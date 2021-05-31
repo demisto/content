@@ -1,8 +1,25 @@
-# Marketplace related
+# Marketplace Related
 /Tests/Marketplace/approved_tags.json @demisto/content-leaders @michalgold
 /Tests/Marketplace/approved_usecases.json @demisto/content-leaders @michalgold
+/Tests/Marketplace/landingPage_sections.json @demisto/content-leaders @michalgold
 
-# Important integrations
+# Marketplace & Upload-Flow
+/Tests/Marketplace/upload_git_snapshot.py @guyfreund
+/Tests/Marketplace/install_packs.sh @guyfreund
+/Tests/Marketplace/configure_and_install_packs.py @guyfreund
+/Tests/Marketplace/copy_and_upload_packs.py @guyfreund
+/Tests/Marketplace/marketplace_services.py @guyfreund
+/Tests/Marketplace/marketplace_statistics.py @guyfreund
+/Tests/Marketplace/marketplace_constants.py @guyfreund
+/Tests/Marketplace/zip_packs.py @guyfreund
+/Tests/Marketplace/upload_packs.py @guyfreund
+/Tests/Marketplace/packs_dependencies.py @guyfreund
+/Tests/Marketplace/search_and_install_packs.py @guyfreund
+/Tests/scripts/prepare_content_packs_for_testing.sh @guyfreund
+/Utils/trigger_test_upload_flow.sh @guyfreund
+/Utils/trigger_upload_packs_to_production.sh @guyfreund
+
+# Important Integrations
 /Packs/Jira/Integrations/JiraV2/* @demisto/content-leaders
 /Packs/ServiceNow/Integrations/ServiceNowv2/* @demisto/content-leaders
 /Packs/EWS/Integrations/EWSv2/* @demisto/content-leaders
@@ -12,7 +29,14 @@
 /Packs/SplunkPy/Integrations/SplunkPy/* @demisto/content-leaders
 /Packs/Active_Directory_Query/Integrations/Active_Directory_Query/* @demisto/content-leaders
 /Packs/VirusTotal/Integrations/integration-VirusTotal_5.5.yml @demisto/content-leaders
+/Packs/VirusTotal/* @jochman
 
-# Important scripts
+# Important Scripts
 /Packs/CommonScripts/Scripts/SetGridField/* @yaakovi
 /Packs/CommonScripts/Scripts/SearchIncidentsV2/* @demisto/content-leaders
+
+# Build related
+.circleci/config.yml @avidan-H @DinaMeylakh
+.gitlab/ci/* @avidan-H @DinaMeylakh
+.gitlab/* @avidan-H @DinaMeylakh
+.gitlab-ci.yml @avidan-H @DinaMeylakh

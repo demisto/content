@@ -1,0 +1,316 @@
+id: Query Cisco Stealthwatch Flows
+version: -1
+name: Query Cisco Stealthwatch Flows
+description: This playbook runs a query on Cisco Stealthwatch flows and return its results to the context.
+fromversion: 5.5.0
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 230a5fa5-ffb2-4d27-857f-647083ec27dc
+    type: start
+    task:
+      id: 230a5fa5-ffb2-4d27-857f-647083ec27dc
+      version: -1
+      name: ""
+      description: Start of playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: f0204271-a851-438f-8930-8c2a7f740a3a
+    type: playbook
+    task:
+      id: f0204271-a851-438f-8930-8c2a7f740a3a
+      version: -1
+      name: GenericPolling
+      description: |-
+        Use this playbook as a sub-playbook to block execution of the master playbook until a remote action is complete.
+        This playbook implements polling by continuously running the command in Step \#2 until the operation completes.
+        The remote action should have the following structure:
+        1. Initiate the operation.
+        2. Poll to check if the operation completed.
+        3. (optional) Get the results of the operation.
+      playbookName: GenericPolling
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      AdditionalPollingCommandArgNames:
+        simple: tenant_id
+      AdditionalPollingCommandArgValues:
+        simple: ${inputs.tenant_id}
+      Ids:
+        simple: ${CiscoStealthwatch.FlowStatus.id}
+      Interval:
+        simple: ${inputs.interval}
+      PollingCommandArgName:
+        simple: search_id
+      PollingCommandName:
+        simple: cisco-stealthwatch-query-flows-status
+      Timeout:
+        simple: ${inputs.timeout}
+      dt:
+        simple: CiscoStealthwatch.FlowStatus(val.percentComplete.indexof('100')==0).id
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 0
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: 172877e1-d636-4b2a-8b3e-70dddf7ea585
+    type: title
+    task:
+      id: 172877e1-d636-4b2a-8b3e-70dddf7ea585
+      version: -1
+      name: Done
+      description: Playbook is done.
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: d5413bce-fc23-4193-8f07-af3ecd0393ad
+    type: condition
+    task:
+      id: d5413bce-fc23-4193-8f07-af3ecd0393ad
+      version: -1
+      name: Is search completed?
+      description: Checks whether the search is completed.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "12"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: startWith
+          left:
+            value:
+              simple: CiscoStealthwatch.FlowStatus.percentComplete
+            iscontext: true
+          right:
+            value:
+              simple: "100"
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 505
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "10":
+    id: "10"
+    taskid: cb63f126-e616-466a-814d-90169463f29d
+    type: regular
+    task:
+      id: cb63f126-e616-466a-814d-90169463f29d
+      version: -1
+      name: cisco-stealthwatch-query-flows-initialize
+      description: Initialize flow search based on parameters. Provide the start
+        time, time range, or start time and end time.
+      script: Cisco Stealthwatch|||cisco-stealthwatch-query-flows-initialize
+      type: regular
+      iscommand: true
+      brand: Cisco Stealthwatch
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      end_time: {}
+      ip_addresses: {}
+      limit:
+        simple: "5"
+      start_time: {}
+      tenant_id:
+        simple: ${inputs.tenant_id}
+      time_range:
+        simple: ${inputs.time_range}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 180
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "11":
+    id: "11"
+    taskid: e0e12b8e-168d-4c1f-82a3-db7397726f71
+    type: regular
+    task:
+      id: e0e12b8e-168d-4c1f-82a3-db7397726f71
+      version: -1
+      name: cisco-stealthwatch-query-flows-status
+      description: Check the status of the flow search.
+      script: Cisco Stealthwatch|||cisco-stealthwatch-query-flows-status
+      type: regular
+      iscommand: true
+      brand: Cisco Stealthwatch
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      search_id:
+        simple: ${CiscoStealthwatch.FlowStatus.id}
+      tenant_id:
+        simple: ${inputs.tenant_id}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 320
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "12":
+    id: "12"
+    taskid: 0daa60f3-885a-4055-811c-1fb467e9acb3
+    type: regular
+    task:
+      id: 0daa60f3-885a-4055-811c-1fb467e9acb3
+      version: -1
+      name: cisco-stealthwatch-query-flows-results
+      description: Flow search results. Use this command after the search job completes.
+      script: Cisco Stealthwatch|||cisco-stealthwatch-query-flows-results
+      type: regular
+      iscommand: true
+      brand: Cisco Stealthwatch
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      search_id:
+        simple: ${CiscoStealthwatch.FlowStatus.id}
+      tenant_id:
+        simple: ${inputs.tenant_id}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 890
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {
+      "6_12_yes": 0.89
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1085,
+        "width": 492.5,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: timeout
+  value:
+    simple: "600"
+  required: false
+  description: The amount to wait before a timeout occurs (in minutes).
+  playbookInputQuery: null
+- key: interval
+  value:
+    simple: "1"
+  required: false
+  description: Polling frequency - how often the polling command should run (in minutes).
+  playbookInputQuery: null
+- key: range
+  value:
+    simple: 0-20
+  required: false
+  description: Range of results to return (e.g., 0-20).
+  playbookInputQuery: null
+- key: tenant_id
+  value:
+    simple: "102"
+  required: true
+  description: Tenant ID represents the domain on Cisco Stealthwatch.
+  playbookInputQuery: null
+- key: time_range
+  value:
+    simple: 1 month ago
+  required: true
+  description: ""
+  playbookInputQuery: null
+outputs:
+- contextPath: CiscoStealthwatch.FlowResults
+  description: The results of the search.
+sourceplaybookid: QRadarFullSearch
+tests:
+ -  No tests

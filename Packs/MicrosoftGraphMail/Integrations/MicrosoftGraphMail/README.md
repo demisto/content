@@ -56,18 +56,19 @@ Gets the properties of returned emails.
 ##### Base Command
 
 `msgraph-mail-list-emails`
-##### Input
+#### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| user_id | The user ID from which to pull emails (can be principal ID (email address)). | Required | 
-| folder_id |  The comma-separated list of folder IDs, in the format: (mail_box,child_mail_box,child_mail_box).  | Optional | 
-| odata | An OData query. | Optional | 
-| search | The term for which to search. This argument cannot contain reserved characters such as "!, $, #, @, etc". Click [here](https://tools.ietf.org/html/rfc3986#section-2.2) for further information. | Optional | 
-| pages_to_pull | The number of pages of emails to return. The maximum is 10 emails per page. | Optional | 
+| user_id | User ID from which to pull mails (can be principal ID (email address)). | Required | 
+| folder_id |  A comma-separated list of folder IDs, in the format: (mail_box,child_mail_box,child_mail_box). . | Optional | 
+| odata | An OData query. See REDAME for OData usage examples. | Optional | 
+| search | The term for which to search. This argument cannot contain reserved characters such as !, $, #, @, etc. For further information, see https://tools.ietf.org/html/rfc3986#section-2.2. | Optional | 
+| page_size | Limit emails to fetch in one request. Default is 20. | Optional | 
+| pages_to_pull | The number of pages of emails to return (maximum is 10 emails per page). Default is 1. | Optional | 
 
 
-##### Context Output
+#### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
@@ -78,9 +79,9 @@ Gets the properties of returned emails.
 | MSGraphMail.SendTime | Date | The time the email was sent. | 
 | MSGraphMail.Categories | String | Categories of the email. | 
 | MSGraphMail.HasAttachments | Boolean | Whether the email has attachments. | 
-| MSGraphMail.Subject | String | The subject of the email. | 
+| MSGraphMail.Subject | String | The subject of email. | 
 | MSGraphMail.IsDraft | Boolean | Whether the email is a draft. | 
-| MSGraphMail.Body | String | The content (body) of the email. | 
+| MSGraphMail.Body | String | The content \(body\) of the email. | 
 | MSGraphMail.Sender.Name | String | The name of the sender. | 
 | MSGraphMail.Sender.Address | String | The email address of the sender. | 
 | MSGraphMail.From.Name | String | The name of the user in the 'from' field of the email. | 
@@ -92,6 +93,7 @@ Gets the properties of returned emails.
 | MSGraphMail.ReplyTo.Name | String | The name in the 'replyTo' field of the email. | 
 | MSGraphMail.ReplyTo.Address | String | The email address in the 'replyTo' field of the email. | 
 | MSGraphMail.UserID | String | The ID of the user. | 
+| MSGraphMail.NextPage | String | A token to pass to the next list command to retrieve additional results. | 
 
 
 ##### Command Example
@@ -102,6 +104,7 @@ Gets the properties of returned emails.
 {
     "MSGraphMail": [
         {
+            "NextPage": "link_to_next_page"
             "BCCRecipients": null,
             "CCRecipients": null,
             "Categories": [],
@@ -1050,3 +1053,76 @@ There is no context output for this command.
 
 ##### Human Readable Output
 ##### Draft with: "" id was sent successfully.
+
+### reply-mail
+***
+Replies to an email using Graph Mail.
+
+
+#### Base Command
+
+`reply-mail`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| to | A CSV list of email addresses for the 'to' field. | Required | 
+| body | The contents (body) of the email to be sent. | Optional | 
+| subject | Subject for the email to be sent. | Required | 
+| inReplyTo | ID of the item to reply to. | Required | 
+| attachIDs | A CSV list of War Room entry IDs that contain files, and are used to attach files to the outgoing email. For example: attachIDs=15@8,19@8. | Optional | 
+| cc | A CSV list of email addresses for the 'cc' field. | Optional | 
+| bcc | A CSV list of email addresses for the 'bcc' field. | Optional | 
+| htmlBody | HTML formatted content (body) of the email to be sent. This argument overrides the "body" argument. | Optional | 
+| attachNames | A CSV list of names of attachments to send. Should be the same number of elements as attachIDs. | Optional | 
+| attachCIDs | A CSV list of CIDs to embed attachments within the email itself. | Optional | 
+| from | Email address of the sender. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| MicrosoftGraph.SentMail.body | String | The body of the email. | 
+| MicrosoftGraph.SentMail.bodyPreview | String | The body preview of the email. | 
+| MicrosoftGraph.SentMail.subject | String | The subject of the email. | 
+| MicrosoftGraph.SentMail.toRecipients | String | The 'To' recipients of the email. | 
+| MicrosoftGraph.SentMail.ccRecipients | String | The CC recipients of the email. | 
+| MicrosoftGraph.SentMail.bccRecipients | String | The BCC recipients of the email. | 
+| MicrosoftGraph.SentMail.ID | String | The immutable ID of the message. | 
+
+
+#### Command Example
+``` !reply-mail to=dev@demistodev.onmicrosoft.com body="This is the body" subject="This is the subject" inReplyTo=AAMkAGY3OTQyM cc=dev3@demistodev.onmicrosoft.com bcc=dev2@demistodev.onmicrosoft.com attachCIDs=3604@6e069bc4-2a1e-43ea-8ed3-ea558e377751 ```
+
+##### Context Example
+```
+{
+    "MicrosoftGraph": {
+        "SentMail": {
+            "ID": "AAMkAGY3OTQyM",
+            "body": {
+                "content": "This is the body",
+                "contentType": "html"
+            },
+            "bodyPreview" : "This is the body",
+            "subject": "Re: This is the subject",
+            "ccRecipients": [
+                "dev3@demistodev.onmicrosoft.com"
+            ],
+            "bccRecipients": [
+                "dev2@demistodev.onmicrosoft.com"
+            ],
+            "toRecipients": [
+                "dev@demistodev.onmicrosoft.com"
+            ]
+        }
+    }
+}
+```
+
+##### Human Readable Output
+##### Email was sent successfully.
+|ID|body|bccRecipients|bodyPreview|ccRecipients|subject|toRecipients|
+|---|---|---|---|---|---|---|
+|AAMkAGY3OTQyM| content: This is the body. contentType: html | dev2@demistodev.onmicrosoft.com | This is the body | dev3@demistodev.onmicrosoft.com | Re: This is the subject | dev@demistodev.onmicrosoft.com |

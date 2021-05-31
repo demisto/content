@@ -1,0 +1,14 @@
+{
+  "Module": "Data Exfiltration",
+  "Source": "LAPTOP-1234",
+  "Phrase_Title": "Google cloud configuration",
+  "Phrase": "This is very interesting...",
+  "Attack_Type": "HTTP Exfiltration",
+  "Timestamp": "2021-02-24 16:16:47",
+  "Content_Type": "text/html",
+  "Risk": "high",
+  "Classification": "source code",
+  "Quantity": 1,
+  "Status": "Exfiltrated",
+  "PrevStatus": "Exfiltrated"
+}

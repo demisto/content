@@ -18,20 +18,39 @@ configuration:
   name: password
   required: true
   type: 4
+- additionalinfo: The ssh key is used to login to an AWS mac machine - for testing
+    purposes.
+  display: SSH Key
+  hidden: false
+  name: ssh_key
+  required: false
+  type: 14
 description: Tidy integration handle endpoints enviorment installation.
 display: Tidy
 name: Tidy
 script:
   commands:
   - arguments:
-    - description: Endpoint IP/URL to be installed.
+    - default: false
+      description: Endpoint IP/URL to be installed.
+      isArray: false
       name: hostname
-    - description: Endpoint user to be installed.
+      required: false
+      secret: false
+    - default: false
+      description: Endpoint user to be installed.
+      isArray: false
       name: user
-    - description: User login password.
+      required: false
+      secret: false
+    - default: false
+      description: User login password.
+      isArray: false
       name: password
+      required: false
       secret: true
     - auto: PREDEFINED
+      default: false
       defaultValue: 2.7.18,3.8.5
       description: Python versions to be installed.
       isArray: true
@@ -470,7 +489,9 @@ script:
       - stackless-3.5.4
       - stackless-3.7.5
       required: true
+      secret: false
     - auto: PREDEFINED
+      default: false
       defaultValue: 3.8.5
       description: Python versions to define as globals in enviorment.
       isArray: true
@@ -910,7 +931,10 @@ script:
       - stackless-3.5.4
       - stackless-3.7.5
       required: true
+      secret: false
+    deprecated: false
     description: Install Python versions, Using Pyenv.
+    execution: false
     name: tidy-pyenv
     outputs:
     - contextPath: Tidy.Install.Status
@@ -938,14 +962,26 @@ script:
       description: Additinal information about the installed software
       type: String
   - arguments:
-    - description: Endpoint IP/URL to be installed.
+    - default: false
+      description: Endpoint IP/URL to be installed.
+      isArray: false
       name: hostname
-    - description: Endpoint user to be installed.
+      required: false
+      secret: false
+    - default: false
+      description: Endpoint user to be installed.
+      isArray: false
       name: user
-    - description: User login password.
+      required: false
+      secret: false
+    - default: false
+      description: User login password.
+      isArray: false
       name: password
+      required: false
       secret: true
     - auto: PREDEFINED
+      default: false
       defaultValue: 1.15.0
       description: GoLang versions to be installed.
       isArray: true
@@ -1077,7 +1113,9 @@ script:
       - 1.15.1
       - 1.15.2
       required: true
+      secret: false
     - auto: PREDEFINED
+      default: false
       defaultValue: 1.15.0
       description: GoLang versions to define as globals in enviorment.
       isArray: true
@@ -1209,7 +1247,10 @@ script:
       - 1.15.1
       - 1.15.2
       required: true
+      secret: false
+    deprecated: false
     description: Install GoLang versions, Using Goenv.
+    execution: false
     name: tidy-goenv
     outputs:
     - contextPath: Tidy.Install.Status
@@ -1237,14 +1278,26 @@ script:
       description: Additinal information about the installed software
       type: String
   - arguments:
-    - description: Endpoint IP/URL to be installed.
+    - default: false
+      description: Endpoint IP/URL to be installed.
+      isArray: false
       name: hostname
-    - description: Endpoint user to be installed.
+      required: false
+      secret: false
+    - default: false
+      description: Endpoint user to be installed.
+      isArray: false
       name: user
-    - description: User login password.
+      required: false
+      secret: false
+    - default: false
+      description: User login password.
+      isArray: false
       name: password
+      required: false
       secret: true
     - auto: PREDEFINED
+      default: false
       defaultValue: 13.0.0
       description: Node.js versions to be installed.
       isArray: true
@@ -1897,7 +1950,9 @@ script:
       - rc
       - v8-canary
       required: true
+      secret: false
     - auto: PREDEFINED
+      default: false
       defaultValue: 13.0.0
       description: Node.js versions to define as globals in enviorment.
       isArray: true
@@ -2551,7 +2606,10 @@ script:
       - rc
       - v8-canary
       required: true
+      secret: false
+    deprecated: false
     description: Install Node.js versions, Using nodenv.
+    execution: false
     name: tidy-nodenv
     outputs:
     - contextPath: Tidy.Install.Status
@@ -2579,21 +2637,46 @@ script:
       description: Additinal information about the installed software
       type: String
   - arguments:
-    - description: Endpoint IP/URL to be installed.
+    - default: false
+      description: Endpoint IP/URL to be installed.
+      isArray: false
       name: hostname
-    - description: Endpoint user to be installed.
+      required: false
+      secret: false
+    - default: false
+      description: Endpoint user to be installed.
+      isArray: false
       name: user
-    - description: User login password.
+      required: false
+      secret: false
+    - default: false
+      description: User login password.
+      isArray: false
       name: password
+      required: false
       secret: true
-    - description: Comma seprated list of homebrew packages (https://formulae.brew.sh/)
+    - default: false
+      description: Comma seprated list of homebrew packages (https://formulae.brew.sh/)
       isArray: true
       name: apps
-    - description: Comma seprated list of homebrew cask packages (https://formulae.brew.sh/cask/)
+      required: false
+      secret: false
+    - default: false
+      description: Comma seprated list of homebrew cask packages (https://formulae.brew.sh/cask/)
       isArray: true
       name: cask_apps
+      required: false
+      secret: false
+    - default: false
+      description: Hombrew taps packages to install
+      isArray: false
+      name: homebrew_taps
+      required: false
+      secret: false
+    deprecated: false
     description: Install and configure homebrew, Install additional homebrew/-cask
       packages.
+    execution: false
     name: tidy-homebrew
     outputs:
     - contextPath: Tidy.Install.Status
@@ -2621,19 +2704,34 @@ script:
       description: Additinal information about the installed software
       type: String
   - arguments:
-    - description: Endpoint IP/URL to be installed.
+    - default: false
+      description: Endpoint IP/URL to be installed.
+      isArray: false
       name: hostname
-    - description: Endpoint user to be installed.
+      required: false
+      secret: false
+    - default: false
+      description: Endpoint user to be installed.
+      isArray: false
       name: user
-    - description: User login password.
+      required: false
+      secret: false
+    - default: false
+      description: User login password.
+      isArray: false
       name: password
+      required: false
       secret: true
-    - description: GitHub access token with public keys admin permissions.. (https://docs.github.com/en/free-pro-team@latest/github/authenticating-to-github/creating-a-personal-access-token)
+    - default: false
+      description: GitHub access token with public keys admin permissions.. (https://docs.github.com/en/free-pro-team@latest/github/authenticating-to-github/creating-a-personal-access-token)
+      isArray: false
       name: access_token
       required: true
       secret: true
+    deprecated: false
     description: Generate private/public key, Configure ssh client, and deploy keys
       to your GitHub account.
+    execution: false
     name: tidy-github-ssh-key
     outputs:
     - contextPath: Tidy.Install.Status
@@ -2661,35 +2759,61 @@ script:
       description: Additinal information about the installed software
       type: String
   - arguments:
-    - description: Endpoint IP/URL to be installed.
+    - default: false
+      description: Endpoint IP/URL to be installed.
+      isArray: false
       name: hostname
-    - description: Endpoint user to be installed.
+      required: false
+      secret: false
+    - default: false
+      description: Endpoint user to be installed.
+      isArray: false
       name: user
-    - description: User login password.
+      required: false
+      secret: false
+    - default: false
+      description: User login password.
+      isArray: false
       name: password
+      required: false
       secret: true
-    - description: Repository to be cloned (SSH/HTTPS).
+    - default: false
+      description: Repository to be cloned (SSH/HTTPS).
+      isArray: false
       name: repo
       required: true
-    - description: The path of where the repository should be checked out.
+      secret: false
+    - default: false
+      description: The path of where the repository should be checked out.
+      isArray: false
       name: dest
       required: true
+      secret: false
     - auto: PREDEFINED
-      defaultValue: "no"
+      default: false
+      defaultValue: 'no'
       description: If yes, any modified files in the working repository will be discarded
+      isArray: false
       name: force
       predefined:
-      - "yes"
-      - "no"
+      - 'yes'
+      - 'no'
       required: true
+      secret: false
     - auto: PREDEFINED
-      defaultValue: "yes"
+      default: false
+      defaultValue: 'yes'
       description: If no, do not retrieve new revisions from the origin repository.
+      isArray: false
       name: update
       predefined:
-      - "yes"
-      - "no"
+      - 'yes'
+      - 'no'
+      required: false
+      secret: false
+    deprecated: false
     description: Clone git repository to destination.
+    execution: false
     name: tidy-git-clone
     outputs:
     - contextPath: Tidy.Install.Status
@@ -2717,34 +2841,56 @@ script:
       description: Additinal information about the installed software
       type: String
   - arguments:
-    - description: Endpoint IP/URL to be installed.
+    - default: false
+      description: Endpoint IP/URL to be installed.
+      isArray: false
       name: hostname
-    - description: Endpoint user to be installed.
+      required: false
+      secret: false
+    - default: false
+      description: Endpoint user to be installed.
+      isArray: false
       name: user
-    - description: User login password.
+      required: false
+      secret: false
+    - default: false
+      description: User login password.
+      isArray: false
       name: password
+      required: false
       secret: true
     - auto: PREDEFINED
+      default: false
       description: 'The name of the setting. '
+      isArray: false
       name: key
       predefined:
       - user.name
       - user.email
       - core.editor
       required: true
-    - description: 'Git key: value to set.'
+      secret: false
+    - default: false
+      description: 'Git key: value to set.'
+      isArray: false
       name: value
       required: true
+      secret: false
     - auto: PREDEFINED
+      default: false
       defaultValue: global
       description: 'Specify which scope to read/set values from. '
+      isArray: false
       name: scope
       predefined:
       - local
       - global
       - system
       required: true
+      secret: false
+    deprecated: false
     description: Configure git cli.
+    execution: false
     name: tidy-git-config
     outputs:
     - contextPath: Tidy.Install.Status
@@ -2772,14 +2918,27 @@ script:
       description: Additinal information about the installed software
       type: String
   - arguments:
-    - description: Endpoint IP/URL to be installed.
+    - default: false
+      description: Endpoint IP/URL to be installed.
+      isArray: false
       name: hostname
-    - description: Endpoint user to be installed.
+      required: false
+      secret: false
+    - default: false
+      description: Endpoint user to be installed.
+      isArray: false
       name: user
-    - description: User login password.
+      required: false
+      secret: false
+    - default: false
+      description: User login password.
+      isArray: false
       name: password
+      required: false
       secret: true
+    deprecated: false
     description: Install zsh, oh-my-zsh, p10k.
+    execution: false
     name: tidy-zsh
     outputs:
     - contextPath: Tidy.Install.Status
@@ -2807,33 +2966,58 @@ script:
       description: Additinal information about the installed software
       type: String
   - arguments:
-    - description: Endpoint IP/URL to be installed.
+    - default: false
+      description: Endpoint IP/URL to be installed.
+      isArray: false
       name: hostname
-    - description: Endpoint user to be installed.
+      required: false
+      secret: false
+    - default: false
+      description: Endpoint user to be installed.
+      isArray: false
       name: user
-    - description: User login password.
+      required: false
+      secret: false
+    - default: false
+      description: User login password.
+      isArray: false
       name: password
+      required: false
       secret: true
-    - description: The file to modify.
+    - default: false
+      description: The file to modify.
+      isArray: false
       name: path
       required: true
-    - description: Text block to be added
+      secret: false
+    - default: false
+      description: Text block to be added
+      isArray: false
       name: block
       required: true
-    - defaultValue: '" "'
+      secret: false
+    - default: false
+      defaultValue: '" "'
       description: Marker to manage block if needed to change in the future.
+      isArray: false
       name: marker
       required: true
+      secret: false
     - auto: PREDEFINED
-      defaultValue: "yes"
+      default: false
+      defaultValue: 'yes'
       description: Create a new file if it does not exist.
+      isArray: false
       name: create
       predefined:
-      - "yes"
-      - "no"
+      - 'yes'
+      - 'no'
       required: true
+      secret: false
+    deprecated: false
     description: Insert/update/remove a block of multi-line text surrounded by customizable
       marker lines.
+    execution: false
     name: tidy-block-in-file
     outputs:
     - contextPath: Tidy.Install.Status
@@ -2861,21 +3045,40 @@ script:
       description: Additinal information about the installed software
       type: String
   - arguments:
-    - description: Endpoint IP/URL to be installed.
+    - default: false
+      description: Endpoint IP/URL to be installed.
+      isArray: false
       name: hostname
-    - description: Endpoint user to be installed.
+      required: false
+      secret: false
+    - default: false
+      description: Endpoint user to be installed.
+      isArray: false
       name: user
-    - description: User login password.
+      required: false
+      secret: false
+    - default: false
+      description: User login password.
+      isArray: false
       name: password
+      required: false
       secret: true
-    - description: Bash command to execute.
+    - default: false
+      description: Bash command to execute.
+      isArray: false
       name: command
       required: true
-    - defaultValue: $HOME
+      secret: false
+    - default: false
+      defaultValue: $HOME
       description: Change directory before executing command.
+      isArray: false
       name: chdir
       required: true
+      secret: false
+    deprecated: false
     description: Run command in host.
+    execution: false
     name: tidy-exec
     outputs:
     - contextPath: Tidy.Install.Status
@@ -2903,14 +3106,27 @@ script:
       description: Additinal information about the installed software
       type: String
   - arguments:
-    - description: Endpoint IP/URL to be installed.
+    - default: false
+      description: Endpoint IP/URL to be installed.
+      isArray: false
       name: hostname
-    - description: Endpoint user to be installed.
+      required: false
+      secret: false
+    - default: false
+      description: Endpoint user to be installed.
+      isArray: false
       name: user
-    - description: User login password.
+      required: false
+      secret: false
+    - default: false
+      description: User login password.
+      isArray: false
       name: password
+      required: false
       secret: true
+    deprecated: false
     description: Install OSx command line tools.
+    execution: false
     name: tidy-osx-command-line-tools
     outputs:
     - contextPath: Tidy.Install.Status
@@ -2938,14 +3154,27 @@ script:
       description: Additinal information about the installed software
       type: String
   - arguments:
-    - description: Endpoint IP/URL to be installed.
+    - default: false
+      description: Endpoint IP/URL to be installed.
+      isArray: false
       name: hostname
-    - description: Endpoint user to be installed.
+      required: false
+      secret: false
+    - default: false
+      description: Endpoint user to be installed.
+      isArray: false
       name: user
-    - description: User login password.
+      required: false
+      secret: false
+    - default: false
+      description: User login password.
+      isArray: false
       name: password
+      required: false
       secret: true
+    deprecated: false
     description: Set demisto developement server.
+    execution: false
     name: tidy-demisto-server
     outputs:
     - contextPath: Tidy.Install.Status
@@ -2973,14 +3202,27 @@ script:
       description: Additinal information about the installed software
       type: String
   - arguments:
-    - description: Endpoint IP/URL to be installed.
+    - default: false
+      description: Endpoint IP/URL to be installed.
+      isArray: false
       name: hostname
-    - description: Endpoint user to be installed.
+      required: false
+      secret: false
+    - default: false
+      description: Endpoint user to be installed.
+      isArray: false
       name: user
-    - description: User login password.
+      required: false
+      secret: false
+    - default: false
+      description: User login password.
+      isArray: false
       name: password
+      required: false
       secret: true
+    deprecated: false
     description: Set demisto developement web-client.
+    execution: false
     name: tidy-demisto-web-client
     outputs:
     - contextPath: Tidy.Install.Status
@@ -3007,11 +3249,19 @@ script:
     - contextPath: Tidy.Install.AdditionalInfo
       description: Additinal information about the installed software
       type: String
-  dockerimage: demisto/tidy:1.0.0.16979
+  - deprecated: false
+    description: Install python environment.
+    execution: false
+    name: tidy-python-env
+  dockerimage: demisto/tidy:1.0.0.19274
+  feed: false
+  isfetch: false
+  longRunning: false
+  longRunningPort: false
   runonce: false
-  script: ''
+  script: '-'
   subtype: python3
   type: python
-fromversion: 5.0.0
 tests:
 - No tests (auto formatted)
+fromversion: 5.0.0

@@ -1,9 +1,9 @@
-import demistomock as demisto
-from CommonServerPython import *
-from CommonServerUserPython import *
 from typing import Dict, Tuple, List
 
 import requests
+from CommonServerUserPython import *
+
+from CommonServerPython import *
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -20,6 +20,7 @@ class LightPanoramaClient(BaseClient):
     This is a client for Panorama API, used by integration commands to issue requests to Panorama API,
      not the BPA service.
     '''
+
     def __init__(self, server, port, api_key, verify, proxy):
         if port is None:
             super().__init__(server + '/', verify)
@@ -99,7 +100,8 @@ class Client(BaseClient):
         response = self._http_request('GET', 'documentation/', proxies=self.proxies)
         return response
 
-    def submit_task_request(self, running_config, system_info, license_info, system_time, generate_zip_bundle) -> Dict:
+    def submit_task_request(self, running_config, system_info, license_info, system_time, generate_zip_bundle,
+                            timeout) -> Dict:
         data = {
             'xml': running_config,
             'system_info': system_info,
@@ -108,7 +110,7 @@ class Client(BaseClient):
             'generate_zip_bundle': generate_zip_bundle
         }
 
-        response = self._http_request('POST', 'create/', data=data, proxies=self.proxies)
+        response = self._http_request('POST', 'create/', data=data, proxies=self.proxies, timeout=timeout)
         return response
 
     def get_results_request(self, task_id: str):
@@ -162,7 +164,9 @@ def submit_task_command(client: Client, panorama: LightPanoramaClient, args: Dic
         raise Exception('Failed getting response from Panorama')
 
     generate_zip_bundle = args.get('generate_zip_bundle')
-    raw = client.submit_task_request(running_config, system_info, license_info, system_time, generate_zip_bundle)
+    timeout = int(args.get('timeout', '120'))
+    raw = client.submit_task_request(running_config, system_info, license_info, system_time, generate_zip_bundle,
+                                     timeout)
     task_id = raw.get('task_id', '')
 
     human_readable = f'Submitted BPA job ID: {task_id}'

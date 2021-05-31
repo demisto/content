@@ -113,7 +113,7 @@ tags:
 timeout: 60µs
 type: python
 runas: DBotRole
-dockerimage: demisto/python3:3.8.6.14516
+dockerimage: demisto/python3:3.9.4.19537
 tests:
 - Create Phishing Classifier V2 ML Test
 fromversion: 5.0.0

@@ -5,15 +5,15 @@ from CommonServerUserPython import *
 ''' IMPORTS '''
 import urllib3
 import requests
-from dateutil.parser import parse
 from typing import Optional, Pattern, List
 
 # disable insecure warnings
 urllib3.disable_warnings()
 
 ''' GLOBALS '''
-TAGS = 'feedTags'
+TAGS = 'tags'
 TLP_COLOR = 'trafficlightprotocol'
+DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 
 
 class Client(BaseClient):
@@ -280,9 +280,14 @@ class Client(BaseClient):
         return created_custom_fields
 
 
-def datestring_to_millisecond_timestamp(datestring):
-    date = parse(str(datestring))
-    return int(date.timestamp() * 1000)
+def datestring_to_server_format(date_string: str) -> str:
+    """
+    formats a datestring to the ISO-8601 format which the server expects to recieve
+    :param date_string: Date represented as a tring
+    :return: ISO-8601 date string
+    """
+    parsed_date = dateparser.parse(date_string, settings={'TIMEZONE': 'UTC'})
+    return parsed_date.strftime(DATE_FORMAT)    # type: ignore
 
 
 def get_indicator_fields(line, url, feed_tags: list, tlp_color: Optional[str], client: Client):
@@ -356,7 +361,7 @@ def get_indicator_fields(line, url, feed_tags: list, tlp_color: Optional[str], c
     return attributes, value
 
 
-def fetch_indicators_command(client, feed_tags, tlp_color, itype, auto_detect, **kwargs):
+def fetch_indicators_command(client, feed_tags, tlp_color, itype, auto_detect, create_relationships=False, **kwargs):
     iterators = client.build_iterator(**kwargs)
     indicators = []
     for iterator in iterators:
@@ -365,12 +370,10 @@ def fetch_indicators_command(client, feed_tags, tlp_color, itype, auto_detect, *
                 attributes, value = get_indicator_fields(line, url, feed_tags, tlp_color, client)
                 if value:
                     if 'lastseenbysource' in attributes.keys():
-                        attributes['lastseenbysource'] = datestring_to_millisecond_timestamp(
-                            attributes['lastseenbysource'])
+                        attributes['lastseenbysource'] = datestring_to_server_format(attributes['lastseenbysource'])
 
                     if 'firstseenbysource' in attributes.keys():
-                        attributes['firstseenbysource'] = datestring_to_millisecond_timestamp(
-                            attributes['firstseenbysource'])
+                        attributes['firstseenbysource'] = datestring_to_server_format(attributes['firstseenbysource'])
                     indicator_type = determine_indicator_type(
                         client.feed_url_to_config.get(url, {}).get('indicator_type'), itype, auto_detect, value)
                     indicator_data = {
@@ -378,6 +381,17 @@ def fetch_indicators_command(client, feed_tags, tlp_color, itype, auto_detect, *
                         "type": indicator_type,
                         "rawJSON": attributes,
                     }
+                    if create_relationships and client.feed_url_to_config.get(url, {}).get('relationship_name'):
+                        if attributes.get('relationship_entity_b'):
+                            relationships_lst = EntityRelationship(
+                                name=client.feed_url_to_config.get(url, {}).get('relationship_name'),
+                                entity_a=value,
+                                entity_a_type=indicator_type,
+                                entity_b=attributes.get('relationship_entity_b'),
+                                entity_b_type=client.feed_url_to_config.get(url, {}).get('relationship_entity_b_type'),
+                            )
+                            relationships_of_indicator = [relationships_lst.to_indicator()]
+                            indicator_data['relationships'] = relationships_of_indicator
 
                     if len(client.custom_fields_mapping.keys()) > 0 or TAGS in attributes.keys():
                         custom_fields = client.custom_fields_creator(attributes)
@@ -411,7 +425,8 @@ def get_indicators_command(client: Client, args):
     feed_tags = args.get('feedTags')
     tlp_color = args.get('tlp_color')
     auto_detect = demisto.params().get('auto_detect_type')
-    indicators_list = fetch_indicators_command(client, feed_tags, tlp_color, itype, auto_detect)[:limit]
+    create_relationships = demisto.params().get('create_relationships')
+    indicators_list = fetch_indicators_command(client, feed_tags, tlp_color, itype, auto_detect, create_relationships)[:limit]
     entry_result = camelize(indicators_list)
     hr = tableToMarkdown('Indicators', entry_result, headers=['Value', 'Type', 'Rawjson'])
     return hr, {}, indicators_list
@@ -453,7 +468,7 @@ def feed_main(feed_name, params=None, prefix=''):
     try:
         if command == 'fetch-indicators':
             indicators = fetch_indicators_command(client, feed_tags, tlp_color, params.get('indicator_type'),
-                                                  params.get('auto_detect_type'))
+                                                  params.get('auto_detect_type'), params.get('create_relationships'))
             # we submit the indicators in batches
             for b in batch(indicators, batch_size=2000):
                 demisto.createIndicators(b)

@@ -26,17 +26,19 @@ args:
 - name: xml
   required: true
   default: true
-  description: valid xml to convert to json format
+  description: The valid xml to convert to json format.
 - name: contextKey
-  description: context Key to push json result to
+  description: The context Key to push json result to.
 - name: verbose
   auto: PREDEFINED
   predefined:
   - "True"
   - "False"
-  description: Print json result to warrom
+  description: Print json result to warrom.
   defaultValue: "True"
 scripttarget: 0
 dependson: {}
 timeout: 0s
 fromversion: 5.0.0
+tests:
+- No tests (auto formatted)

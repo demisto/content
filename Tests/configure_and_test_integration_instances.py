@@ -60,11 +60,11 @@ MARKET_PLACE_CONFIGURATION = {
 AVOID_DOCKER_IMAGE_VALIDATION = {
     'content.validate.docker.images': 'false'
 }
-ID_SET_PATH = './Tests/id_set.json'
+ID_SET_PATH = './artifacts/id_set.json'
 
 
 class Running(IntEnum):
-    CIRCLECI_RUN = 0
+    CI_RUN = 0
     WITH_OTHER_SERVER = 1
     WITH_LOCAL_SERVER = 2
 
@@ -119,11 +119,11 @@ def get_id_set(id_set_path) -> dict:
 
 class Build:
     # START CHANGE ON LOCAL RUN #
-    content_path = '{}/project'.format(os.getenv('HOME'))
-    test_pack_target = '{}/project/Tests'.format(os.getenv('HOME'))
+    content_path = f'{os.getenv("HOME")}/project' if os.getenv('CIRCLECI') else os.getenv('CI_PROJECT_DIR')
+    test_pack_target = f'{os.getenv("HOME")}/project/Tests' if os.getenv('CIRCLECI') else f'{os.getenv("CI_PROJECT_DIR")}/Tests'  # noqa
     key_file_path = 'Use in case of running with non local server'
-    run_environment = Running.CIRCLECI_RUN
-    env_results_path = './env_results.json'
+    run_environment = Running.CI_RUN
+    env_results_path = f'{os.getenv("ARTIFACTS_FOLDER")}/env_results.json'
     DEFAULT_SERVER_VERSION = '99.99.98'
 
     #  END CHANGE ON LOCAL RUN  #
@@ -206,7 +206,7 @@ class Build:
     def get_servers(ami_env):
         env_conf = get_env_conf()
         server_to_port_mapping = map_server_to_port(env_conf, ami_env)
-        if Build.run_environment == Running.CIRCLECI_RUN:
+        if Build.run_environment == Running.CI_RUN:
             server_numeric_version = get_server_numeric_version(ami_env)
         else:
             server_numeric_version = Build.DEFAULT_SERVER_VERSION
@@ -233,9 +233,9 @@ def options_handler():
                         default='/home/runner/work/content-private/content-private/content')
     parser.add_argument('--id_set_path', help='Path to the ID set.')
     parser.add_argument('-l', '--tests_to_run', help='Path to the Test Filter.',
-                        default='./Tests/filter_file.txt')
+                        default='./artifacts/filter_file.txt')
     parser.add_argument('-pl', '--pack_ids_to_install', help='Path to the packs to install file.',
-                        default='./Tests/content_packs_to_install.txt')
+                        default='./artifacts/content_packs_to_install.txt')
     # disable-secrets-detection-start
     parser.add_argument('-sa', '--service_account',
                         help=("Path to gcloud service account, is for circleCI usage. "
@@ -583,18 +583,11 @@ def __set_server_keys(client, integration_params, integration_name):
     for key, value in integration_params.get('server_keys').items():
         data['data'][key] = value
 
-    response_data, status_code, _ = demisto_client.generic_request_func(self=client, path='/system/config',
-                                                                        method='POST', body=data)
-
-    try:
-        result_object = ast.literal_eval(response_data)
-    except ValueError:
-        logging.exception(f'failed to parse response from demisto. response is {response_data}')
-        return
-
-    if status_code >= 300 or status_code < 200:
-        message = result_object.get('message', '')
-        logging.error(f'Failed to set server keys, status_code: {status_code}, message: {message}')
+    update_server_configuration(
+        client=client,
+        server_configuration=data,
+        error_msg='Failed to set server keys'
+    )
 
 
 def set_integration_instance_parameters(integration_configuration,
@@ -746,7 +739,7 @@ def update_content_on_demisto_instance(client, server, ami_name):
         # check that the content installation updated
         # verify the asset id matches the circleci build number / asset_id in the content-descriptor.json
         release, asset_id = get_content_version_details(client, ami_name)
-        with open('content-descriptor.json', 'r') as cd_file:
+        with open('./artifacts/content-descriptor.json', 'r') as cd_file:
             cd_json = json.loads(cd_file.read())
             cd_release = cd_json.get('release')
             cd_asset_id = cd_json.get('assetId')
@@ -836,7 +829,7 @@ def report_tests_status(preupdate_fails, postupdate_fails, preupdate_success, po
 
 
 def get_env_conf():
-    if Build.run_environment == Running.CIRCLECI_RUN:
+    if Build.run_environment == Running.CI_RUN:
         return get_json_file(Build.env_results_path)
 
     elif Build.run_environment == Running.WITH_LOCAL_SERVER:
@@ -888,6 +881,7 @@ def configure_servers_and_restart(build):
             if is_redhat_instance(server.internal_ip):
                 configurations.update(DOCKER_HARDENING_CONFIGURATION_FOR_PODMAN)
                 configurations.update(NO_PROXY_CONFIG)
+                configurations['python.pass.extra.keys'] += "##--network=slirp4netns:cidr=192.168.0.0/16"
             else:
                 configurations.update(DOCKER_HARDENING_CONFIGURATION)
             configure_types.append('docker hardening')
@@ -916,7 +910,7 @@ def get_tests(build: Build) -> List[str]:
     """
     server_numeric_version: str = build.server_numeric_version
     tests: dict = build.tests
-    if Build.run_environment == Running.CIRCLECI_RUN:
+    if Build.run_environment == Running.CI_RUN:
         filtered_tests = extract_filtered_tests()
         if build.is_nightly:
             # skip test button testing
@@ -970,8 +964,8 @@ def get_changed_integrations(build: Build) -> tuple:
 
 
 def get_pack_ids_to_install():
-    if Build.run_environment == Running.CIRCLECI_RUN:
-        with open('./Tests/content_packs_to_install.txt', 'r') as packs_stream:
+    if Build.run_environment == Running.CI_RUN:
+        with open('./artifacts/content_packs_to_install.txt', 'r') as packs_stream:
             pack_ids = packs_stream.readlines()
             return [pack_id.rstrip('\n') for pack_id in pack_ids]
     else:
@@ -1393,7 +1387,7 @@ def main():
 
     configure_servers_and_restart(build)
     disable_instances(build)
-    installed_content_packs_successfully = install_packs_pre_update(build)
+    install_packs_pre_update(build)
 
     new_integrations, modified_integrations = get_changed_integrations(build)
 
@@ -1401,7 +1395,7 @@ def main():
                                                                                   new_integrations,
                                                                                   modified_integrations)
     modified_module_instances, new_module_instances, failed_tests_pre, successful_tests_pre = pre_update_configuration_results
-    installed_content_packs_successfully = update_content_on_servers(build) and installed_content_packs_successfully
+    installed_content_packs_successfully = update_content_on_servers(build)
 
     successful_tests_post, failed_tests_post = test_integrations_post_update(build,
                                                                              new_module_instances,

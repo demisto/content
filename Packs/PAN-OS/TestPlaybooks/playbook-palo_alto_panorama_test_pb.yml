@@ -30,6 +30,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
   "12":
     id: "12"
     taskid: f5fb8041-416c-47dc-82f4-0409c1b15c38
@@ -67,6 +68,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
   "13":
     id: "13"
     taskid: 41e32e60-5e36-40fa-826a-4399d748b890
@@ -94,6 +96,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
   "14":
     id: "14"
     taskid: 8ab61a35-df48-45d4-887b-0c161159f10b
@@ -122,6 +125,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
   "15":
     id: "15"
     taskid: 75b6b479-2c40-4ace-80b6-45d055bbfd59
@@ -149,6 +153,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
   "16":
     id: "16"
     taskid: 4c4e9f21-ce84-4223-815a-c9ea2e2fcb2b
@@ -189,6 +194,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
   "17":
     id: "17"
     taskid: 8c314ca1-8fde-4e3b-8d2b-61144d8361c1
@@ -239,6 +245,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
   "18":
     id: "18"
     taskid: 01a2c2da-bb88-49ed-8f25-dd27bd35ef10
@@ -271,6 +278,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
   "20":
     id: "20"
     taskid: 443ceae8-b2ba-41ad-8f20-b4d8764ff13b
@@ -302,6 +310,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
   "21":
     id: "21"
     taskid: a0aeb681-9d94-49ab-8646-c2cfb7c983a7
@@ -331,6 +340,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
   "22":
     id: "22"
     taskid: bdada150-7809-4a5b-83f8-8b3b190c2c54
@@ -369,6 +379,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
   "24":
     id: "24"
     taskid: 77ea052b-6ea9-4c8e-8273-c76c3029c18d
@@ -407,6 +418,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
   "25":
     id: "25"
     taskid: 57d36c32-2886-40bf-891b-82b31a2778f7
@@ -438,6 +450,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
   "26":
     id: "26"
     taskid: ce76e61c-311b-4d40-818b-0486b81a1eaa
@@ -469,6 +482,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
   "27":
     id: "27"
     taskid: 798f3618-d40e-4cc3-858f-7bbd52010f4a
@@ -509,6 +523,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
   "30":
     id: "30"
     taskid: b3bba0a9-e6e7-4de3-8ad4-bab1318ea181
@@ -540,6 +555,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
   "36":
     id: "36"
     taskid: 6d22dbb2-51eb-42ea-88d2-96107b9e391d
@@ -572,6 +588,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
   "38":
     id: "38"
     taskid: 9782cf23-56f2-41b6-8330-6a94c2b575a9
@@ -607,6 +624,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
   "40":
     id: "40"
     taskid: 9e6a3360-453c-417b-821e-8109cf5f0a0e
@@ -639,6 +657,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
   "50":
     id: "50"
     taskid: 07f279e2-f534-4ca3-8ff8-478f6902ce58
@@ -646,16 +665,20 @@ tasks:
     task:
       id: 07f279e2-f534-4ca3-8ff8-478f6902ce58
       version: -1
-      name: Done
+      name: User-ID Interface and Agents
       type: title
       iscommand: false
       brand: ""
+    nexttasks:
+      '#none#':
+      - "106"
+      - "107"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 910,
-          "y": 5730
+          "x": 740,
+          "y": 5780
         }
       }
     note: false
@@ -663,6 +686,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
   "51":
     id: "51"
     taskid: b0c14831-ccb0-451b-82a7-12b89a5a5212
@@ -690,6 +714,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
   "52":
     id: "52"
     taskid: dee53394-3a42-439f-8a6b-4dc3cae2a857
@@ -717,6 +742,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
   "53":
     id: "53"
     taskid: fdb7e115-8c0f-4e85-8b0d-305ff9d4ae4a
@@ -753,6 +779,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
   "54":
     id: "54"
     taskid: 31c4e469-56e0-450a-8b34-d988393e9fd2
@@ -784,6 +811,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
   "55":
     id: "55"
     taskid: a3990810-d8bd-4881-8c0f-e175f83e0a7c
@@ -820,6 +848,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
   "56":
     id: "56"
     taskid: 8efefe44-f356-4a42-8da8-f9405ca30f9e
@@ -851,6 +880,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
   "60":
     id: "60"
     taskid: 0739a4ef-390e-4931-8734-7d4f5ed70259
@@ -878,6 +908,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
   "61":
     id: "61"
     taskid: 009cf28f-6e36-4827-8eb1-bc07e48ec15b
@@ -905,6 +936,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
   "62":
     id: "62"
     taskid: 5c6c5102-f28b-4ff3-8cea-a6a2987f8fab
@@ -932,6 +964,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
   "64":
     id: "64"
     taskid: 93b03222-ccf5-40e2-8a7a-c345941424f4
@@ -961,6 +994,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
   "67":
     id: "67"
     taskid: 901e3b5c-28ce-4535-83c4-f93efeb74b5c
@@ -997,8 +1031,7 @@ tasks:
       service: {}
       source: {}
       source_user: {}
-      source_zone:
-        simple: test_zone_DO_NOT_DELETE
+      source_zone: {}
       tags:
         simple: Bark_test_tag2
       target: {}
@@ -1015,6 +1048,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
   "69":
     id: "69"
     taskid: b89eb8f8-72cc-4c9d-8dfd-66fc286248ee
@@ -1046,6 +1080,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
   "70":
     id: "70"
     taskid: 297a8468-6d12-4e3f-866b-d60a898609d3
@@ -1081,6 +1116,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
   "74":
     id: "74"
     taskid: e82e1ba9-dd0d-474c-8d85-8022e4254caa
@@ -1113,6 +1149,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
   "75":
     id: "75"
     taskid: c14dbb1c-1ec8-4232-8245-731610011042
@@ -1156,6 +1193,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
   "76":
     id: "76"
     taskid: 62dc8e38-3402-4bf4-88e9-e810deed439e
@@ -1183,6 +1221,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
   "78":
     id: "78"
     taskid: 46b8adc2-7870-4bee-891c-edaaa578d938
@@ -1214,6 +1253,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
   "79":
     id: "79"
     taskid: acf06014-d5c0-4cf2-8128-657e7c9ffb67
@@ -1245,6 +1285,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
   "80":
     id: "80"
     taskid: 79bdb31d-be0d-436f-8181-fbdbc7b993bd
@@ -1272,6 +1313,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
   "81":
     id: "81"
     taskid: 16ceb737-49b8-4299-88df-63271fd2120f
@@ -1304,6 +1346,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
   "83":
     id: "83"
     taskid: 7d2ad685-f47c-4f11-8a5a-97e8890a7cc2
@@ -1319,7 +1362,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "97"
+      - "105"
     scriptarguments:
       element_to_change:
         simple: log-forwarding
@@ -1342,6 +1385,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
   "85":
     id: "85"
     taskid: 2ccddf39-ee2f-44d4-8f6b-823e1288c22f
@@ -1369,6 +1413,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
   "86":
     id: "86"
     taskid: ec6a1131-df0f-4c1c-8232-58c9032f8be6
@@ -1401,6 +1446,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
   "87":
     id: "87"
     taskid: 4c247f7b-da64-459f-8373-8c9fa84d912b
@@ -1435,6 +1481,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
   "88":
     id: "88"
     taskid: 60841756-fa8d-4e04-82f7-6d27718bbd69
@@ -1475,6 +1522,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
   "89":
     id: "89"
     taskid: e66f06c8-6e5b-4d89-8038-426521e0db90
@@ -1509,6 +1557,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
   "90":
     id: "90"
     taskid: 68866cab-d347-4797-8de0-529c2e61041b
@@ -1546,6 +1595,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
   "91":
     id: "91"
     taskid: be3866cc-a224-41d4-8933-fa8131c33eaf
@@ -1582,6 +1632,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
   "92":
     id: "92"
     taskid: cf8e123a-5af3-4175-8649-98557b384b30
@@ -1615,6 +1666,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
   "93":
     id: "93"
     taskid: 9c7382ab-31e7-4748-8b3a-4b7b78a4d663
@@ -1645,37 +1697,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "97":
-    id: "97"
-    taskid: dd879fb6-a453-4d44-874a-4c1774e79b1e
-    type: playbook
-    task:
-      id: dd879fb6-a453-4d44-874a-4c1774e79b1e
-      version: -1
-      name: PanoramaCommitConfiguration
-      description: |-
-        DEPRECATED - Use PAN-OS Commit Configuration instead.
-        If specified as Panorama, will also push the Policies to the specified Device Group in the instance. (please use pan-os-commit-configuration instead)
-      playbookName: PanoramaCommitConfiguration
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "70"
-    separatecontext: true
-    view: |-
-      {
-        "position": {
-          "x": 910,
-          "y": 5060
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
+    isoversize: false
   "98":
     id: "98"
     taskid: 7ac62f0b-93b7-414a-8ead-395f98132b46
@@ -1713,6 +1735,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
   "99":
     id: "99"
     taskid: 7129bfcb-8128-4c59-8955-0066a4b3c56d
@@ -1740,6 +1763,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
   "100":
     id: "100"
     taskid: 391ce2bd-b007-4023-8906-74d087d7ab8a
@@ -1772,6 +1796,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
   "101":
     id: "101"
     taskid: 1559f291-4b7e-4fbd-83ed-edd49f51b122
@@ -1799,6 +1824,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
   "102":
     id: "102"
     taskid: 846ceb01-15aa-42a0-8461-9e3e75e2c69d
@@ -1828,6 +1854,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
   "103":
     id: "103"
     taskid: 6b55d2d9-d07b-491d-81ba-37c03597a865
@@ -1835,7 +1862,7 @@ tasks:
     task:
       id: 6b55d2d9-d07b-491d-81ba-37c03597a865
       version: -1
-      name: panorama-get-pcap from the FW
+      name: panorama-get-pcap from the 8.1 FW(Will fail on the 9.0 Panorama instance)
       description: Returns information for a Panorama PCAP file. The recommended maximum
         file size is 5 MB. If the limit is exceeded, you might need to SSH the firewall
         and run the scp export command to export the PCAP file. For more information,
@@ -1849,8 +1876,6 @@ tasks:
       - "50"
     scriptarguments:
       deviceName: {}
-      serialNumber:
-        simple: 007051000050926
       from:
         simple: test_pcap
       localName: {}
@@ -1860,7 +1885,10 @@ tasks:
         simple: filter-pcap
       searchTime: {}
       serialNo: {}
+      serialNumber:
+        simple: "007051000050926"
       sessionID: {}
+    continueonerror: true
     separatecontext: false
     view: |-
       {
@@ -1874,6 +1902,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
   "104":
     id: "104"
     taskid: 27a52471-e702-4f6f-8d94-9cb4e398e225
@@ -1901,6 +1930,132 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+  "105":
+    id: "105"
+    taskid: 1e0eeb39-8252-447c-81d1-087caf2ebf91
+    type: playbook
+    task:
+      id: 1e0eeb39-8252-447c-81d1-087caf2ebf91
+      version: -1
+      name: PAN-OS Commit Configuration
+      description: Commit the PAN-OS Panorama or Firewall configuration.\nIf specified
+        as Panorama, it also pushes the Policies to the specified Device Group in
+        the instance.
+      playbookName: PAN-OS Commit Configuration
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "70"
+    separatecontext: true
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 5060
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+  "106":
+    id: "106"
+    taskid: 5d6f766b-b9f2-4292-81df-500777194857
+    type: regular
+    task:
+      id: 5d6f766b-b9f2-4292-81df-500777194857
+      version: -1
+      name: panorama-show-user-id-interfaces-config
+      description: Shows the user ID interface configuration
+      script: '|||panorama-show-user-id-interfaces-config'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "108"
+    scriptarguments:
+      template: {}
+      template_stack: {}
+      vsys: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1030,
+          "y": 5940
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+  "107":
+    id: "107"
+    taskid: b19c6519-ffea-44c2-8589-14702361716c
+    type: regular
+    task:
+      id: b19c6519-ffea-44c2-8589-14702361716c
+      version: -1
+      name: panorama-list-configured-user-id-agents
+      description: Retrieves list of user-ID agents configured in the system.
+      script: '|||panorama-list-configured-user-id-agents'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "108"
+    scriptarguments:
+      template: {}
+      template_stack: {}
+      vsys: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": 5940
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+  "108":
+    id: "108"
+    taskid: 92da597f-8365-48eb-8b51-b795dcf221a6
+    type: title
+    task:
+      id: 92da597f-8365-48eb-8b51-b795dcf221a6
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 770,
+          "y": 6160
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
 view: |-
   {
     "linkLabelsPosition": {
@@ -1908,7 +2063,7 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 5745,
+        "height": 6175,
         "width": 1670,
         "x": 50,
         "y": 50

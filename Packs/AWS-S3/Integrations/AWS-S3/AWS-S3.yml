@@ -30,6 +30,8 @@ configuration:
   - sa-east-1
   - eu-north-1
   - eu-west-3
+  - us-gov-east-1
+  - us-gov-west-1
   required: false
   type: 15
 - display: Role Session Duration
@@ -523,7 +525,7 @@ script:
     description: Upload file to S3 bucket
     execution: false
     name: aws-s3-upload-file
-  dockerimage: demisto/boto3:2.0.0.13188
+  dockerimage: demisto/boto3:2.0.0.19034
   isfetch: false
   runonce: false
   script: ''

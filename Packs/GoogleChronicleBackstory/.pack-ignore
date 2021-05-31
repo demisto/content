@@ -6,3 +6,6 @@ ignore=PB110
 
 [file:playbook-Hostname_And_IP_Address_Investigation_And_Remediation_-_Chronicle.yml]
 ignore=PB111
+
+[file:README.md]
+ignore=RM104

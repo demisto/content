@@ -9,6 +9,7 @@ from IntegrationsCheck_Widget_NumberFailingInstances import main
                     'Threat Grid_instance_1,VirusTotal_instance_1,remoteaccess_instance_1'}],
      6),
     ([{'Contents': ''}], 0),
+    ([{'Contents': 'Item not found (8)'}], 0),
     ([{}], 0)
 ])
 def test_script(mocker, list_, expected):
