@@ -24,7 +24,7 @@ def test_fetch_incidents(requests_mock):
         verify=False,
         proxy=False)
     last_run = {
-        'last_fetch': datetime.strptime(dateparser.parse(str(1621860339000)).strftime(DATE_FORMAT), DATE_FORMAT)
+        'last_fetch': dateparser.parse(str(1621860339000),settings={'TIMEZONE': 'UTC'}).strftime(DATE_FORMAT)
     }
     integration_response = fetch_incidents(
         client=client,

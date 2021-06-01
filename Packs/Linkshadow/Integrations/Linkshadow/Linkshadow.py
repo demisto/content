@@ -79,9 +79,9 @@ def format_JSON_for_fetch_incidents(ls_anomaly):
 
 def fetch_incidents(client, max_alerts, last_run, first_fetch_time, apiKey, api_username, plugin_id, action, time_frame):
 
-    last_fetch = last_run.get('last_fetch')
+    last_fetch = dateparser.parse(last_run.get('last_fetch'))
     if last_fetch is None:
-        last_fetch = first_fetch_time
+        last_fetch = dateparser.parse(first_fetch_time, settings={'TIMEZONE': 'UTC'})
 
     latest_created_time = last_fetch
     incidents = []
@@ -93,7 +93,7 @@ def fetch_incidents(client, max_alerts, last_run, first_fetch_time, apiKey, api_
                 incident_occurred_time = dic['time_seen']
                 incident_created_time = dateparser.parse(str(int(dic['action_time']) * 1000), settings={'TIMEZONE': 'UTC'})
                 if last_fetch:
-                    if incident_created_time <= last_fetch:
+                    if incident_created_time.strftime('%s') <= last_fetch.strftime('%s'):
                         continue
                 incident_name = "Linkshadow-entityAnomaly"
                 formatted_JSON = format_JSON_for_fetch_incidents(dic)
@@ -115,7 +115,7 @@ def fetch_incidents(client, max_alerts, last_run, first_fetch_time, apiKey, api_
                 }
                 incidents.append(incident)
                 # Update last run and add incident if the incident is newer than last fetch
-                if incident_created_time > latest_created_time:
+                if incident_created_time.strftime('%s') > latest_created_time.strftime('%s'):
                     latest_created_time = incident_created_time
                 # print (max_alerts)
                 if len(incidents) >= max_alerts:
@@ -162,7 +162,6 @@ def main():
     action = demisto.params().get("action")
     time_frame = demisto.params().get("time_frame")
     first_fetch = demisto.params().get('first_fetch', '1 days')
-    first_fetch_time = dateparser.parse(first_fetch, settings={'TIMEZONE': 'UTC'})
     proxy = demisto.params().get('proxy', False)
     demisto.debug('Command being called is {demisto.command()}')
     try:
@@ -182,7 +181,7 @@ def main():
                 client=client,
                 max_alerts=max_alerts,
                 last_run=demisto.getLastRun(),  # getLastRun() gets the last run dict
-                first_fetch_time=first_fetch_time,
+                first_fetch_time=first_fetch,
                 apiKey=apiKey,
                 api_username=api_username,
                 plugin_id=plugin_id,
@@ -191,8 +190,10 @@ def main():
             )
             demisto.setLastRun(next_run)
             demisto.incidents(incidents)
+
         elif demisto.command() == 'Linkshadow-fetch-entity-anomalies':
             return_results(fetch_entity_anomalies(client, demisto.params(), demisto.args()))
+
     except Exception as e:
         demisto.error(traceback.format_exc())  # print the traceback
         return_error(f'Failed to execute {demisto.command()} command', e)
