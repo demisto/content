@@ -251,7 +251,7 @@ class Client(BaseClient):
 
 def create_standard_domain_context(domain_data):
     command_results = CommandResults(
-        outputs_prefix=f"Domain",
+        outputs_prefix="Domain",
         outputs_key_field="Name",
         outputs=domain_data,
         readable_output=tableToMarkdown(f"Domain(s):", domain_data)
