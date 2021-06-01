@@ -2,7 +2,7 @@
 <p>Use the Atlassian Confluence Server API integration to manage your Confluence spaces and content.</p>
 <p>This integration was integrated and tested with version 6.1 of Atlassian Confluence Server.</p>
 <h2>
-<a id="Configure_Atlassian_Confluence_Server_on_Demisto_4"></a>Configure Atlassian Confluence Server on Demisto</h2>
+<a id="Configure_Atlassian_Confluence_Server_on_Demisto_4"></a>Configure Atlassian Confluence Server on Cortex XSOAR</h2>
 <ol>
 <li>Navigate to<span> </span><strong>Settings</strong><span> </span>&gt;<span> </span><strong>Integrations</strong><span> </span>&gt;<span> </span><strong>Servers &amp; Services</strong>.</li>
 <li>Search for Atlassian Confluence Server.</li>
@@ -20,7 +20,7 @@
 </ol>
 <h2>
 <a id="Commands_16"></a>Commands</h2>
-<p>You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
+<p>You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
 <ol>
 <li><a href="#h_c66282e6-68d7-4de1-99c0-353759967c61" target="_self">Create a space: confluence-create-space</a></li>
 <li><a href="#h_41991150-fafe-4e28-a884-5db88ef3d457" target="_self">Create content for a space: confluence-create-content</a></li>
