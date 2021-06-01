@@ -4,11 +4,12 @@
   "id": "FireEye Central Management - Classifier",
   "description": "Classifies FireEye NX Alerts.",
   "keyTypeMap": {
-    "WEB_MPS": "FireEye NX Alert"
+    "WEB_MPS": "FireEye NX Alert",
+    "EMAIL_MPS": "FireEye EX Alert"
   },
   "transformer": {
     "complex": null,
-    "simple": "incidentType"
+    "simple": "product"
   },
   "version": -1,
   "fromVersion": "6.0.0"
