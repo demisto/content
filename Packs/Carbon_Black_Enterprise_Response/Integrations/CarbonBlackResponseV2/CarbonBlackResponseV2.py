@@ -16,7 +16,7 @@ MAX_INCIDENTS_TO_FETCH = 10
 
 class ProcessEventDetail:
 
-    def __init__(self, piped_version: Union[str,list], fields):
+    def __init__(self, piped_version: Union[str, list], fields):
         self.fields = []
         if not isinstance(piped_version, list):
             piped_version = [piped_version]
@@ -29,8 +29,6 @@ class ProcessEventDetail:
     def format(self):
         return self.fields
 
-    def set_field_value(self, key, new_val):
-        self.fields[key] = new_val
 
 class filemod_complete(ProcessEventDetail):
     FIELDS = ['operation_type', 'event_time', 'file_path', 'md5_after_last_write',
@@ -354,7 +352,6 @@ def get_watchlist_list_command(client: Client, id: str = None, limit: str = None
         })
 
     md = tableToMarkdown(f'{INTEGRATION_NAME} - Watchlists', human_readable_data, removeNull=True)
-    md += f"\nShowing {len(res.get('results', []))} out of {res.get('total_results', '0')} results."
 
     return CommandResults(outputs=res, outputs_prefix='CarbonBlackEDR.Watchlist', outputs_key_field='name',
                           readable_output=md)

@@ -16,7 +16,6 @@ import pytest
 import demistomock as demisto
 
 
-
 def util_load_json(path):
     with io.open(path, mode='r', encoding='utf-8') as f:
         return json.loads(f.read())
@@ -122,13 +121,13 @@ def test_get_isolation_status_field(isolation_activated, is_isolated, expected):
 
 FILEMOD_CASES = [
     (
-        "1|2013-09-16 07:11:58.000000|test_path.dll|||false", # case only one valid string
+        "1|2013-09-16 07:11:58.000000|test_path.dll|||false",  # case only one valid string
         [{'event_time': '2013-09-16 07:11:58.000000',
           'file_path': 'test_path.dll',
           'file_type': '',
           'flagged_as_potential_tamper_attempt': 'false',
           'md5_after_last_write': '',
-          'operation_type': 'Created the file'}] # expected
+          'operation_type': 'Created the file'}]  # expected
     )
 ]
 FILEMOD_BAD_CASES = [
