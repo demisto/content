@@ -12,7 +12,8 @@ args:
   required: true
   secret: false
 - default: false
-  description: Days back to search for incidents - default 7
+  defaultValue: 7
+  description: Days back to search for incidents.
   isArray: false
   name: days
   required: false
@@ -32,7 +33,7 @@ args:
 comment: Generate an as built document, as HTML, based on the running XSOAR instance.
   Requires an instance of the Demisto API integration configured.
 commonfields:
-  id: 839114f2-1efa-40b8-a141-db153297aa2a
+  id: GenerateAsBuilt
   version: -1
 enabled: false
 name: GenerateAsBuilt
