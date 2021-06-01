@@ -262,8 +262,6 @@ ignore=RM106
 [file:playbook-Demisto_Self-Defense_-_Account_policy_monitoring_playbook_README.md]
 ignore=RM106
 
-ignore=RM104
-
 [file:DBotPredictPhishingLabel.yml]
 ignore=SC101
 
