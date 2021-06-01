@@ -923,8 +923,8 @@ def test_fetch_indicators_command(mocker):
     from sixgill.sixgill_constants import FeedStream
 
     client = SixgillFeedClient(
-        "client_id",
-        "client_secret",
+        demisto.params()["client_id"],
+        demisto.params()["client_secret"],
         "some_channel",
         FeedStream.DVEFEED,
         demisto,
@@ -950,8 +950,8 @@ def test_get_indicators_command(mocker):
     from sixgill.sixgill_constants import FeedStream
 
     client = SixgillFeedClient(
-        "client_id",
-        "client_secret",
+        demisto.params()["client_id"],
+        demisto.params()["client_secret"],
         "some_channel",
         FeedStream.DVEFEED,
         demisto,
@@ -986,8 +986,8 @@ def test_feed_tags_and_tlp_color(mocker, tlp_color):
     from sixgill.sixgill_constants import FeedStream
 
     client = SixgillFeedClient(
-        "client_id",
-        "client_secret",
+        demisto.params()["client_id"],
+        demisto.params()["client_secret"],
         "some_channel",
         FeedStream.DVEFEED,
         demisto,

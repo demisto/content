@@ -371,6 +371,7 @@ expected_enrich_output = [
 mock_response = ""
 mocked_get_token_response = """{"access_token": "fababfafbh"}"""
 args = {"cve_id": "CVE-2020-9047"}
+channel_code = "d5cd46c205c20c87006b55a18b106428"
 
 
 class MockedResponse(object):
@@ -389,8 +390,7 @@ class MockedResponse(object):
 def init_params():
     return {
         "client_id": "WRONG_CLIENT_ID_TEST",
-        "client_secret": "CLIENT_SECRET_TEST",
-        "channel_code": "CHANNEL_CODE_TEST",
+        "client_secret": "CLIENT_SECRET_TEST"
     }
 
 
@@ -426,7 +426,7 @@ def test_test_module_command(mocker):
 
     from CybersixgillDVEEnrichment import test_module_command
 
-    test_module_command("client_id", "client_secret", "channel_code", requests.Session(), True)
+    test_module_command(demisto.params()["client_id"], demisto.params()["client_secret"], channel_code, requests.Session(), True)
 
 
 def test_stix_to_indicator(mocker):
