@@ -18,11 +18,12 @@
       "Forensics",
       "Malware",
       "Security",
-      "Threat Intelligence",
+      "Threat Intelligence"
+  ],
+  "useCases": [],
+  "keywords": [
       "Static Analysis",
       "Dynamic Analysis",
       "File Analysis"
-  ],
-  "useCases": [],
-  "keywords": []
+  ]
 }
