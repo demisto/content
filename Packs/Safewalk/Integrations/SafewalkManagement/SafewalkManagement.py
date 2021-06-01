@@ -9,11 +9,11 @@ urllib3.disable_warnings()
 
 class Client(BaseClient):
 
-    def get_transactionlog(self, page: str, search: str, locked: str) -> Dict[str, Any]:
+    def get_transactionlog(self, page, search, locked) -> Dict[str, Any]:
         if page is None:
             page = 1
 
-        p_search=""
+        p_search = ""
         if search is not None and search != '':
             p_search = '&search=%s' % search
 
@@ -24,14 +24,14 @@ class Client(BaseClient):
         return self._http_request(
             method='GET',
             url_suffix='/transactionlog/?page=%s%s%s' % (page, p_search, p_locked),
-            resp_type = 'text'
+            resp_type='text'
         )
 
-    def get_users(self, page: str, search: str, locked: str) -> Dict[str, Any]:
+    def get_users(self, page, search, locked) -> Dict[str, Any]:
         if page is None:
             page = 1
 
-        p_search=""
+        p_search = ""
         if search is not None and search != '':
             p_search = '&search=%s' % search
 
@@ -42,10 +42,10 @@ class Client(BaseClient):
         return self._http_request(
             method='GET',
             url_suffix='/userlist/?page=%s%s%s' % (page, p_search, p_locked),
-            resp_type = 'text'
+            resp_type='text'
         )
 
-    def get_ldap_users(self, page: str, search: str, locked: str, ldap: str) -> Dict[str, Any]:
+    def get_ldap_users(self, page, search, locked, ldap) -> Dict[str, Any]:
         if page is None:
             page = 1
 
@@ -60,24 +60,24 @@ class Client(BaseClient):
         return self._http_request(
             method='GET',
             url_suffix='/userlist/%s/?page=%s%s%s' % (ldap, page, p_search, p_locked),
-            resp_type = 'text'
+            resp_type='text'
         )
 
     def get_ldaps(self) -> Dict[str, Any]:
         return self._http_request(
             method='GET',
             url_suffix='/ldapconfiguration/',
-            resp_type = 'text'
+            resp_type='text'
         )
 
-    def get_user_personalinformation(self, username: str) -> Dict[str, Any]:
+    def get_user_personalinformation(self, username) -> Dict[str, Any]:
         return self._http_request(
             method='GET',
-            url_suffix='/user/%s/'% username,
-            resp_type = 'text'
+            url_suffix='/user/%s/' % username,
+            resp_type='text'
         )
 
-    def set_user_personalinformation(self, username: str, email: str, mobile_phone: str) -> Dict[str, Any]:
+    def set_user_personalinformation(self, username, email, mobile_phone) -> Dict[str, Any]:
         post_params = {}
         if email:
             post_params['email'] = email
@@ -91,112 +91,110 @@ class Client(BaseClient):
             resp_type='text'
         )
 
-    def get_user_accessattempts(self, username: str) -> Dict[str, Any]:
+    def get_user_accessattempts(self, username) -> Dict[str, Any]:
         return self._http_request(
             method='GET',
             url_suffix='/user/%s/access_attempt/' % username,
-            resp_type = 'text'
+            resp_type='text'
         )
 
-    def delete_user_accessattempts(self, username: str) -> Dict[str, Any]:
+    def delete_user_accessattempts(self, username) -> Dict[str, Any]:
         return self._http_request(
             method='DELETE',
             url_suffix='/user/%s/access_attempt/' % username,
-            resp_type = 'text'
+            resp_type='text'
         )
 
-    # Get "params" to generalize all token types. Said argument must be a dictionary or json with the data
-    # corresponding to the token to be registered
-    def create_user_token(self, username: str, post_params: Dict[Any, str]) -> Dict[str, Any]:
+    # Get "params" to generalize all token types. Said argument must be a dictionary or json with the data corresponding to the token to be registered
+    def create_user_token(self, username, post_params) -> Dict[str, Any]:
         return self._http_request(
             method='POST',
             url_suffix='/user/%s/devices/' % username,
             json_data=post_params,
-            resp_type = 'text'
+            resp_type='text'
         )
 
-    def update_user_token(self, username: str, token_devicetype: str, token_serialnumber: str,
-                          post_params: Dict[Any, str]) -> Dict[str, Any]:
+    def update_user_token(self, username, token_devicetype, token_serialnumber, post_params) -> Dict[str, Any]:
         return self._http_request(
             method='PUT',
             url_suffix='/user/%s/devices/%s/%s/' % (username, token_devicetype, token_serialnumber),
             json_data=post_params,
-            resp_type = 'text'
+            resp_type='text'
         )
 
-    def get_user_tokens(self, username: str) -> Dict[str, Any]:
+    def get_user_tokens(self, username) -> Dict[str, Any]:
         return self._http_request(
             method='GET',
             url_suffix='/user/%s/devices/' % username,
-            resp_type = 'text'
+            resp_type='text'
         )
 
-    def delete_user_token(self, username: str, token_devicetype: str, token_serialnumber: str) -> Dict[str, Any]:
+    def delete_user_token(self, username, token_devicetype, token_serialnumber) -> Dict[str, Any]:
         return self._http_request(
             method='DELETE',
             url_suffix='/user/%s/devices/%s/%s/' % (username, token_devicetype, token_serialnumber),
-            resp_type = 'text'
+            resp_type='text'
         )
 
-    def send_user_token(self, username: str, token_devicetype: str, token_serialnumber: str) -> Dict[str, Any]:
+    def send_user_token(self, username, token_devicetype, token_serialnumber) -> Dict[str, Any]:
         return self._http_request(
             method='POST',
             url_suffix='/user/%s/devices/%s/%s/send/' % (username, token_devicetype, token_serialnumber),
-            resp_type = 'text'
+            resp_type='text'
         )
 
-    def send_user_virtualtoken(self, username, token_devicetype: str, token_serialnumber: str) -> Dict[str, Any]:
+    def send_user_virtualtoken(self, username, token_devicetype, token_serialnumber) -> Dict[str, Any]:
         return self._http_request(
             method='POST',
             url_suffix='/devices/%s/%s/code/' % (token_devicetype, token_serialnumber),
-            resp_type = 'text'
+            resp_type='text'
         )
 
-    def get_user_settings(self, username: str) -> Dict[str, Any]:
+    def get_user_settings(self, username) -> Dict[str, Any]:
         return self._http_request(
             method='GET',
             url_suffix='/user/%s/settings/' % username,
-            resp_type = 'text'
+            resp_type='text'
         )
 
     # Get "params" to generalize all configuration items. This argument must be a dictionary or json with the items that you want to modify
-    def set_user_settings(self, username: str, post_params: str) -> Dict[str, Any]:
+    def set_user_settings(self, username, post_params) -> Dict[str, Any]:
         return self._http_request(
             method='PATCH',
             url_suffix='/user/%s/settings/' % username,
             json_data=post_params,
-            resp_type = 'text'
+            resp_type='text'
         )
 
-    def get_user_group(self, username: str) -> Dict[str, Any]:
+    def get_user_group(self, username) -> Dict[str, Any]:
         return self._http_request(
             method='GET',
             url_suffix='/user/%s/group/' % username,
-            resp_type = 'text'
+            resp_type='text'
         )
 
     def add_user_group(self, username, new_group_name) -> Dict[str, Any]:
-        post_params = {'username':username}
+        post_params = {'username': username}
 
         return self._http_request(
             method='POST',
             url_suffix='/group/%s/member/' % new_group_name,
             json_data=post_params,
-            resp_type = 'text'
+            resp_type='text'
         )
 
     def remove_user_group(self, username, old_group_name) -> Dict[str, Any]:
         return self._http_request(
             method='DELETE',
             url_suffix='/group/%s/member/%s/' % (old_group_name, username),
-            resp_type = 'text'
+            resp_type='text'
         )
 
     def get_user_registrationcode(self, username) -> Dict[str, Any]:
         return self._http_request(
             method='GET',
             url_suffix='/user/%s/registrationtoken/' % username,
-            resp_type = 'text'
+            resp_type='text'
         )
 
     def set_user_registrationcode(self, username, expiration, attempts_left) -> Dict[str, Any]:
@@ -214,26 +212,27 @@ class Client(BaseClient):
             method='POST',
             url_suffix='/user/%s/registrationtoken/' % username,
             json_data=post_params,
-            resp_type = 'text'
+            resp_type='text'
         )
 
     def delete_user_registrationcode(self, username) -> Dict[str, Any]:
         return self._http_request(
             method='DELETE',
             url_suffix='/user/%s/registrationtoken/' % username,
-            resp_type = 'text'
+            resp_type='text'
         )
 
     def send_user_registrationcode(self, username) -> Dict[str, Any]:
         return self._http_request(
             method='POST',
             url_suffix='/user/%s/registrationtoken/send/' % username,
-            resp_type = 'text'
+            resp_type='text'
         )
 
     def create_user(self, username, password, firstname, lastname, mobilephone, email):
 
-        post_params = {'username':username, 'password':password, 'first_name':firstname, 'last_name':lastname, 'mobile_phone':mobilephone, 'email':email}
+        post_params = {'username': username, 'password': password, 'first_name': firstname,
+                       'last_name': lastname, 'mobile_phone': mobilephone, 'email': email}
 
         return self._http_request(
             method='POST',
@@ -250,7 +249,7 @@ class Client(BaseClient):
         )
 
 
-def get_transactionlog(client: Client, args: Dict[Any, str]):
+def get_transactionlog(client, args):
     page = args.get('page')
     search = args.get('search')
     locked = args.get('locked')
@@ -269,7 +268,8 @@ def get_transactionlog(client: Client, args: Dict[Any, str]):
 
     return command_results
 
-def get_users(client: Client, args: Dict[Any, str]):
+
+def get_users(client, args):
     page = args.get('page')
     search = args.get('search')
     locked = args.get('locked')
@@ -289,7 +289,7 @@ def get_users(client: Client, args: Dict[Any, str]):
     return command_results
 
 
-def get_ldap_users(client: Client, args: Dict[Any, str]):
+def get_ldap_users(client, args):
     page = args.get('page')
     search = args.get('search')
     locked = args.get('locked')
@@ -309,7 +309,8 @@ def get_ldap_users(client: Client, args: Dict[Any, str]):
 
     return command_results
 
-def get_ldaps(client: Client, args: Dict[Any, str]):
+
+def get_ldaps(client, args):
     result = client.get_ldaps()
 
     readable_output = f'## {result}'
@@ -324,7 +325,8 @@ def get_ldaps(client: Client, args: Dict[Any, str]):
 
     return command_results
 
-def get_user_personalinformation(client: Client, args: Dict[Any, str]):
+
+def get_user_personalinformation(client, args):
     username = args.get('username')
 
     result = client.get_user_personalinformation(username)
@@ -341,7 +343,8 @@ def get_user_personalinformation(client: Client, args: Dict[Any, str]):
 
     return command_results
 
-def set_user_personalinformation(client: Client, args: Dict[Any, str]):
+
+def set_user_personalinformation(client, args):
     username = args.get('username')
     email = args.get('email')
     mobile_phone = args.get('mobile_phone')
@@ -360,7 +363,8 @@ def set_user_personalinformation(client: Client, args: Dict[Any, str]):
 
     return command_results
 
-def get_user_accessattempts(client: Client, args: Dict[Any, str]):
+
+def get_user_accessattempts(client, args):
     username = args.get('username')
 
     result = client.get_user_accessattempts(username)
@@ -377,7 +381,8 @@ def get_user_accessattempts(client: Client, args: Dict[Any, str]):
 
     return command_results
 
-def delete_user_accessattempts(client: Client, args: Dict[Any, str]):
+
+def delete_user_accessattempts(client, args):
     username = args.get('username')
 
     result = client.delete_user_accessattempts(username)
@@ -394,7 +399,8 @@ def delete_user_accessattempts(client: Client, args: Dict[Any, str]):
 
     return command_results
 
-def create_user_token_virtual(client: Client, args: Dict[Any, str]):
+
+def create_user_token_virtual(client, args):
 
     username = args.get('username')
     post_params = {
@@ -415,7 +421,8 @@ def create_user_token_virtual(client: Client, args: Dict[Any, str]):
 
     return command_results
 
-def create_user_token_fastauth(client: Client, args: Dict[Any, str]):
+
+def create_user_token_fastauth(client, args):
 
     username = args.get('username')
     post_params = {
@@ -438,7 +445,8 @@ def create_user_token_fastauth(client: Client, args: Dict[Any, str]):
 
     return command_results
 
-def create_user_token_totpmobile(client: Client, args: Dict[Any, str]):
+
+def create_user_token_totpmobile(client, args):
 
     username = args.get('username')
     post_params = {
@@ -461,7 +469,8 @@ def create_user_token_totpmobile(client: Client, args: Dict[Any, str]):
 
     return command_results
 
-def create_user_token_totmobilehybrid(client: Client, args: Dict[Any, str]):
+
+def create_user_token_totmobilehybrid(client, args):
 
     username = args.get('username')
     post_params = {
@@ -484,7 +493,8 @@ def create_user_token_totmobilehybrid(client: Client, args: Dict[Any, str]):
 
     return command_results
 
-def create_user_token_physical(client: Client, args: Dict[Any, str]):
+
+def create_user_token_physical(client, args):
 
     username = args.get('username')
     post_params = {
@@ -507,7 +517,8 @@ def create_user_token_physical(client: Client, args: Dict[Any, str]):
 
     return command_results
 
-def create_user_token_backup(client: Client, args: Dict[Any, str]):
+
+def create_user_token_backup(client, args):
 
     username = args.get('username')
     post_params = {
@@ -534,8 +545,8 @@ def create_user_token_backup(client: Client, args: Dict[Any, str]):
     return command_results
 
 
-#See
-def update_user_token(client: Client, args: Dict[Any, str]):
+# See
+def update_user_token(client, args):
     username = args.get('username')
     token_devicetype = args.get('devicetype')
     token_serialnumber = args.get('serialnumber')
@@ -556,7 +567,7 @@ def update_user_token(client: Client, args: Dict[Any, str]):
     return command_results
 
 
-def get_user_tokens(client: Client, args: Dict[Any, str]):
+def get_user_tokens(client, args):
     username = args.get('username')
 
     result = client.get_user_tokens(username)
@@ -573,7 +584,8 @@ def get_user_tokens(client: Client, args: Dict[Any, str]):
 
     return command_results
 
-def delete_user_token(client: Client, args: Dict[Any, str]):
+
+def delete_user_token(client, args):
     username = args.get('username')
     token_devicetype = args.get('devicetype')
     token_serialnumber = args.get('serialnumber')
@@ -592,7 +604,8 @@ def delete_user_token(client: Client, args: Dict[Any, str]):
 
     return command_results
 
-def send_user_token(client: Client, args: Dict[Any, str]):
+
+def send_user_token(client, args):
     username = args.get('username')
     token_devicetype = args.get('devicetype')
     token_serialnumber = args.get('serialnumber')
@@ -611,7 +624,8 @@ def send_user_token(client: Client, args: Dict[Any, str]):
 
     return command_results
 
-def send_user_virtualtoken(client: Client, args: Dict[Any, str]):
+
+def send_user_virtualtoken(client, args):
     username = args.get('username')
     token_devicetype = args.get('devicetype')
     token_serialnumber = args.get('serialnumber')
@@ -630,7 +644,8 @@ def send_user_virtualtoken(client: Client, args: Dict[Any, str]):
 
     return command_results
 
-def get_user_settings(client: Client, args: Dict[Any, str]):
+
+def get_user_settings(client, args):
     username = args.get('username')
 
     result = client.get_user_settings(username)
@@ -647,7 +662,8 @@ def get_user_settings(client: Client, args: Dict[Any, str]):
 
     return command_results
 
-def set_user_backuptoken_settings(client: Client, args: Dict[Any, str]):
+
+def set_user_backuptoken_settings(client, args):
     username = args.get('username')
     backup_password_required = args.get('backup-password-required')
     backuptoken_attempts = args.get('backuptoken-attempts')
@@ -664,7 +680,6 @@ def set_user_backuptoken_settings(client: Client, args: Dict[Any, str]):
     if backuptoken_timeout != None:
         params['backuptoken_timeout'] = backuptoken_timeout
 
-
     result = client.set_user_settings(username, params)
 
     readable_output = f'## {result}'
@@ -680,7 +695,7 @@ def set_user_backuptoken_settings(client: Client, args: Dict[Any, str]):
     return command_results
 
 
-def set_user_general_settings(client: Client, args: Dict[Any, str]):
+def set_user_general_settings(client, args):
     username = args.get('username')
     user_storage = args.get('user-storage')
 
@@ -688,7 +703,6 @@ def set_user_general_settings(client: Client, args: Dict[Any, str]):
 
     if user_storage != None:
         params['user_storage'] = user_storage
-
 
     result = client.set_user_settings(username, params)
 
@@ -704,7 +718,8 @@ def set_user_general_settings(client: Client, args: Dict[Any, str]):
 
     return command_results
 
-def set_user_hotpauthentication_settings(client: Client, args: Dict[Any, str]):
+
+def set_user_hotpauthentication_settings(client, args):
     username = args.get('username')
     hotp_accept_tolerance = args.get('hotp-accept-tolerance')
     hotp_resend_tolerance = args.get('hotp-resend-tolerance')
@@ -733,7 +748,6 @@ def set_user_hotpauthentication_settings(client: Client, args: Dict[Any, str]):
     if hotp_flex_pin_password_required != None:
         params['hotp_flex_pin_password_required'] = hotp_flex_pin_password_required
 
-
     result = client.set_user_settings(username, params)
 
     readable_output = f'## {result}'
@@ -748,7 +762,8 @@ def set_user_hotpauthentication_settings(client: Client, args: Dict[Any, str]):
 
     return command_results
 
-def set_user_sesamiauthentication_settings(client: Client, args: Dict[Any, str]):
+
+def set_user_sesamiauthentication_settings(client, args):
     username = args.get('username')
     sesami_mobile_password_required = args.get('sesami_mobile_password_required')
     sesami_slim_password_required = args.get('sesami_slim_password_required')
@@ -765,7 +780,6 @@ def set_user_sesamiauthentication_settings(client: Client, args: Dict[Any, str])
     if gaia_ttw_level != None:
         params['gaia_ttw_level'] = gaia_ttw_level
 
-
     result = client.set_user_settings(username, params)
 
     readable_output = f'## {result}'
@@ -780,7 +794,8 @@ def set_user_sesamiauthentication_settings(client: Client, args: Dict[Any, str])
 
     return command_results
 
-def set_user_totpauthentication_settings(client: Client, args: Dict[Any, str]):
+
+def set_user_totpauthentication_settings(client, args):
     username = args.get('username')
     totp_accept_tolerance = args.get('totp-accept-tolerance')
     totp_resend_tolerance = args.get('totp-resend-tolerance')
@@ -813,7 +828,6 @@ def set_user_totpauthentication_settings(client: Client, args: Dict[Any, str]):
     if totp_mobile_password_required != None:
         params['totp_mobile_password_required'] = totp_mobile_password_required
 
-
     result = client.set_user_settings(username, params)
 
     readable_output = f'## {result}'
@@ -828,7 +842,8 @@ def set_user_totpauthentication_settings(client: Client, args: Dict[Any, str]):
 
     return command_results
 
-def set_user_userauthentication_settings(client: Client, args: Dict[Any, str]):
+
+def set_user_userauthentication_settings(client, args):
     username = args.get('username')
     multiple_step_auth_timeout = args.get('multiple-step-auth-timeout')
     allow_password = args.get('allow-password')
@@ -877,7 +892,6 @@ def set_user_userauthentication_settings(client: Client, args: Dict[Any, str]):
     if dos_tmp_lockdown_time_in_seconds != None:
         params['dos_tmp_lockdown_time_in_seconds'] = dos_tmp_lockdown_time_in_seconds
 
-
     result = client.set_user_settings(username, params)
 
     readable_output = f'## {result}'
@@ -892,7 +906,8 @@ def set_user_userauthentication_settings(client: Client, args: Dict[Any, str]):
 
     return command_results
 
-def set_user_virtualauthentication_settings(client: Client, args: Dict[Any, str]):
+
+def set_user_virtualauthentication_settings(client, args):
     username = args.get('username')
     virtual_device_accept_tolerance = args.get('virtual-device-accept-tolerance')
     virtual_device_gateways = args.get('virtual-device-gateways')
@@ -904,7 +919,6 @@ def set_user_virtualauthentication_settings(client: Client, args: Dict[Any, str]
 
     if virtual_device_gateways != None:
         params['virtual_device_gateways'] = virtual_device_gateways
-
 
     result = client.set_user_settings(username, params)
 
@@ -920,7 +934,8 @@ def set_user_virtualauthentication_settings(client: Client, args: Dict[Any, str]
 
     return command_results
 
-def get_user_group(client: Client, args: Dict[Any, str]):
+
+def get_user_group(client, args):
     username = args.get('username')
 
     result = client.get_user_group(username)
@@ -937,7 +952,8 @@ def get_user_group(client: Client, args: Dict[Any, str]):
 
     return command_results
 
-def update_user_group(client: Client, args: Dict[Any, str]):
+
+def update_user_group(client, args):
     username = args.get('username')
     new_group_name = args.get('new-group-name')
 
@@ -953,7 +969,7 @@ def update_user_group(client: Client, args: Dict[Any, str]):
         client.remove_user_group(username, old_group_name)
         client.add_user_group(username, new_group_name)
 
-    result = {'message':'Successfully updated'}
+    result = {'message': 'Successfully updated'}
 
     readable_output = f'## {result}'
 
@@ -968,7 +984,7 @@ def update_user_group(client: Client, args: Dict[Any, str]):
     return command_results
 
 
-def add_user_group(client: Client, args: Dict[Any, str]):
+def add_user_group(client, args):
     username = args.get('username')
     new_group_name = args.get('new-group-name')
 
@@ -986,7 +1002,8 @@ def add_user_group(client: Client, args: Dict[Any, str]):
 
     return command_results
 
-def remove_user_group(client: Client, args: Dict[Any, str]):
+
+def remove_user_group(client, args):
     username = args.get('username')
     old_group_name = args.get('old-group-name')
 
@@ -1004,7 +1021,8 @@ def remove_user_group(client: Client, args: Dict[Any, str]):
 
     return command_results
 
-def get_user_registrationcode(client: Client, args: Dict[Any, str]):
+
+def get_user_registrationcode(client, args):
     username = args.get('username')
 
     result = client.get_user_registrationcode(username)
@@ -1021,7 +1039,8 @@ def get_user_registrationcode(client: Client, args: Dict[Any, str]):
 
     return command_results
 
-def set_user_registrationcode(client: Client, args: Dict[Any, str]):
+
+def set_user_registrationcode(client, args):
     username = args.get('username')
 
     expiration = args.get('expiration')
@@ -1041,7 +1060,8 @@ def set_user_registrationcode(client: Client, args: Dict[Any, str]):
 
     return command_results
 
-def delete_user_registrationcode(client: Client, args: Dict[Any, str]):
+
+def delete_user_registrationcode(client, args):
     username = args.get('username')
 
     result = client.delete_user_registrationcode(username)
@@ -1058,7 +1078,8 @@ def delete_user_registrationcode(client: Client, args: Dict[Any, str]):
 
     return command_results
 
-def send_user_registrationcode(client: Client, args: Dict[Any, str]):
+
+def send_user_registrationcode(client, args):
     username = args.get('username')
 
     result = client.send_user_registrationcode(username)
@@ -1076,7 +1097,7 @@ def send_user_registrationcode(client: Client, args: Dict[Any, str]):
     return command_results
 
 
-def create_user(client: Client, args: Dict[Any, str]):
+def create_user(client, args):
     username = args.get('username')
     password = args.get('password')
     firstname = args.get('firstname')
@@ -1099,7 +1120,7 @@ def create_user(client: Client, args: Dict[Any, str]):
     return command_results
 
 
-def delete_user(client: Client, args: Dict[Any, str]):
+def delete_user(client, args):
     username = args.get('username')
 
     result = client.delete_user(username)
@@ -1117,7 +1138,7 @@ def delete_user(client: Client, args: Dict[Any, str]):
     return command_results
 
 
-def test_module(client: Client):
+def test_module(client):
     results = json.loads(client.get_transactionlog(None, None, None)).get('results')
 
     if results is not None:
@@ -1300,7 +1321,6 @@ def main():
     # Log exceptions
     except Exception as e:
         return_error(f'Failed to execute {command} command. Error: {str(e)}')
-
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):

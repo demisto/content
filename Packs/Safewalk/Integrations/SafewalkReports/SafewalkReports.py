@@ -9,6 +9,13 @@ from CommonServerPython import *
 urllib3.disable_warnings()
 
 
+
+DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
+MAX_INCIDENTS_TO_FETCH = 50
+HELLOWORLD_SEVERITIES = ['Low', 'Medium', 'High', 'Critical']
+
+
+
 class Client(BaseClient):
 
     def get_associated_users(self, devicetype):
@@ -92,7 +99,8 @@ class Client(BaseClient):
 
         return self._http_request(
             method='GET',
-            url_suffix='/reports/registrations/?begin_date=%s&end_date=%s&user_information=%s' % (begindate, enddate, str(userinformation)),
+            url_suffix='/reports/registrations/?begin_date=%s&end_date=%s&user_information=%s' % (
+                begindate, enddate, str(userinformation)),
             resp_type='text'
         )
 
@@ -107,7 +115,7 @@ class Client(BaseClient):
         if page is None:
             page = 1
 
-        p_search=""
+        p_search = ""
         if search is not None and search != '':
             p_search = '&search=%s' % search
 
@@ -122,7 +130,7 @@ class Client(BaseClient):
         return self._http_request(
             method='GET',
             url_suffix='/transactionlog/?page=%s%s%s%s' % (page, p_search, p_locked, p_query_filter),
-            resp_type = 'text'
+            resp_type='text'
         )
 
 
@@ -322,10 +330,14 @@ def get_users_associations_indicators(client, args):
     return command_results
 
 
-def test_module(client, args):
-    results = json.loads(client.list_incidents(None, None, None, None))['results']
+def test_module(client, is_fetch, last_run, first_fetch_str, fetch_limit):
 
-    if results is not None:
+    if argToBoolean(is_fetch):
+        results, next_run = fetch_incidents(client, last_run, first_fetch_str, fetch_limit)
+    else:
+        results = json.loads(client.list_incidents(None, None, None, None))['results']
+
+    if results:
         return 'ok'
     else:
         return 'Failed to run the test'
@@ -372,7 +384,6 @@ def fetch_incidents(client, last_run, first_fetch_str, fetch_limit, query_filter
     return incidents[:int(fetch_limit)], next_run
 
 
-
 def main():
 
     params = demisto.params()
@@ -385,7 +396,8 @@ def main():
     auth_access_token = params.get('apikey')
     proxy = params.get('proxy', False)
 
-    fetch_limit = (params.get('max_fetch'))
+    is_fetch = params.get('isFetch')
+    fetch_limit = params.get('max_fetch')
     first_fetch_str = params.get('first_fetch')
     auto_generate_query_filter = params.get('auto_generate_query_filter')
     fetch_query_filter = params.get('fetch_query_filter')
@@ -443,7 +455,7 @@ def main():
             return_results(result)
 
         if command == 'test-module':
-            result = test_module(client, args)
+            result = test_module(client, is_fetch, demisto.getLastRun(), first_fetch_str, fetch_limit)
             return_results(result)
 
         if command == 'fetch-incidents':

@@ -5,16 +5,13 @@ name: Safewalk_Management
 display: Safewalk_Management
 category: Authentication
 description: Safewalk server integration
-detaileddescription: |2
-   ### Safewalk XSOAR Integration
-   #### Integration Author: Altipeak
 configuration:
 - display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
   name: first_fetch
   defaultvalue: 7 days
   required: false
   type: 0
-- display: Max fetch 
+- display: Max fetch
   defaultvalue: '50'
   name: max_fetch
   required: false
@@ -444,6 +441,6 @@ script:
   subtype: python3
   type: python
   isFetchSamples: true
-fromversion: 5.5.0
+fromversion: 6.0.0
 tests:
 - No tests (auto formatted)

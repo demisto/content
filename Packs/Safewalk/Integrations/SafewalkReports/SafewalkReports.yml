@@ -5,9 +5,6 @@ name: Safewalk_Reports
 display: Safewalk_Reports
 category: Analytics & SIEM
 description: Safewalk server integration
-detaileddescription: |2
-   ### Safewalk XSOAR Integration
-   #### Integration Author: Altipeak
 configuration:
 - display: Server URL (e.g. https://soar.monstersofhack.com)
   name: url
@@ -186,9 +183,9 @@ script:
   runonce: false
   script: '-'
   subtype: python3
-  type: python  
+  type: python
   ismappable: false
   isFetchSamples: true
-fromversion: 5.5.0
+fromversion: 6.0.0
 tests:
 - No tests (auto formatted)
