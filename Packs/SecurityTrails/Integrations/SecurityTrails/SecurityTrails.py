@@ -965,7 +965,7 @@ def get_useragents_command(client, args):
         "useragent_records_count": record_count
     }
     command_results = CommandResults(
-        outputs_prefix=f"SecurityTrails.IP",
+        outputs_prefix="SecurityTrails.IP",
         outputs_key_field="ip",
         outputs=output_data,
         readable_output=md
