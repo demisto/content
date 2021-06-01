@@ -39,3 +39,6 @@ ignore=PB105
 
 [file:README.md]
 ignore=RM104
+
+[file:playbook-Get_File_Sample_From_Path_-_Generic_README.md]
+ignore=RM106
