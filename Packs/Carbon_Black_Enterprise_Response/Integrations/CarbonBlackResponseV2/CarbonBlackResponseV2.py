@@ -354,7 +354,7 @@ def get_watchlist_list_command(client: Client, id: str = None, limit: str = None
         })
 
     md = tableToMarkdown(f'{INTEGRATION_NAME} - Watchlists', human_readable_data, removeNull=True)
-    md += f"\nShowing {len(res.get('results'))} out of {res.get('total_results')} results."
+    md += f"\nShowing {len(res.get('results', []))} out of {res.get('total_results', '0')} results."
 
     return CommandResults(outputs=res, outputs_prefix='CarbonBlackEDR.Watchlist', outputs_key_field='name',
                           readable_output=md)
@@ -430,7 +430,7 @@ def alert_search_command(client: Client, status: str = None, username: str = Non
     outputs = assign_params(Results=alerts, Facets=res.get('facets'))
 
     md = tableToMarkdown(f'{INTEGRATION_NAME} - Alert Search Results', human_readable_data)
-    md += f"\nShowing {len(res.get('results'))} out of {res.get('total_results')} results."
+    md += f"\nShowing {len(res.get('results', []))} out of {res.get('total_results', '0')} results."
 
     return CommandResults(outputs=outputs, outputs_prefix='CarbonBlackEDR.Alert',
                           outputs_key_field='unique_id',
@@ -500,7 +500,7 @@ def binary_search_command(client: Client, md5: str = None, product_name: str = N
         })
 
     md = tableToMarkdown(f'{INTEGRATION_NAME} - Binary Search Results', human_readable_data)
-    md += f"\nShowing {len(res.get('results'))} out of {res.get('total_results')} results."
+    md += f"\nShowing {len(res.get('results', []))} out of {res.get('total_results', '0')} results."
 
     return CommandResults(outputs=outputs, outputs_prefix='CarbonBlackEDR.BinarySearch',
                           outputs_key_field='md5',
@@ -598,7 +598,7 @@ def processes_search_command(client: Client, process_name: str = None, group: st
                 'Is Terminated': process.get('terminated')
             })
     md = tableToMarkdown(f'{INTEGRATION_NAME} - Process Search Results', human_readable_data, removeNull=True)
-    md += f"\nShowing {len(res.get('results'))} out of {res.get('total_results')} results."
+    md += f"\nShowing {len(res.get('results', []))} out of {res.get('total_results', '0')} results."
 
     return CommandResults(outputs=outputs, outputs_prefix='CarbonBlackEDR.Process', outputs_key_field='id',
                           readable_output=md)
