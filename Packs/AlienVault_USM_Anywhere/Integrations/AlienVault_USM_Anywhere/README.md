@@ -7,7 +7,7 @@
 </div>
 <div class="cl-preview-section">
 <ol>
-<li>Fetch new AlienVault alarms as Demisto incidents.</li>
+<li>Fetch new AlienVault alarms as Cortex XSOAR incidents.</li>
 <li>Search AlienVault alarms.</li>
 <li>Search AlienVault events.</li>
 <li>Retrieve events related to an AlienVault alarms.</li>
@@ -230,7 +230,7 @@
 <h2 id="commands">Commands</h2>
 </div>
 <div class="cl-preview-section">
-<p>You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
+<p>You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
 </div>
 <div class="cl-preview-section">
 <ol>

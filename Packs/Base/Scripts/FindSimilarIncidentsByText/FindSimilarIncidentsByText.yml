@@ -97,7 +97,7 @@ outputs:
   description: Similar incident name.
   type: string
 script: '-'
-subtype: python2
+subtype: python3
 system: false
 tags:
 - ml
