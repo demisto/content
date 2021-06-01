@@ -6,6 +6,8 @@ import urllib3.util
 # Disable insecure warnings
 urllib3.disable_warnings()
 
+SERVICE = 'iam'
+
 
 class DatetimeEncoder(json.JSONEncoder):
     # pylint: disable=method-hidden
@@ -20,7 +22,7 @@ class DatetimeEncoder(json.JSONEncoder):
 
 def create_user(args, aws_client):
     client = aws_client.aws_session(
-        service='iam',
+        service=SERVICE,
         role_arn=args.get('roleArn'),
         role_session_name=args.get('roleSessionName'),
         role_session_duration=args.get('roleSessionDuration'),
@@ -45,7 +47,7 @@ def create_user(args, aws_client):
 
 def create_login_profile(args, aws_client):
     client = aws_client.aws_session(
-        service='iam',
+        service=SERVICE,
         role_arn=args.get('roleArn'),
         role_session_name=args.get('roleSessionName'),
         role_session_duration=args.get('roleSessionDuration'),
@@ -65,7 +67,7 @@ def create_login_profile(args, aws_client):
 
 def get_user(args, aws_client):
     client = aws_client.aws_session(
-        service='iam',
+        service=SERVICE,
         role_arn=args.get('roleArn'),
         role_session_name=args.get('roleSessionName'),
         role_session_duration=args.get('roleSessionDuration'),
@@ -86,7 +88,7 @@ def get_user(args, aws_client):
 
 def list_users(args, aws_client):
     client = aws_client.aws_session(
-        service='iam',
+        service=SERVICE,
         role_arn=args.get('roleArn'),
         role_session_name=args.get('roleSessionName'),
         role_session_duration=args.get('roleSessionDuration'),
@@ -109,7 +111,7 @@ def list_users(args, aws_client):
 
 def update_user(args, aws_client):
     client = aws_client.aws_session(
-        service='iam',
+        service=SERVICE,
         role_arn=args.get('roleArn'),
         role_session_name=args.get('roleSessionName'),
         role_session_duration=args.get('roleSessionDuration'),
@@ -128,7 +130,7 @@ def update_user(args, aws_client):
 
 def delete_user(args, aws_client):
     client = aws_client.aws_session(
-        service='iam',
+        service=SERVICE,
         role_arn=args.get('roleArn'),
         role_session_name=args.get('roleSessionName'),
         role_session_duration=args.get('roleSessionDuration'),
@@ -140,7 +142,7 @@ def delete_user(args, aws_client):
 
 def update_login_profile(args, aws_client):
     client = aws_client.aws_session(
-        service='iam',
+        service=SERVICE,
         role_arn=args.get('roleArn'),
         role_session_name=args.get('roleSessionName'),
         role_session_duration=args.get('roleSessionDuration'),
@@ -156,7 +158,7 @@ def update_login_profile(args, aws_client):
 
 def create_group(args, aws_client):
     client = aws_client.aws_session(
-        service='iam',
+        service=SERVICE,
         role_arn=args.get('roleArn'),
         role_session_name=args.get('roleSessionName'),
         role_session_duration=args.get('roleSessionDuration'),
@@ -181,7 +183,7 @@ def create_group(args, aws_client):
 
 def list_groups(args, aws_client):
     client = aws_client.aws_session(
-        service='iam',
+        service=SERVICE,
         role_arn=args.get('roleArn'),
         role_session_name=args.get('roleSessionName'),
         role_session_duration=args.get('roleSessionDuration'),
@@ -204,7 +206,7 @@ def list_groups(args, aws_client):
 
 def list_groups_for_user(args, aws_client):
     client = aws_client.aws_session(
-        service='iam',
+        service=SERVICE,
         role_arn=args.get('roleArn'),
         role_session_name=args.get('roleSessionName'),
         role_session_duration=args.get('roleSessionDuration'),
@@ -228,7 +230,7 @@ def list_groups_for_user(args, aws_client):
 
 def add_user_to_group(args, aws_client):
     client = aws_client.aws_session(
-        service='iam',
+        service=SERVICE,
         role_arn=args.get('roleArn'),
         role_session_name=args.get('roleSessionName'),
         role_session_duration=args.get('roleSessionDuration'),
@@ -245,7 +247,7 @@ def add_user_to_group(args, aws_client):
 
 def create_access_key(args, aws_client):
     client = aws_client.aws_session(
-        service='iam',
+        service=SERVICE,
         role_arn=args.get('roleArn'),
         role_session_name=args.get('roleSessionName'),
         role_session_duration=args.get('roleSessionDuration'),
@@ -267,7 +269,7 @@ def create_access_key(args, aws_client):
 
 def update_access_key(args, aws_client):
     client = aws_client.aws_session(
-        service='iam',
+        service=SERVICE,
         role_arn=args.get('roleArn'),
         role_session_name=args.get('roleSessionName'),
         role_session_duration=args.get('roleSessionDuration'),
@@ -285,7 +287,7 @@ def update_access_key(args, aws_client):
 
 def list_access_key_for_user(args, aws_client):
     client = aws_client.aws_session(
-        service='iam',
+        service=SERVICE,
         role_arn=args.get('roleArn'),
         role_session_name=args.get('roleSessionName'),
         role_session_duration=args.get('roleSessionDuration'),
@@ -307,7 +309,7 @@ def list_access_key_for_user(args, aws_client):
 
 def list_policies(args, aws_client):
     client = aws_client.aws_session(
-        service='iam',
+        service=SERVICE,
         role_arn=args.get('roleArn'),
         role_session_name=args.get('roleSessionName'),
         role_session_duration=args.get('roleSessionDuration'),
@@ -336,7 +338,7 @@ def list_policies(args, aws_client):
 
 def list_roles(args, aws_client):
     client = aws_client.aws_session(
-        service='iam',
+        service=SERVICE,
         role_arn=args.get('roleArn'),
         role_session_name=args.get('roleSessionName'),
         role_session_duration=args.get('roleSessionDuration'),
@@ -363,7 +365,7 @@ def list_roles(args, aws_client):
 
 def attach_policy(args, aws_client):
     client = aws_client.aws_session(
-        service='iam',
+        service=SERVICE,
         role_arn=args.get('roleArn'),
         role_session_name=args.get('roleSessionName'),
         role_session_duration=args.get('roleSessionDuration'),
@@ -391,7 +393,7 @@ def attach_policy(args, aws_client):
 
 def detach_policy(args, aws_client):
     client = aws_client.aws_session(
-        service='iam',
+        service=SERVICE,
         role_arn=args.get('roleArn'),
         role_session_name=args.get('roleSessionName'),
         role_session_duration=args.get('roleSessionDuration'),
@@ -418,7 +420,7 @@ def detach_policy(args, aws_client):
 
 def delete_login_profile(args, aws_client):
     client = aws_client.aws_session(
-        service='iam',
+        service=SERVICE,
         role_arn=args.get('roleArn'),
         role_session_name=args.get('roleSessionName'),
         role_session_duration=args.get('roleSessionDuration'),
@@ -430,7 +432,7 @@ def delete_login_profile(args, aws_client):
 
 def delete_group(args, aws_client):
     client = aws_client.aws_session(
-        service='iam',
+        service=SERVICE,
         role_arn=args.get('roleArn'),
         role_session_name=args.get('roleSessionName'),
         role_session_duration=args.get('roleSessionDuration'),
@@ -442,7 +444,7 @@ def delete_group(args, aws_client):
 
 def remove_user_from_group(args, aws_client):
     client = aws_client.aws_session(
-        service='iam',
+        service=SERVICE,
         role_arn=args.get('roleArn'),
         role_session_name=args.get('roleSessionName'),
         role_session_duration=args.get('roleSessionDuration'),
@@ -459,7 +461,7 @@ def remove_user_from_group(args, aws_client):
 
 def delete_access_key(args, aws_client):
     client = aws_client.aws_session(
-        service='iam',
+        service=SERVICE,
         role_arn=args.get('roleArn'),
         role_session_name=args.get('roleSessionName'),
         role_session_duration=args.get('roleSessionDuration'),
@@ -476,7 +478,7 @@ def delete_access_key(args, aws_client):
 
 def create_instance_profile(args, aws_client):
     client = aws_client.aws_session(
-        service='iam',
+        service=SERVICE,
         role_arn=args.get('roleArn'),
         role_session_name=args.get('roleSessionName'),
         role_session_duration=args.get('roleSessionDuration'),
@@ -502,7 +504,7 @@ def create_instance_profile(args, aws_client):
 
 def delete_instance_profile(args, aws_client):
     client = aws_client.aws_session(
-        service='iam',
+        service=SERVICE,
         role_arn=args.get('roleArn'),
         role_session_name=args.get('roleSessionName'),
         role_session_duration=args.get('roleSessionDuration'),
@@ -515,7 +517,7 @@ def delete_instance_profile(args, aws_client):
 
 def list_instance_profiles(args, aws_client):
     client = aws_client.aws_session(
-        service='iam',
+        service=SERVICE,
         role_arn=args.get('roleArn'),
         role_session_name=args.get('roleSessionName'),
         role_session_duration=args.get('roleSessionDuration'),
@@ -541,7 +543,7 @@ def list_instance_profiles(args, aws_client):
 
 def add_role_to_instance_profile(args, aws_client):
     client = aws_client.aws_session(
-        service='iam',
+        service=SERVICE,
         role_arn=args.get('roleArn'),
         role_session_name=args.get('roleSessionName'),
         role_session_duration=args.get('roleSessionDuration'),
@@ -561,7 +563,7 @@ def add_role_to_instance_profile(args, aws_client):
 
 def remove_role_from_instance_profile(args, aws_client):
     client = aws_client.aws_session(
-        service='iam',
+        service=SERVICE,
         role_arn=args.get('roleArn'),
         role_session_name=args.get('roleSessionName'),
         role_session_duration=args.get('roleSessionDuration'),
@@ -581,7 +583,7 @@ def remove_role_from_instance_profile(args, aws_client):
 
 def list_instance_profiles_for_role(args, aws_client):
     client = aws_client.aws_session(
-        service='iam',
+        service=SERVICE,
         role_arn=args.get('roleArn'),
         role_session_name=args.get('roleSessionName'),
         role_session_duration=args.get('roleSessionDuration'),
@@ -608,7 +610,7 @@ def list_instance_profiles_for_role(args, aws_client):
 
 def get_instance_profile(args, aws_client):
     client = aws_client.aws_session(
-        service='iam',
+        service=SERVICE,
         role_arn=args.get('roleArn'),
         role_session_name=args.get('roleSessionName'),
         role_session_duration=args.get('roleSessionDuration'),
@@ -630,7 +632,7 @@ def get_instance_profile(args, aws_client):
 
 def get_role(args, aws_client):
     client = aws_client.aws_session(
-        service='iam',
+        service=SERVICE,
         role_arn=args.get('roleArn'),
         role_session_name=args.get('roleSessionName'),
         role_session_duration=args.get('roleSessionDuration'),
@@ -653,7 +655,7 @@ def get_role(args, aws_client):
 
 def delete_role(args, aws_client):
     client = aws_client.aws_session(
-        service='iam',
+        service=SERVICE,
         role_arn=args.get('roleArn'),
         role_session_name=args.get('roleSessionName'),
         role_session_duration=args.get('roleSessionDuration'),
@@ -666,7 +668,7 @@ def delete_role(args, aws_client):
 
 def create_role(args, aws_client):
     client = aws_client.aws_session(
-        service='iam',
+        service=SERVICE,
         role_arn=args.get('roleArn'),
         role_session_name=args.get('roleSessionName'),
         role_session_duration=args.get('roleSessionDuration'),
@@ -700,7 +702,7 @@ def create_role(args, aws_client):
 
 def create_policy(args, aws_client):
     client = aws_client.aws_session(
-        service='iam',
+        service=SERVICE,
         role_arn=args.get('roleArn'),
         role_session_name=args.get('roleSessionName'),
         role_session_duration=args.get('roleSessionDuration'),
@@ -733,7 +735,7 @@ def create_policy(args, aws_client):
 
 def delete_policy(args, aws_client):
     client = aws_client.aws_session(
-        service='iam',
+        service=SERVICE,
         role_arn=args.get('roleArn'),
         role_session_name=args.get('roleSessionName'),
         role_session_duration=args.get('roleSessionDuration'),
@@ -746,7 +748,7 @@ def delete_policy(args, aws_client):
 
 def create_policy_version(args, aws_client):
     client = aws_client.aws_session(
-        service='iam',
+        service=SERVICE,
         role_arn=args.get('roleArn'),
         role_session_name=args.get('roleSessionName'),
         role_session_duration=args.get('roleSessionDuration'),
@@ -775,7 +777,7 @@ def create_policy_version(args, aws_client):
 
 def delete_policy_version(args, aws_client):
     client = aws_client.aws_session(
-        service='iam',
+        service=SERVICE,
         role_arn=args.get('roleArn'),
         role_session_name=args.get('roleSessionName'),
         role_session_duration=args.get('roleSessionDuration'),
@@ -792,7 +794,7 @@ def delete_policy_version(args, aws_client):
 
 def list_policy_versions(args, aws_client):
     client = aws_client.aws_session(
-        service='iam',
+        service=SERVICE,
         role_arn=args.get('roleArn'),
         role_session_name=args.get('roleSessionName'),
         role_session_duration=args.get('roleSessionDuration'),
@@ -813,7 +815,7 @@ def list_policy_versions(args, aws_client):
 
 def get_policy_version(args, aws_client):
     client = aws_client.aws_session(
-        service='iam',
+        service=SERVICE,
         role_arn=args.get('roleArn'),
         role_session_name=args.get('roleSessionName'),
         role_session_duration=args.get('roleSessionDuration'),
@@ -839,7 +841,7 @@ def get_policy_version(args, aws_client):
 
 def set_default_policy_version(args, aws_client):
     client = aws_client.aws_session(
-        service='iam',
+        service=SERVICE,
         role_arn=args.get('roleArn'),
         role_session_name=args.get('roleSessionName'),
         role_session_duration=args.get('roleSessionDuration'),
@@ -855,7 +857,7 @@ def set_default_policy_version(args, aws_client):
 
 def create_account_alias(args, aws_client):
     client = aws_client.aws_session(
-        service='iam',
+        service=SERVICE,
         role_arn=args.get('roleArn'),
         role_session_name=args.get('roleSessionName'),
         role_session_duration=args.get('roleSessionDuration'),
@@ -868,7 +870,7 @@ def create_account_alias(args, aws_client):
 
 def delete_account_alias(args, aws_client):
     client = aws_client.aws_session(
-        service='iam',
+        service=SERVICE,
         role_arn=args.get('roleArn'),
         role_session_name=args.get('roleSessionName'),
         role_session_duration=args.get('roleSessionDuration'),
@@ -881,7 +883,7 @@ def delete_account_alias(args, aws_client):
 
 def get_account_password_policy(args, aws_client):
     client = aws_client.aws_session(
-        service='iam',
+        service=SERVICE,
         role_arn=args.get('roleArn'),
         role_session_name=args.get('roleSessionName'),
         role_session_duration=args.get('roleSessionDuration'),
@@ -896,7 +898,7 @@ def get_account_password_policy(args, aws_client):
 
 def update_account_password_policy(args, aws_client):
     client = aws_client.aws_session(
-        service='iam',
+        service=SERVICE,
         role_arn=args.get('roleArn'),
         role_session_name=args.get('roleSessionName'),
         role_session_duration=args.get('roleSessionDuration'),
