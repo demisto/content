@@ -27,7 +27,7 @@ name: Cybersixgill_DVE_Enrichment
 script:
   commands:
   - arguments:
-    - default: false
+    - default: true
       isArray: true
       name: cve_id
       description: 'cves id list'
