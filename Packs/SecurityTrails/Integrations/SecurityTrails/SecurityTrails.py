@@ -992,7 +992,7 @@ def test_module(client):
     if "success" in results:
         return "ok"
     else:
-        return results['message']
+        return results.get('message')
 
 
 ''' MAIN FUNCTION '''
