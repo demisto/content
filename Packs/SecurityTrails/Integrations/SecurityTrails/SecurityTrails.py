@@ -877,7 +877,7 @@ def ip_search_command(client, args):
     record_count = res.get('record_count')
     md = tableToMarkdown(f"IP DSL Search Results ({record_count} record(s)):", records)
     command_results = CommandResults(
-        outputs_prefix=f"SecurityTrails.IP.Search",
+        outputs_prefix="SecurityTrails.IP.Search",
         outputs_key_field="ip",
         outputs=records,
         readable_output=md
