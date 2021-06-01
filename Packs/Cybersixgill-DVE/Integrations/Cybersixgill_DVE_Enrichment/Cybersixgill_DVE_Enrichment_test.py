@@ -174,7 +174,7 @@ expected_enrich_output = [
     {
         "value": "CVE-2020-9047",
         "Overview": {
-            "description": "A vulnerability exists that could allow the execution of unauthorized code or operating "
+            "Description": "A vulnerability exists that could allow the execution of unauthorized code or operating "
             "system commands on systems running exacqVision Web Service versions 20.06.3.0 and prior "
             "and exacqVision Enterprise Manager versions 20.06.4.0 and prior. An attacker with "
             "administrative privileges could potentially download and run a malicious executable "
@@ -182,10 +182,10 @@ expected_enrich_output = [
             "Created": "2020-06-26T00:00:00.001000Z",
             "Modified": "",
             "External id": "CVE-2020-9047",
-            "Sixgill DVE score - current": 4.83,
-            "Sixgill DVE score - highest ever date": "2020-07-14T00:00:00Z",
-            "Sixgill DVE score - highest ever": 8.21,
-            "Sixgill - Previously exploited probability": 0.0,
+            "Cybersixgill DVE score - current": 4.83,
+            "Cybersixgill DVE score - highest ever date": "2020-07-14T00:00:00Z",
+            "Cybersixgill DVE score - highest ever": 8.21,
+            "Cybersixgill - Previously exploited probability": 0.0,
             "Event Name": "",
             "Event Type": "",
             "Event Action": "",
