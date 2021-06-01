@@ -666,7 +666,7 @@ def get_devices_command(client):
                     'name': value,
                     'address': key,
                 })
-        table_header = ['Name', 'Address']
+        table_header = ['name', 'address']
         markdown = tableToMarkdown(display_title, device_list, headers=table_header,
                                    headerTransform=string_to_table_header)
     else:
