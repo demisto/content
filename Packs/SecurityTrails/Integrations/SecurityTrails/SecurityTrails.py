@@ -204,10 +204,6 @@ class Client(BaseClient):
                 ok_codes=[200, 403],
                 resp_type="response"
             )
-            if res.status_code != 200:
-                self.handle_error(res.json())
-            else:
-                return res.json()
         elif query_type == "domain_stats":
             res = self._http_request(
                 'POST',
