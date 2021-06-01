@@ -1208,7 +1208,6 @@ def add_object(event_id: str, obj: MISPObject, pymisp: ExpandedPyMISP):
 
     formatted_response = replace_keys(response)
     human_readable = f'Object has been added to MISP event ID {event_id}'
-
     return CommandResults(
         readable_output=human_readable,
         outputs_prefix='MISP.Event',
@@ -1222,7 +1221,7 @@ def add_email_object(pymisp: ExpandedPyMISP, demisto_args: dict = {}):
     event_id = demisto_args.get('event_id')
     email_path = demisto.getFilePath(entry_id).get('path')
     obj = EMailObject(email_path)
-    add_object(event_id, obj, pymisp)
+    return add_object(event_id, obj, pymisp)
 
 
 def add_domain_object(pymisp: ExpandedPyMISP, demisto_args: dict = {}):
@@ -1387,7 +1386,7 @@ def main():
             get_ips_events()
         #  Object commands
         elif command == 'misp-add-email-object':
-            return_results(add_email_object(demisto_args=args, pymisp=pymisp))  # checked
+            return_results(add_email_object(demisto_args=args, pymisp=pymisp))  # checked V
         elif command == 'misp-add-domain-object':
             return_results(add_domain_object(demisto_args=args, pymisp=pymisp))  # checked V
         elif command == 'misp-add-url-object':
