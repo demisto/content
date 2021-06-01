@@ -458,10 +458,10 @@ def format_incidents(events: list, event_offset: int, last_fetch: int, module_na
             if validate_timestamp(t_stamp):
                 try:
                     alert_created_time = date_to_timestamp(t_stamp,
-                                                               date_format=CY_GENERAL_DATE_FORMAT)
+                                                           date_format=CY_GENERAL_DATE_FORMAT)
                 except Exception:
                     alert_created_time = date_to_timestamp(t_stamp,
-                                                               date_format=CY_UNIQUE_DATE_FORMAT)
+                                                           date_format=CY_UNIQUE_DATE_FORMAT)
 
                 # If current alert was created since last fetch time, create XS0AR incident.
                 if alert_created_time >= last_fetch:
