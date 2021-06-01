@@ -848,7 +848,7 @@ def get_ip_neighbors_command(client, args):
         } for x in res],
         ["IP", "Hostnames", "Sites", "Ports", "Active Egress"])
     command_results = CommandResults(
-        outputs_prefix=f"SecurityTrails.IP",
+        outputs_prefix="SecurityTrails.IP",
         outputs_key_field="ip",
         outputs={
             "ip": ipaddress,
