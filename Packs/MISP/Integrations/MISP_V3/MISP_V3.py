@@ -1202,16 +1202,18 @@ def add_object(event_id: str, obj: MISPObject, pymisp: ExpandedPyMISP):
             error_string += f'\n\tError code: {err["code"]} ' \
                             f'\n\tMessage: {err["message"]}' \
                             f'\n\tErrors: {err["errors"]}\n'
-        return_error(f'Error in `{command}` command: {error_string}')
+        return_error(f'Error in `{demisto.command()}` command: {error_string}')
     for ref in obj.ObjectReference:
         response = pymisp.add_object_reference(ref)
 
     formatted_response = replace_keys(response)
+    formatted_response.update({"ID": event_id})
+
     human_readable = f'Object has been added to MISP event ID {event_id}'
     return CommandResults(
         readable_output=human_readable,
         outputs_prefix='MISP.Event',
-        outputs_key_field='id',
+        outputs_key_field='ID',
         outputs=formatted_response,
     )
 
@@ -1298,9 +1300,8 @@ def add_generic_object_command():
                      str(e))
 
 
-def add_ip_object():
-    template = 'ip-port'
-    event_id = demisto.getArg('event_id')
+def add_ip_object(pymisp: ExpandedPyMISP, demisto_args: dict = {}):
+    event_id = demisto_args.get('event_id')
     args = [
         'dst_port',
         'src_port',
@@ -1309,22 +1310,24 @@ def add_ip_object():
         'ip_src',
         'ip_dst'
     ]
-    attr = [{arg.replace('_', '-'): demisto.getArg(arg)} for arg in args if demisto.getArg(arg)]
-    ips = argToList(demisto.getArg('ip'))
+    # converting args to MISP's arguments types
+    misp_attributes_args = [{arg.replace('_', '-'): demisto_args.get(arg)} for arg in args if demisto_args.get(arg)]
+    ips = argToList(demisto_args.get('ip'))
     for ip in ips:
-        attr.append({'ip': ip})
-    if attr:
+        misp_attributes_args.append({'ip': ip})
+    if misp_attributes_args:
         non_req_args = [
             'first_seen',
             'last_seen',
         ]
-        attr.extend({arg.replace('_', '-'): demisto.getArg(arg)} for arg in non_req_args if demisto.getArg(arg))
-        if demisto.getArg('comment'):
-            attr.append({'text': demisto.getArg('comment')})
-        obj = build_generic_object(template, attr)
-        add_object(event_id, obj)
+        misp_attributes_args.extend(
+            {arg.replace('_', '-'): demisto_args.get(arg)} for arg in non_req_args if demisto_args.get(arg))
+        if demisto_args.get('comment'):
+            misp_attributes_args.append({'text': demisto_args.get('comment')})
+        obj = build_generic_object('ip-port', misp_attributes_args)
+        return add_object(event_id, obj, pymisp)
     else:
-        return_error(f'None of required arguments presents. command {command} requires one of {args}')
+        return_error(f'None of required arguments presents. command {demisto.command()} requires one of {args}')
 
 
 def main():
@@ -1392,7 +1395,7 @@ def main():
         elif command == 'misp-add-url-object':
             add_url_object()
         elif command == 'misp-add-ip-object':
-            add_ip_object()
+            return_results(add_ip_object(demisto_args=args, pymisp=pymisp))  # checked
         elif command == 'misp-add-object':
             add_generic_object_command()
     except PyMISPError as e:
