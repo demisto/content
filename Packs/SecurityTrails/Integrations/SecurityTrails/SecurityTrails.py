@@ -449,7 +449,8 @@ def domains_subdomains_command(client, args):
 def get_domain_tags_command(client, args):
     hostname = args.get('hostname')
     res = client.domain_tags(hostname=hostname)
-    readable_output = f"### Tags for {hostname}:\n\n{', '.join(res)}"
+    tags = ', '.join(res)
+    readable_output = f"### Tags for {hostname}:\n\n{tags}"
     command_results = CommandResults(
         outputs_prefix=f"SecurityTrails.Domain",
         outputs_key_field="name",
