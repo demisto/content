@@ -118,7 +118,7 @@ def remove_test_playbooks_from_signatures(path, filenames):
 
 def get_zipped_packs_names(zip_path):
     zipped_packs = []
-    packs_path = zip_path + "/packs"
+    packs_path = zip_path
     for entry in os.scandir(packs_path):
         print(entry)
     for subdir, dirs, files in os.walk(packs_path):
