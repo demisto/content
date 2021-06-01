@@ -2023,11 +2023,7 @@ Live Response Permissions Required
 
 
 #### Command Example
-<<<<<<< HEAD
-```!cbd-set-policy policy=123456 keyValue=`{"policyInfo": {"description": "update example", "name": "demisto test1", "id": 123456, "policy": {"sensorSettings": [{"name": "SHOW_UI", "value": "true"}]}, "priorityLevel": "HIGH"}}````
-=======
 ```!cbd-set-policy policy=123456 keyValue=`{"policyInfo": {"description": "update example", "name": "xsoar test1", "id": 123456, "policy": {"sensorSettings": [{"name": "SHOW_UI", "value": "true"}]}, "priorityLevel": "HIGH"}}````
->>>>>>> master
 
 #### Context Example
 ```json
@@ -2037,11 +2033,7 @@ Live Response Permissions Required
             "description": "update example",
             "id": 123456,
             "latestRevision": 1617542937951,
-<<<<<<< HEAD
-            "name": "demisto test1",
-=======
             "name": "xsoar test1",
->>>>>>> master
             "policy": {
                 "avSettings": {
                     "apc": {
@@ -2240,11 +2232,7 @@ Live Response Permissions Required
 >### Carbon Black Endpoint Standard Policy
 >|Id|Description|Name|Latest Revision|Version|Priority Level|System Policy|
 >|---|---|---|---|---|---|---|
-<<<<<<< HEAD
->| 123456 | update example | demisto test1 | 2021-04-04T13:28:57.000Z | 2 | HIGH | false |
-=======
 >| 123456 | update example | xsoar test1 | 2021-04-04T13:28:57.000Z | 2 | HIGH | false |
->>>>>>> master
 
 
 ### cbd-create-policy
@@ -2282,28 +2270,17 @@ Live Response Permissions Required
 
 
 #### Command Example
-<<<<<<< HEAD
-```!cbd-create-policy description=`This is Demisto's test policy` name=`Demisto test3` priorityLevel=HIGH policy=`{}````
-=======
 ```!cbd-create-policy description=`This is xsoar's test policy` name=`xsoar test3` priorityLevel=HIGH policy=`{}````
->>>>>>> master
 
 #### Context Example
 ```json
 {
     "CarbonBlackDefense": {
         "Policy": {
-<<<<<<< HEAD
-            "description": "This is Demisto's test policy",
-            "id": 67586,
-            "latestRevision": 1617542929543,
-            "name": "Demisto test3",
-=======
             "description": "This is xsoar's test policy",
             "id": 67586,
             "latestRevision": 1617542929543,
             "name": "xsoar test3",
->>>>>>> master
             "policy": {
                 "avSettings": {
                     "apc": {
@@ -2703,11 +2680,7 @@ Live Response Permissions Required
 >### Carbon Black Endpoint Standard Policy
 >|Id|Description|Name|Latest Revision|Version|Priority Level|System Policy|
 >|---|---|---|---|---|---|---|
-<<<<<<< HEAD
->| 67586 | This is Demisto's test policy | Demisto test3 | 2021-04-04T13:28:49.000Z | 2 | HIGH | false |
-=======
 >| 67586 | This is xsoar's test policy | xsoar test3 | 2021-04-04T13:28:49.000Z | 2 | HIGH | false |
->>>>>>> master
 
 
 ### cbd-delete-policy
@@ -2778,28 +2751,17 @@ Live Response Permissions Required
 
 
 #### Command Example
-<<<<<<< HEAD
-```!cbd-update-policy id=123456 description=`This is Demisto's test policy after an update` name=`demisto test1` priorityLevel=LOW policy=`{"sensorSettings": [{"name": "SHOW_UI", "value": "false"}]}````
-=======
 ```!cbd-update-policy id=123456 description=`This is xsoar's test policy after an update` name=`xsoar test1` priorityLevel=LOW policy=`{"sensorSettings": [{"name": "SHOW_UI", "value": "false"}]}````
->>>>>>> master
 
 #### Context Example
 ```json
 {
     "CarbonBlackDefense": {
         "Policy": {
-<<<<<<< HEAD
-            "description": "This is Demisto's test policy after an update",
-            "id": 123456,
-            "latestRevision": 1617542940381,
-            "name": "demisto test1",
-=======
             "description": "This is xsoar's test policy after an update",
             "id": 123456,
             "latestRevision": 1617542940381,
             "name": "xsoar test1",
->>>>>>> master
             "policy": {
                 "avSettings": {
                     "apc": {
@@ -2998,11 +2960,7 @@ Live Response Permissions Required
 >### Carbon Black Endpoint Standard Policy
 >|Id|Description|Name|Latest Revision|Version|Priority Level|System Policy|
 >|---|---|---|---|---|---|---|
-<<<<<<< HEAD
->| 123456 | This is Demisto's test policy after an update | demisto test1 | 2021-04-04T13:29:00.000Z | 2 | LOW | false |
-=======
 >| 123456 | This is xsoar's test policy after an update | xsoar test1 | 2021-04-04T13:29:00.000Z | 2 | LOW | false |
->>>>>>> master
 
 
 ### cbd-add-rule-to-policy
@@ -3039,17 +2997,10 @@ There is no context output for this command.
 {
     "CarbonBlackDefense": {
         "Policy": {
-<<<<<<< HEAD
-            "description": "This is Demisto's test policy after an update",
-            "id": 123456,
-            "latestRevision": 1617542944659,
-            "name": "demisto test1",
-=======
             "description": "This is xsoar's test policy after an update",
             "id": 123456,
             "latestRevision": 1617542944659,
             "name": "xsoar test1",
->>>>>>> master
             "policy": {
                 "avSettings": {
                     "apc": {
@@ -3259,11 +3210,7 @@ There is no context output for this command.
 >### Carbon Black Endpoint Standard Policy
 >|Id|Description|Name|Latest Revision|Version|Priority Level|System Policy|
 >|---|---|---|---|---|---|---|
-<<<<<<< HEAD
->| 123456 | This is Demisto's test policy after an update | demisto test1 | 2021-04-04T13:29:04.000Z | 2 | LOW | false |
-=======
 >| 123456 | This is xsoar's test policy after an update | xsoar test1 | 2021-04-04T13:29:04.000Z | 2 | LOW | false |
->>>>>>> master
 
 
 ### cbd-update-rule-in-policy
@@ -3301,17 +3248,10 @@ There is no context output for this command.
 {
     "CarbonBlackDefense": {
         "Policy": {
-<<<<<<< HEAD
-            "description": "This is Demisto's test policy after an update",
-            "id": 123456,
-            "latestRevision": 1617542947344,
-            "name": "demisto test1",
-=======
             "description": "This is xsoar's test policy after an update",
             "id": 123456,
             "latestRevision": 1617542947344,
             "name": "xsoar test1",
->>>>>>> master
             "policy": {
                 "avSettings": {
                     "apc": {
@@ -3521,11 +3461,7 @@ There is no context output for this command.
 >### Carbon Black Endpoint Standard Policy
 >|Id|Description|Name|Latest Revision|Version|Priority Level|System Policy|
 >|---|---|---|---|---|---|---|
-<<<<<<< HEAD
->| 123456 | This is Demisto's test policy after an update | demisto test1 | 2021-04-04T13:29:07.000Z | 2 | LOW | false |
-=======
 >| 123456 | This is xsoar's test policy after an update | xsoar test1 | 2021-04-04T13:29:07.000Z | 2 | LOW | false |
->>>>>>> master
 
 
 ### cbd-delete-rule-from-policy
