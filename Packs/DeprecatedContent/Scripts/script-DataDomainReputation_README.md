@@ -7,7 +7,7 @@ Evaluates the reputation of a URL and Domain and returns a score between 0 and 3
 | --- | --- |
 | Script Type | javascript |
 | Tags | reputation |
-| Demisto Version | 3.1.0+ |
+| Cortex XSOAR Version | 3.1.0+ |
 
 ## Inputs
 ---
