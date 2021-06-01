@@ -53,7 +53,7 @@ args:
   required: false
   secret: false
 comment: Deprecated. Parse Sane-json-reports and export them as pdf files (used internally, thus
-  deprecated).
+  deprecated). No available replacement.
 commonfields:
   id: SanePdfReports
   version: -1
