@@ -495,8 +495,9 @@ def get_whois_command(client, args):
             }
         }
         if res.get('nameServers', None):
-            domain_data['NameServers'] = ", ".join(x for x in res.get('nameServers', []))
-            domain_data['WHOIS']['NameServers'] = ", ".join(x for x in res.get('nameServers', []))
+            name_servers = ", ".join(x for x in res.get('nameServers', []))
+            domain_data['NameServers'] = name_servers
+            domain_data['WHOIS']['NameServers'] = name_servers
 
         # Find the admin contact
         admin = None
