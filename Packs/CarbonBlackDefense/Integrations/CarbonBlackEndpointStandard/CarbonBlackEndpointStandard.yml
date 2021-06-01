@@ -118,7 +118,7 @@ description: Endpoint Standard is an industry-leading next-generation antivirus 
   and behavioral endpoint detection and response (EDR) solution. Endpoint Standard
   is delivered through the Carbon Black Cloud, an endpoint protection platform that
   consolidates security in the cloud using a single agent, console and data set.
-display: Carbon Black Endpoint Standard
+display: Carbon Black Endpoint Standard v2
 name: Carbon Black Endpoint Standard
 script:
   commands:

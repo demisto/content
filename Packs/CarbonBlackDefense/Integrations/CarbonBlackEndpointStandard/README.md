@@ -3,7 +3,24 @@ This integration was integrated and tested with version 1.1.2 of Carbon Black En
 
 ## The changes v1
 The old integration is deprecated because Carbon Black have released a new version of their API.
-The new integration supports new commands, Also added a Mapper and a Layout.
+
+The new integration supports new commands:
+* some operations on devices:
+    * [cbd-device-background-scan](#cbd-device-background-scan) Starts a background scan on a device by ID.
+    * [cbd-device-bypass](#cbd-device-bypass) Bypasses a device.
+    * [cbd-device-policy-update](#cbd-device-policy-update) Updates the devices to the specified policy ID.
+    * [cbd-device-update-sensor-version](#cbd-device-update-sensor-version) Updates the version of a sensor.
+* [cbd-alerts-search](#cbd-alerts-search) Retrieves all alerts include some arguments (query, ID, type, category) to filter the results.
+* [cbd-find-events-details](#cbd-find-events-details) Retrieve details for enriched events.
+
+3 new playbooks
+1. "Find Events" Finds events using a search query (or device_id, etc.).
+2. "Find Event Details" Receives event IDs and returns details about the event.
+3. "Find Processes" Find processes using a search query (or device_id, etc.).
+
+Also added:
+* Mapper.
+* Layout.
 
 ## Configure Carbon Black Endpoint Standard on Cortex XSOAR
 
