@@ -461,7 +461,7 @@ def get_domain_tags_command(client, args):
     create_standard_domain_context(
         domain_data={
             "Name": hostname,
-            "Tags": ", ".join(res)
+            "Tags": tags
         })
 
 
