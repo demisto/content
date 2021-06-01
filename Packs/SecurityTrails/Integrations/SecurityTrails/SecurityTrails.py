@@ -323,7 +323,7 @@ def domain_command(client, args):
                 "Phone": admin_contact[0].get('Phone', None) if admin_contact else None
             }
         },
-        "Tags": ",".join([x for x in domain_tags]),
+        "Tags": ",".join(domain_tags),
         "Admin": {
             "Country": admin_contact[0].get('Country', None) if admin_contact else None,
             "Name": admin_contact[0].get('Name', None) if admin_contact else None,
