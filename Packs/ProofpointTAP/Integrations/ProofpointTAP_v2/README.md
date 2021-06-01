@@ -6,12 +6,12 @@ This integration was integrated and tested with version 8.15.0 of Proofpoint TAP
 </ul><h2>Detailed Description</h2>
 <ul>
 <li>## Configure an API account</li>
-<li>To configure an instance of the integration in Demisto, you need to supply your Service Principal and Service Secret. When you configure the integration instance, enter the Service Principal in the Service Principal field, and the Service Secret in the Password field.</li>
+<li>To configure an instance of the integration in Cortex XSOAR, you need to supply your Service Principal and Service Secret. When you configure the integration instance, enter the Service Principal in the Service Principal field, and the Service Secret in the Password field.</li>
 <li>1. Log in to your Proofpoint TAP environment.</li>
 <li>2. Navigate to **Connect Applications > Service Credentials**.</li>
 </ul><h2>Fetch Incidents</h2>
 <p>Populate this section with Fetch incidents data</p>
-<h2>Configure Proofpoint TAP v2 on Demisto</h2>
+<h2>Configure Proofpoint TAP v2 on Cortex XSOAR</h2>
 <ol>
   <li>Navigate to&nbsp;<strong>Settings</strong>&nbsp;&gt;&nbsp;<strong>Integrations</strong>
   &nbsp;&gt;&nbsp;<strong>Servers &amp; Services</strong>.</li>
@@ -39,7 +39,7 @@ This integration was integrated and tested with version 8.15.0 of Proofpoint TAP
 </ol>
 <h2>Commands</h2>
 <p>
-  You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.
+  You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
   After you successfully execute a command, a DBot message appears in the War Room with the command details.
 </p>
 <ol>
