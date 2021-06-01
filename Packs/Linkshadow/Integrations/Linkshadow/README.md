@@ -16,9 +16,9 @@ API Token, API Username from Linkshadow  ( Generate tokens from following url : 
 | API Username | Use API Username | True |
 | action | fetch_entity_anomalies | True |
 | plugin_id | xsoar_integration_1604211382 | True |
-| **TimeFrame | 01 | True |
-| **Incidents Fetch Interval | 01 Minutes | True |
+| TimeFrame | Minutes | True |
+| Incidents Fetch Interval | 01 Minutes | Default |
 
 4. Click **Test** to validate the URLs, token, and connection.
 
-**Notes : The "TimeFrame" and "Incidents Fetch Interval" should be same as of now to avoid duplicate incidents.
+
