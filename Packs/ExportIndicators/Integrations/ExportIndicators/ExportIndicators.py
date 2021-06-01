@@ -308,13 +308,14 @@ def find_indicators_with_limit_loop(indicator_query: str, limit: int, total_fetc
     iocs: List[dict] = []
     if not last_found_len:
         last_found_len = total_fetched
+    search_indicators = IndicatorsSearcher(page=next_page)
+
     while last_found_len == PAGE_SIZE and limit and total_fetched < limit:
-        fetched_iocs = demisto.searchIndicators(query=indicator_query, page=next_page, size=PAGE_SIZE).get('iocs')
+        fetched_iocs = search_indicators.search_indicators_by_version(query=indicator_query, size=PAGE_SIZE).get('iocs')
         iocs.extend(fetched_iocs)
         last_found_len = len(fetched_iocs)
         total_fetched += last_found_len
-        next_page += 1
-    return iocs, next_page
+    return iocs, search_indicators.page
 
 
 def ip_groups_to_cidrs(ip_range_groups: list):
@@ -867,7 +868,7 @@ def run_long_running(params, is_test=False):
         else:
             demisto.debug('Starting HTTP Server')
 
-        server = WSGIServer(('', port), APP, **ssl_args, log=DEMISTO_LOGGER)
+        server = WSGIServer(('0.0.0.0', port), APP, **ssl_args, log=DEMISTO_LOGGER)
         if is_test:
             server_process = Process(target=server.serve_forever)
             server_process.start()

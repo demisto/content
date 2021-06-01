@@ -126,6 +126,32 @@
     },
     {
       "created": "2019-05-26T16:16:19.000Z",
+      "id": "indicator--7fa7ad39-1337-0000-1337-ce716d3e2ad7",
+      "labels": [
+        "ipv6"
+      ],
+      "modified": "2019-05-26T16:16:19.000Z",
+      "pattern": "[ipv6:value = '2001:0db8:85a3:0000:0000:8a2e:0370:7334']",
+      "score": "Not Specified",
+      "source": "",
+      "type": "indicator",
+      "valid_from": "2019-05-28T16:38:17.851906Z"
+    },
+    {
+      "created": "2019-05-26T16:16:19.000Z",
+      "id": "indicator--7fa7ad39-1337-1337-1337-ce716d3e2ad7",
+      "labels": [
+        "ipv6"
+      ],
+      "modified": "2019-05-26T16:16:19.000Z",
+      "pattern": "[ipv6-addr:value = '2001:0db8:85a3:1337:0000:8a2e:0370:7334']",
+      "score": "Not Specified",
+      "source": "",
+      "type": "indicator",
+      "valid_from": "2019-05-28T16:38:17.851906Z"
+    },
+    {
+      "created": "2019-05-26T16:16:19.000Z",
       "id": "indicator--7fa7ad39-29c9-4cb1-9ee8-ce716d3e2ad7",
       "labels": [
         "ip"

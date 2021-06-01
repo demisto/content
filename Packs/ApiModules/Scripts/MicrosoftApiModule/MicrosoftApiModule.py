@@ -25,6 +25,7 @@ AUTHORIZATION_CODE = 'authorization_code'
 REFRESH_TOKEN = 'refresh_token'  # guardrails-disable-line
 DEVICE_CODE = 'urn:ietf:params:oauth:grant-type:device_code'
 REGEX_SEARCH_URL = '(?P<url>https?://[^\s]+)'
+SESSION_STATE = 'session_state'
 
 
 class MicrosoftClient(BaseClient):
@@ -358,6 +359,9 @@ class MicrosoftClient(BaseClient):
             data['grant_type'] = REFRESH_TOKEN
             data['refresh_token'] = refresh_token
         else:
+            if SESSION_STATE in self.auth_code:
+                raise ValueError('Malformed auth_code parameter: Please copy the auth code from the redirected uri '
+                                 'without any additional info and without the "session_state" query parameter.')
             data['grant_type'] = AUTHORIZATION_CODE
             data['code'] = self.auth_code
 

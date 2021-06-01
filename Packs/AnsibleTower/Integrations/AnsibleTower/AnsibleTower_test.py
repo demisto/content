@@ -12,14 +12,14 @@ test_data = [
         {"host_id": "1"},
         {},
         {"id": "1", "Deleted": True},
-        'AnsibleAWX.Host(val.id == obj.id)'
+        'AnsibleAWX.Host(val.id && val.id == obj.id)'
     ),
     (
         job_template_launch,
         {"job_template_id": "1"},
         JOB_TEMPLATE_LAUNCH_RES,
         JOB_TEMPLATE_EXPECTED,
-        'AnsibleAWX.Job(val.id == obj.id)'
+        'AnsibleAWX.Job(val.id && val.id == obj.id)'
     ),
 
     (
@@ -27,7 +27,7 @@ test_data = [
         {"inventory_id": "1", "credential_id": "1", "module_name": "ping"},
         ADHOC_COMMAND_LAUNCH_RES,
         ADHOC_COMMAND_LAUNCH_EXPECTED,
-        'AnsibleAWX.AdhocCommand(val.id == obj.id)'
+        'AnsibleAWX.AdhocCommand(val.id && val.id == obj.id)'
     )
 ]
 

@@ -233,29 +233,24 @@ def get_all_user_profiles():
             employee_id_to_user_profile[employee_id] = user_profile
             email_to_user_profile[email] = user_profile
 
-    if is_demisto_version_ge('6.1'):
-        # searchAfter argument of searchIndicators command is supported only in server version 6.1 and above.
-        query_result = demisto.searchIndicators(query=query, size=BATCH_SIZE)
-        handle_batch(query_result.get('iocs', []))
+    search_indicators = IndicatorsSearcher()
 
-        while query_result.get('searchAfter') is not None:
-            query_result = demisto.searchIndicators(query=query, size=BATCH_SIZE,
-                                                    searchAfter=query_result.get('searchAfter'))
-            handle_batch(query_result.get('iocs', []))
-    else:
-        # server version is below 6.1 - must get all user profile indicators in a single batch
-        single_batch_size = 50000
-        query_result = demisto.searchIndicators(query=query, size=single_batch_size)
+    query_result = search_indicators.search_indicators_by_version(query=query, size=BATCH_SIZE)
+    while query_result.get('iocs', []):
         handle_batch(query_result.get('iocs', []))
+        query_result = search_indicators.search_indicators_by_version(query=query, size=BATCH_SIZE)
 
     return employee_id_to_user_profile, email_to_user_profile
 
 
-def get_demisto_user(employee_id_to_user_profile, workday_user):
-    employee_id = workday_user.get(EMPLOYEE_ID_FIELD)
-    if employee_id:
-        return employee_id_to_user_profile.get(employee_id)
-    return None
+def get_demisto_user(email_to_user_profile, employee_id_to_user_profile, workday_user):
+    demisto_user = None
+    if (employee_id := workday_user.get(EMPLOYEE_ID_FIELD)):
+        demisto_user = employee_id_to_user_profile.get(employee_id)
+    if not demisto_user:
+        if (email := workday_user.get(EMAIL_ADDRESS_FIELD)):
+            demisto_user = email_to_user_profile.get(email)
+    return demisto_user
 
 
 def get_orphan_users(email_to_user_profile, user_emails):
@@ -428,7 +423,7 @@ def fetch_incidents(client, mapper_in, report_url, workday_date_format, deactiva
         for entry in report_entries:
             # get the user event (if exists) according to workday report
             workday_user = get_workday_user_from_entry(entry, mapper_in, workday_date_format)
-            demisto_user = get_demisto_user(employee_id_to_user_profile, workday_user)
+            demisto_user = get_demisto_user(email_to_user_profile, employee_id_to_user_profile, workday_user)
             demisto.debug(f'Getting event details for user with email address {workday_user.get("email")}.\n'
                           f'Current user data in XSOAR: {demisto_user=}\nData in Workday: {workday_user=}')
 
@@ -438,12 +433,16 @@ def fetch_incidents(client, mapper_in, report_url, workday_date_format, deactiva
             if event is not None:
                 events.append(event)
 
-            # store all user emails from workday report for later use
-            user_emails.append(workday_user.get(EMAIL_ADDRESS_FIELD))
+            # we store all emails of user profiles for later use
+            if demisto_user is not None:
+                user_emails.append(demisto_user.get(EMAIL_ADDRESS_FIELD))
 
         # terminate users in XSOAR which are not on workday report
         orphan_users_events = get_orphan_users(email_to_user_profile, user_emails)
         events.extend(orphan_users_events)
+
+        if not events:
+            demisto.info('Did not detect any changes in Workday report.')
 
     except Exception as e:
         demisto.error('Failed to fetch events. Reason: ' + str(e))

@@ -73,7 +73,7 @@ This integration was integrated and tested with version 8.1.0 and 9.0.1 of Palo 
    
 
 ## Commands
-You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.
+You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 1. [Run any command supported in the Panorama API: panorama](#panorama)
@@ -4618,3 +4618,72 @@ Retrieves list of user-ID agents configured in the system.
 >|---|---|---|---|---|---|---|
 >| testing |  | mine | 12 | demisto | yes | yes |
 >| withSerial | panorama |  |  |  |  |  |
+
+
+### panorama-upload-content-update-file
+***
+Uploads a content file to Panorama.
+
+
+#### Base Command
+
+`panorama-upload-content-update-file`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| entryID | Entry ID of the file to upload. | Required | 
+| category | The category of the content. Possible values are: wildfire, anti-virus, content. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Panorama.Content.Upload.Status | string | Content upload status. | 
+| Panorama.Content.Upload.Message | string | Content upload message. | 
+
+
+#### Command Example
+```panorama-upload-content-update-file entryID="32@14183" category="content" ```
+
+#### Human Readable Output
+>### Results
+>|Status|Message|
+>|---|---|
+>| Success | line: <file_name> saved |
+
+
+### panorama-install-file-content-update
+***
+Installs specific content update file.
+
+
+#### Base Command
+
+`panorama-install-file-content-update`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| version_name | Update file name to be installed on PAN-OS. | Required | 
+| category | The category of the content. Possible values are: wildfire, anti-virus, content. | Required | 
+| skip_validity_check | Skips file validity check with PAN-OS update server. Use this option for air-gapped networks and only if you trust the content file. Possible values are: yes, no. Default is no. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Panorama.Content.Install.JobID | string | JobID of the installation. | 
+| Panorama.Content.Install.Status | string | Installation status. | 
+
+
+#### Command Example
+```panorama-install-file-content-update version_name="panupv2-all-contents-8322-6317" category="content" skip_validity_check="yes" ```
+
+#### Human Readable Output
+>### Results
+>|JobID|Status|
+>|---|---|
+>| 30 | Pending |

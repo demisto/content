@@ -1,0 +1,11 @@
+{
+  "id": "Iq hub log",
+  "name": "IQ-HUB Log",
+  "dataType": "scripts",
+  "widgetType": "table",
+  "query": "IqHubLog",
+  "version": -1,
+  "description": "Logs detections & progression counts along with respective links to confluera Iq-Hub portal.",
+  "isPredefined": true,
+  "fromVersion": "6.0.0"
+}

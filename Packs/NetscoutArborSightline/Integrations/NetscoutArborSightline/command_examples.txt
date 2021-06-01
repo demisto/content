@@ -1,0 +1,9 @@
+na-sightline-tms-group-list limit=2
+na-sightline-mitigation-list limit=2
+na-sightline-managed-object-list limit=2
+na-sightline-mitigation-template-list limit=2
+na-sightline-alert-annotation-list alert_id="2009" limit=2
+na-sightline-mitigation-create description="Some mitigation description" ip_version=IPv4 name="Mitigation Annotation Name" ongoing=true sub_object="{\"protection_prefixes\": [\"192.0.2.0/24\"]}" sub_type=flowspec
+na-sightline-mitigation-delete mitigation_id=flowspec-8
+na-sightline-alert-list limit=2
+na-sightline-router-list limit=2

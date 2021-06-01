@@ -326,8 +326,8 @@ def test_get_indicators_with_relations():
                 "regex": r"^.+,\"?(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})\"?",
                 "transform": "\\1"
             },
-            'relation_name': 'indicator-of',
-            'relation_entity_b_type': 'STIX Malware',
+            'relationship_name': 'indicator-of',
+            'relationship_entity_b_type': 'STIX Malware',
             "fields": [{
                 'firstseenbysource': {
                     "regex": r"^(\d{4}-\d{2}-\d{2}\s\d{2}:\d{2}:\d{2})",
@@ -345,7 +345,7 @@ def test_get_indicators_with_relations():
                     "regex": r"^.+,.+,.+,.+,(.+)",
                     "transform": "\\1"
                 },
-                "relation_entity_b": {
+                "relationship_entity_b": {
                     "regex": r"^.+,.+,.+,.+,\"(.+)\"",
                     "transform": "\\1"
                 }
@@ -353,7 +353,7 @@ def test_get_indicators_with_relations():
         }
     }
     expected_res = [{'value': '127.0.0.1', 'type': 'IP',
-                     'rawJSON': {'malwarefamily': '"Test"', 'relation_entity_b': 'Test', 'value': '127.0.0.1',
+                     'rawJSON': {'malwarefamily': '"Test"', 'relationship_entity_b': 'Test', 'value': '127.0.0.1',
                                  'type': 'IP', 'tags': []},
                      'relationships': [
                          {'name': 'indicator-of', 'reverseName': 'indicated-by', 'type': 'IndicatorToIndicator',
@@ -396,8 +396,8 @@ def test_get_indicators_without_relations():
                 "regex": r"^.+,\"?(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})\"?",
                 "transform": "\\1"
             },
-            'relation_name': 'indicator-of',
-            'relation_entity_b_type': 'STIX Malware',
+            'relationship_name': 'indicator-of',
+            'relationship_entity_b_type': 'STIX Malware',
             "fields": [{
                 'firstseenbysource': {
                     "regex": r"^(\d{4}-\d{2}-\d{2}\s\d{2}:\d{2}:\d{2})",
@@ -415,7 +415,7 @@ def test_get_indicators_without_relations():
                     "regex": r"^.+,.+,.+,.+,(.+)",
                     "transform": "\\1"
                 },
-                "relation_entity_b": {
+                "relationship_entity_b": {
                     "regex": r"^.+,.+,.+,.+,\"(.+)\"",
                     "transform": "\\1"
                 }
@@ -423,7 +423,7 @@ def test_get_indicators_without_relations():
         }
     }
     expected_res = [{'value': '127.0.0.1', 'type': 'IP',
-                     'rawJSON': {'malwarefamily': '"Test"', 'relation_entity_b': 'Test', 'value': '127.0.0.1',
+                     'rawJSON': {'malwarefamily': '"Test"', 'relationship_entity_b': 'Test', 'value': '127.0.0.1',
                                  'type': 'IP', 'tags': []},
                      'fields': {'tags': []}}]
 

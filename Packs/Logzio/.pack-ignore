@@ -1,2 +1,8 @@
 [file:Logzio.yml]
 ignore=IN126
+
+[file:README.md]
+ignore=RM104
+
+[file:Logzio_Indicator_Hunting_README.md]
+ignore=RM106

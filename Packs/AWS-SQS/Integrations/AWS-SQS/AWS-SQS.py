@@ -1,64 +1,5 @@
-import boto3
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-
-AWS_DEFAULT_REGION = demisto.params()['defaultRegion']
-AWS_roleArn = demisto.params()['roleArn']
-AWS_roleSessionName = demisto.params()['roleSessionName']
-AWS_roleSessionDuration = demisto.params()['sessionDuration']
-AWS_rolePolicy = None
-AWS_QUEUEURL = demisto.params()['queueUrl']
-
-
-def aws_session(service='sqs', region=None, roleArn=None, roleSessionName=None, roleSessionDuration=None, rolePolicy=None):
-    kwargs = {}
-    if roleArn and roleSessionName is not None:
-        kwargs.update({
-            'RoleArn': roleArn,
-            'RoleSessionName': roleSessionName,
-        })
-    elif AWS_roleArn and AWS_roleSessionName is not None:
-        kwargs.update({
-            'RoleArn': AWS_roleArn,
-            'RoleSessionName': AWS_roleSessionName,
-        })
-
-    if roleSessionDuration is not None:
-        kwargs.update({'DurationSeconds': int(roleSessionDuration)})
-    elif AWS_roleSessionDuration is not None:
-        kwargs.update({'DurationSeconds': int(AWS_roleSessionDuration)})
-
-    if rolePolicy is not None:
-        kwargs.update({'Policy': rolePolicy})
-    elif AWS_rolePolicy is not None:
-        kwargs.update({'Policy': AWS_rolePolicy})
-
-    if kwargs:
-        sts_client = boto3.client('sts')
-        sts_response = sts_client.assume_role(**kwargs)
-        if region is not None:
-            client = boto3.client(
-                service_name=service,
-                region_name=region,
-                aws_access_key_id=sts_response['Credentials']['AccessKeyId'],
-                aws_secret_access_key=sts_response['Credentials']['SecretAccessKey'],
-                aws_session_token=sts_response['Credentials']['SessionToken']
-            )
-        else:
-            client = boto3.client(
-                service_name=service,
-                region_name=AWS_DEFAULT_REGION,
-                aws_access_key_id=sts_response['Credentials']['AccessKeyId'],
-                aws_secret_access_key=sts_response['Credentials']['SecretAccessKey'],
-                aws_session_token=sts_response['Credentials']['SessionToken']
-            )
-    else:
-        if region is not None:
-            client = boto3.client(service_name=service, region_name=region)
-        else:
-            client = boto3.client(service_name=service, region_name=AWS_DEFAULT_REGION)
-
-    return client
 
 
 def create_entry(title, data, ec):
@@ -206,11 +147,11 @@ def parse_incident_from_finding(message):
     return incident
 
 
-def fetch_incidents():
+def fetch_incidents(aws_client, aws_queue_url):
     try:
-        client = aws_session()
+        client = aws_client.aws_session(service='sqs')
         messages = client.receive_message(
-            QueueUrl=AWS_QUEUEURL,
+            QueueUrl=aws_queue_url,
             MaxNumberOfMessages=10,
             VisibilityTimeout=5,
             WaitTimeSeconds=5,
@@ -232,15 +173,15 @@ def fetch_incidents():
         if receipt_handles is not None:
             # Archive findings
             for receipt_handle in receipt_handles:
-                client.delete_message(QueueUrl=AWS_QUEUEURL, ReceiptHandle=receipt_handle)
+                client.delete_message(QueueUrl=aws_queue_url, ReceiptHandle=receipt_handle)
 
     except Exception as e:
         return raise_error(e)
 
 
-def test_function():
+def test_function(aws_client):
     try:
-        client = aws_session()
+        client = aws_client.aws_session(service='sqs')
         response = client.list_queues()
         if response['ResponseMetadata']['HTTPStatusCode'] == 200:
             return "ok"
@@ -249,6 +190,19 @@ def test_function():
 
 
 def main():
+
+    params = demisto.params()
+    aws_default_region = params.get('defaultRegion')
+    aws_role_arn = params.get('roleArn')
+    aws_role_session_name = params.get('roleSessionName')
+    aws_role_session_duration = params.get('sessionDuration')
+    aws_role_policy = None
+    aws_access_key_id = params.get('access_key')
+    aws_secret_access_key = params.get('secret_key')
+    verify_certificate = not params.get('insecure', True)
+    timeout = params.get('timeout')
+    retries = params.get('retries') or 5
+    aws_queue_url = params.get('queueUrl')
 
     commands = {
         'aws-sqs-get-queue-url': get_queue_url,
@@ -260,20 +214,26 @@ def main():
     }
 
     try:
+        validate_params(aws_default_region, aws_role_arn, aws_role_session_name, aws_access_key_id,
+                        aws_secret_access_key)
+        aws_client = AWSClient(aws_default_region, aws_role_arn, aws_role_session_name, aws_role_session_duration,
+                               aws_role_policy, aws_access_key_id, aws_secret_access_key, verify_certificate, timeout,
+                               retries)
         command = demisto.command()
         args = demisto.args()
         demisto.debug('Command being called is {}'.format(command))
         if command == 'test-module':
-            return_results(test_function())
+            return_results(test_function(aws_client))
         elif demisto.command() == 'fetch-incidents':
-            fetch_incidents()
+            fetch_incidents(aws_client, aws_queue_url)
             sys.exit(0)
         elif command in commands:
-            client = aws_session(
+            client = aws_client.aws_session(
+                service='sqs',
                 region=args.get('region'),
-                roleArn=args.get('roleArn'),
-                roleSessionName=args.get('roleSessionName'),
-                roleSessionDuration=args.get('roleSessionDuration'))
+                role_arn=args.get('roleArn'),
+                role_session_name=args.get('roleSessionName'),
+                role_session_duration=args.get('roleSessionDuration'))
             return_results(commands[command](args, client))
         else:
             raise NotImplementedError('{} is not an existing AWS-SQS command'.format(command))
@@ -281,6 +241,8 @@ def main():
     except Exception as e:
         return_error("Failed to execute {} command.\nError:\n{}".format(demisto.command(), str(e)))
 
+
+from AWSApiModule import *  # noqa: E402
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()

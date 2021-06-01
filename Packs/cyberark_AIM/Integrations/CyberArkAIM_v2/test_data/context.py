@@ -1,5 +1,5 @@
 LIST_CREDENTIALS_CONTEXT = {
-    "CyberArkAIM(val.Name == obj.Name)": [
+    "CyberArkAIM(val.Name && val.Name == obj.Name)": [
         {
             "AccountCategory": "True",
             "AccountDescription": "Built-in account for administering the computer/domain",
