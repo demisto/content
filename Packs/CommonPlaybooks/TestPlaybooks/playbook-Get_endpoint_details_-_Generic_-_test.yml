@@ -1,0 +1,118 @@
+id: Get endpoint details - Generic - test
+version: -1
+name: Get endpoint details - Generic - test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 4ab5ca52-b289-4638-87fe-b2b8e7f7da37
+    type: start
+    task:
+      id: 4ab5ca52-b289-4638-87fe-b2b8e7f7da37
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: 854aa913-b70f-4008-84df-2534ea6a1c93
+    type: playbook
+    task:
+      id: 854aa913-b70f-4008-84df-2534ea6a1c93
+      version: -1
+      name: Get endpoint details - Generic
+      playbookName: Get endpoint details - Generic
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      Endpoint_hostname: {}
+      Endpoint_id:
+        simple: ${inputs.Endpoint_id}
+      Endpoint_ip: {}
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 240
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: 8459a68e-4971-4aed-883c-21943a87b709
+    type: title
+    task:
+      id: 8459a68e-4971-4aed-883c-21943a87b709
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 460
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 475,
+        "width": 380,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: Endpoint_id
+  value:
+    simple: 15dbb9d8f06b45fe9f61eb46e829d986
+  required: false
+  description: 'The id of the endpoint that you wish get details on. '
+  playbookInputQuery:
+outputs: []
+fromversion: 5.5.0
+description: ''
