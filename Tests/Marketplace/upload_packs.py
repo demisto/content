@@ -14,8 +14,7 @@ from google.cloud.storage import Bucket
 from zipfile import ZipFile
 from typing import Any, Tuple, Union, Optional
 from Tests.Marketplace.marketplace_services import init_storage_client, Pack, \
-    load_json, get_content_git_client, get_recent_commits_data, store_successful_and_failed_packs_in_ci_artifacts, \
-    json_write
+    load_json, get_content_git_client, get_recent_commits_data, store_successful_and_failed_packs_in_ci_artifacts
 from Tests.Marketplace.marketplace_statistics import StatisticsHandler
 from Tests.Marketplace.marketplace_constants import PackStatus, Metadata, GCPConfig, BucketUploadFlow, \
     CONTENT_ROOT_PATH, PACKS_FOLDER, PACKS_FULL_PATH, IGNORED_FILES, IGNORED_PATHS, LANDING_PAGE_SECTIONS_PATH
@@ -318,6 +317,7 @@ def upload_index_to_storage(index_folder_path: str, extract_destination_path: st
         sys.exit(1)
     finally:
         if artifacts_dir:
+            logging.warning(f'This is the artifact dir: {artifacts_dir}')
             # Store index.json in CircleCI artifacts
             shutil.copyfile(
                 os.path.join(index_folder_path, f'{GCPConfig.INDEX_NAME}.json'),
@@ -369,13 +369,14 @@ def create_corepacks_config(storage_bucket: Any, build_number: str, index_folder
         logging.critical(f"Missing core packs are: {missing_core_packs}")
         sys.exit(1)
 
-    corepacks_json_path = os.path.join(GCPConfig.STORAGE_BASE_PATH, GCPConfig.CORE_PACK_FILE_NAME)
-    # construct core pack data with public gcs urls
-    core_packs_data = {
-        'corePacks': core_packs_public_urls,
-        'buildNumber': build_number
-    }
-    json_write(corepacks_json_path, core_packs_data)
+    corepacks_json_path = os.path.join(GCPConfig.STORAGE_BASE_PATH, f'{GCPConfig.CORE_PACK_FILE_NAME}')
+    with open(corepacks_json_path, 'w+') as corepacks_file:
+        # construct core pack data with public gcs urls
+        core_packs_data = {
+            'corePacks': core_packs_public_urls,
+            'buildNumber': build_number
+        }
+        json.dump(core_packs_data, corepacks_file, indent=4)
 
     if artifacts_dir:
         # Store corepacks.json in CircleCI artifacts

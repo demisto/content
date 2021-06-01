@@ -2414,7 +2414,7 @@ def json_write(file_path: str, data: Union[list, dict]):
         data: The data to write
 
     """
-    with open(file_path, "w+") as f:
+    with open(file_path, "w") as f:
         f.write(json.dumps(data, indent=4))
 
 
