@@ -82,8 +82,7 @@ def fetch_incidents(client, max_alerts, last_run, first_fetch_time, apiKey, api_
     last_fetch = last_run.get('last_fetch')
     if last_fetch is None:
         last_fetch = first_fetch_time
-    else:
-        last_fetch = last_fetch
+
     latest_created_time = last_fetch
     incidents = []
     alerts = client.fetch_anomaly(apiKey=apiKey, api_username=api_username,
@@ -92,7 +91,7 @@ def fetch_incidents(client, max_alerts, last_run, first_fetch_time, apiKey, api_
         for key in dic.keys():
             if key == 'time_seen':
                 incident_occurred_time = dic['time_seen']
-                incident_created_time = dateparser.parse(str(int(dic['action_time']) * 1000), settings = {'TIMEZONE': 'UTC'})
+                incident_created_time = dateparser.parse(str(int(dic['action_time']) * 1000), settings={'TIMEZONE': 'UTC'})
                 if last_fetch:
                     if incident_created_time <= last_fetch:
                         continue
