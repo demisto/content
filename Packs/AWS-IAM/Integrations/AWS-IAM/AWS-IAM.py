@@ -939,7 +939,7 @@ def update_account_password_policy(args, aws_client):
 
 
 def test_function(aws_client):
-    client = aws_client.aws_session(service='iam')
+    client = aws_client.aws_session(service=SERVICE)
     response = client.list_users()
     if response['ResponseMetadata']['HTTPStatusCode'] == 200:
         demisto.results('ok')
