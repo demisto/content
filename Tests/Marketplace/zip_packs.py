@@ -120,7 +120,7 @@ def get_zipped_packs_names(zip_path):
     zipped_packs = []
     packs_path = zip_path + "/packs"
     print(packs_path)
-    for subdir, dirs, files in os.walk(packs_path):
+    for subdir, dirs, files in os.walk(zip_path):
         for filename in files:
             filepath = subdir + os.sep + filename
             print(f"Current file is {filepath}")
