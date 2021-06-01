@@ -5,51 +5,97 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 87e494a5-6a2b-4144-8f00-17cd45aa1708
+    taskid: c7495e10-3c49-4697-8b02-589beff02399
     type: start
     task:
-      id: 87e494a5-6a2b-4144-8f00-17cd45aa1708
+      id: c7495e10-3c49-4697-8b02-589beff02399
       version: -1
       name: ""
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
-      - "1"
+        - "1"
+    separatecontext: false
     view: |-
       {
         "position": {
-          "x": 450,
+          "x": 50,
           "y": 50
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: 85edc5ad-2fe5-467a-87fc-1987ce538931
+    taskid: 6cffd843-ef82-4158-8edd-db1c193cdedd
     type: regular
     task:
-      id: 85edc5ad-2fe5-467a-87fc-1987ce538931
+      id: 6cffd843-ef82-4158-8edd-db1c193cdedd
       version: -1
       name: Test FormatTableValues function
-      scriptName: TestFormatTableValues
+      script: TestFormatTableValues
       type: regular
       iscommand: false
       brand: ""
+    nexttasks:
+      '#none#':
+        - "2"
+    separatecontext: false
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 230
+          "x": 50,
+          "y": 195
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 3a86ae69-1d70-4c5a-8e5f-9a988dd0aeda
+    type: regular
+    task:
+      id: 3a86ae69-1d70-4c5a-8e5f-9a988dd0aeda
+      version: -1
+      name: Test isDemistoVersionGE function
+      scriptName: TestIsDemistoVersionGE
+      type: regular
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 275,
+        "height": 415,
         "width": 380,
-        "x": 450,
+        "x": 50,
         "y": 50
       }
     }
