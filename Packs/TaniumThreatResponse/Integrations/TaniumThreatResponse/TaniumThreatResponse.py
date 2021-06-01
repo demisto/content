@@ -43,31 +43,17 @@ DEPENDENT_COMMANDS_ERROR_MSG = '\nPlease verify that the connection you have spe
 
 
 class Client(BaseClient):
-    def __init__(self, base_url, username, password, api_token=None, **kwargs):
+    def __init__(self, base_url, username, password, **kwargs):
         self.username = username
         self.password = password
         self.session = ''
-        self.api_token = api_token
-        self.check_authentication()
         super(Client, self).__init__(base_url, **kwargs)
 
     def do_request(self, method, url_suffix, data=None, params=None, resp_type='json'):
         if not self.session:
             self.update_session()
         res = self._http_request(method, url_suffix, headers={'session': self.session}, json_data=data,
-                                 params=params, resp_type='response', ok_codes=(200, 201, 202, 204, 400, 401, 403, 404))
-
-        if res.status_code == 401:
-            if self.api_token:
-                err_msg = 'Unauthorized Error: please verify that the given API token is valid and that the IP of the ' \
-                          'client is listed in the api_token_trusted_ip_address_list global setting.\n'
-            else:
-                err_msg = ''
-            try:
-                err_msg += str(res.json())
-            except ValueError:
-                err_msg += str(res)
-            return_error(err_msg)
+                                 params=params, resp_type='response', ok_codes=(200, 201, 202, 204, 400, 403, 404))
 
         # if session expired
         if res.status_code == 403:
@@ -96,37 +82,18 @@ class Client(BaseClient):
         return res
 
     def update_session(self):
-        if self.api_token:
-            self.session = self.api_token
-        elif self.username and self.password:
-            body = {
-                'username': self.username,
-                'password': self.password
-            }
+        body = {
+            'username': self.username,
+            'password': self.password
+        }
 
-            res = self._http_request('GET', '/api/v2/session/login', json_data=body, ok_codes=(200,))
+        res = self._http_request('GET', '/api/v2/session/login', json_data=body, ok_codes=(200,))
 
-            self.session = res.get('data').get('session')
-        else:  # no API token and no credentials were provided, raise an error:
-            return_error('Please provide either an API Token or Username & Password.')
-
+        self.session = res.get('data').get('session')
         return self.session
 
     def login(self):
         return self.update_session()
-
-    def check_authentication(self):
-        """
-        Check that the authentication process is valid, i.e. user provided either API token to use OAuth 2.0
-        authentication or user provided Username & Password for basic authentication, but not both credentials and
-        API token.
-        """
-        if self.username and self.password and self.api_token:
-            return_error('Please clear either the Credentials or the API Token fields.\n'
-                         'If you wish to use basic authentication please provide username and password, '
-                         'and leave the API Token field empty.\n'
-                         'If you wish to use OAuth 2 authentication, please provide an API Token and leave the '
-                         'Credentials and Password fields empty.')
 
 
 ''' COMMANDS + REQUESTS FUNCTIONS '''
@@ -540,7 +507,7 @@ def validate_connection_name(client, arg_input):
 
 
 def test_module(client, data_args):
-    if client.do_request('GET', '/plugin/products/trace/conns'):
+    if client.login():
         return demisto.results('ok')
     raise ValueError('Test Tanium integration failed - please check your username and password')
 
@@ -1328,12 +1295,11 @@ def main():
     server = params['url'].strip('/')
     # Should we use SSL
     use_ssl = not params.get('insecure', False)
-    api_token = params.get('api_token')
 
     # Remove proxy if not set to true in params
     handle_proxy()
     command = demisto.command()
-    client = Client(server, username, password, api_token=api_token, verify=use_ssl)
+    client = Client(server, username, password, verify=use_ssl)
     demisto.info(f'Command being called is {command}')
 
     commands = {
