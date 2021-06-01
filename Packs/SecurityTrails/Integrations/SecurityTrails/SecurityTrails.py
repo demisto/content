@@ -910,8 +910,7 @@ def ip_statistics_command(client, args):
     }
     md = tableToMarkdown(f"IP Statistics:", table_data)
     command_results = CommandResults(
-        outputs_prefix=f"SecurityTrails.IP.Search.IPStats",
-        outputs_key_field=None,
+        outputs_prefix="SecurityTrails.IP.Search.IPStats",
         outputs=res,
         readable_output=md
     )
