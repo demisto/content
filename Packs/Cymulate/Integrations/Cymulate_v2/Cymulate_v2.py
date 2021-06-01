@@ -1,3 +1,4 @@
+from datetime import date
 from typing import Any, Dict, Tuple, Optional
 
 import copy
@@ -145,8 +146,9 @@ class Client(BaseClient):
         Args:
             endpoint (str): Cymulate's endpoint to list attacks.
             from_date (str): From which date to fetch data.
-            to_date (str): End date to fetch data.
+            to_date (str): End date to fetch data. If no argument is given, value will be now.
         """
+        to_date = to_date if to_date else date.today().strftime("%Y-%m-%d")
         response = self._http_request(method='GET',
                                       url_suffix=f'/{endpoint}/history/get-ids',
                                       params={'fromDate': from_date,
