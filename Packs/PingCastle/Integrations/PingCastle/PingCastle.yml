@@ -28,7 +28,7 @@ configuration:
   hidden: false
   name: private_key
   required: false
-  type: 12
+  type: 4
 description: This integration will run a server that will listen for PingCastle XML
   reports.
 display: PingCastle
@@ -67,6 +67,6 @@ script:
   type: python
 tests:
 - No tests (auto formatted)
-fromversion: 5.5.0
 defaultmapperin: PingCastle-Report-Mapper
 defaultclassifier: PingCastle-Report-Classifier
+fromversion: 5.5.0
