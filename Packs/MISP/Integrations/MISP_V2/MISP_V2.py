@@ -1035,7 +1035,7 @@ def search_attributes() -> Tuple[dict, Any]:
         'to_ids',
         'last',
         'include_decay_score',
-        'enforceWarninglist'
+        'enforceWarninglist',
     ]
     args = dict()
     # Create dict to pass into the search
