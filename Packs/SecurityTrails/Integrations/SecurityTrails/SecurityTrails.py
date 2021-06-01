@@ -732,7 +732,7 @@ def get_dns_history_command(client, args):
     readable_output = tableToMarkdown(f"DNS history for {hostname}:", records_list)
 
     command_results = CommandResults(
-        outputs_prefix=f"SecurityTrails.Domain",
+        outputs_prefix="SecurityTrails.Domain",
         outputs_key_field="name",
         outputs={
             "name": hostname,
