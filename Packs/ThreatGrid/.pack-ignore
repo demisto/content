@@ -1,5 +1,5 @@
 [file:playbook-Detonate_File_-_ThreatGrid.yml]
-ignore=BA101
+ignore=BA101,RM106
 
 [file:playbook-Detonate_URL_-_ThreatGrid.yml]
-ignore=BA101
+ignore=BA101,RM106
