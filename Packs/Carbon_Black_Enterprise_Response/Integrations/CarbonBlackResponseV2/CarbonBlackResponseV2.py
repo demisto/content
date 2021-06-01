@@ -705,7 +705,7 @@ def fetch_incidents(client: Client, max_results: int, last_run: dict, first_fetc
 
 def test_module(client: Client) -> str:
     try:
-        client.get_processes(limit=5, allow_empty=True)
+        client.get_processes(limit='5', allow_empty=True)
         return 'ok'
     except DemistoException as e:
         if 'Forbidden' in str(e) or 'Authorization' in str(e):
