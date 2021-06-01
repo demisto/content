@@ -581,8 +581,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: Returns only results whose cloud management status is the following:
-        (comma-separated string, options are 'NotApplicable', 'ManagedCloud', 'UnmanagedCloud').
+      description: Returns only results whose cloud management status is the following:(comma-separated string, options are 'NotApplicable', 'ManagedCloud', 'UnmanagedCloud').
       isArray: true
       name: cloud_management_status
       required: false
