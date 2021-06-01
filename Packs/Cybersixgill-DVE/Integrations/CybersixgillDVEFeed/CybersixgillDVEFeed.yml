@@ -106,8 +106,7 @@ configuration:
   name: feedTags
   required: false
   type: 0
-description: Leverage the power of Sixgill to supercharge Cortex XSOAR with real-time
-  Threat Intelligence indicators. Get CVE Feed straight into the XSOAR platform.
+description: The Cybersixgill Dynamic Vulnerability Exploit (DVE) Score is based on the most comprehensive collection of vulnerability-related threat intelligence and is the only solution that provides users total context and predicts the immediate risks of a vulnerability based on threat actors’ intent. Cortex XSOAR users can track threats stemming from CVEs that most others define as irrelevant and have a higher probability of being exploited via their Cortex XSOAR dashboard.
 display: Cybersixgill DVE Feed Threat Intelligence
 name: Sixgill_DVE_Feed
 script:

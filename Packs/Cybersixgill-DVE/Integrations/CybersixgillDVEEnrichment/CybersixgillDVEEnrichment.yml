@@ -21,7 +21,7 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: CVE enrichment
+description: By enriching CVEs with the DVE Score, Cortex XSOAR customers gain deeper visibility with relevant threat intel from the deep and dark web with dynamic attributes such as where they are trending, POC exploit details, and more. Loaded with extra-context, this allows users to accurately understand the real impact of CVEs to effectively prioritize critical vulnerabilities.
 display: Cybersixgill_DVE_Enrichment
 name: Cybersixgill_DVE_Enrichment
 script:
