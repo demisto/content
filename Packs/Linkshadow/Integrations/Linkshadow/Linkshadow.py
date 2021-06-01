@@ -194,7 +194,7 @@ def main():
         elif demisto.command() == 'Linkshadow-fetch-entity-anomalies':
             return_results(fetch_entity_anomalies(client, demisto.params(), demisto.args()))
     except Exception as e:
-        demisto.error(traceback.format_exc(e))  # print the traceback
+        demisto.error(traceback.format_exc())  # print the traceback
         return_error(f'Failed to execute {demisto.command()} command', e)
 
 
