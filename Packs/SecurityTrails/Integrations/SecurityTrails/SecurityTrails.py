@@ -261,7 +261,7 @@ def create_standard_domain_context(domain_data):
 
 def create_standard_ip_context(ip_data):
     command_results = CommandResults(
-        outputs_prefix=f"IP",
+        outputs_prefix="IP",
         outputs_key_field="Address",
         outputs=ip_data,
         readable_output=tableToMarkdown(f"IP Address(es):", ip_data)
