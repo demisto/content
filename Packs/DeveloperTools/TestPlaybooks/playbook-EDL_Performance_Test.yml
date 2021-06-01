@@ -275,7 +275,7 @@ tasks:
               prefix: {}
               suffix:
                 value:
-                  simple: ?n=500000
+                  simple: ?n=50000
     separatecontext: false
     loop:
       iscommand: false
