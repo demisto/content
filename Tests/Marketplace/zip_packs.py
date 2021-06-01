@@ -119,9 +119,10 @@ def remove_test_playbooks_from_signatures(path, filenames):
 def get_zipped_packs_names(zip_path):
     zipped_packs = []
     packs_path = zip_path + "/packs"
-    for files in os.walk(packs_path):
-        for file in files:
-            filepath = packs_path + "/" + file
+    print(packs_path)
+    for subdir, dirs, files in os.walk(packs_path):
+        for filename in files:
+            filepath = subdir + os.sep + filename
             print(f"Current file is {filepath}")
             if filepath.endswith(".zip"):
                 print(f"Found zip file of {filepath}")
