@@ -303,7 +303,7 @@ def domain_command(client, args):
         "Subdomains": ",".join(domain_subdomains.get('subdomains', [])),
         "WHOIS": {
             "DomainStatus": domain_whois.get('status'),
-            "NameServers": ",".join(domain_whois.get('nameServers', [])) if domain_whois.get('nameServers', []) else None,
+            "NameServers": ",".join(domain_whois.get('nameServers', [])) or None,
             "CreationDate": domain_whois.get('createdDate'),
             "UpdatedDate": domain_whois.get('updatedDate'),
             "ExpirationDate": domain_whois.get('expiresData'),
