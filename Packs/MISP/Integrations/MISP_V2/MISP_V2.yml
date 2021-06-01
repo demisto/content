@@ -136,7 +136,7 @@ script:
       required: false
       secret: false
     - auto: PREDEFINED
-      default: true
+      default: false
       description: Whether to return only the values that are not on the warninglists.
       isArray: false
       name: enforceWarninglist
