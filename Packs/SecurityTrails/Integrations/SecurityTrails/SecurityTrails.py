@@ -528,7 +528,6 @@ def get_whois_command(client, args):
         )
 
         return_results(command_results)
-        contacts = res.get('contacts', [])
         ip_data = {
             "Address": ip_address
         }
