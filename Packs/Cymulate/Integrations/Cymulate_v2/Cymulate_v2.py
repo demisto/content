@@ -457,7 +457,7 @@ def format_incidents(events: list, event_offset: int, last_fetch: int, module_na
                 try:
                     alert_created_time = int(date_to_timestamp(t_stamp,
                                                                date_format=CY_GENERAL_DATE_FORMAT))
-                except Exception as error:
+                except Exception:
                     alert_created_time = int(date_to_timestamp(t_stamp,
                                                                date_format=CY_UNIQUE_DATE_FORMAT))
 
@@ -614,7 +614,7 @@ def build_incident_dict(event: dict, module_name: str, event_timestamp=None) -> 
     if validate_timestamp(event_timestamp):
         try:
             occurred = datetime.strptime(event_timestamp, CY_GENERAL_DATE_FORMAT).strftime(DATE_FORMAT)  # CHANGED
-        except Exception as error:
+        except Exception:
             occurred = datetime.strptime(event_timestamp, CY_UNIQUE_DATE_FORMAT).strftime(DATE_FORMAT)  # CHANGED
 
         incident['occurred'] = occurred
