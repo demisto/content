@@ -37,7 +37,7 @@ script:
     execution: false
     description: insert CVE id
     name: cve
-  dockerimage: demisto/sixgill:1.0.0.18412
+  dockerimage: demisto/sixgill:1.0.0.19258
   feed: false
   isfetch: false
   longRunning: false
