@@ -13,6 +13,8 @@ you are implementing with your integration
 import json
 import io
 import pytest
+import demistomock as demisto
+
 
 
 def util_load_json(path):
@@ -71,7 +73,7 @@ def test_fail_create_query_string():
     from CarbonBlackResponseV2 import _create_query_string
     with pytest.raises(Exception) as e:
         _create_query_string({})
-    assert str(e.value) == 'Search without any filter is not permitted.'
+    assert str(e.value) == 'Carbon Black EDR - Search without any filter is not permitted.'
 
 
 PARSE_FIELD_CASES = [
@@ -120,22 +122,36 @@ def test_get_isolation_status_field(isolation_activated, is_isolated, expected):
 
 FILEMOD_CASES = [
     (
-        "1|2013-09-16 07:11:58.000000|test_path.dll|||false",
-        {'operation type': 'Created the file', 'event time': '2013-09-16 07:11:58.000000',
-         'file path': 'test_path.dll', 'md5 of the file after last write': '', 'file type': '',
-         'flagged as potential tamper attempt': 'false'}
+        "1|2013-09-16 07:11:58.000000|test_path.dll|||false", # case only one valid string
+        [{'event_time': '2013-09-16 07:11:58.000000',
+          'file_path': 'test_path.dll',
+          'file_type': '',
+          'flagged_as_potential_tamper_attempt': 'false',
+          'md5_after_last_write': '',
+          'operation_type': 'Created the file'}] # expected
     )
 ]
 FILEMOD_BAD_CASES = [
     (
-        "1|2013-09-16 07:11:58.000000|test_path.dll||false",
-        "Data from API is in unexpected format."
+        "1|2013-09-16 07:11:58.000000|test_path.dll||false",  # case missing field
+        'Carbon Black EDR - Missing details. Ignoring entry: 1|2013-09-16 07:11:58.000000|test_path.dll||false.'
+        # error expected
     )
 ]
 
 
 @pytest.mark.parametrize('data_str, expected', FILEMOD_CASES)
 def test_filemod(data_str, expected):
+    """
+        Given:
+            - A process event data containing filemod field
+
+        When:
+            - formatting the data to correct format
+
+        Then:
+            - validating the new filemod field contains json with correctly mapped data
+        """
     from CarbonBlackResponseV2 import filemod_complete
 
     res = filemod_complete(data_str).format()
@@ -143,24 +159,45 @@ def test_filemod(data_str, expected):
 
 
 @pytest.mark.parametrize('data_str, expected', FILEMOD_BAD_CASES)
-def test_fail_filemod(data_str, expected):
+def test_fail_filemod(mocker, data_str, expected):
+    """
+        Given:
+            - A process event data containing invalid filemod field
+
+        When:
+            - formatting the data to correct format
+
+        Then:
+            - validates when field in the response are missing, the error will show and the value be skipped.
+    """
     from CarbonBlackResponseV2 import filemod_complete
-    with pytest.raises(Exception) as e:
-        filemod_complete(data_str)
-    assert str(e.value) == expected
+    demisto_mocker = mocker.patch.object(demisto, 'debug')
+    filemod_complete(data_str)
+    assert demisto_mocker.call_args[0][0] == expected
 
 
 MODLOAD_CASES = [
     (
-        '2013-09-19 22:07:07.000000|f404e59db6a0f122ab26bf4f3e2fd0fa|test_path.dll',
-        {'event time': '2013-09-19 22:07:07.000000', 'MD5 of the loaded module': 'f404e59db6a0f122ab26bf4f3e2fd0fa',
-         'Full path of the loaded module': 'test_path.dll'}
+        '2013-09-19 22:07:07.000000|f404e59db6a0f122ab26bf4f3e2fd0fa|test_path.dll',  # case valid response
+        [{'event_time': '2013-09-19 22:07:07.000000',
+          'loaded_module_full_path': 'test_path.dll',
+          'loaded_module_md5': 'f404e59db6a0f122ab26bf4f3e2fd0fa'}]  # expected
     )
 ]
 
 
 @pytest.mark.parametrize('data_str, expected', MODLOAD_CASES)
 def test_modload(data_str, expected):
+    """
+        Given:
+            - A process event data containing modload field
+
+        When:
+            - formatting the data to correct format
+
+        Then:
+            - validating the new modload field contains json with correctly mapped data
+    """
     from CarbonBlackResponseV2 import modload_complete
 
     res = modload_complete(data_str).format()
@@ -170,14 +207,25 @@ def test_modload(data_str, expected):
 REGMOD_CASES = [
     (
         "2|2013-09-19 22:07:07.000000|test_path",
-        {'operation type': 'First wrote to the file', 'event time': '2013-09-19 22:07:07.000000',
-         'the registry key path': 'test_path'}
+        [{'event_time': '2013-09-19 22:07:07.000000',
+          'operation_type': 'First wrote to the file',
+          'registry_key_path': 'test_path'}]
     )
 ]
 
 
 @pytest.mark.parametrize('data_str, expected', REGMOD_CASES)
 def test_regmod(data_str, expected):
+    """
+        Given:
+            - A process event data containing regmod field
+
+        When:
+            - formatting the data to correct format
+
+        Then:
+            - validating the new regmod field contains json with correctly mapped data
+    """
     from CarbonBlackResponseV2 import regmod_complete
 
     res = regmod_complete(data_str).format()
@@ -188,42 +236,31 @@ CROSSPROC_CASES = [
     (
         "ProcessOpen|2014-01-23 09:19:08.331|00000177-0000-0258-01cf-c209d9f1c431|204f3f58212b3e422c90bd9691a2df28|"
         "test_path.exe|1|2097151|false",
-        {'type of cross-process access': 'ProcessOpen', 'event time': '2014-01-23 09:19:08.331',
-         'unique_id of the targeted process': '00000177-0000-0258-01cf-c209d9f1c431',
-         'md5 of the targeted process': '204f3f58212b3e422c90bd9691a2df28',
-         'path of the targeted process': 'test_path.exe', 'sub-type for ProcessOpen': 'handle open to process',
-         'requested access priviledges': '2097151', 'flagged as potential tamper attempt': 'false'}
+        [{'ProcessOpen_sub-type': 'handle open to process',
+          'cross-process_access_type': 'ProcessOpen',
+          'event_time': '2014-01-23 09:19:08.331',
+          'flagged_as_potential_tamper_attempt': 'false',
+          'requested_access_priviledges': '2097151',
+          'targeted_process_md5': '204f3f58212b3e422c90bd9691a2df28',
+          'targeted_process_path': 'test_path.exe',
+          'targeted_process_unique_id': '00000177-0000-0258-01cf-c209d9f1c431'}]
     )
 ]
 
 
 @pytest.mark.parametrize('data_str, expected', CROSSPROC_CASES)
 def test_crossproc(data_str, expected):
+    """
+        Given:
+            - A process event data containing crossproc field
+
+        When:
+            - formatting the data to correct format
+
+        Then:
+            - validating the new crossproc field contains json with correctly mapped data
+    """
     from CarbonBlackResponseV2 import crossproc_complete
 
     res = crossproc_complete(data_str).format()
     assert res == expected
-
-
-''' COMMANDS TESTS '''
-CLIENT = {"base_url": "example.com",
-          "apitoken": "apikey",
-          "use_ssl": False,
-          "use_proxy": False}
-
-
-PROCESS_SEARCH_CASES = [
-    (
-        {'query': 'chrome.exe', 'facet': False}, 2
-    ),
-]
-
-
-@pytest.mark.parametrize('args, expected', PROCESS_SEARCH_CASES)
-def test_processes_search_command(mocker, args, expected):
-    from CarbonBlackResponseV2 import Client, processes_search_command
-    client = Client(**CLIENT)
-    mock_res = util_load_json('test_data/commands_test_data.json')
-    mocker.patch.object(Client, '_http_request', return_value=mock_res.get('processes_search_command'))
-    res = processes_search_command(client, **args)
-    assert len(res.outputs.get('Results', [])) == expected
