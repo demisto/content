@@ -32,7 +32,7 @@ def main() -> None:
             # This is the call made when pressing the integration Test button.
             return_results('ok')
         elif command == 'dns-nsupdate':
-            return_results(generic_ansible('dns', 'nsupdate', args, int_params))
+            return_results(generic_ansible('dns', 'nsupdate', args, int_params, host_type))
     # Log exceptions and return errors
     except Exception as e:
         demisto.error(traceback.format_exc())  # print the traceback

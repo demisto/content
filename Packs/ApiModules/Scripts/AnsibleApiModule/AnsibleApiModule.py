@@ -209,15 +209,12 @@ def generate_ansible_inventory(args: Dict[str, Any], int_params: Dict[str, Any],
     return inventory, sshkey
 
 
-host_type: str  # Global defined within the integration module. Defined here because https://github.com/python/mypy/issues/5732
-
-
-def generic_ansible(integration_name: str, command: str, args: Dict[str, Any], int_params: Dict[str, Any]) -> CommandResults:
+def generic_ansible(integration_name: str, command: str,
+                    args: Dict[str, Any], int_params: Dict[str, Any], host_type: str) -> CommandResults:
 
     readable_output = ""
     sshkey = ""
     fork_count = 1   # default to executing against 1 host at a time
-    global host_type
 
     if args.get('concurrency'):
         fork_count = cast(int, args.get('concurrency'))

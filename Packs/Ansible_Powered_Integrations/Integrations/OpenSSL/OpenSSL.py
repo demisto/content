@@ -32,27 +32,27 @@ def main() -> None:
             # This is the call made when pressing the integration Test button.
             return_results('ok')
         elif command == 'openssl-certificate':
-            return_results(generic_ansible('openssl', 'openssl_certificate', args, int_params))
+            return_results(generic_ansible('openssl', 'openssl_certificate', args, int_params, host_type))
         elif command == 'openssl-certificate-info':
-            return_results(generic_ansible('openssl', 'openssl_certificate_info', args, int_params))
+            return_results(generic_ansible('openssl', 'openssl_certificate_info', args, int_params, host_type))
         elif command == 'openssl-csr':
-            return_results(generic_ansible('openssl', 'openssl_csr', args, int_params))
+            return_results(generic_ansible('openssl', 'openssl_csr', args, int_params, host_type))
         elif command == 'openssl-csr-info':
-            return_results(generic_ansible('openssl', 'openssl_csr_info', args, int_params))
+            return_results(generic_ansible('openssl', 'openssl_csr_info', args, int_params, host_type))
         elif command == 'openssl-dhparam':
-            return_results(generic_ansible('openssl', 'openssl_dhparam', args, int_params))
+            return_results(generic_ansible('openssl', 'openssl_dhparam', args, int_params, host_type))
         elif command == 'openssl-pkcs12':
-            return_results(generic_ansible('openssl', 'openssl_pkcs12', args, int_params))
+            return_results(generic_ansible('openssl', 'openssl_pkcs12', args, int_params, host_type))
         elif command == 'openssl-privatekey':
-            return_results(generic_ansible('openssl', 'openssl_privatekey', args, int_params))
+            return_results(generic_ansible('openssl', 'openssl_privatekey', args, int_params, host_type))
         elif command == 'openssl-privatekey-info':
-            return_results(generic_ansible('openssl', 'openssl_privatekey_info', args, int_params))
+            return_results(generic_ansible('openssl', 'openssl_privatekey_info', args, int_params, host_type))
         elif command == 'openssl-publickey':
-            return_results(generic_ansible('openssl', 'openssl_publickey', args, int_params))
+            return_results(generic_ansible('openssl', 'openssl_publickey', args, int_params, host_type))
         elif command == 'openssl-certificate-complete-chain':
-            return_results(generic_ansible('openssl', 'certificate_complete_chain', args, int_params))
+            return_results(generic_ansible('openssl', 'certificate_complete_chain', args, int_params, host_type))
         elif command == 'openssl-get-certificate':
-            return_results(generic_ansible('openssl', 'get_certificate', args, int_params))
+            return_results(generic_ansible('openssl', 'get_certificate', args, int_params, host_type))
     # Log exceptions and return errors
     except Exception as e:
         demisto.error(traceback.format_exc())  # print the traceback

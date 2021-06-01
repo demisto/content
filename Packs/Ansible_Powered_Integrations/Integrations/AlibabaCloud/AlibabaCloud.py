@@ -32,9 +32,9 @@ def main() -> None:
             # This is the call made when pressing the integration Test button.
             return_results('ok')
         elif command == 'ali-instance':
-            return_results(generic_ansible('alibabacloud', 'ali_instance', args, int_params))
+            return_results(generic_ansible('alibabacloud', 'ali_instance', args, int_params, host_type))
         elif command == 'ali-instance-info':
-            return_results(generic_ansible('alibabacloud', 'ali_instance_info', args, int_params))
+            return_results(generic_ansible('alibabacloud', 'ali_instance_info', args, int_params, host_type))
     # Log exceptions and return errors
     except Exception as e:
         demisto.error(traceback.format_exc())  # print the traceback
