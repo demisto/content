@@ -1245,43 +1245,39 @@ def add_domain_object(pymisp: ExpandedPyMISP, demisto_args: dict = {}):
     return add_object(event_id, obj, pymisp)
 
 
-def add_url_object():
+def add_url_object(pymisp: ExpandedPyMISP, demisto_args: dict = {}):
     """Building url object in MISP scheme
     Scheme described https://www.misp-project.org/objects.html#_url
     """
-    template = 'url'
+
     url_args = [
         'text',
         'last_seen',
         'first_seen'
     ]
-    event_id = demisto.getArg('event_id')
-    url = demisto.getArg('url')
+    event_id = demisto_args.get('event_id')
+    url = demisto_args.get('url')
     url_parse = urlparse(url)
     url_obj = [
         {'url': url}
     ]
-    if url_parse.scheme:
-        url_obj.append({'scheme': url_parse.scheme})
-    if url_parse.path:
-        url_obj.append({'resource_path': url_parse.path})
-    if url_parse.query:
-        url_obj.append({'query_string': url_parse.query})
-    if url_parse.netloc:
-        url_obj.append({'domain': url_parse.netloc})
-    if url_parse.fragment:
-        url_obj.append({'fragment': url_parse.fragment})
-    if url_parse.port:
-        url_obj.append({'port': url_parse.port})
-    if url_parse.username and url_parse.password:
-        url_obj.append({'credential': (url_parse.username, url_parse.password)})
-    for arg in url_args:
-        new_arg = demisto.getArg(arg)
-        if new_arg:
-            url_obj.append({arg.replace('_', '-'): new_arg})
 
-    g_object = build_generic_object(template, url_obj)
-    add_object(event_id, g_object)
+    url_obj.append({'scheme': url_parse.scheme}) if url_parse.scheme else None
+    url_obj.append({'resource_path': url_parse.path}) if url_parse.path else None
+    url_obj.append({'query_string': url_parse.query}) if url_parse.query else None
+    url_obj.append({'domain': url_parse.netloc}) if url_parse.netloc else None
+    url_obj.append({'fragment': url_parse.fragment}) if url_parse.fragment else None
+    url_obj.append({'port': url_parse.port}) if url_parse.port else None
+    url_obj.append(
+        {'credential': (url_parse.username, url_parse.password)}) if url_parse.username and url_parse.password else None
+
+    for arg in url_args:
+        user_arg = demisto_args.get(arg)
+        if user_arg:
+            url_obj.append({arg.replace('_', '-'): user_arg})
+
+    g_object = build_generic_object('url', url_obj)
+    return add_object(event_id, g_object, pymisp)
 
 
 def add_generic_object_command():
@@ -1394,7 +1390,7 @@ def main():
         elif command == 'misp-add-domain-object':
             return_results(add_domain_object(demisto_args=args, pymisp=pymisp))  # checked V
         elif command == 'misp-add-url-object':
-            add_url_object()
+            return_results(add_url_object(demisto_args=args, pymisp=pymisp))  # checked V
         elif command == 'misp-add-ip-object':
             return_results(add_ip_object(demisto_args=args, pymisp=pymisp))  # checked V - split into sub-funcs
         elif command == 'misp-add-object':
