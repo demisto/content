@@ -276,10 +276,10 @@ def domain_command(client, args):
     domain_whois = client.get_whois(query_type="domain", hostname=domain)
     domain_tags = client.domain_tags(hostname=domain)
     admin_contact = [{
-        "Name": x.get('name', None),
-        "Email": x.get('email', None),
-        "Phone": x.get('telephone', None),
-        "Country": x.get('country', None)
+        "Name": x.get('name'),
+        "Email": x.get('email'),
+        "Phone": x.get('telephone'),
+        "Country": x.get('country')
     } for x in domain_whois.get('contacts', []) if "admin" in x.get('type', '').lower()]
     tech_contact = [{
         "Name": x.get('name', None),
