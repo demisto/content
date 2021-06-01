@@ -772,7 +772,7 @@ def get_whois_history_command(client, args):
     res = client.get_whois_history(hostname=hostname, page=page)
     readable_output = tableToMarkdown(f"WHOIS history for {hostname}:", res.get('items'))
     command_results = CommandResults(
-        outputs_prefix=f"SecurityTrails.Domain",
+        outputs_prefix="SecurityTrails.Domain",
         outputs_key_field="name",
         outputs={
             "name": hostname,
