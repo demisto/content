@@ -4,9 +4,6 @@ from CommonServerUserPython import *
 
 """ IMPORTS """
 
-import json
-import requests
-import dateparser
 import requests
 
 from sixgill.sixgill_request_classes.sixgill_auth_request import SixgillAuthRequest

@@ -206,7 +206,11 @@ expected_enrich_output = [
             "value": "CVE-2020-9047",
             "type": "vulnerability",
             "created": "2020-06-26T00:00:00.001000Z",
-            "description": "A vulnerability exists that could allow the execution of unauthorized code or operating system commands on systems running exacqVision Web Service versions 20.06.3.0 and prior and exacqVision Enterprise Manager versions 20.06.4.0 and prior. An attacker with administrative privileges could potentially download and run a malicious executable that could allow OS command injection on the system.",
+            "description": "A vulnerability exists that could allow the execution of unauthorized code or operating "
+            "system commands on systems running exacqVision Web Service versions 20.06.3.0 and prior "
+            "and exacqVision Enterprise Manager versions 20.06.4.0 and prior. An attacker with "
+            "administrative privileges could potentially download and run a malicious executable "
+            "that could allow OS command injection on the system.",
             "external_references": [{"external_id": "CVE-2020-9047", "source_name": "cve"}],
             "id": "vulnerability--143fb02c-accf-947e-4619-e0befa4e7068",
             "last_activity_date": "2021-03-28T02:05:19Z",
@@ -388,10 +392,7 @@ class MockedResponse(object):
 
 
 def init_params():
-    return {
-        "client_id": "WRONG_CLIENT_ID_TEST",
-        "client_secret": "CLIENT_SECRET_TEST"
-    }
+    return {"client_id": "WRONG_CLIENT_ID_TEST", "client_secret": "CLIENT_SECRET_TEST"}
 
 
 def mocked_request(*args, **kwargs):
@@ -426,7 +427,9 @@ def test_test_module_command(mocker):
 
     from CybersixgillDVEEnrichment import test_module_command
 
-    test_module_command(demisto.params()["client_id"], demisto.params()["client_secret"], channel_code, requests.Session(), True)
+    test_module_command(
+        demisto.params()["client_id"], demisto.params()["client_secret"], channel_code, requests.Session(), True
+    )
 
 
 def test_stix_to_indicator(mocker):
@@ -455,4 +458,3 @@ def test_cve_enrich_command(mocker):
 
     output = cve_enrich_command(client, demisto.args())
     assert output[0].outputs == expected_enrich_output
-
