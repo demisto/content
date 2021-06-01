@@ -1024,10 +1024,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "27":
     id: "27"
-    taskid: 53abc1c6-6016-47ab-87fd-b3606aa79165
+    taskid: cd4abc13-d518-4934-803f-4a6fa7a70f38
     type: regular
     task:
-      id: 53abc1c6-6016-47ab-87fd-b3606aa79165
+      id: cd4abc13-d518-4934-803f-4a6fa7a70f38
       version: -1
       name: Set URL
       description: Set a value in context under the key you entered.
@@ -1051,7 +1051,7 @@ tasks:
               prefix: {}
               suffix:
                 value:
-                  simple: /
+                  simple: /instance/execute/
           - operator: concat
             args:
               prefix: {}
@@ -1059,6 +1059,12 @@ tasks:
                 value:
                   simple: inputs.edl_name
                 iscontext: true
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: /
     separatecontext: false
     view: |-
       {

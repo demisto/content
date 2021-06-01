@@ -34,7 +34,7 @@ class HeyPerformanceResult:
             max_time = max(response_times)
             avg_time = response_times.mean()
             requests_num = len(response_times)
-            total_time = response_times.sum()
+            total_time = int(response_times.sum() / int(self._c))
         outputs = {
             "TimeoutPerRequest": self._t,
             "Concurrency": self._c,
