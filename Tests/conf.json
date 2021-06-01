@@ -3267,6 +3267,10 @@
             ]
         },
         {
+            "integrations": "HostIo",
+            "playbookID": "HostIo_Test"
+        },
+        {
             "playbookID": "CreateCertificate-Test",
             "fromversion": "5.5.0"
         },
