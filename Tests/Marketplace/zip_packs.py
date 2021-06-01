@@ -241,7 +241,7 @@ def main():
     service_account = option.service_account
     circle_build = option.circle_build
     branch_name = option.branch_name
-    gcp_path = 'content/packs/*'
+    gcp_path = 'content/packs'
     remove_test_playbooks = option.remove_test_playbooks
     private_build = option.private
     if private_build:
