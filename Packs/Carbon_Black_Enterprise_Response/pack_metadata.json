@@ -1,6 +1,6 @@
 {
     "name": "Carbon Black Enterprise Response",
-    "description": "Query and response with Carbon Black endpoint detection and response.",
+    "description": "Query and respond with Carbon Black endpoint detection and response.",
     "support": "xsoar",
     "currentVersion": "2.0.0",
     "author": "Cortex XSOAR",

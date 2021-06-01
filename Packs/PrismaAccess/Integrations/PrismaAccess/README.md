@@ -30,7 +30,7 @@ The API connection requires the **API Port** and **API Key** parameters as well 
 
 This integration was integrated and tested with version 9.0.7 of Prisma Access
 
-## Configure Prisma Access on Demisto
+## Configure Prisma Access on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
 2. Search for Prisma Access.
@@ -50,7 +50,7 @@ This integration was integrated and tested with version 9.0.7 of Prisma Access
 
 4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.
+You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### prisma-access-logout-user
 ***

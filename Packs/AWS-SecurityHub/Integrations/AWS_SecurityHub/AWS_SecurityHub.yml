@@ -58,9 +58,10 @@ configuration:
 - display: Retries
   name: retries
   defaultvalue: 5
-  additionalinfo: "The maximum number of retry attempts when connection or throttling errors
-  are encountered. Set to 0 to disable retries. The default value is 5 and the limit is 10.
-  Note: Increasing the number of retries will increase the execution time."
+  additionalinfo: "The maximum number of retry attempts when connection or throttling\
+    \ errors are encountered. Set to 0 to disable retries. The default value is 5\
+    \ and the limit is 10. Note: Increasing the number of retries will increase the\
+    \ execution time."
   required: false
   type: 0
 - display: Fetch incidents
@@ -1566,7 +1567,10 @@ script:
       description: The AWS account ID that a finding is generated in.
       type: string
     - contextPath: AWS-SecurityHub.Findings.Types
-      description: 'One or more finding types in the format of namespace/category/classifier that classify a finding. Valid namespace values are as follows.  Software and Configuration Checks, TTPs, Effects, Unusual Behaviors, Sensitive Data Identifications'
+      description: 'One or more finding types in the format of namespace/category/classifier
+        that classify a finding. Valid namespace values are as follows.  Software
+        and Configuration Checks, TTPs, Effects, Unusual Behaviors, Sensitive Data
+        Identifications'
       type: Unknown
     - contextPath: AWS-SecurityHub.Findings.FirstObservedAt
       description: An ISO8601-formatted timestamp that indicates when the security-findings
@@ -3571,7 +3575,7 @@ script:
     description: Deprecated, use aws-securityhub-batch-update-findings instead.
     execution: false
     name: aws-securityhub-update-findings
-  dockerimage: demisto/boto3py3:1.0.0.20485
+  dockerimage: demisto/boto3py3:1.0.0.20516
   feed: false
   isfetch: true
   longRunning: false
