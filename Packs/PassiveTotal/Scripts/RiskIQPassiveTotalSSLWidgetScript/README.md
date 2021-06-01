@@ -6,7 +6,7 @@ Set widgets to custom layout in Email, RiskIQSerialNumber and File SHA-1 type of
 | --- | --- |
 | Script Type | python3 |
 | Tags | dynamic-indicator-section |
-| Demisto Version | 6.0.0 |
+| Cortex XSOAR Version | 6.0.0 |
 
 ## Dependencies
 ---
