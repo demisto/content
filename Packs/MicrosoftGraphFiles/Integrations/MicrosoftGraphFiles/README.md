@@ -573,7 +573,7 @@ There are no input arguments for this command.
         "Value": [
             {
                 "LastModifiedDateTime": "2016-09-14T11:13:53Z", 
-                "DisplayName": "Demisto Team", 
+                "DisplayName": "XSOAR Team", 
                 "Name": "123", 
                 "CreatedDateTime": "2016-09-14T11:12:59Z", 
                 "WebUrl": "123", 
