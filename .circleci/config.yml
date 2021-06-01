@@ -344,6 +344,7 @@ references:
     run:
       name: Secrets
       when: always
+      no_output_timeout: 5h
       command: |
         demisto-sdk secrets --post-commit --ignore-entropy
 

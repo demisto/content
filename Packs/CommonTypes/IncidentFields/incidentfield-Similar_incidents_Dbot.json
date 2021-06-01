@@ -99,7 +99,7 @@
     "id": "incident_similarincidentsdbot",
     "isReadOnly": false,
     "locked": false,
-    "name": "Similar incidents Dbot ",
+    "name": "Similar incidents Dbot",
     "neverSetAsRequired": false,
     "ownerOnly": false,
     "propagationLabels": [
