@@ -120,6 +120,9 @@ def get_zipped_packs_names(zip_path):
     zipped_packs = []
     packs_path = zip_path + "/packs"
     for subdir, dirs, files in os.walk(packs_path):
+        print("files: " + ' '.join(files))
+        print("dirs: " + ' '.join(dirs))
+        print("subdir: " + subdir)
         for filename in files:
             filepath = subdir + os.sep + filename
             if filepath.endswith(".zip"):
