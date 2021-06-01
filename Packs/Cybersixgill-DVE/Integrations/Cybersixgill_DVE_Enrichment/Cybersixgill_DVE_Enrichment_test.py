@@ -370,6 +370,7 @@ expected_enrich_output = [
 
 mock_response = ""
 mocked_get_token_response = """{"access_token": "fababfafbh"}"""
+args = {"cve_id": "CVE-2020-9047"}
 
 
 class MockedResponse(object):
@@ -425,7 +426,7 @@ def test_test_module_command(mocker):
 
     from Cybersixgill_DVE_Enrichment import test_module_command
 
-    test_module_command("client_id", "client_secret", "channel_code", requests.Session(), "verify")
+    test_module_command("client_id", "client_secret", "channel_code", requests.Session(), True)
 
 
 def test_stix_to_indicator(mocker):
@@ -442,6 +443,7 @@ def test_stix_to_indicator(mocker):
 
 def test_cve_enrich_command(mocker):
     mocker.patch.object(demisto, "params", return_value=init_params())
+    mocker.patch.object(demisto, "args", return_value=args)
     mocker.patch("requests.sessions.Session.send", new=mocked_request)
 
     from Cybersixgill_DVE_Enrichment import cve_enrich_command
