@@ -832,7 +832,7 @@ script:
     - name: domain
       required: true
       default: true
-      isArray: false
+      isArray: true
     name: domain
   dockerimage: demisto/python3:3.9.5.20070
   runonce: false
