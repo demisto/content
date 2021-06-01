@@ -536,7 +536,7 @@ def get_whois_command(client, args):
 
 
 def domain_search_command(client, args):
-    include_ips = True if args.get('include_ips', 'false') == "true" else False
+    include_ips = argToBoolean(args.get('include_ips', 'false'))
     page = int(args.get('page', 1))
     scroll = True if args.get('include_ips', 'false') == "true" else False
     query = args.get('query', None)
