@@ -31,7 +31,7 @@ args:
   name: demistoLogo
   required: false
   secret: false
-comment: Deprecated. Parse Sane-json-reports and export them as docx files (used internally, thus deprecated).
+comment: Deprecated. Parse Sane-json-reports and export them as docx files (used internally, thus deprecated). No available replacement.
 commonfields:
   id: SaneDocReports
   version: -1
