@@ -1,8 +1,8 @@
 commonfields:
-  id: Safewalk_Reports
+  id: SafewalkReports
   version: -1
-name: Safewalk_Reports
-display: Safewalk_Reports
+name: SafewalkReports
+display: Safewalk Reports
 category: Analytics & SIEM
 description: Safewalk server integration
 configuration:

@@ -1,8 +1,8 @@
 commonfields:
-  id: Safewalk_Management
+  id: SafewalkManagement
   version: -1
-name: Safewalk_Management
-display: Safewalk_Management
+name: SafewalkManagement
+display: Safewalk Management
 category: Authentication
 description: Safewalk server integration
 configuration:
