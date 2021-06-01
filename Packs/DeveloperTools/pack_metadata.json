@@ -15,5 +15,11 @@
     "keywords": [
         "tools",
         "developer"
-    ]
+    ],
+    "dependencies": {
+        "GetServerURL": {
+            "mandatory": true,
+            "display_name": "GetServerURL"
+        }
+    }
 }
