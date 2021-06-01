@@ -5,4 +5,4 @@ ignore=IN126
 ignore=RM102
 
 [file:playbook-Code42_Exfiltration_Playbook.yml]
-ignore=BA110
+ignore=BA110,RM106

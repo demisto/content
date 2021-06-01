@@ -37,4 +37,5 @@ ignore=BA109
 [file:WordTokenizerV2.yml]
 ignore=BA109
 
-
+[file:READNE.md]
+ignore=RM106

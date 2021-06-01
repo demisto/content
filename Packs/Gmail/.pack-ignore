@@ -1,2 +1,5 @@
 [file:Gmail.yml]
 ignore=IN126
+
+[file:READNE.md]
+ignore=RM106
