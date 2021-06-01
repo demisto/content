@@ -7,10 +7,10 @@ import demistomock as demisto
 cve_enrich = {
     "created": "2020-06-26T00:00:00.001000Z",
     "description": "A vulnerability exists that could allow the execution of unauthorized code or operating "
-                   "system commands on systems running exacqVision Web Service versions 20.06.3.0 and prior "
-                   "and exacqVision Enterprise Manager versions 20.06.4.0 and prior. An attacker with "
-                   "administrative privileges could potentially download and run a malicious executable "
-                   "that could allow OS command injection on the system.",
+    "system commands on systems running exacqVision Web Service versions 20.06.3.0 and prior "
+    "and exacqVision Enterprise Manager versions 20.06.4.0 and prior. An attacker with "
+    "administrative privileges could potentially download and run a malicious executable "
+    "that could allow OS command injection on the system.",
     "external_references": [{"external_id": "CVE-2020-9047", "source_name": "cve"}],
     "id": "vulnerability--143fb02c-accf-947e-4619-e0befa4e7068",
     "last_activity_date": "2021-03-28T02:05:19Z",
@@ -174,11 +174,11 @@ expected_enrich_output = [
     {
         "value": "CVE-2020-9047",
         "Overview": {
-            "Description": "A vulnerability exists that could allow the execution of unauthorized code or operating "
-                           "system commands on systems running exacqVision Web Service versions 20.06.3.0 and prior "
-                           "and exacqVision Enterprise Manager versions 20.06.4.0 and prior. An attacker with "
-                           "administrative privileges could potentially download and run a malicious executable "
-                           "that could allow OS command injection on the system.",
+            "description": "A vulnerability exists that could allow the execution of unauthorized code or operating "
+            "system commands on systems running exacqVision Web Service versions 20.06.3.0 and prior "
+            "and exacqVision Enterprise Manager versions 20.06.4.0 and prior. An attacker with "
+            "administrative privileges could potentially download and run a malicious executable "
+            "that could allow OS command injection on the system.",
             "Created": "2020-06-26T00:00:00.001000Z",
             "Modified": "",
             "External id": "CVE-2020-9047",
@@ -206,16 +206,11 @@ expected_enrich_output = [
             "value": "CVE-2020-9047",
             "type": "vulnerability",
             "created": "2020-06-26T00:00:00.001000Z",
-            "description": "A vulnerability exists that could allow the execution of unauthorized code or operating "
-                           "system commands on systems running exacqVision Web Service versions 20.06.3.0 and prior "
-                           "and exacqVision Enterprise Manager versions 20.06.4.0 and prior. An attacker with "
-                           "administrative privileges could potentially download and run a malicious executable "
-                           "that could allow OS command injection on the system.",
+            "description": "A vulnerability exists that could allow the execution of unauthorized code or operating system commands on systems running exacqVision Web Service versions 20.06.3.0 and prior and exacqVision Enterprise Manager versions 20.06.4.0 and prior. An attacker with administrative privileges could potentially download and run a malicious executable that could allow OS command injection on the system.",
             "external_references": [{"external_id": "CVE-2020-9047", "source_name": "cve"}],
             "id": "vulnerability--143fb02c-accf-947e-4619-e0befa4e7068",
             "last_activity_date": "2021-03-28T02:05:19Z",
             "name": "CVE-2020-9047",
-            "type": "vulnerability",
             "x_sixgill_info": {
                 "attributes": [
                     {
