@@ -961,7 +961,7 @@ def search(post_to_warroom: bool = True) -> Tuple[dict, Any]:
         'eventid',
         'uuid',
         'to_ids',
-        'enforceWarninglist'
+        'enforceWarninglist',
     ]
 
     args = dict()
