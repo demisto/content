@@ -177,11 +177,11 @@ class Client(BaseClient):
     def get_processes(self, process_name: str = None, group: str = None, hostname: str = None,
                       parent_name: str = None, process_path: str = None, md5: str = None,
                       query: str = None, group_by: str = None, sort: str = None, facet: str = None,
-                      facet_field: str = None, limit: str = None, start: str = None):
+                      facet_field: str = None, limit: str = None, start: str = None, allow_empty: bool = False):
         query_fields = ['process_name', 'group', 'hostname', 'parent_name', 'process_path', 'md5', 'query']
         local_params = locals()
         query_params = {key: local_params.get(key) for key in query_fields if local_params.get(key)}
-        query_string = _create_query_string(query_params)
+        query_string = _create_query_string(query_params, allow_empty)
         params = assign_params(q=query_string,
                                rows=arg_to_number(limit, 'limit'),
                                start=start,
@@ -211,13 +211,18 @@ class Client(BaseClient):
 ''' HELPER FUNCTIONS '''
 
 
-def _create_query_string(params: dict) -> str:
+def _create_query_string(params: dict, allow_empty: bool = False) -> str:
+    """
+    Creating a cb query from params according to https://developer.carbonblack.com/resources/query_overview.pdf.
+    if 'query' in params, it overrides the other params.
+    allow_empty is used for testing and not production as it would overload the context.
+    """
     if 'query' in params:
         return params['query']
     current_query = [f"{query_field}:{params[query_field]}" for query_field in params]
     current_query = ' AND '.join(current_query)
 
-    if not current_query:
+    if not current_query and not allow_empty:
         raise Exception(f'{INTEGRATION_NAME} - Search without any filter is not permitted.')
 
     return current_query
@@ -325,9 +330,9 @@ def watchlist_create_command(client: Client, name: str, search_query: str, index
                              description: str = '') -> CommandResults:
     params = assign_params(name=name, search_query=search_query, description=description, index_type=index_type)
     res = client.http_request(url='/v1/watchlist', method='POST', json_data=params)
-    id = res.get('id')
+    output = {'id': res.get('id')}
     if id:
-        return CommandResults(outputs=res, outputs_prefix='CarbonBlackEDR.Watchlist', outputs_key_field='id',
+        return CommandResults(outputs=output, outputs_prefix='CarbonBlackEDR.Watchlist', outputs_key_field='id',
                               readable_output=f"Successfully created new watchlist with id {id}")
     return CommandResults(readable_output="Could not create new watchlist.")
 
@@ -699,16 +704,14 @@ def fetch_incidents(client: Client, max_results: int, last_run: dict, first_fetc
 
 
 def test_module(client: Client) -> str:
-    message: str = ''
     try:
-
-        message = 'ok'
+        client.get_processes(limit=5, allow_empty=True)
+        return 'ok'
     except DemistoException as e:
         if 'Forbidden' in str(e) or 'Authorization' in str(e):
             message = 'Authorization Error: make sure API Key is correctly set'
         else:
             raise e
-    return message
 
 
 ''' MAIN FUNCTION '''

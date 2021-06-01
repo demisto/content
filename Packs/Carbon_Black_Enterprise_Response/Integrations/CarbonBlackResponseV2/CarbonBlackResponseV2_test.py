@@ -23,22 +23,26 @@ def util_load_json(path):
 
 QUERY_STRING_CASES = [
     (
-        {'hostname': 'ec2amaz-l4c2okc', 'query': 'chrome.exe'},  # case both query and params
+        {'hostname': 'ec2amaz-l4c2okc', 'query': 'chrome.exe'}, False,  # case both query and params
         'chrome.exe'  # expected
     ),
     (
-        {'hostname': 'ec2amaz-l4c2okc'},  # case only params
+        {'hostname': 'ec2amaz-l4c2okc'}, False,  # case only params
         'hostname:ec2amaz-l4c2okc'  # expected
     ),
     (
-        {'query': 'chrome.exe'},  # case only query
+        {'query': 'chrome.exe'}, False,  # case only query
         'chrome.exe'  # expected
+    ),
+    (
+        {}, True,  # case no params
+        ''  # expected
     )
 ]
 
 
-@pytest.mark.parametrize('params,expected_results', QUERY_STRING_CASES)
-def test_create_query_string(params, expected_results):
+@pytest.mark.parametrize('params, empty, expected_results', QUERY_STRING_CASES)
+def test_create_query_string(params, empty, expected_results):
     """
     Given:
         - A search task's parameters
@@ -52,7 +56,7 @@ def test_create_query_string(params, expected_results):
     """
     from CarbonBlackResponseV2 import _create_query_string
 
-    query_string = _create_query_string(params)
+    query_string = _create_query_string(params, allow_empty=empty)
 
     assert query_string == expected_results
 
