@@ -334,7 +334,7 @@ def create_corepacks_config(storage_bucket: Any, build_number: str, index_folder
         storage_bucket (google.cloud.storage.bucket.Bucket): gcs bucket where core packs config is uploaded.
         build_number (str): circleCI build number.
         index_folder_path (str): The index folder path.
-        artifacts_dir: The CI artifacts directory to upload the index.json to.
+        artifacts_dir: The CI artifacts directory to upload the corepacks.json to.
 
     """
     core_packs_public_urls = []
