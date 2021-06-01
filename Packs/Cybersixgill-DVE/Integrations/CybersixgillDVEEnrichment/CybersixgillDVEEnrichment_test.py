@@ -450,10 +450,9 @@ def test_cve_enrich_command(mocker):
     from sixgill.sixgill_enrich_client import SixgillEnrichClient
 
     client = SixgillEnrichClient(
-        "client_id",
-        "client_secret",
-        "some_channel",
+        demisto.params()["client_id"], demisto.params()["client_secret"], channel_code, demisto
     )
 
     output = cve_enrich_command(client, demisto.args())
-    assert output == expected_enrich_output
+    assert output[0].outputs == expected_enrich_output
+
