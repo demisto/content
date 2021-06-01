@@ -1301,6 +1301,7 @@ def add_generic_object_command():
 
 
 def add_ip_object(pymisp: ExpandedPyMISP, demisto_args: dict = {}):
+    # todo split into sub-functions
     event_id = demisto_args.get('event_id')
     args = [
         'dst_port',
@@ -1395,7 +1396,7 @@ def main():
         elif command == 'misp-add-url-object':
             add_url_object()
         elif command == 'misp-add-ip-object':
-            return_results(add_ip_object(demisto_args=args, pymisp=pymisp))  # checked
+            return_results(add_ip_object(demisto_args=args, pymisp=pymisp))  # checked V - split into sub-funcs
         elif command == 'misp-add-object':
             add_generic_object_command()
     except PyMISPError as e:
