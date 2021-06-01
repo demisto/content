@@ -24,7 +24,7 @@ BUILD_BUCKET_PATH="content/builds/$CI_COMMIT_BRANCH/$CI_PIPELINE_ID"
 TARGET_PATH="$BUILD_BUCKET_PATH/content/packs"
 CONTENT_FULL_TARGET_PATH="$GCS_BUILD_BUCKET/$BUILD_BUCKET_PATH/content"
 BUCKET_FULL_TARGET_PATH="$GCS_BUILD_BUCKET/$BUILD_BUCKET_PATH"
-PACKS_FULL_PATH="$CONTENT_FULL_TARGET_PATH/packs"
+PACKS_FULL_TARGET_PATH="$GCS_BUILD_BUCKET/$TARGET_PATH"
 
 # ====== BUCKET CONFIGURATION  ======
 if [[ -z "$1" ]]; then
@@ -83,7 +83,7 @@ else
     IS_FORCE_UPLOAD=false
   fi
   python3 ./Tests/Marketplace/upload_packs.py -a $PACK_ARTIFACTS -d $ARTIFACTS_FOLDER/packs_dependencies.json -e $EXTRACT_FOLDER -b $GCS_BUILD_BUCKET -s "$GCS_MARKET_KEY" -n $CI_BUILD_ID -p "$PACKS_LIST" -o $OVERRIDE_ALL_PACKS -sb $TARGET_PATH -k $PACK_SIGNING_KEY -rt $REMOVE_PBS -i $ID_SET -bu $BUCKET_UPLOAD_FLOW -pb "$GCS_PRIVATE_BUCKET" -c $CI_COMMIT_BRANCH -f $IS_FORCE_UPLOAD
-  gsutil cp -z json $ARTIFACTS_FOLDER/index.json $ARTIFACTS_FOLDER/corepacks.json "gs://$PACKS_FULL_PATH"
+  gsutil cp -z json $ARTIFACTS_FOLDER/index.json $ARTIFACTS_FOLDER/corepacks.json "gs://$PACKS_FULL_TARGET_PATH"
   gsutil cp -z json $ARTIFACTS_FOLDER/id_set.json "gs://$CONTENT_FULL_TARGET_PATH"
   echo "Finished updating content packs successfully."
 fi
