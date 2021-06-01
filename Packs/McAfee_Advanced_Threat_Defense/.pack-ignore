@@ -1,2 +1,8 @@
 [file:playbook-Detonate_URL_-_McAfee_ATD.yml]
 ignore=BA101
+
+[file:README.md]
+ignore=RM104,RM106
+
+[file:McAfee_Advanced_Threat_Defense.yml]
+ignore=BA108,BA109

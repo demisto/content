@@ -1015,6 +1015,9 @@ class ExtFilter:
             exit_error(
                 f"ABORT: value = {root}, conds = {conds}, path = {path}")
 
+        elif optype == "is collectively transformed with":
+            return self.filter_value(root, "is transformed with", conds, path, True)
+
         elif optype == "is transformed with":
             conds = listize(self.parse_conds_json(conds))
 

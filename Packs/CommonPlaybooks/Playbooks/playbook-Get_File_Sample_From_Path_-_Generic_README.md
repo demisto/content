@@ -1,3 +1,4 @@
+
 Returns a file sample, to the War Room from a path on an endpoint using one or more integrations.
 
 inputs:
