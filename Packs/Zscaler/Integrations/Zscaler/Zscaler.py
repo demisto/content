@@ -678,13 +678,13 @@ def category_ioc_update(category_data):
     return response
 
 
-def add_or_remove_urls_from_category(action: str, urls: List[Any], category_data: Dict[str: Any]):
+def add_or_remove_urls_from_category(action, urls, category_data):
     """
     Add or remove urls from a category.
     Args:
-        action: The action requested, can be 'ADD_TO_LIST' for adding or 'REMOVE_FROM'_LIST for removing.
-        urls: the list of urls to add or remove from the category
-        category_data: the data of the category as returned from the API
+        str action: The action requested, can be 'ADD_TO_LIST' for adding or 'REMOVE_FROM'_LIST for removing.
+        List[Any] urls: the list of urls to add or remove from the category
+        Dict[str: Any] category_data: the data of the category as returned from the API
 
     Returns:
         The response as returned from the API
