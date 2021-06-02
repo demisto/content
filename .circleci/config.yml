@@ -863,6 +863,10 @@ jobs:
               then
                 cp ./Tests/failed_tests.txt $CIRCLE_ARTIFACTS/failed_tests.txt
             fi
+            if [ -f ./Tests/performance_results.txt ];
+              then
+                cp ./Tests/performance_results.txt $CIRCLE_ARTIFACTS/performance_results.txt
+            fi
             exit $RETVAL
 #      - run:
 #          name: Slack Notifier
