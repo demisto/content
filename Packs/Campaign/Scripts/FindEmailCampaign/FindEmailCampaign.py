@@ -379,7 +379,8 @@ def horizontal_to_vertical_md_table(horizontal_md_table: str) -> str:
     headers_list = lines[1][1:-1].split('|')
     content_list = lines[3][1:-1].split('|')
 
-    new_table = title
+    new_table = ""
+    # new_table += title
     new_table += '\n| | |'
     new_table += '\n|---|---|'
     for header, content in zip(headers_list, content_list):
@@ -434,7 +435,8 @@ def return_indicator_entry(incidents_df):
     hr = tableToMarkdown('Mutual Indicators', indicators_df.to_dict(orient='records'),
                          headers=indicators_headers)
 
-    demisto.executeCommand('setIncident', {'emailcampaignmutualindicators': hr})
+    hr_no_title = '\n'.join(hr.split('\n')[1:])
+    demisto.executeCommand('setIncident', {'emailcampaignmutualindicators': hr_no_title}) # without title
     return_outputs_custom(hr, add_context_key(create_context_for_indicators(indicators_df)), tag='indicators')
     return indicators_df
 

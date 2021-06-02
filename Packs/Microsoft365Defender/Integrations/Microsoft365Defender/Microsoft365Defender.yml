@@ -55,7 +55,7 @@ configuration:
   type: 8
 - display: Use system proxy settings
   name: proxy
-  required: false
+  required: true
   type: 8
 description: Microsoft 365 Defender is a unified pre- and post-breach enterprise defense
   suite that natively coordinates detection, prevention, investigation, and response
