@@ -2116,7 +2116,7 @@ script: >-
                   var intBuildNumber = parseInt(serverVersion.buildNumber);
                   if (isNaN(intBuildNumber)) {
                       // dev editions are not comparable
-                      logDebug('isDemistoVersionGE: Error.\ninput: server version: {0} build number: {1}\nserver version: {2}'.format(version, buildNumber, JSON.stringify(serverVersion)));
+                      logDebug('isDemistoVersionGE: Error. Input: version: [{0}] buildNumber: [{1}]. server version: {2}'.format(version, buildNumber, JSON.stringify(serverVersion)));
                       return true;
                   }
                   return (intBuildNumber >= parseInt(buildNumber));
