@@ -360,11 +360,12 @@ def fetch_incidents(client: Client,
             page_from=page_from
         )
 
-    relevant_alerts = [alert for alert in data.get('results', []) if not latest_alert_fetch or
-                       _ensure_timezone(dateparser.parse(alert.get('time'))) > latest_alert_fetch]
+    for alert in data.get('results', []):
+        incident_created_time = _ensure_timezone(dateparser.parse(alert.get('time')))
+        # Alert was already fetched. Skipping
+        if latest_alert_fetch and latest_alert_fetch >= incident_created_time:
+            continue
 
-    for alert in relevant_alerts:
-        incident_created_time = dateparser.parse(alert.get('time'))
         incident = {
             'name': alert.get('description'),
             'occurred': incident_created_time.strftime('%Y-%m-%dT%H:%M:%SZ'),
@@ -374,8 +375,6 @@ def fetch_incidents(client: Client,
         incidents.append(incident)
 
         # Update last run and add incident if the incident is newer than last fetch
-        incident_created_time = _ensure_timezone(incident_created_time)
-
         if incident_created_time > latest_created_time:
             latest_created_time = incident_created_time
 
