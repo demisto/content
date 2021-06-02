@@ -152,8 +152,10 @@ def test_generate_ansible_inventory_creds():
     assert winrm_inv.get('all').get('hosts').get('123.123.123.123:45678').get('ansible_winrm_transport') == 'ntlm'
     assert winrm_inv.get('all').get('hosts').get('123.123.123.123:45678').get('ansible_connection') == 'winrm'
 
+
 class Object(object):
     pass
+
 
 def test_generic_ansible():
     """
@@ -174,26 +176,37 @@ def test_generic_ansible():
 
     # Inputs
     args = {'host': "123.123.123.123", 'subcategory': 'File System', 'audit_type': 'failure'}
-    int_params = {'port': 5985, 'creds': {'identifier': 'bill', 'password': 'xyz321', 'credentials':{}}}
+    int_params = {'port': 5985, 'creds': {'identifier': 'bill', 'password': 'xyz321', 'credentials': {}}}
     host_type = "winrm"
 
     # Mock results from Ansible run
     mock_ansible_results = Object()
-    mock_ansible_results.events = [{'uuid': 'cf26f7c4-6eca-48b2-8294-4bd263cfb2e0', 'counter': 1, 'stdout': '', 'start_line': 0, 'end_line': 0, 'runner_ident': 'd5a00f7c-7fb6-424a-a8f9-83556bdb2360', 'event': 'playbook_on_start', 'pid': 674619, 'created': '2021-06-01T15:57:37.638813', 'event_data': {}},
-                                   {'uuid': 'cc29d328-9d35-4193-ba18-e82e98eaf0c6', 'counter': 2, 'stdout': '', 'start_line': 0, 'end_line': 0, 'runner_ident': 'd5a00f7c-7fb6-424a-a8f9-83556bdb2360', 'event': 'runner_on_start', 'pid': 674619, 'created': '2021-06-01T15:57:37.668136', 'parent_uuid': 'a736a224-f5d0-0add-444b-000000000009', 'event_data': {}},
-                                   {'uuid': '4770effd-5088-430c-aee2-621bee4f3f00', 'counter': 3, 'stdout': '123.123.123.123 | SUCCESS => {\r\n    "changed": false,\r\n    "current_audit_policy": {\r\n        "file system": "failure"\r\n    }\r\n}', 'start_line': 0, 'end_line': 6, 'runner_ident': 'd5a00f7c-7fb6-424a-a8f9-83556bdb2360', 'event': 'runner_on_ok', 'pid': 674619, 'created': '2021-06-01T15:57:40.592040', 'parent_uuid': 'a736a224-f5d0-0add-444b-000000000009', 'event_data': {}}]
+    mock_ansible_results.events = [{'uuid': 'cf26f7c4-6eca-48b2-8294-4bd263cfb2e0', 'counter': 1, 'stdout': '',
+                                    'start_line': 0, 'end_line': 0, 'runner_ident': 'd5a00f7c-7fb6-424a-a8f9-83556bdb2360',
+                                    'event': 'playbook_on_start', 'pid': 674619, 'created': '2021-06-01T15:57:37.638813',
+                                    'event_data': {}},
+                                   {'uuid': 'cc29d328-9d35-4193-ba18-e82e98eaf0c6', 'counter': 2, 'stdout': '',
+                                    'start_line': 0, 'end_line': 0, 'runner_ident': 'd5a00f7c-7fb6-424a-a8f9-83556bdb2360',
+                                       'event': 'runner_on_start', 'pid': 674619, 'created': '2021-06-01T15:57:37.668136',
+                                    'parent_uuid': 'a736a224-f5d0-0add-444b-000000000009', 'event_data': {}},
+                                   {'uuid': '4770effd-5088-430c-aee2-621bee4f3f00', 'counter': 3,
+                                    'stdout': '123.123.123.123 | SUCCESS => {\r\n    "changed": false,\r\n\
+                                            "current_audit_policy": {\r\n        "file system": "failure"\r\n    }\r\n}',
+                                    'start_line': 0, 'end_line': 6,
+                                              'runner_ident': 'd5a00f7c-7fb6-424a-a8f9-83556bdb2360', 'event': 'runner_on_ok',
+                                    'pid': 674619, 'created': '2021-06-01T15:57:40.592040',
+                                    'parent_uuid': 'a736a224-f5d0-0add-444b-000000000009', 'event_data': {}}]
 
     # Expected results
-    expected_readable = """# 123.123.123.123 -  SUCCESS 
-  * changed: False
+    expected_readable = """# 123.123.123.123 -  SUCCESS \n  * changed: False
   * ## Current_Audit_Policy
     * file system: failure
 """
-    expected_outputs = [{'changed': False, 'current_audit_policy': {'file system': 'failure'}, 'host': '123.123.123.123', 'status': 'SUCCESS'}]
+    expected_outputs = [{'changed': False, 'current_audit_policy': {
+        'file system': 'failure'}, 'host': '123.123.123.123', 'status': 'SUCCESS'}]
 
-    with patch('ansible_runner.run', return_value = mock_ansible_results):
+    with patch('ansible_runner.run', return_value=mock_ansible_results):
         CommandResults = generic_ansible('microsoftwindows', 'win_audit_policy_system', args, int_params, host_type)
-
 
         assert CommandResults.readable_output == expected_readable
         assert CommandResults.outputs == expected_outputs
