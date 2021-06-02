@@ -4,8 +4,6 @@ import sys
 import argparse
 import shutil
 import uuid
-from tempfile import NamedTemporaryFile
-
 import prettytable
 import glob
 import requests
@@ -16,7 +14,8 @@ from google.cloud.storage import Bucket
 from zipfile import ZipFile
 from typing import Any, Tuple, Union, Optional
 from Tests.Marketplace.marketplace_services import init_storage_client, Pack, \
-    load_json, get_content_git_client, get_recent_commits_data, store_successful_and_failed_packs_in_ci_artifacts
+    load_json, get_content_git_client, get_recent_commits_data, store_successful_and_failed_packs_in_ci_artifacts, \
+    json_write
 from Tests.Marketplace.marketplace_statistics import StatisticsHandler
 from Tests.Marketplace.marketplace_constants import PackStatus, Metadata, GCPConfig, BucketUploadFlow, \
     CONTENT_ROOT_PATH, PACKS_FOLDER, PACKS_FULL_PATH, IGNORED_FILES, IGNORED_PATHS, LANDING_PAGE_SECTIONS_PATH
@@ -329,7 +328,7 @@ def upload_index_to_storage(index_folder_path: str, extract_destination_path: st
 
 def create_corepacks_config(storage_bucket: Any, build_number: str, index_folder_path: str,
                             artifacts_dir: Optional[str]):
-    """Uploads corepacks.json file configuration to bucket. Corepacks file includes core packs for server installation.
+    """Create corepacks.json file to artifacts dir. Corepacks file includes core packs for server installation.
 
      Args:
         storage_bucket (google.cloud.storage.bucket.Bucket): gcs bucket where core packs config is uploaded.
@@ -370,40 +369,13 @@ def create_corepacks_config(storage_bucket: Any, build_number: str, index_folder
         logging.critical(f"Missing core packs are: {missing_core_packs}")
         sys.exit(1)
 
-    corepacks_json_path = os.path.join(GCPConfig.STORAGE_BASE_PATH, f'{GCPConfig.CORE_PACK_FILE_NAME}')
-    try:
-        core_packs_data = {
-            'corePacks': core_packs_public_urls,
-            'buildNumber': build_number
-        }
-        corepacks_json_file = NamedTemporaryFile(delete=False)
-        corepacks_json_path = corepacks_json_file.name
-        corepacks_json_file.write(json.dumps(core_packs_data))
-        corepacks_json_file.close()
-    # with open(corepacks_json_path, 'w+') as corepacks_file:
-    #     # construct core pack data with public gcs urls
-    #     core_packs_data = {
-    #         'corePacks': core_packs_public_urls,
-    #         'buildNumber': build_number
-    #     }
-    #     json.dump(core_packs_data, corepacks_file, indent=4)
-
-        if artifacts_dir:
-            # Store corepacks.json in CircleCI artifacts
-            try:
-                shutil.copyfile(
-                    os.path.join(corepacks_json_path, GCPConfig.CORE_PACK_FILE_NAME),
-                    os.path.join(artifacts_dir, f'{GCPConfig.CORE_PACK_FILE_NAME}'),
-                )
-            except shutil.Error as err:
-                logging.error(f"Failed copying corepacks.json file to "
-                              f"{artifacts_dir}. Additional info: {str(err)}.")
-
-        logging.success(f"Finished copying {GCPConfig.CORE_PACK_FILE_NAME} to artifacts.")
-
-    finally:
-        if corepacks_json_path:
-            os.unlink(corepacks_json_path)
+    corepacks_json_path = os.path.join(artifacts_dir, GCPConfig.CORE_PACK_FILE_NAME)
+    core_packs_data = {
+        'corePacks': core_packs_public_urls,
+        'buildNumber': build_number
+    }
+    json_write(corepacks_json_path, core_packs_data)
+    logging.success(f"Finished copying {GCPConfig.CORE_PACK_FILE_NAME} to artifacts.")
 
 
 def upload_id_set(storage_bucket: Any, id_set_local_path: str = None):
