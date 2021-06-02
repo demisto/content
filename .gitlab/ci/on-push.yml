@@ -84,8 +84,6 @@ create-instances:
     - .push-rule
   needs: ["create-instances"]
   stage: run-instances
-  variables:
-    DESTROY_INSTANCES: "true"
   script:
     - EXIT_CODE=0
     - !reference [.download-demisto-conf]
@@ -104,6 +102,7 @@ create-instances:
       if [ -f ./Tests/failed_tests.txt ]; then
         cp ./Tests/failed_tests.txt $ARTIFACTS_FOLDER/failed_tests.txt
       fi
+    - python3 ./Tests/scripts/destroy_instances.py $ARTIFACTS_FOLDER $ARTIFACTS_FOLDER/env_results.json "$INSTANCE_ROLE" "$TIME_TO_LIVE" || EXIT_CODE=$?
     - exit $EXIT_CODE
 
 server_5_0:
@@ -133,9 +132,6 @@ server_master:
     - if: '$NIGHTLY'
   variables:
     INSTANCE_ROLE: "Server Master"
-    SLACK_TEST_TYPE: "test_playbooks"
-    SLACK_ENV_RESULTS: ${ARTIFACTS_FOLDER}/env_results.json
-    SLACK_ONLY_IF: "true"
 
 run-validations:
   extends:
@@ -147,3 +143,14 @@ run-validations:
 #   extends:
 #     - .run-unittests-and-lint
 #     - .push-rule
+
+slack-notify-nightly-build:
+  extends:
+    - .trigger-slack-notification
+  rules:
+    - if: '$NIGHTLY'
+      when: always
+  variables:
+    PIPELINE_TO_QUERY: $CI_PIPELINE_ID
+    WORKFLOW: 'Content Nightly'
+    JOB_NAME: 'server_master'
