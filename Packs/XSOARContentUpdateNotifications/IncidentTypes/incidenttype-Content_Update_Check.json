@@ -1,0 +1,28 @@
+{
+    "autorun": true,
+    "color": "#64B5F6",
+    "days": 0,
+    "daysR": 0,
+    "default": false,
+    "detached": false,
+    "disabled": false,
+    "extractSettings": {
+        "fieldCliNameToExtractSettings": {},
+        "mode": "Specific"
+    },
+    "hours": 0,
+    "hoursR": 0,
+    "id": "Content Update Check",
+    "layout": "da4741da-88f0-4919-8049-93f21ae85c5c",
+    "locked": false,
+    "name": "Content Update Check",
+    "onChangeRepAlg": 0,
+    "playbookId": "b8ed29cc-0f42-4319-8412-e38e3b64a4e9",
+    "readonly": false,
+    "reputationCalc": 0,
+    "system": false,
+    "version": -1,
+    "weeks": 0,
+    "weeksR": 0,
+    "fromVersion": "6.0.0"
+}

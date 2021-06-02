@@ -1,0 +1,1832 @@
+contentitemexportablefields:
+  contentitemfields:
+    propagationLabels:
+    - all
+description: This playbook will check to see if there are any content updates available
+  for installed packs and notify users via e-mail or Slack.
+id: Content Update Check
+inputs:
+- description: Provide semi-colon delimited e-mail addresses that will be used for
+    the new content notifications. You will require an integration installed and configured
+    that supports the send-mail command.
+  key: notificationemail
+  playbookInputQuery:
+  required: true
+  value:
+    complex:
+      accessor: contentnotificationemail
+      root: incident
+- description: Provide a Slack username to which the notifications will be sent to.
+    You will require Slack integration to be installed and configured.
+  key: slackuser
+  playbookInputQuery:
+  required: false
+  value:
+    complex:
+      accessor: contentnotificationslackusername
+      root: incident
+- description: Provide a Slack channel to which the notifications will be sent to.
+    You will require Slack integration to be installed and configured. Also, ensure
+    that the XSOAR application has access to this channel.
+  key: slackchannel
+  playbookInputQuery:
+  required: false
+  value:
+    complex:
+      accessor: contentnotificationslackchannel
+      root: incident
+name: Content Update Check
+outputs: []
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "2"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 2b52cce9-80aa-462a-8e47-688fd7dc3781
+      iscommand: false
+      name: ""
+      version: -1
+      description: ''
+    taskid: 2b52cce9-80aa-462a-8e47-688fd7dc3781
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 190
+        }
+      }
+  "1":
+    fieldMapping:
+    - incidentfield: Content Updates Available
+      output:
+        complex:
+          root: ContentData
+          transformers:
+          - operator: Stringify
+          - args:
+              separator:
+                value:
+                  simple: ','
+            operator: join
+          - args:
+              prefix:
+                value:
+                  simple: '['
+              suffix:
+                value:
+                  simple: ']'
+            operator: concat
+          - operator: 6b3c5e6d-4da6-44bc-8c19-f3608b077e72
+    id: "1"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "4"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      extend-context:
+        simple: ContentData=response(val.updateAvailable==true)
+      uri:
+        simple: /contentpacks/installed-expired
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: send HTTP GET requests
+      id: 967250a9-758e-400e-857f-229a3a9cfd22
+      iscommand: true
+      name: Check for new content available
+      script: '|||demisto-api-get'
+      type: regular
+      version: -1
+    taskid: 967250a9-758e-400e-857f-229a3a9cfd22
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 720
+        }
+      }
+  "2":
+    id: "2"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "21"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Delete field from context
+      id: 23d6707e-45ed-4e3b-841e-d69ce1486d05
+      iscommand: false
+      name: Delete Context
+      scriptName: DeleteContext
+      type: regular
+      version: -1
+    taskid: 23d6707e-45ed-4e3b-841e-d69ce1486d05
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 360
+        }
+      }
+  "4":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: incident.contentupdatesavailable
+          operator: isNotEmpty
+      label: "yes"
+    id: "4"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "8"
+      "yes":
+      - "6"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 42ae47ea-f233-4d27-8e9e-797fb6d2f9cd
+      iscommand: false
+      name: Are there updates?
+      type: condition
+      version: -1
+    taskid: 42ae47ea-f233-4d27-8e9e-797fb6d2f9cd
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 895
+        }
+      }
+  "5":
+    id: "5"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "9"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      assetid: {}
+      closeNotes: {}
+      closeReason: {}
+      emailclassification: {}
+      id: {}
+      phishingsubtype: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.close.inv
+      id: fce4918a-1386-4f8d-8dba-6d444984caa2
+      iscommand: true
+      name: Close case
+      script: Builtin|||closeInvestigation
+      type: regular
+      version: -1
+    taskid: fce4918a-1386-4f8d-8dba-6d444984caa2
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 230,
+          "y": 2300
+        }
+      }
+  "6":
+    id: "6"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "10"
+      - "12"
+      - "13"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: f8cfa9e6-d368-47be-8a6b-fdfe6d05495e
+      iscommand: false
+      name: Process Notifications
+      type: title
+      version: -1
+      description: ''
+    taskid: f8cfa9e6-d368-47be-8a6b-fdfe6d05495e
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1085
+        }
+      }
+  "8":
+    id: "8"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "16"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: cbed84f0-4f2a-449f-840f-d2302a0fb3ef
+      iscommand: false
+      name: Set Closure Reason
+      type: title
+      version: -1
+      description: ''
+    taskid: cbed84f0-4f2a-449f-840f-d2302a0fb3ef
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 45,
+          "y": 1085
+        }
+      }
+  "9":
+    id: "9"
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 5d7eff6f-7d76-49a8-8ecd-d59cd1c35227
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+      description: ''
+    taskid: 5d7eff6f-7d76-49a8-8ecd-d59cd1c35227
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 230,
+          "y": 2490
+        }
+      }
+  "10":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                filters:
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: modules.commands.name
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: send-mail
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: modules.state
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: active
+                root: modules
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: contentnotificationemail
+                root: incident
+          operator: isNotEmpty
+      label: Send Emails
+    id: "10"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "23"
+      Send Emails:
+      - "11"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 70b8eae4-f0f0-4ef5-8452-300ebb9c5ce9
+      iscommand: false
+      name: Emails
+      type: condition
+      version: -1
+    taskid: 70b8eae4-f0f0-4ef5-8452-300ebb9c5ce9
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 710,
+          "y": 1240
+        }
+      }
+  "11":
+    continueonerror: true
+    id: "11"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "23"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      additionalHeader: {}
+      attachCIDs: {}
+      attachIDs: {}
+      attachNames: {}
+      bcc: {}
+      body:
+        complex:
+          root: ContentData
+          transformers:
+          - args:
+              field:
+                value:
+                  simple: name
+            operator: getField
+          - args:
+              prefix:
+                value:
+                  simple: '- '
+              suffix: {}
+            operator: concat
+          - args:
+              separator:
+                value:
+                  simple: |2+
+
+            operator: join
+          - args:
+              prefix:
+                value:
+                  simple: |+
+                    There are content updates available for XSOAR:
+
+              suffix: {}
+            operator: concat
+          - args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: "\nYou can view them here: "
+            operator: concat
+          - args:
+              prefix: {}
+              suffix:
+                iscontext: true
+                value:
+                  simple: ServerURL.URL
+            operator: concat
+          - args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: /#/market/installed
+            operator: concat
+      cc: {}
+      htmlBody: {}
+      raw_message: {}
+      replyTo: {}
+      subject:
+        simple: New content updates available for XSOAR
+      templateParams: {}
+      to:
+        complex:
+          accessor: contentnotificationemail
+          root: incident
+      transientFile: {}
+      transientFileCID: {}
+      transientFileContent: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Send an email
+      id: 101eeb24-433e-45ff-811d-85fd9720386a
+      iscommand: true
+      name: Send E-mail
+      script: '|||send-mail'
+      type: regular
+      version: -1
+    taskid: 101eeb24-433e-45ff-811d-85fd9720386a
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 710,
+          "y": 1460
+        }
+      }
+  "12":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                filters:
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: modules.brand
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: SlackV2
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: modules.state
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: active
+                root: modules
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: contentnotificationslackchannel
+                root: incident
+          operator: isNotEmpty
+      label: Send Slack Channel
+    id: "12"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "23"
+      Send Slack Channel:
+      - "18"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 7a667557-835e-4f3f-8207-01f3c65fcaa3
+      iscommand: false
+      name: Slack Channel
+      type: condition
+      version: -1
+    taskid: 7a667557-835e-4f3f-8207-01f3c65fcaa3
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 280,
+          "y": 1240
+        }
+      }
+  "13":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                filters:
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: modules.brand
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: SlackV2
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: modules.state
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: active
+                root: modules
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: contentnotificationslackusername
+                root: incident
+          operator: isNotEmpty
+      label: Send Slack User
+    id: "13"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "23"
+      Send Slack User:
+      - "22"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: cc8cc1c5-ee3d-4ae6-8b3a-747f142339be
+      iscommand: false
+      name: Slack User
+      type: condition
+      version: -1
+    taskid: cc8cc1c5-ee3d-4ae6-8b3a-747f142339be
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 1140,
+          "y": 1240
+        }
+      }
+  "16":
+    id: "16"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "17"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      accountid: {}
+      accountinformationbreached: {}
+      accountname: {}
+      addLabels: {}
+      affecteddata: {}
+      affecteddatatype: {}
+      affectedindividualscontactinformation: {}
+      agentid: {}
+      agentsid: {}
+      alertcategory: {}
+      alertid: {}
+      alertname: {}
+      apexdomain: {}
+      app: {}
+      appchannelname: {}
+      appendMultiSelect: {}
+      appendTags: {}
+      applicationid: {}
+      applicationname: {}
+      appmessage: {}
+      approximatenumberofaffecteddatasubjects: {}
+      assetid: {}
+      assettable: {}
+      assigneduser: {}
+      assignmentgroup: {}
+      associatedcidrcount: {}
+      associateddomaincount: {}
+      associatedipcount: {}
+      attachmentcount: {}
+      attachmentextension: {}
+      attachmenthash: {}
+      attachmentid: {}
+      attachmentname: {}
+      attachmentsize: {}
+      attachmenttype: {}
+      attorneygeneralnotification: {}
+      blockedaction: {}
+      breachconfirmation: {}
+      bugtraq: {}
+      caller: {}
+      categories: {}
+      categorycount: {}
+      changed: {}
+      childprocess: {}
+      city: {}
+      classification: {}
+      closeNotes:
+        simple: No updates available
+      closeReason:
+        simple: Resolved
+      closetime: {}
+      closingreason: {}
+      closinguser: {}
+      cloudservice: {}
+      cmd: {}
+      cmdline: {}
+      commandline: {}
+      comment: {}
+      companyaddress: {}
+      companycity: {}
+      companycountry: {}
+      companyhasinsuranceforthebreach: {}
+      companyname: {}
+      companypostalcode: {}
+      compliancenotes: {}
+      consumerreportingagenciesnotification: {}
+      contactaddress: {}
+      contactemailaddress: {}
+      contactname: {}
+      contacttelephonenumber: {}
+      contentnotificationemail: {}
+      contentnotificationslackchannel: {}
+      contentnotificationslackusername: {}
+      contentupdatedetails: {}
+      contentupdatesavailable: {}
+      contentupdateselection: {}
+      costcenter: {}
+      costcentercode: {}
+      country: {}
+      countryname: {}
+      countrywherebusinesshasitsmainestablishment: {}
+      countrywherethebreachtookplace: {}
+      credibilityoffense: {}
+      criticalassets: {}
+      customFields: {}
+      cve: {}
+      cvss: {}
+      cvssavailabilityrequirement: {}
+      cvsscollateraldamagepotential: {}
+      cvssconfidentialityrequirement: {}
+      cvssintegrityrequirement: {}
+      dataencryptionstatus: {}
+      datetimeofthebreach: {}
+      dbotMirrorDirection: {}
+      dbotMirrorId: {}
+      dbotMirrorInstance: {}
+      dbotMirrorTags: {}
+      dbotprediction: {}
+      dbotpredictionprobability: {}
+      dbottextsuggestionhighlighted: {}
+      deleteEmptyField: {}
+      department: {}
+      description: {}
+      descriptionasset: {}
+      descriptionoffense: {}
+      dest: {}
+      desthostname: {}
+      destinationgeolocation: {}
+      destinationhostname: {}
+      destinationip: {}
+      destinationipoffense: {}
+      destinationips: {}
+      destinationipv6: {}
+      destinationmacaddress: {}
+      destinationnetwork: {}
+      destinationnetworkoffense: {}
+      destinationport: {}
+      destntdomain: {}
+      destos: {}
+      details: {}
+      detectedexternalhosts: {}
+      detectedexternalips: {}
+      detectedinternalhosts: {}
+      detectedinternalips: {}
+      detectedips: {}
+      detecteduser: {}
+      detectedusers: {}
+      detectionendtime: {}
+      detectionid: {}
+      detectionupdatetime: {}
+      detectionurl: {}
+      deviceexternalip: {}
+      devicehash: {}
+      deviceid: {}
+      devicelocalip: {}
+      devicemodel: {}
+      devicename: {}
+      devicetime: {}
+      deviceusername: {}
+      displayname: {}
+      dnsname: {}
+      domaincontacts: {}
+      domainoffense: {}
+      dpoemailaddress: {}
+      dponotification: {}
+      dstports: {}
+      dsts: {}
+      duration: {}
+      email: {}
+      emailaddress: {}
+      emailauthenticitycheck: {}
+      emailbcc: {}
+      emailbody: {}
+      emailbodyformat: {}
+      emailbodyhtml: {}
+      emailcampaigncanvas: {}
+      emailcampaignmutualindicators: {}
+      emailcampaignsummary: {}
+      emailcc: {}
+      emailclassification: {}
+      emailclientname: {}
+      emailfrom: {}
+      emailheaders: {}
+      emailhtml: {}
+      emailhtmlimage: {}
+      emailinreplyto: {}
+      emailkeywords: {}
+      emaillabels: {}
+      emaillatestmessage: {}
+      emailmessageid: {}
+      emailreceived: {}
+      emailreplyto: {}
+      emailreturnpath: {}
+      emailsenderip: {}
+      emailsize: {}
+      emailsource: {}
+      emailsubject: {}
+      emailto: {}
+      emailtocount: {}
+      emailurlclicked: {}
+      employeedisplayname: {}
+      employeeemail: {}
+      employeemanageremail: {}
+      endpoint: {}
+      errorcode: {}
+      errormessage: {}
+      escalation: {}
+      eventaction: {}
+      eventdescriptions: {}
+      eventid: {}
+      eventnames: {}
+      events: {}
+      eventtype: {}
+      externaladdresses: {}
+      filehash: {}
+      filemd5: {}
+      filename: {}
+      filenames: {}
+      filepath: {}
+      filepaths: {}
+      filesha1: {}
+      filesha256: {}
+      filesize: {}
+      financialinformationbreached: {}
+      firstname: {}
+      firstseen: {}
+      followup: {}
+      givenname: {}
+      healthinsurancebreached: {}
+      helloworldid: {}
+      helloworldstatus: {}
+      helloworldtype: {}
+      highlevelcategories: {}
+      hostname: {}
+      hostnames: {}
+      id: {}
+      idasset: {}
+      identitytable: {}
+      idoffense: {}
+      incidentlink: {}
+      incomingmirrorerror: {}
+      individualsnotification: {}
+      infectedhosts: {}
+      internaladdresses: {}
+      investigationstage: {}
+      ipaddressasset: {}
+      isactive: {}
+      isolated: {}
+      isthedatasubjecttodpia: {}
+      jobcode: {}
+      jobfamily: {}
+      jobfunction: {}
+      labels: {}
+      lastmodifiedby: {}
+      lastmodifiedon: {}
+      lastname: {}
+      lastseen: {}
+      lastupdatetime: {}
+      leadership: {}
+      likelyimpact: {}
+      linktooffense: {}
+      listofrulesevent: {}
+      listofrulesoffense: {}
+      location: {}
+      locationasset: {}
+      locationregion: {}
+      logsource: {}
+      logsourcename: {}
+      logsourcetype: {}
+      lowlevelcategoriesevents: {}
+      lowlevelcategoriesoffense: {}
+      macaddress: {}
+      macaddressasset: {}
+      magnitudeoffense: {}
+      maliciousbehavior: {}
+      maliciouscauseifthecauseisamaliciousattack: {}
+      malwarefamily: {}
+      malwarename: {}
+      managementnotification: {}
+      manageremailaddress: {}
+      managername: {}
+      md5: {}
+      measurestomitigate: {}
+      medianotification: {}
+      medicalinformationbreached: {}
+      mobiledevicemodel: {}
+      mobilephone: {}
+      name: {}
+      notabledrilldown: {}
+      notableid: {}
+      notableowner: {}
+      notablestatus: {}
+      notableurgency: {}
+      numberofeventsinoffense: {}
+      numberoffetchedevents: {}
+      numberofflows: {}
+      numberoflogsources: {}
+      objective: {}
+      occurred: {}
+      offenseinactive: {}
+      os: {}
+      osversion: {}
+      otherpiidatabreached: {}
+      outgoingmirrorerror: {}
+      owner: {}
+      parentcmdline: {}
+      parentprocess: {}
+      parentprocessid: {}
+      personalemail: {}
+      phase: {}
+      phishingsubtype: {}
+      phonenumber: {}
+      pid: {}
+      piidatatype: {}
+      policydeleted: {}
+      policydescription: {}
+      policydetails: {}
+      policyid: {}
+      policyrecommendation: {}
+      policyremediable: {}
+      policyseverity: {}
+      policytype: {}
+      possiblecauseofthebreach: {}
+      postalcode: {}
+      postnatdestinationip: {}
+      postnatdestinationport: {}
+      postnatsourceip: {}
+      postnatsourceport: {}
+      prenatdestinationport: {}
+      prenatsourceip: {}
+      prenatsourceport: {}
+      protocol: {}
+      protocolevent: {}
+      protocols: {}
+      quarantined: {}
+      rating: {}
+      rawevent: {}
+      region: {}
+      regionid: {}
+      relevanceoffense: {}
+      replacePlaybook: {}
+      reporteremailaddress: {}
+      residentnotificationoption: {}
+      residentsemailaddress: {}
+      resourceid: {}
+      resourcename: {}
+      resourcetype: {}
+      riskrating: {}
+      riskscore: {}
+      roles: {}
+      rulename: {}
+      samaccountname: {}
+      scanresults: {}
+      scenario: {}
+      secretarynotification: {}
+      sectorofaffectedparty: {}
+      securitytrailsassociatedips: {}
+      securitytrailssubdomains: {}
+      securitytrailswhois: {}
+      securitytrailswhoiscontacts: {}
+      securitytrailswhoishistorycontacts: {}
+      severity: {}
+      severityoffense: {}
+      sha1: {}
+      sha256: {}
+      sha512: {}
+      signature: {}
+      similarincidents: {}
+      similarincidentsdbot: {}
+      sizenumberofemployees: {}
+      sizeturnover: {}
+      skuname: {}
+      skutier: {}
+      sla: {}
+      slaField: {}
+      sourcegeolocation: {}
+      sourcehostname: {}
+      sourceip: {}
+      sourceipoffense: {}
+      sourceips: {}
+      sourceipv6: {}
+      sourcemacaddress: {}
+      sourcenetwork: {}
+      sourcenetworkoffense: {}
+      sourceport: {}
+      sourceusername: {}
+      src: {}
+      srchostname: {}
+      srcntdomain: {}
+      srcos: {}
+      srcports: {}
+      srcs: {}
+      srcuser: {}
+      starttime: {}
+      state: {}
+      statecisonotification: {}
+      statewherethebreachtookplace: {}
+      statusoffense: {}
+      streetaddress: {}
+      subcategory: {}
+      subdomaincount: {}
+      subdomains: {}
+      subtype: {}
+      successfulassetenrichment: {}
+      successfuldrilldownenrichment: {}
+      successfulidentityenrichment: {}
+      surname: {}
+      switchidasset: {}
+      switchportidasset: {}
+      systems: {}
+      tactic: {}
+      tacticid: {}
+      tags: {}
+      teamname: {}
+      technicalowner: {}
+      technicalownercontact: {}
+      technicaluser: {}
+      technique: {}
+      techniqueid: {}
+      telephoneno: {}
+      tenantname: {}
+      terminatedaction: {}
+      thehivecasepap: {}
+      thehivecaseresolutionstatus: {}
+      thehivecasestatus: {}
+      thehivecasesummary: {}
+      thehivecasetlp: {}
+      thehiveflag: {}
+      thehivetasks: {}
+      threatactor: {}
+      threathuntingdetectedhostnames: {}
+      threathuntingdetectedip: {}
+      threatlogsfile: {}
+      ticketacknowledgeddate: {}
+      ticketcloseddate: {}
+      ticketnumber: {}
+      ticketopeneddate: {}
+      timezone: {}
+      title: {}
+      trafficdirection: {}
+      trafficlogsfile: {}
+      triggeredsecurityprofile: {}
+      type: {}
+      typeoffense: {}
+      uniquebiometricdatabreached: {}
+      uniqueidentificationnumberbreached: {}
+      uniqueports: {}
+      urlsslverification: {}
+      user: {}
+      useraccountcontrol: {}
+      userid: {}
+      username: {}
+      usernamecountoffense: {}
+      usernames: {}
+      users: {}
+      vendorid: {}
+      vendorproduct: {}
+      vulnerabilitycategory: {}
+      whereisdatahosted: {}
+      workphone: {}
+      xsoarReadOnlyRoles: {}
+      zipcode: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.set.incident
+      id: 591ab235-b212-4a13-805c-a1427501ec6e
+      iscommand: true
+      name: Set Close Reason
+      script: Builtin|||setIncident
+      type: regular
+      version: -1
+    taskid: 591ab235-b212-4a13-805c-a1427501ec6e
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": -170,
+          "y": 1240
+        }
+      }
+  "17":
+    id: "17"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "5"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 6b0bf3bb-8a25-431c-8507-9621369ee9a2
+      iscommand: false
+      name: Close Case
+      type: title
+      version: -1
+      description: ''
+    taskid: 6b0bf3bb-8a25-431c-8507-9621369ee9a2
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 230,
+          "y": 2140
+        }
+      }
+  "18":
+    continueonerror: true
+    id: "18"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "23"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      blocks: {}
+      channel:
+        complex:
+          accessor: contentnotificationslackchannel
+          root: incident
+      entry: {}
+      ignoreAddURL:
+        simple: "true"
+      message:
+        complex:
+          root: ContentData
+          transformers:
+          - args:
+              field:
+                value:
+                  simple: name
+            operator: getField
+          - args:
+              prefix:
+                value:
+                  simple: '*- '
+              suffix:
+                value:
+                  simple: '*'
+            operator: concat
+          - args:
+              separator:
+                value:
+                  simple: |2+
+
+            operator: join
+          - args:
+              prefix:
+                value:
+                  simple: |+
+                    There are content updates available for XSOAR:
+
+              suffix:
+                value:
+                  simple: |2
+
+                    View them here:
+            operator: concat
+          - args:
+              prefix: {}
+              suffix:
+                iscontext: true
+                value:
+                  simple: ServerURL.URL
+            operator: concat
+          - args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: /#/market/installed
+            operator: concat
+      threadID: {}
+      to: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: SlackV2
+      description: Sends a message to a user, group, or channel.
+      id: 555d2c27-0a5d-40b4-8b70-a23fee6a3afa
+      iscommand: true
+      name: Send Slack Notification
+      script: SlackV2|||send-notification
+      type: regular
+      version: -1
+    taskid: 555d2c27-0a5d-40b4-8b70-a23fee6a3afa
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 280,
+          "y": 1460
+        }
+      }
+  "19":
+    id: "19"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "17"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      accountid: {}
+      accountinformationbreached: {}
+      accountname: {}
+      addLabels: {}
+      affecteddata: {}
+      affecteddatatype: {}
+      affectedindividualscontactinformation: {}
+      agentid: {}
+      agentsid: {}
+      alertcategory: {}
+      alertid: {}
+      alertname: {}
+      apexdomain: {}
+      app: {}
+      appchannelname: {}
+      appendMultiSelect: {}
+      appendTags: {}
+      applicationid: {}
+      applicationname: {}
+      appmessage: {}
+      approximatenumberofaffecteddatasubjects: {}
+      assetid: {}
+      assettable: {}
+      assigneduser: {}
+      assignmentgroup: {}
+      associatedcidrcount: {}
+      associateddomaincount: {}
+      associatedipcount: {}
+      attachmentcount: {}
+      attachmentextension: {}
+      attachmenthash: {}
+      attachmentid: {}
+      attachmentname: {}
+      attachmentsize: {}
+      attachmenttype: {}
+      attorneygeneralnotification: {}
+      blockedaction: {}
+      breachconfirmation: {}
+      bugtraq: {}
+      caller: {}
+      categories: {}
+      categorycount: {}
+      changed: {}
+      childprocess: {}
+      city: {}
+      classification: {}
+      closeNotes:
+        simple: Acknowledged
+      closeReason:
+        simple: Resolved
+      closetime: {}
+      closingreason: {}
+      closinguser: {}
+      cloudservice: {}
+      cmd: {}
+      cmdline: {}
+      commandline: {}
+      comment: {}
+      companyaddress: {}
+      companycity: {}
+      companycountry: {}
+      companyhasinsuranceforthebreach: {}
+      companyname: {}
+      companypostalcode: {}
+      compliancenotes: {}
+      consumerreportingagenciesnotification: {}
+      contactaddress: {}
+      contactemailaddress: {}
+      contactname: {}
+      contacttelephonenumber: {}
+      contentnotificationemail: {}
+      contentnotificationslackchannel: {}
+      contentnotificationslackusername: {}
+      contentupdatedetails: {}
+      contentupdatesavailable: {}
+      contentupdateselection: {}
+      costcenter: {}
+      costcentercode: {}
+      country: {}
+      countryname: {}
+      countrywherebusinesshasitsmainestablishment: {}
+      countrywherethebreachtookplace: {}
+      credibilityoffense: {}
+      criticalassets: {}
+      customFields: {}
+      cve: {}
+      cvss: {}
+      cvssavailabilityrequirement: {}
+      cvsscollateraldamagepotential: {}
+      cvssconfidentialityrequirement: {}
+      cvssintegrityrequirement: {}
+      dataencryptionstatus: {}
+      datetimeofthebreach: {}
+      dbotMirrorDirection: {}
+      dbotMirrorId: {}
+      dbotMirrorInstance: {}
+      dbotMirrorTags: {}
+      dbotprediction: {}
+      dbotpredictionprobability: {}
+      dbottextsuggestionhighlighted: {}
+      deleteEmptyField: {}
+      department: {}
+      description: {}
+      descriptionasset: {}
+      descriptionoffense: {}
+      dest: {}
+      desthostname: {}
+      destinationgeolocation: {}
+      destinationhostname: {}
+      destinationip: {}
+      destinationipoffense: {}
+      destinationips: {}
+      destinationipv6: {}
+      destinationmacaddress: {}
+      destinationnetwork: {}
+      destinationnetworkoffense: {}
+      destinationport: {}
+      destntdomain: {}
+      destos: {}
+      details: {}
+      detectedexternalhosts: {}
+      detectedexternalips: {}
+      detectedinternalhosts: {}
+      detectedinternalips: {}
+      detectedips: {}
+      detecteduser: {}
+      detectedusers: {}
+      detectionendtime: {}
+      detectionid: {}
+      detectionupdatetime: {}
+      detectionurl: {}
+      deviceexternalip: {}
+      devicehash: {}
+      deviceid: {}
+      devicelocalip: {}
+      devicemodel: {}
+      devicename: {}
+      devicetime: {}
+      deviceusername: {}
+      displayname: {}
+      dnsname: {}
+      domaincontacts: {}
+      domainoffense: {}
+      dpoemailaddress: {}
+      dponotification: {}
+      dstports: {}
+      dsts: {}
+      duration: {}
+      email: {}
+      emailaddress: {}
+      emailauthenticitycheck: {}
+      emailbcc: {}
+      emailbody: {}
+      emailbodyformat: {}
+      emailbodyhtml: {}
+      emailcampaigncanvas: {}
+      emailcampaignmutualindicators: {}
+      emailcampaignsummary: {}
+      emailcc: {}
+      emailclassification: {}
+      emailclientname: {}
+      emailfrom: {}
+      emailheaders: {}
+      emailhtml: {}
+      emailhtmlimage: {}
+      emailinreplyto: {}
+      emailkeywords: {}
+      emaillabels: {}
+      emaillatestmessage: {}
+      emailmessageid: {}
+      emailreceived: {}
+      emailreplyto: {}
+      emailreturnpath: {}
+      emailsenderip: {}
+      emailsize: {}
+      emailsource: {}
+      emailsubject: {}
+      emailto: {}
+      emailtocount: {}
+      emailurlclicked: {}
+      employeedisplayname: {}
+      employeeemail: {}
+      employeemanageremail: {}
+      endpoint: {}
+      errorcode: {}
+      errormessage: {}
+      escalation: {}
+      eventaction: {}
+      eventdescriptions: {}
+      eventid: {}
+      eventnames: {}
+      events: {}
+      eventtype: {}
+      externaladdresses: {}
+      filehash: {}
+      filemd5: {}
+      filename: {}
+      filenames: {}
+      filepath: {}
+      filepaths: {}
+      filesha1: {}
+      filesha256: {}
+      filesize: {}
+      financialinformationbreached: {}
+      firstname: {}
+      firstseen: {}
+      followup: {}
+      givenname: {}
+      healthinsurancebreached: {}
+      helloworldid: {}
+      helloworldstatus: {}
+      helloworldtype: {}
+      highlevelcategories: {}
+      hostname: {}
+      hostnames: {}
+      id: {}
+      idasset: {}
+      identitytable: {}
+      idoffense: {}
+      incidentlink: {}
+      incomingmirrorerror: {}
+      individualsnotification: {}
+      infectedhosts: {}
+      internaladdresses: {}
+      investigationstage: {}
+      ipaddressasset: {}
+      isactive: {}
+      isolated: {}
+      isthedatasubjecttodpia: {}
+      jobcode: {}
+      jobfamily: {}
+      jobfunction: {}
+      labels: {}
+      lastmodifiedby: {}
+      lastmodifiedon: {}
+      lastname: {}
+      lastseen: {}
+      lastupdatetime: {}
+      leadership: {}
+      likelyimpact: {}
+      linktooffense: {}
+      listofrulesevent: {}
+      listofrulesoffense: {}
+      location: {}
+      locationasset: {}
+      locationregion: {}
+      logsource: {}
+      logsourcename: {}
+      logsourcetype: {}
+      lowlevelcategoriesevents: {}
+      lowlevelcategoriesoffense: {}
+      macaddress: {}
+      macaddressasset: {}
+      magnitudeoffense: {}
+      maliciousbehavior: {}
+      maliciouscauseifthecauseisamaliciousattack: {}
+      malwarefamily: {}
+      malwarename: {}
+      managementnotification: {}
+      manageremailaddress: {}
+      managername: {}
+      md5: {}
+      measurestomitigate: {}
+      medianotification: {}
+      medicalinformationbreached: {}
+      mobiledevicemodel: {}
+      mobilephone: {}
+      name: {}
+      notabledrilldown: {}
+      notableid: {}
+      notableowner: {}
+      notablestatus: {}
+      notableurgency: {}
+      numberofeventsinoffense: {}
+      numberoffetchedevents: {}
+      numberofflows: {}
+      numberoflogsources: {}
+      objective: {}
+      occurred: {}
+      offenseinactive: {}
+      os: {}
+      osversion: {}
+      otherpiidatabreached: {}
+      outgoingmirrorerror: {}
+      owner: {}
+      parentcmdline: {}
+      parentprocess: {}
+      parentprocessid: {}
+      personalemail: {}
+      phase: {}
+      phishingsubtype: {}
+      phonenumber: {}
+      pid: {}
+      piidatatype: {}
+      policydeleted: {}
+      policydescription: {}
+      policydetails: {}
+      policyid: {}
+      policyrecommendation: {}
+      policyremediable: {}
+      policyseverity: {}
+      policytype: {}
+      possiblecauseofthebreach: {}
+      postalcode: {}
+      postnatdestinationip: {}
+      postnatdestinationport: {}
+      postnatsourceip: {}
+      postnatsourceport: {}
+      prenatdestinationport: {}
+      prenatsourceip: {}
+      prenatsourceport: {}
+      protocol: {}
+      protocolevent: {}
+      protocols: {}
+      quarantined: {}
+      rating: {}
+      rawevent: {}
+      region: {}
+      regionid: {}
+      relevanceoffense: {}
+      replacePlaybook: {}
+      reporteremailaddress: {}
+      residentnotificationoption: {}
+      residentsemailaddress: {}
+      resourceid: {}
+      resourcename: {}
+      resourcetype: {}
+      riskrating: {}
+      riskscore: {}
+      roles: {}
+      rulename: {}
+      samaccountname: {}
+      scanresults: {}
+      scenario: {}
+      secretarynotification: {}
+      sectorofaffectedparty: {}
+      securitytrailsassociatedips: {}
+      securitytrailssubdomains: {}
+      securitytrailswhois: {}
+      securitytrailswhoiscontacts: {}
+      securitytrailswhoishistorycontacts: {}
+      severity: {}
+      severityoffense: {}
+      sha1: {}
+      sha256: {}
+      sha512: {}
+      signature: {}
+      similarincidents: {}
+      similarincidentsdbot: {}
+      sizenumberofemployees: {}
+      sizeturnover: {}
+      skuname: {}
+      skutier: {}
+      sla: {}
+      slaField: {}
+      sourcegeolocation: {}
+      sourcehostname: {}
+      sourceip: {}
+      sourceipoffense: {}
+      sourceips: {}
+      sourceipv6: {}
+      sourcemacaddress: {}
+      sourcenetwork: {}
+      sourcenetworkoffense: {}
+      sourceport: {}
+      sourceusername: {}
+      src: {}
+      srchostname: {}
+      srcntdomain: {}
+      srcos: {}
+      srcports: {}
+      srcs: {}
+      srcuser: {}
+      starttime: {}
+      state: {}
+      statecisonotification: {}
+      statewherethebreachtookplace: {}
+      statusoffense: {}
+      streetaddress: {}
+      subcategory: {}
+      subdomaincount: {}
+      subdomains: {}
+      subtype: {}
+      successfulassetenrichment: {}
+      successfuldrilldownenrichment: {}
+      successfulidentityenrichment: {}
+      surname: {}
+      switchidasset: {}
+      switchportidasset: {}
+      systems: {}
+      tactic: {}
+      tacticid: {}
+      tags: {}
+      teamname: {}
+      technicalowner: {}
+      technicalownercontact: {}
+      technicaluser: {}
+      technique: {}
+      techniqueid: {}
+      telephoneno: {}
+      tenantname: {}
+      terminatedaction: {}
+      thehivecasepap: {}
+      thehivecaseresolutionstatus: {}
+      thehivecasestatus: {}
+      thehivecasesummary: {}
+      thehivecasetlp: {}
+      thehiveflag: {}
+      thehivetasks: {}
+      threatactor: {}
+      threathuntingdetectedhostnames: {}
+      threathuntingdetectedip: {}
+      threatlogsfile: {}
+      ticketacknowledgeddate: {}
+      ticketcloseddate: {}
+      ticketnumber: {}
+      ticketopeneddate: {}
+      timezone: {}
+      title: {}
+      trafficdirection: {}
+      trafficlogsfile: {}
+      triggeredsecurityprofile: {}
+      type: {}
+      typeoffense: {}
+      uniquebiometricdatabreached: {}
+      uniqueidentificationnumberbreached: {}
+      uniqueports: {}
+      urlsslverification: {}
+      user: {}
+      useraccountcontrol: {}
+      userid: {}
+      username: {}
+      usernamecountoffense: {}
+      usernames: {}
+      users: {}
+      vendorid: {}
+      vendorproduct: {}
+      vulnerabilitycategory: {}
+      whereisdatahosted: {}
+      workphone: {}
+      xsoarReadOnlyRoles: {}
+      zipcode: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.set.incident
+      id: f5cffaed-6e7e-472a-8264-7b99eb484403
+      iscommand: true
+      name: Set Close Reason
+      script: Builtin|||setIncident
+      type: regular
+      version: -1
+    taskid: f5cffaed-6e7e-472a-8264-7b99eb484403
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 710,
+          "y": 1935
+        }
+      }
+  "21":
+    id: "21"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "1"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Get the Server URL.
+      id: 91c2630c-5621-49b6-8cfb-73a439ad6171
+      iscommand: false
+      name: Get Server URL
+      scriptName: GetServerURL
+      type: regular
+      version: -1
+    taskid: 91c2630c-5621-49b6-8cfb-73a439ad6171
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 540
+        }
+      }
+  "22":
+    continueonerror: true
+    id: "22"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "23"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      blocks: {}
+      channel: {}
+      entry: {}
+      ignoreAddURL:
+        simple: "true"
+      message:
+        complex:
+          root: ContentData
+          transformers:
+          - args:
+              field:
+                value:
+                  simple: name
+            operator: getField
+          - args:
+              prefix:
+                value:
+                  simple: '*- '
+              suffix:
+                value:
+                  simple: '*'
+            operator: concat
+          - args:
+              separator:
+                value:
+                  simple: |2+
+
+            operator: join
+          - args:
+              prefix:
+                value:
+                  simple: |+
+                    There are content updates available for XSOAR:
+
+              suffix:
+                value:
+                  simple: |2
+
+                    View them here:
+            operator: concat
+          - args:
+              prefix: {}
+              suffix:
+                iscontext: true
+                value:
+                  simple: ServerURL.URL
+            operator: concat
+          - args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: /#/market/installed
+            operator: concat
+      threadID: {}
+      to:
+        simple: ${incident.contentnotificationslackusername}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: SlackV2
+      description: Sends a message to a user, group, or channel.
+      id: 431b621f-d00a-481e-8c28-0c20c1d39ebc
+      iscommand: true
+      name: Send Slack Notification
+      script: SlackV2|||send-notification
+      type: regular
+      version: -1
+    taskid: 431b621f-d00a-481e-8c28-0c20c1d39ebc
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1140,
+          "y": 1460
+        }
+      }
+  "23":
+    id: "23"
+    ignoreworker: false
+    loop:
+      builtincondition:
+      - - left:
+            iscontext: true
+            value:
+              simple: ContentDataCheck
+          operator: isEmpty
+      exitCondition: ""
+      iscommand: false
+      max: 96
+      wait: 1800
+    nexttasks:
+      '#none#':
+      - "19"
+    note: false
+    quietmode: 0
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      description: This playbook checks for content updates.
+      id: 1d9224b3-57ca-4af4-80a6-a9e7b4dfb6b5
+      iscommand: false
+      name: 46dd34e6-feaa-41fe-84bf-fcf8b62a69b7
+      playbookId: 46dd34e6-feaa-41fe-84bf-fcf8b62a69b7
+      type: playbook
+      version: -1
+    taskid: 1d9224b3-57ca-4af4-80a6-a9e7b4dfb6b5
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 710,
+          "y": 1740
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 2365,
+        "width": 1690,
+        "x": -170,
+        "y": 190
+      }
+    }
+  }
+tests:
+- No tests (auto formatted)
+fromversion: 6.0.0

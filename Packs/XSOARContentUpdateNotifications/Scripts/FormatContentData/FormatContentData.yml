@@ -1,0 +1,21 @@
+args:
+- name: value
+  required: true
+commonfields:
+  id: FormatContentData
+  version: -1
+dockerimage: demisto/python3:3.9.5.20070
+enabled: true
+name: FormatContentData
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags:
+- transformer
+- general
+type: python
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)
