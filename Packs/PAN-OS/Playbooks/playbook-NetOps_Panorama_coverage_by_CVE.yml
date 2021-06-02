@@ -150,6 +150,6 @@ view: |-
 inputs: []
 outputs: []
 tests:
-- PanoramaCVECoverage
+- PanoramaCVECoverage - Test
 fromversion: 5.0.0
 description: Find if there is a signature coverage for a specific CVE

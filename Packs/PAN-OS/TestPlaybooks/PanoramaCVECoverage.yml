@@ -1,5 +1,5 @@
-id: PanoramaCVECoverage
-name: PanoramaCVECoverage
+id: PanoramaCVECoverage - Test
+name: PanoramaCVECoverage - Test
 version: -1
 fromversion: 5.0.0
 starttaskid: '0'
