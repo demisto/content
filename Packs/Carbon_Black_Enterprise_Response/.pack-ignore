@@ -14,4 +14,7 @@ ignore=BA101
 ignore=IN126
 
 [file:README.md]
-ignore=RM102
+ignore=RM102,RM104
+
+[file:CBLiveGetFile_V2.yml]
+ignore=BA108,BA109

@@ -355,13 +355,13 @@ def search_command(client, args):
     return_list_md: List[Dict] = list()
     entries = list()
     all_indicators: List[Dict] = list()
-    page = 0
     size = 1000
-    raw_data = demisto.searchIndicators(query=f'type:"{client.indicatorType}"', page=page, size=size)
+    search_indicators = IndicatorsSearcher()
+
+    raw_data = search_indicators.search_indicators_by_version(query=f'type:"{client.indicatorType}"', size=size)
     while len(raw_data.get('iocs', [])) > 0:
         all_indicators.extend(raw_data.get('iocs', []))
-        page += 1
-        raw_data = demisto.searchIndicators(query=f'type:"{client.indicatorType}"', page=page, size=size)
+        raw_data = search_indicators.search_indicators_by_version(query=f'type:"{client.indicatorType}"', size=size)
 
     for indicator in all_indicators:
         custom_fields = indicator.get('CustomFields', {})
@@ -404,19 +404,21 @@ def reputation_command(client, args):
     demisto_urls = demisto.demistoUrls()
     indicator_url = demisto_urls.get('server') + "/#/indicator/"
     all_indicators: List[Dict] = list()
-    page = 0
     size = 1000
-    raw_data: dict = demisto.searchIndicators(query=f'type:"{client.indicatorType}" value:{input_indicator}',
-                                              page=page, size=size)
+    search_indicators = IndicatorsSearcher()
+
+    raw_data: dict = search_indicators.search_indicators_by_version(
+        query=f'type:"{client.indicatorType}" value:{input_indicator}', size=size)
+
     if raw_data.get('total') == 0:
         md = 'No indicators found.'
         ec = {}
     else:
         while len(raw_data.get('iocs', [])) > 0:
             all_indicators.extend(raw_data.get('iocs', []))
-            page += 1
-            raw_data = demisto.searchIndicators(query=f'type:"{client.indicatorType}" value:{input_indicator}',
-                                                page=page, size=size)
+            raw_data = search_indicators.search_indicators_by_version(
+                query=f'type:"{client.indicatorType}" value:{input_indicator}', size=size)
+
         for indicator in all_indicators:
             custom_fields = indicator.get('CustomFields', {})
 

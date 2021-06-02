@@ -1,5 +1,8 @@
 Amazon Web Services Elastic Compute Cloud (EC2)
+
 For more information regarding the AWS EC2 service, please visit the official documentation found [here](https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/ec2.html).
+
+For detailed instructions about setting up authentication, see: [AWS Integrations - Authentication](https://xsoar.pan.dev/docs/reference/articles/aws-integrations---authentication).
 
 ## Configure AWS - EC2 on Cortex XSOAR
 
@@ -15,12 +18,14 @@ For more information regarding the AWS EC2 service, please visit the official do
 | sessionDuration | Role Session Duration | False |
 | access_key | Access Key | False |
 | secret_key | Secret Key | False |
+| timeout | The time in seconds till a timeout exception is reached. You can specify just the read timeout (for example 60) or also the connect timeout followed after a comma (for example 60,10). If a connect timeout is not specified a default of 10 second will be used. | False |
+| retries | The maximum number of retry attempts when connection or throttling errors are encountered. Set to 0 to disable retries. The default value is 5 and the limit is 10. Note: Increasing the number of retries will increase the execution time. More details about the retries strategy is available [here](https://boto3.amazonaws.com/v1/documentation/api/latest/guide/retries.html). | False |
 | proxy | Use system proxy settings | False |
 | insecure | Trust any certificate \(not secure\) | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook. 
+You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook. 
 After you successfully execute a command, a DBot message appears in the War Room with the command details. 
 All command, argument, and output descriptions are taken from the AWS documentation.
 
@@ -1621,6 +1626,7 @@ Launches the specified number of instances using an AMI for which you have permi
 | roleArn | The Amazon Resource Name (ARN) of the role to assume. | Optional | 
 | roleSessionName | An identifier for the assumed role session. | Optional | 
 | roleSessionDuration | The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role. | Optional | 
+| host_id | The dedicated host ID. | Optional |
 
 
 #### Context Output
@@ -3059,3 +3065,75 @@ Creates a Traffic Mirror session.
 | AWS.EC2.TrafficMirrorSession.Tags.Key | String | The key of the tag. | 
 | AWS.EC2.TrafficMirrorSession.Tags.Value | String | The value of the tag. | 
 | AWS.EC2.TrafficMirrorSession.ClientToken | String | Unique, case-sensitive identifier that you provide to ensure the idempotency of the request. | 
+
+
+### aws-ec2-allocate-hosts
+***
+Allocates a Dedicated Host to your account.
+
+
+#### Base Command
+
+`aws-ec2-allocate-hosts`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| availability_zone | The Availability Zone in which to allocate the Dedicated Host. | Required | 
+| quantity | The number of Dedicated Hosts to allocate to your account with these parameters. | Required | 
+| auto_placement | Indicates whether the host accepts any untargeted instance launches that match its instance type configuration, or if it only accepts Host tenancy instance launches that specify its unique host ID. The default is "on". Possible values are: on, off. | Optional | 
+| client_token | Unique, case-sensitive identifier that you provide to ensure the idempotency of the request. | Optional | 
+| instance_type | Specifies the instance type to be supported by the Dedicated Hosts. If you specify an instance type, the Dedicated Hosts support instances of the specified instance type only. If you want the Dedicated Hosts to support multiple instance types in a specific instance family, omit this parameter and specify InstanceFamily instead. You cannot specify InstanceType and InstanceFamily in the same request. | Optional | 
+| instance_family | Specifies the instance family to be supported by the Dedicated Hosts. If you specify an instance family, the Dedicated Hosts support multiple instance types within that instance family. If you want the Dedicated Hosts to support a specific instance type only, omit this parameter and specify InstanceType instead. You cannot specify InstanceFamily and InstanceType in the same request. | Optional | 
+| host_recovery | Indicates whether to enable or disable host recovery for the Dedicated Host. Host recovery is disabled by default. Possible values are: on, off. | Optional | 
+| region | The AWS Region, if not specified the default region will be used. | Optional | 
+| roleArn | The Amazon Resource Name (ARN) of the role to assume. | Optional | 
+| roleSessionName | An identifier for the assumed role session. | Optional | 
+| roleSessionDuration | The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AWS.EC2.Host.HostId | String | The ID of the allocated Dedicated Host. This is used to launch an instance onto a specific host. | 
+
+
+#### Command Example
+```!aws-ec2-allocate-hosts availability_zone="us-east-1b" quantity=1 instance_type="m5.large" ```
+
+#### Human Readable Output
+>### AWS EC2 Dedicated Host ID
+>|HostId|
+>|---|
+>| h-00548908djdsgfs|
+
+
+### aws-ec2-release-hosts
+***
+Release on demand dedicated host.
+
+
+#### Base Command
+
+`aws-ec2-release-hosts`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| host_id | A comma-separated list of IDs of the Dedicated Hosts to release. | Required | 
+| region | The AWS Region, if not specified the default region will be used. | Optional | 
+| roleArn | The Amazon Resource Name (ARN) of the role to assume. | Optional | 
+| roleSessionName | An identifier for the assumed role session. | Optional | 
+| roleSessionDuration | The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role. | Optional | 
+
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Command Example
+```!aws-ec2-release-hosts host_id="h-00548908djdsgfs" ```
+
+#### Human Readable Output
+>The host was successfully released.

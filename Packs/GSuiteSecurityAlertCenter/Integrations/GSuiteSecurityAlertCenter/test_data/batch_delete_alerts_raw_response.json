@@ -1,0 +1,11 @@
+{
+    "successAlertIds": [
+        "dummy_alertId1"
+    ],
+    "failedAlertStatus": {
+        "dummy_alertId2": {
+            "code": 5,
+            "message": "NOT_FOUND"
+        }
+    }
+}

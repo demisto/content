@@ -875,7 +875,7 @@ script:
             {to: 'IPAddresses', from: ipAddressDQ},
             {to: 'IPAddress', from: 'network_adapters'},
             {to: 'Notes', from: 'notes'},
-            {to: 'Isolated', from: 'network_isolation_enabled'},
+            {to: 'Isolated', from: 'is_isolating'},
             {to: 'OS', from: 'os_environment_display_string'},
             {to: 'Uptime', from: 'sensor_uptime'},
             {to: 'LastUpdate', from: 'last_update'},

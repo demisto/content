@@ -8380,16 +8380,13 @@ def domain_command(reliability):
     for domain in argToList(domains):
         whois_result = get_whois(domain)
         md, standard_ec, dbot_score = create_outputs(whois_result, domain, reliability)
+        dbot_score.update({Common.Domain.CONTEXT_PATH: standard_ec})
         demisto.results({
             'Type': entryTypes['note'],
             'ContentsFormat': formats['markdown'],
             'Contents': str(whois_result),
             'HumanReadable': tableToMarkdown('Whois results for {}'.format(domain), md),
-            'EntryContext': {
-                'Domain(val.Name && val.Name == obj.Name)': standard_ec,
-                'DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor && val.Vendor == obj.Vendor)':
-                    dbot_score
-            }
+            'EntryContext': dbot_score,
         })
 
 
@@ -8422,7 +8419,7 @@ def ip_command(ips, reliability):
         )
         related_feed = Common.FeedRelatedIndicators(
             value=response.get('network', {}).get('cidr'),
-            indicator_type='IP'
+            indicator_type='CIDR'
         )
         ip_output = Common.IP(
             ip=ip,
@@ -8452,16 +8449,13 @@ def whois_command(reliability):
     domain = get_domain_from_query(query)
     whois_result = get_whois(domain)
     md, standard_ec, dbot_score = create_outputs(whois_result, domain, reliability, query)
+    dbot_score.update({Common.Domain.CONTEXT_PATH: standard_ec})
     demisto.results({
         'Type': entryTypes['note'],
         'ContentsFormat': formats['markdown'],
         'Contents': str(whois_result),
         'HumanReadable': tableToMarkdown('Whois results for {}'.format(domain), md),
-        'EntryContext': {
-            'Domain(val.Name && val.Name == obj.Name)': standard_ec,
-            'DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor && val.Vendor == obj.Vendor)':
-                dbot_score
-        }
+        'EntryContext': dbot_score,
     })
 
 

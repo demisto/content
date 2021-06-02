@@ -1,14 +1,15 @@
 import concurrent.futures
 import secrets
 from enum import Enum
+from ipaddress import ip_address
 from threading import Lock
 from typing import Tuple
 
 import pytz
 import urllib3
+from CommonServerUserPython import *  # noqa
 
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
-from CommonServerUserPython import *  # noqa
 
 # Disable insecure warnings
 urllib3.disable_warnings()  # pylint: disable=no-member
@@ -315,7 +316,8 @@ class Client(BaseClient):
         else:
             auth = (username, password)
             self.base_headers = {'Version': api_version}
-        super().__init__(base_url=server, verify=verify, proxy=proxy, auth=auth)
+        base_url = urljoin(server, '/api')
+        super().__init__(base_url=base_url, verify=verify, proxy=proxy, auth=auth)
         self.password = password
         self.server = server
 
@@ -722,6 +724,15 @@ def build_headers(first_headers: List[str], all_headers: Set[str]) -> List[str]:
     return first_headers + list(set.difference(all_headers, first_headers))
 
 
+def is_valid_ip(ip: str) -> bool:
+    try:
+        ip_address(ip)
+        return True
+    except ValueError:
+        print_debug_msg(f'IP {ip} was found invalid.')
+        return False
+
+
 def get_offense_types(client: Client, offenses: List[Dict]) -> Dict:
     """
     Receives list of offenses, and performs API call to QRadar service to retrieve the offense type names
@@ -865,8 +876,12 @@ def enrich_offense_with_assets(client: Client, offense_ips: List[str]) -> List[D
 
     def get_assets_for_ips_batch(b: List):
         filter_query = ' or '.join([f'interfaces contains ip_addresses contains value="{ip}"' for ip in b])
-        return client.assets_list(filter_=filter_query)
+        try:
+            return client.assets_list(filter_=filter_query)
+        except Exception as e:
+            raise DemistoException(f'Error occurred during asset enrichment. Query: {filter_query}') from e
 
+    offense_ips = [offense_ip for offense_ip in offense_ips if is_valid_ip(offense_ip)]
     # Submit addresses in batches to avoid overloading QRadar service
     assets = [asset for b in batch(offense_ips[:OFF_ENRCH_LIMIT], batch_size=int(BATCH_SIZE))
               for asset in get_assets_for_ips_batch(b)]
@@ -906,11 +921,12 @@ def enrich_offenses_result(client: Client, offenses: Any, enrich_ip_addresses: b
     destination_addresses_id_ip_dict = get_offense_addresses(client, offenses, True) if enrich_ip_addresses else dict()
 
     def create_enriched_offense(offense: Dict) -> Dict:
+        link_to_offense_suffix = '/console/do/sem/offensesummary?appName=Sem&pageId=OffenseSummary&summaryId'\
+                                 f'''={offense.get('id')}'''
         basic_enriches = {
             'offense_type': offense_types_id_name_dict.get(offense.get('offense_type')),
             'closing_reason_id': closing_reasons_id_name_dict.get(offense.get('closing_reason_id')),
-            'LinkToOffense': f'{client.server}/console/do/sem/offensesummary?'
-                             f'''appName=Sem&pageId=OffenseSummary&summaryId={offense.get('id')}''',
+            'LinkToOffense': urljoin(client.server, link_to_offense_suffix),
         }
 
         domain_enrich = {
@@ -2258,7 +2274,8 @@ def qradar_indicators_upload_command(client: Client, args: Dict) -> CommandResul
         else:
             raise e
 
-    indicators = demisto.searchIndicators(query=query, page=page, size=limit).get('iocs', [])
+    search_indicators = IndicatorsSearcher(page=page)
+    indicators = search_indicators.search_indicators_by_version(query=query, size=limit).get('iocs', [])
     indicators_data = [{'Indicator Value': indicator.get('value'), 'Indicator Type': indicator.get('indicator_type')}
                        for indicator in indicators if 'value' in indicator and 'indicator_type' in indicator]
     indicator_values: List[Any] = [indicator.get('Indicator Value') for indicator in indicators_data]
@@ -2709,7 +2726,7 @@ def main() -> None:
         except Exception as e:
             raise DemistoException(f'Failed to parse advanced params. Error: {e}')
 
-    server = urljoin(params.get('server'), '/api')
+    server = params.get('server')
     verify_certificate = not params.get('insecure', False)
     proxy = params.get('proxy', False)
     api_version = params.get('api_version')

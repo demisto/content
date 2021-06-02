@@ -14,6 +14,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "16"
@@ -22,7 +23,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 50
+          "y": -20
         }
       }
     note: false
@@ -46,7 +47,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "4"
+      - "15"
     scriptarguments:
       all:
         simple: "yes"
@@ -237,6 +238,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {
@@ -508,10 +510,11 @@ view: |-
         "height": 2075,
         "width": 380,
         "x": 50,
-        "y": 50
+        "y": -20
       }
     }
   }
 inputs: []
 outputs: []
 fromversion: 5.0.0
+description: Test Microsoft Cloud App Security integration

@@ -507,6 +507,23 @@ class TestMergeVersionBlocks:
         assert name == 'fake_integration'
         assert description == 'Use the Zoom integration manage your Zoom users and meetings'
 
+    def test_get_new_entity_record_layoutscontainer(self):
+        """
+        Given
+            fake layoutscontainer path.
+
+        When
+            getting entity record for layoutscontainer.
+
+        Then
+            Ensure the method is valid and returns the layoutscontainer name and the fromversion.
+        """
+        name, description = get_new_entity_record(os.path.join(TEST_DATA_PATH,
+                                                               'FakePack5', 'Layouts', 'layoutscontainer-fake.json'))
+
+        assert name == 'layoutscontainer-fake'
+        assert description == '(Available from Cortex XSOAR 6.0.0)'
+
     def test_get_new_entity_record_layout(self):
         """
         Given

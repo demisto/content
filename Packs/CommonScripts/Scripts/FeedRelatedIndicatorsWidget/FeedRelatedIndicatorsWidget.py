@@ -41,8 +41,8 @@ def feed_related_indicator(args) -> CommandResults:
 
     for item in feed_related_indicators:
         ioc_value = item.get('value', '')
-
-        results = demisto.searchIndicators(value=ioc_value).get('iocs', [])
+        search_indicators = IndicatorsSearcher()
+        results = search_indicators.search_indicators_by_version(value=ioc_value).get('iocs', [])
 
         if results:
             ioc_id = results[0].get('id')

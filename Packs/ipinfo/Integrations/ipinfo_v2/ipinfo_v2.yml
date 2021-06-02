@@ -1,0 +1,174 @@
+category: Data Enrichment & Threat Intelligence
+commonfields:
+  id: ipinfo_v2
+  version: -1
+configuration:
+- name: credentials
+  additionalinfo: The API key to use for the connection.
+  hiddenusername: true
+  displaypassword: API Token
+  required: false
+  type: 9
+- name: integrationReliability
+  additionalinfo: Reliability of the source providing the intelligence data.
+  defaultvalue: C - Fairly reliable
+  display: Source Reliability
+  options:
+  - A+ - 3rd party enrichment
+  - A - Completely reliable
+  - B - Usually reliable
+  - C - Fairly reliable
+  - D - Not usually reliable
+  - E - Unreliable
+  - F - Reliability cannot be judged
+  required: true
+  type: 15
+- name: base_url
+  defaultvalue: https://ipinfo.io
+  display: Base URL
+  hidden: false
+  required: true
+  type: 0
+- name: insecure
+  display: Trust any certificate (not secure)
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+description: Use the IPinfo.io API to get data about an IP address.
+display: IPinfo v2
+name: ipinfo_v2
+script:
+  commands:
+  - arguments:
+    - default: true
+      description: IP address to query, e.g., 1.1.1.1.
+      isArray: false
+      name: ip
+      required: true
+      secret: false
+    deprecated: false
+    description: Check IP reputation (when information is available, returns a JSON
+      with details). Uses all configured Threat Intelligence feeds.
+    execution: false
+    name: ip
+    outputs:
+    - contextPath: IPinfo.IP.Address
+      description: The IP address.
+      type: String
+    - contextPath: IPinfo.IP.Hostname
+      description: The IP hostname.
+      type: String
+    - contextPath: IPinfo.IP.ASN
+      description: The IP ASN.
+      type: String
+    - contextPath: IPinfo.IP.ASOwner
+      description: The IP AS owner.
+      type: String
+    - contextPath: IPinfo.IP.Organization.Name
+      description: The IP organization name (Only available in some IPinfo.io plans).
+      type: String
+    - contextPath: IPinfo.IP.Organization.Type
+      description: The IP organization type (Only available in some IPinfo.io plans).
+      type: String
+    - contextPath: IPinfo.IP.Geo.Location
+      description: The IP geographic location (coordinates as lat:lon).
+      type: String
+    - contextPath: IPinfo.IP.Geo.Country
+      description: The IP country.
+      type: String
+    - contextPath: IPinfo.IP.Geo.Description
+      description: The IP location as <City, Region, Postal Code, Country>.
+      type: String
+    - contextPath: IPinfo.IP.Registrar.Abuse.Address
+      description: The physical address registered for receiving abuse reports for
+        the IP. (Only available in some IPinfo.io plans).
+      type: String
+    - contextPath: IPinfo.IP.Registrar.Abuse.Country
+      description: The country where abuse reports are received for the IP. (Only
+        available in some IPinfo.io plans).
+      type: String
+    - contextPath: IPinfo.IP.Registrar.Abuse.Email
+      description: The email address for abuse reports provided by the IP. (Only available
+        in some IPinfo.io plans).
+      type: String
+    - contextPath: IPinfo.IP.Registrar.Abuse.Name
+      description: The name of the abuse report handler received for the IP. (Only
+        available in some IPinfo.io plans).
+      type: String
+    - contextPath: IPinfo.IP.Registrar.Abuse.Network
+      description: The IP range relevant for abuse inquiries provided for the IP. (Only
+        available in some IPinfo.io plans).
+      type: String
+
+    - contextPath: IP.Address
+      description: The IP address.
+      type: String
+    - contextPath: IP.Hostname
+      description: The IP hostname.
+      type: String
+    - contextPath: IP.ASN
+      description: The IP ASN.
+      type: String
+    - contextPath: IP.Tags
+      description: Tags related the IP use (hosting, proxy, tor, vpn).
+      type: String
+    - contextPath: IP.FeedRelatedIndicators.value
+      description: Names of indicators associated with the IP.
+      type: String
+    - contextPath: IP.FeedRelatedIndicators.type
+      description: Types of indicators associated with the IP.
+      type: String
+    - contextPath: IP.Relationships.EntityA
+      description: The source of the relationship.
+      type: string
+    - contextPath: IP.Relationships.EntityB
+      description: The destination of the relationship.
+      type: string
+    - contextPath: IP.Relationships.Relationship
+      description: The name of the relationship.
+      type: string
+    - contextPath: IP.Relationships.EntityAType
+      description: The type of the source of the relationship.
+      type: string
+    - contextPath: IP.Relationships.EntityBType
+      description: The type of the destination of the relationship.
+      type: string
+    - contextPath: IP.Geo.Location
+      description: The IP geographic location (coordinates as lat:lon)
+      type: String
+    - contextPath: IP.Geo.Country
+      description: The IP country.
+      type: String
+    - contextPath: IP.Geo.Description
+      description: The IP location as <City, Region, Postal Code, Country>.
+      type: String
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+    - contextPath: DBotScore.Reliability
+      description: How reliable the score is (for example, "C - fairly reliable").
+      type: String
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
+  dockerimage: demisto/python3:3.9.5.20070
+  feed: false
+  isfetch: false
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+tests:
+- IPInfo_v2Test
+fromversion: 5.5.0

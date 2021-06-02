@@ -35,6 +35,7 @@ configuration:
   name: proxy
   required: false
   type: 8
+defaultclassifier: 'null'
 description: Use Anomali ThreatStream to query and submit threats.
 display: Anomali ThreatStream v2
 name: Anomali ThreatStream v2
@@ -139,6 +140,12 @@ script:
     - contextPath: IP.Malicious.Vendor
       description: The vendor that reported the indicator as malicious.
       type: String
+    - contextPath: ThreatStream.IP.Tags
+      description: Tags assigned to the IP.
+      type: Unknown
+    - contextPath: IP.Tags
+      description: (List) Tags of the IP.
+      type: Unknown
   - arguments:
     - default: true
       description: The domain name to check.
@@ -253,6 +260,12 @@ script:
     - contextPath: DBotScore.Score
       description: The actual score.
       type: Number
+    - contextPath: ThreatStream.Domain.Tags
+      description: Tags assigned to the domain.
+      type: Unknown
+    - contextPath: Domain.Tags
+      description: (List) Tags of the domain.
+      type: Unknown
   - arguments:
     - default: true
       description: The hash of file to check.
@@ -263,9 +276,8 @@ script:
     - auto: PREDEFINED
       default: false
       description: If the severity is greater than or equal to the threshold, the
-        hash of file is considered as malicious. This argument will override the
-        default threshold defined as a parameter. Can be "low", "medium", "high",
-        or "very-high".
+        hash of file is considered as malicious. This argument will override the default
+        threshold defined as a parameter. Can be "low", "medium", "high", or "very-high".
       isArray: false
       name: threshold
       predefined:
@@ -352,6 +364,12 @@ script:
     - contextPath: ThreatStream.File.Source
       description: The source of the indicator.
       type: String
+    - contextPath: ThreatStream.File.Tags
+      description: Tags assigned to the file.
+      type: Unknown
+    - contextPath: File.Tags
+      description: (List) Tags of the file.
+      type: Unknown
   - arguments:
     - default: false
       description: The email address to check.
@@ -426,6 +444,9 @@ script:
         The date and time when the indicator was last updated. The date format is: YYYYMMDDThhmmss, where "T" denotes the start of the value
         for time, in UTC time.
       type: String
+    - contextPath: ThreatStream.EmailReputation.Tags
+      description: Tags assigned to the email.
+      type: Unknown
   - arguments:
     - auto: PREDEFINED
       default: false
@@ -1613,7 +1634,13 @@ script:
     - contextPath: ThreatStream.URL.Severity
       description: The indicator severity ("very-high", "high", "medium", or "low").
       type: String
-  dockerimage: demisto/emoji:1.0.0.12410
+    - contextPath: ThreatStream.URL.Tags
+      description: Tags assigned to the URL.
+      type: Unknown
+    - contextPath: URL.Tags
+      description: (List) Tags of the URL.
+      type: Unknown
+  dockerimage: demisto/emoji:1.0.0.19032
   feed: false
   isfetch: false
   longRunning: false

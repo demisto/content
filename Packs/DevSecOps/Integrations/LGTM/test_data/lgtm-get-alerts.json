@@ -1,0 +1,610 @@
+{
+    "$schema": "https://raw.githubusercontent.com/oasis-tcs/sarif-spec/master/Schemata/sarif-schema-2.1.0.json",
+    "version": "2.1.0",
+    "runs": [
+        {
+            "tool": {
+                "driver": {
+                    "name": "LGTM.com",
+                    "organization": "Semmle",
+                    "version": "1.26.0-SNAPSHOT",
+                    "rules": [
+                        {
+                            "id": "com.lgtm/python-queries:py/call/wrong-arguments",
+                            "name": "com.lgtm/python-queries:py/call/wrong-arguments",
+                            "shortDescription": {
+                                "text": "Wrong number of arguments in a call"
+                            },
+                            "fullDescription": {
+                                "text": "Using too many or too few arguments in a call to a function will result in a TypeError at runtime."
+                            },
+                            "defaultConfiguration": {
+                                "level": "error"
+                            },
+                            "properties": {
+                                "tags": [
+                                    "reliability",
+                                    "correctness",
+                                    "external/cwe/cwe-685"
+                                ],
+                                "kind": "problem",
+                                "precision": "very-high",
+                                "sub-severity": "low",
+                                "problem.severity": "error"
+                            }
+                        },
+                        {
+                            "id": "com.lgtm/python-queries:py/multiple-definition",
+                            "name": "com.lgtm/python-queries:py/multiple-definition",
+                            "shortDescription": {
+                                "text": "Variable defined multiple times"
+                            },
+                            "fullDescription": {
+                                "text": "Assignment to a variable occurs multiple times without any intermediate use of that variable"
+                            },
+                            "defaultConfiguration": {},
+                            "properties": {
+                                "tags": [
+                                    "maintainability",
+                                    "useless-code",
+                                    "external/cwe/cwe-563"
+                                ],
+                                "kind": "problem",
+                                "precision": "very-high",
+                                "sub-severity": "low",
+                                "problem.severity": "warning"
+                            }
+                        },
+                        {
+                            "id": "com.lgtm/python-queries:py/unused-local-variable",
+                            "name": "com.lgtm/python-queries:py/unused-local-variable",
+                            "shortDescription": {
+                                "text": "Unused local variable"
+                            },
+                            "fullDescription": {
+                                "text": "Local variable is defined but not used"
+                            },
+                            "defaultConfiguration": {
+                                "level": "note"
+                            },
+                            "properties": {
+                                "tags": [
+                                    "maintainability",
+                                    "useless-code",
+                                    "external/cwe/cwe-563"
+                                ],
+                                "kind": "problem",
+                                "precision": "very-high",
+                                "sub-severity": "high",
+                                "problem.severity": "recommendation"
+                            }
+                        },
+                        {
+                            "id": "com.lgtm/python-queries:py/clear-text-storage-sensitive-data",
+                            "name": "com.lgtm/python-queries:py/clear-text-storage-sensitive-data",
+                            "shortDescription": {
+                                "text": "Clear-text storage of sensitive information"
+                            },
+                            "fullDescription": {
+                                "text": "Sensitive information stored without encryption or hashing can expose it to an attacker."
+                            },
+                            "defaultConfiguration": {
+                                "level": "error"
+                            },
+                            "properties": {
+                                "tags": [
+                                    "security",
+                                    "external/cwe/cwe-312",
+                                    "external/cwe/cwe-315",
+                                    "external/cwe/cwe-359"
+                                ],
+                                "kind": "path-problem",
+                                "precision": "high",
+                                "problem.severity": "error"
+                            }
+                        }
+                    ]
+                }
+            },
+            "artifacts": [
+                {
+                    "location": {
+                        "uri": "module1.py",
+                        "uriBaseId": "%SRCROOT%",
+                        "index": 0
+                    }
+                }
+            ],
+            "results": [
+                {
+                    "ruleId": "com.lgtm/python-queries:py/call/wrong-arguments",
+                    "ruleIndex": 0,
+                    "message": {
+                        "text": "Call to [function load_from_config](1) with too many arguments; should be no more than 1."
+                    },
+                    "locations": [
+                        {
+                            "physicalLocation": {
+                                "artifactLocation": {
+                                    "uri": "module1.py",
+                                    "uriBaseId": "%SRCROOT%",
+                                    "index": 0
+                                },
+                                "region": {
+                                    "startLine": 112,
+                                    "startColumn": 23,
+                                    "endColumn": 70
+                                }
+                            }
+                        }
+                    ],
+                    "partialFingerprints": {
+                        "primaryLocationLineHash": "a8e1daf8b5008d1d:1",
+                        "primaryLocationStartColumnFingerprint": "18"
+                    },
+                    "relatedLocations": [
+                        {
+                            "id": 1,
+                            "physicalLocation": {
+                                "artifactLocation": {
+                                    "uri": "module1.py",
+                                    "uriBaseId": "%SRCROOT%",
+                                    "index": 0
+                                },
+                                "region": {
+                                    "startLine": 101,
+                                    "endColumn": 28
+                                }
+                            },
+                            "message": {
+                                "text": "function load_from_config"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "ruleId": "com.lgtm/python-queries:py/call/wrong-arguments",
+                    "ruleIndex": 0,
+                    "message": {
+                        "text": "Call to [function load_from_config](1) with too many arguments; should be no more than 1."
+                    },
+                    "locations": [
+                        {
+                            "physicalLocation": {
+                                "artifactLocation": {
+                                    "uri": "module1.py",
+                                    "uriBaseId": "%SRCROOT%",
+                                    "index": 0
+                                },
+                                "region": {
+                                    "startLine": 113,
+                                    "startColumn": 12,
+                                    "endColumn": 49
+                                }
+                            }
+                        }
+                    ],
+                    "partialFingerprints": {
+                        "primaryLocationLineHash": "5c8cfaabeac1e16d:1",
+                        "primaryLocationStartColumnFingerprint": "7"
+                    },
+                    "relatedLocations": [
+                        {
+                            "id": 1,
+                            "physicalLocation": {
+                                "artifactLocation": {
+                                    "uri": "module1.py",
+                                    "uriBaseId": "%SRCROOT%",
+                                    "index": 0
+                                },
+                                "region": {
+                                    "startLine": 101,
+                                    "endColumn": 28
+                                }
+                            },
+                            "message": {
+                                "text": "function load_from_config"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "ruleId": "com.lgtm/python-queries:py/multiple-definition",
+                    "ruleIndex": 1,
+                    "message": {
+                        "text": "This assignment to 'code_execution' is unnecessary as it is redefined [here](1) before this value is used."
+                    },
+                    "locations": [
+                        {
+                            "physicalLocation": {
+                                "artifactLocation": {
+                                    "uri": "module1.py",
+                                    "uriBaseId": "%SRCROOT%",
+                                    "index": 0
+                                },
+                                "region": {
+                                    "startLine": 24,
+                                    "startColumn": 5,
+                                    "endColumn": 19
+                                }
+                            }
+                        }
+                    ],
+                    "partialFingerprints": {
+                        "primaryLocationLineHash": "8180e24b4613f9a2:1",
+                        "primaryLocationStartColumnFingerprint": "4"
+                    },
+                    "relatedLocations": [
+                        {
+                            "id": 1,
+                            "physicalLocation": {
+                                "artifactLocation": {
+                                    "uri": "module1.py",
+                                    "uriBaseId": "%SRCROOT%",
+                                    "index": 0
+                                },
+                                "region": {
+                                    "startLine": 31,
+                                    "startColumn": 5,
+                                    "endColumn": 19
+                                }
+                            },
+                            "message": {
+                                "text": "here"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "ruleId": "com.lgtm/python-queries:py/multiple-definition",
+                    "ruleIndex": 1,
+                    "message": {
+                        "text": "This assignment to 'user' is unnecessary as it is redefined [here](1) before this value is used."
+                    },
+                    "locations": [
+                        {
+                            "physicalLocation": {
+                                "artifactLocation": {
+                                    "uri": "module1.py",
+                                    "uriBaseId": "%SRCROOT%",
+                                    "index": 0
+                                },
+                                "region": {
+                                    "startLine": 46,
+                                    "startColumn": 9,
+                                    "endColumn": 13
+                                }
+                            }
+                        }
+                    ],
+                    "partialFingerprints": {
+                        "primaryLocationLineHash": "5358472308e96529:1",
+                        "primaryLocationStartColumnFingerprint": "0"
+                    },
+                    "relatedLocations": [
+                        {
+                            "id": 1,
+                            "physicalLocation": {
+                                "artifactLocation": {
+                                    "uri": "module1.py",
+                                    "uriBaseId": "%SRCROOT%",
+                                    "index": 0
+                                },
+                                "region": {
+                                    "startLine": 50,
+                                    "startColumn": 9,
+                                    "endColumn": 13
+                                }
+                            },
+                            "message": {
+                                "text": "here"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "ruleId": "com.lgtm/python-queries:py/multiple-definition",
+                    "ruleIndex": 1,
+                    "message": {
+                        "text": "This assignment to 'user' is unnecessary as it is redefined [here](1) before this value is used."
+                    },
+                    "locations": [
+                        {
+                            "physicalLocation": {
+                                "artifactLocation": {
+                                    "uri": "module1.py",
+                                    "uriBaseId": "%SRCROOT%",
+                                    "index": 0
+                                },
+                                "region": {
+                                    "startLine": 50,
+                                    "startColumn": 9,
+                                    "endColumn": 13
+                                }
+                            }
+                        }
+                    ],
+                    "partialFingerprints": {
+                        "primaryLocationLineHash": "1805a8f6fd5b76df:1",
+                        "primaryLocationStartColumnFingerprint": "0"
+                    },
+                    "relatedLocations": [
+                        {
+                            "id": 1,
+                            "physicalLocation": {
+                                "artifactLocation": {
+                                    "uri": "module1.py",
+                                    "uriBaseId": "%SRCROOT%",
+                                    "index": 0
+                                },
+                                "region": {
+                                    "startLine": 54,
+                                    "startColumn": 9,
+                                    "endColumn": 13
+                                }
+                            },
+                            "message": {
+                                "text": "here"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "ruleId": "com.lgtm/python-queries:py/multiple-definition",
+                    "ruleIndex": 1,
+                    "message": {
+                        "text": "This assignment to 'send_encrypted' is unnecessary as it is redefined [here](1) before this value is used."
+                    },
+                    "locations": [
+                        {
+                            "physicalLocation": {
+                                "artifactLocation": {
+                                    "uri": "module1.py",
+                                    "uriBaseId": "%SRCROOT%",
+                                    "index": 0
+                                },
+                                "region": {
+                                    "startLine": 223,
+                                    "startColumn": 5,
+                                    "endColumn": 19
+                                }
+                            }
+                        }
+                    ],
+                    "partialFingerprints": {
+                        "primaryLocationLineHash": "552c6bffbe6cb915:1",
+                        "primaryLocationStartColumnFingerprint": "4"
+                    },
+                    "relatedLocations": [
+                        {
+                            "id": 1,
+                            "physicalLocation": {
+                                "artifactLocation": {
+                                    "uri": "module1.py",
+                                    "uriBaseId": "%SRCROOT%",
+                                    "index": 0
+                                },
+                                "region": {
+                                    "startLine": 230,
+                                    "startColumn": 5,
+                                    "endColumn": 19
+                                }
+                            },
+                            "message": {
+                                "text": "here"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "ruleId": "com.lgtm/python-queries:py/unused-local-variable",
+                    "ruleIndex": 2,
+                    "message": {
+                        "text": "The value assigned to local variable 'user' is never used."
+                    },
+                    "locations": [
+                        {
+                            "physicalLocation": {
+                                "artifactLocation": {
+                                    "uri": "module1.py",
+                                    "uriBaseId": "%SRCROOT%",
+                                    "index": 0
+                                },
+                                "region": {
+                                    "startLine": 54,
+                                    "startColumn": 9,
+                                    "endColumn": 13
+                                }
+                            }
+                        }
+                    ],
+                    "partialFingerprints": {
+                        "primaryLocationLineHash": "d37b5c11bd142430:1",
+                        "primaryLocationStartColumnFingerprint": "0"
+                    }
+                },
+                {
+                    "ruleId": "com.lgtm/python-queries:py/unused-local-variable",
+                    "ruleIndex": 2,
+                    "message": {
+                        "text": "The value assigned to local variable 'data' is never used."
+                    },
+                    "locations": [
+                        {
+                            "physicalLocation": {
+                                "artifactLocation": {
+                                    "uri": "module1.py",
+                                    "uriBaseId": "%SRCROOT%",
+                                    "index": 0
+                                },
+                                "region": {
+                                    "startLine": 64,
+                                    "startColumn": 5,
+                                    "endColumn": 9
+                                }
+                            }
+                        }
+                    ],
+                    "partialFingerprints": {
+                        "primaryLocationLineHash": "b60374c7564cf3b5:1",
+                        "primaryLocationStartColumnFingerprint": "0"
+                    }
+                },
+                {
+                    "ruleId": "com.lgtm/python-queries:py/unused-local-variable",
+                    "ruleIndex": 2,
+                    "message": {
+                        "text": "The value assigned to local variable 'data' is never used."
+                    },
+                    "locations": [
+                        {
+                            "physicalLocation": {
+                                "artifactLocation": {
+                                    "uri": "module1.py",
+                                    "uriBaseId": "%SRCROOT%",
+                                    "index": 0
+                                },
+                                "region": {
+                                    "startLine": 73,
+                                    "startColumn": 5,
+                                    "endColumn": 9
+                                }
+                            }
+                        }
+                    ],
+                    "partialFingerprints": {
+                        "primaryLocationLineHash": "269b1675deaafb50:1",
+                        "primaryLocationStartColumnFingerprint": "0"
+                    }
+                },
+                {
+                    "ruleId": "com.lgtm/python-queries:py/unused-local-variable",
+                    "ruleIndex": 2,
+                    "message": {
+                        "text": "The value assigned to local variable 'data' is never used."
+                    },
+                    "locations": [
+                        {
+                            "physicalLocation": {
+                                "artifactLocation": {
+                                    "uri": "module1.py",
+                                    "uriBaseId": "%SRCROOT%",
+                                    "index": 0
+                                },
+                                "region": {
+                                    "startLine": 85,
+                                    "startColumn": 5,
+                                    "endColumn": 9
+                                }
+                            }
+                        }
+                    ],
+                    "partialFingerprints": {
+                        "primaryLocationLineHash": "c32d3d378ff25d1d:1",
+                        "primaryLocationStartColumnFingerprint": "0"
+                    }
+                },
+                {
+                    "ruleId": "com.lgtm/python-queries:py/clear-text-storage-sensitive-data",
+                    "ruleIndex": 3,
+                    "message": {
+                        "text": "Sensitive data from [a request parameter containing a password](1) is stored here."
+                    },
+                    "locations": [
+                        {
+                            "physicalLocation": {
+                                "artifactLocation": {
+                                    "uri": "module1.py",
+                                    "uriBaseId": "%SRCROOT%",
+                                    "index": 0
+                                },
+                                "region": {
+                                    "startLine": 158,
+                                    "startColumn": 33,
+                                    "endColumn": 41
+                                }
+                            }
+                        }
+                    ],
+                    "partialFingerprints": {
+                        "primaryLocationLineHash": "ba844552ea173e36:1",
+                        "primaryLocationStartColumnFingerprint": "28"
+                    },
+                    "codeFlows": [
+                        {
+                            "threadFlows": [
+                                {
+                                    "locations": [
+                                        {
+                                            "location": {
+                                                "physicalLocation": {
+                                                    "artifactLocation": {
+                                                        "uri": "module1.py",
+                                                        "uriBaseId": "%SRCROOT%",
+                                                        "index": 0
+                                                    },
+                                                    "region": {
+                                                        "startLine": 156,
+                                                        "startColumn": 16,
+                                                        "endColumn": 44
+                                                    }
+                                                },
+                                                "message": {
+                                                    "text": "Step 1"
+                                                }
+                                            }
+                                        },
+                                        {
+                                            "location": {
+                                                "physicalLocation": {
+                                                    "artifactLocation": {
+                                                        "uri": "module1.py",
+                                                        "uriBaseId": "%SRCROOT%",
+                                                        "index": 0
+                                                    },
+                                                    "region": {
+                                                        "startLine": 158,
+                                                        "startColumn": 33,
+                                                        "endColumn": 41
+                                                    }
+                                                },
+                                                "message": {
+                                                    "text": "Step 2"
+                                                }
+                                            }
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    ],
+                    "relatedLocations": [
+                        {
+                            "id": 1,
+                            "physicalLocation": {
+                                "artifactLocation": {
+                                    "uri": "module1.py",
+                                    "uriBaseId": "%SRCROOT%",
+                                    "index": 0
+                                },
+                                "region": {
+                                    "startLine": 156,
+                                    "startColumn": 16,
+                                    "endColumn": 44
+                                }
+                            },
+                            "message": {
+                                "text": "a request parameter containing a password"
+                            }
+                        }
+                    ]
+                }
+            ],
+            "columnKind": "unicodeCodePoints",
+            "properties": {
+                "semmle.formatSpecifier": "2.1.0",
+                "semmle.sourceLanguage": "python"
+            }
+        }
+    ]
+}
