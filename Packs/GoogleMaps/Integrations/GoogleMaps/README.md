@@ -1,5 +1,4 @@
-Use the Google Maps API.
-This integration was integrated and tested with version xx of GoogleMaps
+Use the Google Maps API. This integration was integrated and tested with version 3.43 of the Google Maps API. This integration always uses the latest API version.
 ## Configure GoogleMaps on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
@@ -35,6 +34,8 @@ Returns the coordinates of the given physical address.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
+| GoogleMaps.SearchAddress | String | The addresss provided as input. | 
+| GoogleMaps.Address | String | Address of the geocoded location. | 
 | GoogleMaps.lat | Number | Latitude of the provided location. | 
 | GoogleMaps.lng | Number | Longitude of the provided location | 
 

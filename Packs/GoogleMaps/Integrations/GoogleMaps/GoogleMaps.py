@@ -2,6 +2,7 @@ from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-impor
 from CommonServerUserPython import *  # noqa
 
 # Disable insecure warnings
+OUTPUTS_PREFIX = 'GoogleMaps'
 
 requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
 
@@ -16,36 +17,43 @@ class Client(BaseClient):
                          proxy=proxy)
         self.api_key = api_key
 
-    def google_maps_geocode(self, address: str) -> List[CommandResults]:
+    def google_maps_geocode(self, search_address: str) -> List[CommandResults]:
         # noinspection PyTypeChecker
-        response: Dict[str, Any] = self._http_request(method='GET',
-                                                      url_suffix='geocode/json?',
-                                                      params=assign_params(address=address,
-                                                                           key=self.api_key))
-        if 'error_message' in response:
-            return_error(response['error_message'], str(response))
-            return []  # todo check
+        response: Dict[str, Any] = self._http_request(method='GET', url_suffix='geocode/json?',
+                                                      params=assign_params(address=search_address, key=self.api_key))
 
-        if response['status'] == 'ZERO_RESULTS':  # todo perhaps if not response['results']?
-            return_results('No matching places were found.')
-            return []  # todo check
+        status = demisto.get(response, 'status')
 
-        coordinate_dict = response['results'][0]['geometry']['location']
-        response_address = response['results'][0]['formatted_address']
+        if status == 'ZERO_RESULTS':
+            return [CommandResults(readable_output='No matching places were found.')]
 
-        note_outputs = {**coordinate_dict,
-                        **{'Input_Address': address, 'Address': response_address}}
+        elif status != 'OK':  # happens when there are zero results (handled above) or an error
+            error_message = demisto.get(response, 'error_message') or 'See response for details.'
+            raise DemistoException(message=error_message, res=response)
 
-        result_note = CommandResults(outputs_prefix='GoogleMaps',
-                                     outputs_key_field=['lat', 'lng'],
-                                     outputs=note_outputs,
-                                     entry_type=EntryType.NOTE,
-                                     raw_response=response)
+        else:
+            coordinate_dict = response['results'][0]['geometry']['location']
+            response_address = response['results'][0]['formatted_address']
 
-        result_map = CommandResults(entry_type=EntryType.MAP_ENTRY_TYPE,
-                                    raw_response=coordinate_dict)
+            note_outputs = {**coordinate_dict, **{'SearchAddress': search_address, 'Address': response_address}}
 
-        return [result_note, result_map]
+            # noinspection PyTypeChecker
+            readable_output = tableToMarkdown(name='Results',
+                                              t=note_outputs,
+                                              headers=list(note_outputs.keys()),
+                                              headerTransform=pascalToSpace)
+
+            result_note = CommandResults(outputs_prefix=OUTPUTS_PREFIX,
+                                         outputs_key_field=['lat', 'lng'],
+                                         outputs=note_outputs,
+                                         readable_output=readable_output,
+                                         entry_type=EntryType.NOTE,
+                                         raw_response=response)
+
+            result_map = CommandResults(entry_type=EntryType.MAP_ENTRY_TYPE,
+                                        raw_response=coordinate_dict)
+
+            return [result_note, result_map]
 
 
 def google_maps_geocode_command(client: Client, address: str) -> List[CommandResults]:
@@ -64,7 +72,7 @@ def main():
     command = demisto.command()
 
     proxy = demisto.get(params, 'proxy') or False
-    api_key = demisto.get(params, 'api_key.password') or '' # todo
+    api_key = demisto.get(params, 'api_key.password') or ''
     insecure = demisto.get(params, 'insecure') or False
 
     demisto.debug(f'Command being called is {command}')
@@ -82,9 +90,13 @@ def main():
             raise NotImplementedError(f"command '{command}' is not supported")
 
     except Exception as e:
-        demisto.error(traceback.format_exc())  # print the traceback
-        return_error(f'Failed to execute {command} command.'
-                     f'\nError:\n{str(e)}')
+        demisto.error(traceback.format_exc())  # prints the traceback
+
+        error_parts = (f'Failed to execute the {command} command.', 'Error:', {str(e)})
+        if isinstance(e, DemistoException):
+            error_parts += f'Raw response:,{e.res}'
+
+        return_error('\n'.join(error_parts))
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
