@@ -119,19 +119,17 @@ def remove_test_playbooks_from_signatures(path, filenames):
 def get_zipped_packs_names(zip_path):
     zipped_packs = []
     packs_path = zip_path
-    print("get_zipped_packs_names")
-    for entry in os.scandir(packs_path):
-        print(entry)
-    for entry in os.scandir(packs_path):
-        print(entry)
     for subdir, dirs, files in os.walk(packs_path):
         for filename in files:
             filepath = subdir + os.sep + filename
             if filepath.endswith(".zip"):
                 print(f"Found zip file of {filepath}")
-                zipped_packs.append({Path(filepath).stem, filepath})
+                zipped_packs.append({Path(filepath).stem: filepath})
             else:
                 os.remove(filepath)
+    if not zipped_packs:
+        logging.critical('Did not find any pack to download from GCP.')
+        sys.exit(1)
     return zipped_packs
 
 
@@ -155,7 +153,6 @@ def download_packs_from_gcp(storage_bucket, gcp_path, destination_path, circle_b
     try:
         process = subprocess.Popen(["Tests/scripts/cp_gcp_dir.sh", src_path, destination_path])
         out, err = process.communicate()
-        errcode = process.returncode
         if out:
             print("out" + out.decode('utf-8'))
         if err:
@@ -284,7 +281,11 @@ def main():
         logging.exception('Failed downloading packs')
         success = False
 
-    zipped_packs = get_zipped_packs_names(zip_path)
+    try:
+        zipped_packs = get_zipped_packs_names(zip_path)
+    except Exception:
+        logging.exception('No zip files were found')
+        success = False
 
     if remove_test_playbooks:
         try:
