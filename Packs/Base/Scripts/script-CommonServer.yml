@@ -2148,7 +2148,7 @@ script: >-
           if (withVersion) {
               return integrationContext;
           } else {
-              integrationContext.context;
+              return integrationContext.context;
           }
       } else {
           return getIntegrationContext();
