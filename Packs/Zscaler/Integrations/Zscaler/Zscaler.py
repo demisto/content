@@ -682,7 +682,7 @@ def add_or_remove_urls_from_category(action, urls, category_data):
     """
     Add or remove urls from a category.
     Args:
-        action: The action requested, can be ADD_TO_LIST for adding or REMOVE_FROM_LIST for removing.
+        action: The action requested, can be 'ADD_TO_LIST' for adding or 'REMOVE_FROM'_LIST for removing.
         urls: the list of urls to add or remove from the category
         category_data: the data of the category as returned from the API
 
