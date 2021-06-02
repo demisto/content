@@ -26,8 +26,7 @@ jobs:
           BRANCH_NAME: ${{ github.head_ref }}
           SENDGRID_EMAIL_API_KEY: ${{ secrets.SENDGRID_EMAIL_API_KEY }}
           NON_EXIST_VAR: ${{ secrets.NON_EXIST_VAR }}
-        # if: env.SENDGRID_EMAIL_API_KEY
-        if: env.NON_EXIST_VAR
+        if: env.SENDGRID_EMAIL_API_KEY
         run: |
           echo "PR number is: $PR_NUMBER"
           echo "Target branch name is: $BRANCH_NAME"
