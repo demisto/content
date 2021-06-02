@@ -111,7 +111,6 @@ class Client(BaseClient):
                                                       url_suffix='geocode/json?',
                                                       params=assign_params(address=address,
                                                                            key=self.api_key))
-        demisto.log(str(response))
         if 'error_message' in response:
             return_error(response['error_message'], str(response))
             return []  # todo check
