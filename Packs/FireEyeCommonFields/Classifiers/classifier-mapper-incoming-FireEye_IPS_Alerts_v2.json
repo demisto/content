@@ -33,19 +33,19 @@
           "complex": null,
           "simple": "eventId"
         },
-        "Match Count": {
+        "FireEye Match Count": {
           "complex": null,
           "simple": "signatureMatchCnt"
         },
-        "Signature": {
+        "FireEye Signature": {
           "complex": null,
           "simple": "ruleName"
         },
-        "Signature ID": {
+        "FireEye Signature ID": {
           "complex": null,
           "simple": "signatureIden"
         },
-        "Signature Revision": {
+        "FireEye Signature Revision": {
           "complex": null,
           "simple": "signatureRev"
         },

@@ -55,11 +55,11 @@
           "complex": null,
           "simple": "smtpMessage.id"
         },
-        "Email Queue ID": {
+        "FireEye Email Queue ID": {
           "complex": null,
           "simple": "smtpMessage.queueId"
         },
-        "Email Source Domain": {
+        "FireEye Email Source Domain": {
           "complex": null,
           "simple": "src.domain"
         },
@@ -75,7 +75,7 @@
           "complex": null,
           "simple": "explanation.malwareDetected.malware"
         },
-        "Infection ID": {
+        "FireEye Infection ID": {
           "complex": null,
           "simple": "rootInfection"
         },

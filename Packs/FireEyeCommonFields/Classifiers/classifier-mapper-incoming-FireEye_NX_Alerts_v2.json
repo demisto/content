@@ -35,23 +35,23 @@
           "complex": null,
           "simple": "applianceId"
         },
-        "C2 Address": {
+        "FireEye C2 Address": {
           "complex": null,
           "simple": "explanation.cncServices.cncService.address"
         },
-        "C2 Channel": {
+        "FireEye C2 Channel": {
           "complex": null,
           "simple": "explanation.cncServices.cncService.channel"
         },
-        "C2 Host": {
+        "FireEye C2 Host": {
           "complex": null,
           "simple": "explanation.cncServices.cncService.host"
         },
-        "C2 Port": {
+        "FireEye C2 Port": {
           "complex": null,
           "simple": "explanation.cncServices.cncService.port"
         },
-        "C2 Protocol": {
+        "FireEye C2 Protocol": {
           "complex": null,
           "simple": "explanation.cncServices.cncService.protocol"
         },
@@ -71,7 +71,7 @@
           "complex": null,
           "simple": "explanation.malwareDetected.malware"
         },
-        "Infection ID": {
+        "FireEye Infection ID": {
           "complex": null,
           "simple": "rootInfection"
         },
