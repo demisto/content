@@ -375,13 +375,10 @@ def horizontal_to_vertical_md_table(horizontal_md_table: str) -> str:
     Returns: md string with rotated table
     """
     lines = horizontal_md_table.split('\n')
-    # title = lines[0]
     headers_list = lines[1][1:-1].split('|')
     content_list = lines[3][1:-1].split('|')
 
-    new_table = ""
-    # new_table += title
-    new_table += '\n| | |'
+    new_table = '\n| | |'
     new_table += '\n|---|---|'
     for header, content in zip(headers_list, content_list):
         new_table += f"\n|**{header}**|{content}|"
