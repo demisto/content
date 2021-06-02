@@ -678,7 +678,7 @@ def category_ioc_update(category_data):
     return response
 
 
-def add_or_remove_urls_from_category(action, urls, category_data):
+def add_or_remove_urls_from_category(action, urls, category_data) -> None:
     """
     Add or remove urls from a category.
     Args:
@@ -702,8 +702,7 @@ def add_or_remove_urls_from_category(action, urls, category_data):
     if 'configuredName' in category_data:
         data['configuredName'] = category_data['configuredName']
     json_data = json.dumps(data)
-    response = http_request('PUT', cmd_url, json_data)
-    return response.json()
+    http_request('PUT', cmd_url, json_data)
 
 
 def url_quota_command():
