@@ -7,7 +7,7 @@ Add DBot score to context for indicators with custom vendor, score, reliability,
 | --- | --- |
 | Script Type | python3 |
 | Tags |  |
-| Demisto Version | 6.0.0 |
+| Cortex XSOAR Version | 6.0.0 |
 
 ## Inputs
 ---
