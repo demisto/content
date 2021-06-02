@@ -4,6 +4,16 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 from botocore.config import Config
 
+AWS_DEFAULT_REGION = None
+AWS_roleArn = None
+AWS_roleSessionName = None
+AWS_roleSessionDuration = None
+AWS_rolePolicy = None
+AWS_GD_SEVERITY = None
+VERIFY_CERTIFICATE = None
+proxies = None
+config = None
+
 
 def aws_session(service='guardduty', region=None, roleArn=None, roleSessionName=None, roleSessionDuration=None, rolePolicy=None):
     kwargs = {}
@@ -704,8 +714,12 @@ def get_members(args):
             AccountIds=accountId_list
         )
 
-        ec = {"AWS.GuardDuty.Members(val.AccountId === obj.AccountId)": response['Members']}
-        return create_entry('AWS GuardDuty Members', response['Members'], ec)
+        members_response = response.get('Members')
+        filtered_members = [member for member in members_response if member]
+
+        ec = {"AWS.GuardDuty.Members(val.AccountId === obj.AccountId)": filtered_members} \
+            if filtered_members else None
+        return create_entry('AWS GuardDuty Members', filtered_members, ec)
 
     except Exception as e:
         return raise_error(e)
