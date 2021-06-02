@@ -317,7 +317,6 @@ def upload_index_to_storage(index_folder_path: str, extract_destination_path: st
         sys.exit(1)
     finally:
         if artifacts_dir:
-            logging.warning(f'This is the artifact dir: {artifacts_dir}')
             # Store index.json in CircleCI artifacts
             shutil.copyfile(
                 os.path.join(index_folder_path, f'{GCPConfig.INDEX_NAME}.json'),
@@ -371,7 +370,8 @@ def create_corepacks_config(storage_bucket: Any, build_number: str, index_folder
 
     corepacks_json_path = os.path.join(GCPConfig.STORAGE_BASE_PATH, f'{GCPConfig.CORE_PACK_FILE_NAME}')
     if not os.path.exists(corepacks_json_path):
-        os.mkdir(corepacks_json_path)
+        os.makedirs(corepacks_json_path)
+        logging.info(f'This is the file directoy: {os.makedirs(corepacks_json_path)}')
     with open(corepacks_json_path, 'w+') as corepacks_file:
         # construct core pack data with public gcs urls
         core_packs_data = {
