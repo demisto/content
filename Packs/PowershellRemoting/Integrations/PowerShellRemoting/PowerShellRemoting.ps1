@@ -578,6 +578,9 @@ function DownloadFileCommand([RemotingClient]$client, [string]$path, [string]$zi
 
     # add file details to context
     $file_name_leaf = Split-Path $path -leaf
+    if ($host_as_prefix) {
+        $file_name_leaf = $client.host + '_' + $file_name_leaf
+    }
     $file_extension = [System.IO.Path]::GetExtension($file_name_leaf)
     $file_extension = If ($file_extension) {$file_extension.SubString(1, $file_extension.length - 1)} else {""}
 
@@ -592,10 +595,6 @@ function DownloadFileCommand([RemotingClient]$client, [string]$path, [string]$zi
             FileMD5 = (Get-FileHash $file_name -Algorithm MD5).Hash
             FileExtension = $file_extension
         }
-    }
-
-    if ($host_as_prefix) {
-        $file_name_leaf = $client.host + '_' + $file_name_leaf
     }
 
     $demisto_results = @{
