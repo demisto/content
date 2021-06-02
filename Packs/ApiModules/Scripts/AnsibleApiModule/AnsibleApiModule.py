@@ -104,6 +104,12 @@ def rec_ansible_key_strip(obj: Dict[Any, Any]):
     return obj
 
 
+# Convert to camelCase, like .title() but start with lowercase.
+def camelCase(st: str):
+    output = ''.join(x for x in st.title() if x.isalnum())
+    return output[0].lower() + output[1:]
+
+
 def generate_ansible_inventory(args: Dict[str, Any], int_params: Dict[str, Any], host_type: str = "local"):
     host_types = ['ssh', 'winrm', 'nxos', 'ios', 'local']
     if host_type not in host_types:
@@ -123,11 +129,11 @@ def generate_ansible_inventory(args: Dict[str, Any], int_params: Dict[str, Any],
     # All other host types are remote
     elif host_type in ['ssh', 'winrm', 'nxos', 'ios']:
         hosts = args.get('host')
-        if type(args.get('host')) is str:
+        if type(hosts) is str:
             # host arg could be csv
-            hosts = [host.strip() for host in hosts.split(',')]
+            hosts = [host.strip() for host in hosts.split(',')]  # type: ignore[union-attr]
 
-        for host in hosts:
+        for host in hosts:  # type: ignore[union-attr]
             new_host = {}
             new_host['ansible_host'] = host
 
@@ -240,6 +246,7 @@ def generic_ansible(integration_name: str, command: str,
                            omit_event_data=True, ssh_key=sshkey, module_args=module_args, forks=fork_count)
 
     results = []
+    outputs_key_field = ''
     for each_host_event in r.events:
         # Troubleshooting
         # demisto.log("%s: %s\n" % (each_host_event['event'], each_host_event))
@@ -272,9 +279,10 @@ def generic_ansible(integration_name: str, command: str,
                 readable_output += dict2md(result)
 
                 # add host and status to result if it is a dict. Some ansible modules return a list
-                if type(result) == dict:
+                if (type(result) == dict) and (host != 'localhost'):
                     result['host'] = host
-                    result['status'] = status.strip()
+                    outputs_key_field = 'host'  # updates previous outputs that share this key, neat!
+                result['status'] = status.strip()
 
                 results.append(result)
             if each_host_event['event'] == "runner_on_unreachable":
@@ -285,9 +293,10 @@ def generic_ansible(integration_name: str, command: str,
 
             if each_host_event['event'] in ["runner_on_failed", "runner_on_unreachable"]:
                 return_error(msg)
+
     return CommandResults(
         readable_output=readable_output,
-        outputs_prefix=integration_name + '.' + command,
-        outputs_key_field='',
+        outputs_prefix=integration_name + '.' + camelCase(command),
+        outputs_key_field=outputs_key_field,
         outputs=results
     )
