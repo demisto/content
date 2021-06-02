@@ -55,7 +55,7 @@ def main():
     command = demisto.command()
 
     proxy = demisto.get(params, 'proxy') or False
-    base_url = demisto.get(params, 'base_url') or 'https://maps.googleapis.com/fmaps/api/'
+    base_url = demisto.get(params, 'base_url') or 'https://maps.googleapis.com/maps/api/'
     api_key = demisto.get(params, 'api_key.password') or ''
     insecure = demisto.get(params, 'insecure') or False
     error_on_no_results = demisto.get(params, 'error_on_no_results') or False
