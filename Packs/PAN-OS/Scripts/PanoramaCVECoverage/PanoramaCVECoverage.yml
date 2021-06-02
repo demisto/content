@@ -1,0 +1,32 @@
+commonfields:
+  id: Panorama_CVE_Coverage
+  version: -1
+name: Panorama_CVE_Coverage
+comment: comma delimited list of CVEs to find
+script: ''
+type: python
+tags: []
+enabled: true
+args:
+- name: CVE_List
+  required: true
+  description: comma delimited list of CVEs to find
+- name: Result_file
+  required: true
+  description: Entry ID of the output file from the panorama command
+- name: outputFormat
+  description: raw output of panorama command into a file
+  required: true
+  auto: PREDEFINED
+  predefined:
+  - table
+  - paragraph
+  defaultValue: table
+scripttarget: 0
+subtype: python3
+runonce: false
+dockerimage: demisto/python3:3.9.5.20070
+runas: DBotWeakRole
+fromversion: 5.0.0
+tests:
+- No tests (auto formatted)
