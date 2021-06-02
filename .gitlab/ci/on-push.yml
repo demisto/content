@@ -99,7 +99,6 @@ create-instances:
       [ -n "${TIME_TO_LIVE}" ] && TTL=${TIME_TO_LIVE} || TTL=300
       python3 ./Tests/scripts/awsinstancetool/aws_instance_tool.py -envType "$IFRA_ENV_TYPE" -timetolive $TTL -outfile "$ARTIFACTS_FOLDER/env_results.json"
     - section_end "Create Instances"
-  after_script:
     - section_start "Upload Artifacts to GCP"
     - ./Tests/scripts/upload_artifacts.sh
     - section_end "Upload Artifacts to GCP"
