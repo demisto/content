@@ -3267,6 +3267,10 @@
             ]
         },
         {
+            "integrations": "HostIo",
+            "playbookID": "HostIo_Test"
+        },
+        {
             "playbookID": "CreateCertificate-Test",
             "fromversion": "5.5.0"
         },
@@ -3454,7 +3458,9 @@
         "Pwned v2 test": "Issue 26601",
         "TestEmailRepIOPlaybook": "Issue 33219",
         "get_original_email_-_ews-_test": "Issue 27571",
-        "PANW Threat Vault - Signature Search - Test": "Issue 30930"
+        "PANW Threat Vault - Signature Search - Test": "Issue 30930",
+        "PhishTank Testing" : "Issue 29055",
+        "TAXII_Feed_Test": "Issue 37588"
     },
     "skipped_integrations": {
         
