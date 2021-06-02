@@ -76,13 +76,13 @@ script:
       name: duration
       required: false
     - default: false
-      description: "Specifies the start time of the search. This filter is optional. Default is last day. Syntax: end_time=YYYY-MM-DDTHH:mm:ss.sss-OH:om or '1 day/month/year'"
+      description: "The start time of the search. This filter is optional. Default is last day. Syntax: start_time=YYYY-MM-DDTHH:mm:ss.sss-OH:om or '1 day/month/year'."
       isArray: false
       name: start_time
       required: false
       secret: false
     - default: false
-      description: "Specifies the end time of the search. This filter is used with the duration filter. If the end_time is specified but not the duration, the system defaults to duration=12_hours, ending at the specified end_time. Syntax: end_time=YYYY-MM-DDTHH:mm:ss.sss-OH:om"
+      description: "The end time of the search. This filter is used with the duration filter. If the end_time is specified but not the duration, the system defaults to duration=12_hours, ending at the specified end_time. Syntax: end_time=YYYY-MM-DDTHH:mm:ss.sss-OH:om."
       isArray: false
       name: end_time
       required: false
@@ -179,7 +179,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Search and retrieve FireEye CM alerts based on several filters.
+    description: Searches and retrieves FireEye CM alerts based on several filters.
     execution: false
     name: fireeye-cm-get-alerts
     outputs:
@@ -239,7 +239,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Search and retrieve single alert details.
+    description: Searches and retrieves the details of a single alert.
     execution: false
     name: fireeye-cm-get-alert-details
     outputs:
@@ -299,7 +299,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Confirm that the alert has been reviewed.
+    description: Confirms that the alert has been reviewed.
     execution: false
     name: fireeye-cm-alert-acknowledge
   - arguments:
@@ -403,7 +403,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Retrieve information about existing IPS NX events. An IPS enabled appliance is a prequisite to be able to retrieve IPS event data.
+    description: Retrieves information about existing IPS NX events. An IPS enabled appliance is a prerequisite to be able to retrieve IPS event data.
     execution: false
     name: fireeye-cm-get-events
     outputs:
@@ -431,7 +431,7 @@ script:
     - contextPath: FireEyeCM.Events.signatureMatchCnt
       description: The date and time when the event occurred.
       type: String
-    - contextPath: FireEyeCM.Events.signatureIden
+    - contextPath: FireEyeCM.Events.signatureId
       description: The ID of the event.
       type: String
     - contextPath: FireEyeCM.Events.signatureRev
@@ -476,13 +476,13 @@ script:
   - arguments:
     - default: false
       defaultValue: '1 day'
-      description: "Specifies the start time of the search. This filter is optional. Default is last day. Syntax: end_time=YYYY-MM-DDTHH:mm:ss.sss-OH:om or '1 day/month/year'"
+      description: "Specifies the start time of the search. This filter is optional. Default is last day. Syntax: end_time=YYYY-MM-DDTHH:mm:ss.sss-OH:om or '1 day/month/year'."
       isArray: false
       name: start_time
       required: false
       secret: false
     - default: false
-      description: "Specifies the end time of the search. Default is now. Syntax: end_time=YYYY-MM-DDTHH:mm:ss.sss-OH:om or '1 day/month/year'"
+      description: "Specifies the end time of the search. Default is now. Syntax: end_time=YYYY-MM-DDTHH:mm:ss.sss-OH:om or '1 day/month/year'."
       isArray: false
       name: end_time
       required: false
@@ -494,7 +494,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: The email Subject. Must be URL encoded.
+      description: The email subject. Must be URL encoded.
       isArray: false
       name: subject
       required: false
@@ -513,7 +513,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Search and retrieve quarantined emails.
+    description: Searches and retrieves quarantined emails.
     execution: false
     name: fireeye-cm-get-quarantined-emails
     outputs:
@@ -555,13 +555,9 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Release and delete quarantined emails. This is not available when the Email Security is in Drop mode.
+    description: Releases and deletes quarantined emails. This is not available when Email Security is in Drop mode.
     execution: false
     name: fireeye-cm-release-quarantined-emails
-    outputs:
-    - contextPath: FireEyeCM.QuarantinedEmail.TODO
-      description: a.
-      type: string
   - arguments:
     - default: false
       description: The quarantined emails queue IDs. Supports up to 100 IDs.
@@ -576,13 +572,9 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Delete quarantined emails. This is not available when the Email Security is in Drop mode.
+    description: Deletes quarantined emails. This is not available when Email Security is in Drop mode.
     execution: false
     name: fireeye-cm-delete-quarantined-emails
-    outputs:
-    - contextPath: FireEyeCM.QuarantinedEmail.TODO
-      description: a.
-      type: string
   - arguments:
     - default: false
       description: The quarantined emails queue ID.
@@ -654,7 +646,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: "Specifies the end time of the search. Default is now. Syntax: end_time=YYYY-MM-DDTHH:mm:ss.sss-OH:om or '1 day/month/year'"
+      description: "Specifies the end time of the search. Default is now. Syntax: end_time=YYYY-MM-DDTHH:mm:ss.sss-OH:om or '1 day/month/year'."
       isArray: false
       name: end_time
       required: false
@@ -672,7 +664,7 @@ script:
       - 'A'
       - 'B'
       - 'AB'
-      description: This option is required only for IPS reports. The interface option sets ihe Internet interface to one of the values.
+      description: This option is required only for IPS reports. The interface option sets ihe internet interface to one of the values.
       isArray: false
       name: interface
       required: false
@@ -684,13 +676,13 @@ script:
       required: false
       secret: false
     - default: false
-      description: Infection ID. This argument is only relevant when retrieving a report of type alertDetailsReport with conjuction to the infection_type argument.
+      description: Infection ID. This argument is only relevant when retrieving a report of type alertDetailsReport with conjunction to the infection_type argument.
       isArray: false
       name: infection_id
       required: false
       secret: false
     - default: false
-      description: Infection Type. This argument is only relevant when retrieving a report of type alertDetailsReport with conjuction to the infection_id argument.
+      description: Infection Type. This argument is only relevant when retrieving a report of type alertDetailsReport with conjunction to the infection_id argument.
       auto: PREDEFINED
       predefined:
         - 'malware-object'
