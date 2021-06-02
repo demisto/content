@@ -25,7 +25,8 @@ class Client(BaseClient):
         """ constructs url with token (if existent), then returns request """
         return self._http_request(method='GET',
                                   url_suffix=f'{ip}/json',
-                                  params=assign_params(token=self.api_key))
+                                  params=assign_params(token=self.api_key),
+                                  timeout=20)
 
 
 def test_module(client: Client) -> str:
