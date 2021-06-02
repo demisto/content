@@ -106,7 +106,6 @@ class Client(BaseClient):
         self.api_key = api_key
 
     def google_maps_geocode(self, address: str) -> List[CommandResults]:
-        input_address = address
 
         # noinspection PyTypeChecker
         response: Dict[str, Any] = self._http_request(method='GET',
@@ -118,7 +117,7 @@ class Client(BaseClient):
         response_address = response['results'][0]['formatted_address']
 
         note_outputs = {**coordinate_dict,
-                        **{'input_address': input_address, 'address': response_address}}
+                        **{'Input_Address': address, 'Address': response_address}}
 
         result_note = CommandResults(outputs_prefix='GoogleMaps',
                                      outputs_key_field=['lat', 'lng'],

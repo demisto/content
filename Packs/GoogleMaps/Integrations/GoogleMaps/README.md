@@ -40,8 +40,10 @@ Returns the coordinates of the given physical address.
 
 
 #### Command Example
-``` ```
+``` google-maps-geocode address=45 rothschild tel aviv```
 
 #### Human Readable Output
-
-
+### Results
+|address|input_address|lat|lng|
+|---|---|---|---|
+| Rothschild Blvd 45, Tel Aviv-Yafo, Israel | 45 rothschild tel aviv | 32.0642807 | 34.774554 |

@@ -27,7 +27,7 @@ script:
     - default: true
       description: The physical address to be geocoded.
       isArray: false
-      name: address
+      name: input_address
       required: true
       secret: false
     deprecated: false
@@ -41,6 +41,12 @@ script:
     - contextPath: GoogleMaps.lng
       description: Longitude of the provided location
       type: Number
+    - contextPath: GoogleMaps.Input_Address
+      description: The address provided as input
+      type: String
+    - contextPath: GoogleMaps.Address
+      description: The address provided by Google Maps for the geocoded location
+      type: String
   dockerimage: demisto/python3:3.9.5.20070
   feed: false
   isfetch: false
@@ -50,6 +56,6 @@ script:
   script: '-'
   subtype: python3
   type: python
-fromversion: 5.5.0
 tests:
 - No tests (auto formatted)
+fromversion: 5.5.0
