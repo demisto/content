@@ -1,5 +1,5 @@
 {
-    "name": "Windows Forensics Pack",
+    "name": "Windows Forensics",
     "description": "Acquires forensic data from Windows hosts by leveraging Windows built-in capabilities.",
     "support": "xsoar",
     "currentVersion": "1.0.0",

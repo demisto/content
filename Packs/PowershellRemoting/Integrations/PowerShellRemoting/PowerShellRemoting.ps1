@@ -509,7 +509,7 @@ function InvokeCommandCommand {
     $title = "Result for PowerShell Remote Command: $command `n"
     $raw_result = $client.InvokeCommandInSession($command)
     $client.CloseSession()
-    $results_map = CreatResultsMap $raw_result $command $client.fqdn $client.host
+    $results_map = CreatResultsMap -raw_result $raw_result -command $command -fqdn $client.fqdn -hosts $client.host
     # extract command results per computer
     if ($results_map) {
         $entry_context = @{
@@ -634,7 +634,7 @@ function StartETLCommand {
     $command = "netsh trace start capture=yes traceFile=$etl_path maxsize=$etl_max_size overwrite=$overwrite $etl_filter"
     $raw_result = $client.InvokeCommandInSession($command)
     $client.CloseSession()
-    $results_map = CreatResultsMap $raw_result $command $client.fqdn $client.host
+    $results_map = CreatResultsMap -raw_result $raw_result -command $command -fqdn $client.fqdn -hosts $client.host
     if ($results_map) {
         $results_map['EtlFilePath'] = $etl_path
         $results_map['EtlFileName'] = Split-Path $etl_path -leaf
@@ -798,7 +798,7 @@ function Main
     try
     {
         $hosts = if ($command -eq 'test-module') {ArgToList $params.host } else {ArgToList $command_args.host}
-        if ($hosts.Length > 1) {
+        if ($hosts.Length -gt 1) {
             throw "too many hosts were provided. please provide just a single host"
         }
         $domain = if ($params.domain) {"." + $params.domain} else {""}
