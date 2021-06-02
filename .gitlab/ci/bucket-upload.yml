@@ -44,11 +44,10 @@ run-validations-upload-flow:
     - .bucket-upload-rule
 
 
-# Uncomment when docker in docker will work
-# run-unittests-and-lint-upload-flow:
-#   extends:
-#     - .run-unittests-and-lint
-#     - .bucket-upload-rule
+run-unittests-and-lint-upload-flow:
+  extends:
+    - .run-unittests-and-lint
+    - .bucket-upload-rule
 
 
 create-instances-upload-flow:
@@ -116,7 +115,7 @@ install-packs-in-server-master:
 
 
 upload-packs-to-marketplace:
-  needs: ["run-validations-upload-flow", "install-packs-in-server6_0", "install-packs-in-server-master"] # add "run-unittests-and-lint-upload-flow" after docker in docker is resolved.
+  needs: ["run-validations-upload-flow", "install-packs-in-server6_0", "install-packs-in-server-master", "run-unittests-and-lint-upload-flow"]
   stage: upload-to-marketplace
   artifacts:
     expire_in: 48 hrs
