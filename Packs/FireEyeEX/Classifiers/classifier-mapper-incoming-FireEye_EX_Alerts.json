@@ -1,11 +1,11 @@
 {
-  "id": "FireEye NX Alert - Incoming Mapper v2",
-  "name": "FireEye NX Alert - Incoming Mapper v2",
+  "id": "FireEye EX - Incoming Mapper",
+  "name": "FireEye EX - Incoming Mapper",
   "type": "mapping-incoming",
   "version": -1,
   "mapping": {
-    "FireEye NX Alert": {
-      "dontMapEventToLabels": true,
+    "FireEye EX Alert": {
+      "dontMapEventToLabels": false,
       "internalMapping": {
         "Alert Acknowledgement": {
           "complex": null,
@@ -35,37 +35,41 @@
           "complex": null,
           "simple": "applianceId"
         },
-        "C2 Address": {
+        "Application Id": {
           "complex": null,
-          "simple": "explanation.cncServices.cncService.address"
+          "simple": "appliance"
         },
-        "C2 Channel": {
+        "Email CC": {
           "complex": null,
-          "simple": "explanation.cncServices.cncService.channel"
+          "simple": "dst.smtpCc"
         },
-        "C2 Host": {
+        "Email From": {
           "complex": null,
-          "simple": "explanation.cncServices.cncService.host"
+          "simple": "src.smtpMailFrom"
         },
-        "C2 Port": {
+        "Email Headers": {
           "complex": null,
-          "simple": "explanation.cncServices.cncService.port"
+          "simple": "smtpMessage.smtpHeader"
         },
-        "C2 Protocol": {
+        "Email Message ID": {
           "complex": null,
-          "simple": "explanation.cncServices.cncService.protocol"
+          "simple": "smtpMessage.id"
         },
-        "Destination IP": {
+        "Email Queue ID": {
           "complex": null,
-          "simple": "dst.ip"
+          "simple": "smtpMessage.queueId"
         },
-        "Destination MAC Address": {
+        "Email Source Domain": {
           "complex": null,
-          "simple": "dst.mac"
+          "simple": "src.domain"
         },
-        "Destination Port": {
+        "Email Subject": {
           "complex": null,
-          "simple": "dst.port"
+          "simple": "smtpMessage.subject"
+        },
+        "Email To": {
+          "complex": null,
+          "simple": "dst.smtpTo"
         },
         "FireEye Malware Info": {
           "complex": null,
@@ -78,18 +82,6 @@
         "Sensor Name": {
           "complex": null,
           "simple": "sensor"
-        },
-        "Source IP": {
-          "complex": null,
-          "simple": "src.ip"
-        },
-        "Source MAC Address": {
-          "complex": null,
-          "simple": "src.mac"
-        },
-        "Source Port": {
-          "complex": null,
-          "simple": "src.port"
         },
         "UUID": {
           "complex": null,
