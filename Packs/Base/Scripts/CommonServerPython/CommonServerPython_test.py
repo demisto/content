@@ -17,7 +17,7 @@ from CommonServerPython import xml2json, json2xml, entryTypes, formats, tableToM
     argToBoolean, ipv4Regex, ipv4cidrRegex, ipv6cidrRegex, ipv6Regex, batch, FeedIndicatorType, \
     encode_string_results, safe_load_json, remove_empty_elements, aws_table_to_markdown, is_demisto_version_ge, \
     appendContext, auto_detect_indicator_type, handle_proxy, get_demisto_version_as_str, get_x_content_info_headers, \
-    url_to_clickable_markdown, WarningsHandler, DemistoException
+    url_to_clickable_markdown, WarningsHandler, DemistoException, remove_none_elements
 
 try:
     from StringIO import StringIO
@@ -4729,3 +4729,16 @@ class TestIsDemistoServerGE:
             }
         )
         assert not is_demisto_version_ge(version, build)
+
+
+def test_remove_none_elements():
+    d = {'t1': None, "t2": 1}
+    # before we remove the dict will return null which is unexpected by a lot of users
+    assert d.get('t1', 2) == None
+    r = remove_none_elements(d)
+    assert 't1' not in list(d.keys())
+    assert d.get('t2') == 1
+    # after we remove the dict behaves as we expect
+    assert d.get('t1', 2) == 2
+    assert len(r) == 1
+    assert 't1' in r

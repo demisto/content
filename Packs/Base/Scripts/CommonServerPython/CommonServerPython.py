@@ -1177,6 +1177,30 @@ def remove_empty_elements(d):
         return {k: v for k, v in ((k, remove_empty_elements(v)) for k, v in d.items()) if not empty(v)}
 
 
+def remove_none_elements(data):
+    """
+        Remove None values from a dictionary. (updating the given dictionary)
+        Simillar to remove_nulls_from_dictionary but only removes None and not other "empty" elements.
+
+        :type data: ``dict``
+        :param data: The dict to modify (required)
+
+        :return: list of keys removed
+        :rtype: ``list``
+    """
+    list_of_keys = list(data.keys())
+    res = []
+    for key in list_of_keys:
+        if data[key] is None:
+            res.append(key)
+            del data[key]
+    return res
+
+
+if (not os.getenv('COMMON_SERVER_NO_AUTO_PARAMS_REMOVE_NULLS') and hasattr(demisto, 'params')):
+    pass
+
+
 def aws_table_to_markdown(response, table_header):
     """
     Converts a raw response from AWS into a markdown formatted table. This function checks to see if
