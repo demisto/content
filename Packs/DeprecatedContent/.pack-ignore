@@ -262,6 +262,9 @@ ignore=RM106
 [file:playbook-Demisto_Self-Defense_-_Account_policy_monitoring_playbook_README.md]
 ignore=RM106
 
+[file:playbook-ExtraHop_-_Ticket_Tracking_README.md]
+ignore=RM106
+
 [file:DBotPredictPhishingLabel.yml]
 ignore=SC101
 
