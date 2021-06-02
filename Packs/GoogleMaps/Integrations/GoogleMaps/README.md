@@ -36,7 +36,7 @@ Returns the coordinates of the given physical address.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| GoogleMaps.SearchAddress | String | The addresss provided as input. | 
+| GoogleMaps.SearchAddress | String | The address provided as input. | 
 | GoogleMaps.Address | String | Address of the geocoded location. | 
 | GoogleMaps.lat | Number | Latitude of the provided location. | 
 | GoogleMaps.lng | Number | Longitude of the provided location | 
