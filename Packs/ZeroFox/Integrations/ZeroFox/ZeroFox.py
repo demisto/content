@@ -36,7 +36,7 @@ def dict_value_to_integer(params: Dict, key: str):
                 params[key] = int(value)
                 return params[key]
     except ValueError:
-        raise Exception(f'This value for {key} must be an integer.')
+        raise Exception(f'This value for {key} must be an integer')
 
 
 def severity_num_to_string(severity_num: int) -> str:
