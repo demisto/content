@@ -20,6 +20,20 @@ trigger-private-build:
     - python3 Utils/trigger_private_build.py --github-token $GITHUB_TOKEN
     - python3 Utils/get_private_build_status.py --github-token $GITHUB_TOKEN
 
+
+run-validations:
+  extends:
+    - .run-validations
+    - .push-rule
+
+
+# Uncomment when docker in docker will work
+# run-unittests-and-lint:
+#   extends:
+#     - .run-unittests-and-lint
+#     - .push-rule
+
+
 create-instances:
   extends:
     - .default-job-settings
@@ -78,6 +92,7 @@ create-instances:
       echo "====== Uploading artifacts to GCP ======"
       ./Tests/scripts/upload_artifacts.sh
 
+
 .test_content_on_server_instances_base:
   extends:
     - .default-job-settings
@@ -105,15 +120,18 @@ create-instances:
     - python3 ./Tests/scripts/destroy_instances.py $ARTIFACTS_FOLDER $ARTIFACTS_FOLDER/env_results.json "$INSTANCE_ROLE" "$TIME_TO_LIVE" || EXIT_CODE=$?
     - exit $EXIT_CODE
 
+
 server_5_0:
   extends: .test_content_on_server_instances_base
   variables:
     INSTANCE_ROLE: "Server 5.0"
 
+
 server_5_5:
   extends: .test_content_on_server_instances_base
   variables:
     INSTANCE_ROLE: "Server 5.5"
+
 
 server_6_0:
   extends: .test_content_on_server_instances_base
@@ -122,6 +140,7 @@ server_6_0:
     - if: '$CI_PIPELINE_SOURCE =~ /^(push)$/ && $CI_COMMIT_BRANCH !~ /^[0-9]{2}\.[0-9]{1,2}\.[0-9]$/'
   variables:
     INSTANCE_ROLE: "Server 6.0"
+
 
 server_master:
   extends:
@@ -133,16 +152,6 @@ server_master:
   variables:
     INSTANCE_ROLE: "Server Master"
 
-run-validations:
-  extends:
-    - .run-validations
-    - .push-rule
-
-# Uncomment when docker in docker will work
-# run-unittests-and-lint:
-#   extends:
-#     - .run-unittests-and-lint
-#     - .push-rule
 
 slack-notify-nightly-build:
   extends:
