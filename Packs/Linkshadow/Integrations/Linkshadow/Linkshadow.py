@@ -2,6 +2,8 @@ import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
 
+import math
+from datetime import datetime
 import dateparser
 import urllib3
 import traceback
@@ -41,7 +43,7 @@ class Client(BaseClient):
 ''' COMMAND FUNCTIONS '''
 
 
-def test_module(client, apiKey, api_username, plugin_id, action, time_frame):
+def test_module(client, apiKey, api_username, plugin_id, action, time_frame=1440):
     try:
         alerts = client.fetch_anomaly(apiKey=apiKey, api_username=api_username,
                                       plugin_id=plugin_id, action=action, time_frame=time_frame)
@@ -77,13 +79,15 @@ def format_JSON_for_fetch_incidents(ls_anomaly):
     return anomaly_info
 
 
-def fetch_incidents(client, max_alerts, last_run, first_fetch_time, apiKey, api_username, plugin_id, action, time_frame):
+def fetch_incidents(client, max_alerts, last_run, first_fetch_time, apiKey, api_username, plugin_id, action):
 
     last_fetch = dateparser.parse(last_run.get('last_fetch'))
     if last_fetch is None:
         last_fetch = dateparser.parse(first_fetch_time, settings={'TIMEZONE': 'UTC'})
 
     latest_created_time = last_fetch
+    diff_timedelta = float(datetime.utcnow().strftime('%s')) - float(latest_created_time.strftime('%s'))
+    time_frame = int(math.ceil(diff_timedelta/60))
     incidents = []
     alerts = client.fetch_anomaly(apiKey=apiKey, api_username=api_username,
                                   plugin_id=plugin_id, action=action, time_frame=time_frame)
@@ -160,7 +164,6 @@ def main():
     api_username = demisto.params().get('api_username')
     plugin_id = demisto.params().get("plugin_id")
     action = demisto.params().get("action")
-    time_frame = demisto.params().get("time_frame")
     first_fetch = demisto.params().get('first_fetch', '1 days')
     proxy = demisto.params().get('proxy', False)
     demisto.debug('Command being called is {demisto.command()}')
@@ -172,7 +175,7 @@ def main():
             proxy=proxy)
 
         if demisto.command() == 'test-module':
-            result = test_module(client, apiKey, api_username, plugin_id, action, time_frame)
+            result = test_module(client, apiKey, api_username, plugin_id, action)
             return_results(result)
 
         if demisto.command() == 'fetch-incidents':
@@ -185,8 +188,7 @@ def main():
                 apiKey=apiKey,
                 api_username=api_username,
                 plugin_id=plugin_id,
-                action=action,
-                time_frame=time_frame
+                action=action
             )
             demisto.setLastRun(next_run)
             demisto.incidents(incidents)

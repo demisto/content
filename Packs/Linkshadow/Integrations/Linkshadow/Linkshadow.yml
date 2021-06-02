@@ -35,11 +35,6 @@ configuration:
   defaultvalue: fetch_entity_anomalies
   type: 0
   required: true
-- display: Time Frame
-  name: time_frame
-  defaultvalue: "01"
-  type: 0
-  required: true
 - display: API Username
   name: api_username
   type: 0
@@ -82,9 +77,9 @@ script:
   - name: Linkshadow-fetch-entity-anomalies
     arguments:
     - name: time_frame
-      required: true
+      default: true
       description: Period of minutes, to be fetched from Linkshadow
-      defaultValue: "01"
+      defaultValue: "60"
     outputs:
     - contextPath: Linkshadow.data.GlobalID
       description: Unique ID of the Anomaly to track in Linkshadow
