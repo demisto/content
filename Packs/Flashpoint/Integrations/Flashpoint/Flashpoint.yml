@@ -647,7 +647,7 @@ script:
     - contextPath: Flashpoint.Forum.Post
       description: A list of forum posts based on the search keyword.
     description: Search forum posts using a keyword
-  dockerimage: demisto/python3:3.9.4.18682
+  dockerimage: demisto/python3:3.9.5.20070
   runonce: false
   subtype: python3
 tests:
