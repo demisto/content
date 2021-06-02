@@ -16,7 +16,6 @@ import urllib3
 urllib3.disable_warnings()
 
 ''' CONSTANTS '''
-DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 
 
 class AccessToken:
@@ -363,6 +362,8 @@ def fetch_incidents(client: Client,
             page_from=page_from
         )
 
+    # relevant_alerts = [alert for alert in data.get('results', []) if dateparser.parse(alert.get('time')) > last_fetch]
+
     for alert in data.get('results', []):
         incident_created_time = dateparser.parse(alert.get('time'))
         incident = {
@@ -382,9 +383,9 @@ def fetch_incidents(client: Client,
     if data.get('next'):
         # if more than max_results alerts were returned, this fetch is incomplete and the extra results must be fetched
         # next time
-        next_run = {'last_fetch': last_fetch.strftime(DATE_FORMAT), 'incomplete_fetches': incomplete_fetches + 1}
+        next_run = {'last_fetch': last_fetch.isoformat(), 'incomplete_fetches': incomplete_fetches + 1}
     else:
-        next_run = {'last_fetch': latest_created_time.strftime(DATE_FORMAT), 'incomplete_fetches': 0}
+        next_run = {'last_fetch': latest_created_time.isoformat(), 'incomplete_fetches': 0}
     return next_run, incidents
 
 
