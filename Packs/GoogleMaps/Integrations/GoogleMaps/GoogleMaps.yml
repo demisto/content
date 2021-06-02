@@ -27,7 +27,7 @@ script:
     - default: true
       description: The physical address to be geocoded.
       isArray: false
-      name: input_address
+      name: address
       required: true
       secret: false
     deprecated: false

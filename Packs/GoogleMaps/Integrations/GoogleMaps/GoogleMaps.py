@@ -112,6 +112,14 @@ class Client(BaseClient):
                                                       url_suffix='geocode/json?',
                                                       params=assign_params(address=address,
                                                                            key=self.api_key))
+        demisto.log(str(response))
+        if 'error_message' in response:
+            return_error(response['error_message'], str(response))
+            return []  # todo check
+
+        if response['status'] == 'ZERO_RESULTS':  # todo perhaps if not response['results']?
+            return_results('No matching places were found.')
+            return []  # todo check
 
         coordinate_dict = response['results'][0]['geometry']['location']
         response_address = response['results'][0]['formatted_address']
