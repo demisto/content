@@ -107,14 +107,12 @@ class Client(BaseClient):
 
     def google_maps_geocode(self, address: str) -> List[CommandResults]:
         input_address = address
-        address = re.sub(r'\s+', '+', address).strip('+')  # Google Maps API format
 
         # noinspection PyTypeChecker
-        # response: List[Dict[str, Any]] = self._http_request(method='GET',
-        #                                                     url_suffix='geocode/json?',
-        #                                                     params=assign_params(address=address,
-        #                                                                          api_key=self.api_key))
-        response: Dict = DUMMY_RESPONSE  # temporary todo replace with a proper client request
+        response: Dict[str, Any] = self._http_request(method='GET',
+                                                      url_suffix='geocode/json?',
+                                                      params=assign_params(address=address,
+                                                                           key=self.api_key))
 
         coordinate_dict = response['results'][0]['geometry']['location']
         response_address = response['results'][0]['formatted_address']
