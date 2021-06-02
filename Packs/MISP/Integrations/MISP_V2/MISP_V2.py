@@ -641,7 +641,7 @@ def check_domain(domain):
 
     if misp_response:
         dbot_list = list()
-        ip_list = list()
+        domain_list = list()
         md_list = list()
 
         for event_in_response in misp_response:
@@ -684,7 +684,7 @@ def check_domain(domain):
         outputs = {
             outputPaths.get('dbotscore'): {
                 'Indicator': domain,
-                'Type': DBotScoreType.Domain,
+                'Type': DBotScoreType.DOMAIN,
                 'Vendor': 'MISP V2',
                 'Score': Common.DBotScore.NONE,
             },
