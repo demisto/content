@@ -1,0 +1,17 @@
+{
+    "id": 1512912306333,
+    "status": "pending",
+    "task-type": "queryjob",
+    "task-result": {
+        "id": "7680959327659235345",
+        "stats": {
+            "successful": 0,
+            "success-with-result": 0,
+            "success-without-result": 0,
+            "failed": 0,
+            "pending": 0
+        },
+        "result-url": "https://lgtm.com/query/7680959327659235345"
+    },
+    "task-result-url": "https://lgtm.com/api/v1.0/queryjobs/7680959327659235345"
+}

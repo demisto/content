@@ -9,4 +9,4 @@ This pack enables you to run commands that:
 - Add items to match list
 - Add Threat Intel Indicators to Threat Intel Sources
 
-***Note***: This pack replaces the legacy JASK pack. For further details about the migration from JASK, visit our [reference docs](https://xsoar.pan.dev/docs/reference/integrations/sumologicsec#migrating-from-jask-content-pack).
+***Note***: This pack replaces the legacy JASK pack. For further details about the migration from JASK, visit our [reference docs](https://xsoar.pan.dev/docs/reference/integrations/sumo-logic-sec#migrating-from-jask-content-pack).

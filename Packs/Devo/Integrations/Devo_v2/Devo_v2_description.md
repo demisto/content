@@ -1,21 +1,21 @@
 ## Configure API Credentials
-To configure an instance of the integration in Demisto, you will need to provide a Devo apiv2 OAuth token with `*.**`
+To configure an instance of the integration in Cortex XSOAR, you will need to provide a Devo apiv2 OAuth token with `*.**`
 permissions for the time being if you want the fetch incidents to work correctly. Otherwise only grant access to particular
 tables but `siem.logtrust.alert.info` is used when fetching alerts.
 
 If writing back to Devo make sure to also create a set of TLS credentials.
 
-### Get your Demisto OAuth Token
+### Get your Cortex XSOAR OAuth Token
 1. Login to your Devo domain with a user with the ability to create security credentials.
 2. Navigate to __Administration__ > __Credentials__ > __Authentication Tokens__.
-3. If a token for Demisto has not already been  created, Click __CREATE NEW TOKEN__
+3. If a token for Cortex XSOAR has not already been created, Click __CREATE NEW TOKEN__
   * Create the Token with `*.**` table permissions as an `apiv2` token.
 4. Note the generated `Token`
 
-### Get your Demisto Writer Credentials
+### Get your Cortex XSOAR Writer Credentials
 1. Login to your Devo domain with a user with the ability to create security credentials.
 2. Navigate to __Administration__ > __Credentials__ > __X.509 Certificates__.
-3. Click `NEW CERTIFICATE` if you do not already have a set of keys for Demisto.
+3. Click `NEW CERTIFICATE` if you do not already have a set of keys for Cortex XSOAR.
 4. Download the following files:
   * `Certificate`
   * `Private Key`
@@ -47,9 +47,9 @@ If writing back to Devo make sure to also create a set of TLS credentials.
   - Check this box if you would like for the plugin to pull in Devo alerts as incidents. Please refer to `Fetch incident alert filter` and
     `Deduplication parameters JSON` for advanced configuration
 8. Incident type
-  - Demisto incident type to create all incidents as.
+  - Cortex XSOAR incident type to create all incidents as.
 9. Fetch incidents alert filter
-  - If you would like a subset of your alerts to only show up in Demisto please use this filtering.
+  - If you would like a subset of your alerts to only show up in Cortex XSOAR please use this filtering.
   ```
   {
       "type": <"AND" | "OR">,
