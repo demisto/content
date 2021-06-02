@@ -402,6 +402,18 @@ def test_search_devices_by_aql(requests_mock):
 
 
 def test_fetch_incidents_no_duplicates(mocker):
+    """
+    Given:
+    - 'client': Armis client,
+    - 'last_run': Last run parameters.
+
+    When:
+    - Performing two consecutive calls to fetch incidents
+
+    Then:
+    - Ensure incident that was already fetched is not fetched again.
+
+    """
     from Armis import Client, fetch_incidents
     client = Client('secret-example', 'https://test.com/api/v1', verify=False, proxy=False)
     last_fetch = '2021-03-09T01:00:00.000001+00:00'
@@ -415,4 +427,4 @@ def test_fetch_incidents_no_duplicates(mocker):
     assert next_run['last_fetch'] == last_fetch
     assert incidents[0]['rawJSON'] == json.dumps(armis_incident)
     _, incidents = fetch_incidents(client, next_run, '', 'Low', [], [], '', 1)
-    assert not [incidents]
+    assert not incidents

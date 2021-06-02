@@ -3,14 +3,9 @@
 from typing import List
 
 import pytz
-import demistomock as demisto
-from CommonServerPython import *
-from CommonServerUserPython import *
-
-import json
-
-import dateparser
 import urllib3
+
+from CommonServerPython import *
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -323,6 +318,9 @@ def fetch_incidents(client: Client,
     """
     # Get the last fetch time, if exists
     last_fetch = last_run.get('last_fetch')
+    latest_alert_fetch = last_run.get('latest_alert_fetch')
+    if latest_alert_fetch:
+        latest_alert_fetch = _ensure_timezone(dateparser.parse(latest_alert_fetch))
     incomplete_fetches = last_run.get('incomplete_fetches', 0)
 
     # Handle first time fetch
@@ -362,9 +360,10 @@ def fetch_incidents(client: Client,
             page_from=page_from
         )
 
-    # relevant_alerts = [alert for alert in data.get('results', []) if dateparser.parse(alert.get('time')) > last_fetch]
+    relevant_alerts = [alert for alert in data.get('results', []) if not latest_alert_fetch or
+                       _ensure_timezone(dateparser.parse(alert.get('time'))) > latest_alert_fetch]
 
-    for alert in data.get('results', []):
+    for alert in relevant_alerts:
         incident_created_time = dateparser.parse(alert.get('time'))
         incident = {
             'name': alert.get('description'),
@@ -380,12 +379,15 @@ def fetch_incidents(client: Client,
         if incident_created_time > latest_created_time:
             latest_created_time = incident_created_time
 
+    latest_alert_fetch_iso_format = latest_created_time.isoformat()
     if data.get('next'):
         # if more than max_results alerts were returned, this fetch is incomplete and the extra results must be fetched
         # next time
-        next_run = {'last_fetch': last_fetch.isoformat(), 'incomplete_fetches': incomplete_fetches + 1}
+        next_run = {'last_fetch': last_fetch.isoformat(), 'incomplete_fetches': incomplete_fetches + 1,
+                    'latest_alert_fetch': latest_alert_fetch_iso_format}
     else:
-        next_run = {'last_fetch': latest_created_time.isoformat(), 'incomplete_fetches': 0}
+        next_run = {'last_fetch': latest_alert_fetch_iso_format, 'incomplete_fetches': 0,
+                    'latest_alert_fetch': latest_alert_fetch_iso_format}
     return next_run, incidents
 
 
