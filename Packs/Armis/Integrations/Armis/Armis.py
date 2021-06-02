@@ -678,7 +678,6 @@ def main():
         elif command == 'armis-search-alerts-by-aql-string':
             return_results(search_alerts_by_aql_command(client, args))
 
-
     # Log exceptions
     except Exception as e:
         demisto.error(traceback.format_exc())
