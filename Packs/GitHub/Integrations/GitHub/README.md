@@ -2072,3 +2072,51 @@ There is no context output for this command.
 
 #### Human Readable Output
 The file TEST.md committed successfully. Link to the commit: https://github.com/content-bot/hello-world/commit/7678213ghg72136
+
+### GitHub-create-release
+***
+Create a release.
+
+
+#### Base Command
+
+`GitHub-create-release`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| name | The name of the release. | Optional | 
+| tag_name | The name of the releae tag. | Required | 
+| body | Text describing the contents of the tag. | Optional | 
+| draft | True to create a draft (unpublished) release, false to create a published one. Possible values are: True, False. Default is True. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GitHub.Release.draft | Boolean | Whether the release is draft or not | 
+| GitHub.Release.html_url | String | The release URL. | 
+| GitHub.Release.id | Number | The ID of the release. | 
+| GitHub.Release.url | String | Github API url link to the release. | 
+
+
+#### Command Example
+```!GitHub-create-release tag_name=1.0.0 body=`First release` draft=True name=1.0.0```
+
+##### Context Example
+```
+{
+    "GitHub.Release": [
+        {
+            "draft": true,
+            "html_url": "https://github.com/demisto/sdk/releases/tag/1.0.0",
+            "id": 4785254,
+            "url": "https://api.github.com/repos/demisto/sdk/releases/1.0.0"
+        }
+    ]
+}
+```
+
+#### Human Readable Output
+Release 1.0.0 created successfully for repo sdk: https://github.com/demisto/sdk/releases/tag/1.0.0

@@ -2977,8 +2977,8 @@ script:
       secret: false
       auto: PREDEFINED
       predefined:
-      - True
-      - False
+      - 'True'
+      - 'False'
       defaultValue: 'True'
     deprecated: false
     description: Create a release.
