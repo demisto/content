@@ -117,6 +117,13 @@
       - /builds/xsoar/content/unit-tests
       - /builds/xsoar/content/artifacts/*
     when: always
+  services:
+    - name: docker.artifactory.pan.local/build-tools--image-dind:19.03.12-dind
+      alias: docker
+  variables:
+    DOCKER_HOST: tcp://docker:2375
+    DOCKER_DRIVER: overlay2
+    DOCKER_TLS_CERTDIR: ""
   extends:
     - .default-job-settings
   script:
@@ -129,7 +136,7 @@
     - python3 -m pytest Utils -v
     - |
       if [ -n "${DEMISTO_SDK_NIGHTLY}" ] ; then
-      ./Tests/scripts/sdk_pylint_check.sh
+        ./Tests/scripts/sdk_pylint_check.sh
       fi
     - section_end "Test Infrustracture"
     - section_start "Run Unit Testing and Lint"
