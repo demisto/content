@@ -2163,7 +2163,7 @@ script: >-
           version = -1;
       }
       if (isDemistoVersionGE('6.2.0')) {
-          return setIntegrationContext(version, sync);
+          return setIntegrationContext(context, version, sync);
       } else {
           return setIntegrationContext();
       }
