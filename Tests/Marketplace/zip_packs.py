@@ -84,15 +84,14 @@ def remove_test_playbooks_if_exist(zips_path, packs):
                 if 'TestPlaybooks' in dir_names:
                     remove = True
                     logging.info(f'Removing TestPlaybooks from the pack {name}')
-                    new_path = os.path.join(zips_path, name)
-                    os.mkdir(new_path)
-                    pack_zip.extractall(path=new_path,
+                    pack_path = os.path.join(zips_path, name)
+                    pack_zip.extractall(path=pack_path,
                                         members=(member for member in zip_contents if 'TestPlaybooks' not in member))
-                    remove_test_playbooks_from_signatures(new_path, zip_contents)
+                    remove_test_playbooks_from_signatures(pack_path, zip_contents)
             if remove:
                 # Remove the current pack zip
                 os.remove(path)
-                shutil.make_archive(new_path, 'zip', new_path)
+                shutil.make_archive(pack_path, 'zip', pack_path)
 
 
 def remove_test_playbooks_from_signatures(path, filenames):
@@ -274,6 +273,7 @@ def main():
     if not gcp_path:
         gcp_path = BUILD_GCP_PATH
 
+    zipped_packs = []
     success = True
     try:
         download_packs_from_gcp(storage_bucket, gcp_path, zip_path, circle_build, branch_name)
@@ -287,7 +287,7 @@ def main():
         logging.exception('No zip files were found')
         success = False
 
-    if remove_test_playbooks:
+    if zipped_packs and remove_test_playbooks:
         try:
             remove_test_playbooks_if_exist(zip_path, zipped_packs)
         except Exception:
