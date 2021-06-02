@@ -28,5 +28,5 @@ def test_sort_table():
         }
     ]
     o = SortedTableData(test_data, "Test table", "name")
-    r = o.as_markdown()
-    print(r)
+    assert o.data[0].get("name") == "atest"
+    assert o.data[1].get("name") == "btest"
