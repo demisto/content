@@ -33,8 +33,7 @@ def test_fetch_incidents(requests_mock):
         apiKey="",
         api_username="lsadmin",
         plugin_id="xsoar_integration_1604211382",
-        action="fetch_entity_anomalies",
-        time_frame="01",
+        action="fetch_entity_anomalies"
     )
     expected_response = util_load_json('test_data/formatted_fetch_incident.json')
     # raise ValueError(integration_response.incidents,":::::",expected_response)
