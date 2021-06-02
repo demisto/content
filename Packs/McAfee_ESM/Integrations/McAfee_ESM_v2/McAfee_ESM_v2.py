@@ -2,7 +2,7 @@ from typing import Dict, List, Tuple, Optional, Callable
 
 from urllib3 import disable_warnings
 from CommonServerPython import *
-import demistomock as demisto
+# import demistomock as demisto
 from datetime import timedelta, datetime
 import time
 import itertools
@@ -320,7 +320,6 @@ class McAfeeESMClient(BaseClient):
     def edit_case(self) -> Tuple[str, Dict, Dict]:
         path = 'caseEditCase'
         _, _, result = self.get_case_detail(case_id=self.args.get('id'))
-
         if 'organization' in self.args:
             result['orgId'] = self.__org_and_id(org_name=self.args.get('organization')).get('id')
         if 'summary' in self.args:
