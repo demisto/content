@@ -26,15 +26,21 @@ class Client(BaseClient):
         parsed_indicators: list = []
 
         for indicator in reversed(self.feed_data.entries):
+            publications = []
             if indicator:
                 published = email.utils.parsedate(indicator.published)
                 if published:
                     published_iso = datetime.fromtimestamp(mktime(published)).isoformat()
+                    publications.append({
+                        'timestamp': indicator.get('published'),
+                        'link': indicator.get('link'),
+                        'source': self.base_url,
+                        'title': indicator.get('title')
+                    })
                     indicator_obj = {
-                        "type": 'STIX Report',
+                        "type": 'Report',
                         "value": indicator.get('title'),
-                        "link": indicator.get('link'),
-                        "author": indicator.get('author'),
+                        'Publications': publications,
                         "summary": indicator.get('summary'),
                         "rawJSON": {
                             'value': indicator,
