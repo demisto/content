@@ -389,7 +389,7 @@ def create_corepacks_config(storage_bucket: Any, build_number: str, index_folder
             )
         except shutil.Error as err:
             logging.error(f"Failed copying corepacks.json file to "
-                          f"{artifacts_dir}. Additional info: {str(err)}")
+                          f"{artifacts_dir}. Additional info: {str(err)}.")
 
     logging.success(f"Finished copying {GCPConfig.CORE_PACK_FILE_NAME} to artifacts.")
 
