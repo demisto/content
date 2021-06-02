@@ -33,3 +33,15 @@ ignore=SC105
 
 [file:FileToBase64List.yml]
 ignore=BA109
+
+[file:script-SetByIncidentId_README.md]
+ignore=RM106
+
+[file:script-TimeStampToDate_README.md]
+ignore=RM106
+
+[file:script-ExampleJSScript.yml]
+ignore=BA110
+
+[file:script-PCAPMiner_README.md]
+ignore=RM106

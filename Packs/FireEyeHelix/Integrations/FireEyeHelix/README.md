@@ -4,7 +4,7 @@ In order to configure this integration you must have a FireEye customer ID. Your
 
 The API key can be found and generated in the **API KEYS** section. You can navigate to it from your FireEye Helix app home page by clicking on the **user icon** on the top right, and choosing **HELIX Settings**. You'll be redirected to the **HELIX Settings** page, where API KEYS can be found.
 
-## Configure FireEyeHelix on Demisto
+## Configure FireEyeHelix on Cortex XSOAR
 
 1. Navigate to __Settings__ > __Integrations__ > __Servers & Services__.
 2. Search for FireEyeHelix.
@@ -26,7 +26,7 @@ The API key can be found and generated in the **API KEYS** section. You can navi
 4. Click __Test__ to validate the URLs, token, and connection.
 
 ## Commands
-You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.
+You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### Get all alerts
