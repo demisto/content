@@ -31,7 +31,7 @@
   <li>The credentials should be the same as the Tanium client.</li>
 </ul>
 
-<h2>Configure Tanium v2 on Demisto</h2>
+<h2>Configure Tanium v2 on Cortex XSOAR</h2>
 <ol>
   <li>Navigate to&nbsp;<strong>Settings</strong>&nbsp;&gt;&nbsp;<strong>Integrations</strong>
     &nbsp;&gt;&nbsp;<strong>Servers &amp; Services</strong>.</li>
@@ -82,7 +82,7 @@
 </ol>
 <h2>Commands</h2>
 <p>
-  You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.
+  You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
   After you successfully execute a command, a DBot message appears in the War Room with the command details.
 </p>
 <ol>
