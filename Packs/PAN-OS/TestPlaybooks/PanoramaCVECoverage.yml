@@ -1,0 +1,66 @@
+id: PanoramaCVECoverage
+name: PanoramaCVECoverage
+version: -1
+fromversion: 5.0.0
+starttaskid: '0'
+tasks:
+  '0':
+    id: '0'
+    taskid: '6ed45269-12ae-4366-b245-2912f92838e0'
+    type: start
+    task:
+      id: '6ed45269-12ae-4366-b245-2912f92838e0'
+      version: -1
+      name: ''
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '1'
+  '1':
+    id: 1
+    taskid: 'bada97c4-9ab1-4260-b5e9-fac6852d11a8'
+    type: regular
+    task:
+      id: 'bada97c4-9ab1-4260-b5e9-fac6852d11a8'
+      version: -1
+      name: Panorama_CVE_Coverage
+      description: ''
+      script: '|||Panorama_CVE_Coverage'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '2'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '2':
+    id: '2'
+    taskid: '840d9759-da88-4d9f-8665-99d9fbae7a83'
+    type: title
+    task:
+      id: '840d9759-da88-4d9f-8665-99d9fbae7a83'
+      version: -1
+      name: Test Done
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 600}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+view: '{"linkLabelsPosition": {}, "paper": {"dimensions": {"height": 200, "width":
+  380, "x": 50, "y": 50}}}'
+inputs: []
+outputs: []
+description: Find if there is a signature coverage for a specific CVE
