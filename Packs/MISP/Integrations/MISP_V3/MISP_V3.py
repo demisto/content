@@ -6,9 +6,10 @@ from typing import Union, List, Any, Tuple, Dict
 from urllib.parse import urlparse
 
 import requests
-from pymisp import ExpandedPyMISP, PyMISPError, MISPObject
+from pymisp import ExpandedPyMISP, PyMISPError, MISPObject, MISPSighting
 from pymisp.tools import EMailObject, GenericObjectGenerator
 import copy
+from pymisp.tools import FileObject
 
 from CommonServerPython import *
 
@@ -125,6 +126,13 @@ DISTRIBUTION_NUMBERS = {
     'Connected_communities': 2,
     'All_communities': 3
 }
+
+SIGHTING_MAP = {
+    'sighting': 0,
+    'false_positive': 1,
+    'expiration': 2
+}
+
 ''' HELPER FUNCTIONS '''
 
 
@@ -1110,26 +1118,28 @@ def add_tag():
     })
 
 
-def add_sighting():
+def add_sighting(pymisp: ExpandedPyMISP, demisto_args: dict):
     """Adds sighting to MISP attribute
 
     """
-    sighting = {
-        'sighting': 0,
-        'false_positive': 1,
-        'expiration': 2
-    }
-    kargs = {
-        'id': demisto.args().get('id'),
-        'uuid': demisto.args().get('uuid'),
-        'type': sighting.get(demisto.args().get('type'))
-    }
-    att_id = demisto.args().get('id', demisto.args().get('uuid'))
-    if att_id:
-        MISP.set_sightings(kargs)
-        demisto.results(f'Sighting \'{demisto.args().get("type")}\' has been successfully added to attribute {att_id}')
-    else:
+    attribute_id = demisto_args.get('id')
+    attribute_uuid = demisto_args.get('uuid')
+    attribute_type = demisto_args['type']  # mandatory arg
+    att_id = attribute_id or attribute_uuid
+    if not att_id:
         return_error('ID or UUID not specified')
+
+    sighting_args = {
+        'id': attribute_id,
+        'uuid': attribute_uuid,
+        'type': SIGHTING_MAP[attribute_type]
+    }
+    sigh_obj = MISPSighting()
+    sigh_obj.from_dict(**sighting_args)
+    pymisp.add_sighting(sigh_obj, att_id)
+
+    human_readable = f'Sighting \'{attribute_type}\' has been successfully added to attribute {att_id}'
+    return CommandResults(readable_output=human_readable)
 
 
 def test():
@@ -1142,27 +1152,27 @@ def test():
         return_error('MISP has not connected.')
 
 
-def add_events_from_feed():
+def add_events_from_feed(pymisp: ExpandedPyMISP, demisto_args: dict, use_ssl: bool, proxies: dict):
     """Gets an OSINT feed from url and publishing them to MISP
     urls with feeds for example: `https://www.misp-project.org/feeds/`
     feed format must be MISP.
     """
     headers = {'Accept': 'application/json'}
-    url = demisto.getArg('feed')  # type: str
+    url = demisto_args.get('feed')  # type: str
     url = url[:-1] if url.endswith('/') else url
     if PREDEFINED_FEEDS.get(url):
         url = PREDEFINED_FEEDS[url].get('url')  # type: ignore
-    limit = demisto.getArg('limit')  # type: str
+    limit = demisto_args.get('limit')  # type: str
     limit_int = int(limit) if limit.isdigit() else 0
 
     osint_url = f'{url}/manifest.json'
     not_added_counter = 0
     try:
-        uri_list = requests.get(osint_url, verify=USE_SSL, headers=headers, proxies=proxies).json()
+        uri_list = requests.get(osint_url, verify=use_ssl, headers=headers, proxies=proxies).json()
         events_numbers = list()  # type: List[Dict[str, int]]
         for num, uri in enumerate(uri_list, 1):
-            req = requests.get(f'{url}/{uri}.json', verify=USE_SSL, headers=headers, proxies=proxies).json()
-            event = MISP.add_event(req)
+            req = requests.get(f'{url}/{uri}.json', verify=use_ssl, headers=headers, proxies=proxies).json()
+            event = pymisp.add_event(req)
             if 'id' in event:
                 events_numbers.append({'ID': event['id']})
             else:
@@ -1171,7 +1181,6 @@ def add_events_from_feed():
             if limit_int == num:
                 break
 
-        entry_context = {MISP_PATH: events_numbers}
         human_readable = tableToMarkdown(
             f'Total of {len(events_numbers)} events was added to MISP.',
             events_numbers,
@@ -1181,7 +1190,13 @@ def add_events_from_feed():
             human_readable = f'{human_readable}\n' \
                              f'{not_added_counter} events were not added. Might already been added earlier.'
 
-        return_outputs(human_readable, outputs=entry_context)
+        return CommandResults(
+            readable_output=human_readable,
+            outputs_prefix='MISP.Event',
+            outputs_key_field='ID',
+            outputs=events_numbers,
+        )
+
     except ValueError:
         return_error(f'URL [{url}] is not a valid MISP feed')
 
@@ -1222,7 +1237,7 @@ def add_email_object(pymisp: ExpandedPyMISP, demisto_args: dict = {}):
     entry_id = demisto_args.get('entry_id')
     event_id = demisto_args.get('event_id')
     email_path = demisto.getFilePath(entry_id).get('path')
-    obj = EMailObject(email_path)
+    obj = FileObject(email_path)
     return add_object(event_id, obj, pymisp)
 
 
@@ -1280,17 +1295,16 @@ def add_url_object(pymisp: ExpandedPyMISP, demisto_args: dict = {}):
     return add_object(event_id, g_object, pymisp)
 
 
-def add_generic_object_command():
-    event_id = demisto.getArg('event_id')
-    template = demisto.getArg('template')
-    attributes = demisto.getArg('attributes')  # type: str
-    attributes = attributes.replace("'", '"')
+def add_generic_object_command(pymisp: ExpandedPyMISP, demisto_args: dict = {}):
+    event_id = demisto_args.get('event_id')
+    template = demisto_args.get('template')
+    attributes = demisto_args.get('attributes').replace("'", '"')
     try:
         args = json.loads(attributes)
         if not isinstance(args, list):
             args = build_list_from_dict(args)
         obj = build_generic_object(template, args)
-        add_object(event_id, obj)
+        return add_object(event_id, obj, pymisp)
     except ValueError as e:
         return_error(f'`attribute` parameter could not be decoded, may not a valid JSON\nattribute: {attributes}',
                      str(e))
@@ -1373,11 +1387,11 @@ def main():
         elif command == 'misp-delete-event':
             delete_event()
         elif command == 'misp-add-sighting':
-            add_sighting()
+            return_results(add_sighting(demisto_args=args, pymisp=pymisp))  # checked V
         elif command == 'misp-add-tag':
             add_tag()
         elif command == 'misp-add-events-from-feed':
-            add_events_from_feed()
+            return_results(add_events_from_feed(demisto_args=args, pymisp=pymisp, use_ssl=verify, proxies=proxies))
         elif command == 'file':
             get_files_events()
         elif command == 'url':
@@ -1394,7 +1408,7 @@ def main():
         elif command == 'misp-add-ip-object':
             return_results(add_ip_object(demisto_args=args, pymisp=pymisp))  # checked V - split into sub-funcs
         elif command == 'misp-add-object':
-            add_generic_object_command()
+            return_results(add_generic_object_command(demisto_args=args, pymisp=pymisp))  # checked V
     except PyMISPError as e:
         return_error(e.message)
     except Exception as e:
