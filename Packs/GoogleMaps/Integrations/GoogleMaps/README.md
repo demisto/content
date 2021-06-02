@@ -1,6 +1,9 @@
 Use the Google Maps API. This integration was integrated and tested with version 3.43 of the Google Maps API. This integration always uses the latest API version.
 ## Configure GoogleMaps on Cortex XSOAR
 
+### Note
+To be able to use the embedded Google Maps view, please make sure an API key is set in the demisto settings.
+
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
 2. Search for GoogleMaps.
 3. Click **Add instance** to create and configure a new integration instance.
@@ -36,10 +39,11 @@ Returns the coordinates of the given physical address.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| GoogleMaps.SearchAddress | String | The address provided as input. | 
+| GoogleMaps.SearchAddress | String | The address provided as input. For example, a postal address, a business name or an area | 
 | GoogleMaps.Address | String | Address of the geocoded location. | 
-| GoogleMaps.lat | Number | Latitude of the provided location. | 
-| GoogleMaps.lng | Number | Longitude of the provided location | 
+| GoogleMaps.lat | Number | Latitude of the geocoded location. | 
+| GoogleMaps.lng | Number | Longitude of the geocoded location | 
+| GoogleMaps.Country | String | Country of the geocoded location | 
 
 
 #### Command Example

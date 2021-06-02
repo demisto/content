@@ -54,7 +54,10 @@ script:
       description: The address provided as input
       type: String
     - contextPath: GoogleMaps.Address
-      description: The address provided by Google Maps for the geocoded location
+      description: The address provided by Google Maps for the provided location
+      type: String
+    - contextPath: GoogleMaps.Country
+      description: The country or region where the provided location is, according to Google Maps.
       type: String
   dockerimage: demisto/python3:3.9.5.20070
   feed: false

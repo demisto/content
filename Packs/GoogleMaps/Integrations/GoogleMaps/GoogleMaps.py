@@ -3,6 +3,7 @@ from CommonServerUserPython import *  # noqa
 
 # Disable insecure warnings
 OUTPUTS_PREFIX = 'GoogleMaps'
+NO_RESULTS_MESSAGE = 'No matching places were found.'
 
 requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
 
@@ -23,41 +24,18 @@ class Client(BaseClient):
                                                       params=assign_params(address=search_address, key=self.api_key))
 
         status = demisto.get(response, 'status')
+        if status == 'OK':
+            return parse_response(response, search_address)
 
-        if status == 'ZERO_RESULTS':
-            no_results_message = 'No matching places were found.'
+        elif status == 'ZERO_RESULTS':
             if error_on_no_results:
-                raise DemistoException(message=no_results_message, res=response)
-            return [CommandResults(readable_output=no_results_message)]
+                raise DemistoException(message=NO_RESULTS_MESSAGE, res=response)
 
-        elif status != 'OK':  # happens when there are zero results (handled above) or an error
-            error_message = demisto.get(response, 'error_message') or 'See response for details.'
-            raise DemistoException(message=error_message, res=str(response))
+            return [CommandResults(readable_output=NO_RESULTS_MESSAGE)]
 
         else:
-            coordinate_dict = response['results'][0]['geometry']['location']
-            response_address = response['results'][0]['formatted_address']
-
-            note_outputs = {**coordinate_dict, **{'SearchAddress': search_address,
-                                                  'Address': response_address}}
-
-            # noinspection PyTypeChecker
-            readable_output = tableToMarkdown(name='Results',
-                                              t=note_outputs,
-                                              headers=list(note_outputs.keys()),
-                                              headerTransform=pascalToSpace)
-
-            result_note = CommandResults(outputs_prefix=OUTPUTS_PREFIX,
-                                         outputs_key_field=['lat', 'lng'],
-                                         outputs=note_outputs,
-                                         readable_output=readable_output,
-                                         entry_type=EntryType.NOTE,
-                                         raw_response=response)
-
-            result_map = CommandResults(entry_type=EntryType.MAP_ENTRY_TYPE,
-                                        raw_response=coordinate_dict)
-
-            return [result_note, result_map]
+            error_message = demisto.get(response, 'error_message') or 'See raw response for details.'
+            raise DemistoException(message=error_message, res=response)
 
 
 def google_maps_geocode_command(client: Client, search_address: str, error_on_no_results: bool) -> List[CommandResults]:
@@ -105,7 +83,43 @@ def main():
                        'Error:',
                        str(e)]
 
+        if isinstance(e, DemistoException):
+            error_parts.extend(('Raw response:', str(e.res)))  # pylint: disable=E1101
+
         return_error('\n'.join(error_parts))
+
+
+def parse_response(response: Dict, search_address: str) -> List[CommandResults]:
+    """ Parses Google Maps API to a list of CommandResult objects """
+    first_result = response['results'][0]
+    coordinate_dict = first_result['geometry']['location']
+    response_address = first_result['formatted_address']
+
+    country = None
+    for component in first_result['address_components']:
+        if 'types' in component and 'country' in component['types']:
+            country = component['long_name']
+            break
+
+    note_outputs = {**coordinate_dict, **{'SearchAddress': search_address,
+                                          'Address': response_address,
+                                          'Country': country}}
+    # noinspection PyTypeChecker
+    readable_output = tableToMarkdown(name='Results',
+                                      t=note_outputs,
+                                      headers=list(note_outputs.keys()),
+                                      headerTransform=pascalToSpace)
+
+    result_note = CommandResults(outputs_prefix=OUTPUTS_PREFIX,
+                                 outputs_key_field=['lat', 'lng'],
+                                 outputs=note_outputs,
+                                 readable_output=readable_output,
+                                 entry_type=EntryType.NOTE,
+                                 raw_response=response)
+
+    result_map = CommandResults(entry_type=EntryType.MAP_ENTRY_TYPE,
+                                raw_response=coordinate_dict)
+    return [result_note, result_map]
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
