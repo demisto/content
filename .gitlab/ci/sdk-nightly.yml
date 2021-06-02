@@ -20,11 +20,10 @@
   - section_end "Upload Entities to Cortex XSOAR"
 
 
-#### Commented Out Until Resolve Running Docker in Docker #### 
-# demisto-sdk-nightly:run-unittests-and-lint:
-#   extends:
-#     - .run-unittests-and-lint
-#     - .sdk-nightly-schedule-rule
+demisto-sdk-nightly:run-unittests-and-lint:
+  extends:
+    - .run-unittests-and-lint
+    - .sdk-nightly-schedule-rule
 
 
 demisto-sdk-nightly:run-validations:
