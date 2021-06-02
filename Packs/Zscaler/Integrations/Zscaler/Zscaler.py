@@ -702,7 +702,7 @@ def add_or_remove_urls_from_category(action, urls, category_data) -> None:
     if 'configuredName' in category_data:
         data['configuredName'] = category_data['configuredName']
     json_data = json.dumps(data)
-    http_request('PUT', cmd_url, json_data)
+    http_request('PUT', cmd_url, json_data)  # if the request is successful, it returns an empty response
 
 
 def url_quota_command():
