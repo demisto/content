@@ -2112,7 +2112,7 @@ script: >-
           if (serverVersion.version > version) {
               return true;
           } else if (serverVersion.version === version) {
-              if (buildNumber !== undefined) {
+              if (buildNumber) {
                   var intBuildNumber = parseInt(serverVersion.buildNumber);
                   if (isNaN(intBuildNumber)) {
                       // dev editions are not comparable
