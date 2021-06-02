@@ -6,8 +6,8 @@ from typing import Union, List, Any, Tuple, Dict
 from urllib.parse import urlparse
 
 import requests
-from pymisp import ExpandedPyMISP, PyMISPError, MISPObject, MISPSighting
-from pymisp.tools import EMailObject, GenericObjectGenerator
+from pymisp import ExpandedPyMISP, PyMISPError, MISPObject, MISPSighting, MISPEvent
+from pymisp.tools import GenericObjectGenerator
 import copy
 from pymisp.tools import FileObject
 
@@ -670,61 +670,56 @@ def get_time_now():
     return f'{time_now.tm_year}--{time_now.tm_mon}--{time_now.tm_mday}'
 
 
-def create_event(ret_only_event_id: bool = False) -> Union[int, None]:
+def get_new_event(args):
+    event = MISPEvent()
+    event.distribution = args.get('distribution')
+    threat_level_id_arg = args.get('threat_level_id')
+    event.threat_level_id = THREAT_LEVELS_NUMBERS[
+        threat_level_id_arg] if threat_level_id_arg in THREAT_LEVELS_NUMBERS else threat_level_id_arg
+    analysis_arg = args.get('analysis')
+    event.analysis = ANALYSIS_NUMBERS.get(analysis_arg) if analysis_arg in ANALYSIS_NUMBERS else analysis_arg
+
+    event.info = args.get('info') if args.get('info') else 'Event from Demisto'
+    event.date = args.get('date') if args.get('date') else get_time_now()
+    event.published = argToBoolean(args.get('published', 'False'))
+    event.orgc_id = args.get('orgc_id')
+    event.org_id = args.get('org_id')
+    event.sharing_group_id = args.get('sharing_group_id')
+
+    return event
+
+
+def create_event(pymisp: ExpandedPyMISP, demisto_args: dict, ret_only_event_id: bool = False,
+                 data_keys_to_save: list = []) -> Union[int, None]:
     """Creating event in MISP with the given attribute
 
     Args:
+        pymisp
+        demisto_args
         ret_only_event_id (bool): returning event ID if set to True
+        data_keys_to_save
 
     Returns:
         int: event_id
     """
-    d_args = demisto.args()
-    # new_event in the old integration gets some args that belongs to attribute, so after creating the basic event,
-    # we will add attribute
-    event_dic = {
-        'distribution': d_args.get('distribution'),
-        'threat_level_id': THREAT_LEVELS_NUMBERS.get(d_args.get('threat_level_id')) if d_args.get(
-            'threat_level_id') in THREAT_LEVELS_NUMBERS else d_args.get('threat_level_id'),
-        'analysis': ANALYSIS_NUMBERS.get(demisto.args().get('analysis')) if demisto.args().get(
-            'analysis') in ANALYSIS_NUMBERS else demisto.args().get('analysis'),
-        'info': d_args.get('info') if d_args.get('info') else 'Event from Demisto',
-        'date': d_args.get('date') if d_args.get('date') else get_time_now(),
-        'published': True if d_args.get('published') == 'true' else False,
-        'orgc_id': d_args.get('orgc_id'),
-        'org_id': d_args.get('org_id'),
-        'sharing_group_id': d_args.get('sharing_group_id')
-    }
-
-    event = MISP.new_event(**event_dic)
-    event_id = event.get('id')
-    if isinstance(event_id, str) and event_id.isdigit():
-        event_id = int(event_id)
-    elif not isinstance(event_id, int):
-        return_error('EventID must be a number')
-
+    new_event = get_new_event(demisto_args)
+    new_event = pymisp.add_event(new_event, True)
+    event_id = get_valid_event_id(new_event.id)
     if ret_only_event_id:
         return event_id
 
-    # add attribute
-    add_attribute(event_id=event_id, internal=True)
+    add_attribute(event_id=event_id, internal=True, pymisp=pymisp, data_keys_to_save=data_keys_to_save,
+                  new_event=new_event, demisto_args=demisto_args)
+    event = pymisp.search(eventid=event_id)
 
-    event = MISP.search(eventid=event_id)
+    human_readable = f"## MISP create event\nNew event with ID: {event_id} has been successfully created.\n"
 
-    md = f"## MISP create event\nNew event with ID: {event_id} has been successfully created.\n"
-    ec = {
-        MISP_PATH: build_context(event)
-    }
-
-    demisto.results({
-        'Type': entryTypes['note'],
-        'ContentsFormat': formats['json'],
-        'Contents': event,
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': md,
-        'EntryContext': ec
-    })
-    return None
+    return CommandResults(
+        readable_output=human_readable,
+        outputs_prefix='MISP.Event',
+        outputs_key_field='id',
+        outputs=build_context(event, data_keys_to_save),
+    )
 
 
 def get_valid_event_id(event_id: int):
@@ -747,8 +742,8 @@ def get_valid_distribution(distribution: int):
     return distribution
 
 
-def add_attribute(pymisp: ExpandedPyMISP, event_id: int = None, internal: bool = None, demisto_args: dict = {},
-                  data_keys_to_save: list = []):
+def add_attribute(pymisp: ExpandedPyMISP, event_id: int = None, internal: bool = False, demisto_args: dict = {},
+                  data_keys_to_save: list = [], new_event: MISPEvent = None):
     """Adding attribute to a given event
     This function can be called as an independence command or as part of another command (create event for example)
 
@@ -765,19 +760,21 @@ def add_attribute(pymisp: ExpandedPyMISP, event_id: int = None, internal: bool =
         'category': demisto_args.get('category'),
         'to_ids': argToBoolean(demisto_args.get('to_ids', True)),
         'comment': demisto_args.get('comment'),
-        'value': demisto_args['value']
+        'value': demisto_args.get('value')
     }
     attributes_args.update({'id': get_valid_event_id(event_id)}) if event_id else None
     distribution = demisto_args.get('distribution')
     attributes_args.update({'distribution': get_valid_distribution(distribution)}) if distribution else None
 
-    event = pymisp.get_event(attributes_args.get('id'))
-    event.add_attribute(**attributes_args)
-    pymisp.update_event(event=event)
+    if not new_event:
+        new_event = pymisp.search(eventid=attributes_args.get('id'), pythonify=True)[0]
+
+    new_event.add_attribute(**attributes_args)
+    pymisp.update_event(event=new_event)
     if internal:
         return
-    event = pymisp.search(eventid=attributes_args.get('id'))
 
+    updated_event = pymisp.search(eventid=attributes_args.get('id'))
     human_readable = f"## MISP add attribute\nNew attribute: {attributes_args.get('value')} " \
                      f"was added to event id {attributes_args.get('id')}.\n"
 
@@ -785,7 +782,7 @@ def add_attribute(pymisp: ExpandedPyMISP, event_id: int = None, internal: bool =
         readable_output=human_readable,
         outputs_prefix='MISP.Event',
         outputs_key_field='id',
-        outputs=build_context(event, data_keys_to_save),
+        outputs=build_context(updated_event, data_keys_to_save),
     )
 
 
@@ -1076,46 +1073,36 @@ def search_attributes() -> Tuple[dict, Any]:
         return {}, {}
 
 
-def delete_event():
+def delete_event(pymisp: ExpandedPyMISP, demisto_args: dict):
     """
     Gets an event id and deletes it.
     """
-    event_id = demisto.args().get('event_id')
-    event = MISP.delete_event(event_id)
+    event_id = demisto_args.get('event_id')
+    event = pymisp.delete_event(event_id)
     if 'errors' in event:
         return_error(f'Event ID: {event_id} has not found in MISP: \nError message: {event}')
     else:
-        md = f'Event {event_id} has been deleted'
-        demisto.results({
-            'Type': entryTypes['note'],
-            'Contents': event,
-            'ContentsFormat': formats['json'],
-            'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': md
-        })
+        human_readable = f'Event {event_id} has been deleted'
+        return CommandResults(readable_output=human_readable)
 
 
-def add_tag():
+def add_tag(pymisp: ExpandedPyMISP, demisto_args: dict, data_keys_to_save: list = []):
     """
     Function will add tag to given UUID of event or attribute.
     """
-    uuid = demisto.args().get('uuid')
-    tag = demisto.args().get('tag')
+    uuid = demisto_args.get('uuid')
+    tag = demisto_args.get('tag')
 
-    MISP.tag(uuid, tag)
-    event = MISP.search(uuid=uuid)
-    ec = {
-        MISP_PATH: build_context(event)
-    }
-    md = f'Tag {tag} has been successfully added to event {uuid}'
-    demisto.results({
-        'Type': entryTypes['note'],
-        'Contents': event,
-        'ContentsFormat': formats['json'],
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': md,
-        'EntryContext': ec
-    })
+    pymisp.tag(uuid, tag)
+    event = pymisp.search(uuid=uuid)
+    human_readable = f'Tag {tag} has been successfully added to event {uuid}'
+
+    return CommandResults(
+        readable_output=human_readable,
+        outputs_prefix='MISP.Event',
+        outputs_key_field='ID',
+        outputs=build_context(event, data_keys_to_save),
+    )
 
 
 def add_sighting(pymisp: ExpandedPyMISP, demisto_args: dict):
@@ -1375,8 +1362,9 @@ def main():
             upload_sample()
         elif command == 'misp-download-sample':
             download_file()
-        elif command in ('internal-misp-create-event', 'misp-create-event'):
-            create_event()
+        elif command == 'misp-create-event':
+            return_results(create_event(demisto_args=args, pymisp=pymisp, data_keys_to_save=data_keys_to_save))
+            # checked V
         elif command == 'misp-add-attribute':
             return_results(
                 add_attribute(demisto_args=args, pymisp=pymisp, data_keys_to_save=data_keys_to_save))  # checked V
@@ -1385,11 +1373,11 @@ def main():
         elif command == 'misp-search-attributes':
             search_attributes()
         elif command == 'misp-delete-event':
-            delete_event()
+            return_results(delete_event(demisto_args=args, pymisp=pymisp))  # checked
         elif command == 'misp-add-sighting':
             return_results(add_sighting(demisto_args=args, pymisp=pymisp))  # checked V
         elif command == 'misp-add-tag':
-            add_tag()
+            return_results(add_tag(demisto_args=args, pymisp=pymisp, data_keys_to_save=data_keys_to_save))  # checked V
         elif command == 'misp-add-events-from-feed':
             return_results(add_events_from_feed(demisto_args=args, pymisp=pymisp, use_ssl=verify, proxies=proxies))
         elif command == 'file':
