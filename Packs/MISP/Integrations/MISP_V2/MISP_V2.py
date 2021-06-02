@@ -1,16 +1,17 @@
-# type: ignore
-
+import copy
 import logging
 import warnings
-from typing import Union, List, Any, Tuple, Dict
+from typing import Any, Dict, List, Tuple, Union
 from urllib.parse import urlparse
 
+import demistomock as demisto  # noqa: F401
 import requests
-from pymisp import ExpandedPyMISP, PyMISPError, MISPObject
+from CommonServerPython import *  # noqa: F401
+from pymisp import ExpandedPyMISP, MISPObject, PyMISPError
 from pymisp.tools import EMailObject, GenericObjectGenerator
-import copy
 
-from CommonServerPython import *
+# type: ignore
+
 
 logging.getLogger("pymisp").setLevel(logging.CRITICAL)
 
@@ -502,7 +503,7 @@ def check_file(file_hash):
             dbot_obj = {
                 'Indicator': file_hash,
                 'Type': 'hash',
-                'Vendor': 'MISP V2',
+                'Vendor': misp_organisation,
                 'Score': dbot_score
             }
 
@@ -512,7 +513,7 @@ def check_file(file_hash):
             # if malicious, find file with given hash
             if dbot_score == 3:
                 file_obj['Malicious'] = {
-                    'Vendor': 'MISP V2',
+                    'Vendor': misp_organisation,
                     'Description': f'file hash found in MISP event with ID: {event.get("id")}'
                 }
 
@@ -580,14 +581,14 @@ def check_ip(ip):
             dbot_obj = {
                 'Indicator': ip,
                 'Type': 'ip',
-                'Vendor': 'MISP V2',
+                'Vendor': misp_organisation,
                 'Score': dbot_score
             }
             ip_obj = {'Address': ip}
             # if malicious
             if dbot_score == 3:
                 ip_obj['Malicious'] = {
-                    'Vendor': 'MISP V2',
+                    'Vendor': misp_organisation,
                     'Description': f'IP Found in MISP event: {event.get("id")}'
                 }
             md_obj = {
@@ -613,6 +614,77 @@ def check_ip(ip):
             outputPaths.get('dbotscore'): {
                 'Indicator': ip,
                 'Type': DBotScoreType.IP,
+                'Vendor': 'MISP V2',
+                'Score': Common.DBotScore.NONE,
+            },
+        }
+
+    return_results(CommandResults(
+        readable_output=md,
+        outputs=outputs,
+        raw_response=misp_response,
+    ))
+
+
+def get_domains_events():
+    domains = argToList(demisto.args().get('domain'), ',')
+    for domain in domains:
+        check_domain(domain)
+
+
+def check_domain(domain):
+    """
+    Gets a domain and returning its reputation (if exists)
+    domain (str): IP to check
+    """
+    misp_response = MISP.search(value=domain)
+
+    if misp_response:
+        dbot_list = list()
+         ip_list = list()
+          md_list = list()
+
+           for event_in_response in misp_response:
+                event = event_in_response.get('Event')
+                dbot_score = get_dbot_level(event.get('threat_level_id'))
+                misp_organisation = f'MISP.{event.get("Orgc").get("name")}'
+
+                dbot_obj = {
+                    'Indicator': domain,
+                    'Type': 'domain',
+                    'Vendor': misp_organisation,
+                    'Score': dbot_score
+                }
+                domain_obj = {'Address': domain}
+                # if malicious
+                if dbot_score == 3:
+                    domain_obj['Malicious'] = {
+                        'Vendor': misp_organisation,
+                        'Description': f'Domain Found in MISP event: {event.get("id")}'
+                    }
+                md_obj = {
+                    'EventID': event.get('id'),
+                    'Threat Level': THREAT_LEVELS_WORDS[event.get('threat_level_id')],
+                    'Organisation': misp_organisation
+                }
+
+                domain_list.append(domain_obj)
+                dbot_list.append(dbot_obj)
+                md_list.append(md_obj)
+
+            outputs = {
+                outputPaths.get('domain'): domain_list,
+                outputPaths.get('dbotscore'): dbot_list,
+                MISP_PATH: build_context(misp_response)
+            }
+            md = tableToMarkdown(f'Results found in MISP for Domain: {domain}', md_list)
+
+    else:
+        md = f'No events found in MISP for Domain: {domain}'
+        outputs = {
+            outputPaths.get('dbotscore'): {
+                'Indicator': domain,
+                'Type': DBotScoreType.Domain,
                 'Vendor': 'MISP V2',
                 'Score': Common.DBotScore.NONE,
             },
@@ -847,7 +919,7 @@ def check_url(url):
             dbot_obj = {
                 'Indicator': url,
                 'Type': 'url',
-                'Vendor': 'MISP V2',
+                'Vendor': misp_organisation,
                 'Score': dbot_score
             }
 
@@ -856,7 +928,7 @@ def check_url(url):
             }
             if dbot_score == 3:
                 url_obj['Malicious'] = {
-                    'Vendor': 'MISP V2',
+                    'Vendor': misp_organisation,
                     'Description': f'IP Found in MISP event: {event.get("id")}'
                 }
             md_obj = {
@@ -1384,6 +1456,8 @@ def main():
             get_urls_events()
         elif command == 'ip':
             get_ips_events()
+        elif command == 'domain':
+            get_domains_events()
         #  Object commands
         elif command == 'misp-add-email-object':
             add_email_object()
