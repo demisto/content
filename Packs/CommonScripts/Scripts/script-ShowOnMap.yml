@@ -7,7 +7,7 @@ script: >
 
       if not all((lat,lng)):
           if not address:
-              raise DemistoException("no coordinates OR address provided")
+              raise DemistoException("neither coordinates nor address were provided, nothing to show.")
 
           instances = demisto.executeCommand("GetInstances", {"brand" : "GoogleMaps"})
 
