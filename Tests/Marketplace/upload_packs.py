@@ -4,6 +4,8 @@ import sys
 import argparse
 import shutil
 import uuid
+from tempfile import NamedTemporaryFile
+
 import prettytable
 import glob
 import requests
@@ -369,29 +371,39 @@ def create_corepacks_config(storage_bucket: Any, build_number: str, index_folder
         sys.exit(1)
 
     corepacks_json_path = os.path.join(GCPConfig.STORAGE_BASE_PATH, f'{GCPConfig.CORE_PACK_FILE_NAME}')
-    if not os.path.exists(corepacks_json_path):
-        os.makedirs(corepacks_json_path)
-        logging.info(f'This is the file directoy: {os.makedirs(corepacks_json_path)}')
-    with open(corepacks_json_path, 'w+') as corepacks_file:
-        # construct core pack data with public gcs urls
+    try:
         core_packs_data = {
             'corePacks': core_packs_public_urls,
             'buildNumber': build_number
         }
-        json.dump(core_packs_data, corepacks_file, indent=4)
+        corepacks_json_file = NamedTemporaryFile(delete=False)
+        corepacks_json_path = corepacks_json_file.name
+        corepacks_json_file.write(json.dumps(core_packs_data))
+        corepacks_json_file.close()
+    # with open(corepacks_json_path, 'w+') as corepacks_file:
+    #     # construct core pack data with public gcs urls
+    #     core_packs_data = {
+    #         'corePacks': core_packs_public_urls,
+    #         'buildNumber': build_number
+    #     }
+    #     json.dump(core_packs_data, corepacks_file, indent=4)
 
-    if artifacts_dir:
-        # Store corepacks.json in CircleCI artifacts
-        try:
-            shutil.copyfile(
-                os.path.join(GCPConfig.STORAGE_BASE_PATH, GCPConfig.CORE_PACK_FILE_NAME),
-                os.path.join(artifacts_dir, f'{GCPConfig.CORE_PACK_FILE_NAME}'),
-            )
-        except shutil.Error as err:
-            logging.error(f"Failed copying corepacks.json file to "
-                          f"{artifacts_dir}. Additional info: {str(err)}.")
+        if artifacts_dir:
+            # Store corepacks.json in CircleCI artifacts
+            try:
+                shutil.copyfile(
+                    os.path.join(corepacks_json_path, GCPConfig.CORE_PACK_FILE_NAME),
+                    os.path.join(artifacts_dir, f'{GCPConfig.CORE_PACK_FILE_NAME}'),
+                )
+            except shutil.Error as err:
+                logging.error(f"Failed copying corepacks.json file to "
+                              f"{artifacts_dir}. Additional info: {str(err)}.")
 
-    logging.success(f"Finished copying {GCPConfig.CORE_PACK_FILE_NAME} to artifacts.")
+        logging.success(f"Finished copying {GCPConfig.CORE_PACK_FILE_NAME} to artifacts.")
+
+    finally:
+        if corepacks_json_path:
+            os.unlink(corepacks_json_path)
 
 
 def upload_id_set(storage_bucket: Any, id_set_local_path: str = None):
