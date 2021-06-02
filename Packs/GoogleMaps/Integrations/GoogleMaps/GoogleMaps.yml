@@ -10,6 +10,10 @@ configuration:
   name: api_key
   required: true
   type: 9
+- display: Raise error an empty result
+  name: error_on_no_results
+  required: false
+  type: 8
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
@@ -32,7 +36,7 @@ script:
     - default: true
       description: The physical address to be geocoded.
       isArray: false
-      name: address
+      name: search_address
       required: true
       secret: false
     deprecated: false

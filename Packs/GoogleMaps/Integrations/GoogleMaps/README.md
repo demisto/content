@@ -6,10 +6,12 @@ Use the Google Maps API. This integration was integrated and tested with version
 3. Click **Add instance** to create and configure a new integration instance.
 
     | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | Google Maps API Key | The API key to use for the connection. | True |
-    | Trust any certificate (not secure) |  | False |
-    | Use system proxy settings |  | False |
+       | --- | --- | --- |
+   | Google Maps API Key | The API key to use for the connection. | True |
+   | Raise error an empty result | Whether to consider empty results as an error | False |
+   | Base URL |  | True |
+   | Trust any certificate (not secure) |  | False |
+   | Use system proxy settings |  | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
@@ -27,7 +29,7 @@ Returns the coordinates of the given physical address.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| address | The physical address to be geocoded. | Required | 
+| search_address | The physical address to be geocoded. | Required | 
 
 
 #### Context Output
@@ -45,6 +47,7 @@ Returns the coordinates of the given physical address.
 
 #### Human Readable Output
 ### Results
-|address|input_address|lat|lng|
+
+|Address|Search Address|Lat|Lng|
 |---|---|---|---|
 | Rothschild Blvd 45, Tel Aviv-Yafo, Israel | 45 rothschild tel aviv | 32.0642807 | 34.774554 |
