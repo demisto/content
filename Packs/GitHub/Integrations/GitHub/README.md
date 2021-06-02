@@ -1693,7 +1693,7 @@ List team members.
 ```
 
 #### Human Readable Output
-## Team Member of team content in organization demisto
+## Team Member of team content in organization XSOAR
 |ID|Login|Team|
 |--- |---|---|
 |1234567|user1|content|
