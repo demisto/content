@@ -1,0 +1,56 @@
+{
+	"PxgRetVal": {
+		"GNRL_EA_PARAM_1": [
+			{
+				"type": "params",
+				"value": {
+					"ARPRegKey": "{E8C99927-8E6E-4B6B-B80C-1B8B23B1767D}",
+					"CleanerProductName": "",
+					"Comments": "",
+					"DisplayName": "Microsoft SQL Server 2014 Transact-SQL ScriptDom ",
+					"DisplayVersion": "12.2.5000.0",
+					"HelpLink": "http://search.microsoft.com",
+					"HelpTelephone": "",
+					"InstallDate": "",
+					"InstallDir": "",
+					"LangId": 1033,
+					"PackageCode": "",
+					"ProductID": "03820C7E0D0202C290E1ED29F77E75F0",
+					"Publisher": "Microsoft Corporation",
+					"QuietUninstallString": "",
+					"UninstallString": "",
+					"VapmBuild": {
+						"type": "long",
+						"value": 0
+					},
+					"bIsMsi": true
+				}
+			},
+			{
+				"type": "params",
+				"value": {
+					"ARPRegKey": "{8CCB15BC-2D37-49A3-BF21-6D030D822CEA}",
+					"CleanerProductName": "",
+					"Comments": "",
+					"DisplayName": "Plug-in for Microsoft Exchange ActiveSync",
+					"DisplayVersion": "12.0.0.7734",
+					"HelpLink": "",
+					"HelpTelephone": "",
+					"InstallDate": "",
+					"InstallDir": "",
+					"LangId": 0,
+					"PackageCode": "",
+					"ProductID": "1F2C9666BE2192456F484CA31F0371F3",
+					"Publisher": "Kaspersky",
+					"QuietUninstallString": "",
+					"UninstallString": "",
+					"VapmBuild": {
+						"type": "long",
+						"value": 0
+					},
+					"bIsMsi": false
+				}
+			}
+		]
+	}
+}

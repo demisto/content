@@ -1,6 +1,6 @@
 <!-- HTML_DOC -->
 <p>Use the Cisco Umbrella integration to manage online threats.</p>
-<h2>Configure Cisco Umbrella Investigate - Python on Demisto</h2>
+<h2>Configure Cisco Umbrella Investigate - Python on Cortex XSOAR</h2>
 <ol>
 <li>Navigate to <strong>Settings</strong> &gt; <strong>Integrations</strong> &gt; <strong>Servers &amp; Services</strong>.</li>
 <li>Search for Cisco Umbrella Investigate - Python.</li>
@@ -9,6 +9,7 @@
 <li>
 <strong>Name</strong>: a textual name for the integration instance.</li>
 <li><strong>Cisco Umbrella API token</strong></li>
+<li><strong>Source Reliability.</strong></li>
 <li><strong>Use system proxy settings</strong></li>
 <li><strong>Trust any certificate (not secure)</strong></li>
 <li><strong>Base URL</strong></li>
@@ -25,7 +26,7 @@
 <li>The domain status is -1</li>
 </ul>
 <h2>Commands</h2>
-<p>You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
+<p>You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
 <ol>
 <li><a href="#h_95271207136361539669137295">Get a domain category: umbrella-domain-categorization/investigate-umbrella-domain-categorization</a></li>
 <li><a href="#h_12059469238361539669280611">Get co-occurences for a domain: umbrella-domain-co-occurrences/investigate-umbrella-domain-co-occurrences</a></li>

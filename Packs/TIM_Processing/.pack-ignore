@@ -1,0 +1,14 @@
+[file:layoutscontainer-Review_Indicators_Manually.json]
+ignore=BA101
+
+[file:layoutscontainer-Review_Indicators_Manually_For_Whitelisting.json]
+ignore=BA101
+
+[file:playbook-TIM_-_Run_Enrichment_For_Hash_Indicators_README.md]
+ignore=RM106
+
+[file:playbook-TIM_-_Run_Enrichment_For_IP_Indicators_README.md]
+ignore=RM106
+
+[file:playbook-TIM_-_Run_Enrichment_For_Url_Indicators_README.md]
+ignore=RM106

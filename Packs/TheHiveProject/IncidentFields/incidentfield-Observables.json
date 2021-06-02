@@ -57,7 +57,6 @@
       "script": "",
       "selectValues": [
         "",
-        "",
         "WHITE",
         "GREEN",
         "AMBER",
@@ -100,7 +99,7 @@
     {
     }
   ],
-  "editForm": true,
+  "editForm": false,
   "group": 0,
   "hidden": false,
   "id": "incident_thehiveobservables",

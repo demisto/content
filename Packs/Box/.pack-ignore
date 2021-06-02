@@ -1,0 +1,5 @@
+[file:README.md]
+ignore=RM104
+
+[file:integration-Box_README.md]
+ignore=RM106

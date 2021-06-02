@@ -1,0 +1,49 @@
+{
+  "success": true,
+  "data": [
+    {
+      "_id": "12345",
+      "name": "Cobalt Group"
+    },
+    {
+      "_id": "a1345",
+      "name": "FIN8"
+    },
+    {
+      "_id": "b1345",
+      "name": "Lazarus Group"
+    },
+    {
+      "_id": "c1345",
+      "name": "OceanLotus"
+    },
+    {
+      "_id": "d1345",
+      "name": "APT38"
+    },
+    {
+      "_id": "e1345",
+      "name": "Patchwork"
+    },
+    {
+      "_id": "f1345",
+      "name": "Silent Librarian APT"
+    },
+    {
+      "_id": "g1345",
+      "name": "ComRAT And Zebrocy"
+    },
+    {
+      "_id": "h1345",
+      "name": "T-RAT 2.0"
+    },
+    {
+      "_id": "i1345",
+      "name": "Kimsuky Spyware Module"
+    },
+    {
+      "_id": "j1345",
+      "name": "Abbadon RAT"
+    }
+  ]
+}

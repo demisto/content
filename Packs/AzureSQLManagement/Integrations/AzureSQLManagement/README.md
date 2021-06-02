@@ -8,6 +8,16 @@ In both options below, the [device authorization grant flow](https://docs.micros
 
 In order to connect to the Azure SQL Management using either Cortex XSOAR Azure App or the Self-Deployed Azure App:
 1. Fill in the required parameters.
+   
+    | **Parameter** | **Description** | **Required** |
+    | --- | --- | --- |
+    | Application ID |  | True |
+    | Subscription ID |  | True |
+    | Resource Group Name |  | True |
+    | Azure AD endpoint | Azure AD endpoint associated with a national cloud. | False |
+    | Trust any certificate (not secure) |  | False |
+    | Use system proxy settings |  | False |
+   
 2. Run the ***!azure-sql-auth-start*** command. 
 3. Follow the instructions that appear.
 4. Run the ***!azure-sql-auth-complete*** command.
@@ -168,7 +178,7 @@ Lists all the servers.
 {
     "AzureSQL": {
         "Server": {
-            "administratorLogin": "demistoadmin",
+            "administratorLogin": "xsoaradmin",
             "fullyQualifiedDomainName": "sqlintegration.database.windows.net",
             "id": "/subscriptions/0123456789/resourceGroups/sql-integration/providers/Microsoft.Sql/servers/sqlintegration",
             "kind": "v12.0",
@@ -190,7 +200,7 @@ Lists all the servers.
 >### Servers List
 >|Administrator Login|Fully Qualified Domain Name|Id|Kind|Location|Name|Public Network Access|State|Type|Version|
 >|---|---|---|---|---|---|---|---|---|---|
->| demistoadmin | sqlintegration.database.windows.net | /subscriptions/0123456789/resourceGroups/sql-integration/providers/Microsoft.Sql/servers/sqlintegration | v12.0 | eastus | sqlintegration | Enabled | Ready | Microsoft.Sql/servers | 12.0 |
+>| xsoaradmin | sqlintegration.database.windows.net | /subscriptions/0123456789/resourceGroups/sql-integration/providers/Microsoft.Sql/servers/sqlintegration | v12.0 | eastus | sqlintegration | Enabled | Ready | Microsoft.Sql/servers | 12.0 |
 
 
 ### azure-sql-db-list

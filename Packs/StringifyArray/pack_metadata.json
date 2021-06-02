@@ -1,0 +1,17 @@
+{
+    "name": "StringifyArray",
+    "description": "A transformer to encode an array in JSON",
+    "support": "community",
+    "currentVersion": "1.0.1",
+    "author": "Masahiko Inoue",
+    "url": "",
+    "email": "",
+    "created": "2021-03-22T10:19:34Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "githubUser": [
+        "spearmin10"
+    ]
+}

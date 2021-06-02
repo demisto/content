@@ -5,4 +5,13 @@ ignore=IN126,IN135
 ignore=PB106
 
 [file:ServiceNow_IAM.yml]
-ignore=IN135
+ignore=IN135,BA108,BA109
+
+[file:layoutscontainer-ServiceNow_Create_Ticket_and_Mirror.json]
+ignore=BA101
+
+[file:ServiceNow_CMDB.yml]
+ignore=BA108,BA109
+
+[file:README.md]
+ignore=RM106

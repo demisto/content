@@ -60,6 +60,11 @@ Retrieve results for a file hash using WildFire
 | File.SHA1 | string | SHA1 hash of the file. | 
 | File.SHA256 | string | SHA256 hash of the file. | 
 | File.Malicious.Vendor | string | For malicious files, the vendor that made the decision. | 
+| File.FeedRelatedIndicators.value | string | Indicators that are associated with the File. |
+| File.FeedRelatedIndicators.type | string | The type of the indicators that are associated with the File. |
+| File.Tags | string | Tags that are associated with the File. |
+| File.Behavior.details | string | File behavior details. |
+| File.Behavior.action | string | File behavior action. |
 | DBotScore.Indicator | string | The indicator that was tested. | 
 | DBotScore.Type | string | The indicator type. | 
 | DBotScore.Vendor | string | The vendor used to calculate the score. | 

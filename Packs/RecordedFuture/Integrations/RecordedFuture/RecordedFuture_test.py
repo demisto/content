@@ -1,5 +1,5 @@
-import unittest
 import os
+import unittest
 import json
 from pathlib import Path
 from RecordedFuture import (
@@ -12,8 +12,8 @@ from RecordedFuture import (
     triage_command,
 )
 from CommonServerPython import CommandResults
-
 import vcr as vcrpy
+import io
 
 CASSETTES = Path(__file__).parent / 'cassettes'
 
@@ -57,8 +57,7 @@ class RFTest(unittest.TestCase):
     def test_ip_reputation(self) -> None:
         resp = lookup_command(self.client, "37.48.83.137", "ip")
         entity = resp[0].to_context()["Contents"]["data"]["results"][0]
-        context = resp[0].to_context()["EntryContext"]['RecordedFuture.IP(val.name == obj.name)']
-
+        context = resp[0].to_context()["EntryContext"]['RecordedFuture.IP(val.name && val.name == obj.name)']
         self.assertIsInstance(resp[0], CommandResults)
         # there are many rules that are concatenated
         self.assertIn(',', context["rules"])
@@ -67,7 +66,7 @@ class RFTest(unittest.TestCase):
     @vcr.use_cassette()
     def test_intelligence(self) -> None:
         resp = enrich_command(self.client, "184.168.221.96", "ip", True, True)
-        context = resp[0].to_context()["EntryContext"]['RecordedFuture.IP(val.name == obj.name)']  # noqa
+        context = resp[0].to_context()["EntryContext"]['RecordedFuture.IP(val.name && val.name == obj.name)']  # noqa
 
         self.assertIsInstance(resp[0], CommandResults)
         # rules are concatenated
@@ -84,14 +83,12 @@ class RFTest(unittest.TestCase):
     @vcr.use_cassette()
     def test_intelligence_profile(self) -> None:
         """Will fetch related entities even if related_entities param is false"""  # noqa
-        resp = enrich_command(self.client, "184.168.221.96", "ip", False, False, "Vulnerability Analyst")  # noqa
+        resp = enrich_command(self.client, "184.168.221.96", "ip", True, False, "Vulnerability Analyst")  # noqa
         self.assertIsInstance(resp[0], CommandResults)
         data = resp[0].raw_response['data']
-
-        list_of_lists = [entry for entry in data['relatedEntities']]  # noqa
-        flat_related_types = sorted([entry['type'] for entry in list_of_lists])
+        list_of_lists = sorted([[*entry][0] for entry in data['relatedEntities']]) # noqa
         expected = ['RelatedMalwareCategory', 'RelatedMalware', 'RelatedThreatActor']  # noqa
-        self.assertEqual(flat_related_types, sorted(expected))
+        self.assertEqual(list_of_lists, sorted(expected))
 
     @vcr.use_cassette()
     def test_threat_assessment(self) -> None:
@@ -106,6 +103,7 @@ class RFTest(unittest.TestCase):
             "url": ["https://sites.google.com/site/unblockingnotice/"],
             "vulnerability": ["CVE-2020-8813", "CVE-2011-3874"],
         }
+        # mocker.patch.object(DBotScore, 'get_integration_name', return_value='Recorded Future v2')
         resp = triage_command(self.client, entities, context)
         self.assertIsInstance(resp[0], CommandResults)
         self.assertFalse(resp[0].to_context()["Contents"]["verdict"])
@@ -176,3 +174,62 @@ class RFTest(unittest.TestCase):
         """Alert related to typosquats"""
         resp = get_alert_single_command(self.client, "fp0_an")
         self.assertTrue(resp.get('HumanReadable'))
+
+
+def create_client():
+    base_url = "https://api.recordedfuture.com/v2/"
+    verify_ssl = True
+    token = os.environ.get("RF_TOKEN")
+    headers = {
+        "X-RFToken": token,
+        "X-RF-User-Agent": "Cortex_XSOAR/2.0 Cortex_XSOAR_unittest_0.1",
+    }
+
+    return Client(
+        base_url=base_url, verify=verify_ssl, headers=headers, proxy=None
+    )
+
+
+def util_load_json(path):
+    with io.open(path, mode='r', encoding='utf-8') as f:
+        return json.loads(f.read())
+
+
+def test_entity_enrich_with_related_entities(mocker):
+    """
+
+    Given:
+        a request for entity enrichment with the argument fetch_related_entities as True
+    When:
+        requesting the API for entity enrichment
+    Then:
+        The returned data is valid and has the key relatedEntities
+
+    """
+    client = create_client()
+    raw_response = util_load_json('./cassettes/entity_raw_response_related.json')
+    mocker.patch.object(Client, '_http_request', return_value=raw_response)
+    expected_entity_data = util_load_json('./cassettes/enrich_entity_related.json')
+    returned_data = client.entity_enrich('184.168.221.96', 'ip', True, False, 'Vulnerability Analyst')
+    assert expected_entity_data == returned_data
+    assert 'relatedEntities' in returned_data.get('data').keys()
+
+
+def test_entity_enrich_no_related_entities(mocker):
+    """
+
+    Given:
+        a request for entity enrichment with the argument fetch_related_entities as False
+    When:
+        requesting the API for entity enrichment
+    Then:
+        The returned data is valid and does not have the key relatedEntities
+
+    """
+    client = create_client()
+    raw_response = util_load_json('./cassettes/entity_raw_response_no_related.json')
+    mocker.patch.object(Client, '_http_request', return_value=raw_response)
+    expected_entity_data = util_load_json('./cassettes/enrich_entity_no_related.json')
+    returned_data = client.entity_enrich('184.168.221.96', 'ip', False, False, 'Vulnerability Analyst')
+    assert expected_entity_data == returned_data
+    assert 'relatedEntities' not in returned_data.get('data').keys()

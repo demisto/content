@@ -2,7 +2,7 @@ import copy
 from datetime import datetime, timezone
 
 import pytest
-
+from CommonServerPython import DemistoException
 import demistomock as demisto
 from ArcherV2 import Client, extract_from_xml, generate_field_contents, get_errors_from_res, generate_field_value, \
     fetch_incidents, get_fetch_time, parser, OCCURRED_FORMAT
@@ -46,13 +46,13 @@ FIELD_DEFINITION_RES = [
     }
 ]
 
-GET_LEVELS_BY_APP = [
-    {'level': 123, 'mapping': {'1': {
+GET_LEVELS_BY_APP = {
+    'level': 123, 'mapping': {'1': {
         'Type': 7, 'Name': 'External Links', 'FieldId': "1", 'IsRequired': False, 'RelatedValuesListId': None},
         '2': {
-            'Type': 1, 'Name': 'Device Name', 'FieldId': "2",
-            'IsRequired': True, 'RelatedValuesListId': 8}
-    }}]
+        'Type': 1, 'Name': 'Device Name', 'FieldId': "2",
+        'IsRequired': True, 'RelatedValuesListId': 8}
+    }}
 
 GET_FIElD_DEFINITION_RES = {
     "RequestedObject": {"RelatedValuesListId": 62},
@@ -244,9 +244,28 @@ class TestArcherV2:
                 client.update_session()
             assert e
 
+    def test_update_session_fail_parsing(self, mocker):
+        """
+        Given:
+            an exception raised from _http_request who failed to pares json object
+        When:
+            - initiating session
+        Then:
+            - Raise exception with message to check the provided url
+        """
+        mocker.patch.object(Client, '_http_request', side_effect=DemistoException("Failed to parse json object from "
+                                                                                  "response: b\"<html><head><script>"
+                                                                                  "window.top.location='/Default.aspx';"
+                                                                                  "</script></head><body>"
+                                                                                  "</body></html>"))
+        client = Client(BASE_URL, '', '', '', '')
+        with pytest.raises(DemistoException) as e:
+            client.update_session()
+        assert "Check the given URL, it can be a redirect issue" in str(e.value)
+
     def test_generate_field_contents(self):
         client = Client(BASE_URL, '', '', '', '')
-        field = generate_field_contents(client, '{"Device Name":"Macbook"}', GET_LEVELS_BY_APP[0]['mapping'])
+        field = generate_field_contents(client, '{"Device Name":"Macbook"}', GET_LEVELS_BY_APP['mapping'])
         assert field == {'2': {'Type': 1, 'Value': 'Macbook', 'FieldId': '2'}}
 
     def test_get_errors_from_res(self):
@@ -343,10 +362,39 @@ class TestArcherV2:
                                {"Name": "google", "URL": "https://google.com"}]
 
     def test_generate_field_users_groups_input(self):
+        """
+        Given:
+            Valid value from dictionary type under "fieldsToValues" argument
+
+        When:
+            - running archer-update-record
+
+        Then:
+            - assert fields are generated correctly
+
+        """
         client = Client(BASE_URL, '', '', '', '')
         field_key, field_value = generate_field_value(client, "", {'Type': 8}, {"users": [20], "groups": [30]})
         assert field_key == 'Value'
         assert field_value == {"UserList": [{"ID": 20}], "GroupList": [{"ID": 30}]}
+
+    def test_generate_invalid_field_users_groups_input(self):
+        """
+        Given:
+            Invalid value under "fieldsToValues" argument with type 8 (lists)
+
+        When:
+            - running archer-update-record
+
+        Then:
+            - Raise exception indicates that the value is not with the right format
+
+        """
+        client = Client(BASE_URL, '', '', '', '')
+        with pytest.raises(DemistoException) as e:
+            generate_field_value(client, "test", {'Type': 8}, 'user1, user2')
+        assert "The value of the field: test must be a dictionary type and include a list under \"users\" key or " \
+               "\"groups\" key e.g: {\"Policy Owner\":{\"users\":[20],\"groups\":[30]}}" in str(e.value)
 
     @pytest.mark.parametrize('field_value, result', [
         ([1, 2], [{"ContentID": 1}, {"ContentID": 2}]),

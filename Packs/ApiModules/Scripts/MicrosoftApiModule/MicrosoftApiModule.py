@@ -4,6 +4,7 @@ import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
 import requests
+import re
 import base64
 from cryptography.hazmat.primitives.ciphers.aead import AESGCM
 from typing import Dict, Tuple, List, Optional
@@ -23,6 +24,8 @@ CLIENT_CREDENTIALS = 'client_credentials'
 AUTHORIZATION_CODE = 'authorization_code'
 REFRESH_TOKEN = 'refresh_token'  # guardrails-disable-line
 DEVICE_CODE = 'urn:ietf:params:oauth:grant-type:device_code'
+REGEX_SEARCH_URL = '(?P<url>https?://[^\s]+)'
+SESSION_STATE = 'session_state'
 
 
 class MicrosoftClient(BaseClient):
@@ -41,6 +44,7 @@ class MicrosoftClient(BaseClient):
                  resources: List[str] = None,
                  verify: bool = True,
                  self_deployed: bool = False,
+                 azure_ad_endpoint: str = 'https://login.microsoftonline.com',
                  *args, **kwargs):
         """
         Microsoft Client class that implements logic to authenticate with oproxy or self deployed applications.
@@ -85,6 +89,7 @@ class MicrosoftClient(BaseClient):
 
         self.auth_type = SELF_DEPLOYED_AUTH_TYPE if self_deployed else OPROXY_AUTH_TYPE
         self.verify = verify
+        self.azure_ad_endpoint = azure_ad_endpoint
 
         self.multi_resource = multi_resource
         if self.multi_resource:
@@ -354,6 +359,9 @@ class MicrosoftClient(BaseClient):
             data['grant_type'] = REFRESH_TOKEN
             data['refresh_token'] = refresh_token
         else:
+            if SESSION_STATE in self.auth_code:
+                raise ValueError('Malformed auth_code parameter: Please copy the auth code from the redirected uri '
+                                 'without any additional info and without the "session_state" query parameter.')
             data['grant_type'] = AUTHORIZATION_CODE
             data['code'] = self.auth_code
 
@@ -522,11 +530,11 @@ class MicrosoftClient(BaseClient):
 
         return headers
 
-    def device_auth_request(self) -> str:
+    def device_auth_request(self) -> dict:
         response_json = {}
         try:
             response = requests.post(
-                url='https://login.microsoftonline.com/organizations/oauth2/v2.0/devicecode',
+                url=f'{self.azure_ad_endpoint}/organizations/oauth2/v2.0/devicecode',
                 data={
                     'client_id': self.client_id,
                     'scope': self.scope
@@ -540,7 +548,19 @@ class MicrosoftClient(BaseClient):
         except Exception as e:
             return_error(f'Error in Microsoft authorization: {str(e)}')
         set_integration_context({'device_code': response_json.get('device_code')})
-        return response_json.get('user_code', '')
+        return response_json
+
+    def start_auth(self, complete_command: str) -> str:
+        response = self.device_auth_request()
+        message = response.get('message', '')
+        re_search = re.search(REGEX_SEARCH_URL, message)
+        url = re_search.group('url') if re_search else None
+        user_code = response.get('user_code')
+
+        return f"""### Authorization instructions
+1. To sign in, use a web browser to open the page [{url}]({url})
+and enter the code **{user_code}** to authenticate.
+2. Run the **{complete_command}** command in the War Room."""
 
 
 class NotFoundError(Exception):

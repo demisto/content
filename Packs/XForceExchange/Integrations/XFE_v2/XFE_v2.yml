@@ -12,6 +12,47 @@ configuration:
   name: credentials
   required: true
   type: 9
+- additionalinfo: Reliability of the source providing the intelligence data.
+  defaultvalue: C - Fairly reliable
+  display: Source Reliability
+  name: integrationReliability
+  options:
+  - A+ - 3rd party enrichment
+  - A - Completely reliable
+  - B - Usually reliable
+  - C - Fairly reliable
+  - D - Not usually reliable
+  - E - Unreliable
+  - F - Reliability cannot be judged
+  required: true
+  type: 15
+- defaultvalue: '7'
+  display: IP Threshold. Minimum risk score for the IP to be considered malicious
+    (ranges from 1 to 10).
+  hidden: false
+  name: ip_threshold
+  required: false
+  type: 0
+- defaultvalue: '7'
+  display: URL Threshold. Minimum risk score for the URL to be considered malicious
+    (ranges from 1 to 10).
+  hidden: false
+  name: url_threshold
+  required: false
+  type: 0
+- defaultvalue: '5'
+  display: CVE Threshold. Minimum risk score for the URL to be considered malicious
+    (ranges from 1 to 10).
+  hidden: false
+  name: cve_threshold
+  required: false
+  type: 0
+- defaultvalue: 'true'
+  additionalinfo: Create relationships between indicators as part of Enrichment.
+  display: Create relationships
+  name: create_relationships
+  required: false
+  type: 8
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
@@ -20,25 +61,8 @@ configuration:
   name: proxy
   required: false
   type: 8
-- defaultvalue: '7'
-  display: IP Threshold. Minimum risk score for the IP to be considered malicious (ranges from 1 to 10).
-  hidden: false
-  name: ip_threshold
-  required: false
-  type: 0
-- defaultvalue: '7'
-  display: URL Threshold. Minimum risk score for the URL to be considered malicious (ranges from 1 to 10).
-  hidden: false
-  name: url_threshold
-  required: false
-  type: 0
-- defaultvalue: '5'
-  display: CVE Threshold. Minimum risk score for the URL to be considered malicious (ranges from 1 to 10).
-  hidden: false
-  name: cve_threshold
-  required: false
-  type: 0
-description: IBM X-Force Exchange lets you receive threat intelligence about applications, IP addresses, URls and hashes
+description: IBM X-Force Exchange lets you receive threat intelligence about applications,
+  IP addresses, URls and hashes
 display: IBM X-Force Exchange v2
 name: XFE_v2
 script:
@@ -51,7 +75,9 @@ script:
       required: true
       secret: false
     - default: false
-      description: If the score is above the given threshold, will be considered malicious. If threshold is not specified, the default IP threshold, as configured in the instance settings, will be used.
+      description: If the score is above the given threshold, will be considered malicious.
+        If threshold is not specified, the default IP threshold, as configured in
+        the instance settings, will be used.
       isArray: false
       name: threshold
       required: false
@@ -96,7 +122,9 @@ script:
       type: Unknown
   - arguments:
     - default: false
-      description: If the score is above the given threshold, will be considered malicious. If threshold is not specified, the default URL threshold, as configured in the instance settings, will be used.
+      description: If the score is above the given threshold, will be considered malicious.
+        If threshold is not specified, the default URL threshold, as configured in
+        the instance settings, will be used.
       isArray: false
       name: threshold
       required: false
@@ -157,6 +185,21 @@ script:
     - contextPath: File.Malicious.Description
       description: For malicious files, the reason for the vendor to make the decision
       type: String
+    - contextPath: File.Relationships.EntityA
+      description: The source of the relationship.
+      type: string
+    - contextPath: File.Relationships.EntityB
+      description: The destination of the relationship.
+      type: string
+    - contextPath: File.Relationships.Relationship
+      description: The name of the relationship.
+      type: string
+    - contextPath: File.Relationships.EntityAType
+      description: The type of the source of the relationship.
+      type: string
+    - contextPath: File.Relationships.EntityBType
+      description: The type of the destination of the relationship.
+      type: string
     - contextPath: DBotScore.Indicator
       description: The indicator that was tested.
       type: string
@@ -194,7 +237,9 @@ script:
       required: true
       secret: false
     - default: false
-      description: If the score is above the given threshold, will be considered malicious. If threshold is not specified, the default URL threshold, as configured in the instance settings, will be used.
+      description: If the score is above the given threshold, will be considered malicious.
+        If threshold is not specified, the default URL threshold, as configured in
+        the instance settings, will be used.
       isArray: false
       name: threshold
       required: false
@@ -498,7 +543,7 @@ script:
     - contextPath: XFE.CVESearch.Bookmark
       description: Bookmark used to page through results.
       type: String
-  dockerimage: demisto/python3:3.9.1.14969
+  dockerimage: demisto/python3:3.9.5.20070
   feed: false
   isfetch: false
   longRunning: false
