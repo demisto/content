@@ -20,6 +20,7 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r dev-requirements-py3.txt
       - name: Check pack and request review
+        if: ${{ secrets.SENDGRID_EMAIL_API_KEY }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           PR_NUMBER: ${{ github.event.pull_request.number }}
