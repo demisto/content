@@ -10,12 +10,13 @@ script: |-
   if (isDemistoVersionGE('99.0.0') === true) {
       throw new Error('Failed verifying isDemistoVersionGE < 99.0.0');
   }
+  var version = demistoVersion().version;
 
-  if (isDemistoVersionGE('6.2.0', '1') === false) {
+  if (isDemistoVersionGE(version, '1') === false) {
       throw new Error('Failed verifying buildNumber > 1');
   }
 
-  if (isDemistoVersionGE('6.2.0', '99999999') === true) {
+  if (isDemistoVersionGE(version, '99999999') === true) {
       throw new Error('Failed verifying buildNumber < 99999999');
   }
 
