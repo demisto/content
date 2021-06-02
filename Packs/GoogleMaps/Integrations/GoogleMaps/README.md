@@ -2,7 +2,7 @@ Use the Google Maps API. This integration was integrated and tested with version
 ## Configure GoogleMaps on Cortex XSOAR
 
 ### Note
-To be able to use the embedded Google Maps view, please make sure an API key is set in the demisto settings.
+In order to use the embedded Google Maps view, please make sure an API key is set in the demisto settings.
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
 2. Search for GoogleMaps.
@@ -22,8 +22,7 @@ You can execute these commands from the Cortex XSOAR CLI, as part of an automati
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### google-maps-geocode
 ***
-Returns the coordinates of the given physical address.
-
+Returns the coordinates of the given physical address. Only the first result is returned (the most relevant, according to Google Maps).
 
 #### Base Command
 
