@@ -1,7 +1,7 @@
-### This pack was co-authored by:
+#### This pack was co-authored by:
  - Contributor1
  - Contributor2
 
-Thank you for contributing to Cortex XSOAR.
+We appreciate any contribution to our XSOAR content.
 
-If you are interested in contributing, visit our contribution process [here](https://xsoar.pan.dev/docs/contributing/contributing).
+For additional information about our contribution process, visit our [contribution page](https://xsoar.pan.dev/docs/contributing/contributing).
