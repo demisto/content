@@ -4,6 +4,8 @@ Use the Google Maps API. This integration was integrated and tested with version
 ### Note
 In order to use the embedded Google Maps view, please make sure an API key is set in the demisto settings.
 
+---
+
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
 2. Search for GoogleMaps.
 3. Click **Add instance** to create and configure a new integration instance.
