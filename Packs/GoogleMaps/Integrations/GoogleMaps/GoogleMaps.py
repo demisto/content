@@ -8,11 +8,11 @@ requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
 
 
 class Client(BaseClient):
-    def __init__(self, api_key: str, proxy: bool, insecure: bool):
+    def __init__(self, api_key: str, base_url: str, proxy: bool, insecure: bool):
         """
         Client to use in the IPinfo integration. Uses BaseClient
         """
-        super().__init__(base_url='https://maps.googleapis.com/maps/api/',
+        super().__init__(base_url=base_url,
                          verify=not insecure,
                          proxy=proxy)
         self.api_key = api_key
@@ -29,13 +29,14 @@ class Client(BaseClient):
 
         elif status != 'OK':  # happens when there are zero results (handled above) or an error
             error_message = demisto.get(response, 'error_message') or 'See response for details.'
-            raise DemistoException(message=error_message, res=response)
+            raise DemistoException(message=error_message, res=str(response))
 
         else:
             coordinate_dict = response['results'][0]['geometry']['location']
             response_address = response['results'][0]['formatted_address']
 
-            note_outputs = {**coordinate_dict, **{'SearchAddress': search_address, 'Address': response_address}}
+            note_outputs = {**coordinate_dict, **{'SearchAddress': search_address,
+                                                  'Address': response_address}}
 
             # noinspection PyTypeChecker
             readable_output = tableToMarkdown(name='Results',
@@ -72,13 +73,14 @@ def main():
     command = demisto.command()
 
     proxy = demisto.get(params, 'proxy') or False
+    base_url = demisto.get(params, 'base_url') or 'https://maps.googleapis.com/fmaps/api/'
     api_key = demisto.get(params, 'api_key.password') or ''
     insecure = demisto.get(params, 'insecure') or False
 
     demisto.debug(f'Command being called is {command}')
 
     try:
-        client = Client(api_key=api_key, proxy=proxy, insecure=insecure)
+        client = Client(base_url=base_url, api_key=api_key, proxy=proxy, insecure=insecure)
 
         if command == 'test-module':
             return_results(test_module(client))
@@ -92,9 +94,11 @@ def main():
     except Exception as e:
         demisto.error(traceback.format_exc())  # prints the traceback
 
-        error_parts = (f'Failed to execute the {command} command.', 'Error:', {str(e)})
+        error_parts = (f'Failed to execute the {command} command.',
+                       'Error:', str(e))
+
         if isinstance(e, DemistoException):
-            error_parts += f'Raw response:,{e.res}'
+            error_parts += (f'Raw response:\n', str(e.res))
 
         return_error('\n'.join(error_parts))
 

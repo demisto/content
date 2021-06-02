@@ -14,6 +14,11 @@ configuration:
   name: insecure
   required: false
   type: 8
+- display: Base URL
+  name: base_url
+  required: true
+  defaultvalue: https://maps.googleapis.com/maps/api/
+  type: 0
 - display: Use system proxy settings
   name: proxy
   required: false
@@ -41,7 +46,7 @@ script:
     - contextPath: GoogleMaps.lng
       description: Longitude of the provided location
       type: Number
-    - contextPath: GoogleMaps.Input_Address
+    - contextPath: GoogleMaps.SearchAddress
       description: The address provided as input
       type: String
     - contextPath: GoogleMaps.Address
