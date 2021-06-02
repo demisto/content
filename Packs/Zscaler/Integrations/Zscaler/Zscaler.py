@@ -678,7 +678,7 @@ def category_ioc_update(category_data):
     return response
 
 
-def add_or_remove_urls_from_category(action, urls, category_data) -> None:
+def add_or_remove_urls_from_category(action: str, urls: List[Any], category_data: Dict[str: Any]):
     """
     Add or remove urls from a category.
     Args:
