@@ -120,7 +120,7 @@ def get_zipped_packs_names(zip_path):
     zipped_packs = []
     packs_path = zip_path
     print("get_zipped_packs_names")
-    for entry in os.scandir(packs_path + "/packs"):
+    for entry in os.scandir(packs_path):
         print(entry)
     for entry in os.scandir(packs_path):
         print(entry)
