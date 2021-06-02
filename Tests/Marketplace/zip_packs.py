@@ -153,14 +153,13 @@ def download_packs_from_gcp(storage_bucket, gcp_path, destination_path, circle_b
     src_path = "gs://marketplace-dist-dev/" + gcp_path
     # gs_cmd = f"gsutil -m cp -r {src_path} {destination_path}"
     try:
-        print("Src: " + src_path)
-        print("Dest: " + destination_path)
         process = subprocess.Popen(["Tests/scripts/cp_gcp_dir.sh", src_path, destination_path])
         out, err = process.communicate()
         errcode = process.returncode
-        print("out" + out.decode('utf-8'))
-        print("err" + err.decode('utf-8'))
-        print("errcode" + str(errcode))
+        if out:
+            print("out" + out.decode('utf-8'))
+        if err:
+            print("err" + err.decode('utf-8'))
 
     except Exception as e:
         logging.critical(f"Failed to run cp_gcp_dir.sh, Error:{e}")
