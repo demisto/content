@@ -105,7 +105,7 @@ def parse_response(response: Dict, search_address: str) -> List[CommandResults]:
                                           'Address': response_address,
                                           'Country': country}}
     # noinspection PyTypeChecker
-    readable_output = tableToMarkdown(name='Results',
+    readable_output = tableToMarkdown(name='Geocoding Results',
                                       t=note_outputs,
                                       headers=list(note_outputs.keys()),
                                       headerTransform=pascalToSpace)
