@@ -1114,6 +1114,10 @@ script:
     description: Creates a new Watchlist within EDR,
     execution: false
     name: cb-edr-watchlist-create
+    outputs:
+      - contextPath: CarbonBlackEDR.Watchlist.last_hit_count
+        description: An ID for the new watchlist
+        type: Number
   - arguments:
     - default: true
       description: The watchlist ID
