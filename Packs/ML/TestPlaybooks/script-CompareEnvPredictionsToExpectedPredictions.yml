@@ -34,3 +34,4 @@ pswd: ""
 runonce: false
 dockerimage: demisto/ml:1.0.0.20606
 runas: DBotWeakRole
+fromversion: 5.0.0
