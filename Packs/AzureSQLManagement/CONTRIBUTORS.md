@@ -1,7 +1,5 @@
-#### This pack was co-authored by:
+### Pack Contributors:
  - Contributor1
  - Contributor2
 
-We appreciate any contribution to our XSOAR content.
-
-For additional information about our contribution process, visit our [contribution page](https://xsoar.pan.dev/docs/contributing/contributing).
+Contributions are welcome and appreciated. For more info, visit our [Contribution Guide](https://xsoar.pan.dev/docs/contributing/contributing).
