@@ -339,6 +339,7 @@ def create_corepacks_config(storage_bucket: Any, build_number: str, index_folder
     """
     core_packs_public_urls = []
     found_core_packs = set()
+    logging.info(f'This is the index_folder_path - {index_folder_path}')
     for pack in os.scandir(index_folder_path):
         if pack.is_dir() and pack.name in GCPConfig.CORE_PACKS_LIST:
             pack_metadata_path = os.path.join(index_folder_path, pack.name, Pack.METADATA)
@@ -370,6 +371,7 @@ def create_corepacks_config(storage_bucket: Any, build_number: str, index_folder
         sys.exit(1)
 
     corepacks_json_path = os.path.join(GCPConfig.STORAGE_BASE_PATH, f'{GCPConfig.CORE_PACK_FILE_NAME}')
+    logging.info(f'This is the corepacks json path - {corepacks_json_path}')
     with open(corepacks_json_path, 'w+') as corepacks_file:
         # construct core pack data with public gcs urls
         core_packs_data = {
