@@ -69,7 +69,7 @@ def preprocess_text(text, model_type, is_return_error):
             'dedupThreshold': '-1',
             'outputFormat': 'json',
             'textFields': 'text',
-            'removeShortTextThreshold': '0'}
+            'removeShortTextThreshold': '-1'}
     res = demisto.executeCommand('DBotPreProcessTextData', args)
     if is_error(res):
         handle_error(res[0]['Contents'], is_return_error)
@@ -111,7 +111,7 @@ def predict_batch_incidents_light_output(email_subject, email_body, phishing_mod
     preprocessed_text_list = preprocess_text(text_list, model_type, is_return_error=False)
     batch_predictions = []
     for input_text in preprocessed_text_list:
-        incident_res = {'Label': None, 'Probability': None, 'Error': ''}
+        incident_res = {'Label': -1, 'Probability': -1, 'Error': ''}
         filtered_text, filtered_text_number_of_words = phishing_model.filter_model_words(input_text)
         if filtered_text_number_of_words == 0:
             incident_res['Error'] = "The model does not contain any of the input text words"
