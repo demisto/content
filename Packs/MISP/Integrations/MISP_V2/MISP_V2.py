@@ -641,43 +641,43 @@ def check_domain(domain):
 
     if misp_response:
         dbot_list = list()
-         ip_list = list()
-          md_list = list()
+        ip_list = list()
+        md_list = list()
 
-           for event_in_response in misp_response:
-                event = event_in_response.get('Event')
-                dbot_score = get_dbot_level(event.get('threat_level_id'))
-                misp_organisation = f'MISP.{event.get("Orgc").get("name")}'
+        for event_in_response in misp_response:
+            event = event_in_response.get('Event')
+            dbot_score = get_dbot_level(event.get('threat_level_id'))
+            misp_organisation = f'MISP.{event.get("Orgc").get("name")}'
 
-                dbot_obj = {
-                    'Indicator': domain,
-                    'Type': 'domain',
-                    'Vendor': misp_organisation,
-                    'Score': dbot_score
-                }
-                domain_obj = {'Address': domain}
-                # if malicious
-                if dbot_score == 3:
-                    domain_obj['Malicious'] = {
-                        'Vendor': misp_organisation,
-                        'Description': f'Domain Found in MISP event: {event.get("id")}'
-                    }
-                md_obj = {
-                    'EventID': event.get('id'),
-                    'Threat Level': THREAT_LEVELS_WORDS[event.get('threat_level_id')],
-                    'Organisation': misp_organisation
-                }
-
-                domain_list.append(domain_obj)
-                dbot_list.append(dbot_obj)
-                md_list.append(md_obj)
-
-            outputs = {
-                outputPaths.get('domain'): domain_list,
-                outputPaths.get('dbotscore'): dbot_list,
-                MISP_PATH: build_context(misp_response)
+            dbot_obj = {
+                'Indicator': domain,
+                'Type': 'domain',
+                'Vendor': misp_organisation,
+                'Score': dbot_score
             }
-            md = tableToMarkdown(f'Results found in MISP for Domain: {domain}', md_list)
+            domain_obj = {'Address': domain}
+            # if malicious
+            if dbot_score == 3:
+                domain_obj['Malicious'] = {
+                    'Vendor': misp_organisation,
+                    'Description': f'Domain Found in MISP event: {event.get("id")}'
+                }
+            md_obj = {
+                'EventID': event.get('id'),
+                'Threat Level': THREAT_LEVELS_WORDS[event.get('threat_level_id')],
+                'Organisation': misp_organisation
+            }
+
+            domain_list.append(domain_obj)
+            dbot_list.append(dbot_obj)
+            md_list.append(md_obj)
+
+        outputs = {
+            outputPaths.get('domain'): domain_list,
+            outputPaths.get('dbotscore'): dbot_list,
+            MISP_PATH: build_context(misp_response)
+        }
+        md = tableToMarkdown(f'Results found in MISP for Domain: {domain}', md_list)
 
     else:
         md = f'No events found in MISP for Domain: {domain}'
