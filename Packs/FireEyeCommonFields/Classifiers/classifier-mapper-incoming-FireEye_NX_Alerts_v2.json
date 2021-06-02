@@ -2,6 +2,7 @@
   "id": "FireEye NX Alert - Incoming Mapper v2",
   "name": "FireEye NX Alert - Incoming Mapper v2",
   "type": "mapping-incoming",
+  "description": "Maps FireEye NX alerts.",
   "version": -1,
   "mapping": {
     "FireEye NX Alert": {
