@@ -106,7 +106,6 @@ class Client(BaseClient):
         self.api_key = api_key
 
     def google_maps_geocode(self, address: str) -> List[CommandResults]:
-
         # noinspection PyTypeChecker
         response: Dict[str, Any] = self._http_request(method='GET',
                                                       url_suffix='geocode/json?',
@@ -155,7 +154,7 @@ def main():
     command = demisto.command()
 
     proxy = demisto.get(params, 'proxy') or False
-    api_key = demisto.get(params, 'credentials.password') or ''
+    api_key = demisto.get(params, 'api_key.password') or '' # todo
     insecure = demisto.get(params, 'insecure') or False
 
     demisto.debug(f'Command being called is {command}')
