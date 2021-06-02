@@ -6,7 +6,7 @@ This script is used to simplify the process of creating a service request in BMC
 | --- | --- |
 | Script Type | python3 |
 | Tags | bmcremedyforce  |
-| Demisto Version | 5.0.0 |
+| Cortex XSOAR Version | 5.0.0 |
 
 ## Dependencies
 ---
