@@ -155,8 +155,7 @@ def download_packs_from_gcp(storage_bucket, gcp_path, destination_path, circle_b
     try:
         print("Src: " + src_path)
         print("Dest: " + destination_path)
-        process = subprocess.Popen(["Tests/scripts/cp_gcp_dir.sh", src_path, destination_path], shell=True,
-                         stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        process = subprocess.Popen(["Tests/scripts/cp_gcp_dir.sh", src_path, destination_path])
         out, err = process.communicate()
         errcode = process.returncode
         print("out" + out.decode('utf-8'))
