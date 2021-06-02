@@ -87,7 +87,7 @@ def fetch_incidents(client, max_alerts, last_run, first_fetch_time, apiKey, api_
 
     latest_created_time = last_fetch
     diff_timedelta = float(datetime.utcnow().strftime('%s')) - float(latest_created_time.strftime('%s'))
-    time_frame = int(math.ceil(diff_timedelta/60))
+    time_frame = int(math.ceil(diff_timedelta / 60))
     incidents = []
     alerts = client.fetch_anomaly(apiKey=apiKey, api_username=api_username,
                                   plugin_id=plugin_id, action=action, time_frame=time_frame)
