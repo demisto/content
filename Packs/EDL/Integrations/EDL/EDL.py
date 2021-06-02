@@ -39,7 +39,7 @@ NGINX_SERVER_CONF = '''
 server {
 
     listen $port default_server $ssl;
-    
+
     $sslcerts
 
     proxy_cache_key $scheme$proxy_host$request_uri$extra_cache_key;
@@ -556,7 +556,7 @@ def route_edl_values() -> Response:
     )
     query_time = (datetime.now(timezone.utc) - created).total_seconds()
     edl_size = 0
-    if values.strip():        
+    if values.strip():
         edl_size = values.count('\n') + 1  # add 1 as last line doesn't have a \n
     max_age = ceil((datetime.now() - dateparser.parse(cache_refresh_rate)).total_seconds())
     demisto.debug(f'Returning edl of size: [{edl_size}], created: [{created}], query time seconds: [{query_time}],'
