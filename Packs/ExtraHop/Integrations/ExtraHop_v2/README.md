@@ -12,12 +12,12 @@
 <ul>
 <li>Create incidents for every detection that ExtraHop Reveal(x) surfaces in real-time.</li>
 <li>Enable guided investigation and response through playbooks and automation scripts.</li>
-<li>Interrogate the ExtraHop Reveal(x) REST API using the simple and powerful Demisto CLI.</li>
+<li>Interrogate the ExtraHop Reveal(x) REST API using the simple and powerful Cortex XSOAR CLI.</li>
 </ul><h2>Detailed Description</h2>
-<p>Visit the <a href="https://www.extrahop.com/customers/community/bundles/extrahop/demisto-integration/">ExtraHop + Demisto Setup Guide</a> for detailed integration instructions.</p>
+<p>Visit the <a href="https://www.extrahop.com/customers/community/bundles/extrahop/demisto-integration/">ExtraHop + XSOAR Setup Guide</a> for detailed integration instructions.</p>
 <h2>Fetch Incidents</h2>
 <p>Incidents are pushed in via the Demisto REST API by a trigger running on the ExtraHop Reveal(x) appliance.</p>
-<h2>Configure ExtraHop Reveal(x) on Demisto</h2>
+<h2>Configure ExtraHop Reveal(x) on Cortex XSOAR</h2>
 <ol>
   <li>Navigate to&nbsp;<strong>Settings</strong>&nbsp;&gt;&nbsp;<strong>Integrations</strong>
   &nbsp;&gt;&nbsp;<strong>Servers &amp; Services</strong>.</li>
@@ -40,7 +40,7 @@
 </ol>
 <h2>Commands</h2>
 <p>
-  You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.
+  You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
   After you successfully execute a command, a DBot message appears in the War Room with the command details.
 </p>
 <ol>
@@ -51,7 +51,7 @@
   <li>Get all devices on the watchlist: extrahop-get-watchlist</li>
   <li>Create a new alert rule: extrahop-create-alert-rule</li>
   <li>Modify an alert rule: extrahop-edit-alert-rule</li>
-  <li>Link an ExtraHop Detection to a Demisto Investigation: extrahop-track-ticket</li>
+  <li>Link an ExtraHop Detection to a XSOAR Investigation: extrahop-track-ticket</li>
   <li>Get all peers for a device: extrahop-get-peers</li>
   <li>Get all active network protocols for a device: extrahop-get-protocols</li>
   <li>Add or remove a tag from devices: extrahop-tag-devices</li>
@@ -2980,7 +2980,7 @@ Successful Modification
                 "IsL3": true,
                 "Macaddr": "63:65:11:A1:3B:2B",
                 "ModTime": 1569283538898,
-                "NetbiosName": "DEMISTO",
+                "NetbiosName": "XSOAR",
                 "OnWatchlist": true,
                 "ParentId": 1445,
                 "Role": "other",
@@ -3153,7 +3153,7 @@ There are no context output for this command.
 <p>&nbsp;</p>
 <h5>Command Example</h5>
 <p>
-  <code>!extrahop-create-alert-rule apply_all=false disabled=true name="Demisto Test Alert" notify_snmp=false refire_interval=3600 severity=3 type=threshold object_type=device operator=> operand=0.1 field_name=rsp_error field_name2=rsp field_op=/ units=none stat_name="extrahop.application.http"</code>
+  <code>!extrahop-create-alert-rule apply_all=false disabled=true name="XSOAR Test Alert" notify_snmp=false refire_interval=3600 severity=3 type=threshold object_type=device operator=> operand=0.1 field_name=rsp_error field_name2=rsp field_op=/ units=none stat_name="extrahop.application.http"</code>
 </p>
 
 <h5>Human Readable Output</h5>
@@ -3299,7 +3299,7 @@ There are no context output for this command.
 <p>&nbsp;</p>
 <h5>Command Example</h5>
 <p>
-  <code>!extrahop-edit-alert-rule alert_id=32 apply_all=false disabled=true name="Demisto Test" notify_snmp=false refire_interval=3600 severity=3 type=threshold object_type=device operator=> operand=0.1 field_name=rsp_error field_name2=rsp field_op=/ units=none stat_name="extrahop.application.http"  interval_length=30</code>
+  <code>!extrahop-edit-alert-rule alert_id=32 apply_all=false disabled=true name="XSOAR Test" notify_snmp=false refire_interval=3600 severity=3 type=threshold object_type=device operator=> operand=0.1 field_name=rsp_error field_name2=rsp field_op=/ units=none stat_name="extrahop.application.http"  interval_length=30</code>
 </p>
 
 <h5>Human Readable Output</h5>
@@ -3309,9 +3309,9 @@ Successful Modification
 </p>
 </p>
 
-<h3>8. Link an ExtraHop Detection to a Demisto Investigation</h3>
+<h3>8. Link an ExtraHop Detection to a XSOAR Investigation</h3>
 <!-- <hr> -->
-<p>Link an ExtraHop Detection to a Demisto Investigation.</p>
+<p>Link an ExtraHop Detection to a XSOAR Investigation.</p>
 <h5>Base Command</h5>
 <p>
   <code>extrahop-track-ticket</code>
@@ -3338,7 +3338,7 @@ Successful Modification
   <tbody>
     <tr>
       <td>incident_id</td>
-      <td>The ID of the Demisto Incident to ticket track.</td>
+      <td>The ID of the Cortex XSOAR Incident to ticket track.</td>
       <td>Required</td>
     </tr>
     <tr>
@@ -3384,7 +3384,7 @@ Successful Modification
     <tr>
       <td>ExtraHop.TicketId</td>
       <td>string</td>
-      <td>b'Demisto Incident ID successfully tracked to ExtraHop Detection'</td>
+      <td>b'XSOAR Incident ID successfully tracked to ExtraHop Detection'</td>
     </tr>
   </tbody>
 </table>
@@ -4286,4 +4286,4 @@ Uploaded file: extrahop 2019-09-23 16.59.01 to 17.29.01 PST.pcap
 <h2>Additional Information</h2>
 <h2>Known Limitations</h2>
 <h2>Troubleshooting</h2>
-<p>This integration was integrated and tested with version 7.8 of ExtraHop Reveal(x) and version 4.5 of Demisto.
+<p>This integration was integrated and tested with version 7.8 of ExtraHop Reveal(x) and version 4.5 of Cortex XSOAR.

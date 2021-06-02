@@ -2,7 +2,7 @@
 <h2> </h2>
 <p>Use the CrowdStrike Falcon Host integration to detect and block malicious activity.</p>
 <p> </p>
-<h2>Configure CrowdStrike Falcon Host Integration on Demisto</h2>
+<h2>Configure CrowdStrike Falcon Host Integration on Cortex XSOAR</h2>
 <ol>
 <li>Navigate to <strong>Settings</strong> &gt; <strong>Integrations</strong> &gt; <strong>Servers &amp; Services</strong>.</li>
 <li>Search for FalconHost.</li>
@@ -21,7 +21,7 @@
 </ol>
 <p> </p>
 <h2>Commands</h2>
-<p>You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.<br>After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
+<p>You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.<br>After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
 <ol>
 <li><a href="#h_91950037141535449351719">Upload indicators for CS to monitor: cs-upload-ioc</a></li>
 <li><a href="#h_595229102941535449358310">Get definitions of monitored indicators: cs-get-ioc</a></li>

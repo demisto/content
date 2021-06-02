@@ -1040,13 +1040,13 @@ class Pack(object):
 
         return task_status, False
 
-    def get_changelog_latest_rn(self, changelog_index_path: str) -> Tuple[dict, LooseVersion]:
+    def get_changelog_latest_rn(self, changelog_index_path: str) -> Tuple[dict, LooseVersion, str]:
         """
         Returns the changelog file contents and the last version of rn in the changelog file
         Args:
             changelog_index_path (str): the changelog.json file path in the index
 
-        Returns: the changelog file contents and the last version of rn in the changelog file
+        Returns: the changelog file contents, the last version,  and contents of rn in the changelog file
 
         """
         logging.info(f"Found Changelog for: {self._pack_name}")
@@ -1062,8 +1062,9 @@ class Pack(object):
         changelog_rn_versions = [LooseVersion(ver) for ver in changelog]
         # no need to check if changelog_rn_versions isn't empty because changelog file exists
         changelog_latest_rn_version = max(changelog_rn_versions)
+        changelog_latest_rn = changelog[changelog_latest_rn_version.vstring]["releaseNotes"]
 
-        return changelog, changelog_latest_rn_version
+        return changelog, changelog_latest_rn_version, changelog_latest_rn
 
     def get_modified_release_notes_lines(self, release_notes_dir: str, changelog_latest_rn_version: LooseVersion,
                                          changelog: dict, modified_rn_files: list):
@@ -1147,13 +1148,14 @@ class Pack(object):
                 same_block_versions_dict[current_version] = self._clean_release_notes(rn_lines).strip()
         return same_block_versions_dict, higher_nearest_version.vstring
 
-    def get_release_notes_lines(self, release_notes_dir: str, changelog_latest_rn_version: LooseVersion) -> \
-            Tuple[str, str]:
+    def get_release_notes_lines(self, release_notes_dir: str, changelog_latest_rn_version: LooseVersion,
+                                changelog_latest_rn: str) -> Tuple[str, str]:
         """
         Prepares the release notes contents for the new release notes entry
         Args:
             release_notes_dir (str): the path to the release notes dir
             changelog_latest_rn_version (LooseVersion): the last version of release notes in the changelog.json file
+            changelog_latest_rn (str): the last release notes in the changelog.json file
 
         Returns: The release notes contents and the latest release notes version (in the release notes directory)
 
@@ -1173,26 +1175,28 @@ class Pack(object):
             found_versions.append(LooseVersion(version))
 
         latest_release_notes_version = max(found_versions)
-        latest_release_notes = latest_release_notes_version.vstring
-        logging.info(f"Latest ReleaseNotes version is: {latest_release_notes}")
+        latest_release_notes_version_str = latest_release_notes_version.vstring
+        logging.info(f"Latest ReleaseNotes version is: {latest_release_notes_version_str}")
 
         if len(pack_versions_dict) > 1:
             # In case that there is more than 1 new release notes file, wrap all release notes together for one
             # changelog entry
             aggregation_str = f"[{', '.join(lv.vstring for lv in found_versions if lv > changelog_latest_rn_version)}]" \
-                              f" => {latest_release_notes}"
+                              f" => {latest_release_notes_version_str}"
             logging.info(f"Aggregating ReleaseNotes versions: {aggregation_str}")
             release_notes_lines = aggregate_release_notes_for_marketplace(pack_versions_dict)
             self._aggregated = True
             self._aggregation_str = aggregation_str
+        elif len(pack_versions_dict) == 1:
+            # In case where there is only one new release notes file
+            release_notes_lines = pack_versions_dict[latest_release_notes_version_str]
         else:
-            # In case where there is only one new release notes file, OR
             # In case where the pack is up to date, i.e. latest changelog is latest rn file
-            latest_release_notes_suffix = f"{latest_release_notes.replace('.', '_')}.md"
-            with open(os.path.join(release_notes_dir, latest_release_notes_suffix), 'r') as rn_file:
-                release_notes_lines = self._clean_release_notes(rn_file.read())
+            # We should take the release notes from the index as it has might been aggregated
+            logging.info(f'No new RN file was detected for pack {self._pack_name}, taking latest RN from the index')
+            release_notes_lines = changelog_latest_rn
 
-        return release_notes_lines, latest_release_notes
+        return release_notes_lines, latest_release_notes_version_str
 
     def assert_upload_bucket_version_matches_release_notes_version(self,
                                                                    changelog: dict,
@@ -1258,13 +1262,14 @@ class Pack(object):
             logging.info(f"Loading changelog for {self._pack_name} pack")
             changelog_index_path = os.path.join(index_folder_path, self._pack_name, Pack.CHANGELOG_JSON)
             if os.path.exists(changelog_index_path):
-                changelog, changelog_latest_rn_version = self.get_changelog_latest_rn(changelog_index_path)
+                changelog, changelog_latest_rn_version, changelog_latest_rn = \
+                    self.get_changelog_latest_rn(changelog_index_path)
                 release_notes_dir = os.path.join(self._pack_path, Pack.RELEASE_NOTES)
 
                 if os.path.exists(release_notes_dir):
                     # Handling latest release notes files
                     release_notes_lines, latest_release_notes = self.get_release_notes_lines(
-                        release_notes_dir, changelog_latest_rn_version)
+                        release_notes_dir, changelog_latest_rn_version, changelog_latest_rn)
                     self.assert_upload_bucket_version_matches_release_notes_version(changelog, latest_release_notes)
 
                     # Handling modified old release notes files, if there are any
