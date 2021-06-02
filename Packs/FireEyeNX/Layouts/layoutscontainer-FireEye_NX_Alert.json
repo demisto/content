@@ -887,14 +887,6 @@
       "version": 0
      },
      {
-      "fieldId": "incident_niststage",
-      "id": "",
-      "isVisible": true,
-      "modified": "0001-01-01T00:00:00Z",
-      "sortValues": null,
-      "version": 0
-     },
-     {
       "fieldId": "incident_os",
       "id": "",
       "isVisible": true,
@@ -928,14 +920,6 @@
      },
      {
       "fieldId": "incident_remediationsla",
-      "id": "",
-      "isVisible": true,
-      "modified": "0001-01-01T00:00:00Z",
-      "sortValues": null,
-      "version": 0
-     },
-     {
-      "fieldId": "incident_sansstage",
       "id": "",
       "isVisible": true,
       "modified": "0001-01-01T00:00:00Z",
