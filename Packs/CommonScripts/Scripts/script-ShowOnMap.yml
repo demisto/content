@@ -1,19 +1,19 @@
 commonfields:
   id: ShowOnMap
   version: -1
-name: ShowOnMap
+name: ShowOnMapF
 script: >
   var lat = parseFloat(args.lat);
   var lng = parseFloat(args.lng);
-  val address = args.address;
+  var address = args.address;
 
 
   if (isNaN(lat) || isNaN(lng)) {
-      val instances = executeCommand("getInstances", {"brand" : "GoogleMaps"});
+      var instances = executeCommand("getInstances", {"brand" : "GoogleMaps"});
 
       // if an instance of GoogleMaps exists, geocoding is possible
       if (("Modules" in instances) && instances["Modules"].length > 0){
-          val geocoded = executeCommand("geocode", {"address" : address})[0];
+          var geocoded = executeCommand("geocode", {"search_address" : address})[0]; // todo
           lat = geocoded["lat"];
           lng = geocoded["lng"];
 
@@ -21,7 +21,7 @@ script: >
               return {
                       ContentsFormat: formats.text,
                       Type: entryTypes.error,
-                      Contents: 'Geocoding failed'
+                      Contents: "Geocoding failed"
               };
           }
       }
@@ -31,10 +31,9 @@ script: >
           return {
                 ContentsFormat: formats.text,
                 Type: entryTypes.error,
-                Contents: 'Coordinates were not provided, and no instance of GoogleMaps was found.
-                          please configure an instance one to show addresses on a map.'
+                Contents: "Coordinates were not provided, and no instance of GoogleMaps was found. Please configure an instance to show addresses on a map."
           };
-      }
+      };
   }
 
   // now lat,lng are not null (whether they were valid arguments or geocoded)
@@ -55,15 +54,16 @@ tags:
 comment: Returns a map entry with marker on the given coordinate (lat, lng).
 enabled: true
 args:
-  - name: lat
-    required: false
+- name: lat
+  required: false
   default: true
   description: Latitude (e.g. 32.064622)
 - name: lng
   required: false
   description: Longitude (e.g. 34.774131)
-  - name: address
-    required: false
-    description: Address (will be converted to coordinates and then shown)
+- name: address
+  default: true
+  required: false
+  description: Address (will be converted to coordinates and then shown)
 scripttarget: 0
 fromversion: 5.0.0
