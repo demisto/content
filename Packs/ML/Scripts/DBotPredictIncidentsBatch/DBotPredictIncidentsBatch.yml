@@ -116,4 +116,4 @@ type: python
 dockerimage: demisto/ml:1.0.0.19355
 fromversion: 5.0.0
 tests:
-- No tests (auto formatted)
+- VerifyOOBV2Predictions-Test

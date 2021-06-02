@@ -110,6 +110,7 @@ dockerimage:  demisto/ml:1.0.0.20606
 runonce: true
 tests:
 - DbotPredictOufOfTheBoxTestV2
+- VerifyOOBV2Predictions-Test
 tags:
 - phishing
 - ml
