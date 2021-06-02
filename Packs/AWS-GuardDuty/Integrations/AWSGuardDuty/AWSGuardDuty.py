@@ -834,3 +834,7 @@ def main():
 
     demisto.results(result)
     sys.exit(0)
+
+
+if __name__ in ('__main__', '__builtin__', 'builtins'):
+    main()
