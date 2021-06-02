@@ -25,18 +25,23 @@ script:
     }
 
 
-    function setLock(guid, info) {
-        var integrationContext = getIntegrationContext() || {};
+    function setLock(guid, info, version) {
+        var versionedIntegrationContext = getVersionedIntegrationContext(true, true) || {};
+        var integrationContext = versionedIntegrationContext.context;
+        if (JSON.stringify(version) !== JSON.stringify(versionedIntegrationContext.version)) {
+            throw 'Versions mismatch';
+        }
         integrationContext[lockName] = {guid: guid, info: info};
-        setIntegrationContext(integrationContext);
+        setVersionedIntegrationContext(integrationContext, true, version);
     }
 
     function getLock() {
-        var integrationContext = getIntegrationContext() || {};
+        var versionedIntegrationContext = getVersionedIntegrationContext(true, true) || {};
+        var integrationContext = versionedIntegrationContext.context;
         if (!integrationContext[lockName]) {
             integrationContext[lockName] = {};
         }
-        return integrationContext[lockName];
+        return {lock: integrationContext[lockName], version: versionedIntegrationContext.version};
     }
 
 
@@ -54,16 +59,26 @@ script:
 
             var guid = guid();
             var time = 0;
-            var lock = getLock();
+            var versionedLock = getLock();
+            var lock = versionedLock.lock;
 
             while (lock.guid !== guid && time++ < lockTimeout) {
                 wait(1);
-                lock = getLock();
+                versionedLock = getLock();
+                lock = versionedLock.lock;
                 if (lock.guid === guid) {
                     continue;
                 }
                 if (!lock.guid) {
-                    setLock(guid, lockInfo);
+                    try {
+                        setLock(guid, lockInfo, versionedLock.version);
+                    } catch(err) {
+                        if (err.message == 'Versions mismatch') {
+                            logDebug('~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ \n \n \n \n Hit version mismatch when trying to set lock, will try again.');
+                        } else {
+                            throw err;
+                        }
+                    }
                 }
             }
 
@@ -81,29 +96,28 @@ script:
             break;
 
         case 'demisto-lock-release':
-            integrationContext = getIntegrationContext();
+            integrationContext = getVersionedIntegrationContext(true, true);
             integrationContext[lockName] = {};
-            setIntegrationContext(integrationContext);
+            setVersionedIntegrationContext(integrationContext);
 
             var md = '### Demisto Locking Mechanism\n';
             md += 'Lock released successfully';
             return { ContentsFormat: formats.markdown, Type: entryTypes.note, Contents: md } ;
 
         case 'demisto-lock-release-all':
-            setIntegrationContext({});
+            setVersionedIntegrationContext({});
 
             var md = '### Demisto Locking Mechanism\n';
             md += 'All locks released successfully';
             return { ContentsFormat: formats.markdown, Type: entryTypes.note, Contents: md } ;
 
         case 'demisto-lock-info':
-            integrationContext = getIntegrationContext();
+            integrationContext = getVersionedIntegrationContext(true);
             var obj = [];
 
             var res;
             var md = '### Demisto Locking Mechanism\n';
             var locks = (lockName === 'Default') ? Object.keys(integrationContext) : [lockName];
-
             locks.forEach(function(lock){
                 md += 'Lock name: ' + lock + ' - ';
                 if (integrationContext[lock] && integrationContext[lock].guid) {
@@ -116,7 +130,7 @@ script:
                 }
 
             });
-            return { ContentsFormat: formats.json, Type: entryTypes.note, Contents: obj, HumanReadable: md } ;
+            return { ContentsFormat: formats.json, Type: entryTypes.note, Contents: obj, HumanReadable: md };
 
         default:
             var md = 'Unknown command ' + command;
@@ -151,5 +165,4 @@ script:
     arguments: []
     description: Release all locks
   runonce: false
-fromversion: 5.0.0
-toversion: 6.1.9
+fromversion: 6.2.0
