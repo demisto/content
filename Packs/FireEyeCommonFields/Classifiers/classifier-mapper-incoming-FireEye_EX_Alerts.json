@@ -2,6 +2,7 @@
   "id": "FireEye EX - Incoming Mapper",
   "name": "FireEye EX - Incoming Mapper",
   "type": "mapping-incoming",
+  "description": "Maps FireEye EX incidents.",
   "version": -1,
   "mapping": {
     "FireEye EX Alert": {
