@@ -4,22 +4,6 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 from botocore.config import Config
 
-AWS_DEFAULT_REGION = demisto.params()['defaultRegion']
-AWS_roleArn = demisto.params()['roleArn']
-AWS_roleSessionName = demisto.params()['roleSessionName']
-AWS_roleSessionDuration = demisto.params()['sessionDuration']
-AWS_rolePolicy = None
-AWS_GD_SEVERITY = demisto.params()['gs_severity']
-VERIFY_CERTIFICATE = not demisto.params().get('insecure', True)
-proxies = handle_proxy(proxy_param_name='proxy', checkbox_default_value=False)
-config = Config(
-    connect_timeout=1,
-    retries=dict(
-        max_attempts=5
-    ),
-    proxies=proxies
-)
-
 
 def aws_session(service='guardduty', region=None, roleArn=None, roleSessionName=None, roleSessionDuration=None, rolePolicy=None):
     kwargs = {}
@@ -738,83 +722,101 @@ def test_function():
         return raise_error(e)
 
 
-# The command demisto.command() holds the command sent from the user.
-if demisto.command() == 'test-module':
-    # This is the call made when pressing the integration test button.
-    result = test_function()
+def main():
+    global AWS_DEFAULT_REGION, AWS_roleArn, AWS_roleSessionName, AWS_roleSessionDuration, AWS_rolePolicy, \
+        AWS_GD_SEVERITY, VERIFY_CERTIFICATE, proxies, config
+    AWS_DEFAULT_REGION = demisto.params()['defaultRegion']
+    AWS_roleArn = demisto.params()['roleArn']
+    AWS_roleSessionName = demisto.params()['roleSessionName']
+    AWS_roleSessionDuration = demisto.params()['sessionDuration']
+    AWS_rolePolicy = None
+    AWS_GD_SEVERITY = demisto.params()['gs_severity']
+    VERIFY_CERTIFICATE = not demisto.params().get('insecure', True)
+    proxies = handle_proxy(proxy_param_name='proxy', checkbox_default_value=False)
+    config = Config(
+        connect_timeout=1,
+        retries=dict(
+            max_attempts=5
+        ),
+        proxies=proxies
+    )
+    # The command demisto.command() holds the command sent from the user.
+    if demisto.command() == 'test-module':
+        # This is the call made when pressing the integration test button.
+        result = test_function()
 
-if demisto.command() == 'aws-gd-create-detector':
-    result = create_detector(demisto.args())
+    if demisto.command() == 'aws-gd-create-detector':
+        result = create_detector(demisto.args())
 
-if demisto.command() == 'aws-gd-delete-detector':
-    result = delete_detector(demisto.args())
+    if demisto.command() == 'aws-gd-delete-detector':
+        result = delete_detector(demisto.args())
 
-if demisto.command() == 'aws-gd-get-detector':
-    result = get_detector(demisto.args())
+    if demisto.command() == 'aws-gd-get-detector':
+        result = get_detector(demisto.args())
 
-if demisto.command() == 'aws-gd-update-detector':
-    result = update_detector(demisto.args())
+    if demisto.command() == 'aws-gd-update-detector':
+        result = update_detector(demisto.args())
 
-if demisto.command() == 'aws-gd-create-ip-set':
-    result = create_ip_set(demisto.args())
+    if demisto.command() == 'aws-gd-create-ip-set':
+        result = create_ip_set(demisto.args())
 
-if demisto.command() == 'aws-gd-delete-ip-set':
-    result = delete_ip_set(demisto.args())
+    if demisto.command() == 'aws-gd-delete-ip-set':
+        result = delete_ip_set(demisto.args())
 
-if demisto.command() == 'aws-gd-list-detectors':
-    result = list_detectors(demisto.args())
+    if demisto.command() == 'aws-gd-list-detectors':
+        result = list_detectors(demisto.args())
 
-if demisto.command() == 'aws-gd-update-ip-set':
-    result = update_ip_set(demisto.args())
+    if demisto.command() == 'aws-gd-update-ip-set':
+        result = update_ip_set(demisto.args())
 
-if demisto.command() == 'aws-gd-get-ip-set':
-    result = get_ip_set(demisto.args())
+    if demisto.command() == 'aws-gd-get-ip-set':
+        result = get_ip_set(demisto.args())
 
-if demisto.command() == 'aws-gd-list-ip-sets':
-    result = list_ip_sets(demisto.args())
+    if demisto.command() == 'aws-gd-list-ip-sets':
+        result = list_ip_sets(demisto.args())
 
-if demisto.command() == 'aws-gd-create-threatintel-set':
-    result = create_threat_intel_set(demisto.args())
+    if demisto.command() == 'aws-gd-create-threatintel-set':
+        result = create_threat_intel_set(demisto.args())
 
-if demisto.command() == 'aws-gd-delete-threatintel-set':
-    result = delete_threat_intel_set(demisto.args())
+    if demisto.command() == 'aws-gd-delete-threatintel-set':
+        result = delete_threat_intel_set(demisto.args())
 
-if demisto.command() == 'aws-gd-get-threatintel-set':
-    result = get_threat_intel_set(demisto.args())
+    if demisto.command() == 'aws-gd-get-threatintel-set':
+        result = get_threat_intel_set(demisto.args())
 
-if demisto.command() == 'aws-gd-list-threatintel-sets':
-    result = list_threat_intel_sets(demisto.args())
+    if demisto.command() == 'aws-gd-list-threatintel-sets':
+        result = list_threat_intel_sets(demisto.args())
 
-if demisto.command() == 'aws-gd-update-threatintel-set':
-    result = update_threat_intel_set(demisto.args())
+    if demisto.command() == 'aws-gd-update-threatintel-set':
+        result = update_threat_intel_set(demisto.args())
 
-if demisto.command() == 'aws-gd-list-findings':
-    result = list_findings(demisto.args())
+    if demisto.command() == 'aws-gd-list-findings':
+        result = list_findings(demisto.args())
 
-if demisto.command() == 'aws-gd-get-findings':
-    result = get_findings(demisto.args())
+    if demisto.command() == 'aws-gd-get-findings':
+        result = get_findings(demisto.args())
 
-if demisto.command() == 'aws-gd-create-sample-findings':
-    result = create_sample_findings(demisto.args())
+    if demisto.command() == 'aws-gd-create-sample-findings':
+        result = create_sample_findings(demisto.args())
 
-if demisto.command() == 'aws-gd-archive-findings':
-    result = archive_findings(demisto.args())
+    if demisto.command() == 'aws-gd-archive-findings':
+        result = archive_findings(demisto.args())
 
-if demisto.command() == 'aws-gd-unarchive-findings':
-    result = unarchive_findings(demisto.args())
+    if demisto.command() == 'aws-gd-unarchive-findings':
+        result = unarchive_findings(demisto.args())
 
-if demisto.command() == 'aws-gd-update-findings-feedback':
-    result = update_findings_feedback(demisto.args())
+    if demisto.command() == 'aws-gd-update-findings-feedback':
+        result = update_findings_feedback(demisto.args())
 
-if demisto.command() == 'aws-gd-list-members':
-    result = list_members(demisto.args())
+    if demisto.command() == 'aws-gd-list-members':
+        result = list_members(demisto.args())
 
-if demisto.command() == 'aws-gd-get-members':
-    result = get_members(demisto.args())
+    if demisto.command() == 'aws-gd-get-members':
+        result = get_members(demisto.args())
 
-if demisto.command() == 'fetch-incidents':
-    fetch_incidents()
+    if demisto.command() == 'fetch-incidents':
+        fetch_incidents()
+        sys.exit(0)
+
+    demisto.results(result)
     sys.exit(0)
-
-demisto.results(result)
-sys.exit(0)
