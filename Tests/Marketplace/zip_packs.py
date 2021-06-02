@@ -85,6 +85,7 @@ def remove_test_playbooks_if_exist(zips_path, packs):
                     remove = True
                     logging.info(f'Removing TestPlaybooks from the pack {name}')
                     pack_path = os.path.join(zips_path, name)
+                    print("packpath: " + pack_path)
                     pack_zip.extractall(path=pack_path,
                                         members=(member for member in zip_contents if 'TestPlaybooks' not in member))
                     remove_test_playbooks_from_signatures(pack_path, zip_contents)
