@@ -542,12 +542,22 @@ function DownloadFileCommand([RemotingClient]$client, [string]$path, [string]$zi
         throw "$path was not found on the remote host."
     }
 
+    if ($host_as_prefix -eq 'true')
+    {
+        $file_name_parent = Split-Path $path
+        $pre_rename_leaf = Split-Path $path -leaf
+        $file_name_leaf = $client.host + '_' + $pre_rename_leaf
+        $command = "Rename-Item -Path $path -NewName $file_name_leaf"
+        $client.InvokeCommandInSession($command)
+        $path = "$file_name_parent/$file_name_leaf"
+    }
+
     if ($zip_file -eq 'true')
     {
         # zip file at the host
-        $old_path = $path
+        $pre_zip_path = $path
         $path = "$path.zip"
-        $command = "Compress-Archive -Path $old_path -Update -DestinationPath $path"
+        $command = "Compress-Archive -Path $pre_zip_path -Update -DestinationPath $path"
         $client.InvokeCommandInSession($command)
     }
 
@@ -565,6 +575,19 @@ function DownloadFileCommand([RemotingClient]$client, [string]$path, [string]$zi
         $command = "Remove-Item $path"
         $client.InvokeCommandInSession($command)
     }
+
+    if ($host_as_prefix -eq 'true')
+    {
+        if ($zip_file -eq 'true')
+        {
+            $command = "Rename-Item -Path $pre_zip_path -NewName $pre_rename_leaf"
+        }
+        else {
+            $command = "Rename-Item -Path $path -NewName $pre_rename_leaf"
+        }
+        $client.InvokeCommandInSession($command)
+    }
+
     $client.CloseSession()
     if ($check_hash -eq 'true')
     {
@@ -578,9 +601,6 @@ function DownloadFileCommand([RemotingClient]$client, [string]$path, [string]$zi
 
     # add file details to context
     $file_name_leaf = Split-Path $path -leaf
-    if ($host_as_prefix) {
-        $file_name_leaf = $client.host + '_' + $file_name_leaf
-    }
     $file_extension = [System.IO.Path]::GetExtension($file_name_leaf)
     $file_extension = If ($file_extension) {$file_extension.SubString(1, $file_extension.length - 1)} else {""}
 
