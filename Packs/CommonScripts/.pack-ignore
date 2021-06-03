@@ -42,3 +42,6 @@ ignore=RM106
 
 [file:script-ExampleJSScript.yml]
 ignore=BA110
+
+[file:script-PCAPMiner_README.md]
+ignore=RM106
