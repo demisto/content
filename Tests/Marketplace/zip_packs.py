@@ -122,7 +122,7 @@ def remove_unnecessary_files(zip_path):
     zip_path = zip_path + '/packs'
     dir_entries = os.listdir(zip_path)
     print(f"entires are: {', '.join(dir_entries)}")
-    packs_list = list(os.scandir(PACKS_FULL_PATH))
+    packs_list = [pack.name for pack in os.scandir(PACKS_FULL_PATH)]
     print(f"packs are: {', '.join(packs_list)}")
     for entry in dir_entries:
         print(f"Current entry is: {entry}")
