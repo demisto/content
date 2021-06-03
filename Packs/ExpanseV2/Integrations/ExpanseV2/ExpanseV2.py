@@ -80,7 +80,7 @@ MIRROR_DIRECTION = {
 TAGGABLE_ASSET_TYPE_MAP = {
     'Domain': 'domains',
     'Certificate': 'certificates',
-    'cloud-resource': 'cloud_resource',
+    'CloudResource': 'cloud-resources',
     'IpRange': 'ip-range'
 }
 
@@ -123,7 +123,7 @@ class Client(BaseClient):
         hdr = {
             "Content-Type": "application/json",
             "Accept": "application/json",
-            "User-Agent": "Expanse_XSOAR/1.5.0",
+            "User-Agent": "Expanse_XSOAR/1.5.1",
         }
         super().__init__(base_url, verify=verify, proxy=proxy, headers=hdr, **kwargs)
 
@@ -511,6 +511,19 @@ class Client(BaseClient):
             url_suffix='/v2/assets/cloud-resources',
             params=params
         )
+
+    def get_cloud_resource(self, asset_id: str) -> Dict[str, Any]:
+        try:
+            result: Dict = self._http_request(
+                method='GET',
+                url_suffix=f'/v2/assets/cloud-resources/{asset_id}',
+                raise_on_status=True,
+            )
+        except DemistoException as e:
+            if str(e).startswith('Error in API call [404]') or str(e).startswith('Error in API call [400]'):
+                return {}
+            raise e
+        return result
 
     def list_risk_rules(self, params: Dict[str, Any]) -> Iterator[Any]:
         return self._paginate(
@@ -1988,6 +2001,13 @@ def get_domain_command(client: Client, args: Dict[str, Any]) -> List[CommandResu
 
 
 def get_cloud_resource_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
+    asset_id: Optional[str] = args.pop('id', None)
+
+    if asset_id is not None:
+        output = client.get_cloud_resource(asset_id=asset_id)
+        # if output and isinstance(output, dict) and 'domain' not in output:
+        #     output['domain'] = domain
+        return format_cloud_resource_data([output])
 
     total_results, max_page_size = calculate_limits(args.get('limit'))
 
@@ -2716,6 +2736,9 @@ def main() -> None:
             return_results(cidr_command(client, demisto.args()))
 
         elif command == "expanse-get-cloud-resources":
+            return_results(get_cloud_resource_command(client, demisto.args()))
+
+        elif command == "expanse-get-cloud-resource":
             return_results(get_cloud_resource_command(client, demisto.args()))
 
         elif command == "expanse-get-risky-flows":
