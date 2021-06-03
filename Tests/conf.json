@@ -131,6 +131,18 @@
             ]
         },
         {
+            "integrations": "GraphQL",
+            "fromversion": "5.0.0",
+            "instance_names": "fetch_schema",
+            "playbookID": "GraphQL - Test"
+        },
+        {
+            "integrations": "GraphQL",
+            "fromversion": "5.0.0",
+            "instance_names": "no_fetch_schema",
+            "playbookID": "GraphQL - Test"
+        },
+        {
             "integrations": "Azure Network Security Groups",
             "fromversion": "5.0.0",
             "instance_names": "azure_nsg_prod",
@@ -149,7 +161,8 @@
         {
             "integrations": "Microsoft Advanced Threat Analytics",
             "playbookID": "Microsoft Advanced Threat Analytics - Test",
-            "fromversion": "5.0.0"
+            "fromversion": "5.0.0",
+            "is_mockable": false
         },
         {
             "integrations": "Zimperium",
@@ -1938,6 +1951,11 @@
             "fromversion": "5.5.0"
         },
         {
+            "integrations": "AWS - SQS",
+            "playbookID": "AWS - SQS Test Playbook",
+            "fromversion": "5.0.0"
+        },
+        {
             "integrations": "AbuseIPDB",
             "playbookID": "AbuseIPDB Test"
         },
@@ -1953,7 +1971,7 @@
         {
             "integrations": "FireEye HX",
             "playbookID": "FireEye HX Test",
-            "timeout": 500
+            "timeout": 800
         },
         {
             "integrations": "FireEyeFeed",
@@ -2176,6 +2194,11 @@
             "playbookID": "Active Directory - ad-get-user limit check"
         },
         {
+            "integrations": "Active Directory Query v2",
+            "instance_names": "active_directory_ninja",
+            "playbookID": "active directory search user with parentheses test"
+        },
+        {
             "integrations": "mysql",
             "playbookID": "MySQL Test"
         },
@@ -2304,6 +2327,19 @@
             "instance_names": [
                 "non_https_cert",
                 "instance_execute"
+            ]
+        },
+        {
+            "integrations": [
+                "TAXII Server",
+                "TAXIIFeed"
+            ],
+            "playbookID": "TAXII_Feed_Test",
+            "fromversion": "5.5.0",
+            "timeout": 300,
+            "instance_names": [
+                "https_cert",
+                "local_https"
             ]
         },
         {
@@ -3231,6 +3267,10 @@
             ]
         },
         {
+            "integrations": "HostIo",
+            "playbookID": "HostIo_Test"
+        },
+        {
             "playbookID": "CreateCertificate-Test",
             "fromversion": "5.5.0"
         },
@@ -3276,6 +3316,16 @@
             "playbookID": "DbotPredictOufOfTheBoxTestV2",
             "fromversion": "5.5.0",
             "timeout": 1000
+        },
+        {
+            "integrations": "CrowdstrikeFalcon",
+            "playbookID": "Get endpoint details - Generic - test",
+            "fromversion": "5.5.0"
+        },
+        {
+            "integrations": "CrowdstrikeFalcon",
+            "playbookID": "Isolate and unisolate endpoint - test",
+            "fromversion": "5.5.0"
         },
         {
             "integrations": "VirusTotal - Premium (API v3)",
@@ -3333,7 +3383,6 @@
         "Test-Shodan_v2": "Issue 23370",
         "Symantec Deepsight Test": "Issue 22971",
         "TestProofpointFeed": "Issue 22229",
-        "Git_Integration-Test": "Issue 20029",
         "Symantec Data Loss Prevention - Test": "Issue 20134",
         "NetWitness Endpoint Test": "Issue 19878",
         "InfoArmorVigilanteATITest": "Test issue 17358",
@@ -3362,7 +3411,6 @@
         "AttackIQ - Test": "Issue 29774",
         "Azure Compute - Test": "Issue 28056",
         "forcepoint test": "Issue 28043",
-        "CanaryTools Test": "Issue 30796",
         "Test-VulnDB": "Issue 30875",
         "Malware Domain List Active IPs Feed Test": "Issue 30878",
         "CuckooTest": "Issue 25601",
@@ -3409,12 +3457,14 @@
         "PAN-OS - Block IP - Static Address Group Test": "Issue 37021",
         "PAN-OS - Block IP - Custom Block Rule Test": "Issue 37023",
         "Centreon-Test-Playbook": "Issue 37022",
-        "AWS-securityhub Test": "Issue 29796",
-        "McAfeeWebGatewayTest": "Issue 37020",
         "PAN-OS - Block URL - Custom URL Category Test": "Issue 37024",
-        "Microsoft Advanced Threat Analytics - Test": "Issue 29593",
         "Service Desk Plus - Generic Polling Test": "Issue 30798",
-        "Pwned v2 test": "Issue 26601"
+        "Pwned v2 test": "Issue 26601",
+        "TestEmailRepIOPlaybook": "Issue 33219",
+        "get_original_email_-_ews-_test": "Issue 27571",
+        "PANW Threat Vault - Signature Search - Test": "Issue 30930",
+        "PhishTank Testing" : "Issue 29055",
+        "TAXII_Feed_Test": "Issue 37588"
     },
     "skipped_integrations": {
 
@@ -3620,7 +3670,8 @@
         "TAXIIFeed": "Cannot use proxy",
         "EWSO365": "oproxy dependent",
         "MISP V2": "Cleanup process isn't performed as expected.",
-        "Azure Network Security Groups": "Has a command that sends parameters in the path"
+        "Azure Network Security Groups": "Has a command that sends parameters in the path",
+        "GitHub": "Cannot use proxy"
     },
     "parallel_integrations": [
         "AWS - EC2",

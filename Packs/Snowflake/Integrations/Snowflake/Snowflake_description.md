@@ -9,5 +9,5 @@ The name of the Snowflake account to connect to without the domain name: snowfla
 ### Credentials
 To use Key Pair authentication, follow these instructions:
 1. Follow steps 1-4 in the instructions detailed in the [Snowflake Computing documentation](https://docs.snowflake.net/manuals/user-guide/python-connector-example.html#using-key-pair-authentication).
-2. Follow the instructions under the section titled **Configure Demisto Credentials** at this [link](https://support.demisto.com/hc/en-us/articles/115002567894).
+2. Follow the instructions under the section titled **Configure Cortex XSOAR Credentials** at this [link](https://support.demisto.com/hc/en-us/articles/115002567894).
 3. Use the credentials you configured. Refer to the two images at the bottom of the section titled **Configure an External Credentials Vault**.

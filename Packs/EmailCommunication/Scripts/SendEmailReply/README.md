@@ -16,7 +16,7 @@ The script is a part of the Email Communication pack.
 | --- | --- |
 | Script Type | python3 |
 | Tags |  |
-| Demisto Version | 0.0.0 |
+| Cortex XSOAR Version | 0.0.0 |
 
 ## Inputs
 ---

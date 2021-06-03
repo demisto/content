@@ -1,6 +1,6 @@
 <!-- HTML_DOC -->
 <div class="cl-preview-section">
-<p>Recorded Future is a threat intelligence platform, whose indicator and alert data is ingested into Demisto for enrichment.</p>
+<p>Recorded Future is a threat intelligence platform, whose indicator and alert data is ingested into Cortex XSOAR for enrichment.</p>
 <p>This integration was integrated and tested with revision r128029 of Recorded Future.</p>
 </div>
 <div class="cl-preview-section">
@@ -908,10 +908,10 @@
 </pre>
 </div>
 <div class="cl-preview-section">
-<h2 id="configure-recorded-future-on-demisto">Configure Recorded Future on Demisto</h2>
+<h2 id="configure-recorded-future-on-demisto">Configure Recorded Future on Cortex XSOAR</h2>
 </div>
 <div class="cl-preview-section">
-<p>To use Recorded Future in Demisto, a Recorded Future API token is required. For more information, see the <a href="https://support.recordedfuture.com/hc/en-us/articles/115004179227-Managing-API-tokens">Recorded Future documentation</a>.</p>
+<p>To use Recorded Future in Cortex XSOAR, a Recorded Future API token is required. For more information, see the <a href="https://support.recordedfuture.com/hc/en-us/articles/115004179227-Managing-API-tokens">Recorded Future documentation</a>.</p>
 </div>
 <div class="cl-preview-section">
 <ol>
@@ -943,7 +943,7 @@
 <h2 id="commands">Commands</h2>
 </div>
 <div class="cl-preview-section">
-<p>You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.<br> After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
+<p>You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.<br> After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
 </div>
 <div class="cl-preview-section">
 <ol>
@@ -4547,13 +4547,13 @@
 <h3 id="important-notes-regarding-risk-lists">Important notes regarding Risk Lists:</h3>
 </div>
 <div class="cl-preview-section">
-<p>The risk list commands are wrapped by the following scripts:<br> <code>RecordedFutureDomainRiskList</code><br> <code>RecordedFutureHashRiskList</code><br> <code>RecordedFutureIPRiskList</code><br> <code>RecordedFutureURLRiskList</code><br> <code>RecordedFutureVulnerabilityRiskList</code><br> Those scripts perform the same functionality and in addition create indicators in Demisto, with the option to specify a threshold and delete the existing indicators - <strong>which will delete ALL the malicious Recorded Future indicators of that type</strong>.</p>
+<p>The risk list commands are wrapped by the following scripts:<br> <code>RecordedFutureDomainRiskList</code><br> <code>RecordedFutureHashRiskList</code><br> <code>RecordedFutureIPRiskList</code><br> <code>RecordedFutureURLRiskList</code><br> <code>RecordedFutureVulnerabilityRiskList</code><br> Those scripts perform the same functionality and in addition create indicators in Cortex XSOAR, with the option to specify a threshold and delete the existing indicators - <strong>which will delete ALL the malicious Recorded Future indicators of that type</strong>.</p>
 </div>
 <div class="cl-preview-section">
 <p>The lists are updated in Recorded Future every hour. It is important to refrain from executing the risk list commands and scripts often, as they are costly, API credits wise. A good practice will be to schedule a job that executes the scripts once a day or a similar timeframe. For more information, see the <a href="https://support.recordedfuture.com/hc/en-us/articles/115010401968-Risk-List-Download-Recommendations" target="_blank" rel="noopener">Recorded Future documentation</a>.</p>
 </div>
 <div class="cl-preview-section">
-<p>The lists contain a large number of indicators, so extracting them into Demisto might take a while. It is possible to specify a risk rule in order to extract a specific list.</p>
+<p>The lists contain a large number of indicators, so extracting them into Cortex XSOAR might take a while. It is possible to specify a risk rule in order to extract a specific list.</p>
 </div>
 <div class="cl-preview-section">
 <h3 id="important-notes-regarding-alerts">Important notes regarding Alerts:</h3>
