@@ -12,7 +12,6 @@ Linting: https://xsoar.pan.dev/docs/integrations/linting
 This is an empty structure file. Check an example at;
 https://github.com/demisto/content/blob/master/Packs/HelloWorld/Integrations/HelloWorld/HelloWorld.py
 
-
 """
 
 import demistomock as demisto
