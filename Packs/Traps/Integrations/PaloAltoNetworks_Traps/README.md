@@ -6,7 +6,7 @@
 <li>Traps Scan Endpoint</li>
 </ul>
 <h2>Get Your API Key and Application ID</h2>
-<p>You will need to provide the API key and Application ID when configuring an instance of the Traps integration in Demisto.</p>
+<p>You will need to provide the API key and Application ID when configuring an instance of the Traps integration in Cortex XSOAR.</p>
 <p><strong>NOTE</strong>: This procedure requires Super User privileges.</p>
 <ol>
 <li>Access your Traps TMS UI.</li>
@@ -15,7 +15,7 @@
 <li>Copy and save the entire text of your API key as you will not be able to access it again, and the Application ID. </li>
 </ol>
 <p> </p>
-<h2>Configure Traps on Demisto</h2>
+<h2>Configure Traps on Cortex XSOAR</h2>
 <ol>
 <li>Navigate to <strong>Settings</strong> &gt; <strong>Integrations</strong>  &gt; <strong>Servers &amp; Services</strong>.</li>
 <li>Search for Traps.</li>
@@ -33,7 +33,7 @@
 <li>Click <strong>Test</strong> to validate the new instance.</li>
 </ol>
 <h2>Commands</h2>
-<p>You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
+<p>You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
 <ol>
 <li><a href="#h_48358393-53a5-43e5-9e5a-83368fe7e2a6" target="_self">Get endpoint details: traps-get-endpoint-by-id</a></li>
 <li><a href="#h_7dd4af9c-4191-42ce-b8fe-801542f08a51" target="_self">Execute a file retrieve operation / SAM on an agent: traps-endpoint-files-retrieve</a></li>
