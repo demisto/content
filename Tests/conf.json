@@ -3304,7 +3304,7 @@
             "playbookID": "carbonBlackEndpointStandardTestPlaybook",
             "fromversion": "5.5.0",
             "is_mockable": false
-        },
+        }
     ],
     "skipped_tests": {
         "Github IAM - Test Playbook": "Issue 32383",
