@@ -9,5 +9,5 @@
 7. Assign API key to the relevant users group, and assign on next page `Read/Write` access for `SIEM`.
 8. Save configuration and go to API detail you created.
 9. Press `new credentials` and download or copy it.
-10. Now use the credentials for configure Akamai WAF in Demisto.
+10. Now use the credentials for configure Akamai WAF in Cortex XSOAR.
 

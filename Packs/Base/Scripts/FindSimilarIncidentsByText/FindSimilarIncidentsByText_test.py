@@ -1,3 +1,5 @@
+import json
+
 from CommonServerPython import *
 from FindSimilarIncidentsByText import main
 import random
@@ -196,13 +198,8 @@ incident1_dup = {
 
 
 def execute_command(command, args=None):
-    if command == 'getIncidents':
-        entry = {}
-        entry['Type'] = entryTypes['note']
-        entry['Contents'] = {}
-        entry['Contents']['data'] = [incident1_dup, incident3, incident4]
-        return [entry]
-        find_similar_incidents_text_test
+    if command == 'GetIncidentsByQuery':
+        return [{'Contents': json.dumps([incident1_dup, incident3, incident4]), 'Type': 'note'}]
     if command == 'WordTokenizerNLP':
         values = json.loads(args['value'])
         if len(values) == 1:
@@ -223,7 +220,7 @@ def test_similar_context(mocker):
     result = main()
     assert len(result['EntryContext']['similarIncidentList']) == 1
     assert result['EntryContext']['similarIncidentList'][0]['rawId'] == 2
-    assert result['EntryContext']['similarIncident']['similarity'] > 0.9
+    assert float(result['EntryContext']['similarIncident']['similarity']) > 0.9
 
 
 def test_similar_context_with_pre_process(mocker):
@@ -237,4 +234,4 @@ def test_similar_context_with_pre_process(mocker):
     result = main()
     assert len(result['EntryContext']['similarIncidentList']) == 1
     assert result['EntryContext']['similarIncidentList'][0]['rawId'] == 2
-    assert result['EntryContext']['similarIncident']['similarity'] > 0.9
+    assert float(result['EntryContext']['similarIncident']['similarity']) > 0.9

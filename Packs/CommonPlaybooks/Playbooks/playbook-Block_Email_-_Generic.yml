@@ -1,0 +1,117 @@
+id: Block Email - Generic
+version: -1
+name: Block Email - Generic
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: e4cf2a65-fab2-48c9-8d52-479632660700
+    type: start
+    task:
+      id: e4cf2a65-fab2-48c9-8d52-479632660700
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "3"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 80
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: 335f96a3-ea62-4a3f-8808-873c57caa695
+    type: title
+    task:
+      id: 335f96a3-ea62-4a3f-8808-873c57caa695
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 440
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: b30d383c-cdfb-4200-8ed6-cb7ab5b00a1c
+    type: playbook
+    task:
+      id: b30d383c-cdfb-4200-8ed6-cb7ab5b00a1c
+      version: -1
+      name: Symantec block Email
+      playbookName: Symantec block Email
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      EmailToBlock:
+        simple: ${inputs.EmailToBlock}
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 250
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 425,
+        "width": 380,
+        "x": 450,
+        "y": 80
+      }
+    }
+  }
+inputs:
+- key: EmailToBlock
+  value: {}
+  required: false
+  description: The email address that will be blocked.
+  playbookInputQuery:
+outputs: []
+tests:
+- no tests
+fromversion: 5.0.0
+description: This playbook will block emails at your mail relay integration.
