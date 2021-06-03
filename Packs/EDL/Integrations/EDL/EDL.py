@@ -820,9 +820,12 @@ def run_long_running(params: Dict, is_test: bool = False):
         else:
             nginx_process = start_nginx_server(nginx_port, params)
             nginx_log_monitor = gevent.spawn(nginx_log_monitor_loop, nginx_process)
+            demisto.updateModuleHealth('')
             server.serve_forever()
     except Exception as e:
-        demisto.error(f'An error occurred: {str(e)}. Exception: {traceback.format_exc()}')
+        error_message = str(e)
+        demisto.error(f'An error occurred: {error_message}. Exception: {traceback.format_exc()}')
+        demisto.updateModuleHealth(f'An error occurred: {error_message}')
         raise ValueError(str(e))
     finally:
         if nginx_process:
