@@ -307,10 +307,13 @@ def pre_process_tokenizer(text, seed):
 
 
 def pre_process_none(text, seed):
-    original_text = clean_html_from_text(text)
-    tokenized_text = original_text
-    original_words_to_tokens = {x: x for x in text.split()}
-    return create_text_result(text, tokenized_text, original_words_to_tokens, seed)
+    cleaned_text = clean_html_from_text(text)
+    tokenized_text = text
+    original_words_to_tokens = {x: x for x in cleaned_text.split()}
+    return create_text_result(original_text=cleaned_text,
+                              tokenized_text=tokenized_text,
+                              original_words_to_tokens=original_words_to_tokens,
+                              hash_seed=seed)
 
 
 PRE_PROCESS_TYPES = {

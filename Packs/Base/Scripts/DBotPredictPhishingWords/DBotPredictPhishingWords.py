@@ -49,9 +49,11 @@ def preprocess_text(text, model_type, is_return_error):
     if model_type in [FASTTEXT_MODEL_TYPE, UNKNOWN_MODEL_TYPE]:
         preprocess_type = 'nlp'
         hash_seed = demisto.args().get('hashSeed')
+        clean_html = 'true'
     elif model_type == TORCH_TYPE:
         preprocess_type = 'none'
         hash_seed = None
+        clean_html = 'false'
     if isinstance(text, str):
         input_type = 'string'
         input_ = text
@@ -69,7 +71,8 @@ def preprocess_text(text, model_type, is_return_error):
             'dedupThreshold': '-1',
             'outputFormat': 'json',
             'textFields': 'text',
-            'removeShortTextThreshold': '-1'}
+            'removeShortTextThreshold': '-1',
+            'cleanHTML': clean_html}
     res = demisto.executeCommand('DBotPreProcessTextData', args)
     if is_error(res):
         handle_error(res[0]['Contents'], is_return_error)
