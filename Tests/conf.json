@@ -3287,7 +3287,11 @@
             ],
             "fromversion": "6.0.0",
             "nightly": true
-        }
+        },
+	{
+	    "integrations": "Trend Micro Deep Security",
+	    "playbookID": "Trend Micro Deep Security - Test"
+	}
     ],
     "skipped_tests": {
         "Github IAM - Test Playbook": "Issue 32383",
