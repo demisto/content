@@ -6,7 +6,9 @@ description: This playbook checks for content updates.
 id: Check For Content Installation
 inputs: []
 name: Check For Content Installation
-outputs: []
+outputs:
+- contextPath: PacksUpdated
+  type: boolean
 starttaskid: "0"
 tasks:
   "0":
@@ -15,6 +17,8 @@ tasks:
     nexttasks:
       '#none#':
       - "1"
+      - "8"
+      - "11"
     note: false
     quietmode: 0
     separatecontext: false
@@ -32,7 +36,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 480,
           "y": 50
         }
       }
@@ -45,10 +49,10 @@ tasks:
     note: false
     quietmode: 0
     scriptarguments:
-      all:
-        simple: "yes"
+      all: {}
       index: {}
-      key: {}
+      key:
+        simple: ContentDataCheck
       keysToKeep: {}
       subplaybook:
         simple: auto
@@ -57,13 +61,13 @@ tasks:
     task:
       brand: ""
       description: Delete field from context
-      id: d71bee27-3b2b-496f-8ce5-d10cbdbd7892
+      id: 7ab8ebd8-2ff4-4536-82b8-0c827e12613e
       iscommand: false
-      name: Delete Context
+      name: Delete Previous ContentDataCheck Data
       scriptName: DeleteContext
       type: regular
       version: -1
-    taskid: d71bee27-3b2b-496f-8ce5-d10cbdbd7892
+    taskid: 7ab8ebd8-2ff4-4536-82b8-0c827e12613e
     timertriggers: []
     type: regular
     view: |-
@@ -78,12 +82,12 @@ tasks:
     ignoreworker: false
     nexttasks:
       '#none#':
-      - "3"
+      - "9"
     note: false
     quietmode: 0
     scriptarguments:
       extend-context:
-        simple: ContentDataCheck=response(val.updateAvailable==true).name
+        simple: ContentDataPreCheck=response(val.updateAvailable==true).name
       uri:
         simple: /contentpacks/installed-expired
     separatecontext: false
@@ -91,19 +95,19 @@ tasks:
     task:
       brand: ""
       description: send HTTP GET requests
-      id: e252f717-5265-48ab-82f3-4ac52980d0cf
+      id: 855437f4-5e4f-45b6-8430-9aa92004787d
       iscommand: true
       name: Check for updates
       script: '|||demisto-api-get'
       type: regular
       version: -1
-    taskid: e252f717-5265-48ab-82f3-4ac52980d0cf
+    taskid: 855437f4-5e4f-45b6-8430-9aa92004787d
     timertriggers: []
     type: regular
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 480,
           "y": 370
         }
       }
@@ -128,8 +132,336 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 480,
+          "y": 1245
+        }
+      }
+  "4":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: ContentDataCheck
+          operator: isEqualString
+          right:
+            value:
+              simple: None
+      label: "yes"
+    id: "4"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "6"
+      "yes":
+      - "5"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: b03331c0-7f29-44df-897e-6b045e23849f
+      iscommand: false
+      name: Are all the packs updated?
+      type: condition
+      version: -1
+    taskid: b03331c0-7f29-44df-897e-6b045e23849f
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 895
+        }
+      }
+  "5":
+    id: "5"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      append:
+        simple: "false"
+      key:
+        simple: PacksUpdated
+      stringify: {}
+      value:
+        simple: "True"
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Set a value in context under the key you entered.
+      id: 3a8eea6c-802a-4751-8174-692cd8805fc5
+      iscommand: false
+      name: Set Update Status
+      scriptName: Set
+      type: regular
+      version: -1
+    taskid: 3a8eea6c-802a-4751-8174-692cd8805fc5
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1070
+        }
+      }
+  "6":
+    id: "6"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      append:
+        simple: "false"
+      key:
+        simple: PacksUpdated
+      stringify: {}
+      value:
+        simple: "False"
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Set a value in context under the key you entered.
+      id: 735fc5f4-70f5-4687-81f4-6d27d80b65fd
+      iscommand: false
+      name: Set Update Status
+      scriptName: Set
+      type: regular
+      version: -1
+    taskid: 735fc5f4-70f5-4687-81f4-6d27d80b65fd
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 1070
+        }
+      }
+  "7":
+    id: "7"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "4"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      append:
+        simple: "false"
+      key:
+        simple: ContentDataCheck
+      stringify: {}
+      value:
+        complex:
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: ContentDataPreCheck
+              operator: in
+              right:
+                iscontext: true
+                value:
+                  simple: incident.contentpackselection
+          root: ContentDataPreCheck
+          transformers:
+          - args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: None
+            operator: SetIfEmpty
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Set a value in context under the key you entered.
+      id: d0130637-563c-4096-87be-9116a98f7141
+      iscommand: false
+      name: Set the output
+      scriptName: Set
+      type: regular
+      version: -1
+    taskid: d0130637-563c-4096-87be-9116a98f7141
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 720
+        }
+      }
+  "8":
+    id: "8"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "2"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      all: {}
+      index: {}
+      key:
+        simple: PacksUpdated
+      keysToKeep: {}
+      subplaybook:
+        simple: auto
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Delete field from context
+      id: 29184aa1-f5ac-40e3-8f75-48b2b26f9068
+      iscommand: false
+      name: Delete Previous PacksUpdated Data
+      scriptName: DeleteContext
+      type: regular
+      version: -1
+    taskid: 29184aa1-f5ac-40e3-8f75-48b2b26f9068
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 195
+        }
+      }
+  "9":
+    conditions:
+    - condition:
+      - - left:
+            value:
+              simple: All
+          operator: in
+          right:
+            iscontext: true
+            value:
+              simple: incident.contentpackselection
+      label: "yes"
+    id: "9"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "7"
+      "yes":
+      - "10"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 51b14c72-4d0c-4466-812e-f62aeafeefa4
+      iscommand: false
+      name: Are we checking for all updates?
+      type: condition
+      version: -1
+    taskid: 51b14c72-4d0c-4466-812e-f62aeafeefa4
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 480,
           "y": 545
+        }
+      }
+  "10":
+    id: "10"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "4"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      append:
+        simple: "false"
+      key:
+        simple: ContentDataCheck
+      stringify: {}
+      value:
+        complex:
+          root: ContentDataPreCheck
+          transformers:
+          - args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: None
+            operator: SetIfEmpty
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Set a value in context under the key you entered.
+      id: 8a4c845c-1b50-4b8c-894c-89d14b751558
+      iscommand: false
+      name: Set the output
+      scriptName: Set
+      type: regular
+      version: -1
+    taskid: 8a4c845c-1b50-4b8c-894c-89d14b751558
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 720
+        }
+      }
+  "11":
+    id: "11"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "2"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      all: {}
+      index: {}
+      key:
+        simple: ContentDataPreCheck
+      keysToKeep: {}
+      subplaybook:
+        simple: auto
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Delete field from context
+      id: ab55dd0c-60fe-4d29-861d-d9d20bf4356e
+      iscommand: false
+      name: Delete Previous ContentDataCheck Data
+      scriptName: DeleteContext
+      type: regular
+      version: -1
+    taskid: ab55dd0c-60fe-4d29-861d-d9d20bf4356e
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 195
         }
       }
 version: -1
@@ -138,8 +470,8 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 560,
-        "width": 380,
+        "height": 1260,
+        "width": 1240,
         "x": 50,
         "y": 50
       }

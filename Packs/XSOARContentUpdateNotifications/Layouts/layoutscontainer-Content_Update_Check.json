@@ -21,7 +21,7 @@
                             {
                                 "endCol": 2,
                                 "fieldId": "contentupdatesavailable",
-                                "height": 22,
+                                "height": 106,
                                 "id": "c0b13800-c3c7-11eb-9dbf-135bfd106205",
                                 "index": 0,
                                 "sectionItemType": "field",
@@ -36,21 +36,6 @@
                         "static": false,
                         "w": 1,
                         "x": 0,
-                        "y": 0
-                    },
-                    {
-                        "h": 3,
-                        "i": "6vrqyt4zzr-14e6ba80-c3be-11eb-9dbf-135bfd106205",
-                        "items": [],
-                        "maxW": 3,
-                        "minH": 1,
-                        "minW": 1,
-                        "moved": false,
-                        "name": "Actions",
-                        "static": false,
-                        "type": "workplan",
-                        "w": 1,
-                        "x": 1,
                         "y": 0
                     },
                     {
@@ -96,6 +81,32 @@
                         "w": 1,
                         "x": 1,
                         "y": 3
+                    },
+                    {
+                        "displayType": "CARD",
+                        "h": 3,
+                        "hideName": false,
+                        "i": "6vrqyt4zzr-018109f0-c44a-11eb-854f-b7c4d9f26e5f",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "contentpackselection",
+                                "height": 22,
+                                "id": "0d866e70-c44a-11eb-854f-b7c4d9f26e5f",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Content Pack Options",
+                        "static": false,
+                        "w": 1,
+                        "x": 1,
+                        "y": 0
                     }
                 ],
                 "type": "custom"
@@ -134,6 +145,10 @@
                 "fields": [
                     {
                         "fieldId": "incident_name",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_contentpackselection",
                         "isVisible": true
                     },
                     {

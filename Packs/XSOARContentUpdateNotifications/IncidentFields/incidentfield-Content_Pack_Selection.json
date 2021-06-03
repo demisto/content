@@ -1,0 +1,36 @@
+{
+    "associatedToAll": false,
+    "associatedTypes": [
+        "Content Update Check"
+    ],
+    "caseInsensitive": true,
+    "cliName": "contentpackselection",
+    "closeForm": false,
+    "content": true,
+    "editForm": true,
+    "fieldCalcScript": "0d1db0b5-5933-4aa9-8ba1-36fde1f990b0",
+    "group": 0,
+    "hidden": false,
+    "id": "incident_contentpackselection",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "Content Pack Selection",
+    "neverSetAsRequired": false,
+    "ownerOnly": false,
+    "propagationLabels": [
+        "all"
+    ],
+    "required": false,
+    "selectValues": [
+        "All"
+    ],
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "multiSelect",
+    "unmapped": false,
+    "unsearchable": false,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.0.0"
+}

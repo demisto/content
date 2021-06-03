@@ -1,0 +1,22 @@
+comment: This display script outputs the names of all installed Content Packs for
+  use in a field-display triggered field.
+commonfields:
+  id: ContentPackSelection
+  version: -1
+dependson:
+  must:
+  - '|||demisto-api-get'
+dockerimage: demisto/python3:3.9.5.20070
+enabled: true
+name: ContentPackSelection
+runas: DBotRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags:
+- field-display
+type: python
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)

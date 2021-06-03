@@ -10,15 +10,15 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 * SlackV2
 
 ### Scripts
-* DeleteContext
+* Set
 * GetServerURL
 
 ### Commands
-* closeInvestigation
-* setIncident
-* send-notification
 * send-mail
 * demisto-api-get
+* setIncident
+* closeInvestigation
+* send-notification
 
 ## Playbook Inputs
 ---

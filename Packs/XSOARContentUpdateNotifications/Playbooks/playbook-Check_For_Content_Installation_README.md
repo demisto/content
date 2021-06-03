@@ -10,6 +10,7 @@ This playbook does not use any sub-playbooks.
 This playbook does not use any integrations.
 
 ### Scripts
+* Set
 * DeleteContext
 
 ### Commands
@@ -21,7 +22,10 @@ There are no inputs for this playbook.
 
 ## Playbook Outputs
 ---
-There are no outputs for this playbook.
+
+| **Path** | **Description** | **Type** |
+| --- | --- | --- |
+| PacksUpdated |  | boolean |
 
 ## Playbook Image
 ---
