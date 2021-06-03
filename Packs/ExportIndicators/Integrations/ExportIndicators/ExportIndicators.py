@@ -886,7 +886,7 @@ def run_long_running(params, is_test=False):
         error_message = str(e)
         demisto.error(f'An error occurred in long running loop: {error_message}')
         demisto.updateModuleHealth(f'An error occurred: {error_message}')
-        raise ValueError(str(e))
+        raise ValueError(error_message)
     finally:
         if certificate_path:
             os.unlink(certificate_path)

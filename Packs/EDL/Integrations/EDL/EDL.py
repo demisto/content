@@ -827,7 +827,7 @@ def run_long_running(params: Dict, is_test: bool = False):
         error_message = str(e)
         demisto.error(f'An error occurred: {error_message}. Exception: {traceback.format_exc()}')
         demisto.updateModuleHealth(f'An error occurred: {error_message}')
-        raise ValueError(str(e))
+        raise ValueError(error_message)
     finally:
         if nginx_process:
             try:
