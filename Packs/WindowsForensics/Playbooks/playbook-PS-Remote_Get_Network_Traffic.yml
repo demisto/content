@@ -89,7 +89,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 2130
+          "y": 1940
         }
       }
     note: false
@@ -258,7 +258,9 @@ tasks:
     task:
       id: 379481fb-392e-4c4d-89b9-a01b0687aa84
       version: -1
-      name: Convert ETL to PCAP.
+      name: Convert ETL to Pcap
+      tags:
+      - PCAP
       scriptName: Etl2Pcap
       type: regular
       iscommand: false
@@ -266,21 +268,14 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "13"
+      - "12"
     scriptarguments:
       EntryID:
         complex:
           root: File
-          filters:
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: File.Extension
-                iscontext: true
-              right:
-                value:
-                  simple: etl
           accessor: EntryID
+          transformers:
+          - operator: LastArrayElement
     separatecontext: false
     view: |-
       {
@@ -450,46 +445,7 @@ tasks:
       {
         "position": {
           "x": -160,
-          "y": 1945
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "13":
-    id: "13"
-    taskid: 55f220bf-71cd-4297-870d-0b269d16646c
-    type: regular
-    task:
-      id: 55f220bf-71cd-4297-870d-0b269d16646c
-      version: -1
-      name: Mark and tag PCAP
-      description: |
-        Adds provided entries to the incident Evidence Board. In a playbook, can be positioned after a task to add the previous task's entries to the Evidence Board automatically (with no need to provide arguments).
-      scriptName: AddEvidence
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "12"
-    scriptarguments:
-      desc:
-        simple: A PCAP file acquired from a host.
-      description:
-        simple: A PCAP file acquired from a host.
-      entryIDs: {}
-      occurred: {}
-      tags:
-        simple: PCAP
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": -160,
-          "y": 1775
+          "y": 1765
         }
       }
     note: false
@@ -502,7 +458,7 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 2095,
+        "height": 1905,
         "width": 1250,
         "x": -420,
         "y": 100

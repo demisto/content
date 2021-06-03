@@ -88,7 +88,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 2210
+          "y": 2240
         }
       }
     note: false
@@ -330,7 +330,7 @@ tasks:
     task:
       id: 3180f174-9786-4f3f-89bd-69299956c169
       version: -1
-      name: Unzip file and mark as Evidence
+      name: Unzip file
       description: Unzip a file using fileName or entryID to specify a file. Unzipped
         files will be loaded to the War Room and names will be put into the context.
       scriptName: UnzipFile
@@ -357,12 +357,13 @@ tasks:
       fileName: {}
       lastZipFileInWarroom: {}
       password: {}
+      zipTool: {}
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": -190,
-          "y": 1690
+          "x": -340,
+          "y": 1700
         }
       }
     note: false
@@ -409,7 +410,7 @@ tasks:
       {
         "position": {
           "x": 40,
-          "y": 2040
+          "y": 2070
         }
       }
     note: false
@@ -425,42 +426,31 @@ tasks:
       id: 7bc93731-ece1-467a-8297-ccbea27db218
       version: -1
       name: Mark and tag registry
-      description: |
-        Adds provided entries to the incident Evidence Board. In playbook, can be positioned after a task to add the previous task's entries to Evidence Board automatically (with no need to provide arguments)
-      scriptName: AddEvidence
+      description: commands.local.cmd.entriesTags.set
+      tags:
+      - Registry
+      script: Builtin|||setEntriesTags
       type: regular
-      iscommand: false
-      brand: ""
+      iscommand: true
+      brand: Builtin
     nexttasks:
       '#none#':
       - "14"
     scriptarguments:
-      desc:
-        simple: A registry file acquired from a host
-      description:
-        simple: A registry file acquired from a host
       entryIDs:
         complex:
           root: File
-          filters:
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: File.Extension
-                iscontext: true
-              right:
-                value:
-                  simple: reg
           accessor: EntryID
-      occurred: {}
-      tags:
+          transformers:
+          - operator: LastArrayElement
+      entryTags:
         simple: Registry
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 40,
-          "y": 1880
+          "y": 1895
         }
       }
     note: false
@@ -473,9 +463,9 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 2185,
-        "width": 1020,
-        "x": -190,
+        "height": 2215,
+        "width": 1170,
+        "x": -340,
         "y": 90
       }
     }

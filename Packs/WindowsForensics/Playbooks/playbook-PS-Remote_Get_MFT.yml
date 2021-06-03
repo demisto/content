@@ -24,7 +24,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 540,
+          "x": 570,
           "y": 80
         }
       }
@@ -59,7 +59,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 540,
+          "x": 570,
           "y": 230
         }
       }
@@ -85,7 +85,7 @@ tasks:
       {
         "position": {
           "x": 570,
-          "y": 2150
+          "y": 2110
         }
       }
     note: false
@@ -348,7 +348,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -180,
+          "x": -380,
           "y": 1600
         }
       }
@@ -396,7 +396,7 @@ tasks:
       {
         "position": {
           "x": 40,
-          "y": 1980
+          "y": 1940
         }
       }
     note: false
@@ -412,42 +412,29 @@ tasks:
       id: d7db312d-7719-42d6-8819-d4fa97fb6e37
       version: -1
       name: Mark and tag MFT
-      description: |
-        Adds provided entries to the incident Evidence Board. In a playbook, can be positioned after a task to add the previous task's entries to Evidence Board automatically (with no need to provide arguments).
-      scriptName: AddEvidence
+      description: commands.local.cmd.entriesTags.set
+      script: Builtin|||setEntriesTags
       type: regular
-      iscommand: false
-      brand: ""
+      iscommand: true
+      brand: Builtin
     nexttasks:
       '#none#':
       - "14"
     scriptarguments:
-      desc:
-        simple: A MFT file acquired from a host
-      description:
-        simple: A MFT file acquired from a host
       entryIDs:
         complex:
           root: File
-          filters:
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: File.Extension
-                iscontext: true
-              right:
-                value:
-                  simple: mft
           accessor: EntryID
-      occurred: {}
-      tags:
+          transformers:
+          - operator: LastArrayElement
+      entryTags:
         simple: MFT
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 40,
-          "y": 1805
+          "y": 1770
         }
       }
     note: false
@@ -460,9 +447,9 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 2135,
-        "width": 1130,
-        "x": -180,
+        "height": 2095,
+        "width": 1330,
+        "x": -380,
         "y": 80
       }
     }
