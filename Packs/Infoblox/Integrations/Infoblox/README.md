@@ -3,7 +3,10 @@ Infoblox enables you to receive metadata about IPs in your network and manages t
 
 This integration was integrated and tested with version V2 of Infoblox
 </p>
-<h2>Configure Infoblox on Demisto</h2>
+<h2>Configure Infoblox on XSOAR</h2>
+<h5>Required Permissions</h5>
+<p>The API supports only HTTP Basic Authentication. Every user must have permissions that grants them access to the API.</p>
+
 <ol>
   <li>Navigate to&nbsp;<strong>Settings</strong>&nbsp;&gt;&nbsp;<strong>Integrations</strong>
   &nbsp;&gt;&nbsp;<strong>Servers &amp; Services</strong>.</li>
@@ -25,7 +28,7 @@ This integration was integrated and tested with version V2 of Infoblox
 </ol>
 <h2>Commands</h2>
 <p>
-  You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.
+  You can execute these commands from the XSOAR CLI, as part of an automation, or in a playbook.
   After you successfully execute a command, a DBot message appears in the War Room with the command details.
 </p>
 <ol>
@@ -59,12 +62,6 @@ This integration was integrated and tested with version V2 of Infoblox
   <code>infoblox-get-ip</code>
 </p>
 
-<h5>Required Permissions</h5>
-<p>The following permissions are required for this command.</p>
-<ul>
-    <li>permission 1</li>
-    <li>permission 2</li>
-</ul>
 <h5>Input</h5>
 <table style="width:750px" border="2" cellpadding="6">
   <thead>
@@ -248,12 +245,6 @@ This integration was integrated and tested with version V2 of Infoblox
   <code>infoblox-search-related-objects-by-ip</code>
 </p>
 
-<h5>Required Permissions</h5>
-<p>The following permissions are required for this command.</p>
-<ul>
-    <li>permission 1</li>
-    <li>permission 2</li>
-</ul>
 <h5>Input</h5>
 <table style="width:750px" border="2" cellpadding="6">
   <thead>
@@ -360,12 +351,6 @@ This integration was integrated and tested with version V2 of Infoblox
   <code>infoblox-list-response-policy-zone-rules</code>
 </p>
 
-<h5>Required Permissions</h5>
-<p>The following permissions are required for this command.</p>
-<ul>
-    <li>permission 1</li>
-    <li>permission 2</li>
-</ul>
 <h5>Input</h5>
 <table style="width:750px" border="2" cellpadding="6">
   <thead>
@@ -615,12 +600,6 @@ This integration was integrated and tested with version V2 of Infoblox
   <code>infoblox-list-response-policy-zones</code>
 </p>
 
-<h5>Required Permissions</h5>
-<p>The following permissions are required for this command.</p>
-<ul>
-    <li>permission 1</li>
-    <li>permission 2</li>
-</ul>
 <h5>Input</h5>
 <table style="width:750px" border="2" cellpadding="6">
   <thead>
@@ -967,12 +946,6 @@ This integration was integrated and tested with version V2 of Infoblox
   <code>infoblox-create-response-policy-zone</code>
 </p>
 
-<h5>Required Permissions</h5>
-<p>The following permissions are required for this command.</p>
-<ul>
-    <li>permission 1</li>
-    <li>permission 2</li>
-</ul>
 <h5>Input</h5>
 <table style="width:750px" border="2" cellpadding="6">
   <thead>
@@ -1134,12 +1107,6 @@ This integration was integrated and tested with version V2 of Infoblox
   <code>infoblox-create-rpz-rule</code>
 </p>
 
-<h5>Required Permissions</h5>
-<p>The following permissions are required for this command.</p>
-<ul>
-    <li>permission 1</li>
-    <li>permission 2</li>
-</ul>
 <h5>Input</h5>
 <table style="width:750px" border="2" cellpadding="6">
   <thead>
@@ -1306,12 +1273,6 @@ This integration was integrated and tested with version V2 of Infoblox
   <code>infoblox-create-a-substitute-record-rule</code>
 </p>
 
-<h5>Required Permissions</h5>
-<p>The following permissions are required for this command.</p>
-<ul>
-    <li>permission 1</li>
-    <li>permission 2</li>
-</ul>
 <h5>Input</h5>
 <table style="width:750px" border="2" cellpadding="6">
   <thead>
@@ -1471,12 +1432,6 @@ This integration was integrated and tested with version V2 of Infoblox
   <code>infoblox-create-aaaa-substitute-record-rule</code>
 </p>
 
-<h5>Required Permissions</h5>
-<p>The following permissions are required for this command.</p>
-<ul>
-    <li>permission 1</li>
-    <li>permission 2</li>
-</ul>
 <h5>Input</h5>
 <table style="width:750px" border="2" cellpadding="6">
   <thead>
@@ -1636,12 +1591,6 @@ This integration was integrated and tested with version V2 of Infoblox
   <code>infoblox-create-mx-substitute-record-rule</code>
 </p>
 
-<h5>Required Permissions</h5>
-<p>The following permissions are required for this command.</p>
-<ul>
-    <li>permission 1</li>
-    <li>permission 2</li>
-</ul>
 <h5>Input</h5>
 <table style="width:750px" border="2" cellpadding="6">
   <thead>
@@ -1809,12 +1758,6 @@ This integration was integrated and tested with version V2 of Infoblox
   <code>infoblox-create-naptr-substitute-record-rule</code>
 </p>
 
-<h5>Required Permissions</h5>
-<p>The following permissions are required for this command.</p>
-<ul>
-    <li>permission 1</li>
-    <li>permission 2</li>
-</ul>
 <h5>Input</h5>
 <table style="width:750px" border="2" cellpadding="6">
   <thead>
@@ -1996,12 +1939,6 @@ This integration was integrated and tested with version V2 of Infoblox
   <code>infoblox-create-ptr-substitute-record-rule</code>
 </p>
 
-<h5>Required Permissions</h5>
-<p>The following permissions are required for this command.</p>
-<ul>
-    <li>permission 1</li>
-    <li>permission 2</li>
-</ul>
 <h5>Input</h5>
 <table style="width:750px" border="2" cellpadding="6">
   <thead>
@@ -2174,12 +2111,6 @@ This integration was integrated and tested with version V2 of Infoblox
   <code>infoblox-create-srv-substitute-record-rule</code>
 </p>
 
-<h5>Required Permissions</h5>
-<p>The following permissions are required for this command.</p>
-<ul>
-    <li>permission 1</li>
-    <li>permission 2</li>
-</ul>
 <h5>Input</h5>
 <table style="width:750px" border="2" cellpadding="6">
   <thead>
@@ -2363,12 +2294,6 @@ This integration was integrated and tested with version V2 of Infoblox
   <code>infoblox-create-txt-substitute-record-rule</code>
 </p>
 
-<h5>Required Permissions</h5>
-<p>The following permissions are required for this command.</p>
-<ul>
-    <li>permission 1</li>
-    <li>permission 2</li>
-</ul>
 <h5>Input</h5>
 <table style="width:750px" border="2" cellpadding="6">
   <thead>
@@ -2528,12 +2453,6 @@ This integration was integrated and tested with version V2 of Infoblox
   <code>infoblox-create-ipv4-substitute-record-rule</code>
 </p>
 
-<h5>Required Permissions</h5>
-<p>The following permissions are required for this command.</p>
-<ul>
-    <li>permission 1</li>
-    <li>permission 2</li>
-</ul>
 <h5>Input</h5>
 <table style="width:750px" border="2" cellpadding="6">
   <thead>
@@ -2693,12 +2612,6 @@ This integration was integrated and tested with version V2 of Infoblox
   <code>infoblox-create-ipv6-substitute-record-rule</code>
 </p>
 
-<h5>Required Permissions</h5>
-<p>The following permissions are required for this command.</p>
-<ul>
-    <li>permission 1</li>
-    <li>permission 2</li>
-</ul>
 <h5>Input</h5>
 <table style="width:750px" border="2" cellpadding="6">
   <thead>
@@ -2858,12 +2771,6 @@ This integration was integrated and tested with version V2 of Infoblox
   <code>infoblox-enable-rule</code>
 </p>
 
-<h5>Required Permissions</h5>
-<p>The following permissions are required for this command.</p>
-<ul>
-    <li>permission 1</li>
-    <li>permission 2</li>
-</ul>
 <h5>Input</h5>
 <table style="width:750px" border="2" cellpadding="6">
   <thead>
@@ -2997,12 +2904,6 @@ This integration was integrated and tested with version V2 of Infoblox
   <code>infoblox-disable-rule</code>
 </p>
 
-<h5>Required Permissions</h5>
-<p>The following permissions are required for this command.</p>
-<ul>
-    <li>permission 1</li>
-    <li>permission 2</li>
-</ul>
 <h5>Input</h5>
 <table style="width:750px" border="2" cellpadding="6">
   <thead>
@@ -3136,12 +3037,6 @@ This integration was integrated and tested with version V2 of Infoblox
   <code>infoblox-get-object-fields</code>
 </p>
 
-<h5>Required Permissions</h5>
-<p>The following permissions are required for this command.</p>
-<ul>
-    <li>permission 1</li>
-    <li>permission 2</li>
-</ul>
 <h5>Input</h5>
 <table style="width:750px" border="2" cellpadding="6">
   <thead>
@@ -3279,12 +3174,6 @@ This integration was integrated and tested with version V2 of Infoblox
   <code>infoblox-search-rule</code>
 </p>
 
-<h5>Required Permissions</h5>
-<p>The following permissions are required for this command.</p>
-<ul>
-    <li>permission 1</li>
-    <li>permission 2</li>
-</ul>
 <h5>Input</h5>
 <table style="width:750px" border="2" cellpadding="6">
   <thead>
@@ -3421,12 +3310,6 @@ This integration was integrated and tested with version V2 of Infoblox
   <code>infoblox-delete-rpz-rule</code>
 </p>
 
-<h5>Required Permissions</h5>
-<p>The following permissions are required for this command.</p>
-<ul>
-    <li>permission 1</li>
-    <li>permission 2</li>
-</ul>
 <h5>Input</h5>
 <table style="width:750px" border="2" cellpadding="6">
   <thead>
@@ -3484,12 +3367,6 @@ Infoblox Integration - A rule with the following id was deleted:
   <code>infoblox-delete-response-policy-zone</code>
 </p>
 
-<h5>Required Permissions</h5>
-<p>The following permissions are required for this command.</p>
-<ul>
-    <li>permission 1</li>
-    <li>permission 2</li>
-</ul>
 <h5>Input</h5>
 <table style="width:750px" border="2" cellpadding="6">
   <thead>

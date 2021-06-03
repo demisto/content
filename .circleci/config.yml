@@ -159,6 +159,8 @@ references:
         echo 'export PATH="/home/circleci/.local/bin:${PWD}/node_modules/.bin:${PATH}"' >> $BASH_ENV # disable-secrets-detection
         echo 'export PYTHONPATH="/home/circleci/project:${PYTHONPATH}"' >> $BASH_ENV
         echo 'export DEMISTO_README_VALIDATION=true' >> $BASH_ENV
+        echo 'export ENV_RESULTS_PATH=/home/circleci/project/artifacts/env_results.json' >> $BASH_ENV
+        echo 'export GCS_PRODUCTION_BUCKET="marketplace-dist"' >> $BASH_ENV
         echo 'source /home/circleci/project/.circleci/content_release_vars.sh' >> $BASH_ENV
         chmod +x .circleci/gitlab-ci-env-variables.sh
         ./.circleci/gitlab-ci-env-variables.sh
@@ -255,11 +257,11 @@ references:
             else
               export IFRA_ENV_TYPE=Content-Env # disable-secrets-detection
             fi
-            python3 ./Tests/scripts/awsinstancetool/aws_instance_tool.py -envType "$IFRA_ENV_TYPE" -timetolive $TTL -outfile $CIRCLE_ARTIFACTS/env_results.json
+            python3 ./Tests/scripts/awsinstancetool/aws_instance_tool.py -envType "$IFRA_ENV_TYPE" -timetolive $TTL -outfile $ENV_RESULTS_PATH
 
           else
             . ./Tests/scripts/server_get_artifact.sh $SERVER_CI_TOKEN
-            python3 ./Tests/scripts/awsinstancetool/aws_instance_tool.py -envType CustomBuild -custombuild true -circleurl $SERVER_DOWNLOAD_LINK -circleToken $SERVER_CI_TOKEN -timetolive $TTL -outfile $CIRCLE_ARTIFACTS/env_results.json
+            python3 ./Tests/scripts/awsinstancetool/aws_instance_tool.py -envType CustomBuild -custombuild true -circleurl $SERVER_DOWNLOAD_LINK -circleToken $SERVER_CI_TOKEN -timetolive $TTL -outfile $ENV_RESULTS_PATH
         fi
 
   trigger_private_build: &trigger_private_build
@@ -331,7 +333,7 @@ references:
             echo "Skipping - not running in contribution instance"
             exit 0
         fi
-        python3 ./Tests/scripts/destroy_instances.py $CIRCLE_ARTIFACTS $CIRCLE_ARTIFACTS/env_results.json "$INSTANCE_ROLE" "$TIME_TO_LIVE"
+        python3 ./Tests/scripts/destroy_instances.py $CIRCLE_ARTIFACTS $ENV_RESULTS_PATH "$INSTANCE_ROLE" "$TIME_TO_LIVE"
 
         export PSWD=$(jq .serverLogsZipPassword < $(cat secret_conf_path) | cut -d \" -f 2)
         zip -P $PSWD -j $CIRCLE_ARTIFACTS/Logs.zip $CIRCLE_ARTIFACTS/server*.log || ((($? > 0)) && echo "Didn’t find any server logs, skipping this stage" && exit 0)
@@ -348,6 +350,7 @@ references:
     run:
       name: Secrets
       when: always
+      no_output_timeout: 5h
       command: |
         demisto-sdk secrets --post-commit --ignore-entropy
 
@@ -512,7 +515,7 @@ references:
             name: Comment on the contribution Pull Request
             when: always
             command: |
-              SERVER_URL=$(jq -r 'select(.[].Role == "Server Master") | .[].InstanceDNS' $CIRCLE_ARTIFACTS/env_results.json)
+              SERVER_URL=$(jq -r 'select(.[].Role == "Server Master") | .[].InstanceDNS' $ENV_RESULTS_PATH)
               python3 ./Utils/comment_on_pr.py -p $PULL_REQUEST_NUMBER -c "Instance is ready. Server link: https://$SERVER_URL, Build link: $CIRCLE_BUILD_URL"
 
   upload_entities_to_cortex_xsoar: &upload_entities_to_cortex_xsoar
@@ -686,7 +689,7 @@ jobs:
             if [ -n "${BUCKET_UPLOAD}" ]; then
               ./Tests/scripts/slack_notifier.sh 'bucket_upload_flow' '' "$SLACK_CHANNEL"
             else
-              ./Tests/scripts/slack_notifier.sh 'unittests' $CIRCLE_ARTIFACTS/env_results.json
+              ./Tests/scripts/slack_notifier.sh 'unittests' $ENV_RESULTS_PATH
             fi
           when: always
       - *store_artifacts
@@ -992,7 +995,7 @@ jobs:
                 name: Slack Notifier
                 shell: /bin/bash
                 command: |
-                  ./Tests/scripts/slack_notifier.sh 'test_playbooks' $CIRCLE_ARTIFACTS/env_results.json
+                  ./Tests/scripts/slack_notifier.sh 'test_playbooks' $ENV_RESULTS_PATH
                 when: always
             - *destroy_instances
             - *store_artifacts
@@ -1033,7 +1036,7 @@ jobs:
           name: Slack Notifier
           shell: /bin/bash
           command: |
-            ./Tests/scripts/slack_notifier.sh 'test_playbooks' $CIRCLE_ARTIFACTS/env_results.json
+            ./Tests/scripts/slack_notifier.sh 'test_playbooks' $ENV_RESULTS_PATH
           when: always
       - *comment_on_contrib_pr
       - *destroy_instances
@@ -1131,9 +1134,6 @@ jobs:
           name: Instance Test
           command: |
             ./Tests/scripts/instance_test.sh
-            export RETVAL=$?
-            cp ./Tests/failed_instances.txt $CIRCLE_ARTIFACTS/failed_instances.txt
-            exit $RETVAL
           when: always
       - *destroy_instances
       - *store_artifacts
@@ -1163,8 +1163,8 @@ jobs:
           name: Slack Notifier
           shell: /bin/bash
           command: |
-            ./Tests/scripts/slack_notifier.sh 'sdk_unittests' $CIRCLE_ARTIFACTS/env_results.json
-            ./Tests/scripts/slack_notifier.sh 'sdk_faild_steps' $CIRCLE_ARTIFACTS/env_results.json
+            ./Tests/scripts/slack_notifier.sh 'sdk_unittests' $ENV_RESULTS_PATH
+            ./Tests/scripts/slack_notifier.sh 'sdk_faild_steps' $ENV_RESULTS_PATH
           when: always
 
   Demisto SDK Nightly - Run against Cortex XSOAR:
@@ -1186,7 +1186,7 @@ jobs:
           name: Set Environment Variables
           command: |
             echo "export DEMISTO_API_KEY=$(cat $SECRET_CONF_PATH | jq -r '.temp_apikey')" >> $BASH_ENV
-            echo "export DEMISTO_BASE_URL=\"https://localhost:$(cat $CIRCLE_ARTIFACTS/env_results.json | jq -r '.[0].TunnelPort')\"" >> $BASH_ENV
+            echo "export DEMISTO_BASE_URL=\"https://localhost:$(cat $ENV_RESULTS_PATH | jq -r '.[0].TunnelPort')\"" >> $BASH_ENV
             echo "Server URL: $DEMISTO_BASE_URL"
       - run:
           name: Install SDK Master
@@ -1223,7 +1223,7 @@ jobs:
           name: Slack Notifier
           shell: /bin/bash
           command: |
-            ./Tests/scripts/slack_notifier.sh 'sdk_run_against_failed_steps' $CIRCLE_ARTIFACTS/env_results.json
+            ./Tests/scripts/slack_notifier.sh 'sdk_run_against_failed_steps' $ENV_RESULTS_PATH
           when: always
 
   Install Packs in Server 6_0:

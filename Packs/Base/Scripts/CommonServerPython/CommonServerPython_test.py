@@ -39,7 +39,6 @@ INFO = {'b': 1,
         }
         }
 
-
 @pytest.fixture()
 def clear_version_cache():
     """
@@ -1150,57 +1149,46 @@ def test_return_error_get_modified_remote_data_not_implemented(mocker):
     assert demisto.results.call_args[0][0]['Contents'] == err_msg
 
 
-def test_get_demisto_version(mocker, clear_version_cache):
-    # verify expected server version and build returned in case Demisto class has attribute demistoVersion
+def test_indicator_type_by_server_version_under_6_1(mocker, clear_version_cache):
+    """
+    Given
+    - demisto version mock under 6.2
+
+    When
+    - demisto version mock under 6.2
+
+    Then
+    - Do not remove the STIX indicator type prefix.
+    """
     mocker.patch.object(
         demisto,
         'demistoVersion',
         return_value={
-            'version': '5.0.0',
-            'buildNumber': '50000'
+            'version': '6.1.0',
         }
     )
-    assert get_demisto_version() == {
-        'version': '5.0.0',
-        'buildNumber': '50000'
-    }
-    # call again to check cache
-    assert get_demisto_version() == {
-        'version': '5.0.0',
-        'buildNumber': '50000'
-    }
-    # call count should be 1 as we cached
-    assert demisto.demistoVersion.call_count == 1
-    # test is_demisto_version_ge
-    assert is_demisto_version_ge('5.0.0')
-    assert is_demisto_version_ge('4.5.0')
-    assert not is_demisto_version_ge('5.5.0')
-    assert get_demisto_version_as_str() == '5.0.0-50000'
+    assert FeedIndicatorType.indicator_type_by_server_version("STIX Attack Pattern") == "STIX Attack Pattern"
 
 
-def test_is_demisto_version_ge_4_5(mocker, clear_version_cache):
-    get_version_patch = mocker.patch('CommonServerPython.get_demisto_version')
-    get_version_patch.side_effect = AttributeError('simulate missing demistoVersion')
-    assert not is_demisto_version_ge('5.0.0')
-    assert not is_demisto_version_ge('6.0.0')
-    with raises(AttributeError, match='simulate missing demistoVersion'):
-        is_demisto_version_ge('4.5.0')
+def test_indicator_type_by_server_version_6_2(mocker, clear_version_cache):
+    """
+    Given
+    - demisto version mock set to 6.2
 
+    When
+    - demisto version mock set to 6.2
 
-def test_is_demisto_version_build_ge(mocker):
+    Then
+    - Return the STIX indicator type with the STIX prefix
+    """
     mocker.patch.object(
         demisto,
         'demistoVersion',
         return_value={
-            'version': '6.0.0',
-            'buildNumber': '50000'
+            'version': '6.2.0',
         }
     )
-    assert is_demisto_version_ge('6.0.0', '49999')
-    assert is_demisto_version_ge('6.0.0', '50000')
-    assert not is_demisto_version_ge('6.0.0', '50001')
-    assert not is_demisto_version_ge('6.1.0', '49999')
-    assert not is_demisto_version_ge('5.5.0', '50001')
+    assert FeedIndicatorType.indicator_type_by_server_version("STIX Attack Pattern") == "Attack Pattern"
 
 
 def test_assign_params():
@@ -3543,6 +3531,60 @@ def test_warnings_handler(mocker):
     assert 'python warning' in msg
 
 
+def test_get_schedule_metadata():
+    """
+        Given
+            - case 1: no parent entry
+            - case 2: parent entry with schedule metadata
+            - case 3: parent entry without schedule metadata
+
+        When
+            querying the schedule metadata
+
+        Then
+            ensure scheduled_metadata is returned correctly
+            - case 1: no data (empty dict)
+            - case 2: schedule metadata with all details
+            - case 3: empty schedule metadata (dict with polling: false)
+    """
+    from CommonServerPython import get_schedule_metadata
+
+    # case 1
+    context = {'ParentEntry': None}
+    actual_scheduled_metadata = get_schedule_metadata(context=context)
+    assert actual_scheduled_metadata == {}
+
+    # case 2
+    parent_entry = {
+        'polling': True,
+        'pollingCommand': 'foo',
+        'pollingArgs': {'name': 'foo'},
+        'timesRan': 5,
+        'startDate': '2021-04-28T14:20:56.03728+03:00',
+        'endingDate': '2021-04-28T14:25:35.976244+03:00'
+    }
+    context = {
+        'ParentEntry': parent_entry
+    }
+    actual_scheduled_metadata = get_schedule_metadata(context=context)
+    assert actual_scheduled_metadata.get('is_polling') is True
+    assert actual_scheduled_metadata.get('polling_command') == parent_entry.get('pollingCommand')
+    assert actual_scheduled_metadata.get('polling_args') == parent_entry.get('pollingArgs')
+    assert actual_scheduled_metadata.get('times_ran') == (parent_entry.get('timesRan') + 1)
+    assert actual_scheduled_metadata.get('startDate') == parent_entry.get('start_date')
+    assert actual_scheduled_metadata.get('startDate') == parent_entry.get('start_date')
+
+    # case 3
+    parent_entry = {
+        'polling': False
+    }
+    context = {
+        'ParentEntry': parent_entry
+    }
+    actual_scheduled_metadata = get_schedule_metadata(context=context)
+    assert actual_scheduled_metadata == {'is_polling': False, 'times_ran': 1}
+
+
 class TestCommonTypes:
     def test_create_domain(self):
         from CommonServerPython import CommandResults, Common, EntryType, EntryFormat, DBotScoreType
@@ -4173,7 +4215,8 @@ class TestCommonTypes:
 
 
 class TestIndicatorsSearcher:
-    def mock_search_after_output(self, fromDate, toDate, query, size, value, searchAfter):
+    def mock_search_after_output(self, fromDate='', toDate='', query='', size=0, value='', page=0, searchAfter='',
+                                 populateFields=None):
         if not searchAfter:
             searchAfter = 0
 
@@ -4183,6 +4226,10 @@ class TestIndicatorsSearcher:
         else:
             # mock the end of indicators
             searchAfter = None
+
+        if page == 17:
+            # checking a unique case when trying to reach a certain page and not all the indicators
+            searchAfter = 200
 
         return {'searchAfter': searchAfter}
 
@@ -4225,9 +4272,11 @@ class TestIndicatorsSearcher:
 
         search_indicators_obj_search_after = IndicatorsSearcher()
         search_indicators_obj_search_after._can_use_search_after = True
-
-        for n in range(5):
-            search_indicators_obj_search_after.search_indicators_by_version()
+        try:
+            for n in range(5):
+                search_indicators_obj_search_after.search_indicators_by_version()
+        except Exception as e:
+            print(e)
 
         assert search_indicators_obj_search_after._search_after_param == 5
         assert search_indicators_obj_search_after._page == 0
@@ -4253,6 +4302,28 @@ class TestIndicatorsSearcher:
             search_indicators_obj_search_after.search_indicators_by_version()
         assert search_indicators_obj_search_after._search_after_param == None
         assert search_indicators_obj_search_after._page == 0
+
+    def test_search_indicators_in_certain_page(self, mocker):
+        """
+        Given:
+          - Searching indicators in a specific page that is mot 0
+          - Server version in equal or higher than 6.1.0
+        When:
+          - Mocking search indicators in this specific page
+          so search_after is None
+        Then:
+          - The search after param is not None
+          - The page param is 0
+        """
+        from CommonServerPython import IndicatorsSearcher
+        mocker.patch.object(demisto, 'searchIndicators', side_effect=self.mock_search_after_output)
+
+        res = search_indicators_obj_search_after = IndicatorsSearcher(page=17)
+        search_indicators_obj_search_after._can_use_search_after = True
+        search_indicators_obj_search_after.search_indicators_by_version()
+
+        assert search_indicators_obj_search_after._search_after_param == 200
+        assert search_indicators_obj_search_after._page == 17
 
 
 class TestAutoFocusKeyRetriever:
@@ -4305,12 +4376,11 @@ class TestAutoFocusKeyRetriever:
         assert auto_focus_key_retriever.key == 'test'
 
 
-
-class TestEntityRelation:
+class TestEntityRelationship:
     """Global vars for all of the tests"""
     name = 'related-to'
     reverse_name = 'related-to'
-    relation_type = 'IndicatorToIndicator'
+    relationship_type = 'IndicatorToIndicator'
     entity_a = 'test1'
     entity_a_family = 'Indicator'
     entity_a_type = 'Domain'
@@ -4322,7 +4392,7 @@ class TestEntityRelation:
     def test_entity_relations_context(self):
         """
         Given
-        - an EntityRelation object.
+        - an EntityRelationship object.
 
         When
         - running to_context function of the object
@@ -4330,17 +4400,17 @@ class TestEntityRelation:
         Then
         - Validate that the expected context is created
         """
-        from CommonServerPython import EntityRelation
-        relation = EntityRelation(name='related-to',
-                                  relation_type='IndicatorToIndicator',
-                                  entity_a='test1',
-                                  entity_a_family='Indicator',
-                                  entity_a_type='Domain',
-                                  entity_b='test2',
-                                  entity_b_family='Indicator',
-                                  entity_b_type='Domain',
-                                  source_reliability='F - Reliability cannot be judged',
-                                  brand='test')
+        from CommonServerPython import EntityRelationship
+        relationship = EntityRelationship(name='related-to',
+                                          relationship_type='IndicatorToIndicator',
+                                          entity_a='test1',
+                                          entity_a_family='Indicator',
+                                          entity_a_type='Domain',
+                                          entity_b='test2',
+                                          entity_b_family='Indicator',
+                                          entity_b_type='Domain',
+                                          source_reliability='F - Reliability cannot be judged',
+                                          brand='test')
 
         expected_context = {
             "Relationship": 'related-to',
@@ -4349,12 +4419,12 @@ class TestEntityRelation:
             "EntityB": 'test2',
             "EntityBType": 'Domain',
         }
-        assert relation.to_context() == expected_context
+        assert relationship.to_context() == expected_context
 
     def test_entity_relations_to_entry(self):
         """
         Given
-        - an EntityRelation object.
+        - an EntityRelationship object.
 
         When
         - running to_entry function of the object
@@ -4362,37 +4432,37 @@ class TestEntityRelation:
         Then
         - Validate that the expected context is created
         """
-        from CommonServerPython import EntityRelation
-        relation = EntityRelation(name=TestEntityRelation.name,
-                                  relation_type=TestEntityRelation.relation_type,
-                                  entity_a=TestEntityRelation.entity_a,
-                                  entity_a_family=TestEntityRelation.entity_a_family,
-                                  entity_a_type=TestEntityRelation.entity_a_type,
-                                  entity_b=TestEntityRelation.entity_b,
-                                  entity_b_family=TestEntityRelation.entity_b_family,
-                                  entity_b_type=TestEntityRelation.entity_b_type,
-                                  source_reliability=TestEntityRelation.source_reliability
-                                  )
+        from CommonServerPython import EntityRelationship
+        relationship = EntityRelationship(name=TestEntityRelationship.name,
+                                          relationship_type=TestEntityRelationship.relationship_type,
+                                          entity_a=TestEntityRelationship.entity_a,
+                                          entity_a_family=TestEntityRelationship.entity_a_family,
+                                          entity_a_type=TestEntityRelationship.entity_a_type,
+                                          entity_b=TestEntityRelationship.entity_b,
+                                          entity_b_family=TestEntityRelationship.entity_b_family,
+                                          entity_b_type=TestEntityRelationship.entity_b_type,
+                                          source_reliability=TestEntityRelationship.source_reliability
+                                          )
 
         expected_entry = {
-            "name": TestEntityRelation.name,
-            "reverseName": TestEntityRelation.reverse_name,
-            "type": TestEntityRelation.relation_type,
-            "entityA": TestEntityRelation.entity_a,
-            "entityAFamily": TestEntityRelation.entity_a_family,
-            "entityAType": TestEntityRelation.entity_a_type,
-            "entityB": TestEntityRelation.entity_b,
-            "entityBFamily": TestEntityRelation.entity_b_family,
-            "entityBType": TestEntityRelation.entity_b_type,
+            "name": TestEntityRelationship.name,
+            "reverseName": TestEntityRelationship.reverse_name,
+            "type": TestEntityRelationship.relationship_type,
+            "entityA": TestEntityRelationship.entity_a,
+            "entityAFamily": TestEntityRelationship.entity_a_family,
+            "entityAType": TestEntityRelationship.entity_a_type,
+            "entityB": TestEntityRelationship.entity_b,
+            "entityBFamily": TestEntityRelationship.entity_b_family,
+            "entityBType": TestEntityRelationship.entity_b_type,
             "fields": {},
-            "reliability": TestEntityRelation.source_reliability
+            "reliability": TestEntityRelationship.source_reliability
         }
-        assert relation.to_entry() == expected_entry
+        assert relationship.to_entry() == expected_entry
 
     def test_entity_relations_to_indicator(self):
         """
         Given
-        - an EntityRelation object.
+        - an EntityRelationship object.
 
         When
         - running to_indicator function of the object
@@ -4400,30 +4470,30 @@ class TestEntityRelation:
         Then
         - Validate that the expected context is created
         """
-        from CommonServerPython import EntityRelation
-        relation = EntityRelation(name=TestEntityRelation.name,
-                                  relation_type=TestEntityRelation.relation_type,
-                                  entity_a=TestEntityRelation.entity_a,
-                                  entity_a_family=TestEntityRelation.entity_a_family,
-                                  entity_a_type=TestEntityRelation.entity_a_type,
-                                  entity_b=TestEntityRelation.entity_b,
-                                  entity_b_family=TestEntityRelation.entity_b_family,
-                                  entity_b_type=TestEntityRelation.entity_b_type,
-                                  )
+        from CommonServerPython import EntityRelationship
+        relationship = EntityRelationship(name=TestEntityRelationship.name,
+                                          relationship_type=TestEntityRelationship.relationship_type,
+                                          entity_a=TestEntityRelationship.entity_a,
+                                          entity_a_family=TestEntityRelationship.entity_a_family,
+                                          entity_a_type=TestEntityRelationship.entity_a_type,
+                                          entity_b=TestEntityRelationship.entity_b,
+                                          entity_b_family=TestEntityRelationship.entity_b_family,
+                                          entity_b_type=TestEntityRelationship.entity_b_type,
+                                          )
 
         expected_to_indicator = {
-            "name": TestEntityRelation.name,
-            "reverseName": TestEntityRelation.reverse_name,
-            "type": TestEntityRelation.relation_type,
-            "entityA": TestEntityRelation.entity_a,
-            "entityAFamily": TestEntityRelation.entity_a_family,
-            "entityAType": TestEntityRelation.entity_a_type,
-            "entityB": TestEntityRelation.entity_b,
-            "entityBFamily": TestEntityRelation.entity_b_family,
-            "entityBType": TestEntityRelation.entity_b_type,
+            "name": TestEntityRelationship.name,
+            "reverseName": TestEntityRelationship.reverse_name,
+            "type": TestEntityRelationship.relationship_type,
+            "entityA": TestEntityRelationship.entity_a,
+            "entityAFamily": TestEntityRelationship.entity_a_family,
+            "entityAType": TestEntityRelationship.entity_a_type,
+            "entityB": TestEntityRelationship.entity_b,
+            "entityBFamily": TestEntityRelationship.entity_b_family,
+            "entityBType": TestEntityRelationship.entity_b_type,
             "fields": {},
         }
-        assert relation.to_indicator() == expected_to_indicator
+        assert relationship.to_indicator() == expected_to_indicator
 
     def test_invalid_name_init(self):
         """
@@ -4436,19 +4506,19 @@ class TestEntityRelation:
         Then
         - Validate a ValueError is raised.
         """
-        from CommonServerPython import EntityRelation
+        from CommonServerPython import EntityRelationship
         try:
-            EntityRelation(name='ilegal',
-                           relation_type=TestEntityRelation.relation_type,
-                           entity_a=TestEntityRelation.entity_a,
-                           entity_a_family=TestEntityRelation.entity_a_family,
-                           entity_a_type=TestEntityRelation.entity_a_type,
-                           entity_b=TestEntityRelation.entity_b,
-                           entity_b_family=TestEntityRelation.entity_b_family,
-                           entity_b_type=TestEntityRelation.entity_b_type
-                            )
+            EntityRelationship(name='ilegal',
+                               relationship_type=TestEntityRelationship.relationship_type,
+                               entity_a=TestEntityRelationship.entity_a,
+                               entity_a_family=TestEntityRelationship.entity_a_family,
+                               entity_a_type=TestEntityRelationship.entity_a_type,
+                               entity_b=TestEntityRelationship.entity_b,
+                               entity_b_family=TestEntityRelationship.entity_b_family,
+                               entity_b_type=TestEntityRelationship.entity_b_type
+                               )
         except ValueError as exception:
-            assert "Invalid relation: ilegal" in str(exception)
+            assert "Invalid relationship: ilegal" in str(exception)
 
     def test_invalid_relation_type_init(self):
         """
@@ -4461,19 +4531,19 @@ class TestEntityRelation:
         Then
         - Validate a ValueError is raised.
         """
-        from CommonServerPython import EntityRelation
+        from CommonServerPython import EntityRelationship
         try:
-            EntityRelation(name=TestEntityRelation.name,
-                           relation_type='TestRelationType',
-                           entity_a=TestEntityRelation.entity_a,
-                           entity_a_family=TestEntityRelation.entity_a_family,
-                           entity_a_type=TestEntityRelation.entity_a_type,
-                           entity_b=TestEntityRelation.entity_b,
-                           entity_b_family=TestEntityRelation.entity_b_family,
-                           entity_b_type=TestEntityRelation.entity_b_type
-                           )
+            EntityRelationship(name=TestEntityRelationship.name,
+                               relationship_type='TestRelationshipType',
+                               entity_a=TestEntityRelationship.entity_a,
+                               entity_a_family=TestEntityRelationship.entity_a_family,
+                               entity_a_type=TestEntityRelationship.entity_a_type,
+                               entity_b=TestEntityRelationship.entity_b,
+                               entity_b_family=TestEntityRelationship.entity_b_family,
+                               entity_b_type=TestEntityRelationship.entity_b_type
+                               )
         except ValueError as exception:
-            assert "Invalid relation type: TestRelationType" in str(exception)
+            assert "Invalid relationship type: TestRelationshipType" in str(exception)
 
     def test_invalid_a_family_init(self):
         """
@@ -4486,17 +4556,17 @@ class TestEntityRelation:
         Then
         - Validate a ValueError is raised.
         """
-        from CommonServerPython import EntityRelation
+        from CommonServerPython import EntityRelationship
         try:
-            EntityRelation(name=TestEntityRelation.name,
-                           relation_type=TestEntityRelation.relation_type,
-                           entity_a=TestEntityRelation.entity_a,
-                           entity_a_family='IndicatorIlegal',
-                           entity_a_type=TestEntityRelation.entity_a_type,
-                           entity_b=TestEntityRelation.entity_b,
-                           entity_b_family=TestEntityRelation.entity_b_family,
-                           entity_b_type=TestEntityRelation.entity_b_type
-                            )
+            EntityRelationship(name=TestEntityRelationship.name,
+                               relationship_type=TestEntityRelationship.relationship_type,
+                               entity_a=TestEntityRelationship.entity_a,
+                               entity_a_family='IndicatorIlegal',
+                               entity_a_type=TestEntityRelationship.entity_a_type,
+                               entity_b=TestEntityRelationship.entity_b,
+                               entity_b_family=TestEntityRelationship.entity_b_family,
+                               entity_b_type=TestEntityRelationship.entity_b_type
+                               )
         except ValueError as exception:
             assert "Invalid entity A Family type: IndicatorIlegal" in str(exception)
 
@@ -4511,17 +4581,17 @@ class TestEntityRelation:
         Then
         - Validate a ValueError is raised.
         """
-        from CommonServerPython import EntityRelation
+        from CommonServerPython import EntityRelationship
         try:
-            EntityRelation(name=TestEntityRelation.name,
-                           relation_type=TestEntityRelation.relation_type,
-                           entity_a=TestEntityRelation.entity_a,
-                           entity_a_family=TestEntityRelation.entity_a_family,
-                           entity_a_type='DomainTest',
-                           entity_b=TestEntityRelation.entity_b,
-                           entity_b_family=TestEntityRelation.entity_b_family,
-                           entity_b_type=TestEntityRelation.entity_b_type
-                            )
+            EntityRelationship(name=TestEntityRelationship.name,
+                               relationship_type=TestEntityRelationship.relationship_type,
+                               entity_a=TestEntityRelationship.entity_a,
+                               entity_a_family=TestEntityRelationship.entity_a_family,
+                               entity_a_type='DomainTest',
+                               entity_b=TestEntityRelationship.entity_b,
+                               entity_b_family=TestEntityRelationship.entity_b_family,
+                               entity_b_type=TestEntityRelationship.entity_b_type
+                               )
         except ValueError as exception:
             assert "Invalid entity A type: DomainTest" in str(exception)
 
@@ -4536,17 +4606,17 @@ class TestEntityRelation:
         Then
         - Validate a ValueError is raised.
         """
-        from CommonServerPython import EntityRelation
+        from CommonServerPython import EntityRelationship
         try:
-            EntityRelation(name=TestEntityRelation.name,
-                           relation_type=TestEntityRelation.relation_type,
-                           entity_a=TestEntityRelation.entity_a,
-                           entity_a_family=TestEntityRelation.entity_a_family,
-                           entity_a_type=TestEntityRelation.entity_a_type,
-                           entity_b=TestEntityRelation.entity_b,
-                           entity_b_family='IndicatorIlegal',
-                           entity_b_type=TestEntityRelation.entity_b_type
-                            )
+            EntityRelationship(name=TestEntityRelationship.name,
+                               relationship_type=TestEntityRelationship.relationship_type,
+                               entity_a=TestEntityRelationship.entity_a,
+                               entity_a_family=TestEntityRelationship.entity_a_family,
+                               entity_a_type=TestEntityRelationship.entity_a_type,
+                               entity_b=TestEntityRelationship.entity_b,
+                               entity_b_family='IndicatorIlegal',
+                               entity_b_type=TestEntityRelationship.entity_b_type
+                               )
         except ValueError as exception:
             assert "Invalid entity B Family type: IndicatorIlegal" in str(exception)
 
@@ -4561,16 +4631,101 @@ class TestEntityRelation:
         Then
         - Validate a ValueError is raised.
         """
-        from CommonServerPython import EntityRelation
+        from CommonServerPython import EntityRelationship
         try:
-            EntityRelation(name=TestEntityRelation.name,
-                           relation_type=TestEntityRelation.relation_type,
-                           entity_a=TestEntityRelation.entity_a,
-                           entity_a_family=TestEntityRelation.entity_a_family,
-                           entity_a_type=TestEntityRelation.entity_a_type,
-                           entity_b=TestEntityRelation.entity_b,
-                           entity_b_family=TestEntityRelation.entity_b_family,
-                           entity_b_type='DomainTest'
-                            )
+            EntityRelationship(name=TestEntityRelationship.name,
+                               relationship_type=TestEntityRelationship.relationship_type,
+                               entity_a=TestEntityRelationship.entity_a,
+                               entity_a_family=TestEntityRelationship.entity_a_family,
+                               entity_a_type=TestEntityRelationship.entity_a_type,
+                               entity_b=TestEntityRelationship.entity_b,
+                               entity_b_family=TestEntityRelationship.entity_b_family,
+                               entity_b_type='DomainTest'
+                               )
         except ValueError as exception:
             assert "Invalid entity B type: DomainTest" in str(exception)
+
+
+class TestIsDemistoServerGE:
+    @classmethod
+    @pytest.fixture(scope='function', autouse=True)
+    def clear_cache(cls):
+        get_demisto_version._version = None
+
+    def test_get_demisto_version(self, mocker):
+        # verify expected server version and build returned in case Demisto class has attribute demistoVersion
+        mocker.patch.object(
+            demisto,
+            'demistoVersion',
+            return_value={
+                'version': '5.0.0',
+                'buildNumber': '50000'
+            }
+        )
+        assert get_demisto_version() == {
+            'version': '5.0.0',
+            'buildNumber': '50000'
+        }
+        # call again to check cache
+        assert get_demisto_version() == {
+            'version': '5.0.0',
+            'buildNumber': '50000'
+        }
+        # call count should be 1 as we cached
+        assert demisto.demistoVersion.call_count == 1
+        # test is_demisto_version_ge
+        assert is_demisto_version_ge('5.0.0')
+        assert is_demisto_version_ge('4.5.0')
+        assert not is_demisto_version_ge('5.5.0')
+        assert get_demisto_version_as_str() == '5.0.0-50000'
+
+    def test_is_demisto_version_ge_4_5(self, mocker):
+        get_version_patch = mocker.patch('CommonServerPython.get_demisto_version')
+        get_version_patch.side_effect = AttributeError('simulate missing demistoVersion')
+        assert not is_demisto_version_ge('5.0.0')
+        assert not is_demisto_version_ge('6.0.0')
+        with raises(AttributeError, match='simulate missing demistoVersion'):
+            is_demisto_version_ge('4.5.0')
+
+    def test_is_demisto_version_ge_dev_version(self, mocker):
+        mocker.patch.object(
+            demisto,
+            'demistoVersion',
+            return_value={
+                'version': '6.0.0',
+                'buildNumber': '50000'
+            }
+        )
+        assert is_demisto_version_ge('6.0.0', '1-dev')
+
+    @pytest.mark.parametrize('version, build', [
+        ('6.0.0', '49999'),
+        ('6.0.0', '50000'),
+        ('6.0.0', '6'),  # Added with the fix of https://github.com/demisto/etc/issues/36876
+        ('5.5.0', '50001')
+    ])
+    def test_is_demisto_version_build_ge(self, mocker, version, build):
+        mocker.patch.object(
+            demisto,
+            'demistoVersion',
+            return_value={
+                'version': '6.0.0',
+                'buildNumber': '50000'
+            }
+        )
+        assert is_demisto_version_ge(version, build)
+
+    @pytest.mark.parametrize('version, build', [
+        ('6.0.0', '50001'),
+        ('6.1.0', '49999')
+    ])
+    def test_is_demisto_version_build_ge_negative(self, mocker, version, build):
+        mocker.patch.object(
+            demisto,
+            'demistoVersion',
+            return_value={
+                'version': '6.0.0',
+                'buildNumber': '50000'
+            }
+        )
+        assert not is_demisto_version_ge(version, build)

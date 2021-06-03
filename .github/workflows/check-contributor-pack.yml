@@ -25,6 +25,7 @@ jobs:
           PR_NUMBER: ${{ github.event.pull_request.number }}
           BRANCH_NAME: ${{ github.head_ref }}
           SENDGRID_EMAIL_API_KEY: ${{ secrets.SENDGRID_EMAIL_API_KEY }}
+        if: env.SENDGRID_EMAIL_API_KEY
         run: |
           echo "PR number is: $PR_NUMBER"
           echo "Target branch name is: $BRANCH_NAME"
