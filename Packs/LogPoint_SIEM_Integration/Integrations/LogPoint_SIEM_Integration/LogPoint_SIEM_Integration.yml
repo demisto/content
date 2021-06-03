@@ -729,7 +729,7 @@ script:
     - contextPath: LogPoint.Incidents.users.usergroups
       description: LogPoint Incidents Users Usergroups
       type: String
-  dockerimage: demisto/python3:3.9.2.17246
+  dockerimage: demisto/python3:3.9.5.20070
   feed: false
   isfetch: true
   longRunning: false
