@@ -30,7 +30,10 @@ def main() -> None:
 
         if command == 'test-module':
             # This is the call made when pressing the integration Test button.
-            return_results('ok')
+            result = generic_ansible('{demisto_command}', '{test_command}', args, int_params, host_type)
+
+            return_results(result)
+
         elif command == 'azure-rm-azurefirewall':
             return_results(generic_ansible('azurenetworking', 'azure_rm_azurefirewall', args, int_params, host_type))
         elif command == 'azure-rm-azurefirewall-info':

@@ -30,7 +30,10 @@ def main() -> None:
 
         if command == 'test-module':
             # This is the call made when pressing the integration Test button.
-            return_results('ok')
+            result = generic_ansible('{demisto_command}', '{test_command}', args, int_params, host_type)
+
+            return_results(result)
+
         elif command == 'ali-instance':
             return_results(generic_ansible('alibabacloud', 'ali_instance', args, int_params, host_type))
         elif command == 'ali-instance-info':

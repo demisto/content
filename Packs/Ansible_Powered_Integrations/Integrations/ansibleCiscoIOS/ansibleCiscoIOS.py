@@ -30,7 +30,10 @@ def main() -> None:
 
         if command == 'test-module':
             # This is the call made when pressing the integration Test button.
-            return_results('ok')
+            result = generic_ansible('{demisto_command}', '{test_command}', args, int_params, host_type)
+
+            return_results(result)
+
         elif command == 'ios-banner':
             return_results(generic_ansible('ciscoios', 'ios_banner', args, int_params, host_type))
         elif command == 'ios-bgp':

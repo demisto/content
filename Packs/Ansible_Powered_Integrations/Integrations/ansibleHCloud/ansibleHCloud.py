@@ -30,7 +30,10 @@ def main() -> None:
 
         if command == 'test-module':
             # This is the call made when pressing the integration Test button.
-            return_results('ok')
+            result = generic_ansible('{demisto_command}', '{test_command}', args, int_params, host_type)
+
+            return_results(result)
+
         elif command == 'hcloud-datacenter-info':
             return_results(generic_ansible('hcloud', 'hcloud_datacenter_info', args, int_params, host_type))
         elif command == 'hcloud-floating-ip-info':
