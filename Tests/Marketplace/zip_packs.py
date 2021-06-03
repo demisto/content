@@ -119,7 +119,7 @@ def remove_test_playbooks_from_signatures(path, filenames):
 def remove_unnecessary_files(zip_path):
     zip_path = zip_path + '/packs'
     dir_entries = os.listdir(zip_path)
-    print(f"entires are: {''.join(dir_entries)}")
+    print(f"entires are: {', '.join(dir_entries)}")
     for entry in dir_entries:
         print(f"Current entry is: {entry}")
         entry_path = zip_path + os.sep + entry
@@ -137,7 +137,7 @@ def remove_unnecessary_files(zip_path):
                 # going over pack directory
                 for filename in filenames:
                     pack_files.append(os.path.join(root, filename))
-            print(f"files in {entry_path} are {''.join(pack_files)}")
+            print(f"files in {entry_path} are {', '.join(pack_files)}")
             latest_zip = get_latest_pack_zip_from_blob(entry, pack_files)
             print(f"Latest zip is {latest_zip}")
             for pack_file in pack_files:
@@ -262,7 +262,7 @@ def get_latest_pack_zip_from_blob(pack, blobs):
     blob = None
     blobs = [b for b in blobs if os.path.splitext(os.path.basename(b))[0] == pack and b.endswith('.zip')]
     if blobs:
-        blobs = sorted(blobs, key=lambda b: LooseVersion(os.path.basename(os.path.dirname(b.name))), reverse=True)
+        blobs = sorted(blobs, key=lambda b: LooseVersion(os.path.basename(os.path.dirname(b))), reverse=True)
         blob = blobs[0]
 
     return blob
