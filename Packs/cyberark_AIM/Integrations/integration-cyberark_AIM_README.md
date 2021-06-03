@@ -1,6 +1,6 @@
 <!-- HTML_DOC -->
 <p>Deprecated. Use the CyberArk AIM v2 integration instead.</p>
-<h2>Configure CyberArkAIM on Demisto</h2>
+<h2>Configure CyberArkAIM on Cortex XSOAR</h2>
 <ol>
 <li>Navigate to <strong>Settings</strong> &gt; <strong>Integrations</strong> &gt; <strong>Servers &amp; Services</strong>.</li>
 <li>Search for CyberArkAIM.</li>
@@ -24,7 +24,7 @@
 <li>Click <strong>Test</strong> to validate the URLs, token, and connection.</li>
 </ol>
 <h2>Commands</h2>
-<p>You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
+<p>You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
 <ol>
 <li><a href="#h_30574870731547476172583">Search for credentials: cyber-ark-aim-query</a></li>
 <li><a href="#h_632417558321547476178860">Get a list of credentials: list-credentials</a></li>

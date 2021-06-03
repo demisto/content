@@ -1,6 +1,6 @@
 <!-- HTML_DOC -->
 <div class="cl-preview-section">
-<p>Threat Intelligence Platform that connects and interprets intelligence data from open sources, commercial suppliers and industry partnerships.<br> EclecticIQ Platform is used through Demisto to get reputation of IOCs and their related entities.<br> This integration was integrated and tested with version 2.3.0-1 of EclecticIQ Platform</p>
+<p>Threat Intelligence Platform that connects and interprets intelligence data from open sources, commercial suppliers and industry partnerships.<br> EclecticIQ Platform is used through Cortex XSOAR to get reputation of IOCs and their related entities.<br> This integration was integrated and tested with version 2.3.0-1 of EclecticIQ Platform</p>
 </div>
 <div class="cl-preview-section">
 <h2 id="use-cases">Use Cases</h2>
@@ -12,7 +12,7 @@
 </ol>
 </div>
 <div class="cl-preview-section">
-<h2 id="configure-eclecticiq-platform-on-demisto">Configure EclecticIQ Platform on Demisto</h2>
+<h2 id="configure-eclecticiq-platform-on-demisto">Configure EclecticIQ Platform on Cortex XSOAR</h2>
 </div>
 <div class="cl-preview-section">
 <ol>
@@ -40,7 +40,7 @@
 <h2 id="commands">Commands</h2>
 </div>
 <div class="cl-preview-section">
-<p>You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.<br> After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
+<p>You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.<br> After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
 </div>
 <div class="cl-preview-section">
 <ol>
