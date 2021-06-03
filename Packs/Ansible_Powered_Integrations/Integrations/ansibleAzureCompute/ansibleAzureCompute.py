@@ -30,7 +30,7 @@ def main() -> None:
 
         if command == 'test-module':
             # This is the call made when pressing the integration Test button.
-            result = generic_ansible('{demisto_command}', '{test_command}', args, int_params, host_type)
+            result = generic_ansible('azurecompute', 'azure_rm_resource_info', args, int_params, host_type)
 
             return_results(result)
 
