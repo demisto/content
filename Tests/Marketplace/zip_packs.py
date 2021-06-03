@@ -117,7 +117,7 @@ def remove_test_playbooks_from_signatures(path, filenames):
         logging.warning(f'Could not find signatures in the pack {os.path.basename(os.path.dirname(path))}')
 
 
-def remove_unnecessary_files(zip_path):
+def get_zipped_packs_names(zip_path):
     zipped_packs = []
     zip_path = zip_path + '/packs'
     dir_entries = os.listdir(zip_path)
@@ -128,16 +128,6 @@ def remove_unnecessary_files(zip_path):
         print(f"Current entry is: {entry}")
         entry_path = zip_path + os.sep + entry
 
-        # if entry in IGNORED_FILES:
-        #     print(f"Found ignored file:{entry_path}, removing.")
-        #     os.remove(entry_path)
-        #     continue
-        if entry not in IGNORED_FILES:
-            print(f'entry={entry} is not ignored')
-        if entry in packs_list:
-            print(f'entry={entry} is a pack')
-        if os.path.isdir(entry_path):
-            print(f'entry={entry} is a dir')
         if entry not in IGNORED_FILES and entry in packs_list and os.path.isdir(entry_path):
             # This is a pack directory, should keep only most recent release zip
             print(f"current dir is: {entry_path}")
@@ -149,55 +139,6 @@ def remove_unnecessary_files(zip_path):
             print(f"files in {entry_path} are {', '.join(pack_files)}")
             latest_zip = get_latest_pack_zip_from_blob(entry, pack_files)
             zipped_packs.append({Path(latest_zip).stem: latest_zip})
-            # print(f"Latest zip is {latest_zip}")
-            # for pack_file in pack_files:
-            #     if pack_file != latest_zip:
-            #         print(f"Found unnecessary file:{pack_file}, removing.")
-            #         os.remove(pack_file)
-        # else:
-        #     print(f"Found unnecessary file:{entry_path}, removing.")
-        #     os.remove(entry_path)
-    if not zipped_packs:
-        logging.critical('Did not find any pack to download from GCP.')
-        sys.exit(1)
-    return zipped_packs
-
-    #
-    #
-    # for subdir, dirs, files in os.walk(zip_path):
-    #     for filename in files:
-    #         filepath = subdir + os.sep + filename
-    #         print(f"Checking remove for {filename}")
-    #         if filename in IGNORED_FILES:
-    #             print(f"Found ignored file:{filepath}, removing.")
-    #             os.remove(filepath)
-    #
-    #     for current_dir in dirs:
-    #         print(f"current dir is: {current_dir}")
-    #         if current_dir in IGNORED_FILES:
-    #             print(f"Found ignored file:{current_dir}, removing.")
-    #             os.remove(filepath)
-    #         pack_files = []
-    #         for root, dirnames, filenames in os.walk(current_dir):
-    #             print("root is: " + root)
-    #             pack_files.append(os.path.join(root, filenames))
-    #         print(f"files in {current_dir} are {''.join(pack_files)}")
-    #         latest_zip = get_latest_pack_zip_from_blob(current_dir, pack_files)
-    #         for pack_file in pack_files:
-    #             print(f"Found unnecessary file:{pack_file}, removing.")
-    #             if pack_file == latest_zip:
-    #                 os.remove(pack_file)
-
-
-def get_zipped_packs_names(zip_path):
-    zipped_packs = []
-    for subdir, dirs, files in os.walk(zip_path):
-        for filename in files:
-            filepath = subdir + os.sep + filename
-            print(f"Adding file of {filepath}")
-            if not filename.endswith(".zip"):
-                print(f"NOT A ZIP!!!!! - {filepath}")
-            zipped_packs.append({Path(filepath).stem: filepath})
     if not zipped_packs:
         logging.critical('Did not find any pack to download from GCP.')
         sys.exit(1)
@@ -241,14 +182,16 @@ def download_packs_from_gcp(storage_bucket, gcp_path, destination_path, circle_b
         logging.critical(f"Failed to run cp_gcp_dir.sh, Error:{e}")
         sys.exit(1)
 
-    # COPY TO DIFFERENT DIR IF NEEDED
-    # should perform after manipulating the packs
-    # if os.path.exists('/home/runner/work/content-private/content-private/content/artifacts/'):
-    #     logging.info(f"Copying pack from {destination_path} to /home/runner/work/content-private/"
-    #                  f"content-private/content/artifacts/packs")
-    #     shutil.copy(destination_path,
-    #                 f'/home/runner/work/content-private/content-private/content/artifacts/'
-    #                 f'packs')
+
+def copy_to_other_dir(zipped_packs):
+    if os.path.exists('/home/runner/work/content-private/content-private/content/artifacts/'):
+        for zip_pack in zipped_packs:
+            zip_path = zip_pack.items()[0]
+            logging.info(f"Copying pack from {zip_path} to /home/runner/work/content-private/"
+                         f"content-private/content/artifacts/packs")
+            shutil.copy(zip_path,
+                        f'/home/runner/work/content-private/content-private/content/artifacts/'
+                        f'packs')
 
 
 def executor_submit(executor, download_path, blob):
@@ -333,16 +276,13 @@ def main():
         logging.exception('Failed downloading packs')
         success = False
 
-    # Keep only zip files of most recent releases
-    # remove_unnecessary_files(zip_path)
-
-    # TODO: should copy to another dir what's left
-
     try:
-        zipped_packs = remove_unnecessary_files(zip_path)
+        zipped_packs = get_zipped_packs_names(zip_path)
     except Exception:
         logging.exception('No zip files were found')
         success = False
+
+    copy_to_other_dir(zipped_packs)
 
     if zipped_packs and remove_test_playbooks:
         try:
