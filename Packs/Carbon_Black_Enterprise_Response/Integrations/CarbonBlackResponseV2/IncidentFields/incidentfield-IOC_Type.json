@@ -1,0 +1,30 @@
+{
+    "id": "incident_ioctype",
+    "version": -1,
+    "modified": "2021-06-03T09:14:48.176092+03:00",
+    "name": "IOC Type",
+    "ownerOnly": false,
+    "cliName": "ioctype",
+    "type": "shortText",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "associatedTypes": [
+        "Carbon Black EDR"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": false,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "5.5.0"
+}
