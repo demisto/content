@@ -32,7 +32,10 @@ def main() -> None:
             # This is the call made when pressing the integration Test button.
             result = generic_ansible('ciscoios', 'ios_facts', args, int_params, host_type)
 
-            return_results(result)
+            if result:
+                return_results('ok')
+            else:
+                return_results(result)
 
         elif command == 'ios-banner':
             return_results(generic_ansible('ciscoios', 'ios_banner', args, int_params, host_type))

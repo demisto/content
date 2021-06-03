@@ -32,7 +32,10 @@ def main() -> None:
             # This is the call made when pressing the integration Test button.
             result = generic_ansible('azurecompute', 'azure_rm_resource_info', args, int_params, host_type)
 
-            return_results(result)
+            if result:
+                return_results('ok')
+            else:
+                return_results(result)
 
         elif command == 'azure-rm-autoscale':
             return_results(generic_ansible('azurecompute', 'azure_rm_autoscale', args, int_params, host_type))

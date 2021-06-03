@@ -32,7 +32,10 @@ def main() -> None:
             # This is the call made when pressing the integration Test button.
             result = generic_ansible('cisconxos', 'nxos_facts', args, int_params, host_type)
 
-            return_results(result)
+            if result:
+                return_results('ok')
+            else:
+                return_results(result)
 
         elif command == 'nxos-aaa-server':
             return_results(generic_ansible('cisconxos', 'nxos_aaa_server', args, int_params, host_type))
