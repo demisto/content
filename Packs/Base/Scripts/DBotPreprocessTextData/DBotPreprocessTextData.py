@@ -325,8 +325,8 @@ PRE_PROCESS_TYPES = {
 def remove_short_text(data, text_field, target_text_field, remove_short_threshold):
     description = ""
     before_count = len(data)
-    data = [x for x in data if len(x[text_field].split(" ")) > remove_short_threshold and
-            len(x[target_text_field]) > remove_short_threshold]
+    data = [x for x in data if len(x[text_field].split(" ")) > remove_short_threshold
+            and len(x[target_text_field]) > remove_short_threshold]
     after_count = len(data)
     dropped_count = before_count - after_count
     if dropped_count > 0:
