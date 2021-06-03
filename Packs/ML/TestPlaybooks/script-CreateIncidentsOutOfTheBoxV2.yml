@@ -1,5 +1,5 @@
 commonfields:
-  id: 412721d6-6309-4101-8fa0-a6f0122a6e91
+  id: CreateIncidentsOutOfTheBoxV2
   version: -1
 vcShouldKeepItemLegacyProdMachine: false
 name: CreateIncidentsOutOfTheBoxV2
@@ -106,5 +106,5 @@ pswd: ""
 runonce: false
 dockerimage: demisto/python3:3.9.5.20070
 runas: DBotWeakRole
-fromversion: 5.0.0
+fromversion: 5.5.0
 
