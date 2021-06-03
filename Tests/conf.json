@@ -559,6 +559,13 @@
             "fromversion": "5.0.0"
         },
         {
+            "integrations": "SlackV3",
+            "playbookID": " SlackV3 Test Playbook",
+            "timeout": 400,
+            "pid_threshold": 5,
+            "fromversion": "5.0.0"
+        },
+        {
             "integrations": "Cortex XDR - IR",
             "playbookID": "Test XDR Playbook",
             "fromversion": "4.1.0",
@@ -3603,6 +3610,7 @@
         "SplunkPy": "we have multiple instances with same test playbook, mock recording are per playbook so it keeps failing the playback step",
         "mysql": "Does not use http",
         "SlackV2": "Integration requires SSL",
+        "SlackV3": "Integration requires SSL",
         "Whois": "Mocks does not support sockets",
         "Panorama": "Exception: Proxy process took to long to go up. https://circleci.com/gh/demisto/content/24826",
         "Image OCR": "Does not perform network traffic",

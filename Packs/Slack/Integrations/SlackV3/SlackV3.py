@@ -12,9 +12,6 @@ from slack_sdk.web.async_client import AsyncWebClient
 from slack_sdk.socket_mode.aiohttp import SocketModeClient
 from slack_sdk.errors import SlackApiError
 from slack_sdk.web.slack_response import SlackResponse
-
-''' MAIN FUNCTION '''
-
 from slack_sdk.socket_mode.response import SocketModeResponse
 from slack_sdk.socket_mode.request import SocketModeRequest
 
@@ -796,7 +793,6 @@ async def long_running_loop():
             time.sleep(5)
 
 
-
 def test_module():
     """
     Sends a test message to the dedicated slack channel.
@@ -816,8 +812,6 @@ def test_module():
 def init_globals():
     """
     Initializes global variables according to the integration parameters
-
-    # TODO INIT Different Globals for LongRunning
     """
     global BOT_TOKEN, ACCESS_TOKEN, PROXY_URL, PROXIES, DEDICATED_CHANNEL, CLIENT, CHANNEL_CLIENT
     global SEVERITY_THRESHOLD, ALLOW_INCIDENTS, NOTIFY_INCIDENTS, INCIDENT_TYPE, VERIFY_CERT
@@ -1499,12 +1493,9 @@ def close_channel():
     channel_id = ''
 
     if not channel:
-        demisto.info("Got to not channel")
         mirror = find_mirror_by_investigation()
-        demisto.info(f"Mirror is: {mirror}")
         if mirror:
             channel_id = mirror.get('channel_id', '')
-            demisto.info(f"Channel id is: {channel_id}")
             # We need to update the topic in the mirror
             integration_context = get_integration_context(SYNC_CONTEXT)
             mirrors = json.loads(integration_context['mirrors'])
@@ -1512,14 +1503,12 @@ def close_channel():
             # Check for mirrors on the archived channel
             channel_mirrors = list(filter(lambda m: channel_id == m['channel_id'], mirrors))
             for mirror in channel_mirrors:
-                demisto.info(f"Mirror is: {mirror}")
                 mirror['remove'] = True
                 demisto.mirrorInvestigation(mirror['investigation_id'], f'none:{mirror["mirror_direction"]}',
                                             mirror['auto_close'])
 
             set_to_integration_context_with_retries({'mirrors': mirrors}, OBJECTS_TO_KEYS, SYNC_CONTEXT)
     else:
-        demisto.info(f"Got here")
         channel = get_conversation_by_name(channel)
         channel_id = channel.get('id')
 
@@ -1542,7 +1531,6 @@ def create_channel():
 
     response = CHANNEL_CLIENT.conversations_create(name=channel_name, is_private=private)
     conversation = response.get('channel', {})
-    demisto.info(f"Conversation Object is: {conversation}")
 
     if users:
         slack_users = search_slack_users(users)
@@ -1680,50 +1668,6 @@ def get_user():
     }
 
     return_outputs(hr, context, slack_user)
-
-
-def send_slack_request_sync(client: slack_sdk.WebClient, method: str, http_verb: str = 'POST', file_: str = '',
-                            body: dict = None) -> SlackResponse:
-    """
-    Sends a request to slack API while handling rate limit errors.
-
-    Args:
-        client: The slack client.
-        method: The method to use.
-        http_verb: The HTTP method to use.
-        file_: A file path to send.
-        body: The request body.
-
-    Returns:
-        The slack API response.
-    """
-    demisto.info("Trying to make a call")
-    if body is None:
-        body = {}
-
-    set_name_and_icon(body, method)
-    total_try_time = 0
-
-    try:
-        if http_verb == 'POST':
-            if file_:
-                response = client.api_call(method, files={"file": file_}, data=body)
-            else:
-                response = client.api_call(method, json=body)
-        else:
-            response = client.api_call(method, http_verb='GET', params=body)
-        demisto.info(response)
-    except SlackApiError as api_error:
-        response = api_error.response
-        headers = response.headers  # type: ignore
-        if 'Retry-After' in headers:
-            retry_after = int(headers['Retry-After'])
-            total_try_time += retry_after
-            if total_try_time < MAX_LIMIT_TIME:
-                time.sleep(retry_after)
-        return_error("shit went down", api_error)
-
-    return response  # type: ignore
 
 
 def main() -> None:
