@@ -42,3 +42,12 @@ ignore=RM104
 
 [file:playbook-Get_File_Sample_From_Path_-_Generic_README.md]
 ignore=RM106
+
+[file:playbook-Block_Email_-_Generic_README.md]
+ignore=RM106
+
+[file:playbook-Threat_Hunting_-_Generic_README.md]
+ignore=RM106
+
+[file:playbook-Block_Indicators_-_Generic_v2_README.md]
+ignore=RM106
