@@ -7698,6 +7698,7 @@ def get_feed_last_run():
     """
     This function gets the feed's last run: from XSOAR version 6.2.0: using `demisto.getLastRun()`.
     Before XSOAR version 6.2.0: using `demisto.getIntegrationContext()`.
+    :rtype: ``dict``
     :return: All indicators from the feed's last run
     """
     if is_demisto_version_ge('6.2.0'):
@@ -7717,6 +7718,9 @@ def set_feed_last_run(last_run_indicators):
     """
     This function sets the feed's last run: from XSOAR version 6.2.0: using `demisto.setLastRun()`.
     Before XSOAR version 6.2.0: using `demisto.setIntegrationContext()`.
+    :type last_run_indicators: ``dict``
+    :param last_run_indicators: Indicators to save in "lastRun" object.
+    :rtype: ``None``
     :return: None
     """
     if is_demisto_version_ge('6.2.0'):
