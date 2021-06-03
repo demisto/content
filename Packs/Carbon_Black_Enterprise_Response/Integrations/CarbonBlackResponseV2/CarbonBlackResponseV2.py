@@ -2,7 +2,7 @@ import dateparser
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *  # noqa
-from typing import Callable, Dict, List, Any, Union
+from typing import Callable, Dict, List, Any, Union, Tuple
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
@@ -129,7 +129,7 @@ class Client(BaseClient):
 
     def get_sensors(self, id: str = None, hostname: str = None, ipaddr: str = None,  # noqa: F841
                     groupid: str = None, inactive_filter_days: str = None,  # noqa: F841
-                    limit: Union[int, str] = None) -> List[dict]:
+                    limit: Union[int, str] = None) -> Tuple[int, List[dict]]:
         url = f'/v1/sensor/{id}' if id else '/v1/sensor'
         query_fields = ['ipaddr', 'hostname', 'groupid', 'inactive_filter_days']
         query_params: dict = {key: locals().get(key) for key in query_fields if
@@ -137,7 +137,7 @@ class Client(BaseClient):
         res = self.http_request(url=url, method='GET', params=query_params, ok_codes=(200, 204))
 
         # When querying specific sensor without filters, the api returns dictionary instead of list.
-        return res[:arg_to_number(limit, 'limit')] if isinstance(res, list) else [res]
+        return len(res), res[:arg_to_number(limit, 'limit')] if isinstance(res, list) and limit else [res]
 
     def get_alerts(self, status: str = None, username: str = None, feedname: str = None,
                    hostname: str = None, report: str = None, sort: str = None, query: str = None,
@@ -229,7 +229,7 @@ def _create_query_string(params: dict, allow_empty: bool = False) -> str:
 
 
 def _get_sensor_isolation_change_body(client: Client, sensor_id: str, new_isolation: bool) -> dict:
-    new_sensor_data: dict = client.get_sensors(sensor_id)[0]
+    new_sensor_data = client.get_sensors(sensor_id)[1][0]  # returns (length, [sensor_data])
     new_sensor_data['network_isolation_enabled'] = new_isolation
     return new_sensor_data
 
@@ -278,9 +278,7 @@ def quarantine_device_command(client: Client, sensor_id: str) -> CommandResults:
 def sensors_list_command(client: Client, id: str = None, hostname: str = None, ip: str = None,
                          group_id: str = None, inactive_filter_days: str = None, limit: int = None) -> CommandResults:
     try:
-        res = client.get_sensors(id, hostname, ip, group_id, inactive_filter_days, limit)
-
-        res = res[:limit]
+        total_num_of_sensors, res = client.get_sensors(id, hostname, ip, group_id, inactive_filter_days, limit)
 
         human_readable_data = []
         for sensor_data in res:
@@ -299,10 +297,11 @@ def sensors_list_command(client: Client, id: str = None, hostname: str = None, i
                 'Is Isolating': sensor_data.get('is_isolating')
 
             })
+
+        md = tableToMarkdown(f'{INTEGRATION_NAME} - Sensors', human_readable_data, removeNull=True)
+        md += f"\nShowing {len(res)} out of {total_num_of_sensors} results."
         return CommandResults(outputs=res, outputs_prefix='CarbonBlackEDR.Sensor', outputs_key_field='id',
-                              readable_output=tableToMarkdown(f'{INTEGRATION_NAME} - Sensors', human_readable_data,
-                                                              removeNull=True),
-                              raw_response=res)
+                              readable_output=md, raw_response=res)
     except DemistoException as e:
         if '404' in e.message:
             raise Exception(f'{INTEGRATION_NAME} - The sensor {id} could not be found. '
@@ -318,7 +317,7 @@ def watchlist_delete_command(client: Client, id: str) -> CommandResults:
 
 
 def watchlist_update_command(client: Client, id: str, search_query: str, description: str,
-                             enabled: bool) -> CommandResults:
+                             enabled: bool = None) -> CommandResults:
     params = assign_params(enabled=enabled, search_query=search_query, description=description)
     res = client.http_request(url=f'/v1/watchlist/{id}', method='PUT', json_data=params)
 
@@ -378,8 +377,9 @@ def binary_ban_command(client: Client, md5: str, text: str, last_ban_time: str =
     return CommandResults(readable_output='hash banned successfully')
 
 
-def binary_bans_list_command(client: Client) -> CommandResults:
+def binary_bans_list_command(client: Client, limit: str = None) -> CommandResults:
     res = client.http_request(url='/v1/banning/blacklist', method='GET')
+    res = res[:arg_to_number(limit, 'limit')] if limit else res
     human_readable_data = []
     for banned in res:
         human_readable_data.append({
@@ -441,25 +441,31 @@ def alert_search_command(client: Client, status: str = None, username: str = Non
 
 def binary_summary_command(client: Client, md5: str) -> CommandResults:
     url = f'/v1/binary/{md5}/summary'
-    res = client.http_request(url=url, method='GET')
-    if not res:
-        return CommandResults(
-            readable_output=f'Could not find data for file {md5}.')
+    try:
+        res = client.http_request(url=url, method='GET')
+        if not res:
+            return CommandResults(
+                readable_output=f'Could not find data for file {md5}.')
 
-    human_readable_data = {
-        'Host Count': res.get('host_count'),
-        'Group': res.get('group'),
-        'OS Type': res.get('os_type'),
-        'Timestamp': res.get('timestamp'),
-        'md5': res.get('md5'),
-        'Last Seen': res.get('last_seen'),
-        'Is Executable Image': res.get('is_executable_image')
-    }
+        human_readable_data = {
+            'Host Count': res.get('host_count'),
+            'Group': res.get('group'),
+            'OS Type': res.get('os_type'),
+            'Timestamp': res.get('timestamp'),
+            'md5': res.get('md5'),
+            'Last Seen': res.get('last_seen'),
+            'Is Executable Image': res.get('is_executable_image')
+        }
 
-    return CommandResults(outputs=res, outputs_prefix='CarbonBlackEDR.BinaryMetadata', outputs_key_field='md5',
-                          readable_output=tableToMarkdown(f'{INTEGRATION_NAME} -Summary For File {md5}',
-                                                          human_readable_data,
-                                                          removeNull=True))
+        return CommandResults(outputs=res, outputs_prefix='CarbonBlackEDR.BinaryMetadata', outputs_key_field='md5',
+                              readable_output=tableToMarkdown(f'{INTEGRATION_NAME} -Summary For File {md5}',
+                                                          human_readable_data, removeNull=True))
+    except DemistoException as e:
+        if '404' in e.message:
+            return CommandResults(readable_output=f'File {md5} could not be found')
+        else:
+            raise Exception(f'{INTEGRATION_NAME} - Error connecting to API. Error: {e.message}')
+
 
 
 def binary_download_command(client: Client, md5: str) -> CommandResults:
@@ -488,7 +494,8 @@ def binary_search_command(client: Client, md5: str = None, product_name: str = N
     if not res:
         raise Exception(f'{INTEGRATION_NAME} - Request cannot be processed.')
 
-    outputs = assign_params(Results=res.get('results'), Facets=res.get('facets'))
+    outputs = assign_params(Results=res.get('results'), Facets=res.get('facets'), terms=res.get('terms'),
+                            total_results=res.get('total_results'))
     human_readable_data = []
     for binary_file in res.get('results', []):
         human_readable_data.append({
@@ -615,12 +622,12 @@ def sensor_installer_download_command(client: Client, os_type: str, group_id: st
     return fileResult(f'sensor_installer_{group_id}_{os_type}.zip', res, file_type=9)
 
 
-def endpoint_command(client: Client, id: str, ip: str, hostname: str):
+def endpoint_command(client: Client, id: str = None, ip: str = None, hostname: str = None):
     if not id and not ip and not hostname:
         raise Exception(f'{INTEGRATION_NAME} - In order to run this command, please provide valid id, ip or hostname')
 
     try:
-        res = client.get_sensors(id=id, ipaddr=ip, hostname=hostname)
+        res = client.get_sensors(id=id, ipaddr=ip, hostname=hostname)[1]
         endpoints = []
         command_results = []
         for sensor in res:

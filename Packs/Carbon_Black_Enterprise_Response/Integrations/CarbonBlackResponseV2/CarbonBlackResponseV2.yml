@@ -1079,9 +1079,8 @@ script:
       secret: false
     deprecated: false
     description: |-
-      Updates a Watchlist that is specified using ID. You can use the enabled parameter in the body to enable/disable the watchlist.
-
-      Note: The watchlist's id value will increase by one each time it is updated. For example, if you update a watchlist with an id of 709, it will increment the id to 710 when the action is successful.
+      Updates a Watchlist that is specified using ID. Note: The watchlist's id value will increase by one each time it is updated.
+      For example, if you update a watchlist with an id of 709, it will increment the id to 710 when the action is successful.
     execution: false
     name: cb-edr-watchlist-update
   - arguments:
@@ -1115,7 +1114,7 @@ script:
     execution: false
     name: cb-edr-watchlist-create
     outputs:
-      - contextPath: CarbonBlackEDR.Watchlist.last_hit_count
+      - contextPath: CarbonBlackEDR.Watchlist.id
         description: An ID for the new watchlist
         type: Number
   - arguments:
@@ -1215,54 +1214,61 @@ script:
     description: Prevent execution of a specified md5 hash
     execution: false
     name: cb-edr-binary-ban
-  - deprecated: false
+  - arguments:
+      - default: false
+        description: The maximum hashs of result to retrieve.
+        isArray: false
+        name: limit
+        required: true
+        secret: false
+    deprecated: false
     description: Returns a list of banned hashes
     execution: false
     name: cb-edr-binary-bans-list
     outputs:
-      - contextPath: CarbonBlackEDR.BinaryBan..username
+      - contextPath: CarbonBlackEDR.BinaryBan.username
         description: The username who banned the record.
         type: String
-      - contextPath: CarbonBlackEDR.BinaryBan..audit.username
+      - contextPath: CarbonBlackEDR.BinaryBan.audit.username
         description: ''
         type: String
-      - contextPath: CarbonBlackEDR.BinaryBan..audit.timestamp
+      - contextPath: CarbonBlackEDR.BinaryBan.audit.timestamp
         description: ''
         type: String
-      - contextPath: CarbonBlackEDR.BinaryBan..audit.text
+      - contextPath: CarbonBlackEDR.BinaryBan.audit.text
         description: ''
         type: String
-      - contextPath: CarbonBlackEDR.BinaryBan..audit.enabled
+      - contextPath: CarbonBlackEDR.BinaryBan.audit.enabled
         description: ''
         type: Boolean
-      - contextPath: CarbonBlackEDR.BinaryBan..audit.user_id
+      - contextPath: CarbonBlackEDR.BinaryBan.audit.user_id
         description: ''
         type: Number
-      - contextPath: CarbonBlackEDR.BinaryBan..text
+      - contextPath: CarbonBlackEDR.BinaryBan.text
         description: The text description of banned record.
         type: String
-      - contextPath: CarbonBlackEDR.BinaryBan..md5hash
+      - contextPath: CarbonBlackEDR.BinaryBan.md5hash
         description: The banned hash.
         type: String
-      - contextPath: CarbonBlackEDR.BinaryBan..block_count
+      - contextPath: CarbonBlackEDR.BinaryBan.block_count
         description: The total number of blocks on the banned list.
         type: Number
-      - contextPath: CarbonBlackEDR.BinaryBan..user_id
+      - contextPath: CarbonBlackEDR.BinaryBan.user_id
         description: The id of the user who banned the record.
         type: Number
-      - contextPath: CarbonBlackEDR.BinaryBan..last_block_sensor_id
+      - contextPath: CarbonBlackEDR.BinaryBan.last_block_sensor_id
         description: The last sensor id which prevented the hash from executing.
         type: Unknown
-      - contextPath: CarbonBlackEDR.BinaryBan..enabled
+      - contextPath: CarbonBlackEDR.BinaryBan.enabled
         description: Whether the ban is enabled.
         type: Boolean
-      - contextPath: CarbonBlackEDR.BinaryBan..last_block_time
+      - contextPath: CarbonBlackEDR.BinaryBan.last_block_time
         description: The  last time the hash was blocked or prevented from being executed.
         type: Unknown
-      - contextPath: CarbonBlackEDR.BinaryBan..timestamp
+      - contextPath: CarbonBlackEDR.BinaryBan.timestamp
         description: The date and time the record was banned.
         type: String
-      - contextPath: CarbonBlackEDR.BinaryBan..last_block_hostname
+      - contextPath: CarbonBlackEDR.BinaryBan.last_block_hostname
         description: The last hostname to block this hash.
         type: Unknown
   - arguments:
@@ -1742,7 +1748,7 @@ script:
     - default: false
       description: Return this many rows, 10 by default.
       isArray: false
-      name: rows
+      name: limit
       required: false
       secret: false
     - default: false
@@ -1765,162 +1771,156 @@ script:
       - contextPath: CarbonBlackEDR.BinarySearch.highlights
         description: A list of highlight objects matching the query string. Format the same as the process event object.
         type: String
-      - contextPath: CarbonBlackEDR.BinarySearch.results.host_count
+      - contextPath: CarbonBlackEDR.BinarySearch.Results.host_count
         description: The count of unique endpoints which have ever reported this binary.
         type: Number
-      - contextPath: CarbonBlackEDR.BinarySearch.results.original_filename
+      - contextPath: CarbonBlackEDR.BinarySearch.Results.original_filename
         description: |-
           If present, Original filename from FileVersionInformation. For more information check
           https://docs.microsoft.com/en-us/dotnet/api/system.diagnostics.fileversioninfo?redirectedfrom=MSDN&view=net-5.0
         type: String
-      - contextPath: CarbonBlackEDR.BinarySearch.results.legal_copyright
+      - contextPath: CarbonBlackEDR.BinarySearch.Results.legal_copyright
         description: |-
           If present, Legal copyright from FileVersionInformation. For more information check
           https://docs.microsoft.com/en-us/dotnet/api/system.diagnostics.fileversioninfo?redirectedfrom=MSDN&view=net-5.0
         type: String
-      - contextPath: CarbonBlackEDR.BinarySearch.results.digsig_result
+      - contextPath: CarbonBlackEDR.BinarySearch.Results.digsig_result
         description: |-
           Digital signature status.
           One of Signed, Unsigned, Expired, Bad Signature, Invalid Signature, Invalid Chain,
           Untrusted Root, or Explicit Distrust.
         type: String
-      - contextPath: CarbonBlackEDR.BinarySearch.results.observed_filename
+      - contextPath: CarbonBlackEDR.BinarySearch.Results.observed_filename
         description: A list of strings, one per unique filename this binary has been seen as.
         type: String
-      - contextPath: CarbonBlackEDR.BinarySearch.results.product_version
+      - contextPath: CarbonBlackEDR.BinarySearch.Results.product_version
         description: |-
           If present, Product version from FileVersionInformation. For more information check
           https://docs.microsoft.com/en-us/dotnet/api/system.diagnostics.fileversioninfo?redirectedfrom=MSDN&view=net-5.0
         type: String
-      - contextPath: CarbonBlackEDR.BinarySearch.results.watchlists.wid
+      - contextPath: CarbonBlackEDR.BinarySearch.Results.watchlists.wid
         description: The wid of the watchlist.
         type: String
-      - contextPath: CarbonBlackEDR.BinarySearch.results.watchlists.value
+      - contextPath: CarbonBlackEDR.BinarySearch.Results.watchlists.value
         description: The value of the watchlist.
         type: Date
-      - contextPath: CarbonBlackEDR.BinarySearch.results.facet_id
+      - contextPath: CarbonBlackEDR.BinarySearch.Results.facet_id
         description: ''
         type: Number
-      - contextPath: CarbonBlackEDR.BinarySearch.results.digsig_issuer
+      - contextPath: CarbonBlackEDR.BinarySearch.Results.digsig_issuer
         description: If signed and present, the issuer name.
         type: String
-      - contextPath: CarbonBlackEDR.BinarySearch.results.copied_mod_len
+      - contextPath: CarbonBlackEDR.BinarySearch.Results.copied_mod_len
         description: Bytes copied from remote host, if file is > 25MB this will be less than orig_mod_len.
         type: Number
-      - contextPath: CarbonBlackEDR.BinarySearch.results.comments
+      - contextPath: CarbonBlackEDR.BinarySearch.Results.comments
         description: ''
         type: String
-      - contextPath: CarbonBlackEDR.BinarySearch.results.digsig_sign_time
+      - contextPath: CarbonBlackEDR.BinarySearch.Results.digsig_sign_time
         description: If signed, the timestamp of the signature in GMT.
         type: Date
-      - contextPath: CarbonBlackEDR.BinarySearch.results.digsig_prog_name
+      - contextPath: CarbonBlackEDR.BinarySearch.Results.digsig_prog_name
         description: If signed and present, the program name.
         type: String
-      - contextPath: CarbonBlackEDR.BinarySearch.results.orig_mod_len
+      - contextPath: CarbonBlackEDR.BinarySearch.Results.orig_mod_len
         description: Filesize in bytes.
         type: Number
-      - contextPath: CarbonBlackEDR.BinarySearch.results.is_executable_image
+      - contextPath: CarbonBlackEDR.BinarySearch.Results.is_executable_image
         description: Whether the file is an EXE.
         type: Boolean
-      - contextPath: CarbonBlackEDR.BinarySearch.results.is_64bit
+      - contextPath: CarbonBlackEDR.BinarySearch.Results.is_64bit
         description: Whether the file is x64.
         type: Boolean
-      - contextPath: CarbonBlackEDR.BinarySearch.results.md5
+      - contextPath: CarbonBlackEDR.BinarySearch.Results.md5
         description: The md5 hash of this binary.
         type: String
-      - contextPath: CarbonBlackEDR.BinarySearch.results.digsig_subject
+      - contextPath: CarbonBlackEDR.BinarySearch.Results.digsig_subject
         description: If signed and present, the subject.
         type: String
-      - contextPath: CarbonBlackEDR.BinarySearch.results.digsig_publisher
+      - contextPath: CarbonBlackEDR.BinarySearch.Results.digsig_publisher
         description: If signed and present, the publisher name.
         type: String
-      - contextPath: CarbonBlackEDR.BinarySearch.results.endpoint
+      - contextPath: CarbonBlackEDR.BinarySearch.Results.endpoint
         description: |-
           A list of 0 or more hostname, sensorid tuples on which this binary was observed.
           The | character serves as the delimiter between the hostname and the sensorid.
         type: String
-      - contextPath: CarbonBlackEDR.BinarySearch.results.group
+      - contextPath: CarbonBlackEDR.BinarySearch.Results.group
         description: A list of 0 or more sensor groups (by name) in which this binary was observed.
         type: String
       - contextPath: CarbonBlackEDR.BinarySearch.results.event_partition_id
         description: ''
         type: Number
-      - contextPath: CarbonBlackEDR.BinarySearch.results.digsig_result_code
+      - contextPath: CarbonBlackEDR.BinarySearch.Results.digsig_result_code
         description: HRESULT_FROM_WIN32 for the result of the digital signature operation via WinVerifyTrust.
         type: String
-      - contextPath: CarbonBlackEDR.BinarySearch.results.file_version
+      - contextPath: CarbonBlackEDR.BinarySearch.Results.file_version
         description: |-
           If present, File version from FileVersionInformation. For more information check
           https://docs.microsoft.com/en-us/dotnet/api/system.diagnostics.fileversioninfo?redirectedfrom=MSDN&view=net-5.0
         type: String
-      - contextPath: CarbonBlackEDR.BinarySearch.results.signed
+      - contextPath: CarbonBlackEDR.BinarySearch.Results.signed
         description: |-
           Digital signature status: One of Signed, Unsigned, Expired, Bad Signature, Invalid Signature,
           Invalid Chain, Untrusted Root, or Explicit Distrust.
         type: String
-      - contextPath: CarbonBlackEDR.BinarySearch.results.last_seen
+      - contextPath: CarbonBlackEDR.BinarySearch.Results.last_seen
         description: ''
         type: Date
-      - contextPath: CarbonBlackEDR.BinarySearch.results.company_name
+      - contextPath: CarbonBlackEDR.BinarySearch.Results.company_name
         description: |-
           If present, Company name from FileVersionInformation. For more information check
           https://docs.microsoft.com/en-us/dotnet/api/system.diagnostics.fileversioninfo?redirectedfrom=MSDN&view=net-5.0
         type: String
-      - contextPath: CarbonBlackEDR.BinarySearch.results.internal_name
+      - contextPath: CarbonBlackEDR.BinarySearch.Results.internal_name
         description: |-
           If present, Internal name from FileVersionInformation. For more information check
           https://docs.microsoft.com/en-us/dotnet/api/system.diagnostics.fileversioninfo?redirectedfrom=MSDN&view=net-5.0
         type: String
-      - contextPath: CarbonBlackEDR.BinarySearch.results.timestamp
+      - contextPath: CarbonBlackEDR.BinarySearch.Results.timestamp
         description: ''
         type: Date
-      - contextPath: CarbonBlackEDR.BinarySearch.results.cb_version
+      - contextPath: CarbonBlackEDR.BinarySearch.Results.cb_version
         description: ''
         type: Number
-      - contextPath: CarbonBlackEDR.BinarySearch.results.os_type
+      - contextPath: CarbonBlackEDR.BinarySearch.Results.os_type
         description: The operating system type of this binary; one of windows, linux, osx.
         type: String
-      - contextPath: CarbonBlackEDR.BinarySearch.results.file_desc
+      - contextPath: CarbonBlackEDR.BinarySearch.Results.file_desc
         description: |-
           If present, File description from FileVersionInformation. For more information check
           https://docs.microsoft.com/en-us/dotnet/api/system.diagnostics.fileversioninfo?redirectedfrom=MSDN&view=net-5.0
         type: String
-      - contextPath: CarbonBlackEDR.BinarySearch.results.product_name
+      - contextPath: CarbonBlackEDR.BinarySearch.Results.product_name
         description: |-
           If present, Product name from FileVersionInformation. For more information check
           https://docs.microsoft.com/en-us/dotnet/api/system.diagnostics.fileversioninfo?redirectedfrom=MSDN&view=net-5.0
         type: String
-      - contextPath: CarbonBlackEDR.BinarySearch.results.server_added_timestamp
+      - contextPath: CarbonBlackEDR.BinarySearch.Results.server_added_timestamp
         description: The first time this binary was received on the server in the server GMT time.
         type: Date
-      - contextPath: CarbonBlackEDR.BinarySearch.results.private_build
+      - contextPath: CarbonBlackEDR.BinarySearch.Results.private_build
         description: If present, Private build from FileVersionInformation. For more information check
           https://docs.microsoft.com/en-us/dotnet/api/system.diagnostics.fileversioninfo?redirectedfrom=MSDN&view=net-5.0
         type: String
-      - contextPath: CarbonBlackEDR.BinarySearch.elapsed
-        description: The clock time elapsed resolving this request.
-        type: Number
-      - contextPath: CarbonBlackEDR.BinarySearch.start
-        description:  The index of first row.
-        type: Number
   - arguments:
     - default: false
       description: The sensor ID
       isArray: false
       name: id
-      required: true
+      required: false
       secret: false
     - default: false
       description: Query sensors with specified IP address
       isArray: false
       name: ip
-      required: true
+      required: false
       secret: false
     - default: false
       description: Query sensors with matching hostname
       isArray: false
       name: hostname
-      required: true
+      required: false
       secret: false
     deprecated: false
     description: List the CarbonBlack sensors
