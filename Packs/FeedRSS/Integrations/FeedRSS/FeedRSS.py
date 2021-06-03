@@ -4,6 +4,7 @@ from time import mktime
 import feedparser
 
 from CommonServerPython import *
+import html2text
 
 
 class Client(BaseClient):
@@ -37,14 +38,16 @@ class Client(BaseClient):
                         'source': self.base_url,
                         'title': indicator.get('title')
                     })
+                    text = self.get_url_content(indicator.get('link'))
                     indicator_obj = {
                         "type": 'Report',
                         "value": indicator.get('title'),
                         'Publications': publications,
+                        'description': text,
                         "summary": indicator.get('summary'),
                         "rawJSON": {
                             'value': indicator,
-                            'type': 'STIX Report',
+                            'type': 'Report',
                             "firstseenbysource": published_iso,
                         },
                         'fields': {'tags': self.feed_tags}
@@ -87,6 +90,13 @@ class Client(BaseClient):
     # return client.parsed_indicators
 
 
+    def get_url_content(self, url):
+        h = html2text.HTML2Text()
+        f = self._http_request(url)
+        return h.handle(f.text)
+
+
+
 def get_indicators(client: Client, args: dict) -> CommandResults:
     limit = int(args.get('limit', 10))
     headers = ['value', 'summary', 'link', 'author']
@@ -113,7 +123,10 @@ def main():
             # if the client was created successfully and there is data in feed the test is successful.
             return_results("ok")
         elif demisto.command() == 'rss-get-indicators':
-            return_results(get_indicators(client, demisto.args()))
+            # return_results(get_indicators(client, demisto.args()))
+            client.parsed_indicators[:limit]
+            for iter_ in batch(client.parsed_indicators[:10], batch_size=2000):
+                demisto.createIndicators(iter_)
         elif demisto.command() == 'fetch-indicators':
             for iter_ in batch(client.parsed_indicators, batch_size=2000):
                 demisto.createIndicators(iter_)
