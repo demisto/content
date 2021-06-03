@@ -55,6 +55,21 @@ FETCHED_INCIDENT_NOT_EMPTY_WITH_NOT_ENOUGH_VALUES = [
      'entityname': 'nmap'},
 ]
 
+FETCHED_INCIDENT_NOT_EMPTY_SAME_CLUSTER_NAME = [
+    {'id': '1', 'created': "2021-01-30", 'name': 'name_1', 'field_1': 'powershell IP=1.1.1.1', 'field_2': 'powershell.exe',
+     'entityname': 'powershell'},
+    {'id': '2', 'created': "2021-01-30", 'name': 'name_2', 'field_1': 'nmap port 1', 'field_2': 'nmap.exe',
+     'entityname': 'nmap'},
+    {'id': '3', 'created': "2021-01-30", 'name': 'name_3', 'field_1': 'powershell IP=1.1.1.2', 'field_2': 'powershell',
+     'entityname': 'powershell'},
+    {'id': '4', 'created': "2021-01-30", 'name': 'name_4', 'field_1': 'nmap port 2', 'field_2': 'nmap',
+     'entityname': 'nmap'},
+    {'id': '5', 'created': "2021-01-30", 'name': 'name_3', 'field_1': 'explorer', 'field_2': 'explorer',
+     'entityname': 'nmap'},
+    {'id': '6', 'created': "2021-01-30", 'name': 'name_4', 'field_1': 'explorer', 'field_2': 'explorer',
+     'entityname': 'nmap'},
+]
+
 FETCHED_INCIDENT_EMPTY = []
 
 sub_dict_0 = {
@@ -293,3 +308,21 @@ def test_main_name_cluster_is_list(mocker):
     cond_2 = (all(item in cluster_0.items() for item in sub_dict_1.items()) and all(item in cluster_1.items()
                                                                                     for item in sub_dict_0.items()))
     assert (cond_1 or cond_2)
+
+
+# Test same cluster name should created prefixes
+def test_same_cluster_name(mocker):
+    global FETCHED_INCIDENT
+    global sub_dict_1
+    global sub_dict_0
+    FETCHED_INCIDENT = FETCHED_INCIDENT_NOT_EMPTY_SAME_CLUSTER_NAME
+    PARAMETERS_DICT.update(
+        {'fieldsForClustering': 'field_1, field_2, wrong_field', 'fieldForClusterName': 'entityname'})
+    mocker.patch.object(demisto, 'args',
+                        return_value=PARAMETERS_DICT
+                        )
+    mocker.patch.object(demisto, 'executeCommand', side_effect=executeCommand)
+    model, output_clustering_json, msg = main()
+    clusters_name = [x['clusterName'] for x in model.selected_clusters.values()]
+    assert 'nmap' in clusters_name
+    assert 'nmap_0' in clusters_name

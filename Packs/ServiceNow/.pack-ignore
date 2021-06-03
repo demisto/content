@@ -12,3 +12,6 @@ ignore=BA101
 
 [file:ServiceNow_CMDB.yml]
 ignore=BA108,BA109
+
+[file:README.md]
+ignore=RM106

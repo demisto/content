@@ -142,7 +142,7 @@ class Client(BaseClient):
         fields = intel_map[entity_type]
         if entity_type == "ip" and not risky:
             fields.remove("riskyCIDRIPs")
-        if not related and not profile:
+        if not related and profile != 'All':
             fields.remove("relatedEntities")
         req_fields = ",".join(fields)
         params = {"fields": req_fields}
@@ -151,7 +151,7 @@ class Client(BaseClient):
             retries=3,
             status_list_to_retry=STATUS_TO_RETRY
         )
-        if profile != 'All':
+        if profile != 'All' and related:
             related_entities = resp['data']['relatedEntities']
             related_entities = [
                 entry for entry in related_entities
@@ -880,13 +880,18 @@ def build_intel_context(
         entity_type = "cve"
     command_results: List[CommandResults] = []
     if entity_data and ("error" not in entity_data):
-        data = entity_data["data"]
-        data.update(data.pop("entity"))
-        data.update(data.pop("risk"))
-        data.update(data.pop("timestamps"))
-        evidence_details = data['evidenceDetails']
-        rules = ','.join([e['rule'] for e in evidence_details])
-        data['concatRules'] = rules
+        data = entity_data.get("data")  # type: ignore
+        if data:
+            data.update(data.pop("entity"))
+            data.update(data.pop("risk"))
+            data.update(data.pop("timestamps"))
+            evidence_details = data['evidenceDetails']
+            rules = ','.join([e['rule'] for e in evidence_details])
+            data['concatRules'] = rules
+            if data.get('relatedEntities'):
+                data['relatedEntities'] = handle_related_entities(
+                    data.pop('relatedEntities')
+                )
 
         command_results.append(
             CommandResults(
@@ -945,9 +950,7 @@ def build_intel_context(
     return command_results
 
 
-def handle_related_entities(
-    data: List[Dict[str, Any]]
-) -> List[Dict[str, Any]]:
+def handle_related_entities(data: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
     return_data = []
     for related in data:
         return_data.append(
@@ -1132,7 +1135,8 @@ def get_alert_single_command(client: Client, _id: str) -> CommandResults:
             return entity_formatting(data)
         return document_formatting(data)
     except Exception:
-        msg = 'This alert rule currently does not support a human readable format, please let us know if you want it to be supported'
+        msg = 'This alert rule currently does not support a human readable format, ' \
+              'please let us know if you want it to be supported'
         return CommandResults(
             outputs_prefix="",
             outputs={},
