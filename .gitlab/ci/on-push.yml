@@ -20,6 +20,20 @@ trigger-private-build:
     - python3 Utils/trigger_private_build.py --github-token $GITHUB_TOKEN
     - python3 Utils/get_private_build_status.py --github-token $GITHUB_TOKEN
 
+
+run-validations:
+  extends:
+    - .run-validations
+    - .push-rule
+
+
+# Uncomment when docker in docker will work
+# run-unittests-and-lint:
+#   extends:
+#     - .run-unittests-and-lint
+#     - .push-rule
+
+
 create-instances:
   extends:
     - .default-job-settings
@@ -34,9 +48,12 @@ create-instances:
   script:
     - !reference [.download-demisto-conf]
     - !reference [.create-id-set]
+    - section_start "Create Release Notes and Common Server Documentation"
     - python3 Utils/release_notes_generator.py $CONTENT_VERSION $CI_COMMIT_SHA $CI_BUILD_ID --output $ARTIFACTS_FOLDER/packs-release-notes.md --github-token $GITHUB_TOKEN
     - cp content-descriptor.json $ARTIFACTS_FOLDER
     - ./Documentation/commonServerDocs.sh
+    - section_end "Create Release Notes and Common Server Documentation"
+    - section_start "Create Content Artifacts and Update Conf"
     - demisto-sdk create-content-artifacts -a $ARTIFACTS_FOLDER --cpus 8 --content_version $CONTENT_VERSION >> $ARTIFACTS_FOLDER/logs/create_content_artifacts.log
     - gcloud auth activate-service-account --key-file="$GCS_ARTIFACTS_KEY"
     - successful_feature_branch_build=$(gsutil ls "gs://xsoar-ci-artifacts/content/$FEATURE_BRANCH_NAME/*" | tail -n 1 | grep -o -E "content/$FEATURE_BRANCH_NAME/[0-9]*")
@@ -46,37 +63,46 @@ create-instances:
     - rm -rf $ARTIFACTS_FOLDER/uploadable_packs
     - python3 ./Tests/scripts/update_conf_json.py
     - cp "./Tests/conf.json" "$ARTIFACTS_FOLDER/conf.json"
+    - section_end "Create Content Artifacts and Update Conf"
+    - section_start "Collect Tests and Content Packs"
     - |
       if [ -n "${INSTANCE_TESTS}" ]; then
         echo "Skipping - not running in INSTANCE_TESTS build"
       else
-        echo "====== Collecting tests and content packs ======"
         [ -n "${NIGHTLY}" ] && IS_NIGHTLY=true || IS_NIGHTLY=false
         python3 ./Tests/scripts/collect_tests_and_content_packs.py -n $IS_NIGHTLY
       fi
+    - section_end "Collect Tests and Content Packs"
+    - section_start "Calculate Packs Dependencies"
     - python3 ./Tests/Marketplace/packs_dependencies.py -i ./Tests/id_set.json -o $ARTIFACTS_FOLDER/packs_dependencies.json
+    - section_end "Calculate Packs Dependencies"
+    - section_start "Prepare Content Packs for Testing"
     - |
       if [[ -n "${CONTRIB_BRANCH}" ]]; then
-        echo "Skipping Preparing Content Packs For Testing since nightly instances uses production bucket"
+        echo "Skipping Preparing Content Packs For Testing since CONTRIB_BRANCH was $CONTRIB_BRANCH"
       else
-        echo "====== Preparing Content Packs For Testing ======"
         ./Tests/scripts/prepare_content_packs_for_testing.sh "$GCS_MARKET_BUCKET"
       fi
+    - section_end "Prepare Content Packs for Testing"
+    - section_start "Zip Marketplace Packs"
     - |
       if [[ $CI_COMMIT_BRANCH != master ]] && [[ $CI_COMMIT_BRANCH != 20\.* ]] && [[ $CI_COMMIT_BRANCH != 21\.* ]]; then
-        echo "Skipping packs download to artifact on non master or release branch"
+        echo "Skipping packs download to artifact on branch that is not master or a release branch"
+        echo "CI_COMMIT_BRANCH=$CI_COMMIT_BRANCH"
       else
         ZIP_FOLDER=$(mktemp -d)
         python3 ./Tests/Marketplace/zip_packs.py -b 'marketplace-dist' -z $ZIP_FOLDER -a $ARTIFACTS_FOLDER -s $GCS_MARKET_KEY
       fi
+    - section_end "Zip Marketplace Packs"
+    - section_start "Create Instances"
     - |
-      echo "====== Creating instances ======"
       [ -n "${TIME_TO_LIVE}" ] && TTL=${TIME_TO_LIVE} || TTL=300
       python3 ./Tests/scripts/awsinstancetool/aws_instance_tool.py -envType "$IFRA_ENV_TYPE" -timetolive $TTL -outfile "$ARTIFACTS_FOLDER/env_results.json"
-  after_script:
-    - |
-      echo "====== Uploading artifacts to GCP ======"
-      ./Tests/scripts/upload_artifacts.sh
+    - section_end "Create Instances"
+    - section_start "Upload Artifacts to GCP"
+    - ./Tests/scripts/upload_artifacts.sh
+    - section_end "Upload Artifacts to GCP"
+
 
 .test_content_on_server_instances_base:
   extends:
@@ -84,8 +110,6 @@ create-instances:
     - .push-rule
   needs: ["create-instances"]
   stage: run-instances
-  variables:
-    DESTROY_INSTANCES: "true"
   script:
     - EXIT_CODE=0
     - !reference [.download-demisto-conf]
@@ -104,17 +128,21 @@ create-instances:
       if [ -f ./Tests/failed_tests.txt ]; then
         cp ./Tests/failed_tests.txt $ARTIFACTS_FOLDER/failed_tests.txt
       fi
+    - python3 ./Tests/scripts/destroy_instances.py $ARTIFACTS_FOLDER $ARTIFACTS_FOLDER/env_results.json "$INSTANCE_ROLE" "$TIME_TO_LIVE" || EXIT_CODE=$?
     - exit $EXIT_CODE
+
 
 server_5_0:
   extends: .test_content_on_server_instances_base
   variables:
     INSTANCE_ROLE: "Server 5.0"
 
+
 server_5_5:
   extends: .test_content_on_server_instances_base
   variables:
     INSTANCE_ROLE: "Server 5.5"
+
 
 server_6_0:
   extends: .test_content_on_server_instances_base
@@ -123,6 +151,7 @@ server_6_0:
     - if: '$CI_PIPELINE_SOURCE =~ /^(push)$/ && $CI_COMMIT_BRANCH !~ /^[0-9]{2}\.[0-9]{1,2}\.[0-9]$/'
   variables:
     INSTANCE_ROLE: "Server 6.0"
+
 
 server_master:
   extends:
@@ -133,17 +162,15 @@ server_master:
     - if: '$NIGHTLY'
   variables:
     INSTANCE_ROLE: "Server Master"
-    SLACK_TEST_TYPE: "test_playbooks"
-    SLACK_ENV_RESULTS: ${ARTIFACTS_FOLDER}/env_results.json
-    SLACK_ONLY_IF: "true"
 
-run-validations:
+
+slack-notify-nightly-build:
   extends:
-    - .run-validations
-    - .push-rule
-
-# Uncomment when docker in docker will work
-# run-unittests-and-lint:
-#   extends:
-#     - .run-unittests-and-lint
-#     - .push-rule
+    - .trigger-slack-notification
+  rules:
+    - if: '$NIGHTLY'
+      when: always
+  variables:
+    PIPELINE_TO_QUERY: $CI_PIPELINE_ID
+    WORKFLOW: 'Content Nightly'
+    JOB_NAME: 'server_master'

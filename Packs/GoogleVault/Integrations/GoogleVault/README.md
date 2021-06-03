@@ -14,7 +14,7 @@
 <li>Preserve-in-place (Add a user to a hold)</li>
 <li>Search for information within emails, drives, groups and Hangouts chats.</li>
 </ul>
-<h2>Configure Google Vault on Demisto</h2>
+<h2>Configure Google Vault on Cortex XSOAR</h2>
 <ol>
 <li>Navigate to <strong>Settings</strong> &gt; <strong>Integrations</strong> &gt; <strong>Servers &amp; Services</strong>.</li>
 <li>Search for Google Vault.</li>
@@ -67,7 +67,7 @@
 </ol>
 <h2>Commands</h2>
 <hr>
-<p>You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
+<p>You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
 <ol>
 <li><a href="#h_9121489991301545907201415">Create a Google Vault export: gvault-create-export-mail</a></li>
 <li><a href="#h_1868381182601545907210355">Create a matter: gvault-create-matter</a></li>

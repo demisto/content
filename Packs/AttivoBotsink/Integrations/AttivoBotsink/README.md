@@ -1,5 +1,5 @@
 <!-- HTML_DOC -->
-<p>Use the Attivo BOTsink integration to pull Attivo events into Demisto to initiate investigations, manage deception environments, and to deploy decoy systems.</p>
+<p>Use the Attivo BOTsink integration to pull Attivo events into Cortex XSOAR to initiate investigations, manage deception environments, and to deploy decoy systems.</p>
 <p>This integration was tested with version Attivo BOTsink v4.1.1 and v4.1.3.</p>
 <h2>Use Cases</h2>
 <ul>
@@ -7,7 +7,7 @@
 <li>Dynamically deploy decoy systems</li>
 <li>Search for events related to a specific attacker</li>
 </ul>
-<h2>Configure Attivo Botsink on Demisto</h2>
+<h2>Configure Attivo Botsink on Cortex XSOAR</h2>
 <ol>
 <li>Navigate to <strong>Settings</strong> &gt; <strong>Integrations</strong> &gt; <strong>Servers &amp; Services</strong>.</li>
 <li>Search for Attivo Botsink.</li>
@@ -26,9 +26,9 @@
 <li>Click <strong>Test</strong> to validate the URLs, token, and connection.</li>
 </ol>
 <h2>Fetched Incidents Data</h2>
-<p>The Attivo BOTsink plugin for Demisto can optionally pull Attivo events into Demisto to initiate investigations. The <strong>fetch_severity</strong> parameter specifies the lowest severity of event to pull (Very High, High, or Medium).</p>
+<p>The Attivo BOTsink plugin for Cortex XSOAR can optionally pull Attivo events into Cortex XSOAR to initiate investigations. The <strong>fetch_severity</strong> parameter specifies the lowest severity of event to pull (Very High, High, or Medium).</p>
 <h2>Commands</h2>
-<p>You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
+<p>You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
 <ol>
 <li><a href="#h_35091384951544959425609">Verify if a user is part of a deception environment: attivo-check-user</a></li>
 <li><a href="#h_751354897601544959429464">Verify if a host is part of the deception environment: attivo-check-host</a></li>

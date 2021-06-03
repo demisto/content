@@ -1,10 +1,10 @@
 <!-- HTML_DOC -->
-<p>Demisto interfaces with dnstwist to research what sort of trouble users can get in trying to type a domain name. Find similar-looking domains that adversaries can use for attacking. dnstwist detect typosquatting, phishing attacks, fraud, and corporate espionage. Useful as an additional source of targeted threat intelligence.</p>
+<p>Cortex XSOAR interfaces with dnstwist to research what sort of trouble users can get in trying to type a domain name. Find similar-looking domains that adversaries can use for attacking. dnstwist detect typosquatting, phishing attacks, fraud, and corporate espionage. Useful as an additional source of targeted threat intelligence.</p>
 <p>The integration uses Docker image <strong>demisto/dnstwist:1.0</strong>.</p>
 <h2>Use Cases</h2>
 <p>dnstwist takes in a domain name as a seed, generates a list of potential phishing domains, and then checks to see if they are registered.</p>
 <p>Additionally, it can test if the mail server from MX (mail exchange) record can be used to intercept misdirected corporate e-mails, and it can generate fuzzy hashes of the web pages to see if they are live phishing sites.</p>
-<h2>Configure dnstwist on Demisto</h2>
+<h2>Configure dnstwist on Cortex XSOAR</h2>
 <ol>
 <li>Navigate to <strong>Settings</strong> &gt; <strong>Integrations</strong> &gt; <strong>Servers &amp; Services</strong>.</li>
 <li>Search for dnstwist.</li>
@@ -19,7 +19,7 @@
 <li>Click <strong>Test</strong> to validate the new instance.</li>
 </ol>
 <h2>Commands</h2>
-<p>You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.<br> After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
+<p>You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.<br> After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
 <ol>
 <li><a href="#h_74846460451544530995198">Check domain variations: dnstwist-domain-variations</a></li>
 </ol>

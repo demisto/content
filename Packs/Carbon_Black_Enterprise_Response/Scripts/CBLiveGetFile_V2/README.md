@@ -6,7 +6,7 @@ This automation translate endpoint (hostname/IP) to sensor id, Than it downloads
 | --- | --- |
 | Script Type | python3 |
 | Tags | carbon-black, endpoint |
-| Demisto Version | 4.1.0 |
+| Cortex XSOAR Version | 4.1.0 |
 
 ## Inputs
 ---
