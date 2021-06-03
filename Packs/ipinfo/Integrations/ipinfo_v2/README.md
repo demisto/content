@@ -6,6 +6,7 @@ Use the IPinfo.io API to get data about an IP address.
 2. Search for ipinfo_v2.
 3. Click **Add instance** to create and configure a new integration instance.
 
+
    | **Parameter** | **Description** | **Required** |
        | --- | --- | --- |
    | API Token | The API Key to use for connection | True |
