@@ -3305,10 +3305,6 @@
             "fromversion": "5.5.0",
             "is_mockable": false
         },
-        {
-           "integrations": "HPEArubaClearPass",
-            "playbookID": "HPEArubaClearPass_TestPlaybook"
-        }
     ],
     "skipped_tests": {
         "Github IAM - Test Playbook": "Issue 32383",
