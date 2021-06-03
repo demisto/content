@@ -144,6 +144,10 @@ def remove_unnecessary_files(zip_path):
                 if pack_file != latest_zip:
                     print(f"Found unnecessary file:{pack_file}, removing.")
                     os.remove(pack_file)
+        else:
+            print(f"Found ignored file:{entry_path}, removing.")
+            os.remove(entry_path)
+            continue
     #
     #
     # for subdir, dirs, files in os.walk(zip_path):
@@ -177,6 +181,8 @@ def get_zipped_packs_names(zip_path):
         for filename in files:
             filepath = subdir + os.sep + filename
             print(f"Adding file of {filepath}")
+            if not filename.endswith(".zip"):
+                print(f"NOT A ZIP!!!!! - {filepath}")
             zipped_packs.append({Path(filepath).stem: filepath})
     if not zipped_packs:
         logging.critical('Did not find any pack to download from GCP.')
