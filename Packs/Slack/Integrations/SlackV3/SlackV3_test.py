@@ -374,7 +374,7 @@ def set_integration_context(integration_context):
     INTEGRATION_CONTEXT = integration_context
 
 
-RETURN_ERROR_TARGET = 'Slack.return_error'
+RETURN_ERROR_TARGET = 'SlackV3.return_error'
 
 
 @pytest.fixture(autouse=True)
@@ -1566,15 +1566,15 @@ async def test_slack_loop_should_exit(mocker):
     mocker.patch.object(asyncio, 'sleep', side_effect=yeah_im_not_going_to_run)
 
     with pytest.raises(InterruptedError):
-        mocker.patch.object(slack.RTMClient, 'start', side_effect=[MyFuture()])
+        mocker.patch.object(slack_sdk.RTMClient, 'start', side_effect=[MyFuture()])
         # Exits the while True
-        mocker.patch.object(slack.RTMClient, 'stop', side_effect=InterruptedError())
+        mocker.patch.object(slack_sdk.RTMClient, 'stop', side_effect=InterruptedError())
 
         # Arrange
         await slack_loop()
 
     # Assert
-    assert slack.RTMClient.start.call_count == 1
+    assert slack_sdk.RTMClient.start.call_count == 1
 
 
 @pytest.mark.asyncio
@@ -1659,7 +1659,7 @@ async def test_handle_dm_nondemisto_user_should_create(mocker):
 
     mocker.patch.object(demisto, 'params', return_value={'allow_incidents': 'true'})
 
-    Slack.init_globals()
+    SlackV3.init_globals()
 
     # Set
     async def fake_translate(message: str, user_name: str, user_email: str, demisto_user: dict):
@@ -1825,18 +1825,18 @@ async def test_translate_create(mocker):
                       ' View it on: https://www.eizelulz.com:8443#/WarRoom/new_incident'
 
     # Arrange
-    json_data = await SlackV3.translate_create(json_message, 'spengler', 'spengler@ghostbusters.example.com',
-                                             demisto_user)
-    wrong_json_data = await SlackV3.translate_create(wrong_json_message, 'spengler', 'spengler@ghostbusters.example.com',
-                                                   demisto_user)
-    name_data = await SlackV3.translate_create(name_message, 'spengler', 'spengler@ghostbusters.example.com',
-                                             demisto_user)
-    name_type_data = await SlackV3.translate_create(name_type_message, 'spengler', 'spengler@ghostbusters.example.com',
-                                                  demisto_user)
-    type_name_data = await SlackV3.translate_create(type_name_message, 'spengler', 'spengler@ghostbusters.example.com',
-                                                  demisto_user)
-    type_data = await SlackV3.translate_create(type_message, 'spengler', 'spengler@ghostbusters.example.com',
-                                             demisto_user)
+    json_data = await SlackV3.translate_create(json_message, 'spengler',
+                                               'spengler@ghostbusters.example.com', demisto_user)
+    wrong_json_data = await SlackV3.translate_create(wrong_json_message, 'spengler',
+                                                     'spengler@ghostbusters.example.com', demisto_user)
+    name_data = await SlackV3.translate_create(name_message, 'spengler',
+                                               'spengler@ghostbusters.example.com', demisto_user)
+    name_type_data = await SlackV3.translate_create(name_type_message, 'spengler',
+                                                    'spengler@ghostbusters.example.com', demisto_user)
+    type_name_data = await SlackV3.translate_create(type_name_message, 'spengler',
+                                                    'spengler@ghostbusters.example.com', demisto_user)
+    type_data = await SlackV3.translate_create(type_message, 'spengler',
+                                               'spengler@ghostbusters.example.com', demisto_user)
 
     create_args = SlackV3.create_incidents.call_args_list
     json_args = create_args[0][0][0]
@@ -1889,10 +1889,10 @@ async def test_translate_create_newline_json(mocker):
                       ' View it on: https://www.eizelulz.com:8443#/WarRoom/new_incident'
 
     # Arrange
-    json_data = await Slack.translate_create(json_message, 'spengler', 'spengler@ghostbusters.example.com',
+    json_data = await SlackV3.translate_create(json_message, 'spengler', 'spengler@ghostbusters.example.com',
                                              demisto_user)
 
-    create_args = Slack.create_incidents.call_args
+    create_args = SlackV3.create_incidents.call_args
     json_args = create_args[0][0]
 
     # Assert
@@ -2393,7 +2393,7 @@ def test_check_for_answers_no_answer_expires(mocker, requests_mock):
     set_integration_context(integration_context)
 
     # Arrange
-    Slack.check_for_answers()
+    SlackV3.check_for_answers()
 
     result_args = demisto.handleEntitlementForUser.call_args_list[0][0]
 
@@ -2949,7 +2949,7 @@ def test_send_request_with_entitlement(mocker):
     # Arrange
     SlackV3.slack_send()
 
-    send_args = Slack.send_message.call_args[0]
+    send_args = SlackV3.send_message.call_args[0]
 
     results = demisto.results.call_args_list[0][0]
 
@@ -3015,7 +3015,7 @@ def test_send_request_with_entitlement_blocks(mocker):
     # Arrange
     SlackV3.slack_send()
 
-    send_args = Slack.send_message.call_args[0]
+    send_args = SlackV3.send_message.call_args[0]
 
     results = demisto.results.call_args_list[0][0]
 
@@ -3148,7 +3148,7 @@ def test_send_to_user_lowercase(mocker):
 
     assert len(users_call) == 0
     assert len(conversations_call) == 0
-    assert Slack.send_message.call_count == 1
+    assert SlackV3.send_message.call_count == 1
 
     assert send_args[0] == ['im_channel']
     assert send_args[1] is None
@@ -3203,7 +3203,7 @@ def test_send_request_with_severity_user_doesnt_exist(mocker, capfd):
 
     assert len(users_call) == 1
     assert len(conversations_call) == 0
-    assert Slack.send_message.call_count == 1
+    assert SlackV3.send_message.call_count == 1
 
     assert send_args[0] == ['C012AB3CD']
     assert send_args[1] is None
@@ -3962,7 +3962,7 @@ def test_rename_no_args_investigation(mocker):
     our_mirror = our_mirror_filter[0]
 
     # Assert
-    assert Slack.get_conversation_by_name.call_count == 0
+    assert SlackV3.get_conversation_by_name.call_count == 0
     assert slack_sdk.WebClient.api_call.call_count == 1
     assert success_results[0] == 'Channel renamed successfully.'
     assert send_args[0][0] == 'conversations.rename'
@@ -4087,8 +4087,8 @@ def test_get_user_by_name_paging_rate_limit_error(mocker):
 
 def test_get_user_by_name_paging_normal_error(mocker):
     from SlackV3 import get_user_by_name, init_globals
-    from slack.errors import SlackApiError
-    from slack.web.slack_response import SlackResponse
+    from slack_sdk.errors import SlackApiError
+    from slack_sdk.web.slack_response import SlackResponse
 
     # Set
     init_globals()
@@ -4278,7 +4278,7 @@ def test_slack_send_filter_one_mirror_tag(mocker):
                                                        'entryObject': {'tags': ['tag1']}})
 
     mocker.patch.object(demisto, 'params', return_value={'filtered_tags': 'tag1'})
-    Slack.slack_send()
+    SlackV3.slack_send()
     assert demisto.results.mock_calls[0][1][0]['HumanReadable'] == 'Message sent to Slack successfully.\nThread ID is: None'
 
 
@@ -4359,4 +4359,3 @@ def test_send_message_to_destinations_non_strict():
                   }
               ]"""
     send_message_to_destinations([], "", "", blocks=blocks)  # No destinations, no response
-

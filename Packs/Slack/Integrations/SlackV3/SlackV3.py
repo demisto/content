@@ -1113,12 +1113,10 @@ def get_user_by_name(user_to_search: str, add_to_context: bool = True) -> dict:
         if users_filter:
             user = users_filter[0]
     if not user:
-        demisto.info("Not user")
-        body = {
+        kwargs = {
             'limit': PAGINATED_COUNT
         }
-        response = CLIENT.users_list(limit=PAGINATED_COUNT)
-        demisto.info(f"response is: {response}")
+        response = CLIENT.users_list(**kwargs)
 
         # response = send_slack_request_sync(CLIENT, 'users.list', http_verb='GET', body=body)
         while True:
@@ -1135,10 +1133,9 @@ def get_user_by_name(user_to_search: str, add_to_context: bool = True) -> dict:
                 break
             if not cursor:
                 break
-                # this is hacky dont delete
-            body = body.copy()  # strictly for unit test purposes
-            body.update({'cursor': cursor})
-            response = CLIENT.users_list(cursor=cursor)
+            kwargs = kwargs.copy()  # strictly for unit test purposes
+            kwargs.update({'cursor': cursor})
+            response = CLIENT.users_list(**kwargs)
             # response = send_slack_request_sync(CLIENT, 'users.list', http_verb='GET', body=body)
 
         if users_filter:
@@ -1149,7 +1146,6 @@ def get_user_by_name(user_to_search: str, add_to_context: bool = True) -> dict:
         else:
             return {}
 
-    demisto.info(f"User is : {user}")
     return user
 
 
