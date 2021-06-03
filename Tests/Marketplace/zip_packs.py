@@ -116,17 +116,35 @@ def remove_test_playbooks_from_signatures(path, filenames):
         logging.warning(f'Could not find signatures in the pack {os.path.basename(os.path.dirname(path))}')
 
 
-def get_zipped_packs_names(zip_path):
-    zipped_packs = []
-    packs_path = zip_path
-    for subdir, dirs, files in os.walk(packs_path):
+def remove_unnecessary_files(zip_path):
+    for subdir, dirs, files in os.walk(zip_path):
         for filename in files:
             filepath = subdir + os.sep + filename
-            if filepath.endswith(".zip"):
-                print(f"Found zip file of {filepath}")
-                zipped_packs.append({Path(filepath).stem: filepath})
-            else:
+            if filename in IGNORED_FILES:
+                print(f"Found ignored file:{filepath}, removing.")
                 os.remove(filepath)
+
+        for current_dir in dirs:
+            print(f"current dir is: {current_dir}")
+            pack_files = []
+            for root, dirnames, filenames in current_dir:
+                print("root is: " + root)
+                pack_files.append(os.path.join(root, filenames))
+            print(f"files in {current_dir} are {''.join(pack_files)}")
+            latest_zip = get_latest_pack_zip_from_blob(current_dir, pack_files)
+            for pack_file in pack_files:
+                print(f"Found unnecessary file:{pack_file}, removing.")
+                if pack_file == latest_zip:
+                    os.remove(pack_file)
+
+
+def get_zipped_packs_names(zip_path):
+    zipped_packs = []
+    for subdir, dirs, files in os.walk(zip_path):
+        for filename in files:
+            filepath = subdir + os.sep + filename
+            print(f"Adding file of {filepath}")
+            zipped_packs.append({Path(filepath).stem: filepath})
     if not zipped_packs:
         logging.critical('Did not find any pack to download from GCP.')
         sys.exit(1)
@@ -147,9 +165,18 @@ def download_packs_from_gcp(storage_bucket, gcp_path, destination_path, circle_b
     Returns:
         zipped_packs: A list of the downloaded packs paths and their corresponding pack names.
     """
-    # zipped_packs = []
+
     src_path = "gs://marketplace-dist-dev/" + gcp_path
-    # gs_cmd = f"gsutil -m cp -r {src_path} {destination_path}"
+
+    # CHANGE SRC PATH
+    # if gcp_path == BUILD_GCP_PATH:
+    #     src_path = os.path.join(gcp_path, branch_name, circle_build, 'content', 'packs')
+    # else:
+    #     src_path = os.path.join(gcp_path, branch_name, circle_build)
+    #
+    # if not branch_name or not circle_build:
+    #     src_path = src_path.replace('/builds/content', '')
+
     try:
         process = subprocess.Popen(["Tests/scripts/cp_gcp_dir.sh", src_path, destination_path])
         out, err = process.communicate()
@@ -157,49 +184,18 @@ def download_packs_from_gcp(storage_bucket, gcp_path, destination_path, circle_b
             print("out" + out.decode('utf-8'))
         if err:
             print("err" + err.decode('utf-8'))
-
     except Exception as e:
         logging.critical(f"Failed to run cp_gcp_dir.sh, Error:{e}")
         sys.exit(1)
 
-    # with ThreadPoolExecutor(max_workers=MAX_THREADS) as executor:
-    #     for pack in os.scandir(PACKS_FULL_PATH):  # Get all the pack names
-    #         if pack.name in IGNORED_FILES:
-    #             continue
-    #
-    #         if gcp_path == BUILD_GCP_PATH:
-    #             pack_prefix = os.path.join(gcp_path, branch_name, circle_build, 'content', 'packs', pack.name)
-    #         else:
-    #             pack_prefix = os.path.join(gcp_path, branch_name, circle_build, pack.name)
-    #
-    #         if not branch_name or not circle_build:
-    #             pack_prefix = pack_prefix.replace('/builds/content', '')
-    #
-    #         # Search for the pack in the bucket
-    #         blobs = list(storage_bucket.list_blobs(prefix=pack_prefix))
-    #         if blobs:
-    #             blob = get_latest_pack_zip_from_blob(pack.name, blobs)
-    #             if not blob:
-    #                 logging.warning(f'Failed to get the zip of the pack {pack.name} from GCP')
-    #                 continue
-    #             download_path = os.path.join(destination_path, f"{pack.name}.zip")
-    #             zipped_packs.append({pack.name: download_path})
-    #             logging.info(f'Downloading pack from GCP: {pack.name}')
-    #             executor_submit(executor, download_path, blob)
-    #             sleep(1)
-    #             if os.path.exists('/home/runner/work/content-private/content-private/content/artifacts/'):
-    #                 logging.info(f"Copying pack from {download_path} to /home/runner/work/content-private/"
-    #                              f"content-private/content/artifacts/packs/{pack.name}.zip")
-    #                 shutil.copy(download_path,
-    #                             f'/home/runner/work/content-private/content-private/content/artifacts/'
-    #                             f'packs/{pack.name}.zip')
-    #         else:
-    #             logging.warning(f'Did not find a pack to download with the prefix: {pack_prefix}')
-    #
-    # if not zipped_packs:
-    #     logging.critical('Did not find any pack to download from GCP.')
-    #     sys.exit(1)
-    # return zipped_packs
+    # COPY TO DIFFERENT DIR IF NEEDED
+    # should perform after manipulating the packs
+    # if os.path.exists('/home/runner/work/content-private/content-private/content/artifacts/'):
+    #     logging.info(f"Copying pack from {destination_path} to /home/runner/work/content-private/"
+    #                  f"content-private/content/artifacts/packs")
+    #     shutil.copy(destination_path,
+    #                 f'/home/runner/work/content-private/content-private/content/artifacts/'
+    #                 f'packs')
 
 
 def executor_submit(executor, download_path, blob):
@@ -231,7 +227,7 @@ def get_latest_pack_zip_from_blob(pack, blobs):
         blob: The zip blob of the pack with the latest version.
     """
     blob = None
-    blobs = [b for b in blobs if os.path.splitext(os.path.basename(b.name))[0] == pack and b.name.endswith('.zip')]
+    blobs = [b for b in blobs if os.path.splitext(os.path.basename(b))[0] == pack and b.endswith('.zip')]
     if blobs:
         blobs = sorted(blobs, key=lambda b: LooseVersion(os.path.basename(os.path.dirname(b.name))), reverse=True)
         blob = blobs[0]
@@ -277,10 +273,17 @@ def main():
     zipped_packs = []
     success = True
     try:
+        # download file from storage_buckey+gcp_path to zip_path which is a temp
+        # it will copy packs folder to zip_path
         download_packs_from_gcp(storage_bucket, gcp_path, zip_path, circle_build, branch_name)
     except Exception:
         logging.exception('Failed downloading packs')
         success = False
+
+    # Keep only zip files of most recent releases
+    remove_unnecessary_files(zip_path)
+
+    # TODO: should copy to another dir what's left
 
     try:
         zipped_packs = get_zipped_packs_names(zip_path)
