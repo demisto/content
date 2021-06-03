@@ -117,9 +117,11 @@ def remove_test_playbooks_from_signatures(path, filenames):
 
 
 def remove_unnecessary_files(zip_path):
+    zip_path = zip_path + '/packs'
     for subdir, dirs, files in os.walk(zip_path):
         for filename in files:
             filepath = subdir + os.sep + filename
+            print(f"Checking remove for {filename}")
             if filename in IGNORED_FILES:
                 print(f"Found ignored file:{filepath}, removing.")
                 os.remove(filepath)
