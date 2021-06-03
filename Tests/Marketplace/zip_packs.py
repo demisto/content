@@ -118,26 +118,57 @@ def remove_test_playbooks_from_signatures(path, filenames):
 
 def remove_unnecessary_files(zip_path):
     zip_path = zip_path + '/packs'
-    for subdir, dirs, files in os.walk(zip_path):
-        for filename in files:
-            filepath = subdir + os.sep + filename
-            print(f"Checking remove for {filename}")
-            if filename in IGNORED_FILES:
-                print(f"Found ignored file:{filepath}, removing.")
-                os.remove(filepath)
+    dir_entries = os.listdir(zip_path)
+    print(f"entires are: {''.join(dir_entries)}")
+    for entry in dir_entries:
+        print(f"Current entry is: {entry}")
+        entry_path = zip_path + os.sep + entry
 
-        for current_dir in dirs:
-            print(f"current dir is: {current_dir}")
+        if entry in IGNORED_FILES:
+            print(f"Found ignored file:{entry_path}, removing.")
+            os.remove(entry_path)
+            continue
+
+        if os.path.isdir(entry_path):
+            # This is a pack directory, should keep only most recent release zip
+            print(f"current dir is: {entry_path}")
             pack_files = []
-            for root, dirnames, filenames in current_dir:
-                print("root is: " + root)
-                pack_files.append(os.path.join(root, filenames))
-            print(f"files in {current_dir} are {''.join(pack_files)}")
-            latest_zip = get_latest_pack_zip_from_blob(current_dir, pack_files)
+            for root, dirnames, filenames in os.walk(entry_path):
+                # going over pack directory
+                for filename in filenames:
+                    pack_files.append(os.path.join(root, filename))
+            print(f"files in {entry_path} are {''.join(pack_files)}")
+            latest_zip = get_latest_pack_zip_from_blob(entry, pack_files)
+            print(f"Latest zip is {latest_zip}")
             for pack_file in pack_files:
-                print(f"Found unnecessary file:{pack_file}, removing.")
-                if pack_file == latest_zip:
+                if pack_file != latest_zip:
+                    print(f"Found unnecessary file:{pack_file}, removing.")
                     os.remove(pack_file)
+    #
+    #
+    # for subdir, dirs, files in os.walk(zip_path):
+    #     for filename in files:
+    #         filepath = subdir + os.sep + filename
+    #         print(f"Checking remove for {filename}")
+    #         if filename in IGNORED_FILES:
+    #             print(f"Found ignored file:{filepath}, removing.")
+    #             os.remove(filepath)
+    #
+    #     for current_dir in dirs:
+    #         print(f"current dir is: {current_dir}")
+    #         if current_dir in IGNORED_FILES:
+    #             print(f"Found ignored file:{current_dir}, removing.")
+    #             os.remove(filepath)
+    #         pack_files = []
+    #         for root, dirnames, filenames in os.walk(current_dir):
+    #             print("root is: " + root)
+    #             pack_files.append(os.path.join(root, filenames))
+    #         print(f"files in {current_dir} are {''.join(pack_files)}")
+    #         latest_zip = get_latest_pack_zip_from_blob(current_dir, pack_files)
+    #         for pack_file in pack_files:
+    #             print(f"Found unnecessary file:{pack_file}, removing.")
+    #             if pack_file == latest_zip:
+    #                 os.remove(pack_file)
 
 
 def get_zipped_packs_names(zip_path):
