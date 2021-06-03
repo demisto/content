@@ -118,19 +118,21 @@ def remove_test_playbooks_from_signatures(path, filenames):
 
 
 def remove_unnecessary_files(zip_path):
+    zipped_packs = []
     zip_path = zip_path + '/packs'
     dir_entries = os.listdir(zip_path)
     print(f"entires are: {', '.join(dir_entries)}")
+    packs_list = list(os.scandir(PACKS_FULL_PATH))
     for entry in dir_entries:
         print(f"Current entry is: {entry}")
         entry_path = zip_path + os.sep + entry
 
-        if entry in IGNORED_FILES:
-            print(f"Found ignored file:{entry_path}, removing.")
-            os.remove(entry_path)
-            continue
+        # if entry in IGNORED_FILES:
+        #     print(f"Found ignored file:{entry_path}, removing.")
+        #     os.remove(entry_path)
+        #     continue
 
-        if os.path.isdir(entry_path):
+        if entry not in IGNORED_FILES and entry in packs_list and os.path.isdir(entry_path):
             # This is a pack directory, should keep only most recent release zip
             print(f"current dir is: {entry_path}")
             pack_files = []
@@ -140,14 +142,20 @@ def remove_unnecessary_files(zip_path):
                     pack_files.append(os.path.join(root, filename))
             print(f"files in {entry_path} are {', '.join(pack_files)}")
             latest_zip = get_latest_pack_zip_from_blob(entry, pack_files)
-            print(f"Latest zip is {latest_zip}")
-            for pack_file in pack_files:
-                if pack_file != latest_zip:
-                    print(f"Found unnecessary file:{pack_file}, removing.")
-                    os.remove(pack_file)
-        else:
-            print(f"Found unnecessary file:{entry_path}, removing.")
-            os.remove(entry_path)
+            zipped_packs.append({Path(latest_zip).stem: latest_zip})
+            # print(f"Latest zip is {latest_zip}")
+            # for pack_file in pack_files:
+            #     if pack_file != latest_zip:
+            #         print(f"Found unnecessary file:{pack_file}, removing.")
+            #         os.remove(pack_file)
+        # else:
+        #     print(f"Found unnecessary file:{entry_path}, removing.")
+        #     os.remove(entry_path)
+    if not zipped_packs:
+        logging.critical('Did not find any pack to download from GCP.')
+        sys.exit(1)
+    return zipped_packs
+
     #
     #
     # for subdir, dirs, files in os.walk(zip_path):
@@ -204,7 +212,7 @@ def download_packs_from_gcp(storage_bucket, gcp_path, destination_path, circle_b
     Returns:
         zipped_packs: A list of the downloaded packs paths and their corresponding pack names.
     """
-
+    # TODO: change to general case
     src_path = "gs://marketplace-dist-dev/" + gcp_path
 
     # CHANGE SRC PATH
@@ -320,12 +328,12 @@ def main():
         success = False
 
     # Keep only zip files of most recent releases
-    remove_unnecessary_files(zip_path)
+    # remove_unnecessary_files(zip_path)
 
     # TODO: should copy to another dir what's left
 
     try:
-        zipped_packs = get_zipped_packs_names(zip_path)
+        zipped_packs = remove_unnecessary_files(zip_path)
     except Exception:
         logging.exception('No zip files were found')
         success = False
