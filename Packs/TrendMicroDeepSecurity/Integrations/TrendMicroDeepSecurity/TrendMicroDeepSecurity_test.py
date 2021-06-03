@@ -1,7 +1,7 @@
 import json
 from typing import Any, Dict, List, Union
 
-from TrendMicro import Client, convert_args
+from TrendMicroDeepSecurity import Client, convert_args
 
 BASE_URL = "https://test.api.deepsecurity.trendmicro.com"
 
@@ -23,7 +23,7 @@ def test_trendmicro_list_computers_command(requests_mock):
         - Ensure a sample value from the API matches what is generated in the context.
     """
 
-    from TrendMicro import list_computers_command
+    from TrendMicroDeepSecurity import list_computers_command
 
     mock_response = {"computers": [load_mock_response("computer")]}
     requests_mock.get(f"{BASE_URL}/api/computers?expand=none&overrides=true", json=mock_response)
@@ -49,7 +49,7 @@ def test_trendmicro_create_computer_command(requests_mock):
         - Ensure a sample value from the API matches what is generated in the context.
     """
 
-    from TrendMicro import create_computer_command
+    from TrendMicroDeepSecurity import create_computer_command
 
     mock_response = load_mock_response("computer")
     requests_mock.post(f"{BASE_URL}/api/computers", json=mock_response)
@@ -75,7 +75,7 @@ def test_trendmicro_search_computers_command(requests_mock):
         - Ensure a sample value from the API matches what is generated in the context.
     """
 
-    from TrendMicro import search_computers_command
+    from TrendMicroDeepSecurity import search_computers_command
 
     mock_response = {"computers": [load_mock_response("computer")]}
     requests_mock.post(f"{BASE_URL}/api/computers/search", json=mock_response)
@@ -103,7 +103,7 @@ def test_trendmicro_get_computer_command(requests_mock):
         - Ensure a sample value from the API matches what is generated in the context.
     """
 
-    from TrendMicro import get_computer_command
+    from TrendMicroDeepSecurity import get_computer_command
 
     mock_response = load_mock_response("computer")
     requests_mock.get(f"{BASE_URL}/api/computers/3", json=mock_response)
@@ -128,7 +128,7 @@ def test_trendmicro_modify_computer_command(requests_mock):
         - Ensure a sample value from the API matches what is generated in the context.
     """
 
-    from TrendMicro import modify_computer_command
+    from TrendMicroDeepSecurity import modify_computer_command
 
     mock_response = load_mock_response("computer")
     requests_mock.post(f"{BASE_URL}/api/computers/3", json=mock_response)
@@ -153,7 +153,7 @@ def test_trendmicro_delete_computer_command(requests_mock):
         - Ensure the output indicates a successful delete.
     """
 
-    from TrendMicro import delete_computer_command
+    from TrendMicroDeepSecurity import delete_computer_command
 
     requests_mock.delete(f"{BASE_URL}/api/computers/3", text="")
 
@@ -176,7 +176,7 @@ def test_trendmicro_get_computer_setting_command(requests_mock):
         - Ensure a sample value from the API matches what is generated in the context.
     """
 
-    from TrendMicro import get_computer_setting_command
+    from TrendMicroDeepSecurity import get_computer_setting_command
 
     mock_response = load_mock_response("computer_setting")
     requests_mock.get(f"{BASE_URL}/api/computers/3/settings/firewallSettingEngineOptionVerifyTcpChecksumEnabled",
@@ -204,7 +204,7 @@ def test_trendmicro_modify_computer_setting_command(requests_mock):
         - Ensure a sample value from the API matches what is generated in the context.
     """
 
-    from TrendMicro import modify_computer_setting_command
+    from TrendMicroDeepSecurity import modify_computer_setting_command
 
     mock_response = load_mock_response("computer_setting")
     requests_mock.post(f"{BASE_URL}/api/computers/3/settings/firewallSettingEngineOptionVerifyTcpChecksumEnabled",
@@ -232,7 +232,7 @@ def test_trendmicro_reset_computer_setting_command(requests_mock):
         - Ensure a sample value from the API matches what is generated in the context.
     """
 
-    from TrendMicro import reset_computer_setting_command
+    from TrendMicroDeepSecurity import reset_computer_setting_command
 
     mock_response = load_mock_response("computer_setting")
 
@@ -262,7 +262,7 @@ def test_trendmicro_list_firewall_rule_ids_on_computer_command(requests_mock):
         - Ensure a sample value from the API matches what is generated in the context.
     """
 
-    from TrendMicro import list_firewall_rule_ids_of_computer_command
+    from TrendMicroDeepSecurity import list_firewall_rule_ids_of_computer_command
 
     mock_response = {"assignedRuleIDs": load_mock_response("firewall_rule_ids")}
     requests_mock.get(f"{BASE_URL}/api/computers/3/firewall/assignments", json=mock_response)
@@ -289,7 +289,7 @@ def test_trendmicro_set_firewall_rule_ids_on_computer_command(requests_mock):
         - Ensure a sample value from the API matches what is generated in the context.
     """
 
-    from TrendMicro import set_firewall_rule_ids_to_computer_command
+    from TrendMicroDeepSecurity import set_firewall_rule_ids_to_computer_command
 
     mock_response = {"assignedRuleIDs": load_mock_response("firewall_rule_ids")}
     requests_mock.put(f"{BASE_URL}/api/computers/3/firewall/assignments", json=mock_response)
@@ -317,7 +317,7 @@ def test_trendmicro_add_firewall_rule_ids_to_computer_command(requests_mock):
         - Ensure a sample value from the API matches what is generated in the context.
     """
 
-    from TrendMicro import add_firewall_rule_ids_to_computer_command
+    from TrendMicroDeepSecurity import add_firewall_rule_ids_to_computer_command
 
     mock_response = {"assignedRuleIDs": load_mock_response("firewall_rule_ids") + [21]}
     requests_mock.post(f"{BASE_URL}/api/computers/3/firewall/assignments", json=mock_response)
@@ -345,7 +345,7 @@ def test_trendmicro_remove_firewall_rule_id_from_computer_command(requests_mock)
         - Ensure a sample value from the API matches what is generated in the context.
     """
 
-    from TrendMicro import remove_firewall_rule_id_from_computer_command
+    from TrendMicroDeepSecurity import remove_firewall_rule_id_from_computer_command
 
     mock_response = {"assignedRuleIDS": load_mock_response("firewall_rule_ids")[1:]}
     requests_mock.delete(f"{BASE_URL}/api/computers/3/firewall/assignments/18", json=mock_response)
@@ -370,7 +370,7 @@ def test_trendmicro_list_computer_groups_command(requests_mock):
         - Ensure a sample value from the API matches what is generated in the context.
     """
 
-    from TrendMicro import list_computer_groups_command
+    from TrendMicroDeepSecurity import list_computer_groups_command
 
     mock_response = {"computerGroups": [load_mock_response("computer_group")]}
     requests_mock.get(f"{BASE_URL}/api/computergroups", json=mock_response)
@@ -395,7 +395,7 @@ def test_trendmicro_create_computer_group_command(requests_mock):
         - Ensure a sample value from the API matches what is generated in the context.
     """
 
-    from TrendMicro import create_computer_group_command
+    from TrendMicroDeepSecurity import create_computer_group_command
 
     mock_response = load_mock_response("computer_group")
     requests_mock.post(f"{BASE_URL}/api/computergroups", json=mock_response)
@@ -421,7 +421,7 @@ def test_trendmicro_search_computer_groups_command(requests_mock):
         - Ensure a sample value from the API matches what is generated in the context.
     """
 
-    from TrendMicro import search_computer_groups_command
+    from TrendMicroDeepSecurity import search_computer_groups_command
 
     mock_response = {"computerGroups": [load_mock_response("computer_group")]}
     requests_mock.post(f"{BASE_URL}/api/computergroups/search", json=mock_response)
@@ -450,7 +450,7 @@ def test_trendmicro_get_computer_group_command(requests_mock):
         - Ensure a sample value from the API matches what is generated in the context.
     """
 
-    from TrendMicro import get_computer_group_command
+    from TrendMicroDeepSecurity import get_computer_group_command
 
     mock_response = load_mock_response("computer_group")
     requests_mock.get(f"{BASE_URL}/api/computergroups/67", json=mock_response)
@@ -475,7 +475,7 @@ def test_trendmicro_modify_computer_group_command(requests_mock):
         - Ensure a sample value from the API matches what is generated in the context.
     """
 
-    from TrendMicro import modify_computer_group_command
+    from TrendMicroDeepSecurity import modify_computer_group_command
 
     mock_response = load_mock_response("computer_group")
     requests_mock.post(f"{BASE_URL}/api/computergroups/67", json=mock_response)
@@ -501,7 +501,7 @@ def test_trendmicro_delete_computer_group_command(requests_mock):
         - Ensure a sample value from the API matches what is generated in the context.
     """
 
-    from TrendMicro import delete_computer_group_command
+    from TrendMicroDeepSecurity import delete_computer_group_command
 
     requests_mock.delete(f"{BASE_URL}/api/computergroups/67", text="")
 
@@ -525,7 +525,7 @@ def test_trendmicro_search_firewall_rules_command(requests_mock):
         - Ensure a sample value from the API matches what is generated in the context.
     """
 
-    from TrendMicro import search_firewall_rules_command
+    from TrendMicroDeepSecurity import search_firewall_rules_command
 
     mock_response = {"firewallRules": [load_mock_response("firewall_rule")]}
     requests_mock.post(f"{BASE_URL}/api/firewallrules/search", json=mock_response)
@@ -554,7 +554,7 @@ def test_trendmicro_list_firewall_rules_command(requests_mock):
         - Ensure a sample value from the API matches what is generated in the context.
     """
 
-    from TrendMicro import list_firewall_rules_command
+    from TrendMicroDeepSecurity import list_firewall_rules_command
 
     mock_response = {"firewallRules": [load_mock_response("firewall_rule")]}
     requests_mock.get(f"{BASE_URL}/api/firewallrules", json=mock_response)
@@ -579,7 +579,7 @@ def test_trendmicro_create_firewall_rule_command(requests_mock):
         - Ensure a sample value from the API matches what is generated in the context.
     """
 
-    from TrendMicro import create_firewall_rule_command
+    from TrendMicroDeepSecurity import create_firewall_rule_command
 
     mock_response = load_mock_response("firewall_rule")
     requests_mock.post(f"{BASE_URL}/api/firewallrules", json=mock_response)
@@ -604,7 +604,7 @@ def test_trendmicro_get_firewall_rule_command(requests_mock):
         - Ensure a sample value from the API matches what is generated in the context.
     """
 
-    from TrendMicro import get_firewall_rule_command
+    from TrendMicroDeepSecurity import get_firewall_rule_command
 
     mock_response = load_mock_response("firewall_rule")
     requests_mock.get(f"{BASE_URL}/api/firewallrules/5", json=mock_response)
@@ -629,7 +629,7 @@ def test_trendmicro_modify_firewall_rule_command(requests_mock):
         - Ensure a sample value from the API matches what is generated in the context.
     """
 
-    from TrendMicro import modify_firewall_rule_command
+    from TrendMicroDeepSecurity import modify_firewall_rule_command
 
     mock_response = load_mock_response("firewall_rule")
     requests_mock.post(f"{BASE_URL}/api/firewallrules/5", json=mock_response)
@@ -655,7 +655,7 @@ def test_trendmicro_delete_firewall_rule_command(requests_mock):
         - Ensure a sample value from the API matches what is generated in the context.
     """
 
-    from TrendMicro import delete_firewall_rule_command
+    from TrendMicroDeepSecurity import delete_firewall_rule_command
 
     requests_mock.delete(f"{BASE_URL}/api/firewallrules/5", text="")
 
@@ -679,7 +679,7 @@ def test_trendmicro_search_policies_command(requests_mock):
         - Ensure a sample value from the API matches what is generated in the context.
     """
 
-    from TrendMicro import search_policies_command
+    from TrendMicroDeepSecurity import search_policies_command
 
     mock_response = {"policies": [load_mock_response("policy")]}
     requests_mock.post(f"{BASE_URL}/api/policies/search", json=mock_response)
@@ -707,7 +707,7 @@ def test_trendmicro_get_policy_command(requests_mock):
         - Ensure a sample value from the API matches what is generated in the context.
     """
 
-    from TrendMicro import get_policy_command
+    from TrendMicroDeepSecurity import get_policy_command
 
     mock_response = load_mock_response("policy")
     requests_mock.get(f"{BASE_URL}/api/policies/12", json=mock_response)
@@ -732,7 +732,7 @@ def test_trendmicro_modify_policy_command(requests_mock):
         - Ensure a sample value from the API matches what is generated in the context.
     """
 
-    from TrendMicro import modify_policy_command
+    from TrendMicroDeepSecurity import modify_policy_command
 
     mock_response = load_mock_response("policy")
     requests_mock.post(f"{BASE_URL}/api/policies/12", json=mock_response)
@@ -758,7 +758,7 @@ def test_trendmicro_delete_policy_command(requests_mock):
         - Ensure a sample value from the API matches what is generated in the context.
     """
 
-    from TrendMicro import delete_policy_command
+    from TrendMicroDeepSecurity import delete_policy_command
 
     requests_mock.delete(f"{BASE_URL}/api/policies/12", text="")
 
@@ -781,7 +781,7 @@ def test_trendmicro_get_default_policy_setting_command(requests_mock):
         - Ensure a sample value from the API matches what is generated in the context.
     """
 
-    from TrendMicro import get_default_policy_setting_command
+    from TrendMicroDeepSecurity import get_default_policy_setting_command
 
     mock_response = load_mock_response("default_policy_setting")
     requests_mock.get(f"{BASE_URL}/api/policies/default/settings/webReputationSettingBlockedUrls", json=mock_response)
@@ -806,7 +806,7 @@ def test_trendmicro_modify_default_policy_setting_command(requests_mock):
         - Ensure a sample value from the API matches what is generated in the context.
     """
 
-    from TrendMicro import modify_default_policy_setting_command
+    from TrendMicroDeepSecurity import modify_default_policy_setting_command
 
     mock_response = load_mock_response("default_policy_setting")
     requests_mock.post(f"{BASE_URL}/api/policies/default/settings/webReputationSettingBlockedUrls", json=mock_response)
@@ -832,7 +832,7 @@ def test_trendmicro_reset_default_policy_setting_command(requests_mock):
         - Ensure a sample value from the API matches what is generated in the context.
     """
 
-    from TrendMicro import reset_default_policy_setting_command
+    from TrendMicroDeepSecurity import reset_default_policy_setting_command
 
     mock_response = load_mock_response("default_policy_setting")
     requests_mock.delete(f"{BASE_URL}/api/policies/default/settings/webReputationSettingBlockedUrls",
@@ -859,7 +859,7 @@ def test_trendmicro_list_default_policy_settings_command(requests_mock):
         - Ensure a sample value from the API matches what is generated in the context.
     """
 
-    from TrendMicro import list_default_policy_settings_command
+    from TrendMicroDeepSecurity import list_default_policy_settings_command
 
     mock_response = load_mock_response("default_policy_setting")
     requests_mock.get(f"{BASE_URL}/api/policies/default", json=mock_response)
@@ -884,7 +884,7 @@ def test_trendmicro_get_policy_setting_command(requests_mock):
         - Ensure a sample value from the API matches what is generated in the context.
     """
 
-    from TrendMicro import get_policy_setting_command
+    from TrendMicroDeepSecurity import get_policy_setting_command
 
     mock_response = load_mock_response("policy_setting")
     requests_mock.get(f"{BASE_URL}/api/policies/12/settings/firewallSettingEngineOptionsEnabled", json=mock_response)
@@ -910,7 +910,7 @@ def test_trendmicro_modify_policy_setting_command(requests_mock):
         - Ensure a sample value from the API matches what is generated in the context.
     """
 
-    from TrendMicro import modify_policy_setting_command
+    from TrendMicroDeepSecurity import modify_policy_setting_command
 
     mock_response = load_mock_response("policy_setting")
     requests_mock.post(f"{BASE_URL}/api/policies/12/settings/firewallSettingEngineOptionsEnabled", json=mock_response)
@@ -938,7 +938,7 @@ def test_trendmicro_reset_policy_setting_command(requests_mock):
         - Ensure a sample value from the API matches what is generated in the context.
     """
 
-    from TrendMicro import reset_policy_setting_command
+    from TrendMicroDeepSecurity import reset_policy_setting_command
 
     mock_response = load_mock_response("policy_setting")
     requests_mock.delete(f"{BASE_URL}/api/policies/12/settings/firewallSettingEngineOptionsEnabled", json=mock_response)
@@ -965,7 +965,7 @@ def test_trendmicro_list_policies_command(requests_mock):
         - Ensure a sample value from the API matches what is generated in the context.
     """
 
-    from TrendMicro import list_policies_command
+    from TrendMicroDeepSecurity import list_policies_command
 
     mock_response = {"policies": [load_mock_response("policy")]}
     requests_mock.get(f"{BASE_URL}/api/policies", json=mock_response)
@@ -991,7 +991,7 @@ def test_trendmicro_create_policy_command(requests_mock):
         - Ensure a sample value from the API matches what is generated in the context.
     """
 
-    from TrendMicro import create_policy_command
+    from TrendMicroDeepSecurity import create_policy_command
 
     mock_response = load_mock_response("policy")
     requests_mock.post(f"{BASE_URL}/api/policies", json=mock_response)

@@ -4,7 +4,7 @@ from CommonServerUserPython import *
 
 from requests.exceptions import ConnectionError, InvalidURL, InvalidSchema, HTTPError
 import traceback
-from typing import Any, Dict, List, get_type_hints, get_origin, get_args, Callable, Type
+from typing import Any, Dict, List, get_type_hints, get_origin, get_args, Callable, Type, no_type_check
 import urllib3
 
 # disable insecure warnings
@@ -537,7 +537,8 @@ class Client(BaseClient):
         return self._http_request(method="POST", url_suffix="/policies", params={"overrides": overrides},
                                   json_data=policy_properties)
 
-    def _http_request(self, method, url_suffix="", params=None, json_data=None, **kwargs):  # type: ignore
+    @no_type_check
+    def _http_request(self, method: str, url_suffix: str = "", params: dict = None, json_data: dict = None, **kwargs):
         """
         Executing an HTTP request to Trend Micro.
         The function converts the name of the arguments to Trend Micro's convention (camelCase).
