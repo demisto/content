@@ -127,7 +127,7 @@ tasks:
       - - left:
             iscontext: true
             value:
-              simple: ${microsoftwindows.win_ping.[].ping}
+              simple: ${microsoftwindows.winPing.[].ping}
           operator: isEqualString
           right:
             value:
@@ -270,7 +270,7 @@ tasks:
       host:
         complex:
           accessor: host
-          root: microsoftwindows.win_chocolatey(val.rc==0)
+          root: microsoftwindows.winChocolatey(val.rc==0)
       msg:
         complex:
           accessor: "0"
@@ -321,7 +321,7 @@ tasks:
     quietmode: 0
     scriptarguments:
       host:
-        simple: microsoftwindows.win_chocolatey(val.rc!=0).host
+        simple: microsoftwindows.winChocolatey(val.rc!=0).host
       parallel: {}
     separatecontext: false
     skipunavailable: false
@@ -378,14 +378,14 @@ tasks:
       - - left:
             iscontext: true
             value:
-              simple: microsoftwindows.win_chocolatey(val.rc==0).host
+              simple: microsoftwindows.winChocolatey(val.rc==0).host
           operator: isNotEmpty
       label: "yes"
     - condition:
       - - left:
             iscontext: true
             value:
-              simple: microsoftwindows.win_chocolatey(val.rc!=0).host
+              simple: microsoftwindows.winChocolatey(val.rc!=0).host
           operator: isNotEmpty
       label: "No"
     id: "14"
@@ -400,7 +400,7 @@ tasks:
     separatecontext: false
     skipunavailable: false
     task:
-      description: "Check if the software was insalled successfully"
+      description: "Check if the software was installed successfully"
       brand: ""
       id: 54e890e8-a06a-4efa-8fd8-899b79266ea1
       iscommand: false
