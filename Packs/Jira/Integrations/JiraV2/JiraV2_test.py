@@ -82,10 +82,8 @@ def test_create_issue_command_before_fix_mandatory_args_summary_missing(mocker, 
         # when there are missing arguments, an Exception is raised to the user
         create_issue_command()
     assert e
-    assert (
-            demisto.results.call_args[0][0]["Contents"]
-            == "You must provide at least one of the following: project_key or project_name"
-    )
+    assert (demisto.results.call_args[0][0]["Contents"] == "You must provide at least one of the following: "
+                                                           "project_key or project_name")
 
 
 def test_issue_query_command_no_issues(mocker):
@@ -1105,9 +1103,7 @@ def test_get_comments_command(mocker):
     _, outputs, context = get_comments_command(123)
     assert list(outputs.keys())[0] == "Ticket(val.Id == obj.Id)"
     assert outputs["Ticket(val.Id == obj.Id)"]["Id"] == 123
-    assert (
-            outputs["Ticket(val.Id == obj.Id)"]["Comment"][0]["Comment"] == "comment text"
-    )
+    assert (outputs["Ticket(val.Id == obj.Id)"]["Comment"][0]["Comment"] == "comment text")
     assert outputs["Ticket(val.Id == obj.Id)"]["Comment"][0]["User"] == "Test"
     assert outputs["Ticket(val.Id == obj.Id)"]["Comment"][0]["Created"] == "10.12"
     assert context == comments
