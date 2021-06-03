@@ -364,7 +364,7 @@ def get_active_sessions_list_command(client: Client, args: Dict[str, Any]) -> Co
     visitor_phone = args.get('visitor_phone')
 
     session_filter = sessions_filter_to_json_object(session_id, device_ip, device_mac_address, state, visitor_phone)
-    params = {"filter": json.dumps(session_filter)}
+    params = {"filter": session_filter}
 
     res = client.prepare_request(method='GET', params=params, url_suffix='session')
     readable_output, all_active_sessions_list = parse_items_response(res, parse_active_sessions_response)
