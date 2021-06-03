@@ -78,6 +78,7 @@ def remove_test_playbooks_if_exist(zips_path, packs):
     for zip_pack in packs:
         for name, path in zip_pack.items():
             remove = False
+            print("current file is: " + path)
             with ZipFile(path, mode='r') as pack_zip:
                 zip_contents = pack_zip.namelist()
                 dir_names = [os.path.basename(os.path.dirname(content)) for content in zip_contents]
@@ -145,9 +146,8 @@ def remove_unnecessary_files(zip_path):
                     print(f"Found unnecessary file:{pack_file}, removing.")
                     os.remove(pack_file)
         else:
-            print(f"Found ignored file:{entry_path}, removing.")
+            print(f"Found unnecessary file:{entry_path}, removing.")
             os.remove(entry_path)
-            continue
     #
     #
     # for subdir, dirs, files in os.walk(zip_path):
