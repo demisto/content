@@ -14,7 +14,7 @@ script: |-
   df = df[df['Error'] == '']
   for index, row in df.iterrows():
       [target_pred, target_prob] = json.loads(row['name'])
-      if target_pred != row['Prediction'] or abs(target_prob-row['Probability']) > 10**-3:
+      if target_pred != row['Prediction'] or abs(target_prob-row['Probability']) > 10**-4:
           wrong_predictions_ids.append(row['id'])
   message = '{}/{} correct predictions. '.format(len(df)- len(wrong_predictions_ids), len(df))
   if len(wrong_predictions_ids) > 0:
