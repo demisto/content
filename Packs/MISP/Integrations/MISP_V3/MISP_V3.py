@@ -622,7 +622,16 @@ def check_ip(ip):
     ))
 
 
-def upload_sample():
+def pymisp_upload_sample(self, filename, filepath_or_bytes, event_id, distribution=None,
+                         to_ids=True, category=None, comment=None, info=None,
+                         analysis=None, threat_level_id=None):
+    to_post = self._prepare_upload(event_id, distribution, to_ids, category,
+                                   comment, info, analysis, threat_level_id)
+    to_post['request']['files'] = [{'filename': filename, 'data': self._encode_file_to_upload(filepath_or_bytes)}]
+    return self._upload_sample(to_post)
+
+
+def upload_sample(pymisp: ExpandedPyMISP, demisto_args: dict):
     """
     Misp needs to get files in base64. in the old integration (js) it was converted by a script.
     """
@@ -647,7 +656,7 @@ def upload_sample():
             demisto.args()['info'] = filename
         event_id = create_event(ret_only_event_id=True)
 
-    res = MISP.upload_sample(filename=filename, filepath_or_bytes=file, event_id=event_id, **args)
+    res = pymisp_upload_sample(filename=filename, filepath_or_bytes=file, event_id=event_id, **args)
     if res.get('name') == 'Failed':
         ec = None
     else:
@@ -1386,9 +1395,9 @@ def main():
         if command == 'test-module':
             return_results(test(pymisp=pymisp))  # checked V
         elif command == 'misp-upload-sample':
-            upload_sample()
+            return_results(upload_sample(demisto_args=args, pymisp=pymisp))
         elif command == 'misp-download-sample':
-            return_results(download_file(demisto_args=args, pymisp=pymisp)) # checked
+            return_results(download_file(demisto_args=args, pymisp=pymisp))  # checked V
         elif command == 'misp-create-event':
             return_results(create_event(demisto_args=args, pymisp=pymisp, data_keys_to_save=data_keys_to_save))
             # checked V
