@@ -930,7 +930,7 @@ def main():
     build_number = option.ci_build_number if option.ci_build_number else str(uuid.uuid4())
     override_all_packs = option.override_all_packs
     signature_key = option.key_string
-    id_set_path = option.id_set_path
+    id_set_path = option.id_set_path  # type: ignore
     packs_dependencies_mapping = load_json(option.pack_dependencies) if option.pack_dependencies else {}
     storage_base_path = option.storage_base_path
     remove_test_playbooks = option.remove_test_playbooks
