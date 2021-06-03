@@ -2005,8 +2005,6 @@ def get_cloud_resource_command(client: Client, args: Dict[str, Any]) -> List[Com
 
     if asset_id is not None:
         output = client.get_cloud_resource(asset_id=asset_id)
-        # if output and isinstance(output, dict) and 'domain' not in output:
-        #     output['domain'] = domain
         return format_cloud_resource_data([output])
 
     total_results, max_page_size = calculate_limits(args.get('limit'))
