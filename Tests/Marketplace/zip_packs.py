@@ -119,25 +119,26 @@ def remove_test_playbooks_from_signatures(path, filenames):
 
 def get_zipped_packs_names(zip_path):
     zipped_packs = []
-    zip_path = zip_path + '/packs'
+    zip_path = zip_path + '/packs'  # directory of the packs
     dir_entries = os.listdir(zip_path)
-    print(f"entires are: {', '.join(dir_entries)}")
-    packs_list = [pack.name for pack in os.scandir(PACKS_FULL_PATH)]
-    print(f"packs are: {', '.join(packs_list)}")
+    packs_list = [pack.name for pack in os.scandir(PACKS_FULL_PATH)] # list of all packs from repo
+
     for entry in dir_entries:
         print(f"Current entry is: {entry}")
         entry_path = zip_path + os.sep + entry
-
         if entry not in IGNORED_FILES and entry in packs_list and os.path.isdir(entry_path):
             # This is a pack directory, should keep only most recent release zip
-            print(f"current dir is: {entry_path}")
+            print(f"current pack is: {entry_path}")
             pack_files = []
             for root, dirnames, filenames in os.walk(entry_path):
-                # going over pack directory
+                # going over pack directory, saves all filenames
                 for filename in filenames:
                     pack_files.append(os.path.join(root, filename))
             print(f"files in {entry_path} are {', '.join(pack_files)}")
             latest_zip = get_latest_pack_zip_from_blob(entry, pack_files)
+            if not latest_zip:
+                logging.warning(f'Failed to get the zip of the pack {entry} from GCP')
+                continue
             zipped_packs.append({Path(latest_zip).stem: latest_zip})
     if not zipped_packs:
         logging.critical('Did not find any pack to download from GCP.')
@@ -162,7 +163,7 @@ def download_packs_from_gcp(storage_bucket, gcp_path, destination_path, circle_b
     # TODO: change to general case
     src_path = "gs://marketplace-dist-dev/" + gcp_path
 
-    # CHANGE SRC PATH
+    # TODO: ADD - CHANGE SRC PATH
     # if gcp_path == BUILD_GCP_PATH:
     #     src_path = os.path.join(gcp_path, branch_name, circle_build, 'content', 'packs')
     # else:
@@ -174,6 +175,7 @@ def download_packs_from_gcp(storage_bucket, gcp_path, destination_path, circle_b
     try:
         process = subprocess.Popen(["Tests/scripts/cp_gcp_dir.sh", src_path, destination_path])
         out, err = process.communicate()
+        # TODO: check what happens if you remove it
         if out:
             print("out" + out.decode('utf-8'))
         if err:
@@ -269,8 +271,6 @@ def main():
     zipped_packs = []
     success = True
     try:
-        # download file from storage_buckey+gcp_path to zip_path which is a temp
-        # it will copy packs folder to zip_path
         download_packs_from_gcp(storage_bucket, gcp_path, zip_path, circle_build, branch_name)
     except Exception:
         logging.exception('Failed downloading packs')
