@@ -397,6 +397,7 @@ def setup(mocker):
 @pytest.mark.asyncio
 async def test_get_slack_name_user(mocker):
     from SlackV3 import get_slack_name
+    from slack_sdk.socket_mode.aiohttp import SocketModeClient
 
     # Set
     async def api_call(method: str, http_verb: str = 'POST', file: str = None, params=None, json=None, data=None):
@@ -416,19 +417,19 @@ async def test_get_slack_name_user(mocker):
 
     # User in integration context
     user_id = 'U012A3CDE'
-    name = await get_slack_name(user_id, slack_sdk.WebClient)
+    name = await get_slack_name(user_id, SocketModeClient)
     assert name == 'spengler'
     assert slack_sdk.WebClient.api_call.call_count == 0
 
     # User not in integration context
     unknown_user = 'USASSON'
-    name = await get_slack_name(unknown_user, slack_sdk.WebClient)
+    name = await get_slack_name(unknown_user, SocketModeClient)
     assert name == 'spengler'
     assert slack_sdk.WebClient.api_call.call_count == 1
 
     # User does not exist
     nonexisting_user = 'alexios'
-    name = await get_slack_name(nonexisting_user, slack_sdk.WebClient)
+    name = await get_slack_name(nonexisting_user, SocketModeClient)
     assert name == ''
     assert slack_sdk.WebClient.api_call.call_count == 1
 
@@ -1547,39 +1548,9 @@ def test_check_for_mirrors_user_email_not_matching(mocker):
 
 
 @pytest.mark.asyncio
-async def test_slack_loop_should_exit(mocker):
-    from SlackV3 import slack_loop
-
-    # Set
-    class MyFuture:
-        @staticmethod
-        def done():
-            return True
-
-        @staticmethod
-        def exception():
-            return None
-
-    async def yeah_im_not_going_to_run(time):
-        return "sup"
-
-    mocker.patch.object(asyncio, 'sleep', side_effect=yeah_im_not_going_to_run)
-
-    with pytest.raises(InterruptedError):
-        mocker.patch.object(slack_sdk.RTMClient, 'start', side_effect=[MyFuture()])
-        # Exits the while True
-        mocker.patch.object(slack_sdk.RTMClient, 'stop', side_effect=InterruptedError())
-
-        # Arrange
-        await slack_loop()
-
-    # Assert
-    assert slack_sdk.RTMClient.start.call_count == 1
-
-
-@pytest.mark.asyncio
 async def test_handle_dm_create_demisto_user(mocker):
     import SlackV3
+    from slack_sdk.socket_mode.aiohttp import SocketModeClient
 
     # Set
     async def api_call(method: str, http_verb: str = 'POST', file: str = None, params=None, json=None, data=None):
@@ -1602,12 +1573,12 @@ async def test_handle_dm_create_demisto_user(mocker):
     user = js.loads(USERS)[0]
 
     # Arrange
-    await SlackV3.handle_dm(user, 'open 123 incident', slack_sdk.WebClient)
-    await SlackV3.handle_dm(user, 'new incident abu ahmad', slack_sdk.WebClient)
-    await SlackV3.handle_dm(user, 'incident create 817', slack_sdk.WebClient)
-    await SlackV3.handle_dm(user, 'incident open', slack_sdk.WebClient)
-    await SlackV3.handle_dm(user, 'incident new', slack_sdk.WebClient)
-    await SlackV3.handle_dm(user, 'create incident name=abc type=Access', slack_sdk.WebClient)
+    await SlackV3.handle_dm(user, 'open 123 incident', )
+    await SlackV3.handle_dm(user, 'new incident abu ahmad', SocketModeClient)
+    await SlackV3.handle_dm(user, 'incident create 817', SocketModeClient)
+    await SlackV3.handle_dm(user, 'incident open', SocketModeClient)
+    await SlackV3.handle_dm(user, 'incident new', SocketModeClient)
+    await SlackV3.handle_dm(user, 'create incident name=abc type=Access', SocketModeClient)
 
     # Assert
     assert SlackV3.translate_create.call_count == 6

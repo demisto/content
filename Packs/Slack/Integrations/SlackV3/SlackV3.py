@@ -1124,11 +1124,8 @@ def get_user_by_name(user_to_search: str, add_to_context: bool = True) -> dict:
                                                                                []) else []
             cursor = response.get('response_metadata', {}).get('next_cursor')
             users_filter = list(filter(lambda u: u.get('name', '').lower() == user_to_search
-                                                 or u.get('profile', {}).get('email',
-                                                                             '').lower() == user_to_search
-                                                 or u.get('real_name',
-                                                          '').lower() == user_to_search,
-                                       workspace_users))
+                                       or u.get('profile', {}).get('email', '').lower() == user_to_search
+                                       or u.get('real_name', '').lower() == user_to_search, workspace_users))
             if users_filter:
                 break
             if not cursor:
