@@ -786,7 +786,7 @@ def add_attribute(pymisp: ExpandedPyMISP, event_id: int = None, internal: bool =
     )
 
 
-def download_file():
+def download_file(pymisp: ExpandedPyMISP, demisto_args: dict):
     """
     Will post results of given file's hash if present.
     MISP's response should be in case of success:
@@ -794,16 +794,16 @@ def download_file():
     in case of failure:
         (False, 'No hits with the given parameters.')
     """
-    file_hash = demisto.args().get('hash')
-    event_id = demisto.args().get('eventID')
-    unzip = True if demisto.args().get('unzip') == 'true' else False
-    all_samples = True if demisto.args().get('allSamples') in ('1', 'true') else False
+    file_hash = demisto_args.get('hash')
+    event_id = demisto_args.get('eventID')
+    unzip = argToBoolean(demisto_args.get('unzip', 'False'))
+    all_samples = True if demisto_args.get('allSamples') in ('1', 'true') else False
 
-    response = MISP.download_samples(sample_hash=file_hash,
-                                     event_id=event_id,
-                                     all_samples=all_samples,
-                                     unzip=unzip
-                                     )
+    response = pymisp.download_samples(sample_hash=file_hash,
+                                       event_id=event_id,
+                                       all_samples=all_samples,
+                                       unzip=unzip
+                                       )
     if not response[0]:
         demisto.results(f"Couldn't find file with hash {file_hash}")
     else:
@@ -1129,12 +1129,13 @@ def add_sighting(pymisp: ExpandedPyMISP, demisto_args: dict):
     return CommandResults(readable_output=human_readable)
 
 
-def test():
+def test(pymisp: ExpandedPyMISP):
     """
     Test module.
     """
-    if MISP.test_connection():
-        demisto.results('ok')
+    response = pymisp._prepare_request('GET', 'servers/getPyMISPVersion.json')
+    if pymisp._check_json_response(response):
+        return 'ok'
     else:
         return_error('MISP has not connected.')
 
@@ -1356,12 +1357,11 @@ def main():
     try:
         args = demisto.args()
         if command == 'test-module':
-            #  This is the call made when pressing the integration test button.
-            test()
+            return_results(test(pymisp=pymisp))  # checked V
         elif command == 'misp-upload-sample':
             upload_sample()
         elif command == 'misp-download-sample':
-            download_file()
+            return_results(download_file(demisto_args=args, pymisp=pymisp))
         elif command == 'misp-create-event':
             return_results(create_event(demisto_args=args, pymisp=pymisp, data_keys_to_save=data_keys_to_save))
             # checked V
