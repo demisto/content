@@ -523,6 +523,15 @@ def get_issue_fields(issue_creating=False, mirroring=False, **issue_args):
     if issue_args.get('description'):
         issue['fields']['description'] = issue_args['description']
 
+    if issue_args.get('components'):
+        issue['fields']['components'] = [{"name": issue_args['components']}]
+
+    if issue_args.get('security'):
+        issue['fields']['security'] = {"name": issue_args['security']}
+
+    if issue_args.get('environment'):
+        issue['fields']['environment'] = issue_args['environment']
+
     if issue_args.get('labels') and isinstance(issue_args.get('labels'), str):
         issue['fields']['labels'] = issue_args['labels'].split(",")
 
