@@ -1,9 +1,11 @@
 # type: ignore
-
+import base64
 import logging
 import warnings
+import zipfile
+from io import BytesIO
 from typing import Union, List, Any, Tuple, Dict
-from urllib.parse import urlparse
+from urllib.parse import urlparse, urljoin
 
 import requests
 from pymisp import ExpandedPyMISP, PyMISPError, MISPObject, MISPSighting, MISPEvent
@@ -786,6 +788,35 @@ def add_attribute(pymisp: ExpandedPyMISP, event_id: int = None, internal: bool =
     )
 
 
+def download_samples(pymisp: ExpandedPyMISP, sample_hash=None, event_id=None, all_samples=False):
+    to_post = {'request': {'hash': sample_hash, 'eventID': event_id, 'allSamples': all_samples}}
+    response = pymisp._prepare_request('POST', urljoin(pymisp.root_url, 'attributes/downloadSample'),
+                                       data=json.dumps(to_post))
+    result = pymisp._check_response(response)
+    if result.get('error') is not None:
+        return False, result.get('error')
+    if not result.get('result'):
+        return False, result.get('message')
+    details = []
+    for f in result['result']:
+        decoded = base64.b64decode(f['base64'])
+        zipped = BytesIO(decoded)
+        try:
+            archive = zipfile.ZipFile(zipped)
+            if f.get('md5'):
+                # New format
+                unzipped = BytesIO(archive.open(f['md5'], pwd=b'infected').read())
+            else:
+                # Old format
+                unzipped = BytesIO(archive.open(f['filename'], pwd=b'infected').read())
+            details.append([f['event_id'], f['filename'], unzipped])
+        except zipfile.BadZipfile:
+            # In case the sample isn't zipped
+            details.append([f['event_id'], f['filename'], zipped])
+
+    return True, details
+
+
 def download_file(pymisp: ExpandedPyMISP, demisto_args: dict):
     """
     Will post results of given file's hash if present.
@@ -799,13 +830,9 @@ def download_file(pymisp: ExpandedPyMISP, demisto_args: dict):
     unzip = argToBoolean(demisto_args.get('unzip', 'False'))
     all_samples = True if demisto_args.get('allSamples') in ('1', 'true') else False
 
-    response = pymisp.download_samples(sample_hash=file_hash,
-                                       event_id=event_id,
-                                       all_samples=all_samples,
-                                       unzip=unzip
-                                       )
+    response = download_samples(pymisp=pymisp, sample_hash=file_hash, event_id=event_id, all_samples=all_samples)
     if not response[0]:
-        demisto.results(f"Couldn't find file with hash {file_hash}")
+        return CommandResults(readable_output=f"Couldn't find file with hash {file_hash}")
     else:
         if unzip:
             files = list()
@@ -814,11 +841,11 @@ def download_file(pymisp: ExpandedPyMISP, demisto_args: dict):
                 if isinstance(f, tuple) and len(f) == 3:
                     filename = f[1]
                     files.append(fileResult(filename, f[2].getbuffer()))
-            demisto.results(files)
+            return files
         else:
             file_buffer = response[1][0][2].getbuffer()
             filename = response[1][0][1]
-            demisto.results(fileResult(filename, file_buffer))  # type: ignore
+            return fileResult(filename, file_buffer)
 
 
 def get_urls_events():
@@ -1361,7 +1388,7 @@ def main():
         elif command == 'misp-upload-sample':
             upload_sample()
         elif command == 'misp-download-sample':
-            return_results(download_file(demisto_args=args, pymisp=pymisp))
+            return_results(download_file(demisto_args=args, pymisp=pymisp)) # checked
         elif command == 'misp-create-event':
             return_results(create_event(demisto_args=args, pymisp=pymisp, data_keys_to_save=data_keys_to_save))
             # checked V
