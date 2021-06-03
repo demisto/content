@@ -123,6 +123,7 @@ def remove_unnecessary_files(zip_path):
     dir_entries = os.listdir(zip_path)
     print(f"entires are: {', '.join(dir_entries)}")
     packs_list = list(os.scandir(PACKS_FULL_PATH))
+    print(f"packs are: {', '.join(packs_list)}")
     for entry in dir_entries:
         print(f"Current entry is: {entry}")
         entry_path = zip_path + os.sep + entry
@@ -131,7 +132,12 @@ def remove_unnecessary_files(zip_path):
         #     print(f"Found ignored file:{entry_path}, removing.")
         #     os.remove(entry_path)
         #     continue
-
+        if entry not in IGNORED_FILES:
+            print(f'entry={entry} is not ignored')
+        if entry in packs_list:
+            print(f'entry={entry} is a pack')
+        if os.path.isdir(entry_path):
+            print(f'entry={entry} is a dir')
         if entry not in IGNORED_FILES and entry in packs_list and os.path.isdir(entry_path):
             # This is a pack directory, should keep only most recent release zip
             print(f"current dir is: {entry_path}")
