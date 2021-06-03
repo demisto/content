@@ -1,0 +1,3002 @@
+id: Trend Micro Deep Security - Test
+version: 19
+vcShouldKeepItemLegacyProdMachine: false
+name: Trend Micro Deep Security - Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: dc8ff613-7fa4-4901-8efd-3bb706113517
+    type: start
+    task:
+      id: dc8ff613-7fa4-4901-8efd-3bb706113517
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: af324ba7-d9b1-4e4f-86f1-bc9598bbd3da
+    type: regular
+    task:
+      id: af324ba7-d9b1-4e4f-86f1-bc9598bbd3da
+      version: -1
+      name: DeleteContext
+      script: DeleteContext
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: ffdf6a27-0b34-4412-87b6-b76da5d7ec3c
+    type: regular
+    task:
+      id: ffdf6a27-0b34-4412-87b6-b76da5d7ec3c
+      version: -1
+      name: trendmicro-create-computer
+      script: '|||trendmicro-create-computer'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      asset_importance_id: {}
+      description:
+        simple: Test computer for playbook test
+      display_name:
+        simple: Playbook Test
+      expand: {}
+      group_id: {}
+      host_name:
+        simple: PlaybookTestHostname
+      overrides:
+        simple: "true"
+      policy_id: {}
+      relay_list_id: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: f2fb160e-0545-4980-899e-6b1f07c6f58b
+    type: condition
+    task:
+      id: f2fb160e-0545-4980-899e-6b1f07c6f58b
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: TrendMicro.Computers.hostName
+            iscontext: true
+          right:
+            value:
+              simple: PlaybookTestHostname
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: TrendMicro.Computers.displayName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: TrendMicro.Computers.description
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: TrendMicro.Computers.relayListID
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: aa19338e-9ef9-4da5-8f76-354c60b9edb1
+    type: regular
+    task:
+      id: aa19338e-9ef9-4da5-8f76-354c60b9edb1
+      version: -1
+      name: trendmicro-search-computers
+      script: '|||trendmicro-search-computers'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      field_name:
+        simple: hostName
+      field_type:
+        simple: string
+      max_items: {}
+      operation:
+        simple: equal
+      sort_by_object_id: {}
+      value:
+        simple: PlaybookTestHostname
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: fb941212-8cc0-47f8-8c0a-5f7f0bba41ca
+    type: condition
+    task:
+      id: fb941212-8cc0-47f8-8c0a-5f7f0bba41ca
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: TrendMicro.Computers.hostName
+            iscontext: true
+          right:
+            value:
+              simple: PlaybookTestHostname
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: TrendMicro.Computers.displayName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: TrendMicro.Computers.description
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: TrendMicro.Computers.relayListID
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: c4cb63cc-0562-4150-812e-b98fcdbc5ce7
+    type: regular
+    task:
+      id: c4cb63cc-0562-4150-812e-b98fcdbc5ce7
+      version: -1
+      name: trendmicro-get-computer
+      script: '|||trendmicro-get-computer'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      computer_id:
+        simple: ${TrendMicro.Computers.ID}
+      expand:
+        simple: none
+      overrides: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: 1eb87330-2b0f-4986-854e-1495d556d6e4
+    type: condition
+    task:
+      id: 1eb87330-2b0f-4986-854e-1495d556d6e4
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "8"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: TrendMicro.Computers.hostName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: TrendMicro.Computers.displayName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: TrendMicro.Computers.description
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: TrendMicro.Computers.relayListID
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: d8c68dbf-915d-46c1-8138-774be95bf3b4
+    type: regular
+    task:
+      id: d8c68dbf-915d-46c1-8138-774be95bf3b4
+      version: -1
+      name: trendmicro-list-computers
+      script: '|||trendmicro-list-computers'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "9":
+    id: "9"
+    taskid: 23d5247a-68aa-4420-879d-c0fb9b3c68b7
+    type: condition
+    task:
+      id: 23d5247a-68aa-4420-879d-c0fb9b3c68b7
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "10"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: TrendMicro.Computers.hostName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: TrendMicro.Computers.displayName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: TrendMicro.Computers.description
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "10":
+    id: "10"
+    taskid: b98af8ed-6b18-44a4-8c12-3acea677696f
+    type: regular
+    task:
+      id: b98af8ed-6b18-44a4-8c12-3acea677696f
+      version: -1
+      name: trendmicro-modify-computer
+      script: '|||trendmicro-modify-computer'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      asset_importance_id: {}
+      computer_id:
+        simple: ${TrendMicro.Computers.[0].ID}
+      description:
+        simple: Modified Test
+      display_name: {}
+      expand: {}
+      group_id: {}
+      host_name: {}
+      overrides: {}
+      policy_id: {}
+      relay_list_id: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "11":
+    id: "11"
+    taskid: 6d3d079e-b6d0-4ef7-842f-6ebd72bd66dd
+    type: condition
+    task:
+      id: 6d3d079e-b6d0-4ef7-842f-6ebd72bd66dd
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "13"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: TrendMicro.Computers.hostName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: TrendMicro.Computers.displayName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: TrendMicro.Computers.description
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: TrendMicro.Computers.relayListID
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "12":
+    id: "12"
+    taskid: fb8deea5-af81-47f1-8343-1cf703e8330a
+    type: regular
+    task:
+      id: fb8deea5-af81-47f1-8343-1cf703e8330a
+      version: -1
+      name: trendmicro-delete-computer
+      script: '|||trendmicro-delete-computer'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "21"
+    scriptarguments:
+      computer_id:
+        simple: ${TrendMicro.Computers.[0].ID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 60,
+          "y": 4930
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "13":
+    id: "13"
+    taskid: 061119ba-cd43-4ed0-8163-52131f24af29
+    type: regular
+    task:
+      id: 061119ba-cd43-4ed0-8163-52131f24af29
+      version: -1
+      name: trendmicro-get-computer-setting
+      script: '|||trendmicro-get-computer-setting'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      computer_id:
+        simple: ${TrendMicro.Computers.[0].ID}
+      name:
+        simple: logInspectionSettingSeverityClippingAgentEventSendSyslogLevelMin
+      overrides: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "14":
+    id: "14"
+    taskid: 5d8353de-c33b-414f-8f78-aef99bd6e836
+    type: condition
+    task:
+      id: 5d8353de-c33b-414f-8f78-aef99bd6e836
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "15"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: TrendMicro.ComputersSettings.computerId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: TrendMicro.ComputersSettings.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: TrendMicro.ComputersSettings.value
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2590
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "15":
+    id: "15"
+    taskid: 411c8b93-1557-47c7-8eee-893ea2be0a06
+    type: regular
+    task:
+      id: 411c8b93-1557-47c7-8eee-893ea2be0a06
+      version: -1
+      name: trendmicro-modify-computer-setting
+      script: '|||trendmicro-modify-computer-setting'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      computer_id:
+        simple: ${TrendMicro.Computers.[0].ID}
+      name:
+        simple: firewallSettingEngineOptionVerifyTcpChecksumEnabled
+      overrides: {}
+      value:
+        simple: "true"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "16":
+    id: "16"
+    taskid: 5d2f04bf-f7b6-4164-83cb-5c250c6ca5f0
+    type: condition
+    task:
+      id: 5d2f04bf-f7b6-4164-83cb-5c250c6ca5f0
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "17"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: TrendMicro.ComputersSettings.computerId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: TrendMicro.ComputersSettings.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: TrendMicro.ComputersSettings.value
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2970
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "17":
+    id: "17"
+    taskid: baf69959-73e7-4eb3-85ca-0b1ef6e38e94
+    type: regular
+    task:
+      id: baf69959-73e7-4eb3-85ca-0b1ef6e38e94
+      version: -1
+      name: trendmicro-reset-computer-setting
+      script: '|||trendmicro-reset-computer-setting'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "18"
+    scriptarguments:
+      computer_id:
+        simple: ${TrendMicro.Computers.[0].ID}
+      name:
+        simple: firewallSettingEngineOptionConnectionsCleanupMax
+      overrides: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3180
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "18":
+    id: "18"
+    taskid: e3a77558-dac5-4536-8d0a-f3e77eddf9cf
+    type: condition
+    task:
+      id: e3a77558-dac5-4536-8d0a-f3e77eddf9cf
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "45"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: TrendMicro.ComputersSettings.computerId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: TrendMicro.ComputersSettings.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: TrendMicro.ComputersSettings.value
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3360
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "19":
+    id: "19"
+    taskid: bb716565-4955-427d-8a9f-2d0f42b6caee
+    type: regular
+    task:
+      id: bb716565-4955-427d-8a9f-2d0f42b6caee
+      version: -1
+      name: trendmicro-list-computer-groups
+      script: '|||trendmicro-list-computer-groups'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "20"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 60,
+          "y": 5480
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "20":
+    id: "20"
+    taskid: 577479c3-3682-4cbd-8578-3e54e5fa18f1
+    type: condition
+    task:
+      id: 577479c3-3682-4cbd-8578-3e54e5fa18f1
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "23"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: TrendMicro.ComputerGroups.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: TrendMicro.ComputerGroups.description
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 60,
+          "y": 5660
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "21":
+    id: "21"
+    taskid: ebf1a355-c817-4ceb-8a82-16b992f97815
+    type: regular
+    task:
+      id: ebf1a355-c817-4ceb-8a82-16b992f97815
+      version: -1
+      name: trendmicro-create-computer-group
+      script: '|||trendmicro-create-computer-group'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "22"
+    scriptarguments:
+      description: {}
+      name:
+        simple: Test Computer Group
+      parent_group_id: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 60,
+          "y": 5100
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "22":
+    id: "22"
+    taskid: 26031001-ffc9-4a1f-8c6f-72e0f793d313
+    type: condition
+    task:
+      id: 26031001-ffc9-4a1f-8c6f-72e0f793d313
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "19"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: TrendMicro.ComputerGroups.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: TrendMicro.ComputerGroups.description
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 60,
+          "y": 5270
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "23":
+    id: "23"
+    taskid: 0da43830-a706-4518-8089-2e150f82b3ae
+    type: regular
+    task:
+      id: 0da43830-a706-4518-8089-2e150f82b3ae
+      version: -1
+      name: trendmicro-search-computer-groups
+      script: '|||trendmicro-search-computer-groups'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "24"
+    scriptarguments:
+      field_name:
+        simple: name
+      field_type:
+        simple: string
+      max_items: {}
+      operation:
+        simple: equal
+      sort_by_object_id: {}
+      value:
+        simple: Test Computer Group
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 70,
+          "y": 5860
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "24":
+    id: "24"
+    taskid: b335abb7-e7d4-402e-86df-cc38741a0f26
+    type: condition
+    task:
+      id: b335abb7-e7d4-402e-86df-cc38741a0f26
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "25"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: TrendMicro.ComputerGroups.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: TrendMicro.ComputerGroups.description
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 70,
+          "y": 6060
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "25":
+    id: "25"
+    taskid: 8b911a74-d22e-48c2-8369-e7155ba3a013
+    type: regular
+    task:
+      id: 8b911a74-d22e-48c2-8369-e7155ba3a013
+      version: -1
+      name: trendmicro-get-computer-group
+      script: '|||trendmicro-get-computer-group'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "26"
+    scriptarguments:
+      computer_group_id:
+        simple: ${TrendMicro.ComputerGroups.[0].ID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 70,
+          "y": 6260
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "26":
+    id: "26"
+    taskid: aac39a19-6536-40a6-8d8e-9d106a7fb29f
+    type: condition
+    task:
+      id: aac39a19-6536-40a6-8d8e-9d106a7fb29f
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "27"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: TrendMicro.ComputerGroups.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: TrendMicro.ComputerGroups.description
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 70,
+          "y": 6460
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "27":
+    id: "27"
+    taskid: 842bcd33-2afe-446b-8cb8-7f7b7d4399a4
+    type: regular
+    task:
+      id: 842bcd33-2afe-446b-8cb8-7f7b7d4399a4
+      version: -1
+      name: trendmicro-modify-computer-group
+      script: '|||trendmicro-modify-computer-group'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "28"
+    scriptarguments:
+      computer_group_id:
+        simple: ${TrendMicro.ComputerGroups.[0].ID}
+      description:
+        simple: Modified Test Group
+      name: {}
+      parent_group_id: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 70,
+          "y": 6660
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "28":
+    id: "28"
+    taskid: ffa4801c-99c2-407c-8def-5d107a136e6b
+    type: condition
+    task:
+      id: ffa4801c-99c2-407c-8def-5d107a136e6b
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "29"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: TrendMicro.ComputerGroups.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: TrendMicro.ComputerGroups.description
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 70,
+          "y": 6860
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "29":
+    id: "29"
+    taskid: 9d786fef-99d9-40bb-81eb-fc538565909a
+    type: regular
+    task:
+      id: 9d786fef-99d9-40bb-81eb-fc538565909a
+      version: -1
+      name: trendmicro-delete-computer-group
+      script: '|||trendmicro-delete-computer-group'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "34"
+    scriptarguments:
+      computer_group_id:
+        simple: ${TrendMicro.ComputerGroups.[0].ID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 70,
+          "y": 7040
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "30":
+    id: "30"
+    taskid: 9b43057f-2cd8-4ed2-8ad4-f11037934fac
+    type: regular
+    task:
+      id: 9b43057f-2cd8-4ed2-8ad4-f11037934fac
+      version: -1
+      name: trendmicro-search-firewall-rules
+      script: '|||trendmicro-search-firewall-rules'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "31"
+    scriptarguments:
+      field_name:
+        simple: action
+      field_type:
+        simple: choice
+      max_items: {}
+      operation:
+        simple: equal
+      sort_by_object_id: {}
+      value:
+        simple: allow
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 60,
+          "y": 7560
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "31":
+    id: "31"
+    taskid: 42c0a2e5-7f44-4a06-8b39-88ee523b949b
+    type: condition
+    task:
+      id: 42c0a2e5-7f44-4a06-8b39-88ee523b949b
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "32"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: TrendMicro.FirewallRules.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: TrendMicro.FirewallRules.description
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: TrendMicro.FirewallRules.action
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: TrendMicro.FirewallRules.priority
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: TrendMicro.FirewallRules.direction
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 60,
+          "y": 7750
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "32":
+    id: "32"
+    taskid: 4a06a107-37eb-4c9d-8fb7-dceeb4a86fd1
+    type: regular
+    task:
+      id: 4a06a107-37eb-4c9d-8fb7-dceeb4a86fd1
+      version: -1
+      name: trendmicro-list-firewall-rules
+      script: '|||trendmicro-list-firewall-rules'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "33"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 60,
+          "y": 7970
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "33":
+    id: "33"
+    taskid: 22579b1e-62de-4d66-8f08-7572eb9cef6e
+    type: condition
+    task:
+      id: 22579b1e-62de-4d66-8f08-7572eb9cef6e
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "36"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: TrendMicro.FirewallRules.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: TrendMicro.FirewallRules.description
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: TrendMicro.FirewallRules.action
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: TrendMicro.FirewallRules.priority
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: TrendMicro.FirewallRules.direction
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 8160
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "34":
+    id: "34"
+    taskid: 1ea7face-0ba4-4307-8f7f-556e72cd0c0e
+    type: regular
+    task:
+      id: 1ea7face-0ba4-4307-8f7f-556e72cd0c0e
+      version: -1
+      name: trendmicro-create-firewall-rule
+      script: '|||trendmicro-create-firewall-rule'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "35"
+    scriptarguments:
+      action:
+        simple: allow
+      alert_enabled: {}
+      any_flags: {}
+      context_id: {}
+      description:
+        simple: Test Playbook Firewall Rule
+      destination_ip_list_id: {}
+      destination_ip_mask: {}
+      destination_ip_multiple: {}
+      destination_ip_not: {}
+      destination_ip_range_from: {}
+      destination_ip_range_to: {}
+      destination_ip_type: {}
+      destination_ip_value: {}
+      destination_mac_list_id: {}
+      destination_mac_multiple: {}
+      destination_mac_not: {}
+      destination_mac_type: {}
+      destination_mac_value: {}
+      destination_port_list_id: {}
+      destination_port_multiple: {}
+      destination_port_not: {}
+      destination_port_type: {}
+      direction:
+        simple: incoming
+      frame_not: {}
+      frame_number: {}
+      frame_type:
+        simple: ip
+      icmp_code: {}
+      icmp_not: {}
+      icmp_type: {}
+      include_packet_data: {}
+      log_disabled: {}
+      name:
+        simple: Test Playbook Rule
+      priority:
+        simple: "2"
+      protocol: {}
+      protocol_not: {}
+      protocol_number: {}
+      schedule_id: {}
+      source_ip_list_id: {}
+      source_ip_mask: {}
+      source_ip_multiple: {}
+      source_ip_not: {}
+      source_ip_range_from: {}
+      source_ip_range_to: {}
+      source_ip_type: {}
+      source_ip_value: {}
+      source_mac_list_id: {}
+      source_mac_multiple: {}
+      source_mac_not: {}
+      source_mac_type: {}
+      source_mac_value: {}
+      source_port_list_id: {}
+      source_port_multiple: {}
+      source_port_not: {}
+      source_port_type: {}
+      tcp_not: {}
+      tcpflags: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 70,
+          "y": 7220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "35":
+    id: "35"
+    taskid: 53098537-4402-45e2-84dd-b16c28a7f3a7
+    type: condition
+    task:
+      id: 53098537-4402-45e2-84dd-b16c28a7f3a7
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "30"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: TrendMicro.FirewallRules.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: TrendMicro.FirewallRules.description
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: TrendMicro.FirewallRules.action
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: TrendMicro.FirewallRules.priority
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: TrendMicro.FirewallRules.direction
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 70,
+          "y": 7385
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "36":
+    id: "36"
+    taskid: 96fcb14a-db97-4e6d-8cb7-844dbea64813
+    type: regular
+    task:
+      id: 96fcb14a-db97-4e6d-8cb7-844dbea64813
+      version: -1
+      name: trendmicro-get-firewall-rule
+      script: '|||trendmicro-get-firewall-rule'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "37"
+    scriptarguments:
+      firewall_rule_id:
+        simple: ${TrendMicro.FirewallRules.[0].ID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 40,
+          "y": 8360
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "37":
+    id: "37"
+    taskid: 02c3b279-4fd1-4e41-8311-7a5dcf6e9b37
+    type: condition
+    task:
+      id: 02c3b279-4fd1-4e41-8311-7a5dcf6e9b37
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "38"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: TrendMicro.FirewallRules.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: TrendMicro.FirewallRules.description
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: TrendMicro.FirewallRules.action
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: TrendMicro.FirewallRules.priority
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: TrendMicro.FirewallRules.direction
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 40,
+          "y": 8560
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "38":
+    id: "38"
+    taskid: fdbdf78d-7b99-4cd2-832c-5cca20533674
+    type: regular
+    task:
+      id: fdbdf78d-7b99-4cd2-832c-5cca20533674
+      version: -1
+      name: trendmicro-modify-firewall-rule
+      script: '|||trendmicro-modify-firewall-rule'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "39"
+    scriptarguments:
+      action: {}
+      alert_enabled: {}
+      any_flags: {}
+      context_id: {}
+      description:
+        simple: Modified Test Rule
+      destination_ip_list_id: {}
+      destination_ip_mask: {}
+      destination_ip_multiple: {}
+      destination_ip_not: {}
+      destination_ip_range_from: {}
+      destination_ip_range_to: {}
+      destination_ip_type: {}
+      destination_ip_value: {}
+      destination_mac_list_id: {}
+      destination_mac_multiple: {}
+      destination_mac_not: {}
+      destination_mac_type: {}
+      destination_mac_value: {}
+      destination_port_list_id: {}
+      destination_port_multiple: {}
+      destination_port_not: {}
+      destination_port_type: {}
+      direction: {}
+      firewall_rule_id:
+        simple: ${TrendMicro.FirewallRules.[0].ID}
+      frame_not: {}
+      frame_number: {}
+      frame_type: {}
+      icmp_code: {}
+      icmp_not: {}
+      icmp_type: {}
+      include_packet_data: {}
+      log_disabled: {}
+      name: {}
+      priority: {}
+      protocol: {}
+      protocol_not: {}
+      protocol_number: {}
+      schedule_id: {}
+      source_ip_list_id: {}
+      source_ip_mask: {}
+      source_ip_multiple: {}
+      source_ip_not: {}
+      source_ip_range_from: {}
+      source_ip_range_to: {}
+      source_ip_type: {}
+      source_ip_value: {}
+      source_mac_list_id: {}
+      source_mac_multiple: {}
+      source_mac_not: {}
+      source_mac_type: {}
+      source_mac_value: {}
+      source_port_list_id: {}
+      source_port_multiple: {}
+      source_port_not: {}
+      source_port_type: {}
+      tcp_not: {}
+      tcpflags: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 8770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "39":
+    id: "39"
+    taskid: 2b42fad1-16c9-4fb3-8e21-026737da59ff
+    type: condition
+    task:
+      id: 2b42fad1-16c9-4fb3-8e21-026737da59ff
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "40"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: TrendMicro.FirewallRules.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: TrendMicro.FirewallRules.description
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: TrendMicro.FirewallRules.action
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: TrendMicro.FirewallRules.priority
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: TrendMicro.FirewallRules.direction
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 8950
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "40":
+    id: "40"
+    taskid: bf3d6802-318c-4060-86b4-ebf4f9c7ecb5
+    type: regular
+    task:
+      id: bf3d6802-318c-4060-86b4-ebf4f9c7ecb5
+      version: -1
+      name: trendmicro-delete-firewall-rule
+      script: '|||trendmicro-delete-firewall-rule'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "62"
+    scriptarguments:
+      firewall_rule_id:
+        simple: ${TrendMicro.FirewallRules.[0].ID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 40,
+          "y": 9140
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "41":
+    id: "41"
+    taskid: 85354b18-5a74-40d2-8fc5-0a9073c113c2
+    type: regular
+    task:
+      id: 85354b18-5a74-40d2-8fc5-0a9073c113c2
+      version: -1
+      name: trendmicro-list-firewall-rule-ids-of-computer
+      script: '|||trendmicro-list-firewall-rule-ids-of-computer'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "42"
+    scriptarguments:
+      computer_id:
+        simple: ${TrendMicro.Computers.[0].ID}
+      overrides: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 60,
+          "y": 4360
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "42":
+    id: "42"
+    taskid: b1737048-a78a-4013-84ea-03b390b09876
+    type: condition
+    task:
+      id: b1737048-a78a-4013-84ea-03b390b09876
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "64"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: TrendMicro.FirewallAssignments.assignedRuleIDs
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 60,
+          "y": 4560
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "43":
+    id: "43"
+    taskid: 342e39b2-de08-408d-8595-ec7e94187cc2
+    type: regular
+    task:
+      id: 342e39b2-de08-408d-8595-ec7e94187cc2
+      version: -1
+      name: trendmicro-add-firewall-rule-ids-to-computer
+      script: '|||trendmicro-add-firewall-rule-ids-to-computer'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "44"
+    scriptarguments:
+      computer_id:
+        simple: ${TrendMicro.Computers.[0].ID}
+      overrides: {}
+      rule_ids:
+        simple: "10"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3950
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "44":
+    id: "44"
+    taskid: 9e6fb2d7-2c3e-48f2-868b-697cc7eb92d1
+    type: condition
+    task:
+      id: 9e6fb2d7-2c3e-48f2-868b-697cc7eb92d1
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "41"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: TrendMicro.FirewallAssignments.assignedRuleIDs
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4150
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "45":
+    id: "45"
+    taskid: 2a33ba0c-84d7-4cb0-81ef-b249c7c5d501
+    type: regular
+    task:
+      id: 2a33ba0c-84d7-4cb0-81ef-b249c7c5d501
+      version: -1
+      name: trendmicro-set-firewall-rule-ids-to-computer
+      script: '|||trendmicro-set-firewall-rule-ids-to-computer'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "46"
+    scriptarguments:
+      computer_id:
+        simple: ${TrendMicro.Computers.[0].ID}
+      overrides: {}
+      rule_ids:
+        simple: 1,2
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3565
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "46":
+    id: "46"
+    taskid: 11e56cfe-f41d-415a-8629-2d2ff067507e
+    type: condition
+    task:
+      id: 11e56cfe-f41d-415a-8629-2d2ff067507e
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "43"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: TrendMicro.FirewallAssignments.assignedRuleIDs
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "47":
+    id: "47"
+    taskid: 0ac0ae1f-c68a-4363-8c40-15807a7d8beb
+    type: regular
+    task:
+      id: 0ac0ae1f-c68a-4363-8c40-15807a7d8beb
+      version: -1
+      name: trendmicro-get-policy
+      script: '|||trendmicro-get-policy'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "48"
+    scriptarguments:
+      overrides: {}
+      policy_id:
+        simple: ${TrendMicro.Policies.[0].ID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 40,
+          "y": 10540
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "48":
+    id: "48"
+    taskid: 963d0e95-c7b4-458d-8b43-413798316767
+    type: condition
+    task:
+      id: 963d0e95-c7b4-458d-8b43-413798316767
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "49"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: TrendMicro.Policies.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: TrendMicro.Policies.description
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: TrendMicro.Policies.recommendationScanMode
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: TrendMicro.Policies.autoRequiresUpdate
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 40,
+          "y": 10720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "49":
+    id: "49"
+    taskid: 72cf03c7-7ca2-4747-87b8-99bf9c636afa
+    type: regular
+    task:
+      id: 72cf03c7-7ca2-4747-87b8-99bf9c636afa
+      version: -1
+      name: trendmicro-modify-policy
+      script: '|||trendmicro-modify-policy'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "50"
+    scriptarguments:
+      auto_requires_update: {}
+      description:
+        simple: Modified Test Policy
+      name: {}
+      overrides: {}
+      parent_id: {}
+      policy_id:
+        simple: ${TrendMicro.Policies.[0].ID}
+      recommendation_scan_mode: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 30,
+          "y": 10920
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "50":
+    id: "50"
+    taskid: 99d829e3-bba5-4a13-8875-033b4b6b5331
+    type: condition
+    task:
+      id: 99d829e3-bba5-4a13-8875-033b4b6b5331
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "52"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: TrendMicro.Policies.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: TrendMicro.Policies.description
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: TrendMicro.Policies.recommendationScanMode
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: TrendMicro.Policies.autoRequiresUpdate
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 30,
+          "y": 11110
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "51":
+    id: "51"
+    taskid: c0262a25-562f-4bfa-8035-cd259d475687
+    type: regular
+    task:
+      id: c0262a25-562f-4bfa-8035-cd259d475687
+      version: -1
+      name: trendmicro-delete-policy
+      script: '|||trendmicro-delete-policy'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "65"
+    scriptarguments:
+      policy_id:
+        simple: ${TrendMicro.Policies.[0].ID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 30,
+          "y": 12530
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "52":
+    id: "52"
+    taskid: a564ccf5-f505-4809-8681-e12a415b306b
+    type: regular
+    task:
+      id: a564ccf5-f505-4809-8681-e12a415b306b
+      version: -1
+      name: trendmicro-get-policy-setting
+      script: '|||trendmicro-get-policy-setting'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "53"
+    scriptarguments:
+      name:
+        simple: firewallSettingEngineOptionVerifyTcpChecksumEnabled
+      overrides: {}
+      policy_id:
+        simple: ${TrendMicro.Policies.[0].ID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 30,
+          "y": 11330
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "53":
+    id: "53"
+    taskid: 80cfffc6-0dac-40e3-82a8-a3676175c1e9
+    type: condition
+    task:
+      id: 80cfffc6-0dac-40e3-82a8-a3676175c1e9
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "54"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: TrendMicro.PolicySettings.policyId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: TrendMicro.PolicySettings.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: TrendMicro.PolicySettings.value
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 30,
+          "y": 11510
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "54":
+    id: "54"
+    taskid: 24fed070-a98f-403a-8e5a-75b420eb2346
+    type: regular
+    task:
+      id: 24fed070-a98f-403a-8e5a-75b420eb2346
+      version: -1
+      name: trendmicro-modify-policy-setting
+      script: '|||trendmicro-modify-policy-setting'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "55"
+    scriptarguments:
+      name:
+        simple: firewallSettingEngineOptionVerifyTcpChecksumEnabled
+      overrides: {}
+      policy_id:
+        simple: ${TrendMicro.Policies.[0].ID}
+      value:
+        simple: "true"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 30,
+          "y": 11730
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "55":
+    id: "55"
+    taskid: 5b5c40f9-3926-43f0-8e59-4b560dc99edc
+    type: condition
+    task:
+      id: 5b5c40f9-3926-43f0-8e59-4b560dc99edc
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "56"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: TrendMicro.PolicySettings.policyId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: TrendMicro.PolicySettings.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: TrendMicro.PolicySettings.value
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 30,
+          "y": 11920
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "56":
+    id: "56"
+    taskid: c38e4e77-7a1c-47eb-89a0-efac6d1057aa
+    type: regular
+    task:
+      id: c38e4e77-7a1c-47eb-89a0-efac6d1057aa
+      version: -1
+      name: trendmicro-reset-policy-setting
+      script: '|||trendmicro-reset-policy-setting'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "57"
+    scriptarguments:
+      name:
+        simple: firewallSettingEngineOptionVerifyTcpChecksumEnabled
+      overrides: {}
+      policy_id:
+        simple: ${TrendMicro.Policies.[0].ID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 30,
+          "y": 12120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "57":
+    id: "57"
+    taskid: f2974153-17be-4717-8380-bc42eabc9ab1
+    type: condition
+    task:
+      id: f2974153-17be-4717-8380-bc42eabc9ab1
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "51"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: TrendMicro.PolicySettings.policyId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: TrendMicro.PolicySettings.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: TrendMicro.PolicySettings.value
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 30,
+          "y": 12340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "58":
+    id: "58"
+    taskid: 0e95376c-ae67-41b9-81d2-51deadf194a3
+    type: regular
+    task:
+      id: 0e95376c-ae67-41b9-81d2-51deadf194a3
+      version: -1
+      name: trendmicro-list-policies
+      script: '|||trendmicro-list-policies'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "59"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 30,
+          "y": 9680
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "59":
+    id: "59"
+    taskid: 758fc6d5-bfd0-4932-88bf-405f6618675b
+    type: condition
+    task:
+      id: 758fc6d5-bfd0-4932-88bf-405f6618675b
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "60"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: TrendMicro.Policies.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: TrendMicro.Policies.description
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: TrendMicro.Policies.recommendationScanMode
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: TrendMicro.Policies.autoRequiresUpdate
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 30,
+          "y": 9880
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "60":
+    id: "60"
+    taskid: 6944fa9e-94ec-4101-8cca-da4a81d4923d
+    type: regular
+    task:
+      id: 6944fa9e-94ec-4101-8cca-da4a81d4923d
+      version: -1
+      name: trendmicro-search-policies
+      script: '|||trendmicro-search-policies'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "61"
+    scriptarguments:
+      field_name:
+        simple: ID
+      field_type:
+        simple: id
+      max_items: {}
+      operation:
+        simple: equal
+      overrides: {}
+      sort_by_object_id: {}
+      value:
+        simple: ${TrendMicro.Policies.[0].ID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 30,
+          "y": 10100
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "61":
+    id: "61"
+    taskid: c149573d-4807-48e9-8e44-2301cf4c92a8
+    type: condition
+    task:
+      id: c149573d-4807-48e9-8e44-2301cf4c92a8
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "47"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: TrendMicro.Policies.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: TrendMicro.Policies.description
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: TrendMicro.Policies.recommendationScanMode
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: TrendMicro.Policies.autoRequiresUpdate
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 30,
+          "y": 10300
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "62":
+    id: "62"
+    taskid: 0b30c915-dc50-4c6e-8527-4440448802ce
+    type: regular
+    task:
+      id: 0b30c915-dc50-4c6e-8527-4440448802ce
+      version: -1
+      name: trendmicro-create-policy
+      script: '|||trendmicro-create-policy'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "63"
+    scriptarguments:
+      auto_requires_update: {}
+      description:
+        simple: Test Playbook Policy
+      name:
+        simple: Test Playbook Policy
+      overrides: {}
+      parent_id: {}
+      recommendation_scan_mode: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 40,
+          "y": 9320
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "63":
+    id: "63"
+    taskid: aaab2b1e-c15f-468b-81dc-131cba05265d
+    type: condition
+    task:
+      id: aaab2b1e-c15f-468b-81dc-131cba05265d
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "58"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: TrendMicro.Policies.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: TrendMicro.Policies.description
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: TrendMicro.Policies.recommendationScanMode
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: TrendMicro.Policies.autoRequiresUpdate
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 40,
+          "y": 9490
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "64":
+    id: "64"
+    taskid: dc973589-ab63-432a-8b30-a2c0d2caa5e7
+    type: regular
+    task:
+      id: dc973589-ab63-432a-8b30-a2c0d2caa5e7
+      version: -1
+      name: trendmicro-remove-firewall-rule-id-from-computer
+      script: '|||trendmicro-remove-firewall-rule-id-from-computer'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      computer_id:
+        simple: ${TrendMicro.Computers.[0].ID}
+      firewall_rule_id:
+        simple: "10"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 60,
+          "y": 4740
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "65":
+    id: "65"
+    taskid: f287714c-842f-4107-85d7-a9d7767afc1f
+    type: regular
+    task:
+      id: f287714c-842f-4107-85d7-a9d7767afc1f
+      version: -1
+      name: trendmicro-list-default-policy-settings
+      script: '|||trendmicro-list-default-policy-settings'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "66"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 30,
+          "y": 12745
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "66":
+    id: "66"
+    taskid: 05f042d2-7d3f-4e87-8fa0-bc1dcdba909c
+    type: condition
+    task:
+      id: 05f042d2-7d3f-4e87-8fa0-bc1dcdba909c
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "67"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: TrendMicro.DefaultPolicySettings.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: TrendMicro.DefaultPolicySettings.value
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 30,
+          "y": 12945
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "67":
+    id: "67"
+    taskid: 46087419-4d18-44ca-8a2b-45e4a7ad6d29
+    type: regular
+    task:
+      id: 46087419-4d18-44ca-8a2b-45e4a7ad6d29
+      version: -1
+      name: trendmicro-get-default-policy-setting
+      script: '|||trendmicro-get-default-policy-setting'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "68"
+    scriptarguments:
+      name:
+        simple: firewallSettingEngineOptionVerifyTcpChecksumEnabled
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 30,
+          "y": 13190
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "68":
+    id: "68"
+    taskid: b640b838-133c-47a7-8fe1-8d6f5ce790ef
+    type: condition
+    task:
+      id: b640b838-133c-47a7-8fe1-8d6f5ce790ef
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "69"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: TrendMicro.DefaultPolicySettings.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: TrendMicro.DefaultPolicySettings.value
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 30,
+          "y": 13410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "69":
+    id: "69"
+    taskid: 95236d8a-11a0-4e39-858d-07bc1f55d0c1
+    type: regular
+    task:
+      id: 95236d8a-11a0-4e39-858d-07bc1f55d0c1
+      version: -1
+      name: trendmicro-modify-default-policy-setting
+      script: '|||trendmicro-modify-default-policy-setting'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "70"
+    scriptarguments:
+      name:
+        simple: firewallSettingEngineOptionVerifyTcpChecksumEnabled
+      value:
+        simple: "true"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 30,
+          "y": 13630
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "70":
+    id: "70"
+    taskid: 4b1ebed3-df18-4e98-8e9f-d6ae17b30b4d
+    type: condition
+    task:
+      id: 4b1ebed3-df18-4e98-8e9f-d6ae17b30b4d
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "71"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: TrendMicro.DefaultPolicySettings.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: TrendMicro.DefaultPolicySettings.value
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 30,
+          "y": 13850
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "71":
+    id: "71"
+    taskid: 742e4738-a1a1-4b14-8819-86203cfc9074
+    type: regular
+    task:
+      id: 742e4738-a1a1-4b14-8819-86203cfc9074
+      version: -1
+      name: trendmicro-reset-default-policy-setting
+      script: '|||trendmicro-reset-default-policy-setting'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "72"
+    scriptarguments:
+      name:
+        simple: firewallSettingEngineOptionVerifyTcpChecksumEnabled
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 30,
+          "y": 14070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "72":
+    id: "72"
+    taskid: dbb30231-d2cb-41ae-83a4-cf0fdf33f095
+    type: condition
+    task:
+      id: dbb30231-d2cb-41ae-83a4-cf0fdf33f095
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "73"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: TrendMicro.DefaultPolicySettings.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: TrendMicro.DefaultPolicySettings.value
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 30,
+          "y": 14280
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "73":
+    id: "73"
+    taskid: ad7c8436-13e3-4564-8ffc-9de980f247dd
+    type: title
+    task:
+      id: ad7c8436-13e3-4564-8ffc-9de980f247dd
+      version: -1
+      name: Test Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 30,
+          "y": 14510
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 14525,
+        "width": 420,
+        "x": 30,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
