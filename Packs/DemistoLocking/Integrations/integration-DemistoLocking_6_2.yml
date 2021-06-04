@@ -28,8 +28,14 @@ script:
     function setLock(guid, info, version) {
         var versionedIntegrationContext = getVersionedIntegrationContext(true, true) || {};
         var integrationContext = versionedIntegrationContext.context;
-        if (JSON.stringify(version) !== JSON.stringify(versionedIntegrationContext.version)) {
-            throw 'Versions mismatch';
+        if ('sequenceNumber' in versionedIntegrationContext.version && 'primaryTerm' in versionedIntegrationContext.version) {
+            // elasticsearch db
+            if (version.version !== versionedIntegrationContext.version.version || version.sequenceNumber !== versionedIntegrationContext.version.sequenceNumber || version.primaryTerm !== versionedIntegrationContext.version.primaryTerm) {
+                throw new Error('Versions mismatch');
+            }
+        } else if (version !== versionedIntegrationContext.version) {
+            // bolt db
+            throw new Error('Versions mismatch');
         }
         integrationContext[lockName] = {guid: guid, info: info};
         setVersionedIntegrationContext(integrationContext, true, version);
