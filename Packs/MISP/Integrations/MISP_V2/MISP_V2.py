@@ -539,7 +539,7 @@ def check_file(file_hash):
         outputs = {
             outputPaths.get('dbotscore'): {
                 'Indicator': file_hash,
-                'Type': 'hash',
+                'Type': DBotScoreType.FILE,
                 'Vendor': 'MISP V2',
                 'Score': Common.DBotScore.NONE,
             },
