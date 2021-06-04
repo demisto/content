@@ -1,5 +1,6 @@
 id: Trend Micro Deep Security - Test
 version: 19
+fromversion: 5.0.0
 vcShouldKeepItemLegacyProdMachine: false
 name: Trend Micro Deep Security - Test
 starttaskid: "0"

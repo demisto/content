@@ -5568,7 +5568,7 @@ Search for specific firewall rules by some field name with a certain type. Every
                 "sourceIPMask": "255.255.255.0",
                 "sourceIPNot": false,
                 "sourceIPType": "masked-ip",
-                "sourceIPValue": "54.221.196.0",
+                "sourceIPValue": "1.1.1.1",
                 "sourceMACNot": false,
                 "sourceMACType": "any",
                 "sourcePortMultiple": [
@@ -7218,7 +7218,7 @@ List all existing firewall rules
                 "sourceIPMask": "255.255.255.0",
                 "sourceIPNot": false,
                 "sourceIPType": "masked-ip",
-                "sourceIPValue": "54.221.196.0",
+                "sourceIPValue": "1.1.1.1",
                 "sourceMACNot": false,
                 "sourceMACType": "any",
                 "sourcePortMultiple": [
