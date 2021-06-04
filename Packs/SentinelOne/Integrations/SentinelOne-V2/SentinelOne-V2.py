@@ -958,6 +958,7 @@ def list_agents_command(client: Client, args: dict) -> CommandResults:
         scan_status=args.get('scan_status'),
         os_type=args.get('os_type'),
         created_at=args.get('created_at'),
+        limit=args.get('limit'),
     )
 
     # Make request and get raw response
