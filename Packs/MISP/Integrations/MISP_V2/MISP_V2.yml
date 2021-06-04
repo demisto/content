@@ -346,7 +346,7 @@ script:
       type: String
     - contextPath: DBotScore.Score
       description: The actual score.
-      type: Number
+      type: String
   - arguments:
     - default: true
       description: IP address to check.
@@ -1780,25 +1780,18 @@ script:
     outputs:
     - contextPath: Domain.Name
       description: Bad domain found.
-      type: String
     - contextPath: DBotScore.Indicator
       description: The indicator that was tested.
-      type: String
     - contextPath: DBotScore.Type
       description: The indicator type.
-      type: String
     - contextPath: DBotScore.Vendor
       description: The vendor used to calculate the score.
-      type: String
     - contextPath: DBotScore.Score
       description: The actual DBot score.
-      type: Number
     - contextPath: Domain.RiskScore
       description: The reputation returned from MISP
-      type: String
     - contextPath: Domain.Malicious.Vendor
       description: For malicious domains, the vendor that made the decision
-      type: String
   dockerimage: demisto/pymisp:1.0.0.19190
   runonce: false
   script: ''
