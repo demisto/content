@@ -30,8 +30,9 @@ def main() -> None:
 
         if command == 'test-module':
             # This is the call made when pressing the integration Test button.
-            return_results('This integration does not support testing from this screen. Please refer to the documentation for details on how to perform configuration tests.')
-
+            return_results('This integration does not support testing from this screen. \
+                           Please refer to the documentation for details on how to perform \
+                           configuration tests.')
         elif command == 'dns-nsupdate':
             return_results(generic_ansible('dns', 'nsupdate', args, int_params, host_type))
     # Log exceptions and return errors

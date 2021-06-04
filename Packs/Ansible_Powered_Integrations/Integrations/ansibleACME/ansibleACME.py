@@ -30,8 +30,9 @@ def main() -> None:
 
         if command == 'test-module':
             # This is the call made when pressing the integration Test button.
-            return_results('This integration does not support testing from this screen. Please refer to the documentation for details on how to perform configuration tests.')
-
+            return_results('This integration does not support testing from this screen. \
+                           Please refer to the documentation for details on how to perform \
+                           configuration tests.')
         elif command == 'acme-account':
             return_results(generic_ansible('acme', 'acme_account', args, int_params, host_type))
         elif command == 'acme-account-info':

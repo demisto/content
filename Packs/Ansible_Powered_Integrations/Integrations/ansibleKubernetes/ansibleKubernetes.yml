@@ -388,7 +388,7 @@ script:
       description: The created, patched, or otherwise present Service object. Will
         be empty in the case of a deletion.
       type: unknown
-  dockerimage: demisto/ansible-runner:1.0.0.20435
+  dockerimage: demisto/ansible-runner:1.0.0.20884
   runonce: false
   script: ''
   subtype: python3
