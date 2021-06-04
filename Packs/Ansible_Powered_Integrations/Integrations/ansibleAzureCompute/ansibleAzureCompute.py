@@ -102,13 +102,17 @@ def main() -> None:
         elif command == 'azure-rm-virtualmachinescaleset-info':
             return_results(generic_ansible('azurecompute', 'azure_rm_virtualmachinescaleset_info', args, int_params, host_type))
         elif command == 'azure-rm-virtualmachinescalesetextension':
-            return_results(generic_ansible('azurecompute', 'azure_rm_virtualmachinescalesetextension', args, int_params, host_type))
+            return_results(generic_ansible('azurecompute', 'azure_rm_virtualmachinescalesetextension',
+                                           args, int_params, host_type))
         elif command == 'azure-rm-virtualmachinescalesetextension-info':
-            return_results(generic_ansible('azurecompute', 'azure_rm_virtualmachinescalesetextension_info', args, int_params, host_type))
+            return_results(generic_ansible(
+                'azurecompute', 'azure_rm_virtualmachinescalesetextension_info', args, int_params, host_type))
         elif command == 'azure-rm-virtualmachinescalesetinstance':
-            return_results(generic_ansible('azurecompute', 'azure_rm_virtualmachinescalesetinstance', args, int_params, host_type))
+            return_results(generic_ansible('azurecompute', 'azure_rm_virtualmachinescalesetinstance',
+                                           args, int_params, host_type))
         elif command == 'azure-rm-virtualmachinescalesetinstance-info':
-            return_results(generic_ansible('azurecompute', 'azure_rm_virtualmachinescalesetinstance_info', args, int_params, host_type))
+            return_results(generic_ansible('azurecompute', 'azure_rm_virtualmachinescalesetinstance_info',
+                                           args, int_params, host_type))
         elif command == 'azure-rm-webapp':
             return_results(generic_ansible('azurecompute', 'azure_rm_webapp', args, int_params, host_type))
         elif command == 'azure-rm-webapp-info':

@@ -58,7 +58,8 @@ def main() -> None:
         elif command == 'azure-rm-trafficmanagerendpoint':
             return_results(generic_ansible('azurenetworking', 'azure_rm_trafficmanagerendpoint', args, int_params, host_type))
         elif command == 'azure-rm-trafficmanagerendpoint-info':
-            return_results(generic_ansible('azurenetworking', 'azure_rm_trafficmanagerendpoint_info', args, int_params, host_type))
+            return_results(generic_ansible('azurenetworking', 'azure_rm_trafficmanagerendpoint_info',
+                                           args, int_params, host_type))
         elif command == 'azure-rm-trafficmanagerprofile':
             return_results(generic_ansible('azurenetworking', 'azure_rm_trafficmanagerprofile', args, int_params, host_type))
         elif command == 'azure-rm-trafficmanagerprofile-info':
