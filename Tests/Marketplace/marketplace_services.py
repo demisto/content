@@ -331,7 +331,44 @@ class Pack(object):
             return pack_versions[0].vstring
 
     @staticmethod
-    def _get_all_pack_images(pack_integration_images, display_dependencies_images, dependencies_data):
+    def organize_integration_images(pack_integration_images: list, pack_dependencies_integration_images_dict: dict,
+                                    pack_dependencies_by_download_count: list):
+        """ By Issue #32038
+        1. Sort pack integration images by alphabetical order
+        2. Sort pack dependencies by download count
+        Pack integration images are shown before pack dependencies integration images
+
+        Args:
+            pack_integration_images (list): list of pack integration images
+            pack_dependencies_integration_images_dict: a mapping of pack dependency name to its integration images
+            pack_dependencies_by_download_count: a list of pack dependencies sorted by download count
+
+        Returns:
+            list: list of sorted integration images
+
+        """
+
+        def sort_by_name(integration_image: dict):
+            return integration_image.get('name', '')
+
+        # sort packs integration images
+        pack_integration_images = sorted(pack_integration_images, key=sort_by_name)
+
+        # sort pack dependencies integration images
+        all_dep_int_imgs = pack_integration_images
+        for dep_pack_name in pack_dependencies_by_download_count:
+            if dep_pack_name in pack_dependencies_integration_images_dict:
+                logging.info(f'Adding {dep_pack_name} to deps int imgs')
+                dep_int_imgs = sorted(pack_dependencies_integration_images_dict[dep_pack_name], key=sort_by_name)
+                for dep_int_img in dep_int_imgs:
+                    if dep_int_img not in all_dep_int_imgs:  # avoid duplicates
+                        all_dep_int_imgs.append(dep_int_img)
+
+        return all_dep_int_imgs
+
+    @staticmethod
+    def _get_all_pack_images(pack_integration_images, display_dependencies_images, dependencies_data,
+                             pack_dependencies_by_download_count):
         """ Returns data of uploaded pack integration images and it's path in gcs. Pack dependencies integration images
         are added to that result as well.
 
@@ -339,31 +376,34 @@ class Pack(object):
              pack_integration_images (list): list of uploaded to gcs integration images and it paths in gcs.
              display_dependencies_images (list): list of pack names of additional dependencies images to display.
              dependencies_data (dict): all level dependencies data.
+             pack_dependencies_by_download_count (list): list of pack names that are dependencies of the given pack
+            sorted by download count.
 
         Returns:
             list: collection of integration display name and it's path in gcs.
 
         """
-        additional_dependencies_data = {k: v for (k, v) in dependencies_data.items()
-                                        if k in display_dependencies_images}
+        dependencies_integration_images_dict = {}
+        additional_dependencies_data = {k: v for k, v in dependencies_data.items() if k in display_dependencies_images}
 
         for dependency_data in additional_dependencies_data.values():
-            dependency_integration_images = dependency_data.get('integrations', [])
+            for dep_int_img in dependency_data.get('integrations', []):
+                dep_int_img_gcs_path = dep_int_img.get('imagePath', '')  # image public url
+                dep_int_img['name'] = Pack.remove_contrib_suffix_from_name(dep_int_img.get('name', ''))
+                dep_pack_name = os.path.basename(os.path.dirname(dep_int_img_gcs_path))
 
-            for dependency_integration in dependency_integration_images:
-                dependency_integration_gcs_path = dependency_integration.get('imagePath', '')  # image public url
-                dependency_integration['name'] = Pack.remove_contrib_suffix_from_name(
-                    dependency_integration.get('name', ''))
-                dependency_pack_name = os.path.basename(
-                    os.path.dirname(dependency_integration_gcs_path))  # extract pack name from public url
+                if dep_pack_name not in display_dependencies_images:
+                    continue  # skip if integration image is not part of displayed images of the given pack
 
-                if dependency_pack_name not in display_dependencies_images:
-                    continue  # skip if integration image is not part of displayed pack
+                if dep_int_img not in pack_integration_images:  # avoid duplicates in list
+                    if dep_pack_name in dependencies_integration_images_dict:
+                        dependencies_integration_images_dict[dep_pack_name].append(dep_int_img)
+                    else:
+                        dependencies_integration_images_dict[dep_pack_name] = [dep_int_img]
 
-                if dependency_integration not in pack_integration_images:  # avoid duplicates in list
-                    pack_integration_images.append(dependency_integration)
-
-        return pack_integration_images
+        return Pack.organize_integration_images(
+            pack_integration_images, dependencies_integration_images_dict, pack_dependencies_by_download_count
+        )
 
     def is_feed_pack(self, yaml_content, yaml_type):
         """
@@ -1000,13 +1040,13 @@ class Pack(object):
 
         return task_status, False
 
-    def get_changelog_latest_rn(self, changelog_index_path: str) -> Tuple[dict, LooseVersion]:
+    def get_changelog_latest_rn(self, changelog_index_path: str) -> Tuple[dict, LooseVersion, str]:
         """
         Returns the changelog file contents and the last version of rn in the changelog file
         Args:
             changelog_index_path (str): the changelog.json file path in the index
 
-        Returns: the changelog file contents and the last version of rn in the changelog file
+        Returns: the changelog file contents, the last version,  and contents of rn in the changelog file
 
         """
         logging.info(f"Found Changelog for: {self._pack_name}")
@@ -1022,8 +1062,9 @@ class Pack(object):
         changelog_rn_versions = [LooseVersion(ver) for ver in changelog]
         # no need to check if changelog_rn_versions isn't empty because changelog file exists
         changelog_latest_rn_version = max(changelog_rn_versions)
+        changelog_latest_rn = changelog[changelog_latest_rn_version.vstring]["releaseNotes"]
 
-        return changelog, changelog_latest_rn_version
+        return changelog, changelog_latest_rn_version, changelog_latest_rn
 
     def get_modified_release_notes_lines(self, release_notes_dir: str, changelog_latest_rn_version: LooseVersion,
                                          changelog: dict, modified_rn_files: list):
@@ -1107,13 +1148,14 @@ class Pack(object):
                 same_block_versions_dict[current_version] = self._clean_release_notes(rn_lines).strip()
         return same_block_versions_dict, higher_nearest_version.vstring
 
-    def get_release_notes_lines(self, release_notes_dir: str, changelog_latest_rn_version: LooseVersion) -> \
-            Tuple[str, str]:
+    def get_release_notes_lines(self, release_notes_dir: str, changelog_latest_rn_version: LooseVersion,
+                                changelog_latest_rn: str) -> Tuple[str, str]:
         """
         Prepares the release notes contents for the new release notes entry
         Args:
             release_notes_dir (str): the path to the release notes dir
             changelog_latest_rn_version (LooseVersion): the last version of release notes in the changelog.json file
+            changelog_latest_rn (str): the last release notes in the changelog.json file
 
         Returns: The release notes contents and the latest release notes version (in the release notes directory)
 
@@ -1133,26 +1175,28 @@ class Pack(object):
             found_versions.append(LooseVersion(version))
 
         latest_release_notes_version = max(found_versions)
-        latest_release_notes = latest_release_notes_version.vstring
-        logging.info(f"Latest ReleaseNotes version is: {latest_release_notes}")
+        latest_release_notes_version_str = latest_release_notes_version.vstring
+        logging.info(f"Latest ReleaseNotes version is: {latest_release_notes_version_str}")
 
         if len(pack_versions_dict) > 1:
             # In case that there is more than 1 new release notes file, wrap all release notes together for one
             # changelog entry
             aggregation_str = f"[{', '.join(lv.vstring for lv in found_versions if lv > changelog_latest_rn_version)}]" \
-                              f" => {latest_release_notes}"
+                              f" => {latest_release_notes_version_str}"
             logging.info(f"Aggregating ReleaseNotes versions: {aggregation_str}")
             release_notes_lines = aggregate_release_notes_for_marketplace(pack_versions_dict)
             self._aggregated = True
             self._aggregation_str = aggregation_str
+        elif len(pack_versions_dict) == 1:
+            # In case where there is only one new release notes file
+            release_notes_lines = pack_versions_dict[latest_release_notes_version_str]
         else:
-            # In case where there is only one new release notes file, OR
             # In case where the pack is up to date, i.e. latest changelog is latest rn file
-            latest_release_notes_suffix = f"{latest_release_notes.replace('.', '_')}.md"
-            with open(os.path.join(release_notes_dir, latest_release_notes_suffix), 'r') as rn_file:
-                release_notes_lines = self._clean_release_notes(rn_file.read())
+            # We should take the release notes from the index as it has might been aggregated
+            logging.info(f'No new RN file was detected for pack {self._pack_name}, taking latest RN from the index')
+            release_notes_lines = changelog_latest_rn
 
-        return release_notes_lines, latest_release_notes
+        return release_notes_lines, latest_release_notes_version_str
 
     def assert_upload_bucket_version_matches_release_notes_version(self,
                                                                    changelog: dict,
@@ -1218,13 +1262,14 @@ class Pack(object):
             logging.info(f"Loading changelog for {self._pack_name} pack")
             changelog_index_path = os.path.join(index_folder_path, self._pack_name, Pack.CHANGELOG_JSON)
             if os.path.exists(changelog_index_path):
-                changelog, changelog_latest_rn_version = self.get_changelog_latest_rn(changelog_index_path)
+                changelog, changelog_latest_rn_version, changelog_latest_rn = \
+                    self.get_changelog_latest_rn(changelog_index_path)
                 release_notes_dir = os.path.join(self._pack_path, Pack.RELEASE_NOTES)
 
                 if os.path.exists(release_notes_dir):
                     # Handling latest release notes files
                     release_notes_lines, latest_release_notes = self.get_release_notes_lines(
-                        release_notes_dir, changelog_latest_rn_version)
+                        release_notes_dir, changelog_latest_rn_version, changelog_latest_rn)
                     self.assert_upload_bucket_version_matches_release_notes_version(changelog, latest_release_notes)
 
                     # Handling modified old release notes files, if there are any
@@ -1579,6 +1624,11 @@ class Pack(object):
             dict: parsed pack metadata.
 
         """
+        landing_page_sections = mp_statistics.StatisticsHandler.get_landing_page_sections()
+        displayed_dependencies = user_metadata.get('displayedImages', [])
+        trending_packs = None
+        pack_dependencies_by_download_count = displayed_dependencies
+
         # ===== Pack Regular Attributes =====
         self._support_type = user_metadata.get('support', Metadata.XSOAR_SUPPORT)
         self._support_details = self._create_support_section(
@@ -1598,33 +1648,36 @@ class Pack(object):
         self._dependencies = self._parse_pack_dependencies(user_metadata.get('dependencies', {}), dependencies_data)
 
         # ===== Pack Private Attributes =====
-        self._is_private_pack = user_metadata.get('partnerId', False)
-        self._is_premium = True if self._is_private_pack else False
-        self._preview_only = True if self._is_private_pack else False
+        self._is_private_pack = 'partnerId' in user_metadata
+        self._is_premium = self._is_private_pack
+        self._preview_only = get_valid_bool(user_metadata.get('previewOnly', False))
         self._price = convert_price(pack_id=self._pack_name, price_value_input=user_metadata.get('price'))
         if self._is_private_pack:
             self._vendor_id = user_metadata.get('vendorId', "")
             self._partner_id = user_metadata.get('partnerId', "")
             self._partner_name = user_metadata.get('partnerName', "")
             self._content_commit_hash = user_metadata.get('contentCommitHash', "")
+            # Currently all content packs are legacy.
+            # Since premium packs cannot be legacy, we directly set this attribute to false.
+            self._legacy = False
 
         # ===== Pack Statistics Attributes =====
-        landing_page_sections = mp_statistics.StatisticsHandler.get_landing_page_sections()
-        trending_packs = None
-
         if not self._is_private_pack and statistics_handler:  # Public Content case
             self._pack_statistics_handler = mp_statistics.PackStatisticsHandler(
-                self._pack_name, statistics_handler.packs_statistics_df, index_folder_path
+                self._pack_name, statistics_handler.packs_statistics_df, statistics_handler.packs_download_count_desc,
+                displayed_dependencies
             )
             self._downloads_count = self._pack_statistics_handler.download_count
             trending_packs = statistics_handler.trending_packs
+            pack_dependencies_by_download_count = self._pack_statistics_handler.displayed_dependencies_sorted
 
         self._tags = self._collect_pack_tags(user_metadata, landing_page_sections, trending_packs)
         self._search_rank = mp_statistics.PackStatisticsHandler.calculate_search_rank(
             tags=self._tags, certification=self._certification, content_items=self._content_items
         )
         self._related_integration_images = self._get_all_pack_images(
-            self._displayed_integration_images, user_metadata.get('displayedImages', []), dependencies_data
+            self._displayed_integration_images, displayed_dependencies, dependencies_data,
+            pack_dependencies_by_download_count
         )
 
     def format_metadata(self, user_metadata, index_folder_path, packs_dependencies_mapping, build_number, commit_hash,

@@ -187,9 +187,9 @@ tasks:
     task:
       id: c87e21a0-7348-4017-8b50-0d9e9845df63
       version: -1
-      name: Content developer setup New
+      name: Content developer setup
       description: Install content working environment.
-      playbookName: Content developer setup New
+      playbookName: Content developer setup
       type: playbook
       iscommand: false
       brand: ""
@@ -523,7 +523,7 @@ tasks:
               "incomingMapperId": "",
               "integrationLogLevel": "",
               "isIntegrationScript": true,
-              "name": "Tidy_instance_9",
+              "name": "Tidy_instance_1",
               "packID": "",
               "passwordProtected": false,
               "path": "",
