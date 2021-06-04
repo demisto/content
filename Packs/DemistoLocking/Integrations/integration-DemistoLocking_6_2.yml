@@ -74,7 +74,7 @@ script:
                         setLock(guid, lockInfo, versionedLock.version);
                     } catch(err) {
                         if (err.message == 'Versions mismatch') {
-                            logDebug('~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ \n \n \n \n Hit version mismatch when trying to set lock, will try again.');
+                            logDebug('Hit version mismatch when trying to set lock, will try again.');
                         } else {
                             throw err;
                         }
