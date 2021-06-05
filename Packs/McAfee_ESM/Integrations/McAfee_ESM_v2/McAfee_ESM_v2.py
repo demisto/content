@@ -330,6 +330,8 @@ class McAfeeESMClient(BaseClient):
             result['severity'] = self.args['severity']
         if 'status' in self.args:
             result['statusId'] = {'value': self.__status_and_id(status_name=self.args['status']).get('id')}
+        if 'notes' in self.args:
+            result['notes'] = self.args['notes']
 
         self.__request(path, data={'caseDetail': result})
         return self.get_case_detail(case_id=self.args.get('id'))
