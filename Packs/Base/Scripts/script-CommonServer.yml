@@ -2165,7 +2165,7 @@ script: >-
       if (isDemistoVersionGE('6.2.0')) {
           return setIntegrationContext(context, version, sync);
       } else {
-          return setIntegrationContext();
+          return setIntegrationContext(context);
       }
   }
 
