@@ -634,7 +634,7 @@ def get_threat_indicators_command():
                 sample_id
             ),
             entry_context_list,
-            headers=['AnalysisID', 'Category', 'Classification', 'ID', 'Operation'],
+            headers=['ID', 'AnalysisID', 'Category', 'Classification', 'Operation'],
         )
 
         entry_context = {'VMRay.ThreatIndicator(obj.ID === val.ID)': entry_context_list}
