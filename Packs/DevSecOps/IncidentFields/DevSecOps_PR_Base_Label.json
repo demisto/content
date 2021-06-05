@@ -1,0 +1,30 @@
+{
+    "id": "incident_devsecopsprbaselabel",
+    "version": -1,
+    "modified": "2020-09-07T12:35:13.546750981+04:00",
+    "name": "DevSecOps PR Base Label",
+    "ownerOnly": false,
+    "cliName": "devsecopsprbaselabel",
+    "type": "shortText",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "associatedTypes": [
+        "DevSecOps New Git PR"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": false,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.0.0"
+}

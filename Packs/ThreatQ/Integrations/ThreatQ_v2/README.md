@@ -1,6 +1,6 @@
 <!-- HTML_DOC -->
 <p>A threat intelligence platform that collects and interprets intelligence data from open sources and manages indicator scoring, types, and attributes.</p>
-<h2>Configure ThreatQ v2 on Demisto</h2>
+<h2>Configure ThreatQ v2 on Cortex XSOAR</h2>
 <ol>
 <li>Navigate to <strong>Settings</strong> &gt; <strong>Integrations</strong>  &gt; <strong>Servers &amp; Services</strong>.</li>
 <li>Search for ThreatQ v2.</li>
@@ -19,7 +19,7 @@
 <li>Click <strong>Test</strong> to validate the new instance.</li>
 </ol>
 <h2>Commands</h2>
-<p>You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
+<p>You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
 <ol>
 <li><a href="#h_3a7d7db8-675d-4bc0-bf4a-8c618f603caf" target="_self">threatq-search-by-name: threatq-search-by-name</a></li>
 <li><a href="#h_5c96228f-eae9-4b47-81e4-c20a53bf1abb" target="_self">Check an IP address: ip</a></li>
@@ -49,7 +49,7 @@
 <li><a href="#h_49ca05ae-876c-486b-ac66-4fafc8411cd9" target="_self">Edit an indicator: threatq-edit-indicator</a></li>
 <li><a href="#h_d4a85aa5-245f-4b06-bffc-632140561a98" target="_self">Edit an event: threatq-edit-event</a></li>
 <li><a href="#h_7ed2b520-8db0-44e1-9e90-8f30463bd743" target="_self">Update a score of an indictor: threatq-update-score</a></li>
-<li><a href="#h_eeb24165-a887-4df8-8b01-43a054abcedf" target="_self">Download a file to Demisto: threatq-download-file</a></li>
+<li><a href="#h_eeb24165-a887-4df8-8b01-43a054abcedf" target="_self">Download a file to Cortex XSOAR: threatq-download-file</a></li>
 <li><a href="#h_6b58f4f4-da5f-4f94-b9b6-2d4acf482aed" target="_self">Get all indicators: threatq-get-all-indicators:</a></li>
 <li><a href="#h_4b89672e-4c43-4ebc-bd2b-c0ee3450df54" target="_self">Get a list of events: threatq-get-all-events</a></li>
 <li><a href="#h_940ef125-9750-463d-8b8b-3a057eac841b" target="_self">Get a list of all adversaries: threatq-get-all-adversaries</a></li>
@@ -2110,7 +2110,7 @@
 <tbody>
 <tr>
 <td style="width: 141px;">entry_id</td>
-<td style="width: 496px;">The file entry ID in Demisto.</td>
+<td style="width: 496px;">The file entry ID in Cortex XSOAR.</td>
 <td style="width: 71px;">Required</td>
 </tr>
 <tr>
@@ -3149,9 +3149,9 @@
 </pre>
 <h5>Human Readable Output</h5>
 <p><img src="https://raw.githubusercontent.com/demisto/content/e572d45cc445522b558166d4d0232598fb983d9b/Packs/ThreatQ/doc_files/update-score.png" alt="update-score.png"></p>
-<h3 id="h_eeb24165-a887-4df8-8b01-43a054abcedf">28. Download a file to Demisto</h3>
+<h3 id="h_eeb24165-a887-4df8-8b01-43a054abcedf">28. Download a file to Cortex XSOAR</h3>
 <hr>
-<p>Downloads a file from ThreatQ to Demisto.</p>
+<p>Downloads a file from ThreatQ to Cortex XSOAR.</p>
 <h5>Base Command</h5>
 <p><code>threatq-download-file</code></p>
 <h5>Input</h5>

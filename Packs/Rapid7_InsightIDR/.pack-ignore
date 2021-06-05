@@ -3,3 +3,7 @@ ignore=auto-test
 
 [file:README.md]
 ignore=RM104
+
+
+[file:Rapid7_InsightIDR.yml]
+ignore=BA108,BA109

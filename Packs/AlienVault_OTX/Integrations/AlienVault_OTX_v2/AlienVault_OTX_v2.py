@@ -163,7 +163,7 @@ def create_attack_pattern_relationships(client: Client, raw_response: dict, enti
                 entity_a=entity_a,
                 entity_a_type=entity_a_type,
                 entity_b=display_name,
-                entity_b_type="STIX Attack Pattern",
+                entity_b_type=FeedIndicatorType.indicator_type_by_server_version("STIX Attack Pattern"),
                 source_reliability=client.reliability,
                 brand=INTEGRATION_NAME) for display_name in display_names]
     return relationships

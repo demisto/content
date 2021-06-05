@@ -1,14 +1,15 @@
 import concurrent.futures
 import secrets
 from enum import Enum
+from ipaddress import ip_address
 from threading import Lock
 from typing import Tuple
 
 import pytz
 import urllib3
+from CommonServerUserPython import *  # noqa
 
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
-from CommonServerUserPython import *  # noqa
 
 # Disable insecure warnings
 urllib3.disable_warnings()  # pylint: disable=no-member
@@ -723,6 +724,15 @@ def build_headers(first_headers: List[str], all_headers: Set[str]) -> List[str]:
     return first_headers + list(set.difference(all_headers, first_headers))
 
 
+def is_valid_ip(ip: str) -> bool:
+    try:
+        ip_address(ip)
+        return True
+    except ValueError:
+        print_debug_msg(f'IP {ip} was found invalid.')
+        return False
+
+
 def get_offense_types(client: Client, offenses: List[Dict]) -> Dict:
     """
     Receives list of offenses, and performs API call to QRadar service to retrieve the offense type names
@@ -866,8 +876,12 @@ def enrich_offense_with_assets(client: Client, offense_ips: List[str]) -> List[D
 
     def get_assets_for_ips_batch(b: List):
         filter_query = ' or '.join([f'interfaces contains ip_addresses contains value="{ip}"' for ip in b])
-        return client.assets_list(filter_=filter_query)
+        try:
+            return client.assets_list(filter_=filter_query)
+        except Exception as e:
+            raise DemistoException(f'Error occurred during asset enrichment. Query: {filter_query}') from e
 
+    offense_ips = [offense_ip for offense_ip in offense_ips if is_valid_ip(offense_ip)]
     # Submit addresses in batches to avoid overloading QRadar service
     assets = [asset for b in batch(offense_ips[:OFF_ENRCH_LIMIT], batch_size=int(BATCH_SIZE))
               for asset in get_assets_for_ips_batch(b)]
