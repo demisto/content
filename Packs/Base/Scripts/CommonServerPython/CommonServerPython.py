@@ -1197,8 +1197,10 @@ def remove_none_elements(data):
     return res
 
 
-if (not os.getenv('COMMON_SERVER_NO_AUTO_PARAMS_REMOVE_NULLS') and hasattr(demisto, 'params')):
-    pass
+if (not os.getenv('COMMON_SERVER_NO_AUTO_PARAMS_REMOVE_NULLS')) and hasattr(demisto, 'params'):
+    res = remove_none_elements(demisto.params())
+    if res:
+        demisto.debug('Removed None elements from params. keys removed: {}'.format(res))
 
 
 def aws_table_to_markdown(response, table_header):
