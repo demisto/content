@@ -38,7 +38,7 @@ class HeyPerformanceResult:
             avg_time = response_times.mean()
             requests_num = len(response_times)
             total_time = response_times.sum() / int(self._c)
-            status_codes = df['status-code']
+            status_codes = df.get('status-code', [])
             successful_responses = len(tuple(code == 200 for code in status_codes))
         outputs = {
             "TimeoutPerRequest": self._t,
