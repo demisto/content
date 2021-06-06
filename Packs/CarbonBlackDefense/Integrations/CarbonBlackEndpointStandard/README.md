@@ -10,16 +10,18 @@ The new integration supports new commands:
     * [cbd-device-policy-update](#cbd-device-policy-update) Updates the devices to the specified policy ID.
     * [cbd-device-update-sensor-version](#cbd-device-update-sensor-version) Updates the version of a sensor.
 * [cbd-alerts-search](#cbd-alerts-search) Retrieves all alerts include some arguments (query, ID, type, category) to filter the results.
-* [cbd-find-events-details](#cbd-find-events-details) Retrieve details for enriched events.
+* [cbd-find-processes](#cbd-find-processes) Has new arguments (alert_category, device_id, etc.). The command output is a job_id that we can use in cbd-find-processes-results command as an argument to get the details of the processes
+* [cbd-find-events](#cbd-find-events) Has new arguments (alert_category, device_id, etc.). The command output is a job_id that we can use in cbd-find-events-results command as an argument to get the details of the events
+* [cbd-find-events-details](#cbd-find-events-details) Retrieve details for enriched events. The command output is a job_id that we can use in cbd-find-events-details-results command as an argument to get the details of the events
+* cbd-get-devices-status Is deprecated use cbd-device-search.
+* cbd-get-device-status Is deprecated use cbd-device-search with the device_id argument.
 
 3 new playbooks
 1. "Find Events" Finds events using a search query (or device_id, etc.).
 2. "Find Event Details" Receives event IDs and returns details about the event.
 3. "Find Processes" Find processes using a search query (or device_id, etc.).
 
-Also added:
-* Mapper.
-* Layout.
+An incident type, classifier and mapper were added.
 
 ## Configure Carbon Black Endpoint Standard on Cortex XSOAR
 
