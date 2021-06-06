@@ -2,7 +2,7 @@
     "name": "BitSight",
     "description": "Bitsight Integration will help you make more informed decisions by getting company GUIDs, details, and by fetching incidents at your desired time",
     "support": "community",
-    "currentVersion": "1.0.3",
+    "currentVersion": "1.0.4",
     "author": "NTT Data",
     "url": "",
     "email": "",
