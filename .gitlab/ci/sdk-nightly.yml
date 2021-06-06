@@ -36,7 +36,7 @@ demisto-sdk-nightly:run-unittests-and-lint:
   needs: ["demisto-sdk-nightly:prepare-unittests"]
   variables:
     PARALLEL: 8
-  parallel: $PARALLEL
+  parallel: 8
 
 
 demisto-sdk-nightly:run-validations:
