@@ -3,18 +3,18 @@ This integration was integrated and tested with version 3.0.0 of SolarWinds Info
 
 ## SolarWinds Help
 
-SolarWinds Integration requires installation of SolarWinds Orion Platform which consolidates the full suite of monitoring capabilities into one platform. Following products used in this integration are managed under Orion
+The SolarWinds integration requires installation of SolarWinds Orion Platform which consolidates the full suite of monitoring capabilities into one platform. The following products used in this integration are managed under Orion
 
-1. Network Performance Manager
-2. Netflow Traffic Analyzer
-3. Network Configuration Manager
-4. IP Address Manager
-5. Log Analyzer
-6. Server and Application Monitor
+- Network Performance Manager
+- Netflow Traffic Analyzer
+- Network Configuration Manager
+- IP Address Manager
+- Log Analyzer
+- Server and Application Monitor
 
 ## How to install SolarWinds Orion Platform
 
-Follow this [link](https://documentation.solarwinds.com/en/success_center/orionplatform/content/install-new-deployment.htm), it contains a comprehensive guide on how to install Orion and the managed products.
+Follow this [link](https://documentation.solarwinds.com/en/success_center/orionplatform/content/install-new-deployment.htm) to view a comprehensive guide on how to install Orion and the managed products.
 
 ## Configure SolarWinds on Cortex XSOAR
 
@@ -24,14 +24,14 @@ Follow this [link](https://documentation.solarwinds.com/en/success_center/orionp
 
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
-    | Name or IP address of the Orion server | Name or IP address of the Orion server the user wants to connect to. Do not specify the port number. Examples: myorigin.mydomain.local, 12.153.24.2 | True |
-    | Username of the account | Admin can create users such as guests from Orion platform and provide access permission according to need. | True |
+    | Name or IP address of the Orion server | Name or IP address of the Orion server you want to connect to. Do not specify the port number. Examples: myorigin.mydomain.local, 12.153.24.2 | True |
+    | Username of the account | Admin can create users such as guests from the Orion platform and provide access permission according to need. | True |
     | Type of incident to be fetched | Note: 'Type of incident to be fetched' and 'Incident type' should be the same to fetch similar types of incidents. | False |
     | Maximum number of incidents per fetch | The maximum limit is 1000. | False |
-    | First fetch time interval | Date or relative timestamp to start fetching incidents from. For Alert, incidents will be fetched based on triggered date. For Event, the incidents will be fetched based on event time. \( Formats accepted:  2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ, etc\) | False |
-    | Severity levels | Fetches list of alerts as per the severity level.  If not specified, it fetches all the incidents.<br/>Note: Severity level is only available for alerts. | False |
-    | Object Types | To filter the alerts based on the type of property to monitor. If not specified, it will fetch all types of alerts. To list additional object types, use query 'SELECT DISTINCT ObjectType FROM Orion.AlertConfigurations' in swis-query command. | False |
-    | Event Types | To filter events based on the type. If not specified, it will fetch all types of events. To list additional event types, use query 'SELECT Name FROM Orion.EventTypes' in swis-query command. | False |
+    | First fetch time interval | Date or relative timestamp to start fetching incidents from. For Alert, incidents will be fetched based on triggered date. For Event, the incidents will be fetched based on event time. \( Formats accepted:  2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ, etc.\). | False |
+    | Severity levels | Fetch list of alerts as per the severity level. If not specified, it fetches all the incidents.<br/>Note: Severity level is only available for alerts. | False |
+    | Object Types | Filter alerts based on the type of property to monitor. If not specified, it will fetch all types of alerts. To list additional object types, use the query 'SELECT DISTINCT ObjectType FROM Orion.AlertConfigurations' in the swis-query command. | False |
+    | Event Types | Filter events based on the type. If not specified, it will fetch all types of events. To list additional event types, use query 'SELECT Name FROM Orion.EventTypes' in swis-query command. | False |
     | Use system proxy settings |  | False |
     | Trust any certificate (not secure) |  | False |
     | Incident type |  | False |
@@ -55,14 +55,14 @@ Retrieves a list of events on the filter values provided in the command argument
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| acknowledged | To retrieve events that are acknowledged. If true, then retrieves all acknowledged events.<br/>Possible values are: true, false. | Optional | 
-| event_id | To retrieve the events based on specific Event IDs.<br/>Note: event_id supports integer values (int64). | Optional | 
-| event_type | To retrieve events of specific event type. Possible values are: Warning, Informational, Node Up, etc. | Optional | 
+| acknowledged | Whether to retrieve events that are acknowledged. If true, then retrieves all acknowledged events.<br/>Possible values: true and false. | Optional | 
+| event_id | A comma-separated ist of event IDs.<br/>Note: event_id supports integer values (int64). | Optional | 
+| event_type | A comma-separated list of event types. For example: Warning, Informational, Node Up, etc. | Optional | 
 | node | To retrieve events of specific nodes. | Optional | 
-| sort_key | Key based on which the response will be sorted.<br/>Possible values are: EventID, EventTime, Message, TimeStamp, EventTypeName, Node, etc. Default is EventID. | Optional | 
-| sort_order | Order in which the response will be sorted. Possible values are: ascending, descending. Default is ascending. | Optional | 
-| page | Specify a page number to retrieve events. By default, the per-page limit is 50 events and the user can change it by specifying a limit in the argument. Default is 0. | Optional | 
-| limit | Number of records to be retrieved.<br/>Note: The maximum value supported by the limit is maxValue int32. Default is 50. | Optional | 
+| sort_key | Key by which the response will be sorted.<br/>For example: EventID, EventTime, Message, TimeStamp, EventTypeName, Node, etc. Default is EventID. | Optional | 
+| sort_order | Order by which the response will be sorted. Possible values: ascending and descending. Default is ascending. | Optional | 
+| page | The page number from which retrieve events. By default, the per-page limit is 50 events. You can change this value in the limit argument. Default is 0. | Optional | 
+| limit | The maximum number of records to be retrieved.<br/>Note: The maximum value supported by the limit is maxValue int32. Default is 50. | Optional | 
 
 
 #### Context Output
@@ -79,7 +79,7 @@ Retrieves a list of events on the filter values provided in the command argument
 | SolarWinds.Event.EventType | Number | Type of a triggered event. | 
 | SolarWinds.Event.EventTypeName | String | Name of the type of a triggered event. | 
 | SolarWinds.Event.Message | String | Message of a triggered event. | 
-| SolarWinds.Event.Acknowledged | Boolean | Whether the event is acknowledged or not. | 
+| SolarWinds.Event.Acknowledged | Boolean | Whether the event is acknowledged. | 
 | SolarWinds.Event.NetObjectType | String | NetObject type of a triggered event. | 
 | SolarWinds.Event.Timestamp | String | Last modified time of an event. It is a counter that SQL server automatically increments when the event is updated. | 
 | SolarWinds.Event.DisplayName | String | Display name of an event. | 
@@ -175,12 +175,12 @@ Retrieves a list of alerts based on the filter values provided in the command ar
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| alert_id | To retrieve the alerts based on specific Alert IDs.<br/>Note: alert_id supports integer values (int64). | Optional | 
-| type | To retrieve the alerts based on the type of property to monitor. Possible values are: Node, IPAM.IPRequests, Orion.DiscoveryLogs, APM: Component, IPAM Networks, Orion.NodesForecastCapacity, APM: Application, Orion.VolumesForecastCapacity, Orion.NodesForecastCapacity, etc. | Optional | 
-| severity | To retrieve alerts of specific severity levels.<br/>Possible values are: Information, Warning, Critical, Serious, Notice. | Optional | 
-| sort_key | Key based on which the response will be sorted.<br/>Possible values are: AlertID, AlertActiveID, AlertObjectID, TriggeredDateTime, TriggeredMessage, AcknowledgedDateTime, EngineID, Name, ObjectType, etc. Default is AlertActiveID. | Optional | 
-| sort_order | Order in which the response will be sorted. Possible values are: ascending, descending. Default is ascending. | Optional | 
-| page | Specify a page number to retrieve alerts. By default, the per-page limit is 50 alerts and the user can change it by specifying a limit in the argument. Default is 0. | Optional | 
+| alert_id | A comma-separated list of alert IDs.<br/>Note: alert_id supports integer values (int64). | Optional | 
+| type | A comma-separated list of the type of property to monitor. For example: Node, IPAM.IPRequests, Orion.DiscoveryLogs, APM: Component, IPAM Networks, Orion.NodesForecastCapacity, APM: Application, Orion.VolumesForecastCapacity, Orion.NodesForecastCapacity, etc. | Optional | 
+| severity | A comma-separated list of severity levels.<br/>Possible values: Information, Warning, Critical, Serious, and Notice. | Optional | 
+| sort_key | Key by which the response will be sorted.<br/>For example: AlertID, AlertActiveID, AlertObjectID, TriggeredDateTime, TriggeredMessage, AcknowledgedDateTime, EngineID, Name, ObjectType, etc. Default is AlertActiveID. | Optional | 
+| sort_order | Order by which the response will be sorted. Possible values: ascending and descending. Default is ascending. | Optional | 
+| page | The page number from which to retrieve alerts. By default, the per-page limit is 50 alerts. You can change change this value in the limit argument. Default is 0. | Optional | 
 | limit | The number of records to be retrieved.<br/>Note: The maximum value supported by the limit is maxValue int32. Default is 50. | Optional | 
 
 
@@ -190,11 +190,11 @@ Retrieves a list of alerts based on the filter values provided in the command ar
 | --- | --- | --- |
 | SolarWinds.Alert.AlertActiveID | Number | Active ID of the triggered alert. | 
 | SolarWinds.Alert.AlertObjectID | Number | Object ID of the triggered alert. | 
-| SolarWinds.Alert.Acknowledged | Boolean | Whether the alert is acknowledged or not. | 
+| SolarWinds.Alert.Acknowledged | Boolean | Whether the alert is acknowledged. | 
 | SolarWinds.Alert.AcknowledgedBy | String | Name of the person who acknowledged the alert. | 
-| SolarWinds.Alert.AcknowledgedDateTime | Date | Timestamp at which the alert was acknowledged. | 
+| SolarWinds.Alert.AcknowledgedDateTime | Date | Timestamp when the alert was acknowledged. | 
 | SolarWinds.Alert.AcknowledgedNote | String | Acknowledge note of the alert. | 
-| SolarWinds.Alert.TriggeredDateTime | Date | Timestamp at which the alert was triggered. | 
+| SolarWinds.Alert.TriggeredDateTime | Date | Timestamp when the alert was triggered. | 
 | SolarWinds.Alert.TriggeredMessage | String | Message of the triggered alert. | 
 | SolarWinds.Alert.NumberOfNotes | Number | Number of notes of the alert. | 
 | SolarWinds.Alert.LastExecutedEscalationLevel | Number | Last executed escalation level for the alert.  | 
@@ -216,26 +216,26 @@ Retrieves a list of alerts based on the filter values provided in the command ar
 | SolarWinds.Alert.RealEntityUri | String | URI of the real entity. | 
 | SolarWinds.Alert.RealEntityType | String | Type of the real entity. | 
 | SolarWinds.Alert.TriggeredCount | Number | Number of times the alert was triggered. | 
-| SolarWinds.Alert.LastTriggeredDateTime | Date | Timestamp at which the alert was last triggered. | 
+| SolarWinds.Alert.LastTriggeredDateTime | Date | Timestamp when the alert was last triggered. | 
 | SolarWinds.Alert.Context | String | Context of the alert. | 
 | SolarWinds.Alert.AlertNote | String | Note of the alert. | 
 | SolarWinds.Alert.AlertMessage | String | Message of the alert. | 
-| SolarWinds.Alert.AlertRefID | String | Unique Identifier of the alert. | 
+| SolarWinds.Alert.AlertRefID | String | Unique identifier of the alert. | 
 | SolarWinds.Alert.Name | String | Name of the alert. | 
 | SolarWinds.Alert.ConfigurationDescription | String | Configuration description of the alert. | 
 | SolarWinds.Alert.ObjectType | String | Object type of the alert. | 
-| SolarWinds.Alert.Enabled | Boolean | Whether the alert is enabled or not. | 
+| SolarWinds.Alert.Enabled | Boolean | Whether the alert is enabled. | 
 | SolarWinds.Alert.Frequency | Number | Frequency of the alert. | 
 | SolarWinds.Alert.Trigger | String | Condition due to which the alert was triggered. | 
-| SolarWinds.Alert.Reset | String | Reset condition for the alert. When the condition meets the alert is removed from active alerts. | 
+| SolarWinds.Alert.Reset | String | Reset condition for the alert. When the condition is met, the alert is removed from active alerts. | 
 | SolarWinds.Alert.Severity | Number | Severity of the alert. | 
-| SolarWinds.Alert.NotifyEnabled | Boolean | Whether it is notified enabled or not. | 
+| SolarWinds.Alert.NotifyEnabled | Boolean | Whether it is notified enabled. | 
 | SolarWinds.Alert.NotificationSettings | String | Settings of the notifications for the alerts. | 
-| SolarWinds.Alert.LastEdit | Date | Timestamp at which alert was last edited. | 
+| SolarWinds.Alert.LastEdit | Date | Timestamp when the alert was last edited. | 
 | SolarWinds.Alert.CreatedBy | String | Name of the person who created the alert. | 
 | SolarWinds.Alert.Category | String | Category of the alert. | 
-| SolarWinds.Alert.Canned | Boolean | Whether the alert is canned or not. | 
-| SolarWinds.Alert.ResponsibleTeam | String | Team which is responsible for the alert. | 
+| SolarWinds.Alert.Canned | Boolean | Whether the alert is canned. | 
+| SolarWinds.Alert.ResponsibleTeam | String | Team that is responsible for the alert. | 
 
 
 #### Command Example
