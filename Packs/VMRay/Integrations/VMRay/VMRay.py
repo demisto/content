@@ -630,11 +630,11 @@ def get_threat_indicators_command():
             entry_context_list.append(entry)
 
         human_readable = tableToMarkdown(
-            'Threat indicators for sample ID: {}. Showing first indicator:'.format(
+            'Threat indicators for sample ID: {}:'.format(
                 sample_id
             ),
-            entry_context_list[0],
-            headers=['AnalysisID', 'Category', 'Classification', 'Operation'],
+            entry_context_list,
+            headers=['ID', 'AnalysisID', 'Category', 'Classification', 'Operation'],
         )
 
         entry_context = {'VMRay.ThreatIndicator(obj.ID === val.ID)': entry_context_list}
