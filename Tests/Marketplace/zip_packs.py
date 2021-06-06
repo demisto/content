@@ -1,13 +1,10 @@
 import argparse
 import json
 import os
-from concurrent.futures import ThreadPoolExecutor
 import shutil
 import sys
 import logging
-from time import sleep
 from zipfile import ZipFile
-from Tests.Marketplace.marketplace_services import init_storage_client
 from Tests.Marketplace.marketplace_constants import IGNORED_FILES, PACKS_FULL_PATH
 from Tests.scripts.utils.log_util import install_logging
 from demisto_sdk.commands.common.tools import LooseVersion, str2bool
