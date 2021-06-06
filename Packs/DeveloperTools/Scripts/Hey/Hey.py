@@ -23,7 +23,7 @@ class HeyPerformanceResult:
             self._ext_results_map = dict(item.split("=") for item in results_map.split(";"))
 
     def to_results(self) -> CommandResults:
-        df = pd.read_csv(StringIO(self._result), usecols=['response-time'])
+        df = pd.read_csv(StringIO(self._result), usecols=['response-time', 'status-code'])
         if len(df) == 0:
             max_time = 0
             avg_time = 0
@@ -38,7 +38,7 @@ class HeyPerformanceResult:
             avg_time = response_times.mean()
             requests_num = len(response_times)
             total_time = response_times.sum() / int(self._c)
-            status_codes = df.get('status-code', [])
+            status_codes = df.get('status-code')
             successful_responses = len(tuple(code == 200 for code in status_codes))
         outputs = {
             "TimeoutPerRequest": self._t,
