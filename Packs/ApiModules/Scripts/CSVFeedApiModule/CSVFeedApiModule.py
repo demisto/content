@@ -319,7 +319,8 @@ def fetch_indicators_command(client: Client, default_indicator_type: str, auto_d
                                 entity_a=value,
                                 entity_a_type=indicator_type,
                                 entity_b=fields_mapping.get('relationship_entity_b'),
-                                entity_b_type=config.get(url, {}).get('relationship_entity_b_type'),
+                                entity_b_type=FeedIndicatorType.indicator_type_by_server_version(
+                                    config.get(url, {}).get('relationship_entity_b_type')),
                             )
                             relationships_of_indicator = [relationships_lst.to_indicator()]
 

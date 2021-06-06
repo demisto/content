@@ -388,7 +388,8 @@ def fetch_indicators_command(client, feed_tags, tlp_color, itype, auto_detect, c
                                 entity_a=value,
                                 entity_a_type=indicator_type,
                                 entity_b=attributes.get('relationship_entity_b'),
-                                entity_b_type=client.feed_url_to_config.get(url, {}).get('relationship_entity_b_type'),
+                                entity_b_type=FeedIndicatorType.indicator_type_by_server_version(
+                                    client.feed_url_to_config.get(url, {}).get('relationship_entity_b_type')),
                             )
                             relationships_of_indicator = [relationships_lst.to_indicator()]
                             indicator_data['relationships'] = relationships_of_indicator

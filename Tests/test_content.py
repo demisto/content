@@ -37,7 +37,6 @@ BUCKET_NAME = os.environ.get('GCS_ARTIFACTS_BUCKET')
 BUILD_NUM = os.environ.get('CI_BUILD_ID')
 WORKFLOW_ID = os.environ.get('CI_PIPELINE_ID')
 CIRCLE_STATUS_TOKEN = os.environ.get('CIRCLECI_STATUS_TOKEN')
-ENV_RESULTS_PATH = './artifacts/env_results.json'
 
 
 class SettingsTester:
@@ -306,10 +305,14 @@ def load_conf_files(conf_path, secret_conf_path):
 
 
 def load_env_results_json():
-    if not os.path.isfile(ENV_RESULTS_PATH):
+    env_results_path = os.getenv('ENV_RESULTS_PATH', os.path.join(os.getenv('ARTIFACTS_FOLDER', './artifacts'),
+                                                                  'env_results.json'))
+
+    if not os.path.isfile(env_results_path):
+        logging.warning(f"Did not find {env_results_path} file ")
         return {}
 
-    with open(ENV_RESULTS_PATH, 'r') as json_file:
+    with open(env_results_path, 'r') as json_file:
         return json.load(json_file)
 
 
@@ -332,7 +335,7 @@ def get_server_numeric_version(ami_env, is_local_run=False):
 
     env_json = load_env_results_json()
     if not env_json:
-        logging.warning(f'Did not find {ENV_RESULTS_PATH} file, assuming server version is {default_version}.')
+        logging.warning(f"assuming server version is {default_version}.")
         return default_version
 
     instances_ami_names = {env.get('AmiName') for env in env_json if ami_env in env.get('Role', '')}

@@ -791,6 +791,17 @@ def route_list_values() -> Response:
         elif not values:
             values = "No Results Found For the Query"
 
+        # if the case there are strings to add to the EDL, add them if the output type is text
+        if request_args.out_format == FORMAT_TEXT:
+            append_str = params.get("append_string")
+            prepend_str = params.get("prepend_string")
+            if append_str:
+                append_str = append_str.replace("\\n", "\n")
+                values = f"{values}{append_str}"
+            if prepend_str:
+                prepend_str = prepend_str.replace("\\n", "\n")
+                values = f"{prepend_str}\n{values}"
+
         mimetype = get_outbound_mimetype()
         return Response(values, status=200, mimetype=mimetype)
 
@@ -868,7 +879,7 @@ def run_long_running(params, is_test=False):
         else:
             demisto.debug('Starting HTTP Server')
 
-        server = WSGIServer(('', port), APP, **ssl_args, log=DEMISTO_LOGGER)
+        server = WSGIServer(('0.0.0.0', port), APP, **ssl_args, log=DEMISTO_LOGGER)
         if is_test:
             server_process = Process(target=server.serve_forever)
             server_process.start()

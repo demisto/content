@@ -17,7 +17,7 @@ This integration was integrated and tested with version 2019 hotfix 5449 of Tren
 
 4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.
+You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### trendmicro-apex-udso-list
 ***
@@ -734,7 +734,7 @@ Retrieves a list of all investigation results.
     "TrendMicroApex": {
         "InvestigationResult": {
             "agentCount": 1,
-            "creator": "Demisto-PANW",
+            "creator": "Cortex XSOAR-PANW",
             "errorServers": "[]",
             "finishTime": "1969-12-31T23:59:59+00:00",
             "matchedAgentCount": 0,
@@ -775,5 +775,5 @@ Retrieves a list of all investigation results.
 >### Investigation result list:
 >|name|scanSummaryId|scanSummaryGuid|submitTime|serverGuidList|creator|
 >|---|---|---|---|---|---|
->| this is a test | 3 | 6161bf10-f073-4762-bd10-088b0f68ad1d | 2020-09-13T12:24:05+00:00 | B220EB61-6240-44B4-9B94-4AC3F22E6A62 | Demisto-PANW |
+>| this is a test | 3 | 6161bf10-f073-4762-bd10-088b0f68ad1d | 2020-09-13T12:24:05+00:00 | B220EB61-6240-44B4-9B94-4AC3F22E6A62 | Cortex XSOAR-PANW |
 
