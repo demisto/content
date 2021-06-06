@@ -2,7 +2,7 @@ from typing import Dict, List, Tuple, Optional, Callable
 
 from urllib3 import disable_warnings
 from CommonServerPython import *
-# import demistomock as demisto
+import demistomock as demisto
 from datetime import timedelta, datetime
 import time
 import itertools
