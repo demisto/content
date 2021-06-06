@@ -3371,7 +3371,8 @@
             "fromversion": "6.0.0",
             "timeout": 6000,
             "memory_threshold": 900,
-            "pid_threshold": 12
+            "pid_threshold": 12,
+            "performance_result_dt": "EDLHey"
         }
     ],
     "skipped_tests": {

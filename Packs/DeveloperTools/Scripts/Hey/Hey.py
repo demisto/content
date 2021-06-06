@@ -27,19 +27,22 @@ class HeyPerformanceResult:
         if len(df) == 0:
             max_time = 0
             avg_time = 0
+            min_time = 0
             requests_num = 0
             total_time = 0
         else:
             response_times = df['response-time']
             max_time = max(response_times)
+            min_time = min(response_times)
             avg_time = response_times.mean()
             requests_num = len(response_times)
-            total_time = int(response_times.sum() / int(self._c))
+            total_time = response_times.sum() / int(self._c)
         outputs = {
             "TimeoutPerRequest": self._t,
             "Concurrency": self._c,
             "Requests": requests_num,
-            "MaxTime": max_time,
+            "SlowestTime": max_time,
+            "FastestTime": min_time,
             "AverageTime": avg_time,
             "TotalTime": total_time
         }
