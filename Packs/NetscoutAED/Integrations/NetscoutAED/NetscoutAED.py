@@ -156,10 +156,19 @@ def merge_dicts(dict1: dict, dict2: dict) -> dict:
 
 
 def handle_args(demisto_args: dict) -> dict:
+    """
+        Converts the demisto server arguments into arguments which the API accepts.
+
+        :type demisto_args: ``dict``
+        :param demisto_args: The Demisto arguments dictionary.
+
+        :return: The arguments dictionary which the API accepts.
+        :rtype: ``dict``
+    """
     for key in demisto_args:
         val = demisto_args[key]
-        if val == 'true' or val == 'false':
-            demisto_args[key] = argToBoolean(demisto_args[key])
+        if val in ['true', 'false']:
+            demisto_args[key] = argToBoolean(val)
     query = demisto_args.pop('query', None)
     if query:
         demisto_args['q'] = query
@@ -312,16 +321,18 @@ def deserialize_protection_groups(list_of_protection_groups: list) -> None:
     """
     for item in list_of_protection_groups:
         active = item.get('active')
-        if active is not None:
-            item['active'] = True if active == 1 else False
-            protection_level = item.get('protectionLevel')
-            if protection_level:
-                if protection_level == 1:
-                    item['protectionLevel'] = 'low'
-                elif protection_level == 2:
-                    item['protectionLevel'] = 'medium'
-                elif protection_level == 3:
-                    item['protectionLevel'] = 'high'
+        if active is None:
+            continue
+
+        item['active'] = True if active == 1 else False
+        protection_level = item.get('protectionLevel')
+        if protection_level:
+            if protection_level == 1:
+                item['protectionLevel'] = 'low'
+            elif protection_level == 2:
+                item['protectionLevel'] = 'medium'
+            elif protection_level == 3:
+                item['protectionLevel'] = 'high'
 
 
 def serialize_protection_groups(protection_group: dict) -> None:
@@ -503,7 +514,7 @@ def handle_country_addition_commands(client: Client, demisto_args: dict,
 
     objects_time_to_readable_time(countries_list, 'updateTime')
 
-    msg = f'Countries were successfully added to the {direction} blacklisted list\n'
+    msg = f'Countries were successfully added to the {direction} blacklisted list.\n'
 
     readable_output = msg + tableToMarkdown('Added Countries',
                                             countries_list,
@@ -556,7 +567,7 @@ def handle_country_deletion_commands(client: Client, demisto_args: dict, meta_da
         raise DemistoException(
             f'Failed to remove the countries from the {direction} blacklisted list [{raw_result.status_code}]')
 
-    return f'Countries were successfully removed from the {direction} blacklisted list'
+    return f'Countries were successfully removed from the {direction} blacklisted list.'
 
 
 def handle_host_list_commands(client: Client, demisto_args: dict,
@@ -1029,15 +1040,16 @@ def handle_url_deletion_commands(client: Client, demisto_args: dict) -> str:
 
 
 def main() -> None:
+    params = demisto.params()
+    demisto_command = demisto.command()
+    demisto_args = demisto.args()
     try:
-        params = demisto.params()
         base_url: str = urljoin(params.get('base_url', '').rstrip('/'), '/api/aed/v2')
         verify_certificate: bool = not params.get('insecure', False)
         proxy: bool = params.get('proxy', False)
         if not params.get('User') or not (api_token := params.get('User', {}).get('password')):
             raise DemistoException('Missing API Key. Please fill in a valid key in the integration configuration.')
         commands = init_commands_dict()
-        demisto_command = demisto.command()
         handle_proxy()
         client = Client(
             base_url=base_url,
@@ -1051,14 +1063,13 @@ def main() -> None:
         demisto.debug(f'Command being called is {demisto_command}')
         func_to_execute = dict_safe_get(commands, [demisto_command, 'func'])
         meta_data = dict_safe_get(commands, [demisto_command, 'meta_data'])
-        demisto_args = demisto.args()
         results = func_to_execute(client, demisto_args, meta_data) if meta_data \
             else func_to_execute(client, demisto_args)
         return_results(results)
 
     # Log exceptions
     except Exception as e:
-        return_error(f'Urls were successfully to execute {demisto.command()} command. Error: {str(e)}', error=e)
+        return_error(f'Failed to execute {demisto.command()} command. Error: {str(e)}', error=e)
 
 
 ''' ENTRY POINT '''

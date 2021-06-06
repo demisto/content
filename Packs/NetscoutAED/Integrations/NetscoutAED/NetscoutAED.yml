@@ -512,8 +512,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'true'
-      description: 'Set the protection group mode to active (true) or inactive (false).
-        Default: true.'
+      description: 'Set the protection group mode to active (true) or inactive (false).'
       isArray: false
       name: active
       predefined:
@@ -524,8 +523,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: low
-      description: 'The protection level (None = use the global protection level,
-        low, medium, high). Default: low'
+      description: 'The protection level (None = use the global protection level, low, medium, high).'
       isArray: false
       name: protection_level
       predefined:
