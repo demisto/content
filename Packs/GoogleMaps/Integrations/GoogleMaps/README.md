@@ -2,7 +2,7 @@ Use the Google Maps API. This integration was integrated and tested with version
 ## Configure GoogleMaps on Cortex XSOAR
 
 ### Note
-In order to use the embedded Google Maps view, please make sure an API key is set in the demisto settings.
+In order to use the embedded Google Maps view, please make sure a Google Maps Geocoding API key is set in XSOAR.
 
 ---
 
