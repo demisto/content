@@ -3,19 +3,19 @@ commonfields:
   id: SolarWinds
   version: -1
 configuration:
-- additionalinfo: 'Name or IP address of the Orion server the user wants to connect
+- additionalinfo: 'Name or IP address of the Orion server you want to connect
     to. Do not specify the port number. Examples: myorigin.mydomain.local, 12.153.24.2'
   display: Name or IP address of the Orion server
   name: server
   required: true
   type: 0
-- additionalinfo: Admin can create users such as guests from Orion platform and provide
+- additionalinfo: Admin can create users such as guests from the Orion platform and provide
     access permission according to need.
   display: Username of the account
   name: credentials
   required: true
   type: 9
-- additionalinfo: 'Note: ''Type of incident to be fetched'' and ''Incident type''
+- additionalinfo: 'Note: "Type of incident to be fetched" and "Incident type"
     should be the same to fetch similar types of incidents.'
   defaultvalue: Alert
   display: Type of incident to be fetched
@@ -35,8 +35,8 @@ configuration:
   type: 0
 - additionalinfo: 'Date or relative timestamp to start fetching incidents from. For
     Alert, incidents will be fetched based on triggered date. For Event, the incidents
-    will be fetched based on event time. ( Formats accepted:  2 minutes, 2 hours,
-    2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ, etc)'
+    will be fetched based on event time. (Formats accepted:  2 minutes, 2 hours,
+    2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ, etc.).'
   defaultvalue: 3 days
   display: First fetch time interval
   hidden: false
@@ -44,7 +44,7 @@ configuration:
   required: false
   type: 0
 - additionalinfo: |-
-    Fetches list of alerts as per the severity level.  If not specified, it fetches all the incidents.
+    Fetch list of alerts as per the severity level. If not specified, it fetches all the incidents.
     Note: Severity level is only available for alerts.
   display: Severity levels
   hidden: false
@@ -57,9 +57,9 @@ configuration:
   - Critical
   required: false
   type: 16
-- additionalinfo: To filter the alerts based on the type of property to monitor. If
+- additionalinfo: Filter alerts based on the type of property to monitor. If
     not specified, it will fetch all types of alerts. To list additional object types,
-    use query 'SELECT DISTINCT ObjectType FROM Orion.AlertConfigurations' in swis-query
+    use the query 'SELECT DISTINCT ObjectType FROM Orion.AlertConfigurations' in the swis-query
     command.
   display: Object Types
   hidden: false
@@ -92,9 +92,9 @@ configuration:
   - Wireless Controller
   required: false
   type: 16
-- additionalinfo: To filter events based on the type. If not specified, it will fetch
-    all types of events. To list additional event types, use query 'SELECT Name FROM
-    Orion.EventTypes' in swis-query command.
+- additionalinfo: Filter events based on the type. If not specified, it will fetch
+    all types of events. To list additional event types, use the query 'SELECT Name FROM
+    Orion.EventTypes' in the swis-query command.
   display: Event Types
   hidden: false
   name: event_types
@@ -146,7 +146,7 @@ configuration:
   name: isFetch
   required: false
   type: 8
-description: The SolarWinds integration interacts with the SWIS API to allow users
+description: The SolarWinds integration interacts with the SWIS API to allow you
   to fetch alerts and events. It also provides commands to retrieve lists of alerts
   and events.
 display: SolarWinds
@@ -157,8 +157,8 @@ script:
     - auto: PREDEFINED
       default: false
       description: |-
-        To retrieve events that are acknowledged. If true, then retrieves all acknowledged events.
-        Possible values are: true, false.
+        Whether to retrieve events that are acknowledged. If true, retrieves all acknowledged events.
+        Possible values: "true" and "false".
       isArray: false
       name: acknowledged
       predefined:
@@ -168,21 +168,21 @@ script:
       secret: false
     - default: false
       description: |-
-        To retrieve the events based on specific Event IDs.
+        A comma-separated ist of event IDs.
         Note: event_id supports integer values (int64).
       isArray: true
       name: event_id
       required: false
       secret: false
     - default: false
-      description: 'To retrieve events of specific event type. Possible values are:
-        Warning, Informational, Node Up, etc.'
+      description: 'A comma-separated list of event types. For example:
+        "Warning", "Informational", "Node Up", etc.'
       isArray: true
       name: event_type
       required: false
       secret: false
     - default: false
-      description: To retrieve events of specific nodes.
+      description: A comma-separated list of nodes.
       isArray: true
       name: node
       required: false
@@ -191,8 +191,8 @@ script:
       default: false
       defaultValue: EventID
       description: |-
-        Key based on which the response will be sorted.
-        Possible values are: EventID, EventTime, Message, TimeStamp, EventTypeName, Node, etc.
+        Key by which the response will be sorted.
+        For example: "EventID", "EventTime", "Message", "TimeStamp", "EventTypeName", "Node", etc.
       isArray: false
       name: sort_key
       predefined:
@@ -207,8 +207,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: ascending
-      description: 'Order in which the response will be sorted. Possible values are:
-        ascending, descending.'
+      description: 'Order by which the response will be sorted. Possible values:
+        "ascending" and "descending".'
       isArray: false
       name: sort_order
       predefined:
@@ -218,9 +218,8 @@ script:
       secret: false
     - default: false
       defaultValue: '0'
-      description: Specify a page number to retrieve events. By default, the per-page
-        limit is 50 events and the user can change it by specifying a limit in the
-        argument.
+      description: The page number from which to retrieve events. By default, the per-page
+        limit is 50 events. You can change this value in the limit argument.
       isArray: false
       name: page
       required: false
@@ -228,14 +227,14 @@ script:
     - default: false
       defaultValue: '50'
       description: |-
-        Number of records to be retrieved.
+        The maximum number of records to be retrieved.
         Note: The maximum value supported by the limit is maxValue int32.
       isArray: false
       name: limit
       required: false
       secret: false
     deprecated: false
-    description: Retrieves a list of events on the filter values provided in the command
+    description: Retrieves a list of events according to filter values provided in the command
       arguments.
     execution: true
     name: swis-event-list
@@ -271,7 +270,7 @@ script:
       description: Message of a triggered event.
       type: String
     - contextPath: SolarWinds.Event.Acknowledged
-      description: Whether the event is acknowledged or not.
+      description: Whether the event is acknowledged.
       type: Boolean
     - contextPath: SolarWinds.Event.NetObjectType
       description: NetObject type of a triggered event.
@@ -298,25 +297,25 @@ script:
   - arguments:
     - default: false
       description: |-
-        To retrieve the alerts based on specific Alert IDs.
+        A comma-separated list of alert IDs.
         Note: alert_id supports integer values (int64).
       isArray: true
       name: alert_id
       required: false
       secret: false
     - default: false
-      description: 'To retrieve the alerts based on the type of property to monitor.
-        Possible values are: Node, IPAM.IPRequests, Orion.DiscoveryLogs, APM: Component,
-        IPAM Networks, Orion.NodesForecastCapacity, APM: Application, Orion.VolumesForecastCapacity,
-        Orion.NodesForecastCapacity, etc.'
+      description: 'A comma-separated list of the type of property to monitor.
+        For example: "Node", "IPAM.IPRequests", "Orion"."DiscoveryLogs", "APM: Component",
+        "IPAM Networks", "Orion.NodesForecastCapacity", "APM: Application", "Orion.VolumesForecastCapacity",
+        "Orion.NodesForecastCapacity", etc.'
       isArray: true
       name: type
       required: false
       secret: false
     - default: false
       description: |-
-        To retrieve alerts of specific severity levels.
-        Possible values are: Information, Warning, Critical, Serious, Notice.
+        A comma-separated list of severity levels.
+        Possible values: "Information", "Warning", "Critical", "Serious", and "Notice".
       isArray: true
       name: severity
       required: false
@@ -325,8 +324,8 @@ script:
       default: false
       defaultValue: AlertActiveID
       description: |-
-        Key based on which the response will be sorted.
-        Possible values are: AlertID, AlertActiveID, AlertObjectID, TriggeredDateTime, TriggeredMessage, AcknowledgedDateTime, EngineID, Name, ObjectType, etc.
+        Key by which the response will be sorted.
+        For example: "AlertID", "AlertActiveID", "AlertObjectID", "TriggeredDateTime", "TriggeredMessage", "AcknowledgedDateTime", "EngineID", "Name","ObjectType", etc.
       isArray: false
       name: sort_key
       predefined:
@@ -344,8 +343,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: ascending
-      description: 'Order in which the response will be sorted. Possible values are:
-        ascending, descending.'
+      description: 'Order by which the response will be sorted. Possible values are:
+        "ascending" and "descending".'
       isArray: false
       name: sort_order
       predefined:
@@ -355,9 +354,8 @@ script:
       secret: false
     - default: false
       defaultValue: '0'
-      description: Specify a page number to retrieve alerts. By default, the per-page
-        limit is 50 alerts and the user can change it by specifying a limit in the
-        argument.
+      description: The page number from which to retrieve alerts. By default, the per-page
+        limit is 50 alerts. You can change this value in the limit argument.
       isArray: false
       name: page
       required: false
@@ -384,19 +382,19 @@ script:
       description: Object ID of the triggered alert.
       type: Number
     - contextPath: SolarWinds.Alert.Acknowledged
-      description: Whether the alert is acknowledged or not.
+      description: Whether the alert is acknowledged.
       type: Boolean
     - contextPath: SolarWinds.Alert.AcknowledgedBy
       description: Name of the person who acknowledged the alert.
       type: String
     - contextPath: SolarWinds.Alert.AcknowledgedDateTime
-      description: Timestamp at which the alert was acknowledged.
+      description: Timestamp when the alert was acknowledged.
       type: Date
     - contextPath: SolarWinds.Alert.AcknowledgedNote
       description: Acknowledge note of the alert.
       type: String
     - contextPath: SolarWinds.Alert.TriggeredDateTime
-      description: Timestamp at which the alert was triggered.
+      description: Timestamp when the alert was triggered.
       type: Date
     - contextPath: SolarWinds.Alert.TriggeredMessage
       description: Message of the triggered alert.
@@ -405,7 +403,7 @@ script:
       description: Number of notes of the alert.
       type: Number
     - contextPath: SolarWinds.Alert.LastExecutedEscalationLevel
-      description: 'Last executed escalation level for the alert. '
+      description: Last executed escalation level for the alert.
       type: Number
     - contextPath: SolarWinds.Alert.DisplayName
       description: Display name of the alert.
@@ -441,7 +439,7 @@ script:
       description: NetObject ID of the entity.
       type: String
     - contextPath: SolarWinds.Alert.RelatedNodeUri
-      description: URI of the related node
+      description: URI of the related node.
       type: String
     - contextPath: SolarWinds.Alert.RelatedNodeId
       description: ID of the related node.
@@ -462,7 +460,7 @@ script:
       description: Number of times the alert was triggered.
       type: Number
     - contextPath: SolarWinds.Alert.LastTriggeredDateTime
-      description: Timestamp at which the alert was last triggered.
+      description: Timestamp when the alert was last triggered.
       type: Date
     - contextPath: SolarWinds.Alert.Context
       description: Context of the alert.
@@ -474,7 +472,7 @@ script:
       description: Message of the alert.
       type: String
     - contextPath: SolarWinds.Alert.AlertRefID
-      description: Unique Identifier of the alert.
+      description: Unique identifier of the alert.
       type: String
     - contextPath: SolarWinds.Alert.Name
       description: Name of the alert.
@@ -486,7 +484,7 @@ script:
       description: Object type of the alert.
       type: String
     - contextPath: SolarWinds.Alert.Enabled
-      description: Whether the alert is enabled or not.
+      description: Whether the alert is enabled.
       type: Boolean
     - contextPath: SolarWinds.Alert.Frequency
       description: Frequency of the alert.
@@ -495,20 +493,20 @@ script:
       description: Condition due to which the alert was triggered.
       type: String
     - contextPath: SolarWinds.Alert.Reset
-      description: Reset condition for the alert. When the condition meets the alert
+      description: Reset condition for the alert. When the condition is met, the alert
         is removed from active alerts.
       type: String
     - contextPath: SolarWinds.Alert.Severity
       description: Severity of the alert.
       type: Number
     - contextPath: SolarWinds.Alert.NotifyEnabled
-      description: Whether it is notified enabled or not.
+      description: Whether it is notified enabled.
       type: Boolean
     - contextPath: SolarWinds.Alert.NotificationSettings
       description: Settings of the notifications for the alerts.
       type: String
     - contextPath: SolarWinds.Alert.LastEdit
-      description: Timestamp at which alert was last edited.
+      description: Timestamp when the alert was last edited.
       type: Date
     - contextPath: SolarWinds.Alert.CreatedBy
       description: Name of the person who created the alert.
@@ -517,10 +515,10 @@ script:
       description: Category of the alert.
       type: String
     - contextPath: SolarWinds.Alert.Canned
-      description: Whether the alert is canned or not.
+      description: Whether the alert is canned.
       type: Boolean
     - contextPath: SolarWinds.Alert.ResponsibleTeam
-      description: Team which is responsible for the alert.
+      description: Team that is responsible for the alert.
       type: String
   - arguments:
     - default: false
