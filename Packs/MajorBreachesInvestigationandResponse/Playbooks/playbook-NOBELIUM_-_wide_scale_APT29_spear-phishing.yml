@@ -1,0 +1,1633 @@
+id: NOBELIUM - wide scale APT29 spear-phishing
+version: -1
+name: NOBELIUM - wide scale APT29 spear-phishing
+description: "On May 27, 2021, Microsoft reported a wide scale spear phishing campaign\
+  \ attributed to APT29, the same threat actor responsible for the SolarWinds campaign\
+  \ named SolarStorm. This attack had a wide range of targets for an APT spear phishing\
+  \ campaign with 3,000 email accounts targeted within 150 organizations. \nhttps://www.microsoft.com/security/blog/2021/05/27/new-sophisticated-email-based-attack-from-nobelium/\
+  \  \nThis playbook includes the following tasks:\n- Collect IOCs to be used in your\
+  \ threat hunting process\n- Query FW, SIEMs, EDR, XDR to detect malicious hashes,\
+  \ network activity and compromised hosts \n- Block known indicators\n** Note: This\
+  \ is a beta playbook, which lets you implement and test pre-release software. Since\
+  \ the playbook is beta, it might contain bugs. Updates to the pack during the beta\
+  \ phase might include non-backward compatible features. We appreciate your feedback\
+  \ on the quality and usability of the pack to help us identify issues, fix them,\
+  \ and continually improve."
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 4f30ea4a-47c0-46fd-8a46-cdcd1686a5fd
+    type: start
+    task:
+      id: 4f30ea4a-47c0-46fd-8a46-cdcd1686a5fd
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 440,
+          "y": -770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: ec9e48f1-8c12-4c45-8190-e402ac8f2b72
+    type: title
+    task:
+      id: ec9e48f1-8c12-4c45-8190-e402ac8f2b72
+      version: -1
+      name: Collect Indicators of Compromise
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "3"
+      - "2"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 440,
+          "y": -620
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: 8f9863ec-f861-4198-8b1b-b842e219ee7e
+    type: regular
+    task:
+      id: 8f9863ec-f861-4198-8b1b-b842e219ee7e
+      version: -1
+      name: Retrieve IOCs file from Azure GitHub repository
+      description: Sends http request. Returns the response as json.
+      scriptName: http
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      body: {}
+      filename: {}
+      headers: {}
+      insecure: {}
+      method:
+        simple: GET
+      password: {}
+      proxy: {}
+      saveAsFile: {}
+      unsecure: {}
+      url:
+        simple: https://raw.githubusercontent.com/Azure/Azure-Sentinel/master/Detections/MultipleDataSources/NOBELIUM_IOCsMay2021.yaml
+      username: {}
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 790,
+          "y": -480
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 0df53f3d-b6a9-455f-8d28-d2404e0fb38c
+    type: regular
+    task:
+      id: 0df53f3d-b6a9-455f-8d28-d2404e0fb38c
+      version: -1
+      name: Retrieve Volexity blog
+      description: Retrieve parsed Volexity blog to extract indicators from
+      scriptName: RapidBreachResponseParseBlog
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      url:
+        simple: https://www.volexity.com/blog/2021/05/27/suspected-apt29-operation-launches-election-fraud-themed-phishing-campaigns/
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 110,
+          "y": -480
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: 6179d269-96f2-43bb-8320-5ff90d16cb7c
+    type: title
+    task:
+      id: 6179d269-96f2-43bb-8320-5ff90d16cb7c
+      version: -1
+      name: Hunt Indicators
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "8"
+      - "9"
+      - "14"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 680
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: 394d0fc1-05b4-4879-87cf-fc592ea938a9
+    type: regular
+    task:
+      id: 394d0fc1-05b4-4879-87cf-fc592ea938a9
+      version: -1
+      name: Extract IOCS from Volexity blog
+      description: commands.local.cmd.extract.indicators
+      script: Builtin|||extractIndicators
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "29"
+    scriptarguments:
+      entryID: {}
+      filePath: {}
+      investigationID: {}
+      text:
+        complex:
+          root: http
+          accessor: parsedBlog
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 110,
+          "y": -305
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: 0a26694f-dada-468d-8793-fc08ff10605c
+    type: regular
+    task:
+      id: 0a26694f-dada-468d-8793-fc08ff10605c
+      version: -1
+      name: Extract IOCs from Azure GitHub repository
+      description: commands.local.cmd.extract.indicators
+      script: Builtin|||extractIndicators
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "29"
+    scriptarguments:
+      entryID: {}
+      filePath: {}
+      investigationID: {}
+      text:
+        complex:
+          root: HttpRequest.Response
+          accessor: Body
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 790,
+          "y": -305
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: bb9f3fc7-49fb-4e9d-8865-f6ff81c0bfd6
+    type: playbook
+    task:
+      id: bb9f3fc7-49fb-4e9d-8865-f6ff81c0bfd6
+      version: -1
+      name: Palo Alto Networks - Hunting And Threat Detection
+      description: "This is a multipurpose playbook used for hunting and threat detection.\
+        \ The playbook receives inputs based on hashes, IP addresses, or domain names\
+        \ provided manually or from outputs by other playbooks. \nWith the received\
+        \ indicators, the playbook leverages data received by PANW products including,\
+        \ Cortex Data Lake, Autofocus and Pan-OS to search for IP addresses, host\
+        \ names and users related to the provided indicators.\nThe output provided\
+        \ by the playbook facilitates pivoting searches for possibly affected IP addresses\
+        \ or users."
+      playbookName: Palo Alto Networks - Hunting And Threat Detection
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      IPAddresses:
+        complex:
+          root: ExtractedIndicators
+          accessor: IP
+          transformers:
+          - operator: uniq
+      InternalDomainName: {}
+      InternalHostRegex: {}
+      InternalRange: {}
+      MD5:
+        complex:
+          root: ExtractedIndicators.File
+          filters:
+          - - operator: stringHasLength
+              left:
+                value:
+                  simple: ExtractedIndicators.File
+                iscontext: true
+              right:
+                value:
+                  simple: "32"
+          transformers:
+          - operator: uniq
+      SHA1:
+        complex:
+          root: ExtractedIndicators.File
+          filters:
+          - - operator: stringHasLength
+              left:
+                value:
+                  simple: ExtractedIndicators.File
+                iscontext: true
+              right:
+                value:
+                  simple: "40"
+          transformers:
+          - operator: uniq
+      SHA256:
+        complex:
+          root: ExtractedIndicators.File
+          filters:
+          - - operator: stringHasLength
+              left:
+                value:
+                  simple: ExtractedIndicators.File
+                iscontext: true
+              right:
+                value:
+                  simple: "64"
+          transformers:
+          - operator: uniq
+      URLDomain:
+        complex:
+          root: ExtractedIndicators.Domain
+          filters:
+          - - operator: notContainsGeneral
+              left:
+                value:
+                  simple: ExtractedIndicators.Domain
+                iscontext: true
+              right:
+                value:
+                  simple: microsoft.com
+          - - operator: notContainsGeneral
+              left:
+                value:
+                  simple: ExtractedIndicators.Domain
+                iscontext: true
+              right:
+                value:
+                  simple: github
+          transformers:
+          - operator: uniq
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 230,
+          "y": 1010
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: 117fb80b-418f-425c-8606-74d002beaa48
+    type: title
+    task:
+      id: 117fb80b-418f-425c-8606-74d002beaa48
+      version: -1
+      name: SIEM Indicators Hunting
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "11"
+      - "12"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -470,
+          "y": 860
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "9":
+    id: "9"
+    taskid: 2dbdcc23-532c-4fae-87ce-56c08434f460
+    type: title
+    task:
+      id: 2dbdcc23-532c-4fae-87ce-56c08434f460
+      version: -1
+      name: Network Activity Indicators Hunt
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "7"
+      - "10"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 860
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "10":
+    id: "10"
+    taskid: c607bf10-ed36-412c-82bd-cf299e415c15
+    type: playbook
+    task:
+      id: c607bf10-ed36-412c-82bd-cf299e415c15
+      version: -1
+      name: Panorama Query Logs
+      description: 'Query Panorama Logs of types: traffic, threat, url, data-filtering
+        and wildfire.'
+      playbookName: Panorama Query Logs
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      action: {}
+      addr-dst: {}
+      addr-src: {}
+      filedigest: {}
+      ip: {}
+      log_type:
+        simple: threat
+      port-dst: {}
+      query:
+        simple: (threatid eq 86398)
+      rule: {}
+      time-generated: {}
+      url: {}
+      zone-dst: {}
+      zone-src: {}
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 680,
+          "y": 1010
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+  "11":
+    id: "11"
+    taskid: 0a00d050-c53a-4254-87e7-f0f914644f26
+    type: playbook
+    task:
+      id: 0a00d050-c53a-4254-87e7-f0f914644f26
+      version: -1
+      name: QRadar Indicator Hunting V2
+      description: 'The Playbook queries QRadar SIEM for indicators such as file hashes,
+        IP addresses, domains, or urls. '
+      playbookName: QRadar Indicator Hunting V2
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      IPAddress:
+        complex:
+          root: ExtractedIndicators
+          accessor: IP
+          transformers:
+          - operator: uniq
+      InternalRange: {}
+      InvestigationIPFields:
+        simple: sourceip,destinationip
+      InvestigationUserFields:
+        simple: username
+      MD5:
+        complex:
+          root: ExtractedIndicators.File
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: ExtractedIndicators.File
+                iscontext: true
+              right:
+                value:
+                  simple: "32"
+          transformers:
+          - operator: uniq
+      QradarIPfield:
+        simple: sourceip,destinationip
+      QradarMD5Field: {}
+      QradarSHA1Field: {}
+      QradarSHA256Field: {}
+      QradarURLDomainField: {}
+      SHA1:
+        complex:
+          root: ExtractedIndicators.File
+          filters:
+          - - operator: stringHasLength
+              left:
+                value:
+                  simple: ExtractedIndicators.File
+                iscontext: true
+              right:
+                value:
+                  simple: "40"
+          transformers:
+          - operator: uniq
+      SHA256:
+        complex:
+          root: ExtractedIndicators.File
+          filters:
+          - - operator: stringHasLength
+              left:
+                value:
+                  simple: ExtractedIndicators.File
+                iscontext: true
+              right:
+                value:
+                  simple: "64"
+          transformers:
+          - operator: uniq
+      TimeFrame:
+        simple: LAST 7 DAYS
+      URLDomain:
+        complex:
+          root: ExtractedIndicators.Domain
+          filters:
+          - - operator: notContainsGeneral
+              left:
+                value:
+                  simple: ExtractedIndicators.Domain
+                iscontext: true
+              right:
+                value:
+                  simple: github
+          - - operator: notContainsGeneral
+              left:
+                value:
+                  simple: ExtractedIndicators.Domain
+                iscontext: true
+              right:
+                value:
+                  simple: microsoft.com
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": -240,
+          "y": 1010
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+  "12":
+    id: "12"
+    taskid: 08317731-c83c-4506-86ab-31e6cf87b8a3
+    type: playbook
+    task:
+      id: 08317731-c83c-4506-86ab-31e6cf87b8a3
+      version: -1
+      name: Splunk Indicator Hunting
+      description: This playbook queries Splunk for indicators such as file hashes,
+        IP addresses, domains, or urls. It outputs detected users, ip addresses, and
+        hostnames related to the indicators.
+      playbookName: Splunk Indicator Hunting
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      HostFieldsToReturn: {}
+      IPAddress:
+        complex:
+          root: ExtractedIndicators
+          accessor: IP
+          transformers:
+          - operator: uniq
+      IPFieldsToReturn: {}
+      IndexName:
+        simple: '*'
+      InternalDomainName: {}
+      InternalHostRegex: {}
+      InternalIPRange: {}
+      MD5:
+        complex:
+          root: ExtractedIndicators.File
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: ExtractedIndicators.File
+                iscontext: true
+              right:
+                value:
+                  simple: "32"
+          transformers:
+          - operator: uniq
+      SHA1:
+        complex:
+          root: ExtractedIndicators.File
+          filters:
+          - - operator: stringHasLength
+              left:
+                value:
+                  simple: ExtractedIndicators.File
+                iscontext: true
+              right:
+                value:
+                  simple: "40"
+          transformers:
+          - operator: uniq
+      SHA256:
+        complex:
+          root: ExtractedIndicators.File
+          filters:
+          - - operator: stringHasLength
+              left:
+                value:
+                  simple: ExtractedIndicators.File
+                iscontext: true
+              right:
+                value:
+                  simple: "64"
+          transformers:
+          - operator: uniq
+      SelectFields:
+        simple: source,timestamp
+      SplunkIPField: {}
+      SplunkMD5Field: {}
+      SplunkSHA1Field: {}
+      SplunkSHA256Field: {}
+      SplunkURLDomainField: {}
+      URLDomain:
+        complex:
+          root: ExtractedIndicators.Domain
+          filters:
+          - - operator: notContainsGeneral
+              left:
+                value:
+                  simple: ExtractedIndicators.Domain
+                iscontext: true
+              right:
+                value:
+                  simple: github
+          - - operator: notContainsGeneral
+              left:
+                value:
+                  simple: ExtractedIndicators.Domain
+                iscontext: true
+              right:
+                value:
+                  simple: microsoft.com
+          transformers:
+          - operator: uniq
+      UserFieldsToReturn: {}
+      earliest_time:
+        simple: -1d
+      event_limit:
+        simple: "100"
+      latest_time: {}
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": -690,
+          "y": 1010
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+  "13":
+    id: "13"
+    taskid: 70d85026-7eea-479f-8623-813eb6c4b018
+    type: regular
+    task:
+      id: 70d85026-7eea-479f-8623-813eb6c4b018
+      version: -1
+      name: Search XDR incidents related to NOBELIUM
+      description: Searches Demisto incidents
+      scriptName: SearchIncidentsV2
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      details: {}
+      fromclosedate: {}
+      fromdate: {}
+      fromduedate: {}
+      id: {}
+      level: {}
+      name: {}
+      notstatus: {}
+      owner: {}
+      page: {}
+      query:
+        simple: 'xdralerts.name:"LOLBIN connecting to a rare host" '
+      reason: {}
+      size: {}
+      sort: {}
+      status: {}
+      toclosedate: {}
+      todate: {}
+      toduedate: {}
+      type: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1800,
+          "y": 1180
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "14":
+    id: "14"
+    taskid: 0a0c6ec9-f2ec-4f4a-8b44-307f3bfbda35
+    type: title
+    task:
+      id: 0a0c6ec9-f2ec-4f4a-8b44-307f3bfbda35
+      version: -1
+      name: Endpoints Activity Hunt
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "15"
+      - "16"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1380,
+          "y": 860
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "15":
+    id: "15"
+    taskid: 8f352c1e-d41f-4029-895d-8b2f786cfba1
+    type: playbook
+    task:
+      id: 8f352c1e-d41f-4029-895d-8b2f786cfba1
+      version: -1
+      name: Search Endpoints By Hash - Generic V2
+      description: Hunt using available tools
+      playbookName: Search Endpoints By Hash - Generic V2
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      MD5Hash:
+        complex:
+          root: ExtractedIndicators.File
+          filters:
+          - - operator: stringHasLength
+              left:
+                value:
+                  simple: ExtractedIndicators.File
+                iscontext: true
+              right:
+                value:
+                  simple: "32"
+          transformers:
+          - operator: uniq
+      SHA1Hash:
+        complex:
+          root: ExtractedIndicators.File
+          filters:
+          - - operator: stringHasLength
+              left:
+                value:
+                  simple: ExtractedIndicators.File
+                iscontext: true
+              right:
+                value:
+                  simple: "40"
+          transformers:
+          - operator: uniq
+      SHA256Hash:
+        complex:
+          root: ExtractedIndicators.File
+          filters:
+          - - operator: stringHasLength
+              left:
+                value:
+                  simple: ExtractedIndicators.File
+                iscontext: true
+              right:
+                value:
+                  simple: "64"
+          transformers:
+          - operator: uniq
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 1150,
+          "y": 1010
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+  "16":
+    id: "16"
+    taskid: 2564a8d1-784c-4b23-8106-4c22862d05aa
+    type: condition
+    task:
+      id: 2564a8d1-784c-4b23-8106-4c22862d05aa
+      version: -1
+      name: 'Is Cortex XDR enabled? '
+      description: Checks if the Cortex XDR instance is enabled.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "17"
+      "yes":
+      - "13"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Cortex XDR - IR
+                accessor: state
+            iscontext: true
+          right:
+            value:
+              simple: active
+          ignorecase: true
+    view: |-
+      {
+        "position": {
+          "x": 1610,
+          "y": 1010
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "17":
+    id: "17"
+    taskid: 293396bd-67a7-47bc-895a-daad309237b3
+    type: title
+    task:
+      id: 293396bd-67a7-47bc-895a-daad309237b3
+      version: -1
+      name: 'Advanced Hunting '
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "18"
+      - "19"
+      - "20"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1360
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "18":
+    id: "18"
+    taskid: addf90e4-dfca-4a98-8617-17b04b5c7403
+    type: regular
+    task:
+      id: addf90e4-dfca-4a98-8617-17b04b5c7403
+      version: -1
+      name: Run YARA rules
+      description: |-
+        Volexity published YARA rule to detect the related malware.
+
+        **You can find the YARA rule in their blog:**
+        [Volexity blog](https://www.volexity.com/blog/2021/05/27/suspected-apt29-operation-launches-election-fraud-themed-phishing-campaigns/)
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "24"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 1510
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "19":
+    id: "19"
+    taskid: c4cf0fb3-ad75-4f38-88d4-32905e7feba5
+    type: regular
+    task:
+      id: c4cf0fb3-ad75-4f38-88d4-32905e7feba5
+      version: -1
+      name: Run Sigma rules
+      description: |-
+        Run Sigma rules to detected the related malicious activity:
+        - [CobaltStrike Named Pipe](https://github.com/SigmaHQ/sigma/blob/master/rules/windows/pipe_created/sysmon_mal_cobaltstrike.yml)
+        - [Suspicious Process Start Without DLL](https://github.com/SigmaHQ/sigma/blob/master/rules/windows/process_creation/win_susp_procs_req_dlls.yml)
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "24"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1510
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "20":
+    id: "20"
+    taskid: c0ea601f-538a-405d-8d94-2da97de8cd17
+    type: regular
+    task:
+      id: c0ea601f-538a-405d-8d94-2da97de8cd17
+      version: -1
+      name: Cortex XDR XQL queries
+      description: |-
+        Run related advanced XQL queries in Cortex XDR to find any malicious related activity.
+        [Cortex XDR Hunting Blog](https://www.paloaltonetworks.com/blog/security-operations/hunting-for-apt29-spear-phishing-using-xdr/)
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "24"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -10,
+          "y": 1510
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "21":
+    id: "21"
+    taskid: 2bfc43de-1f8c-40a4-84a3-bd0b6ec1c249
+    type: title
+    task:
+      id: 2bfc43de-1f8c-40a4-84a3-bd0b6ec1c249
+      version: -1
+      name: Malicious Email Search
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "22"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "22":
+    id: "22"
+    taskid: b71f61c3-99d1-4b94-8da1-2b7fa36c465e
+    type: condition
+    task:
+      id: b71f61c3-99d1-4b94-8da1-2b7fa36c465e
+      version: -1
+      name: Is EWS enabled?
+      description: Checks if EWS integration enabled
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "4"
+      "yes":
+      - "23"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: EWS V2
+                    ignorecase: true
+                accessor: state
+            iscontext: true
+          right:
+            value:
+              simple: active
+          ignorecase: true
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "23":
+    id: "23"
+    taskid: a84a2f29-7881-4d70-8f7b-bd8e5d731d3c
+    type: regular
+    task:
+      id: a84a2f29-7881-4d70-8f7b-bd8e5d731d3c
+      version: -1
+      name: Search for emails from spoofed accounts
+      description: Searches for items in the specified mailbox. Specific permissions
+        are needed for this operation to search in a target mailbox other than the
+        default.
+      script: '|||ews-search-mailbox'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      folder-path: {}
+      is-public: {}
+      limit: {}
+      message-id: {}
+      query:
+        complex:
+          root: inputs.EWSSearchQuery
+      selected-fields: {}
+      target-mailbox: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 130,
+          "y": 510
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+  "24":
+    id: "24"
+    taskid: 5f8afed1-7fa7-47bf-844b-bb31f324487a
+    type: title
+    task:
+      id: 5f8afed1-7fa7-47bf-844b-bb31f324487a
+      version: -1
+      name: Block Indicators
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "26"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1700
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "25":
+    id: "25"
+    taskid: 2a85a354-b772-40db-8079-d3793a98b894
+    type: playbook
+    task:
+      id: 2a85a354-b772-40db-8079-d3793a98b894
+      version: -1
+      name: Block Indicators - Generic v2
+      description: |+
+        This playbook blocks malicious Indicators using all integrations that are enabled, using the following sub-playbooks:
+
+        - Block URL - Generic
+        - Block Account - Generic
+        - Block IP - Generic v2
+        - Block File - Generic v2
+
+      playbookName: Block Indicators - Generic v2
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "27"
+    scriptarguments:
+      AutoCommit:
+        simple: "No"
+      CustomBlockRule:
+        simple: "True"
+      CustomURLCategory:
+        simple: Demisto Remediation - Malicious URLs
+      DAG: {}
+      EDLServerIP: {}
+      IP:
+        complex:
+          root: ExtractedIndicators
+          accessor: IP
+          transformers:
+          - operator: uniq
+      IPBlacklistMiner: {}
+      IPListName: {}
+      LogForwarding: {}
+      MD5:
+        complex:
+          root: ExtractedIndicators.File
+          filters:
+          - - operator: stringHasLength
+              left:
+                value:
+                  simple: ExtractedIndicators.File
+                iscontext: true
+              right:
+                value:
+                  simple: "32"
+          transformers:
+          - operator: uniq
+      SHA256:
+        complex:
+          root: ExtractedIndicators.File
+          filters:
+          - - operator: stringHasLength
+              left:
+                value:
+                  simple: ExtractedIndicators.File
+                iscontext: true
+              right:
+                value:
+                  simple: "64"
+          transformers:
+          - operator: uniq
+      StaticAddressGroup: {}
+      URL:
+        complex:
+          root: ExtractedIndicators.URL
+          filters:
+          - - operator: notContainsGeneral
+              left:
+                value:
+                  simple: ExtractedIndicators.URL
+                iscontext: true
+              right:
+                value:
+                  simple: github
+              ignorecase: true
+          - - operator: notContainsGeneral
+              left:
+                value:
+                  simple: ExtractedIndicators.URL
+                iscontext: true
+              right:
+                value:
+                  simple: microsoft.com
+          transformers:
+          - operator: uniq
+      URLBlacklistMiner: {}
+      URLListName:
+        simple: Demisto Remediation - URL EDL
+      Username: {}
+      categories: {}
+      device-group: {}
+      type: {}
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 190,
+          "y": 2010
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "26":
+    id: "26"
+    taskid: 12cc4d42-93b7-49ae-8c8d-2e9eca75680e
+    type: condition
+    task:
+      id: 12cc4d42-93b7-49ae-8c8d-2e9eca75680e
+      version: -1
+      name: Block indicators automatically?
+      description: Checks whether IOCs associated with the incident can be blocked automatically.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "28"
+      "yes":
+      - "25"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.BlockIndicatorsAutomatically
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+          ignorecase: true
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1840
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "27":
+    id: "27"
+    taskid: 4af0be4b-2a44-438c-8579-ee068b63a1d6
+    type: title
+    task:
+      id: 4af0be4b-2a44-438c-8579-ee068b63a1d6
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2180
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "28":
+    id: "28"
+    taskid: d57ebdb3-079f-4bdf-838e-24773c30316d
+    type: regular
+    task:
+      id: d57ebdb3-079f-4bdf-838e-24773c30316d
+      version: -1
+      name: Block indicators manually
+      description: Manually block the IOCs in the relevant systems.
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "27"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 710,
+          "y": 2010
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "29":
+    id: "29"
+    taskid: bfcc9bc3-ba7c-41bd-890e-17700c270c58
+    type: title
+    task:
+      id: bfcc9bc3-ba7c-41bd-890e-17700c270c58
+      version: -1
+      name: Tag Indicators
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "30"
+      - "31"
+      - "32"
+      - "33"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 440,
+          "y": -130
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "30":
+    id: "30"
+    taskid: e92b6ba2-4c59-44f9-895a-888c000c5bce
+    type: regular
+    task:
+      id: e92b6ba2-4c59-44f9-895a-888c000c5bce
+      version: -1
+      name: Tag File indicators
+      description: commands.local.cmd.set.indicators
+      script: Builtin|||setIndicators
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "21"
+    scriptarguments:
+      indicatorsValues:
+        complex:
+          root: ExtractedIndicators
+          accessor: File
+          transformers:
+          - operator: uniq
+      tags:
+        simple: NOBELIUM, APT29
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1150,
+          "y": 20
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "31":
+    id: "31"
+    taskid: 0096abb8-0558-41a4-8124-7e4a563b2f36
+    type: regular
+    task:
+      id: 0096abb8-0558-41a4-8124-7e4a563b2f36
+      version: -1
+      name: Tag IP indicators
+      description: commands.local.cmd.set.indicators
+      script: Builtin|||setIndicators
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "21"
+    scriptarguments:
+      indicatorsValues:
+        complex:
+          root: ExtractedIndicators
+          accessor: IP
+          transformers:
+          - operator: uniq
+      tags:
+        simple: NOBELIUM, APT29
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 690,
+          "y": 20
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "32":
+    id: "32"
+    taskid: ed2b4e8b-7cc1-4ff7-8890-f9ff9fdb2c75
+    type: regular
+    task:
+      id: ed2b4e8b-7cc1-4ff7-8890-f9ff9fdb2c75
+      version: -1
+      name: Tag Domain indicators
+      description: commands.local.cmd.set.indicators
+      script: Builtin|||setIndicators
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "21"
+    scriptarguments:
+      indicatorsValues:
+        complex:
+          root: ExtractedIndicators
+          accessor: Domain
+          transformers:
+          - operator: uniq
+      tags:
+        simple: NOBELIUM, APT29
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 200,
+          "y": 20
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "33":
+    id: "33"
+    taskid: af4e37fb-4077-4654-8258-587de5dd4139
+    type: regular
+    task:
+      id: af4e37fb-4077-4654-8258-587de5dd4139
+      version: -1
+      name: Tag URL indicators
+      description: commands.local.cmd.set.indicators
+      script: Builtin|||setIndicators
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "21"
+    scriptarguments:
+      indicatorsValues:
+        complex:
+          root: ExtractedIndicators
+          accessor: URL
+          transformers:
+          - operator: uniq
+      tags:
+        simple: NOBELIUM, APT29
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -250,
+          "y": 20
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {
+      "16_13_yes": 0.61,
+      "16_17_#default#": 0.11
+    },
+    "paper": {
+      "dimensions": {
+        "height": 3015,
+        "width": 2870,
+        "x": -690,
+        "y": -770
+      }
+    }
+  }
+inputs:
+- key: EWSSearchQuery
+  value:
+    simple: From:*usaid.gov or From:*in.constantcontact.com
+  required: false
+  description: The EWS query to find malicious emails related to NOBELIUM spear-phishing.
+  playbookInputQuery:
+- key: BlockIndicatorsAutomatically
+  value:
+    simple: "False"
+  required: false
+  description: Whether to automatically indicators involved with NOBELIUM spear-phishing.
+  playbookInputQuery:
+outputs: []
+tests:
+- No tests (auto formatted)
+fromversion: 5.5.0

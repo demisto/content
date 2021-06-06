@@ -1,0 +1,37 @@
+!docker-build-prune
+!docker-swarm-init listenaddr="192.168.20.210" advertiseaddr="192.168.20.210"
+!docker-swarm-inspect
+!docker-swarm-join
+!docker-swarm-unlock
+!docker-swarm-unlockkey
+!docker-node-list
+!docker-node-inspect id="ihwbb8r17uj4zgk1ds427r06o"
+!docker-config-create configspec_name="test_config" configspec_data="VEhJUyBJUyBOT1QgQSBSRUFMIENFUlRJRklDQVRFCg=="
+!docker-config-list
+!docker-config-inspect id="ud0ychozv55f7n0pzk6qo9kq9"
+!docker-container-list
+!docker-container-changes id="04be62e20d33bf299865e26b657ec5516928641558ccff6a899407ab0b6b1d94"
+!docker-container-create name="hello-docker" containerconfig_image="hello-world"
+!docker-container-inspect id="7997c8bd061e762bfdb105274af3f60e5f2254aaba2172744db1edfccc2b8a41"
+!docker-container-stats id="04be62e20d33bf299865e26b657ec5516928641558ccff6a899407ab0b6b1d94"
+!docker-container-top id="04be62e20d33bf299865e26b657ec5516928641558ccff6a899407ab0b6b1d94"
+!docker-image-list
+!docker-image-history name="05bf9d904cd0953ee1ad647a61abfb0ab1470062f8baa70495b4b068e95a514e"
+!docker-image-inspect name="05bf9d904cd0953ee1ad647a61abfb0ab1470062f8baa70495b4b068e95a514e"
+!docker-image-prune
+!docker-image-search term="centos"
+!docker-volume-list
+!docker-volume-prune
+!docker-volume-create volumeconfig_name="temp-volume"
+!docker-volume-inspect name="temp-volume"
+!docker-network-prune
+!docker-network-list
+!docker-network-create networkconfig_name="test-network1"
+!docker-task-list
+!docker-system-version
+!docker-system-info
+!docker-system-data-usage
+!docker-secret-create secretspec_name="temp-secret1" secretspec_data="test"
+!docker-secret-inspect id="2k3h2oy2qiiz2rc35zhgh3yvz"
+!docker-secret-list
+!docker-swarm-leave force="True"

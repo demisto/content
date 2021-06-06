@@ -13,7 +13,7 @@ import QRadar_v3  # import module separately for mocker
 from CommonServerPython import DemistoException, set_integration_context, CommandResults, \
     GetModifiedRemoteDataResponse, GetRemoteDataResponse
 from QRadar_v3 import USECS_ENTRIES, OFFENSE_OLD_NEW_NAMES_MAP, MINIMUM_API_VERSION, REFERENCE_SETS_OLD_NEW_MAP, \
-    Client, EVENT_COLUMNS_DEFAULT_VALUE, RESET_KEY, ASSET_PROPERTIES_NAME_MAP, \
+    Client, RESET_KEY, ASSET_PROPERTIES_NAME_MAP, \
     FULL_ASSET_PROPERTIES_NAMES_MAP, EntryType, EntryFormat
 from QRadar_v3 import get_time_parameter, add_iso_entries_to_dict, build_final_outputs, build_headers, \
     get_offense_types, get_offense_closing_reasons, get_domain_names, get_rules_names, enrich_assets_results, \
@@ -28,7 +28,7 @@ from QRadar_v3 import get_time_parameter, add_iso_entries_to_dict, build_final_o
     qradar_reference_set_delete_command, qradar_reference_set_value_upsert_command, \
     qradar_reference_set_value_delete_command, qradar_domains_list_command, qradar_geolocations_for_ip_command, \
     qradar_log_sources_list_command, qradar_get_custom_properties_command, enrich_asset_properties, \
-    flatten_nested_geolocation_values, get_modified_remote_data_command, get_remote_data_command
+    flatten_nested_geolocation_values, get_modified_remote_data_command, get_remote_data_command, is_valid_ip
 
 client = Client(
     server='https://192.168.0.1',
@@ -50,6 +50,16 @@ def util_load_json(path):
 asset_enrich_data = util_load_json("./test_data/asset_enrich_test.json")
 
 command_test_data = util_load_json('./test_data/command_test_data.json')
+
+event_columns_default_value = \
+    'QIDNAME(qid), LOGSOURCENAME(logsourceid), CATEGORYNAME(highlevelcategory), ' \
+    'CATEGORYNAME(category), PROTOCOLNAME(protocolid), sourceip, sourceport, destinationip, ' \
+    'destinationport, QIDDESCRIPTION(qid), username, PROTOCOLNAME(protocolid), ' \
+    'RULENAME("creEventList"), sourcegeographiclocation, sourceMAC, sourcev6, ' \
+    'destinationgeographiclocation, destinationv6, LOGSOURCETYPENAME(devicetype), ' \
+    'credibility, severity, magnitude, eventcount, eventDirection, postNatDestinationIP, ' \
+    'postNatDestinationPort, postNatSourceIP, postNatSourcePort, preNatDestinationPort, ' \
+    'preNatSourceIP, preNatSourcePort, UTF8(payload), starttime, devicetime '
 
 
 @pytest.mark.parametrize('arg, iso_format, epoch_format, expected',
@@ -395,7 +405,7 @@ def test_create_search_with_retry(mocker, search_exception, fetch_mode, query_ex
         mocker.patch.object(client, "search_create", return_value=search_response)
     assert create_search_with_retry(client, fetch_mode=fetch_mode,
                                     offense=command_test_data['offenses_list']['response'][0],
-                                    event_columns=EVENT_COLUMNS_DEFAULT_VALUE, events_limit=20,
+                                    event_columns=event_columns_default_value, events_limit=20,
                                     max_retries=1) == search_response
 
 
@@ -498,7 +508,7 @@ def test_enrich_offense_with_events(mocker, offense: Dict, fetch_mode, mock_sear
     poll_events_mock = mocker.patch.object(QRadar_v3, "poll_offense_events_with_retry",
                                            return_value=poll_events_response)
 
-    enriched_offense = enrich_offense_with_events(client, offense, fetch_mode, EVENT_COLUMNS_DEFAULT_VALUE,
+    enriched_offense = enrich_offense_with_events(client, offense, fetch_mode, event_columns_default_value,
                                                   events_limit=events_limit, max_retries=1)
 
     if mock_search_response:
@@ -968,3 +978,38 @@ def test_get_remote_data_command_6_1_and_higher(mocker, params, offense: Dict, e
     result = get_remote_data_command(client, params, {'id': offense.get('id'), 'lastUpdate': 1})
     assert result.mirrored_object == expected.mirrored_object
     assert result.entries == expected.entries
+
+
+@pytest.mark.parametrize('ip_address, expected', [('1.2.3.4', True), ('1.2.3.4.765', False), ('', False),
+                                                  ('192.0.0.1', True), ('::1', True),
+                                                  ('2001:0db8:0a0b:12f0:0000:0000:0000:0001', True), ('1', False)])
+def test_is_valid_ip(ip_address: str, expected: bool):
+    """
+    Given:
+     - IP address returned by QRadar, could be valid and could be invalid.
+
+    When:
+     - Checking whether IP is valid or not.
+
+    Then:
+     - Ensure expected bool is returned indicating whether IP is valid.
+    """
+    assert is_valid_ip(ip_address) == expected
+
+
+def test_validate_long_running_params():
+    """
+    Given:
+     - Cortex XSOAR params.
+
+    When:
+     - Running long running execution.
+
+    Then:
+     - Ensure that error is thrown.
+    """
+    from QRadar_v3 import validate_long_running_params, LONG_RUNNING_REQUIRED_PARAMS
+    for param_name, param_value in LONG_RUNNING_REQUIRED_PARAMS.items():
+        params_without_required_param = {k: v for k, v in LONG_RUNNING_REQUIRED_PARAMS.items() if k is not param_name}
+        with pytest.raises(DemistoException):
+            validate_long_running_params(params_without_required_param)
