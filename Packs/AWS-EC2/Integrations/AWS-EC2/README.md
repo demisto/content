@@ -1,5 +1,8 @@
 Amazon Web Services Elastic Compute Cloud (EC2)
+
 For more information regarding the AWS EC2 service, please visit the official documentation found [here](https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/ec2.html).
+
+For detailed instructions about setting up authentication, see: [AWS Integrations - Authentication](https://xsoar.pan.dev/docs/reference/articles/aws-integrations---authentication).
 
 ## Configure AWS - EC2 on Cortex XSOAR
 
@@ -15,12 +18,14 @@ For more information regarding the AWS EC2 service, please visit the official do
 | sessionDuration | Role Session Duration | False |
 | access_key | Access Key | False |
 | secret_key | Secret Key | False |
+| timeout | The time in seconds till a timeout exception is reached. You can specify just the read timeout (for example 60) or also the connect timeout followed after a comma (for example 60,10). If a connect timeout is not specified a default of 10 second will be used. | False |
+| retries | The maximum number of retry attempts when connection or throttling errors are encountered. Set to 0 to disable retries. The default value is 5 and the limit is 10. Note: Increasing the number of retries will increase the execution time. More details about the retries strategy is available [here](https://boto3.amazonaws.com/v1/documentation/api/latest/guide/retries.html). | False |
 | proxy | Use system proxy settings | False |
 | insecure | Trust any certificate \(not secure\) | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook. 
+You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook. 
 After you successfully execute a command, a DBot message appears in the War Room with the command details. 
 All command, argument, and output descriptions are taken from the AWS documentation.
 
