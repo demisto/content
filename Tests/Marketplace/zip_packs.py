@@ -138,8 +138,8 @@ def get_zipped_packs_names(zip_path, gcp_path, circle_build):
     Creates a list of dictionaries containing a pack name as key and the latest zip file path of the pack as value.
     Args:
         zip_path: path containing all the packs copied from the storage bucket
-        gcp_path:
-        circle_build:
+        gcp_path: The path of the packs in the GCP bucket.
+        circle_build: The number of the circle ci build.
     Returns:
         A list of dictionaries containing each pack name and it's zip path.
         [{'Slack': 'content/packs/slack.zip'}, {'qualys': 'content/packs/qualys.zip'}]

@@ -36,41 +36,73 @@ class TestZipPacks:
         assert blob_name == 'content/packs/Slack/1.0.1/Slack.zip'
 
     def test_get_zipped_packs_name(self, mocker):
+        """
+        Given:
+            Some general path information of the packs and the build
+        When:
+            There is a valid pack which should be stored in the created dictionary
+        Then:
+            Create a list which has one dictionary of the found pack
+        """
         from Tests.Marketplace import zip_packs
-        listdir_result = ['Slack', 'ApiModules', 'python_file.py']
+        list_dir_result = ['Slack', 'ApiModules', 'python_file.py']
         pack_files = TestZipPacks.BLOB_NAMES
         mocker.patch.object(zip_packs, 'get_pack_files', return_value=pack_files)
-        mocker.patch('os.listdir', return_value=listdir_result)
+        mocker.patch('os.listdir', return_value=list_dir_result)
         mocker.patch('os.path.isdir', return_value=True)
         zipped_packs = get_zipped_packs_names('content', BUILD_GCP_PATH, 'builds')
 
         assert zipped_packs == [{'Slack': 'content/packs/Slack/1.0.1/Slack.zip'}]
 
     def test_get_zipped_packs_name_no_zipped_packs(self, mocker):
+        """
+        Given:
+            Some general path information of the packs and the build
+        When:
+            There are no valid packs in the packs directory
+        Then:
+            exit since no packs were found
+        """
         with pytest.raises(SystemExit) as sys_exit:
             from Tests.Marketplace import zip_packs
-            listdir_result = ['ApiModules', 'python_file.py']
+            list_dir_result = ['ApiModules', 'python_file.py']
             pack_files = TestZipPacks.BLOB_NAMES
             mocker.patch.object(zip_packs, 'get_pack_files', return_value=pack_files)
-            mocker.patch('os.listdir', return_value=listdir_result)
+            mocker.patch('os.listdir', return_value=list_dir_result)
             mocker.patch('os.path.isdir', return_value=True)
             get_zipped_packs_names('content', BUILD_GCP_PATH, 'builds')
 
             assert sys_exit.value.code == 1
 
     def test_get_zipped_packs_name_no_latest_zip(self, mocker):
+        """
+        Given:
+            Some general path information of the packs and the build
+        When:
+            There are is one valid pack but it has no valid zip files
+        Then:
+            exit since no zipped packs were found
+        """
         with pytest.raises(SystemExit) as sys_exit:
             from Tests.Marketplace import zip_packs
-            listdir_result = ['Slack', 'ApiModules', 'python_file.py']
+            list_dir_result = ['Slack', 'ApiModules', 'python_file.py']
             pack_files = TestZipPacks.BLOB_NAMES_NO_ZIP
             mocker.patch.object(zip_packs, 'get_pack_files', return_value=pack_files)
-            mocker.patch('os.listdir', return_value=listdir_result)
+            mocker.patch('os.listdir', return_value=list_dir_result)
             mocker.patch('os.path.isdir', return_value=True)
             get_zipped_packs_names('content', BUILD_GCP_PATH, 'builds')
 
             assert sys_exit.value.code == 1
 
     def test_copy_to_other_dir(self, mocker):
+        """
+        Given:
+            A list containing information about a single pack
+        When:
+            The information is valid
+        Then:
+            make a single call to the copy function
+        """
         import shutil
         zipped_packs = [{'Slack': 'content/packs/Slack/1.0.1/Slack.zip'}]
         mocker.patch.object(shutil, 'copy', side_effect=None)
@@ -81,6 +113,14 @@ class TestZipPacks:
         assert shutil.copy.call_count == 1
 
     def test_copy_to_other_dir_no_zipped_packs(self, mocker):
+        """
+        Given:
+            A list containing no information about packs
+        When:
+            There are no packs to copy
+        Then:
+            make no calls to the copy function
+        """
         import shutil
         zipped_packs = []
         mocker.patch.object(shutil, 'copy', side_effect=None)
