@@ -7,8 +7,7 @@
             "integrations": [
                 "WildFire-v2"
             ],
-            "playbookID": "Detonate File - WildFire - Test",
-            "is_mockable": false
+            "playbookID": "Detonate File - WildFire - Test"
         },
         {
             "integrations": "Microsoft Teams Management",
@@ -1198,8 +1197,7 @@
         },
         {
             "integrations": "WildFire-v2",
-            "playbookID": "Detonate URL - WildFire-v2 - Test",
-            "is_mockable": false
+            "playbookID": "Detonate URL - WildFire-v2 - Test"
         },
         {
             "integrations": "WildFire-v2",
