@@ -75,7 +75,7 @@ class McAfeeESMClient(BaseClient):
 
     def test_module(self) -> Tuple[str, Dict, Dict]:
         self.get_organization_list(raw=True)
-        return 'ok', {}, {}
+        return 'ok', {}, 'ok'
 
     def __username_and_id(self, user_name: str = None, user_id: str = None) -> Dict:
         """

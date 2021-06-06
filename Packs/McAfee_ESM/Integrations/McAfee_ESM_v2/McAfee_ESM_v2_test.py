@@ -236,9 +236,9 @@ def test_edit_case(mocker):
                                    "orgId": 2, "severity": 50, "statusId": 3,
                                    "summary": "BRD-ALERT- Recon - Horizontal - Scan"}
 
-    mocker.patch.object(McAfeeESMClient, '_McAfeeESMClient__login', return_value=None)
-    mocker.patch.object(McAfeeESMClient, 'get_case_detail', return_value=('', {}, raw_response_has_event_list))
+    mocker.patch.object(McAfeeESMClient, '_McAfeeESMClient__login', return_value={})
     mocker.patch.object(McAfeeESMClient, '_McAfeeESMClient__request', return_value={})
+    mocker.patch.object(McAfeeESMClient, 'get_case_detail', return_value=('', {}, raw_response_has_event_list))
     client = McAfeeESMClient(params)
     client.edit_case()
     result = client._McAfeeESMClient__request.call_args.kwargs['data']['caseDetail']
