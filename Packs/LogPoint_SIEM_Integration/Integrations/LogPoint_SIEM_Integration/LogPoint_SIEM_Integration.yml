@@ -819,7 +819,7 @@ script:
       secret: false
     - default: false
       description: A comma-separated list of LogPoint repos from which logs are to be fetched. If not provided,
-        it will display logs from all repos. 
+        it will display logs from all repos.
       isArray: true
       name: repos
       required: false
