@@ -874,6 +874,7 @@ jobs:
 #          command: |
 #            ./Tests/scripts/slack_notifier.sh 'test_playbooks' ./env_results.json   # TODO: Modify this
 #          when: always
+      - *destroy_instances
       - *store_artifacts  # TODO: add another script for the test results artifact
 
   Server 5_0:
