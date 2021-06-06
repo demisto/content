@@ -20,10 +20,23 @@
   - section_end "Upload Entities to Cortex XSOAR"
 
 
+demisto-sdk-nightly:prepare-unittests:
+  extends:
+    - .sdk-nightly-schedule-rule
+    - .default-job-settings
+  stage: .pre
+  script:
+    - ./.gitlab/split_test_dirs.sh
+
+
 demisto-sdk-nightly:run-unittests-and-lint:
   extends:
     - .run-unittests-and-lint
     - .sdk-nightly-schedule-rule
+  needs: ["demisto-sdk-nightly:prepare-unittests"]
+  variables:
+    PARALLEL: 8
+  parallel: $PARALLEL
 
 
 demisto-sdk-nightly:run-validations:
