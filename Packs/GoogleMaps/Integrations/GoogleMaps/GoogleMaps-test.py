@@ -23,10 +23,8 @@ def test_google_maps_geocode_command(requests_mock):
     """
     from GoogleMaps import google_maps_geocode_command
     search_address = 'Paloalto Networks TLV office'
-    import os
-    print(os.path.curdir)
 
-    mock_response = util_load_json('test_data/geocode_paloalto_tlv.json')
+    mock_response = util_load_json('test_data/geocode_paloalto_tlv_response.json')
     requests_mock.get('https://maps.googleapis.com/maps/api/geocode/json?', json=mock_response)
 
     client = Client(api_key='',
@@ -38,11 +36,12 @@ def test_google_maps_geocode_command(requests_mock):
                                                           search_address=search_address,
                                                           error_on_no_results=False)
 
-    actual_note_outputs = util_load_json('test_data/geocode_paloalto_tlv_note_outputs.json')
-    expected_note_outputs = actual_note_outputs
-    assert json.dumps(result_note.outpus) == expected_note_outputs
+    expected_note_outputs = util_load_json('test_data/geocode_paloalto_tlv_note_outputs.json')
+    actual_note_outputs = result_note.outputs
+
+    assert actual_note_outputs == expected_note_outputs
 
     # noinspection PyTypeChecker
-    actual_map_contents = json.dumps(result_map.to_context())['Contents']
+    actual_map_contents = result_map.to_context()['Contents']
     expected_map_contents = util_load_json('test_data/geocode_paloalto_tlv_map_contents.json')
     assert actual_map_contents == expected_map_contents
