@@ -39,6 +39,7 @@ script: >
   }
 
   //  lat,lng are not null (whether they were valid arguments or geocoded)
+
   var locationObj = {
     lat: lat,
     lng: lng
