@@ -23,10 +23,10 @@
 <li>Navigate to <strong>Administration</strong> and click the <strong>Tokens</strong> icon.</li>
 <li>On the Authentication Tokens page, click the red plus button to create a new token key.</li>
 <li>Select the necessary user, and click the <strong>Save</strong> button.<br> The new key is listed on the token table.</li>
-<li>Copy the key (authentication token), which you will paste when you configure the integration on Demisto.</li>
+<li>Copy the key (authentication token), which you will paste when you configure the integration on Cortex XSOAR.</li>
 </ol>
 <hr>
-<h2>Configure ReversingLabs A1000 Demisto</h2>
+<h2>Configure ReversingLabs A1000 Cortex XSOAR</h2>
 <ol>
 <li>Navigate to <strong>Settings</strong> &gt; <strong>Integrations</strong> &gt; <strong>Servers &amp; Services</strong>.</li>
 <li>Search for ReversingLabs A1000.</li>
@@ -45,7 +45,7 @@
 </ol>
 <hr>
 <h2>Commands</h2>
-<p>You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
+<p>You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
 <ul>
 <li><a href="#h_912555453321527505457054">Upload a sample to A1000 for analysis: reversinglabs-upload</a></li>
 <li><a href="#h_647371130511527506262720">Re-analyze sample set: reversinglabs-analyze</a></li>
@@ -76,7 +76,7 @@
 <p>entryId</p>
 </td>
 <td style="width: 440px;">
-<p>Entry ID of the file to be uploaded. (Once you upload a file on Demisto’s platform, click on the link(chain) icon to get the entry ID of that file)</p>
+<p>Entry ID of the file to be uploaded. (Once you upload a file on Cortex XSOAR’s platform, click on the link(chain) icon to get the entry ID of that file)</p>
 </td>
 </tr>
 <tr>

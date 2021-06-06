@@ -378,12 +378,10 @@ def horizontal_to_vertical_md_table(horizontal_md_table: str) -> str:
     Returns: md string with rotated table
     """
     lines = horizontal_md_table.split('\n')
-    title = lines[0]
     headers_list = lines[1][1:-1].split('|')
     content_list = lines[3][1:-1].split('|')
 
-    new_table = title
-    new_table += '\n| | |'
+    new_table = '\n| | |'
     new_table += '\n|---|---|'
     for header, content in zip(headers_list, content_list):
         new_table += f"\n|**{header}**|{content}|"
@@ -397,7 +395,8 @@ def return_campaign_details_entry(incidents_df, fields_to_display):
     hr = '\n'.join([hr_campaign_details, hr_email_summary])
 
     vertical_hr_campaign_details = horizontal_to_vertical_md_table(hr_campaign_details)
-    demisto.executeCommand('setIncident', {'emailcampaignsummary': f"{vertical_hr_campaign_details}\n{hr_email_summary}"})
+    demisto.executeCommand('setIncident',
+                           {'emailcampaignsummary': f"{vertical_hr_campaign_details}\n{hr_email_summary}"})
     return return_outputs_custom(hr, context, tag='campaign_details')
 
 
@@ -437,7 +436,8 @@ def return_indicator_entry(incidents_df):
     hr = tableToMarkdown('Mutual Indicators', indicators_df.to_dict(orient='records'),
                          headers=indicators_headers)
 
-    demisto.executeCommand('setIncident', {'emailcampaignmutualindicators': hr})
+    hr_no_title = '\n'.join(hr.split('\n')[1:])
+    demisto.executeCommand('setIncident', {'emailcampaignmutualindicators': hr_no_title})  # without title
     return_outputs_custom(hr, add_context_key(create_context_for_indicators(indicators_df)), tag='indicators')
     return indicators_df
 

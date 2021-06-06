@@ -51,11 +51,11 @@ create-instances-upload-flow:
     INSTANCE_CREATED: "true"
     SSH_TUNNEL_TIMEOUT: 10
     TIME_TO_LIVE: ""
-    DESTROY_INSTANCES: "true"
   extends:
     - .bucket-upload-rule
     - .default-job-settings
   script:
+    - EXIT_CODE=0
     - section_start "Download configuration"
     - ./Tests/scripts/download_demisto_conf.sh  >> $ARTIFACTS_FOLDER/logs/installations.log
     - section_end "Download configuration"
@@ -65,11 +65,15 @@ create-instances-upload-flow:
     - echo INSTANCE_CREATED="$INSTANCE_CREATED"
     - section_end "Get Instance Variables"
     - section_start "Wait Until Server Ready"
-    - python3 ./Tests/scripts/wait_until_server_ready.py "$INSTANCE_ROLE"
+    - python3 ./Tests/scripts/wait_until_server_ready.py "$INSTANCE_ROLE" || EXIT_CODE=$?
     - section_end "Wait Until Server Ready"
     - section_start "Install Packs"
-    - ./Tests/Marketplace/install_packs.sh "$INSTANCE_ROLE"
+    - ./Tests/Marketplace/install_packs.sh "$INSTANCE_ROLE" || EXIT_CODE=$?
     - section_end "Install Packs"
+    - section_start "Destroy instances"
+    - python3 ./Tests/scripts/destroy_instances.py $ARTIFACTS_FOLDER $ARTIFACTS_FOLDER/env_results.json "$INSTANCE_ROLE" "$TIME_TO_LIVE" || EXIT_CODE=$?
+    - section_end "Destroy instances"
+    - exit "$EXIT_CODE"
 
 install-packs-in-server6_0:
   extends: .install_packs_in_server
@@ -158,7 +162,19 @@ run-validations-upload-flow:
 #   extends:
 #     - .run-unittests-and-lint
 #     - .bucket-upload-rule
-#   variables:
-#     SLACK_TEST_TYPE: "unittests"
-#     SLACK_ENV_RESULTS: $ARTIFACTS_FOLDER/env_results.json
-#     SLACK_ONLY_IF: "true"
+
+
+slack-notify-bucket-upload:
+  extends:
+    - .trigger-slack-notification
+  rules:
+    - if: '$GCS_MARKET_BUCKET == "marketplace-dist"' # remove this after testing period
+      when: never # remove this after testing period
+    - if: '$CI_COMMIT_BRANCH =~ /pull\/[0-9]+/'
+      when: never
+    - if: '$BUCKET_UPLOAD == "true"'
+      when: always
+  variables:
+    PIPELINE_TO_QUERY: $CI_PIPELINE_ID
+    WORKFLOW: 'Upload Packs to Marketplace Storage'
+    JOB_NAME: 'upload-packs-to-marketplace'

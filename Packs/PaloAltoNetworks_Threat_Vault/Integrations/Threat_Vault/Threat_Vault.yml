@@ -372,7 +372,7 @@ script:
     - contextPath: ThreatVault.Searchf.signatures
       description: A list of all the signatures found for this specific search.
       type: Unknown
-  dockerimage: demisto/python3:3.9.4.18682
+  dockerimage: demisto/python3:3.9.5.20070
   isfetch: false
   longRunning: false
   longRunningPort: false

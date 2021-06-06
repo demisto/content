@@ -9,7 +9,7 @@ Vectra API is available for administrators and developers to integrate Vectra's 
 <li>c_score and t_score fields changed to certainty and threat accordingly</li>
 </ul><h2>Fetch Incidents</h2>
 <p>You can Fetch only Detections with Greater/Equal Certainty score and Threat score</p>
-<h2>Configure Vectra v2 on Demisto</h2>
+<h2>Configure Vectra v2 on Cortex XSOAR</h2>
 <ol>
   <li>Navigate to&nbsp;<strong>Settings</strong>&nbsp;&gt;&nbsp;<strong>Integrations</strong>
   &nbsp;&gt;&nbsp;<strong>Servers &amp; Services</strong>.</li>
@@ -37,7 +37,7 @@ Vectra API is available for administrators and developers to integrate Vectra's 
 </ol>
 <h2>Commands</h2>
 <p>
-  You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.
+  You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
   After you successfully execute a command, a DBot message appears in the War Room with the command details.
 </p>
 <ol>
