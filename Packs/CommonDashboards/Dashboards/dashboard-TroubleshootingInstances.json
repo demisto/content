@@ -251,13 +251,13 @@
                     },
                     "toDate": "0001-01-01T00:00:00Z"
                 },
-                "description": "Failed Autmations",
+                "description": "Command executions errors",
                 "fromServerVersion": "",
                 "id": "number-of-failed-commands",
                 "isPredefined": false,
                 "itemVersion": "",
                 "modified": "2021-05-20T14:17:32.135870889Z",
-                "name": " Command executions errors",
+                "name": "Command executions errors",
                 "packID": "",
                 "params": {
                     "colors": {
@@ -324,13 +324,13 @@
                     },
                     "toDate": "0001-01-01T00:00:00Z"
                 },
-                "description": "Failed Autmations",
+                "description": "Average runtime by Instance per Command (top 5)",
                 "fromServerVersion": "",
                 "id": "runtime-per-command-per-instance",
                 "isPredefined": false,
                 "itemVersion": "",
                 "modified": "2021-05-24T11:20:22.008866834Z",
-                "name": "Average runtime by Instance per Command (top 5) ",
+                "name": "Average runtime by Instance per Command (top 5)",
                 "packID": "",
                 "params": {
                     "groupBy": [
@@ -424,7 +424,7 @@
                     },
                     "toDate": "0001-01-01T00:00:00Z"
                 },
-                "description": "Failed Autmations",
+                "description": "Command average runtime per Instance (top 5)",
                 "fromServerVersion": "",
                 "id": "runtime-per-instance",
                 "isPredefined": false,
@@ -522,7 +522,7 @@
                     },
                     "toDate": "0001-01-01T00:00:00Z"
                 },
-                "description": "Failed Autmations",
+                "description": "Command execution errors per Instance",
                 "fromServerVersion": "",
                 "id": "error-count-per-instance",
                 "isPredefined": false,
@@ -719,7 +719,7 @@
                     },
                     "toDate": "0001-01-01T00:00:00Z"
                 },
-                "description": "Failed Autmations",
+                "description": "Errors by Incident Type per Command (top 5)",
                 "fromServerVersion": "",
                 "id": "error-count-per-command-per-incident-type",
                 "isPredefined": false,

@@ -27,7 +27,7 @@
                     },
                     "toDate": "0001-01-01T00:00:00Z"
                 },
-                "description": "Failed Autmations",
+                "description": "Commands executed",
                 "fromServerVersion": "",
                 "id": "number-of-used-commands",
                 "isPredefined": false,
@@ -176,7 +176,7 @@
                     },
                     "toDate": "0001-01-01T00:00:00Z"
                 },
-                "description": "Failed Autmations",
+                "description": "Top executed Commands",
                 "fromServerVersion": "",
                 "id": "command-execution-count-per-command",
                 "isPredefined": false,
@@ -520,7 +520,7 @@
                     },
                     "toDate": "0001-01-01T00:00:00Z"
                 },
-                "description": "Failed Autmations",
+                "description": "Command execution type",
                 "fromServerVersion": "",
                 "id": "command-count-auto-vs-manual",
                 "isPredefined": false,

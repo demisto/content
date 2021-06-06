@@ -27,7 +27,7 @@
                     },
                     "toDate": "0001-01-01T00:00:00Z"
                 },
-                "description": "Failed Autmations",
+                "description": "Playbook runs",
                 "fromServerVersion": "",
                 "id": "number_of_used_playbooks",
                 "isPredefined": false,
@@ -181,7 +181,7 @@
                     },
                     "toDate": "0001-01-01T00:00:00Z"
                 },
-                "description": "Failed Autmations",
+                "description": "Average runtime for Playbooks",
                 "fromServerVersion": "",
                 "id": "total-average-playbook-runtime-in-seconds",
                 "isPredefined": false,
@@ -395,7 +395,7 @@
                     },
                     "toDate": "0001-01-01T00:00:00Z"
                 },
-                "description": "Failed Autmations",
+                "description": "Average runtime per Playbook (top 5)",
                 "fromServerVersion": "",
                 "id": "runtime-per-playbook",
                 "isPredefined": false,
