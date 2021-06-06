@@ -492,7 +492,7 @@ def main():
                                 current_commit_hash, index_generation, landing_page_sections=landing_page_sections)
 
     # upload id_set.json to bucket
-    upload_id_set(default_storage_bucket, id_set_path)
+    # upload_id_set(default_storage_bucket, id_set_path)
 
     # get the lists of packs divided by their status
     successful_packs, skipped_packs, failed_packs = get_packs_summary(packs_list)
