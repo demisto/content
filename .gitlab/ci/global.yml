@@ -157,6 +157,8 @@
         if [ -n "$SHOULD_LINT_ALL" ]; then
           echo -e  "----------\nLinting all because:\n${SHOULD_LINT_ALL}\n----------"
           if [[ -n "$PARALLEL" && -n "$CI_NODE_INDEX" ]]; then
+            mkdir -p "./unit-tests/$CI_NODE_INDEX" || true
+            mkdir -p "$ARTIFACTS_FOLDER/$CI_NODE_INDEX" || true
             dirs_to_test=$(cat "$ARTIFACTS_FOLDER/test_groups/test_dirs_$CI_NODE_INDEX.txt" | tr '\n' ',' | sed -E 's/,$//')
             demisto-sdk lint -p 8 -q --test-xml "./unit-tests/$CI_NODE_INDEX" --log-path "$ARTIFACTS_FOLDER/$CI_NODE_INDEX" --failure-report "$ARTIFACTS_FOLDER/$CI_NODE_INDEX" -i "$dirs_to_test"
           else
