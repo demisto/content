@@ -19,13 +19,14 @@ function TestModuleCommand() {
 
 function GetIntegrationContextCommand() {
     # Raw response
-    $raw_response = $demisto.GetIntegrationContext()
+    $raw_response = GetIntegrationContext
+    $raw_response_json = $raw_response | ConvertTo-Json
     # Human readable
-    $human_readable = "Integration context value is **$raw_response**"
+    $human_readable = "Integration context value is **$raw_response_json**"
     # Entry context
     $entry_context = @{}
     $entry_context = @{
-        "$script:INTEGRATION_ENTRY_CONTEX.IntegrationContext.Value" = $raw_response[0]
+        "$script:INTEGRATION_ENTRY_CONTEX.IntegrationContext" = $raw_response
     }
 
     return $human_readable, $entry_context, $raw_response
@@ -33,12 +34,58 @@ function GetIntegrationContextCommand() {
 
 function SetIntegrationContextCommand([hashtable]$kwargs) {
     # Raw response
-    $demisto.SetIntegrationContext($kwargs.value)
+    $integration_context = @{
+    "Value" = $kwargs.value
+    }
+    SetIntegrationContext $integration_context
     $raw_response = @{}
     # Human readable
     $human_readable = "Integration context value set to **$($kwargs.value)** "
     # Entry context
     $entry_context = @{}
+
+    return $human_readable, $entry_context, $raw_response
+}
+
+function SetVersionedIntegrationContextCommand([hashtable]$kwargs) {
+    # Raw response
+    $integration_context = @{
+    "Value" = $kwargs.value
+    }
+    $version = $kwargs.version
+
+    SetIntegrationContext -context $integration_context -version $version
+    $raw_response = @{}
+    # Human readable
+    $human_readable = "Integration context with version **$($version)** value set to **$($kwargs.value)** "
+    # Entry context
+    $entry_context = @{}
+
+    return $human_readable, $entry_context, $raw_response
+}
+
+function GetVersionedIntegrationContextCommand() {
+    # Raw response
+    $raw_response = GetIntegrationContext -withVersion $true
+    $raw_response_json = $raw_response | ConvertTo-Json
+    # Human readable
+    $human_readable = "Integration context with version is **$raw_response_json**"
+    # Entry context
+    $entry_context = @{}
+
+    if (DemistoVersionGreaterEqualThen -version "6.1.0") {
+        $version = $raw_response.version.version
+    }
+    else {
+         $version = $raw_response.version
+    }
+
+    $entry_context = @{
+        $script:INTEGRATION_ENTRY_CONTEX = @{
+            "IntegrationContext" = $raw_response.context
+            "Version" = $version
+        }
+    }
 
     return $human_readable, $entry_context, $raw_response
 }
@@ -61,6 +108,12 @@ function Main {
             }
             "$script:COMMAND_PREFIX-set-integration-context" {
                 ($human_readable, $entry_context, $raw_response) = SetIntegrationContextCommand $command_arguments
+            }
+            "$script:COMMAND_PREFIX-get-integration-versioned-context" {
+                ($human_readable, $entry_context, $raw_response) = GetVersionedIntegrationContextCommand
+            }
+            "$script:COMMAND_PREFIX-set-integration-versioned-context" {
+                ($human_readable, $entry_context, $raw_response) = SetVersionedIntegrationContextCommand $command_arguments
             }
         }
         # Return results to Demisto Server
