@@ -1,9 +1,10 @@
-comment: Shows the Rubrik Polaris Sonar data classification results.
+comment: Shows the Rubrik Polaris Sonar Total Hits.
 commonfields:
-  id: RubrikSonarSensitiveHits
+  id: RubrikSonarTotalHits
   version: -1
 dockerimage: demisto/python3:3.9.5.20070
-name: RubrikSonarSensitiveHits
+enabled: true
+name: RubrikSonarTotalHits
 runas: DBotWeakRole
 runonce: false
 script: ''
