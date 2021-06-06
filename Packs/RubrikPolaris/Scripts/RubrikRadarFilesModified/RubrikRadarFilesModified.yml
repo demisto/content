@@ -1,9 +1,10 @@
-comment: Shows the Rubrik Polaris Sonar data classification results.
+comment: Shows the Rubrik Radar amount of Files Modified.
 commonfields:
-  id: RubrikSonarSensitiveHits
+  id: RubrikRadarFilesModified
   version: -1
 dockerimage: demisto/python3:3.9.5.20070
-name: RubrikSonarSensitiveHits
+enabled: true
+name: RubrikRadarFilesModified
 runas: DBotWeakRole
 runonce: false
 script: ''

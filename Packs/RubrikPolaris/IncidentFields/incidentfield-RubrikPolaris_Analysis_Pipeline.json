@@ -4,7 +4,7 @@
         "Rubrik Radar"
     ],
     "caseInsensitive": true,
-    "cliName": "rubrikpolarismessage",
+    "cliName": "rubrikpolarisanalysispipeline",
     "closeForm": false,
     "columns": [
         {
@@ -52,11 +52,11 @@
     ],
     "editForm": true,
     "group": 0,
-    "hidden": true,
-    "id": "incident_rubrikpolarismessage",
+    "hidden": false,
+    "id": "incident_rubrikpolarisanalysispipeline",
     "isReadOnly": false,
     "locked": false,
-    "name": "Rubrik Polaris Message",
+    "name": "Rubrik Polaris Analysis Pipeline",
     "neverSetAsRequired": false,
     "ownerOnly": false,
     "required": false,
@@ -64,8 +64,8 @@
     "system": false,
     "threshold": 72,
     "type": "grid",
-    "unmapped": true,
-    "unsearchable": true,
+    "unmapped": false,
+    "unsearchable": false,
     "useAsKpi": false,
     "version": -1,
     "fromVersion": "6.0.0"
