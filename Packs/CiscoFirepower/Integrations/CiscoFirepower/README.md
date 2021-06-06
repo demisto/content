@@ -9,7 +9,7 @@ Authentication from a REST API Client
 Cisco recommends that you use different accounts for interfacing with the API and the Firepower User Interface. Credentials cannot be used for both interfaces simultaneously, and will be logged out without warning if used for both.
 
 
-## Configure Cisco Firepower on Demisto
+## Configure Cisco Firepower on Cortex XSOAR
 ---
 
 1. Navigate to __Settings__ > __Integrations__ > __Servers & Services__.
@@ -25,7 +25,7 @@ Cisco recommends that you use different accounts for interfacing with the API an
 
 ## Commands
 ---
-You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.
+You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 1. ciscofp-list-zones
 2. ciscofp-list-ports
