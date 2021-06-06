@@ -521,6 +521,7 @@ class Client(BaseClient):
             )
         except DemistoException as e:
             if str(e).startswith('Error in API call [404]') or str(e).startswith('Error in API call [400]'):
+                demisto.info("Cloud resource with ID: {asset_id} was not found. Error message from API: {str(e)}")
                 return {}
             raise e
         return result
