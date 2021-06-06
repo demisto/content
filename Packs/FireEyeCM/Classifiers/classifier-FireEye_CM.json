@@ -10,7 +10,7 @@
   },
   "transformer": {
     "complex": null,
-    "simple": "eventType"
+    "simple": "product"
   },
   "version": -1,
   "fromVersion": "6.0.0"
