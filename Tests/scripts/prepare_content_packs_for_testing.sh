@@ -6,7 +6,6 @@ set -e
 CI_COMMIT_BRANCH=${CI_COMMIT_BRANCH:-unknown}
 CI_BUILD_ID=${CI_BUILD_ID:-00000}
 PACK_ARTIFACTS=$ARTIFACTS_FOLDER/content_packs.zip
-ID_SET=$ARTIFACTS_FOLDER/id_set.json
 EXTRACT_FOLDER=$(mktemp -d)
 
 if [[ ! -f "$GCS_MARKET_KEY" ]]; then
@@ -59,7 +58,7 @@ if [ ! -n "${BUCKET_UPLOAD}" ]; then
       echo "Did not get content packs to update in the bucket."
     else
       echo "Updating the following content packs: $CONTENT_PACKS_TO_INSTALL ..."
-      python3 ./Tests/Marketplace/upload_packs.py -a $PACK_ARTIFACTS -d $ARTIFACTS_FOLDER/packs_dependencies.json -e $EXTRACT_FOLDER -b $GCS_BUILD_BUCKET -s "$GCS_MARKET_KEY" -n $CI_BUILD_ID -p $CONTENT_PACKS_TO_INSTALL -o true -sb $TARGET_PATH -k $PACK_SIGNING_KEY -rt false --id_set_path $ID_SET -bu false -c $CI_COMMIT_BRANCH -f false
+      python3 ./Tests/Marketplace/upload_packs.py -a $PACK_ARTIFACTS -d $ARTIFACTS_FOLDER/packs_dependencies.json -e $EXTRACT_FOLDER -b $GCS_BUILD_BUCKET -s "$GCS_MARKET_KEY" -n $CI_BUILD_ID -p $CONTENT_PACKS_TO_INSTALL -o true -sb $TARGET_PATH -k $PACK_SIGNING_KEY -rt false -bu false -c $CI_COMMIT_BRANCH -f false
       echo "Finished updating content packs successfully."
     fi
   fi

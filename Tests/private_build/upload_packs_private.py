@@ -352,7 +352,6 @@ def option_handler():
                               "For more information go to: "
                               "https://googleapis.dev/python/google-api-core/latest/auth.html"),
                         required=False)
-    parser.add_argument('-i', '--id_set_path', help="The full path of id_set.json", required=False)
     parser.add_argument('-d', '--pack_dependencies', help="Full path to pack dependencies json file.", required=False)
     parser.add_argument('-p', '--pack_names',
                         help=("Target packs to upload to gcs. Optional values are: `All`, "
@@ -413,7 +412,6 @@ def main():
     service_account = upload_config.service_account
     target_packs = upload_config.pack_names
     build_number = upload_config.ci_build_number
-    id_set_path = upload_config.id_set_path  # noqa F841
     packs_dependencies_mapping = load_json(upload_config.pack_dependencies) if upload_config.pack_dependencies else {}
     storage_base_path = upload_config.storage_base_path
     is_private_build = upload_config.encryption_key and upload_config.encryption_key != ''
