@@ -1265,7 +1265,7 @@ class IntegrationLogger(object):
         # set the os env COMMON_SERVER_NO_AUTO_REPLACE_STRS. Either in CommonServerUserPython, or docker env
         if (not os.getenv('COMMON_SERVER_NO_AUTO_REPLACE_STRS') and hasattr(demisto, 'getParam')):
             # add common params
-            sensitive_params = ('key', 'private', 'password', 'secret', 'token', 'credentials')
+            sensitive_params = ('key', 'private', 'password', 'secret', 'token', 'credentials', 'service_account')
             if demisto.params():
                 self._iter_sensistive_dict_obj(demisto.params(), sensitive_params)
 
