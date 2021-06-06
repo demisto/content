@@ -29,7 +29,7 @@ You need to obtain the following Deception Director information.
 In order to obtain the API Key and the Secret Key you need to go to the user settings in the Deception Director
 and copy both or generate a new pair if they are not already generated.
 
-## Configure CounterCraft Deception Director on Demisto
+## Configure CounterCraft Deception Director on Cortex XSOAR
 ---
 
 1. Navigate to __Settings__ > __Integrations__ > __Servers & Services__.
@@ -37,7 +37,7 @@ and copy both or generate a new pair if they are not already generated.
 3. Click __Add instance__ to create and configure a new integration instance.
     * __Name__: a textual name for the integration instance.
     * __Deception Director Domain or IP Address__: for example, https://192.168.1.1
-    * __Fetch incidents__: if you select this option, your notifications in the Deception Director will be created as Demisto incidents.
+    * __Fetch incidents__: if you select this option, your notifications in the Deception Director will be created as Cortex XSOAR incidents.
     * __Incident type__
     * __API Key  for Deception Director connection__: paste your API Key.
     * __Secret Key for Deception Director connection__: paste your Secret Key.
@@ -49,7 +49,7 @@ and copy both or generate a new pair if they are not already generated.
 
 ## Commands
 ---
-You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.
+You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 1. countercraft-list-campaigns
 2. countercraft-list-hosts
