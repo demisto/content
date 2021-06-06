@@ -622,56 +622,6 @@ def check_ip(ip):
     ))
 
 
-def pymisp_upload_sample(self, filename, filepath_or_bytes, event_id, distribution=None,
-                         to_ids=True, category=None, comment=None, info=None,
-                         analysis=None, threat_level_id=None):
-    to_post = self._prepare_upload(event_id, distribution, to_ids, category,
-                                   comment, info, analysis, threat_level_id)
-    to_post['request']['files'] = [{'filename': filename, 'data': self._encode_file_to_upload(filepath_or_bytes)}]
-    return self._upload_sample(to_post)
-
-
-def upload_sample(pymisp: ExpandedPyMISP, demisto_args: dict):
-    """
-    Misp needs to get files in base64. in the old integration (js) it was converted by a script.
-    """
-    # Creating dict with Demisto's arguments
-    args = ['distribution', 'to_ids', 'category', 'info', 'analysis', 'comment', 'threat_level_id']
-    args = {key: demisto.args().get(key) for key in args if demisto.args().get(key)}
-    args['threat_level_id'] = THREAT_LEVELS_NUMBERS.get(demisto.args().get('threat_level_id')) if demisto.args().get(
-        'threat_level_id') in THREAT_LEVELS_NUMBERS else demisto.args().get('threat_level_id')
-    args['analysis'] = ANALYSIS_NUMBERS.get(demisto.args().get('analysis')) if demisto.args().get(
-        'analysis') in ANALYSIS_NUMBERS else demisto.args().get('analysis')
-    event_id = demisto.args().get('event_id')
-
-    file = demisto.getFilePath(demisto.args().get('fileEntryID'))
-    filename = file.get('name')
-    file = file.get('path')
-
-    if not file:
-        return_error(f'file {filename} is empty or missing')
-
-    if not event_id:
-        if not demisto.args().get('info'):
-            demisto.args()['info'] = filename
-        event_id = create_event(ret_only_event_id=True)
-
-    res = pymisp_upload_sample(filename=filename, filepath_or_bytes=file, event_id=event_id, **args)
-    if res.get('name') == 'Failed':
-        ec = None
-    else:
-        ec = {"MISP.UploadedSample": {filename: event_id}}
-    demisto.results({
-        'Type': entryTypes['note'],
-        'ContentsFormat': formats['json'],
-        'Contents': res,
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable':
-            f"MISP upload sample \n* message: {res.get('message')}\n* event id: {event_id}\n* file name: {filename}",
-        'EntryContext': ec,
-    })
-
-
 def get_time_now():
     """
     Returns:
@@ -1394,8 +1344,6 @@ def main():
         args = demisto.args()
         if command == 'test-module':
             return_results(test(pymisp=pymisp))  # checked V
-        elif command == 'misp-upload-sample':
-            return_results(upload_sample(demisto_args=args, pymisp=pymisp))
         elif command == 'misp-download-sample':
             return_results(download_file(demisto_args=args, pymisp=pymisp))  # checked V
         elif command == 'misp-create-event':
