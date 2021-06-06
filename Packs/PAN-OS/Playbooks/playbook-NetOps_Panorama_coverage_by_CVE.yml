@@ -5,15 +5,14 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 3aac8503-8004-4330-8dbf-093847b69b9d
+    taskid: 3e896440-3bfd-4265-8d70-afc83e373905
     type: start
     task:
-      id: 3aac8503-8004-4330-8dbf-093847b69b9d
+      id: 3e896440-3bfd-4265-8d70-afc83e373905
       version: -1
       name: ""
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "3"
@@ -30,12 +29,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: fd47b527-fffd-4c95-8b12-10b3391e2612
+    taskid: 2d6dd63c-b9b9-419b-86a9-3fa5ad9ccdb0
     type: regular
     task:
-      id: fd47b527-fffd-4c95-8b12-10b3391e2612
+      id: 2d6dd63c-b9b9-419b-86a9-3fa5ad9ccdb0
       version: -1
       name: Check coverage from the cve list
       description: Check coverage from the cve list
@@ -45,22 +46,27 @@ tasks:
       brand: ""
     scriptarguments:
       CVE_List:
-        simple: ${incident.cvelist}
+        complex:
+          root: incident
+          accessor: cvelist
       Result_file:
         simple: ${FileData}
       cve_file:
         simple: ${FileData}
       cve_list:
         simple: ${FileData}
+      entryID:
+        complex:
+          root: File
+          accessor: EntryID
       file:
         simple: ${File.EntryID}
-      outputFormat: {}
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 545
+          "y": 370
         }
       }
     note: true
@@ -68,25 +74,30 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: a76a9f4e-9480-4a1d-8885-e15346428997
+    taskid: 0aa77ad6-c7bc-4f8b-84cf-3b8c9a901a7f
     type: regular
     task:
-      id: a76a9f4e-9480-4a1d-8885-e15346428997
+      id: 0aa77ad6-c7bc-4f8b-84cf-3b8c9a901a7f
       version: -1
       name: panorama-get-predefined-threats-list
-      description: Get pre-defined threats list from the firewall
-      script: Panorama-V30|||panorama-get-predefined-threats-list
+      description: Gets the predefined threats list from a Firewall or Panorama and
+        stores it as a JSON file in the context.
+      script: '|||panorama-get-predefined-threats-list'
       type: regular
       iscommand: true
-      brand: Panorama-V30
+      brand: ""
     nexttasks:
       '#none#':
-      - "5"
+      - "2"
     scriptarguments:
       target:
-        simple: ${incident.target}
+        complex:
+          root: incident
+          accessor: target
     separatecontext: false
     view: |-
       {
@@ -100,47 +111,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "5":
-    id: "5"
-    taskid: 0ea348ad-408a-4c3c-8426-097ef60823c2
-    type: regular
-    task:
-      id: 0ea348ad-408a-4c3c-8426-097ef60823c2
-      version: -1
-      name: Read Result_file generated from the previous command
-      description: Load the contents of a file into context.
-      scriptName: ReadFile
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "2"
-    scriptarguments:
-      encoding: {}
-      entryID:
-        simple: ${File.EntryID}
-      maxFileSize:
-        simple: "100000000"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 370
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 590,
+        "height": 415,
         "width": 380,
         "x": 50,
         "y": 50

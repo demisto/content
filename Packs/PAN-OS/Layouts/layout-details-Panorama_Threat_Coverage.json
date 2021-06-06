@@ -1,9 +1,9 @@
 {
-    "TypeName": "Panorama Threat Coverage",
+    "TypeName": "Panorama Threat Coverage Layout",
     "kind": "details",
     "layout": {
         "TypeName": "",
-        "id": "Panorama Threat Coverage",
+        "id": "Panorama Threat Coverage Layout",
         "kind": "details",
         "modified": "2020-06-03T20:02:14.750504596Z",
         "name": "",

@@ -18,6 +18,9 @@
     "content": true,
     "group": 0,
     "hidden": false,
+    "associatedTypes": [
+        "PanoramaThreatCoverage"
+    ],
     "associatedToAll": true,
     "unmapped": false,
     "unsearchable": false,

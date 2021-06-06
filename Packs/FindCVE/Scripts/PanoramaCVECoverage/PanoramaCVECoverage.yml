@@ -11,7 +11,7 @@ args:
 - name: CVE_List
   required: true
   description: comma delimited list of CVEs to find
-- name: Result_file
+- name: entryID
   required: true
   description: Entry ID of the output file from the panorama command
 - name: outputFormat
