@@ -1,17 +1,21 @@
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 from CommonServerUserPython import *  # noqa
 
-# Disable insecure warnings
 OUTPUTS_PREFIX = 'GoogleMaps'
-NO_RESULTS_MESSAGE = 'No matching places were found.'
 
+STATUS_OK = 'OK'
+STATUS_ZERO_RESULTS = 'ZERO_RESULTS'
+
+MESSAGE_ZERO_RESULTS = 'No matching places were found.'
+
+# Disable insecure warnings
 requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
 
 
 class Client(BaseClient):
     def __init__(self, api_key: str, base_url: str, proxy: bool, insecure: bool):
         """
-        Client to use in the IPinfo integration. Uses BaseClient
+        Client to use in the GoogleMaps integration. Uses BaseClient
         """
         super().__init__(base_url=base_url,
                          verify=not insecure,
@@ -19,22 +23,20 @@ class Client(BaseClient):
         self.api_key = api_key
 
     def google_maps_geocode(self, search_address: str, error_on_no_results: bool) -> List[CommandResults]:
-        # noinspection PyTypeChecker
-        response: Dict[str, Any] = self._http_request(method='GET', url_suffix='geocode/json?',
-                                                      params=assign_params(address=search_address, key=self.api_key))
+        response = self._http_request(method='GET', url_suffix='geocode/json?',
+                                      params=assign_params(address=search_address, key=self.api_key))
 
         status = demisto.get(response, 'status')
-        if status == 'OK':
+        if status == STATUS_OK:
             return parse_response(response, search_address)
 
-        elif status == 'ZERO_RESULTS':
+        elif status == STATUS_ZERO_RESULTS:
             if error_on_no_results:
-                raise DemistoException(message=NO_RESULTS_MESSAGE, res=response)
-
-            return [CommandResults(readable_output=NO_RESULTS_MESSAGE)]
+                raise DemistoException(message=MESSAGE_ZERO_RESULTS, res=response)
+            return [CommandResults(readable_output=MESSAGE_ZERO_RESULTS)]
 
         else:
-            error_message = demisto.get(response, 'error_message') or 'See raw response for details.'
+            error_message = demisto.get(response, 'error_message') or ''
             raise DemistoException(message=error_message, res=response)
 
 
@@ -91,19 +93,21 @@ def main():
 
 def parse_response(response: Dict, search_address: str) -> List[CommandResults]:
     """ Parses Google Maps API to a list of CommandResult objects """
-    first_result = response['results'][0]
-    coordinate_dict = first_result['geometry']['location']
-    response_address = first_result['formatted_address']
+    first_result = (response.get('results') or [])[0]
+
+    coordinate_dict = demisto.get(first_result, 'geometry.location')
+    response_address = demisto.get(first_result, 'formatted_address')
 
     country = None
     for component in first_result['address_components']:
-        if 'types' in component and 'country' in component['types']:
-            country = component['long_name']
+        if 'country' in (demisto.get(component, 'types') or []):
+            country = demisto.get(component, 'long_name')
             break
 
-    note_outputs = {**coordinate_dict, **{'SearchAddress': search_address,
-                                          'Address': response_address,
-                                          'Country': country}}
+    note_outputs = {'SearchAddress': search_address,
+                    'Address': response_address,
+                    'Country': country,
+                    **coordinate_dict}
     # noinspection PyTypeChecker
     readable_output = tableToMarkdown(name='Geocoding Results',
                                       t=note_outputs,

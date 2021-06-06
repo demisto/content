@@ -3,8 +3,10 @@
 import io
 import json
 
+import pytest
+
 from CommonServerPython import DemistoException
-from Packs.GoogleMaps.Integrations.GoogleMaps.GoogleMaps import Client, google_maps_geocode_command, NO_RESULTS_MESSAGE
+from Packs.GoogleMaps.Integrations.GoogleMaps.GoogleMaps import Client, google_maps_geocode_command, MESSAGE_ZERO_RESULTS
 
 search_address = 'Paloalto Networks TLV office'
 
@@ -60,16 +62,13 @@ def test_google_maps_geocode_bad_api_key(requests_mock):
                     proxy=False,
                     insecure=False)
 
-    mock_bad_api_response = util_load_json('test_data/geocode_response_bad_api_key.json')
+    mock_bad_api_response = util_load_json('test_data/geocode_bad_api_key_response.json')
     requests_mock.get('https://maps.googleapis.com/maps/api/geocode/json?', json=mock_bad_api_response)
-    try:
+    with pytest.raises(DemistoException) as e:
         google_maps_geocode_command(client=client,
                                     search_address=search_address,
                                     error_on_no_results=False)
-    except DemistoException as e:
-        assert e.message == 'The provided API key is invalid.'
-    else:
-        assert False
+    assert e.value.args[0] == 'The provided API key is invalid.'
 
 
 def test_google_maps_geocode_zero_results(requests_mock):
@@ -96,13 +95,10 @@ def test_google_maps_geocode_zero_results(requests_mock):
     assert len(no_err_on_zero_results) == 1
     assert no_err_on_zero_results[0].to_context() == util_load_json('test_data/geocode_zero_results_context.json')
 
-    try:
+    with pytest.raises(DemistoException) as e:
         google_maps_geocode_command(client=client,
                                     search_address=zero_results_search_address,
                                     error_on_no_results=True)
-    except DemistoException as e:
-        assert e.message == NO_RESULTS_MESSAGE
-        assert e.res['results'] == []
-        assert e.res['status'] == 'ZERO_RESULTS'
-    else:
-        assert False
+    assert e.value.args[0] == MESSAGE_ZERO_RESULTS
+    assert e.value.res['results'] == []
+    assert e.value.res['status'] == 'ZERO_RESULTS'
