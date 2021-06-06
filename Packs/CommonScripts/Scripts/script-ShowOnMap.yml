@@ -8,32 +8,28 @@ script: >
   var address = args.address;
 
   if (isNaN(lat) || isNaN(lng)) {
-      var instances = executeCommand("GetInstances", {"brand" : "GoogleMaps"});
+    if (!address || address.trim().length === 0){
+    return {
+        ContentsFormat: formats.text,
+        Type: entryTypes.error,
+        Contents: "Please enter either coordinates (lat,lng) or an address (which requires a GoogleMaps integration instance)."
+    };
 
+    }
     // An active instance of GoogleMaps exists, geocoding is possible
-      if (instances[0].EntryContext.Modules){
-          var commandResult = executeCommand("google-maps-geocode", {"search_address" : address});
-          var ec = commandResult[0].EntryContext["GoogleMaps(val.lat && val.lat == obj.lat && val.lng && val.lng == obj.lng)"];
+      var commandResult = executeCommand("google-maps-geocode", {"search_address" : address});
+      var ec = commandResult[0].EntryContext["GoogleMaps(val.lat && val.lat == obj.lat && val.lng && val.lng == obj.lng)"];
 
-          if (ec)
-          {
-              lat = ec.lat;
-              lng = ec.lng;
-          }
-          else { // EntryContext could not be parsed correctly
-              return {
-                  ContentsFormat: formats.text,
-                  Type: entryTypes.error,
-                  Contents: "Geocoding failed."
-              };
-          }
+      if (ec)
+      {
+          lat = ec.lat;
+          lng = ec.lng;
       }
-
-      else { // No active GoogleMaps integration available
+      else { // EntryContext could not be parsed correctly
           return {
               ContentsFormat: formats.text,
               Type: entryTypes.error,
-              Contents:"No active GoogleMaps integration found, please configure one to show addresses on map (or provide ShowOnMap coordinates as input)."
+              Contents: "Geocoding failed."
           };
       }
   }
@@ -54,8 +50,7 @@ script: >
 type: javascript
 tags:
 - Utility
-comment: Returns a map entry with marker on the given coordinates (lat, lng), or address
-  (requires a configured GoogleMaps instance)
+comment: Returns a map entry with marker on the given coordinates (lat, lng), or address (requires a configured GoogleMaps instance)
 enabled: true
 args:
 - name: lat

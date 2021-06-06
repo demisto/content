@@ -1,5 +1,7 @@
 Returns a map entry with marker on the given coordinate (lat, lng).
 
+**Note**: To use the `address` field, please make sure you have set up an instance of the `GoogleMaps` integration.  
+
 ## Script Data
 ---
 
@@ -14,8 +16,9 @@ Returns a map entry with marker on the given coordinate (lat, lng).
 
 | **Argument Name** | **Description** |
 | --- | --- |
-| lat | The latitude. For example, "32.064622". |
-| lng | The longitude. For example, "34.774131". |
+| lat | The latitude. For example, `32.064622`. |
+| lng | The longitude. For example, `34.774131`. |
+| address | A location description. For example, `45 Rothschild, Tel Aviv, Israel` or `Mount Kilimanjaro`.|
 
 ## Outputs
 ---
