@@ -6,7 +6,7 @@ import json
 import pytest
 
 from CommonServerPython import DemistoException
-from GoogleMaps import Client, google_maps_geocode_command, MESSAGE_ZERO_RESULTS
+from GoogleMaps import Client, google_maps_geocode_command, MESSAGE_ZERO_RESULTS, STATUS_ZERO_RESULTS
 
 search_address = 'Paloalto Networks TLV office'
 
@@ -80,25 +80,28 @@ def test_google_maps_geocode_zero_results(requests_mock):
     Then:
         Make sure an appropriate exception is raised if and only if the `error_on_no_results` is True.
     """
+
     zero_results_search_address = ' '
     client = Client(api_key='',
                     base_url='https://maps.googleapis.com/maps/api',
                     proxy=False,
                     insecure=False)
 
-    zero_results_mock_response = util_load_json('test_data/geocode_zero_results_response.json')
-    requests_mock.get('https://maps.googleapis.com/maps/api/geocode/json?', json=zero_results_mock_response)
+    mock_response = util_load_json('test_data/geocode_zero_results_response.json')
+    requests_mock.get('https://maps.googleapis.com/maps/api/geocode/json?', json=mock_response)
 
-    no_err_on_zero_results = google_maps_geocode_command(client=client,
-                                                         search_address=zero_results_search_address,
-                                                         error_on_no_results=False)
-    assert len(no_err_on_zero_results) == 1
-    assert no_err_on_zero_results[0].to_context() == util_load_json('test_data/geocode_zero_results_context.json')
+    actual_result = google_maps_geocode_command(client=client,
+                                                search_address=zero_results_search_address,
+                                                error_on_no_results=False)
+    assert len(actual_result) == 1
+    expected_context = util_load_json('test_data/geocode_zero_results_context.json')
+    assert actual_result[0].to_context() == expected_context
 
+    # And now, with error_on_no_results=True, should raise an exception.
     with pytest.raises(DemistoException) as e:
         google_maps_geocode_command(client=client,
                                     search_address=zero_results_search_address,
                                     error_on_no_results=True)
     assert e.value.args[0] == MESSAGE_ZERO_RESULTS
     assert e.value.res['results'] == []
-    assert e.value.res['status'] == 'ZERO_RESULTS'
+    assert e.value.res['status'] == STATUS_ZERO_RESULTS
