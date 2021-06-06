@@ -66,7 +66,7 @@ except Exception:
 CONTENT_RELEASE_VERSION = '0.0.0'
 CONTENT_BRANCH_NAME = 'master'
 IS_PY3 = sys.version_info[0] == 3
-
+STIX_PREFIX = "STIX "
 # pylint: disable=undefined-variable
 
 ZERO = timedelta(0)
@@ -401,6 +401,21 @@ class FeedIndicatorType(object):
 
         else:
             return None
+
+    @staticmethod
+    def indicator_type_by_server_version(indicator_type):
+        """Returns the indicator type of the input by the server version.
+        If the server version is 6.2 and greater, remove the STIX prefix of the type
+
+        :type indicator_type: ``str``
+        :param indicator_type: Type of an indicator.
+
+        :rtype: ``str``
+        :return:: Indicator type .
+        """
+        if is_demisto_version_ge("6.2.0") and indicator_type.startswith(STIX_PREFIX):
+            return indicator_type[len(STIX_PREFIX):]
+        return indicator_type
 
 
 # -------------------------------- Threat Intel Objects ----------------------------------- #
@@ -1250,7 +1265,7 @@ class IntegrationLogger(object):
         # set the os env COMMON_SERVER_NO_AUTO_REPLACE_STRS. Either in CommonServerUserPython, or docker env
         if (not os.getenv('COMMON_SERVER_NO_AUTO_REPLACE_STRS') and hasattr(demisto, 'getParam')):
             # add common params
-            sensitive_params = ('key', 'private', 'password', 'secret', 'token', 'credentials')
+            sensitive_params = ('key', 'private', 'password', 'secret', 'token', 'credentials', 'service_account')
             if demisto.params():
                 self._iter_sensistive_dict_obj(demisto.params(), sensitive_params)
 
@@ -1677,14 +1692,14 @@ def tableToMarkdown(name, t, headers=None, headerTransform=None, removeNull=Fals
        :param t: The JSON table - List of dictionaries with the same keys or a single dictionary (required)
 
        :type headers: ``list`` or ``string``
-       :keyword headers: A list of headers to be presented in the output table (by order). If string will be passed
+       :param headers: A list of headers to be presented in the output table (by order). If string will be passed
             then table will have single header. Default will include all available headers.
 
        :type headerTransform: ``function``
-       :keyword headerTransform: A function that formats the original data headers (optional)
+       :param headerTransform: A function that formats the original data headers (optional)
 
        :type removeNull: ``bool``
-       :keyword removeNull: Remove empty columns from the table. Default is False
+       :param removeNull: Remove empty columns from the table. Default is False
 
        :type metadata: ``str``
        :param metadata: Metadata about the table contents
@@ -1779,13 +1794,13 @@ def createContextSingle(obj, id=None, keyTransform=None, removeNull=False):
     :param obj: The data to be added to the context (required)
 
     :type id: ``str``
-    :keyword id: The ID of the context entry
+    :param id: The ID of the context entry
 
     :type keyTransform: ``function``
-    :keyword keyTransform: A formatting function for the markdown table headers
+    :param keyTransform: A formatting function for the markdown table headers
 
     :type removeNull: ``bool``
-    :keyword removeNull: True if empty columns should be removed, false otherwise
+    :param removeNull: True if empty columns should be removed, false otherwise
 
     :return: The converted context list
     :rtype: ``list``
@@ -1817,13 +1832,13 @@ def createContext(data, id=None, keyTransform=None, removeNull=False):
         :param data: The data to be added to the context (required)
 
         :type id: ``str``
-        :keyword id: The ID of the context entry
+        :param id: The ID of the context entry
 
         :type keyTransform: ``function``
-        :keyword keyTransform: A formatting function for the markdown table headers
+        :param keyTransform: A formatting function for the markdown table headers
 
         :type removeNull: ``bool``
-        :keyword removeNull: True if empty columns should be removed, false otherwise
+        :param removeNull: True if empty columns should be removed, false otherwise
 
         :return: The converted context list
         :rtype: ``list``
@@ -6266,16 +6281,31 @@ def is_demisto_version_ge(version, build_number=''):
     :return: True if running within a Server version greater or equal than the passed version
     :rtype: ``bool``
     """
+    server_version = {}
     try:
         server_version = get_demisto_version()
-        return \
-            server_version.get('version') >= version and \
-            (not build_number or server_version.get('buildNumber') >= build_number)
+        if server_version.get('version') > version:
+            return True
+        elif server_version.get('version') == version:
+            if build_number:
+                return int(server_version.get('buildNumber')) >= int(build_number)  # type: ignore[arg-type]
+            return True  # No build number
+        else:
+            return False
     except AttributeError:
         # demistoVersion was added in 5.0.0. We are currently running in 4.5.0 and below
         if version >= "5.0.0":
             return False
         raise
+    except ValueError:
+        # dev editions are not comparable
+        demisto.log(
+            'is_demisto_version_ge: ValueError. \n '
+            'input: server version: {} build number: {}\n'
+            'server version: {}'.format(version, build_number, server_version)
+        )
+
+        return True
 
 
 class DemistoHandler(logging.Handler):

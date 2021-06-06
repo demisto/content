@@ -13,6 +13,27 @@
     policy: pull
 
 
+### Global Script Snippets ###
+
+.create-id-set: &create-id-set
+  - section_start "Create ID Set" --collapsed
+  - demisto-sdk create-id-set -o ./Tests/id_set.json >> $ARTIFACTS_FOLDER/logs/create_id_set.log
+  - cp ./Tests/id_set.json $ARTIFACTS_FOLDER
+  - section_end "Create ID Set"
+
+.download-demisto-conf:
+  - section_start "Download content-test-conf" --collapsed
+  - ./Tests/scripts/download_demisto_conf.sh  >> $ARTIFACTS_FOLDER/logs/installations.log
+  - section_end "Download content-test-conf"
+
+.open-ssh-tunnel:
+  - section_start "Open SSH Tunnel" --collapsed
+  - cat $SSH_CONFIGURATION >> ~/.ssh/config
+  - chmod 700 ~/.ssh/config
+  - ./Tests/scripts/open_ssh_tunnel.sh
+  - section_end "Open SSH Tunnel"
+
+
 .clone_and_export_variables: &clone_and_export_variables
   - source .gitlab/helper_functions.sh
   - git checkout $CI_COMMIT_BRANCH
@@ -37,8 +58,8 @@
     else
       echo "installing venv"
       NO_HOOKS=1 SETUP_PY2=yes .hooks/bootstrap >> $ARTIFACTS_FOLDER/logs/installations.log 2>&1
+      venv/bin/pip3 install -r .circleci/build-requirements.txt >> $ARTIFACTS_FOLDER/logs/installations.log 2>&1
     fi
-  - venv/bin/pip3 install -r .circleci/build-requirements.txt >> $ARTIFACTS_FOLDER/logs/installations.log 2>&1
   - source ./venv/bin/activate
   - |
     if [ -n "${DEMISTO_SDK_NIGHTLY}" ]; then
@@ -66,7 +87,7 @@
     - *install_venv
     - *install_ssh_keys
     - section_start "Build Parameters"
-    - set | grep -E "^NIGHTLY=|^INSTANCE_TESTS=|^SERVER_BRANCH_NAME=|^ARTIFACT_BUILD_NUM=|^DEMISTO_SDK_NIGHTLY=|^TIME_TO_LIVE=|^CONTRIB_BRANCH=|^FORCE_PACK_UPLOAD=|^PACKS_TO_UPLOAD=|^BUCKET_UPLOAD=|^GCS_MARKET_BUCKET=|^SLACK_CHANNEL="
+    - set | grep -E "^NIGHTLY=|^INSTANCE_TESTS=|^SERVER_BRANCH_NAME=|^ARTIFACT_BUILD_NUM=|^DEMISTO_SDK_NIGHTLY=|^TIME_TO_LIVE=|^CONTRIB_BRANCH=|^FORCE_PACK_UPLOAD=|^PACKS_TO_UPLOAD=|^BUCKET_UPLOAD=|^GCS_MARKET_BUCKET=|^SLACK_CHANNEL=|^TERM=|^FORCE_COLOR="
     - python --version
     - python3 --version
     - node --version
@@ -74,31 +95,18 @@
     - demisto-sdk --version
     - section_end "Build Parameters"
 
-.default-after-script:
-  after_script:
-    - *clone_and_export_variables
-    - *install_venv
-    - *install_ssh_keys
-    - section_start "Notify Slack"
-    - |
-      if [ -n "${SLACK_ONLY_IF}" ]; then
-        ./Tests/scripts/slack_notifier.sh "$SLACK_TEST_TYPE" "$SLACK_ENV_RESULTS" "$SLACK_CHANNEL"
-      else
-        echo "Skipping Slack"
-      fi
-    - section_end "Notify Slack"
-    - section_start "Destroy instances"
-    - |
-      if [ -n "${DESTROY_INSTANCES}" ]; then
-        python3 ./Tests/scripts/destroy_instances.py $ARTIFACTS_FOLDER $ARTIFACTS_FOLDER/env_results.json "$INSTANCE_ROLE" "$TIME_TO_LIVE"
-      fi
-    - section_end "Destroy instances"
-
 .default-job-settings:
   extends:
     - .default-cache
     - .default-before-script
-    - .default-after-script
+
+
+.trigger-slack-notification:
+  stage: .post
+  trigger:
+    include:
+      - local: .gitlab/ci/slack-notify.yml
+
 
 .run-unittests-and-lint:
   needs: []
@@ -161,8 +169,7 @@
     - demisto-sdk secrets --post-commit --ignore-entropy
     - section_end "Look For Secrets"
     - section_start "Create id set"
-    - demisto-sdk create-id-set -o ./Tests/id_set.json > $ARTIFACTS_FOLDER/logs/create_id_set.log
-    - cp ./Tests/id_set.json $ARTIFACTS_FOLDER
+    - *create-id-set
     - section_end "Create id set"
     - section_start "Merge public and private id sets"
     - |
@@ -188,7 +195,7 @@
     - section_end "Update Tests"
     - section_start "Validate Files and Yaml"
     - |
-      if [[ "$(echo "$GCS_MARKET_BUCKET" | tr '[:upper:]' '[:lower:]')" != "marketplace-dist" ]]; then
+      if [[ -n $FORCE_BUCKET_UPLOAD || -n $BUCKET_UPLOAD ]] && [[ "$(echo "$GCS_MARKET_BUCKET" | tr '[:upper:]' '[:lower:]')" != "marketplace-dist" ]]; then
         echo "Skipping the -Validate Files and Yaml- step when uploading to a test bucket."
       else
         echo "Run flake8 on all excluding Packs (Integrations and Scripts) - they will be handled in linting"

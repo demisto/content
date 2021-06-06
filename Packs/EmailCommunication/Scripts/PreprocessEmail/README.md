@@ -14,7 +14,7 @@ For more information about the preprocessing rules, please refer to https://xsoa
 | --- | --- |
 | Script Type | python3 |
 | Tags | preProcessing, email |
-| Demisto Version | 0.0.0 |
+| Cortex XSOAR Version | 0.0.0 |
 
 ## Inputs
 ---
