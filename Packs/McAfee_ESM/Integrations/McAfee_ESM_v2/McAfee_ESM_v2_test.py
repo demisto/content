@@ -234,7 +234,7 @@ def test_edit_case(mocker):
                                             "\n  Organization\n    old: None\n    new: BRD"
                                             "\n\n", "openTime": "2021-05-25T09:53:53Z",
                                    "orgId": 2, "severity": 50, "statusId": 3,
-                                   "summary": "BRD-ALERT- Recon - Horizontal - Scan"}
+                                   "summary": "ALERT - Scan"}
 
     mocker.patch.object(McAfeeESMClient, '_McAfeeESMClient__login', return_value={})
     mocker.patch.object(McAfeeESMClient, '_McAfeeESMClient__request', return_value={})

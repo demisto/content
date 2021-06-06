@@ -241,7 +241,7 @@ class McAfeeESMClient(BaseClient):
                 context_entry.append(temp_case)
         if not raw:
             human_readable = tableToMarkdown(name=f'cases since {since}', t=context_entry)
-        returned_context_entry = {f'{CONTEXT_INTEGRATION_NAME}User(val.ID && val.ID == obj.ID)': context_entry}
+        returned_context_entry = {f'{CONTEXT_INTEGRATION_NAME}Case(val.ID && val.ID == obj.ID)': context_entry}
         return human_readable, returned_context_entry, raw_response
 
     def get_case_event_list(self) -> Tuple[str, Dict, List[Dict]]:
@@ -287,7 +287,7 @@ class McAfeeESMClient(BaseClient):
         del readable_outputs['EventList']
         if not raw:
             human_readable = tableToMarkdown(name='Case', t=readable_outputs)
-        returned_context_entry = {f'{CONTEXT_INTEGRATION_NAME}User(val.ID && val.ID == obj.ID)': context_entry}
+        returned_context_entry = {f'{CONTEXT_INTEGRATION_NAME}Case(val.ID && val.ID == obj.ID)': context_entry}
         return human_readable, returned_context_entry, raw_response
 
     def get_case_statuses(self, raw: bool = False) -> Tuple[str, Dict, Dict]:
@@ -431,7 +431,7 @@ class McAfeeESMClient(BaseClient):
             table_headers = ['id', 'acknowledgedDate', 'acknowledgedUsername', 'alarmName', 'assignee', 'conditionType',
                              'severity', 'summary', 'triggeredDate']
             human_readable = tableToMarkdown(name='Alarms', t=result, headers=table_headers)
-        returned_context_entry = {f'{CONTEXT_INTEGRATION_NAME}User(val.ID && val.ID == obj.ID)': context_entry}
+        returned_context_entry = {f'{CONTEXT_INTEGRATION_NAME}Alarm(val.ID && val.ID == obj.ID)': context_entry}
         return human_readable, returned_context_entry, raw_response
 
     def acknowledge_alarms(self) -> Tuple[str, Dict, Dict]:
