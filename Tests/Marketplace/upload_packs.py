@@ -378,26 +378,6 @@ def create_corepacks_config(storage_bucket: Any, build_number: str, index_folder
     logging.success(f"Finished copying {GCPConfig.CORE_PACK_FILE_NAME} to artifacts.")
 
 
-def upload_id_set(storage_bucket: Any, id_set_local_path: str = None):
-    """
-    Uploads the id_set.json artifact to the bucket.
-
-    Args:
-        storage_bucket (google.cloud.storage.bucket.Bucket): gcs bucket where core packs config is uploaded.
-        id_set_local_path: path to the id_set.json file
-    """
-    if not id_set_local_path:
-        logging.info("Skipping upload of id set to gcs.")
-        return
-
-    id_set_gcs_path = os.path.join(os.path.dirname(GCPConfig.STORAGE_BASE_PATH), 'id_set.json')
-    blob = storage_bucket.blob(id_set_gcs_path)
-
-    with open(id_set_local_path, mode='r') as f:
-        blob.upload_from_file(f)
-    logging.success("Finished uploading id_set.json to storage.")
-
-
 def _build_summary_table(packs_input_list: list, include_pack_status: bool = False) -> Any:
     """Build summary table from pack list
 

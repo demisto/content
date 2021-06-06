@@ -11,7 +11,7 @@ from Tests.Marketplace.marketplace_services import init_storage_client, Pack, lo
 from Tests.Marketplace.marketplace_statistics import StatisticsHandler
 from Tests.Marketplace.upload_packs import get_packs_names, extract_packs_artifacts, download_and_extract_index, \
     update_index_folder, clean_non_existing_packs, upload_index_to_storage, create_corepacks_config, \
-    upload_id_set, check_if_index_is_updated, print_packs_summary, get_packs_summary
+    check_if_index_is_updated, print_packs_summary, get_packs_summary
 from Tests.Marketplace.marketplace_constants import PackStatus, GCPConfig, CONTENT_ROOT_PATH
 from demisto_sdk.commands.common.tools import str2bool
 
@@ -413,7 +413,7 @@ def main():
     service_account = upload_config.service_account
     target_packs = upload_config.pack_names
     build_number = upload_config.ci_build_number
-    id_set_path = upload_config.id_set_path
+    id_set_path = upload_config.id_set_path  # noqa F841
     packs_dependencies_mapping = load_json(upload_config.pack_dependencies) if upload_config.pack_dependencies else {}
     storage_base_path = upload_config.storage_base_path
     is_private_build = upload_config.encryption_key and upload_config.encryption_key != ''
@@ -490,9 +490,6 @@ def main():
     else:
         upload_index_to_storage(index_folder_path, extract_destination_path, index_blob, build_number, private_packs,
                                 current_commit_hash, index_generation, landing_page_sections=landing_page_sections)
-
-    # upload id_set.json to bucket
-    # upload_id_set(default_storage_bucket, id_set_path)
 
     # get the lists of packs divided by their status
     successful_packs, skipped_packs, failed_packs = get_packs_summary(packs_list)
