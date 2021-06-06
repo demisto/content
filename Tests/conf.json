@@ -1318,10 +1318,6 @@
             "timeout": 600
         },
         {
-            "integrations": "FalconIntel",
-            "playbookID": "CrowdStrike Falcon Intel v2"
-        },
-        {
             "integrations": [
                 "Mail Sender (New)",
                 "Gmail"
