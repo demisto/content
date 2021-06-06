@@ -31,6 +31,8 @@ script: >-
 
   stripSubject = True if demisto.args().get("stripSubject").lower() == "true" else False
 
+  escapeColon = True if demisto.args().get("escapeSemicolons").lower() == "true" else False
+
   if stripSubject and args.get("Subject"):
       # Recursively remove the regex matches only from the beginning of the string
       match_string = args["Subject"]
@@ -44,7 +46,11 @@ script: >-
 
       args["Subject"] = match_string
 
-  query = " AND ".join('{0}:"{1}"'.format(key,value) for (key,value) in args.items())
+  if escapeColon:
+      query = " AND ".join('{0}\\\:"{1}"'.format(key,value) for (key,value) in args.items())
+
+  else:
+      query = " AND ".join('{0}:"{1}"'.format(key,value) for (key,value) in args.items())
 
 
   search_last_week = True if demisto.args().get("searchThisWeek").lower() == "true" else False
@@ -89,6 +95,13 @@ args:
   - "false"
   description: Removes the prefix from the subject of reply and forward messages (e.g., FW:).
   defaultValue: "true"
+- name: escapeSemicolons
+  auto: PREDEFINED
+  predefined:
+  - "true"
+  - "false"
+  description: Escape from colon (true/false).
+  defaultValue: "false"
 outputs:
 - contextPath: EWS.Query
   description: The result query
