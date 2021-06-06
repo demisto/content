@@ -15,6 +15,7 @@ echo "per_parallel_runner=$per_parallel_runner"
 
 for ((i = 0 ; i < total ; i++)); do
     group=$((i % parallel))
+    group=$((group+=1))
     file_name="$ARTIFACTS_FOLDER/test_groups/test_dirs_$group.txt"
     pack=${pack_dirs["$i"]}
     echo "$pack" >> "$file_name"
