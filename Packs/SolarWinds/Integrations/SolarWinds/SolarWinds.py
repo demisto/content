@@ -119,7 +119,7 @@ class Client(BaseClient):
         """
         response = self._http_request(method, url_suffix, params=params, json_data=json_data, resp_type="response",
                                       ok_codes=[200, *list(HTTP_ERRORS.keys())], raise_on_status=False, **kwargs)
-        if response.status_code == 400 and response.json().get('Message'):
+        if response.status_code == 400 and response.json() and response.json().get('Message'):
             raise DemistoException(
                 HTTP_ERRORS[response.status_code].format("Message:" + response.json().get("Message")))
         elif response.status_code in list(HTTP_ERRORS.keys()):
