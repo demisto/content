@@ -732,4 +732,4 @@ script:
   dockerimage: demisto/python3:3.9.5.20070
 fromversion: 5.5.0
 tests:
-- FireEye Central Management - Test
+- No tests
