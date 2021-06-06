@@ -1,9 +1,10 @@
 """Armis Integration for Cortex XSOAR - Unit Tests file
 This file contains the Pytest Tests for the Armis Integration
 """
-import time
 import json
+
 import pytest
+import time
 
 import CommonServerPython
 
@@ -404,7 +405,7 @@ def test_search_devices_by_aql(requests_mock):
 def test_fetch_incidents_no_duplicates(mocker):
     """
     Given:
-    - 'client': Armis client,
+    - 'client': Armis client.
     - 'last_run': Last run parameters.
 
     When:
