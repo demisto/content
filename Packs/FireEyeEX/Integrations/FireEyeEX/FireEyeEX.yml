@@ -753,6 +753,158 @@ script:
       description: The Number of matches for the domain name against the incoming
         emails.
       type: string
+  - arguments:
+    - default: false
+      description: The type of objects to retrieve.
+      auto: PREDEFINED
+      predefined:
+      - 'sender_email_address'
+      - 'sender_domain'
+      - 'sender_ip_address'
+      - 'recipient_email_address'
+      - 'url'
+      - 'md5sum'
+      isArray: false
+      name: type
+      required: true
+      secret: false
+    deprecated: false
+    description: Lists the blocked sender domain by type.
+    execution: false
+    name: fireeye-ex-list-blockedlist
+    outputs:
+    - contextPath: FireEyeEX.name
+      description: The allowed domain name.
+      type: string
+    - contextPath: FireEyeEX.created-at
+      description: The time the domain name was added to the list.
+      type: string
+    - contextPath: FireEyeEX.matches
+      description: The Number of matches for the domain name against the incoming
+        emails.
+      type: string
+  - arguments:
+    - default: false
+      description: The type of objects to retrieve.
+      auto: PREDEFINED
+      predefined:
+      - 'sender_email_address'
+      - 'sender_domain'
+      - 'sender_ip_address'
+      - 'recipient_email_address'
+      - 'url'
+      - 'md5sum'
+      isArray: false
+      name: type
+      required: true
+      secret: false
+    - default: false
+      description: The entry value we want to add.
+      isArray: false
+      name: entry_value
+      required: true
+      secret: false
+    - default: false
+      description: The number of matches for the domain name against the incoming
+        emails.
+      isArray: false
+      name: matches
+      required: true
+      secret: false
+    deprecated: false
+    description: Creates blocked sender domain.
+    execution: false
+    name: fireeye-ex-create-blockedlist
+    outputs:
+    - contextPath: FireEyeEX.name
+      description: The allowed domain name.
+      type: string
+    - contextPath: FireEyeEX.created-at
+      description: The time the domain name was added to the list.
+      type: string
+    - contextPath: FireEyeEX.matches
+      description: The Number of matches for the domain name against the incoming
+        emails.
+      type: string
+  - arguments:
+    - default: false
+      description: The type of objects to retrieve.
+      auto: PREDEFINED
+      predefined:
+      - 'sender_email_address'
+      - 'sender_domain'
+      - 'sender_ip_address'
+      - 'recipient_email_address'
+      - 'url'
+      - 'md5sum'
+      isArray: false
+      name: type
+      required: true
+      secret: false
+    - default: false
+      description: The entry value we want to add.
+      isArray: false
+      name: entry_value
+      required: true
+      secret: false
+    - default: false
+      description: The number of matches for the domain name against the incoming
+        emails.
+      isArray: false
+      name: matches
+      required: true
+      secret: false
+    deprecated: false
+    description: Updates blocked sender domain.
+    execution: false
+    name: fireeye-ex-update-blocklist
+    outputs:
+    - contextPath: FireEyeEX.name
+      description: The allowed domain name.
+      type: string
+    - contextPath: FireEyeEX.created-at
+      description: The time the domain name was added to the list.
+      type: string
+    - contextPath: FireEyeEX.matches
+      description: The Number of matches for the domain name against the incoming
+        emails.
+      type: string
+  - arguments:
+    - default: false
+      description: The type of objects to retrieve.
+      auto: PREDEFINED
+      predefined:
+      - 'sender_email_address'
+      - 'sender_domain'
+      - 'sender_ip_address'
+      - 'recipient_email_address'
+      - 'url'
+      - 'md5sum'
+      isArray: false
+      name: type
+      required: true
+      secret: false
+    - default: false
+      description: The entry value we want to add.
+      isArray: false
+      name: entry_value
+      required: true
+      secret: false
+    deprecated: false
+    description: Deletes blocked sender domain.
+    execution: false
+    name: fireeye-ex-deletes-blockedlist
+    outputs:
+    - contextPath: FireEyeEX.name
+      description: The allowed domain name.
+      type: string
+    - contextPath: FireEyeEX.created-at
+      description: The time the domain name was added to the list.
+      type: string
+    - contextPath: FireEyeEX.matches
+      description: The Number of matches for the domain name against the incoming
+        emails.
+      type: string
   isfetch: true
   runonce: false
   script: '-'

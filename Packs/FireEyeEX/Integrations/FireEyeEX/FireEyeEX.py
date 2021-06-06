@@ -140,6 +140,33 @@ class Client(BaseClient):
                                   params={'operation': 'delete'},
                                   resp_type='json')
 
+    @logger
+    def list_blockedlist_request(self, type_: str) -> Dict[str, str]:
+        return self._http_request(method='GET', url_suffix=f'devicemgmt/emlconfig/policy/blocked_lists/{type_}',
+                                  resp_type='json')
+
+    @logger
+    def create_blockedlist_request(self, type_: str, entry_value: str, matches: str) -> Dict[str, str]:
+        return self._http_request(method='POST',
+                                  url_suffix=f'devicemgmt/emlconfig/policy/blocked_lists/{type_}',
+                                  params={'operation': 'create'},
+                                  json_data={"name": entry_value, "matches": matches},
+                                  resp_type='json')
+
+    @logger
+    def update_blockedlist_request(self, type_: str, entry_value: str, matches: str) -> Dict[str, str]:
+        return self._http_request(method='POST',
+                                  url_suffix=f'devicemgmt/emlconfig/policy/blocked_lists/{type_}/{entry_value}',
+                                  json_data={"matches": matches},
+                                  resp_type='json')
+
+    @logger
+    def delete_blockedlist_request(self, type_: str, entry_value: str) -> Dict[str, str]:
+        return self._http_request(method='POST',
+                                  url_suffix=f'devicemgmt/emlconfig/policy/blocked_lists/{type_}/{entry_value}',
+                                  params={'operation': 'delete'},
+                                  resp_type='json')
+
 
 @logger
 def to_fe_datetime_converter(time_given: str = 'now') -> str:
@@ -496,6 +523,87 @@ def delete_allowedlist(client: Client, args: Dict[str, Any]) -> CommandResults:
     return CommandResults(
         readable_output=md_,
         outputs_prefix=f'{INTEGRATION_CONTEXT_NAME}.Allowedlists',
+        outputs_key_field='name',
+        outputs=raw_response,
+        raw_response=raw_response
+    )
+
+
+@logger
+def list_blockedlist(client: Client, args: Dict[str, Any]) -> CommandResults:
+    type_ = args.get('type', '')
+
+    raw_response = client.list_blockedlist_request(type_)
+    if not raw_response:
+        md_ = 'No blocked lists with the given type were found.'
+    else:
+        md_ = tableToMarkdown(name=f'{INTEGRATION_NAME} Blocked lists:', t=raw_response, removeNull=True)
+
+    return CommandResults(
+        readable_output=md_,
+        outputs_prefix=f'{INTEGRATION_CONTEXT_NAME}.Blockedlists',
+        outputs_key_field='name',
+        outputs=raw_response,
+        raw_response=raw_response
+    )
+
+
+@logger
+def create_blockedlist(client: Client, args: Dict[str, Any]) -> CommandResults:
+    type_ = args.get('type', '')
+    entry_value = args.get('entry_value', '')
+    matches = args.get('matches')
+
+    raw_response = client.create_blockedlist_request(type_, entry_value, matches)
+    if not raw_response:
+        md_ = 'No blocked lists records were created.'
+    else:
+        md_ = tableToMarkdown(name=f'{INTEGRATION_NAME} Blocked lists created:', t=raw_response, removeNull=True)
+
+    return CommandResults(
+        readable_output=md_,
+        outputs_prefix=f'{INTEGRATION_CONTEXT_NAME}.Blockedlists',
+        outputs_key_field='name',
+        outputs=raw_response,
+        raw_response=raw_response
+    )
+
+
+@logger
+def update_blockedlist(client: Client, args: Dict[str, Any]) -> CommandResults:
+    type_ = args.get('type', '')
+    entry_value = args.get('entry_value', '')
+    matches = args.get('matches')
+
+    raw_response = client.update_blockedlist_request(type_, entry_value, matches)
+    if not raw_response:
+        md_ = 'No blocked lists records were updated.'
+    else:
+        md_ = tableToMarkdown(name=f'{INTEGRATION_NAME} Blockedlowed lists updated:', t=raw_response, removeNull=True)
+
+    return CommandResults(
+        readable_output=md_,
+        outputs_prefix=f'{INTEGRATION_CONTEXT_NAME}.Blockedlists',
+        outputs_key_field='name',
+        outputs=raw_response,
+        raw_response=raw_response
+    )
+
+
+@logger
+def delete_blockedlist(client: Client, args: Dict[str, Any]) -> CommandResults:
+    type_ = args.get('type', '')
+    entry_value = args.get('entry_value', '')
+
+    raw_response = client.delete_blockedlist_request(type_, entry_value)
+    if not raw_response:
+        md_ = 'No blocked lists records were deleted.'
+    else:
+        md_ = tableToMarkdown(name=f'{INTEGRATION_NAME} Blocked lists deleted:', t=raw_response, removeNull=True)
+
+    return CommandResults(
+        readable_output=md_,
+        outputs_prefix=f'{INTEGRATION_CONTEXT_NAME}.Blockedlists',
         outputs_key_field='name',
         outputs=raw_response,
         raw_response=raw_response
