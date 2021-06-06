@@ -6,7 +6,7 @@ Prints a raw representation of a string or object, visualising things likes tabs
 | --- | --- |
 | Script Type | python3 |
 | Tags |  |
-| Demisto Version | 5.5.0 |
+| Cortex XSOAR Version | 5.5.0 |
 
 ## Inputs
 ---
