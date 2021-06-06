@@ -33,7 +33,7 @@ script:
             if (version.version !== versionedIntegrationContext.version.version || version.sequenceNumber !== versionedIntegrationContext.version.sequenceNumber || version.primaryTerm !== versionedIntegrationContext.version.primaryTerm) {
                 throw new Error('Versions mismatch');
             }
-        } else if (version !== versionedIntegrationContext.version) {
+        } else if (version.version !== versionedIntegrationContext.version.version) {
             // bolt db
             throw new Error('Versions mismatch');
         }
