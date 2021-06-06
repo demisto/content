@@ -104,10 +104,9 @@ def parse_response(response: Dict, search_address: str) -> List[CommandResults]:
             country = demisto.get(component, 'long_name')
             break
 
-    note_outputs = {'SearchAddress': search_address,
-                    'Address': response_address,
-                    'Country': country,
+    note_outputs = {'SearchAddress': search_address, 'Address': response_address, 'Country': country,
                     **coordinate_dict}
+
     # noinspection PyTypeChecker
     readable_output = tableToMarkdown(name='Geocoding Results',
                                       t=note_outputs,

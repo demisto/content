@@ -6,7 +6,7 @@ import json
 import pytest
 
 from CommonServerPython import DemistoException
-from Packs.GoogleMaps.Integrations.GoogleMaps.GoogleMaps import Client, google_maps_geocode_command, MESSAGE_ZERO_RESULTS
+from GoogleMaps import Client, google_maps_geocode_command, MESSAGE_ZERO_RESULTS
 
 search_address = 'Paloalto Networks TLV office'
 
