@@ -1757,7 +1757,7 @@ script:
       default: false
       defaultValue: 'false'
       description: Whether to scan all of the endpoints or not. Default is false.
-        Do note that scanning all the endpoints may cause performance issues and latency.
+        Scanning all of the endpoints may cause performance issues and latency.
       isArray: false
       name: all
       predefined:
@@ -2673,7 +2673,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: Paths of the files to delete. All files will run on all endpoints.
+      description: Paths of the files to delete. Paths of the files to check for existence. All of the given files will run on all of the endpoints.
       isArray: true
       name: file_path
       required: true
@@ -2706,8 +2706,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: Paths of the files to check for existence. All files will run on
-        all endpoints.
+      description: Paths of the files to check for existence. All of the given files will run on all of the endpoints.
       isArray: true
       name: file_path
       required: true
@@ -2739,7 +2738,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: Names of processes to kill. Will run all processes on all endpoints.
+      description: Names of processes to kill. Will kill all of the given processes on all of the endpoints.
       isArray: true
       name: process_name
       required: true
