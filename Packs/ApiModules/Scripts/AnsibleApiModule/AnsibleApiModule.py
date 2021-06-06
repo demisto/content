@@ -217,6 +217,26 @@ def generate_ansible_inventory(args: Dict[str, Any], int_params: Dict[str, Any],
 
 def generic_ansible(integration_name: str, command: str,
                     args: Dict[str, Any], int_params: Dict[str, Any], host_type: str) -> CommandResults:
+    """Run a Ansible module and return the results as a CommandResult.
+
+    Keyword arguments:
+    integration_name -- the name of the XSOAR integration. Used for context output structure
+    command -- the ansible module to run
+    args -- the XSOAR command args. Literally the demisto.args(). The args provided need to match the
+            ansible module args, as well as include the arg "host" if the module is one that connects
+            to a host.
+    int_params -- the integration parameters. These will contain args that are integration wide.
+                  They will passed to the the ansible module as args, with exception of credentials,
+                  these will be used to build the ansible inventory.
+    host_type -- the type of host that is being managed. The following host types are supported:
+                 * ssh -- Linux or Unix variant managed over ssh
+                 * winrm -- Windows
+                 * nxos -- Cisco NX-OS based network device
+                 * ios -- Cisco IOS based network device
+                 * local  -- this indicates that the command should be executed locally.
+                             Mostly used by modules that connect out to cloud services.
+    
+    """
 
     readable_output = ""
     sshkey = ""
