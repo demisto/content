@@ -1,6 +1,5 @@
 <!-- HTML_DOC -->
 <div class="cl-preview-section">
-<p>Deprecated. Use Recorded Future v2 from RecordedFuture pack instead.</p>
 <p>Recorded Future is a threat intelligence platform, whose indicator and alert data is ingested into Cortex XSOAR for enrichment.</p>
 <p>This integration was integrated and tested with revision r128029 of Recorded Future.</p>
 </div>
@@ -974,9 +973,6 @@
 </div>
 <div class="cl-preview-section">
 <h3 id="get-information-for-a-domain-or-dns">1. Get information for a domain or DNS</h3>
-<p>This command is deprecated.</p>
-<p>Use `recordedfuture-intelligence` command from Recorded Future v2 with the following argument `entity_type=domain` and `entity=domain_value`.</p>
-<p>You can find context differences <a href="https://xsoar.pan.dev/docs/reference/integrations/recorded-future-v2#recordedfuture-intelligence">here</a>. Notice that 'community notes' output is no longer supported.</p>
 </div>
 <div class="cl-preview-section"><hr></div>
 <div class="cl-preview-section">
@@ -1147,9 +1143,6 @@
 </div>
 <div class="cl-preview-section">
 <h3 id="get-information-for-an-ip-address">2. Get information for an IP address</h3>
-<p>This command is deprecated.</p>
-<p>Use `recordedfuture-intelligence` command from Recorded Future v2 with the following argument `entity_type=ip` and `entity=ip_value`.</p>
-<p>You can find context differences <a href="https://xsoar.pan.dev/docs/reference/integrations/recorded-future-v2#recordedfuture-intelligence">here</a>. Notice that 'community notes' output is no longer supported.</p>
 </div>
 <div class="cl-preview-section"><hr></div>
 <div class="cl-preview-section">
@@ -1334,9 +1327,6 @@
 </div>
 <div class="cl-preview-section">
 <h3 id="get-information-for-a-file">3. Get information for a file</h3>
-<p>This command is deprecated.</p>
-<p>Use `recordedfuture-intelligence` command from Recorded Future v2 with the following argument `entity_type=file` and `entity=hash_value`.</p>
-<p>You can find context differences <a href="https://xsoar.pan.dev/docs/reference/integrations/recorded-future-v2#recordedfuture-intelligence">here</a>. Notice that 'community notes' output is no longer supported.</p>
 </div>
 <div class="cl-preview-section"><hr></div>
 <div class="cl-preview-section">
@@ -1546,9 +1536,6 @@
 </div>
 <div class="cl-preview-section">
 <h3 id="get-information-for-a-url">4. Get information for a URL</h3>
-<p>This command is deprecated.</p>
-<p>Use `recordedfuture-intelligence` command from Recorded Future v2 with the following argument `entity_type=url` and `entity=url_value`.</p>
-<p>You can find context differences <a href="https://xsoar.pan.dev/docs/reference/integrations/recorded-future-v2#recordedfuture-intelligence">here</a>. Notice that 'community notes' output is no longer supported.</p>
 </div>
 <div class="cl-preview-section"><hr></div>
 <div class="cl-preview-section">
@@ -2240,10 +2227,6 @@
 </div>
 <div class="cl-preview-section">
 <h3 id="get-hash-threats">6. Get hash threats</h3>
-<p>This command is deprecated.</p>
-<p>Use `recordedfuture-intelligence` command from Recorded Future v2 with the following argument `entity_type=file` and `entity=hash_value`.</p>
-<p>You can find context differences <a href="https://xsoar.pan.dev/docs/reference/integrations/recorded-future-v2#recordedfuture-intelligence">here</a> </p>
-
 </div>
 <div class="cl-preview-section"><hr></div>
 <div class="cl-preview-section">
@@ -2438,9 +2421,6 @@
 </div>
 <div class="cl-preview-section">
 <h3 id="get-ip-threats">7. Get IP threats</h3>
-<p>This command is deprecated.</p>
-<p>Use `recordedfuture-intelligence` command from Recorded Future v2 with the following argument `entity_type=ip` and entity=ip_value.</p>
-<p>You can find context differences <a href="https://xsoar.pan.dev/docs/reference/integrations/recorded-future-v2#recordedfuture-intelligence">here</a>.</p>
 </div>
 <div class="cl-preview-section"><hr></div>
 <div class="cl-preview-section">
@@ -2610,9 +2590,6 @@
 </div>
 <div class="cl-preview-section">
 <h3 id="get-url-threats">8. Get URL threats</h3>
-<p>This command is deprecated.</p>
-<p>Use `recordedfuture-intelligence` command from Recorded Future v2 with the following arguments `entity_type=url` and `entity=url_value`.</p>
-<p>You can find context differences <a href="https://xsoar.pan.dev/docs/reference/integrations/recorded-future-v2#recordedfuture-intelligence">here</a>.</p>
 </div>
 <div class="cl-preview-section"><hr></div>
 <div class="cl-preview-section">
@@ -2772,9 +2749,6 @@
 </div>
 <div class="cl-preview-section">
 <h3 id="get-domain-threats">9. Get domain threats</h3>
-<p>This command is deprecated.</p>
-<p>Use `recordedfuture-intelligence` command from Recorded Future v2 with the following arguments `entity_type=domain` and `entity=domain_value`.</p>
-<p>You can find context differences <a href="https://xsoar.pan.dev/docs/reference/integrations/recorded-future-v2#recordedfuture-intelligence">here</a>.</p>
 </div>
 <div class="cl-preview-section"><hr></div>
 <div class="cl-preview-section">
@@ -2934,9 +2908,6 @@
 </div>
 <div class="cl-preview-section">
 <h3 id="get-vulnerability-threats">10. Get vulnerability threats</h3>
-<p>This command is deprecated.</p>
-<p>Use `recordedfuture-intelligence` command from Recorded Future v2 with the following arguments `entity_type=cve` and `entity=cve_value`.</p>
-<p>You can find context differences <a href="https://xsoar.pan.dev/docs/reference/integrations/recorded-future-v2#recordedfuture-intelligence">here</a>.</p>
 </div>
 <div class="cl-preview-section"><hr></div>
 <div class="cl-preview-section">
@@ -3066,7 +3037,6 @@
 </div>
 <div class="cl-preview-section">
 <h3 id="get-the-domain-risk-list">11. Get the domain risk list</h3>
-<p>This command is deprecated and will not be supported in Recorded Future v2.</p>
 </div>
 <div class="cl-preview-section"><hr></div>
 <div class="cl-preview-section">
@@ -3181,7 +3151,6 @@
 </div>
 <div class="cl-preview-section">
 <h3 id="get-the-url-risk-list">12. Get the URL risk list</h3>
-<p>This command is deprecated and will not be supported in Recorded Future v2.</p>
 </div>
 <div class="cl-preview-section"><hr></div>
 <div class="cl-preview-section">
@@ -3296,7 +3265,6 @@
 </div>
 <div class="cl-preview-section">
 <h3 id="get-the-ip-address-risk-list">13. Get the IP address risk list</h3>
-<p>This command is deprecated and will not be supported in Recorded Future v2.</p>
 </div>
 <div class="cl-preview-section"><hr></div>
 <div class="cl-preview-section">
@@ -3411,7 +3379,6 @@
 </div>
 <div class="cl-preview-section">
 <h3 id="get-the-vulnerability-risk-list">14. Get the vulnerability risk list</h3>
-<p>This command is deprecated and will not be supported in Recorded Future v2.</p>
 </div>
 <div class="cl-preview-section"><hr></div>
 <div class="cl-preview-section">
@@ -3525,8 +3492,7 @@
 <p><img src="https://user-images.githubusercontent.com/35098543/52210325-67e4e800-288f-11e9-9434-5def18e623d0.png" alt="image"></p>
 </div>
 <div class="cl-preview-section">
-<h3 id="get-the-hash-risk-list">15. Get the hash risk list</h3>
-<p>This command is deprecated and will not be supported in Recorded Future v2.</p>
+<h3 id="get-the-has-risk-list">15. Get the has risk list</h3>
 </div>
 <div class="cl-preview-section"><hr></div>
 <div class="cl-preview-section">
@@ -3641,7 +3607,6 @@
 </div>
 <div class="cl-preview-section">
 <h3 id="get-the-domain-risk-rules">16. Get the domain risk rules</h3>
-<p>This command is deprecated and will not be supported in Recorded Future v2.</p>
 </div>
 <div class="cl-preview-section"><hr></div>
 <div class="cl-preview-section">
@@ -3786,7 +3751,6 @@
 </div>
 <div class="cl-preview-section">
 <h3 id="get-the-has-risk-rules">17. Get the has risk rules</h3>
-<p>This command is deprecated and will not be supported in Recorded Future v2.</p>
 </div>
 <div class="cl-preview-section"><hr></div>
 <div class="cl-preview-section">
@@ -3931,7 +3895,6 @@
 </div>
 <div class="cl-preview-section">
 <h3 id="get-the-ip-address-risk-rules">18. Get the IP address risk rules</h3>
-<p>This command is deprecated and will not be supported in Recorded Future v2.</p>
 </div>
 <div class="cl-preview-section"><hr></div>
 <div class="cl-preview-section">
@@ -4036,7 +3999,6 @@
 </div>
 <div class="cl-preview-section">
 <h3 id="get-the-url-risk-rules">19. Get the URL risk rules</h3>
-<p>This command is deprecated and will not be supported in Recorded Future v2.</p>
 </div>
 <div class="cl-preview-section"><hr></div>
 <div class="cl-preview-section">
@@ -4163,7 +4125,6 @@
 </div>
 <div class="cl-preview-section">
 <h3 id="get-the-vulnerability-risk-rules">20. Get the vulnerability risk rules</h3>
-<p>This command is deprecated and will not be supported in Recorded Future v2.</p>
 </div>
 <div class="cl-preview-section"><hr></div>
 <div class="cl-preview-section">
@@ -4268,9 +4229,6 @@
 </div>
 <div class="cl-preview-section">
 <h3 id="get-a-list-of-alert-rules">21. Get a list of alert rules</h3>
-<p>This command is deprecated.</p>
-<p>Use `recordedfuture-alert-rules` command from Recorded Future v2 instead.</p>
-<p>You can find context differences <a href="https://xsoar.pan.dev/docs/reference/integrations/recorded-future-v2#recordedfuture-alert-rules">here</a>.</p>
 </div>
 <div class="cl-preview-section"><hr></div>
 <div class="cl-preview-section">
@@ -4374,9 +4332,6 @@
 </div>
 <div class="cl-preview-section">
 <h3 id="get-a-list-of-alerts">22. Get a list of alerts</h3>
-<p>This command is deprecated.</p>
-<p>Use `recordedfuture-alerts` command from Recorded Future v2 instead.</p>
-<p>You can find context differences <a href="https://xsoar.pan.dev/docs/reference/integrations/recorded-future-v2#recordedfuture-alerts">here</a>.</p>
 </div>
 <div class="cl-preview-section"><hr></div>
 <div class="cl-preview-section">
