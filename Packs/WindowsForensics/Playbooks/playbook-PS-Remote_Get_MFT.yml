@@ -35,16 +35,18 @@ tasks:
     quietmode: 0
   "2":
     id: "2"
-    taskid: aaec1ef7-f154-4e5c-8668-6aec554c3a01
+    taskid: 3d412b04-16a0-4b5f-8b0f-08eb4e46478c
     type: condition
     task:
-      id: aaec1ef7-f154-4e5c-8668-6aec554c3a01
+      id: 3d412b04-16a0-4b5f-8b0f-08eb4e46478c
       version: -1
       name: Is PowerShell Remoting enabled?
+      description: Returns 'yes' if the integration brand is available. Otherwise
+        returns 'no'.
+      scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#default#':
       - "3"
