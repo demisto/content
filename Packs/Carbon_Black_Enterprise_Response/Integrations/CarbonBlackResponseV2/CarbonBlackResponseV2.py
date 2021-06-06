@@ -459,13 +459,12 @@ def binary_summary_command(client: Client, md5: str) -> CommandResults:
 
         return CommandResults(outputs=res, outputs_prefix='CarbonBlackEDR.BinaryMetadata', outputs_key_field='md5',
                               readable_output=tableToMarkdown(f'{INTEGRATION_NAME} -Summary For File {md5}',
-                                                          human_readable_data, removeNull=True))
+                                                              human_readable_data, removeNull=True))
     except DemistoException as e:
         if '404' in e.message:
             return CommandResults(readable_output=f'File {md5} could not be found')
         else:
             raise Exception(f'{INTEGRATION_NAME} - Error connecting to API. Error: {e.message}')
-
 
 
 def binary_download_command(client: Client, md5: str) -> CommandResults:
