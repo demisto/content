@@ -113,7 +113,7 @@ def test_get_computers_by_match_command(mocker):
     assert response.outputs == expected_response
 
 
-def test_get_computer_subset_command(mocker):
+def test_get_computer_general_subset_command(mocker):
     """
     Given
     - Name of the computer and subset arguments.
@@ -125,12 +125,12 @@ def test_get_computer_subset_command(mocker):
     from jamfV2 import Client, get_computer_subset_command
 
     client = Client(base_url='https://paloaltonfr3.jamfcloud.com', verify=False)
-    args = {'identifier': 'name', 'identifier_value': 'Computer 95', 'subset': 'General'}
+    args = {'identifier': 'name', 'identifier_value': 'Computer 95'}
     mock_response_general_subset = util_load_json(
         'test_data/get_computer_subset/get_computer_by_name_general_subset_raw_response.json')
     mocker.patch.object(client, 'get_computer_subset_request', return_value=mock_response_general_subset)
 
-    computer_response = get_computer_subset_command(client, args)
+    computer_response = get_computer_subset_command(client, args, 'General')
     expected_response = util_load_json(
         'test_data/get_computer_subset/get_computer_by_name_general_subset_context.json')
     assert computer_response.outputs == expected_response
@@ -312,25 +312,25 @@ def test_get_mobile_devices_by_match_command(mocker):
     assert devices_response.outputs == expected_response
 
 
-def test_get_mobile_device_subset_command(mocker):
+def test_get_mobile_device_general_subset_command(mocker):
     """
     Given
     - UDID of the mobile device and subset arguments.
     When
-    - Run get mobile device subset command
+    - Run get mobile device general subset command
     Then
     - Ensure the command output matched the given query.
     """
     from jamfV2 import Client, get_mobile_device_subset_command
 
     client = Client(base_url='https://paloaltonfr3.jamfcloud.com', verify=False)
-    args = {'identifier': 'udid', 'identifier_value': 'ab12f4c660a311e490b812df261f2c7e', 'subset': 'General'}
+    args = {'identifier': 'udid', 'identifier_value': 'ab12f4c660a311e490b812df261f2c7e'}
     mock_response = util_load_json(
         'test_data/get_mobile_device_subset/get_mobile_device_by_udid_subset_raw_response.json')
 
     mocker.patch.object(client, 'get_mobile_devices_subset_request', return_value=mock_response)
 
-    device_response = get_mobile_device_subset_command(client, args)
+    device_response = get_mobile_device_subset_command(client, args, 'General')
     expected_response = util_load_json('test_data/get_mobile_device_subset/'
                                        'get_mobile_device_by_udid_subset_context.json')
     assert device_response.outputs == expected_response

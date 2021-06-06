@@ -29,64 +29,106 @@ script:
   commands:
   - arguments:
     - default: false
-      description: 'Get the “general” subset of a specific computer, e.g: name, mac
-        address, ip, serial number, udid etc.(If id argument is given it overrides
-        everything else)'
-      isArray: false
-      name: id
-      required: false
-      secret: false
-    - auto: PREDEFINED
-      default: false
-      defaultValue: 'False'
-      description: '“True” will return the “basic” subset for all of the computers.
-        The “basic” subset will provide some basic information: mac address, model,
-        udid, name, department, building, serial number, username, id. Default is
-        “False”'
-      isArray: false
-      name: basic_subset
-      predefined:
-      - 'True'
-      - 'False'
-      required: false
-      secret: false
-    - default: false
-      description: 'Match computers by specific characteristics (supports wildcards)
-        like: name, udid, serial_number, mac_address, username, realname, email. e.g:
-        “match=john*”, “match=C52F72FACB9T”.'
-      isArray: false
-      name: match
-      predefined:
-      - ''
-      required: false
-      secret: false
-    - default: false
       defaultValue: '50'
       description: The number of results to be returned on each page (default is 50).
-        The maximum size is 200. Relevant only when no “id” is provided.
+        The maximum size is 200.
       isArray: false
       name: limit
       required: false
       secret: false
     - default: false
       defaultValue: '0'
-      description: Number of requested page (relevant when no id is provided)
+      description: Number of requested page.
       isArray: false
       name: page
       required: false
       secret: false
     deprecated: false
-    description: This command will return a list of computers or a single computer
-      based on the parameters being passed. In case no parameter are passed, a list
-      of all computers with their associated IDs will be returned. Please note that
-      only one of the parameters should be passe, if not the order wil be ID -> basic
-      -> match. By default, will return the first 50 computers to the context (ID
-      + name).
+    description: This command will return a list of all computers with their associated
+      IDs . By default, will return the first 50 computers to the context (ID + name).
     execution: false
     name: jamf-get-computers
     outputs:
     - contextPath: JAMF.Computer.id
-      description: The computer id.
+      description: The computer ID.
+      type: Number
+    - contextPath: JAMF.Computer.name
+      description: The computer name.
+      type: String
+  - arguments:
+    - default: false
+      defaultValue: '50'
+      description: 'The number of results to be returned on each page (default is
+        50). The maximum size is 200. '
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '0'
+      description: Number of requested page.
+      isArray: false
+      name: page
+      required: false
+      secret: false
+    deprecated: false
+    description: 'This command will return the “basic” subset for all of the computers.
+      The “basic” subset will provide some basic information: mac address, model,
+      udid, name, department, building, serial number, username, id.'
+    execution: false
+    name: jamf-get-computers-basic-subset
+    outputs:
+    - contextPath: JAMF.Computer.id
+      description: The computer ID.
+      type: Number
+    - contextPath: JAMF.Computer.name
+      description: The computer name.
+      type: String
+    - contextPath: JAMF.Computer.managed
+      description: If the computer is managed.
+      type: Boolean
+    - contextPath: JAMF.Computer.username
+      description: The computer username.
+      type: String
+    - contextPath: JAMF.Computer.model
+      description: The computer model.
+      type: String
+    - contextPath: JAMF.Computer.department
+      description: The computer department.
+      type: String
+    - contextPath: JAMF.Computer.building
+      description: The computer building.
+      type: String
+    - contextPath: JAMF.Computer.mac_address
+      description: The computer mac address.
+      type: String
+    - contextPath: JAMF.Computer.udid
+      description: The computer udid.
+      type: String
+    - contextPath: JAMF.Computer.serial_number
+      description: The computer serial number.
+      type: String
+    - contextPath: JAMF.Computer.report_date_utc
+      description: The computer report date in UTC.
+      type: Date
+    - contextPath: JAMF.Computer.report_date_epoch
+      description: The computer repoer date in epoch.
+      type: Number
+  - arguments:
+    - default: false
+      description: The computer ID.
+      isArray: false
+      name: id
+      required: true
+      secret: false
+    deprecated: false
+    description: 'This command will return  the "general" subset of a specific computer,
+      e.g: name, mac address, ip, serial number, udid etc.'
+    execution: false
+    name: jamf-get-computer-by-id
+    outputs:
+    - contextPath: JAMF.Computer.id
+      description: The computer ID.
       type: Number
     - contextPath: JAMF.Computer.name
       description: The computer name.
@@ -136,14 +178,14 @@ script:
     - contextPath: JAMF.Computer.remote_management.management_username
       description: The computer remote managment username.
       type: String
-    - contextPath: JAMF.Computer.remote_management.management_password_sha256
-      description: The computer remote managment password SHA256.
-      type: String
     - contextPath: JAMF.Computer.supervised
       description: The computer supervised.
       type: Boolean
     - contextPath: JAMF.Computer.mdm_capable
       description: The computer mdm capable.
+      type: Boolean
+    - contextPath: JAMF.Computer.mdm_capable_users
+      description: The computer mdm capable users.
       type: Boolean
     - contextPath: JAMF.Computer.report_date
       description: The computer report date.
@@ -209,6 +251,93 @@ script:
       description: The computer itunes store accont
       type: Boolean
   - arguments:
+    - default: false
+      defaultValue: '50'
+      description: The number of results to be returned on each page (default is 50).
+        The maximum size is 200.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '0'
+      description: Number of requested page.
+      isArray: false
+      name: page
+      required: false
+      secret: false
+    - default: false
+      description: 'Match computers by specific characteristics (supports wildcards)
+        like: name, udid, serial_number, mac_address, username, realname, email. e.g:
+        “match=john*”, “match=C52F72FACB9T”.'
+      isArray: false
+      name: match
+      required: true
+      secret: false
+    deprecated: false
+    description: This command will match computers by specific characteristics and
+      returns general data on each one of the computers.
+    execution: false
+    name: jamf-get-computer-by-match
+    outputs:
+    - contextPath: JAMF.Computer.id
+      description: The computer ID.
+      type: Number
+    - contextPath: JAMF.Computer.name
+      description: The computer name.
+      type: String
+    - contextPath: JAMF.Computer.udid
+      description: The computer udid.
+      type: String
+    - contextPath: JAMF.Computer.serial_number
+      description: The computer serial number.
+      type: String
+    - contextPath: JAMF.Computer.mac_address
+      description: The computer mac address.
+      type: String
+    - contextPath: JAMF.Computer.alt_mac_address
+      description: The computer alt mac address.
+      type: String
+    - contextPath: JAMF.Computer.asset_tag
+      description: The computer asset tag.
+      type: String
+    - contextPath: JAMF.Computer.bar_code_1
+      description: The computer barcode 1.
+      type: String
+    - contextPath: JAMF.Computer.bar_code_2
+      description: The computer barcode 2.
+      type: String
+    - contextPath: JAMF.Computer.username
+      description: The computer username.
+      type: String
+    - contextPath: JAMF.Computer.realname
+      description: The computer real name.
+      type: String
+    - contextPath: JAMF.Computer.email
+      description: The computer email address.
+      type: String
+    - contextPath: JAMF.Computer.email_address
+      description: The computer email address.
+      type: String
+    - contextPath: JAMF.Computer.room
+      description: The computer room .
+      type: String
+    - contextPath: JAMF.Computer.position
+      description: The computer position .
+      type: String
+    - contextPath: JAMF.Computer.building
+      description: The computer building.
+      type: String
+    - contextPath: JAMF.Computer.building_name
+      description: The computer building name.
+      type: String
+    - contextPath: JAMF.Computer.department
+      description: The computer department.
+      type: String
+    - contextPath: JAMF.Computer.department_name
+      description: The computer department name.
+      type: String
+  - arguments:
     - auto: PREDEFINED
       default: false
       description: 'In order to identify which computer is requested, one of these
@@ -231,34 +360,11 @@ script:
       name: identifier_value
       required: true
       secret: false
-    - auto: PREDEFINED
-      default: false
-      description: 'The requested subset. Available Subsets: General, Location, Purchasing,
-        Peripherals, Hardware, Certificates, Software, ExtensionAttributes, GroupsAccounts,  iphones,
-        ConfigurationProfiles.'
-      isArray: false
-      name: subset
-      predefined:
-      - General
-      - Location
-      - Purchasing
-      - Peripherals
-      - Hardware
-      - Certificates
-      - Software
-      - ExtensionAttributes
-      - GroupsAccounts
-      - iphones
-      - ConfigurationProfiles
-      required: true
-      secret: false
     deprecated: false
-    description: Returns a specific subset data for a specific computer according
-      to the given arguments. for example `jamf-get-computer-subset identifier=name
-      identifier_value=test_computer subset=Hardware` will search for test_computer's
-      hardware subset.
+    description: Returns the general subset for a specific computer according to the
+      given arguments.
     execution: false
-    name: jamf-get-computer-subset
+    name: jamf-get-computer-general-subset
     outputs:
     - contextPath: JAMF.ComputerSubset.general.id
       description: The computer ID.
@@ -311,14 +417,23 @@ script:
     - contextPath: JAMF.ComputerSubset.general.remote_management.management_username
       description: The computer managment username.
       type: String
-    - contextPath: JAMF.ComputerSubset.general.remote_management.management_password_sha256
-      description: The computer managment password SHA256.
-      type: String
     - contextPath: JAMF.ComputerSubset.general.supervised
       description: If the computer is supervised.
       type: Boolean
     - contextPath: JAMF.ComputerSubset.general.mdm_capable
       description: If the computer is mdm capable.
+      type: Boolean
+    - contextPath: JAMF.Computer.general.mdm_capable_users
+      description: The computer mdm capable users.
+      type: Boolean
+    - contextPath: JAMF.Computer.general.management_status.enrolled_via_dep
+      description: Whether the computer was enrolled via DEP or not
+      type: Boolean
+    - contextPath: JAMF.Computer.general.management_status.user_approved_enrollment
+      description: Whether the enrollment is user-approved or not
+      type: Boolean
+    - contextPath: JAMF.Computer.general.management_status.user_approved_mdm
+      description: Whether the MDM is user-approved or not
       type: Boolean
     - contextPath: JAMF.ComputerSubset.general.report_date
       description: The computer report date.
@@ -383,6 +498,35 @@ script:
     - contextPath: JAMF.ComputerSubset.general.itunes_store_account_is_active
       description: The computer itunes store accont
       type: Boolean
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      description: 'In order to identify which computer is requested, one of these
+        identifiers should be selected: id, name, udid, serial_number, mac_address.'
+      isArray: false
+      name: identifier
+      predefined:
+      - id
+      - name
+      - udid
+      - serialnumber
+      - macaddress
+      required: true
+      secret: false
+    - default: false
+      description: The value of the “identifier”. For example, if we choose the “id”
+        identifier, a value of a computer id should be passed. If we choose “mac_address”
+        as the identifier, a value of a computer’s mac address should be passed, etc.
+      isArray: false
+      name: identifier_value
+      required: true
+      secret: false
+    deprecated: false
+    description: Returns the location subset for a specific computer according to
+      the given arguments.
+    execution: false
+    name: jamf-get-computer-location-subset
+    outputs:
     - contextPath: JAMF.ComputerSubset.location.username
       description: The computer username.
       type: String
@@ -413,6 +557,38 @@ script:
     - contextPath: JAMF.ComputerSubset.location.room
       description: The computer room.
       type: String
+    - contextPath: JAMF.ComputerSubset.id
+      description: The computer ID.
+      type: Number
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      description: 'In order to identify which computer is requested, one of these
+        identifiers should be selected: id, name, udid, serial_number, mac_address.'
+      isArray: false
+      name: identifier
+      predefined:
+      - id
+      - name
+      - udid
+      - serialnumber
+      - macaddress
+      required: true
+      secret: false
+    - default: false
+      description: The value of the “identifier”. For example, if we choose the “id”
+        identifier, a value of a computer id should be passed. If we choose “mac_address”
+        as the identifier, a value of a computer’s mac address should be passed, etc.
+      isArray: false
+      name: identifier_value
+      required: true
+      secret: false
+    deprecated: false
+    description: Returns the purchasing subset for a specific computer according to
+      the given arguments.
+    execution: false
+    name: jamf-get-computer-purchasing-subset
+    outputs:
     - contextPath: JAMF.ComputerSubset.purchasing.is_purchased
       description: If the computer is purchased.
       type: Boolean
@@ -473,6 +649,73 @@ script:
     - contextPath: JAMF.ComputerSubset.purchasing.os_maintenance_expires
       description: The computer OS maintenance expires.
       type: String
+    - contextPath: JAMF.ComputerSubset.id
+      description: The computer ID.
+      type: Number
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      description: 'In order to identify which computer is requested, one of these
+        identifiers should be selected: id, name, udid, serial_number, mac_address.'
+      isArray: false
+      name: identifier
+      predefined:
+      - id
+      - name
+      - udid
+      - serialnumber
+      - macaddress
+      required: true
+      secret: false
+    - default: false
+      description: The value of the “identifier”. For example, if we choose the “id”
+        identifier, a value of a computer id should be passed. If we choose “mac_address”
+        as the identifier, a value of a computer’s mac address should be passed, etc.
+      isArray: false
+      name: identifier_value
+      required: true
+      secret: false
+    deprecated: false
+    description: Returns the peripherals subset for a specific computer according
+      to the given arguments.
+    execution: false
+    name: jamf-get-computer-peripherals-subset
+    outputs:
+    - contextPath: JAMF.ComputerSubset.peripherals
+      description: The computer peripherals.
+      type: Number
+    - contextPath: JAMF.ComputerSubset.id
+      description: The computer id
+      type: Number
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      description: 'In order to identify which computer is requested, one of these
+        identifiers should be selected: id, name, udid, serial_number, mac_address.'
+      isArray: false
+      name: identifier
+      predefined:
+      - id
+      - name
+      - udid
+      - serialnumber
+      - macaddress
+      required: true
+      secret: false
+    - default: false
+      description: The value of the “identifier”. For example, if we choose the “id”
+        identifier, a value of a computer id should be passed. If we choose “mac_address”
+        as the identifier, a value of a computer’s mac address should be passed, etc.
+      isArray: false
+      name: identifier_value
+      required: true
+      secret: false
+    deprecated: false
+    description: Returns the hardware subset for a specific computer according to
+      the given arguments.
+    execution: false
+    name: jamf-get-computer-hardware-subset
+    outputs:
     - contextPath: JAMF.ComputerSubset.hardware.make
       description: The computer maker.
       type: String
@@ -641,6 +884,85 @@ script:
     - contextPath: JAMF.ComputerSubset.hardware.storage.partitions.pvUUID
       description: The computer storage partition pv UUID.
       type: String
+    - contextPath: JAMF.ComputerSubset.id
+      description: The computer id
+      type: Number
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      description: 'In order to identify which computer is requested, one of these
+        identifiers should be selected: id, name, udid, serial_number, mac_address.'
+      isArray: false
+      name: identifier
+      predefined:
+      - id
+      - name
+      - udid
+      - serialnumber
+      - macaddress
+      required: true
+      secret: false
+    - default: false
+      description: The value of the “identifier”. For example, if we choose the “id”
+        identifier, a value of a computer id should be passed. If we choose “mac_address”
+        as the identifier, a value of a computer’s mac address should be passed, etc.
+      isArray: false
+      name: identifier_value
+      required: true
+      secret: false
+    deprecated: false
+    description: Returns the certificates subset for a specific computer according
+      to the given arguments.
+    execution: false
+    name: jamf-get-computer-certificates-subset
+    outputs:
+    - contextPath: JAMF.ComputerSubset.certificates.common_name
+      description: The certificat common name.
+      type: String
+    - contextPath: JAMF.ComputerSubset.certificates.identity
+      description: The certificat identity.
+      type: Boolean
+    - contextPath: JAMF.ComputerSubset.certificates.expires_utc
+      description: The certificat expires date in UTC.
+      type: Date
+    - contextPath: JAMF.ComputerSubset.certificates.expires_epoch
+      description: The certificat expires date in epoch.
+      type: Number
+    - contextPath: JAMF.ComputerSubset.certificates.name
+      description: The certificat name.
+      type: String
+    - contextPath: JAMF.ComputerSubset.id
+      description: The computer ID.
+      type: Number
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      description: 'In order to identify which computer is requested, one of these
+        identifiers should be selected: id, name, udid, serial_number, mac_address.'
+      isArray: false
+      name: identifier
+      predefined:
+      - id
+      - name
+      - udid
+      - serialnumber
+      - macaddress
+      required: true
+      secret: false
+    - default: false
+      description: The value of the “identifier”. For example, if we choose the “id”
+        identifier, a value of a computer id should be passed. If we choose “mac_address”
+        as the identifier, a value of a computer’s mac address should be passed, etc.
+      isArray: false
+      name: identifier_value
+      required: true
+      secret: false
+    deprecated: false
+    description: Returns the security subset for a specific computer according to
+      the given arguments.
+    execution: false
+    name: jamf-get-computer-security-subset
+    outputs:
     - contextPath: JAMF.ComputerSubset.security.activation_lock
       description: The computer activation lock.
       type: Boolean
@@ -649,6 +971,69 @@ script:
       type: String
     - contextPath: JAMF.ComputerSubset.security.external_boot_level
       description: The computer external boot level.
+      type: String
+    - contextPath: JAMF.ComputerSubset.id
+      description: The computer id
+      type: Number
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      description: 'In order to identify which computer is requested, one of these
+        identifiers should be selected: id, name, udid, serial_number, mac_address.'
+      isArray: false
+      name: identifier
+      predefined:
+      - id
+      - name
+      - udid
+      - serialnumber
+      - macaddress
+      required: true
+      secret: false
+    - default: false
+      description: The value of the “identifier”. For example, if we choose the “id”
+        identifier, a value of a computer id should be passed. If we choose “mac_address”
+        as the identifier, a value of a computer’s mac address should be passed, etc.
+      isArray: false
+      name: identifier_value
+      required: true
+      secret: false
+    deprecated: false
+    description: Returns the software subset for a specific computer according to
+      the given arguments.
+    execution: false
+    name: jamf-get-computer-software-subset
+    outputs:
+    - contextPath: JAMF.ComputerSubset.software.unix_executables
+      description: The computer software's unix executables.
+      type: String
+    - contextPath: JAMF.ComputerSubset.software.licensed_software.name
+      description: The computer software's licensed software name.
+      type: String
+    - contextPath: JAMF.ComputerSubset.software.installed_by_casper.package
+      description: The computer software which was installed by Jamf PRO.
+      type: String
+    - contextPath: JAMF.ComputerSubset.software.installed_by_installer_swu.package
+      description: The computer software which was installed either by installer,app
+        or Software Update.
+      type: String
+    - contextPath: JAMF.ComputerSubset.software.cached_by_casper.package
+      description: The computer software which was cached by Jamf PRO.
+      type: String
+    - contextPath: JAMF.ComputerSubset.software.available_software_updates.name
+      description: The computer available software updates name.
+      type: String
+    - contextPath: JAMF.ComputerSubset.software.available_updates.name
+      description: The computer available update name.
+      type: String
+    - contextPath: JAMF.ComputerSubset.software.available_updates.package_name
+      description: The computer available update package name.
+      type: String
+    - contextPath: JAMF.ComputerSubset.software.available_updates.version
+      description: The computer available update version.
+      type: String
+    - contextPath: JAMF.ComputerSubset.software.running_services.name
+      description: The computer running service name.
       type: String
     - contextPath: JAMF.ComputerSubset.software.applications.name
       description: The computer application name.
@@ -662,6 +1047,56 @@ script:
     - contextPath: JAMF.ComputerSubset.software.applications.bundle_id
       description: The computer application bundle ID.
       type: String
+    - contextPath: JAMF.ComputerSubset.software.fonts.name
+      description: The computer font name.
+      type: String
+    - contextPath: JAMF.ComputerSubset.software.fonts.path
+      description: The computer font path.
+      type: String
+    - contextPath: JAMF.ComputerSubset.software.fonts.version
+      description: The computer font version.
+      type: String
+    - contextPath: JAMF.ComputerSubset.software.plugins.name
+      description: The computer plugin name.
+      type: String
+    - contextPath: JAMF.ComputerSubset.software.plugins.path
+      description: The computer plugin path.
+      type: String
+    - contextPath: JAMF.ComputerSubset.software.plugins.version
+      description: The computer plugin version.
+      type: String
+    - contextPath: JAMF.ComputerSubset.id
+      description: The computer id
+      type: Number
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      description: 'In order to identify which computer is requested, one of these
+        identifiers should be selected: id, name, udid, serial_number, mac_address.'
+      isArray: false
+      name: identifier
+      predefined:
+      - id
+      - name
+      - udid
+      - serialnumber
+      - macaddress
+      required: true
+      secret: false
+    - default: false
+      description: The value of the “identifier”. For example, if we choose the “id”
+        identifier, a value of a computer id should be passed. If we choose “mac_address”
+        as the identifier, a value of a computer’s mac address should be passed, etc.
+      isArray: false
+      name: identifier_value
+      required: true
+      secret: false
+    deprecated: false
+    description: Returns the extension attributes subset for a specific computer according
+      to the given arguments.
+    execution: false
+    name: jamf-get-computer-extension-attributes-subset
+    outputs:
     - contextPath: JAMF.ComputerSubset.extension_attributes.id
       description: The computer extension attributes ID.
       type: Number
@@ -677,20 +1112,176 @@ script:
     - contextPath: JAMF.ComputerSubset.extension_attributes.value
       description: The computer extension attributes value.
       type: String
+    - contextPath: JAMF.ComputerSubset.id
+      description: The computer id
+      type: Number
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      description: 'In order to identify which computer is requested, one of these
+        identifiers should be selected: id, name, udid, serial_number, mac_address.'
+      isArray: false
+      name: identifier
+      predefined:
+      - id
+      - name
+      - udid
+      - serialnumber
+      - macaddress
+      required: true
+      secret: false
+    - default: false
+      description: The value of the “identifier”. For example, if we choose the “id”
+        identifier, a value of a computer id should be passed. If we choose “mac_address”
+        as the identifier, a value of a computer’s mac address should be passed, etc.
+      isArray: false
+      name: identifier_value
+      required: true
+      secret: false
+    deprecated: false
+    description: Returns the groups accounts subset for a specific computer according
+      to the given arguments.
+    execution: false
+    name: jamf-get-computer-groups-accounts-subset
+    outputs:
+    - contextPath: JAMF.ComputerSubset.groups_accounts.computer_group_memberships
+      description: The computer group memberships.
+      type: String
+    - contextPath: JAMF.ComputerSubset.groups_accounts.local_accounts.name
+      description: The computer local account name.
+      type: String
+    - contextPath: JAMF.ComputerSubset.groups_accounts.local_accounts.realname
+      description: The computer local account real name.
+      type: String
+    - contextPath: JAMF.ComputerSubset.groups_accounts.local_accounts.uid
+      description: The computer local account UID.
+      type: String
+    - contextPath: JAMF.ComputerSubset.groups_accounts.local_accounts.home
+      description: The computer local account home.
+      type: String
+    - contextPath: JAMF.ComputerSubset.groups_accounts.local_accounts.home_size
+      description: The computer local account name size.
+      type: String
+    - contextPath: JAMF.ComputerSubset.groups_accounts.local_accounts.home_size_mb
+      description: The computer local account mb.
+      type: Number
+    - contextPath: JAMF.ComputerSubset.groups_accounts.local_accounts.administrator
+      description: Whether the computer is the local account administrator.
+      type: Boolean
+    - contextPath: JAMF.ComputerSubset.groups_accounts.local_accounts.filevault_enabled
+      description: Whether the computer filevault is enabled.
+      type: Boolean
     - contextPath: JAMF.ComputerSubset.groups_accounts.user_inventories.disable_automatic_login
-      description: If the user can automatically.
+      description: Whether 'Automatic Login' is disabled or not.
+      type: Boolean
+    - contextPath: JAMF.ComputerSubset.groups_accounts.user_inventories.user.username
+      description: The computer user inventories.user.username
+      type: String
+    - contextPath: JAMF.ComputerSubset.groups_accounts.user_inventories.user.password_history_depth
+      description: Number of unique passcodes before reuse.
+      type: String
+    - contextPath: JAMF.ComputerSubset.groups_accounts.user_inventories.user.password_min_length
+      description: Smallest number of passcode characters allowed.
+      type: String
+    - contextPath: JAMF.ComputerSubset.groups_accounts.user_inventories.user.password_max_age
+      description: Number of days until the passcode must be changed.
+      type: String
+    - contextPath: JAMF.ComputerSubset.groups_accounts.user_inventories.user.password_min_complex_characters
+      description: Smallest number of non-alphanumeric characters allowed.
+      type: String
+    - contextPath: JAMF.ComputerSubset.groups_accounts.user_inventories.user.password_require_alphanumeric
+      description: Passcode must contain at least one letter and one number.
+      type: String
+    - contextPath: JAMF.ComputerSubset.id
+      description: The computer id
+      type: Number
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      description: 'In order to identify which computer is requested, one of these
+        identifiers should be selected: id, name, udid, serial_number, mac_address.'
+      isArray: false
+      name: identifier
+      predefined:
+      - id
+      - name
+      - udid
+      - serialnumber
+      - macaddress
+      required: true
+      secret: false
+    - default: false
+      description: The value of the “identifier”. For example, if we choose the “id”
+        identifier, a value of a computer id should be passed. If we choose “mac_address”
+        as the identifier, a value of a computer’s mac address should be passed, etc.
+      isArray: false
+      name: identifier_value
+      required: true
+      secret: false
+    deprecated: false
+    description: Returns the iphones subset for a specific computer according to the
+      given arguments.
+    execution: false
+    name: jamf-get-computer-iphones-subset
+    outputs:
+    - contextPath: JAMF.ComputerSubset.iphones
+      description: The commputer related iphones.
+      type: String
+    - contextPath: JAMF.ComputerSubset.id
+      description: The computer id
+      type: Number
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      description: 'In order to identify which computer is requested, one of these
+        identifiers should be selected: id, name, udid, serial_number, mac_address.'
+      isArray: false
+      name: identifier
+      predefined:
+      - id
+      - name
+      - udid
+      - serialnumber
+      - macaddress
+      required: true
+      secret: false
+    - default: false
+      description: The value of the “identifier”. For example, if we choose the “id”
+        identifier, a value of a computer id should be passed. If we choose “mac_address”
+        as the identifier, a value of a computer’s mac address should be passed, etc.
+      isArray: false
+      name: identifier_value
+      required: true
+      secret: false
+    deprecated: false
+    description: Returns the configuration profiles subset for a specific computer
+      according to the given arguments.
+    execution: false
+    name: jamf-get-computer-configuration-profiles-subset
+    outputs:
+    - contextPath: JAMF.ComputerSubset.configuration_profiles.id
+      description: The configuration profile ID.
+      type: Number
+    - contextPath: JAMF.ComputerSubset.configuration_profiles.name
+      description: The configuration profile name.
+      type: String
+    - contextPath: JAMF.ComputerSubset.configuration_profiles.uuid
+      description: The configuration profile UUID.
+      type: String
+    - contextPath: JAMF.ComputerSubset.configuration_profiles.is_removable
+      description: If the configuration profile is removable.
       type: Boolean
     - contextPath: JAMF.ComputerSubset.id
       description: The computer id
       type: Number
   - arguments:
     - default: false
-      description: A 6 digits value. This will be the passcode which will lock the
-        computer after being locked.
+      description: A 6 digits value. This will be the passcode which will be used
+        to unlock the computer after being locked.
       isArray: false
       name: passcode
       required: true
-      secret: false
+      secret: true
     - default: false
       description: The computer ID which you like to lock.
       isArray: false
@@ -726,7 +1317,7 @@ script:
       isArray: false
       name: passcode
       required: true
-      secret: false
+      secret: true
     - default: false
       description: The computer ID which you like to erase.
       isArray: false
@@ -751,24 +1342,6 @@ script:
       type: String
   - arguments:
     - default: false
-      description: The user ID.
-      isArray: false
-      name: id
-      required: false
-      secret: false
-    - default: false
-      description: The user name.
-      isArray: false
-      name: name
-      required: false
-      secret: false
-    - default: false
-      description: The user email.
-      isArray: false
-      name: email
-      required: false
-      secret: false
-    - default: false
       defaultValue: '50'
       description: Maximum number of users to retrieve (maximal value is 200).
       isArray: false
@@ -777,16 +1350,35 @@ script:
       secret: false
     - default: false
       defaultValue: '0'
-      description: Page number
+      description: Number of requested page.
       isArray: false
       name: page
       required: false
       secret: false
     deprecated: false
-    description: Return a list of users with their IDs or a specific user with general
-      data about the user.
+    description: Return a list of users with their IDs and names. By default, will
+      return the first 50 users to the context (ID + name).
     execution: false
     name: jamf-get-users
+    outputs:
+    - contextPath: JAMF.User.id
+      description: The user ID.
+      type: Number
+    - contextPath: JAMF.User.name
+      description: The user name.
+      type: String
+  - arguments:
+    - default: false
+      description: The user ID.
+      isArray: false
+      name: id
+      required: true
+      secret: false
+    deprecated: false
+    description: Return a specific user with general data about the user according
+      to the given ID.
+    execution: false
+    name: jamf-get-user-by-id
     outputs:
     - contextPath: JAMF.User.id
       description: The user ID.
@@ -836,9 +1428,39 @@ script:
     - contextPath: JAMF.User.extension_attributes.value
       description: The user extension attributes value.
       type: String
+    - contextPath: JAMF.User.sites.id
+      description: The user's site ID.
+      type: Number
+    - contextPath: JAMF.User.sites.name
+      description: The user's site name.
+      type: String
     - contextPath: JAMF.User.links.total_vpp_code_count
       description: The user total VPP code acount.
       type: Number
+    - contextPath: JAMF.User.links.vpp_assignments.id
+      description: The vpp assignment ID which is linked to the user.
+      type: Number
+    - contextPath: JAMF.User.links.vpp_assignments.name
+      description: The vpp assignment name which is linked to the user.
+      type: String
+    - contextPath: JAMF.User.links.computers.id
+      description: The computer ID which is linked to the user.
+      type: Number
+    - contextPath: JAMF.User.links.computers.name
+      description: The computer name which is linked to the user.
+      type: String
+    - contextPath: JAMF.User.links.peripherals.id
+      description: The peripherals ID which is linked to the user.
+      type: Number
+    - contextPath: JAMF.User.links.peripherals.name
+      description: The peripherals name which is linked to the user.
+      type: String
+    - contextPath: JAMF.User.links.mobile_devices.id
+      description: The mobile device ID which is linked to the user.
+      type: String
+    - contextPath: JAMF.User.links.mobile_devices.name
+      description: The mobile device name which is linked to the user.
+      type: String
     - contextPath: JAMF.User.user_groups.size
       description: The user groups size.
       type: Number
@@ -853,21 +1475,217 @@ script:
       type: Boolean
   - arguments:
     - default: false
-      description: Gets the “general” subset of a specific device.
+      description: The user name.
       isArray: false
-      name: id
-      required: false
+      name: name
+      required: true
       secret: false
+    deprecated: false
+    description: Return a specific user with general data about the user according
+      to the given name.
+    execution: false
+    name: jamf-get-user-by-name
+    outputs:
+    - contextPath: JAMF.User.id
+      description: The user ID.
+      type: Number
+    - contextPath: JAMF.User.name
+      description: The user name.
+      type: String
+    - contextPath: JAMF.User.full_name
+      description: The user full name.
+      type: String
+    - contextPath: JAMF.User.email
+      description: The user email.
+      type: String
+    - contextPath: JAMF.User.email_address
+      description: The user email address.
+      type: String
+    - contextPath: JAMF.User.phone_number
+      description: The user phone number.
+      type: String
+    - contextPath: JAMF.User.position
+      description: The user position.
+      type: String
+    - contextPath: JAMF.User.managed_apple_id
+      description: The user managed apple ID.
+      type: String
+    - contextPath: JAMF.User.enable_custom_photo_url
+      description: If the user custom photo URl is enabled.
+      type: Boolean
+    - contextPath: JAMF.User.custom_photo_url
+      description: The user custom photo url.
+      type: String
+    - contextPath: JAMF.User.ldap_server.id
+      description: The user LDAP server ID.
+      type: Number
+    - contextPath: JAMF.User.ldap_server.name
+      description: The user LDAP server name.
+      type: String
+    - contextPath: JAMF.User.extension_attributes.id
+      description: The user extension attributes ID.
+      type: Number
+    - contextPath: JAMF.User.extension_attributes.name
+      description: The user extension attributes name.
+      type: String
+    - contextPath: JAMF.User.extension_attributes.type
+      description: The user extension attributes type.
+      type: String
+    - contextPath: JAMF.User.extension_attributes.value
+      description: The user extension attributes value.
+      type: String
+    - contextPath: JAMF.User.sites.site.id
+      description: The user's site ID.
+      type: Number
+    - contextPath: JAMF.User.sites.site.name
+      description: The user's site name.
+      type: String
+    - contextPath: JAMF.User.links.total_vpp_code_count
+      description: The user total VPP code acount.
+      type: Number
+    - contextPath: JAMF.User.links.vpp_assignments.id
+      description: The vpp assignment ID which is linked to the user.
+      type: Number
+    - contextPath: JAMF.User.links.vpp_assignments.name
+      description: The vpp assignment name which is linked to the user.
+      type: String
+    - contextPath: JAMF.User.links.computers.id
+      description: The computer ID which is linked to the user.
+      type: Number
+    - contextPath: JAMF.User.links.computers.name
+      description: The computer name which is linked to the user.
+      type: String
+    - contextPath: JAMF.User.links.peripherals.id
+      description: The peripherals ID which is linked to the user.
+      type: Number
+    - contextPath: JAMF.User.links.peripherals.name
+      description: The peripherals name which is linked to the user.
+      type: String
+    - contextPath: JAMF.User.links.mobile_devices.id
+      description: The mobile device ID which is linked to the user.
+      type: String
+    - contextPath: JAMF.User.links.mobile_devices.name
+      description: The mobile device name which is linked to the user.
+      type: String
+    - contextPath: JAMF.User.user_groups.size
+      description: The user groups size.
+      type: Number
+    - contextPath: JAMF.User.user_groups.user_group.id
+      description: The user group ID.
+      type: Number
+    - contextPath: JAMF.User.user_groups.user_group.name
+      description: The user group name.
+      type: String
+    - contextPath: JAMF.User.user_groups.user_group.is_smart
+      description: If the user group is smart.
+      type: Boolean
+  - arguments:
     - default: false
-      description: 'Match devices by specific characteristics (supports wildcards)
-        like: name, udid, serial_number, mac_address, username, email. e.g: “match=john*”,
-        “match=C52F72FACB9T”.'
+      description: The user email.
       isArray: false
-      name: match
-      predefined:
-      - ''
-      required: false
+      name: email
+      required: true
       secret: false
+    deprecated: false
+    description: Return a specific user with general data about the user according
+      to the given email.
+    execution: false
+    name: jamf-get-user-by-email
+    outputs:
+    - contextPath: JAMF.User.id
+      description: The user ID.
+      type: Number
+    - contextPath: JAMF.User.name
+      description: The user name.
+      type: String
+    - contextPath: JAMF.User.full_name
+      description: The user full name.
+      type: String
+    - contextPath: JAMF.User.email
+      description: The user email.
+      type: String
+    - contextPath: JAMF.User.email_address
+      description: The user email address.
+      type: String
+    - contextPath: JAMF.User.phone_number
+      description: The user phone number.
+      type: String
+    - contextPath: JAMF.User.position
+      description: The user position.
+      type: String
+    - contextPath: JAMF.User.managed_apple_id
+      description: The user managed apple ID.
+      type: String
+    - contextPath: JAMF.User.enable_custom_photo_url
+      description: If the user custom photo URl is enabled.
+      type: Boolean
+    - contextPath: JAMF.User.custom_photo_url
+      description: The user custom photo url.
+      type: String
+    - contextPath: JAMF.User.ldap_server.id
+      description: The user LDAP server ID.
+      type: Number
+    - contextPath: JAMF.User.ldap_server.name
+      description: The user LDAP server name.
+      type: String
+    - contextPath: JAMF.User.extension_attributes.id
+      description: The user extension attributes ID.
+      type: Number
+    - contextPath: JAMF.User.extension_attributes.name
+      description: The user extension attributes name.
+      type: String
+    - contextPath: JAMF.User.extension_attributes.type
+      description: The user extension attributes type.
+      type: String
+    - contextPath: JAMF.User.extension_attributes.value
+      description: The user extension attributes value.
+      type: String
+    - contextPath: JAMF.User.sites.site.id
+      description: The user's site ID.
+      type: Number
+    - contextPath: JAMF.User.sites.site.name
+      description: The user's site name.
+      type: String
+    - contextPath: JAMF.User.links.total_vpp_code_count
+      description: The user total VPP code acount.
+      type: Number
+    - contextPath: JAMF.User.links.vpp_assignments.id
+      description: The vpp assignment ID which is linked to the user.
+      type: Number
+    - contextPath: JAMF.User.links.vpp_assignments.name
+      description: The vpp assignment name which is linked to the user.
+      type: String
+    - contextPath: JAMF.User.links.computers.id
+      description: The computer ID which is linked to the user.
+      type: Number
+    - contextPath: JAMF.User.links.computers.name
+      description: The computer name which is linked to the user.
+      type: String
+    - contextPath: JAMF.User.links.peripherals.id
+      description: The peripherals ID which is linked to the user.
+      type: Number
+    - contextPath: JAMF.User.links.peripherals.name
+      description: The peripherals name which is linked to the user.
+      type: String
+    - contextPath: JAMF.User.links.mobile_devices.id
+      description: The mobile device ID which is linked to the user.
+      type: String
+    - contextPath: JAMF.User.links.mobile_devices.name
+      description: The mobile device name which is linked to the user.
+      type: String
+    - contextPath: JAMF.User.user_groups.size
+      description: The user groups size.
+      type: Number
+    - contextPath: JAMF.User.user_groups.user_group.id
+      description: The user group ID.
+      type: Number
+    - contextPath: JAMF.User.user_groups.user_group.name
+      description: The user group name.
+      type: String
+    - contextPath: JAMF.User.user_groups.user_group.is_smart
+      description: If the user group is smart.
+      type: Boolean
+  - arguments:
     - default: false
       defaultValue: '50'
       description: Maximum number of devices to retrieve (maximal value is 200).
@@ -877,19 +1695,72 @@ script:
       secret: false
     - default: false
       defaultValue: '0'
-      description: Page number
+      description: Number of requested page.
       isArray: false
       name: page
       required: false
       secret: false
     deprecated: false
-    description: This command will return a list of devices or a single devices based
-      on the parameters being passed. In case no parameter are passed, a list of all
-      devices with their associated IDs will be returned. Please note that only one
-      of the parameters should be passe, if not the order wil be ID -> basic -> match.
-      By default, will return the first 50 devices to the context (ID + name).
+    description: This command will return a list of devices with some basic data on
+      each one of them.  By default, will return the first 50 devices to the context
+      (ID + name).
     execution: false
     name: jamf-get-mobile-devices
+    outputs:
+    - contextPath: JAMF.MobileDevices.id
+      description: The mobile device ID.
+      type: Number
+    - contextPath: JAMF.MobileDevices.name
+      description: The mobile device name.
+      type: String
+    - contextPath: JAMF.MobileDevices.device_name
+      description: The mobile device name.
+      type: String
+    - contextPath: JAMF.MobileDevices.udid
+      description: The mobile device udid.
+      type: String
+    - contextPath: JAMF.MobileDevices.serial_number
+      description: The mobile device serial number.
+      type: String
+    - contextPath: JAMF.MobileDevices.phone_number
+      description: The mobile device phone number.
+      type: String
+    - contextPath: JAMF.MobileDevices.wifi_mac_address
+      description: The mobile device WIFI mac address.
+      type: String
+    - contextPath: JAMF.MobileDevices.managed
+      description: If the mobile device is managed.
+      type: Boolean
+    - contextPath: JAMF.MobileDevices.supervised
+      description: If the mobile device is supervised.
+      type: Boolean
+    - contextPath: JAMF.MobileDevices.model
+      description: The mobile device model.
+      type: String
+    - contextPath: JAMF.MobileDevices.model_identifier
+      description: The mobile device model ID.
+      type: String
+    - contextPath: JAMF.MobileDevices.modelDisplay
+      description: The mobile device model display.
+      type: String
+    - contextPath: JAMF.MobileDevices.model_display
+      description: The mobile device model display.
+      type: String
+    - contextPath: JAMF.MobileDevices.username
+      description: The mobile device username.
+      type: String
+  - arguments:
+    - default: false
+      description: Gets the “general” subset of a specific device.
+      isArray: false
+      name: id
+      required: true
+      secret: false
+    deprecated: false
+    description: 'This command will return  the "general" subset of a specific mobile
+      device, e.g: name, mac address, ip, serial number, udid etc.'
+    execution: false
+    name: jamf-get-mobile-device-by-id
     outputs:
     - contextPath: JAMF.MobileDevices.id
       description: The mobile device ID.
@@ -1060,6 +1931,85 @@ script:
       description: The mobile device site name.
       type: String
   - arguments:
+    - default: false
+      description: 'Match devices by specific characteristics (supports wildcards)
+        like: name, udid, serial_number, mac_address, username, email. e.g: “match=john*”,
+        “match=C52F72FACB9T”.'
+      isArray: false
+      name: match
+      predefined:
+      - ''
+      required: true
+      secret: false
+    - default: false
+      defaultValue: '50'
+      description: Maximum number of devices to retrieve (maximal value is 200).
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '0'
+      description: Number of requested page.
+      isArray: false
+      name: page
+      required: false
+      secret: false
+    deprecated: false
+    description: This command will match mobile devices by specific characteristics
+      and returns general data on each one of the mobile device.
+    execution: false
+    name: jamf-get-mobile-device-by-match
+    outputs:
+    - contextPath: JAMF.MobileDevices.id
+      description: The mobile device ID.
+      type: Number
+    - contextPath: JAMF.MobileDevices.name
+      description: The mobile device name.
+      type: String
+    - contextPath: JAMF.MobileDevices.udid
+      description: The mobile device udid.
+      type: String
+    - contextPath: JAMF.MobileDevices.serial_number
+      description: The mobile device serial number.
+      type: String
+    - contextPath: JAMF.MobileDevices.mac_address
+      description: The mobile device mac address.
+      type: String
+    - contextPath: JAMF.MobileDevices.wifi_mac_address
+      description: The mobile device WIFI mac address.
+      type: String
+    - contextPath: JAMF.MobileDevices.username
+      description: The mobile device username.
+      type: String
+    - contextPath: JAMF.MobileDevices.realname
+      description: The mobile device real name.
+      type: String
+    - contextPath: JAMF.MobileDevices.email
+      description: The mobile device user email address.
+      type: String
+    - contextPath: JAMF.MobileDevices.email_address
+      description: The mobile device user email address.
+      type: String
+    - contextPath: JAMF.MobileDevices.room
+      description: The mobile device room.
+      type: String
+    - contextPath: JAMF.MobileDevices.position
+      description: The mobile device position.
+      type: String
+    - contextPath: JAMF.MobileDevices.building
+      description: The mobile device building.
+      type: String
+    - contextPath: JAMF.MobileDevices.building_name
+      description: The mobile device building name.
+      type: String
+    - contextPath: JAMF.MobileDevices.department
+      description: The mobile device department.
+      type: String
+    - contextPath: JAMF.MobileDevices.department_name
+      description: The mobile device department name.
+      type: String
+  - arguments:
     - auto: PREDEFINED
       default: false
       description: 'In order to identify which device is requested, one of these identifiers
@@ -1083,32 +2033,15 @@ script:
       name: identifier_value
       required: true
       secret: false
-    - auto: PREDEFINED
-      default: false
-      description: 'The requested subset. Available Subsets: General, Location, Purchasing,
-        Applications, Security, Network, Certificates, ExtensionAttributes, ProvisioningProfiles,
-        MobileDeviceGroups, ConfigurationProfiles.'
-      isArray: false
-      name: subset
-      predefined:
-      - General
-      - Location
-      - Purchasing
-      - Applications
-      - Security_object
-      - Network
-      - Certificates
-      - ExtensionAttributes
-      - ProvisioningProfiles
-      - MobileDeviceGroups
-      - ConfigurationProfiles
-      required: true
-      secret: false
     deprecated: false
-    description: Returns a specific subset for a specific mobile device.
+    description: Returns the general subset for a specific mobile device according
+      to the given arguments.
     execution: false
-    name: jamf-get-mobile-device-subset
+    name: jamf-get-mobile-device-general-subset
     outputs:
+    - contextPath: JAMF.MobileDeviceSubset.id
+      description: The mobile device ID.
+      type: String
     - contextPath: JAMF.MobileDeviceSubset.general.id
       description: The mobile device ID.
       type: Number
@@ -1277,6 +2210,39 @@ script:
     - contextPath: JAMF.MobileDeviceSubset.general.site.name
       description: The mobile device site name.
       type: String
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      description: 'In order to identify which device is requested, one of these identifiers
+        should be selected: id, name, udid, serial_number, mac_address.'
+      isArray: false
+      name: identifier
+      predefined:
+      - id
+      - name
+      - udid
+      - serialnumber
+      - macaddress
+      required: true
+      secret: false
+    - default: false
+      description: The value of the “identifier”. For example, if we choose the “id”
+        identifier, a value of a mobile device’s id should be passed. If we choose
+        the “mac_address” identifier, a value of a mobile device’s mac address should
+        be passed, etc.
+      isArray: false
+      name: identifier_value
+      required: true
+      secret: false
+    deprecated: false
+    description: Returns the location subset for a specific mobile device according
+      to the given arguments.
+    execution: false
+    name: jamf-get-mobile-device-location-subset
+    outputs:
+    - contextPath: JAMF.MobileDeviceSubset.id
+      description: The mobile device ID.
+      type: String
     - contextPath: JAMF.MobileDeviceSubset.location.username
       description: The mobile device username.
       type: String
@@ -1306,6 +2272,39 @@ script:
       type: String
     - contextPath: JAMF.MobileDeviceSubset.location.room
       description: The mobile device room.
+      type: String
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      description: 'In order to identify which device is requested, one of these identifiers
+        should be selected: id, name, udid, serial_number, mac_address.'
+      isArray: false
+      name: identifier
+      predefined:
+      - id
+      - name
+      - udid
+      - serialnumber
+      - macaddress
+      required: true
+      secret: false
+    - default: false
+      description: The value of the “identifier”. For example, if we choose the “id”
+        identifier, a value of a mobile device’s id should be passed. If we choose
+        the “mac_address” identifier, a value of a mobile device’s mac address should
+        be passed, etc.
+      isArray: false
+      name: identifier_value
+      required: true
+      secret: false
+    deprecated: false
+    description: Returns the purchasing subset for a specific mobile device according
+      to the given arguments.
+    execution: false
+    name: jamf-get-mobile-device-purchasing-subset
+    outputs:
+    - contextPath: JAMF.MobileDeviceSubset.id
+      description: The mobile device ID.
       type: String
     - contextPath: JAMF.MobileDeviceSubset.purchasing.is_purchased
       description: If the mobile device is purchased.
@@ -1361,6 +2360,39 @@ script:
     - contextPath: JAMF.MobileDeviceSubset.purchasing.purchasing_contact
       description: The mobile device purchasing contact.
       type: String
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      description: 'In order to identify which device is requested, one of these identifiers
+        should be selected: id, name, udid, serial_number, mac_address.'
+      isArray: false
+      name: identifier
+      predefined:
+      - id
+      - name
+      - udid
+      - serialnumber
+      - macaddress
+      required: true
+      secret: false
+    - default: false
+      description: The value of the “identifier”. For example, if we choose the “id”
+        identifier, a value of a mobile device’s id should be passed. If we choose
+        the “mac_address” identifier, a value of a mobile device’s mac address should
+        be passed, etc.
+      isArray: false
+      name: identifier_value
+      required: true
+      secret: false
+    deprecated: false
+    description: Returns the applications subset for a specific mobile device according
+      to the given arguments.
+    execution: false
+    name: jamf-get-mobile-device-applications-subset
+    outputs:
+    - contextPath: JAMF.MobileDeviceSubset.id
+      description: The mobile device ID.
+      type: String
     - contextPath: JAMF.MobileDeviceSubset.applications.application_name
       description: The mobile device application name.
       type: String
@@ -1372,6 +2404,39 @@ script:
       type: String
     - contextPath: JAMF.MobileDeviceSubset.applications.identifier
       description: The mobile device application ID.
+      type: String
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      description: 'In order to identify which device is requested, one of these identifiers
+        should be selected: id, name, udid, serial_number, mac_address.'
+      isArray: false
+      name: identifier
+      predefined:
+      - id
+      - name
+      - udid
+      - serialnumber
+      - macaddress
+      required: true
+      secret: false
+    - default: false
+      description: The value of the “identifier”. For example, if we choose the “id”
+        identifier, a value of a mobile device’s id should be passed. If we choose
+        the “mac_address” identifier, a value of a mobile device’s mac address should
+        be passed, etc.
+      isArray: false
+      name: identifier_value
+      required: true
+      secret: false
+    deprecated: false
+    description: Returns the security subset for a specific mobile device according
+      to the given arguments.
+    execution: false
+    name: jamf-get-mobile-device-security-subset
+    outputs:
+    - contextPath: JAMF.MobileDeviceSubset.id
+      description: The mobile device ID.
       type: String
     - contextPath: JAMF.MobileDeviceSubset.security.data_protection
       description: If the mobile device has data protection.
@@ -1451,6 +2516,39 @@ script:
     - contextPath: JAMF.MobileDeviceSubset.security.lost_location_vertical_accuracy
       description: The mobile device security lost location vertical accuracy.
       type: Number
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      description: 'In order to identify which device is requested, one of these identifiers
+        should be selected: id, name, udid, serial_number, mac_address.'
+      isArray: false
+      name: identifier
+      predefined:
+      - id
+      - name
+      - udid
+      - serialnumber
+      - macaddress
+      required: true
+      secret: false
+    - default: false
+      description: The value of the “identifier”. For example, if we choose the “id”
+        identifier, a value of a mobile device’s id should be passed. If we choose
+        the “mac_address” identifier, a value of a mobile device’s mac address should
+        be passed, etc.
+      isArray: false
+      name: identifier_value
+      required: true
+      secret: false
+    deprecated: false
+    description: Returns the network subset for a specific mobile device according
+      to the given arguments.
+    execution: false
+    name: jamf-get-mobile-device-network-subset
+    outputs:
+    - contextPath: JAMF.MobileDeviceSubset.id
+      description: The mobile device ID.
+      type: String
     - contextPath: JAMF.MobileDeviceSubset.network.home_carrier_network
       description: The mobile device home carrier network.
       type: String
@@ -1496,11 +2594,218 @@ script:
     - contextPath: JAMF.MobileDeviceSubset.network.phone_number
       description: The mobile device network phone number.
       type: String
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      description: 'In order to identify which device is requested, one of these identifiers
+        should be selected: id, name, udid, serial_number, mac_address.'
+      isArray: false
+      name: identifier
+      predefined:
+      - id
+      - name
+      - udid
+      - serialnumber
+      - macaddress
+      required: true
+      secret: false
+    - default: false
+      description: The value of the “identifier”. For example, if we choose the “id”
+        identifier, a value of a mobile device’s id should be passed. If we choose
+        the “mac_address” identifier, a value of a mobile device’s mac address should
+        be passed, etc.
+      isArray: false
+      name: identifier_value
+      required: true
+      secret: false
+    deprecated: false
+    description: Returns the certificates subset for a specific mobile device according
+      to the given arguments.
+    execution: false
+    name: jamf-get-mobile-device-certificates-subset
+    outputs:
+    - contextPath: JAMF.MobileDeviceSubset.id
+      description: The mobile device ID.
+      type: String
+    - contextPath: JAMF.MobileDeviceSubset.certificates.size
+      description: The mobile device certificates size.
+      type: String
+    - contextPath: JAMF.MobileDeviceSubset.certificates.certificate.common_name
+      description: The mobile device certificate common name.
+      type: String
+    - contextPath: JAMF.MobileDeviceSubset.certificates.certificate.identity
+      description: Whether this is an identity certificate or not.
+      type: Boolean
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      description: 'In order to identify which device is requested, one of these identifiers
+        should be selected: id, name, udid, serial_number, mac_address.'
+      isArray: false
+      name: identifier
+      predefined:
+      - id
+      - name
+      - udid
+      - serialnumber
+      - macaddress
+      required: true
+      secret: false
+    - default: false
+      description: The value of the “identifier”. For example, if we choose the “id”
+        identifier, a value of a mobile device’s id should be passed. If we choose
+        the “mac_address” identifier, a value of a mobile device’s mac address should
+        be passed, etc.
+      isArray: false
+      name: identifier_value
+      required: true
+      secret: false
+    deprecated: false
+    description: Returns the provisioning profiles subset for a specific mobile device
+      according to the given arguments.
+    execution: false
+    name: jamf-get-mobile-device-provisioning-profiles-subset
+    outputs:
+    - contextPath: JAMF.MobileDeviceSubset.id
+      description: The mobile device ID.
+      type: String
+    - contextPath: JAMF.MobileDeviceSubset.provisioning_profiles.size
+      description: The mobile device provisioning profiles size.
+      type: Number
+    - contextPath: JAMF.MobileDeviceSubset.provisioning_profiles.mobile_device_provisioning_profile.display_name
+      description: The mobile device provisioning profiles display name.
+      type: String
+    - contextPath: JAMF.MobileDeviceSubset.provisioning_profiles.mobile_device_provisioning_profile.expiration_date
+      description: The mobile device provisioning profiles expiration date.
+      type: String
+    - contextPath: JAMF.MobileDeviceSubset.provisioning_profiles.mobile_device_provisioning_profile.expiration_date_epoch
+      description: The mobile device provisioning profiles expiration date in epoch.
+      type: Number
+    - contextPath: JAMF.MobileDeviceSubset.provisioning_profiles.mobile_device_provisioning_profile.expiration_date_utc
+      description: The mobile device provisioning profiles expiration date in UTC.
+      type: String
+    - contextPath: JAMF.MobileDeviceSubset.provisioning_profiles.mobile_device_provisioning_profile.uuid
+      description: The mobile device provisioning profiles UUID.
+      type: String
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      description: 'In order to identify which device is requested, one of these identifiers
+        should be selected: id, name, udid, serial_number, mac_address.'
+      isArray: false
+      name: identifier
+      predefined:
+      - id
+      - name
+      - udid
+      - serialnumber
+      - macaddress
+      required: true
+      secret: false
+    - default: false
+      description: The value of the “identifier”. For example, if we choose the “id”
+        identifier, a value of a mobile device’s id should be passed. If we choose
+        the “mac_address” identifier, a value of a mobile device’s mac address should
+        be passed, etc.
+      isArray: false
+      name: identifier_value
+      required: true
+      secret: false
+    deprecated: false
+    description: Returns the configuration profiles subset for a specific mobile device
+      according to the given arguments.
+    execution: false
+    name: jamf-get-mobile-device-configuration-profiles-subset
+    outputs:
+    - contextPath: JAMF.MobileDeviceSubset.id
+      description: The mobile device ID.
+      type: String
+    - contextPath: JAMF.MobileDeviceSubset.configuration_profiles.size
+      description: The mobile device configuratio profiles size.
+      type: Number
+    - contextPath: JAMF.MobileDeviceSubset.configuration_profiles.configuration_profile.display_name
+      description: The mobile device configuratio profiles display name.
+      type: String
+    - contextPath: JAMF.MobileDeviceSubset.configuration_profiles.configuration_profile.version
+      description: The mobile device configuration profiles version.
+      type: String
+    - contextPath: JAMF.MobileDeviceSubset.configuration_profiles.configuration_profile.identifier
+      description: The mobile device configuratio profiles identifier.
+      type: Number
+    - contextPath: JAMF.MobileDeviceSubset.configuration_profiles.configuration_profile.uuid
+      description: The mobile device configuratio profiles UUID.
+      type: String
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      description: 'In order to identify which device is requested, one of these identifiers
+        should be selected: id, name, udid, serial_number, mac_address.'
+      isArray: false
+      name: identifier
+      predefined:
+      - id
+      - name
+      - udid
+      - serialnumber
+      - macaddress
+      required: true
+      secret: false
+    - default: false
+      description: The value of the “identifier”. For example, if we choose the “id”
+        identifier, a value of a mobile device’s id should be passed. If we choose
+        the “mac_address” identifier, a value of a mobile device’s mac address should
+        be passed, etc.
+      isArray: false
+      name: identifier_value
+      required: true
+      secret: false
+    deprecated: false
+    description: Returns the mobile device groups subset for a specific mobile device
+      according to the given arguments.
+    execution: false
+    name: jamf-get-mobile-device-groups-subset
+    outputs:
+    - contextPath: JAMF.MobileDeviceSubset.id
+      description: The mobile device ID.
+      type: String
     - contextPath: JAMF.MobileDeviceSubset.mobile_device_groups.id
       description: The mobile device group ID.
       type: Number
     - contextPath: JAMF.MobileDeviceSubset.mobile_device_groups.name
       description: The mobile device group name.
+      type: String
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      description: 'In order to identify which device is requested, one of these identifiers
+        should be selected: id, name, udid, serial_number, mac_address.'
+      isArray: false
+      name: identifier
+      predefined:
+      - id
+      - name
+      - udid
+      - serialnumber
+      - macaddress
+      required: true
+      secret: false
+    - default: false
+      description: The value of the “identifier”. For example, if we choose the “id”
+        identifier, a value of a mobile device’s id should be passed. If we choose
+        the “mac_address” identifier, a value of a mobile device’s mac address should
+        be passed, etc.
+      isArray: false
+      name: identifier_value
+      required: true
+      secret: false
+    deprecated: false
+    description: Returns the extension attributes subset for a specific mobile device
+      according to the given arguments.
+    execution: false
+    name: jamf-get-mobile-device-extension-attributes-subset
+    outputs:
+    - contextPath: JAMF.MobileDeviceSubset.id
+      description: The mobile device ID.
       type: String
     - contextPath: JAMF.MobileDeviceSubset.extension_attributes.id
       description: The mobile device extension attribute ID.
@@ -1516,9 +2821,6 @@ script:
       type: Boolean
     - contextPath: JAMF.MobileDeviceSubset.extension_attributes.value
       description: The mobile device extension attribute value.
-      type: String
-    - contextPath: JAMF.MobileDeviceSubset.id
-      description: The mobile device ID.
       type: String
   - arguments:
     - default: false
@@ -1543,7 +2845,7 @@ script:
       secret: false
     - default: false
       defaultValue: '0'
-      description: Page number
+      description: Number of requested page.
       isArray: false
       name: page
       required: false
@@ -1652,7 +2954,7 @@ script:
     - contextPath: JAMF.MobileDeviceCommands.id
       description: The mobile device command ID.
       type: String
-  dockerimage: demisto/btfl-soup:1.0.1.20315
+  dockerimage: demisto/btfl-soup:1.0.1.20928
   feed: false
   isfetch: false
   longRunning: false

@@ -22,7 +22,6 @@ GET_HEADERS = {
 }
 MAX_PAGE_SIZE = 200
 
-
 ''' CLIENT CLASS '''
 
 
@@ -163,7 +162,7 @@ class Client(BaseClient):
 
         uri = '/users'
         if user_id:
-            res = self._http_request(method='GET', url_suffix=f'{uri}/id/{id}', headers=GET_HEADERS,
+            res = self._http_request(method='GET', url_suffix=f'{uri}/id/{user_id}', headers=GET_HEADERS,
                                      error_handler=self._generic_error_handler)
         elif name:
             res = self._http_request(method='GET', url_suffix=f'{uri}/name/{name}', headers=GET_HEADERS,
@@ -188,7 +187,7 @@ class Client(BaseClient):
 
         uri = '/mobiledevices'
         if mobile_id:
-            res = self._http_request(method='GET', url_suffix=f'{uri}/id/{id}', headers=GET_HEADERS,
+            res = self._http_request(method='GET', url_suffix=f'{uri}/id/{mobile_id}', headers=GET_HEADERS,
                                      error_handler=self._generic_error_handler)
         elif match:
             res = self._http_request(method='GET', url_suffix=f'{uri}/match/{match}', headers=GET_HEADERS,
@@ -213,7 +212,6 @@ class Client(BaseClient):
         url_suffix = f'/mobiledevices/{identifier}/{identifier_value}/subset/{subset}'
         res = self._http_request(method='GET', url_suffix=url_suffix, headers=GET_HEADERS,
                                  error_handler=self._generic_error_handler)
-
         return res
 
     def get_computers_by_app_request(self, app: str, version: str = None):
@@ -239,7 +237,7 @@ class Client(BaseClient):
         err_msg = str(BeautifulSoup(res.text).body.text)
         if res.status_code == 400 and 'Unable to match mobile device' in res.text:
             raise DemistoException(f"Unable to match mobile device. Origin error from server: {err_msg}")
-        if res.status_code == 400 and 'not support lost mode' in res.text:
+        if res.status_code == 400 and 'not support' in res.text:
             raise DemistoException(f"The device does not support lost mode. Origin error from server: {err_msg}")
 
     def mobile_device_lost_request(self, mobile_id: str, lost_message: str = None):
@@ -313,7 +311,7 @@ def pagination(response, limit, page):
     return response[start:end]
 
 
-def get_computers_readable_output(computers_response, computer_id=None):
+def get_computers_readable_output(computers_response, computer_id=None, basic_subset=None, match=None):
     readable_output = []
     if computer_id:
         readable_output.append({
@@ -326,7 +324,16 @@ def get_computers_readable_output(computers_response, computer_id=None):
             'Jamf Version': computers_response.get('jamf_version'),
             'Platform': computers_response.get('platform'),
         })
-
+    elif basic_subset or match:
+        for computer in computers_response:
+            readable_output.append({
+                'ID': computer.get('id'),
+                'Name': computer.get('name'),
+                'Username': computer.get('username'),
+                'Mac Address': computer.get('mac_address'),
+                'Serial Number': computer.get('serial_number'),
+                'UDID': computer.get('udid')
+            })
     else:
         for computer in computers_response:
             readable_output.append({
@@ -334,6 +341,49 @@ def get_computers_readable_output(computers_response, computer_id=None):
                 'Name': computer.get('name'),
 
             })
+    return readable_output
+
+
+def get_computers_basic_subset_readable_output(computers_response):
+    readable_output = []
+    for computer in computers_response:
+        readable_output.append({
+            'ID': computer.get('id'),
+            'Name': computer.get('name'),
+            "Username": computer.get('username'),
+            "Model": computer.get('model'),
+            "Mac Address": computer.get('mac_address'),
+            "UDID": computer.get('udid'),
+            "Serial Number": computer.get('serial_number')
+        })
+    return readable_output
+
+
+def get_computer_by_id_readable_output(computers_response):
+    readable_output = {
+        'ID': computers_response.get('id'),
+        'Name': computers_response.get('name'),
+        'MAC Address': computers_response.get('mac_address'),
+        'IP Address': computers_response.get('ip_address'),
+        'Serial Number': computers_response.get('serial_number'),
+        'UDID': computers_response.get('udid'),
+        'Jamf Version': computers_response.get('jamf_version'),
+        'Platform': computers_response.get('platform'),
+    }
+    return readable_output
+
+
+def get_computer_by_match_readable_output(computers_response):
+    readable_output = []
+    for computer in computers_response:
+        readable_output.append({
+            'ID': computer.get('id'),
+            'Name': computer.get('name'),
+            'MAC Address': computer.get('mac_address'),
+            'Serial Number': computer.get('serial_number'),
+            'UDID': computer.get('udid'),
+            'User Name': computer.get('username')
+        })
     return readable_output
 
 
@@ -411,6 +461,15 @@ def get_computer_subset_readable_output(response, subset):
                 'Expires UTC': certificate.get('expires_utc'),
                 'Expires Epoch': certificate.get('expires_epoch')
             })
+        readable_output = certificate_details   # type: ignore
+
+    elif subset == 'Security':
+        readable_output = {
+            'Common Name': computers_response.get('security').get('activation_lock'),
+            'Identity': computers_response.get('security').get('secure_boot_level'),
+            'Expires UTC': computers_response.get('security').get('external_boot_level')
+        }
+
     elif subset == 'Software':
         readable_output = {
             'Number of running services ': len(computers_response.get('software').get('running_services')),
@@ -425,10 +484,12 @@ def get_computer_subset_readable_output(response, subset):
                 'Type': extension_attribute.get('type'),
                 'Value': extension_attribute.get('multi_value')
             })
+        readable_output = extension_attributes  # type: ignore
+
     elif subset == 'GroupsAccounts':
         readable_output = {
             'Number of groups': len(computers_response.get('groups_accounts').get('computer_group_memberships')),
-            'Number of installed applications': len(computers_response.get('groups_accounts').get('local_accounts'))
+            'Number of local accounts': len(computers_response.get('groups_accounts').get('local_accounts'))
         }
     elif subset == 'iphones':
         readable_output = computers_response.get('iphones')
@@ -437,9 +498,10 @@ def get_computer_subset_readable_output(response, subset):
         configuration_profiles = []
         for profile in computers_response.get('configuration_profiles'):
             configuration_profiles.append({
-                'ID': profile.get('id'),
+                'Configuration profile ID': profile.get('id'),
                 'Is Removable': profile.get('is_removable')
             })
+        readable_output = configuration_profiles    # type: ignore
 
     return readable_output
 
@@ -447,27 +509,35 @@ def get_computer_subset_readable_output(response, subset):
 def computer_commands_readable_output(response):
     computer_response = response.get('computer_command').get('command')
     readable_output = {
-        'name': computer_response.get('name'),
-        'computer_id': computer_response.get('computer_id'),
-        'command_uuid': computer_response.get('command_uuid'),
+        'Name': computer_response.get('name'),
+        'Computer ID': computer_response.get('computer_id'),
+        'Command UUID': computer_response.get('command_uuid'),
 
     }
     return readable_output
 
 
 def get_users_readable_output(users_response, user_id, name, email):
-    readable_output = []
-    if user_id or name or email:
-        readable_output.append({
+    if user_id or name:
+        readable_output = {
             'ID': users_response.get('id'),
             'Name': users_response.get('name'),
             'Email': users_response.get('email'),
             'Phone': users_response.get('phone_number')
-
-        })
-    else:
+        }
+    elif email:
+        readable_output = []    # type: ignore
         for user in users_response:
-            readable_output.append({
+            readable_output.append({    # type: ignore
+                'ID': user.get('id'),
+                'Name': user.get('name'),
+                'Email': user.get('email'),
+                'Phone': user.get('phone_number')
+            })
+    else:
+        readable_output = []    # type: ignore
+        for user in users_response:
+            readable_output.append({    # type: ignore
                 'ID': user.get('id'),
                 'Name': user.get('name'),
 
@@ -475,31 +545,31 @@ def get_users_readable_output(users_response, user_id, name, email):
     return readable_output
 
 
-def get_mobile_devices_readable_output(response, mobile_id):
+def get_mobile_devices_readable_output(mobile_response, mobile_id):
     readable_output = []
     if mobile_id:
-        mobile_dev_data = response.get('mobile_device').get('general')
         readable_output.append({
-            'ID': mobile_dev_data.get('id'),
-            'Name': mobile_dev_data.get('name'),
-            'WIFI MAC address': mobile_dev_data.get('wifi_mac_address'),
-            'Bluetooth MAC address': mobile_dev_data.get('bluetooth_mac_address'),
-            'IP address': mobile_dev_data.get('ip_address'),
-            'Serial Number': mobile_dev_data.get('serial_number'),
-            'UDID': mobile_dev_data.get('udid'),
-            'Model': mobile_dev_data.get('model'),
-            'Model Number': mobile_dev_data.get('model_number'),
-            'Managed': mobile_dev_data.get('managed'),
-            'Supervised': mobile_dev_data.get('supervised')
+            'ID': mobile_response.get('id'),
+            'Name': mobile_response.get('name'),
+            'WIFI MAC address': mobile_response.get('wifi_mac_address'),
+            'Bluetooth MAC address': mobile_response.get('bluetooth_mac_address'),
+            'IP address': mobile_response.get('ip_address'),
+            'Serial Number': mobile_response.get('serial_number'),
+            'UDID': mobile_response.get('udid'),
+            'Model': mobile_response.get('model'),
+            'Model Number': mobile_response.get('model_number'),
+            'Managed': mobile_response.get('managed'),
+            'Supervised': mobile_response.get('supervised')
         })
     else:
-        mobile_dev_data = response
-        for mobile_device in mobile_dev_data:
+        for mobile_device in mobile_response:
             readable_output.append({
                 'ID': mobile_device.get('id'),
-                'Name': mobile_device.get('name')
+                'Name': mobile_device.get('name'),
+                'UDID': mobile_device.get('udid'),
+                'Serial Number': mobile_device.get('serial_number')
             })
-    return mobile_dev_data, readable_output
+    return readable_output
 
 
 def get_mobile_device_subset_readable_output(response, subset):
@@ -558,6 +628,7 @@ def get_mobile_device_subset_readable_output(response, subset):
                 'Expires UTC': certificate.get('expires_utc'),
                 'Expires Epoch': certificate.get('expires_epoch')
             })
+        readable_output = certificate_details   # type: ignore
     elif subset == 'Applications':
         applications_mobile_response = mobile_response.get('applications')
 
@@ -574,6 +645,8 @@ def get_mobile_device_subset_readable_output(response, subset):
                 'Type': extension_attribute.get('type'),
                 'Value': extension_attribute.get('multi_value')
             })
+        readable_output = extension_attributes  # type: ignore
+
     elif subset == 'ConfigurationProfiles':
         configuration_profiles_mobile_response = mobile_response.get('configuration_profiles')
         configuration_profiles = []
@@ -584,8 +657,10 @@ def get_mobile_device_subset_readable_output(response, subset):
                 'identifier': profile.get('identifier'),
                 'uuid': profile.get('uuid')
             })
+        readable_output = configuration_profiles    # type: ignore
+
     elif subset == 'Security':
-        security_mobile_response = mobile_response.get('security_object')
+        security_mobile_response = mobile_response.get('security')
 
         readable_output = {
             'Data Protection': security_mobile_response.get('data_protection'),
@@ -626,9 +701,8 @@ def get_mobile_device_subset_readable_output(response, subset):
             'Phone Number': network_mobile_response.get('phone_number')
         }
     elif subset == 'ProvisioningProfiles':
-        provisioning_profiles_mobile_response = mobile_response.get('provisioning_profiles')
+        readable_output = mobile_response.get('provisioning_profiles')
 
-        readable_output = provisioning_profiles_mobile_response
     elif subset == 'MobileDeviceGroups':
         mobile_device_groups_mobile_response = mobile_response.get('mobile_device_groups')
 
@@ -682,17 +756,18 @@ def test_module(client: Client) -> str:
     try:
         if client.get_computers_request():
             message = 'ok'
+    except requests.ReadTimeout as e:   # type: ignore
+        message = f'Read Timeout Error: Make sure your username is correctly set. Original error: {str(e)}'
     except DemistoException as e:
-        if 'Forbidden' in str(e) or 'Authorization' in str(e):
-            message = f'Authorization Error: make sure API Key is correctly set. Original error: {str(e)}'
+        if 'Forbidden' in str(e) or 'Unauthorized' in str(e):
+            message = 'Authorization Error: Make sure server url and password are correctly set.'
         else:
             raise e
     return message
 
 
-def get_computers_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def get_computers_command(client: Client, args: Dict[str, Any], basic_subset: bool = False) -> CommandResults:
     computer_id = args.get('id')
-    basic_subset = argToBoolean(args.get('basic_subset', False))
     match = args.get('match')
     limit = arg_to_number(args.get('limit', 50))
     page = arg_to_number(args.get('page', 0))
@@ -701,14 +776,18 @@ def get_computers_command(client: Client, args: Dict[str, Any]) -> CommandResult
 
     if computer_id:
         computers_response = computers_response.get('computer').get('general')
+        computers_hr = f'Jamf get computers result for computer ID: {computer_id}'
     else:
+        total_results = len(computers_response.get('computers'))
         computers_response = pagination(computers_response.get('computers'), limit, page)
+        computers_hr = f'Jamf get computers result \n Total results:{total_results}\nResults per page: {limit}\nPage: ' \
+                       f'{page}'
 
-    readable_output = get_computers_readable_output(computers_response, computer_id)
+    readable_output = get_computers_readable_output(computers_response, computer_id, basic_subset, match)
 
     return CommandResults(
         readable_output=tableToMarkdown(
-            'Jamf get computers result',
+            computers_hr,
             readable_output,
             removeNull=True
         ),
@@ -719,18 +798,17 @@ def get_computers_command(client: Client, args: Dict[str, Any]) -> CommandResult
     )
 
 
-def get_computer_subset_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def get_computer_subset_command(client: Client, args: Dict[str, Any], subset_name: str) -> CommandResults:
     identifier = args['identifier']
     identifier_value = args['identifier_value']
-    subset = args['subset']
 
-    computer_subset_response = client.get_computer_subset_request(identifier, identifier_value, subset)
-    computer_id = get_computer_id(client, computer_subset_response, subset, identifier, identifier_value)
-    readable_output = get_computer_subset_readable_output(computer_subset_response, subset)
+    computer_subset_response = client.get_computer_subset_request(identifier, identifier_value, subset_name)
+    computer_id = get_computer_id(client, computer_subset_response, subset_name, identifier, identifier_value)
+    readable_output = get_computer_subset_readable_output(computer_subset_response, subset_name)
     computer_subset_response['computer']['id'] = computer_id
     return CommandResults(
         readable_output=tableToMarkdown(
-            'Jamf computer subset result',
+            f'Jamf computer {subset_name} subset result',
             readable_output,
             removeNull=True
         ),
@@ -741,10 +819,10 @@ def get_computer_subset_command(client: Client, args: Dict[str, Any]) -> Command
     )
 
 
-def get_computer_id(client: Client, response, subset, identifier, identifier_value):
+def get_computer_id(client: Client, response, subset_name, identifier, identifier_value):
     # Need to send another request with General subset to get the computer ID.
-    if subset != 'General':
-        computer_id = client.get_computer_subset_request(identifier, identifier_value, 'General').\
+    if subset_name != 'General':
+        computer_id = client.get_computer_subset_request(identifier, identifier_value, 'General'). \
             get('computer').get('general').get('id')
     else:
         computer_id = response.get('computer').get('general').get('id')
@@ -757,15 +835,16 @@ def computer_lock_command(client: Client, args: Dict[str, Any]) -> CommandResult
     lock_msg = args.get('lock_message')
 
     computer_response = client.computer_lock_request(computer_id, passcode, lock_msg)
-    computer_lock_outputs = computer_commands_readable_output(computer_response)
+    computer_lock_hr = computer_commands_readable_output(computer_response)
+    outputs = computer_response.get('computer_command').get('command')
     return CommandResults(
         readable_output=tableToMarkdown(
             f'Computer {computer_id} locked successfully',
-            computer_lock_outputs, removeNull=True, headerTransform=pascalToSpace
+            computer_lock_hr, removeNull=True, headerTransform=pascalToSpace
         ),
         outputs_prefix='JAMF.ComputeCommands',
         outputs_key_field='id',
-        outputs=computer_lock_outputs,
+        outputs=outputs,
         raw_response=computer_response
     )
 
@@ -776,14 +855,16 @@ def computer_erase_command(client: Client, args: Dict[str, Any]) -> CommandResul
 
     computer_response = client.computer_erase_request(computer_id, passcode)
     computer_erase_outputs = computer_commands_readable_output(computer_response)
+    outputs = computer_response.get('computer_command').get('command')
+
     return CommandResults(
         readable_output=tableToMarkdown(
-            f'Computer {computer_id} erase successfully',
+            f'Computer {computer_id} erased successfully',
             computer_erase_outputs, removeNull=True, headerTransform=pascalToSpace
         ),
         outputs_prefix='JAMF.ComputerCommands',
         outputs_key_field='id',
-        outputs=computer_erase_outputs,
+        outputs=outputs,
         raw_response=computer_response
     )
 
@@ -794,16 +875,22 @@ def get_users_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     email = args.get('email')
     limit = arg_to_number(args.get('limit', 50))
     page = arg_to_number(args.get('page', 0))
-
     user_response = client.get_users_request(user_id, name, email)
     if not any([user_id, name, email]):
+        total_results = len(user_response.get('users'))
+        users_hr = f'Jamf get users result \n Total results:{total_results}\nResults per page: {limit}\nPage: ' \
+                   f'{page}'
         user_response = pagination(user_response.get('users'), limit, page)
     else:
-        user_response = user_response['user']
+        if email:
+            user_response = user_response['users']
+        else:
+            user_response = user_response['user']
+        users_hr = 'Jamf get user result'
     readable_output = get_users_readable_output(user_response, user_id, name, email)
     return CommandResults(
         readable_output=tableToMarkdown(
-            'Jamf get users result',
+            users_hr,
             readable_output, removeNull=True
         ),
         outputs_prefix='JAMF.User',
@@ -821,39 +908,41 @@ def get_mobile_devices_command(client: Client, args: Dict[str, Any]) -> CommandR
 
     mobile_response = client.get_mobile_devices_request(mobile_id, match)
 
-    if not mobile_id:
+    if mobile_id:
+        mobile_response = mobile_response.get('mobile_device').get('general')
+        mobiles_hr = f'Jamf get mobile devices result on mobile ID:{mobile_id}'
+
+    else:
+        total_results = len(mobile_response.get('mobile_devices'))
         mobile_response = pagination(mobile_response.get('mobile_devices'), limit, page)
-    mobile_outputs, readable_output = get_mobile_devices_readable_output(mobile_response, mobile_id)
+        mobiles_hr = f'Jamf get mobile devices result \n Total results:{total_results}\nResults per page: {limit}\nPage: ' \
+                     f'{page}'
+
+    readable_output = get_mobile_devices_readable_output(mobile_response, mobile_id)
 
     return CommandResults(
         readable_output=tableToMarkdown(
-            'Jamf get mobile devices result',
+            mobiles_hr,
             readable_output, removeNull=True
         ),
         outputs_prefix='JAMF.MobileDevice',
         outputs_key_field='id',
-        outputs=mobile_outputs,
+        outputs=mobile_response,
         raw_response=mobile_response
     )
 
 
-def get_mobile_device_subset_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def get_mobile_device_subset_command(client: Client, args: Dict[str, Any], subset: str) -> CommandResults:
     identifier = args['identifier']
     identifier_value = args['identifier_value']
-    subset = args['subset']
 
     mobile_subset_response = client.get_mobile_devices_subset_request(identifier, identifier_value, subset)
-    if subset != 'General':
-        mobile_id = client.get_mobile_devices_subset_request(identifier, identifier_value, 'General')\
-            .get('mobile_device').get('general').get('id')
-    else:
-        mobile_id = mobile_subset_response.get('mobile_device').get('general').get('id')
-
+    mobile_id = get_mobile_device_id(client, mobile_subset_response, subset, identifier, identifier_value)
     readable_output = get_mobile_device_subset_readable_output(mobile_subset_response, subset)
     mobile_subset_response['mobile_device']['id'] = mobile_id
     return CommandResults(
         readable_output=tableToMarkdown(
-            'Jamf mobile device subset result',
+            f'Jamf mobile device {subset} subset result',
             readable_output,
             removeNull=True
         ),
@@ -862,6 +951,16 @@ def get_mobile_device_subset_command(client: Client, args: Dict[str, Any]) -> Co
         outputs=mobile_subset_response['mobile_device'],
         raw_response=mobile_subset_response
     )
+
+
+def get_mobile_device_id(client: Client, response, subset, identifier, identifier_value):
+    # Need to send another request with General subset to get the mobile device ID.
+    if subset != 'General':
+        mobile_id = client.get_mobile_devices_subset_request(identifier, identifier_value, 'General') \
+            .get('mobile_device').get('general').get('id')
+    else:
+        mobile_id = response.get('mobile_device').get('general').get('id')
+    return mobile_id
 
 
 def get_computers_by_app_command(client: Client, args: Dict[str, Any]) -> CommandResults:
@@ -931,7 +1030,6 @@ def mobile_device_erase_command(client: Client, args: Dict[str, Any]) -> Command
 
 
 def main() -> None:
-
     try:
         params = demisto.params()
         base_url = urljoin(params.get('url', '').rstrip('/'), '/JSSResource')
@@ -950,8 +1048,50 @@ def main() -> None:
         elif demisto.command() == 'jamf-get-computers':
             return_results(get_computers_command(client, demisto.args()))
 
-        elif demisto.command() == 'jamf-get-computer-subset':
-            return_results(get_computer_subset_command(client, demisto.args()))
+        elif demisto.command() == 'jamf-get-computers-basic-subset':
+            return_results(get_computers_command(client, demisto.args(), basic_subset=True))
+
+        elif demisto.command() == 'jamf-get-computer-by-id':
+            return_results(get_computers_command(client, demisto.args()))
+
+        elif demisto.command() == 'jamf-get-computer-by-match':
+            return_results(get_computers_command(client, demisto.args()))
+
+        elif demisto.command() == 'jamf-get-computer-general-subset':
+            return_results(get_computer_subset_command(client, demisto.args(), 'General'))
+
+        elif demisto.command() == 'jamf-get-computer-location-subset':
+            return_results(get_computer_subset_command(client, demisto.args(), 'Location'))
+
+        elif demisto.command() == 'jamf-get-computer-purchasing-subset':
+            return_results(get_computer_subset_command(client, demisto.args(), 'Purchasing'))
+
+        elif demisto.command() == 'jamf-get-computer-peripherals-subset':
+            return_results(get_computer_subset_command(client, demisto.args(), 'Peripherals'))
+
+        elif demisto.command() == 'jamf-get-computer-hardware-subset':
+            return_results(get_computer_subset_command(client, demisto.args(), 'Hardware'))
+
+        elif demisto.command() == 'jamf-get-computer-certificates-subset':
+            return_results(get_computer_subset_command(client, demisto.args(), 'Certificates'))
+
+        elif demisto.command() == 'jamf-get-computer-security-subset':
+            return_results(get_computer_subset_command(client, demisto.args(), 'Security'))
+
+        elif demisto.command() == 'jamf-get-computer-software-subset':
+            return_results(get_computer_subset_command(client, demisto.args(), 'Software'))
+
+        elif demisto.command() == 'jamf-get-computer-extension-attributes-subset':
+            return_results(get_computer_subset_command(client, demisto.args(), 'ExtensionAttributes'))
+
+        elif demisto.command() == 'jamf-get-computer-groups-accounts-subset':
+            return_results(get_computer_subset_command(client, demisto.args(), 'GroupsAccounts'))
+
+        elif demisto.command() == 'jamf-get-computer-iphones-subset':
+            return_results(get_computer_subset_command(client, demisto.args(), 'iphones'))
+
+        elif demisto.command() == 'jamf-get-computer-configuration-profiles-subset':
+            return_results(get_computer_subset_command(client, demisto.args(), 'ConfigurationProfiles'))
 
         elif demisto.command() == 'jamf-computer-lock':
             return_results(computer_lock_command(client, demisto.args()))
@@ -962,11 +1102,56 @@ def main() -> None:
         elif demisto.command() == 'jamf-get-users':
             return_results(get_users_command(client, demisto.args()))
 
+        elif demisto.command() == 'jamf-get-user-by-id':
+            return_results(get_users_command(client, demisto.args()))
+
+        elif demisto.command() == 'jamf-get-user-by-name':
+            return_results(get_users_command(client, demisto.args()))
+
+        elif demisto.command() == 'jamf-get-user-by-email':
+            return_results(get_users_command(client, demisto.args()))
+
         elif demisto.command() == 'jamf-get-mobile-devices':
             return_results(get_mobile_devices_command(client, demisto.args()))
 
-        elif demisto.command() == 'jamf-get-mobile-device-subset':
-            return_results(get_mobile_device_subset_command(client, demisto.args()))
+        elif demisto.command() == 'jamf-get-mobile-device-by-id':
+            return_results(get_mobile_devices_command(client, demisto.args()))
+
+        elif demisto.command() == 'jamf-get-mobile-device-by-match':
+            return_results(get_mobile_devices_command(client, demisto.args()))
+
+        elif demisto.command() == 'jamf-get-mobile-device-general-subset':
+            return_results(get_mobile_device_subset_command(client, demisto.args(), 'General'))
+
+        elif demisto.command() == 'jamf-get-mobile-device-location-subset':
+            return_results(get_mobile_device_subset_command(client, demisto.args(), 'Location'))
+
+        elif demisto.command() == 'jamf-get-mobile-device-purchasing-subset':
+            return_results(get_mobile_device_subset_command(client, demisto.args(), 'Purchasing'))
+
+        elif demisto.command() == 'jamf-get-mobile-device-applications-subset':
+            return_results(get_mobile_device_subset_command(client, demisto.args(), 'Applications'))
+
+        elif demisto.command() == 'jamf-get-mobile-device-security-subset':
+            return_results(get_mobile_device_subset_command(client, demisto.args(), 'Security'))
+
+        elif demisto.command() == 'jamf-get-mobile-device-network-subset':
+            return_results(get_mobile_device_subset_command(client, demisto.args(), 'Network'))
+
+        elif demisto.command() == 'jamf-get-mobile-device-certificates-subset':
+            return_results(get_mobile_device_subset_command(client, demisto.args(), 'Certificates'))
+
+        elif demisto.command() == 'jamf-get-mobile-device-extension-attributes-subset':
+            return_results(get_mobile_device_subset_command(client, demisto.args(), 'ExtensionAttributes'))
+
+        elif demisto.command() == 'jamf-get-mobile-device-provisioning-profiles-subset':
+            return_results(get_mobile_device_subset_command(client, demisto.args(), 'ProvisioningProfiles'))
+
+        elif demisto.command() == 'jamf-get-mobile-device-groups-subset':
+            return_results(get_mobile_device_subset_command(client, demisto.args(), 'MobileDeviceGroups'))
+
+        elif demisto.command() == 'jamf-get-mobile-device-configuration-profiles-subset':
+            return_results(get_mobile_device_subset_command(client, demisto.args(), 'ConfigurationProfiles'))
 
         elif demisto.command() == 'jamf-get-computers-by-application':
             return_results(get_computers_by_app_command(client, demisto.args()))
