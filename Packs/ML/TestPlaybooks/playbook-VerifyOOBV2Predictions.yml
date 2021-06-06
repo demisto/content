@@ -1,0 +1,272 @@
+id: VerifyOOBV2Predictions-Test
+version: 1
+vcShouldKeepItemLegacyProdMachine: false
+name: VerifyOOBV2Predictions-Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 3bca5e80-d9aa-4e3a-83d4-e63a91e494b4
+    type: start
+    task:
+      id: 3bca5e80-d9aa-4e3a-83d4-e63a91e494b4
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+      - "2"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: 4d4779ae-8074-4bb9-8d5b-7003340e5a8a
+    type: regular
+    task:
+      id: 4d4779ae-8074-4bb9-8d5b-7003340e5a8a
+      version: -1
+      name: |
+        Create Incidents
+      scriptName: CreateIncidentsOutOfTheBoxV2
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: ea1b2366-63bc-46aa-837d-14152dff120f
+    type: regular
+    task:
+      id: ea1b2366-63bc-46aa-837d-14152dff120f
+      version: -1
+      name: Load Doacker Image
+      description: Predict phishing incidents using the out-of-the-box pre-trained
+        model.
+      scriptName: DBotPredictOutOfTheBoxV2
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      emailBody:
+        simple: test
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 7590edba-2389-41bb-86ee-f21a2ada8969
+    type: regular
+    task:
+      id: 7590edba-2389-41bb-86ee-f21a2ada8969
+      version: -1
+      name: Wait for Docker
+      description: Sleep for X seconds
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      seconds:
+        simple: "30"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: ba73f27f-0a3a-4f6d-81dd-db5bd46e0190
+    type: regular
+    task:
+      id: ba73f27f-0a3a-4f6d-81dd-db5bd46e0190
+      version: -1
+      name: Predict incidents batch
+      description: Apply a trained ML model on multiple incidents at once, to compare
+        incidents how the incidents were labeled by analysts, to the predictions of
+        the model. This script is aimed to help evaluate a trained model using past
+        incidents.
+      scriptName: DBotPredictIncidentsBatch
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      incidentTypes:
+        simple: Simulation
+      modelName:
+        simple: demisto_out_of_the_box_model_v2
+      tagField:
+        simple: name
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: 635bb224-7fa2-444e-8b82-49f30a5ef61e
+    type: regular
+    task:
+      id: 635bb224-7fa2-444e-8b82-49f30a5ef61e
+      version: -1
+      name: Compare predictions
+      scriptName: CompareEnvPredictionsToExpectedPredictions
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      input:
+        simple: ${lastCompletedTaskEntries}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 760
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: db58ef4b-f02c-4e06-854f-92753faccb8e
+    type: condition
+    task:
+      id: db58ef4b-f02c-4e06-854f-92753faccb8e
+      version: -1
+      name: Are all predictions matched?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "7"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isTrue
+          left:
+            value:
+              simple: CompareEnvPredictionsToExpectedPredictions .allPredictionsMatched
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 970
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: 7cdd5941-eaad-45d1-82ab-448e44925e07
+    type: title
+    task:
+      id: 7cdd5941-eaad-45d1-82ab-448e44925e07
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 270,
+          "y": 1160
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1175,
+        "width": 810,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.5.0
