@@ -1,6 +1,6 @@
 <!-- HTML_DOC -->
 <p>Deprecated. Use the Cofense Triage v2 integration instead.</p>
-<h2>Configure Cofense Triage on Demisto</h2>
+<h2>Configure Cofense Triage on Cortex XSOAR</h2>
 <ol>
 <li>Navigate to<span> </span><strong>Settings</strong><span> </span>&gt;<span> </span><strong>Integrations</strong><span> </span>&gt;<span> </span><strong>Servers &amp; Services</strong>.</li>
 <li>Search for Cofense Triage.</li>
@@ -25,7 +25,7 @@
 <li>Click<span> </span><strong>Test</strong><span> </span>to validate the URLs, token, and connection.</li>
 </ol>
 <h2>Commands</h2>
-<p>You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
+<p>You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
 <ol>
 <li><a href="#h_e926473e-cece-4f98-8645-503850ed1aee" target="_self">Search reports: cofense-search-reports</a></li>
 <li><a href="#h_f9f3b2c2-2432-48d5-adb5-8b6313bd8232" target="_self">Get an attachment: cofense-get-attachment</a></li>

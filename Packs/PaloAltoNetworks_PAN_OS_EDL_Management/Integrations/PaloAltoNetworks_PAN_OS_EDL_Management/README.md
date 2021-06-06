@@ -44,7 +44,7 @@
   </li>
 </ol>
 <p>&nbsp;</p>
-<h2>Configure Palo Alto Networks PAN-OS EDL on Demisto</h2>
+<h2>Configure Palo Alto Networks PAN-OS EDL on Cortex XSOAR</h2>
 <ol>
   <li>
     Navigate to&nbsp;<strong>Settings</strong>&nbsp;&gt;&nbsp;<strong>Integrations</strong>
@@ -84,7 +84,7 @@
 </ol>
 <h2>Commands</h2>
 <p>
-  You can execute these commands from the Demisto CLI, as part of an automation,
+  You can execute these commands from the Cortex XSOAR CLI, as part of an automation,
   or in a playbook. After you successfully execute a command, a DBot message appears
   in the War Room with the command details.
 </p>
