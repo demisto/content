@@ -23,8 +23,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 750,
-          "y": 20
+          "x": 1125,
+          "y": 50
         }
       }
     note: false
@@ -36,17 +36,15 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: ae9c53b2-f3e3-4512-8d11-ab8818ae50f8
+    taskid: 66d05321-8457-44af-81cb-8188ad01cf6d
     type: regular
     task:
-      id: ae9c53b2-f3e3-4512-8d11-ab8818ae50f8
+      id: 66d05321-8457-44af-81cb-8188ad01cf6d
       version: -1
       name: jamf-get-computers
-      description: This command will return a list of computers or a single computer
-        based on the parameters being passed. In case no parameter are passed, a list
-        of all computers with their associated IDs will be returned. Please note that
-        only one of the parameters should be passed. By default, will return the first
-        50 computers to the context (id + name).
+      description: This command will return a list of all computers with their associated
+        IDs . By default, will return the first 50 computers to the context (ID +
+        name).
       script: '|||jamf-get-computers'
       type: regular
       iscommand: true
@@ -55,15 +53,16 @@ tasks:
       '#none#':
       - "2"
       - "4"
+      - "10"
     scriptarguments:
       limit:
-        simple: "10"
+        simple: "5"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 750,
-          "y": 200
+          "x": 480,
+          "y": 195
         }
       }
     note: false
@@ -101,8 +100,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 750,
-          "y": 380
+          "x": 50,
+          "y": 370
         }
       }
     note: false
@@ -135,8 +134,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 750,
-          "y": 560
+          "x": 50,
+          "y": 545
         }
       }
     note: false
@@ -148,30 +147,40 @@ tasks:
     isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: 3bf7bf33-0520-4e69-85be-9207ace6c42e
+    taskid: b7a5ffdc-3019-43fa-81b9-f0a01148886c
     type: regular
     task:
-      id: 3bf7bf33-0520-4e69-85be-9207ace6c42e
+      id: b7a5ffdc-3019-43fa-81b9-f0a01148886c
       version: -1
-      name: jamf-get-computer-subset
-      description: Returns a specific subset for a specific computer.
-      script: '|||jamf-get-computer-subset'
+      name: jamf-get-computer-general-subset
+      description: Returns the general subset for a specific computer according to
+        the given arguments.
+      script: '|||jamf-get-computer-general-subset'
       type: regular
       iscommand: true
       brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
     scriptarguments:
       identifier:
         simple: id
       identifier_value:
-        simple: ${JAMF.Computer.id}
-      subset:
-        simple: Location
+        complex:
+          root: JAMF.Computer
+          accessor: id
+          transformers:
+          - operator: atIndex
+            args:
+              index:
+                value:
+                  simple: "0"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 1180,
-          "y": 320
+          "x": 480,
+          "y": 370
         }
       }
     note: false
@@ -206,8 +215,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1360,
-          "y": 170
+          "x": 910,
+          "y": 195
         }
       }
     note: false
@@ -231,6 +240,9 @@ tasks:
       type: regular
       iscommand: true
       brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
     scriptarguments:
       limit:
         simple: "10"
@@ -238,8 +250,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 330,
-          "y": 190
+          "x": 1340,
+          "y": 195
         }
       }
     note: false
@@ -251,10 +263,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    taskid: 31a99cc7-a324-4b63-8a97-fc03c785c147
+    taskid: 58d5807c-7941-4aee-8e26-4a671ae4e9d5
     type: regular
     task:
-      id: 31a99cc7-a324-4b63-8a97-fc03c785c147
+      id: 58d5807c-7941-4aee-8e26-4a671ae4e9d5
       version: -1
       name: jamf-get-mobile-devices
       description: Will return a list of all devices with general information on each
@@ -273,8 +285,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -90,
-          "y": 180
+          "x": 1770,
+          "y": 195
         }
       }
     note: false
@@ -286,48 +298,234 @@ tasks:
     isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: 40213580-2cb1-4b02-8e59-c2d0a9a0817b
+    taskid: fc1780df-5e2a-48c0-8f07-9abc7151690c
     type: regular
     task:
-      id: 40213580-2cb1-4b02-8e59-c2d0a9a0817b
+      id: fc1780df-5e2a-48c0-8f07-9abc7151690c
       version: -1
-      name: jamf-get-mobile-device-subset
-      description: Returns a specific subset for a specific mobile device.
-      script: '|||jamf-get-mobile-device-subset'
+      name: jamf-get-mobile-device-applications-subset
+      description: Returns the applications subset for a specific mobile device according
+        to the given arguments.
+      script: '|||jamf-get-mobile-device-applications-subset'
       type: regular
       iscommand: true
       brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
     scriptarguments:
-      Identifier_value:
-        complex:
-          root: ${Jamf.Mobile
-          accessor: name}
-          transformers:
-          - operator: atIndex
-            args:
-              index:
-                value:
-                  simple: "0"
       identifier:
-        simple: name
+        simple: id
       identifier_value:
         complex:
-          root: ${JAMF.MobileDevice
-          accessor: name}
+          root: JAMF.MobileDevices
+          accessor: id
           transformers:
           - operator: atIndex
             args:
               index:
                 value:
                   simple: "0"
-      subset:
-        simple: Location
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": -90,
+          "x": 1770,
           "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: a60a59c5-1077-47e9-818b-7c57a20f6164
+    type: regular
+    task:
+      id: a60a59c5-1077-47e9-818b-7c57a20f6164
+      version: -1
+      name: jamf-get-user-by-id
+      description: Return a specific user with general data about the user according
+        to the given ID.
+      script: '|||jamf-get-user-by-id'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      id:
+        complex:
+          root: JAMF.User
+          accessor: id
+          transformers:
+          - operator: atIndex
+            args:
+              index:
+                value:
+                  simple: "0"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: d6ca97c2-b417-4eb7-8e57-2fe22f03365a
+    type: regular
+    task:
+      id: d6ca97c2-b417-4eb7-8e57-2fe22f03365a
+      version: -1
+      name: jamf-get-computer-by-id
+      description: 'This command will return  the "general" subset of a specific computer,
+        e.g: name, mac address, ip, serial number, udid etc.'
+      script: '|||jamf-get-computer-by-id'
+      type: regular
+      iscommand: true
+      brand: ""
+    scriptarguments:
+      id:
+        complex:
+          root: JAMF.Computer
+          accessor: id
+          transformers:
+          - operator: atIndex
+            args:
+              index:
+                value:
+                  simple: "0"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: 18553e94-82e0-4d76-810e-5e7e489d28c3
+    type: regular
+    task:
+      id: 18553e94-82e0-4d76-810e-5e7e489d28c3
+      version: -1
+      name: jamf-get-computer-by-match
+      description: This command will match computers by specific characteristics and
+        returns general data on each one of the computers.
+      script: '|||jamf-get-computer-by-match'
+      type: regular
+      iscommand: true
+      brand: ""
+    scriptarguments:
+      limit:
+        simple: "5"
+      match:
+        simple: '"Computer 9*"'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 520
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: 643e10d3-bfea-41fd-8b7a-6a03777f6376
+    type: regular
+    task:
+      id: 643e10d3-bfea-41fd-8b7a-6a03777f6376
+      version: -1
+      name: jamf-get-computer-hardware-subset
+      description: Returns the hardware subset for a specific computer according to
+        the given arguments.
+      script: '|||jamf-get-computer-hardware-subset'
+      type: regular
+      iscommand: true
+      brand: ""
+    scriptarguments:
+      identifier:
+        simple: serialnumber
+      identifier_value:
+        simple: CA41097460A3
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 510
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: 005140ec-d6e7-4630-8b09-c21725b0a8d0
+    type: regular
+    task:
+      id: 005140ec-d6e7-4630-8b09-c21725b0a8d0
+      version: -1
+      name: |
+        jamf-get-mobile-device-general-subset
+      description: Returns the general subset for a specific mobile device according
+        to the given arguments.
+      script: '|||jamf-get-mobile-device-general-subset'
+      type: regular
+      iscommand: true
+      brand: ""
+    scriptarguments:
+      identifier:
+        simple: name
+      identifier_value:
+        complex:
+          root: JAMF.MobileDevices
+          accessor: name
+          transformers:
+          - operator: atIndex
+            args:
+              index:
+                value:
+                  simple: "0"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1770,
+          "y": 510
         }
       }
     note: false
@@ -342,10 +540,10 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 635,
-        "width": 1830,
-        "x": -90,
-        "y": 20
+        "height": 590,
+        "width": 2100,
+        "x": 50,
+        "y": 50
       }
     }
   }

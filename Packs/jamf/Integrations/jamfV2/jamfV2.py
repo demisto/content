@@ -925,7 +925,7 @@ def get_mobile_devices_command(client: Client, args: Dict[str, Any]) -> CommandR
             mobiles_hr,
             readable_output, removeNull=True
         ),
-        outputs_prefix='JAMF.MobileDevice',
+        outputs_prefix='JAMF.MobileDevices',
         outputs_key_field='id',
         outputs=mobile_response,
         raw_response=mobile_response
