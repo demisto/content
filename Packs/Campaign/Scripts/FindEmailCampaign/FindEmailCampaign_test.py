@@ -247,3 +247,37 @@ def test_context_not_populated_with_invalid_fields(mocker):
     for context_incident in context[INCIDENTS_CONTEXT_KEY]:
         for field in invalid_fields:
             assert field not in context_incident, f'the field "{field}" should not be stored in context'
+
+@pytest.mark.parametrize(
+    'include_self', [True, False])
+def test_include_self_flag_on(mocker, include_self):
+    """
+
+    Given:
+        - include_self flag either True or false
+
+    When:
+        - Get the campaign details entry
+
+    Then:
+        - Assert that the appearance of the current incident is in the context (INCIDENTS_CONTEXT_KEY) according to the
+          given flag
+
+    """
+    import FindEmailCampaign
+    global RESULTS
+    RESULTS = []
+    FindEmailCampaign.SELF_IN_CONTEXT = include_self
+    mocker.patch.object(demisto, 'results', side_effect=results)
+    mocker.patch('FindEmailCampaign.summarize_email_body', mock_summarize_email_body)
+    incident = create_incident(subject='subject', body='email body')
+    mocker.patch.object(demisto,'incident',return_value=incident)
+    incidents_list = [incident]
+    data = pd.DataFrame(incidents_list)
+    return_campaign_details_entry(data, fields_to_display=[])
+    res = RESULTS[0]
+    context = res['EntryContext']
+    result = incident['id'] in [context_incident['id'] for context_incident in context[INCIDENTS_CONTEXT_KEY]]
+    # if include_self is true result should be true
+    # if include_self is false result should be false
+    assert (include_self and result) or (not include_self and not result)
