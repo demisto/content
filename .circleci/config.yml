@@ -817,6 +817,10 @@ jobs:
             - run:
                 name: Zip Content Packs From GCS
                 command: |
+                  if [[ $CIRCLE_BRANCH != master ]] && [[ $CIRCLE_BRANCH != 20\.* ]] && [[ $CIRCLE_BRANCH != 21\.* ]]; then
+                    echo "Skipping packs download to artifact on non master or release branch"
+                    exit 0
+                  fi
 
                   ZIP_FOLDER=$(mktemp -d)
                   python3 ./Tests/Marketplace/zip_packs.py -b 'marketplace-dist' -z $ZIP_FOLDER -a $CIRCLE_ARTIFACTS -s $GCS_MARKET_KEY

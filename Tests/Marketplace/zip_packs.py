@@ -117,33 +117,55 @@ def remove_test_playbooks_from_signatures(path, filenames):
         logging.warning(f'Could not find signatures in the pack {os.path.basename(os.path.dirname(path))}')
 
 
+def get_pack_files(entry_path):
+    """
+    Creates a list with all paths of files inside a directory and it's subdirectories.
+    Args:
+        entry_path: The directory path
+    Returns:
+        A list with paths of all files in the directory and subdirectories.
+    """
+    pack_files = []
+    for root, dirnames, filenames in os.walk(entry_path):
+        # going over pack directory, saves all filenames
+        for filename in filenames:
+            pack_files.append(os.path.join(root, filename))
+    return pack_files
+
+
 def get_zipped_packs_names(zip_path, gcp_path, circle_build):
+    """
+    Creates a list of dictionaries containing a pack name as key and the latest zip file path of the pack as value.
+    Args:
+        zip_path: path containing all the packs copied from the storage bucket
+        gcp_path:
+        circle_build:
+    Returns:
+        A list of dictionaries containing each pack name and it's zip path.
+        [{'Slack': 'content/packs/slack.zip'}, {'qualys': 'content/packs/qualys.zip'}]
+    """
     zipped_packs = []
-    zip_path = os.path.join(zip_path, 'packs')
-    # if gcp_path == BUILD_GCP_PATH:
-    #     zip_path = os.path.join(zip_path, 'packs')  # directory of the packs
-    # else:
-    #     zip_path = os.path.join(zip_path, circle_build)  # directory of the packs
+
+    if gcp_path == BUILD_GCP_PATH:
+        zip_path = os.path.join(zip_path, 'packs')  # directory of the packs
+    else:
+        zip_path = os.path.join(zip_path, circle_build)  # directory of the packs
+
     dir_entries = os.listdir(zip_path)
     packs_list = [pack.name for pack in os.scandir(PACKS_FULL_PATH)]  # list of all packs from repo
 
     for entry in dir_entries:
-        print(f"Current entry is: {entry}")
-        entry_path = zip_path + os.sep + entry
+        entry_path = os.path.join(zip_path, entry)
         if entry not in IGNORED_FILES and entry in packs_list and os.path.isdir(entry_path):
             # This is a pack directory, should keep only most recent release zip
-            print(f"current pack is: {entry_path}")
-            pack_files = []
-            for root, dirnames, filenames in os.walk(entry_path):
-                # going over pack directory, saves all filenames
-                for filename in filenames:
-                    pack_files.append(os.path.join(root, filename))
-            print(f"files in {entry_path} are {', '.join(pack_files)}")
+            pack_files = get_pack_files(entry_path)
             latest_zip = get_latest_pack_zip_from_blob(entry, pack_files)
             if not latest_zip:
                 logging.warning(f'Failed to get the zip of the pack {entry} from GCP')
                 continue
+            print(f"Found latest zip of {entry}, which is {latest_zip}")
             zipped_packs.append({Path(latest_zip).stem: latest_zip})
+
     if not zipped_packs:
         logging.critical('Did not find any pack to download from GCP.')
         sys.exit(1)
@@ -152,8 +174,7 @@ def get_zipped_packs_names(zip_path, gcp_path, circle_build):
 
 def download_packs_from_gcp(storage_bucket_name, gcp_path, destination_path, circle_build, branch_name):
     """
-    Iterates over the Packs directory in the content repository and downloads each pack (if found) from a GCP bucket
-    in parallel.
+    Copies all content in the gcp path to destination_path
     Args:
         storage_bucket_name: The name of the GCP bucket to download from.
         gcp_path: The path of the packs in the GCP bucket.
@@ -161,37 +182,41 @@ def download_packs_from_gcp(storage_bucket_name, gcp_path, destination_path, cir
         branch_name: The branch name of the build.
         circle_build: The number of the circle ci build.
     """
-    src_path = "gs://marketplace-dist-dev/" + gcp_path
-    # if gcp_path == BUILD_GCP_PATH:
-    #     src_path = os.path.join('gs://', storage_bucket_name, gcp_path, branch_name, circle_build, 'content', 'packs')
-    # else:
-    #     src_path = os.path.join('gs://', storage_bucket_name, gcp_path, branch_name, circle_build)
-    #
-    # if not branch_name or not circle_build:
-    #     src_path = src_path.replace('/builds/content', '')
+
+    if gcp_path == BUILD_GCP_PATH:
+        src_path = os.path.join('gs://', storage_bucket_name, gcp_path, branch_name, circle_build, 'content', 'packs')
+    else:
+        src_path = os.path.join('gs://', storage_bucket_name, gcp_path, branch_name, circle_build)
+
+    if not branch_name or not circle_build:
+        src_path = src_path.replace('/builds/content', '')
 
     try:
         process = subprocess.Popen(["Tests/scripts/cp_gcp_dir.sh", src_path, destination_path])
-        # out, err = process.communicate()
-        # # TODO: check what happens if you remove it
-        # if out:
-        #     print("out" + out.decode('utf-8'))
-        # if err:
-        #     print("err" + err.decode('utf-8'))
+        out, err = process.communicate()
+        if out:
+            print("out" + out.decode('utf-8'))
+        if err:
+            print("err" + err.decode('utf-8'))
     except Exception as e:
         logging.critical(f"Failed to run cp_gcp_dir.sh, Error:{e}")
         sys.exit(1)
 
 
 def copy_to_other_dir(zipped_packs):
+    """
+    Copies zip files if needed
+    Args:
+        zipped_packs: A list of dictionaries containing pack name as key and it's latest zip path as value
+    """
     if os.path.exists('/home/runner/work/content-private/content-private/content/artifacts/'):
         for zip_pack in zipped_packs:
-            zip_path = zip_pack.items()[0]
-            logging.info(f"Copying pack from {zip_path} to /home/runner/work/content-private/"
-                         f"content-private/content/artifacts/packs")
-            shutil.copy(zip_path,
-                        f'/home/runner/work/content-private/content-private/content/artifacts/'
-                        f'packs')
+            for name, path in zip_pack.items():
+                logging.info(f"Copying pack from {path} to /home/runner/work/content-private/"
+                             f"content-private/content/artifacts/packs/{name}.zip")
+                shutil.copy(path,
+                            f'/home/runner/work/content-private/content-private/content/artifacts/'
+                            f'packs/{name}.zip')
 
 
 def executor_submit(executor, download_path, blob):
@@ -237,10 +262,9 @@ def main():
     storage_bucket_name = option.bucket_name
     zip_path = option.zip_path
     artifacts_path = option.artifacts_path
-    service_account = option.service_account
     circle_build = option.circle_build
     branch_name = option.branch_name
-    gcp_path = 'content/packs'
+    gcp_path = option.gcp_path
     remove_test_playbooks = option.remove_test_playbooks
     private_build = option.private
     if private_build:
