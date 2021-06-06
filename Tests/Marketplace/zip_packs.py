@@ -117,11 +117,15 @@ def remove_test_playbooks_from_signatures(path, filenames):
         logging.warning(f'Could not find signatures in the pack {os.path.basename(os.path.dirname(path))}')
 
 
-def get_zipped_packs_names(zip_path):
+def get_zipped_packs_names(zip_path, gcp_path, circle_build):
     zipped_packs = []
-    zip_path = zip_path + '/packs'  # directory of the packs
+    zip_path = os.path.join(zip_path, 'packs')
+    # if gcp_path == BUILD_GCP_PATH:
+    #     zip_path = os.path.join(zip_path, 'packs')  # directory of the packs
+    # else:
+    #     zip_path = os.path.join(zip_path, circle_build)  # directory of the packs
     dir_entries = os.listdir(zip_path)
-    packs_list = [pack.name for pack in os.scandir(PACKS_FULL_PATH)] # list of all packs from repo
+    packs_list = [pack.name for pack in os.scandir(PACKS_FULL_PATH)]  # list of all packs from repo
 
     for entry in dir_entries:
         print(f"Current entry is: {entry}")
@@ -146,40 +150,34 @@ def get_zipped_packs_names(zip_path):
     return zipped_packs
 
 
-def download_packs_from_gcp(storage_bucket, gcp_path, destination_path, circle_build, branch_name):
+def download_packs_from_gcp(storage_bucket_name, gcp_path, destination_path, circle_build, branch_name):
     """
     Iterates over the Packs directory in the content repository and downloads each pack (if found) from a GCP bucket
     in parallel.
     Args:
-        storage_bucket: The GCP bucket to download from.
+        storage_bucket_name: The name of the GCP bucket to download from.
         gcp_path: The path of the packs in the GCP bucket.
         destination_path: The path to download the packs to.
         branch_name: The branch name of the build.
         circle_build: The number of the circle ci build.
-
-    Returns:
-        zipped_packs: A list of the downloaded packs paths and their corresponding pack names.
     """
-    # TODO: change to general case
     src_path = "gs://marketplace-dist-dev/" + gcp_path
-
-    # TODO: ADD - CHANGE SRC PATH
     # if gcp_path == BUILD_GCP_PATH:
-    #     src_path = os.path.join(gcp_path, branch_name, circle_build, 'content', 'packs')
+    #     src_path = os.path.join('gs://', storage_bucket_name, gcp_path, branch_name, circle_build, 'content', 'packs')
     # else:
-    #     src_path = os.path.join(gcp_path, branch_name, circle_build)
+    #     src_path = os.path.join('gs://', storage_bucket_name, gcp_path, branch_name, circle_build)
     #
     # if not branch_name or not circle_build:
     #     src_path = src_path.replace('/builds/content', '')
 
     try:
         process = subprocess.Popen(["Tests/scripts/cp_gcp_dir.sh", src_path, destination_path])
-        out, err = process.communicate()
-        # TODO: check what happens if you remove it
-        if out:
-            print("out" + out.decode('utf-8'))
-        if err:
-            print("err" + err.decode('utf-8'))
+        # out, err = process.communicate()
+        # # TODO: check what happens if you remove it
+        # if out:
+        #     print("out" + out.decode('utf-8'))
+        # if err:
+        #     print("err" + err.decode('utf-8'))
     except Exception as e:
         logging.critical(f"Failed to run cp_gcp_dir.sh, Error:{e}")
         sys.exit(1)
@@ -256,10 +254,6 @@ def main():
             os.mkdir(zip_path)
         artifacts_path = '/home/runner/work/content-private/content-private/content/artifacts'
 
-    # google cloud storage client initialized
-    storage_client = init_storage_client(service_account)
-    storage_bucket = storage_client.bucket('marketplace-dist-dev')
-
     if not circle_build or not branch_name:
         # Ignore build properties
         circle_build = ''
@@ -271,13 +265,13 @@ def main():
     zipped_packs = []
     success = True
     try:
-        download_packs_from_gcp(storage_bucket, gcp_path, zip_path, circle_build, branch_name)
+        download_packs_from_gcp(storage_bucket_name, gcp_path, zip_path, circle_build, branch_name)
     except Exception:
         logging.exception('Failed downloading packs')
         success = False
 
     try:
-        zipped_packs = get_zipped_packs_names(zip_path)
+        zipped_packs = get_zipped_packs_names(zip_path, gcp_path, circle_build)
     except Exception:
         logging.exception('No zip files were found')
         success = False
