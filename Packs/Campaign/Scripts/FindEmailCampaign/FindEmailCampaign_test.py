@@ -248,6 +248,7 @@ def test_context_not_populated_with_invalid_fields(mocker):
         for field in invalid_fields:
             assert field not in context_incident, f'the field "{field}" should not be stored in context'
 
+
 @pytest.mark.parametrize(
     'include_self', [True, False])
 def test_include_self_flag_on(mocker, include_self):
@@ -271,7 +272,7 @@ def test_include_self_flag_on(mocker, include_self):
     mocker.patch.object(demisto, 'results', side_effect=results)
     mocker.patch('FindEmailCampaign.summarize_email_body', mock_summarize_email_body)
     incident = create_incident(subject='subject', body='email body')
-    mocker.patch.object(demisto,'incident',return_value=incident)
+    mocker.patch.object(demisto, 'incident', return_value=incident)
     incidents_list = [incident]
     data = pd.DataFrame(incidents_list)
     return_campaign_details_entry(data, fields_to_display=[])
