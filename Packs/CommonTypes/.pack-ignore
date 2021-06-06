@@ -183,3 +183,18 @@ ignore=BA101
 
 [file:layoutscontainer-url.json]
 ignore=BA101
+
+[layoutscontainer-STIX_Tool.json]
+ignore=BA101
+
+[layoutscontainer-STIX_Report.json]
+ignore=BA101
+
+[layoutscontainer-STIX_Malware.json]
+ignore=BA101
+
+[layoutscontainer-STIX_Attack_Pattern.json]
+ignore=BA101
+
+[layoutscontainer-STIX_Threat_Actor.json]
+ignore=BA101
