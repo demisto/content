@@ -34,6 +34,7 @@ SOURCE_PATH="content/packs"
 PRIVATE_BUILD_BUCKET_PATH="content/builds/$GIT_BRANCH/$GITHUB_RUN_NUMBER"
 PRIVATE_TARGET_PATH="$PRIVATE_BUILD_BUCKET_PATH/content/packs"
 BUCKET_FULL_TARGET_PATH="$GCS_PRIVATE_TESTING_BUCKET/$PRIVATE_BUILD_BUCKET_PATH"
+CONTENT_FULL_TARGET_PATH="$GCS_PRIVATE_TESTING_BUCKET/$PRIVATE_BUILD_BUCKET_PATH/content"
 
 echo "Copying private master files at: $SOURCE_PATH to target path: gs://$GCS_PRIVATE_TESTING_BUCKET/$PRIVATE_TARGET_PATH ..."
 gsutil -m cp -r "gs://$GCS_PRIVATE_PROD_BUCKET/$SOURCE_PATH" "gs://$GCS_PRIVATE_TESTING_BUCKET/$PRIVATE_TARGET_PATH"
@@ -64,6 +65,7 @@ else
     NEW_EXTRACT_FOLDER_FOR_INDEX=$(mktemp -d)
     NEW_EXTRACT_FOLDER_FOR_ARTIFACTS=$(mktemp -d)
     python3 ./Tests/Marketplace/prepare_public_index_for_private_testing.py -b $GCS_TESTING_BUCKET -pb $GCS_PRIVATE_TESTING_BUCKET -n $GITHUB_RUN_NUMBER -e $NEW_EXTRACT_FOLDER_FOR_INDEX -sb $PUBLIC_TARGET_PATH -s $KF -p $NEW_PACK_NAME -a $PACK_ARTIFACTS -ea $NEW_EXTRACT_FOLDER_FOR_ARTIFACTS -di private/dummy_index
+    gsutil cp -z json $ARTIFACTS_FOLDER/id_set.json "gs://$CONTENT_FULL_TARGET_PATH"
     echo "Finished updating content packs successfully."
   fi
 fi
