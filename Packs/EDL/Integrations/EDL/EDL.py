@@ -39,7 +39,6 @@ NGINX_SERVER_CONF = '''
 server {
 
     listen $port default_server $ssl;
-    listen [::]:$port default_server $ssl;
 
     $sslcerts
 
@@ -556,13 +555,15 @@ def route_edl_values() -> Response:
         cache_refresh_rate=cache_refresh_rate,
     )
     query_time = (datetime.now(timezone.utc) - created).total_seconds()
-    edl_size = values.count('\n') + 1  # add 1 as last line doesn't have a \n
+    edl_size = 0
+    if values.strip():
+        edl_size = values.count('\n') + 1  # add 1 as last line doesn't have a \n
     max_age = ceil((datetime.now() - dateparser.parse(cache_refresh_rate)).total_seconds())
     demisto.debug(f'Returning edl of size: [{edl_size}], created: [{created}], query time seconds: [{query_time}],'
                   f' max age: [{max_age}]')
     resp = Response(values, status=200, mimetype='text/plain', headers=[
         ('X-EDL-Created', created.isoformat()),
-        ('X-EDL-Query-Time-Secs', str(query_time)),
+        ('X-EDL-Query-Time-Secs', "{:.3f}".format(query_time)),
         ('X-EDL-Size', str(edl_size))
     ])
     resp.cache_control.max_age = max_age
@@ -820,10 +821,13 @@ def run_long_running(params: Dict, is_test: bool = False):
         else:
             nginx_process = start_nginx_server(nginx_port, params)
             nginx_log_monitor = gevent.spawn(nginx_log_monitor_loop, nginx_process)
+            demisto.updateModuleHealth('')
             server.serve_forever()
     except Exception as e:
-        demisto.error(f'An error occurred: {str(e)}. Exception: {traceback.format_exc()}')
-        raise ValueError(str(e))
+        error_message = str(e)
+        demisto.error(f'An error occurred: {error_message}. Exception: {traceback.format_exc()}')
+        demisto.updateModuleHealth(f'An error occurred: {error_message}')
+        raise ValueError(error_message)
     finally:
         if nginx_process:
             try:
