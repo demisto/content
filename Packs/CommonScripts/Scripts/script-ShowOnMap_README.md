@@ -1,4 +1,4 @@
-Returns a map entry with marker on the given coordinate (lat, lng).
+Returns a map entry with a marker on the given coordinate (lat, lng).
 
 **Note**: To use the `address` field, please make sure you have set up an instance of the `GoogleMaps` integration.  
 
