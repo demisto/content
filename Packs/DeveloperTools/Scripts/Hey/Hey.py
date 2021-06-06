@@ -30,6 +30,7 @@ class HeyPerformanceResult:
             min_time = 0
             requests_num = 0
             total_time = 0
+            successful_responses = 0
         else:
             response_times = df['response-time']
             max_time = max(response_times)
@@ -37,6 +38,8 @@ class HeyPerformanceResult:
             avg_time = response_times.mean()
             requests_num = len(response_times)
             total_time = response_times.sum() / int(self._c)
+            status_codes = df['status-code']
+            successful_responses = len(tuple(code == 200 for code in status_codes))
         outputs = {
             "TimeoutPerRequest": self._t,
             "Concurrency": self._c,
@@ -44,7 +47,8 @@ class HeyPerformanceResult:
             "SlowestTime": max_time,
             "FastestTime": min_time,
             "AverageTime": avg_time,
-            "TotalTime": total_time
+            "TotalTime": total_time,
+            "SuccessfulResponses": successful_responses
         }
         outputs.update(self._ext_results_map)
         return CommandResults(outputs=outputs, outputs_prefix="Hey")
@@ -80,7 +84,7 @@ def run_hey_test(url: str, n: Optional[str] = None, t: Optional[str] = None, c: 
         z=z + 's' if z else None,
         o='csv'
     )
-    hey_query = f"hey " + " ".join(f"-{k} {v}" for k, v in hey_map.items()) + f' {url}'
+    hey_query = f"hey --disable-compression " + " ".join(f"-{k} {v}" for k, v in hey_map.items()) + f' {url}'
     result = run_command(hey_query)
     return HeyPerformanceResult(result=result, results_map=results_map, **hey_map).to_results()
 

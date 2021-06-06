@@ -53,7 +53,7 @@ tasks:
       "n":
         simple: ${inputs.n}
       results_map:
-        simple: ${inputs.results_map}
+        simple: "Type=IP"
       t:
         simple: ${inputs.t}
       url:
@@ -104,7 +104,7 @@ tasks:
       "n":
         simple: ${inputs.n}
       results_map:
-        simple: ${inputs.results_map}
+        simple: "Type=URL"
       t:
         simple: ${inputs.t}
       url:
@@ -152,7 +152,7 @@ tasks:
       "n":
         simple: ${inputs.n}
       results_map:
-        simple: ${inputs.results_map}
+        simple: "Type=Domain"
       t:
         simple: ${inputs.t}
       url:
