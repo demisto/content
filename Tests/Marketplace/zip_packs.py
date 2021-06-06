@@ -150,7 +150,6 @@ def get_zipped_packs_names(zip_path, gcp_path, circle_build):
 
     dir_entries = os.listdir(zip_path)
     packs_list = [pack.name for pack in os.scandir(PACKS_FULL_PATH)]  # list of all packs from repo
-    print(f"List of packs in repo is {', '.join(packs_list)}")
 
     for entry in dir_entries:
         entry_path = os.path.join(zip_path, entry)
