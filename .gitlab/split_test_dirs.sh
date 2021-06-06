@@ -3,7 +3,7 @@
 
 ARTIFACTS_FOLDER=${ARTIFACTS_FOLDER:-"./artifacts"}
 mkdir -p "$ARTIFACTS_FOLDER/test_groups"
-find Packs -name '*_test.py' | grep -E '^Packs/.*?/' --only-matching | uniq -c | sort -nr | grep -E 'Packs/.*$' --only-matching | uniq > "$ARTIFACTS_FOLDER/pack_dirs_list.txt"
+find Packs -name '*_test.py' | grep -E '^Packs/.*?/' --only-matching | uniq -c | sort -nr | grep -E 'Packs/.*$' --only-matching | uniq | cut -d'/' -f1,2 > "$ARTIFACTS_FOLDER/pack_dirs_list.txt"
 
 group=0
 parallel=8
