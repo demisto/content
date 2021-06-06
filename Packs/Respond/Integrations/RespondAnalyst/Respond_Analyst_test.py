@@ -528,13 +528,13 @@ def test_get_remote_data_command(requests_mock):
                 'ipaddress': '10.150.0.22',
                 'isinternal': False}],
             'malware': [{
-                'name': 'Ransom.Win32.CRYSIS.SM',
+                'name': 'name1',
                 'type': 'Ransomware',
-                'vendor': 'McAfee'},
+                'vendor': 'vendor'},
                 {
-                    'name': 'RAT.Win32.CRYSIS.SM',
+                    'name': 'name2',
                     'type': 'RAT',
-                    'vendor': 'McAfee'}],
+                    'vendor': 'vendor'}],
             "hashes": [{'hash': '44d88612fea8a8f36de82e1278abb02f'}],
             'accounts': [{
                 'domain': None,

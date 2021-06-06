@@ -65,14 +65,14 @@
   ],
   "malware": [
     {
-      "name": "Ransom.Win32.CRYSIS.SM",
+      "name": "name1",
       "type": "Ransomware",
-      "vendor": "McAfee"
+      "vendor": "vendor"
     },
     {
-      "name": "RAT.Win32.CRYSIS.SM",
+      "name": "name2",
       "type": "RAT",
-      "vendor": "McAfee"
+      "vendor": "vendor"
     }
   ],
   "signatures": [],
