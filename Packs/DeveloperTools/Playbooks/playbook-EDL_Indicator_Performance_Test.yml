@@ -1,0 +1,233 @@
+id: EDL Indicator Performance Test
+version: -1
+fromversion: 5.5.0
+name: EDL Indicator Performance Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 8b37eccd-7b68-4a35-880e-8e3cbb57206e
+    type: start
+    task:
+      id: 8b37eccd-7b68-4a35-880e-8e3cbb57206e
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: bb4249c9-06da-49c5-8ad1-093af683f520
+    type: regular
+    task:
+      id: bb4249c9-06da-49c5-8ad1-093af683f520
+      version: -1
+      name: Hey edl IP
+      scriptName: Hey
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      c:
+        simple: ${inputs.c}
+      "n":
+        simple: ${inputs.n}
+      results_map:
+        simple: "Type=IP"
+      t:
+        simple: ${inputs.t}
+      url:
+        complex:
+          root: inputs.url
+          transformers:
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: '&q=type:IP'
+      z:
+        simple: ${inputs.z}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 210
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: fea7febe-ea3d-46e4-8a90-b49022248265
+    type: regular
+    task:
+      id: fea7febe-ea3d-46e4-8a90-b49022248265
+      version: -1
+      name: Hey edl URL
+      scriptName: Hey
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      c:
+        simple: ${inputs.c}
+      "n":
+        simple: ${inputs.n}
+      results_map:
+        simple: "Type=URL"
+      t:
+        simple: ${inputs.t}
+      url:
+        complex:
+          root: inputs.url
+          transformers:
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: '&q=type:URL'
+      z:
+        simple: ${inputs.z}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 0a79181d-8964-47e8-862a-e90b6e0cc6c6
+    type: regular
+    task:
+      id: 0a79181d-8964-47e8-862a-e90b6e0cc6c6
+      version: -1
+      name: Hey edl Domain
+      scriptName: Hey
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      c:
+        simple: ${inputs.c}
+      "n":
+        simple: ${inputs.n}
+      results_map:
+        simple: "Type=Domain"
+      t:
+        simple: ${inputs.t}
+      url:
+        complex:
+          root: inputs.url
+          transformers:
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: '&q=type:Domain'
+      z:
+        simple: ${inputs.z}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 570
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 615,
+        "width": 380,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: url
+  value: {}
+  required: false
+  description: The URL of the EDL instance with with query in the end
+  playbookInputQuery: null
+- key: "n"
+  value: {}
+  required: false
+  description: ""
+  playbookInputQuery: null
+- key: t
+  value: {}
+  required: false
+  description: ""
+  playbookInputQuery: null
+- key: z
+  value: {}
+  required: false
+  description: ""
+  playbookInputQuery: null
+- key: results_map
+  value: {}
+  required: false
+  description: ""
+  playbookInputQuery: null
+- key: c
+  value: {}
+  required: false
+  description: Concurrent requests to be sent.
+  playbookInputQuery: null
+outputs:
+- contextPath: Hey
+  type: unknown
+sourceplaybookid: 37d1cfda-2d21-4eab-87fa-4449cf2f5427
+tests:
+- No test

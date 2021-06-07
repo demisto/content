@@ -1018,6 +1018,7 @@
         {
             "playbookID": "Test_EDL",
             "integrations": "EDL",
+            "instance_names": "edl_update",
             "fromversion": "5.5.0",
             "pid_threshold": 8
         },
@@ -3356,9 +3357,17 @@
             "fromversion": "5.5.0"
         },
         {
-            "integrations": "NetscoutAED",
-            "playbookID": "NetscoutAED-Test",
-            "fromversion": "5.5.0"
+            "playbookID": "EDL Performance Test",
+            "instance_names": "edl_auto",
+            "integrations": [
+                "EDL",
+                "Create-Mock-Feed-Relationships"
+            ],
+            "fromversion": "6.0.0",
+            "timeout": 6000,
+            "memory_threshold": 900,
+            "pid_threshold": 12,
+            "performance_result_dt": "EDLHey"
         }
     ],
     "skipped_tests": {
@@ -3665,7 +3674,8 @@
         "EWSO365": "oproxy dependent",
         "MISP V2": "Cleanup process isn't performed as expected.",
         "Azure Network Security Groups": "Has a command that sends parameters in the path",
-        "GitHub": "Cannot use proxy"
+        "GitHub": "Cannot use proxy",
+        "Create-Mock-Feed-Relationships": "recording is redundant for this integration"
     },
     "parallel_integrations": [
         "AWS - EC2",
@@ -3716,6 +3726,9 @@
         "GCP Whitelist Feed",
         "Cortex Data Lake",
         "Mail Listener v2"
+    ],
+    "performance_tests": [
+        "EDL Performance Test"
     ],
     "docker_thresholds": {
         

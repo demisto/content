@@ -1300,6 +1300,7 @@ def create_filter_envs_file(from_version: str, to_version: str, documentation_ch
             'Server 5.0': False,
             'Server 6.0': False,
         }
+    envs_to_test = {'Performance Server Master': True}  # TODO: repalce with non-stub
     # Releases are only relevant for non marketplace server versions, therefore - there is no need to create marketplace
     # server in release branches.
     if is_release_branch():
@@ -1398,6 +1399,7 @@ if __name__ == "__main__":
     parser.add_argument('-s', '--skip-save', type=tools.str2bool,
                         help='Skipping saving the test filter file (good for simply doing validation)')
     parser.add_argument('-p', '--changed_pack_path', type=str, help='A string representing the changed files')
+    # TODO: Add argument for performance that collects all performance tests
     options = parser.parse_args()
 
     # Create test file based only on committed files

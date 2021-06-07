@@ -1,0 +1,1149 @@
+id: EDL Performance Test
+version: -1
+fromversion: 6.0.0
+name: EDL Performance Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 2eb9ddd0-ccf2-4f2a-87b7-fa3d85dbadae
+    type: start
+    task:
+      id: 2eb9ddd0-ccf2-4f2a-87b7-fa3d85dbadae
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 9418d23c-443f-4b4c-85cd-547c437aa5bd
+    type: regular
+    task:
+      id: 9418d23c-443f-4b4c-85cd-547c437aa5bd
+      version: -1
+      name: Clear Context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      all:
+        simple: "yes"
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 1076862d-ae4a-4255-8c98-859cd020e4f9
+    type: title
+    task:
+      id: 1076862d-ae4a-4255-8c98-859cd020e4f9
+      version: -1
+      name: 10,000 Indicators
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2820
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 10dbaa6b-47a6-480a-8a11-4d606c011d8e
+    type: playbook
+    task:
+      id: 10dbaa6b-47a6-480a-8a11-4d606c011d8e
+      version: -1
+      name: EDL Performance Test - Concurrency
+      playbookName: EDL Performance Test - Concurrency
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      "n":
+        simple: ${inputs.n}
+      url:
+        complex:
+          root: ServerURL
+          transformers:
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: ?n=10000
+      z:
+        simple: ${inputs.z}
+    separatecontext: false
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2965
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 6e631bba-210b-49c3-8ddc-4006a454a40a
+    type: playbook
+    task:
+      id: 6e631bba-210b-49c3-8ddc-4006a454a40a
+      version: -1
+      name: EDL Performance Test - Concurrency
+      playbookName: EDL Performance Test - Concurrency
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      url:
+        complex:
+          root: ServerURL
+          transformers:
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: ?n=50000
+    separatecontext: false
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3635
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 4f4bda2f-7322-44be-879e-1639abd40fe7
+    type: title
+    task:
+      id: 4f4bda2f-7322-44be-879e-1639abd40fe7
+      version: -1
+      name: 50,000 Indicators
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3490
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 35507e73-efd2-4aaa-8fa5-c3296820bd82
+    type: title
+    task:
+      id: 35507e73-efd2-4aaa-8fa5-c3296820bd82
+      version: -1
+      name: 100,000 Indicators
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4160
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: 9a5ef27f-b926-44d6-82ab-bab7f7159549
+    type: playbook
+    task:
+      id: 9a5ef27f-b926-44d6-82ab-bab7f7159549
+      version: -1
+      name: EDL Performance Test - Concurrency
+      playbookName: EDL Performance Test - Concurrency
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      url:
+        complex:
+          root: ServerURL
+          transformers:
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: ?n=50000
+    separatecontext: false
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4305
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: 9823e492-a8ac-4e0f-852a-b0012feeb71f
+    type: regular
+    task:
+      id: 9823e492-a8ac-4e0f-852a-b0012feeb71f
+      version: -1
+      name: Set Small Outputs
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      key:
+        simple: EDLHey.Small
+      value:
+        simple: ${Hey}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3140
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: dcc11d96-e0df-4645-8ebb-5f48d580cd9c
+    type: regular
+    task:
+      id: dcc11d96-e0df-4645-8ebb-5f48d580cd9c
+      version: -1
+      name: Clear Hey Context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      all:
+        simple: "no"
+      key:
+        simple: Hey
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3315
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: 71e346aa-cafa-4722-8d11-83771646f766
+    type: regular
+    task:
+      id: 71e346aa-cafa-4722-8d11-83771646f766
+      version: -1
+      name: Set Medium Outputs
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      key:
+        simple: EDLHey.Meduim
+      value:
+        simple: ${Hey}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3810
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: 576cec4e-952f-4898-8a43-d290794a9d65
+    type: regular
+    task:
+      id: 576cec4e-952f-4898-8a43-d290794a9d65
+      version: -1
+      name: Clear Hey Context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      all:
+        simple: "no"
+      key:
+        simple: Hey
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3985
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: f08e3e3b-f4ab-427d-8ed7-3ffff340becc
+    type: regular
+    task:
+      id: f08e3e3b-f4ab-427d-8ed7-3ffff340becc
+      version: -1
+      name: Set Large Outputs
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      key:
+        simple: EDLHey.Large
+      value:
+        simple: ${Hey}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4480
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: c4db1a84-b7d7-4238-8eab-3af7174d3806
+    type: regular
+    task:
+      id: c4db1a84-b7d7-4238-8eab-3af7174d3806
+      version: -1
+      name: Clear Hey Context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      all:
+        simple: "no"
+      key:
+        simple: Hey
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4655
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: b65aa856-4fd4-401d-8f9e-ea8d923defdd
+    type: regular
+    task:
+      id: b65aa856-4fd4-401d-8f9e-ea8d923defdd
+      version: -1
+      name: Check IP Is Ready
+      description: Returns, whether there're, are enough indicators in the system.
+      scriptName: VerifyEnoughIndicators
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      query:
+        simple: type:IP
+      size:
+        simple: ${inputs.iocs_in_xsoar}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: 278af3d2-10fb-440c-833b-faafbd0622dd
+    type: condition
+    task:
+      id: 278af3d2-10fb-440c-833b-faafbd0622dd
+      version: -1
+      name: Verify IP Is Ready
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "17"
+      "yes":
+      - "16"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isTrue
+          left:
+            value:
+              simple: IndicatorsCheck.ConditionMet
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "16":
+    id: "16"
+    taskid: 27fb58d9-ee50-4dc1-8c3b-160343aa698b
+    type: regular
+    task:
+      id: 27fb58d9-ee50-4dc1-8c3b-160343aa698b
+      version: -1
+      name: Clear Context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "18"
+    scriptarguments:
+      all:
+        simple: "yes"
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: 7a127cae-5c09-447b-80e1-4ffc2bd8ed3f
+    type: playbook
+    task:
+      id: 7a127cae-5c09-447b-80e1-4ffc2bd8ed3f
+      version: -1
+      name: GenericPolling
+      description: |-
+        Use this playbook as a sub-playbook to block execution of the master playbook until a remote action is complete.
+        This playbook implements polling by continuously running the command in Step \#2 until the operation completes.
+        The remote action should have the following structure:
+
+        1. Initiate the operation.
+        2. Poll to check if the operation completed.
+        3. (optional) Get the results of the operation.
+      playbookName: GenericPolling
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      AdditionalPollingCommandArgNames:
+        simple: size
+      AdditionalPollingCommandArgValues:
+        simple: ${inputs.iocs_in_xsoar}
+      Ids:
+        simple: type:IP
+      Interval:
+        simple: "1"
+      PollingCommandArgName:
+        simple: query
+      PollingCommandName:
+        simple: VerifyEnoughIndicators
+      Timeout:
+        simple: "10"
+      dt:
+        simple: IndicatorsCheck(val.ConditionMet !== true).Query
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: 2e890bb8-a0ac-4a48-802d-cdf70ea36a61
+    type: regular
+    task:
+      id: 2e890bb8-a0ac-4a48-802d-cdf70ea36a61
+      version: -1
+      name: Check Domain Is Ready
+      description: Returns, whether there're, are enough indicators in the system.
+      scriptName: VerifyEnoughIndicators
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      query:
+        simple: type:Domain
+      size:
+        simple: ${inputs.iocs_in_xsoar}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "19":
+    id: "19"
+    taskid: 636a581d-84f7-444f-8a08-68dad3bf9330
+    type: condition
+    task:
+      id: 636a581d-84f7-444f-8a08-68dad3bf9330
+      version: -1
+      name: Verify Domain Is Ready
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "21"
+      "yes":
+      - "20"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isTrue
+          left:
+            value:
+              simple: IndicatorsCheck.ConditionMet
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "20":
+    id: "20"
+    taskid: 392a8f1f-19c6-48f7-863f-69519804e184
+    type: regular
+    task:
+      id: 392a8f1f-19c6-48f7-863f-69519804e184
+      version: -1
+      name: Clear Context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "22"
+    scriptarguments:
+      all:
+        simple: "yes"
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "21":
+    id: "21"
+    taskid: ffd406a0-04c5-4846-890b-36f6eddc270f
+    type: playbook
+    task:
+      id: ffd406a0-04c5-4846-890b-36f6eddc270f
+      version: -1
+      name: GenericPolling
+      description: |-
+        Use this playbook as a sub-playbook to block execution of the master playbook until a remote action is complete.
+        This playbook implements polling by continuously running the command in Step \#2 until the operation completes.
+        The remote action should have the following structure:
+
+        1. Initiate the operation.
+        2. Poll to check if the operation completed.
+        3. (optional) Get the results of the operation.
+      playbookName: GenericPolling
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "20"
+    scriptarguments:
+      AdditionalPollingCommandArgNames:
+        simple: size
+      AdditionalPollingCommandArgValues:
+        simple: ${inputs.iocs_in_xsoar}
+      Ids:
+        simple: type:Domain
+      Interval:
+        simple: "1"
+      PollingCommandArgName:
+        simple: query
+      PollingCommandName:
+        simple: VerifyEnoughIndicators
+      Timeout:
+        simple: "10"
+      dt:
+        simple: IndicatorsCheck(val.ConditionMet !== true).Query
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "22":
+    id: "22"
+    taskid: cebb39e4-4109-4b3c-8fc2-ea773a81f5a2
+    type: regular
+    task:
+      id: cebb39e4-4109-4b3c-8fc2-ea773a81f5a2
+      version: -1
+      name: Check URL Is Ready
+      description: Returns, whether there're, are enough indicators in the system.
+      scriptName: VerifyEnoughIndicators
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "24"
+    scriptarguments:
+      query:
+        simple: type:URL
+      size:
+        simple: ${inputs.iocs_in_xsoar}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "23":
+    id: "23"
+    taskid: 3f0abebd-024d-42a5-86a2-c142ee96e775
+    type: regular
+    task:
+      id: 3f0abebd-024d-42a5-86a2-c142ee96e775
+      version: -1
+      name: Clear Context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "28"
+    scriptarguments:
+      all:
+        simple: "no"
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2295
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "24":
+    id: "24"
+    taskid: df125a0e-2738-4ca8-8f9a-80d512f06ce2
+    type: condition
+    task:
+      id: df125a0e-2738-4ca8-8f9a-80d512f06ce2
+      version: -1
+      name: Verify URL Is Ready
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "25"
+      "yes":
+      - "23"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isTrue
+          left:
+            value:
+              simple: IndicatorsCheck.ConditionMet
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1945
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "25":
+    id: "25"
+    taskid: a7c13bdf-f1e9-486a-8976-cab792f9bc4f
+    type: playbook
+    task:
+      id: a7c13bdf-f1e9-486a-8976-cab792f9bc4f
+      version: -1
+      name: GenericPolling
+      description: |-
+        Use this playbook as a sub-playbook to block execution of the master playbook until a remote action is complete.
+        This playbook implements polling by continuously running the command in Step \#2 until the operation completes.
+        The remote action should have the following structure:
+
+        1. Initiate the operation.
+        2. Poll to check if the operation completed.
+        3. (optional) Get the results of the operation.
+      playbookName: GenericPolling
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "23"
+    scriptarguments:
+      AdditionalPollingCommandArgNames:
+        simple: size
+      AdditionalPollingCommandArgValues:
+        simple: ${inputs.iocs_in_xsoar}
+      Ids:
+        simple: type:URL
+      Interval:
+        simple: "1"
+      PollingCommandArgName:
+        simple: query
+      PollingCommandName:
+        simple: VerifyEnoughIndicators
+      Timeout:
+        simple: "10"
+      dt:
+        simple: IndicatorsCheck(val.ConditionMet !== true).Query
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 2120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "27":
+    id: "27"
+    taskid: cd4abc13-d518-4934-803f-4a6fa7a70f38
+    type: regular
+    task:
+      id: cd4abc13-d518-4934-803f-4a6fa7a70f38
+      version: -1
+      name: Set URL
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      key:
+        simple: ServerURL
+      value:
+        complex:
+          root: ServerURL
+          accessor: URL
+          transformers:
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: /instance/execute/
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: inputs.edl_name
+                iscontext: true
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: /
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2645
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "28":
+    id: "28"
+    taskid: aabc615a-cae3-424a-8f7d-c6e0476eecfb
+    type: regular
+    task:
+      id: aabc615a-cae3-424a-8f7d-c6e0476eecfb
+      version: -1
+      name: Get Server URL
+      description: Get the Server URL.
+      scriptName: GetServerURL
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "27"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 4700,
+        "width": 492.5,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: edl_name
+  value:
+    simple: edl
+  required: false
+  description: EDL instance URL.
+  playbookInputQuery: null
+- key: z
+  value: {}
+  required: false
+  description: Duration of application to send requests.
+  playbookInputQuery: null
+- key: "n"
+  value: {}
+  required: false
+  description: The number of requests to run. Default is 200.
+  playbookInputQuery: null
+- key: iocs_in_xsoar
+  value:
+    simple: "333333"
+  required: false
+  description: Expected number of indicators in the system.
+  playbookInputQuery: null
+outputs: []
