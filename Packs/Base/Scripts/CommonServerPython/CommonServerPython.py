@@ -7702,12 +7702,12 @@ def support_multithreading():
     :rtype: ``None``
     """
 
-    class MultithreadedDemisto(Demisto):
+    class MultithreadedDemisto(Demisto):  # type: ignore
         lock = Lock()
         def __do(self, cmd):
             try:
-                if self.lock.acquire(timeout=60):
-                    super().__do(cmd)
+                if self.lock.acquire(timeout=60):  # type: ignore[call-arg]
+                    super().__do(cmd)  # type: ignore[call-arg]
             finally:
                 self.lock.release()
 
