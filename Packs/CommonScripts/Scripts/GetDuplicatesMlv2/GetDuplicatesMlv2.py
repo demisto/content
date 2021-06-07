@@ -268,7 +268,7 @@ class Utils():
 
     @staticmethod
     def extract_domain_from_url(url):
-        extract = tldextract.TLDExtract(cache_file='/tmp/.tld_set')
+        extract = tldextract.TLDExtract(cache_dir='/tmp/.tld_set')
         domain = extract(url).domain.lower()
         suffix = extract(url).suffix.lower()
         if len(domain) > 0 and len(suffix) > 0:
