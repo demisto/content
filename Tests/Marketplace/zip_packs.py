@@ -147,6 +147,7 @@ def get_zipped_packs_names(zip_path, gcp_path, circle_build):
         zip_path = os.path.join(zip_path, 'packs')  # directory of the packs
     elif circle_build:
         zip_path = os.path.join(zip_path, circle_build)  # directory of the packs
+        zip_path = zip_path.rstrip(os.path.sep)
 
     dir_entries = os.listdir(zip_path)
     print(f'zip path is: {zip_path}')
@@ -187,14 +188,12 @@ def download_packs_from_gcp(storage_bucket_name, gcp_path, destination_path, cir
         print(f"1. src path is:{src_path}")
     else:
         src_path = os.path.join('gs://', storage_bucket_name, gcp_path, branch_name, circle_build)
-        print(f"gcp_path={gcp_path}")
-        print(f"branch_name={branch_name}")
-        print(f"branch_name={circle_build}")
-        print(f"2. src path is:{src_path}")
+        src_path = src_path.rstrip(os.path.sep)
 
     if not branch_name or not circle_build:
         src_path = src_path.replace('/builds/content', '')
-    print(f"3.src path is:{src_path}")
+
+    print(f"src path is:{src_path}")
     print(f"dest path is:{destination_path}")
     process = subprocess.check_output(["Tests/scripts/cp_gcp_dir.sh", src_path, destination_path])
     if process:
