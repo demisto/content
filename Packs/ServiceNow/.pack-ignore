@@ -13,6 +13,9 @@ ignore=BA101
 [file:ServiceNow_CMDB.yml]
 ignore=BA108,BA109
 
+[file:README.md]
+ignore=RM106
+
 [file:classifier-mapper-ServiceNow_Create_Ticket_-_Incoming_Mapper.json]
 ignore=BA101
 

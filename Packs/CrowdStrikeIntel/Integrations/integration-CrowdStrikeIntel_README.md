@@ -6,7 +6,7 @@
 <li>Search files, URLs, domains, and IP addresses, for malware.</li>
 <li>Create indicator based reports.</li>
 </ul>
-<h2>Configure CrowdStrike Falcon Intelligence v2 on Demisto</h2>
+<h2>Configure CrowdStrike Falcon Intelligence v2 on Cortex XSOAR</h2>
 <ol>
 <li>Navigate to <strong>Settings</strong> &gt; <strong>Integrations</strong> &gt; <strong>Servers &amp; Services</strong>.</li>
 <li>Search for Falcon Intel v2.</li>
@@ -28,7 +28,7 @@
 <li>Click <strong>Test</strong> to validate the URLs and token.</li>
 </ol>
 <h2>Commands</h2>
-<p>You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
+<p>You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
 <ol>
 <li><a href="#h_27836259351531206474006">Check file for malware: file</a></li>
 <li><a href="#h_929507814711531206482007">Check URL for malware: url</a></li>

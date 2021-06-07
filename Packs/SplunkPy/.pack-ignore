@@ -1,5 +1,11 @@
 [file:SplunkPy.yml]
 ignore=IN126,IN135
 
+[file:README.md]
+ignore=RM106
+
+[file:playbook-Splunk_Indicator_Hunting_README.md]
+ignore=RM106
+
 [file:classifier-mapper-incoming-SplunkPy.json]
 ignore=BA101

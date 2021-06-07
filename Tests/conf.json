@@ -7,8 +7,7 @@
             "integrations": [
                 "WildFire-v2"
             ],
-            "playbookID": "Detonate File - WildFire - Test",
-            "is_mockable": false
+            "playbookID": "Detonate File - WildFire - Test"
         },
         {
             "integrations": "Microsoft Teams Management",
@@ -1198,8 +1197,7 @@
         },
         {
             "integrations": "WildFire-v2",
-            "playbookID": "Detonate URL - WildFire-v2 - Test",
-            "is_mockable": false
+            "playbookID": "Detonate URL - WildFire-v2 - Test"
         },
         {
             "integrations": "WildFire-v2",
@@ -1318,10 +1316,6 @@
             "playbookID": "Intezer Testing v2",
             "fromversion": "4.1.0",
             "timeout": 600
-        },
-        {
-            "integrations": "FalconIntel",
-            "playbookID": "CrowdStrike Falcon Intel v2"
         },
         {
             "integrations": [
@@ -1971,7 +1965,7 @@
         {
             "integrations": "FireEye HX",
             "playbookID": "FireEye HX Test",
-            "timeout": 500
+            "timeout": 800
         },
         {
             "integrations": "FireEyeFeed",
@@ -3267,6 +3261,10 @@
             ]
         },
         {
+            "integrations": "HostIo",
+            "playbookID": "HostIo_Test"
+        },
+        {
             "playbookID": "CreateCertificate-Test",
             "fromversion": "5.5.0"
         },
@@ -3314,6 +3312,16 @@
             "timeout": 1000
         },
         {
+            "integrations": "CrowdstrikeFalcon",
+            "playbookID": "Get endpoint details - Generic - test",
+            "fromversion": "5.5.0"
+        },
+        {
+            "integrations": "CrowdstrikeFalcon",
+            "playbookID": "Isolate and unisolate endpoint - test",
+            "fromversion": "5.5.0"
+        },
+        {
             "integrations": "VirusTotal - Premium (API v3)",
             "playbookID": "VirusTotal Premium v3 TestPlaybook",
             "fromversion": "5.5.0"
@@ -3345,6 +3353,11 @@
         {
             "integrations": "ThreatExchange v2",
             "playbookID": "ThreatExchangeV2-test",
+            "fromversion": "5.5.0"
+        },
+        {
+            "integrations": "NetscoutAED",
+            "playbookID": "NetscoutAED-Test",
             "fromversion": "5.5.0"
         }
     ],
@@ -3393,7 +3406,6 @@
         "AttackIQ - Test": "Issue 29774",
         "Azure Compute - Test": "Issue 28056",
         "forcepoint test": "Issue 28043",
-        "CanaryTools Test": "Issue 30796",
         "Test-VulnDB": "Issue 30875",
         "Malware Domain List Active IPs Feed Test": "Issue 30878",
         "CuckooTest": "Issue 25601",
@@ -3444,7 +3456,9 @@
         "Service Desk Plus - Generic Polling Test": "Issue 30798",
         "Pwned v2 test": "Issue 26601",
         "TestEmailRepIOPlaybook": "Issue 33219",
-        "get_original_email_-_ews-_test": "Issue 27571"
+        "get_original_email_-_ews-_test": "Issue 27571",
+        "PANW Threat Vault - Signature Search - Test": "Issue 30930",
+        "TAXII_Feed_Test": "Issue 37588"
     },
     "skipped_integrations": {
         
