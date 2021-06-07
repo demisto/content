@@ -364,8 +364,7 @@ def option_handler():
     parser.add_argument('-inf', '--is_infra_run',
                         help="Whether the upload run is an infrastructure one / nightly, or there are actual changes",
                         required=False, type=str2bool, default=False)
-    parser.add_argument('-bn', '--branch_name', help="Name of the branch CI is being ran on.",
-                        default='compress-private-id-set')
+    parser.add_argument('-bn', '--branch_name', help="Name of the branch CI is being ran on.", default='unknown')
     parser.add_argument('-o', '--override_all_packs', help="Override all existing packs in cloud storage",
                         default=False, action='store_true', required=False)
     parser.add_argument('-k', '--key_string', help="Base64 encoded signature key used for signing packs.",
