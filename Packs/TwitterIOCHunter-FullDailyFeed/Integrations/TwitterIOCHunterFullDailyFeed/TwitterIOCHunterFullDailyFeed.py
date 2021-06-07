@@ -10,7 +10,7 @@ def test_module(client):
         return 'Test failed: ' + str(result)
 
 
-def findtypeandvalue(indicatordata):
+def find_type_and_value(indicatordata):
     if len(indicatordata.get('sha256')) > 0:
         return 'File SHA-256', indicatordata.get('sha256')
     elif len(indicatordata.get('md5')) > 0:
@@ -33,12 +33,12 @@ def get_indicators_command(client):
     listofindicators = []
     result = client._http_request('GET', '/')
     for item in result:
-        typeofindicator, valueofindicator = findtypeandvalue(item)
+        typeofindicator, valueofindicator = find_type_and_value(item)
         for newitem in valueofindicator:
             data = {'type': typeofindicator,
                     'value': newitem,
                     'service': 'Twitter IOC Hunter',
-                    'rawJSON': {'reference': item['reference'], 'tweet': item['tweet']},
+                    'rawJSON': {'reference': item.get('reference'), 'tweet': item.get('tweet')},
                     'score': 3
                     }
         listofindicators.append(data)
