@@ -239,7 +239,7 @@ class Client(BaseClient):
                      ip_only: bool, object_type: str):
         body = {'limit': limit, 'offset': offset, 'filter': filter_search,
                 "ip-only": ip_only, 'type': object_type}
-        return self._http_request(method='POST', url_suffix='v1.5/show-objects',
+        return self._http_request(method='POST', url_suffix='show-objects',
                                   headers=self.headers, json_data=body)
 
     def list_application_site_categories(self, limit: int, offset: int):
