@@ -3358,6 +3358,11 @@
             "integrations": "ThreatExchange v2",
             "playbookID": "ThreatExchangeV2-test",
             "fromversion": "5.5.0"
+        },
+        {
+            "integrations": "NetscoutAED",
+            "playbookID": "NetscoutAED-Test",
+            "fromversion": "5.5.0"
         }
     ],
     "skipped_tests": {
