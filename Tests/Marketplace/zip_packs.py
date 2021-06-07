@@ -187,6 +187,9 @@ def download_packs_from_gcp(storage_bucket_name, gcp_path, destination_path, cir
         print(f"1. src path is:{src_path}")
     else:
         src_path = os.path.join('gs://', storage_bucket_name, gcp_path, branch_name, circle_build)
+        print(f"gcp_path={gcp_path}")
+        print(f"branch_name={branch_name}")
+        print(f"branch_name={circle_build}")
         print(f"2. src path is:{src_path}")
 
     if not branch_name or not circle_build:
