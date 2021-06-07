@@ -10,7 +10,7 @@ In order to use this integration you need the following:
 #### BASE_URL
 The base URL would be of the [Query.AI Proxy](https://proxy.query.ai:443) . Replace with hostname and port of the Query.AI Proxy component running in your environment.
 
-## Configure Query.AI on Demisto
+## Configure Query.AI on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
 2. Search for **Query.AI**.
@@ -30,7 +30,7 @@ The base URL would be of the [Query.AI Proxy](https://proxy.query.ai:443) . Repl
 
 
 ## Commands
-You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.
+You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 1. [Returns response for the query being run on Query.AI: queryai-run-query](#1-queryai-run-query)
