@@ -52,7 +52,8 @@ args:
   name: disableHeaders
   required: false
   secret: false
-comment: Parse Sane-json-reports and export them as pdf files (used internally).
+comment: Deprecated. No available replacement. Parse Sane-json-reports and export them as pdf files (used internally, thus
+  deprecated).
 commonfields:
   id: SanePdfReports
   version: -1
