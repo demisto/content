@@ -1,4 +1,4 @@
-category: Utilities
+category: Vulnerability Management
 commonfields:
   id: Cyberpion
   version: -1
@@ -75,7 +75,7 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: Vulnerabilities management
+description: The Cyberpion integration allows you to seamlessly receive all your Cyberpion security solution Action Items and supportive information to your Cortex XSOAR.
 display: Cyberpion
 name: Cyberpion
 script:
@@ -167,7 +167,7 @@ script:
     - contextPath: Cyberpion.DomainState.discovery_date
       description: The Date domain was discovered
       type: Date
-  dockerimage: demisto/python3:3.9.5.20070
+  dockerimage: demisto/python3:3.9.5.20958
   feed: false
   isfetch: true
   longRunning: false

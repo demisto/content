@@ -106,7 +106,7 @@ class Client(BaseClient):
         http_responses = []
         # call API
         params['page'] = str(1)
-        demisto.debug(f'getting action items, page num: {page_num}, domain={domain}')
+        demisto.debug(f'getting action items, domain={domain}')
         http_response = self._http_request(
             method='GET',
             url_suffix='/actionitems/',
@@ -118,7 +118,7 @@ class Client(BaseClient):
             backoff_factor=BACKOFF_FACTOR,
             raise_on_status=True
         )
-        demisto.debug(f'after getting action items, page num: {page_num}, domain={domain}')
+        demisto.debug(f'after getting action items, domain={domain}')
         if 'results' not in http_response:
             raise Exception('failed to read action items.\nError: got response without \'results\' key')
         results = http_response['results']
@@ -347,7 +347,6 @@ def get_domain_action_items_command(client: Client, args: Dict[str, Any], min_se
     demisto.debug(f'finished creating table data for domain {domain}. returning command result')
     return CommandResults(
         readable_output=markdown,
-        # outputs_prefix='Cyberpion.DomainData.vulnerabilities',
         outputs_prefix='Cyberpion.DomainData',
         outputs_key_field='id',
         outputs=domain_data
@@ -422,7 +421,7 @@ def main() -> None:
             # saves next_run for the time fetch-incidents is invoked
             demisto.setLastRun(new_last_run_dict)
         else:
-            raise NotImplemented(f'no such command: {demisto.command()}')
+            raise NotImplementedError(f'no such command: {demisto.command()}')
 
     # Log exceptions and return errors
     except Exception as e:
