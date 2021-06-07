@@ -189,7 +189,8 @@ def download_packs_from_gcp(storage_bucket_name, gcp_path, destination_path, cir
 
     if not branch_name or not circle_build:
         src_path = src_path.replace('/builds/content', '')
-
+    print(f"src path is:{src_path}")
+    print(f"dest path is:{destination_path}")
     try:
         process = subprocess.Popen(["Tests/scripts/cp_gcp_dir.sh", src_path, destination_path])
         out, err = process.communicate()
