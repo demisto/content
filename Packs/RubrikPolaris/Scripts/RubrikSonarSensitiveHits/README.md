@@ -7,7 +7,7 @@ Shows the Rubrik Polaris Sonar data classification results.
 | --- | --- |
 | Script Type | python3 |
 | Tags | dynamic-section, field-change-triggered |
-| Demisto Version | 6.0.0 |
+| Cortex XSOAR Version | 6.0.0 |
 
 ## Inputs
 ---
