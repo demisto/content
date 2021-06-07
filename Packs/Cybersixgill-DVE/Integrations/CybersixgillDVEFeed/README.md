@@ -30,14 +30,14 @@ To obtain access to Cybersixgill DVE Score feed via Cortex XSOAR, please contact
 ## Commands
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
-### sixgill-get-indicators
+### sixgill-get-dve-feed
 ***
 Fetching Sixgill DVE Feed indicators
 
 
 #### Base Command
 
-`sixgill-get-indicators`
+`sixgill-get-dve-feed`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
