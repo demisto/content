@@ -13,6 +13,6 @@ subtype: python3
 tags:
 - preProcessing
 type: python
-fromversion: 5.5.0
+fromversion: 6.0.0
 tests:
 - No tests (auto formatted)
