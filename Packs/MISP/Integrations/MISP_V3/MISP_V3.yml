@@ -1028,7 +1028,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Adds an OSINT feed.
+    description: Adds an OSINT feed. Only feeds from format misp are allowed (i.e have manifest.json).
     execution: false
     name: misp-add-events-from-feed
     outputs:

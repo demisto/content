@@ -1146,20 +1146,19 @@ def add_events_from_feed(pymisp: ExpandedPyMISP, demisto_args: dict, use_ssl: bo
         events_numbers = list()  # type: List[Dict[str, int]]
         for num, uri in enumerate(uri_list, 1):
             req = requests.get(f'{url}/{uri}.json', verify=use_ssl, headers=headers, proxies=proxies).json()
-            event = pymisp.add_event(req)
-            if 'id' in event:
-                events_numbers.append({'ID': event['id']})
+            e = MISPEvent()
+            e.load(req)
+            event = pymisp.add_event(e)
+            event_data = event.get('Event')
+            if event_data and 'id' in event_data:
+                events_numbers.append({'ID': event_data['id']})
             else:
                 not_added_counter += 1
             # If limit exists
             if limit_int == num:
                 break
 
-        human_readable = tableToMarkdown(
-            f'Total of {len(events_numbers)} events was added to MISP.',
-            events_numbers,
-            headers='Event IDs'
-        )
+        human_readable = tableToMarkdown(f'Total of {len(events_numbers)} events was added to MISP.', events_numbers)
         if not_added_counter:
             human_readable = f'{human_readable}\n' \
                              f'{not_added_counter} events were not added. Might already been added earlier.'
@@ -1171,8 +1170,8 @@ def add_events_from_feed(pymisp: ExpandedPyMISP, demisto_args: dict, use_ssl: bo
             outputs=events_numbers,
         )
 
-    except ValueError:
-        return_error(f'URL [{url}] is not a valid MISP feed')
+    except ValueError as e:
+        return_error(f'URL [{url}] is not a valid MISP feed. error: {e}')
 
 
 def add_object(event_id: str, obj: MISPObject, pymisp: ExpandedPyMISP):
@@ -1227,6 +1226,31 @@ def add_domain_object(pymisp: ExpandedPyMISP, demisto_args: dict = {}):
     for ip in ips:
         obj.add_attribute('ip', value=ip)
     obj.add_attribute('domain', value=domain)
+    for arg in args:
+        value = demisto_args.get(arg)
+        if value:
+            obj.add_attribute(arg, value=value)
+    return add_object(event_id, obj, pymisp)
+
+
+def add_file_object(pymisp: ExpandedPyMISP, demisto_args: dict = {}):
+    """Adds a file object to MISP
+
+    """
+    args = ['text', 'creation_date', 'first_seen', 'last_seen']
+    event_id = demisto_args.get('event_id')
+    file_encoding = demisto_args.get('file_encoding')
+    file_name = demisto_args.get('filename')
+    full_path = demisto_args.get('full_path')
+    md5 = demisto_args.get('md5')
+    mimetype = demisto_args.get('mimetype')
+    sha1 = demisto_args.get('sha1')
+    sha256 = demisto_args.get('sha256')
+    size = demisto_args.get('size')
+    state = demisto_args.get('state')
+    text = demisto_args.get('text')
+    obj = MISPObject('file')
+    obj.add_attribute('file', value=domain)
     for arg in args:
         value = demisto_args.get(arg)
         if value:
@@ -1363,7 +1387,8 @@ def main():
         elif command == 'misp-add-tag':
             return_results(add_tag(demisto_args=args, pymisp=pymisp, data_keys_to_save=data_keys_to_save))  # checked V
         elif command == 'misp-add-events-from-feed':
-            return_results(add_events_from_feed(demisto_args=args, pymisp=pymisp, use_ssl=verify, proxies=proxies))
+            return_results(
+                add_events_from_feed(demisto_args=args, pymisp=pymisp, use_ssl=verify, proxies=proxies))  # checked V
         elif command == 'file':
             get_files_events()
         elif command == 'url':
@@ -1381,6 +1406,8 @@ def main():
             return_results(add_ip_object(demisto_args=args, pymisp=pymisp))  # checked V - split into sub-funcs
         elif command == 'misp-add-object':
             return_results(add_generic_object_command(demisto_args=args, pymisp=pymisp))  # checked V
+        elif command == 'misp-add-file-object':
+            return_results(add_file_object(demisto_args=args, pymisp=pymisp))  # checked
     except PyMISPError as e:
         return_error(e.message)
     except Exception as e:
