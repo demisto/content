@@ -35,22 +35,20 @@ class Client(BaseClient):
                     publications.append({
                         'timestamp': indicator.get('published'),
                         'link': indicator.get('link'),
-                        'source': self.base_url,
+                        'source': self._base_url,
                         'title': indicator.get('title')
                     })
-                    text = self.get_url_content(indicator.get('link'))
+                    # text = self.get_url_content(indicator.get('link'))
                     indicator_obj = {
                         "type": 'Report',
                         "value": indicator.get('title'),
-                        'Publications': publications,
-                        'description': text,
-                        "summary": indicator.get('summary'),
-                        "rawJSON": {
-                            'value': indicator,
-                            'type': 'Report',
-                            "firstseenbysource": published_iso,
-                        },
-                        'fields': {'tags': self.feed_tags}
+                        "rawJSON": {'value': indicator, 'type': 'Report', "firstseenbysource": published_iso},
+                        "fields": {
+                            'publications': publications,
+                            'description': 'tal',
+                            "summary": indicator.get('summary'),
+                            'tags': self.feed_tags,
+                        }
                     }
                     if self.tlp_color:
                         indicator_obj['fields']['trafficlightprotocol'] = self.tlp_color
@@ -96,7 +94,6 @@ class Client(BaseClient):
         return h.handle(f.text)
 
 
-
 def get_indicators(client: Client, args: dict) -> CommandResults:
     limit = int(args.get('limit', 10))
     headers = ['value', 'summary', 'link', 'author']
@@ -123,10 +120,7 @@ def main():
             # if the client was created successfully and there is data in feed the test is successful.
             return_results("ok")
         elif demisto.command() == 'rss-get-indicators':
-            # return_results(get_indicators(client, demisto.args()))
-            client.parsed_indicators[:limit]
-            for iter_ in batch(client.parsed_indicators[:10], batch_size=2000):
-                demisto.createIndicators(iter_)
+            return_results(get_indicators(client, demisto.args()))
         elif demisto.command() == 'fetch-indicators':
             for iter_ in batch(client.parsed_indicators, batch_size=2000):
                 demisto.createIndicators(iter_)
