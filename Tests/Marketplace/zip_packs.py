@@ -142,12 +142,10 @@ def get_zipped_packs_names(zip_path, gcp_path, circle_build):
         [{'Slack': 'content/packs/slack.zip'}, {'qualys': 'content/packs/qualys.zip'}]
     """
     zipped_packs = []
-
-    if gcp_path == BUILD_GCP_PATH:
-        zip_path = os.path.join(zip_path, 'packs')  # directory of the packs
-    elif circle_build:
+    if circle_build:
         zip_path = os.path.join(zip_path, circle_build)  # directory of the packs
-        zip_path = zip_path.rstrip(os.path.sep)
+    else:
+        zip_path = os.path.join(zip_path, 'packs')  # directory of the packs
 
     dir_entries = os.listdir(zip_path)
     print(f'zip path is: {zip_path}')
@@ -167,7 +165,6 @@ def get_zipped_packs_names(zip_path, gcp_path, circle_build):
             zipped_packs.append({Path(latest_zip).stem: latest_zip})
 
     if not zipped_packs:
-        logging.critical('Did not find any pack to download from GCP.')
         sys.exit(1)
     return zipped_packs
 
@@ -182,10 +179,8 @@ def download_packs_from_gcp(storage_bucket_name, gcp_path, destination_path, cir
         branch_name: The branch name of the build.
         circle_build: The number of the circle ci build.
     """
-
     if gcp_path == BUILD_GCP_PATH:
         src_path = os.path.join('gs://', storage_bucket_name, gcp_path, branch_name, circle_build, 'content', 'packs')
-        print(f"1. src path is:{src_path}")
     else:
         src_path = os.path.join('gs://', storage_bucket_name, gcp_path, branch_name, circle_build)
         src_path = src_path.rstrip(os.path.sep)
@@ -193,14 +188,12 @@ def download_packs_from_gcp(storage_bucket_name, gcp_path, destination_path, cir
     if not branch_name or not circle_build:
         src_path = src_path.replace('/builds/content', '')
 
-    print(f"src path is:{src_path}")
-    print(f"dest path is:{destination_path}")
     process = subprocess.check_output(["Tests/scripts/cp_gcp_dir.sh", src_path, destination_path])
     if process:
         logging.info(f"cp_gcp_dir.sh output: {process}")
 
 
-def copy_to_other_dir(zipped_packs):
+def copy_zipped_packs_to_artifacts(zipped_packs):
     """
     Copies zip files if needed
     Args:
@@ -293,11 +286,11 @@ def main():
 
     try:
         zipped_packs = get_zipped_packs_names(zip_path, gcp_path, circle_build)
-    except Exception:
-        logging.exception('No zip files were found')
+    except Exception as e:
+        logging.exception(f'No zip files were found, {e}')
         success = False
 
-    copy_to_other_dir(zipped_packs)
+    copy_zipped_packs_to_artifacts(zipped_packs)
 
     if zipped_packs and remove_test_playbooks:
         try:
