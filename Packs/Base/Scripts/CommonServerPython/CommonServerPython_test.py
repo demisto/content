@@ -4650,8 +4650,8 @@ class TestSetAndGetLastRun:
 
     def test_get_last_run_in_6_2_when_get_last_run_has_results(self, mocker):
         """
-        Given: 6.2.0 environment
-        When: Fetch indicators when getLastRun returns results
+        Given: 6.2.0 environment and getLastRun returns results
+        When: Fetch indicators
         Then: Returning all indicators from demisto.getLastRun object
         """
         import demistomock as demisto
@@ -4663,8 +4663,8 @@ class TestSetAndGetLastRun:
 
     def test_get_last_run_in_6_1_when_get_integration_context_has_results(self, mocker):
         """
-        Given: 6.1.0 environment
-        When: Fetch indicators when getIntegrationContext return results:
+        Given: 6.1.0 environment and getIntegrationContext return results
+        When: Fetch indicators
                 This can happen when updating XSOAR version to 6.2.0 while a feed instance is already set.
         Then: Returning all indicators from demisto.getIntegrationContext object
         """
@@ -4677,8 +4677,8 @@ class TestSetAndGetLastRun:
 
     def test_get_last_run_in_6_2_when_get_last_run_has_no_results(self, mocker):
         """
-        Given: 6.2.0 environment
-        When: Fetch indicators when getLastRun and getIntegrationContext are empty
+        Given: 6.2.0 environment and getLastRun and getIntegrationContext are empty
+        When: Fetch indicators
         Then: function will return empty dict
         """
         import demistomock as demisto
@@ -4691,8 +4691,8 @@ class TestSetAndGetLastRun:
 
     def test_get_last_run_in_6_2_when_get_last_is_empty_and_get_integration_is_not(self, mocker):
         """
-        Given: 6.2.0 environment
-        When: Fetch indicators when getLastRun is empty and getIntegrationContext has results.
+        Given: 6.2.0 environment and getLastRun is empty and getIntegrationContext has results.
+        When: Fetch indicators
         Then: function will return empty dict
         """
         import demistomock as demisto
@@ -4722,7 +4722,6 @@ class TestSetAndGetLastRun:
         assert set_integration_context.called is False
         set_last_run.assert_called_with({1: "first indicator"})
 
-
     def test_set_last_run_in_6_1(self, mocker):
         """
         Given: 6.1.0 environment
@@ -4737,6 +4736,7 @@ class TestSetAndGetLastRun:
         set_feed_last_run({1: "first indicator"})
         set_integration_context.assert_called_with({1: "first indicator"})
         assert set_last_run.called is False
+
 
 class TestIsDemistoServerGE:
     @classmethod
