@@ -1618,21 +1618,14 @@ def create_release_command():
         'tag_name': tag_name,
         'name': args.get('name'),
         'body': args.get('body'),
-        'draft': argToBoolean(args.get('draft'))
+        'draft': argToBoolean(args.get('draft')),
     }
     response = http_request('POST', url_suffix=RELEASE_SUFFIX, data=data)
     release_url = response.get('html_url')
 
-    outputs = {
-        'id': response.get('id'),
-        'draft': response.get('draft'),
-        'html_url': response.get('html_url'),
-        'url': response.get('url')
-    }
-
     return_results(CommandResults(
         outputs_prefix='GitHub.Release',
-        outputs=outputs,
+        outputs=response,
         outputs_key_field='id',
         readable_output=f'Release {tag_name} created successfully for repo {REPOSITORY}: {release_url}',
         raw_response=response

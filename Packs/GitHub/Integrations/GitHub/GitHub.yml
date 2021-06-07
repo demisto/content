@@ -2970,7 +2970,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: True to create a draft (unpublished) release, false to create a published one.
+      description: Whether to create a draft (unpublished) release.
       isArray: false
       name: draft
       required: false
@@ -2986,7 +2986,7 @@ script:
     name: GitHub-create-release
     outputs:
     - contextPath: GitHub.Release.draft
-      description: Whether the release is draft or not
+      description: Whether the release is a draft.
       type: Boolean
     - contextPath: GitHub.Release.html_url
       description: The release URL.
