@@ -10,6 +10,7 @@ tags:
 - transformer
 - entirelist
 - general
+comment: Accepts a json object and returns a markdown.
 enabled: true
 args:
 - name: value
