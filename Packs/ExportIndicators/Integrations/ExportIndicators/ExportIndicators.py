@@ -791,6 +791,17 @@ def route_list_values() -> Response:
         elif not values:
             values = "No Results Found For the Query"
 
+        # if the case there are strings to add to the EDL, add them if the output type is text
+        if request_args.out_format == FORMAT_TEXT:
+            append_str = params.get("append_string")
+            prepend_str = params.get("prepend_string")
+            if append_str:
+                append_str = append_str.replace("\\n", "\n")
+                values = f"{values}{append_str}"
+            if prepend_str:
+                prepend_str = prepend_str.replace("\\n", "\n")
+                values = f"{prepend_str}\n{values}"
+
         mimetype = get_outbound_mimetype()
         return Response(values, status=200, mimetype=mimetype)
 
@@ -875,14 +886,18 @@ def run_long_running(params, is_test=False):
             time.sleep(5)
             server_process.terminate()
         else:
+            demisto.updateModuleHealth('')
             server.serve_forever()
     except SSLError as e:
         ssl_err_message = f'Failed to validate certificate and/or private key: {str(e)}'
         demisto.error(ssl_err_message)
+        demisto.updateModuleHealth(f'An error occurred: {ssl_err_message}')
         raise ValueError(ssl_err_message)
     except Exception as e:
-        demisto.error(f'An error occurred in long running loop: {str(e)}')
-        raise ValueError(str(e))
+        error_message = str(e)
+        demisto.error(f'An error occurred in long running loop: {error_message}')
+        demisto.updateModuleHealth(f'An error occurred: {error_message}')
+        raise ValueError(error_message)
     finally:
         if certificate_path:
             os.unlink(certificate_path)
