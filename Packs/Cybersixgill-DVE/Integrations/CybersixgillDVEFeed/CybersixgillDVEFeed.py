@@ -3,7 +3,7 @@ from CommonServerPython import *
 from CommonServerUserPython import *
 
 """ IMPORTS """
-from typing import Dict, Callable, Optional, Any
+from typing import Dict, Optional, Any
 from collections import OrderedDict
 import traceback
 import requests
@@ -17,6 +17,7 @@ from sixgill.sixgill_utils import is_indicator
 requests.packages.urllib3.disable_warnings()
 
 """ CONSTANTS """
+SESSION = requests.Session()
 INTEGRATION_NAME = "Sixgil_DVE_Feed"
 CHANNEL_CODE = "7698e8287dfde53dcd13082be750a85a"
 MAX_INDICATORS = 1000
@@ -55,11 +56,11 @@ DESCRIPTION_FIELD_ORDER = OrderedDict(
 """ HELPER FUNCTIONS """
 
 
-def test_module(session, params, verify):
+def test_module(params, verify):
     """
     Performs basic Auth request
     """
-    response = session.send(
+    response = SESSION.send(
         request=SixgillAuthRequest(
             params.get("client_id"), params.get("client_secret"), CHANNEL_CODE
         ).prepare(),
@@ -183,10 +184,9 @@ def get_limit(str_limit, default_limit):
 
 
 def main():
-    session = requests.Session()
     params = demisto.params()
     max_indicators = get_limit(params.get("maxIndicators", MAX_INDICATORS), MAX_INDICATORS)
-    session.proxies = handle_proxy()
+    SESSION.proxies = handle_proxy()
     verify = not params.get("insecure", True)
     client = SixgillFeedClient(
         params.get("client_id"),
@@ -194,7 +194,7 @@ def main():
         CHANNEL_CODE,
         FeedStream.DVEFEED,
         bulk_size=max_indicators,
-        session=session,
+        session=SESSION,
         verify=verify
     )
     command = demisto.command()
@@ -204,7 +204,7 @@ def main():
     args = demisto.args()
     try:
         if command == 'test-module':
-            return_results(test_module(session, params, verify))
+            return_results(test_module(params, verify))
         elif command == "fetch-indicators":
             indicators = fetch_indicators_command(client, tags=tags, tlp_color=tlp_color)
             for b in batch(indicators, batch_size=2000):

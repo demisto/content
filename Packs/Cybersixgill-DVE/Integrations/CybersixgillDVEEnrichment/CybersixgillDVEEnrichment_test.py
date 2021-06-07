@@ -415,10 +415,10 @@ def test_test_module_command_raise_exception(mocker):
     mocker.patch.object(demisto, "params", return_value=init_params())
     mocker.patch("requests.sessions.Session.send", return_value=MockedResponse(400, "error"))
 
-    from CybersixgillDVEEnrichment import test_module_command
+    from CybersixgillDVEEnrichment import test_module
 
     with pytest.raises(Exception):
-        test_module_command()
+        test_module()
 
 
 def test_test_module_command(mocker):
