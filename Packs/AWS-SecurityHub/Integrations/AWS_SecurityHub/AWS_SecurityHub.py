@@ -584,8 +584,8 @@ def get_master_account_command(client, args):
 
 def get_findings_command(client, args):
     kwargs = generate_kwargs_for_get_findings(args)
-    findings = []
     response = client.get_findings(**kwargs)
+    findings = response.get('Findings', [])
     next_token = response.get('NextToken')
     while next_token:
         kwargs['NextToken'] = next_token
@@ -724,7 +724,13 @@ def fetch_incidents(client, aws_sh_severity, archive_findings, additional_filter
         'rawJSON': json.dumps(finding)
     }
         for finding in findings]
-    demisto.setLastRun({'lastRun': max(findings, key=lambda finding: finding.get('CreatedAt')).get('CreatedAt'),
+    if findings:
+        # in case we got finding, we should get the latest created one and increase it by 1 ms so the next fetch
+        # wont include it in the query and fetch duplicates
+        last_created_finding = max(findings, key=lambda finding: finding.get('CreatedAt')).get('CreatedAt')
+        last_created_finding_dt = parse(last_created_finding) + timedelta(milliseconds=1)  # type: ignore[operator]
+        last_run = last_created_finding_dt.isoformat()  # type: ignore[union-attr]
+    demisto.setLastRun({'lastRun': last_run,
                         'next_token': next_token})
     demisto.incidents(incidents)
 
