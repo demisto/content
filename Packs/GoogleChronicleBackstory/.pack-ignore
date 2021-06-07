@@ -42,3 +42,6 @@ ignore=BA110
 
 [file:ChroniclePotentiallyBlockedIPWidgetScript.yml]
 ignore=BA110
+
+[file:playbook-ChronicleAssets_Investigation_And_Remediation_-_Chronicle.yml]
+ignore=PB112
