@@ -499,7 +499,7 @@
                 "isPredefined": false,
                 "itemVersion": "",
                 "modified": "2021-06-02T07:03:13.291852853Z",
-                "name": "Average runtime by Incident type per Playbook (top 5)",
+                "name": "Average runtime by Incident Type per Playbook (top 5)",
                 "packID": "",
                 "params": {
                     "groupBy": [
@@ -550,7 +550,7 @@
                     "xAxisLabel": "Playbook name",
                     "yAxisLabel": ""
                 },
-                "prevName": "Average runtime by Incident type per Playbook (top 5)",
+                "prevName": "Average runtime by Incident Type per Playbook (top 5)",
                 "propagationLabels": [
                     "all"
                 ],

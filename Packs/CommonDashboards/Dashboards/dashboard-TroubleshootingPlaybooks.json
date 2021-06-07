@@ -298,7 +298,7 @@
                 "isPredefined": false,
                 "itemVersion": "",
                 "modified": "2021-06-02T07:54:48.329462649Z",
-                "name": "Failed manual Tasks",
+                "name": "Failed Manual Tasks",
                 "packID": "",
                 "params": {
                     "groupBy": [],
@@ -306,7 +306,7 @@
                         "sum|1"
                     ]
                 },
-                "prevName": "Failed manual Tasks",
+                "prevName": "Failed Manual Tasks",
                 "propagationLabels": [
                     "all"
                 ],
@@ -451,7 +451,7 @@
                 "isPredefined": false,
                 "itemVersion": "",
                 "modified": "2021-06-03T10:32:11.910815214Z",
-                "name": "Executions by status per manual Tasks (top 5)",
+                "name": "Executions by status per Manual Tasks (top 5)",
                 "packID": "",
                 "params": {
                     "groupBy": [
@@ -499,7 +499,7 @@
                     "xAxisLabel": "Task names",
                     "yAxisLabel": "Count"
                 },
-                "prevName": "Executions by status per manual Tasks (top 5)",
+                "prevName": "Executions by status per Manual Tasks (top 5)",
                 "propagationLabels": [
                     "all"
                 ],
@@ -546,7 +546,7 @@
                 "isPredefined": false,
                 "itemVersion": "",
                 "modified": "2021-06-03T10:32:34.189169383Z",
-                "name": "Executions by status per automated Tasks (top 5)",
+                "name": "Executions by status per Automated Tasks (top 5)",
                 "packID": "",
                 "params": {
                     "groupBy": [
@@ -594,7 +594,7 @@
                     "xAxisLabel": "Task names",
                     "yAxisLabel": "Count"
                 },
-                "prevName": "Executions by status per automated Tasks (top 5)",
+                "prevName": "Executions by status per Automated Tasks (top 5)",
                 "propagationLabels": [
                     "all"
                 ],
@@ -641,7 +641,7 @@
                 "isPredefined": false,
                 "itemVersion": "",
                 "modified": "2021-06-03T10:41:06.249878754Z",
-                "name": "Failed Tasks auto vs manual",
+                "name": "Failed Tasks Auto vs Manual",
                 "packID": "",
                 "params": {
                     "customGroupBy": [
@@ -712,7 +712,7 @@
                         }
                     ]
                 },
-                "prevName": "Failed Tasks auto vs manual",
+                "prevName": "Failed Tasks Auto vs Manual",
                 "primaryTerm": 5,
                 "propagationLabels": [
                     "all"

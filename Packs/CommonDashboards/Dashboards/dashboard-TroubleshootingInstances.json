@@ -822,7 +822,7 @@
                 "isPredefined": false,
                 "itemVersion": "",
                 "modified": "2021-06-02T07:42:16.923909327Z",
-                "name": "Average runtime per automation (top 5)",
+                "name": "Average runtime per Automation (top 5)",
                 "packID": "",
                 "params": {
                     "groupBy": [
@@ -876,7 +876,7 @@
                     "xAxisLabel": "",
                     "yAxisLabel": ""
                 },
-                "prevName": "Average runtime per automation (top 5)",
+                "prevName": "Average runtime per Automation (top 5)",
                 "propagationLabels": [
                     "all"
                 ],

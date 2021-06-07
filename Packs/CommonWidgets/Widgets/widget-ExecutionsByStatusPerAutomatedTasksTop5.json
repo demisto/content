@@ -49,7 +49,7 @@
     },
     "query": "taskName:* automated:T",
     "modified": "2021-06-03T10:32:34.189169383Z",
-    "name": "Executions by status per automated Tasks (top 5)",
+    "name": "Executions by status per Automated Tasks (top 5)",
     "dateRange": {
         "fromDate": "0001-01-01T00:00:00Z",
         "toDate": "0001-01-01T00:00:00Z",
@@ -68,5 +68,5 @@
     "id": "executions-by-status-per-automated-tasks-top-5",
     "widgetType": "column",
     "fromVersion": "6.2.0",
-    "description": "Executions by status per automated Tasks (top 5)"
+    "description": "Executions by status per Automated Tasks (top 5)"
 }
