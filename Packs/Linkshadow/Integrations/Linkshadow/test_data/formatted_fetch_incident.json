@@ -1,0 +1,32 @@
+[
+  {
+    "name": "Linkshadow-entityAnomaly",
+    "occurred": "2021-05-25T01:04:03.000Z",
+    "rawJSON": {
+      "time_seen": "1621904643000",
+      "category": "Suspicious",
+      "anomaly_type": "Network Scan",
+      "sip": "172.16.4.71",
+      "anomaly_id": "18",
+      "inserted_time": "1621904643",
+      "smac": "58:fb:84:4f:b6:4a",
+      "bandwidth": "",
+      "score": "15",
+      "dport": "8612",
+      "dmac": "",
+      "sport": "50008",
+      "dip": "192.168.1.110",
+      "desc": "172.16.4.71 scanned 3 IPs"
+    },
+    "CustomFields": {
+      "sip": "172.16.4.71",
+      "sourceip": "172.16.4.71",
+      "destinationip": "192.168.1.110",
+      "sourceport": "50008",
+      "destinationport": "8612",
+      "macaddress": "58:fb:84:4f:b6:4a",
+      "alertid": "18",
+      "subcategory": "Suspicious"
+    }
+  }
+]
