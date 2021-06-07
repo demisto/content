@@ -2835,15 +2835,16 @@ def test_auto_detect_indicator_type_tldextract(mocker):
         Then
             Run the auto_detect_indicator_type and validate that tldextract using `cache_file` arg and not `cache_dir`
     """
-    import tldextract as tlde
-    tlde.__version__ = '2.2.7'
+    if sys.version_info.major == 3 and sys.version_info.minor >= 8:
+        import tldextract as tlde
+        tlde.__version__ = '2.2.7'
 
-    mocker.patch.object(tlde, 'TLDExtract')
+        mocker.patch.object(tlde, 'TLDExtract')
 
-    auto_detect_indicator_type('8')
+        auto_detect_indicator_type('8')
 
-    res = tlde.TLDExtract.call_args
-    assert 'cache_file' in res[1].keys()
+        res = tlde.TLDExtract.call_args
+        assert 'cache_file' in res[1].keys()
 
 
 def test_handle_proxy(mocker):
