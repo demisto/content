@@ -145,7 +145,7 @@ def get_zipped_packs_names(zip_path, gcp_path, circle_build):
 
     if gcp_path == BUILD_GCP_PATH:
         zip_path = os.path.join(zip_path, 'packs')  # directory of the packs
-    else:
+    elif circle_build:
         zip_path = os.path.join(zip_path, circle_build)  # directory of the packs
 
     dir_entries = os.listdir(zip_path)
