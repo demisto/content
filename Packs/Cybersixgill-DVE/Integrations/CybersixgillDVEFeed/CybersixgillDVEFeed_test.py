@@ -893,19 +893,22 @@ def mocked_request(*args, **kwargs):
 
 
 def test_test_module_command_raise_exception(mocker):
-    from CybersixgillDVEFeed import test_module
+    mocker.patch.object(demisto, "params", return_value=init_params())
     mocker.patch("requests.sessions.Session.send", return_value=MockedResponse(400, "error"))
-    verify = False
+
+    from CybersixgillDVEFeed import module_command_test
 
     with pytest.raises(Exception):
-        test_module(init_params(), verify)
+        module_command_test()
 
 
 def test_test_module_command(mocker):
-    from CybersixgillDVEFeed import test_module
+    mocker.patch.object(demisto, "params", return_value=init_params())
     mocker.patch("requests.sessions.Session.send", return_value=MockedResponse(200, "ok"))
-    verify = False
-    test_module(init_params(), verify)
+
+    from CybersixgillDVEFeed import module_command_test
+
+    module_command_test()
 
 
 def test_fetch_indicators_command(mocker):
@@ -958,7 +961,7 @@ def test_get_indicators_command(mocker):
     output = get_indicators_command(client, {"limit": 10})
     bundle_index = 0
     submitted_indicators = 0
-    assert output.raw_response == expected_ioc_output
+    assert output[2] == expected_ioc_output
 
 
 @pytest.mark.parametrize("tlp_color", ["", None, "AMBER"])

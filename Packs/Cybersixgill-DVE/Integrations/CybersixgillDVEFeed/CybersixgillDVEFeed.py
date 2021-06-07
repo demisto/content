@@ -3,7 +3,7 @@ from CommonServerPython import *
 from CommonServerUserPython import *
 
 """ IMPORTS """
-from typing import Dict, Optional, Any
+from typing import Dict, Callable, Optional, Any
 from collections import OrderedDict
 import traceback
 import requests
@@ -17,13 +17,14 @@ from sixgill.sixgill_utils import is_indicator
 requests.packages.urllib3.disable_warnings()
 
 """ CONSTANTS """
-SESSION = requests.Session()
 INTEGRATION_NAME = "Sixgil_DVE_Feed"
 CHANNEL_CODE = "7698e8287dfde53dcd13082be750a85a"
 MAX_INDICATORS = 1000
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 SUSPICIOUS_FEED_IDS = ["darkfeed_003"]
 DEMISTO_DATETIME_FORMAT = "%Y-%m-%dT%H:%M:%S.%fZ"
+VERIFY = not demisto.params().get("insecure", True)
+SESSION = requests.Session()
 DESCRIPTION_FIELD_ORDER = OrderedDict(
     [
         ("Description", "eventdescription"),
@@ -56,19 +57,19 @@ DESCRIPTION_FIELD_ORDER = OrderedDict(
 """ HELPER FUNCTIONS """
 
 
-def test_module(params, verify):
+def module_command_test(*args):
     """
     Performs basic Auth request
     """
     response = SESSION.send(
         request=SixgillAuthRequest(
-            params.get("client_id"), params.get("client_secret"), CHANNEL_CODE
+            demisto.params()["client_id"], demisto.params()["client_secret"], CHANNEL_CODE
         ).prepare(),
-        verify=verify,
+        verify=VERIFY,
     )
     if not response.ok:
         raise DemistoException("Auth request failed - please verify client_id, and client_secret.")
-    return "ok"
+    return "ok", None, "ok"
 
 
 def get_description(fileds_obj):
@@ -167,13 +168,7 @@ def get_indicators_command(client, args):
     limit = int(args.get("limit"))
     final_indicators = fetch_indicators_command(client, limit, True)
     human_readable = tableToMarkdown("Indicators from Sixgill DVE Feed:", final_indicators)
-    return CommandResults(
-        readable_output=human_readable,
-        outputs_prefix='',
-        outputs_key_field='',
-        raw_response=final_indicators,
-        outputs={},
-    )
+    return human_readable, {}, final_indicators
 
 
 def get_limit(str_limit, default_limit):
@@ -184,36 +179,33 @@ def get_limit(str_limit, default_limit):
 
 
 def main():
-    params = demisto.params()
-    max_indicators = get_limit(params.get("maxIndicators", MAX_INDICATORS), MAX_INDICATORS)
+    max_indicators = get_limit(demisto.params().get("maxIndicators", MAX_INDICATORS), MAX_INDICATORS)
     SESSION.proxies = handle_proxy()
-    verify = not params.get("insecure", True)
     client = SixgillFeedClient(
-        params.get("client_id"),
-        params.get("client_secret"),
+        demisto.params()["client_id"],
+        demisto.params()["client_secret"],
         CHANNEL_CODE,
         FeedStream.DVEFEED,
         bulk_size=max_indicators,
         session=SESSION,
-        verify=verify
+        verify=VERIFY
     )
     command = demisto.command()
     demisto.info(f"Command being called is {command}")
-    tags = argToList(params.get("feedTags", []))
-    tlp_color = params.get("tlp_color")
-    args = demisto.args()
+    tags = argToList(demisto.params().get("feedTags", []))
+    tlp_color = demisto.params().get("tlp_color")
+    commands: Dict[str, Callable] = {"test-module": module_command_test, "sixgill-get-dve-feed": get_indicators_command}
     try:
-        if command == 'test-module':
-            return_results(test_module(params, verify))
-        elif command == "fetch-indicators":
+        if demisto.command() == "fetch-indicators":
             indicators = fetch_indicators_command(client, tags=tags, tlp_color=tlp_color)
             for b in batch(indicators, batch_size=2000):
                 demisto.createIndicators(b)
-        elif command == 'sixgill-get-indicators':
-            return_results(get_indicators_command(client, args))
+        else:
+            readable_output, outputs, raw_response = commands[command](client, demisto.args())
+            return_outputs(readable_output, outputs, raw_response)
     except Exception as err:
         demisto.error(traceback.format_exc())
-        return_error(f"Error failed to execute {command}, error: [{err}]")
+        return_error(f"Error failed to execute {demisto.command()}, error: [{err}]")
 
 
 if __name__ == "__builtin__" or __name__ == "builtins":
