@@ -1,0 +1,71 @@
+{
+    "associatedToAll": false,
+    "associatedTypes": [
+        "Configuration Setup"
+    ],
+    "caseInsensitive": true,
+    "cliName": "marketplacepacksinstalled",
+    "closeForm": false,
+    "columns": [
+        {
+            "displayName": "Pack ID",
+            "fieldCalcScript": "",
+            "isDefault": true,
+            "isReadOnly": false,
+            "key": "packid",
+            "required": false,
+            "script": "",
+            "selectValues": null,
+            "type": "shortText",
+            "width": 445
+        },
+        {
+            "displayName": "Pack Version",
+            "fieldCalcScript": "",
+            "isDefault": true,
+            "isReadOnly": false,
+            "key": "packversion",
+            "required": false,
+            "script": "",
+            "selectValues": null,
+            "type": "shortText",
+            "width": 300
+        },
+        {
+            "displayName": "Installation Status",
+            "fieldCalcScript": "",
+            "isDefault": true,
+            "isReadOnly": false,
+            "key": "installationstatus",
+            "required": false,
+            "script": "",
+            "selectValues": null,
+            "type": "shortText",
+            "width": 150
+        }
+    ],
+    "content": true,
+    "defaultRows": [
+        {}
+    ],
+    "description": "Content Packs that were installed.",
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_configurationsetup_marketplacepacksinstalled",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "Marketplace Packs Installed",
+    "neverSetAsRequired": false,
+    "ownerOnly": false,
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "grid",
+    "unmapped": false,
+    "unsearchable": false,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.0.0"
+}
