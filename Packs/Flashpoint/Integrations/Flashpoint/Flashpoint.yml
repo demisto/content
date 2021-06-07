@@ -26,6 +26,12 @@ configuration:
   defaultvalue: ""
   type: 8
   required: false
+- defaultvalue: 'true'
+  additionalinfo: Create relationships between indicators as part of Enrichment.
+  display: Create relationships
+  name: create_relationships
+  required: false
+  type: 8
 script:
   script: ''
   type: python
@@ -86,6 +92,21 @@ script:
     - contextPath: Flashpoint.IP.Event.Comment
       description: The comment that was provided when the indicator was observed.
       type: string
+    - contextPath: IP.Relationships.EntityA
+      description: The source of the relationship.
+      type: string
+    - contextPath: IP.Relationships.EntityB
+      description: The destination of the relationship.
+      type: string
+    - contextPath: IP.Relationships.Relationship
+      description: The name of the relationship.
+      type: string
+    - contextPath: IP.Relationships.EntityAType
+      description: The type of the source of the relationship.
+      type: string
+    - contextPath: IP.Relationships.EntityBType
+      description: The type of the destination of the relationship.
+      type: string
     description: Looks up details of an IP indicator. The reputation of the IP address is considered malicious if there's at least one IOC event in the Flashpoint database that matches the IP indicator. Alternatively, the IP address is considered suspicious if it matches any one of the Torrent's Peer IP Address or Forum Visit's Peer IP Address.
   - name: domain
     arguments:
@@ -142,6 +163,21 @@ script:
       type: string
     - contextPath: Domain.Name
       description: Name of domain.
+      type: string
+    - contextPath: Domain.Relationships.EntityA
+      description: The source of the relationship.
+      type: string
+    - contextPath: Domain.Relationships.EntityB
+      description: The destination of the relationship.
+      type: string
+    - contextPath: Domain.Relationships.Relationship
+      description: The name of the relationship.
+      type: string
+    - contextPath: Domain.Relationships.EntityAType
+      description: The type of the source of the relationship.
+      type: string
+    - contextPath: Domain.Relationships.EntityBType
+      description: The type of the destination of the relationship.
       type: string
     description: Lookup the "Domain" type indicator details. The reputation of Domain is considered Malicious if there's at least one IOC event in Flashpoint database matching the Domain indicator.
   - name: filename
@@ -248,6 +284,21 @@ script:
     - contextPath: URL.Data
       description: The URL
       type: string
+    - contextPath: URL.Relationships.EntityA
+      description: The source of the relationship.
+      type: string
+    - contextPath: URL.Relationships.EntityB
+      description: The destination of the relationship.
+      type: string
+    - contextPath: URL.Relationships.Relationship
+      description: The name of the relationship.
+      type: string
+    - contextPath: URL.Relationships.EntityAType
+      description: The type of the source of the relationship.
+      type: string
+    - contextPath: URL.Relationships.EntityBType
+      description: The type of the destination of the relationship.
+      type: string
     description: Lookup the "URL" type indicator details. The reputation of Url is considered Malicious if there's at least one IOC event in Flashpoint database matching the Url indicator.
   - name: file
     arguments:
@@ -316,6 +367,21 @@ script:
       type: string
     - contextPath: File.SHA256
       description: SHA256 type file.
+      type: string
+    - contextPath: File.Relationships.EntityA
+      description: The source of the relationship.
+      type: string
+    - contextPath: File.Relationships.EntityB
+      description: The destination of the relationship.
+      type: string
+    - contextPath: File.Relationships.Relationship
+      description: The name of the relationship.
+      type: string
+    - contextPath: File.Relationships.EntityAType
+      description: The type of the source of the relationship.
+      type: string
+    - contextPath: File.Relationships.EntityBType
+      description: The type of the destination of the relationship.
       type: string
     description: Lookup the "File" type indicator details. The reputation of File-hash is considered Malicious if there's at least one IOC event in Flashpoint database matching the File-hash indicator.
   - name: email
@@ -581,7 +647,7 @@ script:
     - contextPath: Flashpoint.Forum.Post
       description: A list of forum posts based on the search keyword.
     description: Search forum posts using a keyword
-  dockerimage: demisto/python3:3.8.2.6981
+  dockerimage: demisto/python3:3.9.5.20070
   runonce: false
   subtype: python3
 tests:

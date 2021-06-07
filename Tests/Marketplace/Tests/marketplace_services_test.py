@@ -13,7 +13,8 @@ from datetime import datetime, timedelta
 
 from Tests.Marketplace.marketplace_services import Pack, input_to_list, get_valid_bool, convert_price, \
     get_updated_server_version, load_json, \
-    store_successful_and_failed_packs_in_ci_artifacts, is_ignored_pack_file
+    store_successful_and_failed_packs_in_ci_artifacts, is_ignored_pack_file,\
+    is_the_only_rn_in_block
 from Tests.Marketplace.marketplace_constants import PackStatus, PackFolders, Metadata, GCPConfig, BucketUploadFlow, \
     PACKS_FOLDER, PackTags
 
@@ -40,6 +41,19 @@ TEST_METADATA = {
     "description": "description",
     "created": "2020-04-14T00:00:00Z",
     "updated": "2020-11-24T08:08:35Z",
+}
+
+AGGREGATED_CHANGELOG = {
+    "1.0.1": {
+        "releaseNotes": "dummy release notes",
+        "displayName": "1.0.0",
+        "released": "2020-05-05T13:39:33Z"
+    },
+    "1.0.3": {
+        'releaseNotes': 'dummy release notes\ndummy release notes\n',
+        'displayName': '1.0.3 - 264879',
+        'released': '2021-01-27T23:01:58Z'
+    }
 }
 
 
@@ -71,6 +85,7 @@ class TestMetadataParsing:
         dummy_pack._description = 'Description of test pack'
         dummy_pack._server_min_version = Metadata.SERVER_DEFAULT_MIN_VERSION
         dummy_pack._downloads_count = 10
+        dummy_pack._displayed_integration_images = []
         dummy_pack._enhance_pack_attributes(
             user_metadata=dummy_pack_metadata, index_folder_path="", pack_was_modified=False,
             dependencies_data={}, statistics_handler=None
@@ -110,6 +125,7 @@ class TestMetadataParsing:
     def test_enhance_pack_attributes(self, dummy_pack, dummy_pack_metadata):
         """ Test function for existence of all fields in metadata. Important to maintain it according to #19786 issue.
         """
+        dummy_pack._displayed_integration_images = []
         dummy_pack._enhance_pack_attributes(
             user_metadata=dummy_pack_metadata, index_folder_path="", pack_was_modified=False,
             dependencies_data={}, statistics_handler=None
@@ -135,6 +151,7 @@ class TestMetadataParsing:
             to XSOAR defaults value of Metadata class.
         """
 
+        dummy_pack._displayed_integration_images = []
         dummy_pack._enhance_pack_attributes(
             user_metadata={}, index_folder_path="", pack_was_modified=False,
             dependencies_data={}, statistics_handler=None
@@ -342,7 +359,7 @@ class TestParsingInternalFunctions:
                     "imagePath": "content/packs/DummyPack2/DummyIntegration_image.png"}]}}
 
         all_pack_images = Pack._get_all_pack_images(pack_integration_images, display_dependencies_images,
-                                                    dependencies_data)
+                                                    dependencies_data, display_dependencies_images)
 
         assert expected == all_pack_images
 
@@ -541,11 +558,6 @@ class TestChangelogCreation:
            Then:
                - return True
        """
-        dummy_pack.current_version = '2.0.2'
-        mocker.patch("Tests.Marketplace.marketplace_services.logging")
-        mocker.patch("os.path.exists", return_value=True)
-        dir_list = ['1_0_1.md', '2_0_2.md', '2_0_0.md']
-        mocker.patch("os.listdir", return_value=dir_list)
         original_changelog = '''{
             "1.0.0": {
                 "releaseNotes": "First release notes",
@@ -558,8 +570,17 @@ class TestChangelogCreation:
                 "released": "2020-06-05T13:39:33Z"
             }
         }'''
-        mocker.patch('builtins.open', mock_open(read_data=original_changelog))
+
+        dummy_pack.current_version = '2.0.2'
+        open_mocker = MockOpen()
         dummy_path = 'Irrelevant/Test/Path'
+        open_mocker[os.path.join(dummy_path, dummy_pack.name, Pack.CHANGELOG_JSON)].read_data = original_changelog
+        open_mocker[os.path.join(dummy_pack.path, Pack.RELEASE_NOTES, '2_0_2.md')].read_data = 'wow'
+        mocker.patch("Tests.Marketplace.marketplace_services.logging")
+        mocker.patch("os.path.exists", return_value=True)
+        dir_list = ['1_0_1.md', '2_0_2.md', '2_0_0.md']
+        mocker.patch("os.listdir", return_value=dir_list)
+        mocker.patch('builtins.open', open_mocker)
         build_number = random.randint(0, 100000)
         task_status, not_updated_build = \
             Pack.prepare_release_notes(self=dummy_pack, index_folder_path=dummy_path, build_number=build_number)
@@ -636,6 +657,72 @@ class TestChangelogCreation:
 
         assert task_status is True
         assert not_updated_build is False
+
+    @pytest.mark.parametrize('version, boolean_value', [('1.0.1', True), ('1.0.2', False), ('1.0.3', False)])
+    def test_is_the_only_rn_in_block(self, mocker, dummy_pack, version, boolean_value):
+        """
+           Given:
+               - A version number and current changelog found in index.
+           When:
+               - Attempting to modify an existing release note and checking if it appears with other versions
+                in the changelog under tha same key, therefore should be re-aggregated, or not.
+           Then:
+               - Return True if there are no other aggregated release notes with it in the changelog,
+                and false otherwise.
+        """
+        release_notes_dir = 'Irrelevant/Test/Path'
+        dir_list = ['1_0_1.md', '1_0_2.md', '1_0_3.md']
+        mocker.patch("os.listdir", return_value=dir_list)
+        assert is_the_only_rn_in_block(release_notes_dir, version, AGGREGATED_CHANGELOG) == boolean_value
+
+    def test_get_same_block_versions(self, mocker, dummy_pack):
+        """
+           Given:
+               - A version number that appears in the changelog file along with other release notes in the same block,
+                under a key that represents the highest version among those, and current changelog found in index
+           When:
+               - Attempting to re-aggregate all the release notes that are under the same key in the changelog,
+                when one of those has been modified.
+           Then:
+               - Return all the versions and their modified release notes that are in the same block, as in
+                under the same version key in the changelog file.
+        """
+        release_notes_dir = 'Irrelevant/Test/Path'
+        version = '1.0.2'
+        higher_nearest_version = '1.0.3'
+        dir_list = ['1_0_1.md', '1_0_2.md', '1_0_3.md']
+        mocker.patch("os.listdir", return_value=dir_list)
+        modified_rn_file = 'modified dummy release notes'
+        mocker.patch("builtins.open", mock_open(read_data=modified_rn_file))
+        same_block_versions_dict = {'1.0.2': modified_rn_file, '1.0.3': modified_rn_file}
+        assert dummy_pack.get_same_block_versions(release_notes_dir, version, AGGREGATED_CHANGELOG) ==\
+               (same_block_versions_dict, higher_nearest_version)
+
+    def test_get_modified_release_notes_lines(self, mocker, dummy_pack):
+        """
+           Given:
+               - Modified release note file and valid current changelog found in index.
+           When:
+               - Fixing an existing release notes file.
+           Then:
+               - Assert the returned release notes lines contains the modified release note.
+        """
+
+        release_notes_dir = 'Irrelevant/Test/Path'
+        changelog_latest_rn_version = LooseVersion('1.0.3')
+        modified_rn_files = ['1_0_2.md']
+        modified_rn_lines = 'dummy release notes\nmodified dummy release notes'
+        modified_rn_file = 'modified dummy release notes'
+        mocker.patch("builtins.open", mock_open(read_data=modified_rn_file))
+        same_block_version_dict = {'1.0.2': "dummy release notes", '1.0.3': "dummy release notes"}
+        higher_version = '1.0.3'
+        mocker.patch("Tests.Marketplace.marketplace_services.Pack.get_same_block_versions",
+                     return_value=(same_block_version_dict, higher_version))
+        mocker.patch("Tests.Marketplace.marketplace_services.aggregate_release_notes_for_marketplace",
+                     return_value=modified_rn_lines)
+        modified_versions_dict = dummy_pack.get_modified_release_notes_lines(
+            release_notes_dir, changelog_latest_rn_version, AGGREGATED_CHANGELOG, modified_rn_files)
+        assert modified_versions_dict == {'1.0.3': modified_rn_lines}
 
     def test_assert_production_bucket_version_matches_release_notes_version_positive(self, dummy_pack):
         """
@@ -1487,9 +1574,10 @@ class TestReleaseNotes:
         }
         mocker.patch('builtins.open', mock_open(read_data=original_changelog))
         mocker.patch('os.path.exists', return_value=True)
-        changelog, changelog_latest_rn_version = dummy_pack.get_changelog_latest_rn('fake_path')
+        changelog, changelog_latest_rn_version, changelog_latest_rn = dummy_pack.get_changelog_latest_rn('fake_path')
         assert changelog == original_changelog_dict
         assert changelog_latest_rn_version == LooseVersion('2.0.0')
+        assert changelog_latest_rn == "Second release notes"
 
     def test_create_local_changelog(self, mocker, dummy_pack):
         """
@@ -1539,7 +1627,7 @@ class TestReleaseNotes:
         open_mocker['rn_dir_fake_path/1_1_0.md'].read_data = rn_one
         open_mocker['rn_dir_fake_path/2_0_0.md'].read_data = rn_two
         mocker.patch('builtins.open', open_mocker)
-        rn_lines, latest_rn = dummy_pack.get_release_notes_lines('rn_dir_fake_path', LooseVersion('1.0.0'))
+        rn_lines, latest_rn = dummy_pack.get_release_notes_lines('rn_dir_fake_path', LooseVersion('1.0.0'), '')
         assert latest_rn == '2.0.0'
         assert rn_lines == aggregated_rn
 
@@ -1559,9 +1647,30 @@ class TestReleaseNotes:
         '''
         mocker.patch('builtins.open', mock_open(read_data=rn))
         mocker.patch('os.listdir', return_value=['1_0_0.md', '1_0_1.md'])
-        rn_lines, latest_rn = dummy_pack.get_release_notes_lines('rn_dir_fake_path', LooseVersion('1.0.1'))
+        rn_lines, latest_rn = dummy_pack.get_release_notes_lines('rn_dir_fake_path', LooseVersion('1.0.1'), rn)
         assert latest_rn == '1.0.1'
         assert rn_lines == rn
+
+    def test_get_release_notes_lines_no_rn(self, mocker, dummy_pack):
+        """
+           Given:
+               - 2 release notes files, 1.0.0 and 1.0.1 which is the latest rn and exists in the changelog
+           When:
+               - Creating the release notes for version 1.0.1
+           Then:
+               - Verify that the rn are the same
+       """
+        changelog_latest_rn = '''
+#### Integrations
+##### CrowdStrike Falcon Intel v2
+- wow1
+- wow2
+        '''
+
+        mocker.patch('os.listdir', return_value=['1_0_0.md', '1_0_1.md'])
+        rn_lines, latest_rn = dummy_pack.get_release_notes_lines('wow', LooseVersion('1.0.1'), changelog_latest_rn)
+        assert latest_rn == '1.0.1'
+        assert rn_lines == changelog_latest_rn
 
     FAILED_PACKS_DICT = {
         'TestPack': {'status': 'wow1'},
@@ -1632,7 +1741,7 @@ class TestStoreInCircleCIArtifacts:
                - Private updated packs list - TestPack5 , TestPack6
                - A path to the circle ci artifacts dir
            When:
-               - Storing the packs results in the $CIRCLE_ARTIFACTS/packs_results.json file
+               - Storing the packs results in the $ARTIFACTS_FOLDER/packs_results.json file
            Then:
                - Verify that the file content contains the successful, failed and private
                 packs TestPack1, TestPack2 & TestPack3, TestPack4, TestPack5 & TestPack6 respectively.
@@ -1669,7 +1778,7 @@ class TestStoreInCircleCIArtifacts:
                - Successful packs list - TestPack1, TestPack2
                - A path to the circle ci artifacts dir
            When:
-               - Storing the packs results in the $CIRCLE_ARTIFACTS/packs_results.json file
+               - Storing the packs results in the $ARTIFACTS_FOLDER/packs_results.json file
            Then:
                - Verify that the file content contains the successful packs TestPack1 & TestPack2.
        """
@@ -1694,7 +1803,7 @@ class TestStoreInCircleCIArtifacts:
                - Failed packs list - TestPack3 , TestPack4
                - A path to the circle ci artifacts dir
            When:
-               - Storing the packs results in the $CIRCLE_ARTIFACTS/packs_results.json file
+               - Storing the packs results in the $ARTIFACTS_FOLDER/packs_results.json file
            Then:
                - Verify that the file content contains the failed packs TestPack & TestPack4.
        """
@@ -1719,7 +1828,7 @@ class TestStoreInCircleCIArtifacts:
                - Updated private packs list - TestPack5 , TestPack6
                - A path to the circle ci artifacts dir
            When:
-               - Storing the packs results in the $CIRCLE_ARTIFACTS/packs_results.json file
+               - Storing the packs results in the $ARTIFACTS_FOLDER/packs_results.json file
            Then:
                - Verify that the file content contains the successful packs TestPack5 & TestPack6.
        """

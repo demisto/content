@@ -3,7 +3,7 @@ The Expanse Content Pack for Cortex XSOAR provides full coverage of the Expander
 Through a powerful set of Playbooks, analysts can correlate the discovered information with data provided from internal security systems (such as Palo Alto Networks Cortex Data Lake, Prisma Cloud and Panorama, Active Directory, Splunk SIEM, etc.) to help pinpoint the right owners of assets and automate remediation.
 
 ##### What does this pack do?
-- Provides the **Expanse v2** integration (for Expanse Expander and Behavior), which allows XSOAR to collect Expanse Issues and bi-directionally mirror them. Several commands are available to search, tag, and update Issues and Assets in Expanse.
+- Provides the **Expanse v2** integration (for Expanse Expander and Behavior), which allows XSOAR to collect Expanse Issues and bi-directionally mirror them. Several commands are available to search, tag, and update Issues and Assets in Expanse. The integration also supports the Services API.
 - Provides a feed integration named **Expanse Expander Feed**, which is compatible with the Cortex XSOAR Threat Intel Management capabilities to retrieve and store discovered assets (IPs, IP Ranges, Domains, Certificates) in Cortex XSOAR for analysis and correlation.
 - Provides an **Expanse Issue** Incident Type with dedicated fields and layouts.
 - Provides a rich set of Playbooks and Subplaybooks that handle the investigation and remediation of Expanse Issues.

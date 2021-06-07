@@ -46,7 +46,7 @@ configuration:
   name: create_relationships
   required: false
   type: 8
-description: Urlscan.io reputation
+description: Use urlscan.io integration to perform scans on suspected URLs and see their reputation.
 display: urlscan.io
 name: urlscan.io
 script:
@@ -285,19 +285,19 @@ script:
     - contextPath: URL.Malicious.Description
       description: For malicious URLs, the reason that the vendor made the decision.
       type: string
-    - contextPath: URL.Relations.EntityA
+    - contextPath: URL.Relationships.EntityA
       description: The source of the relationship.
       type: string
-    - contextPath: URL.Relations.EntityB
+    - contextPath: URL.Relationships.EntityB
       description: The destination of the relationship.
       type: string
-    - contextPath: URL.Relations.Relationship
+    - contextPath: URL.Relationships.Relationship
       description: The name of the relationship.
       type: string
-    - contextPath: URL.Relations.EntityAType
+    - contextPath: URL.Relationships.EntityAType
       description: The type of the source of the relationship.
       type: string
-    - contextPath: URL.Relations.EntityBType
+    - contextPath: URL.Relationships.EntityBType
       description: The type of the destination of the relationship.
       type: string
     - contextPath: URLScan.RelatedIPs

@@ -651,3 +651,4 @@ outputs:
   type: unknown
 tests:
 - no test (new v2 playbook has an updated test)
+deprecated: true

@@ -3,8 +3,8 @@ from CommonServerPython import *
 from CommonServerUserPython import *
 
 ''' IMPORTS '''
-
 import json
+import copy
 import requests
 from typing import Union, Any
 from datetime import datetime
@@ -13,27 +13,27 @@ from datetime import datetime
 requests.packages.urllib3.disable_warnings()
 
 ''' GLOBALS/PARAMS '''
+USER: str
+TOKEN: str
+PRIVATE_KEY: str
+INTEGRATION_ID: str
+INSTALLATION_ID: str
+REPOSITORY: str
+USE_SSL: bool
+FETCH_TIME: str
+USER_SUFFIX: str
+ISSUE_SUFFIX: str
+RELEASE_SUFFIX: str
+PULLS_SUFFIX: str
+FILE_SUFFIX: str
+HEADERS: dict
 
-USER = demisto.params().get('user')
-TOKEN = demisto.params().get('token', '')
-PRIVATE_KEY = demisto.params().get('credentials', {})
-PRIVATE_KEY = PRIVATE_KEY.get('credentials', {}).get('sshkey', '') if PRIVATE_KEY else PRIVATE_KEY
-INTEGRATION_ID = demisto.params().get('integration_id')
-INSTALLATION_ID = demisto.params().get('installation_id')
 BASE_URL = 'https://api.github.com'
-REPOSITORY = demisto.params().get('repository')
-USE_SSL = not demisto.params().get('insecure', False)
-FETCH_TIME = demisto.params().get('fetch_time', '3')
-
-USER_SUFFIX = '/repos/{}/{}'.format(USER, REPOSITORY)
-ISSUE_SUFFIX = USER_SUFFIX + '/issues'
-RELEASE_SUFFIX = USER_SUFFIX + '/releases'
-PULLS_SUFFIX = USER_SUFFIX + '/pulls'
 
 RELEASE_HEADERS = ['ID', 'Name', 'Download_count', 'Body', 'Created_at', 'Published_at']
 ISSUE_HEADERS = ['ID', 'Repository', 'Organization', 'Title', 'State', 'Body', 'Created_at', 'Updated_at', 'Closed_at',
                  'Closed_by', 'Assignees', 'Labels']
-FILE_HEADERS = ['Name', 'Path', 'Type', 'Size', 'DownloadUrl']
+FILE_HEADERS = ['Name', 'Path', 'Type', 'Size', 'SHA', 'DownloadUrl']
 
 # Headers to be sent in requests
 MEDIA_TYPE_INTEGRATION_PREVIEW = "application/vnd.github.machine-man-preview+json"
@@ -41,18 +41,20 @@ MEDIA_TYPE_INTEGRATION_PREVIEW = "application/vnd.github.machine-man-preview+jso
 ''' HELPER FUNCTIONS '''
 
 
-def create_jwt(private_key: bytes, integration_id: str):
+def create_jwt(private_key: str, integration_id: str):
     """
     Create a JWT token used for getting access token. It's needed for github bots.
     POSTs https://api.github.com/app/installations/<installation_id>/access_tokens
-    :param private_key: bytes: github's private key
+    :param private_key: str: github's private key
     :param integration_id: str: ID of the github integration (bot)
     """
+    import jwt
+
     now = int(time.time())
     expiration = 60
     payload = {"iat": now, "exp": now + expiration, "iss": integration_id}
     jwt_token = jwt.encode(payload, private_key, algorithm='RS256')
-    return jwt_token.decode()
+    return jwt_token
 
 
 def get_installation_access_token(installation_id: str, jwt_token: str):
@@ -615,6 +617,51 @@ def create_pull_request_command():
     return_outputs(readable_output=human_readable, outputs=ec, raw_response=response)
 
 
+def list_branch_pull_requests(branch_name: str, repository: Optional[str] = None,
+                              organization: Optional[str] = None) -> List[Dict]:
+    """
+    Performs API request to GitHub service and formats the returned pull requests details to outputs.
+    Args:
+        branch_name (str): Name of the branch to retrieve its PR.
+        repository (Optional[str]): Repository the branch resides in. Defaults to 'REPOSITORY' if not given.
+        organization (Optional[str]): Organization the branch resides in. Defaults to 'USER' if not given.
+
+    Returns:
+        (List[Dict]): List of the formatted pull requests outputs.
+    """
+    repository = repository if repository else REPOSITORY
+    organization = organization if organization else USER
+    suffix = f'/repos/{organization}/{repository}/pulls?head={organization}:{branch_name}'
+    response = http_request('GET', url_suffix=suffix)
+    formatted_outputs = [format_pr_outputs(output) for output in response]
+
+    return formatted_outputs
+
+
+def list_branch_pull_requests_command() -> None:
+    """
+    List all pull requests corresponding to the given 'branch_name' in 'organization'
+    Args:
+        - 'branch_name': Branch name to retrieve its pull requests.
+        - 'organization': Organization the branch belongs to.
+        - 'repository': The repository the branch belongs to. Uses 'REPOSITORY' parameter if not given.
+    Returns:
+        (None): Results to XSOAR.
+    """
+    args = demisto.args()
+    branch_name = args.get('branch_name', '')
+    organization = args.get('organization')
+    repository = args.get('repository')
+    formatted_outputs = list_branch_pull_requests(branch_name, repository, organization)
+
+    return_results(CommandResults(
+        outputs_prefix='GitHub.PR',
+        outputs_key_field='Number',
+        outputs=formatted_outputs,
+        readable_output=tableToMarkdown(f'Pull Request For Branch #{branch_name}', formatted_outputs, removeNull=True)
+    ))
+
+
 def is_pr_merged(pull_number: Union[int, str]):
     suffix = PULLS_SUFFIX + f'/{pull_number}/merge'
     response = http_request('GET', url_suffix=suffix)
@@ -914,6 +961,23 @@ def get_team_membership(team_id: Union[int, str], user_name: str) -> dict:
     return response
 
 
+def get_team_members(organization: str, team_slug: str, maximum_users: int = 30) -> list:
+    page = 1
+    results: list = []
+    while len(results) < maximum_users:
+        results_per_page = maximum_users - len(results)
+        results_per_page = min(results_per_page, 100)
+        params = {'page': page, 'per_page': results_per_page}
+        suffix = f'/orgs/{organization}/teams/{team_slug}/members'
+        response = http_request('GET', url_suffix=suffix, params=params)
+        if not response:
+            break
+        results.extend(response)
+        page += 1
+
+    return results
+
+
 def get_team_membership_command():
     args = demisto.args()
     team_id = args.get('team_id')
@@ -1009,7 +1073,7 @@ def get_stale_prs(stale_time: str, label: str) -> list:
     query = f'repo:{USER}/{REPOSITORY} is:open updated:<{timestamp} is:pr'
     if label:
         query += f' label:{label}'
-    matching_issues = search_issue(query).get('items', [])
+    matching_issues = search_issue(query, 100).get('items', [])
     relevant_prs = [get_pull_request(issue.get('number')) for issue in matching_issues]
     return relevant_prs
 
@@ -1114,20 +1178,120 @@ def list_all_command():
     create_issue_table(response, response, limit)
 
 
-def search_issue(query):
+def search_code(query, page=None, page_size=None):
+    headers = copy.deepcopy(HEADERS)
+    headers['Accept'] = 'application/vnd.github.v3+json'
+    params = {
+        'q': query
+    }
+
+    if page is not None:
+        params['page'] = page
+    if page_size is not None:
+        params['per_page'] = page_size
+
+    response = http_request(method='GET',
+                            url_suffix='/search/code',
+                            params=params,
+                            headers=headers)
+    return response
+
+
+def search_code_command():
+    q = demisto.args().get('query')
+    page_number = demisto.args().get('page_number')
+    page_size = demisto.args().get('page_size')
+    limit = demisto.args().get('limit')
+
+    response = None
+
+    if limit and page_number:
+        raise ValueError('Must pass either limit or page_number with page_size')
+    elif limit:
+        tmp_limit = int(limit)
+
+        page_size = int(page_size or 100)
+        while tmp_limit > 0:
+            page_number = int(tmp_limit / page_size)
+            res = search_code(
+                query=q,
+                page=page_number,
+                page_size=min(page_size, tmp_limit)
+            )
+
+            if not response:
+                response = res
+            else:
+                response['items'].extend(res.get('items', []))
+
+            tmp_limit = tmp_limit - page_size
+
+    else:
+        page_number = int(page_number or 0)
+        page_size = int(page_size or 50)
+
+        response = search_code(
+            query=q,
+            page=page_number,
+            page_size=page_size
+        )
+
+    total_count = response.get('total_count') if response else 0
+    items = response.get('items', []) if response else []
+    outputs = []
+    md_table = []
+    for item in items:
+        outputs.append({
+            'name': item.get('name'),
+            'path': item.get('path'),
+            'html_url': item.get('html_url'),
+            'repository': {
+                'desrciption': item.get('repository', {}).get('description'),
+                'full_name': item.get('repository', {}).get('full_name'),
+                'html_url': item.get('repository', {}).get('html_url'),
+                'branches_url': item.get('repository', {}).get('branches_url'),
+                'releases_url': item.get('repository', {}).get('releases_url'),
+                'commits_url': item.get('repository', {}).get('commits_url'),
+                'private': item.get('repository', {}).get('private'),
+                'id': item.get('repository', {}).get('id')
+            }
+        })
+
+        md_table.append({
+            'Name': f'[{item.get("name")}]({item.get("html_url")})',
+            'Path': item.get('path'),
+            'Repository Name': item.get('repository', {}).get('full_name'),
+            'Repository Description': item.get('repository', {}).get('description'),
+            'Is Repository Private': item.get('repository', {}).get('private')
+        })
+    md = tableToMarkdown(f'Returned {len(md_table)} out of {total_count} total results.', md_table,
+                         headers=['Name', 'Path', 'Repository Name', 'Repository Description', 'Is Repository Private'])
+
+    results = CommandResults(
+        outputs_prefix='GitHub.CodeSearchResults',
+        outputs_key_field='html_url',
+        outputs=outputs,
+        raw_response=response,
+        readable_output=md
+    )
+
+    return_results(results)
+
+
+def search_issue(query, limit):
     response = http_request(method='GET',
                             url_suffix='/search/issues',
-                            params={'q': query})
+                            params={'q': query, 'per_page': limit})
     return response
 
 
 def search_command():
     q = demisto.args().get('query')
     limit = int(demisto.args().get('limit'))
-    if limit > 200:
-        limit = 200
+    if limit > 100:
+        limit = 100  # per GitHub limitation.
 
-    response = search_issue(q)
+    response = search_issue(q, limit)
     create_issue_table(response['items'], response, limit)
 
 
@@ -1206,6 +1370,34 @@ def get_workflow_usage(owner_name, repository_name, workflow_id):
     workflow_usage = http_request(method="GET", url_suffix=url_suffix).get('billable', {})
 
     return workflow_usage
+
+
+def list_team_members_command():
+    args = demisto.args()
+    org = args.get('organization')
+    team_slug = args.get('team_slug')
+    maximum_users = int(args.get('maximum_users'))
+    response = get_team_members(org, team_slug, maximum_users)
+    members = []
+    for member in response:
+        context_data = {
+            'ID': member.get("id"),
+            'Login': member.get("login"),
+            'Team': team_slug,
+        }
+        members.append(context_data)
+    if members:
+        human_readable = tableToMarkdown(f'Team Member of team {team_slug} in organization {org}', t=members, removeNull=True)
+    else:
+        human_readable = f'There is no team members under team {team_slug} in organization {org}'
+
+    return_results(CommandResults(
+        readable_output=human_readable,
+        outputs_prefix='GitHub.TeamMember',
+        outputs_key_field='ID',
+        outputs=members if members else None,
+        raw_response=response,
+    ))
 
 
 def get_github_actions_usage():
@@ -1294,13 +1486,18 @@ def list_files_command():
     path = args.get('path', '')
     organization = args.get('organization')
     repository = args.get('repository')
+    branch = args.get('branch')
 
     if organization and repository:
         suffix = f'/repos/{organization}/{repository}/contents/{path}'
     else:
         suffix = f'{USER_SUFFIX}/contents/{path}'
 
-    res = http_request(method='GET', url_suffix=suffix)
+    params = {}
+    if branch:
+        params['ref'] = branch
+
+    res = http_request(method='GET', url_suffix=suffix, params=params)
 
     ec_object = []
     for file in res:
@@ -1309,12 +1506,109 @@ def list_files_command():
             'Name': file.get('name'),
             'Size': file.get('size'),
             'Path': file.get('path'),
+            'SHA': file.get('sha'),
             'DownloadUrl': file.get('download_url')
         })
 
     ec = {'GitHub.File(val.Path === obj.Path)': ec_object}
     human_readable = tableToMarkdown(f'Files in path: {path}', ec_object, removeNull=True, headers=FILE_HEADERS)
     return_outputs(readable_output=human_readable, outputs=ec, raw_response=res)
+
+
+def commit_file_command():
+    args = demisto.args()
+    commit_message = args.get('commit_message')
+    path_to_file = args.get('path_to_file')
+    branch = args.get('branch_name')
+    entry_id = args.get('entry_id')
+    file_text = args.get('file_text')
+    file_sha = args.get('file_sha')
+
+    if not entry_id and not file_text:
+        raise DemistoException('You must specify either the "file_text" or the "entry_id" of the file.')
+    elif entry_id:
+        file_path = demisto.getFilePath(entry_id).get('path')
+        with open(file_path, 'rb') as f:
+            content = f.read()
+    else:
+        content = bytes(file_text, encoding='utf8')
+
+    data = {
+        'message': commit_message,
+        'content': base64.b64encode(content).decode("utf-8"),
+        'branch': branch,
+    }
+    if file_sha:
+        data['sha'] = file_sha
+    res = http_request(method='PUT', url_suffix='{}/{}'.format(FILE_SUFFIX, path_to_file), data=data)
+
+    return_results(CommandResults(
+        readable_output=f"The file {path_to_file} committed successfully. Link to the commit:"
+                        f" {res['commit'].get('html_url')}",
+        raw_response=res
+    ))
+
+
+def list_check_runs(owner_name, repository_name, run_id, commit_id):
+    url_suffix = None
+
+    if run_id:
+        url_suffix = f"/repos/{owner_name}/{repository_name}/check-runs/{run_id}"
+    elif commit_id:
+        url_suffix = f"/repos/{owner_name}/{repository_name}/commits/{commit_id}/check-runs"
+    else:
+        raise DemistoException("You have to specify either the check run id of the head commit reference")
+
+    check_runs = http_request(method="GET", url_suffix=url_suffix)
+
+    return [r for r in check_runs.get('check_runs')]
+
+
+def get_github_get_check_run():
+    """ List github check runs.
+
+    """
+    command_args = demisto.args()
+    owner_name = command_args.get('owner', '')
+    repository_name = command_args.get('repository', '')
+    run_id = command_args.get('run_id', '')
+    commit_id = command_args.get('commit_id', '')
+
+    check_run_result = []
+
+    check_runs = list_check_runs(owner_name=owner_name, repository_name=repository_name, run_id=run_id, commit_id=commit_id)
+
+    for check_run in check_runs:
+        check_run_id = check_run.get('id', '')
+        check_external_id = check_run.get('external_id', '')
+        check_run_name = check_run.get('name', '')
+        check_run_app_name = check_run['app'].get('name', '')
+        check_run_pr = check_run.get('pull_requests')
+        check_run_status = check_run.get('status', '')
+        check_run_conclusion = check_run.get('conclusion', '')
+        check_run_started_at = check_run.get('started_at', '')
+        check_run_completed_at = check_run.get('completed_at', '')
+        check_run_output = check_run.get('output', '')
+
+        check_run_result.append({
+            'CheckRunID': check_run_id,
+            'CheckExternalID': check_external_id,
+            'CheckRunName': check_run_name,
+            'CheckRunAppName': check_run_app_name,
+            'CheckRunPR': check_run_pr,
+            'CheckRunStatus': check_run_status,
+            'CheckRunConclusion': check_run_conclusion,
+            'CheckRunStartedAt': check_run_started_at,
+            'CheckRunCompletedAt': check_run_completed_at,
+            'CheckRunOutPut': check_run_output
+        })
+    command_results = CommandResults(
+        outputs_prefix='GitHub.CheckRuns',
+        outputs_key_field='CheckRunID',
+        outputs=check_run_result,
+        raw_response=check_run_result,
+    )
+    return_results(command_results)
 
 
 def fetch_incidents_command():
@@ -1326,23 +1620,45 @@ def fetch_incidents_command():
         start_time = datetime.now() - timedelta(days=int(FETCH_TIME))
 
     last_time = start_time
-    issue_list = http_request(method='GET',
-                              url_suffix=ISSUE_SUFFIX,
-                              params={'state': 'all'})
-
     incidents = []
-    for issue in issue_list:
-        updated_at_str = issue.get('created_at')
-        updated_at = datetime.strptime(updated_at_str, '%Y-%m-%dT%H:%M:%SZ')
-        if updated_at > start_time:
-            inc = {
-                'name': issue.get('url'),
-                'occurred': updated_at_str,
-                'rawJSON': json.dumps(issue)
-            }
-            incidents.append(inc)
-            if updated_at > last_time:
-                last_time = updated_at
+
+    if demisto.params().get('fetch_object') == "Pull_requests":
+        pr_list = http_request(method='GET',
+                               url_suffix=PULLS_SUFFIX,
+                               params={
+                                   'state': 'open',
+                                   'sort': 'created',
+                                   'page': 1
+                               })
+        for pr in pr_list:
+            updated_at_str = pr.get('created_at')
+            updated_at = datetime.strptime(updated_at_str, '%Y-%m-%dT%H:%M:%SZ')
+            if updated_at > start_time:
+                inc = {
+                    'name': pr.get('url'),
+                    'occurred': updated_at_str,
+                    'rawJSON': json.dumps(pr)
+                }
+                incidents.append(inc)
+                if updated_at > last_time:
+                    last_time = updated_at
+    else:
+        issue_list = http_request(method='GET',
+                                  url_suffix=ISSUE_SUFFIX,
+                                  params={'state': 'all'})
+
+        for issue in issue_list:
+            updated_at_str = issue.get('created_at')
+            updated_at = datetime.strptime(updated_at_str, '%Y-%m-%dT%H:%M:%SZ')
+            if updated_at > start_time:
+                inc = {
+                    'name': issue.get('url'),
+                    'occurred': updated_at_str,
+                    'rawJSON': json.dumps(issue)
+                }
+                incidents.append(inc)
+                if updated_at > last_time:
+                    last_time = updated_at
 
     demisto.setLastRun({'start_time': datetime.strftime(last_time, '%Y-%m-%dT%H:%M:%SZ')})
     demisto.incidents(incidents)
@@ -1380,28 +1696,63 @@ COMMANDS = {
     'Github-get-github-actions-usage': get_github_actions_usage,
     'Github-list-files': list_files_command,
     'GitHub-get-file-content': get_file_content_from_repo,
-}
-
-'''EXECUTION'''
-
-if TOKEN == '' and PRIVATE_KEY != '':
-    try:
-        import jwt
-    except Exception:
-        return_error("You need to update the docket image so that the jwt package could be used")
-
-    generated_jwt_token = create_jwt(PRIVATE_KEY, INTEGRATION_ID)
-    TOKEN = get_installation_access_token(INSTALLATION_ID, generated_jwt_token)
-
-if TOKEN == '' and PRIVATE_KEY == '':
-    return_error("Insert api token or private key")
-
-HEADERS = {
-    'Authorization': "Bearer " + TOKEN
+    'GitHub-search-code': search_code_command,
+    'GitHub-list-team-members': list_team_members_command,
+    'GitHub-list-branch-pull-requests': list_branch_pull_requests_command,
+    'Github-get-check-run': get_github_get_check_run,
+    'Github-commit-file': commit_file_command,
 }
 
 
 def main():
+    global USER
+    global TOKEN
+    global PRIVATE_KEY
+    global INTEGRATION_ID
+    global INSTALLATION_ID
+    global REPOSITORY
+    global USE_SSL
+    global FETCH_TIME
+    global USER_SUFFIX
+    global ISSUE_SUFFIX
+    global RELEASE_SUFFIX
+    global PULLS_SUFFIX
+    global FILE_SUFFIX
+    global HEADERS
+
+    params = demisto.params()
+    USER = params.get('user')
+    TOKEN = params.get('token', '')
+    creds: dict = params.get('credentials', {})
+    PRIVATE_KEY = creds.get('sshkey', '') if creds else ''
+    INTEGRATION_ID = params.get('integration_id')
+    INSTALLATION_ID = params.get('installation_id')
+    REPOSITORY = params.get('repository')
+    USE_SSL = not params.get('insecure', False)
+    FETCH_TIME = params.get('fetch_time', '3')
+
+    USER_SUFFIX = '/repos/{}/{}'.format(USER, REPOSITORY)
+    ISSUE_SUFFIX = USER_SUFFIX + '/issues'
+    RELEASE_SUFFIX = USER_SUFFIX + '/releases'
+    PULLS_SUFFIX = USER_SUFFIX + '/pulls'
+    FILE_SUFFIX = USER_SUFFIX + '/contents'
+
+    if TOKEN == '' and PRIVATE_KEY != '':
+        try:
+            import jwt  # noqa
+        except Exception:
+            return_error("You need to update the docker image so that the jwt package could be used")
+
+        generated_jwt_token = create_jwt(PRIVATE_KEY, INTEGRATION_ID)
+        TOKEN = get_installation_access_token(INSTALLATION_ID, generated_jwt_token)
+
+    if TOKEN == '' and PRIVATE_KEY == '':
+        return_error("Insert api token or private key")
+
+    HEADERS = {
+        'Authorization': "Bearer " + TOKEN
+    }
+
     handle_proxy()
     cmd = demisto.command()
     LOG(f'command is {cmd}')
@@ -1413,5 +1764,5 @@ def main():
 
 
 # python2 uses __builtin__ python3 uses builtins
-if __name__ == '__builtin__' or __name__ == 'builtins':
+if __name__ == '__builtin__' or __name__ == 'builtins' or __name__ == '__main__':
     main()

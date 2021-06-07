@@ -187,7 +187,7 @@ def fetch_indicators_command(client: Client, indicator_type: str, feedTags: list
                 handle_indicator_function(client, item, feed_config, service_name, indicator_type, indicator_field,
                                           use_prefix_flat, feedTags, auto_detect, mapping_function))
 
-            if limit and len(indicators) % limit == 0:  # We have a limitation only when get-indicators command is
+            if limit and len(indicators) >= limit:  # We have a limitation only when get-indicators command is
                 # called, and then we return for each service_name "limit" of indicators
                 break
     return indicators
@@ -219,6 +219,8 @@ def handle_indicator(client: Client, item: Dict, feed_config: Dict, service_name
     current_indicator_type = determine_indicator_type(indicator_type, auto_detect, indicator_value)
 
     if not current_indicator_type:
+        demisto.debug(f'Could not determine indicator type for value: {indicator_value} from field: {indicator_field}.'
+                      f' Skipping item: {item}')
         return []
 
     indicator = {
@@ -242,6 +244,9 @@ def handle_indicator(client: Client, item: Dict, feed_config: Dict, service_name
 
     if mapping:
         mapping_function(mapping, indicator, attributes)
+
+    if feed_config.get('rawjson_include_indicator_type'):
+        item['_indicator_type'] = current_indicator_type
 
     indicator['rawJSON'] = item
 

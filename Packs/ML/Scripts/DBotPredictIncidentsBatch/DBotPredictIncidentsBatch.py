@@ -71,20 +71,18 @@ def main():
             'emailBody': email_body_list,
             'emailBodyHTML': email_html_list,
             'modelName': model_name}
-    demisto.results('got to prediction')
-
     res = demisto.executeCommand("DBotPredictPhishingWords", args)
     if is_error(res):
         return_error(get_error(res))
 
     incidents_df = pd.DataFrame(incidents)
-    predictions_df = pd.DataFrame(res[0]['Contents'])
+    predictions_df = pd.DataFrame(res[-1]['Contents'])
     df = pd.concat([incidents_df, predictions_df], axis=1)
     df.rename(columns={"Label": "Prediction"}, inplace=True)
     file_name = 'predictions.csv'
     file_columns = ['id', tag_field_name, 'Prediction',
                     'Probability',
-                    'Exception']
+                    'Error']
     if additional_populate_fields is not None and additional_populate_fields.strip() != '':
         file_columns += [x.strip() for x in additional_populate_fields.split(',') if x.strip() != '']
     file_columns = [c for c in file_columns if c in df.columns]
