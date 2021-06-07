@@ -1,6 +1,6 @@
 Use the Kenna v2 integration to search and update vulnerabilities, schedule a run connector, and manage tags and attributes.
 
-## Configure Kenna v2 on Demisto
+## Configure Kenna v2 on Cortex XSOAR
 ---
 
 1. Navigate to __Settings__ > __Integrations__ > __Servers & Services__.
@@ -15,7 +15,7 @@ Use the Kenna v2 integration to search and update vulnerabilities, schedule a ru
 
 ## Commands
 ---
-You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.
+You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### 1. Search vulnerabilities

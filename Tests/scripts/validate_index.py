@@ -9,9 +9,9 @@ import logging
 import sys
 import os
 
-from Tests.Marketplace.marketplace_services import init_storage_client, load_json, get_content_git_client, \
-    GCPConfig, CONTENT_ROOT_PATH
+from Tests.Marketplace.marketplace_services import init_storage_client, load_json, get_content_git_client
 from Tests.Marketplace.upload_packs import download_and_extract_index
+from Tests.Marketplace.marketplace_constants import GCPConfig, CONTENT_ROOT_PATH
 from Tests.scripts.utils.log_util import install_logging
 from pprint import pformat
 

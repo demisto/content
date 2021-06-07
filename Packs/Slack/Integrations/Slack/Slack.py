@@ -260,6 +260,7 @@ def send_slack_request_sync(client: slack.WebClient, method: str, http_verb: str
     total_try_time = 0
     while True:
         try:
+            demisto.debug(f'Sending slack {method} (sync). Body is: {str(body)}')
             if http_verb == 'POST':
                 if file_:
                     response = client.api_call(method, files={"file": file_}, data=body)
@@ -268,6 +269,7 @@ def send_slack_request_sync(client: slack.WebClient, method: str, http_verb: str
             else:
                 response = client.api_call(method, http_verb='GET', params=body)
         except SlackApiError as api_error:
+            demisto.debug(f'Got rate limit error (sync). Body is: {str(body)}\n{api_error}')
             response = api_error.response
             headers = response.headers  # type: ignore
             if 'Retry-After' in headers:
@@ -304,6 +306,7 @@ async def send_slack_request_async(client: slack.WebClient, method: str, http_ve
     total_try_time = 0
     while True:
         try:
+            demisto.debug(f'Sending slack {method} (async). Body is: {str(body)}')
             if http_verb == 'POST':
                 if file_:
                     response = await client.api_call(method, files={"file": file_}, data=body)  # type: ignore
@@ -312,6 +315,7 @@ async def send_slack_request_async(client: slack.WebClient, method: str, http_ve
             else:
                 response = await client.api_call(method, http_verb='GET', params=body)  # type: ignore
         except SlackApiError as api_error:
+            demisto.debug(f'Got rate limit error (async). Body is: {str(body)}\n{api_error}')
             response = api_error.response
             headers = response.headers
             if 'Retry-After' in headers:
@@ -1264,6 +1268,7 @@ def get_conversation_by_name(conversation_name: str) -> dict:
         if conversation_filter:
             return conversation_filter[0]
 
+    demisto.debug(f'could not find slack channel "{conversation_to_search}" in integration context, searching via API')
     # If not found in cache, search for it
     body = {
         'types': 'private_channel,public_channel',
@@ -1274,12 +1279,13 @@ def get_conversation_by_name(conversation_name: str) -> dict:
     while True:
         conversations = response['channels'] if response and response.get('channels') else []
         cursor = response.get('response_metadata', {}).get('next_cursor')
-        conversation_filter = list(filter(lambda c: c.get('name') == conversation_name, conversations))
+        conversation_filter = [c for c in conversations if c.get('name') == conversation_name]
         if conversation_filter:
             break
         if not cursor:
             break
-        body = body.copy()
+
+        body = body.copy()  # strictly for unit-test purposes (test_get_conversation_by_name_paging)
         body.update({'cursor': cursor})
         response = send_slack_request_sync(CLIENT, 'conversations.list', http_verb='GET', body=body)
 
@@ -1303,18 +1309,21 @@ def slack_send():
     """
     Sends a message to slack
     """
-    message = demisto.args().get('message', '')
-    to = demisto.args().get('to')
-    original_channel = demisto.args().get('channel')
-    group = demisto.args().get('group')
-    message_type = demisto.args().get('messageType', '')  # From server
-    original_message = demisto.args().get('originalMessage', '')  # From server
-    entry = demisto.args().get('entry')
-    ignore_add_url = demisto.args().get('ignoreAddURL', False) or demisto.args().get('IgnoreAddURL', False)
-    thread_id = demisto.args().get('threadID', '')
-    severity = demisto.args().get('severity')  # From server
-    blocks = demisto.args().get('blocks')
-    entry_object = demisto.args().get('entryObject')  # From server, available from demisto v6.1 and above
+
+    args = demisto.args()
+    demisto.debug(f'Got slack send request. args: {args}')
+    message = args.get('message', '')
+    to = args.get('to')
+    original_channel = args.get('channel')
+    group = args.get('group')
+    message_type = args.get('messageType', '')  # From server
+    original_message = args.get('originalMessage', '')  # From server
+    entry = args.get('entry')
+    ignore_add_url = args.get('ignoreAddURL', False) or args.get('IgnoreAddURL', False)
+    thread_id = args.get('threadID', '')
+    severity = args.get('severity')  # From server
+    blocks = args.get('blocks')
+    entry_object = args.get('entryObject')  # From server, available from demisto v6.1 and above
     entitlement = ''
 
     if message_type == MIRROR_TYPE and original_message.find(MESSAGE_FOOTER) != -1:
@@ -1346,6 +1355,7 @@ def slack_send():
     if original_channel == INCIDENT_NOTIFICATION_CHANNEL or (not original_channel and message_type == INCIDENT_OPENED):
         original_channel = INCIDENT_NOTIFICATION_CHANNEL
         channel = DEDICATED_CHANNEL
+        demisto.debug(f'trying to send message to channel {original_channel}, changing slack channel to {channel}')
 
     if (channel == DEDICATED_CHANNEL and original_channel == INCIDENT_NOTIFICATION_CHANNEL
             and ((severity is not None and severity < SEVERITY_THRESHOLD)
@@ -1971,10 +1981,16 @@ def loop_info(loop: asyncio.AbstractEventLoop):
     return info
 
 
+def slack_get_integration_context():
+    integration_context = get_integration_context()
+    return_results(fileResult('slack_integration_context', json.dumps(integration_context), EntryType.ENTRY_INFO_FILE))
+
+
 def main():
     """
     Main
     """
+    global CLIENT
     if is_debug_mode():
         os.environ['PYTHONASYNCIODEBUG'] = "1"
 
@@ -1994,6 +2010,7 @@ def main():
         'slack-kick-from-channel': kick_from_channel,
         'slack-rename-channel': rename_channel,
         'slack-get-user-details': get_user,
+        'slack-get-integration-context': slack_get_integration_context,
     }
 
     command_name = demisto.command()

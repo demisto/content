@@ -19,7 +19,7 @@
                         "items": [
                             {
                                 "endCol": 2,
-                                "fieldId": "temporaryid",
+                                "fieldId": "bitsighttemporaryid",
                                 "height": 22,
                                 "id": "cb022d80-769e-11eb-b547-b75a1233ac03",
                                 "index": 0,
@@ -29,7 +29,7 @@
                             {
                                 "dropEffect": "move",
                                 "endCol": 2,
-                                "fieldId": "affectsrating",
+                                "fieldId": "bitsightaffectsrating",
                                 "height": 22,
                                 "id": "c302f280-769f-11eb-b547-b75a1233ac03",
                                 "index": 1,
@@ -39,7 +39,7 @@
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "assets",
+                                "fieldId": "bitsightassets",
                                 "height": 44,
                                 "id": "de163600-769e-11eb-b547-b75a1233ac03",
                                 "index": 2,
@@ -57,7 +57,7 @@
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "evidencekey",
+                                "fieldId": "bitsightevidencekey",
                                 "height": 22,
                                 "id": "ed95cd20-769e-11eb-b547-b75a1233ac03",
                                 "index": 4,
@@ -86,7 +86,7 @@
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "relatedfindings",
+                                "fieldId": "bitsightrelatedfindings",
                                 "height": 22,
                                 "id": "020c99f0-769f-11eb-b547-b75a1233ac03",
                                 "index": 7,
@@ -95,7 +95,7 @@
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "riskcategory",
+                                "fieldId": "bitsightriskcategory",
                                 "height": 22,
                                 "id": "088e4030-769f-11eb-b547-b75a1233ac03",
                                 "index": 8,
@@ -104,7 +104,7 @@
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "riskvector",
+                                "fieldId": "bitsightriskvector",
                                 "height": 22,
                                 "id": "108b14c0-769f-11eb-b547-b75a1233ac03",
                                 "index": 9,
@@ -114,7 +114,7 @@
                             {
                                 "dropEffect": "move",
                                 "endCol": 2,
-                                "fieldId": "riskvectorlabel",
+                                "fieldId": "bitsightriskvectorlabel",
                                 "height": 22,
                                 "id": "17a55180-769f-11eb-b547-b75a1233ac03",
                                 "index": 10,
@@ -124,7 +124,7 @@
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "rolledupobservationid",
+                                "fieldId": "bitsightrolledupobservationid",
                                 "height": 22,
                                 "id": "1fdc9700-769f-11eb-b547-b75a1233ac03",
                                 "index": 11,
@@ -142,7 +142,7 @@
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "severitycategory",
+                                "fieldId": "bitsightseveritycategory",
                                 "height": 22,
                                 "id": "26d5de40-769f-11eb-b547-b75a1233ac03",
                                 "index": 13,
@@ -170,7 +170,7 @@
                             {
                                 "dropEffect": "move",
                                 "endCol": 2,
-                                "fieldId": "comments",
+                                "fieldId": "bitsightcomments",
                                 "height": 22,
                                 "id": "380a9f70-769f-11eb-b547-b75a1233ac03",
                                 "index": 16,
@@ -181,7 +181,7 @@
                             {
                                 "dropEffect": "move",
                                 "endCol": 2,
-                                "fieldId": "remainingdecay",
+                                "fieldId": "bitsightremainingdecay",
                                 "height": 22,
                                 "id": "3d286ff0-769f-11eb-b547-b75a1233ac03",
                                 "index": 17,
@@ -596,7 +596,7 @@
                         "isVisible": true
                     },
                     {
-                        "fieldId": "incident_assets",
+                        "fieldId": "incident_bitsightassets",
                         "isVisible": true
                     },
                     {
@@ -616,7 +616,7 @@
                         "isVisible": true
                     },
                     {
-                        "fieldId": "incident_comments",
+                        "fieldId": "incident_bitsightcomments",
                         "isVisible": true
                     },
                     {
@@ -684,7 +684,7 @@
                         "isVisible": true
                     },
                     {
-                        "fieldId": "incident_evidencekey",
+                        "fieldId": "incident_bitsightevidencekey",
                         "isVisible": true
                     },
                     {
@@ -760,27 +760,27 @@
                         "isVisible": true
                     },
                     {
-                        "fieldId": "incident_relatedfindings",
+                        "fieldId": "incident_bitsightrelatedfindings",
                         "isVisible": true
                     },
                     {
-                        "fieldId": "incident_riskcategory",
+                        "fieldId": "incident_bitsightriskcategory",
                         "isVisible": true
                     },
                     {
-                        "fieldId": "incident_riskvector",
+                        "fieldId": "incident_bitsightriskvector",
                         "isVisible": true
                     },
                     {
-                        "fieldId": "incident_riskvectorlabel",
+                        "fieldId": "incident_bitsightriskvectorlabel",
                         "isVisible": true
                     },
                     {
-                        "fieldId": "incident_rolledupobservationid",
+                        "fieldId": "incident_bitsightrolledupobservationid",
                         "isVisible": true
                     },
                     {
-                        "fieldId": "incident_severitycategory",
+                        "fieldId": "incident_bitsightseveritycategory",
                         "isVisible": true
                     },
                     {
@@ -824,7 +824,7 @@
                         "isVisible": true
                     },
                     {
-                        "fieldId": "incident_temporaryid",
+                        "fieldId": "incident_bitsighttemporaryid",
                         "isVisible": true
                     },
                     {
@@ -956,7 +956,7 @@
                         "isVisible": true
                     },
                     {
-                        "fieldId": "incident_assets",
+                        "fieldId": "incident_bitsightassets",
                         "isVisible": true
                     },
                     {
@@ -976,7 +976,7 @@
                         "isVisible": true
                     },
                     {
-                        "fieldId": "incident_comments",
+                        "fieldId": "incident_bitsightcomments",
                         "isVisible": true
                     },
                     {
@@ -1048,7 +1048,7 @@
                         "isVisible": true
                     },
                     {
-                        "fieldId": "incident_evidencekey",
+                        "fieldId": "incident_bitsightevidencekey",
                         "isVisible": true
                     },
                     {
@@ -1124,7 +1124,7 @@
                         "isVisible": true
                     },
                     {
-                        "fieldId": "incident_relatedfindings",
+                        "fieldId": "incident_bitsightrelatedfindings",
                         "isVisible": true
                     },
                     {
@@ -1132,23 +1132,23 @@
                         "isVisible": true
                     },
                     {
-                        "fieldId": "incident_riskcategory",
+                        "fieldId": "incident_bitsightriskcategory",
                         "isVisible": true
                     },
                     {
-                        "fieldId": "incident_riskvector",
+                        "fieldId": "incident_bitsightriskvector",
                         "isVisible": true
                     },
                     {
-                        "fieldId": "incident_riskvectorlabel",
+                        "fieldId": "incident_bitsightriskvectorlabel",
                         "isVisible": true
                     },
                     {
-                        "fieldId": "incident_rolledupobservationid",
+                        "fieldId": "incident_bitsightrolledupobservationid",
                         "isVisible": true
                     },
                     {
-                        "fieldId": "incident_severitycategory",
+                        "fieldId": "incident_bitsightseveritycategory",
                         "isVisible": true
                     },
                     {
@@ -1192,7 +1192,7 @@
                         "isVisible": true
                     },
                     {
-                        "fieldId": "incident_temporaryid",
+                        "fieldId": "incident_bitsighttemporaryid",
                         "isVisible": true
                     },
                     {

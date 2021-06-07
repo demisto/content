@@ -30,7 +30,7 @@ configuration:
   required: false
   type: 13
 description: Protect your cloud assets and private network
-display: Stealthwatch Cloud
+display: Cisco Secure Cloud Analytics (Stealthwatch Cloud)
 name: Stealthwatch Cloud
 script:
   commands:

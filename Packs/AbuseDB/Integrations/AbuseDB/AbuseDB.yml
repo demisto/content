@@ -141,6 +141,9 @@ script:
     - contextPath: AbuseIPDB.IP.Malicious.Description
       description: A description explaining why the IP address was reported as malicious.
       type: String
+    - contextPath: AbuseIPDB.IP.ISP
+      description: The internet service provider of the IP.
+      type: String
   - arguments:
     - default: false
       description: IPv4 Address Block in CIDR notation.
@@ -186,6 +189,9 @@ script:
     - contextPath: IP.Malicious.Detections
       description: The Detections that led to the verdict.
       type: String
+    - contextPath: IP.Malicious.Description
+      description: A description explaining why the IP address was reported as malicious.
+      type: String
     - contextPath: AbuseIPDB.IP.Address
       description: The IP address fetched from AbuseIPDB.
       type: String
@@ -219,8 +225,8 @@ script:
     - contextPath: AbuseIPDB.IP.Malicious.Detections
       description: The Detections that led to the verdict.
       type: String
-    - contextPath: IP.Malicious.Description
-      description: A description explaining why the IP address was reported as malicious.
+    - contextPath: AbuseIPDB.IP.ISP
+      description: The internet service provider of the IP.
       type: String
   - arguments:
     - default: false

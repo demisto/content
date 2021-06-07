@@ -715,6 +715,9 @@ def test_module(client: QRadarClient):
     params = demisto.params()
     is_long_running = params.get("longRunning")
     if is_long_running:
+        if not params.get('events_limit'):
+            raise DemistoException('Unlimited long running instance fetch is not supported, please limit your fetch'
+                                   ' by using the "Max number of events per incident" parameter.')
         # check fetch incidents can fetch and search events
         raw_offenses = client.get_offenses(_range="0-0")
         fetch_mode = params.get("fetch_mode")
@@ -1977,9 +1980,9 @@ def get_indicators_list(indicator_query, limit, page):
     """
     indicators_values_list = []
     indicators_data_list = []
-    fetched_iocs = demisto.searchIndicators(
-        query=indicator_query, page=page, size=limit
-    ).get("iocs")
+    search_indicators = IndicatorsSearcher(page=page)
+    fetched_iocs = search_indicators.search_indicators_by_version(query=indicator_query, size=limit).get("iocs")
+
     for indicator in fetched_iocs:
         indicators_values_list.append(indicator["value"])
         indicators_data_list.append(
@@ -1999,31 +2002,39 @@ def fetch_loop_with_events(
     events_limit,
 ):
     while True:
-        is_reset_triggered(client.lock, handle_reset=True)
+        try:
+            is_reset_triggered(client.lock, handle_reset=True)
 
-        print_debug_msg("Starting fetch loop with events.")
-        fetch_incidents_long_running_events(
-            client,
-            incident_type,
-            user_query,
-            ip_enrich,
-            asset_enrich,
-            fetch_mode,
-            events_columns,
-            events_limit,
-        )
-        time.sleep(FETCH_SLEEP)
+            print_debug_msg("Starting fetch loop with events.")
+            fetch_incidents_long_running_events(
+                client,
+                incident_type,
+                user_query,
+                ip_enrich,
+                asset_enrich,
+                fetch_mode,
+                events_columns,
+                events_limit,
+            )
+        except Exception as e:
+            demisto.error(str(e))
+        finally:
+            time.sleep(FETCH_SLEEP)
 
 
 def fetch_loop_no_events(client: QRadarClient, incident_type, user_query, ip_enrich, asset_enrich):
     while True:
-        is_reset_triggered(client.lock, handle_reset=True)
+        try:
+            is_reset_triggered(client.lock, handle_reset=True)
 
-        print_debug_msg("Starting fetch loop with no events.")
-        fetch_incidents_long_running_no_events(
-            client, incident_type, user_query, ip_enrich, asset_enrich
-        )
-        time.sleep(FETCH_SLEEP)
+            print_debug_msg("Starting fetch loop with no events.")
+            fetch_incidents_long_running_no_events(
+                client, incident_type, user_query, ip_enrich, asset_enrich
+            )
+        except Exception as e:
+            demisto.error(e)
+        finally:
+            time.sleep(FETCH_SLEEP)
 
 
 def long_running_main(

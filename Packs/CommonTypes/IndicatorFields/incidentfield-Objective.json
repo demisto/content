@@ -1,0 +1,30 @@
+{
+    "id": "indicator_objective",
+    "version": -1,
+    "modified": "2021-04-26T15:15:35.48485+03:00",
+    "name": "Objective",
+    "ownerOnly": false,
+    "cliName": "objective",
+    "type": "shortText",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 2,
+    "hidden": false,
+    "associatedTypes": [
+        "Campaign"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": false,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "5.5.0"
+}

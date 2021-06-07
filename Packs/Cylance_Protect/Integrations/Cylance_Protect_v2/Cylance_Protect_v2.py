@@ -388,13 +388,14 @@ def get_device_threats():
             threshold = demisto.args().get('threshold', FILE_THRESHOLD)
             dbot_score = translate_score(threat['cylance_score'], int(threshold))
         dbot_score_array.append({
-            'Indicator': threat['name'],
+            'Indicator': threat.get('sha256'),
             'Type': 'file',
             'Vendor': 'Cylance Protect',
             'Score': dbot_score
         })
     if device_threats:
         threats_context = createContext(data=device_threats, keyTransform=underscoreToCamelCase)
+        threats_context = add_capitalized_hash_to_context(threats_context)
         ec = {
             'File': threats_context,
             'DBotScore': dbot_score_array
@@ -627,7 +628,7 @@ def update_zone_request(zone_id, name, policy_id, criticality):
 
 
 def get_threat():
-    sha256 = demisto.args()['sha256']
+    sha256 = demisto.args().get('sha256')
     threat = get_threat_request(sha256)
     if threat:
         dbot_score = 0
@@ -637,10 +638,11 @@ def get_threat():
             threshold = demisto.args().get('threshold', FILE_THRESHOLD)
             dbot_score = translate_score(threat['cylance_score'], int(threshold))
         context_threat = createContext(data=threat, keyTransform=underscoreToCamelCase, removeNull=True)
+        context_threat = add_capitalized_hash_to_context(context_threat)
         ec = {
             'File': context_threat,
             'DBotScore': {
-                'Indicator': threat['name'],
+                'Indicator': sha256,
                 'Type': 'file',
                 'Vendor': 'Cylance Protect',
                 'Score': dbot_score
@@ -685,12 +687,13 @@ def get_threats():
             threshold = demisto.args().get('threshold', FILE_THRESHOLD)
             dbot_score = translate_score(threat['cylance_score'], int(threshold))
         dbot_score_array.append({
-            'Indicator': threat['name'],
+            'Indicator': threat.get('sha256'),
             'Type': 'file',
             'Vendor': 'Cylance Protect',
             'Score': dbot_score
         })
     context_threat = createContext(data=threats, keyTransform=underscoreToCamelCase, removeNull=True)
+    context_threat = add_capitalized_hash_to_context(context_threat)
     ec = {
         'File': context_threat,
         'DBotScore': dbot_score_array
@@ -825,13 +828,14 @@ def get_list():
             threshold = demisto.args().get('threshold', FILE_THRESHOLD)
             dbot_score = translate_score(threat['cylance_score'], int(threshold))
         dbot_score_array.append({
-            'Indicator': threat['name'],
+            'Indicator': threat['sha256'],
             'Type': 'file',
             'Vendor': 'Cylance Protect',
             'Score': dbot_score
         })
     if lst:
         context_list = createContext(data=lst, keyTransform=underscoreToCamelCase, removeNull=True)
+        context_list = add_capitalized_hash_to_context((context_list))
         ec = {
             'File': context_list,
             'DBotScore': dbot_score_array
@@ -1000,7 +1004,7 @@ def download_threat():
             }
 
         context[outputPaths['dbotscore']] = {
-            'Indicator': threat.get('name'),
+            'Indicator': threat.get('sha256'),
             'Type': 'file',
             'Vendor': 'Cylance Protect',
             'Score': dbot_score
@@ -1345,6 +1349,30 @@ def fetch_incidents():
 
     demisto.incidents(incidents)
     demisto.setLastRun({'time': current_run.isoformat().split('.')[0]})
+
+
+def add_capitalized_hash_to_context(threats_context):
+    """Add capitalized hash keys to the context such as SHA256 and MD5,
+    the keys are redundant since they are used for avoiding BC issues.
+
+    Args:
+        threats_context(list): list of dicts of context outputs for the threats of interest, each containing
+        the key 'Sha256' (and possibly (Md5)).
+
+    Returns:
+        threats_context(list): list of dicts of context outputs for the threats of interest, each containing
+        the key and value 'Sha256' (and possibly Md5) as well as the key and value 'SHA256' (and possible MD5).
+    """
+    if not isinstance(threats_context, list):
+        threats_context = [threats_context]
+
+    for context_item in threats_context:
+        if context_item.get('Sha256'):
+            context_item['SHA256'] = context_item.get('Sha256')
+        if context_item.get('Md5'):
+            context_item['MD5'] = context_item.get('Md5')
+
+    return threats_context
 
 
 # EXECUTION

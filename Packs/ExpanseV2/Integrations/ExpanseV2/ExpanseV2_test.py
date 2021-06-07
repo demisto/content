@@ -232,8 +232,8 @@ def test_fetch_incidents(requests_mock):
 
     next_run, result = fetch_incidents(client, max_incidents=int(MOCK_LIMIT), last_run=last_run, business_units=MOCK_BU,
                                        first_fetch=None, priority=None, activity_status=None, progress_status=None,
-                                       issue_types=None, tags=None, mirror_direction=None, sync_tags=False,
-                                       fetch_details=None)
+                                       issue_types=None, tags=None, cloud_management_status=None, mirror_direction=None,
+                                       sync_tags=False, fetch_details=None)
 
     assert next_run == {
         'last_fetch': datestring_to_timestamp_us(MOCK_NEXT_FETCH_TIME),
@@ -541,6 +541,61 @@ def test_expanse_get_issue_updates_command(requests_mock):
     assert result.outputs == [{**d, "issueId": MOCK_ISSUE_ID} for d in mock_updates["data"][: int(MOCK_LIMIT)]]
 
 
+def test_expanse_get_service(requests_mock):
+    """
+    Given:
+        - an Expanse client
+        - arguments (service_id)
+    When
+        - running !expanse-get-service
+    Then
+        - the service is retrieved and returned in the Context
+    """
+    from ExpanseV2 import Client, get_service_command
+
+    MOCK_SERVICE_ID = "1c0cb095-2bf1-385f-a760-cb364cbe6f59"
+    mock_services = util_load_json("test_data/expanse_get_services.json")
+    mock_service = [i for i in mock_services["data"] if i["id"] == MOCK_SERVICE_ID][0]
+    client = Client(api_key="key", base_url="https://example.com/api/", verify=True, proxy=False)
+
+    requests_mock.get(f"https://example.com/api/v1/services/services/{MOCK_SERVICE_ID}", json=mock_service)
+
+    result = get_service_command(client, {"service_id": MOCK_SERVICE_ID})
+    assert result.outputs_prefix == "Expanse.Service"
+    assert result.outputs_key_field == "id"
+    assert result.outputs == mock_service
+
+
+def test_expanse_get_services(requests_mock):
+    """
+    Given:
+        - an Expanse client
+        - arguments (business_unit, limit, sort)
+    When
+        - running !expanse-get-services
+    Then
+        - the issues are retrieved and returned to the context
+    """
+    from ExpanseV2 import Client, get_services_command
+
+    MOCK_BU = "testcorp123 Dev"
+    MOCK_LIMIT = "2"
+    MOCK_SORT = "firstObserved"
+    mock_services = util_load_json("test_data/expanse_get_services.json")
+
+    client = Client(api_key="key", base_url="https://example.com/api/", verify=True, proxy=False)
+
+    requests_mock.get(
+        f"https://example.com/api/v1/services/services?limit={MOCK_LIMIT}&businessUnitName={MOCK_BU}&sort={MOCK_SORT}",
+        json=mock_services,
+    )
+
+    result = get_services_command(client, {"business_unit": MOCK_BU, "limit": MOCK_LIMIT, "sort": MOCK_SORT})
+    assert result.outputs_prefix == "Expanse.Service"
+    assert result.outputs_key_field == "id"
+    assert result.outputs == mock_services["data"][: int(MOCK_LIMIT)]
+
+
 def test_expanse_list_businessunits_command(requests_mock):
     """
     Given:
@@ -614,6 +669,109 @@ def test_expanse_list_tags(requests_mock):
     assert result.outputs_prefix == "Expanse.Tag"
     assert result.outputs_key_field == "id"
     assert result.outputs == mock_tags["data"][: int(MOCK_LIMIT)]
+
+
+def test_expanse_list_pocs(requests_mock):
+    """
+    Given:
+        - an Expanse client
+        - arguments (limit)
+    When
+        - running !expanse-list-pocs
+    Then
+        - the pocs are retrieved and returned to the context
+    """
+    from ExpanseV2 import Client, list_pocs_command
+
+    MOCK_LIMIT = "2"
+    mock_pocs = util_load_json("test_data/expanse_list_pocs.json")
+
+    client = Client(api_key="key", base_url="https://example.com/api/", verify=True, proxy=False)
+
+    requests_mock.get(f"https://example.com/api/v2/annotation/point-of-contact?limit={MOCK_LIMIT}", json=mock_pocs)
+    result = list_pocs_command(client, {"limit": MOCK_LIMIT})
+
+    assert result.outputs_prefix == "Expanse.PointOfContact"
+    assert result.outputs_key_field == "id"
+    assert result.outputs == mock_pocs["data"][: int(MOCK_LIMIT)]
+
+
+def test_expanse_create_poc(requests_mock):
+    """
+    Given:
+        - an Expanse client
+        - arguments (poc email, poc first_name, poc last_name, poc phone, poc role)
+    When
+        - running !expanse-create-poc
+    Then
+        - A new poc is created in Expanse
+        - the poc information is returned to the Context as Expanse.PointOfContact
+    """
+    from ExpanseV2 import Client, create_poc_command
+
+    MOCK_POC_EMAIL = "analyst@expanseinc.com"
+    MOCK_POC_FIRST_NAME = "John"
+    mock_poc = util_load_json("test_data/expanse_create_poc.json")
+
+    client = Client(api_key="key", base_url="https://example.com/api/", verify=True, proxy=False)
+
+    requests_mock.post("https://example.com/api/v2/annotation/point-of-contact", json=mock_poc)
+
+    result = create_poc_command(client, {"email": MOCK_POC_EMAIL, "first_name": MOCK_POC_FIRST_NAME})
+
+    assert result.outputs_prefix == "Expanse.PointOfContact"
+    assert result.outputs_key_field == "id"
+    assert result.outputs == mock_poc
+
+
+def test_expanse_assign_single_poc_to_iprange(mocker, requests_mock):
+    """
+    Given:
+        - an Expanse client
+        - arguments (single poc email, ip range asset ID)
+    When
+        - running !expanse-assign-pocs-to-iprange
+    Then
+        - The corresponding poc ID from the tag is retrieved via API
+        - The poc ID is assigned to the IP range
+        - "Operation Complete" is returned as human readable output
+    """
+    from ExpanseV2 import Client, manage_asset_pocs_command
+
+    OP_TYPE = "ASSIGN"
+    ASSET_TYPE = "IpRange"
+    POC_EMAIL = "analyst@expanseinc.com"
+    POC_IDS = ["f491b7ef-a7b9-4644-af90-36dc0a6b2000"]
+    ASSET_TYPE_URL = "ip-range"
+
+    MOCK_ASSET_ID = "c871feab-7d38-4cc5-9d36-5dad76f6b389"
+    MOCK_PAGE_LIMIT = "20"
+
+    client = Client(api_key="key", base_url="https://example.com/api/", verify=True, proxy=False)
+
+    # For list tags
+    mock_pocs = util_load_json("test_data/expanse_list_pocs.json")
+    requests_mock.get(f"https://example.com/api/v2/annotation/point-of-contact?limit={MOCK_PAGE_LIMIT}", json=mock_pocs)
+
+    requests_mock.post(f"https://example.com/api/v2/{ASSET_TYPE_URL}/contact-assignments/bulk", json={})
+
+    mock_func = mocker.patch.object(client, "manage_asset_pocs")
+
+    result = manage_asset_pocs_command(
+        client,
+        {"operation_type": OP_TYPE, "asset_type": ASSET_TYPE, "asset_id": MOCK_ASSET_ID, "poc_emails": POC_EMAIL}
+    )
+
+    assert len(mock_func.call_args_list) == 1
+    assert mock_func.call_args_list[0][0][0] == ASSET_TYPE_URL
+    assert mock_func.call_args_list[0][0][1] == OP_TYPE
+    assert mock_func.call_args_list[0][0][2] == MOCK_ASSET_ID
+    assert sorted(mock_func.call_args_list[0][0][3]) == sorted(POC_IDS)
+    assert result.outputs_prefix is None
+    assert result.outputs_key_field is None
+    assert result.outputs is None
+    assert result.readable_output == "Operation complete (ASSIGN ['analyst@expanseinc.com'] to " \
+                                     "c871feab-7d38-4cc5-9d36-5dad76f6b389)"
 
 
 def test_expanse_get_iprange(requests_mock):
@@ -1345,7 +1503,7 @@ def test_expanse_get_certificate_by_hash(requests_mock):
     mock_certificate_data = util_load_json("test_data/expanse_certificate.json")
     mock_result_data = util_load_json("test_data/expanse_certificate_stdctx.json")
 
-    mock_result_data['Expanse.Certificate(val.id == obj.id)'] = [mock_certificate_data]
+    mock_result_data['Expanse.Certificate(val.id && val.id == obj.id)'] = [mock_certificate_data]
 
     client = Client(api_key="key", base_url="https://example.com/api/", verify=True, proxy=False)
     requests_mock.get(
@@ -1422,7 +1580,7 @@ def test_certificate_command(requests_mock, mocker):
     mock_ioc_data = util_load_json("test_data/expanse_certcommand_ioc.json")
     mock_result_data = util_load_json("test_data/expanse_certificate_stdctx.json")
 
-    mock_result_data['Expanse.Certificate(val.id == obj.id)'] = [mock_certificate_data]
+    mock_result_data['Expanse.Certificate(val.id && val.id == obj.id)'] = [mock_certificate_data]
 
     client = Client(api_key="key", base_url="https://example.com/api/", verify=True, proxy=False)
     requests_mock.get(

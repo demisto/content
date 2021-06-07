@@ -397,7 +397,7 @@ script:
       description: Error Message in case API fails
       type: String
     description: BitSight command to get list of companies and GUID
-  dockerimage: demisto/python3:3.9.2.17957
+  dockerimage: demisto/python3:3.9.5.20070
   isfetch: true
   runonce: false
   subtype: python3

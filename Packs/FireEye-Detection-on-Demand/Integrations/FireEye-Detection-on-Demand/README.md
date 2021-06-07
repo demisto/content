@@ -15,7 +15,7 @@ This integration was integrated and tested with version 1.4.1 of FireEye Detecti
 
 4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.
+You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### fireeye-dod-get-hashes
 ***
@@ -286,7 +286,7 @@ Retrieves one or more reports of file scans
 >### Scan status
 >|completed_at|duration|file_extension|file_name|file_size|is_malicious|magic|md5|name|overall_status|report_id|sha1|sha256|signature_name|size|started_at|type|urls|verdict|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
->| 2020-11-10 14:28:18 | 0 | urlscan | test-infection.exe | 28672 | true |  | NA | test-infection.exe | DONE | 82e71bec-04c7-4f04-945b-4d344a758abe | NA | NA | Phish.LIVE.DTI.URL,<br/>Malicious.LIVE.DTI.URL,<br/>fe_ml_heuristic,<br/>FireEye.Malware.exe,<br/>FETestEvent | 28672 | 2020-11-10 14:28:18 | urlscan | http://fedeploycheck.fireeye.com/appliance-test/block.html,<br/>http://165.227.14.8/?NDU2MDgz&amp;yOyeu&amp;YPocHQsbD=disagree&amp;lAjd=callous&amp;mvUq=disagree&amp;eSCpt=disagree&amp;mnnYBwlX=abettor&amp;MZMJ=everyone&amp;ipEMqw=professional&amp;xRefGF=callous&amp;tzsdfga4=dJORROwbnhRaGKA1hlIhYVV0W8a2ojkbXzhCf1JaG9RGIZ1hD-sGcELgL6G2xyPNRcw&amp;cvggd54=wnfQMvXcJBXQFYbIKuXDSKxDKU7WFEaVw4-RhMG3YpjNfynz1-zURnL6tASVVFuRrbM&amp;hMdqbI=electrical&amp;qgZufk=disagree&amp;egHdAM=abettor&amp;BUfBH=professional&amp;RGVeFwBNTM2MzY2,<br/>http://br430.teste.website/~idbrok92/idb/UI/Login/,<br/>http://www.dulys.co.zw/,<br/>http://fedeploycheck.fireeye.com/appliance-test/test-infection.exe,<br/>http://fedeploycheck.fireeye.com/appliance-test/test-infection.pdf,<br/>http://fedeploycheck.fireeye.com/appliance-test/alert.html,<br/>https://tinyurl.com/y2qezvol,<br/>https://fedeploycheck.fireeye.com/appliance-test/alert.html | MALICIOUS |
+>| 2020-11-10 14:28:18 | 0 | urlscan | test-infection.exe | 28672 | true |  | NA | test-infection.exe | DONE | 82e71bec-04c7-4f04-945b-4d344a758abe | NA | NA | Phish.LIVE.DTI.URL,<br/>Malicious.LIVE.DTI.URL,<br/>fe_ml_heuristic,<br/>FireEye.Malware.exe,<br/>FETestEvent | 28672 | 2020-11-10 14:28:18 | urlscan | http:<span></span>//fedeploycheck.fireeye.com/appliance-test/block.html,<br/>http:<span></span>//165.227.14.8/?NDU2MDgz&amp;yOyeu&amp;YPocHQsbD=disagree&amp;lAjd=callous&amp;mvUq=disagree&amp;eSCpt=disagree&amp;mnnYBwlX=abettor&amp;MZMJ=everyone&amp;ipEMqw=professional&amp;xRefGF=callous&amp;tzsdfga4=dJORROwbnhRaGKA1hlIhYVV0W8a2ojkbXzhCf1JaG9RGIZ1hD-sGcELgL6G2xyPNRcw&amp;cvggd54=wnfQMvXcJBXQFYbIKuXDSKxDKU7WFEaVw4-RhMG3YpjNfynz1-zURnL6tASVVFuRrbM&amp;hMdqbI=electrical&amp;qgZufk=disagree&amp;egHdAM=abettor&amp;BUfBH=professional&amp;RGVeFwBNTM2MzY2,<br/>http:<span></span>//br430.teste.website/~idbrok92/idb/UI/Login/,<br/>http:<span></span>//www<span></span>.dulys.co.zw/,<br/>http:<span></span>//fedeploycheck.fireeye.com/appliance-test/test-infection.exe,<br/>http:<span></span>//fedeploycheck.fireeye.com/appliance-test/test-infection.pdf,<br/>http:<span></span>//fedeploycheck.fireeye.com/appliance-test/alert.html,<br/>https:<span></span>//tinyurl.com/y2qezvol,<br/>https:<span></span>//fedeploycheck.fireeye.com/appliance-test/alert.html | MALICIOUS |
 
 
 ### fireeye-dod-get-report-url

@@ -19,7 +19,7 @@ function UpdateIntegrationContext([OAuth2DeviceCodeClient]$client){
         "AccessTokenCreationTime" = $client.access_token_creation_time
     }
 
-    $Demisto.setIntegrationContext($integration_context)
+    SetIntegrationContext $integration_context
     <#
         .DESCRIPTION
         Update integration context from OAuth2DeviceCodeClient client
@@ -234,16 +234,18 @@ function ParseResults([string]$results, [int]$limit = -1, [string]$type = "Previ
         }
    }
     if ($type -eq "Purge"){
-        $results_matches_purge = (Select-String -AllMatches "\{?Location: (.*); Item count: (.*); Total size: (.*); Failed count: (.*)[},]"  -InputObject $results).Matches
+        $results_matches_purge = (Select-String -AllMatches "\{?Location: (.*); Item count: (.*); Total size: (.*); Failed count: (.*); [},]"  -InputObject $results).Matches
         $parsed_results = New-Object System.Collections.Generic.List[System.Object]
         foreach ($match in $results_matches_purge)
         {
             if ($parsed_results.Count -ge $limit -and $limit -ne -1){
                 break
             }
-
             $parsed_results.Add(@{
                 "Location" = $match.Groups[1].Value
+                "ItemCount" = $match.Groups[2].Value
+                "TotalSize" = $match.Groups[3].Value
+                "FailedCount" = $match.Groups[4].Value
             })
         }
     }
@@ -455,7 +457,7 @@ class OAuth2DeviceCodeClient {
     }
 
     static [OAuth2DeviceCodeClient]CreateClientFromIntegrationContext([bool]$insecure, [bool]$proxy){
-        $ic = $script:Demisto.getIntegrationContext()
+        $ic = GetIntegrationContext
         $client = [OAuth2DeviceCodeClient]::new($ic.DeviceCode, $ic.DeviceCodeExpiresIn, $ic.DeviceCodeCreationTime, $ic.AccessToken, $ic.RefreshToken,
                                                 $ic.AccessTokenExpiresIn, $ic.AccessTokenCreationTime, $insecure, $proxy)
 
@@ -576,15 +578,20 @@ class OAuth2DeviceCodeClient {
         }
         catch {
             $response_body = ConvertFrom-Json $_.ErrorDetails.Message
-            if ($response_body.error -eq "invalid_grant") {
-                $error_details = "Please login to grant account permissions (After 90 days grant is expired) !$script:COMMAND_PREFIX-auth-start."
-            }
-            else {
-                $error_details = $response_body
-            }
+            $error_details = "Unable to refresh access token for your account"
 
-            throw "Unable to refresh access token for your account, $error_details"
+            # AADSTS50173 points to password change https://login.microsoftonline.com/error?code=50173.
+            # In that case, the integration context should be overwritten and the user should execute the auth process from the begining.
+            if ($response_body.error_description -like "*AADSTS50173*") {
+                $this.ClearContext()
+                $error_details = "The account password has been changed or reset. Please run !$script:COMMAND_PREFIX-auth-start to re-authenticate"
+            }
+            elseif ($response_body.error -eq "invalid_grant") {
+                $error_details = "Please login to grant account permissions (After 90 days grant is expired) !$script:COMMAND_PREFIX-auth-start"
+            }
+            throw "$error_details. Full error message: $response_body"
         }
+
         # Update object properties
         $this.access_token = $response_body.access_token
         $this.refresh_token = $response_body.refresh_token
@@ -666,6 +673,21 @@ class OAuth2DeviceCodeClient {
             .EXAMPLE
             $client.RefreshTokenIfExpired()
         #>
+    }
+    ClearContext(){
+        $this.access_token = $null
+        $this.refresh_token = $null
+        $this.access_token_expires_in = $null
+        $this.access_token_creation_time = $null
+        UpdateIntegrationContext $this
+        <#
+            .DESCRIPTION
+            Clear the token fields from the integration context on password change case.
+
+            .EXAMPLE
+            $client.ClearContext()
+        #>
+
     }
 }
 
@@ -1214,7 +1236,8 @@ function StartAuthCommand ([OAuth2DeviceCodeClient]$client) {
     $raw_response = $client.AuthorizationRequest()
     $human_readable = "## $script:INTEGRATION_NAME - Authorize instructions
 1. To sign in, use a web browser to open the page [https://microsoft.com/devicelogin](https://microsoft.com/devicelogin) and enter the code **$($raw_response.user_code)** to authenticate.
-2. Run the following command **!$script:COMMAND_PREFIX-auth-complete** in the War Room."
+2. Run the **!$script:COMMAND_PREFIX-auth-complete** command in the War Room.
+3. Run the **!$script:COMMAND_PREFIX-auth-test** command in the War Room to test the completion of the authorization process and the configured parameters."
     $entry_context = @{}
 
     return $human_readable, $entry_context, $raw_response
@@ -1475,6 +1498,7 @@ function Main {
     try {
         # Creating Compliance and search client
         $oauth2_client = [OAuth2DeviceCodeClient]::CreateClientFromIntegrationContext($insecure, $no_proxy)
+
         # Refreshing tokens if expired
         $oauth2_client.RefreshTokenIfExpired()
         # Creating Compliance and search client

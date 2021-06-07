@@ -618,3 +618,4 @@ outputs:
   type: string
 tests:
 - No test (provided a test for URL enrichment v2)
+deprecated: true

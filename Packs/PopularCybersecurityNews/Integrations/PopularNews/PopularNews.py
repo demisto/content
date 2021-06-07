@@ -1,5 +1,3 @@
-from datetime import datetime
-
 import demistomock as demisto  # noqa: F401
 import requests
 from bs4 import BeautifulSoup
@@ -16,16 +14,14 @@ def scrape_kos():
     response = requests.get("https://krebsonsecurity.com/", verify=VERIFY)
     soup = BeautifulSoup(response.text, "html.parser")
 
-    for article in soup.select(".post-title"):
+    for article in soup.select(".entry-title"):
         title = article.get_text().strip()
         articles.append(title)
         link = article.find('a').attrs['href']
         links.append(link)
 
-    for date in soup.select(".post-smallerfont"):
-        date_got = date.get_text().split("\n")[2]  # 19Feb 21
-        ts = datetime.strptime(date_got[:8], "%d%b %y")
-        dates.append(ts.strftime("%B %d, %Y"))  # 19 February, 2021
+    for date in soup.select(".adt"):
+        dates.append(date.find('span').get_text().strip())
 
     return list(zip(articles, list(zip(links, dates))))
 
@@ -99,12 +95,19 @@ def main():
         aggregate(tp, "Threatpost")
     else:
         raise NotImplementedError('Command %s was not implemented.' % demisto.command())
-    demisto.results({
+
+    result = {
         'ContentsFormat': formats['table'],
         'Type': entryTypes['note'],
         'Contents': TABLE,
-        'EntryContext': {"News": TABLE},
-        'IgnoreAutoExtract': True})
+        'EntryContext': {},
+        'IgnoreAutoExtract': True,
+    }
+
+    if TABLE:
+        result['EntryContext'] = {"News": TABLE}
+
+    demisto.results(result)
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
