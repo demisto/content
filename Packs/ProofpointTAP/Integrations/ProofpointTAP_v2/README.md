@@ -474,7 +474,7 @@ Gets events for clicks to malicious URLs blocked in the specified time period. M
             "messageID": "4444",
             "recipient": "xxxx@xxx.com",
             "sender": "xxxx@xxx.com",
-            "senderIP": "000.000.200.255",
+            "senderIP": "000.000.000.000",
             "threatID": "threat_num2",
             "threatTime": "2010-01-22T00:00:20.000Z",
             "threatURL": "https://threatinsight.proofpoint.com",
@@ -490,7 +490,7 @@ Gets events for clicks to malicious URLs blocked in the specified time period. M
 >### Blocked Clicks
 >|Id|Sender IP|Recipient|Classification|Threat ID|Threat URL|Threat Status|Threat Time|Click Time|Campaign Id|User Agent|
 >|---|---|---|---|---|---|---|---|---|---|---|
->|  | 192.000.00.0 | xxxx@xxx.com | MALWARE | threat_num2 | https://threatinsight.proofpoint.com |  | 2010-01-22T00:00:20.000Z | 2010-01-22T00:00:10.000Z | 46e01b8a-c899-404d-bcd9-189bb393d1a7 | Mozilla/5.0(WindowsNT6.1;WOW64;rv:27.0)Gecko/20100101Firefox/27.0 |
+>|  | 000.000.000.000 | xxxx@xxx.com | MALWARE | threat_num2 | https://threatinsight.proofpoint.com |  | 2010-01-22T00:00:20.000Z | 2010-01-22T00:00:10.000Z | 46e01b8a-c899-404d-bcd9-189bb393d1a7 | Mozilla/5.0(WindowsNT6.1;WOW64;rv:27.0)Gecko/20100101Firefox/27.0 |
 
 
 ### proofpoint-get-events-clicks-permitted
@@ -547,7 +547,7 @@ Get events for clicks to malicious URLs permitted in the specified time period. 
             "messageID": "4444",
             "recipient": "xxxx@xxx.com",
             "sender": "9facbf452def2d7efc5b5c48cdb837fa@badguy.zz",
-            "senderIP": "192.000.200.255",
+            "senderIP": "000.000.000.000",
             "threatID": "threat_num2",
             "threatTime": "2010-01-22T00:00:20.000Z",
             "threatURL": "https://threatinsight.proofpoint.com",
@@ -679,7 +679,7 @@ Get events for blocked messages in the specified time period. Must provide eithe
                     "xxxx@xxx.com"
                 ],
                 "sender": "xxxx@xxx.com",
-                "senderIP": "192.00.000.000",
+                "senderIP": "000.000.000.000",
                 "spamScore": 100,
                 "subject": "Your mailbox is full......",
                 "threatsInfoMap": [
@@ -1141,7 +1141,7 @@ Gets details for a given campaign.
 >### Campaign Information
 >|Id|Name|Description|Start Date|Notable|
 >|---|---|---|---|---|
->| f3ff08dfbdb5e-b3fe-d05f97b2ed3f | AgentTesla \| Compressed Executables \| "techie" \| 25 March 2021 | Messages purporting to be e.g.<br/><br/>* from &lt;hari@alwasit.com&gt;' and subject "Re: New Order From customer".<br/><br/>These messages contain compressed executables that lead to the installation of AgentTesla with the following example configuration:<br/><br/><pre>C2_Email_Address: xxxx@xxx.com<br/>C2_Email_Password: <br/>C2_Email_Server: xxxx@xxx.com</pre> | 2021-03-25T00:00:00.000Z | false |
+>| f3ff08dfbdb5e-b3fe-d05f97b2ed3f | AgentTesla \| Compressed Executables \| "techie" \| 25 March 2021 | Messages purporting to be e.g.<br/><br/>* from &lt;xxxx@xxx.com&gt;' and subject "Re: New Order From customer".<br/><br/>These messages contain compressed executables that lead to the installation of AgentTesla with the following example configuration:<br/><br/><pre>C2_Email_Address: xxxx@xxx.com<br/>C2_Email_Password: <br/>C2_Email_Server: xxxx@xxx.com</pre> | 2021-03-25T00:00:00.000Z | false |
 >
 >### Campaign Members
 >**No entries.**
