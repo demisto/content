@@ -7701,6 +7701,7 @@ def support_multithreading():
     :return: No data returned
     :rtype: ``None``
     """
+
     class MultithreadedDemisto(Demisto):
         lock = Lock()
         def __do(self, cmd):
