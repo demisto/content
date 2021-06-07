@@ -2,7 +2,6 @@ commonfields:
   id: JsonToTable
   version: -1
 fromversion: 5.5
-vcShouldKeepItemLegacyProdMachine: false
 name: JsonToTable
 script: ''
 type: python
@@ -20,7 +19,6 @@ args:
   description: The markdown title.
 scripttarget: 0
 subtype: python3
-pswd: ""
 runonce: false
 dockerimage: demisto/python3:3.9.5.20070
 runas: DBotWeakRole
