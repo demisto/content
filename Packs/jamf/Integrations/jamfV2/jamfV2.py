@@ -719,7 +719,7 @@ def get_computers_by_app_readable_output(response):
         total_computers = len(version.get('computers'))
         readable_output.append({
             'version': version.get('number'),
-            'Sum of computers': total_computers
+            'Total number of computers': total_computers
         })
 
     return readable_output
@@ -970,13 +970,16 @@ def get_computers_by_app_command(client: Client, args: Dict[str, Any]) -> Comman
     page = arg_to_number(args.get('page', 0))
     computer_response = client.get_computers_by_app_request(app, version)
 
+    total_results = len(computer_response.get('computer_applications').get('unique_computers'))
     computers_list = pagination(computer_response.get('computer_applications').get('unique_computers'), limit, page)
+    computers_hr = f'Jamf get computers by application result \n Total results:{total_results}\nResults per page: ' \
+                   f'{limit}\nPage: {page}'
 
     readable_output = get_computers_by_app_readable_output(computer_response.get('computer_applications'))[:limit]
     outputs = {'application': app, 'computers': computers_list}
     return CommandResults(
         readable_output=tableToMarkdown(
-            'Jamf computers by application result',
+            computers_hr,
             readable_output, removeNull=True
         ),
         outputs_prefix='JAMF.ComputersByApp',
@@ -1025,6 +1028,38 @@ def mobile_device_erase_command(client: Client, args: Dict[str, Any]) -> Command
         raw_response=mobile_response
     )
 
+
+def endpoint_command(client, args):
+    endpoint_id_list = argToList(args.get('id'))
+    endpoint_ip_list = argToList(args.get('ip'))
+    endpoint_hostname_list = argToList(args.get('hostname'))
+    if endpoint_id_list:
+        for endpoint_id in endpoint_id_list:
+            computers_response = client.get_computer_subset_request(identifier='id', identifier_value=endpoint_id)
+            computers_response = computers_response.get('computer').get('general')
+
+    if endpoint_ip_list:
+        for endpoint_ip in endpoint_ip_list:
+            computers_response = client.get_computers_request(match=endpoint_ip)
+            computers_response = computers_response.get('computers')
+
+    if endpoint_hostname_list:
+        for endpoint_hostname in endpoint_hostname_list:
+            computers_response = client.get_computer_subset_request(identifier='name',
+                                                                    identifier_value=endpoint_hostname)
+            computers_response = computers_response.get('computer').get('general')
+
+    return CommandResults(
+        readable_output=tableToMarkdown(
+            computers_hr,
+            readable_output,
+            removeNull=True
+        ),
+        outputs_prefix='JAMF.Computer',
+        outputs_key_field='id',
+        outputs=computers_response,
+        raw_response=computers_response
+    )
 
 ''' MAIN FUNCTION '''
 
@@ -1161,6 +1196,10 @@ def main() -> None:
 
         elif demisto.command() == 'jamf-mobile-device-erase':
             return_results(mobile_device_erase_command(client, demisto.args()))
+
+        elif demisto.command() == 'endpoint':
+            return_results(endpoint_command(client, demistomock.args()))
+
     # Log exceptions and return errors
     except Exception as e:
         demisto.error(traceback.format_exc())  # print the traceback

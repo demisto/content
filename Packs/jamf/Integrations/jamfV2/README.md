@@ -22,7 +22,7 @@ After you successfully execute a command, a DBot message appears in the War Room
 ### jamf-get-computers
 ***
 This command will return a list of all computers with their associated IDs . By default, will return the first 50 computers to the context (ID + name).
-
+This command is a replacement for ``jamf-get-computers`` in jamf v1 integration.
 
 #### Base Command
 
@@ -315,6 +315,7 @@ This command will return  the "general" subset of a specific computer, e.g: name
 ### jamf-get-computer-by-match
 ***
 This command will match computers by specific characteristics and returns general data on each one of the computers.
+This command is a replacement for ``jamf-get-computers-match`` in jamf v1 integration.
 
 
 #### Base Command

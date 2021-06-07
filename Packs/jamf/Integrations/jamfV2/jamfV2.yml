@@ -116,7 +116,9 @@ script:
       type: Number
   - arguments:
     - default: false
-      description: The computer ID.
+      description: |-
+        The computer ID.
+        To get the computer ID, please run `jamf-get-computers` to get all computers names and ID's.
       isArray: false
       name: id
       required: true
@@ -1369,7 +1371,9 @@ script:
       type: String
   - arguments:
     - default: false
-      description: The user ID.
+      description: |-
+        The user ID.
+        To get the user ID, please run `jamf-get-users` to get all users names and ID's.
       isArray: false
       name: id
       required: true
@@ -1751,7 +1755,9 @@ script:
       type: String
   - arguments:
     - default: false
-      description: Gets the “general” subset of a specific device.
+      description: |-
+        Gets the “general” subset of a specific device.
+        To get the mobile device ID, please run `jamf-get-mobile-devices` to get all mobile devices names and ID's.
       isArray: false
       name: id
       required: true
@@ -2954,6 +2960,29 @@ script:
     - contextPath: JAMF.MobileDeviceCommands.id
       description: The mobile device command ID.
       type: String
+  - arguments:
+    - default: false
+      description: The endpoint ID.
+      isArray: true
+      name: id
+      required: false
+      secret: false
+    - default: false
+      description: The endpoint IP address.
+      isArray: true
+      name: ip
+      required: false
+      secret: false
+    - default: false
+      description: The endpoint hostname.
+      isArray: true
+      name: hostname
+      required: false
+      secret: false
+    deprecated: false
+    description: Returns information about an endpoint.
+    execution: false
+    name: endpoint
   dockerimage: demisto/btfl-soup:1.0.1.20928
   feed: false
   isfetch: false
