@@ -7,7 +7,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 This playbook does not use any sub-playbooks.
 
 ### Integrations
-* ProofpointTAP_v2
+ProofpointTAP_v2
 
 ### Scripts
 * SetContext
@@ -26,8 +26,8 @@ There are no inputs for this playbook.
 
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
-| Proofpoint.Report | Proofpoint Report | unknown |
-| Proofpoint.Campaign | Proofpoint Campaign  | unknown |
+| Proofpoint.Report | Proofpoint Report. | unknown |
+| Proofpoint.Campaign | Proofpoint Campaign.  | unknown |
 
 ## Playbook Image
 ---

@@ -172,8 +172,8 @@ tasks:
     task:
       id: b6080c55-d2fe-4644-8cc1-50082789585d
       version: -1
-      name: No ThreatID or Campaign ID retrieved
-      description: Prints text to war room (Markdown supported)
+      name: No Threat ID or Campaign ID Retrieved
+      description: Prints text to War Room (Markdown supported)
       tags:
       - ProofPoint Event Enrichment
       scriptName: Print
@@ -242,7 +242,7 @@ tasks:
     task:
       id: 69368a3a-c9c4-4f8d-8794-2d8710907a27
       version: -1
-      name: Get forensics given Campaign ID
+      name: Get Forensics given Campaign ID
       description: Returns forensics evidence.
       tags:
       - ProofPoint Event Enrichment
@@ -283,7 +283,7 @@ tasks:
     task:
       id: b9734d02-8df3-4459-8978-f1b2522996c4
       version: -1
-      name: Get forensics Information given ThreatID
+      name: Get Forensics Information given Threat ID
       description: Returns forensics evidence.
       tags:
       - ProofPoint Event Enrichment
@@ -324,8 +324,8 @@ tasks:
     task:
       id: 715f3623-1813-4465-85d8-6a32f92aa512
       version: -1
-      name: Extract CampaignID to Context
-      description: Sets key/value pair in incident's context
+      name: Extract Campaign ID to Context
+      description: Sets key/value pair in incident's context.
       scriptName: SetContext
       type: regular
       iscommand: false
@@ -362,8 +362,8 @@ tasks:
     task:
       id: 2204be9e-f4e2-4e4a-8822-782cfa238320
       version: -1
-      name: Extract CampaignID to Context
-      description: Sets key/value pair in incident's context
+      name: Extract Campaign ID to Context
+      description: Sets key/value pair in incident's context.
       scriptName: SetContext
       type: regular
       iscommand: false
@@ -440,8 +440,8 @@ tasks:
     task:
       id: 749e8a02-2629-4df3-889a-2aef645c7923
       version: -1
-      name: Extract ThreatID to Context
-      description: Sets key/value pair in incident's context
+      name: Extract Threat ID to Context
+      description: Sets key/value pair in incident's context.
       scriptName: SetContext
       type: regular
       iscommand: false
@@ -478,7 +478,7 @@ tasks:
     task:
       id: b6934d1a-597f-4db0-896c-3b965d654714
       version: -1
-      name: Check if ThreatID Exists
+      name: Check if Threat ID Exists
       type: condition
       iscommand: false
       brand: ""
@@ -518,8 +518,8 @@ tasks:
     task:
       id: d6d7e345-7742-401e-8095-1d641d27d4e6
       version: -1
-      name: Extract ThreatID to Context
-      description: Sets key/value pair in incident's context
+      name: Extract Threat ID to Context
+      description: Sets key/value pair in incident's context.
       scriptName: SetContext
       type: regular
       iscommand: false
@@ -624,7 +624,7 @@ tasks:
     task:
       id: 6627bc6e-175a-4d83-8162-c2e8bb519454
       version: -1
-      name: Check if ThreatID Exists
+      name: Check if Threat ID Exists
       type: condition
       iscommand: false
       brand: ""
@@ -664,7 +664,7 @@ tasks:
     task:
       id: 114b02d4-48e8-4458-859d-7b70279b473f
       version: -1
-      name: What Information have been fetched?
+      name: What Information has been Fetched?
       type: condition
       iscommand: false
       brand: ""
@@ -731,7 +731,7 @@ tasks:
     task:
       id: fbc5a4bb-37f7-4d22-874a-27f2be8d99cf
       version: -1
-      name: Get forensics Information given ThreatID
+      name: Get Forensics Information given Threat ID
       description: Returns forensics evidence.
       tags:
       - ProofPoint Event Enrichment
@@ -808,7 +808,7 @@ outputs:
   description: Proofpoint Report
   type: unknown
 - contextPath: Proofpoint.Campaign
-  description: 'Proofpoint Campaign '
+  description: 'Proofpoint Campaign'
   type: unknown
 tests:
 - ProofpointTAP-Test

@@ -7,7 +7,7 @@ type: python
 tags:
 - widget
 enabled: true
-comment: Export a list of Proofpoint TAP most attacked users to XSOAR widget
+comment: Exports a list of Proofpoint TAP most attacked users to the Cortex XSOAR widget.
 scripttarget: 0
 subtype: python3
 runonce: false
