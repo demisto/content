@@ -1,0 +1,6 @@
+{
+    "success": true,
+    "timezone": "UTC",
+    "date_format": "%Y/%m/%d",
+    "hour_format": "24 Hour"
+}
