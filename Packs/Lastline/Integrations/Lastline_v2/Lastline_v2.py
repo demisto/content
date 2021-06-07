@@ -336,6 +336,7 @@ def main():
         f'{INTEGRATION_COMMAND_NAME}-upload-file': Client.upload_file,
         f'{INTEGRATION_COMMAND_NAME}-upload-url': Client.upload_url
     }
+    
     try:
         if command in commands:
             readable_output, outputs, raw_response = commands[command](client)
