@@ -278,8 +278,7 @@ def create_context(packs_to_install: List[Dict[str, str]], content_packs_install
 
         context_data.append(content_installed)
 
-    for pack in packs_to_install:
-        pack_id = pack['id']
+    for pack_id in requested_packs_ids:
         if pack_id in content_packs_installer.already_on_machine_packs:
             content_installed = {
                 'packid': pack_id,
