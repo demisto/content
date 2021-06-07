@@ -184,23 +184,18 @@ def download_packs_from_gcp(storage_bucket_name, gcp_path, destination_path, cir
 
     if gcp_path == BUILD_GCP_PATH:
         src_path = os.path.join('gs://', storage_bucket_name, gcp_path, branch_name, circle_build, 'content', 'packs')
+        print(f"1. src path is:{src_path}")
     else:
         src_path = os.path.join('gs://', storage_bucket_name, gcp_path, branch_name, circle_build)
+        print(f"2. src path is:{src_path}")
 
     if not branch_name or not circle_build:
         src_path = src_path.replace('/builds/content', '')
-    print(f"src path is:{src_path}")
+    print(f"3.src path is:{src_path}")
     print(f"dest path is:{destination_path}")
-    try:
-        process = subprocess.Popen(["Tests/scripts/cp_gcp_dir.sh", src_path, destination_path])
-        out, err = process.communicate()
-        if out:
-            print("out" + out.decode('utf-8'))
-        if err:
-            print("err" + err.decode('utf-8'))
-    except Exception as e:
-        logging.critical(f"Failed to run cp_gcp_dir.sh, Error:{e}")
-        sys.exit(1)
+    process = subprocess.check_output(["Tests/scripts/cp_gcp_dir.sh", src_path, destination_path])
+    if process:
+        logging.info(f"cp_gcp_dir.sh output: {process}")
 
 
 def copy_to_other_dir(zipped_packs):
@@ -290,8 +285,8 @@ def main():
     success = True
     try:
         download_packs_from_gcp(storage_bucket_name, gcp_path, zip_path, circle_build, branch_name)
-    except Exception:
-        logging.exception('Failed downloading packs')
+    except Exception as e:
+        logging.exception(f"Failed to run download_packs_from_gcp, Error:{e}")
         success = False
 
     try:
