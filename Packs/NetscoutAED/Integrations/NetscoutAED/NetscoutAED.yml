@@ -21,7 +21,7 @@ configuration:
   required: false
   hiddenusername: true
   type: 9
-description: Use the Netscout Arbor Edge Defense Integration to detect and stop both
+description: Use the Netscout Arbor Edge Defense integration to detect and stop both
   inbound threats and outbound communication from internal compromised hosts.
 display: Netscout Arbor Edge Defense
 name: NetscoutAED
