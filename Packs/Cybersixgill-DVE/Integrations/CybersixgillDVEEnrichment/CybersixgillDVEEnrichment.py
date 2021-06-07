@@ -16,7 +16,7 @@ requests.packages.urllib3.disable_warnings()
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 
 
-def test_module_command(client_id, client_secret, channel_code, session, verify):
+def test_module(client_id, client_secret, channel_code, session, verify):
     """
     Performs basic Auth request
     """
@@ -96,12 +96,12 @@ def cve_enrich_command(client: SixgillEnrichClient, args) -> List[CommandResults
         cve_id_data = client.enrich_dve(cve_id)
         final_data = stix_to_indicator(cve_id_data)
         final_data_list.append(final_data)
-    readable_output = tableToMarkdown("CVE_ID", final_data_list)
+    readable_output = tableToMarkdown("CVE ID", final_data_list)
 
     command_results.append(
         CommandResults(
             readable_output=readable_output,
-            outputs_prefix="Sixgill.CVE_ID",
+            outputs_prefix="Sixgill.CVE",
             outputs_key_field="CVE_ID",
             outputs=final_data_list,
         )
@@ -112,29 +112,29 @@ def cve_enrich_command(client: SixgillEnrichClient, args) -> List[CommandResults
 
 def main():
     channel_code = "d5cd46c205c20c87006b55a18b106428"
-    verify = not demisto.params().get("insecure", True)
+    params = demisto.params()
+    command = demisto.command()
+    verify = not params.get("insecure", True)
     session = requests.Session()
-
     session.proxies = handle_proxy()
 
-    client = SixgillEnrichClient(
-        demisto.params()["client_id"], demisto.params()["client_secret"], channel_code, demisto, session, verify
-    )
+    client = SixgillEnrichClient(params.get("client_id"), params.get("client_secret"), channel_code, demisto,
+                                 session, verify)
 
     LOG(f"Command being called is {demisto.command()}")
     try:
 
-        if demisto.command() == "cve":
+        if command == "cybersixgill-cve-enrich":
             return_results(cve_enrich_command(client, demisto.args()))
-        else:
+        elif command == "test-module":
             return_results(
-                test_module_command(
-                    demisto.params()["client_id"], demisto.params()["client_secret"], channel_code, session, verify
+                test_module(
+                    params.get("client_id"), params.get("client_secret"), channel_code, session, verify
                 )
             )
     # Log exceptions
     except Exception as e:
-        return_error(f"Failed to execute {demisto.command()} command. Error: {str(e)}")
+        return_error(f"Failed to execute {command} command. Error: {str(e)}")
 
 
 if __name__ in ("__main__", "__builtin__", "builtins"):

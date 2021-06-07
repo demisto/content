@@ -425,9 +425,9 @@ def test_test_module_command(mocker):
     mocker.patch.object(demisto, "params", return_value=init_params())
     mocker.patch("requests.sessions.Session.send", return_value=MockedResponse(200, "ok"))
 
-    from CybersixgillDVEEnrichment import test_module_command
+    from CybersixgillDVEEnrichment import test_module
 
-    test_module_command(
+    test_module(
         demisto.params()["client_id"], demisto.params()["client_secret"], channel_code, requests.Session(), True
     )
 

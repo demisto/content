@@ -16,7 +16,7 @@ from sixgill.sixgill_utils import is_indicator
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
 
-""" CONSTANTS   """
+""" CONSTANTS """
 INTEGRATION_NAME = "Sixgil_DVE_Feed"
 CHANNEL_CODE = "7698e8287dfde53dcd13082be750a85a"
 MAX_INDICATORS = 1000
