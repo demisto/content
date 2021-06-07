@@ -70,7 +70,7 @@ create-instances:
         echo "Skipping - not running in INSTANCE_TESTS build"
       else
         [ -n "${NIGHTLY}" ] && IS_NIGHTLY=true || IS_NIGHTLY=false
-        python3 ./Tests/scripts/collect_tests_and_content_packs.py -n $IS_NIGHTLY
+        python3 ./Tests/scripts/collect_tests_and_content_packs.py -n $IS_NIGHTLY --performance $IS_PERFORMANCE
       fi
     - section_end "Collect Tests and Content Packs"
     - section_start "Calculate Packs Dependencies"
@@ -128,6 +128,9 @@ create-instances:
       if [ -f ./Tests/failed_tests.txt ]; then
         cp ./Tests/failed_tests.txt $ARTIFACTS_FOLDER/failed_tests.txt
       fi
+      if [ -f ./Tests/performance_results.json ]; then
+        cp ./Tests/performance_results.json $ARTIFACTS_FOLDER/performance_results.json
+      fi
     - python3 ./Tests/scripts/destroy_instances.py $ARTIFACTS_FOLDER $ARTIFACTS_FOLDER/env_results.json "$INSTANCE_ROLE" "$TIME_TO_LIVE" || EXIT_CODE=$?
     - exit $EXIT_CODE
 
@@ -169,6 +172,7 @@ performance_test:
     - .test_content_on_server_instances_base
   variables:
     INSTANCE_ROLE: Performance Server Master
+    IS_PERFORMANCE: true
 #  rules:
 #    - if: '$PERFORMANCE_TEST'
 #      when: always

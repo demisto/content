@@ -40,6 +40,9 @@ class TestConf(object):
     def get_tests(self):
         return self._conf.get('tests', {})
 
+    def get_performance_tests(self):
+        return self._conf.get('performance_tests', {})
+
     def get_test_playbook_ids(self):
         conf_tests = self._conf['tests']
         test_ids = []
@@ -1276,23 +1279,22 @@ def is_release_branch():
     return re.match(r'[0-9]{2}\.[0-9]{1,2}\.[0-9]', branch_name)
 
 
-def create_filter_envs_file(from_version: str, to_version: str, documentation_changes_only: bool = False):
+def create_filter_envs_file(from_version: str = '', to_version: str = '', documentation_changes_only: bool = False,
+                            is_performance: bool = False):
     """
     Create a file containing all the envs we need to run for the CI
     Args:
         from_version: Server from_version
         to_version: Server to_version
         documentation_changes_only: If the build is for documentations changes only - no need to create instances.
+        is_performance: If the build is for performance - create performance instance.
 
     """
-    envs_to_test = {
-        'Server 5.5': is_runnable_in_server_version(from_version, '5.5', to_version),
-        'Server Master': True,
-        'Server 5.0': is_runnable_in_server_version(from_version, '5.0', to_version),
-        'Server 6.0': is_runnable_in_server_version(from_version, '6.0', to_version),
-    }
-
-    if documentation_changes_only:
+    if is_performance:
+        envs_to_test = {
+            'Performance Server Master': True
+        }
+    elif documentation_changes_only:
         # No need to create the instances.
         envs_to_test = {
             'Server 5.5': False,
@@ -1300,7 +1302,13 @@ def create_filter_envs_file(from_version: str, to_version: str, documentation_ch
             'Server 5.0': False,
             'Server 6.0': False,
         }
-    envs_to_test = {'Performance Server Master': True}  # TODO: repalce with non-stub
+    else:
+        envs_to_test = {
+            'Server 5.5': is_runnable_in_server_version(from_version, '5.5', to_version),
+            'Server Master': True,
+            'Server 5.0': is_runnable_in_server_version(from_version, '5.0', to_version),
+            'Server 6.0': is_runnable_in_server_version(from_version, '6.0', to_version),
+        }
     # Releases are only relevant for non marketplace server versions, therefore - there is no need to create marketplace
     # server in release branches.
     if is_release_branch():
@@ -1331,13 +1339,19 @@ def changed_files_to_string(changed_files):
     return '\n'.join(files_with_status)
 
 
-def create_test_file(is_nightly, skip_save=False, path_to_pack=''):
-    """Create a file containing all the tests we need to run for the CI"""
+def create_test_file(is_nightly, is_performance, skip_save=False, path_to_pack=''):
+    """Create a file containing all the tests we need to run for the CI
+    :param is_performance:
+    """
     if is_nightly:
         packs_to_install = filter_installed_packs(set(os.listdir(PACKS_DIR)))
         tests = filter_tests(set(CONF.get_test_playbook_ids()), id_set=deepcopy(ID_SET))
         logging.info("Nightly - collected all tests that appear in conf.json and all packs from content repo that "
                      "should be tested")
+    elif is_performance:
+        performance_tests = CONF.get_performance_tests()
+        tests, packs_to_install = find_tests_and_content_packs_for_modified_files(performance_tests)
+        create_filter_envs_file(is_performance=True)
     else:
         branches = tools.run_command("git branch")
         branch_name_reg = re.search(r"\* (.*)", branches)
@@ -1374,7 +1388,7 @@ def create_test_file(is_nightly, skip_save=False, path_to_pack=''):
         with open("./artifacts/content_packs_to_install.txt", "w") as content_packs_to_install:
             content_packs_to_install.write(packs_to_install_string)
 
-    if is_nightly:
+    if is_nightly or is_performance:
         logging.debug('Collected the following tests:\n{0}\n'.format(tests_string))
         logging.debug('Collected the following packs to install:\n{0}\n'.format('\n'.join(packs_to_install)))
 
@@ -1399,11 +1413,11 @@ if __name__ == "__main__":
     parser.add_argument('-s', '--skip-save', type=tools.str2bool,
                         help='Skipping saving the test filter file (good for simply doing validation)')
     parser.add_argument('-p', '--changed_pack_path', type=str, help='A string representing the changed files')
-    # TODO: Add argument for performance that collects all performance tests
+    parser.add_argument('--performance', type=tools.str2bool, help='Is performance test')
     options = parser.parse_args()
 
     # Create test file based only on committed files
-    create_test_file(options.nightly, options.skip_save, options.changed_pack_path)
+    create_test_file(options.nightly, options.performance, options.skip_save, options.changed_pack_path)
     if not _FAILED:
         logging.info("Finished test configuration")
         sys.exit(0)
