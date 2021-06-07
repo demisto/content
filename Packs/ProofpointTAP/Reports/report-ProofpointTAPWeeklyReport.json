@@ -1,5 +1,5 @@
 {
-  "id": "WeeklyReport",
+  "id": "ProofpointTAPWeeklyReport",
   "modified": "2021-05-09T15:08:08.493330177+03:00",
   "startDate": "0001-01-01T00:00:00Z",
   "times": 0,
@@ -8,7 +8,7 @@
   "timezoneOffset": 0,
   "cronView": false,
   "scheduled": false,
-  "name": "Weekly Report",
+  "name": "Proofpoint TAP Weekly Report",
   "type": "pdf",
   "system": false,
   "locked": false,

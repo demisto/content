@@ -1,6 +1,6 @@
-id: ProofPointTAP - Event Enrichment
+id: Proofpoint TAP - Event Enrichment
 version: -1
-name: ProofPointTAP - Event Enrichment
+name: Proofpoint TAP - Event Enrichment
 starttaskid: "0"
 tasks:
   "0":
@@ -246,10 +246,10 @@ tasks:
       description: Returns forensics evidence.
       tags:
       - ProofPoint Event Enrichment
-      script: Proofpoint TAP v3|||proofpoint-get-forensics
+      script: Proofpoint TAP v2|||proofpoint-get-forensics
       type: regular
       iscommand: true
-      brand: Proofpoint TAP v3
+      brand: Proofpoint TAP v2
     nexttasks:
       '#none#':
       - "5"
@@ -287,10 +287,10 @@ tasks:
       description: Returns forensics evidence.
       tags:
       - ProofPoint Event Enrichment
-      script: Proofpoint TAP v3|||proofpoint-get-forensics
+      script: Proofpoint TAP v2|||proofpoint-get-forensics
       type: regular
       iscommand: true
-      brand: Proofpoint TAP v3
+      brand: Proofpoint TAP v2
     nexttasks:
       '#none#':
       - "19"
@@ -735,10 +735,10 @@ tasks:
       description: Returns forensics evidence.
       tags:
       - ProofPoint Event Enrichment
-      script: Proofpoint TAP v3|||proofpoint-get-forensics
+      script: Proofpoint TAP v2|||proofpoint-get-forensics
       type: regular
       iscommand: true
-      brand: Proofpoint TAP v3
+      brand: Proofpoint TAP v2
     nexttasks:
       '#none#':
       - "6"
