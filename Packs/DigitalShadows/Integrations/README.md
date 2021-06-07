@@ -129,7 +129,7 @@ Find data breach records
                 "Content": "A",
                 "DataBreachId": 99000001,
                 "DomainNames": [
-                    "demisto.com"
+                    "xsoar.com"
                 ],
                 "Id": 140260931001,
                 "Password": "1",
@@ -148,7 +148,7 @@ Find data breach records
                 "Content": "B",
                 "DataBreachId": 99000002,
                 "DomainNames": [
-                    "demisto.com"
+                    "xsoar.com"
                 ],
                 "Id": 140261100001,
                 "Password": "2",
@@ -173,8 +173,8 @@ Find data breach records
 >### Digital Shadows Breach Records
 > Content| DataBreachId| DomainNames| Id| Password| PriorRowTextBreachCount| PriorUsernameBreachCount| PriorUsernamePasswordBreachCount| Published| Review Created| Review Status| Review User| Username
 >---|---|---|---|---|---|---|---|---|---|---|---|---
->A | 99000001 | demisto.com | 140260931001 | 1 |   | 0 | 0 | 2019-05-30T20:52:59.489Z |   | OPEN |   | some_mail@mail.com
->aB | 99000002 | demisto.com | 140261100001 | 2 |   | 0 | 0 | 2019-05-30T20:53:00.635Z |   | OPEN |   | another_mail@mail.com
+>A | 99000001 | xsoar.com | 140260931001 | 1 |   | 0 | 0 | 2019-05-30T20:52:59.489Z |   | OPEN |   | some_mail@mail.com
+>aB | 99000002 | xsoar.com | 140261100001 | 2 |   | 0 | 0 | 2019-05-30T20:53:00.635Z |   | OPEN |   | another_mail@mail.com
 
 
 ### ds-get-breach-summary
@@ -205,7 +205,7 @@ There is no context output for this command.
 
 #### Human Readable Output
 
->{"breachesPerDomain":[{"count":3,"key":"molnnet.com"}],"totalBreaches":3,"totalUsernames":238,"usernamesPerDomain":[{"count":238,"key":"demisto.com"}]}
+>{"breachesPerDomain":[{"count":3,"key":"molnnet.com"}],"totalBreaches":3,"totalUsernames":238,"usernamesPerDomain":[{"count":238,"key":"xsoar.com"}]}
 
 ### ds-find-breach-usernames
 ***
@@ -318,17 +318,17 @@ Retrieve a data breach by its id
                 "PASSWORDS"
             ],
             "DomainCount": 3372,
-            "DomainName": "demisto.com",
+            "DomainName": "xsoar.com",
             "Id": 99000001,
             "IncidentId": 99002706,
             "IncidentScope": "ORGANIZATION",
             "IncidentSeverity": "HIGH",
-            "IncidentTitle": "Report of data leak from demisto.com",
+            "IncidentTitle": "Report of data leak from xsoar.com",
             "IncidentType": "DATA_LEAKAGE",
             "Occurred": "2016-07-03",
             "RecordCount": 5846,
             "SourceUrl": "some_url",
-            "Title": "Report of data leak from demisto.com"
+            "Title": "Report of data leak from xsoar.com"
         }
     }
 }
@@ -339,7 +339,7 @@ Retrieve a data breach by its id
 >### Digital Shadows Breaches
 > DataClasses| DomainCount| DomainName| Id| IncidentId| IncidentScope| IncidentSeverity| IncidentTitle| IncidentType| Occurred| RecordCount| SourceUrl| Title
 >---|---|---|---|---|---|---|---|---|---|---|---|---
->EMAIL_ADDRESSES,PASSWORDS | 3372 | demisto.com | 99000001 | 99002706 | ORGANIZATION | HIGH | Report of data leak from demisto.com | DATA_LEAKAGE | 2016-07-03 | 5846 | some_url | Report of data leak from demisto.com
+>EMAIL_ADDRESSES,PASSWORDS | 3372 | xsoar.com | 99000001 | 99002706 | ORGANIZATION | HIGH | Report of data leak from xsoar.com | DATA_LEAKAGE | 2016-07-03 | 5846 | some_url | Report of data leak from xsoar.com
 
 
 ### ds-get-breach-records
@@ -493,19 +493,19 @@ Find data breaches
             {
                 "DataClasses": null,
                 "DomainCount": 3372,
-                "DomainName": "demisto.com",
+                "DomainName": "xsoar.com",
                 "Id": 99000001,
                 "IncidentId": 99002706,
                 "IncidentScope": "ORGANIZATION",
                 "IncidentSeverity": "HIGH",
-                "IncidentTitle": "Report of data leak from demisto.com",
+                "IncidentTitle": "Report of data leak from xsoar.com",
                 "IncidentType": "DATA_LEAKAGE",
                 "Modified": "2018-07-24T18:24:59.449Z",
                 "Occurred": "2016-07-03",
                 "OrganisationUsernameCount": 100,
                 "RecordCount": 5846,
                 "SourceUrl": "some_url",
-                "Title": "Report of data leak from demisto.com"
+                "Title": "Report of data leak from xsoar.com"
             },
             {
                 "DataClasses": null,
@@ -534,7 +534,7 @@ Find data breaches
 >### Digital Shadows Breaches
 > DataClasses| DomainCount| DomainName| Id| IncidentId| IncidentScope| IncidentSeverity| IncidentTitle| IncidentType| Modified| Occurred| OrganisationUsernameCount| RecordCount| SourceUrl| Title
 >---|---|---|---|---|---|---|---|---|---|---|---|---|---|---
->  | 3372 | demisto.com | 99000001 | 99002706 | ORGANIZATION | HIGH | Report of data leak from demisto.com | DATA_LEAKAGE | 2018-07-24T18:24:59.449Z | 2016-07-03 | 100 | 5846 | some_url | Report of data leak from demisto.com
+>  | 3372 | xsoar.com | 99000001 | 99002706 | ORGANIZATION | HIGH | Report of data leak from xsoar.com | DATA_LEAKAGE | 2018-07-24T18:24:59.449Z | 2016-07-03 | 100 | 5846 | some_url | Report of data leak from xsoar.com
 >  | 5848 | someDomain.com | 99000000 | 99002728 | ORGANIZATION | HIGH | Report of data leak from someDomain.com | DATA_LEAKAGE | 2018-07-24T18:22:42.780Z | 2016-06-29 | 100 | 5858 | another_url | Report of data leak from someDomain.com
 
 
