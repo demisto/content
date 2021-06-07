@@ -169,7 +169,6 @@ performance_test:
     - .test_content_on_server_instances_base
   variables:
     INSTANCE_ROLE: Performance Server Master
-    IFRA_ENV_TYPE: "Performance_Master"
 #  rules:
 #    - if: '$PERFORMANCE_TEST'
 #      when: always
