@@ -7697,6 +7697,9 @@ class AutoFocusKeyRetriever:
 
 def support_multithreading():
     """Adds lock on the calls to the Cortex XSOAR server from the Demisto object to support integration which use multithreading.
+
+    :return: No data returned
+    :rtype: ``None``
     """
     class MultithreadedDemisto(Demisto):
         lock = Lock()
