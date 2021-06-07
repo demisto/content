@@ -821,9 +821,12 @@ jobs:
                     echo "Skipping packs download to artifact on non master or release branch"
                     exit 0
                   fi
+                  if [[ $GCS_MARKET_BUCKET != "marketplace-dist" ]]; then
+                    STORAGE_BASE_PATH="upload-flow/builds/$CIRCLE_BRANCH/$CI_PIPELINE_ID/content/packs"
+                  fi
 
                   ZIP_FOLDER=$(mktemp -d)
-                  python3 ./Tests/Marketplace/zip_packs.py -b 'marketplace-dist' -z $ZIP_FOLDER -a $CIRCLE_ARTIFACTS -s $GCS_MARKET_KEY
+                  python3 ./Tests/Marketplace/zip_packs.py -b $GCS_MARKET_BUCKET -z $ZIP_FOLDER -a $CIRCLE_ARTIFACTS -s $GCS_MARKET_KEY -sbp "${STORAGE_BASE_PATH}"
                 when: always
             - run:
                 name: Store Artifacts to GCS

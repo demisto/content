@@ -1,8 +1,8 @@
 import pytest
 
 from Tests.Marketplace.zip_packs import get_latest_pack_zip_from_blob, zip_packs,\
-    remove_test_playbooks_if_exist, remove_test_playbooks_from_signatures, BUILD_GCP_PATH, get_zipped_packs_names,\
-    copy_to_other_dir
+    remove_test_playbooks_if_exist, remove_test_playbooks_from_signatures, get_zipped_packs_names,\
+    copy_zipped_packs_to_artifacts
 
 
 class TestZipPacks:
@@ -50,7 +50,7 @@ class TestZipPacks:
         mocker.patch.object(zip_packs, 'get_pack_files', return_value=pack_files)
         mocker.patch('os.listdir', return_value=list_dir_result)
         mocker.patch('os.path.isdir', return_value=True)
-        zipped_packs = get_zipped_packs_names('content', BUILD_GCP_PATH, 'builds')
+        zipped_packs = get_zipped_packs_names('content')
 
         assert zipped_packs == [{'Slack': 'content/packs/Slack/1.0.1/Slack.zip'}]
 
@@ -70,7 +70,7 @@ class TestZipPacks:
             mocker.patch.object(zip_packs, 'get_pack_files', return_value=pack_files)
             mocker.patch('os.listdir', return_value=list_dir_result)
             mocker.patch('os.path.isdir', return_value=True)
-            get_zipped_packs_names('content', BUILD_GCP_PATH, 'builds')
+            get_zipped_packs_names('content')
 
             assert sys_exit.value.code == 1
 
@@ -90,11 +90,11 @@ class TestZipPacks:
             mocker.patch.object(zip_packs, 'get_pack_files', return_value=pack_files)
             mocker.patch('os.listdir', return_value=list_dir_result)
             mocker.patch('os.path.isdir', return_value=True)
-            get_zipped_packs_names('content', BUILD_GCP_PATH, 'builds')
+            get_zipped_packs_names('content')
 
             assert sys_exit.value.code == 1
 
-    def test_copy_to_other_dir(self, mocker):
+    def test_copy_zipped_packs_to_artifacts(self, mocker):
         """
         Given:
             A list containing information about a single pack
@@ -108,11 +108,11 @@ class TestZipPacks:
         mocker.patch.object(shutil, 'copy', side_effect=None)
         mocker.patch('os.path.exists', return_value=True)
 
-        copy_to_other_dir(zipped_packs)
+        copy_zipped_packs_to_artifacts(zipped_packs)
 
         assert shutil.copy.call_count == 1
 
-    def test_copy_to_other_dir_no_zipped_packs(self, mocker):
+    def test_copy_zipped_packs_to_artifacts_no_zipped_packs(self, mocker):
         """
         Given:
             A list containing no information about packs
@@ -126,7 +126,7 @@ class TestZipPacks:
         mocker.patch.object(shutil, 'copy', side_effect=None)
         mocker.patch('os.path.exists', return_value=True)
 
-        copy_to_other_dir(zipped_packs)
+        copy_zipped_packs_to_artifacts(zipped_packs)
 
         assert shutil.copy.call_count == 0
 
