@@ -7,8 +7,7 @@
             "integrations": [
                 "WildFire-v2"
             ],
-            "playbookID": "Detonate File - WildFire - Test",
-            "is_mockable": false
+            "playbookID": "Detonate File - WildFire - Test"
         },
         {
             "integrations": "Microsoft Teams Management",
@@ -1198,8 +1197,7 @@
         },
         {
             "integrations": "WildFire-v2",
-            "playbookID": "Detonate URL - WildFire-v2 - Test",
-            "is_mockable": false
+            "playbookID": "Detonate URL - WildFire-v2 - Test"
         },
         {
             "integrations": "WildFire-v2",
@@ -1318,10 +1316,6 @@
             "playbookID": "Intezer Testing v2",
             "fromversion": "4.1.0",
             "timeout": 600
-        },
-        {
-            "integrations": "FalconIntel",
-            "playbookID": "CrowdStrike Falcon Intel v2"
         },
         {
             "integrations": [
@@ -3359,6 +3353,11 @@
         {
             "integrations": "ThreatExchange v2",
             "playbookID": "ThreatExchangeV2-test",
+            "fromversion": "5.5.0"
+        },
+        {
+            "integrations": "NetscoutAED",
+            "playbookID": "NetscoutAED-Test",
             "fromversion": "5.5.0"
         }
     ],
