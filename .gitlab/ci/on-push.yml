@@ -132,47 +132,47 @@ create-instances:
     - exit $EXIT_CODE
 
 
-#server_5_0:
-#  extends: .test_content_on_server_instances_base
-#  variables:
-#    INSTANCE_ROLE: "Server 5.0"
-#
-#
-#server_5_5:
-#  extends: .test_content_on_server_instances_base
-#  variables:
-#    INSTANCE_ROLE: "Server 5.5"
-#
-#
-#server_6_0:
-#  extends: .test_content_on_server_instances_base
-#  #  No need to trigger in case of release branch
-#  rules:
-#    - if: '$CI_PIPELINE_SOURCE =~ /^(push)$/ && $CI_COMMIT_BRANCH !~ /^[0-9]{2}\.[0-9]{1,2}\.[0-9]$/'
-#  variables:
-#    INSTANCE_ROLE: "Server 6.0"
-#
-#
-#server_master:
-#  extends:
-#    - .test_content_on_server_instances_base
-#  #  No need to trigger in case of release branch
-#  rules:
-#    - if: '$CI_PIPELINE_SOURCE =~ /^(push)$/ && $CI_COMMIT_BRANCH !~ /^[0-9]{2}\.[0-9]{1,2}\.[0-9]$/'
-#    - if: '$NIGHTLY'
-#  variables:
-#    INSTANCE_ROLE: "Server Master"
+server_5_0:
+  extends: .test_content_on_server_instances_base
+  variables:
+    INSTANCE_ROLE: "Server 5.0"
+
+
+server_5_5:
+  extends: .test_content_on_server_instances_base
+  variables:
+    INSTANCE_ROLE: "Server 5.5"
+
+
+server_6_0:
+  extends: .test_content_on_server_instances_base
+  #  No need to trigger in case of release branch
+  rules:
+    - if: '$CI_PIPELINE_SOURCE =~ /^(push)$/ && $CI_COMMIT_BRANCH !~ /^[0-9]{2}\.[0-9]{1,2}\.[0-9]$/'
+  variables:
+    INSTANCE_ROLE: "Server 6.0"
+
+
+server_master:
+  extends:
+    - .test_content_on_server_instances_base
+  #  No need to trigger in case of release branch
+  rules:
+    - if: '$CI_PIPELINE_SOURCE =~ /^(push)$/ && $CI_COMMIT_BRANCH !~ /^[0-9]{2}\.[0-9]{1,2}\.[0-9]$/'
+    - if: '$NIGHTLY'
+  variables:
+    INSTANCE_ROLE: "Server Master"
 
 
 performance_test:
   extends:
     - .test_content_on_server_instances_base
-#  rules:
-#    - if: '$PERFORMANCE_TEST'
-#      when: always
   variables:
     INSTANCE_ROLE: Performance Server Master
     IFRA_ENV_TYPE: "Performance_Master"
+#  rules:
+#    - if: '$PERFORMANCE_TEST'
+#      when: always
 
 slack-notify-nightly-build:
   extends:
