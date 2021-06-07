@@ -122,7 +122,7 @@ script:
     deprecated: false
     description: Fetching Sixgill DVE Feed indicators
     execution: false
-    name: sixgill-get-dve-feed
+    name: sixgill-get-indicators
   dockerimage: demisto/sixgill:1.0.0.19258
   feed: true
   isfetch: false

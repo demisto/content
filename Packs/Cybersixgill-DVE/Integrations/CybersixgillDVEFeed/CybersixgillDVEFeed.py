@@ -23,8 +23,6 @@ MAX_INDICATORS = 1000
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 SUSPICIOUS_FEED_IDS = ["darkfeed_003"]
 DEMISTO_DATETIME_FORMAT = "%Y-%m-%dT%H:%M:%S.%fZ"
-VERIFY = not demisto.params().get("insecure", True)
-SESSION = requests.Session()
 DESCRIPTION_FIELD_ORDER = OrderedDict(
     [
         ("Description", "eventdescription"),
@@ -57,19 +55,19 @@ DESCRIPTION_FIELD_ORDER = OrderedDict(
 """ HELPER FUNCTIONS """
 
 
-def module_command_test(*args):
+def test_module(session, params, verify):
     """
     Performs basic Auth request
     """
-    response = SESSION.send(
+    response = session.send(
         request=SixgillAuthRequest(
-            demisto.params()["client_id"], demisto.params()["client_secret"], CHANNEL_CODE
+            params.get("client_id"), params.get("client_secret"), CHANNEL_CODE
         ).prepare(),
-        verify=VERIFY,
+        verify=verify,
     )
     if not response.ok:
         raise DemistoException("Auth request failed - please verify client_id, and client_secret.")
-    return "ok", None, "ok"
+    return "ok"
 
 
 def get_description(fileds_obj):
@@ -168,7 +166,13 @@ def get_indicators_command(client, args):
     limit = int(args.get("limit"))
     final_indicators = fetch_indicators_command(client, limit, True)
     human_readable = tableToMarkdown("Indicators from Sixgill DVE Feed:", final_indicators)
-    return human_readable, {}, final_indicators
+    return CommandResults(
+        readable_output=human_readable,
+        outputs_prefix='',
+        outputs_key_field='',
+        raw_response=final_indicators,
+        outputs={},
+    )
 
 
 def get_limit(str_limit, default_limit):
@@ -179,33 +183,37 @@ def get_limit(str_limit, default_limit):
 
 
 def main():
-    max_indicators = get_limit(demisto.params().get("maxIndicators", MAX_INDICATORS), MAX_INDICATORS)
-    SESSION.proxies = handle_proxy()
+    session = requests.Session()
+    params = demisto.params()
+    max_indicators = get_limit(params.get("maxIndicators", MAX_INDICATORS), MAX_INDICATORS)
+    session.proxies = handle_proxy()
+    verify = not params.get("insecure", True)
     client = SixgillFeedClient(
-        demisto.params()["client_id"],
-        demisto.params()["client_secret"],
+        params.get("client_id"),
+        params.get("client_secret"),
         CHANNEL_CODE,
         FeedStream.DVEFEED,
         bulk_size=max_indicators,
-        session=SESSION,
-        verify=VERIFY
+        session=session,
+        verify=verify
     )
     command = demisto.command()
     demisto.info(f"Command being called is {command}")
-    tags = argToList(demisto.params().get("feedTags", []))
-    tlp_color = demisto.params().get("tlp_color")
-    commands: Dict[str, Callable] = {"test-module": module_command_test, "sixgill-get-dve-feed": get_indicators_command}
+    tags = argToList(params.get("feedTags", []))
+    tlp_color = params.get("tlp_color")
+    args = demisto.args()
     try:
-        if demisto.command() == "fetch-indicators":
+        if command == 'test-module':
+            return_results(test_module(session, params, verify))
+        elif command == "fetch-indicators":
             indicators = fetch_indicators_command(client, tags=tags, tlp_color=tlp_color)
             for b in batch(indicators, batch_size=2000):
                 demisto.createIndicators(b)
-        else:
-            readable_output, outputs, raw_response = commands[command](client, demisto.args())
-            return_outputs(readable_output, outputs, raw_response)
+        elif command == 'sixgill-get-indicators':
+            return_results(get_indicators_command(client, args))
     except Exception as err:
         demisto.error(traceback.format_exc())
-        return_error(f"Error failed to execute {demisto.command()}, error: [{err}]")
+        return_error(f"Error failed to execute {command}, error: [{err}]")
 
 
 if __name__ == "__builtin__" or __name__ == "builtins":
