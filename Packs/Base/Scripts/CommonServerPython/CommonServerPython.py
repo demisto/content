@@ -7701,9 +7701,9 @@ def support_multithreading():
     :return: No data returned
     :rtype: ``None``
     """
-
-    class MultithreadedDemisto(Demisto):  # type: ignore
+    class MultithreadedDemisto(Demisto):  # type: ignore[name-defined] # noqa: F821
         lock = Lock()
+
         def __do(self, cmd):
             try:
                 if self.lock.acquire(timeout=60):  # type: ignore[call-arg]
