@@ -4679,7 +4679,7 @@ class TestSetAndGetLastRun:
         """
         Given: 6.2.0 environment
         When: Fetch indicators when getLastRun and getIntegrationContext are empty
-        Then: {}
+        Then: function will return empty dict
         """
         import demistomock as demisto
         from CommonServerPython import get_feed_last_run
@@ -4693,7 +4693,7 @@ class TestSetAndGetLastRun:
         """
         Given: 6.2.0 environment
         When: Fetch indicators when getLastRun is empty and getIntegrationContext has results.
-        Then: {}
+        Then: function will return empty dict
         """
         import demistomock as demisto
         from CommonServerPython import get_feed_last_run
@@ -4821,4 +4821,3 @@ class TestIsDemistoServerGE:
             }
         )
         assert not is_demisto_version_ge(version, build)
-
