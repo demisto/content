@@ -147,9 +147,12 @@ def create_context_for_campaign_details(campaign_found=False, incidents_df=None,
         incident_df = incident_df[incident_df['id'] != incident_id]
         incident_df.rename({FROM_DOMAIN_FIELD: 'emailfromdomain'}, axis=1, inplace=True)
         incidents_context = incident_df.fillna(1).to_dict(orient='records')
+        datetimes = incidents_df['created_dt'].dropna()  # type: ignore
+        min_datetime = min(datetimes).strftime("%m/%d/%Y, %H:%M:%S")
         return {
             'isCampaignFound': campaign_found,
             'involvedIncidentsCount': len(incidents_df) if incidents_df is not None else 0,
+            'firstIncidentDate': min_datetime,
             INCIDENTS_CONTEXT_TD: incidents_context
         }
 
@@ -533,6 +536,7 @@ def main():
         fields_to_display = get_comma_sep_list(fields_to_display)
     else:
         fields_to_display = []
+    res = demisto.executeCommand('FindDuplicateEmailIncidents', input_args)
     res = demisto.executeCommand('FindDuplicateEmailIncidents', input_args)
     if is_error(res):
         return_error(get_error(res))
