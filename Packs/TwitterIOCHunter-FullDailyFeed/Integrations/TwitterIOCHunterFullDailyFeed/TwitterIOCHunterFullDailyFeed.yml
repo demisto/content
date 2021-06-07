@@ -11,24 +11,6 @@ configuration:
   name: proxy
   required: false
   type: 8
-- display: Fetch indicators
-  name: feed
-  required: false
-  type: 8
-- additionalinfo: Indicators from this integration instance will be marked with this
-    verdict
-  display: Indicator Verdict
-  name: feedReputation
-  options:
-  - Unknown
-  - None
-  - Benign
-  - Good
-  - Suspicious
-  - Malicious
-  - Bad
-  required: false
-  type: 18
 - additionalinfo: Reliability of the source providing the intelligence data
   defaultvalue: F - Reliability cannot be judged
   display: Source Reliability
@@ -109,7 +91,7 @@ script:
   - arguments: []
     description: Get Indicators from TwitterIOCHunter
     name: twitteriochunter-get-indicators
-  dockerimage: demisto/python3:3.9.5.20070
+  dockerimage: demisto/python3:3.9.5.20958
   feed: true
   isFetchSamples: true
   runonce: false

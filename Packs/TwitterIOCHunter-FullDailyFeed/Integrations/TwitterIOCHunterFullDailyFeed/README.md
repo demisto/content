@@ -1,5 +1,5 @@
 Fetch the full daily feed from www.tweettioc.com/v1/tweets/daily/full
-This integration was integrated and tested with version xx of TwitterIOCHunter - Full Daily Feed
+This integration was integrated and tested with version v1 of TwitterIOCHunter - Full Daily Feed
 ## Configure TwitterIOCHunter - Full Daily Feed on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
