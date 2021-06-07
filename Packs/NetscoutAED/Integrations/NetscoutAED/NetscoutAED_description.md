@@ -1,7 +1,7 @@
 ## Netscout Arbor Edge Defense - AED
 
-- Use the Netscout Arbor Edge Defense integration to detect and stop both
-  inbound threats and outbound communication from internal compromised hosts.
+- Use the Netscout Arbor Edge Defense integration to detect and stop both inbound threats
+  and outbound malicious communication from compromised internal devices.
 
 ### Creating an API client
 AED uses token-based authentication to access the API.
