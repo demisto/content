@@ -363,6 +363,24 @@ script:
       name: parentIssueId
       required: false
       secret: false
+    - default: false
+      description: A text field for describing the environment in which the issue occurred (for example - environment="IE9 on Windows 7").
+      isArray: false
+      name: environment
+      required: false
+      secret: false
+    - default: false
+      description: The security level name of the issue, (for example - security="Anyone")
+      isArray: false
+      name: security
+      required: false
+      secret: false
+    - default: false
+      description: The components names of the issue, (for example - components="component1,component2").
+      isArray: true
+      name: components
+      required: false
+      secret: false
     deprecated: false
     description: Creates a new issue in Jira.
     execution: false
@@ -547,20 +565,20 @@ script:
       required: false
       secret: false
     - default: false
-      description: A text field for describing the environment in which the issue occurred (e.g. "IE9 on Windows 7").
+      description: A text field for describing the environment in which the issue occurred (for example - environment="IE9 on Windows 7").
       isArray: false
       name: environment
       required: false
       secret: false
     - default: false
-      description: The security level of the issue.
+      description: The security level name of the issue, (for example - security="Anyone")
       isArray: false
       name: security
       required: false
       secret: false
     - default: false
-      description: The components of the issue.
-      isArray: false
+      description: The components names of the issue, (for example - components="component1,component2").
+      isArray: true
       name: components
       required: false
       secret: false
@@ -684,9 +702,6 @@ script:
   dockerimage: demisto/oauthlib:1.0.0.20579
   feed: false
   isfetch: true
-  ismappable: true
-  isremotesyncin: true
-  isremotesyncout: true
   longRunning: false
   longRunningPort: false
   runonce: false
