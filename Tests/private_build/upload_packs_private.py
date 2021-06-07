@@ -10,7 +10,7 @@ from Tests.Marketplace.marketplace_services import init_storage_client, Pack, lo
     get_content_git_client, get_recent_commits_data
 from Tests.Marketplace.marketplace_statistics import StatisticsHandler
 from Tests.Marketplace.upload_packs import get_packs_names, extract_packs_artifacts, download_and_extract_index, \
-    update_index_folder, clean_non_existing_packs, upload_index_to_storage, upload_core_packs_config, \
+    update_index_folder, clean_non_existing_packs, upload_index_to_storage, create_corepacks_config, \
     upload_id_set, check_if_index_is_updated, print_packs_summary, get_packs_summary
 from Tests.Marketplace.marketplace_constants import PackStatus, GCPConfig, CONTENT_ROOT_PATH
 from demisto_sdk.commands.common.tools import str2bool
@@ -413,7 +413,7 @@ def main():
     service_account = upload_config.service_account
     target_packs = upload_config.pack_names
     build_number = upload_config.ci_build_number
-    id_set_path = upload_config.id_set_path
+    id_set_path = upload_config.id_set_path  # noqa F841
     packs_dependencies_mapping = load_json(upload_config.pack_dependencies) if upload_config.pack_dependencies else {}
     storage_base_path = upload_config.storage_base_path
     is_private_build = upload_config.encryption_key and upload_config.encryption_key != ''
@@ -478,7 +478,8 @@ def main():
     # upload core packs json to bucket
 
     if should_upload_core_packs(storage_bucket_name):
-        upload_core_packs_config(default_storage_bucket, build_number, index_folder_path)
+        create_corepacks_config(default_storage_bucket, build_number, index_folder_path,
+                                artifacts_dir=os.path.dirname(packs_artifacts_path))
     # finished iteration over content packs
     if is_private_build:
         delete_public_packs_from_index(index_folder_path)

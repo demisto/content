@@ -7,8 +7,7 @@
             "integrations": [
                 "WildFire-v2"
             ],
-            "playbookID": "Detonate File - WildFire - Test",
-            "is_mockable": false
+            "playbookID": "Detonate File - WildFire - Test"
         },
         {
             "integrations": "Microsoft Teams Management",
@@ -1198,8 +1197,7 @@
         },
         {
             "integrations": "WildFire-v2",
-            "playbookID": "Detonate URL - WildFire-v2 - Test",
-            "is_mockable": false
+            "playbookID": "Detonate URL - WildFire-v2 - Test"
         },
         {
             "integrations": "WildFire-v2",
@@ -1318,10 +1316,6 @@
             "playbookID": "Intezer Testing v2",
             "fromversion": "4.1.0",
             "timeout": 600
-        },
-        {
-            "integrations": "FalconIntel",
-            "playbookID": "CrowdStrike Falcon Intel v2"
         },
         {
             "integrations": [
@@ -3357,13 +3351,18 @@
             "is_mockable": false
         },
         {
+            "integrations": "Proofpoint TAP v2",
+            "playbookID": "ProofpointTAP-Test"
+        },
+        {
             "integrations": "ThreatExchange v2",
             "playbookID": "ThreatExchangeV2-test",
             "fromversion": "5.5.0"
         },
         {
-            "integrations": "Proofpoint TAP v2",
-            "playbookID": "ProofpointTAP-Test"
+            "integrations": "NetscoutAED",
+            "playbookID": "NetscoutAED-Test",
+            "fromversion": "5.5.0"
         }
     ],
     "skipped_tests": {
@@ -3463,7 +3462,6 @@
         "TestEmailRepIOPlaybook": "Issue 33219",
         "get_original_email_-_ews-_test": "Issue 27571",
         "PANW Threat Vault - Signature Search - Test": "Issue 30930",
-        "PhishTank Testing" : "Issue 29055",
         "TAXII_Feed_Test": "Issue 37588"
     },
     "skipped_integrations": {
