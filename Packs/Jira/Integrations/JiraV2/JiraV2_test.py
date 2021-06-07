@@ -1139,6 +1139,6 @@ def test_get_issue_fields_issuejson_param():
 
 def test_get_issue_fields():
     from JiraV2 import get_issue_fields
-    issue_fields = get_issue_fields(False, False, **{"components": "Test", "security": "Anyone", "environment": "Test"})
-    assert issue_fields == {'fields': {'components': [{'name': 'Test'}], 'environment': 'Test',
+    issue_fields = get_issue_fields(False, False, **{"components": "Test, Test 1", "security": "Anyone", "environment": "Test"})
+    assert issue_fields == {'fields': {'components': [{'name': 'Test'}, {'name': 'Test 1'}], 'environment': 'Test',
                                        'security': {'name': 'Anyone'}}}

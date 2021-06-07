@@ -524,7 +524,8 @@ def get_issue_fields(issue_creating=False, mirroring=False, **issue_args):
         issue['fields']['description'] = issue_args['description']
 
     if issue_args.get('components'):
-        issue['fields']['components'] = [{"name": issue_args['components']}]
+        components = [{"name": comp} for comp in argToList(issue_args["components"])]
+        issue['fields']['components'] = components
 
     if issue_args.get('security'):
         issue['fields']['security'] = {"name": issue_args['security']}

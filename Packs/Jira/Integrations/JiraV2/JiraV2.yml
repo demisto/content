@@ -1,6 +1,6 @@
 category: Case Management
 commonfields:
-  id: jira-v2
+  id: jira-v2 test
   version: -1
 configuration:
 - display: 'Jira URL, for example: https://demisto.atlassian.net/'
@@ -105,8 +105,8 @@ configuration:
 description: Use the Jira integration to manage issues and create Cortex XSOAR incidents
   from the Jira projects. From Cortex XSOAR version 6.0 and above mirror issues to
   existing issue incidents in Cortex XSOAR.
-display: Atlassian Jira v2
-name: jira-v2
+display: Atlassian Jira v2 test
+name: jira-v2 test
 script:
   commands:
   - arguments:
