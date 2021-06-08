@@ -1,11 +1,11 @@
+import itertools
+import time
+from datetime import datetime, timedelta
 from typing import Dict, List, Tuple, Optional, Callable
 
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 from urllib3 import disable_warnings
-from CommonServerPython import *
-import demistomock as demisto
-from datetime import timedelta, datetime
-import time
-import itertools
 
 disable_warnings()
 
@@ -827,9 +827,9 @@ def expected_errors(error: DemistoException) -> bool:
     :return: if the error is not real error
     """
     expected_error: List[str] = [
-        'qryGetResults failed with error[Error deserializing EsmQueryResults, see logs for more information ' +  # noqa: W504
-        '(Error deserializing EsmQueryResults, see logs for more information ' +  # noqa: W504
-        '(Internal communication error, see logs for more details))].',
+        'qryGetResults failed with error[Error deserializing EsmQueryResults, see logs for more information '  # noqa: W504
+        + '(Error deserializing EsmQueryResults, see logs for more information '  # noqa: W504
+        + '(Internal communication error, see logs for more details))].',
         'alarmUnacknowledgeTriggeredAlarm failed with error[ERROR_BadRequest (60)].',
         'alarmAcknowledgeTriggeredAlarm failed with error[ERROR_BadRequest (60)].'
     ]
@@ -849,14 +849,20 @@ def time_format(current_time: str, difference: int = 0) -> str:
     except ValueError as error:
         if str(error) != f'time data \'{current_time}\' does not match format \'%Y/%m/%d %H:%M:%S\'':
             raise error
-        else:
+
+        try:
+            to_return = convert_time_format(current_time, difference=difference, mcafee_format='%m/%d/%Y %H:%M:%S')
+        except ValueError as error_2:
+            if str(error_2) != f'time data \'{current_time}\' does not match format \'%m/%d/%Y %H:%M:%S\'':
+                raise error_2
+
             try:
-                to_return = convert_time_format(current_time, difference=difference, mcafee_format='%m/%d/%Y %H:%M:%S')
-            except ValueError as error_2:
-                if str(error_2) == f'time data \'{current_time}\' does not match format \'%m/%d/%Y %H:%M:%S\'':
-                    raise ValueError(f'time data \'{current_time}\' does not match the time format.')
+                to_return = convert_time_format(current_time, difference=difference, mcafee_format='%d-%m-%Y %H:%M:%S')
+            except ValueError as error_3:
+                if str(error_3) != f'time data \'{current_time}\' does not match format \'%d-%m-%Y %H:%M:%S\'':
+                    raise error_3
                 else:
-                    raise error_2
+                    raise ValueError(f'time data \'{current_time}\' does not match the time format.')
     return to_return
 
 
