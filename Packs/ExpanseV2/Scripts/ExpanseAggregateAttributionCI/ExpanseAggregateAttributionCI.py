@@ -6,8 +6,7 @@ import demistomock as demisto
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 from CommonServerUserPython import *  # noqa
 
-from typing import Dict, List, Any, Tuple, Optional
-from ipaddress import IPv4Address, IPv4Network
+from typing import Dict, Any, Tuple, Optional
 import traceback
 
 
