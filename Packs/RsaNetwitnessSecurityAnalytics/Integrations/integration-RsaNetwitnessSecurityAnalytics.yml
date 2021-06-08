@@ -1,4 +1,5 @@
 commonfields:
+
   id: RSA NetWitness Security Analytics
   version: -1
 name: RSA NetWitness Security Analytics
