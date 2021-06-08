@@ -8,7 +8,7 @@ INPUT = [
         "name": "server 1",
         "sys_id": "1234",
         "sys_class_name": "cmdb_ci",
-        "asset":  {
+        "asset": {
             "display_value": "server 1",
             "link": "https://servicenow.com/5678",
             "value": "5678"
