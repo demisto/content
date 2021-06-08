@@ -578,9 +578,9 @@ def auto_detect_indicator_type(indicator_value):
             return FeedIndicatorType.Domain
 
     except Exception:
-        demisto.debug('Failed to use tldextract.')
-        pass
+        demisto.debug('tldextract failed to detect indicator type. indicator value: {}'.format(indicator_value))
 
+    demisto.debug('Failed to detect indicator type. Indicator value: {}'.format(indicator_value))
     return None
 
 
