@@ -795,7 +795,6 @@ def main() -> None:
             demisto.setLastRun(next_run)
             demisto.incidents(incidents)
 
-            # return_results(baseintegration_dummy_command(client, demisto.args()))
         elif command in commands:
             return_results(commands[command](client, **args))
         else:
