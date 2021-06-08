@@ -9,3 +9,6 @@ ignore=BA101
 
 [file:classifier-mapper-Gurucul-HighRiskUsers.json]
 ignore=BA101
+
+[file:incidentfield-Gra_Case_Id.json]
+ignore=IF100
