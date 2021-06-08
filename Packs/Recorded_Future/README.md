@@ -1,0 +1,1 @@
+Note: This pack is going to be deprecated around November 2021, use Recorded Future v2 instead.
