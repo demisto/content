@@ -211,7 +211,7 @@ def test_mcafee_severity_to_demisto(test_input, output):
 
 def test_edit_case(mocker):
     params = {
-        "url": "https://dummy.com",
+        "url": "https://example.com",
         "insecure": True,
         "credentials": {
             "identifier": "TEST",
