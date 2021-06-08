@@ -38,6 +38,9 @@ def test_fetch_incidents(requests_mock):
     expected_response = util_load_json('test_data/formatted_fetch_incident.json')
     # raise ValueError(integration_response.incidents,":::::",expected_response)
     # THEN the response should be returned and formatted
+    
+    integration_response[1]['rawJSON']=json.loads(integration_response[1]['rawJSON'])
+    
     assert integration_response[1] == expected_response
 
 
