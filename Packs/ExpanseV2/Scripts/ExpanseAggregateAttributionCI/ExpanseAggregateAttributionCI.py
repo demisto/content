@@ -65,7 +65,7 @@ def aggregate_command(args: Dict[str, Any]) -> CommandResults:
         if not isinstance(entry, dict):
             continue
 
-        name, sys_class_name, sys_id, asset_display_value, asset_link, asset_value = deconstruct_entry(input_list)
+        name, sys_class_name, sys_id, asset_display_value, asset_link, asset_value = deconstruct_entry(entry)
 
         current_state = current_sys_ids.get(sys_id, None)
         if current_state is None:
