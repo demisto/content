@@ -1,22 +1,19 @@
 id: Expanse Attribution
 version: -1
-contentitemexportablefields:
-  contentitemfields: {}
 name: Expanse Attribution
-description: >
-  Subplaybook for Handle Expanse Incident playbooks.
-  Given an Expanse Issue IP, Issue Provider, Issue Domain, Issue Port and Issue Protocol
-  hunts for internal activity related to the detected service.
-  The playbook looks for logs on Splunk, Cortex Data Lake and Panorama.
+description: |
+  Subplaybook for Handle Expanse Incident playbooks. Given an Expanse Issue IP, Issue Provider, Issue Domain,
+  Issue Port and Issue Protocol hunts for internal activity related to the detected service.
+  The playbook looks for logs on Splunk, Cortex Data Lake, Panorama, and ServiceNow CMDB.
   Returns a list of potential owner BUs, owner Users, Device and Notes.
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 3c9c1c89-0f34-410c-8cab-fc59ba625197
+    taskid: 1439e55f-e456-4e7e-80c5-6bb9fd3ade7a
     type: start
     task:
-      id: 3c9c1c89-0f34-410c-8cab-fc59ba625197
+      id: 1439e55f-e456-4e7e-80c5-6bb9fd3ade7a
       version: -1
       name: ""
       iscommand: false
@@ -27,6 +24,7 @@ tasks:
       - "2"
       - "10"
       - "17"
+      - "53"
     separatecontext: false
     view: |-
       {
@@ -42,10 +40,10 @@ tasks:
     quietmode: 0
   "2":
     id: "2"
-    taskid: 8bb9a2b6-6a94-4c88-8e8e-b3b0f9fa2a7e
+    taskid: 646c51b3-64a3-4cc4-8c9e-0c300eeb3cec
     type: title
     task:
-      id: 8bb9a2b6-6a94-4c88-8e8e-b3b0f9fa2a7e
+      id: 646c51b3-64a3-4cc4-8c9e-0c300eeb3cec
       version: -1
       name: Splunk
       type: title
@@ -70,10 +68,10 @@ tasks:
     quietmode: 0
   "3":
     id: "3"
-    taskid: 2ade3405-24ea-4aed-85e7-64777eeb53d3
+    taskid: ba2b6065-cee1-47de-8a94-c134e97a1e35
     type: title
     task:
-      id: 2ade3405-24ea-4aed-85e7-64777eeb53d3
+      id: ba2b6065-cee1-47de-8a94-c134e97a1e35
       version: -1
       name: User Enrichment
       type: title
@@ -98,10 +96,10 @@ tasks:
     quietmode: 0
   "4":
     id: "4"
-    taskid: 1e89fc04-b806-43d6-8bc7-cd7974f93fac
+    taskid: 5959a088-b1f0-45de-86d2-9e4f2eecab4c
     type: regular
     task:
-      id: 1e89fc04-b806-43d6-8bc7-cd7974f93fac
+      id: 5959a088-b1f0-45de-86d2-9e4f2eecab4c
       version: -1
       name: Splunk Hunt For Users To IP
       description: Searches Splunk for events.
@@ -189,10 +187,10 @@ tasks:
     quietmode: 0
   "5":
     id: "5"
-    taskid: a7dc61ef-738d-4fe8-8e35-12f5c9581cfd
+    taskid: 7512f4b8-fee1-42c4-8188-1dfc92119376
     type: regular
     task:
-      id: a7dc61ef-738d-4fe8-8e35-12f5c9581cfd
+      id: 7512f4b8-fee1-42c4-8188-1dfc92119376
       version: -1
       name: Splunk Hunt For Unknown Users To IP
       description: Searches Splunk for events.
@@ -280,10 +278,10 @@ tasks:
     quietmode: 0
   "6":
     id: "6"
-    taskid: 0837ad27-89b6-4075-8b66-3e04602312d5
+    taskid: af011f43-cb0f-42bc-8760-6dfc5c0f84db
     type: condition
     task:
-      id: 0837ad27-89b6-4075-8b66-3e04602312d5
+      id: af011f43-cb0f-42bc-8760-6dfc5c0f84db
       version: -1
       name: Is Splunk Enabled?
       description: Check if Splunk integration is enabled
@@ -337,10 +335,10 @@ tasks:
     quietmode: 0
   "10":
     id: "10"
-    taskid: 8ef616d7-382c-4bae-8c63-4b56a0018f11
+    taskid: a2264d52-e070-491b-8478-c7baccfe1537
     type: title
     task:
-      id: 8ef616d7-382c-4bae-8c63-4b56a0018f11
+      id: a2264d52-e070-491b-8478-c7baccfe1537
       version: -1
       name: Cortex Data Lake
       type: title
@@ -365,10 +363,10 @@ tasks:
     quietmode: 0
   "11":
     id: "11"
-    taskid: acd0c8a4-3371-4873-8c72-3096d5126d02
+    taskid: 7343f74e-c5f3-4fe7-8af1-1ce8116a721d
     type: condition
     task:
-      id: acd0c8a4-3371-4873-8c72-3096d5126d02
+      id: 7343f74e-c5f3-4fe7-8af1-1ce8116a721d
       version: -1
       name: Is Cortex Data Lake Enabled?
       description: Check if Cortex Data Lake is enabled
@@ -422,10 +420,10 @@ tasks:
     quietmode: 0
   "12":
     id: "12"
-    taskid: b89f04bc-f6e3-4d65-85d7-58da77ae408c
+    taskid: 4cae6181-ae73-429d-8869-c8b708bf7c05
     type: regular
     task:
-      id: b89f04bc-f6e3-4d65-85d7-58da77ae408c
+      id: 4cae6181-ae73-429d-8869-c8b708bf7c05
       version: -1
       name: Cortex Data Lake Hunt for Unknown Users To IP
       description: Runs a query on  any table or field.
@@ -511,10 +509,10 @@ tasks:
     quietmode: 0
   "13":
     id: "13"
-    taskid: 7a70019b-8004-40ab-8040-a3a6d34bc92b
+    taskid: 20bed384-92c1-4a86-87be-96bedf01e903
     type: regular
     task:
-      id: 7a70019b-8004-40ab-8040-a3a6d34bc92b
+      id: 20bed384-92c1-4a86-87be-96bedf01e903
       version: -1
       name: Cortex Data Lake Hunt for Users To IP
       description: Runs a query on  any table or field.
@@ -600,10 +598,10 @@ tasks:
     quietmode: 0
   "17":
     id: "17"
-    taskid: 56fc3e80-b44f-4ba9-857f-28e724549770
+    taskid: eab774c4-02c5-4dee-8965-fa202810606e
     type: title
     task:
-      id: 56fc3e80-b44f-4ba9-857f-28e724549770
+      id: eab774c4-02c5-4dee-8965-fa202810606e
       version: -1
       name: Panorama
       type: title
@@ -628,10 +626,10 @@ tasks:
     quietmode: 0
   "18":
     id: "18"
-    taskid: 008a5d4e-0458-483e-823b-d6147307f09f
+    taskid: 1d247655-3be4-49c8-899a-15f11a15f417
     type: condition
     task:
-      id: 008a5d4e-0458-483e-823b-d6147307f09f
+      id: 1d247655-3be4-49c8-899a-15f11a15f417
       version: -1
       name: Is Panorama Enabled?
       description: Check if Panorama/PAN-OS is enabled
@@ -684,10 +682,10 @@ tasks:
     quietmode: 0
   "21":
     id: "21"
-    taskid: fd5d2d75-bd71-4a1f-8654-f81375971bb3
+    taskid: 3f5eb80c-04e9-47ce-8f0d-5d2e9e6645fb
     type: playbook
     task:
-      id: fd5d2d75-bd71-4a1f-8654-f81375971bb3
+      id: 3f5eb80c-04e9-47ce-8f0d-5d2e9e6645fb
       version: -1
       name: Panorama Query Logs
       description: 'Query Panorama Logs of types: traffic, threat, url, data-filtering
@@ -773,10 +771,10 @@ tasks:
     quietmode: 0
   "25":
     id: "25"
-    taskid: fb2c4b0e-fcab-40d8-8c66-c1549418528c
+    taskid: 5724da04-6f04-461c-8217-d6f5928dc032
     type: playbook
     task:
-      id: fb2c4b0e-fcab-40d8-8c66-c1549418528c
+      id: 5724da04-6f04-461c-8217-d6f5928dc032
       version: -1
       name: Panorama Query Logs
       description: 'Query Panorama Logs of types: traffic, threat, url, data-filtering
@@ -862,10 +860,10 @@ tasks:
     quietmode: 0
   "30":
     id: "30"
-    taskid: 3133b435-0253-4dea-8bf2-f7f395ca1e24
+    taskid: f5900a2f-c528-4a74-84f9-e3473ad79b94
     type: title
     task:
-      id: 3133b435-0253-4dea-8bf2-f7f395ca1e24
+      id: f5900a2f-c528-4a74-84f9-e3473ad79b94
       version: -1
       name: Done
       type: title
@@ -887,10 +885,10 @@ tasks:
     quietmode: 0
   "31":
     id: "31"
-    taskid: c0346d53-e385-4e27-8168-122188e5eae6
+    taskid: 78ff62a9-0182-4eac-803c-d16e93196663
     type: condition
     task:
-      id: c0346d53-e385-4e27-8168-122188e5eae6
+      id: 78ff62a9-0182-4eac-803c-d16e93196663
       version: -1
       name: Do We Have Users?
       description: Check if AD is enabled & we have users to enrich
@@ -932,10 +930,10 @@ tasks:
     quietmode: 0
   "33":
     id: "33"
-    taskid: da577c6f-f72f-4547-8310-604a964e29f8
+    taskid: 468166de-d649-4626-8e85-9a16cac2820f
     type: regular
     task:
-      id: da577c6f-f72f-4547-8310-604a964e29f8
+      id: 468166de-d649-4626-8e85-9a16cac2820f
       version: -1
       name: Export Enriched Users
       description: Expanse Enrich Attribution Data Structure with additional details
@@ -972,10 +970,10 @@ tasks:
     quietmode: 0
   "34":
     id: "34"
-    taskid: 4a2f8459-0f06-45ad-8d39-108bb8c028f0
+    taskid: e826a536-3ecf-4eba-8af6-e69322ca318f
     type: title
     task:
-      id: 4a2f8459-0f06-45ad-8d39-108bb8c028f0
+      id: e826a536-3ecf-4eba-8af6-e69322ca318f
       version: -1
       name: Splunk Not Enabled
       type: title
@@ -1000,10 +998,10 @@ tasks:
     quietmode: 0
   "35":
     id: "35"
-    taskid: 78014326-bea5-4741-8566-cf7759675f59
+    taskid: 50de6c15-5bcf-47ad-8946-730982cabf74
     type: title
     task:
-      id: 78014326-bea5-4741-8566-cf7759675f59
+      id: 50de6c15-5bcf-47ad-8946-730982cabf74
       version: -1
       name: Cortex Data Lake Not Enabled
       type: title
@@ -1028,10 +1026,10 @@ tasks:
     quietmode: 0
   "36":
     id: "36"
-    taskid: 37bf17fb-cf44-4d4e-8b6c-b644346f2bc9
+    taskid: e6698f2f-7e70-45fd-814e-b6fe3fe8be94
     type: title
     task:
-      id: 37bf17fb-cf44-4d4e-8b6c-b644346f2bc9
+      id: e6698f2f-7e70-45fd-814e-b6fe3fe8be94
       version: -1
       name: Panorama Not Enabled
       type: title
@@ -1056,10 +1054,10 @@ tasks:
     quietmode: 0
   "38":
     id: "38"
-    taskid: 2956955c-071b-43fa-8e5e-f415a3d26fed
+    taskid: 203873ac-6000-4ebf-8c01-7b4cea78bff9
     type: title
     task:
-      id: 2956955c-071b-43fa-8e5e-f415a3d26fed
+      id: 203873ac-6000-4ebf-8c01-7b4cea78bff9
       version: -1
       name: Device Enrichmnent
       type: title
@@ -1084,10 +1082,10 @@ tasks:
     quietmode: 0
   "39":
     id: "39"
-    taskid: 670ffbfc-faa9-499b-897f-dd7490f18d14
+    taskid: 15374bf1-b96b-4d8c-8b92-8129f0b99dca
     type: condition
     task:
-      id: 670ffbfc-faa9-499b-897f-dd7490f18d14
+      id: 15374bf1-b96b-4d8c-8b92-8129f0b99dca
       version: -1
       name: Is Panorama Enabled And We Have Devices?
       description: Check if Panorama/PAN-OS is enabled & we have device to enrich
@@ -1150,10 +1148,10 @@ tasks:
     quietmode: 0
   "40":
     id: "40"
-    taskid: 53b1c500-ea7a-4fed-8b6a-80502547364c
+    taskid: 704ab9bd-71f0-4768-8265-8e3283d51b22
     type: regular
     task:
-      id: 53b1c500-ea7a-4fed-8b6a-80502547364c
+      id: 704ab9bd-71f0-4768-8265-8e3283d51b22
       version: -1
       name: Retrieve Device Groups
       description: Run any command supported in the API.
@@ -1209,10 +1207,10 @@ tasks:
     quietmode: 0
   "41":
     id: "41"
-    taskid: 80840a1a-0676-4209-82ed-e4643656ab00
+    taskid: 6daa4e71-3bde-45b0-85a8-4b9447720265
     type: regular
     task:
-      id: 80840a1a-0676-4209-82ed-e4643656ab00
+      id: 6daa4e71-3bde-45b0-85a8-4b9447720265
       version: -1
       name: Enrich Attribution Device
       description: Expanse Enrich Attribution Data Structure with additional details
@@ -1256,10 +1254,10 @@ tasks:
     quietmode: 0
   "45":
     id: "45"
-    taskid: 86983449-750a-45b3-85f2-caa728009cab
+    taskid: d7964216-2ecf-4e3c-8c77-23f3ee498442
     type: title
     task:
-      id: 86983449-750a-45b3-85f2-caa728009cab
+      id: d7964216-2ecf-4e3c-8c77-23f3ee498442
       version: -1
       name: Cortex Data Lake Done
       type: title
@@ -1284,10 +1282,10 @@ tasks:
     quietmode: 0
   "46":
     id: "46"
-    taskid: dbcd4c70-c45d-47d2-846c-20834ae1b069
+    taskid: 64d3829b-15d8-47a1-8165-1fbbcf4ff65b
     type: title
     task:
-      id: dbcd4c70-c45d-47d2-846c-20834ae1b069
+      id: 64d3829b-15d8-47a1-8165-1fbbcf4ff65b
       version: -1
       name: Splunk Done
       type: title
@@ -1312,10 +1310,10 @@ tasks:
     quietmode: 0
   "47":
     id: "47"
-    taskid: 2a7a9849-34fc-4ce3-8500-e038a2607e56
+    taskid: 6151cafa-c70e-4b8f-80ee-8ad32e083efa
     type: title
     task:
-      id: 2a7a9849-34fc-4ce3-8500-e038a2607e56
+      id: 6151cafa-c70e-4b8f-80ee-8ad32e083efa
       version: -1
       name: Panorama Done
       type: title
@@ -1340,10 +1338,10 @@ tasks:
     quietmode: 0
   "48":
     id: "48"
-    taskid: dd245e6e-c618-4737-86b3-42875662c53c
+    taskid: c6917ada-79c9-43d7-8c7c-5d8cad1f3f0c
     type: title
     task:
-      id: dd245e6e-c618-4737-86b3-42875662c53c
+      id: c6917ada-79c9-43d7-8c7c-5d8cad1f3f0c
       version: -1
       name: Aggregation
       type: title
@@ -1355,6 +1353,7 @@ tasks:
       - "49"
       - "50"
       - "51"
+      - "56"
     separatecontext: false
     view: |-
       {
@@ -1370,10 +1369,10 @@ tasks:
     quietmode: 0
   "49":
     id: "49"
-    taskid: b388e5d1-5a58-4388-81db-afd5f07b165b
+    taskid: fd445e11-8442-4cad-8879-f99732253316
     type: regular
     task:
-      id: b388e5d1-5a58-4388-81db-afd5f07b165b
+      id: fd445e11-8442-4cad-8879-f99732253316
       version: -1
       name: Aggregate Attribution Device Result
       description: Aggregate entries from multiple sources into AttributionDevice
@@ -1428,10 +1427,10 @@ tasks:
     quietmode: 0
   "50":
     id: "50"
-    taskid: 7b234785-915d-4ab0-86c5-a4d8676c041c
+    taskid: 3cf82cb9-59b5-43e7-8df0-59416245ebd0
     type: regular
     task:
-      id: 7b234785-915d-4ab0-86c5-a4d8676c041c
+      id: 3cf82cb9-59b5-43e7-8df0-59416245ebd0
       version: -1
       name: Aggregate Attribution IP Result
       description: Aggregate entries from multiple sources into AttributionIP
@@ -1483,10 +1482,10 @@ tasks:
     quietmode: 0
   "51":
     id: "51"
-    taskid: b8bdeab3-68b9-42c6-8b27-4f5b1092b293
+    taskid: 7e6e4115-0b5a-4658-872f-dea3a8dc0f40
     type: regular
     task:
-      id: b8bdeab3-68b9-42c6-8b27-4f5b1092b293
+      id: 7e6e4115-0b5a-4658-872f-dea3a8dc0f40
       version: -1
       name: Aggregate Attribution User Result
       description: Aggregate entries from multiple sources into AttributionUser
@@ -1537,10 +1536,10 @@ tasks:
     quietmode: 0
   "52":
     id: "52"
-    taskid: 0f47bdcb-83fe-4342-812e-814f8083c403
+    taskid: 9b8c9779-c75c-4cfb-8361-558943b7bb8d
     type: playbook
     task:
-      id: 0f47bdcb-83fe-4342-812e-814f8083c403
+      id: 9b8c9779-c75c-4cfb-8361-558943b7bb8d
       version: -1
       name: Account Enrichment - Generic v2.1
       playbookName: Account Enrichment - Generic v2.1
@@ -1576,14 +1575,132 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-system: true
+  "53":
+    id: "53"
+    taskid: 2a1409dd-8bf3-4f2d-8586-1205199245c3
+    type: title
+    task:
+      id: 2a1409dd-8bf3-4f2d-8586-1205199245c3
+      version: -1
+      name: ServiceNow CMDB
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "55"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2860,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "54":
+    id: "54"
+    taskid: 136717cd-ee46-4716-8781-53765a010e8d
+    type: title
+    task:
+      id: 136717cd-ee46-4716-8781-53765a010e8d
+      version: -1
+      name: ServiceNow CMDB Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "48"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2860,
+          "y": 925
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "55":
+    id: "55"
+    taskid: a022fb4b-d884-444c-81dc-5057d0358b44
+    type: playbook
+    task:
+      id: a022fb4b-d884-444c-81dc-5057d0358b44
+      version: -1
+      name: Expanse Check ServiceNow CMDB
+      playbookName: Expanse Check ServiceNow CMDB
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "54"
+    separatecontext: true
+    view: |-
+      {
+        "position": {
+          "x": 2860,
+          "y": 530
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "56":
+    id: "56"
+    taskid: bd34cb36-0258-460d-82b2-bbea5275d639
+    type: regular
+    task:
+      id: bd34cb36-0258-460d-82b2-bbea5275d639
+      version: -1
+      name: ExpanseAggregateAttributionCI
+      description: Aggregate entries from ServiceNow CMDB into AttributionCI
+      scriptName: ExpanseAggregateAttributionCI
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      current:
+        simple: ${Expanse.AttributionCI}
+      input:
+        simple: ${ServiceNowCMDB.Report}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1400,
+          "y": 1475
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
         "height": 3165,
-        "width": 3590,
+        "width": 4060,
         "x": -820,
         "y": 50
       }
@@ -1644,6 +1761,9 @@ outputs:
   type: unknown
 - contextPath: Expanse.AttributionUser
   description: Users
+  type: Unknown
+- contextPath: Expanse.AttributionCI
+  description: CMDB CI
   type: Unknown
 tests:
 - No tests

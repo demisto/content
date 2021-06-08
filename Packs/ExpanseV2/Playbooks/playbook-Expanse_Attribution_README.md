@@ -1,4 +1,4 @@
-Subplaybook for Handle Expanse Incident playbooks. Given an Expanse Issue IP, Issue Provider, Issue Domain, Issue Port and Issue Protocol hunts for internal activity related to the detected service. The playbook looks for logs on Splunk, Cortex Data Lake and Panorama. Returns a list of potential owner BUs, owner Users, Device and Notes.
+Subplaybook for Handle Expanse Incident playbooks. Given an Expanse Issue IP, Issue Provider, Issue Domain, Issue Port and Issue Protocol hunts for internal activity related to the detected service. The playbook looks for logs on Splunk, Cortex Data Lake, Panorama, and ServiceNow CMDB. Returns a list of potential owner BUs, owner Users, Device and Notes.
 
 
 ## Dependencies
@@ -7,6 +7,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 ### Sub-playbooks
 * Panorama Query Logs
 * Account Enrichment - Generic v2.1
+* Expanse Check ServiceNow CMDB
 
 ### Integrations
 This playbook does not use any integrations.
@@ -16,6 +17,7 @@ This playbook does not use any integrations.
 * ExpanseEnrichAttribution
 * ExpanseAggregateAttributionDevice
 * ExpanseAggregateAttributionIP
+* ExpanseAggregateAttributionCI
 
 ### Commands
 * cdl-query-logs
@@ -40,9 +42,10 @@ This playbook does not use any integrations.
 
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
-| Expanse.AttributionIP | IP addresses | unknown |
-| Expanse.AttributionDevice | Devices | unknown |
+| Expanse.AttributionIP | IP addresses | Unknown |
+| Expanse.AttributionDevice | Devices | Unknown |
 | Expanse.AttributionUser | Users | Unknown |
+| Expanse.AttributionCI | CMDB CI | Unknown |
 
 ## Playbook Image
 ---

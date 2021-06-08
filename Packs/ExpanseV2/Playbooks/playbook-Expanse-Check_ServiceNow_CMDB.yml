@@ -1,0 +1,538 @@
+id: Expanse Check ServiceNow CMDB
+version: -1
+name: Expanse Check ServiceNow CMDB
+description: |
+  Subplaybook for Finding Expanse IPs in ServiceNow CMDB.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 83b0ce67-7295-4dca-8f0c-e3f120c28054
+    type: start
+    task:
+      id: 83b0ce67-7295-4dca-8f0c-e3f120c28054
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: 2fdc225a-3233-4044-8f6e-8f4fbf9019d0
+    type: condition
+    task:
+      id: 2fdc225a-3233-4044-8f6e-8f4fbf9019d0
+      version: -1
+      name: Is ServiceNow CMDB Enabled?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      "yes":
+      - "2"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: ServiceNow CMDB
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: cc90fb88-c40d-4f0b-8c32-974254bfba09
+    type: condition
+    task:
+      id: cc90fb88-c40d-4f0b-8c32-974254bfba09
+      version: -1
+      name: Is Asset On-Prem?
+      description: Check if a given value exists in the context. Will return 'no'
+        for empty empty arrays. To be used mostly with DQ and selectors.
+      scriptName: Exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "11"
+      "yes":
+      - "3"
+    scriptarguments:
+      value:
+        complex:
+          root: incident
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: incident.expanseprovider
+                iscontext: true
+              right:
+                value:
+                  simple: On Prem
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 450
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 13dc7c7a-ee92-496e-8249-322c7ac55a10
+    type: condition
+    task:
+      id: 13dc7c7a-ee92-496e-8249-322c7ac55a10
+      version: -1
+      name: IP Address Exists
+      description: Check if a given value exists in the context. Will return 'no'
+        for empty empty arrays. To be used mostly with DQ and selectors.
+      scriptName: Exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "11"
+      "yes":
+      - "4"
+    scriptarguments:
+      value:
+        complex:
+          root: ${incident.labels
+          accessor: ip}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 680
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: 11fdd2d7-d729-4a27-800a-62b19db3a9ae
+    type: regular
+    task:
+      id: 11fdd2d7-d729-4a27-800a-62b19db3a9ae
+      version: -1
+      name: Get Network Adaptor CMDB record
+      description: Query records for a CMDB class.
+      script: ServiceNow CMDB|||servicenow-cmdb-records-list
+      type: regular
+      iscommand: true
+      brand: ServiceNow CMDB
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      class:
+        simple: cmdb_ci_network_adapter
+      limit: {}
+      offset: {}
+      query:
+        simple: ip_address =${incident.labels.ip}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 900
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: 2cdd1987-60f1-418b-8146-eefefad04b9b
+    type: regular
+    task:
+      id: 2cdd1987-60f1-418b-8146-eefefad04b9b
+      version: -1
+      name: servicenow-cmdb-record-get-by-id
+      description: Query attributes and relationship information for a specific record.
+      script: ServiceNow CMDB|||servicenow-cmdb-record-get-by-id
+      type: regular
+      iscommand: true
+      brand: ServiceNow CMDB
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      class:
+        simple: cmdb_ci_network_adapter
+      fields: {}
+      relation_limit: {}
+      relation_offset: {}
+      sys_id:
+        complex:
+          root: ServiceNowCMDB.Records
+          accessor: sys_id
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 440,
+          "y": 1330
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: 80635be8-0ff3-4f26-82fb-36a0caca5854
+    type: regular
+    task:
+      id: 80635be8-0ff3-4f26-82fb-36a0caca5854
+      version: -1
+      name: Get CMDB class type and record using the network adaptor
+      description: Query attributes and relationship information for a specific record.
+      script: ServiceNow CMDB|||servicenow-cmdb-record-get-by-id
+      type: regular
+      iscommand: true
+      brand: ServiceNow CMDB
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      class:
+        simple: cmdb_ci
+      fields: {}
+      relation_limit: {}
+      relation_offset: {}
+      sys_id:
+        complex:
+          root: ServiceNowCMDB.Record.Attributes.cmdb_ci
+          accessor: value
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 440,
+          "y": 1525
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: 0f2eb583-d692-4200-881b-51ac73cfaa51
+    type: title
+    task:
+      id: 0f2eb583-d692-4200-881b-51ac73cfaa51
+      version: -1
+      name: Playbook End
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1240,
+          "y": 1900
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: 12afbf6a-203f-49b9-88a9-b49445dc0602
+    type: condition
+    task:
+      id: 12afbf6a-203f-49b9-88a9-b49445dc0602
+      version: -1
+      name: Network Adaptor exist?
+      description: Check if a given value exists in the context. Will return 'no'
+        for empty empty arrays. To be used mostly with DQ and selectors.
+      scriptName: Exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "9"
+      "yes":
+      - "5"
+    scriptarguments:
+      value:
+        simple: ${ServiceNowCMDB.Records}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1080
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "9":
+    id: "9"
+    taskid: 51aeffd3-7e17-4bd4-854e-ac75dacff7dc
+    type: condition
+    task:
+      id: 51aeffd3-7e17-4bd4-854e-ac75dacff7dc
+      version: -1
+      name: Add asset in CMDB?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      "No":
+      - "7"
+      "Yes":
+      - "10"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 890,
+          "y": 1250
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+        simple: Analyst
+      subject:
+      body:
+        simple: Do you want to add this asset in the CMDB?
+      methods: []
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+      replyOptions:
+      - "No"
+      - "Yes"
+    skipunavailable: false
+    quietmode: 0
+  "10":
+    id: "10"
+    taskid: 9c1230a2-8464-43d4-88e8-9401749000b9
+    type: regular
+    task:
+      id: 9c1230a2-8464-43d4-88e8-9401749000b9
+      version: -1
+      name: Manually add asset in CMDB
+      description: The asset is not in your CMDB, please manually add asset in ServiceNow
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 890,
+          "y": 1455
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "11":
+    id: "11"
+    taskid: 4b4c231f-689f-4e30-85aa-449fceb9d19b
+    type: regular
+    task:
+      id: 4b4c231f-689f-4e30-85aa-449fceb9d19b
+      version: -1
+      name: Manually add asset to cloud inventory
+      description: The asset is not On-Prem. Check your cloud inventory tool to see
+        if this asset is inventoried.
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 890,
+          "y": 840
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "12":
+    id: "12"
+    taskid: add6f322-e074-461b-8013-01f2b725f113
+    type: regular
+    task:
+      id: add6f322-e074-461b-8013-01f2b725f113
+      version: -1
+      name: Asset is in CMDB!
+      description: Prints text to war room (Markdown supported)
+      scriptName: Print
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      value:
+        simple: Asset is in CMDB!
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 440,
+          "y": 1930
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "13":
+    id: "13"
+    taskid: 64a48b46-9251-4e5e-86cf-363792f3c78e
+    type: regular
+    task:
+      id: 64a48b46-9251-4e5e-86cf-363792f3c78e
+      version: -1
+      name: Save CMDB information in Evidence
+      description: Convert an array to a nice table display. Usually, from the context.
+      scriptName: ToTable
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      columns:
+        simple: name,sys_class_name,sys_id,asset.display_value,asset.link,asset.value
+      data:
+        complex:
+          root: ${ServiceNowCMDB.Record
+          accessor: Attributes}
+      title: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 440,
+          "y": 1740
+        }
+      }
+    note: false
+    evidencedata:
+      description:
+        simple: CMDB Evidence
+      customfields: {}
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1975,
+        "width": 1180,
+        "x": 440,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+tests:
+- No tests
+fromversion: 6.0.0
