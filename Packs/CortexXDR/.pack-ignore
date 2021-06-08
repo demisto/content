@@ -11,4 +11,19 @@ ignore=RM102
 ignore=BA108,BA109
 
 [file:XDRSyncScript_5_9_9.yml]
-ignore=BA108,BA109
+ignore=BA108,BA109,BA110
+
+[file:Cortex_XDR_-_Retrieve_File_Playbook.yml]
+ignore=BA110
+
+[file:Cortex_XDR_-_Port_Scan.yml]
+ignore=PB110
+
+[file:Cortex_XDR_Incident_Handling.yml]
+ignore=PB110
+
+[file:Cortex_XDR_incident_handling_v2.yml]
+ignore=PB110
+
+[file:PaloAltoNetworks_Cortex_XDR_Incident_Sync.yml]
+ignore=PB110

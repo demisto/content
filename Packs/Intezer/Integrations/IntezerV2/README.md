@@ -1,6 +1,6 @@
 <!-- HTML_DOC -->
 <p><span>Use the Intezer v2 integration to detect and analyze malware, based on code reuse.</span></p>
-<h2>Configure Intezer v2 on Demisto</h2>
+<h2>Configure Intezer v2 on Cortex XSOAR</h2>
 <ol>
 <li>Navigate to<span> </span><strong>Settings</strong><span> </span>&gt;<span> </span><strong>Integrations</strong><span> </span>&gt;<span> </span><strong>Servers &amp; Services</strong>.</li>
 <li>Search for Intezer v2.</li>
@@ -17,7 +17,7 @@
 </ol>
 <h2> </h2>
 <h2>Commands</h2>
-<p>You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
+<p>You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
 <ol>
 <li><a href="#h_6feb063f-66b1-45e5-89f0-1b6ff5142114" target="_self">Check file reputation by hash: intezer-analyze-by-hash</a></li>
 <li><a href="#h_353b4e58-45be-474d-b171-b8b803d216d0" target="_self">Check file reputation by latest report: intezer-get-latest-report</a></li>
