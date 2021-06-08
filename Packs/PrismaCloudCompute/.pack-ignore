@@ -15,3 +15,5 @@ ignore=RM106
 
 [file:classifier-mapper-incoming-PrismaCloudCompute.json]
 ignore=BA101
+[file:incidentfield-Prisma_Cloud_Compute_Raw_Alert_JSON.json]
+ignore=IF100
