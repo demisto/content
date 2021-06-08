@@ -198,3 +198,6 @@ ignore=BA101
 
 [file:layoutscontainer-STIX_Threat_Actor.json]
 ignore=BA101
+
+[file:classifier-mapper-incoming-Mail-listener.json]
+ignore=BA101
