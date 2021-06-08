@@ -1,0 +1,73 @@
+{
+    "size": 5,
+    "dataType": "metrics",
+    "params": {
+        "groupBy": [
+            "command"
+        ],
+        "keys": [
+            "sum|executionCount"
+        ],
+        "showOthers": false,
+        "tableColumns": [
+            {
+                "isDefault": true,
+                "key": "count",
+                "position": 0
+            },
+            {
+                "isDefault": true,
+                "key": "data",
+                "position": 1
+            },
+            {
+                "isDefault": true,
+                "key": "floatData",
+                "position": 2
+            },
+            {
+                "isDefault": true,
+                "key": "groups",
+                "position": 3
+            },
+            {
+                "isDefault": true,
+                "key": "name",
+                "position": 4
+            },
+            {
+                "isDefault": true,
+                "key": "pivot",
+                "position": 5
+            },
+            {
+                "isDefault": true,
+                "key": "color",
+                "position": 6
+            }
+        ],
+        "valuesFormat": "abbreviated"
+    },
+    "query": "type:integration",
+    "modified": "2021-05-31T11:50:14.521631622Z",
+    "name": "Top executed Commands",
+    "dateRange": {
+        "fromDate": "0001-01-01T00:00:00Z",
+        "toDate": "0001-01-01T00:00:00Z",
+        "period": {
+            "by": "",
+            "byTo": "",
+            "byFrom": "days",
+            "toValue": null,
+            "fromValue": 7,
+            "field": ""
+        },
+        "fromDateLicense": "0001-01-01T00:00:00Z"
+    },
+    "isPredefined": true,
+    "version": -1,
+    "id": "command-execution-count-per-command",
+    "description": "Top executed Commands",
+    "widgetType": "column",
+    "fromVersion": "6.2.0"
+}
