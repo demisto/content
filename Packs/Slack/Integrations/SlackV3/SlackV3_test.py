@@ -5,7 +5,7 @@ import pytest
 import slack_sdk
 from slack_sdk.web.slack_response import SlackResponse
 
-from mock import MagicMock
+from unittest.mock import MagicMock
 
 from CommonServerPython import *
 
