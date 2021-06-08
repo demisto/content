@@ -150,7 +150,7 @@ script:
     - default: false
       description: The IP address of a new particular threatening IP address object.
       isArray: false
-      name: IP
+      name: ip
       required: true
       secret: false
     - default: false
@@ -203,11 +203,16 @@ script:
       description: The object ID of a particular threatening IP address object that
         should be deleted.
       name: object_id
-      required: true
+      required: false
+      secret: false
+    - default: false
+      description: The IP address of an existing threatening IP address object that should be deleted.
+      name: object_ip
+      required: false
       secret: false
     deprecated: false
     description: Delete an existing particular threatening IP address object by its
-      object ID.
+      object ID or by its IP address.
     execution: false
     name: f5-silverline-ip-object-delete
   dockerimage: demisto/python3:3.9.5.20070

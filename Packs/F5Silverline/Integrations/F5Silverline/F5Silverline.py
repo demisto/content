@@ -83,7 +83,7 @@ def add_ip_objects_command(client: Client, args: Dict[str, Any]) -> CommandResul
     API docs: https://portal.f5silverline.com/docs/api/v1/ip_objects.md (POST section)
     """
     list_type = args['list_type']
-    ip_address = args['IP']
+    ip_address = args['ip']
     list_target = args.get('list_target', 'proxy-routed')
     mask = args.get('mask', '32')
     duration = int(args.get('duration', 0))
@@ -123,19 +123,46 @@ def define_body_for_add_ip_command(list_target, mask, ip_address, duration, note
         }
 
 
+def is_object_id_exist(client, object_id, list_type):
+    _, outputs = get_ip_objects_by_ids(client, [object_id], list_type, {})
+    for output in outputs:
+        if output.get('id') == object_id:
+            return True
+    return False
+
+
 def delete_ip_objects_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     """
-    Deletes an exist IP object from the requested list type (denylist or allowlist) by its object id (mandatory).
-    Note: Human readable appears only if the HTTP request did not fail.
+    Deletes an exist IP object from the requested list type (denylist or allowlist) by its object id or its ip.
+    Note: Human readable appears only if the HTTP request did not fail and the object id exists.
     API docs: https://portal.f5silverline.com/docs/api/v1/ip_objects.md (DELETE section)
     """
     list_type = args['list_type']
-    object_id = args['object_id']
-    url_suffix = f'{list_type}/ip_objects/{object_id}'
+    object_id = args.get('object_id')
+    object_ip = args.get('object_ip')
+    if not object_ip and not object_ip:
+        raise DemistoException("At least one of the following should be given: object_ip, object_id.")
 
-    client.request_ip_objects(body={}, method='DELETE', url_suffix=url_suffix, params={}, resp_type='content')
-    human_readable = f"IP object with ID: {object_id} deleted successfully from the {list_type} list."
-    return CommandResults(readable_output=human_readable)
+    if not object_id:
+        object_id = get_object_id_by_ip(client, list_type, object_ip)
+
+    url_suffix = f'{list_type}/ip_objects/{object_id}'
+    if is_object_id_exist(client, object_id, list_type):
+        client.request_ip_objects(body={}, method='DELETE', url_suffix=url_suffix, params={}, resp_type='content')
+        human_readable = f"IP object with ID: {object_id} deleted successfully from the {list_type} list."
+        return CommandResults(readable_output=human_readable)
+
+
+def get_object_id_by_ip(client, list_type, object_ip):
+    url_suffix = f'{list_type}/ip_objects'
+    response = client.request_ip_objects(body={}, method='GET', url_suffix=url_suffix, params={})
+    all_objects = response.get('data')
+    for obj in all_objects:
+        attributes = obj.get('attributes')
+        ip = attributes.get('ip', "")
+        if ip == object_ip:
+            return obj.get("id")
+    raise DemistoException("An object with the given IP address was not found.")
 
 
 def handle_paging(page_number, page_size):
