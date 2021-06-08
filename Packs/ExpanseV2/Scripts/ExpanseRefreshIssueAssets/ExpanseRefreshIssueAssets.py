@@ -23,6 +23,8 @@ def refresh_issue_assets_command(args: Dict[str, Any]) -> CommandResults:
             new_asset = demisto.executeCommand('expanse-get-iprange', {"id": asset_key, "include": "annotations"})
         elif asset_type == 'Certificate':
             new_asset = demisto.executeCommand('expanse-get-certificate', {"md5_hash": asset_key})
+        elif asset_type == 'CloudResource':
+            new_asset = demisto.executeCommand('expanse-get-cloud-resource', {"id": asset_key})
         else:
             # Unknown asset type, ignore.
             continue

@@ -21,8 +21,8 @@ configuration:
   required: false
   hiddenusername: true
   type: 9
-description: Use the Netscout Arbor Edge Defense Integration to detect and stop both
-  inbound threats and outbound communication from internal compromised hosts.
+description: Use the Netscout Arbor Edge Defense integration to detect and stop both inbound threats
+  and outbound malicious communication from compromised internal devices.
 display: Netscout Arbor Edge Defense
 name: NetscoutAED
 script:
@@ -1270,7 +1270,7 @@ script:
     description: Removes one or more hosts or CIDRs from the outbound whitelist.
     execution: false
     name: na-ed-outbound-whitelisted-hosts-remove
-  dockerimage: demisto/python3:3.9.5.20070
+  dockerimage: demisto/python3:3.9.5.20958
   feed: false
   isfetch: false
   longRunning: false
