@@ -3,11 +3,11 @@
     "version": -1,
     "fromVersion": "6.1.0",
     "modified": "2021-01-14T11:32:59.575043Z",
-    "name": "ElasticSearch Details",
+    "name": "Elasticsearch Details",
     "dataType": "system",
     "widgetType": "text",
     "isPredefined": true,
-    "description": "ElasticSearch cluster details",
+    "description": "Elasticsearch cluster details",
     "dateRange": {
         "fromDate": "0001-01-01T00:00:00Z",
         "toDate": "0001-01-01T00:00:00Z",

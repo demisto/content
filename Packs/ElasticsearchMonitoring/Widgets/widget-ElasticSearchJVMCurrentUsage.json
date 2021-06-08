@@ -3,12 +3,12 @@
     "version": -1,
     "fromVersion": "6.1.0",
     "modified": "2021-01-10T13:24:20.812147Z",
-    "name": "Elastic JVM Memory Current Usage",
+    "name": "Elasticsearch JVM Memory Current Usage",
     "dataType": "system",
     "widgetType": "number",
     "query": "es-jvm-memory.usedPercent",
     "isPredefined": true,
-    "description": "ElasticSearch JVM Memory Current Usage %",
+    "description": "Elasticsearch JVM Memory Current Usage %",
     "params": {
         "colors": {
             "isEnabled": true,

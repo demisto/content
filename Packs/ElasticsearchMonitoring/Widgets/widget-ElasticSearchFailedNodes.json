@@ -8,7 +8,7 @@
     "widgetType": "number",
     "query": "es-node.failed",
     "isPredefined": true,
-    "description": "ElasticSearch total number of nodes that are currently failed",
+    "description": "Elasticsearch total number of nodes that are currently failed",
     "params": {
         "colors": {
             "isEnabled": true,

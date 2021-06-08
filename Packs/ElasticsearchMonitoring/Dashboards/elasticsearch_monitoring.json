@@ -1,5 +1,5 @@
 {
-    "id": "ElasticSearch Monitoring",
+    "id": "Elasticsearch Monitoring",
     "version": -1,
     "fromDate": "0001-01-01T00:00:00Z",
     "toDate": "0001-01-01T00:00:00Z",
@@ -11,7 +11,7 @@
         "fromValue": 7,
         "field": ""
     },
-    "name": "ElasticSearch Monitoring",
+    "name": "Elasticsearch Monitoring",
     "layout": [
         {
             "id": "c7709860-541a-11eb-923d-8542cb044fcc",
@@ -25,12 +25,12 @@
                 "id": "es-cpu-current-usage",
                 "version": -1,
                 "modified": "2021-01-10T13:24:20.812878Z",
-                "name": "ElasticSearch CPU Current Usage",
+                "name": "Elasticsearch CPU Current Usage",
                 "dataType": "system",
                 "widgetType": "number",
                 "query": "es-cpu.usedPercent",
                 "isPredefined": true,
-                "description": "ElasticSearch CPU Current Usage %",
+                "description": "Elasticsearch CPU Current Usage %",
                 "params": {
                     "colors": {
                         "isEnabled": true,
@@ -64,12 +64,12 @@
                 "id": "es-disk-current-usage",
                 "version": -1,
                 "modified": "2021-01-10T13:24:20.812147Z",
-                "name": "ElasticSearch Disk Current Usage",
+                "name": "Elasticsearch Disk Current Usage",
                 "dataType": "system",
                 "widgetType": "number",
                 "query": "es-disk.usedPercent",
                 "isPredefined": true,
-                "description": "ElasticSearch Disk Current Usage %",
+                "description": "Elasticsearch Disk Current Usage %",
                 "params": {
                     "colors": {
                         "isEnabled": true,
@@ -105,12 +105,12 @@
                 "id": "es-jvm-memory-current-usage",
                 "version": -1,
                 "modified": "2021-01-10T13:24:20.812147Z",
-                "name": "Elastic JVM Memory Current Usage",
+                "name": "Elasticsearch JVM Memory Current Usage",
                 "dataType": "system",
                 "widgetType": "number",
                 "query": "es-jvm-memory.usedPercent",
                 "isPredefined": true,
-                "description": "Elastic JVM Memory Current Usage %",
+                "description": "Elasticsearch JVM Memory Current Usage %",
                 "params": {
                     "colors": {
                         "isEnabled": true,
@@ -149,7 +149,7 @@
                 "widgetType": "number",
                 "query": "es-shard.usedPercent",
                 "isPredefined": true,
-                "description": "ElasticSearch Shards Current Usage %",
+                "description": "Elasticsearch Shards Current Usage %",
                 "params": {
                     "colors": {
                         "isEnabled": true,
@@ -184,12 +184,12 @@
                 "version": -1,
                 "fromVersion": "6.1.0",
                 "modified": "2021-01-12T07:58:09.265012Z",
-                "name": "ElasticSearch Active Shards",
+                "name": "Elasticsearch Active Shards",
                 "dataType": "system",
                 "widgetType": "number",
                 "query": "es-shard.used",
                 "isPredefined": true,
-                "description": "ElasticSearch total shards (including replicas) currently active",
+                "description": "Elasticsearch total shards (including replicas) currently active",
                 "dateRange": {
                     "fromDate": "0001-01-01T00:00:00Z",
                     "toDate": "0001-01-01T00:00:00Z",
@@ -231,12 +231,12 @@
                 "id": "es-failed-shards",
                 "modified": "2021-01-12T08:00:56.215781Z",
                 "fromServerVersion": "6.1.0",
-                "name": "ElasticSearch Failing Shards",
+                "name": "Elasticsearch Failing Shards",
                 "dataType": "system",
                 "widgetType": "number",
                 "query": "es-shard.failed",
                 "isPredefined": true,
-                "description": "ElasticSearch total shards (including Replicas) that are currently unassigned or failed",
+                "description": "Elasticsearch total shards (including Replicas) that are currently unassigned or failed",
                 "params": {
                     "colors": {
                         "isEnabled": true,
@@ -407,12 +407,12 @@
                 "version": -1,
                 "fromVersion": "6.1.0",
                 "modified": "2021-01-12T08:25:06.626374Z",
-                "name": "ElasticSearch Total Documents Over time",
+                "name": "Elasticsearch Total Documents Over time",
                 "dataType": "system",
                 "widgetType": "line",
                 "query": "es-doc.total",
                 "isPredefined": true,
-                "description": "ElasticSearch total amount of documents in XSOAR indices over time in minutes",
+                "description": "Elasticsearch total amount of documents in XSOAR indices over time in minutes",
                 "dateRange": {
                     "fromDate": "0001-01-01T00:00:00Z",
                     "toDate": "0001-01-01T00:00:00Z",
@@ -427,6 +427,7 @@
                     "fromDateLicense": "0001-01-01T00:00:00Z"
                 },
                 "params": {
+                    "valuesFormat": "abbreviated",
                     "timeFrame": "minutes"
                 },
                 "size": 60
@@ -700,7 +701,7 @@
                 "widgetType": "number",
                 "query": "es-index.total",
                 "isPredefined": true,
-                "description": "ElasticSearch total amount of indexes",
+                "description": "Elasticsearch total amount of indexes",
                 "dateRange": {
                     "fromDate": "0001-01-01T00:00:00Z",
                     "toDate": "0001-01-01T00:00:00Z",
@@ -769,12 +770,12 @@
                 "version": -1,
                 "fromVersion": "6.1.0",
                 "modified": "2021-01-21T11:24:19.474349Z",
-                "name": "ElasticSearch Shards Status by Index",
+                "name": "Elasticsearch Shards Status by Index",
                 "dataType": "system",
                 "widgetType": "bar",
                 "query": "es-node.usedPercent",
                 "isPredefined": true,
-                "description": "ElasticSearch active indices distributed by allocated shards and replicas",
+                "description": "Elasticsearch active indices distributed by allocated shards and replicas",
                 "dateRange": {
                     "fromDate": "0001-01-01T00:00:00Z",
                     "toDate": "0001-01-01T00:00:00Z",

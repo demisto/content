@@ -8,7 +8,7 @@
     "widgetType": "number",
     "query": "es-shard.usedPercent",
     "isPredefined": true,
-    "description": "ElasticSearch Shards Current Usage %",
+    "description": "Elasticsearch Shards Current Usage %",
     "params": {
         "colors": {
             "isEnabled": true,

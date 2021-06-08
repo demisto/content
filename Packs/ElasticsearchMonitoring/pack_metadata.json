@@ -1,6 +1,6 @@
 {
-    "name": "ElasticSearch Monitoring",
-    "description": "ElasticSearch and OpenSearch monitoring dashboard and widgets tracking statistics and cluster status.",
+    "name": "Elasticsearch Monitoring",
+    "description": "Elasticsearch and OpenSearch monitoring dashboard and widgets tracking statistics and cluster status.",
     "support": "xsoar",
     "currentVersion": "1.0.0",
     "author": "Cortex XSOAR",
@@ -8,13 +8,13 @@
     "email": "",
     "categories": [],
     "tags": [
-        "ElasticSearch"
+        "Elasticsearch"
     ],
     "useCases": [
         "Health Check"
     ],
     "keywords": [
-        "ElasticSearch",
+        "Elasticsearch",
         "OpenSearch"
     ]
 }

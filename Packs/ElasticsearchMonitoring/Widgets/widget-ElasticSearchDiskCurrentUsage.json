@@ -3,12 +3,12 @@
     "version": -1,
     "fromVersion": "6.1.0",
     "modified": "2021-01-10T13:24:20.812147Z",
-    "name": "ElasticSearch Disk Current Usage",
+    "name": "Elasticsearch Disk Current Usage",
     "dataType": "system",
     "widgetType": "number",
     "query": "es-disk.usedPercent",
     "isPredefined": true,
-    "description": "ElasticSearch Disk Current Usage %",
+    "description": "Elasticsearch Disk Current Usage %",
     "params": {
         "colors": {
             "isEnabled": true,

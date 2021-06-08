@@ -3,12 +3,12 @@
     "version": -1,
     "fromVersion": "6.1.0",
     "modified": "2021-01-14T11:38:28.271829Z",
-    "name": "ElasticSearch Nodes Current Usage",
+    "name": "Elasticsearch Nodes Current Usage",
     "dataType": "system",
     "widgetType": "number",
     "query": "es-node.usedPercent",
     "isPredefined": true,
-    "description": "ElasticSearch Node Current Usage %",
+    "description": "Elasticsearch Node Current Usage %",
     "params": {
         "colors": {
             "isEnabled": true,

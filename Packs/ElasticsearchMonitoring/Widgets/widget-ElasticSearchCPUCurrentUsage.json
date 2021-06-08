@@ -3,12 +3,12 @@
     "version": -1,
     "fromVersion": "6.1.0",
     "modified": "2021-01-10T13:24:20.812878Z",
-    "name": "ElasticSearch CPU Current Usage",
+    "name": "Elasticsearch CPU Current Usage",
     "dataType": "system",
     "widgetType": "number",
     "query": "es-cpu.usedPercent",
     "isPredefined": true,
-    "description": "ElasticSearch CPU Current Usage %",
+    "description": "Elasticsearch CPU Current Usage %",
     "params": {
         "colors": {
             "isEnabled": true,
