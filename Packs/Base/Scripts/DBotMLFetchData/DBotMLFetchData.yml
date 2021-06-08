@@ -140,7 +140,7 @@ args:
   - 'False'
   required: false
   secret: false
-comment: Deprecated. Collect telemetry data from the environment.
+comment: Deprecated. No available replacement. Collect telemetry data from the environment.
 commonfields:
   id: DBotMLFetchData
   version: -1
