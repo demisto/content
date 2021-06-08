@@ -1177,30 +1177,35 @@ def remove_empty_elements(d):
         return {k: v for k, v in ((k, remove_empty_elements(v)) for k, v in d.items()) if not empty(v)}
 
 
-def remove_none_elements(data):
+class SmartGetDict(dict):
+    """A dict that when called with get(key, default) will return the default passed
+    value, even if there is a value of "None" in the place of the key. Example with built-in dict:
+    ```
+    >>> d = {}
+    >>> d['test'] = None
+    >>> d.get('test', 1)
+    >>> print(d.get('test', 1))
+    None
+    ```
+    Example with SmartGetDict:
+    ```
+    >>> d = SmartGetDict()
+    >>> d['test'] = None
+    >>> d.get('test', 1)
+    >>> print(d.get('test', 1))
+    1
+    ```
+
     """
-        Remove None values from a dictionary. (updating the given dictionary)
-        Simillar to remove_nulls_from_dictionary but only removes None and not other "empty" elements.
-
-        :type data: ``dict``
-        :param data: The dict to modify (required)
-
-        :return: list of keys removed
-        :rtype: ``list``
-    """
-    list_of_keys = list(data.keys())
-    res = []
-    for key in list_of_keys:
-        if data[key] is None:
-            res.append(key)
-            del data[key]
-    return res
+    def get(self, key, default=None):
+        res = dict.get(self, key)
+        if res is not None:
+            return res
+        return default
 
 
-if (not os.getenv('COMMON_SERVER_NO_AUTO_PARAMS_REMOVE_NULLS')) and hasattr(demisto, 'params'):
-    res = remove_none_elements(demisto.params())
-    if res:
-        demisto.debug('Removed None elements from params. keys removed: {}'.format(res))
+if (not os.getenv('COMMON_SERVER_NO_AUTO_PARAMS_REMOVE_NULLS')) and hasattr(demisto, 'params') and demisto.params():
+    demisto.callingContext['params'] = SmartGetDict(demisto.params())
 
 
 def aws_table_to_markdown(response, table_header):

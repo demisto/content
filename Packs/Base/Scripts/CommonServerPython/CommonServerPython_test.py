@@ -17,7 +17,7 @@ from CommonServerPython import xml2json, json2xml, entryTypes, formats, tableToM
     argToBoolean, ipv4Regex, ipv4cidrRegex, ipv6cidrRegex, ipv6Regex, batch, FeedIndicatorType, \
     encode_string_results, safe_load_json, remove_empty_elements, aws_table_to_markdown, is_demisto_version_ge, \
     appendContext, auto_detect_indicator_type, handle_proxy, get_demisto_version_as_str, get_x_content_info_headers, \
-    url_to_clickable_markdown, WarningsHandler, DemistoException, remove_none_elements
+    url_to_clickable_markdown, WarningsHandler, DemistoException, SmartGetDict
 
 try:
     from StringIO import StringIO
@@ -38,6 +38,7 @@ INFO = {'b': 1,
             'c': {'d': 10},
         }
         }
+
 
 @pytest.fixture()
 def clear_version_cache():
@@ -126,98 +127,98 @@ TABLE_TO_MARKDOWN_ONLY_DATA_PACK = [
     )
 ]
 
-DATA_WITH_URLS =  [(
-        [
-            {
+DATA_WITH_URLS = [(
+    [
+        {
             'header_1': 'a1',
             'url1': 'b1',
             'url2': 'c1'
-            },
-            {
+        },
+        {
             'header_1': 'a2',
             'url1': 'b2',
             'url2': 'c2'
-            },
-            {
+        },
+        {
             'header_1': 'a3',
             'url1': 'b3',
             'url2': 'c3'
-            }
-        ],
-'''### tableToMarkdown test
+        }
+    ],
+    '''### tableToMarkdown test
 |header_1|url1|url2|
 |---|---|---|
 | a1 | [b1](b1) | [c1](c1) |
 | a2 | [b2](b2) | [c2](c2) |
 | a3 | [b3](b3) | [c3](c3) |
 '''
-    )]
+)]
 
 COMPLEX_DATA_WITH_URLS = [(
     [
-    {'data':
+        {'data':
          {'id': '1',
           'result':
-              {'files':
-                  [
-                      {
+          {'files':
+           [
+               {
                           'filename': 'name',
                           'size': 0,
                           'url': 'url'
-                      }
-                  ]
-              },
+                          }
+           ]
+           },
           'links': ['link']
           }
-     },
-    {'data':
-        {'id': '2',
-            'result':
-            {'files':
-               [
-                   {
-                       'filename': 'name',
-                       'size': 0,
-                       'url': 'url'
-                    }
-               ]
-            },
-            'links': ['link']
+         },
+        {'data':
+         {'id': '2',
+          'result':
+          {'files':
+           [
+               {
+                   'filename': 'name',
+                   'size': 0,
+                   'url': 'url'
+               }
+           ]
+           },
+          'links': ['link']
+          }
          }
-     }
-],
+    ],
     [
-    {'data':
+        {'data':
          {'id': '1',
           'result':
-              {'files':
-                  [
-                      {
-                          'filename': 'name',
-                          'size': 0,
-                          'url': '[url](url)'
-                      }
-                  ]
-              },
+          {'files':
+           [
+               {
+                   'filename': 'name',
+                   'size': 0,
+                   'url': '[url](url)'
+               }
+           ]
+           },
           'links': ['[link](link)']
           }
-     },
-    {'data':
-        {'id': '2',
-            'result':
-            {'files':
-               [
-                   {
-                       'filename': 'name',
-                       'size': 0,
-                       'url': '[url](url)'
-                    }
-               ]
-            },
-            'links': ['[link](link)']
+         },
+        {'data':
+         {'id': '2',
+          'result':
+          {'files':
+           [
+               {
+                   'filename': 'name',
+                   'size': 0,
+                   'url': '[url](url)'
+               }
+           ]
+           },
+          'links': ['[link](link)']
+          }
          }
-     }
-])]
+    ])]
 
 
 @pytest.mark.parametrize('data, expected_table', TABLE_TO_MARKDOWN_ONLY_DATA_PACK)
@@ -4731,14 +4732,11 @@ class TestIsDemistoServerGE:
         assert not is_demisto_version_ge(version, build)
 
 
-def test_remove_none_elements():
+def test_smart_get_dict():
     d = {'t1': None, "t2": 1}
     # before we remove the dict will return null which is unexpected by a lot of users
-    assert d.get('t1', 2) == None
-    r = remove_none_elements(d)
-    assert 't1' not in list(d.keys())
-    assert d.get('t2') == 1
-    # after we remove the dict behaves as we expect
-    assert d.get('t1', 2) == 2
-    assert len(r) == 1
-    assert 't1' in r
+    assert d.get('t1', 2) is None
+    s = SmartGetDict(d)
+    assert s.get('t1', 2) == 2
+    assert s.get('t2') == 1
+    assert s.get('t3') is None
