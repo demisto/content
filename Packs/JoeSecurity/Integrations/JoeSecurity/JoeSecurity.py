@@ -278,7 +278,6 @@ def analyse_sample_file_request(file_entry, should_wait, internet_access, commen
 
     web_id = res['data']['webids'][0]
     result = info_request(web_id)
-    result['data']['filename'] = filename
     return analysis_to_entry('Analysis #%s' % (web_id,), result['data'])
 
 
