@@ -192,9 +192,7 @@ def main():
                 f'Failed to convert {client_guid} to a valid UUID string. Using a random generated UUID instead')
             client_guid = None
 
-    # smbclient.ClientConfig(username=user, password=password, require_secure_negotiate=verify, domain_controller=dc,
-    #                        client_guid=client_guid)
-
+    # Temporary workaround to an issue in the smbprotocol package.
     config = smbclient.ClientConfig(username=user, password=password, require_secure_negotiate=verify,
                                     client_guid=client_guid)
     config.domain_controller = dc
