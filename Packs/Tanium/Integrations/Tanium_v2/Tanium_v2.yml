@@ -15,7 +15,7 @@ configuration:
   name: credentials
   required: false
   type: 9
-- additionalinfo: The API token that was created in the Tanium platform and should
+- additionalinfo: The API token was created in the Tanium platform and should
     be used for OAuth 2 authentication. See Detailed Description (?) for more information.
   display: API Token
   hidden: false
