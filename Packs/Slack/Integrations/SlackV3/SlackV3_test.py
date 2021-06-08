@@ -1867,7 +1867,7 @@ async def test_translate_create_newline_json(mocker):
 
     # Arrange
     json_data = await SlackV3.translate_create(json_message, 'spengler', 'spengler@ghostbusters.example.com',
-                                             demisto_user)
+                                               demisto_user)
 
     create_args = SlackV3.create_incidents.call_args
     json_args = create_args[0][0]
