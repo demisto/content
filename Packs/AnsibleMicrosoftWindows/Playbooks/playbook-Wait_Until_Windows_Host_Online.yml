@@ -56,12 +56,12 @@ tasks:
     separatecontext: false
     skipunavailable: false
     task:
-      brand: MicrosoftWindows
+      brand: AnsibleMicrosoftWindows
       description: A windows version of the classic ping module
       id: 4a7aab89-887f-4b95-8126-9b15e44f82ca
       iscommand: true
       name: Try to connect to host
-      script: MicrosoftWindows|||win-ping
+      script: AnsibleMicrosoftWindows|||win-ping
       type: regular
       version: -1
     taskid: 4a7aab89-887f-4b95-8126-9b15e44f82ca
@@ -80,7 +80,7 @@ tasks:
       - - left:
             iscontext: true
             value:
-              simple: ${microsoftwindows.win_ping.[].ping}
+              simple: ${microsoftwindows.winPing.[].ping}
           operator: isEqualString
           right:
             value:
@@ -190,4 +190,3 @@ tests:
 - No tests (auto formatted)
 fromversion: 6.0.0
 description: Pauses execution until the Windows host responds to a ping over WinRM.
-deprecated: true

@@ -235,7 +235,6 @@ def generic_ansible(integration_name: str, command: str,
                  * ios -- Cisco IOS based network device
                  * local  -- this indicates that the command should be executed locally.
                              Mostly used by modules that connect out to cloud services.
-    
     """
 
     readable_output = ""

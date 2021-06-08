@@ -127,7 +127,7 @@ tasks:
       - - left:
             iscontext: true
             value:
-              simple: ${microsoftwindows.win_ping.[].ping}
+              simple: ${microsoftwindows.winPing.[].ping}
           operator: isEqualString
           right:
             value:
@@ -178,12 +178,12 @@ tasks:
     separatecontext: false
     skipunavailable: false
     task:
-      brand: MicrosoftWindows
+      brand: AnsibleMicrosoftWindows
       description: A windows version of the classic ping module
       id: acf4dadd-6ba0-4389-81dc-75f5b0b5582d
       iscommand: true
       name: Test connectivity to endpoint
-      script: MicrosoftWindows|||win-ping
+      script: AnsibleMicrosoftWindows|||win-ping
       type: regular
       version: -1
     taskid: acf4dadd-6ba0-4389-81dc-75f5b0b5582d
@@ -270,7 +270,7 @@ tasks:
       host:
         complex:
           accessor: host
-          root: microsoftwindows.win_chocolatey(val.rc==0)
+          root: microsoftwindows.winChocolatey(val.rc==0)
       msg:
         complex:
           accessor: "0"
@@ -296,12 +296,12 @@ tasks:
     separatecontext: false
     skipunavailable: false
     task:
-      brand: MicrosoftWindows
+      brand: AnsibleMicrosoftWindows
       description: Sends a message to logged in users on Windows hosts
       id: 9912c17e-6d81-4271-8f60-217ef5a2a4a6
       iscommand: true
       name: Notify end user of Success via popup
-      script: MicrosoftWindows|||win-msg
+      script: AnsibleMicrosoftWindows|||win-msg
       type: regular
       version: -1
     taskid: 9912c17e-6d81-4271-8f60-217ef5a2a4a6
@@ -321,17 +321,17 @@ tasks:
     quietmode: 0
     scriptarguments:
       host:
-        simple: microsoftwindows.win_chocolatey(val.rc!=0).host
+        simple: microsoftwindows.winChocolatey(val.rc!=0).host
       parallel: {}
     separatecontext: false
     skipunavailable: false
     task:
-      brand: MicrosoftWindows
+      brand: AnsibleMicrosoftWindows
       description: Gathers facts about remote hosts
       id: 9ff3fdfb-ea92-4b24-89d1-1dfde4e632a3
       iscommand: true
       name: Gather System Facts for troubleshooting
-      script: MicrosoftWindows|||win-gather-facts
+      script: AnsibleMicrosoftWindows|||win-gather-facts
       type: regular
       version: -1
     taskid: 9ff3fdfb-ea92-4b24-89d1-1dfde4e632a3
@@ -378,14 +378,14 @@ tasks:
       - - left:
             iscontext: true
             value:
-              simple: microsoftwindows.win_chocolatey(val.rc==0).host
+              simple: microsoftwindows.winChocolatey(val.rc==0).host
           operator: isNotEmpty
       label: "yes"
     - condition:
       - - left:
             iscontext: true
             value:
-              simple: microsoftwindows.win_chocolatey(val.rc!=0).host
+              simple: microsoftwindows.winChocolatey(val.rc!=0).host
           operator: isNotEmpty
       label: "No"
     id: "14"
@@ -400,7 +400,7 @@ tasks:
     separatecontext: false
     skipunavailable: false
     task:
-      description: "Check if the software was insalled successfully"
+      description: "Check if the software was installed successfully"
       brand: ""
       id: 54e890e8-a06a-4efa-8fd8-899b79266ea1
       iscommand: false
@@ -692,4 +692,3 @@ tests:
 fromversion: 6.0.0
 description: This playbook helps an operator install Windows applications to workstations
   using the Chocolatey package manager.
-deprecated: true
