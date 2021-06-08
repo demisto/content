@@ -106,7 +106,12 @@ configuration:
   name: feedTags
   required: false
   type: 0
-description: The Cybersixgill Dynamic Vulnerability Exploit (DVE) Score is based on the most comprehensive collection of vulnerability-related threat intelligence and is the only solution that provides users total context and predicts the immediate risks of a vulnerability based on threat actors’ intent. Cortex XSOAR users can track threats stemming from CVEs that most others define as irrelevant and have a higher probability of being exploited via their Cortex XSOAR dashboard.
+description: The Cybersixgill Dynamic Vulnerability Exploit (DVE) Score is based on
+  the most comprehensive collection of vulnerability-related threat intelligence and
+  is the only solution that provides users total context and predicts the immediate
+  risks of a vulnerability based on threat actors’ intent. Cortex XSOAR users can
+  track threats stemming from CVEs that most others define as irrelevant and have
+  a higher probability of being exploited via their Cortex XSOAR dashboard.
 display: Cybersixgill DVE Feed Threat Intelligence
 name: Sixgill_DVE_Feed
 script:
@@ -123,7 +128,7 @@ script:
     description: Fetching Sixgill DVE Feed indicators
     execution: false
     name: sixgill-get-dve-feed
-  dockerimage: demisto/sixgill:1.0.0.19258
+  dockerimage: demisto/sixgill:1.0.0.20925
   feed: true
   isfetch: false
   longRunning: false
