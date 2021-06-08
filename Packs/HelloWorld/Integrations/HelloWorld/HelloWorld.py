@@ -246,7 +246,7 @@ from CommonServerUserPython import *
 
 import json
 import urllib3
-import dateparser
+import dateparser  # type: ignore[import]
 import traceback
 from typing import Any, Dict, Tuple, List, Optional, Union, cast
 
