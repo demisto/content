@@ -7,7 +7,7 @@ Adds or removes an analyst from the out-of-office list in XSOAR. When used with 
 | --- | --- |
 | Script Type | python3 |
 | Tags | ooo, Shift Management |
-| Demisto Version | 5.5.0 |
+| Cortex XSOAR Version | 5.5.0 |
 
 ## Inputs
 ---

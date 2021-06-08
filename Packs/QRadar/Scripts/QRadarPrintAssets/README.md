@@ -7,7 +7,7 @@ This script prints the assets fetched from the offense in a table format.
 | --- | --- |
 | Script Type | python3 |
 | Tags | dynamic-section |
-| Demisto Version | 6.0.0 |
+| Cortex XSOAR Version | 6.0.0 |
 
 ## Inputs
 ---

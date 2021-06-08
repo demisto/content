@@ -19,20 +19,12 @@
 #   extends:
 #     - .run-unittests-and-lint
 #     - .sdk-nightly-schedule-rule
-#   variables:
-#     SLACK_TEST_TYPE: ${CI_JOB_NAME}
-#     SLACK_ENV_RESULTS: ${ARTIFACTS_FOLDER}/env_results.json
-#     SLACK_ONLY_IF: "true"
 
 
 demisto-sdk-nightly:run-validations:
   extends:
     - .run-validations
     - .sdk-nightly-schedule-rule
-  variables:
-    SLACK_TEST_TYPE: ${CI_JOB_NAME}
-    SLACK_ENV_RESULTS: ${ARTIFACTS_FOLDER}/env_results.json
-    SLACK_ONLY_IF: "true"
 
 
 demisto_sdk_nightly:check_idset_dependent_commands:
@@ -44,9 +36,6 @@ demisto_sdk_nightly:check_idset_dependent_commands:
     variables: true
   variables:
     IS_NIGHTLY: "false"
-    SLACK_TEST_TYPE: ${CI_JOB_NAME}
-    SLACK_ENV_RESULTS: ${ARTIFACTS_FOLDER}/env_results.json
-    SLACK_ONLY_IF: "true"
   script:
     - section_start "Secrets Detection" --collapsed
     - demisto-sdk secrets --post-commit --ignore-entropy
@@ -108,9 +97,6 @@ demisto-sdk-nightly:run-commands-against-instance:
   variables:
     DESTROY_INSTANCES: "true"
     INSTANCE_ROLE: "Server Master"
-    SLACK_TEST_TYPE: ${CI_JOB_NAME}
-    SLACK_ENV_RESULTS: ${ARTIFACTS_FOLDER}/env_results.json
-    SLACK_ONLY_IF: "true"
   needs: ["demisto-sdk-nightly:create-instance"]
   dependencies:
     - demisto-sdk-nightly:create-instance
@@ -147,3 +133,18 @@ demisto-sdk-nightly:run-commands-against-instance:
     - demisto-sdk lint -i Packs/HelloWorld/
     - section_end "Run Lint"
     - *upload-entities-to-cortex-xsoar
+    - section_start "Destroy instances"
+    - python3 ./Tests/scripts/destroy_instances.py $ARTIFACTS_FOLDER $ARTIFACTS_FOLDER/env_results.json "$INSTANCE_ROLE" "$TIME_TO_LIVE"
+    - section_end "Destroy instances"
+
+
+demisto-sdk-nightly:trigger-slack-notify:
+  extends:
+    - .trigger-slack-notification
+  rules:
+    - if: '$CI_PIPELINE_SOURCE =~ /^(schedule)$/ && $DEMISTO_SDK_NIGHTLY == "true"'
+      when: always
+  variables:
+    PIPELINE_TO_QUERY: $CI_PIPELINE_ID
+    WORKFLOW: 'Demisto SDK Nightly'
+    JOB_NAME: 'demisto-sdk-nightly:run-commands-against-instance'
