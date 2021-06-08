@@ -66,3 +66,6 @@ ignore=IF100
 
 [file:README.md]
 ignore=RM104
+
+[file:classifier-mapper-incoming-FireEye_NX.json]
+ignore=BA101
