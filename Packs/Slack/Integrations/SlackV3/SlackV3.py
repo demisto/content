@@ -126,7 +126,7 @@ def answer_question(text: str, entitlement: str, email: str = ''):
         demisto.error(f'Failed handling entitlement {entitlement}: {str(e)}')
 
 
-async def send_slack_request_async(client: slack_sdk.WebClient, method: str, http_verb: str = 'POST', file_: str = '',
+async def send_slack_request_async(client: SocketModeClient, method: str, http_verb: str = 'POST', file_: str = '',
                                    body: dict = None) -> SlackResponse:
     """
     Sends an async request to slack API while handling rate limit errors.
@@ -151,11 +151,11 @@ async def send_slack_request_async(client: slack_sdk.WebClient, method: str, htt
             demisto.debug(f'Sending slack {method} (async). Body is: {str(body)}')
             if http_verb == 'POST':
                 if file_:
-                    response = await client.api_call(method, files={"file": file_}, data=body)  # type: ignore
+                    response = await client.web_client.api_call(method, files={"file": file_}, data=body)  # type: ignore
                 else:
-                    response = await client.api_call(method, json=body)  # type: ignore
+                    response = await client.web_client.api_call(method, json=body)  # type: ignore
             else:
-                response = await client.api_call(method, http_verb='GET', params=body)  # type: ignore
+                response = await client.web_client.api_call(method, http_verb='GET', params=body)  # type: ignore
         except SlackApiError as api_error:
             demisto.debug(f'Got rate limit error (async). Body is: {str(body)}\n{api_error}')
             response = api_error.response
@@ -280,6 +280,7 @@ async def get_user_by_id_async(client: SocketModeClient, user_id: str) -> dict:
     Returns:
         The slack user.
     """
+    user: dict = {}
     users: list = []
     integration_context = get_integration_context(SYNC_CONTEXT)
     if integration_context.get('users'):
@@ -288,8 +289,13 @@ async def get_user_by_id_async(client: SocketModeClient, user_id: str) -> dict:
         if user_filter:
             user = user_filter[0]
     if not user:
-        user = (await client.web_client.users_info(user=user_id))
-        users.append(user.get('user', {}))
+        body = {
+            'user': user_id
+        }
+        user = (
+            await send_slack_request_async(client, 'users.info', http_verb='GET', body=body)).get(
+            'user', {})
+        users.append(user)
         set_to_integration_context_with_retries({'users': users}, OBJECTS_TO_KEYS, SYNC_CONTEXT)
 
     return user
@@ -604,7 +610,7 @@ async def process(client: SocketModeClient, req: SocketModeRequest):
             user = await get_user_by_id_async(client, user_id)
             entitlement_reply = await check_and_handle_entitlement(text, user, thread)
 
-        if subtype == 'bot_message' or message_bot_id or message.get('subtype') == 'bot_message':
+        if subtype == 'bot_message' or message_bot_id or message.get('subtype') == 'bot_message' or event.get('bot_id', None):
             return
 
         if entitlement_reply:
