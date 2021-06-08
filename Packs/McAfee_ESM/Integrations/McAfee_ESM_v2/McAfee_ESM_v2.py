@@ -73,7 +73,7 @@ class McAfeeESMClient(BaseClient):
     def __logout(self):
         self._http_request('DELETE', 'logout', resp_type='response')
 
-    def test_module(self) -> Tuple[str, Dict, Dict]:
+    def test_module(self) -> Tuple[str, Dict, str]:
         self.get_organization_list(raw=True)
         return 'ok', {}, 'ok'
 
