@@ -1,0 +1,49 @@
+{
+    "size": 0,
+    "dataType": "metrics",
+    "params": {
+        "colors": {
+            "isEnabled": false,
+            "items": {
+                "#1DB846": {
+                    "value": 0
+                },
+                "#D13C3C": {
+                    "value": 6
+                },
+                "#EF9700": {
+                    "value": 5
+                }
+            },
+            "type": "above"
+        },
+        "groupBy": [],
+        "keys": [
+            "sum|errorCount"
+        ],
+        "tableColumns": [],
+        "valuesFormat": "abbreviated"
+    },
+    "query": "type:integration",
+    "modified": "2021-05-20T14:17:32.135870889Z",
+    "name": "Command executions errors",
+    "dateRange": {
+        "fromDate": "0001-01-01T00:00:00Z",
+        "toDate": "0001-01-01T00:00:00Z",
+        "period": {
+            "by": "",
+            "byTo": "",
+            "byFrom": "days",
+            "toValue": null,
+            "fromValue": 7,
+            "field": ""
+        },
+        "fromDateLicense": "0001-01-01T00:00:00Z"
+    },
+    "isPredefined": true,
+    "version": -1,
+    "id": "number-of-failed-commands",
+    "description": "Command executions errors",
+    "widgetType": "trend",
+    "fromVersion": "6.2.0"
+}

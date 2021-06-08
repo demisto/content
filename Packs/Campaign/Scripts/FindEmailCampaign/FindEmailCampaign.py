@@ -17,6 +17,7 @@ import tldextract
 
 no_fetch_extract = tldextract.TLDExtract(suffix_list_urls=None)
 
+SELF_IN_CONTEXT = False
 EMAIL_BODY_FIELD = 'emailbody'
 EMAIL_SUBJECT_FIELD = 'emailsubject'
 EMAIL_HTML_FIELD = 'emailbodyhtml'
@@ -144,7 +145,9 @@ def create_context_for_campaign_details(campaign_found=False, incidents_df=None,
             return_warning(INVALID_KEY_WARNING.format(fields=invalid_context_keys))
 
         incident_df = incidents_df[context_keys]  # lgtm [py/hash-unhashable-value]
-        incident_df = incident_df[incident_df['id'] != incident_id]
+        if not SELF_IN_CONTEXT:
+            incident_df = incident_df[incident_df['id'] != incident_id]
+
         incident_df.rename({FROM_DOMAIN_FIELD: 'emailfromdomain'}, axis=1, inplace=True)
         incidents_context = incident_df.fillna(1).to_dict(orient='records')
         datetimes = incidents_df['created_dt'].dropna()  # type: ignore
@@ -524,13 +527,15 @@ def analyze_incidents_campaign(incidents, fields_to_display):
 
 
 def main():
-    global EMAIL_BODY_FIELD, EMAIL_SUBJECT_FIELD, EMAIL_HTML_FIELD, FROM_FIELD
+    global EMAIL_BODY_FIELD, EMAIL_SUBJECT_FIELD, EMAIL_HTML_FIELD, FROM_FIELD, SELF_IN_CONTEXT
     input_args = demisto.args()
     EMAIL_BODY_FIELD = input_args.get('emailBody', EMAIL_BODY_FIELD)
     EMAIL_SUBJECT_FIELD = input_args.get('emailSubject', EMAIL_SUBJECT_FIELD)
     EMAIL_HTML_FIELD = input_args.get('emailBodyHTML', EMAIL_HTML_FIELD)
     FROM_FIELD = input_args.get('emailFrom', FROM_FIELD)
     fields_to_display = input_args.get('fieldsToDisplay')
+    SELF_IN_CONTEXT = argToBoolean(input_args.get('includeSelf', 'false'))
+
     if fields_to_display is not None:
         input_args['populateFields'] = fields_to_display
         fields_to_display = get_comma_sep_list(fields_to_display)
@@ -542,6 +547,7 @@ def main():
         return_error(get_error(res))
     res = res[-1]
     incidents = json.loads(res['Contents'])
+
     if is_number_of_incidents_too_low(res, incidents):
         return
     if is_number_of_unique_recipients_is_too_low(incidents):
