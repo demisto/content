@@ -41,7 +41,7 @@ def test_check_base_url(mocker):
     mocker.patch.object(demisto, 'args', return_value=MOCK_ARGS)
     mocker.patch.object(demisto, 'command', return_value='checkpoint-login-and-get-session-id')
     mocker.patch.object(demisto, 'results')
-    mocker.patch('CheckPointFirewall_v2.checkpoint_login_and_get_sid_command', side_effect=mock_get_sid)
+    mocker.patch('CheckPointFirewallv2.checkpoint_login_and_get_sid_command', side_effect=mock_get_sid)
 
     main()
 
