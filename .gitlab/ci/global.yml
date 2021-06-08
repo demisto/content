@@ -124,9 +124,8 @@
     DOCKER_HOST: tcp://docker:2375
     DOCKER_DRIVER: overlay2
     DOCKER_TLS_CERTDIR: ""
-    RUN_INFRA_LINT_AND_TESTS:
-      value: '$CI_NODE_INDEX == null || $CI_NODE_INDEX == 1'
-      description: "Only run the infrastructure tests and linting if we are running the job normally or in the first index of a set of parallel jobs"
+# Only run the infrastructure tests and linting if we are running the job normally or in the first index of a set of parallel jobs
+    RUN_INFRA_LINT_AND_TESTS: '$CI_NODE_INDEX == null || $CI_NODE_INDEX == 1'
   extends:
     - .default-job-settings
   script:

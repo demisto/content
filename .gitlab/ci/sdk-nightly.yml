@@ -8,13 +8,6 @@
     - if: '$CI_PIPELINE_SOURCE =~ /^(schedule|trigger)$/ && $DEMISTO_SDK_NIGHTLY == "true"'
       when: always
 
-.sdk-nightly-schedule-rule-always:
-  rules:
-    - if: '$CI_PIPELINE_SOURCE =~ /^(schedule)$/ && $DEMISTO_SDK_NIGHTLY == "true"'
-      when: always
-    - if: '$CI_PIPELINE_SOURCE == "trigger" && $DEMISTO_SDK_NIGHTLY == "true"'
-      when: always
-
 
 .upload-entities-to-cortex-xsoar: &upload-entities-to-cortex-xsoar
   - section_start "Upload Entities to Cortex XSOAR" --collapsed
