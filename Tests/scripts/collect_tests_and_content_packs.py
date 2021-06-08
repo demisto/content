@@ -1052,7 +1052,7 @@ def remove_private_tests(tests_without_private_packs):
             tests_without_private_packs.remove(private_test)
 
 
-def filter_tests(tests: set, id_set: json, is_nightly = False) -> set:
+def filter_tests(tests: set, id_set: json, is_nightly=False) -> set:
     """
     Filter tests out from the test set if they are:
     a.Ignored
