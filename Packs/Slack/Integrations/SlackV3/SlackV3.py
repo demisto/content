@@ -832,7 +832,7 @@ async def start_listening():
 
 async def slack_loop():
     client = SocketModeClient(
-        app_token=demisto.params().get('access_token'),
+        app_token=demisto.params().get('app_token'),
         web_client=AsyncWebClient(token=demisto.params().get('bot_token'), ssl=handle_ssl_verification())
     )
     client.socket_mode_request_listeners.append(process)
