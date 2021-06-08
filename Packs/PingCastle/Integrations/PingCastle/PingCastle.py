@@ -1,4 +1,5 @@
 import random
+import socket
 import string
 import traceback
 import ssl
@@ -174,6 +175,43 @@ def get_report_command(args: dict):
     )
 
 
+def test_module(params: dict):
+    """
+    Returning 'ok' indicates that the integration works like it is supposed to.
+    This test works by running the listening server to see if it will run.
+
+    Args:
+        params (dict): The integration parameters
+    Returns:
+        'ok' if test passed, anything else will fail the test.
+    """
+
+    try:
+        certificate: str = params.get('certificate')
+        private_key: str = params.get('private_key')
+
+        certificate_file = NamedTemporaryFile(mode='w', delete=False)
+        certificate_path = certificate_file.name
+        certificate_file.write(certificate)
+        certificate_file.close()
+
+        private_key_file = NamedTemporaryFile(mode='w', delete=False)
+        private_key_path = private_key_file.name
+        private_key_file.write(private_key)
+        private_key_file.close()
+
+        s = socket.socket()
+        ssl.wrap_socket(s, keyfile=private_key_path, certfile=certificate_path, server_side=True)
+        return 'ok'
+
+    except ssl.SSLError as e:
+        if e.reason == 'KEY_VALUES_MISMATCH':
+            return 'Private and Public keys do not match'
+
+    except Exception as e:
+        return f'Test failed with the following error: {repr(e)}'
+
+
 def main() -> None:
     """main function, parses params and runs command functions"""
 
@@ -183,6 +221,9 @@ def main() -> None:
 
     demisto.debug(f'Command being called is {demisto.command()}')
     try:
+        if command == 'test-module':
+            test_module(params)
+
         if command == 'long-running-execution':
             listen_for_reports(params)
 
