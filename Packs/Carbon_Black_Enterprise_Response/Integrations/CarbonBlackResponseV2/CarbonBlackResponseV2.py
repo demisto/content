@@ -9,7 +9,7 @@ requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
 
 ''' CONSTANTS '''
 INTEGRATION_NAME = 'Carbon Black EDR'
-MAX_INCIDENTS_TO_FETCH = 10
+MAX_INCIDENTS_TO_FETCH = 50
 
 ''' PARSING PROCESS EVENT COMPLEX FIELDS CLASS'''
 
