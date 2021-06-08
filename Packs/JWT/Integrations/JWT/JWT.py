@@ -30,7 +30,7 @@ class Client(BaseClient):
 
 
 def encode_authentication_token(secret_key, jti=None, iss=None, aud=None, sub=None, scp=None, iat=None, exp=None,
-                                nbf=None, token_timeout=None, additional_claims=None):
+                                nbf=None, token_timeout=None, additional_claims=None, algorithm='HS256'):
     token_id = str(uuid.uuid4())
     jti = jti or token_id
 
@@ -61,7 +61,7 @@ def encode_authentication_token(secret_key, jti=None, iss=None, aud=None, sub=No
     if additional_claims:
         claims.update(json.loads(additional_claims))
 
-    payload = jwt.encode(claims, secret_key, algorithm='HS256')
+    payload = jwt.encode(claims, secret_key, algorithm=algorithm)
 
     return jti, payload
 
@@ -69,26 +69,47 @@ def encode_authentication_token(secret_key, jti=None, iss=None, aud=None, sub=No
 ''' COMMAND FUNCTIONS '''
 
 
-def test_module():
+def test_module(client, params):
+    secret_key = params.get('key')
+    jti = params.get('jti')
+    iss = params.get('iss', params['url'])
+    aud = params.get('aud')
+    sub = params.get('sub')
+    scp = params.get('scp')
+    iat = params.get('iat')
+    exp = params.get('exp')
+    nbf = params.get('nbf')
+    algorithm = params.get('algorithm')
+
+    additional_claims = params.get('additionalClaims')
+    token_timeout = params.get('tokenTimeout')
+
+    payload = encode_authentication_token(secret_key=secret_key, jti=jti, iss=iss, aud=aud, sub=sub, scp=scp,
+                                          iat=iat, exp=exp, nbf=nbf, token_timeout=token_timeout,
+                                          additional_claims=additional_claims, algorithm=algorithm)[1]
+    payload = {'auth_token': payload}
+    headers = {'Content-Type': 'application/json; charset=utf-8'}
+    client.request_access_token(headers=headers, body=payload)
     return 'ok'
 
 
 def jwt_generate_authentication_payload_command(args, params):
-    secret_key = params['key']
-    jti = args.get('jti')
+    secret_key = params.get('key')
+    jti = args.get('jti') or params.get('jti')
     iss = args.get('iss') or params.get('iss', params['url'])
     aud = args.get('aud') or params.get('aud')
-    sub = args.get('sub')
-    scp = args.get('scp')
-    iat = args.get('iat')
-    exp = args.get('exp')
-    nbf = args.get('nbf')
-    additional_claims = args.get('additionalClaims')
-    token_timeout = args.get('tokenTimeout')
+    sub = args.get('sub') or params.get('sub')
+    scp = args.get('scp') or params.get('scp')
+    iat = args.get('iat') or params.get('iat')
+    exp = args.get('exp') or params.get('exp')
+    nbf = args.get('nbf') or params.get('nbf')
+    algorithm = args.get('algorithm') or params.get('algorithm')
+    additional_claims = args.get('additionalClaims') or params.get('additionalClaims')
+    token_timeout = args.get('tokenTimeout') or params.get('tokenTimeout')
 
     jti, payload = encode_authentication_token(secret_key=secret_key, jti=jti, iss=iss, aud=aud, sub=sub, scp=scp,
                                                iat=iat, exp=exp, nbf=nbf, token_timeout=token_timeout,
-                                               additional_claims=additional_claims)
+                                               additional_claims=additional_claims, algorithm=algorithm)
     result = {
         "ID": jti,
         "AuthenticationToken": payload
@@ -102,21 +123,22 @@ def jwt_generate_authentication_payload_command(args, params):
 
 
 def jwt_generate_access_token_command(client, args, params):
-    secret_key = params['key']
-    jti = args.get('jti')
+    secret_key = params.get('key')
+    jti = args.get('jti') or params.get('jti')
     iss = args.get('iss') or params.get('iss', params['url'])
     aud = args.get('aud') or params.get('aud')
-    sub = args.get('sub')
-    scp = args.get('scp')
-    iat = args.get('iat')
-    exp = args.get('exp')
-    nbf = args.get('nbf')
-    additional_claims = args.get('additionalClaims')
-    token_timeout = args.get('tokenTimeout')
+    sub = args.get('sub') or params.get('sub')
+    scp = args.get('scp') or params.get('scp')
+    iat = args.get('iat') or params.get('iat')
+    exp = args.get('exp') or params.get('exp')
+    nbf = args.get('nbf') or params.get('nbf')
+    algorithm = args.get('algorithm') or params.get('algorithm')
+    additional_claims = args.get('additionalClaims') or params.get('additionalClaims')
+    token_timeout = args.get('tokenTimeout') or params.get('tokenTimeout')
 
     jti, payload = encode_authentication_token(secret_key=secret_key, jti=jti, iss=iss, aud=aud, sub=sub, scp=scp,
                                                iat=iat, exp=exp, nbf=nbf, token_timeout=token_timeout,
-                                               additional_claims=additional_claims)
+                                               additional_claims=additional_claims, algorithm=algorithm)
     payload = {'auth_token': payload}
     headers = {'Content-Type': 'application/json; charset=utf-8'}
     res = client.request_access_token(headers=headers, body=payload)
@@ -151,7 +173,7 @@ def jwt_decode_token_command(args):
 
 def main():
 
-    base_url = urljoin(demisto.params()['url'])
+    base_url = demisto.params().get('url')
 
     verify_certificate = not demisto.params().get('insecure', False)
     proxy = demisto.params().get('proxy', False)
@@ -165,7 +187,7 @@ def main():
             headers=headers,
             proxy=proxy)
         if demisto.command() == 'test-module':
-            result = test_module()
+            result = test_module(client, demisto.params())
             return_results(result)
 
         elif demisto.command() == 'jwt-generate-authentication-payload':

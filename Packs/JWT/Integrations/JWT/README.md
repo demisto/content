@@ -60,8 +60,8 @@ Generates a JWT authorization token with an optional scope and queries the API f
 {
     "JWT": {
         "Token": {
-            "AccessToken": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE2MjIwNTA1ODMsImlhdCI6MTYyMjA1MDI4MywianRpIjoiMDA5ZWIwMzYtMWU2MC00M2U1LWFhZDItMTE4NzQ2MmRiMGJlIiwiaXNzIjoiaHR0cDovL2V4YW1wbGUuY29tIiwic3ViIjoiMzIzMy0yMzQ0LTRiNTItMjMyMy1mYzBiZmIxMWU2NzMiLCJwYXJhbWV0ZXIxIjoiMjMzMjMtMzIzLTQ4NTQtODkzYy1iNTk2MTA0MjNhZCJ9.13zCwNhvt8fCuyHBcmdbDSaXUIpDRI95Q5-m1EbPQmk",
-            "AuthenticationToken": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE2MjIwNTA1ODMsImlhdCI6MTYyMjA1MDI4MywianRpIjoiMDA5ZWIwMzYtMWU2MC00M2U1LWFhZDItMTE4NzQ2MmRiMGJlIiwiaXNzIjoiaHR0cDovL2V4YW1wbGUuY29tIiwic3ViIjoiMzIzMy0yMzQ0LTRiNTItMjMyMy1mYzBiZmIxMWU2NzMiLCJwYXJhbWV0ZXIxIjoiMjMzMjMtMzIzLTQ4NTQtODkzYy1iNTk2MTA0MjNhZCJ9.13zCwNhvt8fCuyHBcmdbDSaXUIpDRI95Q5-m1EbPQmk",
+            "AccessToken": "***",
+            "AuthenticationToken": "***",
             "ID": "009eb036-1e60-43e5-aad2-1187462db0be"
         }
     }
@@ -116,7 +116,7 @@ Generates a JWT authorization request payload by encoding the provided claims.
 {
     "JWT": {
         "Token": {
-            "AuthenticationToken": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE2MjIwNTEwNzksImlhdCI6MTYyMjA1MDc3OSwianRpIjoiNjYxNzVjZWItZjkxMC00YjMyLThhNTMtNzM5ZWNmMzdhOTVkIiwiaXNzIjoiaHR0cDovL2V4YW1wbGUuY29tIiwic3ViIjoiMzIzMy0yMzQ0LTRiNTItMjMyMy1mYzBiZmIxMWU2NzMiLCJwYXJhbWV0ZXIxIjoiMjMzMjMtMzIzLTQ4NTQtODkzYy1iNTk2MTA0MjNhZCJ9.PISDs6gEtk6B0dqCpCDMNcnJAxByAQLYZRJGgJfBh7M",
+            "AuthenticationToken": "***",
             "ID": "66175ceb-f910-4b32-8a53-739ecf37a95d"
         }
     }
@@ -128,7 +128,7 @@ Generates a JWT authorization request payload by encoding the provided claims.
 >### Results
 >|AuthenticationToken|ID|
 >|---|---|
->| eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE2MjIwNTEwNzksImlhdCI6MTYyMjA1MDc3OSwianRpIjoiNjYxNzVjZWItZjkxMC00YjMyLThhNTMtNzM5ZWNmMzdhOTVkIiwiaXNzIjoiaHR0cDovL2V4YW1wbGUuY29tIiwic3ViIjoiMzIzMy0yMzQ0LTRiNTItMjMyMy1mYzBiZmIxMWU2NzMiLCJwYXJhbWV0ZXIxIjoiMjMzMjMtMzIzLTQ4NTQtODkzYy1iNTk2MTA0MjNhZCJ9.PISDs6gEtk6B0dqCpCDMNcnJAxByAQLYZRJGgJfBh7M | 66175ceb-f910-4b32-8a53-739ecf37a95d |
+>| *** |
 
 
 ### jwt-decode-token

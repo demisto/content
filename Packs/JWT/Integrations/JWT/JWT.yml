@@ -14,18 +14,81 @@ configuration:
   hidden: false
   name: key
   required: true
+  type: 4
+- additionalinfo: Token Signing Algorithm.
+  defaultvalue: HS256
+  display: Algorithm
+  hidden: false
+  name: algorithm
+  required: false
   type: 0
 - additionalinfo: The “iss” (issuer) claim identifies the principal that issued the
     JWT.
-  display: Issuer Claim
+  display: Issuer
   name: iss
   required: false
-  type: 4
+  type: 0
 - additionalinfo: The “aud” (audience) claim identifies the recipients that the JWT
     is intended for.
-  display: Audience Claim
+  display: Audience
   hidden: false
   name: aud
+  required: false
+  type: 0
+- additionalinfo: The "jti" (JWT ID) claim provides a unique identifier for the JWT
+    token.
+  display: Token ID
+  hidden: false
+  name: jti
+  required: false
+  type: 0
+- additionalinfo: The "sub" (subject) claim identifies the principal that is the subject
+    of the JWT.
+  display: Subject
+  hidden: false
+  name: sub
+  required: false
+  type: 0
+- additionalinfo: The "scp" (scope) claim is described in OAuth 2.0 Token Exchange
+    as an array of strings, each of which represents an OAuth Scope granted for the
+    issued security token.
+  display: Scope
+  hidden: false
+  name: scp
+  required: false
+  type: 0
+- additionalinfo: The "iat" (issued at) claim identifies the time at which the JWT
+    was issued.
+  display: Issued At
+  hidden: false
+  name: iat
+  required: false
+  type: 0
+- additionalinfo: The "exp" (expiration time) claim identifies the expiration time
+    on or after which the JWT MUST NOT be accepted for processing.
+  display: Expiration Time
+  hidden: false
+  name: exp
+  required: false
+  type: 0
+- additionalinfo: The "nbf" (not before) claim identifies the time before which the
+    JWT MUST NOT be accepted for processing.
+  display: Not Before
+  hidden: false
+  name: nbf
+  required: false
+  type: 0
+- additionalinfo: Additional claims to include in the request.
+  display: Additional Claims
+  hidden: false
+  name: additionalClaims
+  required: false
+  type: 12
+- additionalinfo: Token Timeout in Seconds
+  defaultvalue: '300'
+  display: Token Timeout
+  hidden: false
+  name: tokenTimeout
   required: false
   type: 0
 - display: Trust any certificate (not secure)
@@ -114,6 +177,13 @@ script:
       name: tokenTimeout
       required: false
       secret: false
+    - default: true
+      defaultValue: HS256
+      description: Token Signing Algorithm
+      isArray: false
+      name: algorithm
+      required: false
+      secret: false
     deprecated: false
     description: Generates a JWT authorization token with an optional scope and queries
       the API for an access token and then returns the received API access token
@@ -198,6 +268,13 @@ script:
       description: Token Timeout in Seconds
       isArray: false
       name: tokenTimeout
+      required: false
+      secret: false
+    - default: true
+      defaultValue: HS256
+      description: Token Signing Algorithm
+      isArray: false
+      name: algorithm
       required: false
       secret: false
     deprecated: false
