@@ -85,7 +85,7 @@ def aggregate_command(args: Dict[str, Any]) -> CommandResults:
     return CommandResults(
         readable_output=markdown,
         outputs=outputs or None,
-        outputs_prefix="Expanse.AttributionDeviceCI",
+        outputs_prefix="Expanse.AttributionCI",
         outputs_key_field=["name", "sys_id", "sys_class_name"]
     )
 
