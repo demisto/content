@@ -27,8 +27,12 @@ def option_handler():
     # disable-secrets-detection-start
     parser.add_argument('-a', '--artifacts_path', help="Path of the CircleCI artifacts to save the zip file in",
                         required=False)
+    parser.add_argument('-gp', '--gcp_path', help="Path of the content packs in the GCP bucket",
+                        required=False)
     parser.add_argument('-z', '--zip_path', help="Full path of folder to zip packs in", required=True)
     parser.add_argument('-b', '--bucket_name', help="Storage bucket name", required=True)
+    parser.add_argument('-br', '--branch_name', help="Name of the branch", required=False)
+    parser.add_argument('-n', '--circle_build', help="Number of the circle build", required=False)
     parser.add_argument('-sbp', '--storage_base_path', help="Storage base path of the directory to download from.",
                         required=False)
     parser.add_argument('-s', '--service_account',
