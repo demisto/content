@@ -1,0 +1,14 @@
+[
+  {
+    "name": "Tenant 1: 8",
+    "type": "Respond Software Incident",
+    "occurred": "2020-06-05T16:20:26Z",
+    "rawJSON": "{\"incidentId\": \"8\", \"timeGenerated\": \"2020-06-05T16:20:26Z\", \"eventCount\": 1, \"firstEventTime\": \"2020-06-05T08:20:17Z\", \"lastEventTime\": \"2020-06-05T08:20:17Z\", \"URL\": \"https://localhost:6078/secure/incidents/8?tenantId=dev1\", \"closeURL\": \"https://localhost:6078/secure/incidents/feedback/8?tenantId=dev1\", \"title\": \"Unknown\", \"description\": \"incident description\", \"status\": \"Closed\", \"severity\": \"Low\", \"probability\": \"VeryLow\", \"attackStage\": \"Exploitation\", \"attackTactic\": null, \"assetCriticality\": \"Low\", \"assetCount\": 1, \"assets\": [], \"externalsystems\": [], \"accounts\": [], \"domains\": [], \"hashes\": [], \"malware\": [], \"signatures\": null, \"escalationreasons\": [], \"assignedUsers\": [], \"tenantIdRespond\": \"dev1\", \"tenantId\": \"Tenant 1\", \"respondRemoteId\": \"Tenant 1:8\", \"dbotMirrorDirection\": \"Both\", \"dbotMirrorInstance\": \"respond_test\", \"feedback\": {\"timeUpdated\": \"1592523622852\", \"userId\": \"user1\", \"outcome\": \"Non-Actionable\", \"comments\": \"fdsafdsafdsa\"}}"
+  },
+  {
+    "name": "Tenant 1: 14",
+    "type": "Respond Software Incident",
+    "occurred": "2020-06-05T16:20:28Z",
+    "rawJSON": "{\"incidentId\": \"14\", \"timeGenerated\": \"2020-06-05T16:20:28Z\", \"eventCount\": 1, \"firstEventTime\": \"2020-05-28T08:07:13Z\", \"lastEventTime\": \"2020-05-28T08:07:13Z\", \"URL\": \"https://localhost:6078/secure/incidents/14?tenantId=dev1\", \"closeURL\": \"https://localhost:6078/secure/incidents/feedback/14?tenantId=dev1\", \"title\": \"Blocked Int - Ext C2 Malware\", \"description\": \"incident description\", \"status\": \"Closed\", \"severity\": \"Low\", \"probability\": \"Medium\", \"attackStage\": \"AttackObjective\", \"attackTactic\": null, \"assetCriticality\": \"Low\", \"assetCount\": 1, \"assets\": [], \"externalsystems\": [], \"accounts\": [], \"domains\": [], \"hashes\": [], \"malware\": [], \"signatures\": null, \"escalationreasons\": [{\"label\": \"Suspicious External System Attributes\"}], \"assignedUsers\": [], \"tenantIdRespond\": \"dev1\", \"tenantId\": \"Tenant 1\", \"respondRemoteId\": \"Tenant 1:14\", \"dbotMirrorDirection\": \"Both\", \"dbotMirrorInstance\": \"respond_test\", \"feedback\": {\"timeUpdated\": \"1592784436497\", \"userId\": \"user1\", \"outcome\": \"Inconclusive\", \"comments\": null}}"
+  }
+]
