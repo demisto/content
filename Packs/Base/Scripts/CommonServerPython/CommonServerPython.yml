@@ -17,6 +17,8 @@ alt_dockerimages: # used for unit testing
 - demisto/python3:3.7.3.286
 - demisto/python3:3.8.3.8494
 - demisto/python3:3.9.1.14969
+- devdemisto/python3-deb:3.9.5.20978
+- devdemisto/python3:3.9.5.20978
 tests:
 - TestCommonPython
 - Test-debug-mode
