@@ -36,7 +36,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Retrieved password from secret
+    description: Extracting the password field from the required secret
     execution: false
     name: thycotic-secret-password-get
     outputs:
@@ -51,7 +51,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Retrieved username from secret
+    description: Extracting the username field from the required secret
     execution: false
     name: thycotic-secret-username-get
     outputs:
@@ -66,7 +66,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Search ID secret by Name
+    description: Search a secret by its name.
     execution: false
     name: thycotic-secret-search-name
     outputs:
@@ -131,15 +131,13 @@ script:
       name: foldername
       required: true
       secret: false
-    - auto: PREDEFINED
-      default: false
-      description: Folder type ID(1=< ID =< 3
+    - default: false
+      defaultValue: '1'
+      description: Folder type ID, 1 - for folder
       isArray: false
       name: foldertypeid
       predefined:
-      - '1'
-      - '2'
-      - '3'
+      - ''
       required: true
       secret: false
     - default: false
@@ -192,7 +190,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Search folder by  folder name
+    description: Search a specific folder by name.
     execution: false
     name: thycotic-folder-search
     outputs:
@@ -517,7 +515,8 @@ script:
   - arguments:
     - auto: PREDEFINED
       default: false
-      description: AutoChangeEnabled options
+      description: Secret Server will automatically initiate a password change after
+        a Secret expires or on a schedule.
       isArray: false
       name: autochangeenabled
       predefined:
@@ -527,7 +526,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: CheckOutChangePasswordEnabled options
+      description: This flag means that when performing a check-in operation, the
+        server will change the secret password to a new one.
       isArray: false
       name: checkoutchangepasswordenabled
       predefined:
@@ -608,7 +608,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: requiresCommen options
+      description: Users will be prompted for comment and ticket number when accessing
+        a Secret.
       isArray: false
       name: requirescommen
       predefined:
@@ -640,7 +641,7 @@ script:
       secret: false
     - default: false
       defaultValue: '1'
-      description: siteId options (integer)
+      description: SiteID, 1 - local site
       isArray: false
       name: siteid
       required: true
@@ -774,7 +775,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: IsApplicationAccount, true - if this is account usage for SDK
+      description: This flag means that this account can only be used for access by
+        tools that use the SDK developed by Tycotic
       isArray: false
       name: isapplicationaccount
       predefined:
@@ -923,7 +925,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: E-mail
+      description: User email address
       isArray: false
       name: emailaddress
       required: false
@@ -949,14 +951,15 @@ script:
       required: false
       secret: false
     - default: false
-      description: GroupOwners(integer)
+      description: Owner group
       isArray: false
       name: groupowners
       required: false
       secret: false
     - auto: PREDEFINED
       default: false
-      description: IsApplicationAccount
+      description: This flag means that this account can only be used for access by
+        tools that use the SDK developed by Tycotic
       isArray: false
       name: isapplicationaccount
       predefined:
@@ -1023,7 +1026,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: timeOptionId (integer)
+      description: Restricted access time
       isArray: false
       name: timeoptionid
       required: false
@@ -1069,7 +1072,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: Password
+      description: The new password
       isArray: false
       name: newpassword
       required: true
@@ -1082,7 +1085,7 @@ script:
     - contextPath: Thycotic.Secret.ChangePassword
       description: Secret summary
       type: String
-  dockerimage: demisto/python3:3.9.5.20070
+  dockerimage: demisto/python3:3.9.5.20958
   feed: false
   isfetch: false
   longRunning: false
