@@ -14,11 +14,11 @@ import traceback
 
 
 def deconstruct_entry(ServiceNowCMDBContext: Dict[str, Any]) -> Tuple[Optional[str],
-                                                            Optional[str],
-                                                            Optional[str],
-                                                            Optional[int],
-                                                            Optional[int],
-                                                            Optional[int]]:
+                                                                      Optional[str],
+                                                                      str,
+                                                                      Optional[str],
+                                                                      Optional[str],
+                                                                      Optional[str]]:
     """
     deconstruct_entry
     Extracts device relevant fields from a log entry.
@@ -34,18 +34,12 @@ def deconstruct_entry(ServiceNowCMDBContext: Dict[str, Any]) -> Tuple[Optional[s
     """
     name = ServiceNowCMDBContext.get("name")
     sys_class_name = ServiceNowCMDBContext.get("sys_class_name")
-    sys_id = ServiceNowCMDBContext.get("sys_id")
+    sys_id = ServiceNowCMDBContext.get("sys_id", "Unknown")
     asset_display_value = ServiceNowCMDBContext.get("asset", {}).get("display_value")
     asset_link = ServiceNowCMDBContext.get("asset", {}).get("link")
     asset_value = ServiceNowCMDBContext.get("asset", {}).get("value")
 
-
-    return name,\
-           sys_class_name,\
-           sys_id,\
-           asset_display_value,\
-           asset_link,\
-           asset_value
+    return name, sys_class_name, sys_id, asset_display_value, asset_link, asset_value
 
 
 ''' COMMAND FUNCTION '''
@@ -66,7 +60,7 @@ def aggregate_command(args: Dict[str, Any]) -> CommandResults:
 
         name, sys_class_name, sys_id, asset_display_value, asset_link, asset_value = deconstruct_entry(entry)
 
-        current_state = current_sys_ids.get(sys_id, None)
+        current_state = current_sys_ids.get(sys_id)
         if current_state is None:
             current_state = {
                 'name': name,
