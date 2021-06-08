@@ -27,3 +27,9 @@ ignore=PB110
 
 [file:PaloAltoNetworks_Cortex_XDR_Incident_Sync.yml]
 ignore=PB110
+
+[file:classifier-mapper-incoming-PaloAltoNetworks_CortexXDR.json]
+ignore=BA101
+
+[file:classifier-mapper-outgoing-PaloAltoNetworks_CortexXDR.json]
+ignore=BA101
