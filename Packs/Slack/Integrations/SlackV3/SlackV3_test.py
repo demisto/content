@@ -5,6 +5,10 @@ import threading
 import pytest
 import slack_sdk
 from slack_sdk.web.slack_response import SlackResponse
+from slack_sdk.socket_mode.aiohttp import SocketModeClient
+from slack_sdk.web.async_client import AsyncWebClient
+
+from mock import MagicMock
 
 from CommonServerPython import *
 
@@ -394,44 +398,49 @@ def setup(mocker):
     init_globals()
 
 
+class AsyncMock(MagicMock):
+    async def __call__(self, *args, **kwargs):
+        return super(AsyncMock, self).__call__(*args, **kwargs)
+
+
 @pytest.mark.asyncio
 async def test_get_slack_name_user(mocker):
     from SlackV3 import get_slack_name
-    from slack_sdk.socket_mode.aiohttp import SocketModeClient
 
-    # Set
-    async def api_call(method: str, http_verb: str = 'POST', file: str = None, params=None, json=None, data=None):
-        if method == 'users.info':
-            user = params['user']
-            if user != 'alexios':
-                return {'user': js.loads(USERS)[0]}
-        elif method == 'conversations.info':
-            return {'channel': js.loads(CONVERSATIONS)[0]}
+    async def users_info(user: str):
+        if user != 'alexios':
+            return js.loads(USERS)[0]
         return None
+
+    async def conversations_info():
+        return {'channel': js.loads(CONVERSATIONS)[0]}
 
     mocker.patch.object(demisto, 'getIntegrationContext', side_effect=get_integration_context)
     mocker.patch.object(demisto, 'setIntegrationContext')
-    mocker.patch.object(slack_sdk.WebClient, 'api_call', side_effect=api_call)
 
-    # Assert
+    #
+    socket_client = AsyncMock()
+    mocker.patch.object(socket_client.web_client, 'users_info', side_effect=users_info)
+    mocker.patch.object(socket_client.web_client, 'conversations_info', side_effect=conversations_info)
+    # Assert 6516
 
     # User in integration context
     user_id = 'U012A3CDE'
-    name = await get_slack_name(user_id, SocketModeClient)
+    name = await get_slack_name(user_id, socket_client)
     assert name == 'spengler'
-    assert slack_sdk.WebClient.api_call.call_count == 0
+    assert socket_client.web_client.call_count == 0
 
     # User not in integration context
     unknown_user = 'USASSON'
-    name = await get_slack_name(unknown_user, SocketModeClient)
+    name = await get_slack_name(unknown_user, socket_client)
     assert name == 'spengler'
-    assert slack_sdk.WebClient.api_call.call_count == 1
+    assert socket_client.web_client.users_info.call_count == 1
 
     # User does not exist
     nonexisting_user = 'alexios'
-    name = await get_slack_name(nonexisting_user, SocketModeClient)
+    name = await get_slack_name(nonexisting_user, socket_client)
     assert name == ''
-    assert slack_sdk.WebClient.api_call.call_count == 1
+    assert socket_client.web_client.users_info.call_count == 1
 
 
 @pytest.mark.asyncio
@@ -2005,482 +2014,6 @@ async def test_handle_text(mocker):
     assert entry_args['username'] == 'spengler'
     assert entry_args['email'] == 'spengler@ghostbusters.example.com'
     assert entry_args['footer'] == '\n**From Slack**'
-
-
-def test_check_for_answers_no_proxy(mocker, requests_mock):
-    import SlackV3
-
-    # Set
-
-    mocker.patch.object(demisto, 'handleEntitlementForUser')
-    mocker.patch.object(demisto, 'getIntegrationContext', side_effect=get_integration_context)
-    mocker.patch.object(demisto, 'setIntegrationContext', side_effect=set_integration_context)
-    mocker.patch.object(SlackV3, 'get_current_utc_time', return_value=datetime.datetime(2019, 9, 26, 18, 38, 25))
-    mocker.patch.object(SlackV3, 'add_info_headers')
-    requests_mock.post(
-        'https://oproxy.demisto.ninja/slack-poll',
-        json={'payload': PAYLOAD_JSON}
-    )
-
-    integration_context = get_integration_context()
-    integration_context['questions'] = js.dumps([{
-        'thread': 'cool',
-        'entitlement': 'e95cb5a1-e394-4bc5-8ce0-508973aaf298@22|43',
-        'reply': 'Thanks bro',
-        'expiry': '3000-09-26 18:38:25',
-        'sent': '2019-09-26 18:38:25',
-        'default_response': 'NoResponse',
-        'last_poll_time': '2019-09-26 18:34:25'
-    }])
-
-    set_integration_context(integration_context)
-
-    # Arrange
-    SlackV3.check_for_answers()
-
-    result_args = demisto.handleEntitlementForUser.call_args_list[0][0]
-
-    # Assert
-    assert demisto.handleEntitlementForUser.call_count == 1
-    assert demisto.setIntegrationContext.call_count == 1
-    assert requests_mock._adapter.last_request.proxies == OrderedDict()
-    assert result_args[0] == '22'
-    assert result_args[1] == 'e95cb5a1-e394-4bc5-8ce0-508973aaf298'
-    assert result_args[2] == 'spengler@ghostbusters.example.com'
-    assert result_args[3] == 'Eyy'
-    assert result_args[4] == '43'
-
-    # Should delete the question
-    assert demisto.getIntegrationContext()['questions'] == js.dumps([])
-
-
-def test_check_for_answers_proxy(mocker, requests_mock):
-    import SlackV3
-
-    # Set
-    mocker.patch.object(SlackV3, 'handle_proxy', return_value={'https': 'https_proxy', 'http': 'http_proxy'})
-    SlackV3.init_globals()
-    proxy_dict = OrderedDict()
-    proxy_dict['https'] = 'https_proxy'
-    proxy_dict['http'] = 'http_proxy'
-    mocker.patch.object(demisto, 'handleEntitlementForUser')
-    mocker.patch.object(demisto, 'getIntegrationContext', side_effect=get_integration_context)
-    mocker.patch.object(demisto, 'setIntegrationContext', side_effect=set_integration_context)
-    mocker.patch.object(SlackV3, 'add_info_headers')
-    mocker.patch.object(SlackV3, 'get_current_utc_time', return_value=datetime.datetime(2019, 9, 26, 18, 38, 25))
-    requests_mock.post(
-        'https://oproxy.demisto.ninja/slack-poll',
-        json={'payload': PAYLOAD_JSON}
-    )
-
-    integration_context = get_integration_context()
-    integration_context['questions'] = js.dumps([{
-        'thread': 'cool',
-        'entitlement': 'e95cb5a1-e394-4bc5-8ce0-508973aaf298@22|43',
-        'reply': 'Thanks bro',
-        'expiry': '3000-09-26 18:38:25',
-        'sent': '2019-09-26 18:38:25',
-        'default_response': 'NoResponse',
-        'last_poll_time': '2019-09-26 18:34:25'
-    }])
-
-    set_integration_context(integration_context)
-
-    # Arrange
-    SlackV3.check_for_answers()
-
-    result_args = demisto.handleEntitlementForUser.call_args_list[0][0]
-
-    # Assert
-    assert demisto.handleEntitlementForUser.call_count == 1
-    assert demisto.setIntegrationContext.call_count == 1
-    assert requests_mock._adapter.last_request.proxies == proxy_dict
-    assert result_args[0] == '22'
-    assert result_args[1] == 'e95cb5a1-e394-4bc5-8ce0-508973aaf298'
-    assert result_args[2] == 'spengler@ghostbusters.example.com'
-    assert result_args[3] == 'Eyy'
-    assert result_args[4] == '43'
-
-    # Should delete the question
-    assert demisto.getIntegrationContext()['questions'] == js.dumps([])
-
-
-def test_check_for_answers_continue(mocker, requests_mock):
-    import SlackV3
-
-    # Set
-    mocker.patch.object(demisto, 'handleEntitlementForUser')
-    mocker.patch.object(demisto, 'error')
-    mocker.patch.object(demisto, 'getIntegrationContext', side_effect=get_integration_context)
-    mocker.patch.object(demisto, 'setIntegrationContext', side_effect=set_integration_context)
-    mocker.patch.object(SlackV3, 'add_info_headers')
-    mocker.patch.object(SlackV3, 'get_current_utc_time', return_value=datetime.datetime(2019, 9, 26, 18, 38, 25))
-    requests_mock.post(
-        'https://oproxy.demisto.ninja/slack-poll',
-        [{'json': {}, 'status_code': 200},
-         {'json': 'error', 'status_code': 401},
-         {'json': {'payload': PAYLOAD_JSON}, 'status_code': 200}]
-
-    )
-
-    integration_context = get_integration_context()
-    integration_context['questions'] = js.dumps([{
-        'thread': 'notcool',
-        'entitlement': '4404dae8-2d45-46bd-85fa-64779c12abe8@30|44',
-        'reply': 'Thanks bro',
-        'expiry': '3000-09-26 18:38:25',
-        'sent': '2019-09-26 18:38:25',
-        'default_response': 'NoResponse',
-        'last_poll_time': '2019-09-26 18:34:25'
-    }, {
-        'thread': 'notcool2',
-        'entitlement': '4404dae8-2d45-46bd-85fa-64779c12abe7@30|44',
-        'reply': 'Thanks bro',
-        'expiry': '3000-09-26 18:38:25',
-        'sent': '2019-09-26 18:38:25',
-        'default_response': 'NoResponse',
-        'last_poll_time': '2019-09-26 18:34:25'
-    }, {
-        'thread': 'cool',
-        'entitlement': 'e95cb5a1-e394-4bc5-8ce0-508973aaf298@22|43',
-        'reply': 'Thanks bro',
-        'expiry': '3000-09-26 18:38:25',
-        'sent': '2019-09-26 18:38:25',
-        'default_response': 'NoResponse',
-        'last_poll_time': '2019-09-26 18:34:25'
-    }])
-
-    set_integration_context(integration_context)
-
-    # Arrange
-    SlackV3.check_for_answers()
-
-    result_args = demisto.handleEntitlementForUser.call_args_list[0][0]
-
-    # Assert
-    assert demisto.handleEntitlementForUser.call_count == 1
-    assert demisto.setIntegrationContext.call_count == 1
-    assert demisto.error.call_count == 1
-
-    assert result_args[0] == '22'
-    assert result_args[1] == 'e95cb5a1-e394-4bc5-8ce0-508973aaf298'
-    assert result_args[2] == 'spengler@ghostbusters.example.com'
-    assert result_args[3] == 'Eyy'
-    assert result_args[4] == '43'
-
-    # Should delete the question
-    assert demisto.getIntegrationContext()['questions'] == js.dumps([{
-        'thread': 'notcool',
-        'entitlement': '4404dae8-2d45-46bd-85fa-64779c12abe8@30|44',
-        'reply': 'Thanks bro',
-        'expiry': '3000-09-26 18:38:25',
-        'sent': '2019-09-26 18:38:25',
-        'default_response': 'NoResponse',
-        'last_poll_time': '2019-09-26 18:38:25'
-    }, {
-        'thread': 'notcool2',
-        'entitlement': '4404dae8-2d45-46bd-85fa-64779c12abe7@30|44',
-        'reply': 'Thanks bro',
-        'expiry': '3000-09-26 18:38:25',
-        'sent': '2019-09-26 18:38:25',
-        'default_response': 'NoResponse',
-        'last_poll_time': '2019-09-26 18:38:25'
-    }])
-
-
-@pytest.mark.parametrize('sent, expected_minutes', [(None, 1), ('2019-09-26 18:37:25', 1), ('2019-09-26 18:10:25', 2),
-                                                    ('2019-09-26 17:38:24', 5), ('2019-09-25 18:10:25', 5)])
-def test_get_poll_minutes(sent, expected_minutes):
-    from SlackV3 import get_poll_minutes
-
-    # Set
-    current = datetime.datetime(2019, 9, 26, 18, 38, 25)
-
-    # Arrange
-    minutes = get_poll_minutes(current, sent)
-
-    # Assert
-    assert minutes == expected_minutes
-
-
-def test_check_for_answers_no_answer(mocker, requests_mock):
-    import SlackV3
-
-    # Set
-    mocker.patch.object(demisto, 'handleEntitlementForUser')
-    mocker.patch.object(demisto, 'getIntegrationContext', side_effect=get_integration_context)
-    mocker.patch.object(demisto, 'setIntegrationContext', side_effect=set_integration_context)
-    mocker.patch.object(SlackV3, 'add_info_headers')
-    mocker.patch.object(SlackV3, 'get_current_utc_time', return_value=datetime.datetime(2019, 9, 26, 18, 38, 25))
-    requests_mock.post(
-        'https://oproxy.demisto.ninja/slack-poll',
-        json={}
-    )
-
-    integration_context = get_integration_context()
-    integration_context['questions'] = js.dumps([{
-        'thread': 'cool',
-        'entitlement': 'e95cb5a1-e394-4bc5-8ce0-508973aaf298@22|43',
-        'reply': 'Thanks bro',
-        'expiry': '3000-09-26 18:38:25',
-        'sent': '2019-09-26 18:38:25',
-        'default_response': 'NoResponse',
-        'last_poll_time': '2019-09-26 18:34:25'
-    }, {
-        'thread': 'notcool',
-        'entitlement': '4404dae8-2d45-46bd-85fa-64779c12abe8@30|44',
-        'reply': 'Thanks bro',
-        'expiry': '3000-09-26 18:38:25',
-        'sent': '2019-09-26 18:38:25',
-        'default_response': 'NoResponse',
-        'last_poll_time': '2019-09-26 18:34:25'
-    }])
-
-    set_integration_context(integration_context)
-
-    # Arrange
-    SlackV3.check_for_answers()
-
-    # Assert
-
-    assert demisto.handleEntitlementForUser.call_count == 0
-    assert demisto.setIntegrationContext.call_count == 1
-
-    # Should not delete the question
-    assert demisto.getIntegrationContext()['questions'] == js.dumps([{
-        'thread': 'cool',
-        'entitlement': 'e95cb5a1-e394-4bc5-8ce0-508973aaf298@22|43',
-        'reply': 'Thanks bro',
-        'expiry': '3000-09-26 18:38:25',
-        'sent': '2019-09-26 18:38:25',
-        'default_response': 'NoResponse',
-        'last_poll_time': '2019-09-26 18:38:25'
-    }, {
-        'thread': 'notcool',
-        'entitlement': '4404dae8-2d45-46bd-85fa-64779c12abe8@30|44',
-        'reply': 'Thanks bro',
-        'expiry': '3000-09-26 18:38:25',
-        'sent': '2019-09-26 18:38:25',
-        'default_response': 'NoResponse',
-        'last_poll_time': '2019-09-26 18:38:25'
-    }])
-
-
-def test_check_for_answers_no_polling(mocker, requests_mock):
-    import SlackV3
-
-    # Set
-    mocker.patch.object(demisto, 'handleEntitlementForUser')
-    mocker.patch.object(demisto, 'getIntegrationContext', side_effect=get_integration_context)
-    mocker.patch.object(demisto, 'setIntegrationContext', side_effect=set_integration_context)
-    mocker.patch.object(SlackV3, 'add_info_headers')
-    mocker.patch.object(SlackV3, 'get_current_utc_time', return_value=datetime.datetime(2019, 9, 26, 18, 38, 25))
-    requests_mock.post(
-        'https://oproxy.demisto.ninja/slack-poll',
-        json={}
-    )
-
-    integration_context = get_integration_context()
-    integration_context['questions'] = js.dumps([{
-        'thread': 'cool',
-        'entitlement': 'e95cb5a1-e394-4bc5-8ce0-508973aaf298@22|43',
-        'reply': 'Thanks bro',
-        'expiry': '3000-09-26 18:38:25',
-        'sent': '2019-09-26 18:38:25',
-        'default_response': 'NoResponse',
-        'last_poll_time': '2019-09-26 18:38:00'
-    }, {
-        'thread': 'notcool',
-        'entitlement': '4404dae8-2d45-46bd-85fa-64779c12abe8@30|44',
-        'reply': 'Thanks bro',
-        'expiry': '3000-09-26 18:38:25',
-        'sent': '2019-09-26 18:38:25',
-        'default_response': 'NoResponse',
-        'last_poll_time': '2019-09-26 18:38:01'
-    }])
-
-    set_integration_context(integration_context)
-
-    # Arrange
-    SlackV3.check_for_answers()
-
-    # Assert
-
-    assert demisto.handleEntitlementForUser.call_count == 0
-    assert demisto.setIntegrationContext.call_count == 0
-    assert demisto.getIntegrationContext.call_count == 1
-
-    # Should not delete the question
-    assert demisto.getIntegrationContext()['questions'] == js.dumps([{
-        'thread': 'cool',
-        'entitlement': 'e95cb5a1-e394-4bc5-8ce0-508973aaf298@22|43',
-        'reply': 'Thanks bro',
-        'expiry': '3000-09-26 18:38:25',
-        'sent': '2019-09-26 18:38:25',
-        'default_response': 'NoResponse',
-        'last_poll_time': '2019-09-26 18:38:00'
-    }, {
-        'thread': 'notcool',
-        'entitlement': '4404dae8-2d45-46bd-85fa-64779c12abe8@30|44',
-        'reply': 'Thanks bro',
-        'expiry': '3000-09-26 18:38:25',
-        'sent': '2019-09-26 18:38:25',
-        'default_response': 'NoResponse',
-        'last_poll_time': '2019-09-26 18:38:01'
-    }])
-
-
-def test_check_for_answers_no_answer_expires(mocker, requests_mock):
-    import SlackV3
-
-    # Set
-    mocker.patch.object(demisto, 'handleEntitlementForUser')
-    mocker.patch.object(demisto, 'getIntegrationContext', side_effect=get_integration_context)
-    mocker.patch.object(demisto, 'setIntegrationContext', side_effect=set_integration_context)
-    mocker.patch.object(SlackV3, 'add_info_headers')
-    mocker.patch.object(SlackV3, 'get_current_utc_time', return_value=datetime.datetime(2019, 9, 26, 18, 38, 25))
-    requests_mock.post(
-        'https://oproxy.demisto.ninja/slack-poll',
-        json={}
-    )
-
-    integration_context = get_integration_context()
-    integration_context['questions'] = js.dumps([{
-        'thread': 'cool',
-        'entitlement': 'e95cb5a1-e394-4bc5-8ce0-508973aaf298@22|43',
-        'reply': 'Thanks bro',
-        'expiry': '3000-09-26 18:38:25',
-        'default_response': 'NoResponse',
-        'last_poll_time': '2019-09-26 18:34:25'
-    }, {
-        'thread': 'notcool',
-        'entitlement': '4404dae8-2d45-46bd-85fa-64779c12abe8@30|44',
-        'reply': 'Thanks bro',
-        'expiry': '2019-09-26 18:35:25',
-        'default_response': 'NoResponse',
-        'last_poll_time': '2019-09-26 18:34:25'
-    }])
-
-    set_integration_context(integration_context)
-
-    # Arrange
-    SlackV3.check_for_answers()
-
-    result_args = demisto.handleEntitlementForUser.call_args_list[0][0]
-
-    # Assert
-    assert demisto.handleEntitlementForUser.call_count == 1
-    assert demisto.setIntegrationContext.call_count == 1
-    assert result_args[0] == '30'
-    assert result_args[1] == '4404dae8-2d45-46bd-85fa-64779c12abe8'
-    assert result_args[2] == ''
-    assert result_args[3] == 'NoResponse'
-    assert result_args[4] == '44'
-
-    # Should not delete the question
-    assert demisto.getIntegrationContext()['questions'] == js.dumps([{
-        'thread': 'cool',
-        'entitlement': 'e95cb5a1-e394-4bc5-8ce0-508973aaf298@22|43',
-        'reply': 'Thanks bro',
-        'expiry': '3000-09-26 18:38:25',
-        'default_response': 'NoResponse',
-        'last_poll_time': '2019-09-26 18:38:25'
-    }])
-
-
-def test_check_for_answers_error(mocker, requests_mock):
-    import SlackV3
-
-    # Set
-    mocker.patch.object(demisto, 'handleEntitlementForUser')
-    mocker.patch.object(demisto, 'getIntegrationContext', side_effect=get_integration_context)
-    mocker.patch.object(demisto, 'setIntegrationContext', side_effect=set_integration_context)
-    mocker.patch.object(demisto, 'error')
-    mocker.patch.object(SlackV3, 'add_info_headers')
-    mocker.patch.object(SlackV3, 'get_current_utc_time', return_value=datetime.datetime(2019, 9, 26, 18, 38, 25))
-    requests_mock.post(
-        'https://oproxy.demisto.ninja/slack-poll',
-        json='error',
-        status_code=401
-    )
-
-    integration_context = get_integration_context()
-    integration_context['questions'] = js.dumps([{
-        'thread': 'cool',
-        'entitlement': 'e95cb5a1-e394-4bc5-8ce0-508973aaf298@22|43',
-        'expiry': '3000-09-26 18:38:25',
-        'default_response': 'NoResponse'
-    }, {
-        'thread': 'notcool',
-        'entitlement': '4404dae8-2d45-46bd-85fa-64779c12abe8@30|44',
-        'expiry': '3000-09-26 18:38:25',
-        'default_response': 'NoResponse'
-    }])
-
-    set_integration_context(integration_context)
-
-    # Arrange
-    SlackV3.check_for_answers()
-
-    # Assert
-
-    assert demisto.handleEntitlementForUser.call_count == 0
-    assert demisto.setIntegrationContext.call_count == 1
-    assert demisto.error.call_count == 2
-
-    # Should not delete the question
-    assert demisto.getIntegrationContext()['questions'] == js.dumps([{
-        'thread': 'cool',
-        'entitlement': 'e95cb5a1-e394-4bc5-8ce0-508973aaf298@22|43',
-        'expiry': '3000-09-26 18:38:25',
-        'default_response': 'NoResponse',
-        'last_poll_time': '2019-09-26 18:38:25'
-    }, {
-        'thread': 'notcool',
-        'entitlement': '4404dae8-2d45-46bd-85fa-64779c12abe8@30|44',
-        'expiry': '3000-09-26 18:38:25',
-        'default_response': 'NoResponse',
-        'last_poll_time': '2019-09-26 18:38:25'
-    }])
-
-
-def test_check_for_answers_handle_entitlement_error(mocker, requests_mock):
-    import SlackV3
-
-    # Set
-    mocker.patch.object(demisto, 'handleEntitlementForUser', side_effect=InterruptedError())
-    mocker.patch.object(demisto, 'getIntegrationContext', side_effect=get_integration_context)
-    mocker.patch.object(demisto, 'setIntegrationContext', side_effect=set_integration_context)
-    mocker.patch.object(demisto, 'error')
-    mocker.patch.object(SlackV3, 'add_info_headers')
-    mocker.patch.object(SlackV3, 'get_current_utc_time', return_value=datetime.datetime(2019, 9, 26, 18, 38, 25))
-    requests_mock.post(
-        'https://oproxy.demisto.ninja/slack-poll',
-        json={'payload': PAYLOAD_JSON},
-        status_code=200
-    )
-
-    integration_context = get_integration_context()
-    integration_context['questions'] = js.dumps([{
-        'thread': 'notcool',
-        'entitlement': '4404dae8-2d45-46bd-85fa-64779c12abe8@30|44',
-        'expiry': '3000-09-26 18:38:25',
-        'default_response': 'NoResponse'
-    }])
-
-    set_integration_context(integration_context)
-
-    # Arrange
-    SlackV3.check_for_answers()
-
-    # Assert
-
-    assert demisto.handleEntitlementForUser.call_count == 1
-    assert demisto.setIntegrationContext.call_count == 1
-    assert demisto.error.call_count == 1
-
-    # Should not delete the question
-    assert demisto.getIntegrationContext()['questions'] == js.dumps([])
 
 
 @pytest.mark.asyncio
