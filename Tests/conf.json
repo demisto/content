@@ -3716,6 +3716,9 @@
         "Cortex Data Lake",
         "Mail Listener v2"
     ],
+    "private_tests": [
+        "HelloWorldPremium_Scan-Test"
+    ],
     "docker_thresholds": {
         
         "_comment": "Add here docker images which are specific to an integration and require a non-default threshold (such as rasterize or ews). That way there is no need to define this multiple times. You can specify full image name with version or without.",

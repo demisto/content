@@ -37,6 +37,9 @@ class TestConf(object):
     def get_skipped_tests(self):
         return list(self._conf['skipped_tests'].keys())
 
+    def get_private_tests(self):
+        return self._conf['private_tests']
+
     def get_tests(self):
         return self._conf.get('tests', {})
 
@@ -857,7 +860,7 @@ def is_test_runnable(test_id, id_set, conf, server_version):
     2. Test playbook / integration is not skipped.
     3. Test fromversion is earlier or equal to server_version
     4. Test toversion is greater or equal to server_version
-    4. If test has integrations, then all integrations
+    5. If test has integrations, then all integrations
         a. fromversion is earlier or equal to server_version
         b. toversion is after or equal to server_version
     """
@@ -1037,19 +1040,40 @@ def remove_tests_for_non_supported_packs(tests: set, id_set: dict) -> set:
     return tests
 
 
-def filter_tests(tests: set, id_set: json) -> set:
+def remove_private_tests(tests_without_private_packs):
+    """Remove all tests that test private integrations from the test list.
+
+    Args:
+        tests_without_private_packs: The list of tests to remove the private packs' tests from.
     """
-    Filter tests out from the test set if they are a.Ignored b.Non XSOAR or non-supported packs c. tests of
-    deprecated packs.
+    private_tests = CONF.get_private_tests()
+    for private_test in private_tests:
+        if private_test in tests_without_private_packs:
+            tests_without_private_packs.remove(private_test)
+
+
+def filter_tests(tests: set, id_set: json, is_nightly = False) -> set:
+    """
+    Filter tests out from the test set if they are:
+    a.Ignored
+    b.Non XSOAR or non-supported packs
+    c. tests of deprecated packs.
+    d. tests of private packs (optional)
     Args:
         tests (set): Set of tests collected so far.
         id_set (dict): The ID set.
+        remove_private_packs (bool): Whether to remove private packs
     Returns:
         (set): Set of tests without ignored, non supported and deprecated-packs tests.
     """
     tests_with_no_dummy_strings = {test for test in tests if 'no test' not in test.lower()}
     tests_without_ignored = remove_ignored_tests(tests_with_no_dummy_strings, id_set)
     tests_without_non_supported = remove_tests_for_non_supported_packs(tests_without_ignored, id_set)
+
+    if is_nightly:
+        # Removing private packs' tests from nightly, since they aren't runnable in nightly
+        # due to the fact they aren't in stored in the content repository.
+        remove_private_tests(tests_without_non_supported)
 
     return tests_without_non_supported
 
@@ -1334,7 +1358,7 @@ def create_test_file(is_nightly, skip_save=False, path_to_pack=''):
     """Create a file containing all the tests we need to run for the CI"""
     if is_nightly:
         packs_to_install = filter_installed_packs(set(os.listdir(PACKS_DIR)))
-        tests = filter_tests(set(CONF.get_test_playbook_ids()), id_set=deepcopy(ID_SET))
+        tests = filter_tests(set(CONF.get_test_playbook_ids()), id_set=deepcopy(ID_SET), is_nightly=True)
         logging.info("Nightly - collected all tests that appear in conf.json and all packs from content repo that "
                      "should be tested")
     else:
