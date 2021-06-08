@@ -126,6 +126,52 @@ def answer_question(text: str, entitlement: str, email: str = ''):
         demisto.error(f'Failed handling entitlement {entitlement}: {str(e)}')
 
 
+async def send_slack_request_async(client: slack_sdk.WebClient, method: str, http_verb: str = 'POST', file_: str = '',
+                                   body: dict = None) -> SlackResponse:
+    """
+    Sends an async request to slack API while handling rate limit errors.
+
+    Args:
+        client: The slack client.
+        method: The method to use.
+        http_verb: The HTTP method to use.
+        file_: A file path to send.
+        body: The request body.
+
+    Returns:
+        The slack API response.
+    """
+    if body is None:
+        body = {}
+
+    set_name_and_icon(body, method)
+    total_try_time = 0
+    while True:
+        try:
+            demisto.debug(f'Sending slack {method} (async). Body is: {str(body)}')
+            if http_verb == 'POST':
+                if file_:
+                    response = await client.api_call(method, files={"file": file_}, data=body)  # type: ignore
+                else:
+                    response = await client.api_call(method, json=body)  # type: ignore
+            else:
+                response = await client.api_call(method, http_verb='GET', params=body)  # type: ignore
+        except SlackApiError as api_error:
+            demisto.debug(f'Got rate limit error (async). Body is: {str(body)}\n{api_error}')
+            response = api_error.response
+            headers = response.headers
+            if 'Retry-After' in headers:
+                retry_after = int(headers['Retry-After'])
+                total_try_time += retry_after
+                if total_try_time < MAX_LIMIT_TIME:
+                    await asyncio.sleep(retry_after)
+                    continue
+            raise
+        break
+
+    return response
+
+
 async def handle_listen_error(error: str):
     """
     Logs an error and updates the module health accordingly.
@@ -430,8 +476,12 @@ async def handle_dm(user: dict, text: str, client: SocketModeClient):
             data = str(e)
 
     if not data:
-        data = 'Sorry, I could not perform the selected operation.'
-    im = await client.web_client.conversations_open(users=user.get(id))
+        if not data:
+            data = 'Sorry, I could not perform the selected operation.'
+        body = {
+            'users': user.get('id')
+        }
+        im = await send_slack_request_async(client, 'conversations.open', body=body)
     channel = im.get('channel', {}).get('id')
 
     await client.web_client.chat_postMessage(channel=channel, text=data)
@@ -841,14 +891,13 @@ def init_globals():
 
     BOT_TOKEN = demisto.params().get('bot_token', '')
     ACCESS_TOKEN = demisto.params().get('access_token', '')
-    USER_TOKEN = demisto.params().get('user_token', '')
     PROXIES = handle_proxy()
     proxy_url = demisto.params().get('proxy_url')
     PROXY_URL = proxy_url or PROXIES.get('http')  # aiohttp only supports http proxy
     DEDICATED_CHANNEL = demisto.params().get('incidentNotificationChannel')
     demisto.info("Starting to build clients")
     CLIENT = slack_sdk.WebClient(token=BOT_TOKEN, proxy=PROXY_URL, ssl=SSL_CONTEXT)
-    CHANNEL_CLIENT = slack_sdk.WebClient(token=USER_TOKEN, proxy=PROXY_URL, ssl=SSL_CONTEXT)
+    CHANNEL_CLIENT = slack_sdk.WebClient(token=ACCESS_TOKEN, proxy=PROXY_URL, ssl=SSL_CONTEXT)
     demisto.info("Built clients")
     SEVERITY_THRESHOLD = SEVERITY_DICT.get(demisto.params().get('min_severity', 'Low'), 1)
     ALLOW_INCIDENTS = demisto.params().get('allow_incidents', False)
