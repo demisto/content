@@ -39,6 +39,7 @@
 		"Use Case",
 		"New",
 		"Trending",
-		"Relationship"
+		"Relationship",
+		"ElasticSearch"
 	]
 }
