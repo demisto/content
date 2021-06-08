@@ -1196,6 +1196,9 @@ class SmartGetDict(dict):
     1
     ```
 
+    :return: SmartGetDict
+    :rtype: ``SmartGetDict``
+
     """
     def get(self, key, default=None):
         res = dict.get(self, key)
