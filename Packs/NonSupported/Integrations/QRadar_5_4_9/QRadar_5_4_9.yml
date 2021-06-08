@@ -1416,6 +1416,7 @@ script:
   runonce: false
   script: '-'
   subtype: python2
+dockerimage: demisto/python:2.7.18.20958
   type: python
 tests:
 - test_Qradar
