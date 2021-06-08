@@ -87,7 +87,7 @@
     - *install_venv
     - *install_ssh_keys
     - section_start "Build Parameters"
-    - set | grep -E "^NIGHTLY=|^INSTANCE_TESTS=|^SERVER_BRANCH_NAME=|^ARTIFACT_BUILD_NUM=|^DEMISTO_SDK_NIGHTLY=|^TIME_TO_LIVE=|^CONTRIB_BRANCH=|^FORCE_PACK_UPLOAD=|^PACKS_TO_UPLOAD=|^BUCKET_UPLOAD=|^GCS_MARKET_BUCKET=|^SLACK_CHANNEL=|^TERM=|^FORCE_COLOR="
+    - set | grep -E "^NIGHTLY=|^INSTANCE_TESTS=|^SERVER_BRANCH_NAME=|^ARTIFACT_BUILD_NUM=|^DEMISTO_SDK_NIGHTLY=|^TIME_TO_LIVE=|^CONTRIB_BRANCH=|^FORCE_PACK_UPLOAD=|^PACKS_TO_UPLOAD=|^BUCKET_UPLOAD=|^GCS_MARKET_BUCKET=|^SLACK_CHANNEL=|^TERM=|CI.*?="
     - python --version
     - python3 --version
     - node --version
@@ -124,19 +124,37 @@
     DOCKER_HOST: tcp://docker:2375
     DOCKER_DRIVER: overlay2
     DOCKER_TLS_CERTDIR: ""
+    RUN_INFRA_LINT_AND_TESTS:
+      value: '$CI_NODE_INDEX == null || $CI_NODE_INDEX == 1'
+      description: "Only run the infrastructure tests and linting if we are running the job normally or in the first index of a set of parallel jobs"
   extends:
     - .default-job-settings
   script:
+    - set -o pipefail
+    - section_start "Install Docker"
+    - curl -fsSL https://get.docker.com | sh # disable-secrets-detection
+    - section_end "Install Docker"
     - section_start "Test Infrustracture"
-    - python3 -m pytest ./Tests/scripts/infrastructure_tests/ -v
-    - python3 -m pytest ./Tests/Marketplace/Tests/ -v
-    - python3 -m pytest ./Tests/scripts/utils/tests -v
-    - python3 -m pytest ./Tests/tests -v
-    - python3 -m pytest ./Tests/private_build/ -v
-    - python3 -m pytest Utils -v
+    - |
+      if [ -n "$RUN_INFRA_LINT_AND_TESTS" ]; then
+        python3 -m pytest ./Tests/scripts/infrastructure_tests/ -v
+        python3 -m pytest ./Tests/Marketplace/Tests/ -v
+        python3 -m pytest ./Tests/scripts/utils/tests -v
+        python3 -m pytest ./Tests/tests -v
+        python3 -m pytest ./Tests/private_build/ -v
+        python3 -m pytest Utils -v
+      else
+        echo "Skipping running infrastructure unit tests because "RUN_INFRA_LINT_AND_TESTS=$RUN_INFRA_LINT_AND_TESTS""
+      fi
     - |
       if [ -n "${DEMISTO_SDK_NIGHTLY}" ] ; then
-        ./Tests/scripts/sdk_pylint_check.sh
+        if [ -n "$RUN_INFRA_LINT_AND_TESTS" ]; then
+          ./Tests/scripts/sdk_pylint_check.sh
+        else
+          echo "Skipping running infrastructure pylint because "RUN_INFRA_LINT_AND_TESTS=$RUN_INFRA_LINT_AND_TESTS""
+        fi
+      else
+        echo "Skipping running infrastructure pylint because "DEMISTO_SDK_NIGHTLY=$DEMISTO_SDK_NIGHTLY""
       fi
     - section_end "Test Infrustracture"
     - section_start "Run Unit Testing and Lint"
