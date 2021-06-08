@@ -1,12 +1,9 @@
-import asyncio
 import json as js
 import threading
 
 import pytest
 import slack_sdk
 from slack_sdk.web.slack_response import SlackResponse
-from slack_sdk.socket_mode.aiohttp import SocketModeClient
-from slack_sdk.web.async_client import AsyncWebClient
 
 from mock import MagicMock
 
