@@ -533,7 +533,7 @@ script:
     - contextPath: Slack.User.Email
       description: The email address of the user.
       type: String
-  dockerimage: devdemisto/slackv3:1.0.0.19751
+  dockerimage: demisto/slackv3:1.0.0.21206
   feed: false
   isfetch: false
   longRunning: true
