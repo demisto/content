@@ -686,16 +686,8 @@ def fetch_incidents(client: Client, max_results: int, last_run: dict, first_fetc
 
         incident = {
             'name': incident_name,
-            # 'details': alert['name'],
             'occurred': timestamp_to_datestring(incident_created_time_ms),
             'rawJSON': json.dumps(alert),
-            # 'type': 'Hello World Alert',  # Map to a specific XSOAR incident Type
-            # 'severity': convert_to_demisto_severity(alert.get('alert_severity', 'Low')),
-            # 'CustomFields': {  # Map specific XSOAR Custom Fields
-            #     'helloworldid': alert.get('alert_id'),
-            #     'helloworldstatus': alert.get('alert_status'),
-            #     'helloworldtype': alert.get('alert_type')
-            # }
         }
 
         incidents.append(incident)
