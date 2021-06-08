@@ -8,11 +8,11 @@ configuration:
   name: url
   required: true
   type: 0
-- additionalinfo: The API key to use for the connection.
-  display: API Key
+- displaypassword: The API key to use for the connection.
   name: token
+  type: 9
+  hiddenusername: true
   required: true
-  type: 4
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
@@ -111,6 +111,15 @@ script:
       description: The last update date (timestamp) of a particular threatening IP
         address object.
       type: String
+    - contextPath: F5Silverline.Paging.last_page_number
+      description: The last page number that exists.
+      type: Number
+    - contextPath: F5Silverline.Paging.current_page_size
+      description: The number of IP objects to be returned on each page.
+      type: Number
+    - contextPath: F5Silverline.Paging.current_page_number
+      description: The number of the requested page.
+      type: Number
   - arguments:
     - auto: PREDEFINED
       default: false

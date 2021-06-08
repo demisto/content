@@ -1,3 +1,5 @@
+import re
+
 import demistomock as demisto
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 from CommonServerUserPython import *  # noqa
@@ -10,6 +12,7 @@ requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
 
 BASE_URL = "/api/v1/ip_lists"
 TABLE_HEADERS_GET_OBJECTS = ['ID', 'IP', 'Expires At', 'List Target', 'Created At', 'Updated At']
+PAGE_NUMBER_PATTERN = "(?<=page\[number]=).*?(?=&)"
 
 
 class Client(BaseClient):
@@ -149,6 +152,35 @@ def handle_paging(page_number, page_size):
     return is_paging_required, params
 
 
+def add_paging_to_outputs(paging_dict, page_number):
+    link_to_current_obj = paging_dict.get('self')
+    link_to_last_obj = paging_dict.get('last')
+    current_page_number = re.search(PAGE_NUMBER_PATTERN, link_to_current_obj).group(
+        0) if link_to_current_obj else page_number
+    last_page_number = re.search(PAGE_NUMBER_PATTERN, link_to_last_obj).group(
+        0) if link_to_last_obj else current_page_number  # if the current page is also the last one
+    return current_page_number, last_page_number
+
+
+def paging_outputs_dict(current_page_number, last_page_number, page_size):
+    return {
+        'current_page_number': current_page_number,
+        'current_page_size': page_size,
+        'last_page_number': last_page_number
+    }
+
+
+def paging_data_to_human_readable(current_page_number, last_page_number, page_size):
+    output = f"Current page number: {current_page_number}\n "
+    if not last_page_number:
+        # if the current page number is also the last page number
+        last_page_number = current_page_number
+    output += f"Last page number: {last_page_number}\n"
+    if page_size:
+        output += f"Current page size: {page_size}"
+    return output
+
+
 def get_ip_objects_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     """
     Gets a list of IP objects by the requested list type (denylist or allowlist).
@@ -161,6 +193,8 @@ def get_ip_objects_list_command(client: Client, args: Dict[str, Any]) -> Command
     page_number = args.get('page_number')
     page_size = args.get('page_size')
     url_suffix = f'{list_type}/ip_objects'
+    paging_data = []
+    paging_data_human_readable = ""
     is_paging_required, params = handle_paging(page_number, page_size)
 
     if not object_ids:
@@ -168,11 +202,16 @@ def get_ip_objects_list_command(client: Client, args: Dict[str, Any]) -> Command
         response = client.request_ip_objects(body={}, method='GET', url_suffix=url_suffix, params=params)
         outputs = response.get('data')
         human_results = parse_get_ip_object_list_results(response)
+        if is_paging_required and outputs:
+            current_page_number, last_page_number = add_paging_to_outputs(response.get('links'), page_number)
+            paging_data = paging_outputs_dict(current_page_number, last_page_number, page_size)
+            paging_data_human_readable = paging_data_to_human_readable(current_page_number, last_page_number, page_size)
     else:
         human_results, outputs = get_ip_objects_by_ids(client, object_ids, list_type, params)  # type: ignore
 
     human_readable = tableToMarkdown('F5 Silverline IP Objects', human_results, TABLE_HEADERS_GET_OBJECTS,
                                      removeNull=True)
+    human_readable += paging_data_human_readable
 
     if not human_results and is_paging_required:
         human_readable = "No results were found. Please try to run the command without page_number and page_size to " \
@@ -180,9 +219,9 @@ def get_ip_objects_list_command(client: Client, args: Dict[str, Any]) -> Command
 
     return CommandResults(
         readable_output=human_readable,
-        outputs_prefix='F5Silverline.IPObjectList',
+        outputs_prefix='F5Silverline',
         outputs_key_field='id',
-        outputs=outputs
+        outputs={"IPObjectList": outputs, "Paging": paging_data}
     )
 
 
@@ -230,7 +269,7 @@ def parse_get_ip_object_list_results(results: Dict):
 
 def main() -> None:
     params = demisto.params()
-    access_token = params.get('token')
+    access_token = params.get('token').get('password')
     base_url = urljoin(params.get('url'), BASE_URL)
     verify_certificate = not params.get('insecure', False)
     proxy = params.get('proxy', False)
