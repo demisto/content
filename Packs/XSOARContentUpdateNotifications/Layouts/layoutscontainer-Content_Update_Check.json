@@ -150,7 +150,18 @@
                     {
                         "fieldId": "incident_contentpackselection",
                         "isVisible": true
-                    },
+                    }
+                ],
+                "isVisible": true,
+                "name": "Pack Monitoring",
+                "query": null,
+                "queryType": "",
+                "readOnly": false,
+                "type": ""
+            },
+            {
+                "description": "",
+                "fields": [
                     {
                         "fieldId": "incident_contentnotificationemail",
                         "isVisible": true
@@ -165,7 +176,7 @@
                     }
                 ],
                 "isVisible": true,
-                "name": "Basic Information",
+                "name": "Notification Settings",
                 "query": null,
                 "queryType": "",
                 "readOnly": false,

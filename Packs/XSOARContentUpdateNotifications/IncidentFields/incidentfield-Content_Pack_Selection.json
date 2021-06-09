@@ -7,8 +7,8 @@
     "cliName": "contentpackselection",
     "closeForm": false,
     "content": true,
+    "description": "CSV of pack names to monitor. This can include \"All\" for all packs. (To find a list of installed packs, simple run !ListInstalledContentPacks from the war room).",
     "editForm": true,
-    "fieldCalcScript": "0d1db0b5-5933-4aa9-8ba1-36fde1f990b0",
     "group": 0,
     "hidden": false,
     "id": "incident_contentpackselection",
@@ -17,17 +17,15 @@
     "name": "Content Pack Selection",
     "neverSetAsRequired": false,
     "ownerOnly": false,
+    "placeholder": "All",
     "propagationLabels": [
         "all"
     ],
     "required": false,
-    "selectValues": [
-        "All"
-    ],
     "sla": 0,
     "system": false,
     "threshold": 72,
-    "type": "multiSelect",
+    "type": "longText",
     "unmapped": false,
     "unsearchable": false,
     "useAsKpi": false,

@@ -25,7 +25,7 @@ There are no inputs for this playbook.
 
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
-| PacksUpdated |  | boolean |
+| PacksUpdated | This will return true if all the content packs were updated. If a user specified "All" in the content pack filters then all packs must be updated. Otherwise, only those that are specified in the filter need to be updated for this to return as True. | boolean |
 
 ## Playbook Image
 ---

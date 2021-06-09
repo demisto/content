@@ -8,6 +8,10 @@ inputs: []
 name: Check For Content Installation
 outputs:
 - contextPath: PacksUpdated
+  description: This will return true if all the content packs were updated. If a user
+    specified "All" in the content pack filters then all packs must be updated. Otherwise,
+    only those that are specified in the filter need to be updated for this to return
+    as True.
   type: boolean
 starttaskid: "0"
 tasks:
@@ -49,11 +53,8 @@ tasks:
     note: false
     quietmode: 0
     scriptarguments:
-      all: {}
-      index: {}
       key:
         simple: ContentDataCheck
-      keysToKeep: {}
       subplaybook:
         simple: auto
     separatecontext: false
@@ -161,12 +162,14 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: b03331c0-7f29-44df-897e-6b045e23849f
+      description: This task checks to see if either all packs were updates or if
+        the user filtered packs were all updated.
+      id: e4616c06-c123-450f-8047-b88512bbf1c4
       iscommand: false
       name: Are all the packs updated?
       type: condition
       version: -1
-    taskid: b03331c0-7f29-44df-897e-6b045e23849f
+    taskid: e4616c06-c123-450f-8047-b88512bbf1c4
     timertriggers: []
     type: condition
     view: |-
@@ -189,7 +192,6 @@ tasks:
         simple: "false"
       key:
         simple: PacksUpdated
-      stringify: {}
       value:
         simple: "True"
     separatecontext: false
@@ -226,7 +228,6 @@ tasks:
         simple: "false"
       key:
         simple: PacksUpdated
-      stringify: {}
       value:
         simple: "False"
     separatecontext: false
@@ -263,7 +264,6 @@ tasks:
         simple: "false"
       key:
         simple: ContentDataCheck
-      stringify: {}
       value:
         complex:
           filters:
@@ -314,11 +314,8 @@ tasks:
     note: false
     quietmode: 0
     scriptarguments:
-      all: {}
-      index: {}
       key:
         simple: PacksUpdated
-      keysToKeep: {}
       subplaybook:
         simple: auto
     separatecontext: false
@@ -395,7 +392,6 @@ tasks:
         simple: "false"
       key:
         simple: ContentDataCheck
-      stringify: {}
       value:
         complex:
           root: ContentDataPreCheck
@@ -436,11 +432,8 @@ tasks:
     note: false
     quietmode: 0
     scriptarguments:
-      all: {}
-      index: {}
       key:
         simple: ContentDataPreCheck
-      keysToKeep: {}
       subplaybook:
         simple: auto
     separatecontext: false
