@@ -292,7 +292,7 @@ tasks:
       long_name:
         simple: demisto-test
       siteName:
-        simple: test
+        simple: node_goat
       tag_name:
         simple: USERAGENT
       threshold:
