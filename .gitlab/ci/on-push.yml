@@ -172,7 +172,7 @@ performance_test:
     - .test_content_on_server_instances_base
   variables:
     INSTANCE_ROLE: Performance Server Master
-    IS_PERFORMANCE: true
+    IS_PERFORMANCE: "true"
 #  rules:
 #    - if: '$PERFORMANCE_TEST'
 #      when: always
