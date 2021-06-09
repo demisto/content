@@ -1094,10 +1094,6 @@ jobs:
                 name: Zip Content Packs From GCS
                 command: |
                   if [ -n "${BUCKET_UPLOAD}" ]; then
-                    if [[ $CIRCLE_BRANCH != master ]] && [[ $CIRCLE_BRANCH != 20\.* ]] && [[ $CIRCLE_BRANCH != 21\.* ]]; then
-                      echo "Skipping packs download to artifact on non master or release branch"
-                      exit 0
-                    fi
                     if [[ $GCS_MARKET_BUCKET != "marketplace-dist" ]]; then
                       STORAGE_BASE_PATH="upload-flow/builds/$CIRCLE_BRANCH/$CI_PIPELINE_ID/content/packs"
                     fi
