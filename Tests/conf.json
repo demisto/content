@@ -3466,6 +3466,7 @@
     "skipped_integrations": {
 
         "_comment1": "~~~ NO INSTANCE ~~~",
+        "SolarWinds": "No instance - developed by Crest",
         "trustwave secure email gateway": "No instance - developed by Qmasters",
         "ServiceDeskPlus (On-Premise)": "No instance",
         "Forcepoint": "instance issues. Issue 28043",
