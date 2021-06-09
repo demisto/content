@@ -1349,8 +1349,8 @@ def create_test_file(is_nightly, is_performance, skip_save=False, path_to_pack='
         logging.info("Nightly - collected all tests that appear in conf.json and all packs from content repo that "
                      "should be tested")
     elif is_performance:
-        performance_tests = CONF.get_performance_tests()
-        tests, packs_to_install = find_tests_and_content_packs_for_modified_files(performance_tests)
+        tests = CONF.get_performance_tests()
+        packs_to_install = get_content_pack_name_of_test(set(tests), ID_SET)
         create_filter_envs_file(is_performance=True)
     else:
         branches = tools.run_command("git branch")
@@ -1413,7 +1413,7 @@ if __name__ == "__main__":
     parser.add_argument('-s', '--skip-save', type=tools.str2bool,
                         help='Skipping saving the test filter file (good for simply doing validation)')
     parser.add_argument('-p', '--changed_pack_path', type=str, help='A string representing the changed files')
-    parser.add_argument('--performance', type=tools.str2bool, help='Is performance test')
+    parser.add_argument('--performance', type=tools.str2bool, help='Is performance test or not')
     options = parser.parse_args()
 
     # Create test file based only on committed files
