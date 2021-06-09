@@ -331,6 +331,17 @@
 								"index": 33,
 								"sectionItemType": "field",
 								"startCol": 0
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "f5silverlinerawmessage",
+								"height": 106,
+								"id": "25f36990-c909-11eb-96fd-df7b1d8be585",
+								"index": 34,
+								"listId": "caseinfoid-fce71720-98b0-11e9-97d7-ed26ef9e46c8",
+								"sectionItemType": "field",
+								"startCol": 0
 							}
 						],
 						"maxW": 3,
@@ -445,7 +456,7 @@
 								"fieldId": "occurred",
 								"height": 53,
 								"id": "incident-occurred-field",
-								"index": 1,
+								"index": 0,
 								"sectionItemType": "field",
 								"startCol": 0
 							},
@@ -454,7 +465,7 @@
 								"fieldId": "dbotmodified",
 								"height": 53,
 								"id": "incident-modified-field",
-								"index": 2,
+								"index": 1,
 								"sectionItemType": "field",
 								"startCol": 0
 							},
@@ -463,7 +474,7 @@
 								"fieldId": "dbotduedate",
 								"height": 53,
 								"id": "incident-dueDate-field",
-								"index": 3,
+								"index": 2,
 								"sectionItemType": "field",
 								"startCol": 0
 							},
@@ -472,7 +483,7 @@
 								"fieldId": "dbotcreated",
 								"height": 53,
 								"id": "incident-created-field",
-								"index": 1,
+								"index": 0,
 								"sectionItemType": "field",
 								"startCol": 1
 							},
@@ -481,7 +492,7 @@
 								"fieldId": "dbotclosed",
 								"height": 53,
 								"id": "incident-closed-field",
-								"index": 2,
+								"index": 1,
 								"sectionItemType": "field",
 								"startCol": 1
 							}
