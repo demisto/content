@@ -124,8 +124,8 @@ def listen_for_reports(params):
     Args:
         params (dict): A dictionary of the arguments to the integration
     """
-    certificate = params.get('certificate')
-    private_key = params.get('private_key')
+    certificate = str(params.get('certificate'))
+    private_key = str(params.get('private_key'))
     port = int(params.get('longRunningPort'))
 
     while True:
@@ -187,8 +187,8 @@ def test_module(params: dict):
     """
 
     try:
-        certificate = params.get('certificate')
-        private_key = params.get('private_key')
+        certificate = str(params.get('certificate'))
+        private_key = str(params.get('private_key'))
 
         certificate_file = NamedTemporaryFile(mode='w', delete=False)
         certificate_path = certificate_file.name
