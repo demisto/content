@@ -1,0 +1,74 @@
+{
+    "size": 5,
+    "dataType": "metrics",
+    "params": {
+        "showOthers": true,
+        "tableColumns": [
+            {
+                "isDefault": true,
+                "key": "count",
+                "position": 0
+            },
+            {
+                "isDefault": true,
+                "key": "data",
+                "position": 1
+            },
+            {
+                "isDefault": true,
+                "key": "floatData",
+                "position": 2
+            },
+            {
+                "isDefault": true,
+                "key": "groups",
+                "position": 3
+            },
+            {
+                "isDefault": true,
+                "key": "name",
+                "position": 4
+            },
+            {
+                "isDefault": true,
+                "key": "color",
+                "position": 5
+            }
+        ],
+        "showGraphValues": false,
+        "keys": [
+            "sum|errorCount"
+        ],
+        "groupBy": [
+            "instance"
+        ],
+        "valuesFormat": "abbreviated",
+        "yAxisLabel": "",
+        "xAxisLabel": "",
+        "referenceLine": {
+            "type": "avg"
+        }
+    },
+    "query": "type:integration",
+    "modified": "2021-05-24T11:26:33.95700435Z",
+    "name": "Command execution errors per Instance",
+    "dateRange": {
+        "fromDate": "0001-01-01T00:00:00Z",
+        "toDate": "0001-01-01T00:00:00Z",
+        "period": {
+            "by": "",
+            "byTo": "",
+            "byFrom": "days",
+            "toValue": null,
+            "fromValue": 7,
+            "field": ""
+        },
+        "fromDateLicense": "0001-01-01T00:00:00Z"
+    },
+    "isPredefined": true,
+    "version": -1,
+    "id": "error-count-per-instance",
+    "description": "Command execution errors per Instance",
+    "widgetType": "pie",
+    "fromVersion": "6.2.0"
+}
