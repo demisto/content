@@ -51,7 +51,7 @@ tasks:
       note:
         simple: test blacklist
       siteName:
-        simple: demisto
+        simple: node_goat
     separatecontext: false
     view: |-
       {
@@ -82,7 +82,7 @@ tasks:
       - "52"
     scriptarguments:
       siteName:
-        simple: demisto
+        simple: node_goat
     separatecontext: false
     view: |-
       {
@@ -115,7 +115,7 @@ tasks:
       IP:
         simple: ${SigSciences.Corp.Site.Blacklist.Source}
       siteName:
-        simple: demisto
+        simple: node_goat
     separatecontext: false
     view: |-
       {
@@ -151,7 +151,7 @@ tasks:
       note:
         simple: test adding ip to whitelist
       siteName:
-        simple: demisto
+        simple: node_goat
     separatecontext: false
     view: |-
       {
@@ -182,7 +182,7 @@ tasks:
       - "63"
     scriptarguments:
       siteName:
-        simple: demisto
+        simple: node_goat
     separatecontext: false
     view: |-
       {
@@ -215,7 +215,7 @@ tasks:
       IP:
         simple: ${SigSciences.Corp.Site.Whitelist.Source}
       siteName:
-        simple: demisto
+        simple: node_goat
     separatecontext: false
     view: |-
       {
@@ -290,7 +290,7 @@ tasks:
       interval:
         simple: "10"
       long_name:
-        simple: demisto-test
+        simple: node_goat-test
       siteName:
         simple: test
       tag_name:
@@ -368,7 +368,7 @@ tasks:
       interval:
         simple: "1"
       long_name:
-        simple: demisto-test-alert-2
+        simple: node_goat-test-alert-2
       siteName:
         simple: test
       tag_name:
@@ -817,7 +817,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: demisto-test-tag-2
+              simple: node_goat-test-tag-2
     view: |-
       {
         "position": {
@@ -1417,7 +1417,7 @@ tasks:
       q:
         simple: '"https://dashboard.signalsciences.net/api/v0/corps/demisto/sites/demisto/requests?q=from:-7d tag:sqli tag:xss tag:cmdexe tag:traversal"'
       siteName:
-        simple: demisto
+        simple: node_goat
     separatecontext: false
     view: |-
       {
@@ -1447,7 +1447,7 @@ tasks:
       request_id:
         simple: 5c82c5d0b62acc0007d8eb03
       siteName:
-        simple: demisto
+        simple: node_goat
     separatecontext: false
     view: |-
       {
@@ -1516,7 +1516,7 @@ tasks:
       - "55"
     scriptarguments:
       siteName:
-        simple: demisto
+        simple: node_goat
     separatecontext: false
     view: |-
       {
@@ -1654,7 +1654,7 @@ tasks:
       - "62"
     scriptarguments:
       siteName:
-        simple: demisto
+        simple: node_goat
     separatecontext: false
     view: |-
       {
