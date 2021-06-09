@@ -1168,20 +1168,7 @@ def get_test_list_and_content_packs_to_install(files_string,
     modified_packs = get_modified_packs(files_string)
     if modified_packs:
         packs_to_install = packs_to_install.union(modified_packs)
-
-    # Get packs of integrations corresponding to each test, as listed in conf.json
-    packs_of_tested_integrations = conf.get_packs_of_tested_integrations(tests, id_set)
-    packs_to_install = packs_to_install.union(packs_of_tested_integrations)
-
-    # Get packs that contains each of the collected tests
-    packs_of_collected_tests = get_content_pack_name_of_test(tests, id_set)
-    packs_to_install = packs_to_install.union(packs_of_collected_tests)
-
-    # All filtering out of packs should be done here
-    packs_to_install = filter_installed_packs(packs_to_install)
-
-    # All filtering out of tests should be done here
-    tests = filter_tests(tests, id_set)
+    packs_to_install, tests = get_packs_and_filtered_tests(tests, packs_to_install, conf, id_set)
 
     if not tests:
         logging.info("No tests found running sanity check only")
@@ -1200,10 +1187,28 @@ def get_test_list_and_content_packs_to_install(files_string,
         )
         packs_to_install.update(["HelloWorld", "Gmail"])
 
+    return tests, packs_to_install
+
+
+def get_packs_and_filtered_tests(tests,
+                                 packs_to_install=None,
+                                 conf=deepcopy(CONF),
+                                 id_set=deepcopy(ID_SET)):
+    if not packs_to_install:
+        packs_to_install = set([])
+    # Get packs of integrations corresponding to each test, as listed in conf.json
+    packs_of_tested_integrations = conf.get_packs_of_tested_integrations(tests, id_set)
+    packs_to_install = packs_to_install.union(packs_of_tested_integrations)
+    # Get packs that contains each of the collected tests
+    packs_of_collected_tests = get_content_pack_name_of_test(tests, id_set)
+    packs_to_install = packs_to_install.union(packs_of_collected_tests)
+    # All filtering out of packs should be done here
+    packs_to_install = filter_installed_packs(packs_to_install)
+    # All filtering out of tests should be done here
+    tests = filter_tests(tests, id_set)
     # We add Base andDeveloperTools packs for every build
     packs_to_install.update(["DeveloperTools", "Base"])
-
-    return tests, packs_to_install
+    return packs_to_install, tests
 
 
 def get_from_version_and_to_version_bounderies(all_modified_files_paths: set,
@@ -1350,7 +1355,7 @@ def create_test_file(is_nightly, is_performance, skip_save=False, path_to_pack='
                      "should be tested")
     elif is_performance:
         tests = CONF.get_performance_tests()
-        packs_to_install = get_content_pack_name_of_test(set(tests), ID_SET)
+        packs_to_install, tests = get_packs_and_filtered_tests(tests)
         create_filter_envs_file(is_performance=True)
     else:
         branches = tools.run_command("git branch")
