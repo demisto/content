@@ -116,6 +116,7 @@
     paths:
       - /builds/xsoar/content/unit-tests
       - /builds/xsoar/content/artifacts/*
+    when: always
   extends:
     - .default-job-settings
   script:
@@ -164,6 +165,7 @@
     expire_in: 30 days
     paths:
       - /builds/xsoar/content/artifacts/*
+    when: always
   script:
     - section_start "Look For Secrets"
     - demisto-sdk secrets --post-commit --ignore-entropy
