@@ -100,6 +100,7 @@ class Pack(object):
         self._keywords = None  # initialized in enhance_pack_attributes function
         self._dependencies = None  # initialized in enhance_pack_attributes function
         self._pack_statistics_handler = None  # initialized in enhance_pack_attributes function
+        self._is_missing_details = False
 
     @property
     def name(self):
@@ -306,6 +307,12 @@ class Pack(object):
         """ str: the list of uploaded integration images
         """
         return self._uploaded_integration_images
+
+    @property
+    def is_missing_details(self):
+        """ bool: whether the as missing details or not.
+        """
+        return self._is_missing_details
 
     def _get_latest_version(self):
         """ Return latest semantic version of the pack.
@@ -595,17 +602,14 @@ class Pack(object):
 
         return pack_metadata
 
-    def _load_pack_dependencies(self, index_folder_path, first_level_dependencies, all_level_displayed_dependencies):
+    def _load_pack_dependencies(self, index_folder_path, first_level_dependencies, all_level_displayed_dependencies, pack_names):
         """ Loads dependencies metadata and returns mapping of pack id and it's loaded data.
-
         Args:
             index_folder_path (str): full path to download index folder.
             first_level_dependencies (dict): user defined dependencies.
             all_level_displayed_dependencies (list): all level pack's images to display.
-
         Returns:
             dict: pack id as key and loaded metadata of packs as value.
-
         """
         dependencies_data_result = {}
         dependencies_ids = {d for d in first_level_dependencies.keys()}
@@ -621,6 +625,10 @@ class Pack(object):
                 with open(dependency_metadata_path, 'r') as metadata_file:
                     dependency_metadata = json.load(metadata_file)
                     dependencies_data_result[dependency_pack_id] = dependency_metadata
+            elif dependency_pack_id in pack_names:
+                logging.warning(f"{self._pack_name} pack dependency with id {dependency_pack_id} was not found Adds it to the list for further treatment")
+                self._is_missing_details = True
+                continue
             else:
                 logging.warning(f"{self._pack_name} pack dependency with id {dependency_pack_id} was not found")
                 continue
@@ -1681,7 +1689,7 @@ class Pack(object):
         )
 
     def format_metadata(self, user_metadata, index_folder_path, packs_dependencies_mapping, build_number, commit_hash,
-                        pack_was_modified, statistics_handler):
+                        pack_was_modified, statistics_handler, pack_names):
         """ Re-formats metadata according to marketplace metadata format defined in issue #19786 and writes back
         the result.
 
@@ -1709,7 +1717,7 @@ class Pack(object):
                 logging.info(f"Adding auto generated display images for {self._pack_name} pack")
             dependencies_data = self._load_pack_dependencies(index_folder_path,
                                                              user_metadata.get('dependencies', {}),
-                                                             user_metadata.get('displayedImages', []))
+                                                             user_metadata.get('displayedImages', []), pack_names)
 
             self._enhance_pack_attributes(
                 user_metadata, index_folder_path, pack_was_modified, dependencies_data, statistics_handler

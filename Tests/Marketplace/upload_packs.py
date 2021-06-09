@@ -958,24 +958,27 @@ def main():
 
     # clean index and gcs from non existing or invalid packs
     clean_non_existing_packs(index_folder_path, private_packs, storage_bucket)
-
+    packs_missing_details = []
     # starting iteration over packs
     for pack in packs_list:
         task_status, user_metadata = pack.load_user_metadata()
         if not task_status:
             pack.status = PackStatus.FAILED_LOADING_USER_METADATA.value
+            pack_names.remove(pack.name)
             pack.cleanup()
             continue
 
         task_status = pack.collect_content_items()
         if not task_status:
             pack.status = PackStatus.FAILED_COLLECT_ITEMS.name
+            pack_names.remove(pack.name)
             pack.cleanup()
             continue
 
         task_status = pack.upload_integration_images(storage_bucket, diff_files_list, True)
         if not task_status:
             pack.status = PackStatus.FAILED_IMAGES_UPLOAD.name
+            pack_names.remove(pack.name)
             pack.cleanup()
             continue
 
@@ -983,6 +986,7 @@ def main():
 
         if not task_status:
             pack.status = PackStatus.FAILED_AUTHOR_IMAGE_UPLOAD.name
+            pack_names.remove(pack.name)
             pack.cleanup()
             continue
 
@@ -991,13 +995,20 @@ def main():
 
         if not task_status:
             pack.status = PackStatus.FAILED_DETECTING_MODIFIED_FILES.name
+            pack_names.remove(pack.name)
             pack.cleanup()
             continue
 
         task_status = pack.format_metadata(user_metadata, index_folder_path, packs_dependencies_mapping, build_number,
-                                           current_commit_hash, pack_was_modified, statistics_handler)
+                                           current_commit_hash, pack_was_modified, statistics_handler, pack_names)
+
+        if pack.is_missing_details:
+            packs_missing_details.append(pack)
+            continue
+
         if not task_status:
             pack.status = PackStatus.FAILED_METADATA_PARSING.name
+            pack_names.remove(pack.name)
             pack.cleanup()
             continue
 
@@ -1005,29 +1016,34 @@ def main():
                                                                     modified_pack_files_paths)
         if not task_status:
             pack.status = PackStatus.FAILED_RELEASE_NOTES.name
+            pack_names.remove(pack.name)
             pack.cleanup()
             continue
 
         if not_updated_build:
             pack.status = PackStatus.PACK_IS_NOT_UPDATED_IN_RUNNING_BUILD.name
+            pack_names.remove(pack.name)
             pack.cleanup()
             continue
 
         task_status = pack.remove_unwanted_files(remove_test_playbooks)
         if not task_status:
             pack.status = PackStatus.FAILED_REMOVING_PACK_SKIPPED_FOLDERS
+            pack_names.remove(pack.name)
             pack.cleanup()
             continue
 
         task_status = pack.sign_pack(signature_key)
         if not task_status:
             pack.status = PackStatus.FAILED_SIGNING_PACKS.name
+            pack_names.remove(pack.name)
             pack.cleanup()
             continue
 
         task_status, zip_pack_path = pack.zip_pack()
         if not task_status:
             pack.status = PackStatus.FAILED_ZIPPING_PACK_ARTIFACTS.name
+            pack_names.remove(pack.name)
             pack.cleanup()
             continue
 
@@ -1036,18 +1052,21 @@ def main():
 
         if not task_status:
             pack.status = PackStatus.FAILED_UPLOADING_PACK.name
+            pack_names.remove(pack.name)
             pack.cleanup()
             continue
 
         task_status, exists_in_index = pack.check_if_exists_in_index(index_folder_path)
         if not task_status:
             pack.status = PackStatus.FAILED_SEARCHING_PACK_IN_INDEX.name
+            pack_names.remove(pack.name)
             pack.cleanup()
             continue
 
         task_status = pack.prepare_for_index_upload()
         if not task_status:
             pack.status = PackStatus.FAILED_PREPARING_INDEX_FOLDER.name
+            pack_names.remove(pack.name)
             pack.cleanup()
             continue
 
@@ -1055,17 +1074,50 @@ def main():
                                           pack_version=pack.latest_version, hidden_pack=pack.hidden)
         if not task_status:
             pack.status = PackStatus.FAILED_UPDATING_INDEX_FOLDER.name
+            pack_names.remove(pack.name)
             pack.cleanup()
             continue
 
         # in case that pack already exist at cloud storage path and in index, don't show that the pack was changed
         if skipped_upload and exists_in_index:
             pack.status = PackStatus.PACK_ALREADY_EXISTS.name
+            pack_names.remove(pack.name)
             pack.cleanup()
             continue
 
         pack.status = PackStatus.SUCCESS.name
 
+    for pack in packs_missing_details:
+        task_status = pack.format_metadata(user_metadata, index_folder_path, packs_dependencies_mapping, build_number,
+                                           current_commit_hash, pack_was_modified, statistics_handler, pack_names)
+
+        if not task_status:
+            pack.status = PackStatus.FAILED_METADATA_PARSING.name
+            pack_names.remove(pack.name)
+            pack.cleanup()
+            continue
+
+        task_status, exists_in_index = pack.check_if_exists_in_index(index_folder_path)
+        if not task_status:
+            pack.status = PackStatus.FAILED_SEARCHING_PACK_IN_INDEX.name
+            pack_names.remove(pack.name)
+            pack.cleanup()
+            continue
+
+        task_status = pack.prepare_for_index_upload()
+        if not task_status:
+            pack.status = PackStatus.FAILED_PREPARING_INDEX_FOLDER.name
+            pack_names.remove(pack.name)
+            pack.cleanup()
+            continue
+
+        task_status = update_index_folder(index_folder_path=index_folder_path, pack_name=pack.name, pack_path=pack.path,
+                                          pack_version=pack.latest_version, hidden_pack=pack.hidden)
+        if not task_status:
+            pack.status = PackStatus.FAILED_UPDATING_INDEX_FOLDER.name
+            pack_names.remove(pack.name)
+            pack.cleanup()
+            continue
     # upload core packs json to bucket
     create_corepacks_config(storage_bucket, build_number, index_folder_path,
                             artifacts_dir=os.path.dirname(packs_artifacts_path))
