@@ -629,13 +629,13 @@ class Pack(object):
                 for pack in packs_list:
                     if pack.name == dependency_pack_id:
                         _, meta = pack.load_user_metadata()
-                    dependencies_data_result[dependency_pack_id] = {
-                        "mandatory": first_level_dependencies.get(dependency_pack_id, {}).get('mandatory', True),
-                        "minVersion": pack.current_version,
-                        "author": meta.get('author', ''),
-                        "name": pack.display_name,
-                        "certification": meta.get('certification', 'certified')
-                    }
+                        dependencies_data_result[dependency_pack_id] = {
+                            "mandatory": first_level_dependencies.get(dependency_pack_id, {}).get('mandatory', True),
+                            "minVersion": pack.current_version,
+                            "author": meta.get('author', ''),
+                            "name": pack.display_name,
+                            "certification": meta.get('certification', 'certified')
+                        }
                 logging.warning(f"{self._pack_name} pack dependency with id {dependency_pack_id} was not found in index  Adds it from metadata")
             else:
                 logging.warning(f"{self._pack_name} pack dependency with id {dependency_pack_id} was not found")
