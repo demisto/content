@@ -490,7 +490,7 @@ script:
     name: aruba-clearpass-active-sessions-list
     outputs:
     - contextPath: HPEArubaClearPass.Sessions.ID
-      description: ID of the active session.df
+      description: ID of the active session.
       type: String
     - contextPath: HPEArubaClearPass.Sessions.Device_IP
       description: IP address of the client.
