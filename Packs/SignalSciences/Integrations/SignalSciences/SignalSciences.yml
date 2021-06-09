@@ -1,8 +1,8 @@
 commonfields:
-  id: Signal Sciences WAF
+  id: Signal Sciences WAF_copy
   version: -1
-name: Signal Sciences WAF
-display: Signal Sciences WAF
+name: Signal Sciences WAF_copy
+display: Signal Sciences WAF_copy
 category: Network Security
 description: Protect your web application using Signal Sciences.
 configuration:

@@ -290,7 +290,7 @@ tasks:
       interval:
         simple: "10"
       long_name:
-        simple: node_goat-test
+        simple: demisto-test
       siteName:
         simple: test
       tag_name:
@@ -329,7 +329,7 @@ tasks:
       alert_id:
         simple: ${SigSciences.Corp.Site.Alert.ID}
       siteName:
-        simple: test
+        simple: node_goat
     separatecontext: false
     view: |-
       {
@@ -370,7 +370,7 @@ tasks:
       long_name:
         simple: node_goat-test-alert-2
       siteName:
-        simple: test
+        simple: node_goat
       tag_name:
         simple: USERAGENT
       threshold:
@@ -407,7 +407,7 @@ tasks:
       alert_id:
         simple: ${SigSciences.Corp.Site.Alert.ID}
       siteName:
-        simple: test
+        simple: node_goat
     separatecontext: false
     view: |-
       {
@@ -478,7 +478,7 @@ tasks:
       alert_id:
         simple: ${SigSciences.Corp.Site.Alert.ID}
       siteName:
-        simple: test
+        simple: node_goat
     separatecontext: false
     view: |-
       {
@@ -597,7 +597,7 @@ tasks:
       list_type:
         simple: IP
       siteName:
-        simple: test
+        simple: node_goat
     separatecontext: false
     view: |-
       {
@@ -630,7 +630,7 @@ tasks:
       list_id:
         simple: ${SigSciences.Corp.Site.List.ID}
       siteName:
-        simple: test
+        simple: node_goat
     separatecontext: false
     view: |-
       {
@@ -676,7 +676,7 @@ tasks:
       method:
         simple: Remove
       siteName:
-        simple: test
+        simple: node_goat
     separatecontext: false
     view: |-
       {
@@ -747,7 +747,7 @@ tasks:
       list_id:
         simple: ${SigSciences.Corp.Site.List.ID}
       siteName:
-        simple: test
+        simple: node_goat
     separatecontext: false
     view: |-
       {
@@ -778,7 +778,7 @@ tasks:
       - "25"
     scriptarguments:
       siteName:
-        simple: test
+        simple: node_goat
     separatecontext: false
     view: |-
       {
@@ -943,7 +943,7 @@ tasks:
       - "30"
     scriptarguments:
       siteName:
-        simple: test
+        simple: node_goat
     separatecontext: false
     view: |-
       {
@@ -1782,7 +1782,7 @@ tasks:
       - "70"
     scriptarguments:
       siteName:
-        simple: test
+        simple: node_goat
     separatecontext: false
     view: |-
       {
@@ -1816,7 +1816,7 @@ tasks:
       list_id:
         simple: ${SigSciences.Corp.Site.List.ID}
       siteName:
-        simple: test
+        simple: node_goat
     separatecontext: false
     view: |-
       {
