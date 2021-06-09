@@ -1000,7 +1000,7 @@ def main():
             continue
 
         task_status = pack.format_metadata(user_metadata, index_folder_path, packs_dependencies_mapping, build_number,
-                                           current_commit_hash, pack_was_modified, statistics_handler, pack_names)
+                                           current_commit_hash, pack_was_modified, statistics_handler, pack_names, packs_list)
 
         if pack.is_missing_details:
             packs_missing_details.append(pack)
