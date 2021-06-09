@@ -15,20 +15,17 @@
   <li>Get information about sensors, packages, actions, hosts etc.</li>
 </ul>
 <h2>Detailed Description</h2>
-<ul>
-  <li>Integration with Tanium REST API. Available from Tanium version 7.3.0. You can manage questions, actions, saved
-    questions, packages and sensor information.</li>
-  <li></li>
-  <li>## Configuration Parameters</li>
-  <li></li>
-  <li>**Hostname** </li>
-  <li>The network address of the Tanium server host.</li>
-  <li></li>
-  <li>**Domain** </li>
-  <li>The Tanium user domain. Relevant when there is more than one domain inside Tanium.</li>
-  <li></li>
-  <li>**Credentials** </li>
-  <li>The credentials should be the same as the Tanium client.</li>
+Integration with Tanium REST API. Available from Tanium version 7.3.0. You can manage questions, actions, saved
+    questions, packages and sensor information.
+
+  ## Configuration Parameters
+  <ul>
+  <li><i>Hostname</i>
+   - The network address of the Tanium server host.
+  <li><i>Domain </i>
+   - The Tanium user domain. Relevant when there is more than one domain inside Tanium.</li>
+  <li><i>Credentials </i>
+   - The credentials should be the same as the Tanium client.</li>
 </ul>
 
 <h2>Configure Tanium v2 on Cortex XSOAR</h2>
@@ -60,25 +57,22 @@
     <li>
     <strong>OAuth 2.0 Authentication -</strong> To use OAuth 2.0 follow the next steps:
     <ol>
-    <li>Login to the Tanium client and navigate to <strong>Administration</strong> -> <strong>API Tokens</strong></li>
-    <li>Click <strong>New API Token</strong> to create a new API Token.</li>
-    <li>In the pop-up window, modify the expiration time and trusted IP addresses if needed and click save.</li>
-    <li>In the next pop-up window, fill in the Tanium credentials and copy the generated API token.
-        Notice! The API Token cannot be copied after closing the window, so make sure to save it for future use.</li>
+    <li>Follow the instructions <a href= https://docs.tanium.com/platform_user/platform_user/console_api_tokens.html#add_API_tokens ><strong>here</strong></a>  to create an API token.
     <li>Paste the generated API Token into the <strong>API Token</strong> parameter in the instance configuration, and leave the username
         and password fields empty.</li>
-    <li>Press the <strong>Test</strong> button to validate the instance configuration.</li>
+    <li>Click the <strong>Test</strong> button to validate the instance configuration.</li>
     </ol>
     </li>
 </ol>
 <h5>Notes:</h5>
 <ol>
     <li><strong>Trusted IP Addresses:</strong> by default, the Tanium Server blocks API tokens from all addresses except
-     registered Tanium Module Servers. To add additional allowed IP addresses for any API token, add the IP addresses to the api_token_trusted_ip_address_list global setting. To add allowed IP addresses for an individual API token, specify the IP addresses in the trusted_ip_addresses field of the api_token object.</li>
+     registered Tanium Module Servers. To add allowed IP addresses for any API token, add the IP addresses to the api_token_trusted_ip_address_list global setting. To add allowed IP addresses for an individual API token, specify the IP addresses in the trusted_ip_addresses field of the api_token object.</li>
     <li><strong>Expiration Time:</strong> by default, an api_token is valid for seven days. To change the expiration timeframe, edit
      the api_token_expiration_in_days global setting (minimum value is 1), or include a value with the expire_in_days field when you create the token.</li>
-    <li>To edit a global setting in the Tanium platform, go to <strong>Administration</strong> -> <strong>Global
-     Settings</strong> and search for the setting you would like to edit.</li>
+    <li>To edit a global setting in the Tanium platform, go to <i>Administration</i> -> <i>Global
+     Settings</i> and search for the setting you would like to edit.</li>
+     <li>For more information see the <a href=https://docs.tanium.com/platform_user/platform_user/console_api_tokens.html><strong>Tanium documentation</strong></a>.</li>
 </ol>
 <h2>Commands</h2>
 <p>
