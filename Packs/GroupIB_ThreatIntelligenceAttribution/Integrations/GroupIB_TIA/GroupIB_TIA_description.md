@@ -10,7 +10,7 @@
 3. Your server URL is the same as your TI&A web interface URL.  
 4. Your username is the email that you use to enter in the web interface.
 5. Set classifier and mapper with Group-IB Threat Intelligence & Attribution classifier and mapper or with our own if you want so.
-6. Go to the Settings->Integrations->Pre-Processing Rules and set up the pre-processing rule:
+6. Go to Settings->Integrations->Pre-Processing Rules and set up the pre-processing rule:
 * Set up condition: "gibid Is not empty (General)".
 * Action: "Run a script".
 * Script: "GIBIncidentUpdate".

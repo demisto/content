@@ -1,23 +1,37 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-result = True
-inc = demisto.incident()
-custom_fields = inc.get("CustomFields", {})
-del inc["CustomFields"]
-del inc["labels"]
-del inc["occurred"]
-del inc["sla"]
-inc.update(custom_fields)
-demisto.error(custom_fields)
-gibid = custom_fields.get('gibid')
-demisto.error(gibid)
-incid = demisto.executeCommand("getIncidents", {"query": "gibid: {0} and -status:Closed".format(gibid)})
-total = int(incid[0]["Contents"]["total"])
-if total > 0:
-    result = False
-    incident_id = incid[0]["Contents"]["data"][total - 1]["id"]
-    demisto.error(incident_id)
-    for key, value in inc.items():
-        demisto.executeCommand('setIncident', {"id": incident_id, key: value})
 
-return_results(result)
+
+def prevent_duplication(current_incident):
+    result = True
+    custom_fields = current_incident.get("CustomFields", {})
+    if "CustomFields" in current_incident.keys():
+        del current_incident["CustomFields"]
+    if "labels" in current_incident.keys():
+        del current_incident["labels"]
+    if "occurred" in current_incident.keys():
+        del current_incident["occurred"]
+    if "sla" in current_incident.keys():
+        del current_incident["sla"]
+    current_incident.update(custom_fields)
+    gibid = custom_fields.get('gibid')
+    search_incident = demisto.executeCommand("getIncidents", {"query": "gibid: {0} and -status:Closed".format(gibid)})
+    total = int(search_incident[0].get("Contents", {}).get("total", {}))
+    if total > 0:
+        result = False
+        incident_id = search_incident[0].get("Contents", {}).get("data", {})[total - 1].get("id")
+        for key, value in current_incident.items():
+            demisto.executeCommand('setIncident', {"id": incident_id, key: value})
+
+    return result
+
+
+def main():
+    try:
+        return_results(prevent_duplication(demisto.incident()))
+    except Exception as e:
+        return_error("Error: {0}".format(str(e)))
+
+
+if __name__ in ("__main__", "__builtin__", "builtins"):
+    main()

@@ -1,0 +1,1 @@
+Prevents creation of feeds with the same GIB ID
