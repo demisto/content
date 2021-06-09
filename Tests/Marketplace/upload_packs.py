@@ -1118,6 +1118,9 @@ def main():
             pack_names.remove(pack.name)
             pack.cleanup()
             continue
+
+        pack.status = PackStatus.SUCCESS.name
+
     # upload core packs json to bucket
     create_corepacks_config(storage_bucket, build_number, index_folder_path,
                             artifacts_dir=os.path.dirname(packs_artifacts_path))
