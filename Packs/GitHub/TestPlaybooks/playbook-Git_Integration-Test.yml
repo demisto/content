@@ -471,19 +471,16 @@ tasks:
       - - operator: isEqualNumber
           left:
             value:
-              simple: GitHub.Release.ID
+              simple: GitHub.Release.id
             iscontext: true
           right:
             value:
-              simple: "19854717"
-      - - operator: isEqualNumber
-          left:
-            value:
-              simple: GitHub.Release.Download_count
+              complex:
+                root: GitHub.Release
+                accessor: ID
+                transformers:
+                - operator: FirstArrayElement
             iscontext: true
-          right:
-            value:
-              simple: "7"
     view: |-
       {
         "position": {
