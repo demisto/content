@@ -1,1 +1,1 @@
-Note: This pack is going to be deprecated around November 2021, use Recorded Future v2 instead.
+Note: This pack is deprecated and going to be EOL around November 2021, use Recorded Future v2 instead.
