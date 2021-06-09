@@ -2,7 +2,7 @@ import demistomock as demisto
 from GIBIncidentUpdate import prevent_duplication
 
 
-INCOMING_INCIDENT = [
+EXISTING_INCIDENT = [
     {
         "Contents": {
             "total": 1,
@@ -12,9 +12,10 @@ INCOMING_INCIDENT = [
         }
     }
 ]
+INCOMING_INCIDENT = {"gibid": "12v"}
 
 
 def test_prevent_duplication(mocker):
-    mocker.patch.object(demisto, "executeCommand", return_value=INCOMING_INCIDENT)
-    result = prevent_duplication({"gibid": "12v"})
+    mocker.patch.object(demisto, "executeCommand", return_value=EXISTING_INCIDENT)
+    result = prevent_duplication(INCOMING_INCIDENT)
     assert not result
