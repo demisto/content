@@ -31,10 +31,17 @@ class Handler:
         demisto.info(msg)
 
 
+class ErrorHandler:
+    @staticmethod
+    def write(msg: str):
+        demisto.error(f'wsgi error: {msg}')
+
+
 ''' GLOBAL VARIABLES '''
 INTEGRATION_NAME: str = 'Export Indicators Service'
 PAGE_SIZE: int = 200
 DEMISTO_LOGGER: Handler = Handler()
+ERROR_LOGGER: ErrorHandler = ErrorHandler()
 APP: Flask = Flask('demisto-export_iocs')
 CTX_VALUES_KEY: str = 'dmst_export_iocs_values'
 CTX_MIMETYPE_KEY: str = 'dmst_export_iocs_mimetype'
@@ -1074,7 +1081,7 @@ def run_long_running(params: Dict, is_test: bool = False):
         )
         APP.logger.addHandler(log_handler)  # pylint: disable=no-member
         demisto.debug('done setting demisto handler for logging')
-        server = WSGIServer(('0.0.0.0', server_port), APP, log=DEMISTO_LOGGER)
+        server = WSGIServer(('0.0.0.0', server_port), APP, log=DEMISTO_LOGGER, error_log=ERROR_LOGGER)
         if is_test:
             test_nginx_server(nginx_port, params)
             server_process = Process(target=server.serve_forever)
