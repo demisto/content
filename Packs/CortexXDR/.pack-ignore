@@ -33,3 +33,11 @@ ignore=BA101
 
 [file:classifier-mapper-outgoing-PaloAltoNetworks_CortexXDR.json]
 ignore=BA101
+[file:incidentfield-XDR_Alert_Category.json]
+ignore=IF100
+
+[file:incidentfield-XDR_Alert_Name.json]
+ignore=IF100
+
+[file:incidentfield-XDR_Similar_Incidents.json]
+ignore=IF100
