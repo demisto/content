@@ -993,7 +993,7 @@
             }
         ]
     },
-    "name": "STIX Report",
+    "name": "Report",
     "system": false,
     "version": -1,
     "fromVersion": "6.0.0",

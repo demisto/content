@@ -1295,7 +1295,7 @@
             }
         ]
     },
-    "name": "STIX Threat Actor",
+    "name": "Threat Actor",
     "system": false,
     "version": -1,
     "fromVersion": "6.0.0",
