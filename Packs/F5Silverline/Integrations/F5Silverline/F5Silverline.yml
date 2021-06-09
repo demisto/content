@@ -148,17 +148,10 @@ script:
       required: false
       secret: false
     - default: false
-      description: The IP address of a new particular threatening IP address object.
+      description: The CIDR range address of a new particular threatening IP address object (i.e IP address/ mask). For example, "1.2.3.4/32". In case only IP address is given, the default mask is 32.
       isArray: false
-      name: ip
+      name: cidr_range
       required: true
-      secret: false
-    - default: false
-      description: The mask address of a new particular threatening IP address object.
-        Default is 32.
-      isArray: false
-      name: mask
-      required: false
       secret: false
     - default: false
       description: The duration (in seconds) of a new particular threatening IP address

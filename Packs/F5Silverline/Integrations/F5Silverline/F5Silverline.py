@@ -11,7 +11,7 @@ from typing import Dict, Any
 requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
 
 BASE_URL = "/api/v1/ip_lists"
-TABLE_HEADERS_GET_OBJECTS = ['ID', 'IP', 'Expires At', 'List Target', 'Created At', 'Updated At']
+TABLE_HEADERS_GET_OBJECTS = ['ID', 'CIDR Range', 'Created At', 'Updated At']
 PAGE_NUMBER_PATTERN = "(?<=page\[number]=).*?(?=&)"
 
 
@@ -75,6 +75,17 @@ def paging_args_to_params(page_size, page_number):
     return params
 
 
+def get_ip_and_mask_from_cidr(cidr_range):
+    if '/' not in cidr_range:
+        ip_address = cidr_range
+        mask = '32'
+    else:
+        cidr_range = cidr_range.split('/')
+        ip_address = cidr_range[0]
+        mask = cidr_range[1]
+    return ip_address, mask
+
+
 def add_ip_objects_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     """
     Adds a new IP object to the requested list type (denylist or allowlist).
@@ -83,9 +94,9 @@ def add_ip_objects_command(client: Client, args: Dict[str, Any]) -> CommandResul
     API docs: https://portal.f5silverline.com/docs/api/v1/ip_objects.md (POST section)
     """
     list_type = args['list_type']
-    ip_address = args['ip']
+    cidr_range = args['cidr_range']
+    ip_address, mask = get_ip_and_mask_from_cidr(cidr_range)
     list_target = args.get('list_target', 'proxy-routed')
-    mask = args.get('mask', '32')
     duration = int(args.get('duration', 0))
     note = args.get('note', "")
     tags = argToList(args.get('tags', []))
@@ -94,7 +105,8 @@ def add_ip_objects_command(client: Client, args: Dict[str, Any]) -> CommandResul
     body = define_body_for_add_ip_command(list_target, mask, ip_address, duration, note, tags)
 
     client.request_ip_objects(body=body, method='POST', url_suffix=url_suffix, params={}, resp_type='content')
-    human_readable = f"IP object with IP address: {ip_address} added successfully into the {list_type} list."
+    human_readable = f"IP object with CIDR range address: {ip_address}/{mask} added successfully into the {list_type}" \
+                     f" list."
     return CommandResults(readable_output=human_readable)
 
 
@@ -236,7 +248,7 @@ def get_ip_objects_list_command(client: Client, args: Dict[str, Any]) -> Command
     else:
         human_results, outputs = get_ip_objects_by_ids(client, object_ids, list_type, params)  # type: ignore
 
-    human_readable = tableToMarkdown('F5 Silverline IP Objects', human_results, TABLE_HEADERS_GET_OBJECTS,
+    human_readable = tableToMarkdown(f'F5 Silverline {list_type} IP Objects', human_results, TABLE_HEADERS_GET_OBJECTS,
                                      removeNull=True)
     human_readable += paging_data_human_readable
 
@@ -283,11 +295,12 @@ def parse_get_ip_object_list_results(results: Dict):
         results_data = [results_data]
     for ip_object in results_data:  # type: ignore
         if ip_object:
+            ip_address = ip_object.get('attributes').get('ip')
+            mask = ip_object.get('attributes').get('mask')
+            cidr_range = f'{ip_address}/{mask}'
             parsed_results.append({
                 'ID': ip_object.get('id'),
-                'IP': ip_object.get('attributes').get('ip'),
-                'Expires At': ip_object.get('attributes').get('expires_at'),
-                'List Target': ip_object.get('attributes').get('list_target'),
+                'CIDR Range': cidr_range,
                 'Created At': ip_object.get('meta').get('created_at'),
                 'Updated At': ip_object.get('meta').get('updated_at')
             })
