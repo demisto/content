@@ -481,7 +481,7 @@ def fetch_incidents(client: Client, last_run: dict, first_fetch: str, max_fetch:
     all_alerts = raw_response.get('alert')
 
     if not all_alerts:
-        demisto.info(f'{INTEGRATION_NAME} no alerts were fetched at: {str(next_run)}')
+        demisto.info(f'{INTEGRATION_NAME} no alerts were fetched at: {str(last_run)}')
         # as no alerts occurred till now, update last_run time accordingly
         last_run['time'] = to_fe_datetime_converter('now')
         return last_run, []
@@ -507,8 +507,8 @@ def fetch_incidents(client: Client, last_run: dict, first_fetch: str, max_fetch:
     if not incidents:
         demisto.info(f'{INTEGRATION_NAME} no new alerts were fetched at: {str(next_run)}')
         # as no alerts occurred till now, update last_run time accordingly
-        last_run['time'] = to_fe_datetime_converter('now')
-        return last_run, []
+        next_run['time'] = to_fe_datetime_converter('now')
+        return next_run, []
 
     # as alerts occurred till now, update last_run time accordingly to the that of latest fetched alert
     next_run = {
