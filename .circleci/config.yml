@@ -1305,40 +1305,12 @@ workflows:
           - << pipeline.parameters.instance_tests >>
     jobs:
       - Setup Environment
-      - Create Instances:
-          filters:
-            branches:
-              ignore: /pull\/[0-9]+/
       - Run Unit Testing And Lint:
           requires:
             - Setup Environment
       - Run Validations:
           requires:
             - Setup Environment
-      - Server 5_0:
-          filters:
-            branches:
-              ignore: /pull\/[0-9]+/
-          requires:
-            - Create Instances
-      - Server 5_5:
-          filters:
-            branches:
-              ignore: /pull\/[0-9]+/
-          requires:
-            - Create Instances
-      - Server 6_0:
-          filters:
-            branches:
-              ignore: /pull\/[0-9]+/
-          requires:
-            - Create Instances
-      - Server Master:
-          filters:
-            branches:
-              ignore: /pull\/[0-9]+/
-          requires:
-            - Create Instances
 
   force_pack_upload:
     when: << pipeline.parameters.force_pack_upload >>
