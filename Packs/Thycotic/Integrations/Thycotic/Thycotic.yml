@@ -707,13 +707,13 @@ script:
       type: String
   - arguments:
     - default: false
-      description: User display name
+      description: The user’s name as displayed in the user interface.
       isArray: false
       name: displayname
       required: true
       secret: false
     - default: false
-      description: Password for new user
+      description: Password for new user. The password used to log in.
       isArray: false
       name: password
       required: true
@@ -747,7 +747,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: User email address
+      description: The user's email address. Used by the system to send reports, access
+        requests, and other notifications.
       isArray: false
       name: emailaddress
       required: false
@@ -755,7 +756,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'true'
-      description: Whether the user account is enabled
+      description: Whether the user account is enabled. Disabled users are unable
+        to log in and do not consume a user license.
       isArray: false
       name: enabled
       predefined:
@@ -775,8 +777,9 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: This flag means that this account can only be used for access by
-        tools that use the SDK developed by Tycotic
+      description: Whether this is an application account. Application accounts are
+        used for automation, cannot log in using the UI, and do not consume a user
+        license.
       isArray: false
       name: isapplicationaccount
       predefined:
@@ -805,7 +808,9 @@ script:
       required: false
       secret: false
     - default: false
-      description: RADIUS username
+      description: When a user account uses RADIUS two-factor authentication, this
+        property is the user name of the RADIUS account used to authenticate this
+        user.
       isArray: false
       name: radiususername
       required: false
@@ -897,26 +902,27 @@ script:
       type: String
   - arguments:
     - default: false
-      description: User ID
+      description: User ID. Must match ID in path.
       isArray: false
       name: id
       required: true
       secret: false
     - default: false
-      description: DateOptionId(integer)
+      description: The d of the date format to use when displaying dates to this user.
+        These options are defined in Admin > Configuration.
       isArray: false
       name: dateoptionid
       required: false
       secret: false
     - default: false
-      description: Display name
+      description: The user’s name as displayed in the user interface.
       isArray: false
       name: displayname
       required: false
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Whether Duo two-factor authentication is enabled
+      description: Whether Duo two-factor authentication is enabled.
       isArray: false
       name: duotwofactor
       predefined:
@@ -925,14 +931,16 @@ script:
       required: false
       secret: false
     - default: false
-      description: User email address
+      description: The user's email address. Used by the system to send reports, access
+        requests, and other notifications.
       isArray: false
       name: emailaddress
       required: false
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Whether the user account is enabled
+      description: Whether the user account is enabled. Disabled users are unable
+        to log in and do not consume a user license.
       isArray: false
       name: enabled
       predefined:
@@ -942,7 +950,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Whether FIDO2 two-factor authentication is enabled
+      description: Whether FIDO2 two-factor authentication is enabled.
       isArray: false
       name: fido2twofactor
       predefined:
@@ -951,15 +959,16 @@ script:
       required: false
       secret: false
     - default: false
-      description: Owner group
+      description: 'A list of group ids for the groups that can manage this user. '
       isArray: false
       name: groupowners
       required: false
       secret: false
     - auto: PREDEFINED
       default: false
-      description: This flag means that this account can only be used for access by
-        tools that use the SDK developed by Tycotic
+      description: Whether this is an application account. Application accounts are
+        used for automation, cannot log in using the UI, and do not consume a user
+        license.
       isArray: false
       name: isapplicationaccount
       predefined:
@@ -969,7 +978,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: isGroupOwnerUpdate
+      description: Whether the user is managed by the groups specified in GroupOwners
+        or is managed by all users with the ‘Administer Users’ role permission.
       isArray: false
       name: isgroupownerupdate
       predefined:
@@ -988,14 +998,15 @@ script:
       required: false
       secret: false
     - default: false
-      description: Number of login failures
+      description: Number of login failures to allow before the account is locked
+        out. Set to 0 for unlimited login attempts.
       isArray: false
       name: loginfailures
       required: false
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Whether OATH two-factor authentication is enabled
+      description: Whether OATH two-factor authentication is enabled.
       isArray: false
       name: oathtwofactor
       predefined:
@@ -1004,7 +1015,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: Password for update object
+      description: Password for update user. The password used to log in.
       isArray: false
       name: password
       required: false
@@ -1020,13 +1031,16 @@ script:
       required: false
       secret: false
     - default: false
-      description: RADIUS username
+      description: When a user account uses RADIUS two-factor authentication, this
+        property is the user name of the RADIUS account used to authenticate this
+        user.
       isArray: false
       name: radiususername
       required: false
       secret: false
     - default: false
-      description: Restricted access time
+      description: The id of the time format to use when displaying times to this
+        user. These options are defined in Admin > Configuration.
       isArray: false
       name: timeoptionid
       required: false
@@ -1039,6 +1053,19 @@ script:
       predefined:
       - 'true'
       - 'false'
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: etermines the type of Unix authentication to use. Must be Password
+        (0), PublicKey (1), PasswordOrPublicKey (2), or PasswordAndPublicKey (3).
+      isArray: false
+      name: unixauthenticationmethodtype
+      predefined:
+      - '0'
+      - '1'
+      - '2'
+      - '3'
       required: false
       secret: false
     deprecated: false
@@ -1085,7 +1112,7 @@ script:
     - contextPath: Thycotic.Secret.ChangePassword
       description: Secret summary
       type: String
-  dockerimage: demisto/python3:3.9.5.20958
+  dockerimage: demisto/python3:3.9.5.20070
   feed: false
   isfetch: false
   longRunning: false
