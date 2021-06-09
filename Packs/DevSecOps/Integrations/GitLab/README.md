@@ -8,14 +8,14 @@ This integration was integrated and tested with version v4.0 of GitLab API
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
-| url | Server URL \(e.g. https://gitlab.com/api/v4\) | True |
+| url | Server URL (e.g. `https://gitlab.com/api/v4`) | True |
 | api_key | API Key | True |
 | insecure | Trust any certificate \(not secure\) | False |
 | proxy | Use system proxy settings | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.
+You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### gitlab-get-projects
 ***
