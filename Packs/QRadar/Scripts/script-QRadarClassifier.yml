@@ -102,7 +102,7 @@ type: javascript
 tags:
 - QRadar
 - Classifier
-comment: Deprecated. This script Classifies QRadar incidents.\nThe 'QRADAR_CATEGORIES' dictionary translate QRadar 'High level Categories' to its 'Demisto Types' counterpart.\n\nFor custom categories, use the 'customCategories' argument.\nThe offense high level category will be put to context
+comment: Deprecated. No available replacement. This script Classifies QRadar incidents.\nThe 'QRADAR_CATEGORIES' dictionary translate QRadar 'High level Categories' to its 'Demisto Types' counterpart.\n\nFor custom categories, use the 'customCategories' argument.\nThe offense high level category will be put to context.
 system: true
 args:
 - name: customCategories
