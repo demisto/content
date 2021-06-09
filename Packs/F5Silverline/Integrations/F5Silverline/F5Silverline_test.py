@@ -14,17 +14,19 @@ def util_load_json(path):
 
 
 IP_ADDRESSES_TO_ADD = [
-    ({'list_type': 'denylist', 'IP': '1.2.3.4'}, "IP object with IP address: 1.2.3.4 "
-                                                 "added successfully into the denylist list."),
-    ({'list_type': 'allowlist', 'IP': '1.2.3.4', 'note': "test"},
-     "IP object with IP address: 1.2.3.4 added successfully into the allowlist list."),
+    ({'list_type': 'denylist', 'cidr_range': '1.2.3.4'},
+     'IP object with CIDR range address: 1.2.3.4/32 added successfully into the denylist list.'),
+    ({'list_type': 'allowlist', 'cidr_range': '1.2.3.4', 'note': "test"},
+     "IP object with CIDR range address: 1.2.3.4/32 added successfully into the allowlist list."),
 ]
 
 IP_ADDRESSES_TO_DELETE = [
     ({'list_type': 'denylist', 'object_id': '850f7418-2ac9'}, "IP object with ID: 850f7418-2ac9 deleted successfully "
-                                                              "from the denylist list."),
+                                                              "from the denylist list.", True),
     ({'list_type': 'allowlist', 'object_id': '850f7418-2ac9', 'note': "test"},
-     "IP object with ID: 850f7418-2ac9 deleted successfully from the allowlist list."),
+     "IP object with ID: 850f7418-2ac9 deleted successfully from the allowlist list.", True),
+    ({'list_type': 'allowlist', 'object_id': '850f7418-2ac9', 'note': "test"},
+     "", False),
 ]
 
 IP_OBJECT_GET_LIST = [({'list_type': 'denylist', 'object_id': ['id1']}, 'ip_object_list_by_id.json'),
@@ -54,8 +56,8 @@ def test_add_ip_objects_command(mocker, args, expected_output):
     assert result.readable_output == expected_output
 
 
-@pytest.mark.parametrize('args,expected_output', IP_ADDRESSES_TO_DELETE)
-def test_delete_ip_objects_command(mocker, args, expected_output):
+@pytest.mark.parametrize('args,expected_output, is_object_exist', IP_ADDRESSES_TO_DELETE)
+def test_delete_ip_objects_command(mocker, args, expected_output, is_object_exist):
     """
     Given:
         - Got id of an IP object to delete from a list_type.
@@ -67,11 +69,16 @@ def test_delete_ip_objects_command(mocker, args, expected_output):
         - Validating that the object was deleted successfully.
         - Validating the returned human readable.
     """
+    import F5Silverline
     mocker.patch.object(Client, "request_ip_objects")
+    mocker.patch.object(F5Silverline, "is_object_id_exist", return_value=is_object_exist)
     client = create_client(base_url='https://portal.f5silverline.com/api/v1/ip_lists', verify=False, headers={},
                            proxy=False)
     result = delete_ip_objects_command(client, args)
-    assert result.readable_output == expected_output
+    if not is_object_exist:
+        assert not expected_output
+    else:
+        assert result.readable_output == expected_output
 
 
 @pytest.mark.parametrize('args, response_json', IP_OBJECT_GET_LIST)
@@ -93,10 +100,11 @@ def test_get_ip_objects_list_command(mocker, args, response_json):
     mocker.patch.object(Client, "request_ip_objects", return_value=response)
     results = get_ip_objects_list_command(client, args)
 
-    assert results.outputs_prefix == "F5Silverline.IPObjectList"
+    assert results.outputs_prefix == "F5Silverline"
     assert results.outputs_key_field == "id"
-    assert [results.outputs[0].get('id')] == args.get('object_id', ['id1'])
-    assert results.outputs[0].get('attributes') == {'ip': '1.2.3.4', 'mask': '32', 'duration': 0, 'expires_at': 'None',
-                                                    'list_target': 'proxy'}
-    assert results.outputs[0].get('links') == {
+    assert [results.outputs['IPObjectList'][0].get('id')] == args.get('object_id', ['id1'])
+    assert results.outputs['IPObjectList'][0].get('attributes') == {'ip': '1.2.3.4', 'mask': '32', 'duration': 0,
+                                                                    'expires_at': 'None',
+                                                                    'list_target': 'proxy'}
+    assert results.outputs['IPObjectList'][0].get('links') == {
         'self': 'https://portal.f5silverline.com/api/v1/ip_lists/denylist/ip_objects/id1?list_target=proxy'}

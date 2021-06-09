@@ -143,7 +143,7 @@ def is_object_id_exist(client, object_id, list_type):
     return False
 
 
-def delete_ip_objects_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def delete_ip_objects_command(client: Client, args: Dict[str, Any]):
     """
     Deletes an exist IP object from the requested list type (denylist or allowlist) by its object id or its ip.
     Note: Human readable appears only if the HTTP request did not fail and the object id exists.
@@ -152,7 +152,7 @@ def delete_ip_objects_command(client: Client, args: Dict[str, Any]) -> CommandRe
     list_type = args['list_type']
     object_id = args.get('object_id')
     object_ip = args.get('object_ip')
-    if not object_ip and not object_ip:
+    if not object_id and not object_ip:
         raise DemistoException("At least one of the following should be given: object_ip, object_id.")
 
     if not object_id:
@@ -194,10 +194,17 @@ def handle_paging(page_number, page_size):
 def add_paging_to_outputs(paging_dict, page_number):
     link_to_current_obj = paging_dict.get('self')
     link_to_last_obj = paging_dict.get('last')
-    current_page_number = re.search(PAGE_NUMBER_PATTERN, link_to_current_obj).group(
-        0) if link_to_current_obj else page_number
-    last_page_number = re.search(PAGE_NUMBER_PATTERN, link_to_last_obj).group(
-        0) if link_to_last_obj else current_page_number  # if the current page is also the last one
+    current_page_number = re.search(PAGE_NUMBER_PATTERN, link_to_current_obj)
+    last_page_number = re.search(PAGE_NUMBER_PATTERN, link_to_last_obj)
+    if current_page_number:
+        current_page_number = current_page_number.group(0) if link_to_current_obj else page_number
+    else:
+        raise DemistoException("An error occurred when trying to parse paging response")
+
+    if last_page_number:
+        last_page_number = last_page_number.group(0) if link_to_last_obj else current_page_number
+    else:
+        raise DemistoException("An error occurred when trying to parse paging response")
     return current_page_number, last_page_number
 
 
