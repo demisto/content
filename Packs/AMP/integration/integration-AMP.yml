@@ -1,0 +1,792 @@
+category: Endpoint
+commonfields:
+  id: AMP
+  version: -1
+configuration:
+- defaultvalue: https://api.amp.cisco.com
+  display: Server URL (e.g. https://api.amp.cisco.com)
+  name: server
+  required: true
+  type: 0
+- display: Client ID
+  name: credentials
+  required: true
+  type: 9
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Fetch incidents
+  name: isFetch
+  required: false
+  type: 8
+- display: Incident type
+  name: incidentType
+  required: false
+  type: 13
+- defaultvalue: 3 days
+  display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
+  name: fetch_time
+  required: false
+  type: 0
+- defaultvalue: '0'
+  display: Offset for fetch timezone (in integer)
+  name: fetch_time_offset
+  required: false
+  type: 0
+- display: Event Type ID to fetch
+  name: fetch_event_type
+  required: false
+  type: 0
+- defaultvalue: '1'
+  display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  required: false
+  type: 19
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ''
+    itemVersion: ''
+    packID: 6b08c7f9-0a68-4d1c-8166-3ffb166425c4
+    propagationLabels:
+    - all
+    toServerVersion: ''
+description: Cisco AMP integration that supports fetching events as incidents per
+  list of Event Type IDs.
+detaileddescription: To learn how to generate a Client ID and API Key, which are required
+  for this integration, see the [Cisco AMP documentation.]( https://www.cisco.com/c/en/us/support/docs/security/amp-endpoints/201121-Overview-of-the-Cisco-AMP-for-Endpoints.html#anc1).
+display: AMP
+image: data:image/png;base64,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
+name: AMP
+script:
+  commands:
+  - arguments:
+    - description: Maximum number of results to return.
+      name: limit
+    - description: Filter results by hostname.
+      name: hostname
+    - description: Filter results by internal IP address.
+      name: internal_ip
+    - description: Filter results by external IP address.
+      name: external_ip
+    - description: Filter results by group GUID.
+      name: group_guid
+    description: Returns a list of computers on which agents are deployed. You can
+      use filters (arguments) to narrow the search.
+    name: amp_get_computers
+    outputs:
+    - contextPath: CiscoAMP.GetComputers
+      description: Get Computers from AMP
+      type: string
+  - arguments:
+    - default: true
+      description: The connector GUID for which to return information.
+      name: connector_guid
+      required: true
+    description: Returns information for the specified computer.
+    name: amp_get_computer_by_connector
+    outputs:
+    - contextPath: CiscoAMP.GetComputerByConnector
+      description: Computer info by connector
+      type: string
+  - arguments:
+    - description: The IP address, SHA256 hash, or URL.
+      name: q
+    - description: Maximum number of results to return.
+      name: limit
+    - default: true
+      description: The connector GUID.
+      name: connector_guid
+      required: true
+    description: Returns a list of all activities associated with a particular computer.
+      This is analogous to the Device Trajectory on the FireAMP Console. Use the Q
+      argument to search for an IP address, SHA256 hash, or URL.
+    name: amp_get_computer_trajectory
+    outputs:
+    - contextPath: CiscoAMP.GetComputerByTrajectory
+      description: Computer info by trajectory
+      type: string
+  - arguments:
+    - default: true
+      description: The connector GUID.
+      name: connector_guid
+      required: true
+    - description: The group GUID.
+      name: group_guid
+      required: true
+    description: Moves a computer to a group with the corresponding connector_guid
+      and group_guid, respectively.
+    name: amp_move_computer
+    outputs:
+    - contextPath: CiscoAMP.MoveComputer
+      description: Moved Computer info
+      type: string
+  - arguments:
+    - description: An IPv4 address, SHA256 hash, filename, or URL fragment.
+      name: q
+      required: true
+    - description: Maximum number of results to return.
+      name: limit
+    - default: true
+      defaultValue: '0'
+      description: offset
+      name: offset
+    description: This endpoint enables you to search all computers across your organization
+      for any events or activities associated with a file or network operation, and
+      returns computers that match the specified criteria. You can then query the
+      /computers/{connector-guid}/trajectory endpoint for specific details.
+    name: amp_get_computer_activity
+    outputs:
+    - contextPath: CiscoAMP.GetComputerActivity
+      description: Computer activity
+      type: string
+  - arguments:
+    - description: Maximum number of results to return.
+      name: limit
+    - description: The connector GUID.
+      name: connector_guid
+    - description: The group GUID.
+      name: group_guid
+    - description: The detected SHA256 hash.
+      name: detection_sha256
+    - description: The application SHA256.
+      name: application_sha256
+    - description: The event type.
+      isArray: true
+      name: event_type
+    - description: The offset.
+      name: offset
+    - description: The start date for the query, in ISO8601 format.
+      name: start_date
+    description: A general query interface for events. This is analogous to the Events
+      view on the FireAMP Console.
+    name: amp_get_events
+    outputs:
+    - contextPath: CiscoAMP.GetEvents
+      description: Events info
+      type: string
+  - arguments: []
+    description: Events are identified and filtered by a unique ID. This endpoint
+      provides a human readable name and short description of each event (by ID).
+    name: amp_get_event_types
+    outputs:
+    - contextPath: CiscoAMP.GetEventTypes
+      description: Event Types
+      type: string
+  - arguments:
+    - description: Maximum number of results to return.
+      name: limit
+    - description: The offset.
+      name: offset
+    - description: Name of the file.
+      name: name
+    description: Returns a list of application blocking file lists. You can filter
+      this list by name
+    name: amp_get_application_blocking
+    outputs:
+    - contextPath: CiscoAMP.GetApplicationBlocking
+      description: Application Blocking
+      type: string
+  - arguments:
+    - default: true
+      description: Retrieves information about a particular file_list.
+      name: file_list_guid
+      required: true
+    description: Returns a particular file list for application blocking or simple
+      custom detection. You need to specify the file_list_guid argument to retrieve
+      information about a particular file_list.
+    name: amp_get_file_list_by_guid
+    outputs:
+    - contextPath: CiscoAMP.GetFileList
+      description: File list by GUID
+  - arguments:
+    - description: Maximum number of results to return.
+      name: limit
+    - description: The offset.
+      name: offset
+    - description: Name of the detection.
+      name: name
+    description: Returns a list of simple custom detection file lists. You can filter
+      this list by detection name.
+    name: amp_get_simple_custom_detections
+    outputs:
+    - contextPath: CiscoAMP.GetSimpleCustomDetections
+      description: Simple Custom Detections
+      type: string
+  - arguments:
+    - description: Maximum number of results to return.
+      name: limit
+    - description: The offset.
+      name: offset
+    - default: true
+      description: Retrieves information about a particular file_list.
+      name: file_list_guid
+      required: true
+    description: Returns a list of items for a particular file_list. You need to specify
+      the file_list_guid argument to retrieve these items.
+    name: amp_get_file_list_files
+    outputs:
+    - contextPath: CiscoAMP.GetFileListFiles
+      description: File list files
+      type: string
+  - arguments:
+    - default: true
+      description: Retrieves information about a particular file_list.
+      name: file_list_guid
+      required: true
+    - description: SHA256 hash.
+      name: sha256
+      required: true
+    description: Returns a particular item for a given file_list. You need to specify
+      the sha256 argument and the file_list_guid argument to retrieve an item.
+    name: amp_get_file_list_files_by_sha
+    outputs:
+    - contextPath: CiscoAMP.GetFileListFilesBySHA256
+      description: Get File List Info
+      type: string
+  - arguments:
+    - default: true
+      description: Retrieves information about a particular file_list.
+      name: file_list_guid
+      required: true
+    - description: SHA256 hash.
+      name: sha256
+      required: true
+    - description: Description of the SHA256 hash.
+      name: description
+    description: Adds a SHA256 hash to a file list, using file_list_guid.
+    name: amp_set_file_list_files_by_sha
+    outputs:
+    - contextPath: CiscoAMP.SetFileList
+      description: Set File List
+      type: string
+  - arguments:
+    - default: true
+      description: The file_list_guid to retrieve information about a particular file_list
+      name: file_list_guid
+      required: true
+    - description: SHA256 hash.
+      name: sha256
+      required: true
+    description: Deletes an item from a file_list using the SHA256 hash and file_list_guid.
+    name: amp_delete_file_list_files_by_sha
+    outputs:
+    - contextPath: CiscoAMP.DeleteFileList
+      description: Deleted file list info
+      type: string
+  - arguments:
+    - description: amount of results
+      name: limit
+    - description: name of the group
+      name: name
+    description: Returns basic information about groups in your organization. You
+      can map group names to GUIDs for filtering on the events endpoint.
+    name: amp_get_groups
+    outputs:
+    - contextPath: CiscoAMP.GetGroups
+      description: Groups info
+      type: string
+  - arguments:
+    - default: true
+      description: The particular group guid
+      name: group_guid
+      required: true
+    description: Returns a particular group
+    name: amp_get_group
+    outputs:
+    - contextPath: CiscoAMP.GetGroup
+      description: Group info
+      type: string
+  - arguments:
+    - default: true
+      description: The group GUID.
+      name: group_guid
+      required: true
+    - description: The Linux policy guide.
+      name: linux_policy_guid
+    - description: The Android policy guide.
+      name: android_policy_guid
+    - description: The Mac policy guide.
+      name: mac_policy_guid
+    - description: The Windows policy guide.
+      name: windows_policy_guid
+    description: Sets a security policy to a group of endpoints.
+    name: amp_set_group_policy
+    outputs:
+    - contextPath: CiscoAMP.SetGroupPolicy
+      description: Set Group Policy
+      type: string
+  - arguments:
+    - description: Maximum number of results to return.
+      name: limit
+    - description: The offset.
+      name: offset
+    - description: The policy name.
+      name: name
+    - description: The policy product.
+      name: product
+    description: Returns a list of policies. You can filter this list by name and
+      product.
+    name: amp_get_policies
+    outputs:
+    - contextPath: CiscoAMP.GetPolicies
+      description: Policies Information
+      type: string
+  - arguments:
+    - default: true
+      description: The policy GUID.
+      name: policy_guid
+      required: true
+    description: Retrieves information about a particular policy, based on policy_guid.
+    name: amp_get_policy
+    outputs:
+    - contextPath: CiscoAMP.GetPolicy
+      description: Policy Info
+      type: string
+  - arguments: []
+    description: Fetches a list of versions.
+    name: amp_get_version
+    outputs:
+    - contextPath: CiscoAMP.GetVersion
+      description: Version info
+      type: string
+  - arguments:
+    - default: true
+      description: connector GUID.
+      name: connector_guid
+      required: true
+    description: Performs a feature availability request on a computer. Can also be
+      used as a course-grained isolation status request.
+    name: amp_delete_computers_isolation
+    outputs:
+    - contextPath: CiscoAMP.DeleteComputerIsolation
+      description: Deleted isolation information
+      type: string
+  - arguments:
+    - default: true
+      description: connector GUID.
+      name: connector_guid
+      required: true
+    description: Request Isolation for a Computer.  If a computer is already isolated
+      a 409 Conflict error status will be sent. Returns the same result of a GET request
+      on the /isolation endpoint.
+    name: amp_put_computers_isolation
+    outputs:
+    - contextPath: CiscoAMP.PutComputerIsolation
+      description: Isolation request status
+      type: string
+  - arguments:
+    - default: true
+      description: connector GUID.
+      name: connector_guid
+      required: true
+    description: 'Returns a fine grained isolation status for a computer.  The available
+      flag is set to true if isolation can be performed on the computer.  status will
+      be set to one of:  not_isolated pending_start isolated pending_stop'
+    name: amp_get_computers_isolation
+    outputs:
+    - contextPath: CiscoAMP.GetComputerIsolation
+      description: Computer Isolation info
+      type: string
+  - arguments:
+    - description: username
+      name: q
+      required: true
+    - defaultValue: '3'
+      description: Limit results
+      name: limit
+    - default: true
+      defaultValue: '0'
+      description: Offset
+      name: offset
+    description: Fetch a specific computer's trajectory with given connector_guid
+      and filter for events with user name activity
+    name: amp_get_user_activity
+    outputs:
+    - contextPath: CiscoAMP.GetUserActivity
+      description: Users Activity
+      type: string
+  - arguments:
+    - description: Username to filter with
+      name: q
+      required: true
+    - default: true
+      defaultValue: '3'
+      description: Limit results
+      name: limit
+    - description: Connector GUID to search
+      name: connector_guid
+      required: true
+    description: Fetch a specific computer's trajectory with given connector_guid
+      and filter for events with user name activity
+    name: amp_get_user_trajectory
+    outputs:
+    - contextPath: CiscoAMP.GetUserByTrajectory
+      description: Users Trajectory
+      type: string
+  - arguments:
+    - description: Connector GUID
+      name: connector_guid
+      required: true
+    description: Deletes a specific computer with given connector_guid
+    execution: true
+    name: amp_delete_computer
+    outputs:
+    - contextPath: CiscoAMP.DeleteComputer
+      description: Delete Computer
+      type: string
+  - arguments:
+    - description: connector_guid of the computer
+      name: connector_guid
+      required: true
+    description: Get Isolation features from computer
+    name: amp_get_computers_isolation_feature_availability
+    outputs:
+    - contextPath: CiscoAMP.ComputerIsolationFeature
+      description: Isolation Features Supported
+      type: string
+  - arguments:
+    - description: child_guid to use
+      name: child_guid
+      required: true
+    - description: parent_group_guid if you want to add as a child of the parent_group_guid
+      name: parent_group_guid
+    description: Converts an existing group to a child of another group or an existing
+      child group to a root group (that is, one with no parent groups).
+    name: amp_set_group_child_policy
+    outputs:
+    - contextPath: CiscoAMP.SetGroupChild
+      description: Child relationship
+      type: string
+  - arguments:
+    - description: Name of the group
+      name: name
+      required: true
+    - description: Description of the group
+      name: description
+    description: Creates a new group, along with a group name or description.
+    name: amp_create_group
+    outputs:
+    - contextPath: CiscoAMP.CreateGroup
+      description: Created Group info
+      type: string
+  - arguments:
+    - description: group_guid
+      name: group_guid
+      required: true
+    description: Destroys group with a given guid
+    execution: true
+    name: amp_delete_group
+    outputs:
+    - contextPath: CiscoAMP.DeleteGroup
+      description: Deleted Group info
+      type: string
+  - arguments:
+    - description: Limit the amount of indicators to get
+      name: limit
+    - description: Offset where to start
+      name: offset
+    description: Returns a list of indicators.
+    name: amp_get_indicators
+    outputs:
+    - contextPath: CiscoAMP.Indicators
+      description: Indicators
+      type: string
+  - arguments:
+    - description: indicator_guid
+      name: indicator_guid
+      required: true
+    description: Shows information about a specific indicator.
+    name: amp_get_indicator
+    outputs:
+    - contextPath: CiscoAMP.Indicator
+      description: Shows information about a specific indicator.
+      type: string
+  - arguments:
+    - description: ios_bid
+      name: ios_bid
+      required: true
+    description: retrieve app_trajectory queries for a given ios bundle id
+    name: amp_get_app_trajectory
+    outputs:
+    - contextPath: CiscoAMP.GetAppTrajectory
+      description: retrieve app_trajectory queries for a given ios bundle id
+      type: string
+  dockerimage: demisto/python3:3.9.5.20958
+  isFetchSamples: true
+  isfetch: true
+  runonce: false
+  script: |-
+    ''' IMPORTS '''
+    from datetime import datetime
+    import dateparser
+
+    # Disable insecure warnings
+    requests.packages.urllib3.disable_warnings()
+
+
+    def results_return(command, data):
+        if command == 'GetVersion':
+            results = CommandResults(
+                outputs_prefix='CiscoAMP.' + str(command),
+                outputs_key_field='',
+                outputs={'version': data['version']}
+            )
+        elif 'data' in data and data['data']:
+            results = CommandResults(
+                outputs_prefix='CiscoAMP.' + str(command),
+                outputs_key_field='',
+                outputs=data['data']
+            )
+        else:
+            results = CommandResults(
+                outputs_prefix='CiscoAMP.' + str(command),
+                outputs_key_field='',
+                outputs={'data': 'no results'}
+            )
+        return_results(results)
+
+
+    def test_module(client):
+        result = client._http_request('GET', '/version/')
+        if result:
+            return 'ok'
+        else:
+            return f'Test failed: {result}'
+
+
+    def create_incident_from_log(log):
+        occurred = log['date']
+        keys = log.keys()
+        labels = []
+        for key in keys:
+            labels.append({'type': key, 'value': str(log[key])})
+            try:
+                formatted_description = f'Cisco AMP Incident - {log["detection"]}'
+            except KeyError:
+                formatted_description = 'Cisco AMP Incident'
+        return {
+            'name': formatted_description,
+            'labels': labels,
+            'rawJSON': json.dumps(log),
+            'occurred': occurred
+        }
+
+
+    def form_incindents(logs):
+        listofincidents = []
+        for item in logs:
+            listofincidents.append(create_incident_from_log(item))
+        return listofincidents
+
+
+    def fetch_incidents(client):
+        parameters = {}
+        timefrom = dateparser.parse(demisto.params().get('fetch_time')).strftime('%Y-%m-%dT%H:%M:%S')
+        orginaloffset = int(demisto.params().get('fetch_time_offset'))
+        if orginaloffset < 10 and orginaloffset >= 0:
+            offset = f'+0{orginaloffset}:00'
+        else:
+            offset = f'+{orginaloffset}:00'
+        timefrom += offset
+        eventtype = demisto.params().get('fetch_event_type')
+        last_run = demisto.getLastRun()
+        if last_run and 'start_time' in last_run:
+            start_time = last_run.get('start_time')
+        else:
+            start_time = timefrom
+        end_time = datetime.now().strftime('%Y-%m-%dT%H:%M:%S')
+        end_time += offset
+        parameters['start_date'] = start_time
+        if eventtype:
+            parameters['event_type[]'] = eventtype.split(',')
+        results = client._http_request('GET', 'events', params=parameters)
+        if 'data' in results and results['metadata']['results']['total'] > 0:
+            demisto.setLastRun({'start_time': end_time})
+            demisto.incidents(form_incindents(results['data']))
+        else:
+            demisto.setLastRun({'start_time': end_time})
+            demisto.incidents([])
+
+
+    def main():
+        username = demisto.params().get('credentials').get('identifier')
+        password = demisto.params().get('credentials').get('password')
+
+        # get the service API url
+        base_url = urljoin(demisto.params()['server'], '/v1/')
+
+        verify_certificate = not demisto.params().get('insecure', False)
+
+        proxy = demisto.params().get('proxy', False)
+
+        headers = {'Accept': 'application/json', 'content-type': 'application/json'}
+
+        demisto.info(f'Command being called is {demisto.command()}')
+        try:
+            client = BaseClient(
+                base_url=base_url,
+                verify=verify_certificate,
+                auth=(username, password),
+                headers=headers,
+                proxy=proxy)
+
+            if demisto.command() == 'test-module':
+                # This is the call made when pressing the integration Test button.
+                result = test_module(client)
+                demisto.results(result)
+            elif demisto.command() == 'fetch-incidents':
+                fetch_incidents(client)
+            elif demisto.command() == 'amp_get_computers':
+                parameters = {'group_guid[]': demisto.args().get('group_guid'),
+                              'internal_ip': demisto.args().get('internal_ip'),
+                              'hostname[]': demisto.args().get('hostname'),
+                              'external_ip': demisto.args().get('external_ip'),
+                              'limit': demisto.args().get('limit')}
+                results_return('GetComputers', client._http_request('GET', 'computers/', params=parameters))
+            elif demisto.command() == 'amp_get_computer_by_connector':
+                connector_guid = demisto.args().get('connector_guid')
+                results_return('GetComputerByConnector', client._http_request('GET', f'computers/{connector_guid}'))
+            elif demisto.command() == 'amp_get_computer_trajectory':
+                connector_guid = demisto.args().get('connector_guid')
+                parameters = {'q': demisto.args().get('q'),
+                              'limit': demisto.args().get('limit')}
+                results_return('GetComputerByTrajectory', client._http_request('GET', f'computers/{connector_guid}/trajectory', params=parameters))
+            elif demisto.command() == 'amp_move_computer':
+                connector_guid = demisto.args().get('connector_guid')
+                jsonparameters = {'group_guid': demisto.args().get('group_guid')}
+                jsonparameters = remove_empty_elements(jsonparameters)
+                results_return('MoveComputer', client._http_request('PATCH', f'computers/{connector_guid}', json_data=jsonparameters))
+            elif demisto.command() == 'amp_get_computer_activity':
+                parameters = {'q': demisto.args().get('q'),
+                              'offset': demisto.args().get('offset'),
+                              'limit': demisto.args().get('limit')}
+                results_return('GetComputerActivity', client._http_request('GET', 'computers/activity', params=parameters))
+            elif demisto.command() == 'amp_get_user_activity':
+                parameters = {'q': demisto.args().get('q'),
+                              'limit': demisto.args().get('limit'),
+                              'offset': demisto.args().get('offset')}
+                results_return('GetUserActivity', client._http_request('GET', 'computers/user_activity', params=parameters))
+            elif demisto.command() == 'amp_get_user_trajectory':
+                connector_guid = demisto.args().get('connector_guid')
+                parameters = {'q': demisto.args().get('q'),
+                              'limit': demisto.args().get('limit')}
+                results_return('GetUserByTrajectory', client._http_request('GET', f'computers/{connector_guid}/user_trajectory', params=parameters))
+            elif demisto.command() == 'amp_delete_computer':
+                connector_guid = demisto.args().get('connector_guid')
+                results_return('DeleteComputer', client._http_request('DELETE', f'computers/{connector_guid}'))
+            elif demisto.command() == 'amp_get_computers_isolation':
+                connector_guid = demisto.args().get('connector_guid')
+                results_return('GetComputerIsolation', client._http_request('GET', f'computers/{connector_guid}/isolation'))
+            elif demisto.command() == 'amp_get_computers_isolation_feature_availability':
+                connector_guid = demisto.args().get('connector_guid')
+                results_return('ComputerIsolationFeature', client._http_request('OPTIONS', f'computers/{connector_guid}/isolation'))
+            elif demisto.command() == 'amp_put_computers_isolation':
+                connector_guid = demisto.args().get('connector_guid')
+                results_return('PutComputerIsolation', client._http_request('PUT', f'computers/{connector_guid}/isolation'))
+            elif demisto.command() == 'amp_delete_computers_isolation':
+                connector_guid = demisto.args().get('connector_guid')
+                results_return('DeleteComputerIsolation', client._http_request('DELETE', f'computers/{connector_guid}/isolation', params=parameters))
+            elif demisto.command() == 'amp_get_events':
+                parameters = {'group_guid[]': demisto.args().get('group_guid'),
+                              'detection_sha256': demisto.args().get('detection_sha256'),
+                              'application_sha256': demisto.args().get('application_sha256'),
+                              'connector_guid[]': demisto.args().get('connector_guid'),
+                              'start_date': demisto.args().get('start_date'),
+                              'offset': demisto.args().get('offset'),
+                              'event_type[]': demisto.args().get('event_type').split(','),
+                              'limit': demisto.args().get('limit')}
+                results_return('GetEvents', client._http_request('GET', 'events', params=parameters))
+            elif demisto.command() == 'amp_get_event_types':
+                results_return('GetEventTypes', client._http_request('GET', 'event_types'))
+            elif demisto.command() == 'amp_get_application_blocking':
+                parameters = {'name[]': demisto.args().get('name'),
+                              'offset': demisto.args().get('offset'),
+                              'limit': demisto.args().get('limit')}
+                results_return('GetApplicationBlocking', client._http_request('GET', 'file_lists/application_blocking', params=parameters))
+            elif demisto.command() == 'amp_get_file_list_by_guid':
+                file_list_guid = demisto.args().get('file_list_guid')
+                results_return('GetFileList', client._http_request('GET', f'file_lists/{file_list_guid}'))
+            elif demisto.command() == 'amp_get_simple_custom_detections':
+                parameters = {'name[]': demisto.args().get('name'),
+                              'offset': demisto.args().get('offset'),
+                              'limit': demisto.args().get('limit')}
+                results_return('GetSimpleCustomDetections', client._http_request('GET', 'file_lists/simple_custom_detections', params=parameters))
+            elif demisto.command() == 'amp_get_file_list_files':
+                file_list_guid = demisto.args().get('file_list_guid')
+                parameters = {'offset': demisto.args().get('offset'),
+                              'limit': demisto.args().get('limit')}
+                results_return('GetFileListFiles', client._http_request('GET', f'file_lists/{file_list_guid}/files', params=parameters))
+            elif demisto.command() == 'amp_get_file_list_files_by_sha':
+                file_list_guid = demisto.args().get('file_list_guid')
+                sha256 = demisto.args().get('sha256')
+                results_return('GetFileListFilesBySHA256', client._http_request('GET', f'file_lists/{file_list_guid}/files/{sha256}'))
+            elif demisto.command() == 'amp_set_file_list_files_by_sha':
+                file_list_guid = demisto.args().get('file_list_guid')
+                sha256 = demisto.args().get('sha256')
+                jsonparameters = {'description': demisto.args().get('description')}
+                jsonparameters = remove_empty_elements(jsonparameters)
+                results_return('SetFileList', client._http_request('POST', f'file_lists/{file_list_guid}/files/{sha256}', json_data=jsonparameters))
+            elif demisto.command() == 'amp_delete_file_list_files_by_sha':
+                file_list_guid = demisto.args().get('file_list_guid')
+                sha256 = demisto.args().get('sha256')
+                results_return('DeleteFileList', client._http_request('DELETE', f'file_lists/{file_list_guid}/files/{sha256}'))
+            elif demisto.command() == 'amp_get_groups':
+                parameters = {'name': demisto.args().get('name'),
+                              'limit': demisto.args().get('limit')}
+                results_return('GetGroups', client._http_request('GET', 'groups/', params=parameters))
+            elif demisto.command() == 'amp_get_group':
+                group_guid = demisto.args().get('group_guid')
+                results_return('GetGroup', client._http_request('GET', f'groups/{group_guid}'))
+            elif demisto.command() == 'amp_set_group_policy':
+                group_guid = demisto.args().get('group_guid')
+                jsonparameters = {'linux_policy_guid': demisto.args().get('linux_policy_guid'),
+                                  'android_policy_guid': demisto.args().get('android_policy_guid'),
+                                  'mac_policy_guid': demisto.args().get('mac_policy_guid'),
+                                  'windows_policy_guid': demisto.args().get('windows_policy_guid')}
+                jsonparameters = remove_empty_elements(jsonparameters)
+                results_return('SetGroupPolicy', client._http_request('PATCH', f'groups/{group_guid}', json_data=jsonparameters))
+            elif demisto.command() == 'amp_get_policies':
+                parameters = {'name[]': demisto.args().get('name'),
+                              'offset': demisto.args().get('offset'),
+                              'product[]': demisto.args().get('product'),
+                              'limit': demisto.args().get('limit')}
+                results_return('GetPolicies', client._http_request('GET', 'policies/', params=parameters))
+            elif demisto.command() == 'amp_get_policy':
+                policy_guid = demisto.args().get('policy_guid')
+                results_return('GetPolicy', client._http_request('GET', f'policies/{policy_guid}'))
+            elif demisto.command() == 'amp_get_version':
+                results_return('GetVersion', client._http_request('GET', 'version'))
+            elif demisto.command() == 'amp_set_group_child_policy':
+                child_guid = demisto.args().get('child_guid')
+                jsonparameters = {'parent_group_guid': demisto.args().get('parent_group_guid')}
+                jsonparameters = remove_empty_elements(jsonparameters)
+                results_return('SetGroupChild', client._http_request('PATCH', f'groups/{child_guid}/parent', json_data=jsonparameters))
+            elif demisto.command() == 'amp_create_group':
+                jsonparameters = {'name': demisto.args().get('name'),
+                                  'description': demisto.args().get('description')}
+                jsonparameters = remove_empty_elements(jsonparameters)
+                results_return('CreateGroup', client._http_request('POST', 'groups', json_data=jsonparameters))
+            elif demisto.command() == 'amp_delete_group':
+                group_guid = demisto.args().get('group_guid')
+                results_return('DeleteGroup', client._http_request('DELETE', f'groups/{group_guid}'))
+            elif demisto.command() == 'amp_get_indicators':
+                parameters = {'offset': demisto.args().get('offset'),
+                              'limit': demisto.args().get('limit')}
+                results_return('Indicators', client._http_request('GET', 'indicators/', params=parameters))
+            elif demisto.command() == 'amp_get_indicator':
+                indicator_guid = demisto.args().get('indicator_guid')
+                results_return('Indicator', client._http_request('GET', f'indicators/{indicator_guid}'))
+            elif demisto.command() == 'amp_get_app_trajectory':
+                parameters = {'ios_bid': demisto.args().get('ios_bid')}
+                results_return('Indicator', client._http_request('GET', 'app_trajectory/queries', params=parameters))
+
+        # Log exceptions
+        except Exception as e:
+            return_error(f'Failed to execute {demisto.command()} command. Error: {str(e)}')
+
+
+    if __name__ in ('__main__', '__builtin__', 'builtins'):
+        main()
+  subtype: python3
+  type: python
