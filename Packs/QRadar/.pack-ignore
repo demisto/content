@@ -30,3 +30,8 @@ ignore=RM106
 
 [file:classifier-mapper-incoming-QRadar.json]
 ignore=BA101
+[file:incidentfield-Number_Of_Events_In_Offense.json]
+ignore=IF100
+
+[file:incidentfield-Number_Of_Fetched_Events.json]
+ignore=IF100
