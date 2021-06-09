@@ -82,8 +82,8 @@ tasks:
       '#none#':
       - "7"
     scriptarguments:
-      IP:
-        simple: 1.2.3.4
+      cidr_range:
+        simple: 1.2.3.4/32
       list_target:
         simple: proxy
       list_type:
