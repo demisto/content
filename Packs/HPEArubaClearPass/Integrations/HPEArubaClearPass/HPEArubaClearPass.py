@@ -360,10 +360,9 @@ def get_active_sessions_list_command(client: Client, args: Dict[str, Any]) -> Co
     session_id = args.get('session_id')
     device_ip = args.get('device_ip')
     device_mac_address = args.get('device_mac_address')
-    state = args.get('state')
     visitor_phone = args.get('visitor_phone')
 
-    session_filter = sessions_filter_to_json_object(session_id, device_ip, device_mac_address, state, visitor_phone)
+    session_filter = sessions_filter_to_json_object(session_id, device_ip, device_mac_address, visitor_phone)
     params = {"filter": session_filter}
 
     res = client.prepare_request(method='GET', params=params, url_suffix='session')
@@ -379,12 +378,11 @@ def get_active_sessions_list_command(client: Client, args: Dict[str, Any]) -> Co
     )
 
 
-def sessions_filter_to_json_object(session_id, device_ip, device_mac_address, state, visitor_phone):
+def sessions_filter_to_json_object(session_id, device_ip, device_mac_address, visitor_phone):
     session_filter = {}
     session_filter.update({"id": session_id}) if session_id else None
     session_filter.update({"framedipaddress": device_ip}) if device_ip else None
     session_filter.update({"mac_address": device_mac_address}) if device_mac_address else None
-    session_filter.update({"state": state}) if state else None
     session_filter.update({"visitor_phone": visitor_phone}) if visitor_phone else None
     # the API requires the value of 'filter' to be a json object.
     return json.dumps(session_filter) if session_filter else session_filter

@@ -479,12 +479,6 @@ script:
       required: false
       secret: false
     - default: false
-      description: The current state of the session (active, stale, closed).
-      isArray: false
-      name: state
-      required: false
-      secret: false
-    - default: false
       description: The visitor’s phone number.
       isArray: false
       name: visitor_phone

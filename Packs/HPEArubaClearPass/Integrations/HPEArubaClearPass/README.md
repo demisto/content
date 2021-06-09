@@ -598,7 +598,6 @@ Get a list of active sessions.
 | session_id | ID of the active session. | Optional | 
 | device_ip | IP address of the client. | Optional | 
 | device_mac_address | MAC address of the client device. | Optional | 
-| state | The current state of the session (active, stale, closed). | Optional | 
 | visitor_phone | The visitor’s phone number. | Optional | 
 
 
@@ -614,9 +613,7 @@ Get a list of active sessions.
 
 
 #### Command Example
-``` ```
-
-#### Human Readable Output
+```!aruba-clearpass-active-sessions-list```
 
 
 
@@ -644,8 +641,8 @@ Disconnect active session.
 
 
 #### Command Example
-``` ```
+```!aruba-clearpass-active-session-disconnect session_id=123```
 
-#### Human Readable Output
+
 
 
