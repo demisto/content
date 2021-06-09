@@ -81,9 +81,12 @@ def format_JSON_for_fetch_incidents(ls_anomaly):
 
 def fetch_incidents(client, max_alerts, last_run, first_fetch_time, apiKey, api_username, plugin_id, action):
 
-    last_fetch = dateparser.parse(last_run.get('last_fetch'))
-    if last_fetch is None:
+    if len(last_run) <= 0:
         last_fetch = dateparser.parse(first_fetch_time, settings={'TIMEZONE': 'UTC'})
+    else:
+        last_fetch = dateparser.parse(last_run.get('last_fetch'))
+        if last_fetch is None:
+            last_fetch = dateparser.parse(first_fetch_time, settings={'TIMEZONE': 'UTC'})
     latest_created_time = last_fetch
     diff_timedelta = float(datetime.utcnow().strftime('%s')) - float(latest_created_time.strftime('%s'))
     time_frame = int(math.ceil(diff_timedelta / 60))
@@ -104,7 +107,7 @@ def fetch_incidents(client, max_alerts, last_run, first_fetch_time, apiKey, api_
                 incident = {
                     'name': incident_name,
                     'occurred': timestamp_to_datestring(incident_occurred_time),
-                    'rawJSON': formatted_JSON,
+                    'rawJSON': json.dumps(formatted_JSON),
                     'CustomFields': {  # Map specific XSOAR Custom Fields
                         'sip': formatted_JSON['sip'],
                         'sourceip': formatted_JSON['sip'],
