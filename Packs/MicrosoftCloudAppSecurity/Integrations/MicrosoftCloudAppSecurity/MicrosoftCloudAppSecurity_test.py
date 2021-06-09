@@ -4,7 +4,7 @@ from MicrosoftCloudAppSecurity import Client
 
 
 def get_fetch_data():
-    with open('./test_data.json', 'r') as f:
+    with open('test_data/test_data.json', 'r') as f:
         return json.loads(f.read())
 
 
@@ -13,19 +13,16 @@ expected_filtered_alerts = {'filters': {'severity': {'eq': 0}, 'resolutionStatus
 response_alerts_data = {"service": "111", "instance": "111", "severity": "Low",
                         "resolution_status": "Open", "skip": "5", "limit": "10"}
 
-
 expected_filtered_activities = {'filters': {'ip.address': {'eq': '8.8.8.8'}, 'ip.category': {'eq': 1},
                                             'activity.takenAction': {'eq': 'block'}, 'source': {'eq': 0}},
                                 'skip': 5, 'limit': 10}
 response_activities_data = {"ip": "8.8.8.8", "ip_category": "Corporate",
                             'taken_action': 'block', 'source': 'Access_control', "skip": "5", "limit": "10"}
 
-
 expected_filtered_files = {'filters': {'fileType': {'eq': 0}, 'quarantined': {'eq': True}, 'sharing': {'eq': 0},
                                        'extension': {'eq': 'png'}}, 'skip': 5, 'limit': 10}
 response_files_data = {"file_type": "Other", "sharing": 'Private',
                        'extension': 'png', 'quarantined': 'True', "skip": "5", "limit": "10"}
-
 
 expected_filtered_users_accounts = {'filters': {'type': {'eq': 'user'}, 'isExternal': {'eq': True}, 'status': {'eq': 0},
                                                 'userGroups': {'eq': '1234'}, 'isAdmin': {'eq': 'demisto'}},
@@ -52,9 +49,12 @@ def test_args_to_filter(response_data, expected):
 @pytest.mark.parametrize(
     "alert_ids, customer_filters, comment, expected",
     [
-        ("5f06d71dba4,289d0602ba5ac", '', '', {'filters': {'id': {'eq': ['5f06d71dba4', '289d0602ba5ac']}}}),
-        ("5f06d71dba4", '', 'Irrelevant', {"comment": "Irrelevant", 'filters': {'id': {'eq': ['5f06d71dba4']}}}),
-        ("", '{"filters": {"id": {"eq": ["5f06d71dba4"]}}}', "", {'filters': {'id': {'eq': ['5f06d71dba4']}}})
+        ("6060c4300be9cfd6182c934d,605c63ff0be9cfd618f0dcb1", '', '',
+         {'filters': {'id': {'eq': ['6060c4300be9cfd6182c934d', '605c63ff0be9cfd618f0dcb1']}}}),
+        ("6060c4300be9cfd6182c934d", '', 'Irrelevant',
+         {"comment": "Irrelevant", 'filters': {'id': {'eq': ['6060c4300be9cfd6182c934d']}}}),
+        ("", '{"filters": {"id": {"eq": ["6060c4300be9cfd6182c934d"]}}}', "",
+         {'filters': {'id': {'eq': ['6060c4300be9cfd6182c934d']}}})
     ]
 )
 def test_args_to_filter_for_dismiss_and_resolve_alerts(alert_ids, customer_filters, comment, expected):
@@ -138,19 +138,52 @@ def test_alerts_to_incidents_and_fetch_start_from(requests_mock):
     requests_mock.get('https://demistodev.eu2.portal.cloudappsecurity.com/api/v1/alerts/',
                       json=incidents["incidents"])
     res_incidents, fetch_start_time, new_last_fetch_id = \
-        alerts_to_incidents_and_fetch_start_from(incidents["incidents"], 1602771392519, {"last_fetch": 1603365903,
-                                                 "last_fetch_id": "5f919e55b0703c2f5a23d9d8"})
+        alerts_to_incidents_and_fetch_start_from(incidents["incidents"], 1602771392519,
+                                                 {"last_fetch": 1603365903,
+                                                  "last_fetch_id": "5f919e55b0703c2f5a23d9d8"})
     assert fetch_start_time == 1603385903000
     assert new_last_fetch_id == "5f919e55b0703c2f5a23d9d7"
     assert res_incidents == [{'name': 'block1', 'occurred': '2020-10-22T16:58:23Z',
                               'rawJSON': '{"_id": "5f919e55b0703c2f5a23d9d7", "timestamp": 1603385903000, '
-                              '"title": "block1"}'}]
+                                         '"title": "block1"}'}]
 
     requests_mock.get('https://demistodev.eu2.portal.cloudappsecurity.com/api/v1/alerts/',
                       json=[])
     res_incidents, fetch_start_time, new_last_fetch_id = \
         alerts_to_incidents_and_fetch_start_from([], 1602771392519, {"last_fetch": 1603365903,
-                                                 "last_fetch_id": "5f919e55b0703c2f5a23d9d8"})
+                                                                     "last_fetch_id": "5f919e55b0703c2f5a23d9d8"})
     assert fetch_start_time == 1602771392519
     assert new_last_fetch_id == "5f919e55b0703c2f5a23d9d8"
     assert res_incidents == []
+
+
+def test_close_false_positive_command_success(requests_mock):
+    """
+    Given:
+        - List of alerts
+    When:
+        - Close requested alerts as false positive
+    Then:
+        - Returns message: POST SUCCEEDED
+    """
+    from MicrosoftCloudAppSecurity import close_false_positive_command
+    raw_response = get_fetch_data()
+    args = {"filters": {
+        "id": {
+            "eq": [
+                "6060c4300be9cfd6182c934d",
+                "604f14400be9cfd6181b13fb"
+            ]
+        }
+    }
+    }
+    custom_filter = {"custom_filter": json.dumps(args)}
+
+    expected = raw_response["CLOSE_ALERT_SUCCESS"]
+    requests_mock.post('https://demistodev.eu2.portal.cloudappsecurity.com/api/v1/alerts/close_false_positive/',
+                       json=expected)
+
+    res = close_false_positive_command(client_mocker, custom_filter).outputs
+    assert res == expected
+
+# close_benign and close_true_positive are the same as close_false_positive

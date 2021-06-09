@@ -84,6 +84,20 @@ STATUS_OPTIONS = {
     'Deleted': 4
 }
 
+CLOSE_BENIGN_REASON_OPTIONS = {
+    'Actual severity is lower': 0,
+    'Other': 1,
+    'Confirmed with end user': 2,
+    'Triggered by test': 3
+}
+
+CLOSE_FALSE_POSITIVE_REASON_OPTIONS = {
+    'Not of interest': 0,
+    'Too many similar alerts': 1,
+    'Alert is not accurate': 2,
+    'Other': 3
+}
+
 INTEGRATION_NAME = 'MicrosoftCloudAppSecurity'
 
 
@@ -116,6 +130,27 @@ class Client(BaseClient):
             json_data=request_data
         )
         return data
+
+    def close_benign(self, request_data: dict):
+        return self._http_request(
+            method='POST',
+            url_suffix='/alerts/close_benign/',
+            json_data=request_data
+        )
+
+    def close_false_positive(self, request_data: dict):
+        return self._http_request(
+            method='POST',
+            url_suffix='/alerts/close_false_positive/',
+            json_data=request_data
+        )
+
+    def close_true_positive(self, request_data: dict):
+        return self._http_request(
+            method='POST',
+            url_suffix='/alerts/close_true_positive/',
+            json_data=request_data
+        )
 
     def list_activities(self, url_suffix: str, request_data: dict):
         data = self._http_request(
@@ -154,6 +189,11 @@ class Client(BaseClient):
 
 
 def args_to_filter(arguments: dict):
+    """
+    Common filters of **all** related entities (Activities, Alerts, Files, Data Entities etc.)
+    For more info please check
+
+    """
     request_data: Dict[str, Any] = {}
     filters: Dict[str, Any] = {}
     for key, value in arguments.items():
@@ -218,7 +258,36 @@ def build_filter_and_url_to_search_with(url_suffix: str, custom_filter: Optional
     return request_data, url_suffix
 
 
+def args_to_filter_close_alerts(alert_ids: Any, custom_filter: Optional[Any], comment: Optional[Any] = '',
+                                reason: Optional[Any] = '', sendFeedback: bool = False,
+                                feedbackText: Optional[Any] = '', allowContact: bool = False,
+                                contactEmail: Optional[Any] = ''):
+    request_data: Dict[str, Any] = {}
+    filters = {}
+
+    if alert_ids:
+        ids = {'eq': alert_ids.split(',')}
+        filters['id'] = ids
+        request_data['filters'] = filters
+    elif custom_filter:
+        request_data = json.loads(custom_filter)
+    else:
+        raise DemistoException("Error: You must enter at least one of these arguments: alert ID, custom filter.")
+
+    request_data['comment'] = comment
+    request_data['reason'] = reason
+    request_data['sendFeedback'] = sendFeedback
+    request_data['feedbackText'] = feedbackText
+    request_data['allowContact'] = allowContact
+    request_data['contactEmail'] = contactEmail
+
+    return request_data
+
+
 def args_to_filter_for_dismiss_and_resolve_alerts(alert_ids: Any, custom_filter: Any, comments: Any):
+    """
+    Deprecated by args_to_filter_close_alerts.
+    """
     request_data: Dict[str, Any] = {}
     filters = {}
     if alert_ids:
@@ -340,6 +409,9 @@ def list_alerts_command(client: Client, args: dict):
 
 
 def bulk_dismiss_alert_command(client: Client, args: dict):
+    """
+    Deprecated by: close_false_positive_command
+    """
     alert_ids = args.get('alert_ids')
     custom_filter = args.get('custom_filter')
     comment = args.get('comment')
@@ -359,6 +431,9 @@ def bulk_dismiss_alert_command(client: Client, args: dict):
 
 
 def bulk_resolve_alert_command(client: Client, args: dict):
+    """
+    Deprecated by: close_true_positive_command
+    """
     alert_ids = args.get('alert_ids')
     custom_filter = args.get('custom_filter')
     comment = args.get('comment')
@@ -589,11 +664,79 @@ def params_to_filter(severity: List[str], resolution_status: str):
     return filters
 
 
+def close_benign_command(client: Client, args: dict):
+    alert_ids = args.get('alert_ids')
+    custom_filter = args.get('custom_filter')
+    comment = args.get('comment')
+    reason = CLOSE_BENIGN_REASON_OPTIONS.get(str(args.get('reason')))
+    sendFeedback = bool(args.get('sendFeedback'))
+    feedbackText = args.get('feedbackText')
+    allowContact = bool(args.get('allowContact'))
+    contactEmail = args.get('contactEmail')
+
+    request_data = args_to_filter_close_alerts(alert_ids, custom_filter, comment, reason,
+                                               sendFeedback, feedbackText, allowContact, contactEmail)
+    close_benign_alerts = client.close_benign(request_data)
+    number_of_close_benign = close_benign_alerts["close_benign"]
+    return CommandResults(
+        readable_output=f'{number_of_close_benign} alerts are classified as close benign',
+        outputs_prefix='MicrosoftCloudAppSecurity.Alerts',
+        outputs_key_field='_id',
+        outputs=close_benign_alerts)
+
+
+def close_false_positive_command(client: Client, args: dict):
+    alert_ids = args.get('alert_ids')
+    custom_filter = args.get('custom_filter')
+    comment = args.get('comment')
+    reason = CLOSE_FALSE_POSITIVE_REASON_OPTIONS.get(str(args.get('reason')))
+    sendFeedback = bool(args.get('sendFeedback'))
+    feedbackText = args.get('feedbackText')
+    allowContact = bool(args.get('allowContact'))
+    contactEmail = args.get('contactEmail')
+
+    request_data = args_to_filter_close_alerts(alert_ids, custom_filter, comment, reason,
+                                               sendFeedback, feedbackText, allowContact, contactEmail)
+    closed_false_positive_data = {}
+    try:
+        closed_false_positive_data = client.close_false_positive(request_data)
+    except Exception as e:
+        if 'alertsNotFound' in str(e):
+            raise DemistoException('Error: This alert id is already closed or does not exist.')
+    number_of_closed_false_positive_alerts = closed_false_positive_data['closed_false_positive']
+
+    return CommandResults(
+        readable_output=f'{number_of_closed_false_positive_alerts} alerts are classified as closed false positive',
+        outputs_prefix='MicrosoftCloudAppSecurity.Alerts',
+        outputs_key_field='_id',
+        outputs=closed_false_positive_data)
+
+
+def close_true_positive_command(client: Client, args: dict):
+    alert_ids = args.get('alert_ids')
+    custom_filter = args.get('custom_filter')
+    comment = args.get('comment')
+    reason = CLOSE_BENIGN_REASON_OPTIONS.get(str(args.get('reason')))
+    sendFeedback = bool(args.get('sendFeedback'))
+    feedbackText = args.get('feedbackText')
+    allowContact = bool(args.get('allowContact'))
+    contactEmail = args.get('contactEmail')
+
+    request_data = args_to_filter_close_alerts(alert_ids, custom_filter, comment, reason,
+                                               sendFeedback, feedbackText, allowContact, contactEmail)
+    close_true_positive = client.close_true_positive(request_data)
+    number_of_close_true_positive = close_true_positive['closed_true_positive']
+    return CommandResults(
+        readable_output=f'{number_of_close_true_positive} are classified as closed true positive',
+        outputs_prefix='MicrosoftCloudAppSecurity.Alerts',
+        outputs_key_field='_id',
+        outputs=close_true_positive)
+
+
 def main():
     """
         PARSE AND VALIDATE INTEGRATION PARAMS
     """
-
     params = demisto.params()
     token = demisto.params().get('token')
     base_url = f'{demisto.params().get("url")}/api/v1'
@@ -647,6 +790,14 @@ def main():
         elif demisto.command() == 'microsoft-cas-users-accounts-list':
             return_results(list_users_accounts_command(client, demisto.args()))
 
+        elif demisto.command() == 'microsoft-cas-alert-close-benign':
+            return_results(close_benign_command(client, demisto.args()))
+
+        elif demisto.command() == 'microsoft-cas-alert-close-true-positive':
+            return_results(close_true_positive_command(client, demisto.args()))
+
+        elif demisto.command() == 'microsoft-cas-alert-close-false-positive':
+            return_results(close_false_positive_command(client, demisto.args()))
     # Log exceptions
     except Exception as e:
         return_error(f'Failed to execute {demisto.command()} command. Error: {str(e)}')
