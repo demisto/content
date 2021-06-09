@@ -1055,8 +1055,8 @@ def remove_private_tests(tests_without_private_packs):
 def filter_tests(tests: set, id_set: json, is_nightly=False) -> set:
     """
     Filter tests out from the test set if they are:
-    a.Ignored
-    b.Non XSOAR or non-supported packs
+    a. Ignored
+    b. Non-XSOAR or non-supported packs
     c. tests of deprecated packs.
     d. tests of private packs (optional)
     Args:
