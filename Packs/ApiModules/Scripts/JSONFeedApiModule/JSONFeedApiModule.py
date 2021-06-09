@@ -248,7 +248,7 @@ def handle_indicator(client: Client, item: Dict, feed_config: Dict, service_name
     if mapping:
         mapping_function(mapping, indicator, attributes)
 
-    if create_relationships and relations_function and feed_config.get('relation_name'):
+    if create_relationships and relationships_func and feed_config.get('relation_name'):
         indicator['relationships'] = relationships_func(feed_config, mapping, attributes)
 
     if feed_config.get('rawjson_include_indicator_type'):
