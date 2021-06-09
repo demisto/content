@@ -9,21 +9,27 @@ requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
 
 ''' CONSTANTS '''
 INTEGRATION_NAME = 'Carbon Black EDR'
-MAX_INCIDENTS_TO_FETCH = 50
 
 ''' PARSING PROCESS EVENT COMPLEX FIELDS CLASS'''
 
 
 class ProcessEventDetail:
-
+    """
+    This class representing the Process Event Details as found here:
+    https://developer.carbonblack.com/reference/enterprise-response/6.3/rest-api/#process-event-details
+    Each sub-class representing a different piped-versioned field, and support the format method.
+    """
     def __init__(self, piped_version: Union[str, list], fields):
         self.fields = []
         if not isinstance(piped_version, list):
             piped_version = [piped_version]
         for entry in piped_version:
             data = entry.split('|')
+
+            # zip works when number of values is not equal, which can result in incorrect data.
             if len(data) != len(fields):
                 demisto.debug(f'{INTEGRATION_NAME} - Missing details. Ignoring entry: {entry}.')
+
             self.fields.append(dict(zip(fields, data)))
 
     def format(self):
@@ -141,12 +147,13 @@ class Client(BaseClient):
 
     def get_alerts(self, status: str = None, username: str = None, feedname: str = None,
                    hostname: str = None, report: str = None, sort: str = None, query: str = None,
-                   facet: str = None, limit: Union[str, int] = None, start: str = None) -> dict:
+                   facet: str = None, limit: Union[str, int] = None, start: str = None,
+                   allow_empty_params: bool = False) -> dict:
 
         query_fields = ['status', 'username', 'feedname', 'hostname', 'report', 'query']
         local_params = locals()
         query_params = {key: local_params.get(key) for key in query_fields if local_params.get(key)}
-        query_string = _create_query_string(query_params)
+        query_string = _create_query_string(query_params, allow_empty_params=allow_empty_params)
         params = assign_params(q=query_string,
                                rows=arg_to_number(limit, 'limit'),
                                start=start,
@@ -195,12 +202,13 @@ class Client(BaseClient):
         return self.http_request(url='/v1/process', method='GET', params=params)
 
     def get_formatted_ProcessEventDetail(self, process_json: dict):
-        COMPLEX_FIELDS = {'filemod_complete': filemod_complete, 'modload_complete': modload_complete,
+        complex_fields = {'filemod_complete': filemod_complete, 'modload_complete': modload_complete,
                           'regmod_complete': regmod_complete, 'crossproc_complete': crossproc_complete}
         formatted_json = {}
         for field in process_json:
-            if field in COMPLEX_FIELDS:
-                field_object: ProcessEventDetail = COMPLEX_FIELDS[field](process_json.get(field))
+            if field in complex_fields:
+                # creating the relevant field object and formatting it.
+                field_object: ProcessEventDetail = complex_fields[field](process_json.get(field))
                 formatted_json[field] = field_object.format()
             else:
                 formatted_json[field] = process_json.get(field)
@@ -211,18 +219,18 @@ class Client(BaseClient):
 ''' HELPER FUNCTIONS '''
 
 
-def _create_query_string(params: dict, allow_empty: bool = False) -> str:
+def _create_query_string(params: dict, allow_empty_params: bool = False) -> str:
     """
     Creating a cb query from params according to https://developer.carbonblack.com/resources/query_overview.pdf.
     if 'query' in params, it overrides the other params.
-    allow_empty is used for testing and not production as it would overload the context.
+    allow_empty_params is used for testing and not production as it would overload the context.
     """
     if 'query' in params:
         return params['query']
     current_query = [f"{query_field}:{params[query_field]}" for query_field in params]
     current_query = ' AND '.join(current_query)
 
-    if not current_query and not allow_empty:
+    if not current_query and not allow_empty_params:
         raise Exception(f'{INTEGRATION_NAME} - Search without any filter is not permitted.')
 
     return current_query
@@ -235,10 +243,13 @@ def _get_sensor_isolation_change_body(client: Client, sensor_id: str, new_isolat
 
 
 def _parse_field(raw_field: str, sep: str = ',', index_after_split: int = 0, chars_to_remove: str = '') -> str:
+    '''
+    This function allows getting a specific complex sub-string. "example,example2|" -> 'example2'
+    '''
     try:
         new_field = raw_field.split(sep)[index_after_split]
     except IndexError:
-        raise IndexError(f'raw: {raw_field}, splitted by {sep} has no index {index_after_split}')
+        raise IndexError(f'raw: {raw_field}, split by {sep} has no index {index_after_split}')
     chars_to_remove = set(chars_to_remove)
     for char in chars_to_remove:
         new_field = new_field.replace(char, '')
@@ -246,6 +257,8 @@ def _parse_field(raw_field: str, sep: str = ',', index_after_split: int = 0, cha
 
 
 def _get_isolation_status_field(isolation_activated: bool, is_isolated: bool) -> str:
+    # Logic for isolation can be found in:
+    # https://developer.carbonblack.com/reference/enterprise-response/6.3/rest-api/#sensorsendpoints
     if isolation_activated:
         sensor_isolation_status = 'Yes' if is_isolated else 'Pending isolation'
     else:
@@ -657,8 +670,8 @@ def endpoint_command(client: Client, id: str = None, ip: str = None, hostname: s
         return CommandResults(readable_output=f'{INTEGRATION_NAME} - Could not get endpoint')
 
 
-def fetch_incidents(client: Client, max_results: int, last_run: dict, first_fetch_time: int, status: str,
-                    feedname: str, hostname: str, query: str):
+def fetch_incidents(client: Client, max_results: int, last_run: dict, first_fetch_time: int, status: str = None,
+                    feedname: str = None, hostname: str = None, query: str = None):
     last_fetch = last_run.get('last_fetch', None)
     # Handle first fetch time
     if last_fetch is None:
@@ -681,8 +694,11 @@ def fetch_incidents(client: Client, max_results: int, last_run: dict, first_fetc
             if incident_created_time_ms <= last_fetch:
                 continue
 
-        # If no name is present it will throw an exception
-        incident_name = alert['process_name']
+        alert_id = alert.get('unique_id', '')
+        alert_name = alert.get('process_name', '')
+        incident_name = f'{INTEGRATION_NAME}: {alert_id} {alert_name}'
+        if not alert_id or not alert_name:
+            demisto.debug(f'Alert details are missing. {str(alert)}')
 
         incident = {
             'name': incident_name,
@@ -696,6 +712,7 @@ def fetch_incidents(client: Client, max_results: int, last_run: dict, first_fetc
         if incident_created_time_ms > latest_created_time:
             latest_created_time = incident_created_time_ms
 
+    demisto.debug(f'Fetched {len(alerts)} alerts. Saving {len(incidents)} as incidents.')
     # Save the next_run as a dict with the last_fetch key to be stored
     next_run = {'last_fetch': latest_created_time}
     return next_run, incidents
@@ -704,6 +721,8 @@ def fetch_incidents(client: Client, max_results: int, last_run: dict, first_fetc
 def test_module(client: Client) -> str:
     try:
         client.get_processes(limit='5', allow_empty=True)
+        if demisto.params().get('isFetch'):
+            client.get_alerts(allow_empty_params=True, limit='5')
         return 'ok'
     except DemistoException as e:
         if 'Forbidden' in str(e) or 'Authorization' in str(e):
@@ -759,27 +778,16 @@ def main() -> None:
             return_results(result)
 
         elif command == 'fetch-incidents':
-            # Set and define the fetch incidents command to run after activated via integration settings.
-            alert_status = demisto.params().get('alert_status', None)
-            alert_feed_name = demisto.params().get('alert_feed_name', None)
-            alert_hostname = demisto.params().get('alert_hostname', None)
-            alert_query = demisto.params().get('alert_query', None)
-
             # Convert the argument to an int using helper function or set to MAX_INCIDENTS_TO_FETCH
             max_results = arg_to_number(
-                arg=demisto.params().get('max_fetch'),
-                arg_name='max_fetch',
-                required=False
+                arg=demisto.params().get('max_fetch', '50'), arg_name='max_fetch', required=False
             )
-            if not max_results or max_results > MAX_INCIDENTS_TO_FETCH:
-                max_results = MAX_INCIDENTS_TO_FETCH
+
             # How much time before the first fetch to retrieve incidents
-            first_fetch_time = arg_to_datetime(
-                arg=demisto.params().get('first_fetch', '3 days'),
-                arg_name='First fetch time',
-                required=True
-            )
+            first_fetch_time = dateparser.parse(arg=demisto.params().get('first_fetch', '3 days'),
+                                                arg_name='First fetch time', required=True)
             first_fetch_timestamp = int(first_fetch_time.timestamp()) if first_fetch_time else None
+
             # Using assert as a type guard (since first_fetch_time is always an int when required=True)
             assert isinstance(first_fetch_timestamp, int)
 
@@ -787,11 +795,11 @@ def main() -> None:
                 client=client,
                 max_results=max_results,
                 last_run=demisto.getLastRun(),  # getLastRun() gets the last run dict
-                first_fetch_time=first_fetch_timestamp,
-                status=alert_status,
-                feedname=alert_feed_name,
-                hostname=alert_hostname,
-                query=alert_query)
+                first_fetch_time=first_fetch_time,
+                status=demisto.params().get('alert_status', None),
+                feedname=demisto.params().get('alert_feed_name', None),
+                hostname=demisto.params().get('alert_hostname', None),
+                query=demisto.params().get('alert_query', None))
             demisto.setLastRun(next_run)
             demisto.incidents(incidents)
 

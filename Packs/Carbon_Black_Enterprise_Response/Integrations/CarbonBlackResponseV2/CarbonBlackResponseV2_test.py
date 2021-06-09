@@ -1,5 +1,7 @@
 import json
 import io
+
+import dateparser
 import pytest
 import demistomock as demisto
 
@@ -255,3 +257,16 @@ def test_crossproc(data_str, expected):
 
     res = crossproc_complete(data_str).format()
     assert res == expected
+
+
+def test_fetch_incidents(mocker):
+    from CarbonBlackResponseV2 import fetch_incidents, Client
+    # last_run = {'lastRun': '2018-10-24T14:13:20+00:00'}
+    alerts = util_load_json('test_data/commands_test_data.json').get('fetch_incident_data')
+    client = Client(base_url="url", apitoken="api_key", use_ssl=True, use_proxy=False)
+    mocker.patch.object(Client, 'get_alerts', return_value=alerts)
+    first_fetch_time = dateparser.parse(demisto.params().get('first_fetch', '3 days'))
+    first_fetch_timestamp = int(first_fetch_time.timestamp()) if first_fetch_time else None
+    _, incidents = fetch_incidents(client, last_run={}, first_fetch_time=first_fetch_timestamp, max_results='3')
+    assert len(incidents) == 3
+    assert incidents[0].get('name') == 'Carbon Black EDR: 1 svchost.exe'

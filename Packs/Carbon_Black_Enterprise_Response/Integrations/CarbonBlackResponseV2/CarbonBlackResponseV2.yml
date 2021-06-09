@@ -11,14 +11,6 @@ configuration:
   name: apitoken
   required: true
   type: 4
-- display: Trust any certificate (not secure)
-  name: insecure
-  required: false
-  type: 8
-- display: Use system proxy settings
-  name: proxy
-  required: false
-  type: 8
 - display: Fetch incidents
   name: isFetch
   required: false
@@ -62,6 +54,14 @@ configuration:
   name: first_fetch
   required: false
   type: 0
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
 description: VMware Carbon Black EDR (formerly known as Carbon Black Response)
 display: VMware Carbon Black EDR v2
 name: carbonblack-v3
