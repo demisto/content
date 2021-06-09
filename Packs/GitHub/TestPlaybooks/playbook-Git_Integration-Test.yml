@@ -46,8 +46,8 @@ tasks:
     nexttasks:
       '#none#':
       - "16"
-      - "21"
       - "26"
+      - "61"
     scriptarguments:
       all:
         simple: "yes"
@@ -1823,6 +1823,46 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "61":
+    id: "61"
+    taskid: 6feb9775-5046-41f7-8fc9-1a6832f44348
+    type: regular
+    task:
+      id: 6feb9775-5046-41f7-8fc9-1a6832f44348
+      version: -1
+      name: GitHub-create-release
+      description: Create a release.
+      script: '|||GitHub-create-release'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "21"
+    scriptarguments:
+      body:
+        simple: test
+      name:
+        simple: 1.0.0
+      tag_name:
+        simple: 1.0.0
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1945
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {},
