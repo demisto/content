@@ -84,8 +84,7 @@ tasks:
       id: 0aa77ad6-c7bc-4f8b-84cf-3b8c9a901a7f
       version: -1
       name: panorama-get-predefined-threats-list
-      description: Gets the predefined threats list from a Firewall or Panorama and
-        stores it as a JSON file in the context.
+      description: Gets the predefined threats list from a Firewall or Panorama.
       script: '|||panorama-get-predefined-threats-list'
       type: regular
       iscommand: true
@@ -128,6 +127,6 @@ view: |-
 inputs: []
 outputs: []
 tests:
-- PanoramaCVECoverage - Test
+- No tests (auto formatted)
 fromversion: 5.0.0
-description: Find if there is a signature coverage for a specific CVE
+description: Find if there is a signature coverage for a specific CVE.

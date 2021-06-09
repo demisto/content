@@ -1,8 +1,8 @@
 commonfields:
-  id: Panorama_CVE_Coverage
+  id: PanoramaCVECoverage
   version: -1
-name: Panorama_CVE_Coverage
-comment: comma delimited list of CVEs to find
+name: PanoramaCVECoverage
+comment: Check coverage given a list of CVEs.
 script: ''
 type: python
 tags: []
@@ -10,12 +10,12 @@ enabled: true
 args:
 - name: CVE_List
   required: true
-  description: comma delimited list of CVEs to find
+  description: comma delimited list of CVEs to find.
 - name: Result_file
   required: true
-  description: Entry ID of the output file from the panorama command
+  description: Entry ID of the output file from the panorama command.
 - name: outputFormat
-  description: raw output of panorama command into a file
+  description: raw output of panorama command into a file.
   required: true
   auto: PREDEFINED
   predefined:
