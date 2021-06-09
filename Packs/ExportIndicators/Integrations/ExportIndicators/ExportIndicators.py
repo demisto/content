@@ -1,18 +1,28 @@
+import logging
+
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
 
 import re
 import json
-import traceback
 from base64 import b64decode
 from multiprocessing import Process
 from gevent.pywsgi import WSGIServer
-from tempfile import NamedTemporaryFile
+import subprocess
+import gevent
+from signal import SIGUSR1
+import requests
+from flask.logging import default_handler
 from flask import Flask, Response, request
 from netaddr import IPAddress, IPSet
-from ssl import SSLContext, SSLError, PROTOCOL_TLSv1_2
 from typing import Callable, List, Any, cast, Dict, Tuple
+from datetime import datetime, timezone
+import os
+import traceback
+from string import Template
+from math import ceil
+import dateparser
 
 
 class Handler:
@@ -76,6 +86,42 @@ _PROTOCOL_REMOVAL = re.compile(r'^(?:[a-z]+:)*//')
 _PORT_REMOVAL = re.compile(r'^([a-z0-9\-\.]+)(?:\:[0-9]+)*')
 _INVALID_TOKEN_REMOVAL = re.compile(r'(?:[^\./+=\?&]+\*[^\./+=\?&]*)|(?:[^\./+=\?&]*\*[^\./+=\?&]+)')
 _BROAD_PATTERN = re.compile(r'^(?:\*\.)+[a-zA-Z]+(?::[0-9]+)?$')
+
+# nginx server params
+NGINX_SERVER_ACCESS_LOG = '/var/log/nginx/access.log'
+NGINX_SERVER_ERROR_LOG = '/var/log/nginx/error.log'
+NGINX_SERVER_CONF_FILE = '/etc/nginx/conf.d/default.conf'
+NGINX_SSL_KEY_FILE = '/etc/nginx/ssl/ssl.key'
+NGINX_SSL_CRT_FILE = '/etc/nginx/ssl/ssl.crt'
+NGINX_SSL_CERTS = f'''
+    ssl_certificate {NGINX_SSL_CRT_FILE};
+    ssl_certificate_key {NGINX_SSL_KEY_FILE};
+'''
+NGINX_SERVER_CONF = '''
+server {
+
+    listen $port default_server $ssl;
+
+    $sslcerts
+
+    proxy_cache_key $scheme$proxy_host$request_uri$extra_cache_key;
+
+    # Static test file
+    location = /nginx-test {
+        alias /var/lib/nginx/html/index.html;
+        default_type text/html;
+    }
+
+    # Proxy everything to python
+    location / {
+        proxy_pass http://localhost:$serverport/;
+        add_header X-Proxy-Cache $upstream_cache_status;
+        # allow bypassing the cache with an arg of nocache=1 ie http://server:7000/?nocache=1
+        proxy_cache_bypass $arg_nocache;
+    }
+}
+
+'''
 
 '''Request Arguments Class'''
 
@@ -773,16 +819,21 @@ def route_list_values() -> Response:
             if not validate_basic_authentication(headers, username, password):
                 err_msg: str = 'Basic authentication failed. Make sure you are using the right credentials.'
                 demisto.debug(err_msg)
-                return Response(err_msg, status=401)
+                return Response(err_msg, status=401, mimetype='text/plain', headers=[
+                    ('WWW-Authenticate', 'Basic realm="Login Required"'),
+                ])
 
         request_args = get_request_args(params)
+        created = datetime.now(timezone.utc)
+        cache_refresh_rate = params.get('cache_refresh_rate')
 
         values = get_outbound_ioc_values(
             on_demand=params.get('on_demand'),
             last_update_data=get_integration_context(),
-            cache_refresh_rate=params.get('cache_refresh_rate'),
+            cache_refresh_rate=cache_refresh_rate,
             request_args=request_args
         )
+        query_time = (datetime.now(timezone.utc) - created).total_seconds()
 
         if not get_integration_context() and params.get('on_demand'):
             values = 'You are running in On-Demand mode - please run !eis-update command to initialize the ' \
@@ -803,7 +854,22 @@ def route_list_values() -> Response:
                 values = f"{prepend_str}\n{values}"
 
         mimetype = get_outbound_mimetype()
-        return Response(values, status=200, mimetype=mimetype)
+
+        list_size = 0
+        if values.strip():
+            list_size = values.count('\n') + 1  # add 1 as last line doesn't have a \n
+        max_age = ceil((datetime.now() - dateparser.parse(cache_refresh_rate)).total_seconds())  # type: ignore[operator]
+        demisto.debug(f'Returning exported indicators list of size: [{list_size}], created: [{created}], '
+                      f'query time seconds: [{query_time}], max age: [{max_age}]')
+        resp = Response(values, status=200, mimetype=mimetype, headers=[
+            ('X-ExportIndicators-Created', created.isoformat()),
+            ('X-ExportIndicators-Query-Time-Secs', "{:.3f}".format(query_time)),
+            ('X-ExportIndicators-Size', str(list_size))
+        ])
+        resp.cache_control.max_age = max_age
+        resp.cache_control[
+            'stale-if-error'] = '600'  # number of seconds we are willing to serve stale content when there is an error
+        return resp
 
     except Exception:
         return Response(traceback.format_exc(), status=400, mimetype='text/plain')
@@ -842,67 +908,206 @@ def test_module(args, params):
     return 'ok'
 
 
-def run_long_running(params, is_test=False):
+def create_nginx_server_conf(file_path: str, port: int, params: Dict):
+    """Create nginx conf file
+
+    Args:
+        file_path (str): path of server conf file
+        port (int): listening port. server port to proxy to will be port+1
+        params (Dict): additional nginx params
+
+    Raises:
+        DemistoException: raised if there is a detected config error
+    """
+    template_str = params.get('nginx_server_conf') or NGINX_SERVER_CONF
+    certificate: str = params.get('certificate', '')
+    private_key: str = params.get('key', '')
+    ssl = ''
+    sslcerts = ''
+    serverport = port + 1
+    extra_cache_key = ''
+    if (certificate and not private_key) or (private_key and not certificate):
+        raise DemistoException('If using HTTPS connection, both certificate and private key should be provided.')
+    if certificate and private_key:
+        demisto.debug('Using HTTPS for nginx conf')
+        with open(NGINX_SSL_CRT_FILE, 'wt') as f:
+            f.write(certificate)
+        with open(NGINX_SSL_KEY_FILE, 'wt') as f:
+            f.write(private_key)
+        ssl = 'ssl'  # to be included in the listen directive
+        sslcerts = NGINX_SSL_CERTS
+    credentials = params.get('credentials') or {}
+    if credentials.get('identifier'):
+        extra_cache_key = "$http_authorization"
+    server_conf = Template(template_str).safe_substitute(port=port, serverport=serverport, ssl=ssl,
+                                                         sslcerts=sslcerts, extra_cache_key=extra_cache_key)
+    with open(file_path, mode='wt') as f:
+        f.write(server_conf)
+
+
+def start_nginx_server(port: int, params: Dict) -> subprocess.Popen:
+    create_nginx_server_conf(NGINX_SERVER_CONF_FILE, port, params)
+    nginx_global_directives = 'daemon off;'
+    global_directives_conf = params.get('nginx_global_directives')
+    if global_directives_conf:
+        nginx_global_directives = f'{nginx_global_directives} {global_directives_conf}'
+    directive_args = ['-g', nginx_global_directives]
+    # we first do a test that all config is good and log it
+    try:
+        nginx_test_command = ['nginx', '-T']
+        nginx_test_command.extend(directive_args)
+        test_output = subprocess.check_output(nginx_test_command, stderr=subprocess.STDOUT, text=True)
+        demisto.info(f'ngnix test passed. command: [{nginx_test_command}]')
+        demisto.debug(f'nginx test ouput:\n{test_output}')
+    except subprocess.CalledProcessError as err:
+        raise ValueError(f"Failed testing nginx conf. Return code: {err.returncode}. Output: {err.output}")
+    nginx_command = ['nginx']
+    nginx_command.extend(directive_args)
+    res = subprocess.Popen(nginx_command, text=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    demisto.info(f'done starting nginx with pid: {res.pid}')
+    return res
+
+
+def nginx_log_process(nginx_process: subprocess.Popen):
+    try:
+        old_access = NGINX_SERVER_ACCESS_LOG + '.old'
+        old_error = NGINX_SERVER_ERROR_LOG + '.old'
+        log_access = False
+        log_error = False
+        # first check if one of the logs are missing. This may happen on rare ocations that we renamed and deleted the file
+        # before nginx completed the role over of the logs
+        missing_log = False
+        if not os.path.isfile(NGINX_SERVER_ACCESS_LOG):
+            missing_log = True
+            demisto.info(f'Missing access log: {NGINX_SERVER_ACCESS_LOG}. Will send roll signal to nginx.')
+        if not os.path.isfile(NGINX_SERVER_ERROR_LOG):
+            missing_log = True
+            demisto.info(f'Missing error log: {NGINX_SERVER_ERROR_LOG}. Will send roll signal to nginx.')
+        if missing_log:
+            nginx_process.send_signal(int(SIGUSR1))
+            demisto.info(f'Done sending roll signal to nginx (pid: {nginx_process.pid}) after detecting missing log file.'
+                         ' Will skip this iteration.')
+            return
+        if os.path.getsize(NGINX_SERVER_ACCESS_LOG):
+            log_access = True
+            os.rename(NGINX_SERVER_ACCESS_LOG, old_access)
+        if os.path.getsize(NGINX_SERVER_ERROR_LOG):
+            log_error = True
+            os.rename(NGINX_SERVER_ERROR_LOG, old_error)
+        if log_access or log_error:
+            # nginx rolls the logs when getting sigusr1
+            nginx_process.send_signal(int(SIGUSR1))
+            gevent.sleep(0.5)  # sleep 0.5 to let nginx complete the roll
+        if log_access:
+            with open(old_access, 'rt') as f:
+                start = 1
+                for lines in batch(f.readlines(), 100):
+                    end = start + len(lines)
+                    demisto.info(f'nginx access log ({start}-{end-1}): ' + ''.join(lines))
+                    start = end
+            os.unlink(old_access)
+        if log_error:
+            with open(old_error, 'rt') as f:
+                start = 1
+                for lines in batch(f.readlines(), 100):
+                    end = start + len(lines)
+                    demisto.error(f'nginx error log ({start}-{end-1}): ' + ''.join(lines))
+                    start = end
+            os.unlink(old_error)
+    except Exception as e:
+        demisto.error(f'Failed nginx log processing: {e}. Exception: {traceback.format_exc()}')
+
+
+def nginx_log_monitor_loop(nginx_process: subprocess.Popen):
+    """An endless loop to monitor nginx logs. Meant to be spawned as a greenlet.
+    Will run every minute and if needed will dump the nginx logs and roll them if needed.
+
+    Args:
+        nginx_process (subprocess.Popen): the nginx process. Will send signal for log rolling.
+    """
+    while True:
+        gevent.sleep(60)
+        nginx_log_process(nginx_process)
+
+
+def test_nginx_server(port: int, params: Dict):
+    nginx_process = start_nginx_server(port, params)
+    # let nginx startup
+    time.sleep(0.5)
+    try:
+        protocol = 'https' if params.get('key') else 'http'
+        res = requests.get(f'{protocol}://localhost:{port}/nginx-test',
+                           verify=False, proxies={"http": "", "https": ""})  # nosec guardrails-disable-line
+        res.raise_for_status()
+        welcome = 'Welcome to nginx'
+        if welcome not in res.text:
+            raise ValueError(f'Unexpected response from nginx-text (does not contain "{welcome}"): {res.text}')
+    finally:
+        try:
+            nginx_process.terminate()
+            nginx_process.wait(1.0)
+        except Exception as ex:
+            demisto.error(f'failed stoping test nginx process: {ex}')
+
+
+def run_long_running(params: Dict, is_test: bool = False):
     """
     Start the long running server
     :param params: Demisto params
     :param is_test: Indicates whether it's test-module run or regular run
     :return: None
     """
-    certificate: str = params.get('certificate', '')
-    private_key: str = params.get('key', '')
-
-    certificate_path = str()
-    private_key_path = str()
+    nginx_process = None
+    nginx_log_monitor = None
 
     try:
-        port = get_params_port(params)
-        ssl_args = dict()
 
-        if (certificate and not private_key) or (private_key and not certificate):
-            raise DemistoException('If using HTTPS connection, both certificate and private key should be provided.')
-
-        if certificate and private_key:
-            certificate_file = NamedTemporaryFile(delete=False)
-            certificate_path = certificate_file.name
-            certificate_file.write(bytes(certificate, 'utf-8'))
-            certificate_file.close()
-
-            private_key_file = NamedTemporaryFile(delete=False)
-            private_key_path = private_key_file.name
-            private_key_file.write(bytes(private_key, 'utf-8'))
-            private_key_file.close()
-            context = SSLContext(PROTOCOL_TLSv1_2)
-            context.load_cert_chain(certificate_path, private_key_path)
-            ssl_args['ssl_context'] = context
-            demisto.debug('Starting HTTPS Server')
-        else:
-            demisto.debug('Starting HTTP Server')
-
-        server = WSGIServer(('0.0.0.0', port), APP, **ssl_args, log=DEMISTO_LOGGER)
+        nginx_port = get_params_port(params)
+        server_port = nginx_port + 1
+        # set our own log handlers
+        APP.logger.removeHandler(default_handler)  # pylint: disable=no-member
+        integration_logger = IntegrationLogger()
+        integration_logger.buffering = False
+        log_handler = DemistoHandler(integration_logger)
+        log_handler.setFormatter(
+            logging.Formatter("flask log: [%(asctime)s] %(levelname)s in %(module)s: %(message)s")
+        )
+        APP.logger.addHandler(log_handler)  # pylint: disable=no-member
+        demisto.debug('done setting demisto handler for logging')
+        server = WSGIServer(('0.0.0.0', server_port), APP, log=DEMISTO_LOGGER)
         if is_test:
+            test_nginx_server(nginx_port, params)
             server_process = Process(target=server.serve_forever)
             server_process.start()
             time.sleep(5)
-            server_process.terminate()
+            try:
+                server_process.terminate()
+                server_process.join(1.0)
+            except Exception as ex:
+                demisto.error(f'failed stoping test wsgi server process: {ex}')
+
         else:
+            nginx_process = start_nginx_server(nginx_port, params)
+            nginx_log_monitor = gevent.spawn(nginx_log_monitor_loop, nginx_process)
             demisto.updateModuleHealth('')
             server.serve_forever()
-    except SSLError as e:
-        ssl_err_message = f'Failed to validate certificate and/or private key: {str(e)}'
-        demisto.error(ssl_err_message)
-        demisto.updateModuleHealth(f'An error occurred: {ssl_err_message}')
-        raise ValueError(ssl_err_message)
     except Exception as e:
         error_message = str(e)
         demisto.error(f'An error occurred in long running loop: {error_message}')
         demisto.updateModuleHealth(f'An error occurred: {error_message}')
         raise ValueError(error_message)
+
     finally:
-        if certificate_path:
-            os.unlink(certificate_path)
-        if private_key_path:
-            os.unlink(private_key_path)
+        if nginx_process:
+            try:
+                nginx_process.terminate()
+            except Exception as ex:
+                demisto.error(f'Failed stopping nginx process when exiting: {ex}')
+        if nginx_log_monitor:
+            try:
+                nginx_log_monitor.kill(timeout=1.0)
+            except Exception as ex:
+                demisto.error(f'Failed stopping nginx_log_monitor when exiting: {ex}')
 
 
 def update_outbound_command(args, params):
@@ -976,6 +1181,7 @@ def main():
         else:
             raise NotImplementedError(f'Command "{command}" is not implemented.')
     except Exception as e:
+        demisto.error(traceback.format_exc())
         err_msg = f'Error in {INTEGRATION_NAME} Integration [{e}]'
         return_error(err_msg)
 
