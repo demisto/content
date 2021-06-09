@@ -212,7 +212,7 @@ def indicator_mapping(mapping: Dict, indicator: Dict, attributes: Dict):
 def handle_indicator(client: Client, item: Dict, feed_config: Dict, service_name: str,
                      indicator_type: str, indicator_field: str, use_prefix_flat: bool,
                      feedTags: list, auto_detect: bool, mapping_function: Callable = indicator_mapping,
-                     create_relationships: bool = False, relations_function: Callable = None) -> List[dict]:
+                     create_relationships: bool = False, relationships_func: Callable = None) -> List[dict]:
     indicator_list = []
     mapping = feed_config.get('mapping')
     take_value_from_flatten = False
