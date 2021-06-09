@@ -1,0 +1,44 @@
+{
+  "id": "aa9b3d62-4d72-4ebc-8f39-3da3833e7038",
+  "name": "Tordal \"2203_78291\" | US Targeting | URLs | 24 March 2021",
+  "description": "DocuSign themed messages that contain URLs linking to the download of an Office file or attachments of an Office file. The file contains macros that, if enabled, will execute Tordal. Tordal may then download Ficker Stealer.\r\n\r\n\r\nExample senders:\r\n\r\n- \"DocuSign Electronic Signature Service\"\r\n- \"DocuSign Electronic Signature \"\r\n- \"DocuSign Electronic Signature and Invoice Service\"\r\n- \"DocuSign Electronic Signature and Invoice\"\r\n- \"DocuSign Signature Service\"\r\n- \"DocuSign Signature \"\r\n- \"DocuSign Signature and Invoice Service\"\r\n- \"DocuSign Signature and Invoice\"\r\n\r\n\r\nExample subjects:\r\n\r\n- You got invoice from DocuSign Electronic Service\r\n- You got invoice from DocuSign Electronic Service \r\n- You got invoice from DocuSign Electronic Signature Service\r\n- You got invoice from DocuSign Electronic Signature Service \r\n- You got invoice from DocuSign Service\r\n- You got invoice from DocuSign Service \r\n- You got invoice from DocuSign Signature Service\r\n- You got invoice from DocuSign Signature Service \r\n- You got notification from DocuSign Electronic Service\r\n- You got notification from DocuSign Electronic Service \r\n- You got notification from DocuSign Electronic Signature Service\r\n- You got notification from DocuSign Electronic Signature Service \r\n- You got notification from DocuSign Service\r\n- You got notification from DocuSign Signature Service\r\n- You got notification from DocuSign Signature Service \r\n- You received invoice from DocuSign Electronic Service\r\n- You received invoice from DocuSign Electronic Signature Service\r\n- You received invoice from DocuSign Electronic Signature Service \r\n- You received invoice from DocuSign Service\r\n- You received invoice from DocuSign Service \r\n- You received invoice from DocuSign Signature Service\r\n- You received invoice from DocuSign Signature Service \r\n- You received notification from DocuSign Electronic Service\r\n- You received notification from DocuSign Electronic Signature Service\r\n- You received notification from DocuSign Electronic Signature Service \r\n- You received notification from DocuSign Service\r\n- You received notification from DocuSign Service \r\n- You received notification from DocuSign Signature Service\r\n- You received notification from DocuSign Signature Service \r\n\n\n\n** Tordal Task **\n\n - xxxx@xxx.com/6jiuu8934u.exe\n\n** Tordal C2 **\n\n - xxxx@xxx.com/8/forum.php\n - xxxx@xxx.com/8/forum.php\n - xxxx@xxx.com/8/forum.php\n\n** Ficker Stealer C2 **\n\n - sweyblidian.com",
+  "startDate": "2021-03-24T00:01:00.000Z",
+  "notable": false,
+  "actors": [
+    {
+      "id": "95d2068e-6c19-48c0-a036-3366f9a3ea8e",
+      "name": "TA511"
+    }
+  ],
+  "families": [
+    {
+      "id": "f5dfd745-370b-4ffb-9a12-3ebf040fd5c4",
+      "name": "Stealer"
+    },
+    {
+      "id": "e52f20f4-b663-4222-b82f-5423a1876ba4",
+      "name": "Downloader"
+    }
+  ],
+  "malware": [
+    {
+      "id": "a37f32e5-99f8-48af-9821-61e5dc4c71d3",
+      "name": "Tordal"
+    }
+  ],
+  "techniques": [
+    {
+      "id": "951f1df0-c81b-41ef-ac31-dd90a421bffa",
+      "name": "Office VBA Macro"
+    }
+  ],
+  "brands": [
+    {
+      "id": "bd0f6db2-1728-4e0b-ad8b-3135ca9616bc",
+      "name": "DocuSign"
+    }
+  ],
+  "campaignMembers": [
+
+  ]
+}

@@ -135,7 +135,7 @@ script:
         };
 
         var res = http(fullUrl, req, params.insecure, params.proxy);
-        if (res.StatusCode !== 204) {
+        if (res.StatusCode !== 200 && res.StatusCode !== 204) {
             throw 'Logout failed. StatusCode: ' + res.StatusCode + (res.Body !== '' ? '. Error: ' + res.Body : '');
         }
     }

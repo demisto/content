@@ -1,7 +1,7 @@
 
 ### Microsoft 365 Defender
 
-Use the [device authorization grant flow](https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-oauth2-device-code)
+Use the [device code flow](https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#device-code-flow)
 to link Microsoft 365 Defender with Cortex XSOAR.
 
 To connect to the Microsoft 365 Defender:
