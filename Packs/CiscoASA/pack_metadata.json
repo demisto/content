@@ -12,5 +12,11 @@
     ],
     "tags": [],
     "useCases": [],
-    "keywords": []
+    "keywords": [],
+    "dependencies": {
+        "CiscoFirepower": {
+            "mandatory": true,
+            "display_name": "CiscoFirepower"
+        }
+    }
 }

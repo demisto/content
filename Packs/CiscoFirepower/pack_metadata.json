@@ -12,5 +12,11 @@
     ],
     "tags": [],
     "useCases": [],
-    "keywords": []
+    "keywords": [],
+    "dependencies": {
+        "CiscoASA": {
+            "mandatory": true,
+            "display_name": "Cisco ASA"
+        }
+    }
 }
