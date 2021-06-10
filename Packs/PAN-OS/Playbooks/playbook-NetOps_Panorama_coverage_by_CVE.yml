@@ -12,6 +12,7 @@ tasks:
       version: -1
       name: ""
       iscommand: false
+      description: ''
       brand: ""
     nexttasks:
       '#none#':
@@ -29,8 +30,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "2":
     id: "2"
     taskid: 2d6dd63c-b9b9-419b-86a9-3fa5ad9ccdb0
@@ -66,8 +65,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "3":
     id: "3"
     taskid: 0aa77ad6-c7bc-4f8b-84cf-3b8c9a901a7f
@@ -102,8 +99,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {},
