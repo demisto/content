@@ -640,7 +640,7 @@ class Pack(object):
             else:
                 logging.warning(f"{self._pack_name} pack dependency with id {dependency_pack_id} was not found")
                 continue
-
+            logging.info(dependencies_data_result[dependency_pack_id])
         return dependencies_data_result
 
     def _create_changelog_entry(self, release_notes, version_display_name, build_number, pack_was_modified=False,
