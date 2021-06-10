@@ -515,8 +515,7 @@ script:
   - arguments:
     - auto: PREDEFINED
       default: false
-      description: Secret Server will automatically initiate a password change after
-        a Secret expires or on a schedule.
+      description: Whether the secret’s password is automatically rotated on a schedule.
       isArray: false
       name: autochangeenabled
       predefined:
@@ -526,8 +525,9 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: This flag means that when performing a check-in operation, the
-        server will change the secret password to a new one.
+      description: Whether the secret’s password is automatically changed when a secret
+        is checked in. This is a security feature that prevents a use of the password
+        retrieved from check-out after the secret is checked in.
       isArray: false
       name: checkoutchangepasswordenabled
       predefined:
@@ -537,7 +537,9 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Whether secret checkout is enabled
+      description: Whether the user must check-out the secret to view it. Checking
+        out gives the user exclusive access to the secret for a specified period or
+        until the secret is checked in.
       isArray: false
       name: checkoutenabled
       predefined:
@@ -546,14 +548,14 @@ script:
       required: false
       secret: false
     - default: false
-      description: Checkout interval, in minutes (integer)
+      description: The number of minutes that a secret will remain checked out.
       isArray: false
       name: checkoutintervalminutes
       required: false
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Whether the secret inherits permissions from the containing folder
+      description: Whether the secret inherits permissions from the containing folder.
       isArray: false
       name: enableinheritpermissions
       predefined:
@@ -563,7 +565,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Whether the secret policy is inherited from the containing folder
+      description: Whether the secret policy is inherited from the containing folder.
       isArray: false
       name: enableinheritsecretpolicy
       predefined:
@@ -572,14 +574,17 @@ script:
       required: false
       secret: false
     - default: false
-      description: Secret folder ID. May be null unless secrets are required to be
-        in folders.(integer)
+      description: Secret folder ID. If the secret is contained in a folder, the id
+        of the containing folder. Use -1 for secrets that are in the root folder.
       isArray: false
       name: folderid
       required: false
       secret: false
     - default: false
-      description: LauncherConnectAsSecretId(integer)
+      description: When an SSH secret is proxied, you can choose to connect as another
+        user and then do an su to the current secret’s user. This is a common practice
+        for connecting with a lower privileged account and then switching to the root
+        user.
       isArray: false
       name: launcherconnectassecretid
       required: false
@@ -591,25 +596,15 @@ script:
       required: true
       secret: false
     - default: false
-      description: passwordTypeWebScriptId options(integer)
+      description: The id of the password change script to use on applicable web password
+        secrets.
       isArray: false
       name: passwordtypewebscriptld
       required: false
       secret: false
     - auto: PREDEFINED
       default: false
-      description: proxyEnabled options
-      isArray: false
-      name: proxyenabled
-      predefined:
-      - 'true'
-      - 'false'
-      required: false
-      secret: false
-    - auto: PREDEFINED
-      default: false
-      description: Users will be prompted for comment and ticket number when accessing
-        a Secret.
+      description: Whether the user must enter a comment to view the secret.
       isArray: false
       name: requirescommen
       predefined:
@@ -618,7 +613,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: secretPolicyId options(integer)
+      description: The id of the secret policy that controls the security and other
+        settings of the secret.
       isArray: false
       name: secretpolicyid
       required: false
@@ -631,7 +627,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: sessionRecordingEnabled options
+      description: Whether session recording is enabled.
       isArray: false
       name: sessionrecordingenabled
       predefined:
@@ -641,13 +637,16 @@ script:
       secret: false
     - default: false
       defaultValue: '1'
-      description: SiteID, 1 - local site
+      description: ' The id of the distributed engine site that is used by this secret
+        for operations such as password changing.'
       isArray: false
       name: siteid
       required: true
       secret: false
     - default: false
-      description: sshKeyArgs options(list args)
+      description: |-
+        sshKeyArgs options. generateSshKeys (bool) – Whether to generate an SSH private key.
+        generatePassphrase (bool) – Whether to generate an SSH private key passphrase.  Only applicable when the Secret template has a password changer with the Private Key Passphrase field mapped.  If it is not mapped, this setting is ignored.
       isArray: false
       name: sshkeyargs
       required: false
@@ -680,6 +679,23 @@ script:
       description: Item Notes for secret.IF  need to select template.
       isArray: false
       name: notes_item
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Whether the secret should be flagged for immediate password change.
+      isArray: false
+      name: autochangenextpassword
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    - default: false
+      description: The id of the mapping entity that associates this secret to a specific
+        access request workflow.
+      isArray: false
+      name: accessRequestWorkflowMapId
       required: false
       secret: false
     deprecated: false
@@ -1112,7 +1128,7 @@ script:
     - contextPath: Thycotic.Secret.ChangePassword
       description: Secret summary
       type: String
-  dockerimage: demisto/python3:3.9.5.20070
+  dockerimage: demisto/python3:3.9.5.21272
   feed: false
   isfetch: false
   longRunning: false
@@ -1123,4 +1139,4 @@ script:
   type: python
 tests:
 - No tests (auto formatted)
-fromversion: 5.0.0
+fromversion: 6.0.0
