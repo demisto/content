@@ -842,7 +842,7 @@ tasks:
       name: Set Expanse issue "Progress" Value
       description: Update a property of an Expanse issue.
       tags:
-      - MirrorToXpanse
+      - ${inputs.OutgoingMirrorTag}
       script: '|||expanse-update-issue'
       type: regular
       iscommand: true
@@ -2870,7 +2870,7 @@ tasks:
       version: -1
       name: Close Reason
       tags:
-      - MirrorToXpanse
+      - ${inputs.OutgoingMirrorTag}
       type: collection
       iscommand: false
       brand: ""
@@ -2969,7 +2969,7 @@ tasks:
       version: -1
       name: Analyst's Comment
       tags:
-      - MirrorToXpanse
+      - ${inputs.OutgoingMirrorTag}
       type: collection
       iscommand: false
       brand: ""
@@ -3566,7 +3566,7 @@ inputs:
   playbookInputQuery:
 - key: CommonTags
   value:
-    simple: test-env, production-env, excluded
+    simple:
   required: false
   description: |-
     Common tags which your organization uses.
