@@ -224,11 +224,12 @@ def try_parse_integer(int_to_parse: Any, err_msg: str) -> int:
     return res
 
 
-def get_params_port() -> int:
+def get_params_port(params: Dict = None) -> int:
     """
     Gets port from the integration parameters
     """
-    port_mapping: str = demisto.params().get('longRunningPort', '')
+    params = demisto.params() if not params else params
+    port_mapping: str = params.get('longRunningPort', '')
     err_msg: str
     port: int
     if port_mapping:
@@ -242,7 +243,7 @@ def get_params_port() -> int:
     return port
 
 
-def run_long_running(params: Dict = {}, is_test: bool = False):
+def run_long_running(params: Dict = None, is_test: bool = False):
     """
     Start the long running server
     :param params: Demisto params
