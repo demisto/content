@@ -37,8 +37,8 @@ tasks:
     task:
       id: 2d6dd63c-b9b9-419b-86a9-3fa5ad9ccdb0
       version: -1
-      name: Check coverage from the cve list
-      description: Check coverage from the cve list
+      name: Check coverage from the CVE list
+      description: Check coverage from the CVE list.
       scriptName: PanoramaCVECoverage
       type: regular
       iscommand: false
@@ -73,7 +73,7 @@ tasks:
       id: 0aa77ad6-c7bc-4f8b-84cf-3b8c9a901a7f
       version: -1
       name: panorama-get-predefined-threats-list
-      description: Gets the predefined threats list from a Firewall or Panorama.
+      description: Gets the predefined threats list from Firewall or Panorama.
       script: '|||panorama-get-predefined-threats-list'
       type: regular
       iscommand: true
@@ -116,4 +116,4 @@ outputs: []
 tests:
 - No tests (auto formatted)
 fromversion: 5.0.0
-description: Find if there is a signature coverage for a specific CVE.
+description: Find if there is signature coverage for a specific CVE.
