@@ -69,7 +69,7 @@ def encode_authentication_token(secret_key, jti=None, iss=None, aud=None, sub=No
 ''' COMMAND FUNCTIONS '''
 
 
-def test_module(client, params):
+def test_module():
     return 'ok'
 
 
@@ -167,7 +167,7 @@ def main():
             headers=headers,
             proxy=proxy)
         if demisto.command() == 'test-module':
-            result = test_module(client, demisto.params())
+            result = test_module()
             return_results(result)
 
         elif demisto.command() == 'jwt-generate-authentication-payload':
