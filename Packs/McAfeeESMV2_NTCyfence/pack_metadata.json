@@ -1,0 +1,17 @@
+{
+    "name": "McAfee ESM v2_NT Cyfence",
+    "description": "McAfee ESM NT Cyfence",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "Yotpet Bupha",
+    "url": "",
+    "email": "",
+    "created": "2021-06-10T03:56:47Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "githubUser": [
+        "mryot"
+    ]
+}
