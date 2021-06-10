@@ -63,7 +63,7 @@ class TestZipPacks:
         Then:
             exit since no packs were found
         """
-        with pytest.raises(SystemExit) as sys_exit:
+        with pytest.raises(Exception):
             from Tests.Marketplace import zip_packs
             list_dir_result = ['ApiModules', 'python_file.py']
             pack_files = TestZipPacks.BLOB_NAMES
@@ -71,8 +71,6 @@ class TestZipPacks:
             mocker.patch('os.listdir', return_value=list_dir_result)
             mocker.patch('os.path.isdir', return_value=True)
             get_zipped_packs_names('content')
-
-            assert sys_exit.value.code == 1
 
     def test_get_zipped_packs_name_no_latest_zip(self, mocker):
         """
@@ -83,7 +81,7 @@ class TestZipPacks:
         Then:
             exit since no zipped packs were found
         """
-        with pytest.raises(SystemExit) as sys_exit:
+        with pytest.raises(Exception):
             from Tests.Marketplace import zip_packs
             list_dir_result = ['Slack', 'ApiModules', 'python_file.py']
             pack_files = TestZipPacks.BLOB_NAMES_NO_ZIP
@@ -91,8 +89,6 @@ class TestZipPacks:
             mocker.patch('os.listdir', return_value=list_dir_result)
             mocker.patch('os.path.isdir', return_value=True)
             get_zipped_packs_names('content')
-
-            assert sys_exit.value.code == 1
 
     def test_copy_zipped_packs_to_artifacts(self, mocker):
         """
