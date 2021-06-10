@@ -7707,7 +7707,9 @@ def support_multithreading():
         def __do(self, cmd):
             try:
                 if self.lock.acquire(timeout=60):  # type: ignore[call-arg]
-                    super().__do(cmd)  # type: ignore[call-arg]
+                    return super().__do(cmd)  # type: ignore[call-arg]
+                else:
+                    raise RuntimeError('Failed acquiring lock')
             finally:
                 self.lock.release()
 
