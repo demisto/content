@@ -16,12 +16,13 @@ def prevent_duplication(current_incident):
     current_incident.update(custom_fields)
     gibid = custom_fields.get('gibid')
     search_incident = demisto.executeCommand("getIncidents", {"query": "gibid: {0} and -status:Closed".format(gibid)})
-    total = int(search_incident[0].get("Contents", {}).get("total", {}))
-    if total > 0:
-        result = False
-        incident_id = search_incident[0].get("Contents", {}).get("data", {})[total - 1].get("id")
-        for key, value in current_incident.items():
-            demisto.executeCommand('setIncident', {"id": incident_id, key: value})
+    if search_incident:
+        total = int(search_incident[0].get("Contents", {}).get("total", 0))
+        if total > 0:
+            result = False
+            incident_id = search_incident[0].get("Contents", {}).get("data", {})[total - 1].get("id")
+            for key, value in current_incident.items():
+                demisto.executeCommand('setIncident', {"id": incident_id, key: value})
 
     return result
 
