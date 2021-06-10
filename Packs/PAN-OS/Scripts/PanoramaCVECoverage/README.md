@@ -1,4 +1,4 @@
-comma delimited list of CVEs to find
+Check coverage given a list of CVEs.
 
 ## Script Data
 ---
@@ -25,4 +25,13 @@ This script is used in the following playbooks and scripts.
 
 ## Outputs
 ---
-There are no outputs for this script.
+
+| **Path** | **Description** | **Type** |
+| --- | --- | --- |
+| Panorama.CVECoverage.CVE | The CVE value.| String |
+| Panorama.CVECoverage.Coverage.threat_name | The threat name. | String |
+| Panorama.CVECoverage.Coverage.link | Link address to the threat in CVE site. | String |
+| Panorama.CVECoverage.Coverage.severity | The threat severity. | String |
+| Panorama.CVECoverage.Coverage.threat_id | The threat ID. | Number |
+| Panorama.CVECoverage.Coverage.default_action | The threat default action. | String |
+
