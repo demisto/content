@@ -15,3 +15,6 @@ ignore=BA101
 
 [file:classifier-mapper-incoming-Cymulate_v2.json]
 ignore=BA101
+
+[file:incidentfield-Cymulate_Cymulate_Test_Case.json]
+ignore=IF100
