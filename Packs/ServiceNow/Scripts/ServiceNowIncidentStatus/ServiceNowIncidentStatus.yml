@@ -1,21 +1,24 @@
+comment: |
+  populates the value of the ServiceNow Ticket State field and display it in a layout widget.
 commonfields:
   id: ServiceNowIncidentStatus
   version: -1
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ''
+dockerimage: demisto/python3:3.9.5.21272
+enabled: true
 name: ServiceNowIncidentStatus
+runas: DBotWeakRole
+runonce: false
 script: ''
-type: python
+scripttarget: 0
+subtype: python3
 tags:
 - dynamic-section
 - python
 - servicenow v2
-comment: |
-  populates the value of the ServiceNow Ticket State field and display it in a layout widget.
-enabled: true
-scripttarget: 0
-subtype: python3
-runonce: false
-dockerimage: demisto/python3:3.9.1.14969
-runas: DBotWeakRole
+type: python
+fromversion: 6.0.0
 tests:
 - No tests (auto formatted)
-fromversion: 6.0.0
