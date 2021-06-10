@@ -821,6 +821,14 @@ def create_user_iam(default_base_dn, args, mapper_out, disabled_users_group_cn):
         return iam_user_profile
 
 
+def get_old_samaccountname(user_profile, mapper_out):
+    user_profile = json.loads(user_profile)
+    old_user_data = user_profile.get('olduserdata')
+    iam_old_user_profile = IAMUserProfile(user_profile=old_user_data)
+    ad_old_user = iam_old_user_profile.map_object(mapper_name=mapper_out)
+    return ad_old_user.get("samaccountname")
+
+
 def update_user_iam(default_base_dn, args, create_if_not_exists, mapper_out, disabled_users_group_cn):
     """Update an AD user by User Profile.
     :param default_base_dn: The location in the DIT where the search will start
@@ -842,6 +850,8 @@ def update_user_iam(default_base_dn, args, create_if_not_exists, mapper_out, dis
 
         # check it user exists and if it doesn't, create it
         sam_account_name = ad_user.get("samaccountname")
+        old_sam_account_name = get_old_samaccountname(user_profile, mapper_out)
+
         if not sam_account_name:
             raise DemistoException("User must have a sAMAccountName, please make sure a mapping "
                                    "exists in \"" + mapper_out + "\" outgoing mapper.")
@@ -852,7 +862,7 @@ def update_user_iam(default_base_dn, args, create_if_not_exists, mapper_out, dis
                                    "and schema type, under the \"ou\" field.")
 
         new_ou = ad_user.get("ou")
-        user_exists = check_if_user_exists_by_samaccountname(default_base_dn, sam_account_name)
+        user_exists = check_if_user_exists_by_samaccountname(default_base_dn, old_sam_account_name)
 
         if not user_exists and create_if_not_exists:
             iam_user_profile = create_user_iam(default_base_dn, args, mapper_out, disabled_users_group_cn)
