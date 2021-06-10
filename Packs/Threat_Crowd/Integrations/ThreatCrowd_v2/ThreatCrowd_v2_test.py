@@ -121,7 +121,7 @@ def test_ip_command_empty_response(mocker):
         - ThreatCrowd service returns returns empty data regarding the requested IP.
 
     Then:
-        - Validate that no results are returned.
+        - validates that indicator objects were created as expected
 
     """
     from ThreatCrowd_v2 import ip_command
