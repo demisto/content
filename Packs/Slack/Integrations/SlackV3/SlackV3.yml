@@ -3,14 +3,24 @@ commonfields:
   id: SlackV3
   version: -1
 configuration:
-- display: Slack API access token
+- display: ""
+  displaypassword: Slack API access token
   name: access_token
-  required: true
-  type: 4
-- display: Slack API bot token
+  type: 9
+  required: false
+  hiddenusername: true
+- display: ""
+  displaypassword: Slack API bot token
   name: bot_token
-  required: true
-  type: 4
+  type: 9
+  required: false
+  hiddenusername: true
+- display: ""
+  displaypassword: Slack API app token
+  name: app_token
+  type: 9
+  required: false
+  hiddenusername: true
 - display: Dedicated Slack channel to receive notifications
   name: incidentNotificationChannel
   required: false
@@ -81,11 +91,6 @@ configuration:
   display: Comma separated list of tags To filter the messages sent from demisto.
   hidden: false
   name: filtered_tags
-  required: false
-  type: 0
-- display: User Access Token
-  hidden: false
-  name: user_token
   required: false
   type: 0
 description: Send messages and notifications to your Slack team.
