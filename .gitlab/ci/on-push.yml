@@ -129,7 +129,8 @@ create-instances:
         cp ./Tests/failed_tests.txt $ARTIFACTS_FOLDER/failed_tests.txt
       fi
       if [ -f ./Tests/performance_results.json ]; then
-        cp ./Tests/performance_results.json $ARTIFACTS_FOLDER/performance_results.json
+        python3 ./Utils/json_to_csv.py -i ./Tests/performance_results.json -o ./Tests/performance_results.csv -c Size
+        cp ./Tests/performance_results.csv $ARTIFACTS_FOLDER/performance_results.csv
       fi
     - python3 ./Tests/scripts/destroy_instances.py $ARTIFACTS_FOLDER $ARTIFACTS_FOLDER/env_results.json "$INSTANCE_ROLE" "$TIME_TO_LIVE" || EXIT_CODE=$?
     - exit $EXIT_CODE

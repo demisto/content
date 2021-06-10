@@ -10,7 +10,7 @@ def main():
     total = query_result.get('total', 0)
     outputs = {
         'Query': query,
-        'Size': size,
+        'Size': total,
         'ConditionMet': total >= size
     }
     return_results(CommandResults(outputs=outputs, outputs_key_field='Query', outputs_prefix='IndicatorsCheck'))
