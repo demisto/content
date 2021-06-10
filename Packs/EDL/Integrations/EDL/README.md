@@ -42,14 +42,14 @@ Unlike `PAN-OS EDL Management`, this integration hosts the EDL on the Cortex XSO
 
 4. Click **Test** to validate the URLs, token, and connection.
 
-### Access the EDL Service by Instance Name (HTTPS)
-**The route will be open without security hardening and might expose you to network risks.**
+### Access the EDL Service via XSOAR Server's HTTPS endpoint
+**Note: The EDL will be open to the same network the XSOAR Server is accessible. Make sure you are aware of the network risks. Enabling strong authentication is highly recommended if the route is open to the public.**
 
-To access the EDL service by instance name, make sure ***Instance execute external*** is enabled.
+To access the EDL service by instance name, make sure ***Instance Execute External*** is enabled.
 
 1. In Cortex XSOAR, go to **Settings > About > Troubleshooting**.
-2. In the **Server Configuration** section, verify that the ***instance.execute.external*** key is set to *true*. If this key does not exist, click **+ Add Server Configuration** and add the *instance.execute.external* and set the value to *true*. See [this documentation](https://xsoar.pan.dev/docs/integrations/long-running#invoking-http-integrations-via-cortex-xsoar-servers-route-handling) for further information.
-3. In a web browser, go to `https://<cortex-xsoar_address>/instance/execute/<instance_name>`.
+2. In the **Server Configuration** section, verify that the `instance.execute.external.<instance_name>` key is set to `true`. If this key does not exist, click **+ Add Server Configuration** and add the `instance.execute.external.<instance_name>` and set the value to `true`. See [this documentation](https://xsoar.pan.dev/docs/reference/articles/long-running-invoke) for further information.
+3. In a web browser, go to `https://<cortex-xsoar_address>/instance/execute/<instance_name>/`.
 
 ### URL Inline Arguments
 Use the following arguments in the URL to change the request:

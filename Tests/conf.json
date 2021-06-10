@@ -7,8 +7,7 @@
             "integrations": [
                 "WildFire-v2"
             ],
-            "playbookID": "Detonate File - WildFire - Test",
-            "is_mockable": false
+            "playbookID": "Detonate File - WildFire - Test"
         },
         {
             "integrations": "Microsoft Teams Management",
@@ -131,6 +130,18 @@
             ]
         },
         {
+            "integrations": "GraphQL",
+            "fromversion": "5.0.0",
+            "instance_names": "fetch_schema",
+            "playbookID": "GraphQL - Test"
+        },
+        {
+            "integrations": "GraphQL",
+            "fromversion": "5.0.0",
+            "instance_names": "no_fetch_schema",
+            "playbookID": "GraphQL - Test"
+        },
+        {
             "integrations": "Azure Network Security Groups",
             "fromversion": "5.0.0",
             "instance_names": "azure_nsg_prod",
@@ -149,7 +160,8 @@
         {
             "integrations": "Microsoft Advanced Threat Analytics",
             "playbookID": "Microsoft Advanced Threat Analytics - Test",
-            "fromversion": "5.0.0"
+            "fromversion": "5.0.0",
+            "is_mockable": false
         },
         {
             "integrations": "Zimperium",
@@ -1185,8 +1197,7 @@
         },
         {
             "integrations": "WildFire-v2",
-            "playbookID": "Detonate URL - WildFire-v2 - Test",
-            "is_mockable": false
+            "playbookID": "Detonate URL - WildFire-v2 - Test"
         },
         {
             "integrations": "WildFire-v2",
@@ -1305,10 +1316,6 @@
             "playbookID": "Intezer Testing v2",
             "fromversion": "4.1.0",
             "timeout": 600
-        },
-        {
-            "integrations": "FalconIntel",
-            "playbookID": "CrowdStrike Falcon Intel v2"
         },
         {
             "integrations": [
@@ -1748,19 +1755,7 @@
         {
             "integrations": "Microsoft Defender Advanced Threat Protection",
             "playbookID": "Microsoft Defender - ATP - Indicators Test",
-            "instance_names": "microsoft_defender_atp_prod",
-            "is_mockable": false
-        },
-        {
-            "integrations": "Microsoft Defender Advanced Threat Protection",
-            "playbookID": "Microsoft Defender - ATP - Indicators Test",
             "instance_names": "microsoft_defender_atp_dev",
-            "is_mockable": false
-        },
-        {
-            "integrations": "Microsoft Defender Advanced Threat Protection",
-            "playbookID": "Microsoft Defender - ATP - Indicators Test",
-            "instance_names": "microsoft_defender_atp_dev_self_deployed",
             "is_mockable": false
         },
         {
@@ -1950,6 +1945,11 @@
             "fromversion": "5.5.0"
         },
         {
+            "integrations": "AWS - SQS",
+            "playbookID": "AWS - SQS Test Playbook",
+            "fromversion": "5.0.0"
+        },
+        {
             "integrations": "AbuseIPDB",
             "playbookID": "AbuseIPDB Test"
         },
@@ -1965,7 +1965,7 @@
         {
             "integrations": "FireEye HX",
             "playbookID": "FireEye HX Test",
-            "timeout": 500
+            "timeout": 800
         },
         {
             "integrations": "FireEyeFeed",
@@ -2188,6 +2188,11 @@
             "playbookID": "Active Directory - ad-get-user limit check"
         },
         {
+            "integrations": "Active Directory Query v2",
+            "instance_names": "active_directory_ninja",
+            "playbookID": "active directory search user with parentheses test"
+        },
+        {
             "integrations": "mysql",
             "playbookID": "MySQL Test"
         },
@@ -2312,7 +2317,24 @@
             ],
             "playbookID": "TAXII_Feed_Test",
             "fromversion": "5.5.0",
-            "timeout": 300
+            "timeout": 300,
+            "instance_names": [
+                "non_https_cert",
+                "instance_execute"
+            ]
+        },
+        {
+            "integrations": [
+                "TAXII Server",
+                "TAXIIFeed"
+            ],
+            "playbookID": "TAXII_Feed_Test",
+            "fromversion": "5.5.0",
+            "timeout": 300,
+            "instance_names": [
+                "https_cert",
+                "local_https"
+            ]
         },
         {
             "integrations": "TAXII 2 Feed",
@@ -3239,6 +3261,10 @@
             ]
         },
         {
+            "integrations": "HostIo",
+            "playbookID": "HostIo_Test"
+        },
+        {
             "playbookID": "CreateCertificate-Test",
             "fromversion": "5.5.0"
         },
@@ -3286,6 +3312,20 @@
             "timeout": 1000
         },
         {
+           "integrations": "HPEArubaClearPass",
+            "playbookID": "HPEArubaClearPass_TestPlaybook"
+        },
+        {
+            "integrations": "CrowdstrikeFalcon",
+            "playbookID": "Get endpoint details - Generic - test",
+            "fromversion": "5.5.0"
+        },
+        {
+            "integrations": "CrowdstrikeFalcon",
+            "playbookID": "Isolate and unisolate endpoint - test",
+            "fromversion": "5.5.0"
+        },
+        {
             "integrations": "VirusTotal - Premium (API v3)",
             "playbookID": "VirusTotal Premium v3 TestPlaybook",
             "fromversion": "5.5.0"
@@ -3313,6 +3353,20 @@
             "playbookID": "carbonBlackEndpointStandardTestPlaybook",
             "fromversion": "5.5.0",
             "is_mockable": false
+        },
+        {
+            "integrations": "Proofpoint TAP v2",
+            "playbookID": "ProofpointTAP-Test"
+        },
+        {
+            "integrations": "ThreatExchange v2",
+            "playbookID": "ThreatExchangeV2-test",
+            "fromversion": "5.5.0"
+        },
+        {
+            "integrations": "NetscoutAED",
+            "playbookID": "NetscoutAED-Test",
+            "fromversion": "5.5.0"
         }
     ],
     "skipped_tests": {
@@ -3332,7 +3386,6 @@
         "Test-Shodan_v2": "Issue 23370",
         "Symantec Deepsight Test": "Issue 22971",
         "TestProofpointFeed": "Issue 22229",
-        "Git_Integration-Test": "Issue 20029",
         "Symantec Data Loss Prevention - Test": "Issue 20134",
         "NetWitness Endpoint Test": "Issue 19878",
         "InfoArmorVigilanteATITest": "Test issue 17358",
@@ -3352,7 +3405,7 @@
         "Tanium v2 - Test": "Issue 26822",
         "hashIncidentFields-test": "Issue 26850",
         "Fidelis Elevate Network": "Issue 26453",
-        "Cortex XDR - IOC - Test": "Issue 25598",
+        "Cortex XDR - IOC - Test": "Issue 37957",
         "Cherwell Example Scripts - test": "Issue 26780",
         "Cherwell - test": "Issue 26780",
         "PAN-OS Query Logs For Indicators Test": "Issue 28753",
@@ -3361,7 +3414,6 @@
         "AttackIQ - Test": "Issue 29774",
         "Azure Compute - Test": "Issue 28056",
         "forcepoint test": "Issue 28043",
-        "CanaryTools Test": "Issue 30796",
         "Test-VulnDB": "Issue 30875",
         "Malware Domain List Active IPs Feed Test": "Issue 30878",
         "CuckooTest": "Issue 25601",
@@ -3383,7 +3435,6 @@
         "Kenna Test": "Missing data",
         "Trend Micro Apex - Test": "Issue 27280",
         "Create ServiceNow Ticket and Mirror Test": "Issue 30587",
-        "Field polling test": "Issue 33951",
         "palo_alto_panorama_test_pb": "Issue 34371",
         "Microsoft Defender - ATP - Indicators Test": "Issue 29279",
         "Active Directory - Get User Manager Details - Test": "Issue 25604",
@@ -3401,9 +3452,6 @@
         "AWS - EC2 Test Playbook": "Issue 36486",
         "get_file_sample_by_hash_-_cylance_protect_-_test": "Issue 28823",
         "Carbon Black Enterprise EDR Test": "Issue 29775",
-        "Rundeck_test": "Issue 31174",
-        "Azure NSG - Test": "Issue 33217",
-        "AutoFocus V2 test": "Issue 26464",
         "VirusTotal (API v3) Detonate Test": "Issue 36004",
         "FailedInstances - Test": "Issue 33218",
         "PAN-OS DAG Configuration Test": "Issue 19205",
@@ -3411,14 +3459,18 @@
         "PAN-OS - Block IP - Static Address Group Test": "Issue 37021",
         "PAN-OS - Block IP - Custom Block Rule Test": "Issue 37023",
         "Centreon-Test-Playbook": "Issue 37022",
-        "AWS-securityhub Test": "Issue 29796",
-        "McAfeeWebGatewayTest": "Issue 37020",
         "PAN-OS - Block URL - Custom URL Category Test": "Issue 37024",
-        "Microsoft Advanced Threat Analytics - Test": "Issue 29593"
+        "Service Desk Plus - Generic Polling Test": "Issue 30798",
+        "TestEmailRepIOPlaybook": "Issue 33219",
+        "get_original_email_-_ews-_test": "Issue 27571",
+        "PANW Threat Vault - Signature Search - Test": "Issue 30930",
+        "TAXII_Feed_Test": "Issue 37588",
+        "Git_Integration-Test": "Issue 37800"
     },
     "skipped_integrations": {
         
         "_comment1": "~~~ NO INSTANCE ~~~",
+        "SolarWinds": "No instance - developed by Crest",
         "trustwave secure email gateway": "No instance - developed by Qmasters",
         "ServiceDeskPlus (On-Premise)": "No instance",
         "Forcepoint": "instance issues. Issue 28043",
@@ -3452,7 +3504,7 @@
         "Symantec MSS": "No instance, probably not going to get it (issue 15513)",
         "Google Cloud Compute": "Can't test yet",
         "FireEye ETP": "No instance",
-        "ProofpointTAP_v2": "No instance",
+        "Proofpoint TAP v2": "No instance",
         "remedy_sr_beta": "No instance",
         "fireeye": "Issue 19839",
         "Remedy On-Demand": "Issue 19835",
@@ -3619,7 +3671,9 @@
         "GoogleKubernetesEngine": "SDK",
         "TAXIIFeed": "Cannot use proxy",
         "EWSO365": "oproxy dependent",
-        "MISP V2": "Cleanup process isn't performed as expected."
+        "MISP V2": "Cleanup process isn't performed as expected.",
+        "Azure Network Security Groups": "Has a command that sends parameters in the path",
+        "GitHub": "Cannot use proxy"
     },
     "parallel_integrations": [
         "AWS - EC2",

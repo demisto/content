@@ -7,7 +7,7 @@ Retrieves the time left until the next shift begins.
 | --- | --- |
 | Script Type | python3 |
 | Tags | Shift Management, widget |
-| Demisto Version | 5.5.0 |
+| Cortex XSOAR Version | 5.5.0 |
 
 ## Inputs
 ---

@@ -5,7 +5,7 @@
 Fetch indicators from a CSV feed. The integration allows a great amount of user configuration to support different types of CSV feeds.
 
 
-## Configure CSV Feed on Demisto
+## Configure CSV Feed on Cortex XSOAR
 ---
 
 

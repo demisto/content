@@ -1,7 +1,7 @@
 <!-- HTML_DOC -->
 <p>Use the ThreatConnect integration to identify, manage, and block threats.</p>
 <p>This integration was integrated and tested with ThreatConnect Python SDK v2.</p>
-<h2>Configure ThreatConnect on Demisto</h2>
+<h2>Configure ThreatConnect on Cortex XSOAR</h2>
 <ol>
 <li>Navigate to<span> </span><strong>Settings</strong><span> </span>&gt;<span> </span><strong>Integrations</strong><span> </span>&gt;<span> </span><strong>Servers &amp; Services</strong>.</li>
 <li>Search for ThreatConnect1.</li>
@@ -23,7 +23,7 @@
 <li>Click<span> </span><strong>Test</strong><span> </span>to validate the URLs, token, and connection.</li>
 </ol>
 <h2>Commands</h2>
-<p>You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.<br> After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
+<p>You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.<br> After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
 <ol>
 <li><a href="#h_dbc09d92-a6ff-4bd1-a989-ee279906188b" target="_self">Search for an IP indicator: ip</a></li>
 <li><a href="#h_5f8f617c-5b41-4fc6-ba71-6bc198ce0240" target="_self">Search for a URL indicator: url</a></li>

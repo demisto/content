@@ -1,1 +1,0 @@
-Trustwave SEG is a secure messaging solution that protects businesses and users from email-borne threats, including phishing, blended threats, and spam.Trustwave Secure Email Gateway also delivers improved policy enforcement and data leakage prevention.

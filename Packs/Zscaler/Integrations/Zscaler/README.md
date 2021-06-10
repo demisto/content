@@ -24,7 +24,7 @@ A custom category ID has the format `CUSTOM_01`, which is not indicative of the
 
 4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.
+You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### zscaler-blacklist-url
 ***
@@ -582,7 +582,9 @@ Retrieves a list of all categories.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| displayURL | Whether to display the URLs of each category in the War Room. Default is 'false'. | Optional | 
+| displayURL | Whether to display the URLs of each category in the War Room. Default is 'false'. URLs will always be returned to the Context Data. | Optional | 
+| custom_categories_only | Whether to retrieve only custom categories to the War Room. Default is 'false'. | Optional |
+| get_ids_and_names_only | Whether to retrieve only a list containing URL category IDs and names. Even if *displayURL* is set to true, URLs will not be returned. Please note - the API does not support the combination of custom_only and get_ids_and_names_only. | Optional |
 
 
 #### Context Output
