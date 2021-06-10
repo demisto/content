@@ -1,6 +1,6 @@
 import demistomock as demisto
 from CommonServerPython import *
-# from CommonServerUserPython import *
+from CommonServerUserPython import *
 from typing import Dict, Any, List, Optional, Tuple
 
 # Disable insecure warnings
@@ -10,6 +10,7 @@ requests.packages.urllib3.disable_warnings()
 
 VENDOR = 'Threat Crowd'
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
+IP_NO_DATA_RESPONSE_CODE = '0'
 
 ''' CLIENT CLASS '''
 
@@ -73,6 +74,9 @@ def ip_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
     ips = argToList(args.get('ip'))
     for ip in ips:
         res = client._http_request(method='GET', url_suffix=api_url, params={'ip': ip})
+        if res.get('response_code') == IP_NO_DATA_RESPONSE_CODE:
+            # Indicating no data was found regarding the requested IP. Skipping.
+            continue
 
         # adding value to both outputs and raw results as it is not provided in the API response
         res['value'] = ip
