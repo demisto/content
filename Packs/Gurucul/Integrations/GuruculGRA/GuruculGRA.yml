@@ -867,7 +867,7 @@ script:
     - contextPath: Gra.Case.Action.Anomaly.Message
       description: Message
       type: string
-    - contextPath: Gra.Case.Action.Anomaly.Anomaly Name
+    - contextPath: Gra.Case.Action.Anomaly.anomalyName
       description: Anomaly Name
       type: string
     description: Closing an anomaly or anomalies within a case and updating the anomaly
@@ -882,16 +882,16 @@ script:
     - name: toDate
       description: To Date ( yyyy-MM-dd )
     outputs:
-    - contextPath: Gra.Investigate.Anomaly.Summary.Analytical Features
+    - contextPath: Gra.Investigate.Anomaly.Summary.analyticalFeatures
       description: Analytical Features
       type: string
-    - contextPath: Gra.Investigate.Anomaly.Summary.Entity Count
+    - contextPath: Gra.Investigate.Anomaly.Summary.entityCount
       description: Entity Count
       type: string
-    - contextPath: Gra.Investigate.Anomaly.Summary.Resource Count
+    - contextPath: Gra.Investigate.Anomaly.Summary.resourceCount
       description: Resource Count
       type: string
-    - contextPath: Gra.Investigate.Anomaly.Summary.Records
+    - contextPath: Gra.Investigate.Anomaly.Summary.records
       description: Records
       type: string
     - contextPath: Gra.Investigate.Anomaly.Summary.anomalyBaseline
@@ -930,14 +930,14 @@ script:
     - contextPath: Gra.Investigate.Anomaly.Summary.anomalyDescription
       description: Anomaly Description
       type: string
-    - contextPath: Gra.Investigate.Anomaly.Summary.Similar Template Anomalies
+    - contextPath: Gra.Investigate.Anomaly.Summary.similarTemplateAnomalies
       description: Similar Template Anomalies
       type: string
-    - contextPath: Gra.Investigate.Anomaly.Summary.Entities Flagged
+    - contextPath: Gra.Investigate.Anomaly.Summary.entitiesFlagged
       description: Entities Flagged
       type: number
     description: Retrieve detailed anomaly summary of specified anomaly name.
-  dockerimage: demisto/python3:3.9.5.20070
+  dockerimage: demisto/python3:3.9.5.20958
   isfetch: true
   runonce: false
   subtype: python3

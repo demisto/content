@@ -331,12 +331,12 @@ def main() -> None:
             riskAcceptDate = arguments.get('riskAcceptDate')
             cases_url = '/cases/' + action
             if action == 'riskManageCase':
-                post_url = '{"caseId":' + caseId + ',"subOption":"' + subOption + '","caseComment":"' + caseComment +\
-                           '","riskAcceptDate":"' + riskAcceptDate + '"}'
+                post_url = {"caseId": int(caseId), "subOption": subOption, "caseComment": caseComment,
+                            "riskAcceptDate": riskAcceptDate}
             else:
-                post_url = '{"caseId":' + caseId + ',"subOption":"' + subOption + '","caseComment":"' + \
-                           caseComment + '"}'
-            fetch_post_records(client, cases_url, 'Gra.Case.Action', 'caseId', params, post_url)
+                post_url = {"caseId": int(caseId), "subOption": subOption, "caseComment": caseComment}
+            post_url_json = json.dumps(post_url)
+            fetch_post_records(client, cases_url, 'Gra.Case.Action', 'caseId', params, post_url_json)
 
         elif demisto.command() == 'gra-case-action-anomaly':
             action = arguments.get('action')
@@ -347,12 +347,13 @@ def main() -> None:
             riskAcceptDate = arguments.get('riskAcceptDate')
             cases_url = '/cases/' + action
             if action == 'riskAcceptCaseAnomaly':
-                post_url = '{"caseId":' + caseId + ',"anomalyNames":' + anomalyNames + ',"subOption":"' + subOption +\
-                           '","caseComment":"' + caseComment + '","riskAcceptDate":"' + riskAcceptDate + '"}'
+                post_url = {"caseId": int(caseId), "anomalyNames": anomalyNames, "subOption": subOption,
+                            "caseComment": caseComment, "riskAcceptDate": riskAcceptDate}
             else:
-                post_url = '{"caseId":' + caseId + ',"anomalyNames":"' + anomalyNames + '","subOption":"' + \
-                           subOption + '","caseComment":"' + caseComment + '"}'
-            fetch_post_records(client, cases_url, 'Gra.Cases.Action.Anomaly', 'caseId', params, post_url)
+                post_url = {"caseId": int(caseId), "anomalyNames": anomalyNames, "subOption": subOption,
+                            "caseComment": caseComment}
+            post_url_json = json.dumps(post_url)
+            fetch_post_records(client, cases_url, 'Gra.Cases.Action.Anomaly', 'caseId', params, post_url_json)
 
         elif demisto.command() == 'gra-investigate-anomaly-summary':
             fromDate = arguments.get('fromDate')

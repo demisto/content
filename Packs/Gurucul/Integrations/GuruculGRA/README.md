@@ -925,7 +925,7 @@ Closing an anomaly or anomalies within a case and updating the anomaly status as
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | Gra.Case.Action.Anomaly.Message | String | Message  | 
-| Gra.Case.Action.Anomaly.Anomaly Name | String | Anomaly Name | 
+| Gra.Case.Action.Anomaly.anomalyName | String | Anomaly Name | 
 
 
 #### Command Example
@@ -965,10 +965,10 @@ Retrieve detailed anomaly summary of specified anomaly name.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Gra.Investigate.Anomaly.Summary.Analytical Features | String | Analytical Features  | 
-| Gra.Investigate.Anomaly.Summary.Entity Count | String | Entity Count | 
-| Gra.Investigate.Anomaly.Summary.Resource Count | String | Resource Count | 
-| Gra.Investigate.Anomaly.Summary.Records | String | Records | 
+| Gra.Investigate.Anomaly.Summary.analyticalFeatures | String | Analytical Features  | 
+| Gra.Investigate.Anomaly.Summary.entityCount | String | Entity Count | 
+| Gra.Investigate.Anomaly.Summary.resourceCount | String | Resource Count | 
+| Gra.Investigate.Anomaly.Summary.records | String | Records | 
 | Gra.Investigate.Anomaly.Summary.anomalyBaseline | String | Anomaly Baseline | 
 | Gra.Investigate.Anomaly.Summary.anomalyLastCatch | String | Anomaly Last Catch | 
 | Gra.Investigate.Anomaly.Summary.executionDays | String | Execution Days | 
@@ -981,8 +981,8 @@ Retrieve detailed anomaly summary of specified anomaly name.
 | Gra.Investigate.Anomaly.Summary.classifier | String | classifier | 
 | Gra.Investigate.Anomaly.Summary.anomalyFirstCatch | String | anomalyFirstCatch | 
 | Gra.Investigate.Anomaly.Summary.anomalyDescription | String | anomalyDescription | 
-| Gra.Investigate.Anomaly.Summary.Similar Template Anomalies | String | Similar Template Anomalies | 
-| Gra.Investigate.Anomaly.Summary.Entities Flagged | Number | Entities Flagged |  
+| Gra.Investigate.Anomaly.Summary.similarTemplateAnomalies | String | Similar Template Anomalies | 
+| Gra.Investigate.Anomaly.Summary.entitiesFlagged | Number | Entities Flagged |  
 
 
 #### Command Example
@@ -991,12 +991,12 @@ Retrieve detailed anomaly summary of specified anomaly name.
 #### Context Example
 ```
 {
-  "Analytical Features": {
+  "analyticalFeatures": {
     "eventdesc": 8
   },
-  "Entity Count": "466",
-  "Resource Count": "4",
-  "Records": {
+  "entityCount": "466",
+  "resourceCount": "4",
+  "records": {
     "anomalyBaseline": "Baseline period is not configured.",
     "anomalyLastCatch": "2020-12-06 10:00:59",
     "executionDays": "null",
@@ -1013,7 +1013,7 @@ Retrieve detailed anomaly summary of specified anomaly name.
     "anomalyFirstCatch": "2020-11-08 12:15:00",
     "anomalyDescription": "This template can be used to create models using the saved search query."
   },
-  "Similar Template Anomalies": {
+  "similarTemplateAnomalies": {
     "anomaly1": 442,
     "anomaly2": 4,
     "anomaly3": 4,
@@ -1021,7 +1021,7 @@ Retrieve detailed anomaly summary of specified anomaly name.
     "anomaly5": 8,
     "anomaly6": 1
   },
-  "Entities Flagged": 0
+  "entitiesFlagged": 0
 }
 ```
 
