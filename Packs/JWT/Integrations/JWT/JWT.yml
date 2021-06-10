@@ -177,7 +177,7 @@ script:
       name: tokenTimeout
       required: false
       secret: false
-    - default: true
+    - default: false
       defaultValue: HS256
       description: Token Signing Algorithm
       isArray: false
@@ -270,7 +270,7 @@ script:
       name: tokenTimeout
       required: false
       secret: false
-    - default: true
+    - default: false
       defaultValue: HS256
       description: Token Signing Algorithm
       isArray: false

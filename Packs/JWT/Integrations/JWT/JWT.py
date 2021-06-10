@@ -70,26 +70,6 @@ def encode_authentication_token(secret_key, jti=None, iss=None, aud=None, sub=No
 
 
 def test_module(client, params):
-    secret_key = params.get('key')
-    jti = params.get('jti')
-    iss = params.get('iss', params['url'])
-    aud = params.get('aud')
-    sub = params.get('sub')
-    scp = params.get('scp')
-    iat = params.get('iat')
-    exp = params.get('exp')
-    nbf = params.get('nbf')
-    algorithm = params.get('algorithm')
-
-    additional_claims = params.get('additionalClaims')
-    token_timeout = params.get('tokenTimeout')
-
-    payload = encode_authentication_token(secret_key=secret_key, jti=jti, iss=iss, aud=aud, sub=sub, scp=scp,
-                                          iat=iat, exp=exp, nbf=nbf, token_timeout=token_timeout,
-                                          additional_claims=additional_claims, algorithm=algorithm)[1]
-    payload = {'auth_token': payload}
-    headers = {'Content-Type': 'application/json; charset=utf-8'}
-    client.request_access_token(headers=headers, body=payload)
     return 'ok'
 
 
