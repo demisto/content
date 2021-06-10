@@ -10,7 +10,6 @@ requests.packages.urllib3.disable_warnings()
 
 VENDOR = 'Threat Crowd'
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
-IP_NO_DATA_RESPONSE_CODE = '0'
 
 ''' CLIENT CLASS '''
 
