@@ -3312,6 +3312,10 @@
             "timeout": 1000
         },
         {
+           "integrations": "HPEArubaClearPass",
+            "playbookID": "HPEArubaClearPass_TestPlaybook"
+        },
+        {
             "integrations": "CrowdstrikeFalcon",
             "playbookID": "Get endpoint details - Generic - test",
             "fromversion": "5.5.0"
