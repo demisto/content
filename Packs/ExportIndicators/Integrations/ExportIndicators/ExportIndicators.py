@@ -104,6 +104,7 @@ NGINX_SSL_CERTS = f'''
     ssl_certificate {NGINX_SSL_CRT_FILE};
     ssl_certificate_key {NGINX_SSL_KEY_FILE};
 '''
+
 NGINX_SERVER_CONF = '''
 server {
 
