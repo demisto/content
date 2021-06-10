@@ -2086,7 +2086,7 @@ Create a release.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | name | The name of the release. | Optional | 
-| tag_name | The name of the releae tag. | Required | 
+| tag_name | The name of the release tag. | Required | 
 | body | Text describing the contents of the tag. | Optional | 
 | draft | True to create a draft (unpublished) release, false to create a published one. Possible values are: True, False. Default is True. | Optional | 
 
@@ -2095,10 +2095,10 @@ Create a release.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| GitHub.Release.draft | Boolean | Whether the release is draft or not | 
+| GitHub.Release.draft | Boolean | Whether the release is a draft. | 
 | GitHub.Release.html_url | String | The release URL. | 
 | GitHub.Release.id | Number | The ID of the release. | 
-| GitHub.Release.url | String | Github API url link to the release. | 
+| GitHub.Release.url | String | Github API URL link to the release. | 
 
 
 #### Command Example
