@@ -242,7 +242,7 @@ def get_params_port() -> int:
     return port
 
 
-def run_long_running( params: Dict = {}, is_test: bool = False):
+def run_long_running(params: Dict = {}, is_test: bool = False):
     """
     Start the long running server
     :param params: Demisto params

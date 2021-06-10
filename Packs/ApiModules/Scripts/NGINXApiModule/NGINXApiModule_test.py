@@ -105,6 +105,7 @@ def test_nginx_start_fail(mocker: MockerFixture, nginx_cleanup):
     except ValueError as e:
         assert 'bad_stuff' in str(e)
 
+
 @docker_only
 def test_nginx_start_fail_directive(nginx_cleanup):
     """Test that nginx fails when invalid global directive is passed
@@ -115,6 +116,7 @@ def test_nginx_start_fail_directive(nginx_cleanup):
         pytest.fail('nginx start should fail')
     except ValueError as e:
         assert 'bad_directive' in str(e)
+
 
 @docker_only
 @pytest.mark.filterwarnings('ignore::urllib3.exceptions.InsecureRequestWarning')
@@ -129,3 +131,32 @@ def test_nginx_test_start_valid(nginx_cleanup, params):
     sleep(0.5)
     ps_out = subprocess.check_output(['ps', 'aux'], text=True)
     assert 'nginx' not in ps_out
+
+
+@docker_only
+def test_nginx_log_process(nginx_cleanup, mocker: MockerFixture):
+    import NGINXApiModule as module
+    # clear logs for test
+    Path(module.NGINX_SERVER_ACCESS_LOG).unlink(missing_ok=True)
+    Path(module.NGINX_SERVER_ERROR_LOG).unlink(missing_ok=True)
+    NGINX_PROCESS = module.start_nginx_server(12345, {})
+    sleep(0.5)  # give nginx time to start
+    # create a request to get a log line
+    requests.get('http://localhost:12345/nginx-test?unit_testing')
+    sleep(0.2)
+    mocker.patch.object(demisto, 'info')
+    mocker.patch.object(demisto, 'error')
+    module.nginx_log_process(NGINX_PROCESS)
+    # call_args is tuple (args list, kwargs). we only need the args
+    arg = demisto.info.call_args[0][0]
+    assert 'nginx access log' in arg
+    assert 'unit_testing' in arg
+    arg = demisto.error.call_args[0][0]
+    assert '[warn]' in arg
+    assert 'the master process runs with super-user privileges' in arg
+    # make sure old file was removed
+    assert not Path(module.NGINX_SERVER_ACCESS_LOG + '.old').exists()
+    assert not Path(module.NGINX_SERVER_ERROR_LOG + '.old').exists()
+    # make sure log was rolled over files should be of size 0
+    assert not Path(module.NGINX_SERVER_ACCESS_LOG).stat().st_size
+    assert not Path(module.NGINX_SERVER_ERROR_LOG).stat().st_size
