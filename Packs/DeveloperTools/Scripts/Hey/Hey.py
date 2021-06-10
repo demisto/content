@@ -14,9 +14,19 @@ urllib3.disable_warnings()
 
 
 class HeyPerformanceResult:
-    def __init__(self, result: str, results_map: Optional[str], t: Optional[str] = None, c: Optional[str] = None, **args):
-        self._t = t or '20'
-        self._c = c or '50'
+    def __init__(self,
+                 result: str,
+                 results_map: Optional[str],
+                 t: Optional[str] = None,
+                 c: Optional[str] = None,
+                 n: Optional[str] = None,
+                 **args):
+        self._t = int(t or 20)
+        self._c = int(c or 50)
+        self._n = int(n or 200)
+        c_in_n = self._n / self._c
+        if c_in_n != int(c_in_n):
+            self._n = int(c_in_n) * self._c
         self._result = result or ''
         self._ext_results_map = {}
         if results_map:
@@ -24,20 +34,19 @@ class HeyPerformanceResult:
 
     def to_results(self) -> CommandResults:
         df = pd.read_csv(StringIO(self._result), usecols=['response-time', 'status-code'])
+        requests_num = self._n
         if len(df) == 0:
             max_time = 0
             avg_time = 0
             min_time = 0
-            requests_num = 0
-            total_time = 0
+            total_time = int(self._n / self._c) * self._t
             successful_responses = 0
         else:
             response_times = df['response-time']
             max_time = max(response_times)
             min_time = min(response_times)
             avg_time = response_times.mean()
-            requests_num = len(response_times)
-            total_time = response_times.sum() / int(self._c)
+            total_time = response_times.sum() / int(self._c)  # not 100% accurate
             status_codes = df.get('status-code')
             successful_responses = len(tuple(code == 200 for code in status_codes))
         outputs = {
