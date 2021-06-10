@@ -65,7 +65,7 @@ C/t/GFcoOUze68WuI/BqMAiWhPJ1ioL7RI2ZPvI=
 def test_nginx_conf(tmp_path: Path):
     from NGINXApiModule import create_nginx_server_conf
     conf_file = str(tmp_path / "nginx-test-server.conf")
-    create_nginx_server_conf(conf_file, 12345)
+    create_nginx_server_conf(conf_file, 12345, params={})
     with open(conf_file, 'rt') as f:
         conf = f.read()
         assert 'listen 12345 default_server' in conf
