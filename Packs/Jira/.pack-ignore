@@ -9,3 +9,6 @@ ignore=BA110
 
 [file:ScriptJiraListTransition.yml]
 ignore=BA110
+
+[file:classifier-mapper-outgoing-Jira.json]
+ignore=BA101
