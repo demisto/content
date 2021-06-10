@@ -66,7 +66,7 @@ except Exception:
 CONTENT_RELEASE_VERSION = '0.0.0'
 CONTENT_BRANCH_NAME = 'master'
 IS_PY3 = sys.version_info[0] == 3
-
+STIX_PREFIX = "STIX "
 # pylint: disable=undefined-variable
 
 ZERO = timedelta(0)
@@ -402,6 +402,21 @@ class FeedIndicatorType(object):
         else:
             return None
 
+    @staticmethod
+    def indicator_type_by_server_version(indicator_type):
+        """Returns the indicator type of the input by the server version.
+        If the server version is 6.2 and greater, remove the STIX prefix of the type
+
+        :type indicator_type: ``str``
+        :param indicator_type: Type of an indicator.
+
+        :rtype: ``str``
+        :return:: Indicator type .
+        """
+        if is_demisto_version_ge("6.2.0") and indicator_type.startswith(STIX_PREFIX):
+            return indicator_type[len(STIX_PREFIX):]
+        return indicator_type
+
 
 # -------------------------------- Threat Intel Objects ----------------------------------- #
 
@@ -474,6 +489,30 @@ def is_debug_mode():
     """
     # use `hasattr(demisto, 'is_debug')` to ensure compatibility with server version <= 4.5
     return hasattr(demisto, 'is_debug') and demisto.is_debug
+
+
+def get_schedule_metadata(context):
+    """
+        Get the entry schedule metadata if available
+
+        :type context: ``dict``
+        :param context: Context in which the command was executed.
+
+        :return: Dict with metadata of scheduled entry
+        :rtype: ``dict``
+    """
+    schedule_metadata = {}
+    parent_entry = context.get('ParentEntry', {})
+    if parent_entry:
+        schedule_metadata = assign_params(
+            is_polling=True if parent_entry.get('polling') else False,
+            polling_command=parent_entry.get('pollingCommand'),
+            polling_args=parent_entry.get('pollingArgs'),
+            times_ran=int(parent_entry.get('timesRan', 0)) + 1,
+            start_date=parent_entry.get('startDate'),
+            end_date=parent_entry.get('endingDate')
+        )
+    return schedule_metadata
 
 
 def auto_detect_indicator_type(indicator_value):
@@ -1226,7 +1265,7 @@ class IntegrationLogger(object):
         # set the os env COMMON_SERVER_NO_AUTO_REPLACE_STRS. Either in CommonServerUserPython, or docker env
         if (not os.getenv('COMMON_SERVER_NO_AUTO_REPLACE_STRS') and hasattr(demisto, 'getParam')):
             # add common params
-            sensitive_params = ('key', 'private', 'password', 'secret', 'token', 'credentials')
+            sensitive_params = ('key', 'private', 'password', 'secret', 'token', 'credentials', 'service_account')
             if demisto.params():
                 self._iter_sensistive_dict_obj(demisto.params(), sensitive_params)
 
@@ -1653,14 +1692,14 @@ def tableToMarkdown(name, t, headers=None, headerTransform=None, removeNull=Fals
        :param t: The JSON table - List of dictionaries with the same keys or a single dictionary (required)
 
        :type headers: ``list`` or ``string``
-       :keyword headers: A list of headers to be presented in the output table (by order). If string will be passed
+       :param headers: A list of headers to be presented in the output table (by order). If string will be passed
             then table will have single header. Default will include all available headers.
 
        :type headerTransform: ``function``
-       :keyword headerTransform: A function that formats the original data headers (optional)
+       :param headerTransform: A function that formats the original data headers (optional)
 
        :type removeNull: ``bool``
-       :keyword removeNull: Remove empty columns from the table. Default is False
+       :param removeNull: Remove empty columns from the table. Default is False
 
        :type metadata: ``str``
        :param metadata: Metadata about the table contents
@@ -1755,13 +1794,13 @@ def createContextSingle(obj, id=None, keyTransform=None, removeNull=False):
     :param obj: The data to be added to the context (required)
 
     :type id: ``str``
-    :keyword id: The ID of the context entry
+    :param id: The ID of the context entry
 
     :type keyTransform: ``function``
-    :keyword keyTransform: A formatting function for the markdown table headers
+    :param keyTransform: A formatting function for the markdown table headers
 
     :type removeNull: ``bool``
-    :keyword removeNull: True if empty columns should be removed, false otherwise
+    :param removeNull: True if empty columns should be removed, false otherwise
 
     :return: The converted context list
     :rtype: ``list``
@@ -1793,13 +1832,13 @@ def createContext(data, id=None, keyTransform=None, removeNull=False):
         :param data: The data to be added to the context (required)
 
         :type id: ``str``
-        :keyword id: The ID of the context entry
+        :param id: The ID of the context entry
 
         :type keyTransform: ``function``
-        :keyword keyTransform: A formatting function for the markdown table headers
+        :param keyTransform: A formatting function for the markdown table headers
 
         :type removeNull: ``bool``
-        :keyword removeNull: True if empty columns should be removed, false otherwise
+        :param removeNull: True if empty columns should be removed, false otherwise
 
         :return: The converted context list
         :rtype: ``list``
@@ -4816,6 +4855,64 @@ class Common(object):
             return ret_value
 
 
+class ScheduledCommand:
+    """
+    ScheduledCommand configuration class
+    Holds the scheduled command configuration for the command result - managing the way the command should be polled.
+
+    :type command: ``str``
+    :param command: The command that'll run after next_run_in_seconds has passed.
+
+    :type next_run_in_seconds: ``int``
+    :param next_run_in_seconds: How long to wait before executing the command.
+
+    :type args: ``Optional[Dict[str, Any]]``
+    :param args: Arguments to use when executing the command.
+
+    :type timeout_in_seconds: ``Optional[int]``
+    :param timeout_in_seconds: Number of seconds until the polling sequence will timeout.
+
+    :return: None
+    :rtype: ``None``
+    """
+    VERSION_MISMATCH_ERROR = 'This command is not supported by this XSOAR server version. Please update your server ' \
+                             'version to 6.2.0 or later.'
+
+    def __init__(
+            self,
+            command,  # type: str
+            next_run_in_seconds,  # type: int
+            args=None,  # type: Optional[Dict[str, Any]]
+            timeout_in_seconds=None,  # type: Optional[int]
+    ):
+        self.raise_error_if_not_supported()
+        self._command = command
+        if next_run_in_seconds < 10:
+            demisto.info('ScheduledCommandConfiguration provided value for next_run_in_seconds: '
+                         '{} is '.format(next_run_in_seconds) + 'too low - minimum interval is 10 seconds. '
+                                                                'next_run_in_seconds was set to 10 seconds.')
+            next_run_in_seconds = 10
+        self._next_run = str(next_run_in_seconds)
+        self._args = args
+        self._timeout = str(timeout_in_seconds) if timeout_in_seconds else None
+
+    @staticmethod
+    def raise_error_if_not_supported():
+        if not is_demisto_version_ge('6.2.0'):
+            raise DemistoException(ScheduledCommand.VERSION_MISMATCH_ERROR)
+
+    def to_results(self):
+        """
+        Returns the result dictionary of the polling command
+        """
+        return assign_params(
+            PollingCommand=self._command,
+            NextRun=self._next_run,
+            PollingArgs=self._args,
+            Timeout=self._timeout
+        )
+
+
 def camelize_string(src_str, delim='_', upper_camel=True):
     """
     Transform snake_case to CamelCase
@@ -5433,15 +5530,17 @@ class CommandResults:
     :type entry_type: ``int`` code of EntryType
     :param entry_type: type of return value, see EntryType
 
+    :type scheduled_command: ``ScheduledCommand``
+    :param scheduled_command: manages the way the command should be polled.
+
     :return: None
     :rtype: ``None``
     """
 
     def __init__(self, outputs_prefix=None, outputs_key_field=None, outputs=None, indicators=None, readable_output=None,
                  raw_response=None, indicators_timeline=None, indicator=None, ignore_auto_extract=False,
-                 mark_as_note=False, polling_command=None, polling_args=None, polling_timeout=None,
-                 polling_next_run=None, relationships=None, entry_type=None):
-        # type: (str, object, object, list, str, object, IndicatorsTimeline, Common.Indicator, bool, bool,str, dict, str, str, list, int) -> None # noqa: E501
+                 mark_as_note=False, scheduled_command=None, relationships=None, entry_type=None):
+        # type: (str, object, object, list, str, object, IndicatorsTimeline, Common.Indicator, bool, bool, ScheduledCommand, list, int) -> None  # noqa: E501
         if raw_response is None:
             raw_response = outputs
         if outputs is not None and not isinstance(outputs, dict) and not outputs_prefix:
@@ -5477,10 +5576,7 @@ class CommandResults:
         self.indicators_timeline = indicators_timeline
         self.ignore_auto_extract = ignore_auto_extract
         self.mark_as_note = mark_as_note
-        self.polling_command = polling_command
-        self.polling_args = polling_args
-        self.polling_timeout = polling_timeout
-        self.polling_next_run = polling_next_run
+        self.scheduled_command = scheduled_command
 
         self.relationships = relationships
 
@@ -5554,13 +5650,8 @@ class CommandResults:
             'Note': mark_as_note,
             'Relationships': relationships,
         }
-        if self.polling_command and self.polling_next_run:
-            return_entry.update({
-                'PollingCommand': self.polling_command,
-                'PollingArgs': self.polling_args,
-                'Timeout': self.polling_timeout,
-                'NextRun': self.polling_next_run
-            })
+        if self.scheduled_command:
+            return_entry.update(self.scheduled_command.to_results())
         return return_entry
 
 
@@ -6190,16 +6281,31 @@ def is_demisto_version_ge(version, build_number=''):
     :return: True if running within a Server version greater or equal than the passed version
     :rtype: ``bool``
     """
+    server_version = {}
     try:
         server_version = get_demisto_version()
-        return \
-            server_version.get('version') >= version and \
-            (not build_number or server_version.get('buildNumber') >= build_number)
+        if server_version.get('version') > version:
+            return True
+        elif server_version.get('version') == version:
+            if build_number:
+                return int(server_version.get('buildNumber')) >= int(build_number)  # type: ignore[arg-type]
+            return True  # No build number
+        else:
+            return False
     except AttributeError:
         # demistoVersion was added in 5.0.0. We are currently running in 4.5.0 and below
         if version >= "5.0.0":
             return False
         raise
+    except ValueError:
+        # dev editions are not comparable
+        demisto.log(
+            'is_demisto_version_ge: ValueError. \n '
+            'input: server version: {} build number: {}\n'
+            'server version: {}'.format(version, build_number, server_version)
+        )
+
+        return True
 
 
 class DemistoHandler(logging.Handler):
@@ -6287,6 +6393,15 @@ class DebugLogger(object):
         brand = callingContext.get('IntegrationBrand')
         if brand:
             msg += "\n#### Integration: brand: [{}] instance: [{}]".format(brand, callingContext.get('IntegrationInstance'))
+        sm = get_schedule_metadata(context=callingContext)
+        if sm.get('is_polling'):
+            msg += "\n#### Schedule Metadata: scheduled command: [{}] args: [{}] times ran: [{}] scheduled: [{}] end " \
+                   "date: [{}]".format(sm.get('polling_command'),
+                                       sm.get('polling_args'),
+                                       sm.get('times_ran'),
+                                       sm.get('start_date'),
+                                       sm.get('end_date')
+                                       )
         self.int_logger.write(msg)
 
 

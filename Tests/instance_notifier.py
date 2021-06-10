@@ -157,7 +157,8 @@ if __name__ == "__main__":
     install_logging('Instance-Test.log')
     options = options_handler()
     if options.instance_tests:
-        with open('./artifacts/env_results.json', 'r') as json_file:
+        env_results_path = os.path.join(os.getenv('ARTIFACTS_FOLDER', './artifacts'), 'env_results.json')
+        with open(env_results_path, 'r') as json_file:
             env_results = json.load(json_file)
             server = f'https://localhost:{env_results[0]["TunnelPort"]}'
 

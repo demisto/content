@@ -24,9 +24,9 @@ The Akamai WAF integration allows you to manage a common set of lists for use in
 4.  Assign API key to the relevant users group, and assign on next page `Read/Write` access for `Network Lists`.
 5.  Save configuration and go to API detail you created.
 6. Press `new credentials` and download or copy it.
-7. Now use the credentials for configure Akamai WAF in Demisto
+7. Now use the credentials for configure Akamai WAF in Cortex XSOAR
 
-## Configure Akamai WAF on Demisto
+## Configure Akamai WAF on Cortex XSOAR
 
 1.  Navigate to **Settings** > **Integrations**  > **Servers & Services**.
 2.  Search for Akamai WAF.
@@ -42,7 +42,7 @@ The Akamai WAF integration allows you to manage a common set of lists for use in
 
 ## Commands
 
-You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.
+You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 1.  Returns a list of all network lists available for an authenticated user who belongs to a group: [akamai-get-network-lists](#akamai-get-network-lists)
 2.  Gets a network list by the network list ID: [akamai-get-network-list-by-id](###akamai-get-network-lists)

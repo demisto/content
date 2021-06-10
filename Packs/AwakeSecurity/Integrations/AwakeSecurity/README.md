@@ -1,7 +1,7 @@
 <!-- HTML_DOC -->
 <h2>Overview</h2>
 <p>Use the Awake Security integration to manage and respond to network threats.</p>
-<h2>Configure Awake Security on Demisto</h2>
+<h2>Configure Awake Security on Cortex XSOAR</h2>
 <ol>
 <li>Navigate to <strong>Settings</strong> &gt; <strong>Integrations</strong> &gt; <strong>Servers &amp; Services</strong>.</li>
 <li>Search for Awake Security.</li>
@@ -17,15 +17,15 @@
 <li><strong>Use system proxy settings</strong></li>
 <li><strong>Comma-separated list of threat behaviors to generate incidents for, e.g., "Exfiltration: SSL upload from non-browser to notable domain, Lateral Movement: Unix-based PSEXEC, C2: Possible ICMP tunnel"</strong></li>
 <li><strong>Period between incident fetch interval (in minutes)</strong></li>
-<li><strong>Minimum threshold to determine an indicator suspicious in Demisto</strong></li>
-<li><strong>Minimum threshold to determine an indicator malicious in Demisto</strong></li>
+<li><strong>Minimum threshold to determine an indicator suspicious in Cortex XSOAR</strong></li>
+<li><strong>Minimum threshold to determine an indicator malicious in Cortex XSOAR</strong></li>
 </ul>
 </li>
 <li>Click <strong>Test</strong> to validate the URLs, token, and connection.</li>
 </ol>
 <h2> </h2>
 <h2>Commands</h2>
-<p>You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
+<p>You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
 <ol>
 <li><a href="#h_99540541251544465827889">Query devices: awake-query-devices</a></li>
 <li><a href="#h_275281160801544465832555">Query activities: awake-query-activities</a></li>
@@ -717,12 +717,12 @@
 <tr>
 <td style="width: 487px;">DBotScore.Score</td>
 <td style="width: 72px;">number</td>
-<td style="width: 149px;">Severity score of the specified domain in Demisto</td>
+<td style="width: 149px;">Severity score of the specified domain in Cortex XSOAR</td>
 </tr>
 <tr>
 <td style="width: 487px;">DBotScore.Type</td>
 <td style="width: 72px;">string</td>
-<td style="width: 149px;">Indicator type in Demisto</td>
+<td style="width: 149px;">Indicator type in Cortex XSOAR</td>
 </tr>
 <tr>
 <td style="width: 487px;">DBotScore.Vendor</td>
@@ -811,7 +811,7 @@
 <tr>
 <td style="width: 215px;">DBotScore.Score</td>
 <td style="width: 76px;">number</td>
-<td style="width: 417px;">Severity score of the specified IP address in Demisto</td>
+<td style="width: 417px;">Severity score of the specified IP address in Cortex XSOAR</td>
 </tr>
 <tr>
 <td style="width: 215px;">DBotScore.Vendor</td>
@@ -821,7 +821,7 @@
 <tr>
 <td style="width: 215px;">DBotScore.Type</td>
 <td style="width: 76px;">string</td>
-<td style="width: 417px;">Indicator type in Demisto</td>
+<td style="width: 417px;">Indicator type in Cortex XSOAR</td>
 </tr>
 </tbody>
 </table>
@@ -945,12 +945,12 @@
 <tr>
 <td style="width: 308px;">DBotScore.Score</td>
 <td style="width: 63px;">number</td>
-<td style="width: 337px;">Severity score of the specified email address in Demisto</td>
+<td style="width: 337px;">Severity score of the specified email address in Cortex XSOAR</td>
 </tr>
 <tr>
 <td style="width: 308px;">DBotScore.Type</td>
 <td style="width: 63px;">string</td>
-<td style="width: 337px;">Indicator type in Demisto</td>
+<td style="width: 337px;">Indicator type in Cortex XSOAR</td>
 </tr>
 <tr>
 <td style="width: 308px;">DBotScore.Vendor</td>
