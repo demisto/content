@@ -95,7 +95,7 @@ def test_ip_command(mocker):
             - running ip command was required
 
         Then:
-            - validates that indicator objects were created as expected
+            validates that indicator objects were created as expected
     """
     # from Packs.Threat_Crowd.Integrations.ThreatCrowdV2.ThreatCrowd_v2 import get_ip
     from ThreatCrowd_v2 import ip_command
@@ -111,6 +111,28 @@ def test_ip_command(mocker):
     assert res[0].indicator.dbot_score.score == 3
     assert res[0].indicator.dbot_score.indicator == "0.0.0.0"
     assert len(res) == 2
+
+
+def test_ip_command_empty_response(mocker):
+    """
+    Given:
+        - List of IPs.
+    When:
+        - ThreatCrowd service returns returns empty data regarding the requested IP.
+
+    Then:
+        - Validate that no results are returned.
+
+    """
+    from ThreatCrowd_v2 import ip_command
+
+    mock_response = get_key_from_test_data('empty_ip_response')
+    mock_request = mocker.patch.object(Client, '_http_request', return_value=mock_response)
+
+    res = ip_command(CLIENT, {'ip': '0.0.0.0, 1.1.1.1'})
+    assert mock_request.call_args_list[0][1] == {'method': 'GET', 'params': {'ip': '0.0.0.0'},
+                                                 'url_suffix': 'ip/report/'}
+    assert len(res) == 0
 
 
 def test_domain_command(mocker):

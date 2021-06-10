@@ -1,6 +1,6 @@
 import demistomock as demisto
 from CommonServerPython import *
-from CommonServerUserPython import *
+# from CommonServerUserPython import *
 from typing import Dict, Any, List, Optional, Tuple
 
 # Disable insecure warnings
