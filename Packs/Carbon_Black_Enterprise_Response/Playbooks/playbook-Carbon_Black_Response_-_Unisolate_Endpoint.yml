@@ -1,7 +1,8 @@
 id: Carbon Black Response - Unisolate Endpoint
 version: -1
 name: Carbon Black Response - Unisolate Endpoint
-description: This playbook unisolates sensors according to the sensor ID that is provided in the playbook input.
+description: This playbook unisolates sensors according to the sensor ID that is provided
+  in the playbook input.
 starttaskid: "0"
 tasks:
   "0":

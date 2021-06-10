@@ -19,6 +19,7 @@ class ProcessEventDetail:
     https://developer.carbonblack.com/reference/enterprise-response/6.3/rest-api/#process-event-details
     Each sub-class representing a different piped-versioned field, and support the format method.
     """
+
     def __init__(self, piped_version: Union[str, list], fields):
         self.fields = []
         if not isinstance(piped_version, list):
@@ -143,7 +144,7 @@ class Client(BaseClient):
         res = self.http_request(url=url, method='GET', params=query_params, ok_codes=(200, 204))
 
         # When querying specific sensor without filters, the api returns dictionary instead of list.
-        return len(res), res[:arg_to_number(limit, 'limit')] if isinstance(res, list) and limit else [res]
+        return len(res), res[:arg_to_number(limit, 'limit')] if isinstance(res, list) else [res]
 
     def get_alerts(self, status: str = None, username: str = None, feedname: str = None,
                    hostname: str = None, report: str = None, sort: str = None, query: str = None,
@@ -225,8 +226,14 @@ def _create_query_string(params: dict, allow_empty_params: bool = False) -> str:
     if 'query' in params, it overrides the other params.
     allow_empty_params is used for testing and not production as it would overload the context.
     """
-    if 'query' in params:
-        return params['query']
+    # If user provided both params and query, it means he is not experienced, and might expect different results,
+    # therefore we decided to prohibit the use of both in search commands.
+    if 'query' in params and len(params) > 1:
+        raise Exception(f'{INTEGRATION_NAME} - Searching with both query and other filters is not allowed.'
+                        f'Please provide either a search query or one of the possible filters.')
+    elif 'query' in params:
+         return params['query']
+
     current_query = [f"{query_field}:{params[query_field]}" for query_field in params]
     current_query = ' AND '.join(current_query)
 
@@ -311,7 +318,9 @@ def sensors_list_command(client: Client, id: str = None, hostname: str = None, i
 
             })
 
-        md = tableToMarkdown(f'{INTEGRATION_NAME} - Sensors', human_readable_data, removeNull=True)
+        md = tableToMarkdown(f'{INTEGRATION_NAME} - Sensors', human_readable_data, removeNull=True, headers=[
+            'Sensor Id', 'Computer Name', 'Status', 'Power State', 'Group ID', 'OS Version', 'Health Score',
+            'Is Isolating', 'Node Id', 'Sensor Version', 'IP Address/MAC Info'])
         md += f"\nShowing {len(res)} out of {total_num_of_sensors} results."
         return CommandResults(outputs=res, outputs_prefix='CarbonBlackEDR.Sensor', outputs_key_field='id',
                               readable_output=md, raw_response=res)
@@ -342,10 +351,11 @@ def watchlist_create_command(client: Client, name: str, search_query: str, index
                              description: str = '') -> CommandResults:
     params = assign_params(name=name, search_query=search_query, description=description, index_type=index_type)
     res = client.http_request(url='/v1/watchlist', method='POST', json_data=params)
-    output = {'id': res.get('id')}
+    watchlist_id = res.get('id')
     if id:
+        output = {'id': watchlist_id}
         return CommandResults(outputs=output, outputs_prefix='CarbonBlackEDR.Watchlist', outputs_key_field='id',
-                              readable_output=f"Successfully created new watchlist with id {id}")
+                              readable_output=f"Successfully created new watchlist with id {watchlist_id}")
     return CommandResults(readable_output="Could not create new watchlist.")
 
 
@@ -357,6 +367,7 @@ def get_watchlist_list_command(client: Client, id: str = None, limit: str = None
     # Handling case of only one record.
     if id:
         res = [res]
+    total_num_of_watchlists = len(res)
     res = res[:arg_to_number(limit, 'limit')]
     for watchlist in res:
         human_readable_data.append({
@@ -368,8 +379,8 @@ def get_watchlist_list_command(client: Client, id: str = None, limit: str = None
             'Query': watchlist.get('search_query'),
         })
 
-    md = tableToMarkdown(f'{INTEGRATION_NAME} - Watchlists', human_readable_data, removeNull=True)
-
+    md = f'{INTEGRATION_NAME} - Watchlists'
+    md += tableToMarkdown(f"\nShowing {len(res)} out of {total_num_of_watchlists} results.", human_readable_data, removeNull=True)
     return CommandResults(outputs=res, outputs_prefix='CarbonBlackEDR.Watchlist', outputs_key_field='name',
                           readable_output=md)
 
@@ -432,6 +443,7 @@ def alert_search_command(client: Client, status: str = None, username: str = Non
     human_readable_data = []
     for alert in alerts:
         human_readable_data.append({
+            'Alert ID': alert.get('unique_id'),
             'File Name': alert.get('process_name'),
             'File Path': alert.get('process_path'),
             'Hostname': alert.get('hostname'),
@@ -442,13 +454,16 @@ def alert_search_command(client: Client, status: str = None, username: str = Non
             'Status': alert.get('status'),
         })
 
-    outputs = assign_params(Results=alerts, Facets=res.get('facets'))
+    outputs = assign_params(Results=alerts, Facets=res.get('facets'), Terms=res.get('terms'),
+                            total_results=res.get('total_results'))
 
-    md = tableToMarkdown(f'{INTEGRATION_NAME} - Alert Search Results', human_readable_data)
-    md += f"\nShowing {len(res.get('results', []))} out of {res.get('total_results', '0')} results."
+    md = f'{INTEGRATION_NAME} - Alert Search Results'
+    md += tableToMarkdown(
+        f"\nShowing {start} - {len(res.get('results', []))} out of {res.get('total_results', '0')} results.",
+        human_readable_data)
 
     return CommandResults(outputs=outputs, outputs_prefix='CarbonBlackEDR.Alert',
-                          outputs_key_field='unique_id',
+                          outputs_key_field='Terms',
                           readable_output=md)
 
 
@@ -499,14 +514,14 @@ def binary_download_command(client: Client, md5: str) -> CommandResults:
 def binary_search_command(client: Client, md5: str = None, product_name: str = None, digital_signature: str = None,
                           group: str = None, hostname: str = None, publisher: str = None, company_name: str = None,
                           sort: str = None, observed_filename: str = None, query: str = None, facet: str = None,
-                          limit: str = '50', start: str = None) -> CommandResults:
+                          limit: str = '50', start: str = '0') -> CommandResults:
     res = client.get_binaries(md5, product_name, digital_signature, group, hostname, publisher, company_name, sort,
                               observed_filename, query, facet, limit, start)
 
     if not res:
         raise Exception(f'{INTEGRATION_NAME} - Request cannot be processed.')
 
-    outputs = assign_params(Results=res.get('results'), Facets=res.get('facets'), terms=res.get('terms'),
+    outputs = assign_params(Results=res.get('results'), Facets=res.get('facets'), Terms=res.get('terms'),
                             total_results=res.get('total_results'))
     human_readable_data = []
     for binary_file in res.get('results', []):
@@ -520,9 +535,10 @@ def binary_search_command(client: Client, md5: str = None, product_name: str = N
             'Is Executable Image': binary_file.get('is_executable_image')
         })
 
-    md = tableToMarkdown(f'{INTEGRATION_NAME} - Binary Search Results', human_readable_data)
-    md += f"\nShowing {len(res.get('results', []))} out of {res.get('total_results', '0')} results."
-
+    md = f'{INTEGRATION_NAME} - Binary Search Results'
+    md += tableToMarkdown(f"\nShowing {start} - {len(res.get('results', []))} out of "
+                         f"{res.get('total_results', '0')} results.", human_readable_data, headers=[
+        'md5', 'Group','OS Type', 'Host Count', 'Last Seen', 'Is Executable Image', 'Timestamp'])
     return CommandResults(outputs=outputs, outputs_prefix='CarbonBlackEDR.BinarySearch',
                           outputs_key_field='md5',
                           readable_output=md)
@@ -594,14 +610,15 @@ def process_get_command(client: Client, process_id: str, segment_id: str,
 def processes_search_command(client: Client, process_name: str = None, group: str = None, hostname: str = None,
                              parent_name: str = None, process_path: str = None, md5: str = None,
                              query: str = None, group_by: str = None, sort: str = None, facet: str = None,
-                             facet_field: str = None, limit: str = '50', start: str = None):
+                             facet_field: str = None, limit: str = '50', start: str = '0'):
     res = client.get_processes(process_name, group, hostname, parent_name, process_path, md5, query, group_by, sort,
                                facet, facet_field, limit, start)
 
     if not res:
         raise Exception(f'{INTEGRATION_NAME} - Request cannot be processed.')
 
-    outputs = assign_params(Results=res.get('results'), Facets=res.get('facets'))
+    outputs = assign_params(Results=res.get('results'), Facets=res.get('facets'), Terms=res.get('terms'),
+                            total_results=res.get('total_results'))
 
     human_readable_data = []
     for process in res.get('results'):
@@ -610,18 +627,22 @@ def processes_search_command(client: Client, process_name: str = None, group: st
                 'Process Path': process.get('path'),
                 'Process md5': process.get('process_md5'),
                 'Process Name': process.get('process_name'),
+                'Segment ID': process.get('segment_id'),
                 'Process PID': process.get('process_pid'),
                 'Process ID': process.get('id'),
                 'Hostname': process.get('hostname'),
-                'Segment ID': process.get('segment_id'),
                 'Username': process.get('username'),
                 'Last Update': process.get('last_update'),
                 'Is Terminated': process.get('terminated')
             })
-    md = tableToMarkdown(f'{INTEGRATION_NAME} - Process Search Results', human_readable_data, removeNull=True)
-    md += f"\nShowing {len(res.get('results', []))} out of {res.get('total_results', '0')} results."
+    md = f'#### {INTEGRATION_NAME} - Process Search Results'
+    md += tableToMarkdown(f"\nShowing {start} - {len(res.get('results', []))} out of {res.get('total_results', '0')} results.",
+                         human_readable_data,
+                         headers=['Process Path', 'Process ID', 'Segment ID', 'Process md5', 'Process Name','Hostname',
+                                  'Process PID', 'Username', 'Last Update', 'Is Terminated'],
+                         removeNull=True)
 
-    return CommandResults(outputs=outputs, outputs_prefix='CarbonBlackEDR.Process', outputs_key_field='id',
+    return CommandResults(outputs=outputs, outputs_prefix='CarbonBlackEDR.ProcessSearch', outputs_key_field='Terms',
                           readable_output=md)
 
 
@@ -670,20 +691,38 @@ def endpoint_command(client: Client, id: str = None, ip: str = None, hostname: s
         return CommandResults(readable_output=f'{INTEGRATION_NAME} - Could not get endpoint')
 
 
-def fetch_incidents(client: Client, max_results: int, last_run: dict, first_fetch_time: int, status: str = None,
-                    feedname: str = None, hostname: str = None, query: str = None):
+def fetch_incidents(client: Client, max_results: int, last_run: dict, first_fetch_time: str, status: str = None,
+                    feedname: str = None, query: str = None):
+    if (status or feedname) and query:
+        raise Exception(f'{INTEGRATION_NAME} - Search is not permitted with both query and filter parameters.')
+
+    max_results = arg_to_number(arg=max_results, arg_name='max_fetch', required=False) if max_results else 50
+
+    # How much time before the first fetch to retrieve incidents
+    first_fetch_time = dateparser.parse(first_fetch_time)
+    first_fetch_timestamp_ms = int(first_fetch_time.timestamp() * 1000) if first_fetch_time else None
+
     last_fetch = last_run.get('last_fetch', None)
     # Handle first fetch time
     if last_fetch is None:
-        last_fetch = first_fetch_time
+        last_fetch = first_fetch_timestamp_ms
     else:
         last_fetch = int(last_fetch)
 
     latest_created_time = last_fetch
 
     incidents: List[Dict[str, Any]] = []
-    res = client.get_alerts(status=status, feedname=feedname, hostname=hostname, query=query, limit=max_results)
-    alerts = res.get('results', {})
+
+    # multiple statuses are not supported by api. If status provided, gets the incidents for each status.
+    # Otherwise will run without status.
+    alerts = []
+    if status:
+        for current_status in argToList(status):
+            res = client.get_alerts(status=current_status, feedname=feedname, limit=max_results)
+            alerts += res.get('results', {})
+    else:
+        res = client.get_alerts(feedname=feedname, query=query, limit=max_results)
+        alerts += res.get('results', {})
 
     for alert in alerts:
         incident_created_time = dateparser.parse(alert.get('created_time'))
@@ -725,7 +764,7 @@ def test_module(client: Client) -> str:
             client.get_alerts(allow_empty_params=True, limit='5')
         return 'ok'
     except DemistoException as e:
-        if 'Forbidden' in str(e) or 'Authorization' in str(e):
+        if 'Forbidden' in str(e) or 'UNAUTHORIZED' in str(e):
             raise Exception('Authorization Error: make sure API Key is correctly set')
         else:
             raise e
@@ -736,10 +775,11 @@ def test_module(client: Client) -> str:
 
 def main() -> None:
     try:
-        api_token = demisto.params().get('apitoken')
-        base_url = urljoin(demisto.params()['url'], '/api')
-        verify_certificate = not demisto.params().get('insecure', False)
-        proxy = demisto.params().get('proxy', False)
+        params = demisto.params()
+        base_url = urljoin(params['url'], '/api')
+        api_token = params.get('credentials', {}).get('password')
+        verify_certificate = not params.get('insecure', False)
+        proxy = params.get('proxy', False)
         command = demisto.command()
         args = demisto.args() if demisto.args() else {}
         demisto.debug(f'Command being called is {command}')
@@ -778,28 +818,15 @@ def main() -> None:
             return_results(result)
 
         elif command == 'fetch-incidents':
-            # Convert the argument to an int using helper function or set to MAX_INCIDENTS_TO_FETCH
-            max_results = arg_to_number(
-                arg=demisto.params().get('max_fetch', '50'), arg_name='max_fetch', required=False
-            )
-
-            # How much time before the first fetch to retrieve incidents
-            first_fetch_time = dateparser.parse(arg=demisto.params().get('first_fetch', '3 days'),
-                                                arg_name='First fetch time', required=True)
-            first_fetch_timestamp = int(first_fetch_time.timestamp()) if first_fetch_time else None
-
-            # Using assert as a type guard (since first_fetch_time is always an int when required=True)
-            assert isinstance(first_fetch_timestamp, int)
 
             next_run, incidents = fetch_incidents(
                 client=client,
-                max_results=max_results,
-                last_run=demisto.getLastRun(),  # getLastRun() gets the last run dict
-                first_fetch_time=first_fetch_time,
-                status=demisto.params().get('alert_status', None),
-                feedname=demisto.params().get('alert_feed_name', None),
-                hostname=demisto.params().get('alert_hostname', None),
-                query=demisto.params().get('alert_query', None))
+                max_results=params.get('max_fetch'),
+                last_run=demisto.getLastRun(),
+                first_fetch_time= params.get('first_fetch', '3 days'),
+                status=params.get('alert_status', None),
+                feedname=params.get('alert_feed_name', None),
+                query=params.get('alert_query', None))
             demisto.setLastRun(next_run)
             demisto.incidents(incidents)
 

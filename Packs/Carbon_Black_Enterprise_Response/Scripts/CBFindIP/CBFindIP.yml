@@ -28,10 +28,12 @@ outputs:
   description: Process name.
   type: String
 - contextPath: Process.CbSegmentID
-  description: Carbon Black "segment" where this process instance is stored. Required to fetch additional information for a process.
+  description: Carbon Black "segment" where this process instance is stored. Required
+    to fetch additional information for a process.
   type: String
 - contextPath: Process.CbID
-  description: Carbon Black unique ID for this process instance. Required (together with CbSegmentID) to fetch additional information for a process.
+  description: Carbon Black unique ID for this process instance. Required (together
+    with CbSegmentID) to fetch additional information for a process.
   type: String
 - contextPath: Process.Endpoint
   description: The endpoint of the process.
