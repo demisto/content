@@ -16,6 +16,38 @@ JAMF classic API: https://www.jamf.com/developers/apis/classic/reference/#/
     | Use system proxy settings | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
+
+###Required Permissions
+In order to run JAMF V2 commands, the user should have a set of minimum permissions on the Jamf Pro server. Changing permissions on Jamf Pro server can be done using the following steps inside the Jamf Pro management GUI:
+
+1.Go to “Management Settings → All Settings → Jamf Pro User Accounts & Group”
+
+2.Click on the relevant user which is going to be used inside the integration.
+
+3.Click the “Edit” button.
+
+4.Under the “Account” tab, set the “Privilege Set” to “Custom” (or create a new user with “Privilege Set” as “Custom” if you don’t want to change the existing user’s permissions)
+
+5.Under the “Privileges” tab, tick the relevant checkboxes based on the detailed permissions list below.
+
+6.Click the “Save” button.
+
+| Combined permissions for all of the commands: |
+| --- |
+| Jamf Pro Server Objects → Computers → Read
+| Jamf Pro Server Objects → Computers → Create
+| Jamf Pro Server Objects → Users → Read
+| Jamf Pro Server Objects → Mobile Devices → Read
+| Jamf Pro Server Objects → Mobile Devices → Create
+| Jamf Pro Server Objects → Advanced Computer Searches → Read
+| Jamf Pro Server Settings → Apple Education Support → Read
+| Jamf Pro Server Actions → Send Computer Remote Lock Command
+| Jamf Pro Server Actions → Send Computer Remote Wipe Command
+| Jamf Pro Server Actions → Send Mobile Device Lost Mode Command
+| Jamf Pro Server Actions → Send Mobile Device Remote Wipe Command
+| Jamf Pro Server Actions → View Mobile Device Lost Mode Location
+
+
 ## Commands
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
@@ -27,6 +59,10 @@ This command is a replacement for ``jamf-get-computers`` in jamf v1 integration.
 #### Base Command
 
 `jamf-get-computers`
+
+#### Required Permissions
+Jamf Pro Server Objects → Computers → Read
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -41,6 +77,10 @@ This command is a replacement for ``jamf-get-computers`` in jamf v1 integration.
 | --- | --- | --- |
 | JAMF.Computer.id | Number | The computer ID. | 
 | JAMF.Computer.name | String | The computer name. | 
+| JAMF.Computer.Paging.total_results | Number | The number of computers returned in this specific search. | 
+| JAMF.Computer.Paging.page_size | Number | The number of computers to be returned on each page. | 
+| JAMF.Computer.Paging.current_page | Number | Number of requested page. | 
+
 
 
 #### Command Example
@@ -89,6 +129,10 @@ This command will return the “basic” subset for all of the computers. The �
 #### Base Command
 
 `jamf-get-computers-basic-subset`
+
+#### Required Permissions
+Jamf Pro Server Objects → Computers → Read
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -112,7 +156,7 @@ This command will return the “basic” subset for all of the computers. The �
 | JAMF.Computer.udid | String | The computer udid. | 
 | JAMF.Computer.serial_number | String | The computer serial number. | 
 | JAMF.Computer.report_date_utc | Date | The computer report date in UTC. | 
-| JAMF.Computer.report_date_epoch | Number | The computer repoer date in epoch. | 
+| JAMF.Computer.report_date_epoch | Number | The computer report date in epoch. | 
 
 
 #### Command Example
@@ -191,6 +235,10 @@ This command will return  the "general" subset of a specific computer, e.g: name
 #### Base Command
 
 `jamf-get-computer-by-id`
+
+#### Required Permissions
+Jamf Pro Server Objects → Computers → Read
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -321,6 +369,10 @@ This command is a replacement for ``jamf-get-computers-match`` in jamf v1 integr
 #### Base Command
 
 `jamf-get-computer-by-match`
+
+#### Required Permissions
+Jamf Pro Server Objects → Computers → Read
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -353,7 +405,9 @@ This command is a replacement for ``jamf-get-computers-match`` in jamf v1 integr
 | JAMF.Computer.building_name | String | The computer building name. | 
 | JAMF.Computer.department | String | The computer department. | 
 | JAMF.Computer.department_name | String | The computer department name. | 
-
+| JAMF.Computer.Paging.total_results | Number | The number of computers returned in this specific search. | 
+| JAMF.Computer.Paging.page_size | Number | The number of computers to be returned on each page. | 
+| JAMF.Computer.Paging.current_page | Number | Number of requested page. | 
 
 #### Command Example
 ```!jamf-get-computer-by-match match="Computer 9*" limit=3```
@@ -452,6 +506,10 @@ Returns the general subset for a specific computer according to the given argume
 #### Base Command
 
 `jamf-get-computer-general-subset`
+
+#### Required Permissions
+Jamf Pro Server Objects → Computers → Read
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -590,6 +648,10 @@ Returns the location subset for a specific computer according to the given argum
 #### Base Command
 
 `jamf-get-computer-location-subset`
+
+#### Required Permissions
+Jamf Pro Server Objects → Computers → Read
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -659,6 +721,10 @@ Returns the purchasing subset for a specific computer according to the given arg
 #### Base Command
 
 `jamf-get-computer-purchasing-subset`
+
+#### Required Permissions
+Jamf Pro Server Objects → Computers → Read
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -749,6 +815,10 @@ Returns the peripherals subset for a specific computer according to the given ar
 #### Base Command
 
 `jamf-get-computer-peripherals-subset`
+
+#### Required Permissions
+Jamf Pro Server Objects → Computers → Read
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -796,6 +866,10 @@ Returns the hardware subset for a specific computer according to the given argum
 #### Base Command
 
 `jamf-get-computer-hardware-subset`
+
+#### Required Permissions
+Jamf Pro Server Objects → Computers → Read
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1030,6 +1104,10 @@ Returns the certificates subset for a specific computer according to the given a
 #### Base Command
 
 `jamf-get-computer-certificates-subset`
+
+#### Required Permissions
+Jamf Pro Server Objects → Computers → Read
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1115,6 +1193,10 @@ Returns the security subset for a specific computer according to the given argum
 #### Base Command
 
 `jamf-get-computer-security-subset`
+
+#### Required Permissions
+Jamf Pro Server Objects → Computers → Read
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1170,6 +1252,10 @@ Returns the software subset for a specific computer according to the given argum
 #### Base Command
 
 `jamf-get-computer-software-subset`
+
+#### Required Permissions
+Jamf Pro Server Objects → Computers → Read
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1455,6 +1541,10 @@ Returns the extension attributes subset for a specific computer according to the
 #### Base Command
 
 `jamf-get-computer-extension-attributes-subset`
+
+#### Required Permissions
+Jamf Pro Server Objects → Computers → Read
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1564,6 +1654,10 @@ Returns the groups accounts subset for a specific computer according to the give
 #### Base Command
 
 `jamf-get-computer-groups-accounts-subset`
+
+#### Required Permissions
+Jamf Pro Server Objects → Computers → Read
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1707,6 +1801,10 @@ Returns the iphones subset for a specific computer according to the given argume
 #### Base Command
 
 `jamf-get-computer-iphones-subset`
+
+#### Required Permissions
+Jamf Pro Server Objects → Computers → Read
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1754,6 +1852,10 @@ Returns the configuration profiles subset for a specific computer according to t
 #### Base Command
 
 `jamf-get-computer-configuration-profiles-subset`
+
+#### Required Permissions
+Jamf Pro Server Objects → Computers → Read
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1827,6 +1929,13 @@ Will send the "DeviceLock" command to a computer. This command logs the user out
 #### Base Command
 
 `jamf-computer-lock`
+
+#### Required Permissions
+Jamf Pro Server Actions → Send Computer Remote Lock Command
+
+Jamf Pro Server Objects → Computers → Create
+
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1840,9 +1949,9 @@ Will send the "DeviceLock" command to a computer. This command logs the user out
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| JAMF.ComputerCommands.name | String | The command name | 
-| JAMF.ComputerCommands.command_uuid | String | The command udid. | 
-| JAMF.ComputerCommands.computer_id | String | The computer ID. | 
+| JAMF.ComputerCommand.name | String | The command name | 
+| JAMF.ComputerCommand.command_uuid | String | The command udid. | 
+| JAMF.ComputerCommand.computer_id | String | The computer ID. | 
 
 
 #### Command Example
@@ -1877,6 +1986,12 @@ Will send the “EraseDevice'' command to a computer. Permanently erases all the
 #### Base Command
 
 `jamf-computer-erase`
+
+#### Required Permissions
+Jamf Pro Server Actions → Send Computer Remote Wipe Command
+
+Jamf Pro Server Objects → Computers → Create
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1889,9 +2004,9 @@ Will send the “EraseDevice'' command to a computer. Permanently erases all the
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| JAMF.ComputerCommands.name | String | The command name. | 
-| JAMF.ComputerCommands.command_uuid | String | The command udid. | 
-| JAMF.ComputerCommands.computer_id | String | The computer ID. | 
+| JAMF.ComputerCommand.name | String | The command name. | 
+| JAMF.ComputerCommand.command_uuid | String | The command udid. | 
+| JAMF.ComputerCommand.computer_id | String | The computer ID. | 
 
 
 #### Command Example
@@ -1926,6 +2041,10 @@ Return a list of users with their IDs and names. By default, will return the fir
 #### Base Command
 
 `jamf-get-users`
+
+#### Required Permissions
+Jamf Pro Server Objects → Users → Read
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1940,6 +2059,9 @@ Return a list of users with their IDs and names. By default, will return the fir
 | --- | --- | --- |
 | JAMF.User.id | Number | The user ID. | 
 | JAMF.User.name | String | The user name. | 
+| JAMF.User.Paging.total_results | Number | The number of users returned in this specific search. | 
+| JAMF.User.Paging.page_size | Number | The number of users to be returned on each page. | 
+| JAMF.User.Paging.current_page | Number | Number of requested page. | 
 
 
 #### Command Example
@@ -1988,6 +2110,12 @@ Return a specific user with general data about the user according to the given I
 #### Base Command
 
 `jamf-get-user-by-id`
+
+#### Required Permissions
+Jamf Pro Server Objects → Users → Read
+
+Jamf Pro Server Settings → Apple Education Support → Read (in order to view these fields: “enable_custom_photo_url” and “custom_photo_url”)
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2126,6 +2254,12 @@ Return a specific user with general data about the user according to the given n
 #### Base Command
 
 `jamf-get-user-by-name`
+
+#### Required Permissions
+Jamf Pro Server Objects → Users → Read
+
+Jamf Pro Server Settings → Apple Education Support → Read (in order to view these fields: “enable_custom_photo_url” and “custom_photo_url”)
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2265,6 +2399,12 @@ Return a specific user with general data about the user according to the given e
 #### Base Command
 
 `jamf-get-user-by-email`
+
+#### Required Permissions
+Jamf Pro Server Objects → Users → Read
+
+Jamf Pro Server Settings → Apple Education Support → Read (in order to view these fields: “enable_custom_photo_url” and “custom_photo_url”)
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2399,6 +2539,10 @@ This command will return a list of devices with some basic data on each one of t
 #### Base Command
 
 `jamf-get-mobile-devices`
+
+#### Required Permissions
+Jamf Pro Server Objects → Mobile Devices → Read
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2411,21 +2555,23 @@ This command will return a list of devices with some basic data on each one of t
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| JAMF.MobileDevices.id | Number | The mobile device ID. | 
-| JAMF.MobileDevices.name | String | The mobile device name. | 
-| JAMF.MobileDevices.device_name | String | The mobile device name. | 
-| JAMF.MobileDevices.udid | String | The mobile device udid. | 
-| JAMF.MobileDevices.serial_number | String | The mobile device serial number. | 
-| JAMF.MobileDevices.phone_number | String | The mobile device phone number. | 
-| JAMF.MobileDevices.wifi_mac_address | String | The mobile device WIFI mac address. | 
-| JAMF.MobileDevices.managed | Boolean | If the mobile device is managed. | 
-| JAMF.MobileDevices.supervised | Boolean | If the mobile device is supervised. | 
-| JAMF.MobileDevices.model | String | The mobile device model. | 
-| JAMF.MobileDevices.model_identifier | String | The mobile device model ID. | 
-| JAMF.MobileDevices.modelDisplay | String | The mobile device model display. | 
-| JAMF.MobileDevices.model_display | String | The mobile device model display. | 
-| JAMF.MobileDevices.username | String | The mobile device username. | 
-
+| JAMF.MobileDevice.id | Number | The mobile device ID. | 
+| JAMF.MobileDevice.name | String | The mobile device name. | 
+| JAMF.MobileDevice.device_name | String | The mobile device name. | 
+| JAMF.MobileDevice.udid | String | The mobile device udid. | 
+| JAMF.MobileDevice.serial_number | String | The mobile device serial number. | 
+| JAMF.MobileDevice.phone_number | String | The mobile device phone number. | 
+| JAMF.MobileDevice.wifi_mac_address | String | The mobile device WIFI mac address. | 
+| JAMF.MobileDevice.managed | Boolean | If the mobile device is managed. | 
+| JAMF.MobileDevice.supervised | Boolean | If the mobile device is supervised. | 
+| JAMF.MobileDevice.model | String | The mobile device model. | 
+| JAMF.MobileDevice.model_identifier | String | The mobile device model ID. | 
+| JAMF.MobileDevice.modelDisplay | String | The mobile device model display. | 
+| JAMF.MobileDevice.model_display | String | The mobile device model display. | 
+| JAMF.MobileDevice.username | String | The mobile device username. | 
+| JAMF.MobileDevice.Paging.total_results | Number | The number of mobile devices returned in this specific search. | 
+| JAMF.MobileDevice.Paging.page_size | Number | The number of mobile devices to be returned on each page. | 
+| JAMF.MobileDevice.Paging.current_page | Number | Number of requested page. | 
 
 #### Command Example
 ```!jamf-get-mobile-devices limit=3```
@@ -2509,6 +2655,39 @@ This command will return  the "general" subset of a specific mobile device, e.g:
 #### Base Command
 
 `jamf-get-mobile-device-by-id`
+
+#### Required Permissions
+Jamf-get-mobile-device-by-id
+
+Jamf Pro Server Objects → Mobile Devices → Read
+
+*Jamf Pro Server Actions → Send Mobile Device Lost Mode Command 
+
+**Jamf Pro Server Actions → View Mobile Device Lost Mode Location
+
+*In order to view these fields: |
+| --- |
+| lost_mode_enabled |  
+| lost_mode_enforced |  
+| lost_mode_enable_issued_epoch |  
+| lost_mode_enable_issued_utc |  
+| lost_mode_message |  
+| lost_mode_phone |  
+| lost_mode_footnote |  
+
+** In order to view these fields (has to be combined with “Send Mobile Device Lost Mode Command” permission) |
+| --- |
+| lost_location_epoch |  
+| lost_location_utc |  
+| lost_location_latitude |  
+| lost_location_longitude |  
+| lost_location_altitude |  
+| lost_location_speed |  
+| lost_location_course |  
+| lost_location_horizontal_accuracy |  
+| lost_location_vertical_accuracy |  
+
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2520,62 +2699,62 @@ This command will return  the "general" subset of a specific mobile device, e.g:
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| JAMF.MobileDevices.id | Number | The mobile device ID. | 
-| JAMF.MobileDevices.display_name | String | The mobile device display name. | 
-| JAMF.MobileDevices.device_name | String | The mobile device name. | 
-| JAMF.MobileDevices.name | String | The mobile device name. | 
-| JAMF.MobileDevices.asset_tag | String | The mobile device asset ID. | 
-| JAMF.MobileDevices.last_inventory_update | String | The mobile device last inventory update. | 
-| JAMF.MobileDevices.last_inventory_update_epoch | Date | The mobile device last inventory update in epoch. | 
-| JAMF.MobileDevices.last_inventory_update_utc | Date | The mobile device last inventory update in UTC. | 
-| JAMF.MobileDevices.capacity | Number | The mobile device capacity. | 
-| JAMF.MobileDevices.capacity_mb | Number | The mobile device capacity MB. | 
-| JAMF.MobileDevices.available | Number | The mobile device available. | 
-| JAMF.MobileDevices.available_mb | Number | The mobile device available MB. | 
-| JAMF.MobileDevices.percentage_used | Number | The mobile device available percentage used. | 
-| JAMF.MobileDevices.os_type | String | The mobile device OS type. | 
-| JAMF.MobileDevices.os_version | String | The mobile device OS version. | 
-| JAMF.MobileDevices.os_build | String | The mobile device OS build. | 
-| JAMF.MobileDevices.serial_number | String | The mobile device serial number. | 
-| JAMF.MobileDevices.udid | String | The mobile device udid. | 
-| JAMF.MobileDevices.initial_entry_date_epoch | Date | The mobile device  initial entry date in epoch. | 
-| JAMF.MobileDevices.initial_entry_date_utc | Date | The mobile device  initial entry date in UTC. | 
-| JAMF.MobileDevices.phone_number | String | The mobile device phone number. | 
-| JAMF.MobileDevices.ip_address | String | The mobile device IP address. | 
-| JAMF.MobileDevices.wifi_mac_address | String | The mobile device WIFI mac address. | 
-| JAMF.MobileDevices.bluetooth_mac_address | String | The mobile device bluetooth mac address. | 
-| JAMF.MobileDevices.modem_firmware | String | The mobile device modem fireware. | 
-| JAMF.MobileDevices.model | String | The mobile device model. | 
-| JAMF.MobileDevices.model_identifier | String | The mobile device model ID. | 
-| JAMF.MobileDevices.model_number | String | The mobile device model number. | 
-| JAMF.MobileDevices.modelDisplay | String | The mobile device model display. | 
-| JAMF.MobileDevices.model_display | String | The mobile device model display. | 
-| JAMF.MobileDevices.device_ownership_level | String | The mobile device ownership level. | 
-| JAMF.MobileDevices.enrollment_method | String | The mobile device enrollment method. | 
-| JAMF.MobileDevices.last_enrollment_epoch | Number | The mobile device last enrollment in epoch. | 
-| JAMF.MobileDevices.last_enrollment_utc | String | The mobile device last enrollment in UTC. | 
-| JAMF.MobileDevices.mdm_profile_expiration_epoch | Number | The mobile device mdm profile expiration in epoch. | 
-| JAMF.MobileDevices.mdm_profile_expiration_utc | String | The mobile device mdm profile expiration in UTC. | 
-| JAMF.MobileDevices.managed | Boolean | If the mobile device is managed. | 
-| JAMF.MobileDevices.supervised | Boolean | If the mobile device is supervised. | 
-| JAMF.MobileDevices.exchange_activesync_device_identifier | String | The mobile device exchange active sync device ID. | 
-| JAMF.MobileDevices.shared | String | The mobile device shared. | 
-| JAMF.MobileDevices.diagnostic_submission | String | The mobile device diagnostic submission, | 
-| JAMF.MobileDevices.app_analytics | String | The mobile device app analytics. | 
-| JAMF.MobileDevices.tethered | String | The mobile device tethered. | 
-| JAMF.MobileDevices.battery_level | Number | The mobile device battery level. | 
-| JAMF.MobileDevices.ble_capable | Boolean | The mobile device ble capable. | 
-| JAMF.MobileDevices.device_locator_service_enabled | Boolean | If the mobile device locator service is enabled. | 
-| JAMF.MobileDevices.do_not_disturb_enabled | Boolean | If the mobile device do not disturb is enabled. | 
-| JAMF.MobileDevices.cloud_backup_enabled | Boolean | If the mobile device cloud backup is enabled. | 
-| JAMF.MobileDevices.last_cloud_backup_date_epoch | Date | The mobie device last cloud update backup date in epoch. | 
-| JAMF.MobileDevices.last_cloud_backup_date_utc | Date | The mobie device last cloud update backup date in UTC. | 
-| JAMF.MobileDevices.location_services_enabled | Boolean | If the mobile device location services is enabled. | 
-| JAMF.MobileDevices.itunes_store_account_is_active | Boolean | If the mobile device itunes store accouns is enabled. | 
-| JAMF.MobileDevices.last_backup_time_epoch | Number | The mobile device last backup time in epoch. | 
-| JAMF.MobileDevices.last_backup_time_utc | String | The mobile device last backup time in UTC. | 
-| JAMF.MobileDevices.site.id | Number | Tyhe mobile device site ID. | 
-| JAMF.MobileDevices.site.name | String | The mobile device site name. | 
+| JAMF.MobileDevice.id | Number | The mobile device ID. | 
+| JAMF.MobileDevice.display_name | String | The mobile device display name. | 
+| JAMF.MobileDevice.device_name | String | The mobile device name. | 
+| JAMF.MobileDevice.name | String | The mobile device name. | 
+| JAMF.MobileDevice.asset_tag | String | The mobile device asset ID. | 
+| JAMF.MobileDevice.last_inventory_update | String | The mobile device last inventory update. | 
+| JAMF.MobileDevice.last_inventory_update_epoch | Date | The mobile device last inventory update in epoch. | 
+| JAMF.MobileDevice.last_inventory_update_utc | Date | The mobile device last inventory update in UTC. | 
+| JAMF.MobileDevice.capacity | Number | The mobile device capacity. | 
+| JAMF.MobileDevice.capacity_mb | Number | The mobile device capacity MB. | 
+| JAMF.MobileDevice.available | Number | The mobile device available. | 
+| JAMF.MobileDevice.available_mb | Number | The mobile device available MB. | 
+| JAMF.MobileDevice.percentage_used | Number | The mobile device available percentage used. | 
+| JAMF.MobileDevice.os_type | String | The mobile device OS type. | 
+| JAMF.MobileDevice.os_version | String | The mobile device OS version. | 
+| JAMF.MobileDevice.os_build | String | The mobile device OS build. | 
+| JAMF.MobileDevice.serial_number | String | The mobile device serial number. | 
+| JAMF.MobileDevice.udid | String | The mobile device udid. | 
+| JAMF.MobileDevice.initial_entry_date_epoch | Date | The mobile device  initial entry date in epoch. | 
+| JAMF.MobileDevice.initial_entry_date_utc | Date | The mobile device  initial entry date in UTC. | 
+| JAMF.MobileDevice.phone_number | String | The mobile device phone number. | 
+| JAMF.MobileDevice.ip_address | String | The mobile device IP address. | 
+| JAMF.MobileDevice.wifi_mac_address | String | The mobile device WIFI mac address. | 
+| JAMF.MobileDevice.bluetooth_mac_address | String | The mobile device bluetooth mac address. | 
+| JAMF.MobileDevice.modem_firmware | String | The mobile device modem fireware. | 
+| JAMF.MobileDevice.model | String | The mobile device model. | 
+| JAMF.MobileDevice.model_identifier | String | The mobile device model ID. | 
+| JAMF.MobileDevice.model_number | String | The mobile device model number. | 
+| JAMF.MobileDevice.modelDisplay | String | The mobile device model display. | 
+| JAMF.MobileDevice.model_display | String | The mobile device model display. | 
+| JAMF.MobileDevice.device_ownership_level | String | The mobile device ownership level. | 
+| JAMF.MobileDevice.enrollment_method | String | The mobile device enrollment method. | 
+| JAMF.MobileDevice.last_enrollment_epoch | Number | The mobile device last enrollment in epoch. | 
+| JAMF.MobileDevice.last_enrollment_utc | String | The mobile device last enrollment in UTC. | 
+| JAMF.MobileDevice.mdm_profile_expiration_epoch | Number | The mobile device mdm profile expiration in epoch. | 
+| JAMF.MobileDevice.mdm_profile_expiration_utc | String | The mobile device mdm profile expiration in UTC. | 
+| JAMF.MobileDevice.managed | Boolean | If the mobile device is managed. | 
+| JAMF.MobileDevice.supervised | Boolean | If the mobile device is supervised. | 
+| JAMF.MobileDevice.exchange_activesync_device_identifier | String | The mobile device exchange active sync device ID. | 
+| JAMF.MobileDevice.shared | String | The mobile device shared. | 
+| JAMF.MobileDevice.diagnostic_submission | String | The mobile device diagnostic submission, | 
+| JAMF.MobileDevice.app_analytics | String | The mobile device app analytics. | 
+| JAMF.MobileDevice.tethered | String | The mobile device tethered. | 
+| JAMF.MobileDevice.battery_level | Number | The mobile device battery level. | 
+| JAMF.MobileDevice.ble_capable | Boolean | The mobile device ble capable. | 
+| JAMF.MobileDevice.device_locator_service_enabled | Boolean | If the mobile device locator service is enabled. | 
+| JAMF.MobileDevice.do_not_disturb_enabled | Boolean | If the mobile device do not disturb is enabled. | 
+| JAMF.MobileDevice.cloud_backup_enabled | Boolean | If the mobile device cloud backup is enabled. | 
+| JAMF.MobileDevice.last_cloud_backup_date_epoch | Date | The mobie device last cloud update backup date in epoch. | 
+| JAMF.MobileDevice.last_cloud_backup_date_utc | Date | The mobie device last cloud update backup date in UTC. | 
+| JAMF.MobileDevice.location_services_enabled | Boolean | If the mobile device location services is enabled. | 
+| JAMF.MobileDevice.itunes_store_account_is_active | Boolean | If the mobile device itunes store accouns is enabled. | 
+| JAMF.MobileDevice.last_backup_time_epoch | Number | The mobile device last backup time in epoch. | 
+| JAMF.MobileDevice.last_backup_time_utc | String | The mobile device last backup time in UTC. | 
+| JAMF.MobileDevice.site.id | Number | Tyhe mobile device site ID. | 
+| JAMF.MobileDevice.site.name | String | The mobile device site name. | 
 
 
 #### Command Example
@@ -2665,6 +2844,10 @@ This command will match mobile devices by specific characteristics and returns g
 #### Base Command
 
 `jamf-get-mobile-device-by-match`
+
+#### Required Permissions
+Jamf Pro Server Objects → Mobile Devices → Read
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2678,22 +2861,25 @@ This command will match mobile devices by specific characteristics and returns g
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| JAMF.MobileDevices.id | Number | The mobile device ID. | 
-| JAMF.MobileDevices.name | String | The mobile device name. | 
-| JAMF.MobileDevices.udid | String | The mobile device udid. | 
-| JAMF.MobileDevices.serial_number | String | The mobile device serial number. | 
-| JAMF.MobileDevices.mac_address | String | The mobile device mac address. | 
-| JAMF.MobileDevices.wifi_mac_address | String | The mobile device WIFI mac address. | 
-| JAMF.MobileDevices.username | String | The mobile device username. | 
-| JAMF.MobileDevices.realname | String | The mobile device real name. | 
-| JAMF.MobileDevices.email | String | The mobile device user email address. | 
-| JAMF.MobileDevices.email_address | String | The mobile device user email address. | 
-| JAMF.MobileDevices.room | String | The mobile device room. | 
-| JAMF.MobileDevices.position | String | The mobile device position. | 
-| JAMF.MobileDevices.building | String | The mobile device building. | 
-| JAMF.MobileDevices.building_name | String | The mobile device building name. | 
-| JAMF.MobileDevices.department | String | The mobile device department. | 
-| JAMF.MobileDevices.department_name | String | The mobile device department name. | 
+| JAMF.MobileDevice.id | Number | The mobile device ID. | 
+| JAMF.MobileDevice.name | String | The mobile device name. | 
+| JAMF.MobileDevice.udid | String | The mobile device udid. | 
+| JAMF.MobileDevice.serial_number | String | The mobile device serial number. | 
+| JAMF.MobileDevice.mac_address | String | The mobile device mac address. | 
+| JAMF.MobileDevice.wifi_mac_address | String | The mobile device WIFI mac address. | 
+| JAMF.MobileDevice.username | String | The mobile device username. | 
+| JAMF.MobileDevice.realname | String | The mobile device real name. | 
+| JAMF.MobileDevice.email | String | The mobile device user email address. | 
+| JAMF.MobileDevice.email_address | String | The mobile device user email address. | 
+| JAMF.MobileDevice.room | String | The mobile device room. | 
+| JAMF.MobileDevice.position | String | The mobile device position. | 
+| JAMF.MobileDevice.building | String | The mobile device building. | 
+| JAMF.MobileDevice.building_name | String | The mobile device building name. | 
+| JAMF.MobileDevice.department | String | The mobile device department. | 
+| JAMF.MobileDevice.department_name | String | The mobile device department name. | 
+| JAMF.MobileDevice.Paging.total_results | Number | The number of mobile devices returned in this specific search. | 
+| JAMF.MobileDevice.Paging.page_size | Number | The number of mobile devices to be returned on each page. | 
+| JAMF.MobileDevice.Paging.current_page | Number | Number of requested page. | 
 
 
 #### Command Example
@@ -2744,6 +2930,10 @@ Returns the general subset for a specific mobile device according to the given a
 #### Base Command
 
 `jamf-get-mobile-device-general-subset`
+
+#### Required Permissions
+Jamf Pro Server Objects → Mobile Devices → Read
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2907,6 +3097,10 @@ Returns the location subset for a specific mobile device according to the given 
 #### Base Command
 
 `jamf-get-mobile-device-location-subset`
+
+#### Required Permissions
+Jamf Pro Server Objects → Mobile Devices → Read
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2976,6 +3170,10 @@ Returns the purchasing subset for a specific mobile device according to the give
 #### Base Command
 
 `jamf-get-mobile-device-purchasing-subset`
+
+#### Required Permissions
+Jamf Pro Server Objects → Mobile Devices → Read
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -3062,6 +3260,10 @@ Returns the applications subset for a specific mobile device according to the gi
 #### Base Command
 
 `jamf-get-mobile-device-applications-subset`
+
+#### Required Permissions
+Jamf Pro Server Objects → Mobile Devices → Read
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -3114,6 +3316,37 @@ Returns the security subset for a specific mobile device according to the given 
 #### Base Command
 
 `jamf-get-mobile-device-security-subset`
+
+#### Required Permissions
+Jamf Pro Server Objects → Mobile Devices → Read
+
+*Jamf Pro Server Actions → Send Mobile Device Lost Mode Command 
+
+**Jamf Pro Server Actions → View Mobile Device Lost Mode Location
+
+*In order to view these fields: |
+| --- |
+| lost_mode_enabled |  
+| lost_mode_enforced |  
+| lost_mode_enable_issued_epoch |  
+| lost_mode_enable_issued_utc |  
+| lost_mode_message |  
+| lost_mode_phone |  
+| lost_mode_footnote |  
+
+** In order to view these fields (has to be combined with “Send Mobile Device Lost Mode Command” permission) |
+| --- |
+| lost_location_epoch |  
+| lost_location_utc |  
+| lost_location_latitude |  
+| lost_location_longitude |  
+| lost_location_altitude |  
+| lost_location_speed |  
+| lost_location_course |  
+| lost_location_horizontal_accuracy |  
+| lost_location_vertical_accuracy |  
+
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -3215,6 +3448,10 @@ Returns the network subset for a specific mobile device according to the given a
 #### Base Command
 
 `jamf-get-mobile-device-network-subset`
+
+#### Required Permissions
+Jamf Pro Server Objects → Mobile Devices → Read
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -3294,6 +3531,10 @@ Returns the certificates subset for a specific mobile device according to the gi
 #### Base Command
 
 `jamf-get-mobile-device-certificates-subset`
+
+#### Required Permissions
+Jamf Pro Server Objects → Mobile Devices → Read
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -3359,6 +3600,10 @@ Returns the provisioning profiles subset for a specific mobile device according 
 #### Base Command
 
 `jamf-get-mobile-device-provisioning-profiles-subset`
+
+#### Required Permissions
+Jamf Pro Server Objects → Mobile Devices → Read
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -3411,6 +3656,10 @@ Returns the configuration profiles subset for a specific mobile device according
 #### Base Command
 
 `jamf-get-mobile-device-configuration-profiles-subset`
+
+#### Required Permissions
+Jamf Pro Server Objects → Mobile Devices → Read
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -3471,6 +3720,10 @@ Returns the mobile device groups subset for a specific mobile device according t
 #### Base Command
 
 `jamf-get-mobile-device-groups-subset`
+
+#### Required Permissions
+Jamf Pro Server Objects → Mobile Devices → Read
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -3521,6 +3774,10 @@ Returns the extension attributes subset for a specific mobile device according t
 #### Base Command
 
 `jamf-get-mobile-device-extension-attributes-subset`
+
+#### Required Permissions
+Jamf Pro Server Objects → Mobile Devices → Read
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -3646,6 +3903,10 @@ Will return a list of computers with basic information on each of them.
 #### Base Command
 
 `jamf-get-computers-by-application`
+
+#### Required Permissions
+Jamf Pro Server Objects → Advanced Computer Searches → Read
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -3660,13 +3921,15 @@ Will return a list of computers with basic information on each of them.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| JAMF.ComputersByApp.id | Number | The computer ID. | 
-| JAMF.ComputersByApp.name | String | The computer name. | 
-| JAMF.ComputersByApp.udid | String | The computer udid. | 
-| JAMF.ComputersByApp.serial_number | String | The computer serial number. | 
-| JAMF.ComputersByApp.mac_address | String | The computer mac address. | 
-| JAMF.ComputersByApp.application | String | The appliction the user serched for. | 
-
+| JAMF.ComputersByApp.Computer.id | Number | The computer ID. | 
+| JAMF.ComputersByApp.Computer.name | String | The computer name. | 
+| JAMF.ComputersByApp.Computer.udid | String | The computer udid. | 
+| JAMF.ComputersByApp.Computer.serial_number | String | The computer serial number. | 
+| JAMF.ComputersByApp.Computer.mac_address | String | The computer mac address. | 
+| JAMF.ComputersByApp.Application | String | The appliction the user serched for. | 
+| JAMF.ComputersByApp.Paging.total_results | Number | The number of computers returned in this specific search. | 
+| JAMF.ComputersByApp.Paging.page_size | Number | The number of computers to be returned on each page. | 
+| JAMF.ComputersByApp.Paging.current_page | Number | Number of requested page. | 
 
 #### Command Example
 ```!jamf-get-computers-by-application application=safar* limit=3```
@@ -3723,6 +3986,12 @@ Will enable “lost mode” on a specific device. Lost Mode is a feature that al
 #### Base Command
 
 `jamf-mobile-device-lost-mode`
+
+#### Required Permissions
+Jamf Pro Server Actions → Send Mobile Device Lost Mode Command
+
+Jamf Pro Server Objects → Mobile Devices → Create
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -3756,6 +4025,12 @@ Permanently erases all data on the device and deactivates the device.
 #### Base Command
 
 `jamf-mobile-device-erase`
+
+#### Required Permissions
+Jamf Pro Server Actions → Send Mobile Device Remote Wipe Command
+
+Jamf Pro Server Objects → Mobile Devices → Create
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |

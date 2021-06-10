@@ -1,6 +1,6 @@
 {
-  "application": "safar*",
-  "computers": [
+  "Application": "safar*",
+  "Computer": [
     {
       "id": 138,
       "mac_address": "F0:18:98:3F:DB:8E",

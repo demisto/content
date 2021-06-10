@@ -55,6 +55,15 @@ script:
     - contextPath: JAMF.Computer.name
       description: The computer name.
       type: String
+    - contextPath: JAMF.Computer.Paging.total_results
+      description: The number of computers returned in this specific search.
+      type: Number
+    - contextPath: JAMF.Computer.Paging.page_size
+      description: The number of computers to be returned on each page.
+      type: Number
+    - contextPath: JAMF.Computer.Paging.current_page
+      description: Number of requested page.
+      type: Number
   - arguments:
     - default: false
       defaultValue: '50'
@@ -339,6 +348,15 @@ script:
     - contextPath: JAMF.Computer.department_name
       description: The computer department name.
       type: String
+    - contextPath: JAMF.Computer.Paging.total_results
+      description: The number of computers returned in this specific search.
+      type: Number
+    - contextPath: JAMF.Computer.Paging.page_size
+      description: The number of computers to be returned on each page.
+      type: Number
+    - contextPath: JAMF.Computer.Paging.current_page
+      description: Number of requested page.
+      type: Number
   - arguments:
     - auto: PREDEFINED
       default: false
@@ -1303,13 +1321,13 @@ script:
     execution: false
     name: jamf-computer-lock
     outputs:
-    - contextPath: JAMF.ComputerCommands.name
+    - contextPath: JAMF.ComputerCommand.name
       description: The command name
       type: String
-    - contextPath: JAMF.ComputerCommands.command_uuid
+    - contextPath: JAMF.ComputerCommand.command_uuid
       description: The command udid.
       type: String
-    - contextPath: JAMF.ComputerCommands.computer_id
+    - contextPath: JAMF.ComputerCommand.computer_id
       description: The computer ID.
       type: String
   - arguments:
@@ -1333,13 +1351,13 @@ script:
     execution: false
     name: jamf-computer-erase
     outputs:
-    - contextPath: JAMF.ComputerCommands.name
+    - contextPath: JAMF.ComputerCommand.name
       description: The command name.
       type: String
-    - contextPath: JAMF.ComputerCommands.command_uuid
+    - contextPath: JAMF.ComputerCommand.command_uuid
       description: The command udid.
       type: String
-    - contextPath: JAMF.ComputerCommands.computer_id
+    - contextPath: JAMF.ComputerCommand.computer_id
       description: The computer ID.
       type: String
   - arguments:
@@ -1369,6 +1387,15 @@ script:
     - contextPath: JAMF.User.name
       description: The user name.
       type: String
+    - contextPath: JAMF.User.Paging.total_results
+      description: The number of users returned in this specific search.
+      type: Number
+    - contextPath: JAMF.User.Paging.page_size
+      description: The number of users to be returned on each page.
+      type: Number
+    - contextPath: JAMF.User.Paging.current_page
+      description: Number of requested page.
+      type: Number
   - arguments:
     - default: false
       description: |-
@@ -1711,48 +1738,57 @@ script:
     execution: false
     name: jamf-get-mobile-devices
     outputs:
-    - contextPath: JAMF.MobileDevices.id
+    - contextPath: JAMF.MobileDevice.id
       description: The mobile device ID.
       type: Number
-    - contextPath: JAMF.MobileDevices.name
+    - contextPath: JAMF.MobileDevice.name
       description: The mobile device name.
       type: String
-    - contextPath: JAMF.MobileDevices.device_name
+    - contextPath: JAMF.MobileDevice.device_name
       description: The mobile device name.
       type: String
-    - contextPath: JAMF.MobileDevices.udid
+    - contextPath: JAMF.MobileDevice.udid
       description: The mobile device udid.
       type: String
-    - contextPath: JAMF.MobileDevices.serial_number
+    - contextPath: JAMF.MobileDevice.serial_number
       description: The mobile device serial number.
       type: String
-    - contextPath: JAMF.MobileDevices.phone_number
+    - contextPath: JAMF.MobileDevice.phone_number
       description: The mobile device phone number.
       type: String
-    - contextPath: JAMF.MobileDevices.wifi_mac_address
+    - contextPath: JAMF.MobileDevice.wifi_mac_address
       description: The mobile device WIFI mac address.
       type: String
-    - contextPath: JAMF.MobileDevices.managed
+    - contextPath: JAMF.MobileDevice.managed
       description: If the mobile device is managed.
       type: Boolean
-    - contextPath: JAMF.MobileDevices.supervised
+    - contextPath: JAMF.MobileDevice.supervised
       description: If the mobile device is supervised.
       type: Boolean
-    - contextPath: JAMF.MobileDevices.model
+    - contextPath: JAMF.MobileDevice.model
       description: The mobile device model.
       type: String
-    - contextPath: JAMF.MobileDevices.model_identifier
+    - contextPath: JAMF.MobileDevice.model_identifier
       description: The mobile device model ID.
       type: String
-    - contextPath: JAMF.MobileDevices.modelDisplay
+    - contextPath: JAMF.MobileDevice.modelDisplay
       description: The mobile device model display.
       type: String
-    - contextPath: JAMF.MobileDevices.model_display
+    - contextPath: JAMF.MobileDevice.model_display
       description: The mobile device model display.
       type: String
-    - contextPath: JAMF.MobileDevices.username
+    - contextPath: JAMF.MobileDevice.username
       description: The mobile device username.
       type: String
+    - contextPath: JAMF.MobileDevice.Paging.total_results
+      description: The number of mobile devices returned in this specific search.
+      type: Number
+    - contextPath: JAMF.MobileDevice.Paging.page_size
+      description: The number of mobile devices to be returned on each page.
+      type: Number
+    - contextPath: JAMF.MobileDevice.Paging.current_page
+      description: Number of requested page.
+      type: Number
   - arguments:
     - default: false
       description: |-
@@ -1768,172 +1804,172 @@ script:
     execution: false
     name: jamf-get-mobile-device-by-id
     outputs:
-    - contextPath: JAMF.MobileDevices.id
+    - contextPath: JAMF.MobileDevice.id
       description: The mobile device ID.
       type: Number
-    - contextPath: JAMF.MobileDevices.display_name
+    - contextPath: JAMF.MobileDevice.display_name
       description: The mobile device display name.
       type: String
-    - contextPath: JAMF.MobileDevices.device_name
+    - contextPath: JAMF.MobileDevice.device_name
       description: The mobile device name.
       type: String
-    - contextPath: JAMF.MobileDevices.name
+    - contextPath: JAMF.MobileDevice.name
       description: The mobile device name.
       type: String
-    - contextPath: JAMF.MobileDevices.asset_tag
+    - contextPath: JAMF.MobileDevice.asset_tag
       description: The mobile device asset ID.
       type: String
-    - contextPath: JAMF.MobileDevices.last_inventory_update
+    - contextPath: JAMF.MobileDevice.last_inventory_update
       description: The mobile device last inventory update.
       type: String
-    - contextPath: JAMF.MobileDevices.last_inventory_update_epoch
+    - contextPath: JAMF.MobileDevice.last_inventory_update_epoch
       description: The mobile device last inventory update in epoch.
       type: Date
-    - contextPath: JAMF.MobileDevices.last_inventory_update_utc
+    - contextPath: JAMF.MobileDevice.last_inventory_update_utc
       description: The mobile device last inventory update in UTC.
       type: Date
-    - contextPath: JAMF.MobileDevices.capacity
+    - contextPath: JAMF.MobileDevice.capacity
       description: The mobile device capacity.
       type: Number
-    - contextPath: JAMF.MobileDevices.capacity_mb
+    - contextPath: JAMF.MobileDevice.capacity_mb
       description: The mobile device capacity MB.
       type: Number
-    - contextPath: JAMF.MobileDevices.available
+    - contextPath: JAMF.MobileDevice.available
       description: The mobile device available.
       type: Number
-    - contextPath: JAMF.MobileDevices.available_mb
+    - contextPath: JAMF.MobileDevice.available_mb
       description: The mobile device available MB.
       type: Number
-    - contextPath: JAMF.MobileDevices.percentage_used
+    - contextPath: JAMF.MobileDevice.percentage_used
       description: The mobile device available percentage used.
       type: Number
-    - contextPath: JAMF.MobileDevices.os_type
+    - contextPath: JAMF.MobileDevice.os_type
       description: The mobile device OS type.
       type: String
-    - contextPath: JAMF.MobileDevices.os_version
+    - contextPath: JAMF.MobileDevice.os_version
       description: The mobile device OS version.
       type: String
-    - contextPath: JAMF.MobileDevices.os_build
+    - contextPath: JAMF.MobileDevice.os_build
       description: The mobile device OS build.
       type: String
-    - contextPath: JAMF.MobileDevices.serial_number
+    - contextPath: JAMF.MobileDevice.serial_number
       description: The mobile device serial number.
       type: String
-    - contextPath: JAMF.MobileDevices.udid
+    - contextPath: JAMF.MobileDevice.udid
       description: The mobile device udid.
       type: String
-    - contextPath: JAMF.MobileDevices.initial_entry_date_epoch
+    - contextPath: JAMF.MobileDevice.initial_entry_date_epoch
       description: The mobile device  initial entry date in epoch.
       type: Date
-    - contextPath: JAMF.MobileDevices.initial_entry_date_utc
+    - contextPath: JAMF.MobileDevice.initial_entry_date_utc
       description: The mobile device  initial entry date in UTC.
       type: Date
-    - contextPath: JAMF.MobileDevices.phone_number
+    - contextPath: JAMF.MobileDevice.phone_number
       description: The mobile device phone number.
       type: String
-    - contextPath: JAMF.MobileDevices.ip_address
+    - contextPath: JAMF.MobileDevice.ip_address
       description: The mobile device IP address.
       type: String
-    - contextPath: JAMF.MobileDevices.wifi_mac_address
+    - contextPath: JAMF.MobileDevice.wifi_mac_address
       description: The mobile device WIFI mac address.
       type: String
-    - contextPath: JAMF.MobileDevices.bluetooth_mac_address
+    - contextPath: JAMF.MobileDevice.bluetooth_mac_address
       description: The mobile device bluetooth mac address.
       type: String
-    - contextPath: JAMF.MobileDevices.modem_firmware
+    - contextPath: JAMF.MobileDevice.modem_firmware
       description: The mobile device modem fireware.
       type: String
-    - contextPath: JAMF.MobileDevices.model
+    - contextPath: JAMF.MobileDevice.model
       description: The mobile device model.
       type: String
-    - contextPath: JAMF.MobileDevices.model_identifier
+    - contextPath: JAMF.MobileDevice.model_identifier
       description: The mobile device model ID.
       type: String
-    - contextPath: JAMF.MobileDevices.model_number
+    - contextPath: JAMF.MobileDevice.model_number
       description: The mobile device model number.
       type: String
-    - contextPath: JAMF.MobileDevices.modelDisplay
+    - contextPath: JAMF.MobileDevice.modelDisplay
       description: The mobile device model display.
       type: String
-    - contextPath: JAMF.MobileDevices.model_display
+    - contextPath: JAMF.MobileDevice.model_display
       description: The mobile device model display.
       type: String
-    - contextPath: JAMF.MobileDevices.device_ownership_level
+    - contextPath: JAMF.MobileDevice.device_ownership_level
       description: The mobile device ownership level.
       type: String
-    - contextPath: JAMF.MobileDevices.enrollment_method
+    - contextPath: JAMF.MobileDevice.enrollment_method
       description: The mobile device enrollment method.
       type: String
-    - contextPath: JAMF.MobileDevices.last_enrollment_epoch
+    - contextPath: JAMF.MobileDevice.last_enrollment_epoch
       description: The mobile device last enrollment in epoch.
       type: Number
-    - contextPath: JAMF.MobileDevices.last_enrollment_utc
+    - contextPath: JAMF.MobileDevice.last_enrollment_utc
       description: The mobile device last enrollment in UTC.
       type: String
-    - contextPath: JAMF.MobileDevices.mdm_profile_expiration_epoch
+    - contextPath: JAMF.MobileDevice.mdm_profile_expiration_epoch
       description: The mobile device mdm profile expiration in epoch.
       type: Number
-    - contextPath: JAMF.MobileDevices.mdm_profile_expiration_utc
+    - contextPath: JAMF.MobileDevice.mdm_profile_expiration_utc
       description: The mobile device mdm profile expiration in UTC.
       type: String
-    - contextPath: JAMF.MobileDevices.managed
+    - contextPath: JAMF.MobileDevice.managed
       description: If the mobile device is managed.
       type: Boolean
-    - contextPath: JAMF.MobileDevices.supervised
+    - contextPath: JAMF.MobileDevice.supervised
       description: If the mobile device is supervised.
       type: Boolean
-    - contextPath: JAMF.MobileDevices.exchange_activesync_device_identifier
+    - contextPath: JAMF.MobileDevice.exchange_activesync_device_identifier
       description: The mobile device exchange active sync device ID.
       type: String
-    - contextPath: JAMF.MobileDevices.shared
+    - contextPath: JAMF.MobileDevice.shared
       description: The mobile device shared.
       type: String
-    - contextPath: JAMF.MobileDevices.diagnostic_submission
+    - contextPath: JAMF.MobileDevice.diagnostic_submission
       description: The mobile device diagnostic submission,
       type: String
-    - contextPath: JAMF.MobileDevices.app_analytics
+    - contextPath: JAMF.MobileDevice.app_analytics
       description: The mobile device app analytics.
       type: String
-    - contextPath: JAMF.MobileDevices.tethered
+    - contextPath: JAMF.MobileDevice.tethered
       description: The mobile device tethered.
       type: String
-    - contextPath: JAMF.MobileDevices.battery_level
+    - contextPath: JAMF.MobileDevice.battery_level
       description: The mobile device battery level.
       type: Number
-    - contextPath: JAMF.MobileDevices.ble_capable
+    - contextPath: JAMF.MobileDevice.ble_capable
       description: The mobile device ble capable.
       type: Boolean
-    - contextPath: JAMF.MobileDevices.device_locator_service_enabled
+    - contextPath: JAMF.MobileDevice.device_locator_service_enabled
       description: If the mobile device locator service is enabled.
       type: Boolean
-    - contextPath: JAMF.MobileDevices.do_not_disturb_enabled
+    - contextPath: JAMF.MobileDevice.do_not_disturb_enabled
       description: If the mobile device do not disturb is enabled.
       type: Boolean
-    - contextPath: JAMF.MobileDevices.cloud_backup_enabled
+    - contextPath: JAMF.MobileDevice.cloud_backup_enabled
       description: If the mobile device cloud backup is enabled.
       type: Boolean
-    - contextPath: JAMF.MobileDevices.last_cloud_backup_date_epoch
+    - contextPath: JAMF.MobileDevice.last_cloud_backup_date_epoch
       description: The mobie device last cloud update backup date in epoch.
       type: Date
-    - contextPath: JAMF.MobileDevices.last_cloud_backup_date_utc
+    - contextPath: JAMF.MobileDevice.last_cloud_backup_date_utc
       description: The mobie device last cloud update backup date in UTC.
       type: Date
-    - contextPath: JAMF.MobileDevices.location_services_enabled
+    - contextPath: JAMF.MobileDevice.location_services_enabled
       description: If the mobile device location services is enabled.
       type: Boolean
-    - contextPath: JAMF.MobileDevices.itunes_store_account_is_active
+    - contextPath: JAMF.MobileDevice.itunes_store_account_is_active
       description: If the mobile device itunes store accouns is enabled.
       type: Boolean
-    - contextPath: JAMF.MobileDevices.last_backup_time_epoch
+    - contextPath: JAMF.MobileDevice.last_backup_time_epoch
       description: The mobile device last backup time in epoch.
       type: Number
-    - contextPath: JAMF.MobileDevices.last_backup_time_utc
+    - contextPath: JAMF.MobileDevice.last_backup_time_utc
       description: The mobile device last backup time in UTC.
       type: String
-    - contextPath: JAMF.MobileDevices.site.id
+    - contextPath: JAMF.MobileDevice.site.id
       description: Tyhe mobile device site ID.
       type: Number
-    - contextPath: JAMF.MobileDevices.site.name
+    - contextPath: JAMF.MobileDevice.site.name
       description: The mobile device site name.
       type: String
   - arguments:
@@ -1967,54 +2003,63 @@ script:
     execution: false
     name: jamf-get-mobile-device-by-match
     outputs:
-    - contextPath: JAMF.MobileDevices.id
+    - contextPath: JAMF.MobileDevice.id
       description: The mobile device ID.
       type: Number
-    - contextPath: JAMF.MobileDevices.name
+    - contextPath: JAMF.MobileDevice.name
       description: The mobile device name.
       type: String
-    - contextPath: JAMF.MobileDevices.udid
+    - contextPath: JAMF.MobileDevice.udid
       description: The mobile device udid.
       type: String
-    - contextPath: JAMF.MobileDevices.serial_number
+    - contextPath: JAMF.MobileDevice.serial_number
       description: The mobile device serial number.
       type: String
-    - contextPath: JAMF.MobileDevices.mac_address
+    - contextPath: JAMF.MobileDevice.mac_address
       description: The mobile device mac address.
       type: String
-    - contextPath: JAMF.MobileDevices.wifi_mac_address
+    - contextPath: JAMF.MobileDevice.wifi_mac_address
       description: The mobile device WIFI mac address.
       type: String
-    - contextPath: JAMF.MobileDevices.username
+    - contextPath: JAMF.MobileDevice.username
       description: The mobile device username.
       type: String
-    - contextPath: JAMF.MobileDevices.realname
+    - contextPath: JAMF.MobileDevice.realname
       description: The mobile device real name.
       type: String
-    - contextPath: JAMF.MobileDevices.email
+    - contextPath: JAMF.MobileDevice.email
       description: The mobile device user email address.
       type: String
-    - contextPath: JAMF.MobileDevices.email_address
+    - contextPath: JAMF.MobileDevice.email_address
       description: The mobile device user email address.
       type: String
-    - contextPath: JAMF.MobileDevices.room
+    - contextPath: JAMF.MobileDevice.room
       description: The mobile device room.
       type: String
-    - contextPath: JAMF.MobileDevices.position
+    - contextPath: JAMF.MobileDevice.position
       description: The mobile device position.
       type: String
-    - contextPath: JAMF.MobileDevices.building
+    - contextPath: JAMF.MobileDevice.building
       description: The mobile device building.
       type: String
-    - contextPath: JAMF.MobileDevices.building_name
+    - contextPath: JAMF.MobileDevice.building_name
       description: The mobile device building name.
       type: String
-    - contextPath: JAMF.MobileDevices.department
+    - contextPath: JAMF.MobileDevice.department
       description: The mobile device department.
       type: String
-    - contextPath: JAMF.MobileDevices.department_name
+    - contextPath: JAMF.MobileDevice.department_name
       description: The mobile device department name.
       type: String
+    - contextPath: JAMF.MobileDevice.Paging.total_results
+      description: The number of mobile devices returned in this specific search.
+      type: Number
+    - contextPath: JAMF.MobileDevice.Paging.page_size
+      description: The number of mobile devices to be returned on each page.
+      type: Number
+    - contextPath: JAMF.MobileDevice.Paging.current_page
+      description: Number of requested page.
+      type: Number
   - arguments:
     - auto: PREDEFINED
       default: false
@@ -2862,24 +2907,33 @@ script:
     execution: false
     name: jamf-get-computers-by-application
     outputs:
-    - contextPath: JAMF.ComputersByApp.id
+    - contextPath: JAMF.ComputersByApp.Computer.id
       description: The computer ID.
       type: Number
-    - contextPath: JAMF.ComputersByApp.name
+    - contextPath: JAMF.ComputersByApp.Computer.name
       description: The computer name.
       type: String
-    - contextPath: JAMF.ComputersByApp.udid
+    - contextPath: JAMF.ComputersByApp.Computer.udid
       description: The computer udid.
       type: String
-    - contextPath: JAMF.ComputersByApp.serial_number
+    - contextPath: JAMF.ComputersByApp.Computer.serial_number
       description: The computer serial number.
       type: String
-    - contextPath: JAMF.ComputersByApp.mac_address
+    - contextPath: JAMF.ComputersByApp.Computer.mac_address
       description: The computer mac address.
       type: String
-    - contextPath: JAMF.ComputersByApp.application
+    - contextPath: JAMF.ComputersByApp.Application
       description: The appliction the user serched for.
       type: String
+    - contextPath: JAMF.ComputersByApp.Paging.total_results
+      description: The number of computers returned in this specific search.
+      type: Number
+    - contextPath: JAMF.ComputersByApp.Paging.page_size
+      description: The number of computers to be returned on each page.
+      type: Number
+    - contextPath: JAMF.ComputersByApp.Paging.current_page
+      description: Number of requested page.
+      type: Number
   - arguments:
     - default: false
       description: The mobile device’s ID
@@ -2983,6 +3037,31 @@ script:
     description: Returns information about an endpoint.
     execution: false
     name: endpoint
+    outputs:
+    - contextPath: Endpoint.Hostname
+      description: The endpoint's hostname.
+      type: String
+    - contextPath: Endpoint.OS
+      description: The endpoint's operation system.
+      type: String
+    - contextPath: Endpoint.IPAddress
+      description: The endpoint's IP address.
+      type: String
+    - contextPath: Endpoint.ID
+      description: The endpoint's ID.
+      type: String
+    - contextPath: Endpoint.Status
+      description: The endpoint's status.
+      type: String
+    - contextPath: Endpoint.IsIsolated
+      description: The endpoint's isolation status.
+      type: String
+    - contextPath: Endpoint.MACAddress
+      description: The endpoint's MAC address.
+      type: String
+    - contextPath: Endpoint.Vendor
+      description: The integration name of the endpoint vendor.
+      type: String
   dockerimage: demisto/btfl-soup:1.0.1.20928
   feed: false
   isfetch: false

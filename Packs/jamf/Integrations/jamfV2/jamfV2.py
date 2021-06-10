@@ -22,6 +22,8 @@ GET_HEADERS = {
 }
 MAX_PAGE_SIZE = 200
 
+INTEGRATION_NAME = 'JAMF v2'
+
 ''' CLIENT CLASS '''
 
 
@@ -461,7 +463,7 @@ def get_computer_subset_readable_output(response, subset):
                 'Expires UTC': certificate.get('expires_utc'),
                 'Expires Epoch': certificate.get('expires_epoch')
             })
-        readable_output = certificate_details   # type: ignore
+        readable_output = certificate_details  # type: ignore
 
     elif subset == 'Security':
         readable_output = {
@@ -501,7 +503,7 @@ def get_computer_subset_readable_output(response, subset):
                 'Configuration profile ID': profile.get('id'),
                 'Is Removable': profile.get('is_removable')
             })
-        readable_output = configuration_profiles    # type: ignore
+        readable_output = configuration_profiles  # type: ignore
 
     return readable_output
 
@@ -517,7 +519,7 @@ def computer_commands_readable_output(response):
     return readable_output
 
 
-def get_users_readable_output(users_response, user_id, name, email):
+def get_users_readable_output(users_response, user_id=None, name=None, email=None):
     if user_id or name:
         readable_output = {
             'ID': users_response.get('id'),
@@ -526,18 +528,18 @@ def get_users_readable_output(users_response, user_id, name, email):
             'Phone': users_response.get('phone_number')
         }
     elif email:
-        readable_output = []    # type: ignore
+        readable_output = []  # type: ignore
         for user in users_response:
-            readable_output.append({    # type: ignore
+            readable_output.append({  # type: ignore
                 'ID': user.get('id'),
                 'Name': user.get('name'),
                 'Email': user.get('email'),
                 'Phone': user.get('phone_number')
             })
     else:
-        readable_output = []    # type: ignore
+        readable_output = []  # type: ignore
         for user in users_response:
-            readable_output.append({    # type: ignore
+            readable_output.append({  # type: ignore
                 'ID': user.get('id'),
                 'Name': user.get('name'),
 
@@ -545,7 +547,7 @@ def get_users_readable_output(users_response, user_id, name, email):
     return readable_output
 
 
-def get_mobile_devices_readable_output(mobile_response, mobile_id):
+def get_mobile_devices_readable_output(mobile_response, mobile_id=None):
     readable_output = []
     if mobile_id:
         readable_output.append({
@@ -628,7 +630,7 @@ def get_mobile_device_subset_readable_output(response, subset):
                 'Expires UTC': certificate.get('expires_utc'),
                 'Expires Epoch': certificate.get('expires_epoch')
             })
-        readable_output = certificate_details   # type: ignore
+        readable_output = certificate_details  # type: ignore
     elif subset == 'Applications':
         applications_mobile_response = mobile_response.get('applications')
 
@@ -657,7 +659,7 @@ def get_mobile_device_subset_readable_output(response, subset):
                 'identifier': profile.get('identifier'),
                 'uuid': profile.get('uuid')
             })
-        readable_output = configuration_profiles    # type: ignore
+        readable_output = configuration_profiles  # type: ignore
 
     elif subset == 'Security':
         security_mobile_response = mobile_response.get('security')
@@ -735,6 +737,57 @@ def mobile_device_commands_readable_output(response):
     return mobile_device_response, readable_output
 
 
+def generate_endpoint_by_context_standard(endpoints):
+    standard_endpoints = []
+    for single_endpoint in endpoints:
+        endpoint = Common.Endpoint(
+            id=single_endpoint.get('id'),
+            hostname=single_endpoint.get('name'),
+            ip_address=single_endpoint.get('ip'),
+            os=single_endpoint.get('platform'),
+            mac_address=single_endpoint.get('mac_address'),
+            vendor=INTEGRATION_NAME)
+
+        standard_endpoints.append(endpoint)
+    return standard_endpoints
+
+
+def command_results_endpoint_command(standard_endpoints, outputs):
+    command_results = []
+    if standard_endpoints:
+        for endpoint in standard_endpoints:
+            endpoint_context = endpoint.to_context().get(Common.Endpoint.CONTEXT_PATH)
+
+            hr = tableToMarkdown('Jamf Endpoint', endpoint_context)
+
+            command_results.append(CommandResults(
+                readable_output=hr,
+                raw_response=outputs,
+                indicator=endpoint
+            ))
+
+    else:
+        command_results.append(CommandResults(
+            readable_output="No endpoints were found",
+            raw_response=outputs,
+        ))
+    return command_results
+
+
+def paging_outputs_dict(total_results, page_size, current_page):
+    paging_outputs = {
+        'total_results': total_results,
+        'page_size': page_size,
+        'current_page': current_page
+    }
+    paging_hr = {
+        'Total Results': total_results,
+        'Page Size': page_size,
+        'Current Page': current_page
+    }
+    return paging_outputs, paging_hr
+
+
 ''' COMMAND FUNCTIONS '''
 
 
@@ -756,7 +809,7 @@ def test_module(client: Client) -> str:
     try:
         if client.get_computers_request():
             message = 'ok'
-    except requests.ReadTimeout as e:   # type: ignore
+    except requests.ReadTimeout as e:  # type: ignore
         message = f'Read Timeout Error: Make sure your username is correctly set. Original error: {str(e)}'
     except DemistoException as e:
         if 'Forbidden' in str(e) or 'Unauthorized' in str(e):
@@ -766,24 +819,53 @@ def test_module(client: Client) -> str:
     return message
 
 
-def get_computers_command(client: Client, args: Dict[str, Any], basic_subset: bool = False) -> CommandResults:
-    computer_id = args.get('id')
+def get_computers_command(client: Client, args: Dict[str, Any], basic_subset: bool = False) -> List[CommandResults]:
     match = args.get('match')
     limit = arg_to_number(args.get('limit', 50))
     page = arg_to_number(args.get('page', 0))
 
-    computers_response = client.get_computers_request(computer_id, basic_subset, match)
+    computers_response = client.get_computers_request(basic_subset=basic_subset, match=match)
 
-    if computer_id:
-        computers_response = computers_response.get('computer').get('general')
-        computers_hr = f'Jamf get computers result for computer ID: {computer_id}'
-    else:
-        total_results = len(computers_response.get('computers'))
-        computers_response = pagination(computers_response.get('computers'), limit, page)
-        computers_hr = f'Jamf get computers result \n Total results:{total_results}\nResults per page: {limit}\nPage: ' \
-                       f'{page}'
+    total_results = len(computers_response.get('computers'))
+    computers_response = pagination(computers_response.get('computers'), limit, page)
+    paging_outputs, paging_readable_output = paging_outputs_dict(total_results, limit, page)
 
-    readable_output = get_computers_readable_output(computers_response, computer_id, basic_subset, match)
+    readable_output = get_computers_readable_output(computers_response, basic_subset=basic_subset, match=match)
+
+    return [
+        CommandResults(
+            readable_output=tableToMarkdown(
+                'Jamf get computers results',
+                readable_output,
+                removeNull=True
+            ),
+            outputs_prefix='JAMF.Computer',
+            outputs_key_field='id',
+            outputs=computers_response,
+            raw_response=computers_response
+        ),
+        CommandResults(
+            readable_output=tableToMarkdown(
+                'Paging for get computers',
+                paging_readable_output,
+                removeNull=True
+            ),
+            outputs_prefix='JAMF.Computer.Paging',
+            outputs_key_field='id',
+            outputs=paging_outputs
+        )
+    ]
+
+
+def get_computer_by_id_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    computer_id = args.get('id')
+
+    computers_response = client.get_computers_request(computer_id)
+
+    computers_response = computers_response.get('computer').get('general')
+    computers_hr = f'Jamf get computers result for computer ID: {computer_id}'
+
+    readable_output = get_computers_readable_output(computers_response, computer_id)
 
     return CommandResults(
         readable_output=tableToMarkdown(
@@ -842,7 +924,7 @@ def computer_lock_command(client: Client, args: Dict[str, Any]) -> CommandResult
             f'Computer {computer_id} locked successfully',
             computer_lock_hr, removeNull=True, headerTransform=pascalToSpace
         ),
-        outputs_prefix='JAMF.ComputeCommands',
+        outputs_prefix='JAMF.ComputerCommand',
         outputs_key_field='id',
         outputs=outputs,
         raw_response=computer_response
@@ -862,32 +944,64 @@ def computer_erase_command(client: Client, args: Dict[str, Any]) -> CommandResul
             f'Computer {computer_id} erased successfully',
             computer_erase_outputs, removeNull=True, headerTransform=pascalToSpace
         ),
-        outputs_prefix='JAMF.ComputerCommands',
+        outputs_prefix='JAMF.ComputerCommand',
         outputs_key_field='id',
         outputs=outputs,
         raw_response=computer_response
     )
 
 
-def get_users_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def get_users_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
+    limit = arg_to_number(args.get('limit', 50))
+    page = arg_to_number(args.get('page', 0))
+    user_response = client.get_users_request()
+    total_results = len(user_response.get('users'))
+    user_response = pagination(user_response.get('users'), limit, page)
+
+    paging_outputs, paging_readable_output = paging_outputs_dict(total_results, limit, page)
+
+    readable_output = get_users_readable_output(user_response)
+
+    return [
+        CommandResults(
+            readable_output=tableToMarkdown(
+                'Jamf get users results',
+                readable_output, removeNull=True
+            ),
+            outputs_prefix='JAMF.User',
+            outputs_key_field='id',
+            outputs=user_response,
+            raw_response=user_response
+        ),
+        CommandResults(
+            readable_output=tableToMarkdown(
+                'Paging for get users',
+                paging_readable_output,
+                removeNull=True
+            ),
+            outputs_prefix='JAMF.User.Paging',
+            outputs_key_field='id',
+            outputs=paging_outputs
+        )
+    ]
+
+
+def get_users_by_identifier_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     user_id = args.get('id')
     name = args.get('name')
     email = args.get('email')
-    limit = arg_to_number(args.get('limit', 50))
-    page = arg_to_number(args.get('page', 0))
+
     user_response = client.get_users_request(user_id, name, email)
-    if not any([user_id, name, email]):
-        total_results = len(user_response.get('users'))
-        users_hr = f'Jamf get users result \n Total results:{total_results}\nResults per page: {limit}\nPage: ' \
-                   f'{page}'
-        user_response = pagination(user_response.get('users'), limit, page)
+
+    if email:
+        user_response = user_response['users']
     else:
-        if email:
-            user_response = user_response['users']
-        else:
-            user_response = user_response['user']
-        users_hr = 'Jamf get user result'
+        user_response = user_response['user']
+
+    users_hr = 'Jamf get user result'
+
     readable_output = get_users_readable_output(user_response, user_id, name, email)
+
     return CommandResults(
         readable_output=tableToMarkdown(
             users_hr,
@@ -900,32 +1014,57 @@ def get_users_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     )
 
 
-def get_mobile_devices_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-    mobile_id = args.get('id')
+def get_mobile_devices_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
     match = args.get('match', False)
     limit = arg_to_number(args.get('limit', 50))
     page = arg_to_number(args.get('page', 0))
 
-    mobile_response = client.get_mobile_devices_request(mobile_id, match)
+    mobile_response = client.get_mobile_devices_request(match=match)
 
-    if mobile_id:
-        mobile_response = mobile_response.get('mobile_device').get('general')
-        mobiles_hr = f'Jamf get mobile devices result on mobile ID:{mobile_id}'
+    total_results = len(mobile_response.get('mobile_devices'))
+    mobile_response = pagination(mobile_response.get('mobile_devices'), limit, page)
 
-    else:
-        total_results = len(mobile_response.get('mobile_devices'))
-        mobile_response = pagination(mobile_response.get('mobile_devices'), limit, page)
-        mobiles_hr = f'Jamf get mobile devices result \n Total results:{total_results}\nResults per page: {limit}\nPage: ' \
-                     f'{page}'
+    readable_output = get_mobile_devices_readable_output(mobile_response)
+    paging_outputs, paging_readable_output = paging_outputs_dict(total_results, limit, page)
+
+    return [
+        CommandResults(
+            readable_output=tableToMarkdown(
+                'Jamf get mobile devices result',
+                readable_output, removeNull=True
+            ),
+            outputs_prefix='JAMF.MobileDevice',
+            outputs_key_field='id',
+            outputs=mobile_response,
+            raw_response=mobile_response
+        ),
+        CommandResults(
+            readable_output=tableToMarkdown(
+                'Paging for get mobile devices',
+                paging_readable_output,
+                removeNull=True
+            ),
+            outputs_prefix='JAMF.MobileDevice.Paging',
+            outputs_key_field='id',
+            outputs=paging_outputs
+        )
+    ]
+
+
+def get_mobile_device_by_id_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    mobile_id = args.get('id')
+
+    mobile_response = client.get_mobile_devices_request(mobile_id)
+    mobile_response = mobile_response.get('mobile_device').get('general')
 
     readable_output = get_mobile_devices_readable_output(mobile_response, mobile_id)
 
     return CommandResults(
         readable_output=tableToMarkdown(
-            mobiles_hr,
+            f'Jamf get mobile devices result on mobile ID:{mobile_id}',
             readable_output, removeNull=True
         ),
-        outputs_prefix='JAMF.MobileDevices',
+        outputs_prefix='JAMF.MobileDevice',
         outputs_key_field='id',
         outputs=mobile_response,
         raw_response=mobile_response
@@ -963,7 +1102,7 @@ def get_mobile_device_id(client: Client, response, subset, identifier, identifie
     return mobile_id
 
 
-def get_computers_by_app_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def get_computers_by_app_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
     app = args['application']
     version = args.get('version')
     limit = arg_to_number(args.get('limit', 50))
@@ -972,21 +1111,34 @@ def get_computers_by_app_command(client: Client, args: Dict[str, Any]) -> Comman
 
     total_results = len(computer_response.get('computer_applications').get('unique_computers'))
     computers_list = pagination(computer_response.get('computer_applications').get('unique_computers'), limit, page)
-    computers_hr = f'Jamf get computers by application result \n Total results:{total_results}\nResults per page: ' \
-                   f'{limit}\nPage: {page}'
 
     readable_output = get_computers_by_app_readable_output(computer_response.get('computer_applications'))[:limit]
-    outputs = {'application': app, 'computers': computers_list}
-    return CommandResults(
-        readable_output=tableToMarkdown(
-            computers_hr,
-            readable_output, removeNull=True
+    outputs = {'Application': app, 'Computer': computers_list}
+
+    paging_outputs, paging_readable_output = paging_outputs_dict(total_results, limit, page)
+
+    return [
+        CommandResults(
+            readable_output=tableToMarkdown(
+                'Jamf get computers by application result',
+                readable_output, removeNull=True
+            ),
+            outputs_prefix='JAMF.ComputersByApp',
+            outputs_key_field='Application',
+            outputs=outputs,
+            raw_response=computer_response
         ),
-        outputs_prefix='JAMF.ComputersByApp',
-        outputs_key_field='application',
-        outputs=outputs,
-        raw_response=computer_response
-    )
+        CommandResults(
+            readable_output=tableToMarkdown(
+                'Paging for get mobile devices',
+                paging_readable_output,
+                removeNull=True
+            ),
+            outputs_prefix='JAMF.ComputersByApp.Paging',
+            outputs_key_field='id',
+            outputs=paging_outputs
+        )
+    ]
 
 
 def mobile_device_lost_command(client: Client, args: Dict[str, Any]) -> CommandResults:
@@ -1033,33 +1185,35 @@ def endpoint_command(client, args):
     endpoint_id_list = argToList(args.get('id'))
     endpoint_ip_list = argToList(args.get('ip'))
     endpoint_hostname_list = argToList(args.get('hostname'))
+    outputs = []
+    command_results = []
+    standard_endpoints = []
     if endpoint_id_list:
         for endpoint_id in endpoint_id_list:
-            computers_response = client.get_computer_subset_request(identifier='id', identifier_value=endpoint_id)
-            computers_response = computers_response.get('computer').get('general')
+            computers_response = client.get_computer_subset_request(identifier='id', identifier_value=endpoint_id,
+                                                                    subset='general')
+            outputs.append(computers_response.get('computer').get('general'))
+            standard_endpoints = generate_endpoint_by_context_standard(outputs)
+        command_results.append(command_results_endpoint_command(standard_endpoints, outputs))
 
-    if endpoint_ip_list:
+    elif endpoint_ip_list:
         for endpoint_ip in endpoint_ip_list:
             computers_response = client.get_computers_request(match=endpoint_ip)
-            computers_response = computers_response.get('computers')
+            outputs.append(computers_response.get('computers'))
+            standard_endpoints = generate_endpoint_by_context_standard(outputs)
+        command_results.append(command_results_endpoint_command(standard_endpoints, outputs))
 
-    if endpoint_hostname_list:
+    elif endpoint_hostname_list:
         for endpoint_hostname in endpoint_hostname_list:
             computers_response = client.get_computer_subset_request(identifier='name',
-                                                                    identifier_value=endpoint_hostname)
-            computers_response = computers_response.get('computer').get('general')
+                                                                    identifier_value=endpoint_hostname,
+                                                                    subset='general')
+            outputs.append(computers_response.get('computer').get('general'))
+            standard_endpoints = generate_endpoint_by_context_standard(outputs)
+        command_results.append(command_results_endpoint_command(standard_endpoints, outputs))
 
-    return CommandResults(
-        readable_output=tableToMarkdown(
-            computers_hr,
-            readable_output,
-            removeNull=True
-        ),
-        outputs_prefix='JAMF.Computer',
-        outputs_key_field='id',
-        outputs=computers_response,
-        raw_response=computers_response
-    )
+    return command_results
+
 
 ''' MAIN FUNCTION '''
 
@@ -1087,7 +1241,7 @@ def main() -> None:
             return_results(get_computers_command(client, demisto.args(), basic_subset=True))
 
         elif demisto.command() == 'jamf-get-computer-by-id':
-            return_results(get_computers_command(client, demisto.args()))
+            return_results(get_computer_by_id_command(client, demisto.args()))
 
         elif demisto.command() == 'jamf-get-computer-by-match':
             return_results(get_computers_command(client, demisto.args()))
@@ -1138,19 +1292,19 @@ def main() -> None:
             return_results(get_users_command(client, demisto.args()))
 
         elif demisto.command() == 'jamf-get-user-by-id':
-            return_results(get_users_command(client, demisto.args()))
+            return_results(get_users_by_identifier_command(client, demisto.args()))
 
         elif demisto.command() == 'jamf-get-user-by-name':
-            return_results(get_users_command(client, demisto.args()))
+            return_results(get_users_by_identifier_command(client, demisto.args()))
 
         elif demisto.command() == 'jamf-get-user-by-email':
-            return_results(get_users_command(client, demisto.args()))
+            return_results(get_users_by_identifier_command(client, demisto.args()))
 
         elif demisto.command() == 'jamf-get-mobile-devices':
             return_results(get_mobile_devices_command(client, demisto.args()))
 
         elif demisto.command() == 'jamf-get-mobile-device-by-id':
-            return_results(get_mobile_devices_command(client, demisto.args()))
+            return_results(get_mobile_device_by_id_command(client, demisto.args()))
 
         elif demisto.command() == 'jamf-get-mobile-device-by-match':
             return_results(get_mobile_devices_command(client, demisto.args()))
@@ -1198,7 +1352,7 @@ def main() -> None:
             return_results(mobile_device_erase_command(client, demisto.args()))
 
         elif demisto.command() == 'endpoint':
-            return_results(endpoint_command(client, demistomock.args()))
+            return_results(endpoint_command(client, demisto.args()))
 
     # Log exceptions and return errors
     except Exception as e:

@@ -44,7 +44,7 @@ def test_get_computers_command(mocker):
 
     computer_response = get_computers_command(client, args)
     expected_response = util_load_json('test_data/get_computer/get_computer_context.json')
-    assert computer_response.outputs == expected_response
+    assert computer_response[0].outputs == expected_response
 
 
 def test_get_computers_limit_command(mocker):
@@ -66,7 +66,7 @@ def test_get_computers_limit_command(mocker):
 
     response = get_computers_command(client, args)
     expected_response = util_load_json('test_data/get_computer/get_computer_limit_context.json')
-    assert response.outputs == expected_response
+    assert response[0].outputs == expected_response
 
 
 def test_get_computers_by_id_command(mocker):
@@ -74,11 +74,11 @@ def test_get_computers_by_id_command(mocker):
     Given
     - Computer ID.
     When
-    - Run get computers command
+    - Run get computer by id command
     Then
     - Get results on specific computer ID.
     """
-    from jamfV2 import Client, get_computers_command
+    from jamfV2 import Client, get_computer_by_id_command
 
     client = Client(base_url='https://paloaltonfr3.jamfcloud.com', verify=False)
     args = {'id': 1}
@@ -86,7 +86,7 @@ def test_get_computers_by_id_command(mocker):
 
     mocker.patch.object(client, 'get_computers_request', return_value=mock_response)
 
-    response = get_computers_command(client, args)
+    response = get_computer_by_id_command(client, args)
     expected_response = util_load_json('test_data/get_computer/get_computer_by_id_context.json')
     assert response.outputs == expected_response
 
@@ -110,7 +110,7 @@ def test_get_computers_by_match_command(mocker):
 
     response = get_computers_command(client, args)
     expected_response = util_load_json('test_data/get_computer/get_computer_by_match_context.json')
-    assert response.outputs == expected_response
+    assert response[0].outputs == expected_response
 
 
 def test_get_computer_general_subset_command(mocker):
@@ -199,7 +199,7 @@ def test_get_users_command(mocker):
 
     users_response = get_users_command(client, args)
     expected_response = util_load_json('test_data/get_users/get_users_context.json')
-    assert users_response.outputs == expected_response
+    assert users_response[0].outputs == expected_response
 
 
 def test_get_users_limit_command(mocker):
@@ -221,7 +221,7 @@ def test_get_users_limit_command(mocker):
 
     users_response = get_users_command(client, args)
     expected_response = util_load_json('test_data/get_users/get_users_limit_context.json')
-    assert users_response.outputs == expected_response
+    assert users_response[0].outputs == expected_response
 
 
 def test_get_mobile_devices_command(mocker):
@@ -243,7 +243,7 @@ def test_get_mobile_devices_command(mocker):
 
     devices_response = get_mobile_devices_command(client, args)
     expected_response = util_load_json('test_data/get_mobile_devices/get_mobile_devices_context.json')
-    assert devices_response.outputs == expected_response
+    assert devices_response[0].outputs == expected_response
 
 
 def test_get_mobile_devices_limit_command(mocker):
@@ -265,7 +265,7 @@ def test_get_mobile_devices_limit_command(mocker):
 
     devices_response = get_mobile_devices_command(client, args)
     expected_response = util_load_json('test_data/get_mobile_devices/get_mobile_devices_limit_context.json')
-    assert devices_response.outputs == expected_response
+    assert devices_response[0].outputs == expected_response
 
 
 def test_get_mobile_devices_by_id_command(mocker):
@@ -277,7 +277,7 @@ def test_get_mobile_devices_by_id_command(mocker):
     Then
     - Get results on specific mobile device ID.
     """
-    from jamfV2 import Client, get_mobile_devices_command
+    from jamfV2 import Client, get_mobile_device_by_id_command
 
     client = Client(base_url='https://paloaltonfr3.jamfcloud.com', verify=False)
     args = {'id': 1}
@@ -285,7 +285,7 @@ def test_get_mobile_devices_by_id_command(mocker):
 
     mocker.patch.object(client, 'get_mobile_devices_request', return_value=mock_response)
 
-    devices_response = get_mobile_devices_command(client, args)
+    devices_response = get_mobile_device_by_id_command(client, args)
     expected_response = util_load_json('test_data/get_mobile_devices/get_mobile_device_by_id_context.json')
     assert devices_response.outputs == expected_response
 
@@ -309,7 +309,7 @@ def test_get_mobile_devices_by_match_command(mocker):
 
     devices_response = get_mobile_devices_command(client, args)
     expected_response = util_load_json('test_data/get_mobile_devices/get_mobile_device_by_match_context.json')
-    assert devices_response.outputs == expected_response
+    assert devices_response[0].outputs == expected_response
 
 
 def test_get_mobile_device_general_subset_command(mocker):
@@ -355,7 +355,7 @@ def test_get_computers_by_app_command(mocker):
 
     computer_response = get_computers_by_app_command(client, args)
     expected_response = util_load_json('test_data/get_computer_by_app/get_computer_by_app_context.json')
-    assert computer_response.outputs == expected_response
+    assert computer_response[0].outputs == expected_response
 
 
 def test_mobile_device_lost_command(mocker):
