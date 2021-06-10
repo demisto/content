@@ -2,7 +2,7 @@
     "defaultIncidentType": "Expanse Issue - Generic",
     "description": "",
     "feed": false,
-    "id": "ExpanseV2_Generic",
+    "id": "ExpanseV2 Generic",
     "keyTypeMap": {
         "Low": "Expanse Issue - Generic",
         "Medium": "Expanse Issue - Generic",
