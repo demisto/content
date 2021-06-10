@@ -218,7 +218,7 @@ def get_latest_pack_zip_from_blob(pack, blobs):
         blobs: The blob list
 
     Returns:
-        blob: The zip blob of the pack with the latest version.
+        latest_blob_name: The zip blob of the pack with the latest version.
     """
     latest_blob_name = None
     latest_blob_version = None
