@@ -1161,6 +1161,8 @@ tasks:
         simple: ${CarbonBlackDefenseLR.Session.id}
       wait_for_output:
         simple: "False"
+      wait_timeout:
+        simple: "90"
     separatecontext: false
     view: |-
       {
