@@ -11,6 +11,8 @@
 <h2>Authentication</h2>
 For more details about the authentication used in this integration, see <a href="https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication">Microsoft Integrations - Authentication</a>.
 
+<b>Note:</b> For this integration, you cannot use a "Shared mailbox" regardless of the authentication method used.
+
 <h3>Required Permissions</h3>
 The following permissions are required for all commands:
 <ul>
