@@ -1,0 +1,69 @@
+{
+    "size": 0,
+    "dataType": "tasks",
+    "params": {
+        "groupBy": [
+            "completedBy"
+        ],
+        "tableColumns": [
+            {
+                "isDefault": true,
+                "key": "count",
+                "position": 0
+            },
+            {
+                "isDefault": true,
+                "key": "data",
+                "position": 1
+            },
+            {
+                "isDefault": true,
+                "key": "floatData",
+                "position": 2
+            },
+            {
+                "isDefault": true,
+                "key": "groups",
+                "position": 3
+            },
+            {
+                "isDefault": true,
+                "key": "name",
+                "position": 4
+            },
+            {
+                "isDefault": true,
+                "key": "color",
+                "position": 5
+            },
+            {
+                "isDefault": true,
+                "key": "label",
+                "position": 6
+            }
+        ],
+        "valuesFormat": "abbreviated"
+    },
+    "query": "automated:F",
+    "modified": "2021-06-02T06:56:18.628090006Z",
+    "name": "Top Users Closed Manual Tasks",
+    "dateRange": {
+        "fromDate": "0001-01-01T00:00:00Z",
+        "toDate": "0001-01-01T00:00:00Z",
+        "period": {
+            "by": "",
+            "byTo": "",
+            "byFrom": "days",
+            "toValue": null,
+            "fromValue": 7,
+            "field": ""
+        },
+        "fromDateLicense": "0001-01-01T00:00:00Z"
+    },
+    "isPredefined": true,
+    "version": -1,
+    "id": "top-users-closed-manual-tasks",
+    "widgetType": "bar",
+    "fromVersion": "6.2.0",
+    "description": "Top Users Closed Manual Tasks"
+}
