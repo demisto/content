@@ -84,8 +84,6 @@ def get_bot_id() -> str:
         The app bot ID
     """
     response = CLIENT.auth_test()
-    demisto.info(f"Get_bot_id: {response}")
-
     return response.get('user_id')
 
 
@@ -591,7 +589,6 @@ async def process(client: SocketModeClient, req: SocketModeRequest):
         return
     try:
         data: dict = req.payload
-        demisto.info(f"Data from listener is {data}")
         event: dict = data.get('event', {})
         subtype = data.get('subtype', '')
         text = event.get('text', '')
@@ -980,8 +977,6 @@ def get_conversation_by_name(conversation_name: str) -> dict:
         body = body.copy()
         body.update({'cursor': cursor})
         response = send_slack_request_sync(CLIENT, 'conversations.list', http_verb='GET', body=body)
-        demisto.info(f" Conversation response is: {response}")
-
     if conversation_filter:
         conversation = conversation_filter[0]
 
@@ -994,8 +989,6 @@ def get_conversation_by_name(conversation_name: str) -> dict:
         else:
             conversations = [conversation]
         set_to_integration_context_with_retries({'conversations': conversations}, OBJECTS_TO_KEYS, SYNC_CONTEXT)
-    demisto.info(f"Conversation is {conversation}")
-
     return conversation
 
 
@@ -1138,20 +1131,16 @@ def find_mirror_by_investigation() -> dict:
     Returns:
         The mirror object
     """
-    demisto.info("Finding mirror by investigation")
     mirror: dict = {}
     investigation = demisto.investigation()
-    demisto.info(f"Investigation is: {investigation}")
     if investigation:
         integration_context = get_integration_context(SYNC_CONTEXT)
-        demisto.info(f"Investigation context is: {integration_context}")
         if integration_context.get('mirrors'):
             mirrors = json.loads(integration_context['mirrors'])
             investigation_filter = list(filter(lambda m: investigation.get('id') == m['investigation_id'],
                                                mirrors))
             if investigation_filter:
                 mirror = investigation_filter[0]
-    demisto.info(f"Found mirror by investigation - {mirror}")
 
     return mirror
 
@@ -1340,7 +1329,6 @@ def search_slack_users(users: Union[list, str]) -> list:
         The slack users
     """
     slack_users = []
-    demisto.info(f"Users are: {users}")
 
     if not isinstance(users, list):
         users = [users]
