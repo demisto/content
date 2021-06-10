@@ -125,6 +125,16 @@ args:
   - ''
   required: false
   secret: false
+- default: false
+  defaultValue: 'false'
+  description: Include the current incident in EmailCampaign path in context.
+  isArray: false
+  name: includeSelf
+  required: false
+  secret: false
+  predefined:
+    - 'true'
+    - 'false'
 comment: Find a campaign of emails based on their textual similarity.
 commonfields:
   id: FindEmailCampaign
