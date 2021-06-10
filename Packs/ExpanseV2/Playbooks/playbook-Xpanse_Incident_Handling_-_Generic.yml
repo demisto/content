@@ -2520,7 +2520,7 @@ tasks:
       - "84"
     scriptarguments:
       asset_id:
-        simple: ${incident.expanseasset.key}
+        simple: ${incident.expanseasset.assetkey}
       asset_type:
         simple: ${incident.expanseasset.assettype}
       tag_names:
