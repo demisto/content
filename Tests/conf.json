@@ -3449,7 +3449,6 @@
         "FireEyeNX-Test": "Issue 33216",
         "GmailTest": "Issue 27057",
         "Gmail Single User - Test": "Issue 27361",
-        "AWS - EC2 Test Playbook": "Issue 36486",
         "get_file_sample_by_hash_-_cylance_protect_-_test": "Issue 28823",
         "Carbon Black Enterprise EDR Test": "Issue 29775",
         "VirusTotal (API v3) Detonate Test": "Issue 36004",
