@@ -50,4 +50,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![Xpanse Incident Handling - Generic](Insert the link to your image here)
+![Xpanse Incident Handling - Generic](https://github.com/demisto/content/raw/aa5e631fa19dd23c862156e91b18a42ae2614658/Packs/ExpanseV2/doc_files/Xpanse_Incident_Handling_-_Generic.png)
