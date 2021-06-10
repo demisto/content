@@ -1029,6 +1029,8 @@ tasks:
         simple: "True"
       wait_for_output:
         simple: "True"
+      wait_timeout:
+        simple: "90"
     separatecontext: false
     view: |-
       {
@@ -1070,6 +1072,8 @@ tasks:
         simple: "True"
       wait_for_output:
         simple: "True"
+      wait_timeout:
+        simple: "90"
     separatecontext: false
     view: |-
       {
