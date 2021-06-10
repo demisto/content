@@ -18,12 +18,13 @@ configuration:
     name: password
     required: true
     type: 4
-  - display: SSH Key
-    displaypassword: SSH_key
-    hiddenusername: true
+  - additionalinfo: The ssh key is used to login to an AWS mac machine - for testing
+      purposes.
+    display: SSH Key
+    hidden: false
     name: ssh_key
     required: false
-    type: 9
+    type: 14
 description: Tidy integration handle endpoints enviorment installation.
 display: Tidy
 name: Tidy
