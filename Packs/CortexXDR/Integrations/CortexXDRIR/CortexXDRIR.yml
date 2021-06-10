@@ -735,9 +735,10 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
+      defaultValue: Medium
       description: |-
         String value of alert severity. Valid values are:
-        Informational, Low, Medium, High, or Unknown
+        Informational, Low, Medium or High
       isArray: false
       name: severity
       predefined:
