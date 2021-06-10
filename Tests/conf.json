@@ -3312,6 +3312,10 @@
             "timeout": 1000
         },
         {
+           "integrations": "HPEArubaClearPass",
+            "playbookID": "HPEArubaClearPass_TestPlaybook"
+        },
+        {
             "integrations": "CrowdstrikeFalcon",
             "playbookID": "Get endpoint details - Generic - test",
             "fromversion": "5.5.0"
@@ -3406,7 +3410,7 @@
         "Tanium v2 - Test": "Issue 26822",
         "hashIncidentFields-test": "Issue 26850",
         "Fidelis Elevate Network": "Issue 26453",
-        "Cortex XDR - IOC - Test": "Issue 25598",
+        "Cortex XDR - IOC - Test": "Issue 37957",
         "Cherwell Example Scripts - test": "Issue 26780",
         "Cherwell - test": "Issue 26780",
         "PAN-OS Query Logs For Indicators Test": "Issue 28753",
@@ -3462,7 +3466,6 @@
         "Centreon-Test-Playbook": "Issue 37022",
         "PAN-OS - Block URL - Custom URL Category Test": "Issue 37024",
         "Service Desk Plus - Generic Polling Test": "Issue 30798",
-        "Pwned v2 test": "Issue 26601",
         "TestEmailRepIOPlaybook": "Issue 33219",
         "get_original_email_-_ews-_test": "Issue 27571",
         "PANW Threat Vault - Signature Search - Test": "Issue 30930",
