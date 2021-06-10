@@ -11,17 +11,17 @@ Check coverage given a list of CVEs.
 
 ## Used In
 ---
-This script is used in the following playbooks and scripts.
-* NetOps Panorama coverage by CVE
+This script is used in the following playbook and script.
+NetOps Panorama coverage by CVE
 
 ## Inputs
 ---
 
 | **Argument Name** | **Description** |
 | --- | --- |
-| CVE_List | comma delimited list of CVEs to find |
-| Result_file | Entry ID of the output file from the panorama command |
-| outputFormat | raw output of panorama command into a file |
+| CVE_List | A comma-separated list of CVEs to find. |
+| Result_file | Entry ID of the output file from the panorama command. |
+| outputFormat | Raw output of the panorama command into a file. |
 
 ## Outputs
 ---
