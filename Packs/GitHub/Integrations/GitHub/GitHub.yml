@@ -2958,7 +2958,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: The name of the releae tag.
+      description: The name of the release tag.
       isArray: false
       name: tag_name
       required: true
@@ -2995,7 +2995,7 @@ script:
       description: The ID of the release.
       type: Number
     - contextPath: GitHub.Release.url
-      description: Github API url link to the release.
+      description: Github API URL link to the release.
       type: String
   - arguments:
     - default: false
