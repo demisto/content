@@ -60,6 +60,12 @@ configuration:
   name: request_timeout
   required: false
   type: 0
+- defaultvalue: 'utf-8'
+  additionalinfo: The default unicode encoding to apply on attachments from fetched emails
+  display: Default encoding
+  name: default_encoding
+  required: false
+  type: 0
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
