@@ -275,7 +275,7 @@ tasks:
               prefix: {}
               suffix:
                 value:
-                  simple: ?n=50000
+                  simple: ?n=100000
     separatecontext: false
     loop:
       iscommand: false
@@ -1142,7 +1142,7 @@ inputs:
   playbookInputQuery: null
 - key: iocs_in_xsoar
   value:
-    simple: "333333"
+    simple: "333000"
   required: false
   description: Expected number of indicators in the system.
   playbookInputQuery: null
