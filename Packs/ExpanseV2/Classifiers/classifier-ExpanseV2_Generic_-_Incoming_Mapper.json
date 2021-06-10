@@ -3,7 +3,7 @@
     "feed": false,
     "id": "ExpanseV2-Generic-mapper",
     "mapping": {
-        "Expanse Issue": {
+        "Expanse Issue - Generic": {
             "dontMapEventToLabels": false,
             "internalMapping": {
                 "Expanse Activity Status": {
