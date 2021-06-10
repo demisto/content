@@ -542,7 +542,6 @@ def main():
     else:
         fields_to_display = []
     res = demisto.executeCommand('FindDuplicateEmailIncidents', input_args)
-    res = demisto.executeCommand('FindDuplicateEmailIncidents', input_args)
     if is_error(res):
         return_error(get_error(res))
     res = res[-1]
