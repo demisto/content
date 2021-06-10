@@ -1,0 +1,39 @@
+{
+    "size": 10,
+    "dataType": "metrics",
+    "params": {
+        "groupBy": [
+            "command"
+        ],
+        "keys": [
+            "sum|errorCount"
+        ],
+        "showGraphValues": false,
+        "tableColumns": [],
+        "valuesFormat": "abbreviated",
+        "xAxisLabel": "",
+        "yAxisLabel": ""
+    },
+    "query": "type:integration and isManual:T",
+    "modified": "2021-05-13T16:30:08.664490225Z",
+    "name": "Manual Command execution errors (top 5)",
+    "dateRange": {
+        "fromDate": "0001-01-01T00:00:00Z",
+        "toDate": "0001-01-01T00:00:00Z",
+        "period": {
+            "by": "",
+            "byTo": "",
+            "byFrom": "days",
+            "toValue": null,
+            "fromValue": 180,
+            "field": ""
+        },
+        "fromDateLicense": "0001-01-01T00:00:00Z"
+    },
+    "isPredefined": true,
+    "version": -1,
+    "id": "failed-manual-commands-run",
+    "description": "Manual Command execution errors (top 5)",
+    "widgetType": "bar",
+    "fromVersion": "6.2.0"
+}
