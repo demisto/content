@@ -255,6 +255,180 @@ script:
       within the application. Used for outgoing-mapping through the Get Schema option.
     execution: false
     name: get-mapping-fields
+  - arguments:
+    - default: false
+      description: Group SCIM data with displayName
+      isArray: false
+      name: scim
+      required: true
+      secret: false
+    deprecated: false
+    description: Creates an empty group
+    execution: false
+    name: create-group
+    outputs:
+    - contextPath: CreateGroup.id
+      description: Group Id
+      type: String
+    - contextPath: CreateGroup.displayName
+      description: Display Name of the Group
+      type: String
+    - contextPath: CreateGroup.success
+      description: Success status of the command
+      type: Boolean
+    - contextPath: CreateGroup.errorCode
+      description: Error Code if there is failure
+      type: Number
+    - contextPath: CreateGroup.errorMessage
+      description: Error Details if there is failure
+      type: Unknown
+  - arguments:
+    - default: false
+      description: Group SCIM Data
+      isArray: false
+      name: scim
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'false'
+      isArray: false
+      name: includeMembers
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    deprecated: false
+    description: Retrieves the group information including members
+    execution: false
+    name: get-group
+    outputs:
+    - contextPath: GetGroup.id
+      description: Group Id
+      type: String
+    - contextPath: GetGroup.displayName
+      description: Display Name of the Group
+      type: String
+    - contextPath: GetGroup.members.display
+      description: Display Name of the group member
+      type: String
+    - contextPath: GetGroup.members.value
+      description: Id of the group member
+      type: String
+    - contextPath: GetGroup.success
+      description: Success status of the command
+      type: Boolean
+    - contextPath: GetGroup.errorCode
+      description: Error Code if there is failure
+      type: Number
+    - contextPath: GetGroup.errorMessage
+      description: Error Details if there is failure
+      type: Unknown
+  - arguments:
+    - default: false
+      description: Group SCIM with id in it
+      isArray: false
+      name: scim
+      required: true
+      secret: false
+    deprecated: false
+    description: Permanently removes a group.
+    execution: false
+    name: delete-group
+    outputs:
+    - contextPath: DeleteGroup.id
+      description: Group Id
+      type: String
+    - contextPath: DeleteGroup.displayName
+      description: Display Name of the Group
+      type: String
+    - contextPath: DeleteGroup.success
+      description: Success status of the command
+      type: Boolean
+    - contextPath: DeleteGroup.errorCode
+      description: Error Code if there is failure
+      type: Number
+    - contextPath: DeleteGroup.errorMessage
+      description: Error Details if there is failure
+      type: Unknown
+  - arguments:
+    - default: false
+      description: Group SCIM data
+      isArray: false
+      name: scim
+      required: true
+      secret: false
+    - default: false
+      description: List of members ids to add. A maximum of 15,000 users per call
+        can be modified using this command
+      isArray: true
+      name: memberIdsToAdd
+      required: false
+      secret: false
+    - default: false
+      description: List of members ids to be deleted from the group. A maximum of
+        15,000 users per call can be modified using this command
+      isArray: true
+      name: memberIdsToDelete
+      required: false
+      secret: false
+    deprecated: false
+    description: Updates an existing group resource. This command allows individual
+      (or groups of) users to be added or removed from the group with a single operation.
+      A max of 15,000 users can be modified in 1 call
+    execution: false
+    name: update-group
+    outputs:
+    - contextPath: UpdateGroup.id
+      description: Group Id
+      type: String
+    - contextPath: UpdateGroup.displayName
+      description: Display Name of the Group
+      type: String
+    - contextPath: UpdateGroup.success
+      description: Success status of the command
+      type: Boolean
+    - contextPath: UpdateGroup.errorCode
+      description: Error Code if there is failure
+      type: Number
+    - contextPath: UpdateGroup.errorMessage
+      description: Error Details if there is failure
+      type: Unknown
+  - arguments:
+    - default: false
+      description: Group ID
+      isArray: false
+      name: groupId
+      required: false
+      secret: false
+    - default: false
+      description: Group name of the group to replace
+      isArray: false
+      name: groupName
+      required: false
+      secret: false
+    - default: false
+      description: New Group Name if the group name needs to be updated. If no update
+        is needed,, provide the old group name
+      isArray: false
+      name: newGroupName
+      required: true
+      secret: false
+    - default: false
+      description: 'List of slack user ID values (example: ["U0W0NQFFC","U0W0C30RE"]).
+        This will replace all members of a group with the members provided here'
+      isArray: true
+      name: memberIds
+      required: false
+      secret: false
+    deprecated: false
+    description: Updates an existing group resource, overwriting all values for a
+      group even if an attribute is empty or not provided. A maximum of 15,000 users
+      per call can be updated using this endpoint. If the member list is not provided,
+      all members will be removed from the group
+    execution: false
+    name: slack-replace-group
   dockerimage: demisto/python3:3.9.1.15759
   feed: false
   isfetch: false
@@ -264,8 +438,6 @@ script:
   script: '-'
   subtype: python3
   type: python
-  ismappable: true
-  isremotesyncout: true
 tests:
 - No tests
 fromversion: 6.0.0

@@ -122,6 +122,57 @@ class Client(BaseClient):
 
         return okta_fields
 
+    def get_group_by_id(self, group_id):
+        uri = f'groups/{group_id}'
+        return self._http_request(
+            method='GET',
+            url_suffix=uri,
+            resp_type='response'
+        )
+
+    def get_logs_for_groups(self, filter=None, from_date=None, to_date=None, sort_order=None):
+        uri = 'logs'
+        query_params = {}
+        if from_date:
+            query_params['since'] = encode_string_results(from_date)
+        if to_date:
+            query_params['until'] = encode_string_results(to_date)
+        if filter:
+            query_params['filter'] = encode_string_results(filter)
+
+        query_params['sortOrder'] = sort_order if sort_order else 'ASCENDING'
+
+        return self.get_paged_results(uri, query_params)
+
+    def get_group_members(self, group_id):
+        uri = f'groups/{group_id}/users'
+        return self.get_paged_results(uri)
+
+    def get_paged_results(self, uri, query_param=None):
+        response = self._http_request(
+            method="GET",
+            url_suffix=uri,
+            params=query_param,
+            resp_type='response',
+        )
+        paged_results = response.json()
+
+        if response.status_code != 200:
+            raise Exception(
+                f'Error occurred while calling Okta API: {response.request.url}. Response: {response.json()}')
+        while "next" in response.links and len(response.json()) > 0:
+            next_page = response.links.get("next").get("url")
+            response = self._http_request(
+                method="GET",
+                full_url=next_page,
+                url_suffix=''
+            )
+            if response.status_code != 200:
+                raise Exception(
+                    f'Error occurred while calling Okta API: {response.request.url}. Response: {response.json()}')
+            paged_results += response.json()
+        return paged_results
+
     def get_app_user_assignment(self, application_id, user_id):
         uri = f'/apps/{application_id}/users/{user_id}'
         res = self._http_request(
@@ -241,6 +292,25 @@ class Client(BaseClient):
         next_page = res.links.get('next', {}).get('url')
 
         return logs_batch, next_page
+
+    # for testing
+    def test_create_group(self):
+        res = self._http_request(
+            method='POST',
+            url_suffix='groups',
+            resp_type='response'
+        )
+        demisto.log(str("here1"))
+        demisto.log(str(res.json()))
+
+    def test_list_group(self):
+        res = self._http_request(
+            method='GET',
+            url_suffix='groups',
+            resp_type='response',
+            params={'limit': 5})
+        demisto.log(str("here2"))
+        demisto.log(str(res.json()))
 
 
 '''HELPER FUNCTIONS'''
@@ -651,6 +721,187 @@ def fetch_incidents(client, last_run, first_fetch_str, fetch_limit, query_filter
     return incidents[:fetch_limit], next_run
 
 
+class OutputContext:
+    """
+        Class to build a generic output and context.
+    """
+
+    def __init__(self, success=None, active=None, id=None, username=None, email=None, errorCode=None,
+                 errorMessage=None, details=None, displayName=None, members=None):
+        self.instanceName = demisto.callingContext['context']['IntegrationInstance']
+        self.brand = demisto.callingContext['context']['IntegrationBrand']
+        self.command = demisto.command().replace('-', '_').title().replace('_', '')
+        self.success = success
+        self.active = active
+        self.id = id
+        self.username = username
+        self.email = email
+        self.errorCode = errorCode
+        self.errorMessage = errorMessage
+        self.details = details
+        self.displayName = displayName  # Used in group
+        self.members = members  # Used in group
+        self.data = {
+            "brand": self.brand,
+            "instanceName": self.instanceName,
+            "success": success,
+            "active": active,
+            "id": id,
+            "username": username,
+            "email": email,
+            "errorCode": errorCode,
+            "errorMessage": errorMessage,
+            "details": details,
+            "displayName": displayName,
+            "members": members
+        }
+        # Remoove empty values
+        self.data = {
+            k: v
+            for k, v in self.data.items()
+            if v is not None
+        }
+
+
+def verify_and_load_scim_data(scim):
+    try:
+        scim = json.loads(scim)
+    except:
+        pass
+    if type(scim) != dict:
+        raise Exception("SCIM data is not a valid JSON")
+    return scim
+
+
+def get_group_command(client, args):
+    scim = verify_and_load_scim_data(args.get('scim'))
+    demisto.log(f'scim is -> {(scim)}')
+    group_id = scim.get('id')
+    group_name = scim.get('displayName')
+    #for testing issues
+    group_id = "00g91glt13un0ZFmU0h7"
+    demisto.log(f'group id is -> {(group_id)}')
+
+    if not (group_id or group_name):
+        return_error("You must supply either 'id' or 'displayName' in the scim data")
+
+    group_search_result = None
+    if not group_id:
+        res = client.search_group(group_name)
+        res_json = res.json()
+
+        if res.status_code == 200:
+            if len(res_json) < 1:
+                generic_iam_context = OutputContext(success=False, displayName=group_name, errorCode=404,
+                                                    errorMessage="Group Not Found", details=res_json)
+                generic_iam_context_dt = f'{generic_iam_context.command}(val.id == obj.id && val.instanceName == obj.instanceName)'
+                outputs = {
+                    generic_iam_context_dt: generic_iam_context.data
+                }
+
+                readable_output = tableToMarkdown(f'Okta Get Group:', generic_iam_context.data, removeNull=True)
+                return (
+                    readable_output,
+                    outputs,
+                    generic_iam_context.data
+                )
+            else:
+                group_search_result = res_json
+        else:
+            generic_iam_context = OutputContext(success=False, displayName=group_name, id=group_id,
+                                                errorCode=res_json.get('errorCode'),
+                                                errorMessage=res_json.get('errorSummary'),
+                                                details=res_json)
+            generic_iam_context_dt = f'{generic_iam_context.command}(val.id == obj.id && val.instanceName == obj.instanceName)'
+            outputs = {
+                generic_iam_context_dt: generic_iam_context.data
+            }
+
+            readable_output = tableToMarkdown(f'Okta Get Group:', generic_iam_context.data, removeNull=True)
+            return (
+                readable_output,
+                outputs,
+                generic_iam_context.data
+            )
+
+    if group_search_result and len(group_search_result) > 1:
+        generic_iam_context_data_list = []
+
+        for group in group_search_result:
+            group_name = group.get('profile', {}).get('name')
+            generic_iam_context = OutputContext(success=True, id=group.get('id'), displayName=group_name)
+            generic_iam_context_data_list.append(generic_iam_context.data)
+
+        generic_iam_context_dt = f'{generic_iam_context.command}(val.id == obj.id && val.instanceName == obj.instanceName)'
+        outputs = {
+            generic_iam_context_dt: generic_iam_context_data_list
+        }
+        readable_output = tableToMarkdown(f'Okta Get Group:', generic_iam_context_data_list, removeNull=True)
+        return (
+            readable_output,
+            outputs,
+            generic_iam_context_data_list
+        )
+    elif not group_id:
+        group_id = group_search_result[0].get('id')
+
+    res = client.get_group_by_id(group_id)
+    res_json = res.json()
+    if res.status_code == 200:
+        group_member_profiles = []
+        include_members = args.get('includeMembers')
+        if include_members.lower() == 'true':
+            group_members = client.get_group_members(group_id)
+            for member in group_members:
+                if member.get('status') != DEPROVISIONED_STATUS:
+                    profile = member.get('profile', {})
+                    group_member_profile = {
+                        "value": member.get('id'),
+                        "display": profile.get('login')
+                    }
+                    group_member_profiles.append(group_member_profile)
+        generic_iam_context = OutputContext(success=True, id=res_json.get('id'),
+                                            displayName=res_json.get('profile', {}).get('name'),
+                                            members=group_member_profiles)
+    elif res.status_code == 404:
+        generic_iam_context = OutputContext(success=False, displayName=group_name, id=group_id, errorCode=404,
+                                            errorMessage="Group Not Found", details=res_json)
+    else:
+        generic_iam_context = OutputContext(success=False, displayName=group_name, id=group_id,
+                                            errorCode=res_json.get('errorCode'),
+                                            errorMessage=res_json.get('errorSummary'),
+                                            details=res_json)
+
+    generic_iam_context_dt = f'{generic_iam_context.command}(val.id == obj.id && val.instanceName == obj.instanceName)'
+    outputs = {
+        generic_iam_context_dt: generic_iam_context.data
+    }
+
+    readable_output = tableToMarkdown(f'Okta Get Group:', generic_iam_context.data, removeNull=True)
+    return (
+        readable_output,
+        outputs,
+        generic_iam_context.data
+    )
+
+
+def get_logs_command(client, args):
+    filter = args.get('filter')
+    since = args.get('since')
+    until = args.get('until')
+    log_events = client.get_logs_for_groups(filter=filter, from_date=since, to_date=until)
+
+    readable_output = tableToMarkdown(f"Okta Log Events:", log_events)
+    outputs = {
+        'Okta.Logs.Events(val.uuid && val.uuid === obj.uuid)': log_events
+    }
+    return (
+        readable_output,
+        outputs,
+        log_events
+    )
+
+
 def main():
     user_profile = None
     params = demisto.params()
@@ -730,6 +981,14 @@ def main():
             context = set_configuration(args)
             demisto.setIntegrationContext(context)
 
+        elif command == 'get-group':
+            human_readable, outputs, raw_response = get_group_command(client, args)
+            return_outputs(readable_output=human_readable, outputs=outputs, raw_response=raw_response)
+
+        elif command == 'okta-get-logs-v2':
+            human_readable, outputs, raw_response = get_logs_command(client, args)
+            return_outputs(readable_output=human_readable, outputs=outputs, raw_response=raw_response)
+
         elif command == 'fetch-incidents':
             last_run = demisto.getLastRun()
             context = demisto.getIntegrationContext()
@@ -737,6 +996,12 @@ def main():
                                                   fetch_query_filter, auto_generate_query_filter, context)
             demisto.incidents(incidents)
             demisto.setLastRun(next_run)
+        #for Testing
+        elif command == 'test-create-group':
+            client.test_create_group()
+        elif command == 'test-list-group':
+            client.test_list_group()
+
 
     except Exception:
         # For any other integration command exception, return an error
