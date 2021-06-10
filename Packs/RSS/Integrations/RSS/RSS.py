@@ -1,8 +1,10 @@
-import feedparser
-from CommonServerPython import *
 import email.utils
-from time import mktime
 from datetime import datetime
+from time import mktime
+
+import demistomock as demisto  # noqa: F401
+import feedparser
+from CommonServerPython import *  # noqa: F401
 
 
 def fetch_incidents(url):
@@ -18,6 +20,7 @@ def fetch_incidents(url):
         last_fetch = datetime.strptime(last_fetch, '%Y-%m-%dT%H:%M:%S.%f')
 
     for entry in reversed(feed.entries):
+        print("yana")
 
         date_parsed = email.utils.parsedate(entry.published)
         if date_parsed:
