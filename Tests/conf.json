@@ -3367,6 +3367,11 @@
             "integrations": "NetscoutAED",
             "playbookID": "NetscoutAED-Test",
             "fromversion": "5.5.0"
+        },
+        {
+            "integrations": "jamf v2",
+            "playbookID": "Jamf_v2_test",
+            "fromversion": "5.5.0"
         }
     ],
     "skipped_tests": {
