@@ -19,6 +19,24 @@ This integration was integrated and tested with version 9.0.2 of FireEye Central
     | Use system proxy settings | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
+
+## Fetch FireEye EX Alert Emails
+To fetch a FireEye EX alert email, you will need the UUID.
+1. Run the ***fireeye-cm-get-alert-details** command with the alert ID. For example,
+
+   ***!fireeye-cm-get-alert-details alert_id=542***
+2. Locate the UUID in the context data and run the ***fireeye-cm-get-artifacts-by-uuid*** command with the UUID. For example: 
+   
+   ***!fireeye-cm-get-artifacts-by-uuid uuid=243a2555-a915-47a1-a947-e71049f4971c***
+3. Download the email.
+
+## Access the FireEye NX Alert URL
+To display a proper link in the FireEye NX Alert URL field of the FireEye NX Alert layout, you need to configure the hostname in the appliance settings of the FireEye application.
+
+1. Log in to your FireEye application.
+2. Navigate to **Appliance Settings > Network > Hostname**.
+3. In the Hostname field, enter your URL/server/ip address.
+
 ## Commands
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
