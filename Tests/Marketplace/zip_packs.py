@@ -158,7 +158,7 @@ def get_zipped_packs_names(zip_path):
             zipped_packs.append({Path(latest_zip).stem: latest_zip})
 
     if not zipped_packs:
-        sys.exit(1)
+        raise Exception('No zip files were found')
     return zipped_packs
 
 
@@ -220,13 +220,17 @@ def get_latest_pack_zip_from_blob(pack, blobs):
     Returns:
         blob: The zip blob of the pack with the latest version.
     """
-    blob = None
-    blobs = [b for b in blobs if os.path.splitext(os.path.basename(b))[0] == pack and b.endswith('.zip')]
-    if blobs:
-        blobs = sorted(blobs, key=lambda b: LooseVersion(os.path.basename(os.path.dirname(b))), reverse=True)
-        blob = blobs[0]
+    latest_blob_name = None
+    latest_blob_version = None
+    for current_blob in blobs:
+        current_pack_name = os.path.splitext(os.path.basename(current_blob))[0]
+        if current_pack_name == pack and current_blob.endswith('.zip'):
+            current_pack_zip_version = os.path.basename(os.path.dirname(current_blob))
+            if not latest_blob_version or latest_blob_version < current_pack_zip_version:
+                latest_blob_version = current_pack_zip_version
+                latest_blob_name = current_blob
 
-    return blob
+    return latest_blob_name
 
 
 def main():
@@ -263,14 +267,15 @@ def main():
     try:
         zipped_packs = get_zipped_packs_names(zip_path)
     except Exception as e:
-        logging.exception(f'No zip files were found, {e}')
+        logging.exception(f'Failed to get zipped packs names, {e}')
         success = False
 
-    try:
-        copy_zipped_packs_to_artifacts(zipped_packs)
-    except Exception as e:
-        logging.exception(f'Failed to copy to artifacts, {e}')
-        success = False
+    if private_build:
+        try:
+            copy_zipped_packs_to_artifacts(zipped_packs)
+        except Exception as e:
+            logging.exception(f'Failed to copy to artifacts, {e}')
+            success = False
 
     if zipped_packs and remove_test_playbooks:
         try:
@@ -293,11 +298,13 @@ def main():
                 shutil.copy(os.path.join(zip_path, ARTIFACT_NAME), os.path.join(artifacts_path, ARTIFACT_NAME))
         else:
             logging.critical('Failed zipping packs.')
-            sys.exit(1)
     else:
         logging.warning('Failed to perform zip content packs from GCS step.')
 
     cleanup(zip_path)
+
+    if not success:
+        sys.exit(1)
 
 
 if __name__ == '__main__':
