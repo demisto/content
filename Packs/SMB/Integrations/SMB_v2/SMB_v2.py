@@ -48,7 +48,7 @@ class SMBClient:
             password=password or self._password,
             port=port or self._port,
             encrypt=encrypt or self._encrypt,
-            auth_protocol='ntlm'
+            auth_protocol='ntlm',
         )
 
 
@@ -193,6 +193,7 @@ def main():
             client_guid = None
 
     # Temporary workaround to an issue in the smbprotocol package.
+    # Git issue: https://github.com/jborean93/smbprotocol/issues/109
     config = smbclient.ClientConfig(username=user, password=password, require_secure_negotiate=verify,
                                     client_guid=client_guid)
     config.domain_controller = dc
