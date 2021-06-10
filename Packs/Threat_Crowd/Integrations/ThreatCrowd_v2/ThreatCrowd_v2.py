@@ -74,9 +74,6 @@ def ip_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
     ips = argToList(args.get('ip'))
     for ip in ips:
         res = client._http_request(method='GET', url_suffix=api_url, params={'ip': ip})
-        if res.get('response_code') == IP_NO_DATA_RESPONSE_CODE:
-            # Indicating no data was found regarding the requested IP. Skipping.
-            continue
 
         # adding value to both outputs and raw results as it is not provided in the API response
         res['value'] = ip
@@ -86,7 +83,7 @@ def ip_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
             ip, DBotScoreType.IP, VENDOR, score, reliability=client.reliability)
         ip_object = Common.IP(ip, dbot)
 
-        hashes = res.get('hashes')[:entries_limit]
+        hashes = res.get('hashes', [])[:entries_limit]
         resolutions = handle_resolutions(res.get('resolutions', []), entries_limit)
 
         markdown = f"### Threat crowd report for ip {ip}: \n  ### DBotScore: {score_str} \n" \
