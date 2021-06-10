@@ -95,7 +95,7 @@ def test_ip_command(mocker):
             - running ip command was required
 
         Then:
-            validates that indicator objects were created as expected
+            - validates that indicator objects were created as expected
     """
     # from Packs.Threat_Crowd.Integrations.ThreatCrowdV2.ThreatCrowd_v2 import get_ip
     from ThreatCrowd_v2 import ip_command
