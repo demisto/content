@@ -10,12 +10,12 @@ enabled: true
 args:
 - name: CVE_List
   required: true
-  description: comma delimited list of CVEs to find.
+  description: A comma-separated list of CVEs to find.
 - name: Result_file
   required: true
   description: Entry ID of the output file from the panorama command.
 - name: outputFormat
-  description: raw output of panorama command into a file.
+  description: Raw output into a file from the panorama command.
   required: true
   auto: PREDEFINED
   predefined:
