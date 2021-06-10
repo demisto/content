@@ -3312,6 +3312,10 @@
             "timeout": 1000
         },
         {
+           "integrations": "HPEArubaClearPass",
+            "playbookID": "HPEArubaClearPass_TestPlaybook"
+        },
+        {
             "integrations": "CrowdstrikeFalcon",
             "playbookID": "Get endpoint details - Generic - test",
             "fromversion": "5.5.0"
@@ -3351,6 +3355,10 @@
             "is_mockable": false
         },
         {
+            "integrations": "Proofpoint TAP v2",
+            "playbookID": "ProofpointTAP-Test"
+        },
+        {
             "integrations": "ThreatExchange v2",
             "playbookID": "ThreatExchangeV2-test",
             "fromversion": "5.5.0"
@@ -3359,6 +3367,12 @@
             "integrations": "NetscoutAED",
             "playbookID": "NetscoutAED-Test",
             "fromversion": "5.5.0"
+        },
+        {
+            "integrations": "CarbonBlackLiveResponseCloud",
+            "playbookID": "CarbonBlackLiveResponseCloud-Test",
+            "fromversion": "5.5.0",
+            "is_mockable": false
         }
     ],
     "skipped_tests": {
@@ -3397,7 +3411,7 @@
         "Tanium v2 - Test": "Issue 26822",
         "hashIncidentFields-test": "Issue 26850",
         "Fidelis Elevate Network": "Issue 26453",
-        "Cortex XDR - IOC - Test": "Issue 25598",
+        "Cortex XDR - IOC - Test": "Issue 37957",
         "Cherwell Example Scripts - test": "Issue 26780",
         "Cherwell - test": "Issue 26780",
         "PAN-OS Query Logs For Indicators Test": "Issue 28753",
@@ -3453,15 +3467,16 @@
         "Centreon-Test-Playbook": "Issue 37022",
         "PAN-OS - Block URL - Custom URL Category Test": "Issue 37024",
         "Service Desk Plus - Generic Polling Test": "Issue 30798",
-        "Pwned v2 test": "Issue 26601",
         "TestEmailRepIOPlaybook": "Issue 33219",
         "get_original_email_-_ews-_test": "Issue 27571",
         "PANW Threat Vault - Signature Search - Test": "Issue 30930",
-        "TAXII_Feed_Test": "Issue 37588"
+        "TAXII_Feed_Test": "Issue 37588",
+        "Git_Integration-Test": "Issue 37800"
     },
     "skipped_integrations": {
         
         "_comment1": "~~~ NO INSTANCE ~~~",
+        "SolarWinds": "No instance - developed by Crest",
         "trustwave secure email gateway": "No instance - developed by Qmasters",
         "ServiceDeskPlus (On-Premise)": "No instance",
         "Forcepoint": "instance issues. Issue 28043",
@@ -3495,7 +3510,7 @@
         "Symantec MSS": "No instance, probably not going to get it (issue 15513)",
         "Google Cloud Compute": "Can't test yet",
         "FireEye ETP": "No instance",
-        "ProofpointTAP_v2": "No instance",
+        "Proofpoint TAP v2": "No instance",
         "remedy_sr_beta": "No instance",
         "fireeye": "Issue 19839",
         "Remedy On-Demand": "Issue 19835",
