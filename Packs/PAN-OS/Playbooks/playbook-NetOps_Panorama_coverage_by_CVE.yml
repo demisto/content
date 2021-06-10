@@ -40,7 +40,7 @@ tasks:
       version: -1
       name: Check coverage from the cve list
       description: Check coverage from the cve list
-      scriptName: Panorama_CVE_Coverage
+      scriptName: PanoramaCVECoverage
       type: regular
       iscommand: false
       brand: ""
@@ -50,17 +50,9 @@ tasks:
           root: incident
           accessor: cvelist
       Result_file:
-        simple: ${FileData}
-      cve_file:
-        simple: ${FileData}
-      cve_list:
-        simple: ${FileData}
-      entryID:
         complex:
           root: File
           accessor: EntryID
-      file:
-        simple: ${File.EntryID}
     separatecontext: false
     view: |-
       {

@@ -2,56 +2,71 @@
 import demistomock as demisto
 from CommonServerPython import *
 
-my_fields = ['CVE', 'Threat Name', 'Link', 'Severity', 'Threat ID', 'Default Action']
+OUTPUT_HEADERS = ['Threat Name', 'Link', 'Severity', 'Threat ID', 'Default Action']
 
 
 def main():
     # Input arguments
+    args = demisto.args()
+    cve_list = argToList(args.get('CVE_List'))
+    pan_os_output = args.get('Result_file')
+    output_format = args.get('outputFormat', 'table')
 
-    # The CVE we are looking for
-    cve_arg = demisto.args().get('CVE_List')
-    queriedCVEs = cve_arg.split()
+    # read the file content
+    read_file_output = demisto.executeCommand("ReadFile", {"entryID": pan_os_output, "maxFileSize": "100000000"})
+    if isError(read_file_output):
+        return_error(f'Failed to execute ReadFile command: {get_error(read_file_output)}')
+
+    pan_os_output = read_file_output[0].get('EntryContext').get('FileData')
 
     # CVE data from the firewall
-    PanOSOutput = demisto.args().get('Result_file')
-    data = json.loads(PanOSOutput)
+    data = json.loads(pan_os_output)
 
-    findings: Dict[List, List] = {}
+    findings = {}
+
     # Correlating the corresponding CVE list to reference link, severity, threat_id, and default action.
     for entry in data['threats']['vulnerability']['entry']:
         if 'cve' in entry:
             cve = entry['cve']['member']
-            if cve in queriedCVEs:
+            if cve in cve_list:
                 link = "http://cve.circl.lu/api/cve/" + cve
-                threatName = entry['threatname']
-                severity = entry['severity']
-                threatID = entry['@name']
+                threat_name = entry.get('threatname')
+                severity = entry.get('severity')
+                threat_id = entry.get('@name')
                 action = entry.get('default-action', 'No Action Defined')
-                outputFields = {'CVE': cve, 'Threat Name': threatName, 'Link': link, 'Severity': severity,
-                                'Threat ID': threatID, 'Default Action': action}
+                output_fields = {'threat_name': threat_name, 'link': link, 'severity': severity,
+                                 'threat_id': threat_id, 'default_action': action}
                 if cve in findings:
-                    findings[cve].append(outputFields)
+                    findings[cve].append(output_fields)
                 else:
-                    findings[cve] = [outputFields]
-
-    view = demisto.args().get('outputFormat', '')
+                    findings[cve] = [output_fields]
 
     # Start of markdown output formatting
     res = '## CVE Coverage\n'
-    for queriedCVE in queriedCVEs:
+    for queriedCVE in cve_list:
         if queriedCVE in findings:
-            if view == 'table':
-                section = tableToMarkdown(queriedCVE, findings[queriedCVE], my_fields)
+            if output_format == 'table':
+                section = tableToMarkdown(queriedCVE, findings[queriedCVE], headerTransform=string_to_table_header)
             else:
                 section = '### %s\n' % queriedCVE
-                rows = [','.join([entry[fieldName] for fieldName in my_fields]) for entry in findings[queriedCVE]]
+                rows = [','.join([entry[fieldName] for fieldName in entry.keys()]) for entry in findings[queriedCVE]]
                 section += '\n'.join(rows)
             res += section
         else:
             res += '### %s\nNo coverage for %s' % (queriedCVE, queriedCVE)
         res += '\n'
     res += '\n\n'
-    demisto.results({'ContentsFormat': formats['markdown'], 'Type': entryTypes['note'], 'Contents': res})
+
+    # create the context outputs
+    outputs = []
+    for queried_CVE in findings.keys():
+        outputs.append({'CVE': queried_CVE,
+                        'Coverage': findings[queried_CVE]})
+
+    return_results(CommandResults(readable_output=res,
+                                  outputs_key_field='CVE',
+                                  outputs=outputs,
+                                  outputs_prefix='Panorama.CVECoverage'))
 
 
 # python2 uses __builtin__ python3 uses builtins
