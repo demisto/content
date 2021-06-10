@@ -162,7 +162,7 @@ Deletes an existing particular threatening IP address object by its object ID or
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | list_type | The dynamic lists type of threatening IP addresses. The type can be one of allowlist or denylist. Possible values are: allowlist, denylist. Note: Allowlists are named DDOS IP Allowlists in the F5 Silverline portal. | Required | 
-| object_id | The object ID of a particular threatening IP address object that should be deleted. | Required | 
+| object_id | The object ID of a particular threatening IP address object that should be deleted. | Optional | 
 | object_ip | The IP address of an existing threatening IP address object that should be deleted. | Optional | 
 
 
