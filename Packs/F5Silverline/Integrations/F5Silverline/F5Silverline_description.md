@@ -13,4 +13,4 @@ To configure an instance of F5 Silverline, you need to obtain the following info
 ## Fetching F5 Silverline Alerts
 
 As the F5 Silverline API does not support fetch incidents for now, we retrieve alerts via a log collector.   
-In order to fetch alerts, follow the instructions [here]: (https://github.com/demisto/content/raw/master/Packs/F5Silverline/Integrations/F5Silverline/README.md#fetch-f5-silverline-alerts).
+In order to fetch alerts, follow the instructions [here](https://github.com/demisto/content/raw/master/Packs/F5Silverline/Integrations/F5Silverline/README.md#fetch-f5-silverline-alerts)
