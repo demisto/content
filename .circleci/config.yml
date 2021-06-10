@@ -1190,7 +1190,7 @@ jobs:
             echo "Server URL: $DEMISTO_BASE_URL"
       - run:
           name: Install SDK Master
-          command: pip3 install git+https://github.com/demisto/demisto-sdk.git
+          command: pip3 install git+https://github.com/demisto/demisto-sdk.git@fail-download-unsuccessful
       - *wait_until_server_ready
       - run:
           name: Unlock HelloWorld integration and playbook
