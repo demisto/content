@@ -50,6 +50,9 @@ Gets a dynamic list of threatening IP addresses by the given list type.
 | F5Silverline.IPObjectList.meta.tags | Unknown | The tags of a particular threatening IP address object. | 
 | F5Silverline.IPObjectList.meta.created_at | String | The creation date \(timestamp\) of a particular threatening IP address object. | 
 | F5Silverline.IPObjectList.meta.updated_at | String | The last update date \(timestamp\) of a particular threatening IP address object. | 
+| F5Silverline.Paging.last_page_number | Number | The last page number that exists. | 
+| F5Silverline.Paging.current_page_size | Number | The number of IP objects to be returned on each page. | 
+| F5Silverline.Paging.current_page_number | Number | The number of the requested page. | 
 
 
 #### Command Example
@@ -64,19 +67,19 @@ Gets a dynamic list of threatening IP addresses by the given list type.
                 "attributes": {
                     "duration": 0,
                     "expires_at": null,
-                    "ip": "1.2.3.4",
+                    "ip": "1.2.3.5",
                     "list_target": "proxy",
                     "mask": "32"
                 },
-                "id": "d3a8179e-043d-43cb-acff-745b6765d18a",
+                "id": "822f2572-ddc4-4eb1-84ab-f27e4095c8c4",
                 "links": {
-                    "self": "https://portal.f5silverline.com/api/v1/ip_lists/denylist/ip_objects/d3a8179e-043d-43cb-acff-745b6765d18a?list_target=proxy"
+                    "self": "https://portal.f5silverline.com/api/v1/ip_lists/denylist/ip_objects/822f2572-ddc4-4eb1-84ab-f27e4095c8c4?list_target=proxy"
                 },
                 "meta": {
-                    "created_at": "2021-04-22T13:00:43.175Z",
-                    "note": "",
+                    "created_at": "2021-05-20T10:25:32.694Z",
+                    "note": null,
                     "tags": [],
-                    "updated_at": "2021-04-22T13:00:43.175Z"
+                    "updated_at": "2021-05-20T10:25:32.694Z"
                 },
                 "type": "ip_objects"
             },
@@ -84,55 +87,35 @@ Gets a dynamic list of threatening IP addresses by the given list type.
                 "attributes": {
                     "duration": 0,
                     "expires_at": null,
-                    "ip": "1.2.3.4",
+                    "ip": "14.16.1.0",
                     "list_target": "proxy",
                     "mask": "32"
                 },
-                "id": "a7c55ea4-1244-4745-a7ad-b4396f2725b3",
+                "id": "66202ba3-04f1-4f7c-b1a8-9a49776a96a4",
                 "links": {
-                    "self": "https://portal.f5silverline.com/api/v1/ip_lists/denylist/ip_objects/a7c55ea4-1244-4745-a7ad-b4396f2725b3?list_target=proxy"
+                    "self": "https://portal.f5silverline.com/api/v1/ip_lists/denylist/ip_objects/66202ba3-04f1-4f7c-b1a8-9a49776a96a4?list_target=proxy"
                 },
                 "meta": {
-                    "created_at": "2021-04-22T12:54:02.283Z",
+                    "created_at": "2021-06-09T07:59:31.772Z",
                     "note": "",
                     "tags": [],
-                    "updated_at": "2021-04-22T12:54:02.283Z"
-                },
-                "type": "ip_objects"
-            },
-            {
-                "attributes": {
-                    "duration": 0,
-                    "expires_at": null,
-                    "ip": "2.2.3.4",
-                    "list_target": "proxy",
-                    "mask": "32"
-                },
-                "id": "6d8eafb9-4c3e-4225-a05e-08995a2b5c34",
-                "links": {
-                    "self": "https://portal.f5silverline.com/api/v1/ip_lists/denylist/ip_objects/6d8eafb9-4c3e-4225-a05e-08995a2b5c34?list_target=proxy"
-                },
-                "meta": {
-                    "created_at": "2021-04-22T13:01:03.074Z",
-                    "note": "",
-                    "tags": [],
-                    "updated_at": "2021-04-22T13:01:03.074Z"
+                    "updated_at": "2021-06-09T07:59:31.772Z"
                 },
                 "type": "ip_objects"
             }
-        ]
+        ],
+        "Paging": []
     }
 }
 ```
 
 #### Human Readable Output
 
->### F5 Silverline IP Objects
->|ID|IP|List Target|Created At|Updated At|
->|---|---|---|---|---|
->| d3a8179e-043d-43cb-acff-745b6765d18a | 1.2.3.4 | proxy | 2021-04-22T13:00:43.175Z | 2021-04-22T13:00:43.175Z |
->| a7c55ea4-1244-4745-a7ad-b4396f2725b3 | 1.2.3.4 | proxy | 2021-04-22T12:54:02.283Z | 2021-04-22T12:54:02.283Z |
->| 6d8eafb9-4c3e-4225-a05e-08995a2b5c34 | 2.2.3.4 | proxy | 2021-04-22T13:01:03.074Z | 2021-04-22T13:01:03.074Z |
+>### F5 Silverline denylist IP Objects
+>|ID|CIDR Range|Created At|Updated At|
+>|---|---|---|---|
+>| 822f2572-ddc4-4eb1-84ab-f27e4095c8c4 | 1.2.3.5/32 | 2021-05-20T10:25:32.694Z | 2021-05-20T10:25:32.694Z |
+>| 66202ba3-04f1-4f7c-b1a8-9a49776a96a4 | 14.16.1.0/32 | 2021-06-09T07:59:31.772Z | 2021-06-09T07:59:31.772Z |
 
 
 ### f5-silverline-ip-object-add
@@ -147,13 +130,12 @@ Adds a new particular threatening IP address object by its IP address.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| list_type | The dynamic lists type of threatening IP addresses. The type can be allowlist or denylist. Note: Allowlists are named DDOS IP Allowlists in the F5 Silverline portal. | Required | 
-| list_target | This argument can be supplied to target either the proxy or routed denylist. If list_target is not specifiedm it will assume both proxy and routed are requested (i.e.,proxy-routed). The allowed values for list_target are proxy or routed or proxy-routed. This argument limits the denylist type but is ignored for the other list types. Possible values are: proxy, routed, proxy-routed. | Optional | 
-| IP | The IP address of a new particular threatening IP address object. | Required | 
-| mask | The mask address of a new particular threatening IP address object. Default is 32. | Optional | 
+| list_type | The dynamic lists type of threatening IP addresses. The type can be "allowlist" or "denylist". Note: Allowlists are named DDOS IP Allowlists in the F5 Silverline portal. Possible values are: allowlist, denylist. | Required | 
+| list_target | This argument can be supplied to target either the proxy or routed denylist. If list_target is not specifiedm it will assume both proxy and routed are requested (i.e., proxy-routed). Possible values are: "proxy", "routed", or "proxy-routed". This argument limits the denylist type but is ignored for allowlist. Possible values are: proxy, routed, proxy-routed. | Optional | 
+| cidr_range | The CIDR range address of a new particular threatening IP address object (i.e IP address/ mask). For example, "1.2.3.4/32". In case only IP address is given, the default mask is 32. | Required | 
 | duration | The duration (in seconds) of a new particular threatening IP address object where the list type is 'denylist'. Setting the duration to 0 (default) means the new IP address object will never expire. This feature has been removed for allowlist. | Optional | 
 | note | The note of a new particular threatening IP address object. Default is empty. | Optional | 
-| tags | A comma-separated list of tags of a new particular threatening IP address object. Default is empty. | Optional | 
+| tags | A comma-separated list of tags of a new particular threatening IP address object. | Optional | 
 
 
 #### Context Output
@@ -161,15 +143,15 @@ Adds a new particular threatening IP address object by its IP address.
 There is no context output for this command.
 
 #### Command Example
-```!f5-silverline-ip-object-add IP=2.2.3.4 list_type=denylist```
+```!f5-silverline-ip-object-add cidr_range=2.5.3.4 list_type=denylist```
 
 #### Human Readable Output
 
->IP object with IP address: 2.2.3.4 created successfully to the denylist list.
+>IP object with CIDR range address: 2.5.3.4/32 added successfully into the denylist list.
 
 ### f5-silverline-ip-object-delete
 ***
-Deletes an existing particular threatening IP address object by its object ID.
+Deletes an existing particular threatening IP address object by its object ID or by its IP address.
 
 
 #### Base Command
@@ -181,6 +163,7 @@ Deletes an existing particular threatening IP address object by its object ID.
 | --- | --- | --- |
 | list_type | The dynamic lists type of threatening IP addresses. The type can be one of allowlist or denylist. Possible values are: allowlist, denylist. Note: Allowlists are named DDOS IP Allowlists in the F5 Silverline portal. | Required | 
 | object_id | The object ID of a particular threatening IP address object that should be deleted. | Required | 
+| object_ip | The IP address of an existing threatening IP address object that should be deleted. | Optional | 
 
 
 #### Context Output
@@ -188,11 +171,11 @@ Deletes an existing particular threatening IP address object by its object ID.
 There is no context output for this command.
 
 #### Command Example
-```!f5-silverline-ip-object-delete list_type=denylist object_id=d3a8179e-043d-43cb-acff-745b6765d18a```
+```!f5-silverline-ip-object-delete list_type=denylist object_id=66202ba3-04f1-4f7c-b1a8-9a49776a96a4```
 
 #### Human Readable Output
 
->IP object with ID: d3a8179e-043d-43cb-acff-745b6765d18a deleted successfully from the denylist list.
+>IP object with ID: 66202ba3-04f1-4f7c-b1a8-9a49776a96a4 deleted successfully from the denylist list.
 
 
 ## Fetch F5 Silverline alerts
