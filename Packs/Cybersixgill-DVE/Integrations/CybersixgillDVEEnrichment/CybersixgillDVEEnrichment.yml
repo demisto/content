@@ -26,7 +26,7 @@ description: By enriching CVEs with the DVE Score, Cortex XSOAR customers gain d
   such as where they are trending, POC exploit details, and more. Loaded with extra-context,
   this allows users to accurately understand the real impact of CVEs to effectively
   prioritize critical vulnerabilities.
-display: Cybersixgill_DVE_Enrichment
+display: Cybersixgill DVE Enrichment
 name: Cybersixgill_DVE_Enrichment
 script:
   commands:
@@ -39,8 +39,18 @@ script:
       secret: false
     deprecated: false
     execution: false
-    description: insert CVE id
+    description: Returns information for each CVE in the input list
     name: cybersixgill-cve-enrich
+    outputs:
+      - contextPath: Sixgill.CVE.Overview
+        description: Overview of the CVE enrich information
+        type: String
+      - contextPath: Sixgill.CVE.rawJSON
+        description: The raw JSON of the CVE enrich information
+        type: String
+      - contextPath: Sixgill.CVE.value
+        description: The value of the CVE
+        type: String
   dockerimage: demisto/sixgill:1.0.0.20925
   feed: false
   isfetch: false

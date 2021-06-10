@@ -96,7 +96,7 @@ def cve_enrich_command(client: SixgillEnrichClient, args) -> List[CommandResults
         cve_id_data = client.enrich_dve(cve_id)
         final_data = stix_to_indicator(cve_id_data)
         final_data_list.append(final_data)
-    readable_output = tableToMarkdown("CVE ID", final_data_list)
+    readable_output = tableToMarkdown("Enriched results for cve_id:", final_data_list)
 
     command_results.append(
         CommandResults(
