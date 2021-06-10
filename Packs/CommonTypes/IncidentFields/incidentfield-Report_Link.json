@@ -2,7 +2,7 @@
     "id": "incident_reportlink",
     "version": -1,
     "modified": "2021-05-30T15:53:57.101752+03:00",
-    "name": "ReportLink",
+    "name": "Report Link",
     "ownerOnly": false,
     "cliName": "reportlink",
     "type": "shortText",

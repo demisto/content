@@ -2,7 +2,7 @@
     "id": "incident_processpath",
     "version": -1,
     "modified": "2021-05-30T15:53:36.753562+03:00",
-    "name": "ProcessPath",
+    "name": "Process Path",
     "ownerOnly": false,
     "cliName": "processpath",
     "type": "shortText",
