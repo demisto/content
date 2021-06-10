@@ -1,1 +1,1 @@
-Prevents creation of feeds with the same GIB ID
+Prevents creation of feeds with the same GIB ID, by checking if there is an existing closed incident with the same GIB ID.

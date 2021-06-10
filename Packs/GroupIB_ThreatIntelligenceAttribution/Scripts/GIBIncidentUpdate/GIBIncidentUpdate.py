@@ -3,6 +3,11 @@ from CommonServerPython import *  # noqa: F401
 
 
 def prevent_duplication(current_incident):
+    """
+    This script checks if there is a closed incident with the same GIB ID as the incoming incident.
+    If so, the script updates the already existing incident with the fields of the incoming incident, and returns False.
+    If not, the script returns True.
+    """
     result = True
     custom_fields = current_incident.get("CustomFields", {})
     if "CustomFields" in current_incident.keys():
