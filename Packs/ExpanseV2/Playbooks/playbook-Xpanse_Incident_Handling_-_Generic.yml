@@ -1,0 +1,3587 @@
+id: Xpanse Incident Handling - Generic
+version: -1
+name: Xpanse Incident Handling - Generic
+description: |-
+  A generic playbook for handling Xpanse issues.
+  The logic behind this playbook is working with an internal exclusions list which will help the analyst to get a decision.
+  The phases of this playbook are:
+    1) Check if assets (IP, Domain or Certificate) associated to the issue are excluded in the exclusions list.
+    2) Optionally, enrich indicators and calculate the severity of the issue, using sub-playbooks.
+    3) Optionally, allow the analyst to add associated assets (IP, Domain or Certificate) to the exclusions list.
+    4) Tag associated assets.
+    5) Update the status of the issue.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: b1e16b69-e2e9-4156-8e41-ca3512ed4878
+    type: start
+    task:
+      id: b1e16b69-e2e9-4156-8e41-ca3512ed4878
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "91"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": -1980
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: dd845f24-5012-4e3e-809b-930a255bbf5b
+    type: playbook
+    task:
+      id: dd845f24-5012-4e3e-809b-930a255bbf5b
+      version: -1
+      name: Expanse Load-Create List
+      description: |
+        Subplaybook to support Expanse Handle Incident playbook.
+        Load a list to be used in Expanse playbook.
+        Create the list if it does not exist.
+      playbookName: Expanse Load-Create List
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "104"
+    scriptarguments:
+      ListName:
+        simple: ${inputs.ExclusionsList}
+      ListValues:
+        simple: '{"Addresses":[],"Domains":[], "Certificates":[]}'
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": -680
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: d7b8479d-945f-4efe-8c9b-77fa5fb6625d
+    type: condition
+    task:
+      id: d7b8479d-945f-4efe-8c9b-77fa5fb6625d
+      version: -1
+      name: Check if IP or Domain are excluded
+      description: Check if IP and service are permitted.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "25"
+      Domain:
+      - "24"
+      IP:
+      - "60"
+    separatecontext: false
+    conditions:
+    - label: Domain
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: ${ParsedList.Domains}
+            iscontext: true
+          right:
+            value:
+              simple: ${AssetValues_Domain}
+            iscontext: true
+    - label: IP
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: ${ParsedList.Addresses}
+            iscontext: true
+          right:
+            value:
+              simple: ${AssetValues_IP}
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 60
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 776dbe31-2a4c-4607-8e78-46125372b298
+    type: regular
+    task:
+      id: 776dbe31-2a4c-4607-8e78-46125372b298
+      version: -1
+      name: Set "WasExcluded" field
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "26"
+    scriptarguments:
+      key:
+        simple: WasExcluded
+      value:
+        simple: ' True'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 140,
+          "y": 1255
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: 352d1866-9a86-45c5-85f4-3371ed4a8955
+    type: collection
+    task:
+      id: 352d1866-9a86-45c5-85f4-3371ed4a8955
+      version: -1
+      name: Check if Asset's IP values should be excluded
+      description: Prints text to war room (Markdown supported)
+      type: collection
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      value:
+        simple: Doesn't exist
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 820,
+          "y": 2460
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+      subject:
+      body: {}
+      methods: []
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: |-
+            Please take a look at these IP values:
+            ${AssetValues_IP}
+
+            Do you want to add them to the exclusion list "${inputs.ExclusionsList}"?
+        required: true
+        gridcolumns: []
+        defaultrows: []
+        type: singleSelect
+        options: []
+        optionsarg:
+        - simple: "Yes"
+        - simple: "No"
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+        readonly: false
+      title: Excluding Asset's IP values
+      description: ""
+      sender: Your SOC team
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: 2228d833-358a-4f70-8f4d-50fec17485e9
+    type: condition
+    task:
+      id: 2228d833-358a-4f70-8f4d-50fec17485e9
+      version: -1
+      name: Check Analyst's Answer - Exclude IP
+      description: Check Analyst's Answer - Exclude IP.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "10"
+      "yes":
+      - "7"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Excluding Asset's IP values.Answers.0
+            iscontext: true
+          right:
+            value:
+              simple: "Yes"
+    view: |-
+      {
+        "position": {
+          "x": 820,
+          "y": 2620
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: 10676fa5-21ed-42e4-8f31-a9a74fdbcf68
+    type: regular
+    task:
+      id: 10676fa5-21ed-42e4-8f31-a9a74fdbcf68
+      version: -1
+      name: Set New Key to be added to list
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      key:
+        simple: NewKeyToList_IP
+      value:
+        simple: ${AssetValues_IP}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1020,
+          "y": 2790
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: 2a9b58f2-bd19-4aa9-80f8-f3ae6625221b
+    type: regular
+    task:
+      id: 2a9b58f2-bd19-4aa9-80f8-f3ae6625221b
+      version: -1
+      name: Add the new key to list
+      description: Adds/Replaces a key in key/value store backed by an XSOAR list.
+      scriptName: AddKeyToList
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "26"
+    scriptarguments:
+      append:
+        simple: "true"
+      keyName:
+        simple: Addresses
+      listName:
+        simple: ${inputs.ExclusionsList}
+      value:
+        simple: ${NewKeyToList_IP}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1020,
+          "y": 2945
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "9":
+    id: "9"
+    taskid: 28446c0a-34e7-4da8-8ccf-7e29a197d393
+    type: title
+    task:
+      id: 28446c0a-34e7-4da8-8ccf-7e29a197d393
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 6920
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "10":
+    id: "10"
+    taskid: 709f9af5-8cc6-4392-838b-ed706abc07f1
+    type: title
+    task:
+      id: 709f9af5-8cc6-4392-838b-ed706abc07f1
+      version: -1
+      name: Manual Investigation
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "26"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 2990
+        }
+      }
+    note: false
+    timertriggers:
+    - fieldname: remediationsla
+      action: start
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "12":
+    id: "12"
+    taskid: 1b8c893e-ccd9-44db-871b-62e0167240e5
+    type: condition
+    task:
+      id: 1b8c893e-ccd9-44db-871b-62e0167240e5
+      version: -1
+      name: Should indicators be extracted and enriched?
+      description: Should indicators be extracted and enriched?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "88"
+      "yes":
+      - "13"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: inputs.EnrichIndicators
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 365
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "13":
+    id: "13"
+    taskid: 9585db58-a53e-4691-8d18-877d01a2c928
+    type: title
+    task:
+      id: 9585db58-a53e-4691-8d18-877d01a2c928
+      version: -1
+      name: Enrich indicators
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "87"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 565
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "17":
+    id: "17"
+    taskid: 4066cc9b-568f-44b0-8af0-dccc086c02f4
+    type: title
+    task:
+      id: 4066cc9b-568f-44b0-8af0-dccc086c02f4
+      version: -1
+      name: Calculate Severity
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "18"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1600,
+          "y": 1020
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "18":
+    id: "18"
+    taskid: a656c284-32ca-4147-8271-fcac5b1f1aed
+    type: playbook
+    task:
+      id: a656c284-32ca-4147-8271-fcac5b1f1aed
+      version: -1
+      name: Calculate Severity - Standard
+      playbookName: Calculate Severity - Standard
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "88"
+    separatecontext: true
+    view: |-
+      {
+        "position": {
+          "x": 1600,
+          "y": 1135
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "20":
+    id: "20"
+    taskid: 7743d01a-3556-43d9-8637-b2f66630f624
+    type: regular
+    task:
+      id: 7743d01a-3556-43d9-8637-b2f66630f624
+      version: -1
+      name: Close incident (already excluded)
+      description: commands.local.cmd.close.inv
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      closeNotes:
+        simple: |-
+          Incident closed after one of the following combinations was found as excluded in the "${inputs.ExclusionsList}" list:
+
+          ${AssetValues_IP}
+
+          ${AssetValues_Domain}
+      id:
+        simple: ${incident.id}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -160,
+          "y": 6710
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "22":
+    id: "22"
+    taskid: c5b28218-f4f4-426f-820c-3c4998956103
+    type: regular
+    task:
+      id: c5b28218-f4f4-426f-820c-3c4998956103
+      version: -1
+      name: Update Xpanse's issue "Progress" to "Investigating"
+      description: Update a property of an Expanse issue.
+      script: '|||expanse-update-issue'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "94"
+    scriptarguments:
+      issue_id:
+        simple: ${incident.expanseissueid}
+      update_type:
+        simple: ProgressStatus
+      value:
+        simple: Investigating
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 250,
+          "y": -1680
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "23":
+    id: "23"
+    taskid: 6f0379da-a287-4f17-859d-50d230933205
+    type: title
+    task:
+      id: 6f0379da-a287-4f17-859d-50d230933205
+      version: -1
+      name: Check exclusions list
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": -830
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "24":
+    id: "24"
+    taskid: 336167f8-d845-4b01-8de5-8b3608cc234f
+    type: title
+    task:
+      id: 336167f8-d845-4b01-8de5-8b3608cc234f
+      version: -1
+      name: Domain excluded in list
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "63"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 200,
+          "y": 230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "25":
+    id: "25"
+    taskid: f0eacb79-b414-4a2b-8b68-c01627d99683
+    type: title
+    task:
+      id: f0eacb79-b414-4a2b-8b68-c01627d99683
+      version: -1
+      name: Not excluded in list
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "12"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "26":
+    id: "26"
+    taskid: 5dbd2b62-4fd4-4e2e-8740-3b2e084d7449
+    type: collection
+    task:
+      id: 5dbd2b62-4fd4-4e2e-8740-3b2e084d7449
+      version: -1
+      name: Xpanse/Incident summary
+      description: Prints text to war room (Markdown supported)
+      type: collection
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "101"
+    scriptarguments:
+      value:
+        simple: ' '
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 3155
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+      subject:
+      body:
+      methods: []
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: 'Please provide a "Progress" status for Xpanse issue:'
+        required: true
+        gridcolumns: []
+        defaultrows: []
+        type: singleSelect
+        options: []
+        optionsarg:
+        - simple: New
+        - simple: Investigating
+        - simple: In Progress
+        - simple: No Risk
+        - simple: Acceptable Risk
+        - simple: Resolved
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+        readonly: false
+      title: Update status in Xpanse
+      description: Please go over the incident and choose the appropriate status.
+      sender: ""
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 0
+  "27":
+    id: "27"
+    taskid: 728e65f6-1f91-4a14-890e-16b700344200
+    type: regular
+    task:
+      id: 728e65f6-1f91-4a14-890e-16b700344200
+      version: -1
+      name: Close incident (wasn't originally excluded)
+      description: commands.local.cmd.close.inv
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      closeNotes:
+        simple: Incident closed after manual investigation.
+      id:
+        simple: ${incident.id}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 270,
+          "y": 6710
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "29":
+    id: "29"
+    taskid: abc856ef-7c42-4146-8684-f6710e89d4e7
+    type: regular
+    task:
+      id: abc856ef-7c42-4146-8684-f6710e89d4e7
+      version: -1
+      name: Update Expanse Comment
+      description: Update a property of an Expanse issue.
+      script: '|||expanse-update-issue'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "38"
+    scriptarguments:
+      issue_id:
+        simple: ${incident.expanseissueid}
+      update_type:
+        simple: Comment
+      value:
+        simple: ${Issue Comment.Answers.0}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 770,
+          "y": 3840
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "31":
+    id: "31"
+    taskid: a8fef264-7505-497a-84e4-ce1415bb45c4
+    type: regular
+    task:
+      id: a8fef264-7505-497a-84e4-ce1415bb45c4
+      version: -1
+      name: Set Expanse issue "Progress" Value
+      description: Update a property of an Expanse issue.
+      tags:
+      - MirrorToXpanse
+      script: '|||expanse-update-issue'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "53"
+    scriptarguments:
+      issue_id:
+        simple: ${incident.expanseissueid}
+      update_type:
+        simple: ProgressStatus
+      value:
+        complex:
+          root: Update status in Xpanse.Answers
+          accessor: "0"
+          transformers:
+          - operator: replace
+            args:
+              limit: {}
+              replaceWith: {}
+              toReplace:
+                value:
+                  simple: ' '
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 3495
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "35":
+    id: "35"
+    taskid: 235edc69-d34f-4fe0-8c66-fdd3c285e103
+    type: condition
+    task:
+      id: 235edc69-d34f-4fe0-8c66-fdd3c285e103
+      description: ""
+      version: -1
+      name: Check if Tags available
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "37"
+      "yes":
+      - "36"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ${incident.expanseasset.tags}
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 4145
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "36":
+    id: "36"
+    taskid: c854f425-2580-4519-85e4-3072dc956f2d
+    type: collection
+    task:
+      id: c854f425-2580-4519-85e4-3072dc956f2d
+      description: ""
+      version: -1
+      name: Add additional tags
+      type: collection
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "39"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -10,
+          "y": 4325
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+      subject:
+      body:
+      methods: []
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: |-
+            Current asset:
+
+            Display Name -  ${incident.expanseasset.displayname}
+            Type: ${incident.expanseasset.assettype}
+
+            Current assigned tags to the current asset:
+            ${incident.expanseasset.tags}
+
+            Common Tags (only relevant when "CommonTags" playbook input was provided) :
+            Pick one or more tags if you want them to be assigned to the asset as well:
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: multiSelect
+        options: []
+        optionsarg:
+        - complex:
+            root: inputs.CommonTags
+            transformers:
+            - operator: splitAndTrim
+              args:
+                delimiter:
+                  value:
+                    simple: ','
+        fieldassociated: ""
+        placeholder: Tag1, Tag2, Tag3....
+        tooltip: ""
+        readonly: false
+      - id: "1"
+        label: ""
+        labelarg:
+          simple: 'If you want to assign more tags, please add them below (if more
+            than one, please add a comma separated list):'
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: shortText
+        options: []
+        optionsarg: []
+        fieldassociated: ""
+        placeholder: Tag1, Tag2, Tag3....
+        tooltip: ""
+        readonly: false
+      title: Xpanse Issue Tagging
+      description: ""
+      sender: ""
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 0
+  "37":
+    id: "37"
+    taskid: f77447ba-cbac-4095-8676-f530addbacc4
+    type: collection
+    task:
+      id: f77447ba-cbac-4095-8676-f530addbacc4
+      description: ""
+      version: -1
+      name: Add new tags
+      type: collection
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "39"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 4325
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+      subject:
+      body:
+      methods: []
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: |-
+            Current asset:
+
+            Display Name -  ${incident.expanseasset.displayname}
+            Type: ${incident.expanseasset.assettype}
+
+            This asset does not have any assigned tags yet.
+
+            Common Tags (only relevant when "CommonTags" playbook input was provided) :
+            Pick one or more tags if you want them to be assigned to the asset as well:
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: multiSelect
+        options: []
+        optionsarg:
+        - complex:
+            root: inputs.CommonTags
+            transformers:
+            - operator: splitAndTrim
+              args:
+                delimiter:
+                  value:
+                    simple: ','
+        fieldassociated: ""
+        placeholder: Tag1, Tag2, Tag3...
+        tooltip: ""
+        readonly: false
+      - id: "1"
+        label: ""
+        labelarg:
+          simple: 'If you want to assign other tags to this asset, please add them
+            below (if more than one, please add a comma separated list):'
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: longText
+        options: []
+        optionsarg:
+        - complex:
+            root: inputs.CommonTags
+            transformers:
+            - operator: splitAndTrim
+              args:
+                delimiter:
+                  value:
+                    simple: ','
+        fieldassociated: ""
+        placeholder: Tag1, Tag2, Tag3...
+        tooltip: ""
+        readonly: false
+      title: Xpanse issue new tags
+      description: ""
+      sender: ""
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 0
+  "38":
+    id: "38"
+    taskid: 28dca17a-af73-4329-84f2-f51485117dd2
+    type: title
+    task:
+      id: 28dca17a-af73-4329-84f2-f51485117dd2
+      version: -1
+      name: Expanse Issue Tagging
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "35"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 4015
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "39":
+    id: "39"
+    taskid: 3f193959-9ff3-44a6-8f63-ce6b6540be62
+    type: condition
+    task:
+      id: 3f193959-9ff3-44a6-8f63-ce6b6540be62
+      description: ""
+      version: -1
+      name: Check Tagging Answer
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "84"
+      Add - Both:
+      - "81"
+      Add - Common:
+      - "54"
+      Add - Not Common:
+      - "80"
+      New - Both:
+      - "83"
+      New - Common:
+      - "55"
+      New - Not Common:
+      - "82"
+    separatecontext: false
+    conditions:
+    - label: New - Both
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Xpanse issue new tags.Answers.0
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Xpanse issue new tags.Answers.1
+            iscontext: true
+    - label: New - Common
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Xpanse issue new tags.Answers.0
+            iscontext: true
+    - label: New - Not Common
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Xpanse issue new tags.Answers.1
+            iscontext: true
+    - label: Add - Both
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Xpanse Issue Tagging.Answers.0
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Xpanse Issue Tagging.Answers.1
+            iscontext: true
+    - label: Add - Common
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Xpanse Issue Tagging.Answers.0
+            iscontext: true
+    - label: Add - Not Common
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Xpanse Issue Tagging.Answers.1
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 230,
+          "y": 4500
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "42":
+    id: "42"
+    taskid: f66ec319-96b9-4cfc-8bd8-9da20854e007
+    type: condition
+    task:
+      id: f66ec319-96b9-4cfc-8bd8-9da20854e007
+      description: ""
+      version: -1
+      name: Closed via exclusion?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "27"
+      "yes":
+      - "20"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WasExcluded
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 60,
+          "y": 6540
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "44":
+    id: "44"
+    taskid: b5fe89f5-88ee-4c8e-81eb-ed3e28945e13
+    type: regular
+    task:
+      id: b5fe89f5-88ee-4c8e-81eb-ed3e28945e13
+      version: -1
+      name: Create Tags
+      description: Create a new tag in Expanse.
+      script: '|||expanse-create-tag'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "57"
+    scriptarguments:
+      name:
+        complex:
+          root: ${XpanseAdditionalTagNames}
+          transformers:
+          - operator: splitAndTrim
+            args:
+              delimiter:
+                value:
+                  simple: ','
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 5050
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "53":
+    id: "53"
+    taskid: a1bfebe7-0361-4229-8322-8a4530340875
+    type: condition
+    task:
+      id: a1bfebe7-0361-4229-8322-8a4530340875
+      version: -1
+      name: Check Comment
+      description: Check if comment is not empty.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "38"
+      "yes":
+      - "29"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ${Issue Comment.Answers.0}
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 3670
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "54":
+    id: "54"
+    taskid: 85f73662-1235-4904-8c6d-c41be4be9774
+    type: regular
+    task:
+      id: 85f73662-1235-4904-8c6d-c41be4be9774
+      version: -1
+      name: Set "ExpanseAdditionalTagNames" (Add - Common)
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "56"
+    scriptarguments:
+      key:
+        simple: XpanseAdditionalTagNames
+      value:
+        simple: ${Xpanse Issue Tagging.Answers.0}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -810,
+          "y": 4680
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "55":
+    id: "55"
+    taskid: bbd9ec79-2b2c-478c-8dd9-3b76e15904f9
+    type: regular
+    task:
+      id: bbd9ec79-2b2c-478c-8dd9-3b76e15904f9
+      version: -1
+      name: Set "ExpanseAdditionalTagNames" (New - Common)
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "56"
+    scriptarguments:
+      key:
+        simple: XpanseAdditionalTagNames
+      value:
+        simple: ${Xpanse issue new tags.Answers.0}
+    separatecontext: false
+    defaultassigneecomplex: {}
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 4680
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "56":
+    id: "56"
+    taskid: d7785592-ee5b-45ef-895c-0e2f5fbbccee
+    type: regular
+    task:
+      id: d7785592-ee5b-45ef-895c-0e2f5fbbccee
+      version: -1
+      name: Refresh Issue Assets
+      description: |
+        Script to refresh tags and attribution reasons of assets inside Expanse Issue. The script should be used inside the Expanse Issue incident context.
+      scriptName: ExpanseRefreshIssueAssets
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "44"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 4860
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "57":
+    id: "57"
+    taskid: 420bc35d-666e-4ce7-87e4-be0c0add6569
+    type: regular
+    task:
+      id: 420bc35d-666e-4ce7-87e4-be0c0add6569
+      version: -1
+      name: Refresh Issue Assets
+      description: |
+        Script to refresh tags and attribution reasons of assets inside Expanse Issue. The script should be used inside the Expanse Issue incident context.
+      scriptName: ExpanseRefreshIssueAssets
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "102"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 5240
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "58":
+    id: "58"
+    taskid: ce3270b5-5323-4c1a-8cc5-578f589d74d0
+    type: regular
+    task:
+      id: ce3270b5-5323-4c1a-8cc5-578f589d74d0
+      version: -1
+      name: Set "AssetValues_IP"
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      key:
+        simple: AssetValues_IP
+      value:
+        simple: '{"ip":"${incident.expanseip}","issueTypeID":"${incident.alerttypeid}","port":${incident.expanseport},"protocol":"${incident.expanseprotocol}"}'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": -110
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "59":
+    id: "59"
+    taskid: 1ac8c9bd-2421-465d-8871-882ae2bfd360
+    type: regular
+    task:
+      id: 1ac8c9bd-2421-465d-8871-882ae2bfd360
+      version: -1
+      name: Set "AssetValues_Domain"
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      key:
+        simple: AssetValues_Domain
+      value:
+        simple: '{"domain":"${incident.expansedomain}","issueTypeID":"${incident.alerttypeid}","port":${incident.expanseport},"protocol":"${incident.expanseprotocol}"}'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 950,
+          "y": -110
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "60":
+    id: "60"
+    taskid: 14d271a4-0d71-4372-81f3-25d8c18d9a9a
+    type: title
+    task:
+      id: 14d271a4-0d71-4372-81f3-25d8c18d9a9a
+      version: -1
+      name: IP excluded in list
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "79"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 760,
+          "y": 230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "61":
+    id: "61"
+    taskid: b590f937-f879-414a-8d10-95177f3d388f
+    type: collection
+    task:
+      id: b590f937-f879-414a-8d10-95177f3d388f
+      version: -1
+      name: Exclude IP as well?
+      description: Prints text to war room (Markdown supported)
+      type: collection
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "64"
+    scriptarguments:
+      value:
+        simple: ' '
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -10,
+          "y": 580
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+      subject:
+      body:
+      methods: []
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: |-
+            The following domain was excluded in the "${inputs.ExclusionsList}" list with these values:
+            ${AssetValues_Domain}
+
+            Do you want to exclude the following IP as well along with these values?
+            ${AssetValues_IP}
+        required: true
+        gridcolumns: []
+        defaultrows: []
+        type: singleSelect
+        options: []
+        optionsarg:
+        - simple: "Yes"
+        - simple: "No"
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+        readonly: false
+      title: IP Exclusion
+      description: ""
+      sender: ""
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 0
+  "63":
+    id: "63"
+    taskid: 53f19c6d-cbcf-45e6-8e99-4b4d803afa52
+    type: condition
+    task:
+      id: 53f19c6d-cbcf-45e6-8e99-4b4d803afa52
+      version: -1
+      name: Check if IP also excluded
+      description: Check if IP also excluded.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "61"
+      "yes":
+      - "3"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: ${ParsedList.Addresses}
+            iscontext: true
+          right:
+            value:
+              simple: ${AssetValues_IP}
+    view: |-
+      {
+        "position": {
+          "x": 200,
+          "y": 365
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "64":
+    id: "64"
+    taskid: 594588b2-264e-4204-800c-37695f5292e6
+    type: condition
+    task:
+      id: 594588b2-264e-4204-800c-37695f5292e6
+      version: -1
+      name: Check Analyst's answer - Excluding IP
+      description: Check Analyst's answer - Excluding IP.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "65"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: IP Exclusion.Answers.0
+            iscontext: true
+          right:
+            value:
+              simple: "Yes"
+    view: |-
+      {
+        "position": {
+          "x": -10,
+          "y": 740
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "65":
+    id: "65"
+    taskid: 9362b651-b9d2-43bb-8c36-b6d8085ad31a
+    type: regular
+    task:
+      id: 9362b651-b9d2-43bb-8c36-b6d8085ad31a
+      version: -1
+      name: Set New Key to be added to list
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "66"
+    scriptarguments:
+      key:
+        simple: NewKeyToList_IP
+      value:
+        simple: ${AssetValues_IP}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -160,
+          "y": 910
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "66":
+    id: "66"
+    taskid: e28d3787-a02c-4d47-8b11-f35ba2fdf78d
+    type: regular
+    task:
+      id: e28d3787-a02c-4d47-8b11-f35ba2fdf78d
+      version: -1
+      name: Add the new key to list
+      description: Adds/Replaces a key in key/value store backed by an XSOAR list.
+      scriptName: AddKeyToList
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      append:
+        simple: "true"
+      keyName:
+        simple: Addresses
+      listName:
+        simple: ${inputs.ExclusionsList}
+      value:
+        simple: ${NewKeyToList_IP}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -160,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "67":
+    id: "67"
+    taskid: 33381a18-a090-460d-81a6-e50d5ed16925
+    type: collection
+    task:
+      id: 33381a18-a090-460d-81a6-e50d5ed16925
+      version: -1
+      name: Exclude Domain as well?
+      description: Prints text to war room (Markdown supported)
+      type: collection
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "68"
+    scriptarguments:
+      value:
+        simple: ' '
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 760,
+          "y": 580
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+      subject:
+      body:
+      methods: []
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: |-
+            The following IP was excluded in the "${inputs.ExclusionsList}" list with these values:
+            ${AssetValues_IP}
+
+            Do you want to exclude the following IP as well along with these values?
+            ${AssetValues_Domain}
+        required: true
+        gridcolumns: []
+        defaultrows: []
+        type: singleSelect
+        options: []
+        optionsarg:
+        - simple: "Yes"
+        - simple: "No"
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+        readonly: false
+      title: Domain Exclusion
+      description: ""
+      sender: ""
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 0
+  "68":
+    id: "68"
+    taskid: f6619685-1fd6-4667-88bd-01ed6a1930cc
+    type: condition
+    task:
+      id: f6619685-1fd6-4667-88bd-01ed6a1930cc
+      version: -1
+      name: Check Analyst's answer - Excluding domain
+      description: Check Analyst's answer - Excluding domain.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "69"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Domain Exclusion.Answers.0
+            iscontext: true
+          right:
+            value:
+              simple: "Yes"
+    view: |-
+      {
+        "position": {
+          "x": 760,
+          "y": 740
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "69":
+    id: "69"
+    taskid: 06cf804d-1ace-4498-84db-cf786cfda726
+    type: regular
+    task:
+      id: 06cf804d-1ace-4498-84db-cf786cfda726
+      version: -1
+      name: Set New Key to be added to list
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "70"
+    scriptarguments:
+      key:
+        simple: NewKeyToList_Domain
+      value:
+        simple: ${AssetValues_Domain}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 760,
+          "y": 925
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "70":
+    id: "70"
+    taskid: 21738018-7a7f-441e-856e-7ca5ba07576c
+    type: regular
+    task:
+      id: 21738018-7a7f-441e-856e-7ca5ba07576c
+      version: -1
+      name: Add the new key to list
+      description: Adds/Replaces a key in key/value store backed by an XSOAR list.
+      scriptName: AddKeyToList
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      append:
+        simple: "true"
+      keyName:
+        simple: Domains
+      listName:
+        simple: ${inputs.ExclusionsList}
+      value:
+        simple: ${NewKeyToList_Domain}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 760,
+          "y": 1085
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "71":
+    id: "71"
+    taskid: bec52d6d-f628-4b0b-86e5-2784b1c26e64
+    type: condition
+    task:
+      id: bec52d6d-f628-4b0b-86e5-2784b1c26e64
+      version: -1
+      name: Check if domain exist
+      description: Check if Expanse Domain exist.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "4"
+      "yes":
+      - "73"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ${incident.expansedomain}
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 1090,
+          "y": 1620
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "73":
+    id: "73"
+    taskid: efbdfcaf-ab86-49e4-8a5b-62f6fdb96a0d
+    type: collection
+    task:
+      id: efbdfcaf-ab86-49e4-8a5b-62f6fdb96a0d
+      version: -1
+      name: Check if Asset's Domain values should be excluded
+      description: Prints text to war room (Markdown supported)
+      type: collection
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "75"
+    scriptarguments:
+      value:
+        simple: Doesn't exist
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1130,
+          "y": 1790
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+      subject:
+      body: {}
+      methods: []
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: |-
+            Please take a look at these domain values:
+            ${AssetValues_Domain}
+
+            Do you want to add them to the exclusion list "${inputs.ExclusionsList}"?
+        required: true
+        gridcolumns: []
+        defaultrows: []
+        type: singleSelect
+        options: []
+        optionsarg:
+        - simple: "Yes"
+        - simple: "No"
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+        readonly: false
+      title: Excluding Asset's Domain values
+      description: ""
+      sender: Your SOC team
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 0
+  "75":
+    id: "75"
+    taskid: aceded68-d914-4afc-80d1-abdd1889dbdd
+    type: condition
+    task:
+      id: aceded68-d914-4afc-80d1-abdd1889dbdd
+      version: -1
+      name: Check Analyst's Answer - Exclude Domain
+      description: Check Analyst's Answer - Exclude Domain.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "4"
+      "yes":
+      - "77"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Excluding Asset's Domain values.Answers.0
+            iscontext: true
+          right:
+            value:
+              simple: "Yes"
+    view: |-
+      {
+        "position": {
+          "x": 1130,
+          "y": 1965
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "77":
+    id: "77"
+    taskid: 97aee104-8752-427b-8f03-271eed796b42
+    type: regular
+    task:
+      id: 97aee104-8752-427b-8f03-271eed796b42
+      version: -1
+      name: Set New Key to be added to list
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "78"
+    scriptarguments:
+      key:
+        simple: NewKeyToList_Domain
+      value:
+        simple: ${AssetValues_Domain}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1230,
+          "y": 2140
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "78":
+    id: "78"
+    taskid: b5c874d1-735c-4492-888d-7682de17bbb3
+    type: regular
+    task:
+      id: b5c874d1-735c-4492-888d-7682de17bbb3
+      version: -1
+      name: Add the new key to list
+      description: Adds/Replaces a key in key/value store backed by an XSOAR list.
+      scriptName: AddKeyToList
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      append:
+        simple: "true"
+      keyName:
+        simple: Domains
+      listName:
+        simple: ${inputs.ExclusionsList}
+      value:
+        simple: ${NewKeyToList_Domain}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1230,
+          "y": 2290
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "79":
+    id: "79"
+    taskid: ee0b12c1-18d5-43ff-819e-b5e93f0958f6
+    type: condition
+    task:
+      id: ee0b12c1-18d5-43ff-819e-b5e93f0958f6
+      version: -1
+      name: Check if domain Exist
+      description: Check if Expanse Domain Exist.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "67"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ${AssetValues_Domain.domain}
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 760,
+          "y": 365
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "80":
+    id: "80"
+    taskid: bb1566be-de12-483a-8774-ba9c1a3b20c9
+    type: regular
+    task:
+      id: bb1566be-de12-483a-8774-ba9c1a3b20c9
+      version: -1
+      name: Set "ExpanseAdditionalTagNames" (Add - Not Common)
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "56"
+    scriptarguments:
+      key:
+        simple: XpanseAdditionalTagNames
+      value:
+        simple: ${Xpanse Issue Tagging.Answers.1}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -400,
+          "y": 4680
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "81":
+    id: "81"
+    taskid: 4ad14c6c-b27e-47fe-847d-fdbd6bd66141
+    type: regular
+    task:
+      id: 4ad14c6c-b27e-47fe-847d-fdbd6bd66141
+      version: -1
+      name: Set "ExpanseAdditionalTagNames" (Add - Both)
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "56"
+    scriptarguments:
+      key:
+        simple: XpanseAdditionalTagNames
+      value:
+        complex:
+          root: ${Xpanse Issue Tagging.Answers
+          accessor: 0}
+          transformers:
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: Xpanse Issue Tagging.Answers.1
+                iscontext: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 10,
+          "y": 4680
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "82":
+    id: "82"
+    taskid: 6c3f2473-0348-49b4-8076-7bd4691e9274
+    type: regular
+    task:
+      id: 6c3f2473-0348-49b4-8076-7bd4691e9274
+      version: -1
+      name: Set "ExpanseAdditionalTagNames" (New - Not Common)
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "56"
+    scriptarguments:
+      key:
+        simple: XpanseAdditionalTagNames
+      value:
+        simple: ${Xpanse issue new tags.Answers.1}
+    separatecontext: false
+    defaultassigneecomplex: {}
+    view: |-
+      {
+        "position": {
+          "x": 860,
+          "y": 4680
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "83":
+    id: "83"
+    taskid: 852c3159-5bb4-4807-8649-f877eb8d3735
+    type: regular
+    task:
+      id: 852c3159-5bb4-4807-8649-f877eb8d3735
+      version: -1
+      name: Set "ExpanseAdditionalTagNames" (New - Both)
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "56"
+    scriptarguments:
+      key:
+        simple: XpanseAdditionalTagNames
+      value:
+        complex:
+          root: ${Xpanse issue new tags.Answers
+          accessor: 0}
+          transformers:
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: Xpanse issue new tags.Answers.1
+                iscontext: true
+    separatecontext: false
+    defaultassigneecomplex: {}
+    view: |-
+      {
+        "position": {
+          "x": 1270,
+          "y": 4680
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "84":
+    id: "84"
+    taskid: a532f0f6-6600-48d9-8554-bb2fb17cac63
+    type: collection
+    task:
+      id: a532f0f6-6600-48d9-8554-bb2fb17cac63
+      description: ""
+      version: -1
+      name: Close Incident?
+      type: collection
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "85"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 5790
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+      subject:
+      body:
+      methods: []
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: Do you want to close this incident?
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: singleSelect
+        options: []
+        optionsarg:
+        - simple: "Yes"
+        - simple: "No"
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+        readonly: false
+      title: Close incident?
+      description: ""
+      sender: ""
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 0
+  "85":
+    id: "85"
+    taskid: 8a8dc8f8-5f93-4a74-83d7-20d79defef82
+    type: condition
+    task:
+      id: 8a8dc8f8-5f93-4a74-83d7-20d79defef82
+      description: ""
+      version: -1
+      name: Check if incident should be closed
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "9"
+      "yes":
+      - "99"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Close incident?.Answers.0
+            iscontext: true
+          right:
+            value:
+              simple: "Yes"
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 5970
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "86":
+    id: "86"
+    taskid: 080bfa9b-05bd-4793-841a-79d7a804f8d4
+    type: regular
+    task:
+      id: 080bfa9b-05bd-4793-841a-79d7a804f8d4
+      version: -1
+      name: Assign tags to Issue (cloud)
+      description: Assign tags to an Expanse asset.
+      script: '|||expanse-assign-tags-to-asset'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "84"
+    scriptarguments:
+      asset_id:
+        simple: ${incident.expanseasset.key}
+      asset_type:
+        simple: ${incident.expanseasset.assettype}
+      tag_names:
+        complex:
+          root: ${XpanseAdditionalTagNames}
+          transformers:
+          - operator: splitAndTrim
+            args:
+              delimiter:
+                value:
+                  simple: ','
+          - operator: toLowerCase
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 5610
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "87":
+    id: "87"
+    taskid: 11d99b57-2d20-40d4-8045-ad80dfedffd5
+    type: playbook
+    task:
+      id: 11d99b57-2d20-40d4-8045-ad80dfedffd5
+      version: -1
+      name: Extract and Enrich Expanse Indicators
+      description: |2-
+          Subplaybook for Handle Expanse Incident playbooks.
+          Extract and Enrich Indicators (CIDRs, IPs, Certificates, Domains and DomainGlobs) from Expanse Incidents.
+          Enrichment is performed via enrichIndicators command and generic playbooks.
+          Returns the enriched indicators.
+      playbookName: Extract and Enrich Expanse Indicators
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "95"
+    scriptarguments:
+      Create Indicators:
+        simple: "true"
+      Expanse Assets:
+        complex:
+          root: incident
+          accessor: expanseasset
+      Expanse IP:
+        complex:
+          root: incident
+          accessor: expanseip
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "88":
+    id: "88"
+    taskid: 71fca259-9459-4a4d-8542-26983d53b0d1
+    type: title
+    task:
+      id: 71fca259-9459-4a4d-8542-26983d53b0d1
+      version: -1
+      name: Add new values to exclusion list
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "108"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1090,
+          "y": 1305
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "91":
+    id: "91"
+    taskid: c1cd8099-f378-4f67-8580-6b1fcb2ca879
+    type: title
+    task:
+      id: c1cd8099-f378-4f67-8580-6b1fcb2ca879
+      version: -1
+      name: Extract additional data
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "92"
+      - "22"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": -1820
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "92":
+    id: "92"
+    taskid: 85fe0360-70c8-412e-88ed-561adf247bd1
+    type: regular
+    task:
+      id: 85fe0360-70c8-412e-88ed-561adf247bd1
+      version: -1
+      name: Fetch Xpanse Issue's comments
+      description: Retrieve issue comments (subset of updates)
+      script: '|||expanse-get-issue-comments'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "94"
+    scriptarguments:
+      issue_id:
+        simple: ${incident.expanseissueid}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 710,
+          "y": -1680
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "93":
+    id: "93"
+    taskid: 1764d8f4-6a02-41de-836e-cf66a9886e61
+    type: regular
+    task:
+      id: 1764d8f4-6a02-41de-836e-cf66a9886e61
+      version: -1
+      name: Set "XpanseComments" in the context
+      description: Set a value in context under the key you entered. If no value is
+        entered, the script doesn't do anything.
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "98"
+    scriptarguments:
+      key:
+        simple: XpanseComments
+      value:
+        simple: ${Expanse.IssueComment}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": -1360
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "94":
+    id: "94"
+    taskid: e967dc87-8a3c-4ec1-852c-268c318f2508
+    type: title
+    task:
+      id: e967dc87-8a3c-4ec1-852c-268c318f2508
+      version: -1
+      name: Set context values
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "93"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": -1510
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "95":
+    id: "95"
+    taskid: 7cb7723e-0966-4bd9-8eb4-837e16d12dec
+    type: condition
+    task:
+      id: 7cb7723e-0966-4bd9-8eb4-837e16d12dec
+      description: ""
+      version: -1
+      name: Calculate severity?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "88"
+      "yes":
+      - "17"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: inputs.CalculateSeverity
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 845
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "97":
+    id: "97"
+    taskid: e62ef2c7-5149-4dae-8931-5dafd6b04452
+    type: regular
+    task:
+      id: e62ef2c7-5149-4dae-8931-5dafd6b04452
+      version: -1
+      name: Set Xpanse Issue Comments in the incident
+      description: commands.local.cmd.set.incident
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "23"
+    scriptarguments:
+      comments:
+        simple: ${XpanseComments}
+      expanseissuecomments:
+        simple: ${XpanseComments}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 790,
+          "y": -1000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "98":
+    id: "98"
+    taskid: ab7fac48-2785-4272-8ec9-b4baeb9de0ca
+    type: condition
+    task:
+      id: ab7fac48-2785-4272-8ec9-b4baeb9de0ca
+      description: ""
+      version: -1
+      name: Check if there are comments
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "23"
+      "yes":
+      - "97"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: XpanseComments
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": -1180
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "99":
+    id: "99"
+    taskid: 45143fea-7c63-49e4-84d8-93be3d0b05d4
+    type: collection
+    task:
+      id: 45143fea-7c63-49e4-84d8-93be3d0b05d4
+      description: ""
+      version: -1
+      name: Close Reason
+      tags:
+      - MirrorToXpanse
+      type: collection
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "100"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 230,
+          "y": 6180
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+      subject:
+      body:
+      methods: []
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: Please choose the relevant Close Reason
+        required: true
+        gridcolumns: []
+        defaultrows: []
+        type: singleSelect
+        options: []
+        optionsarg:
+        - simple: False Positive
+        - simple: Resolved
+        - simple: Duplicate
+        - simple: Other
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+        readonly: false
+      title: Close Reason
+      description: ""
+      sender: ""
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 0
+  "100":
+    id: "100"
+    taskid: f26f3d22-f915-46d3-85bc-b322d1c7533b
+    type: regular
+    task:
+      id: f26f3d22-f915-46d3-85bc-b322d1c7533b
+      version: -1
+      name: Set Close Reason
+      description: commands.local.cmd.set.incident
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "42"
+    scriptarguments:
+      closeReason:
+        simple: ${Close Reason.Answers.0}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 230,
+          "y": 6370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "101":
+    id: "101"
+    taskid: b7597574-fab0-4cae-8959-ff617a54ec45
+    type: collection
+    task:
+      id: b7597574-fab0-4cae-8959-ff617a54ec45
+      description: ""
+      version: -1
+      name: Analyst's Comment
+      tags:
+      - MirrorToXpanse
+      type: collection
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "31"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 3320
+        }
+      }
+    note: true
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+      subject:
+      body:
+      methods: []
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: Add a comment to the Xpanse issue
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: longText
+        options: []
+        optionsarg: []
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+        readonly: false
+      title: Issue Comment
+      description: ""
+      sender: ""
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 0
+  "102":
+    id: "102"
+    taskid: 44b58df9-1fd2-48cb-8b65-f8a54ab66e56
+    type: condition
+    task:
+      id: 44b58df9-1fd2-48cb-8b65-f8a54ab66e56
+      description: ""
+      version: -1
+      name: Check if the asset is Cloud Resource
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "103"
+      "yes":
+      - "86"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: ${incident.expanseasset.assettype}
+            iscontext: true
+          right:
+            value:
+              simple: CloudResource
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 5420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "103":
+    id: "103"
+    taskid: f727cde3-8f9b-469d-83d4-941b223411c5
+    type: regular
+    task:
+      id: f727cde3-8f9b-469d-83d4-941b223411c5
+      version: -1
+      name: Assign tags to Issue (not cloud)
+      description: Assign tags to an Expanse asset.
+      script: '|||expanse-assign-tags-to-asset'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "84"
+    scriptarguments:
+      asset_id:
+        simple: ${incident.expanseasset.id}
+      asset_type:
+        simple: ${incident.expanseasset.assettype}
+      tag_names:
+        complex:
+          root: ${XpanseAdditionalTagNames}
+          transformers:
+          - operator: splitAndTrim
+            args:
+              delimiter:
+                value:
+                  simple: ','
+          - operator: toLowerCase
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 5610
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "104":
+    id: "104"
+    taskid: e7d7a8d2-6f69-4f9a-8629-aec2949cd283
+    type: condition
+    task:
+      id: e7d7a8d2-6f69-4f9a-8629-aec2949cd283
+      description: ""
+      version: -1
+      name: Check if resource type is Certificate
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "59"
+      - "58"
+      "yes":
+      - "105"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: ${incident.expanseasset.assettype}
+            iscontext: true
+          right:
+            value:
+              simple: Certificate
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": -500
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "105":
+    id: "105"
+    taskid: 8b60919f-b071-49b4-83fc-3994aca3d282
+    type: regular
+    task:
+      id: 8b60919f-b071-49b4-83fc-3994aca3d282
+      version: -1
+      name: Fetch certificate details
+      description: Retrieve Expanse certificates by MD5 hash or search parameters.
+      script: '|||expanse-get-certificate'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "106"
+    scriptarguments:
+      md5_hash:
+        simple: ${incident.expanseasset.assetkey}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 0,
+          "y": -280
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "106":
+    id: "106"
+    taskid: bfacc7fb-9f35-471b-8244-442c00e5369b
+    type: regular
+    task:
+      id: bfacc7fb-9f35-471b-8244-442c00e5369b
+      version: -1
+      name: Set "AssetValues_Certificate"
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "113"
+    scriptarguments:
+      key:
+        simple: AssetValues_Certificate
+      value:
+        simple: '{"subject":"${Expanse.Certificate.certificate.subject}","sha256fingerprint":"${Expanse.Certificate.certificate.sha256Fingerprint}","issueTypeID":"${incident.alerttypeid}"}'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 0,
+          "y": -110
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "108":
+    id: "108"
+    taskid: 75430723-0c7c-4430-8a0b-a1a15072dfb3
+    type: condition
+    task:
+      id: 75430723-0c7c-4430-8a0b-a1a15072dfb3
+      description: ""
+      version: -1
+      name: Check if resource type is Certificate
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "71"
+      Certificate:
+      - "109"
+    separatecontext: false
+    conditions:
+    - label: Certificate
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: ${incident.expanseasset.assettype}
+            iscontext: true
+          right:
+            value:
+              simple: Certificate
+    view: |-
+      {
+        "position": {
+          "x": 1090,
+          "y": 1440
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "109":
+    id: "109"
+    taskid: b5e6057f-b4c0-4f47-8528-bffec7980438
+    type: collection
+    task:
+      id: b5e6057f-b4c0-4f47-8528-bffec7980438
+      description: ""
+      version: -1
+      name: Check if certificate should be excluded
+      type: collection
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "110"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 570,
+          "y": 1790
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+      subject:
+      body:
+      methods: []
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: |-
+            Please take a look at these certificate values:
+            ${AssetValues_Certificate}
+
+            Do you want to add them to the exclusion list "${inputs.ExclusionsList}"?
+        required: true
+        gridcolumns: []
+        defaultrows: []
+        type: singleSelect
+        options: []
+        optionsarg:
+        - simple: "Yes"
+        - simple: "No"
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+        readonly: false
+      title: Excluding Asset's Certificate values
+      description: ""
+      sender: ""
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 0
+  "110":
+    id: "110"
+    taskid: 44addda2-bb6f-4187-8560-0fc96d0fdf7f
+    type: condition
+    task:
+      id: 44addda2-bb6f-4187-8560-0fc96d0fdf7f
+      version: -1
+      name: Check Analyst's Answer - Exclude Certificate
+      description: Check Analyst's Answer - Exclude Domain.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "10"
+      "yes":
+      - "111"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Excluding Asset's Certificate values.Answers.0
+            iscontext: true
+          right:
+            value:
+              simple: "Yes"
+    view: |-
+      {
+        "position": {
+          "x": 570,
+          "y": 1965
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "111":
+    id: "111"
+    taskid: b85e7ac6-e466-41bd-8a73-94733051a366
+    type: regular
+    task:
+      id: b85e7ac6-e466-41bd-8a73-94733051a366
+      version: -1
+      name: Set New Key to be added to list
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "112"
+    scriptarguments:
+      key:
+        simple: NewKeyToList_Certificate
+      value:
+        simple: ${AssetValues_Certificate}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 400,
+          "y": 2140
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "112":
+    id: "112"
+    taskid: 0bcb1f27-e32e-4e6a-8e01-2617ebb6bb50
+    type: regular
+    task:
+      id: 0bcb1f27-e32e-4e6a-8e01-2617ebb6bb50
+      version: -1
+      name: Add the new key to list
+      description: Adds/Replaces a key in key/value store backed by an XSOAR list.
+      scriptName: AddKeyToList
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      append:
+        simple: "true"
+      keyName:
+        simple: Certificates
+      listName:
+        simple: ${inputs.ExclusionsList}
+      value:
+        simple: ${NewKeyToList_Certificate}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 400,
+          "y": 2290
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "113":
+    id: "113"
+    taskid: 362d487e-c83c-45e1-810b-4a9f1f7f441e
+    type: condition
+    task:
+      id: 362d487e-c83c-45e1-810b-4a9f1f7f441e
+      version: -1
+      name: Check if Certificate is excluded
+      description: Check if IP and service are permitted.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "25"
+      Certificate:
+      - "114"
+    separatecontext: false
+    conditions:
+    - label: Certificate
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: ${ParsedList.Certificates}
+            iscontext: true
+          right:
+            value:
+              simple: ${AssetValues_Certificate}
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 0,
+          "y": 60
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "114":
+    id: "114"
+    taskid: 01420181-2705-467b-88b4-ea73eb5f93fe
+    type: title
+    task:
+      id: 01420181-2705-467b-88b4-ea73eb5f93fe
+      version: -1
+      name: Certificate excluded in the list
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "26"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -370,
+          "y": 230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 8965,
+        "width": 2790,
+        "x": -810,
+        "y": -1980
+      }
+    }
+  }
+inputs:
+- key: ExclusionsList
+  value:
+    simple: XpanseExclusionsList
+  required: true
+  description: "The name of an internal XSOAR list which includes all whitelisted\
+    \ IP values or Domain values.  If no list currently exist, the playbook will create\
+    \ it for you with the givan name.\nThe structure of this list should be:\n\n{\n\
+    \ \"Addresses\":[\n    {\n      \"ip\": \"x.x.x.x\",\n      \"issueTypeID\": \"\
+    issueTypeIDHere\",\n      \"port\": 123,\n      \"protocol\": \"UDP\"\n    },\n\
+    \    {\n      \"ip\": \"x.x.x.x\",\n      \"issueTypeID\": \"issueTypeIDHere\"\
+    ,\n      \"port\": 456,\n      \"protocol\": \"TCP\"\n    },\n    .\n    .\n \
+    \   .\n  ],\n\"Domains\":[\n   {\n     \"domain\":\"some.domain.com\",\n     \"\
+    issueTypeID\": \"issueTypeIDHere\",\n     \"port\": 80,\n     \"protocol\": \"\
+    TCP\"\n   }\n   .\n   .\n   .\n ] ,\n\"Certificates\":[\n   {\n     \"sha256fingerprint\"\
+    :\"value of sha256 fingerprin\",\n     \"issueTypeID\": \"issueTypeIDHere\",\n\
+    \     \"subject\": \"certificate subject\"\n   }\n   .\n   .\n   .\n ]\n}\n\n\
+    For example:\n\n{\n   \"Addresses\":[\n      {\n         \"ip\":\"10.0.0.1\",\n\
+    \         \"issueTypeID\":\"MissingXFrameOptionsHeader\",\n         \"port\":443,\n\
+    \         \"protocol\": \"TCP\"\n      },\n      {\n         \"ip\":\"10.0.0.2\"\
+    ,\n         \"issueTypeID\":\"WildcardCertificate\",\n         \"port\":443,\n\
+    \         \"protocol\": \"TCP\"\n      }\n   ],\n   \"Domains\":[\n\t   {\n\t\
+    \     \"domain\":\"my.domain.com\",\n\t     \"issueTypeID\": \"ApacheWebServer\"\
+    ,\n\t     \"port\": 443,\n\t     \"protocol\": \"TCP\"\n\t   }\t\n   ],\n   \"\
+    Certificates\":[\n       {\n         \"sha256fingerprint\":\"f2ca1bb.....6fd2\"\
+    ,\n     \t \"issueTypeID\": \"ShortKeyCertificate\",\n     \t \"subject\": \"\
+    C=US,ST=WASHINGTON,L=.....E=John@test.com\"\n   \t}\n   ]\n}\n\nIn the above example,\
+    \ we will whitelist \"MissingXFrameOptionsHeader\" issue type ID on 10.0.0.1:443,\
+    \ \"WildcardCertificate\" issue type ID on 10.0.0.2:443, \"ApacheWebServer\" issue\
+    \ type ID on my.domain.com:443 And \"ShortKeyCertificate\" on a certificate with\
+    \ a specific sha256 fingerprint and subject. "
+  playbookInputQuery:
+- key: EnrichIndicators
+  value:
+    simple: "True"
+  required: false
+  description: Whether to extract and enrich indicators automatically using the "Entity
+    Enrichment - Generic V3" playbook or not.
+  playbookInputQuery:
+- key: CalculateSeverity
+  value:
+    simple: "True"
+  required: false
+  description: Whether to calculate the severity of the incident automatically using
+    the "Calculate Severity - Standard" playbook or not.
+  playbookInputQuery:
+- key: CommonTags
+  value:
+    simple: test-env, production-env, excluded
+  required: false
+  description: |-
+    Common tags which your organization uses.
+    Should be a comma separated list (lower case letters), for example:
+    tag1, tag2, tag3 ...
+  playbookInputQuery:
+- key: OutgoingMirrorTag
+  value:
+    simple: MirrorToXpanse
+  required: false
+  description: |-
+    If a value is provided for this field, the comment of the analyst will be tagged with it.
+    In order to mirror it, please configure the same value under the integration's instance outgoing mirror configurations.
+  playbookInputQuery:
+outputs: []
+tests:
+- No tests (auto formatted)
+fromversion: 6.0.0

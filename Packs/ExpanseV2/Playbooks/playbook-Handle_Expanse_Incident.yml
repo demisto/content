@@ -7082,6 +7082,8 @@ tasks:
     scriptarguments:
       ListName:
         simple: ${inputs.OrganizationUnitsToTagName}
+      ListValues:
+        simple: '{}'
     separatecontext: true
     loop:
       iscommand: false

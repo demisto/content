@@ -120,7 +120,7 @@ tasks:
       - "2"
     scriptarguments:
       listData:
-        simple: '{}'
+        simple: ${inputs.ListValues}
       listName:
         simple: ${inputs.ListName}
     separatecontext: false
@@ -263,7 +263,7 @@ tasks:
       - "6"
     scriptarguments:
       listData:
-        simple: '{}'
+        simple: ${inputs.ListValues}
       listName:
         simple: ${inputs.ListName}
     separatecontext: false
@@ -296,6 +296,11 @@ inputs:
   value: {}
   required: true
   description: Name of the list to load. List will be created if it does not exist/empty.
+  playbookInputQuery:
+- key: ListValues
+  value: {}
+  required: true
+  description: If the list doesn't exist or empty, it will be created with these values.
   playbookInputQuery:
 outputs:
 - contextPath: ParsedList
