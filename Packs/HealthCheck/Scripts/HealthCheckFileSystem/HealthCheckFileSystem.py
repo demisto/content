@@ -10,9 +10,10 @@ UNITS = {'B': 1, 'K': 10**3, 'M': 10**6, 'G': 10**9, 'T': 10**12}
 
 
 def count_partitions(filesystem):
-    for path in filesystem:
-        if '/lib/demisto/data/partitionsData' in path:
-            return len(filesystem[path]) - 2
+    if filesystem:
+        for path in filesystem:
+            if '/lib/demisto/data/partitionsData' in path:
+                return len(filesystem[path]) - 2
 
 
 def parse_size(size):
@@ -69,7 +70,10 @@ RESOLUTION = ["Free up Disk Space with Data Archiving: https://docs.paloaltonetw
               "cortex-xsoar-admin/manage-data/free-up-disc-space-with-data-archiving"]
 
 res = []
+largeFilesTable = []
 path = demisto.executeCommand('getFilePath', {'id': demisto.args()['entryID']})
+
+
 if is_error(path):
     demisto.results('File not found')
     sys.exit(0)
@@ -91,6 +95,7 @@ with open(path[0]['Contents']['path'], 'rb') as fh:
                     'description': f"The file: {file['path']}/{file['name']} has a size of: {file['size']}\n",
                     'resolution': RESOLUTION[0]
                     })
+        largeFilesTable.append({"file": f"{file['path']}/{file['name']}", "size": f"{file['size']}"})
     if numberOfPartitions > 12:
         res.append({'category': 'File system', 'severity': 'Medium',
                     'description': f"You have {numberOfPartitions} months data, consider to archive old data",
@@ -101,6 +106,12 @@ with open(path[0]['Contents']['path'], 'rb') as fh:
                     'description': f"You have {numberOfPartitions} months data, consider to archive old data",
                     'resolution': RESOLUTION[0]
                     })
+
+print(largeFilesTable)
+
+aa = demisto.executeCommand('setIncident', {"largefiles": largeFilesTable})
+
+print(aa)
 
 results = CommandResults(
     readable_output="HealthCheckFileSysLog Done",

@@ -11,7 +11,7 @@ res = demisto.executeCommand(
 
 
 enabledInstances = list(filter(lambda x: x['enabled'] == "true", res['instances']))
-
+print(res[])
 enabledInstancesNames = []
 for instance in enabledInstances:
     if instance['name'] in ['testmodule', 'd2']:
@@ -19,4 +19,5 @@ for instance in enabledInstances:
     else:
         enabledInstancesNames.append({'instances': instance['name']})
 
-demisto.executeCommand('setIncident', {'enabledintegrationsinstances': enabledInstancesNames})
+demisto.executeCommand('setIncident', {'enabledinstances': enabledInstancesNames})
+demisto.executeCommand('setIncident', {'numberofengines': res['engines']['total']})

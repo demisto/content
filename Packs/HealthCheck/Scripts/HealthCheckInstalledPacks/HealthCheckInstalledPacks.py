@@ -9,9 +9,9 @@ not_certified = 0
 config_json = demisto.executeCommand("demisto-api-get", {"uri": "/contentpacks/installed-expired"})[0]["Contents"]["response"]
 
 for item in config_json:
-    packs.append({"packs": item['id'], "currentversion": item['currentVersion'], 'updateavailable': item['updateAvailable']})
-    pack_list.append({"packs": item['id'], "currentversion": item['currentVersion'], 'updateavailable': item['updateAvailable'],
-                      "fsv": item['fromServerVersion'], "tsv": item['toServerVersion'], "certification": item['certification']})
+    packs.append({"packs": item['name'], "currentversion": item['currentVersion'], 'updateavailable': item['updateAvailable']})
+    # pack_list.append({"packs": item['name'], "currentversion": item['currentVersion'], 'updateavailable': item['updateAvailable'],
+    #                   "fsv": item['fromServerVersion'], "tsv": item['toServerVersion'], "certification": item['certification']})
     if item['updateAvailable']:
         need_update += 1
     if item['certification'].lower() != 'certified':
@@ -35,7 +35,7 @@ if not_certified > 0:
 
 demisto.executeCommand("setIncident", {
     'installedpacks': packs,
-    'totalpacksinstalled': len(packs),
+    'lf': len(packs),
     'packsneedupdate': need_update
 })
 
