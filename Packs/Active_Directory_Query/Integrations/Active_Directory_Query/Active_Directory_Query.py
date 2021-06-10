@@ -869,7 +869,7 @@ def update_user_iam(default_base_dn, args, create_if_not_exists, mapper_out, dis
 
         elif user_exists:
 
-            dn = user_dn(sam_account_name, default_base_dn)
+            dn = user_dn(old_sam_account_name, default_base_dn)
 
             if allow_enable:
                 enable_user_iam(default_base_dn, dn, disabled_users_group_cn)
