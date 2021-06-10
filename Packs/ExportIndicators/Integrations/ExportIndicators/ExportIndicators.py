@@ -254,9 +254,10 @@ def sort_iocs(request_args: RequestArguments, iocs: list) -> list:
     return iocs
 
 
-def refresh_outbound_context(request_args: RequestArguments) -> str:
+def refresh_outbound_context(request_args: RequestArguments, on_demand: bool = False) -> str:
     """
-    Refresh the cache values and format using an indicator_query to call demisto.searchIndicators
+    Refresh the values and format using an indicator_query to call demisto.searchIndicators
+    Update integration cache only in case of running on demand
     Returns: List(IoCs in output format)
     """
     now = datetime.now()
@@ -308,24 +309,25 @@ def refresh_outbound_context(request_args: RequestArguments) -> str:
     else:
         out_dict[CTX_MIMETYPE_KEY] = MIMETYPE_TEXT
 
-    set_integration_context({
-        "last_output": out_dict,
-        'last_run': date_to_timestamp(now),
-        'last_limit': request_args.limit,
-        'last_offset': request_args.offset,
-        'last_format': request_args.out_format,
-        'last_query': request_args.query,
-        'current_iocs': iocs,
-        'mwg_type': request_args.mwg_type,
-        'drop_invalids': request_args.drop_invalids,
-        'strip_port': request_args.strip_port,
-        'category_default': request_args.category_default,
-        'category_attribute': request_args.category_attribute,
-        'collapse_ips': request_args.collapse_ips,
-        'csv_text': request_args.csv_text,
-        'sort_field': request_args.sort_field,
-        'sort_order': request_args.sort_order,
-    })
+    if on_demand:
+        set_integration_context({
+            "last_output": out_dict,
+            'last_run': date_to_timestamp(now),
+            'last_limit': request_args.limit,
+            'last_offset': request_args.offset,
+            'last_format': request_args.out_format,
+            'last_query': request_args.query,
+            'current_iocs': iocs,
+            'mwg_type': request_args.mwg_type,
+            'drop_invalids': request_args.drop_invalids,
+            'strip_port': request_args.strip_port,
+            'category_default': request_args.category_default,
+            'category_attribute': request_args.category_attribute,
+            'collapse_ips': request_args.collapse_ips,
+            'csv_text': request_args.csv_text,
+            'sort_field': request_args.sort_field,
+            'sort_order': request_args.sort_order,
+        })
     return out_dict[CTX_VALUES_KEY]
 
 
@@ -1148,7 +1150,7 @@ def update_outbound_command(args, params):
     request_args = RequestArguments(query, out_format, limit, offset, mwg_type, strip_port, drop_invalids,
                                     category_default, category_attribute, collapse_ips, csv_text, sort_field, sort_order)
 
-    indicators = refresh_outbound_context(request_args)
+    indicators = refresh_outbound_context(request_args, on_demand=on_demand)
     if indicators:
         hr = tableToMarkdown('List was updated successfully with the following values', indicators,
                              ['Indicators']) if print_indicators == 'true' else 'List was updated successfully'
