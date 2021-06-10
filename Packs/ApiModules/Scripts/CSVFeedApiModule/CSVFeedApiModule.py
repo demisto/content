@@ -311,15 +311,16 @@ def fetch_indicators_command(client: Client, default_indicator_type: str, auto_d
                     indicator_type = determine_indicator_type(conf_indicator_type, default_indicator_type, auto_detect,
                                                               value)
                     raw_json['type'] = indicator_type
-                    # if relations param is True and also the url returns relations
-                    if create_relationships and config.get(url, {}).get('relation_name'):
-                        if fields_mapping.get('relation_entity_b'):
-                            relationships_lst = EntityRelation(
-                                name=config.get(url, {}).get('relation_name'),
+                    # if relationships param is True and also the url returns relationships
+                    if create_relationships and config.get(url, {}).get('relationship_name'):
+                        if fields_mapping.get('relationship_entity_b'):
+                            relationships_lst = EntityRelationship(
+                                name=config.get(url, {}).get('relationship_name'),
                                 entity_a=value,
                                 entity_a_type=indicator_type,
-                                entity_b=fields_mapping.get('relation_entity_b'),
-                                entity_b_type=config.get(url, {}).get('relation_entity_b_type'),
+                                entity_b=fields_mapping.get('relationship_entity_b'),
+                                entity_b_type=FeedIndicatorType.indicator_type_by_server_version(
+                                    config.get(url, {}).get('relationship_entity_b_type')),
                             )
                             relationships_of_indicator = [relationships_lst.to_indicator()]
 

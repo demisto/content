@@ -3,7 +3,7 @@
 <hr>
 <p>Red Canary collects endpoint data using Carbon Black Response and CrowdStrike Falcon. The collected data is standardized into a common schema, which allows teams to detect, analyze and respond to security incidents.</p>
 <h2> </h2>
-<h2>Configure RedCanary on Demisto</h2>
+<h2>Configure RedCanary on Cortex XSOAR</h2>
 <hr>
 <ol>
 <li>Navigate to <strong>Settings</strong> &gt; <strong>Integrations</strong> &gt; <strong>Servers &amp; Services</strong>.</li>
@@ -38,7 +38,7 @@
 </ul>
 <h2>Commands</h2>
 <hr>
-<p>You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.<br>After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
+<p>You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.<br>After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
 <ol>
 <li><a href="#h_25865194561540914272674">Acknowledge a detection: redcanary-acknowledge-detection</a></li>
 <li><a href="#h_554835331831540914848016">Update the remediation state of a detection: redcanary-update-remediation-state</a></li>

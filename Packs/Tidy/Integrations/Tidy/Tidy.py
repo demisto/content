@@ -35,10 +35,11 @@ class AnyEnvs:
 
 
 class TidyClient:
-    def __init__(self, hostname: str, user: str, password: str = ""):
+    def __init__(self, hostname: str, user: str, password: str = "", ssh_key: str = ""):
         self.hostname = hostname
         self.username = user
         self.password = password
+        self.ssh_key = ssh_key
 
     def test(self) -> None:
         """
@@ -82,12 +83,19 @@ class TidyClient:
         """
         if extra_vars is None:
             extra_vars = {}
+        inventory = f"{self.username}@{self.hostname} ansible_host=\"{self.hostname}\" " \
+                    f"ansible_user=\"{self.username}\" ansible_password=\"{self.password}\" " \
+                    f"ansible_become_password=\"{self.password}\" ansible_connection=ssh"
+        if self.ssh_key:
+            with open('key.pem', 'w') as ssh_key_file:
+                ssh_key_file.write(self.ssh_key)
+            os.chmod('key.pem', 0o400)
+            inventory += f' ansible_ssh_private_key_file=\"{os.path.abspath(ssh_key_file.name)}\"'
+
         runner = run(
             private_data_dir=IMAGE_PLAYBOOKS_PATH,
             playbook=f'playbook-{playbook_name}.yml',
-            inventory=f"{self.username}@{self.hostname} ansible_host=\"{self.hostname}\" "
-                      f"ansible_user=\"{self.username}\" ansible_password=\"{self.password}\" "
-                      f"ansible_become_password=\"{self.password}\" ansible_connection=ssh",
+            inventory=inventory,
             verbosity=2,
             extravars=extra_vars,
             json_mode=False,
@@ -96,7 +104,7 @@ class TidyClient:
         return runner
 
     def osx_command_line_tools(self) -> Runner:
-        """ Execute osx-command-line-tools playbook, Availble envs defined by AnyEnvs object.
+        """ Execute osx-command-line-tools playbook, Available envs defined by AnyEnvs object.
 
         Returns:
             Runner: ansible-runner Runner object.
@@ -280,15 +288,6 @@ def parse_response(response: Runner, human_readable_name: str, installed_softwar
          DemistoResult: Demisto structured response.
     """
     stdout = f'\n\n### Stdout:\n```\n{"".join(response.stdout.readlines())}\n```'
-    if response.status == 'failed' or response.rc != 0:
-        demisto.results({
-            'Type': EntryType.NOTE,
-            'ContentsFormat': EntryFormat.JSON,
-            'Contents': {},
-            'ReadableContentsFormat': EntryFormat.MARKDOWN,
-            'HumanReadable': stdout,
-        })
-        raise DemistoException(f'Installing {installed_software} has failed with return code {response.rc}, See stdout.')
 
     result = {
         'Status': response.status,
@@ -300,7 +299,19 @@ def parse_response(response: Runner, human_readable_name: str, installed_softwar
         'InstalledSoftware': installed_software,
         'AdditionalInfo': additional_vars
     }
+
     human_readable = tableToMarkdown(human_readable_name, result, removeNull=True) + stdout
+    if response.status == 'failed' or response.rc != 0:
+        demisto.results({
+            'Type': EntryType.NOTE,
+            'ContentsFormat': EntryFormat.JSON,
+            'Contents': result,
+            'ReadableContentsFormat': EntryFormat.MARKDOWN,
+            'HumanReadable': stdout,
+            'EntryContext': {'Tidy.Install': result}
+        })
+        raise DemistoException(f'Installing {installed_software} has failed with return code {response.rc}, '
+                               f'See stdout.')
 
     return {
         'Type': entryTypes['note'],
@@ -308,7 +319,7 @@ def parse_response(response: Runner, human_readable_name: str, installed_softwar
         'Contents': result,
         'ReadableContentsFormat': formats['markdown'],
         'HumanReadable': human_readable,
-        'EntryContext': {'Ansible.Install': result}
+        'EntryContext': {'Tidy.Install': result}
     }
 
 
@@ -653,7 +664,13 @@ def main() -> None:
     hostname = demisto.getArg("hostname") or demisto.getParam("hostname")
     user = demisto.getArg("user") or demisto.getParam("user")
     password = demisto.getArg("password") or demisto.getParam("password")
-    client = TidyClient(hostname=hostname, user=user, password=password)
+    ssh_key = demisto.getParam("ssh_key")
+    client = TidyClient(
+        hostname=hostname,
+        user=user,
+        password=password,
+        ssh_key=ssh_key if ssh_key else ''
+    )
 
     # Command execution
     try:

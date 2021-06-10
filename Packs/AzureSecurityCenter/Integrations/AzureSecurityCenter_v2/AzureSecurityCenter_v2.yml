@@ -120,6 +120,12 @@ script:
       name: alert_id
       required: false
       secret: false
+    - default: false
+      description: The subscription ID to use. Can be retrieved from the azure-sc-list-subscriptions command. If not specified, the default subscription ID is used.
+      isArray: false
+      name: subscription_id
+      required: false
+      secret: false
     deprecated: false
     description: Gets an alert that is associated with a resource group or a subscription. The subscription_id argument is
       required in case it was not defined in the integration's configuration.
@@ -203,7 +209,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: Subscription ID. If empty, the subcription_id from the instance configuration is used.
+      description: The subscription ID to use. Can be retrieved from the azure-sc-list-subscriptions command. If not specified, the default subscription ID is used.
       isArray: false
       name: subscription_id
       required: false

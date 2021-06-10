@@ -314,14 +314,16 @@ def ip_lookup_command(client, ip):
         if client.create_relationships:
             if events_details.get('attack_ids'):
                 for attack_id in events_details.get('attack_ids'):
-                    relationships.append(EntityRelation(name='indicator-of',
-                                                        entity_a=ip,
-                                                        entity_a_type=FeedIndicatorType.IP,
-                                                        entity_b=attack_id,
-                                                        entity_b_type='STIX Attack Pattern',
-                                                        brand=BRAND))
+                    relationships.append(
+                        EntityRelationship(name='indicator-of',
+                                           entity_a=ip,
+                                           entity_a_type=FeedIndicatorType.IP,
+                                           entity_b=attack_id,
+                                           entity_b_type=FeedIndicatorType.indicator_type_by_server_version(
+                                               'STIX Attack Pattern'),
+                                           brand=BRAND))
 
-        ip_ioc = Common.IP(ip=ip, dbot_score=dbot_score, relations=relationships)
+        ip_ioc = Common.IP(ip=ip, dbot_score=dbot_score, relationships=relationships)
 
         flashpoint_ip_context = []
         for indicator in resp:
@@ -346,7 +348,7 @@ def ip_lookup_command(client, ip):
             readable_output=hr,
             indicator=ip_ioc,
             raw_response=resp,
-            relations=relationships
+            relationships=relationships
         )
         return command_results
 
@@ -472,14 +474,16 @@ def domain_lookup_command(client, domain):
         if client.create_relationships:
             if events_details.get('attack_ids'):
                 for attack_id in events_details.get('attack_ids'):
-                    relationships.append(EntityRelation(name='indicator-of',
-                                                        entity_a=domain,
-                                                        entity_a_type=FeedIndicatorType.Domain,
-                                                        entity_b=attack_id,
-                                                        entity_b_type='STIX Attack Pattern',
-                                                        brand=BRAND))
+                    relationships.append(
+                        EntityRelationship(name='indicator-of',
+                                           entity_a=domain,
+                                           entity_a_type=FeedIndicatorType.Domain,
+                                           entity_b=attack_id,
+                                           entity_b_type=FeedIndicatorType.indicator_type_by_server_version(
+                                               'STIX Attack Pattern'),
+                                           brand=BRAND))
 
-        domain_ioc = Common.Domain(domain=domain, dbot_score=dbot_score, relations=relationships)
+        domain_ioc = Common.Domain(domain=domain, dbot_score=dbot_score, relationships=relationships)
 
         flashpoint_domain_context = []
         for indicator in resp:
@@ -504,7 +508,7 @@ def domain_lookup_command(client, domain):
             readable_output=hr,
             indicator=domain_ioc,
             raw_response=resp,
-            relations=relationships
+            relationships=relationships
         )
         return command_results
 
@@ -656,14 +660,16 @@ def url_lookup_command(client, url):
         if client.create_relationships:
             if events_details.get('attack_ids'):
                 for attack_id in events_details.get('attack_ids'):
-                    relationships.append(EntityRelation(name='indicator-of',
-                                                        entity_a=url,
-                                                        entity_a_type=FeedIndicatorType.URL,
-                                                        entity_b=attack_id,
-                                                        entity_b_type='STIX Attack Pattern',
-                                                        brand=BRAND))
+                    relationships.append(
+                        EntityRelationship(name='indicator-of',
+                                           entity_a=url,
+                                           entity_a_type=FeedIndicatorType.URL,
+                                           entity_b=attack_id,
+                                           entity_b_type=FeedIndicatorType.indicator_type_by_server_version(
+                                               'STIX Attack Pattern'),
+                                           brand=BRAND))
 
-        url_ioc = Common.URL(url=url, dbot_score=dbot_score, relations=relationships)
+        url_ioc = Common.URL(url=url, dbot_score=dbot_score, relationships=relationships)
 
         flashpoint_url_context = []
         for indicator in resp:
@@ -688,7 +694,7 @@ def url_lookup_command(client, url):
             readable_output=hr,
             indicator=url_ioc,
             raw_response=resp,
-            relations=relationships
+            relationships=relationships
         )
         return command_results
 
@@ -756,20 +762,22 @@ def file_lookup_command(client, file):
         if client.create_relationships:
             if events_details.get('attack_ids'):
                 for attack_id in events_details.get('attack_ids'):
-                    relationships.append(EntityRelation(name='indicator-of',
-                                                        entity_a=file,
-                                                        entity_a_type=DBotScoreType.FILE,
-                                                        entity_b=attack_id,
-                                                        entity_b_type='STIX Attack Pattern',
-                                                        brand=BRAND))
+                    relationships.append(
+                        EntityRelationship(name='indicator-of',
+                                           entity_a=file,
+                                           entity_a_type=DBotScoreType.FILE,
+                                           entity_b=attack_id,
+                                           entity_b_type=FeedIndicatorType.indicator_type_by_server_version(
+                                               'STIX Attack Pattern'),
+                                           brand=BRAND))
 
         hash_type = get_hash_type(file)  # if file_hash found, has to be md5, sha1 or sha256
         if hash_type == 'md5':
-            file_ioc = Common.File(md5=file, dbot_score=dbot_score, relations=relationships)
+            file_ioc = Common.File(md5=file, dbot_score=dbot_score, relationships=relationships)
         elif hash_type == 'sha1':
-            file_ioc = Common.File(sha1=file, dbot_score=dbot_score, relations=relationships)
+            file_ioc = Common.File(sha1=file, dbot_score=dbot_score, relationships=relationships)
         else:
-            file_ioc = Common.File(sha256=file, dbot_score=dbot_score, relations=relationships)
+            file_ioc = Common.File(sha256=file, dbot_score=dbot_score, relationships=relationships)
 
         flashpoint_file_context = []
         for indicator in resp:
@@ -794,7 +802,7 @@ def file_lookup_command(client, file):
             readable_output=hr,
             indicator=file_ioc,
             raw_response=resp,
-            relations=relationships
+            relationships=relationships
         )
         return command_results
 
