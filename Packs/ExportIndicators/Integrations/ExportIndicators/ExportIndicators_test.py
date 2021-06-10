@@ -713,10 +713,10 @@ def test_nginx_start_fail(mocker: MockerFixture, nginx_cleanup):
     def nginx_bad_conf(file_path: str, port: int, params: dict):
         with open(file_path, 'wt') as f:
             f.write('server {bad_stuff test;}')
-    import ExportIndicators as edl
-    mocker.patch.object(edl, 'create_nginx_server_conf', side_effect=nginx_bad_conf)
+    import ExportIndicators as eis
+    mocker.patch.object(eis, 'create_nginx_server_conf', side_effect=nginx_bad_conf)
     try:
-        edl.start_nginx_server(12345, {})
+        eis.start_nginx_server(12345, {})
         pytest.fail('nginx start should fail')
     except ValueError as e:
         assert 'bad_stuff' in str(e)
@@ -726,9 +726,9 @@ def test_nginx_start_fail(mocker: MockerFixture, nginx_cleanup):
 def test_nginx_start_fail_directive(nginx_cleanup):
     """Test that nginx fails when invalid global directive is passed
     """
-    import ExportIndicators as edl
+    import ExportIndicators as eis
     try:
-        edl.start_nginx_server(12345, {'nginx_global_directives': 'bad_directive test;'})
+        eis.start_nginx_server(12345, {'nginx_global_directives': 'bad_directive test;'})
         pytest.fail('nginx start should fail')
     except ValueError as e:
         assert 'bad_directive' in str(e)
@@ -741,8 +741,8 @@ def test_nginx_start_fail_directive(nginx_cleanup):
     {'certificate': SSL_TEST_CRT, 'key': SSL_TEST_KEY},
 ])
 def test_nginx_test_start_valid(nginx_cleanup, params):
-    import ExportIndicators as edl
-    edl.test_nginx_server(11300, params)
+    import ExportIndicators as eis
+    eis.test_nginx_server(11300, params)
     # check that nginx process is not up
     sleep(0.5)
     ps_out = subprocess.check_output(['ps', 'aux'], text=True)
@@ -751,18 +751,18 @@ def test_nginx_test_start_valid(nginx_cleanup, params):
 
 @docker_only
 def test_nginx_log_process(nginx_cleanup, mocker: MockerFixture):
-    import ExportIndicators as edl
+    import ExportIndicators as eis
     # clear logs for test
-    Path(edl.NGINX_SERVER_ACCESS_LOG).unlink(missing_ok=True)
-    Path(edl.NGINX_SERVER_ERROR_LOG).unlink(missing_ok=True)
-    NGINX_PROCESS = edl.start_nginx_server(12345, {})
+    Path(eis.NGINX_SERVER_ACCESS_LOG).unlink(missing_ok=True)
+    Path(eis.NGINX_SERVER_ERROR_LOG).unlink(missing_ok=True)
+    NGINX_PROCESS = eis.start_nginx_server(12345, {})
     sleep(0.5)  # give nginx time to start
     # create a request to get a log line
     requests.get('http://localhost:12345/nginx-test?unit_testing')
     sleep(0.2)
     mocker.patch.object(demisto, 'info')
     mocker.patch.object(demisto, 'error')
-    edl.nginx_log_process(NGINX_PROCESS)
+    eis.nginx_log_process(NGINX_PROCESS)
     # call_args is tuple (args list, kwargs). we only need the args
     arg = demisto.info.call_args[0][0]
     assert 'nginx access log' in arg
@@ -771,8 +771,8 @@ def test_nginx_log_process(nginx_cleanup, mocker: MockerFixture):
     assert '[warn]' in arg
     assert 'the master process runs with super-user privileges' in arg
     # make sure old file was removed
-    assert not Path(edl.NGINX_SERVER_ACCESS_LOG + '.old').exists()
-    assert not Path(edl.NGINX_SERVER_ERROR_LOG + '.old').exists()
+    assert not Path(eis.NGINX_SERVER_ACCESS_LOG + '.old').exists()
+    assert not Path(eis.NGINX_SERVER_ERROR_LOG + '.old').exists()
     # make sure log was rolled over files should be of size 0
-    assert not Path(edl.NGINX_SERVER_ACCESS_LOG).stat().st_size
-    assert not Path(edl.NGINX_SERVER_ERROR_LOG).stat().st_size
+    assert not Path(eis.NGINX_SERVER_ACCESS_LOG).stat().st_size
+    assert not Path(eis.NGINX_SERVER_ERROR_LOG).stat().st_size
