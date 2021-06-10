@@ -2170,7 +2170,7 @@ def fetch_emails_as_incidents(client: EWSClient, last_run):
         for item in last_emails:
             if item.message_id:
                 ids.append(item.message_id)
-                incident = parse_incident_from_item(item, client.encoding)
+                incident = parse_incident_from_item(item, client.default_encoding)
                 incidents.append(incident)
 
                 if len(incidents) >= client.max_fetch:
