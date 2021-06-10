@@ -4,7 +4,9 @@ from time import mktime
 import feedparser
 
 from CommonServerPython import *
-import html2text
+from bs4 import BeautifulSoup
+
+html_tags = ['p', 'table', 'ul', 'ol', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6']
 
 
 class Client(BaseClient):
@@ -38,7 +40,7 @@ class Client(BaseClient):
                         'source': self._base_url,
                         'title': indicator.get('title')
                     })
-                    # text = self.get_url_content(indicator.get('link'))
+                    text = self.get_url_content(indicator.get('link'))
                     indicator_obj = {
                         "type": 'Report',
                         "value": indicator.get('title'),
@@ -88,13 +90,21 @@ class Client(BaseClient):
     # return client.parsed_indicators
 
 
-    def get_url_content(self, url):
-        h = html2text.HTML2Text()
-        f = self._http_request(url)
-        return h.handle(f.text)
+    def get_url_content(self, link):
+        text = self._http_request(method='GET', full_url=link)
+        report_content = ''
+        nested_tags = ['ol', 'ul']  # , 'table'] TODO: add
+        soup = BeautifulSoup(text, "html.parser")
+        for tag in soup.find_all():
+            if tag.name in html_tags:
+                if tag.name in nested_tags:
+                    nested_text = [li.text.strip() for li in tag.find_all('li')]
+                    report_content += ''.join(nested_text)
+                else:
+                    report_content += tag.text.strip()
+        return report_content
 
-
-def get_indicators(client: Client, args: dict) -> CommandResults:
+    def get_indicators(client: Client, args: dict) -> CommandResults:
     limit = int(args.get('limit', 10))
     headers = ['value', 'summary', 'link', 'author']
     hr_ = tableToMarkdown(name='RSS Feed:', t=client.parsed_indicators[:limit], headers=headers)
