@@ -1,5 +1,5 @@
 FireEye Central Management (CM Series) is the FireEye threat intelligence hub. It services the FireEye ecosystem, ensuring that FireEye products share the latest intelligence and correlate across attack vectors to detect and prevent cyber attacks
-This integration was integrated and tested with version xx of FireEye Central Management
+This integration was integrated and tested with version 9.0.2 of FireEye Central Management
 ## Configure FireEye Central Management on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
@@ -35,7 +35,7 @@ Searches and retrieves FireEye CM alerts based on several filters.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | alert_id | The ID number of the alert to retrieve. | Optional | 
-| duration | The time interval to search. This filter is used with either the start_time or end_time filter. If duration, start time, and end time are not specified, the system defaults to duration=12_hours, end_time=current_time. If only the duration is specified, the end_time defaults to the current_time. Possible values are: 1_hour, 2_hours, 6_hours, 12_hours, 24_hours, 48_hours. | Optional | 
+| duration | The time interval to search. This filter is used with either the start_time or end_time filter. If duration, start time, and end time are not specified, the system defaults to duration=12_hours, end_time=current_time. If only the duration is specified, the end_time defaults to the current_time. Possible values: 1_hour, 2_hours, 6_hours, 12_hours, 24_hours, 48_hours. | Optional | 
 | start_time | The start time of the search. This filter is optional. Default is last day. Syntax: start_time=YYYY-MM-DDTHH:mm:ss.sss-OH:om or '1 day/month/year'. | Optional | 
 | end_time | The end time of the search. This filter is used with the duration filter. If the end_time is specified but not the duration, the system defaults to duration=12_hours, ending at the specified end_time. Syntax: end_time=YYYY-MM-DDTHH:mm:ss.sss-OH:om. | Optional | 
 | callback_domain | Searches for alerts that include callbacks to the specified domain. | Optional | 
@@ -43,14 +43,14 @@ Searches and retrieves FireEye CM alerts based on several filters.
 | src_ip | The source IPv4 address related to the malware alert. | Optional | 
 | file_name | The name of the malware file. | Optional | 
 | file_type | The malware file type. | Optional | 
-| info_level | Specifies the level of information to be returned. The default is concise. Possible values are: concise, normal, extended. Default is concise. | Optional | 
+| info_level | The level of information to be returned. Possible values: concise, normal, extended. Default is concise. | Optional | 
 | malware_name | The name of the malware object. | Optional | 
-| malware_type | The type of the malware object. Possible values are: domain_match, malware_callback, malware_object, web_infection, infection_match, riskware-infection, riskware-callback, riskware-object. | Optional | 
+| malware_type | The type of the malware object. Possible values: domain_match, malware_callback, malware_object, web_infection, infection_match, riskware-infection, riskware-callback, riskware-object. | Optional | 
 | md5 | Searches for alerts that include a specific MD5 hash. | Optional | 
 | recipient_email | The email address of the malware object receiver. | Optional | 
 | sender_email | The email address of the malware object sender. | Optional | 
 | url | Searches for a specific alert URL. | Optional | 
-| limit | Maximum number of alerts to return. Default is 20. Default is 20. | Optional | 
+| limit | Maximum number of alerts to return. Default is 20. | Optional | 
 
 
 #### Context Output
@@ -66,9 +66,9 @@ Searches and retrieves FireEye CM alerts based on several filters.
 | FireEyeCM.Alerts.vlan | String | The virtual LAN \(VLAN\) of the alert. | 
 | FireEyeCM.Alerts.malicious | String | A flag indicating whether the alert is malicious. | 
 | FireEyeCM.Alerts.severity | String | The severity of the alert. | 
-| FireEyeCM.Alerts.sensor | String | The sensor name which the alert associated with. | 
+| FireEyeCM.Alerts.sensor | String | The sensor name that the alert is associated with. | 
 | FireEyeCM.Alerts.applianceId | String | The appliance ID of the alert. | 
-| FireEyeCM.Alerts.sensorIp | String | The sensor IP which the alert associated with. | 
+| FireEyeCM.Alerts.sensorIp | String | The sensor IP that the alert is associated with. | 
 | FireEyeCM.Alerts.ack | String | A flag indicating whether an acknowledgment is received. | 
 | FireEyeCM.Alerts.src | Unknown | The source of the alert. | 
 | FireEyeCM.Alerts.dst | Unknown | The destination of the alert. | 
@@ -94,7 +94,7 @@ Searches and retrieves the details of a single alert.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| alert_id | The ID number of the alert to retrieve its details. | Required | 
+| alert_id | The ID of the alert for which to retrieve its details. | Required | 
 
 
 #### Context Output
@@ -110,9 +110,9 @@ Searches and retrieves the details of a single alert.
 | FireEyeCM.Alerts.vlan | String | The virtual LAN \(VLAN\) of the alert. | 
 | FireEyeCM.Alerts.malicious | String | A flag indicating whether the alert is malicious. | 
 | FireEyeCM.Alerts.severity | String | The severity of the alert. | 
-| FireEyeCM.Alerts.sensor | String | The sensor name which the alert associated with. | 
+| FireEyeCM.Alerts.sensor | String | The sensor name that the alert is associated with. | 
 | FireEyeCM.Alerts.applianceId | String | The appliance ID of the alert. | 
-| FireEyeCM.Alerts.sensorIp | String | The sensor IP which the alert associated with. | 
+| FireEyeCM.Alerts.sensorIp | String | The sensor IP that the alert is associated with. | 
 | FireEyeCM.Alerts.ack | String | A flag indicating whether an acknowledgment is received. | 
 | FireEyeCM.Alerts.src | Unknown | The source of the alert. | 
 | FireEyeCM.Alerts.dst | Unknown | The destination of the alert. | 
@@ -165,7 +165,7 @@ Downloads malware artifacts data for the specified UUID as a zip file.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | uuid | The universally unique identifier (UUID) for the alert. | Required | 
-| timeout | Timeout to retrieve the artifacts. Default is 120. Default is 120. | Optional | 
+| timeout | Timeout to retrieve the artifacts. Default is 120. | Optional | 
 
 
 #### Context Output
@@ -231,10 +231,10 @@ Retrieves information about existing IPS NX events. An IPS enabled appliance is 
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| duration | Specifies the time interval to search. This filter is used with the end_time filter. If the duration is not specified, the system defaults to duration=12_hours, end_time=current_time. Possible values are: 1_hour, 2_hours, 6_hours, 12_hours, 24_hours, 48_hours. | Optional | 
-| end_time | Specifies the end time of the search. This filter is used with the duration filter. If the end_time is specified but not the duration, the system defaults to duration=12_hours, ending at the specified end_time. Syntax: end_time=YYYY-MM-DDTHH:mm:ss.sss-OH:om. | Optional | 
-| mvx_correlated_only | Specifies whether to include all IPS events or MVX-correlated events only. Default is false. Possible values are: false, true. Default is false. | Optional | 
-| limit | Maximum number of events to return. Default is 20. Default is 20. | Optional | 
+| duration | The time interval in which to search. This filter is used with the end_time filter. If the duration is not specified, the system defaults to duration=12_hours, end_time=current_time. Possible values: 1_hour, 2_hours, 6_hours, 12_hours, 24_hours, 48_hours. | Optional | 
+| end_time | The end time of the search. This filter is used with the duration filter. If the end_time is specified but not the duration, the system defaults to duration=12_hours, ending at the specified end_time. Syntax: end_time=YYYY-MM-DDTHH:mm:ss.sss-OH:om. | Optional | 
+| mvx_correlated_only | Specifies whether to include all IPS events or MVX-correlated events only. Possible values: false, true. Default is false. | Optional | 
+| limit | Maximum number of events to return. Default is 20. | Optional | 
 
 
 #### Context Output
@@ -284,12 +284,12 @@ Searches and retrieves quarantined emails.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| start_time | Specifies the start time of the search. This filter is optional. Default is last day. Syntax: end_time=YYYY-MM-DDTHH:mm:ss.sss-OH:om or '1 day/month/year'. Default is 1 day. | Optional | 
-| end_time | Specifies the end time of the search. Default is now. Syntax: end_time=YYYY-MM-DDTHH:mm:ss.sss-OH:om or '1 day/month/year'. | Optional | 
+| start_time | The start time of the search. This filter is optional. Syntax: start_time=YYYY-MM-DDTHH:mm:ss.sss-OH:om or '1 day/month/year'. Default is 1 day. | Optional | 
+| end_time | The end time of the search. Default is now. Syntax: end_time=YYYY-MM-DDTHH:mm:ss.sss-OH:om or '1 day/month/year'. | Optional | 
 | from | The sender email. | Optional | 
 | subject | The email subject. Must be URL encoded. | Optional | 
 | appliance_id | The appliance ID. | Optional | 
-| limit | Number of emails to return. Default is 20. Default is 20. | Optional | 
+| limit | Number of emails to return. Default is 20. | Optional | 
 
 
 #### Context Output
@@ -300,9 +300,9 @@ Searches and retrieves quarantined emails.
 | FireEyeCM.QuarantinedEmail.completed_at | string | The time the email has been quarantined. | 
 | FireEyeCM.QuarantinedEmail.email_uuid | string | The quarantined email UUID. | 
 | FireEyeCM.QuarantinedEmail.from | string | The quarantined email sender. | 
-| FireEyeCM.QuarantinedEmail.message_id | string | The quarantined email message id. | 
+| FireEyeCM.QuarantinedEmail.message_id | string | The quarantined email message ID. | 
 | FireEyeCM.QuarantinedEmail.quarantine_path | string | The quarantined email path. | 
-| FireEyeCM.QuarantinedEmail.The quarantined email queue id. | string | The quarantined email queue id. | 
+| FireEyeCM.QuarantinedEmail.The quarantined email queue id. | string | The quarantined email queue ID. | 
 | FireEyeCM.QuarantinedEmail.subject | string | The quarantined email subject. | 
 
 
@@ -325,7 +325,7 @@ Releases and deletes quarantined emails. This is not available when Email Securi
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| queue_ids | The quarantined emails queue IDs. Supports up to 100 IDs. | Required | 
+| queue_ids | A comma-separated list of quarantined email queue IDs. Supports up to 100 IDs. | Required | 
 | sensor_name | The sensor display name. | Required | 
 
 
@@ -352,7 +352,7 @@ Deletes quarantined emails. This is not available when Email Security is in Drop
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| queue_ids | The quarantined emails queue IDs. Supports up to 100 IDs. | Required | 
+| queue_ids | A comma-separated list of quarantined email queue IDs. Supports up to 100 IDs. | Required | 
 | sensor_name | The sensor display name. | Required | 
 
 
@@ -369,7 +369,7 @@ There is no context output for this command.
 
 ### fireeye-cm-download-quarantined-emails
 ***
-Download quarantined emails.
+Downloads quarantined emails.
 
 
 #### Base Command
@@ -415,15 +415,15 @@ Returns reports on selected alerts.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| report_type | The report type. Requests for ipsTopNAttack, ipsTopNAttacker, ipsTopNVictim, or ipsTopNMvxVerified reports must be used with the limit parameter set to either 25, 50, 75, or 100. You must have an Intrusion Prevention System (IPS)-enabled appliance to be able to generate the IPS reports. Possible values are: empsEmailAVReport, empsEmailActivity, empsEmailExecutiveSummary, empsEmailHourlyStat, mpsCallBackServer, mpsExecutiveSummary, mpsInfectedHostsTrend, mpsMalwareActivity, mpsWebAVReport, ipsExecutiveSummary, ipsTopNAttack, ipsTopNAttacker, ipsTopNVictim, ipsTopNMvxVerified, alertDetailsReport. | Required | 
-| start_time | Specifies the start time of the search. This filter is optional. Default is last week. Syntax: end_time=YYYY-MM-DDTHH:mm:ss.sss-OH:om or '1 day/month/year'. Default is 1 week. | Optional | 
-| end_time | Specifies the end time of the search. Default is now. Syntax: end_time=YYYY-MM-DDTHH:mm:ss.sss-OH:om or '1 day/month/year'. | Optional | 
-| limit | Default is 100. This option is required only for IPS TopN reports. The limit option sets the maximum number (N) of items covered by each report. Default is 100. | Optional | 
-| interface | This option is required only for IPS reports. The interface option sets ihe internet interface to one of the values. Possible values are: A, B, AB. | Optional | 
+| report_type | The report type. Requests for ipsTopNAttack, ipsTopNAttacker, ipsTopNVictim, or ipsTopNMvxVerified reports must be used with the limit parameter set to either 25, 50, 75, or 100. You must have an Intrusion Prevention System (IPS)-enabled appliance to be able to generate the IPS reports. Possible values: empsEmailAVReport, empsEmailActivity, empsEmailExecutiveSummary, empsEmailHourlyStat, mpsCallBackServer, mpsExecutiveSummary, mpsInfectedHostsTrend, mpsMalwareActivity, mpsWebAVReport, ipsExecutiveSummary, ipsTopNAttack, ipsTopNAttacker, ipsTopNVictim, ipsTopNMvxVerified, alertDetailsReport. | Required | 
+| start_time | The start time of the search. This filter is optional. Syntax: start_time=YYYY-MM-DDTHH:mm:ss.sss-OH:om or '1 day/month/year'. Default is 1 week. | Optional | 
+| end_time | The end time of the search. Default is now. Syntax: end_time=YYYY-MM-DDTHH:mm:ss.sss-OH:om or '1 day/month/year'. | Optional | 
+| limit | The maximum number of items covered by each report. Default is 100. This option is required only for IPS TopN reports. | Optional | 
+| interface | The internet interface to one of the values. This option is required only for IPS reports. Possible values: A, B, AB. | Optional | 
 | alert_id | Alert ID. This argument is only relevant when retrieving a report of type alertDetailsReport. | Optional | 
 | infection_id | Infection ID. This argument is only relevant when retrieving a report of type alertDetailsReport with conjunction to the infection_type argument. | Optional | 
-| infection_type | Infection Type. This argument is only relevant when retrieving a report of type alertDetailsReport with conjunction to the infection_id argument. Possible values are: malware-object, malware-callback, infection-match, domain-match, web-infection. | Optional | 
-| timeout | Timeout to retrieve the reports. Default is 120. Default is 120. | Optional | 
+| infection_type | Infection type. This argument is only relevant when retrieving a report of type alertDetailsReport with conjunction to the infection_id argument. Possible values: malware-object, malware-callback, infection-match, domain-match, web-infection. | Optional | 
+| timeout | Timeout to retrieve the reports. Default is 120. | Optional | 
 
 
 #### Context Output
