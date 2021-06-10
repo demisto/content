@@ -1036,7 +1036,7 @@
             }
         ]
     },
-    "name": "STIX Attack Pattern",
+    "name": "Attack Pattern",
     "system": false,
     "version": -1,
     "fromVersion": "6.0.0",
