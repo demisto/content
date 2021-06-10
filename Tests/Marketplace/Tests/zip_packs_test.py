@@ -8,6 +8,7 @@ from Tests.Marketplace.zip_packs import get_latest_pack_zip_from_blob, zip_packs
 class TestZipPacks:
     BLOB_NAMES = [
         'content/packs/Slack/1.0.0/Slack.zip',
+        'content/packs/Slack/1.0.2/Slack.zip',
         'content/packs/Slack/1.0.1/Slack.zip',
         'content/packs/SlackSheker/2.0.0/SlackSheker.zip',
         'content/packs/Slack/Slack.png',
@@ -33,7 +34,7 @@ class TestZipPacks:
         """
 
         blob_name = get_latest_pack_zip_from_blob('Slack', TestZipPacks.BLOB_NAMES)
-        assert blob_name == 'content/packs/Slack/1.0.1/Slack.zip'
+        assert blob_name == 'content/packs/Slack/1.0.2/Slack.zip'
 
     def test_get_zipped_packs_name(self, mocker):
         """
@@ -52,7 +53,7 @@ class TestZipPacks:
         mocker.patch('os.path.isdir', return_value=True)
         zipped_packs = get_zipped_packs_names('content')
 
-        assert zipped_packs == [{'Slack': 'content/packs/Slack/1.0.1/Slack.zip'}]
+        assert zipped_packs == [{'Slack': 'content/packs/Slack/1.0.2/Slack.zip'}]
 
     def test_get_zipped_packs_name_no_zipped_packs(self, mocker):
         """

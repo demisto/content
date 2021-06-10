@@ -225,7 +225,7 @@ def get_latest_pack_zip_from_blob(pack, blobs):
     for current_blob in blobs:
         current_pack_name = os.path.splitext(os.path.basename(current_blob))[0]
         if current_pack_name == pack and current_blob.endswith('.zip'):
-            current_pack_zip_version = os.path.basename(os.path.dirname(current_blob))
+            current_pack_zip_version = LooseVersion(os.path.basename(os.path.dirname(current_blob)))
             if not latest_blob_version or latest_blob_version < current_pack_zip_version:
                 latest_blob_version = current_pack_zip_version
                 latest_blob_name = current_blob
