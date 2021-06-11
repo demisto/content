@@ -424,7 +424,7 @@ class McAfeeESMClient(BaseClient):
         since = since if since else self.args.get('timeRange')
         start_time = start_time if start_time else self.args.get('customStart')
         end_time = end_time if end_time else self.args.get('customEnd')
-        assigned_user = self.args.get('assignedUser')
+        # assigned_user = self.args.get('assignedUser')
         # if not assigned_user or assigned_user.lower() == 'me':
         #     assigned_user = self.__user_name
 
