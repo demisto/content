@@ -1,0 +1,494 @@
+id: 92607a74-996d-4dd3-85e3-9d1fe958a75a
+version: 8
+name: IP Blacklist - GCP Firewall
+description: Set a list of IP addresses in GCP firewall.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: d51a7d75-be14-4f93-8519-a2b419baaf56
+    type: start
+    task:
+      id: d51a7d75-be14-4f93-8519-a2b419baaf56
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 377.5,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 2529d9b0-ff39-482c-8b5b-a5b1b426fe86
+    type: title
+    task:
+      id: 2529d9b0-ff39-482c-8b5b-a5b1b426fe86
+      version: -1
+      name: Whitelist IPs on GCP (Firewall)
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "29"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 377.5,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "13":
+    id: "13"
+    taskid: ac24597a-5d87-496d-87ec-75a1cda0ad10
+    type: regular
+    task:
+      id: ac24597a-5d87-496d-87ec-75a1cda0ad10
+      version: -1
+      name: Close Incident
+      description: commands.local.cmd.close.inv
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "34"
+    scriptarguments:
+      assetid: {}
+      closeNotes: {}
+      closeReason: {}
+      code42alerttype: {}
+      emailclassification: {}
+      id:
+        complex:
+          root: incident
+          accessor: id
+      phishingsubtype: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "22":
+    id: "22"
+    taskid: bd8df7e2-a56a-4491-8313-587b2b5cdefc
+    type: regular
+    task:
+      id: bd8df7e2-a56a-4491-8313-587b2b5cdefc
+      version: -1
+      name: Get GCP Firewall
+      description: Returns the specified firewall.
+      script: '|||gcp-compute-get-firewall'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "35"
+    scriptarguments:
+      name:
+        simple: ${inputs.GCPFirewallName}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 515
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "24":
+    id: "24"
+    taskid: 4b9662e2-1390-408e-8c72-34fbfc836ff3
+    type: regular
+    task:
+      id: 4b9662e2-1390-408e-8c72-34fbfc836ff3
+      version: -1
+      name: Set and replace IP list on GCP Security Firewall
+      description: Updates the specified firewall rule with the data included in the
+        request.
+      script: '|||gcp-compute-patch-firewall'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      allowed: {}
+      denied: {}
+      description: {}
+      destinationRanges: {}
+      direction: {}
+      disabled: {}
+      logConfigEnable: {}
+      name:
+        simple: ${inputs.GCPFirewallName}
+      network: {}
+      priority: {}
+      sourceRanges:
+        complex:
+          root: myRanges
+          transformers:
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: srcIP
+                iscontext: true
+          - operator: uniq
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: ','
+      sourceServiceAccounts: {}
+      sourceTags: {}
+      targetServiceAccounts: {}
+      targetTags: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1215
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "29":
+    id: "29"
+    taskid: 06d6eb8d-ae65-4dc6-833d-4e3d41fead15
+    type: condition
+    task:
+      id: 06d6eb8d-ae65-4dc6-833d-4e3d41fead15
+      version: -1
+      name: Is Google Compute integration enabled?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "34"
+      "yes":
+      - "22"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Google Cloud Compute
+                accessor: brand
+            iscontext: true
+          right:
+            value:
+              simple: Google Cloud Compute
+    view: |-
+      {
+        "position": {
+          "x": 377.5,
+          "y": 340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "34":
+    id: "34"
+    taskid: f0a64fd4-ce44-42ad-8606-721d432c7cf4
+    type: title
+    task:
+      id: f0a64fd4-ce44-42ad-8606-721d432c7cf4
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 592.5,
+          "y": 1565
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "35":
+    id: "35"
+    taskid: c796cea1-6199-4288-80dc-dc4687c04301
+    type: condition
+    task:
+      id: c796cea1-6199-4288-80dc-dc4687c04301
+      version: -1
+      name: GCP Firewall found?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "37"
+      "yes":
+      - "36"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: GoogleCloudCompute.Firewalls.name
+            iscontext: true
+          right:
+            value:
+              simple: inputs.GCPFirewallName
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "36":
+    id: "36"
+    taskid: ad500697-0dd7-4dc0-8b87-fe3ae331f4b8
+    type: regular
+    task:
+      id: ad500697-0dd7-4dc0-8b87-fe3ae331f4b8
+      version: -1
+      name: Extract
+      description: Loads a json from string input, and returns a json object result
+      scriptName: LoadJSON
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "43"
+    scriptarguments:
+      extend-context:
+        simple: srcIP=jsonPayload.source_ip_address
+      input:
+        simple: ${incident.labels.data}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 865
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "37":
+    id: "37"
+    taskid: 49934a26-f7ac-4798-8779-2850008b3085
+    type: title
+    task:
+      id: 49934a26-f7ac-4798-8779-2850008b3085
+      version: -1
+      name: GCP Firewall Name Not Founnd
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "38"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 880
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "38":
+    id: "38"
+    taskid: aa69ad2b-9911-439d-8b39-603117c9a2f6
+    type: regular
+    task:
+      id: aa69ad2b-9911-439d-8b39-603117c9a2f6
+      version: -1
+      name: Engineer - Fix Firewall Name and rerun
+      type: regular
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1040
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "43":
+    id: "43"
+    taskid: f79fe514-dd09-4a5f-809b-6ea83e038c4f
+    type: regular
+    task:
+      id: f79fe514-dd09-4a5f-809b-6ea83e038c4f
+      version: -1
+      name: copy-src-ranges
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "24"
+    scriptarguments:
+      append: {}
+      key:
+        simple: myRanges
+      stringify: {}
+      value:
+        simple: ${GoogleCloudCompute.Firewalls.sourceRanges}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1040
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {
+      "29_22_yes": 0.3,
+      "29_34_#default#": 0.49,
+      "35_37_#default#": 0.36
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1580,
+        "width": 922.5,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: ""
+  value: {}
+  required: false
+  description: Indicators to trigger the playbook
+  playbookInputQuery:
+    query: ""
+    queryEntity: indicators
+    results: null
+    daterange:
+      fromdate: 0001-01-01T00:00:00Z
+      todate: 0001-01-01T00:00:00Z
+      period:
+        by: ""
+        byto: ""
+        byfrom: ""
+        tovalue: null
+        fromvalue: null
+        field: ""
+      fromdatelicenseval: 0001-01-01T00:00:00Z
+    runFromLastJobTime: false
+- key: IP
+  value: {}
+  required: true
+  description: IP addresses to whitelist in GCP Firewall
+  playbookInputQuery: null
+- key: GCPFirewallName
+  value:
+    simple: fw-test-ids-cortex
+  required: true
+  description: Name of the GCP Firewall where the playbook should set the IPs
+  playbookInputQuery: null
+- key: IndicatorTagName
+  value:
+    simple: GCP_IP_Whitelist
+  required: true
+  description: Name of the Indicator Tag to apply to any IPs whitelisted by this playbook.
+  playbookInputQuery: null
+outputs: []
+sourceplaybookid: IP Whitelist - GCP Firewall
