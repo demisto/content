@@ -55,7 +55,7 @@ tasks:
       retry-count:
         simple: "3"
       retry-interval:
-        simple: "12"
+        simple: "22"
       timeout:
         simple: "90"
     separatecontext: false
@@ -95,7 +95,7 @@ tasks:
       retry-count:
         simple: "3"
       retry-interval:
-        simple: "12"
+        simple: "24"
     separatecontext: false
     view: |-
       {
