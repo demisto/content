@@ -1,5 +1,5 @@
 id: FireEye Central Management - Test
-fromversion: 6.0.0
+fromversion: 5.5.0
 version: -1
 name: FireEye Central Management - Test
 starttaskid: "0"
