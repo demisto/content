@@ -386,7 +386,7 @@ def test_fetch_incidents_last_alert_ids(mocker):
 
     assert len(incidents) == 0
     # trim miliseconds to avoid glitches such as 2021-05-19T10:21:52.121+00:00 != 2021-05-19T10:21:52.123+00:00
-    assert last_run.get('time')[:-8] == to_fe_datetime_converter('now')[:-8]
+    assert last_run.get('time')[:-9] == to_fe_datetime_converter('now')[:-9]
 
 
 @pytest.mark.parametrize('severity_str, dbot_score', [
