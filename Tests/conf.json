@@ -3312,7 +3312,7 @@
             "timeout": 1000
         },
         {
-           "integrations": "HPEArubaClearPass",
+            "integrations": "HPEArubaClearPass",
             "playbookID": "HPEArubaClearPass_TestPlaybook"
         },
         {
@@ -3470,7 +3470,8 @@
         "get_original_email_-_ews-_test": "Issue 27571",
         "PANW Threat Vault - Signature Search - Test": "Issue 30930",
         "TAXII_Feed_Test": "Issue 37588",
-        "Git_Integration-Test": "Issue 37800"
+        "Git_Integration-Test": "Issue 37800",
+        "CrowdStrike Falcon Intel v2": "Issue 37620"
     },
     "skipped_integrations": {
         
