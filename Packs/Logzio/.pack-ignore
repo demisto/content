@@ -9,3 +9,12 @@ ignore=RM106
 
 [file:classifier-mapper-incoming-Logzio.json]
 ignore=BA101
+
+[file:incidentfield-Logz.Io_Alert_ID.json]
+ignore=IF100
+
+[file:incidentfield-Logz.io_Alert_Event_ID.json]
+ignore=IF100
+
+[file:incidentfield-Logz.io_Alert_Summary.json]
+ignore=IF100

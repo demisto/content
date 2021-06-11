@@ -1,0 +1,482 @@
+{
+    "brandName": "SolarWinds",
+    "custom": true,
+    "defaultIncidentType": "SolarWinds Alert",
+    "feed": false,
+    "id": "6f6096e7-e547-4cff-85ac-15d2ea4231f3",
+    "isDefault": false,
+    "keyTypeMap": {
+        "Orion.AlertActive": "SolarWinds Alert"
+    },
+    "mapping": {
+        "SolarWinds Alert": {
+            "dontMapEventToLabels": true,
+            "internalMapping": {
+                "SolarWinds Acknowledged": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [
+
+                        ],
+                        "root": "Acknowledged",
+                        "transformers": [
+
+                        ]
+                    },
+                    "simple": ""
+                },
+                "SolarWinds Active Alert ID": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [
+
+                        ],
+                        "root": "AlertActiveID",
+                        "transformers": [
+
+                        ]
+                    },
+                    "simple": ""
+                },
+                "SolarWinds Alert Acknowledged By": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [
+
+                        ],
+                        "root": "AcknowledgedBy",
+                        "transformers": [
+
+                        ]
+                    },
+                    "simple": ""
+                },
+                "SolarWinds Alert Acknowledged Date Time": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [
+
+                        ],
+                        "root": "AcknowledgedDateTime",
+                        "transformers": [
+
+                        ]
+                    },
+                    "simple": ""
+                },
+                "SolarWinds Alert Acknowledged Note": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [
+
+                        ],
+                        "root": "AcknowledgedNote",
+                        "transformers": [
+
+                        ]
+                    },
+                    "simple": ""
+                },
+                "SolarWinds Alert Created By": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [
+
+                        ],
+                        "root": "CreatedBy",
+                        "transformers": [
+
+                        ]
+                    },
+                    "simple": ""
+                },
+                "SolarWinds Alert Entity Caption": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [
+
+                        ],
+                        "root": "EntityCaption",
+                        "transformers": [
+
+                        ]
+                    },
+                    "simple": ""
+                },
+                "SolarWinds Alert Entity Details URI": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [
+
+                        ],
+                        "root": "EntityDetailsUrl",
+                        "transformers": [
+
+                        ]
+                    },
+                    "simple": ""
+                },
+                "SolarWinds Alert Entity NetObject ID": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [
+
+                        ],
+                        "root": "EntityNetObjectId",
+                        "transformers": [
+
+                        ]
+                    },
+                    "simple": ""
+                },
+                "SolarWinds Alert Entity Type": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [
+
+                        ],
+                        "root": "EntityType",
+                        "transformers": [
+
+                        ]
+                    },
+                    "simple": ""
+                },
+                "SolarWinds Alert Entity URI": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [
+
+                        ],
+                        "root": "EntityUri",
+                        "transformers": [
+
+                        ]
+                    },
+                    "simple": ""
+                },
+                "SolarWinds Alert ID": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [
+
+                        ],
+                        "root": "AlertID",
+                        "transformers": [
+
+                        ]
+                    },
+                    "simple": ""
+                },
+                "SolarWinds Alert Name": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [
+
+                        ],
+                        "root": "Name",
+                        "transformers": [
+
+                        ]
+                    },
+                    "simple": ""
+                },
+                "SolarWinds Alert Note": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [
+
+                        ],
+                        "root": "AlertNote",
+                        "transformers": [
+
+                        ]
+                    },
+                    "simple": ""
+                },
+                "SolarWinds Alert Object ID": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [
+
+                        ],
+                        "root": "AlertObjectID",
+                        "transformers": [
+
+                        ]
+                    },
+                    "simple": ""
+                },
+                "SolarWinds Alert Real Entity Type": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [
+
+                        ],
+                        "root": "RealEntityType",
+                        "transformers": [
+
+                        ]
+                    },
+                    "simple": ""
+                },
+                "SolarWinds Alert Real Entity URI": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [
+
+                        ],
+                        "root": "RealEntityUri",
+                        "transformers": [
+
+                        ]
+                    },
+                    "simple": ""
+                },
+                "SolarWinds Alert Reference ID": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [
+
+                        ],
+                        "root": "AlertRefID",
+                        "transformers": [
+
+                        ]
+                    },
+                    "simple": ""
+                },
+                "SolarWinds Alert Related Node Caption": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [
+
+                        ],
+                        "root": "RelatedNodeCaption",
+                        "transformers": [
+
+                        ]
+                    },
+                    "simple": ""
+                },
+                "SolarWinds Alert Related Node Details URL": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [
+
+                        ],
+                        "root": "RelatedNodeDetailsUrl",
+                        "transformers": [
+
+                        ]
+                    },
+                    "simple": ""
+                },
+                "SolarWinds Alert Related Node ID": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [
+
+                        ],
+                        "root": "RelatedNodeId",
+                        "transformers": [
+
+                        ]
+                    },
+                    "simple": ""
+                },
+                "SolarWinds Alert Type": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [
+
+                        ],
+                        "root": "ObjectType",
+                        "transformers": [
+
+                        ]
+                    },
+                    "simple": ""
+                },
+                "SolarWinds Description": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [
+
+                        ],
+                        "root": "ConfigurationDescription",
+                        "transformers": [
+
+                        ]
+                    },
+                    "simple": ""
+                },
+                "SolarWinds Display Name": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [
+
+                        ],
+                        "root": "DisplayName",
+                        "transformers": [
+
+                        ]
+                    },
+                    "simple": ""
+                },
+                "SolarWinds Instance Site ID": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [
+
+                        ],
+                        "root": "InstanceSiteId",
+                        "transformers": [
+
+                        ]
+                    },
+                    "simple": ""
+                },
+                "SolarWinds Instance Type": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [
+
+                        ],
+                        "root": "InstanceType",
+                        "transformers": [
+
+                        ]
+                    },
+                    "simple": ""
+                },
+                "SolarWinds Message": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [
+
+                        ],
+                        "root": "TriggeredMessage",
+                        "transformers": [
+
+                        ]
+                    },
+                    "simple": ""
+                },
+                "SolarWinds URI": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [
+
+                        ],
+                        "root": "Uri",
+                        "transformers": [
+
+                        ]
+                    },
+                    "simple": ""
+                },
+                "category": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [
+
+                        ],
+                        "root": "Category",
+                        "transformers": [
+
+                        ]
+                    },
+                    "simple": ""
+                },
+                "severity": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [
+
+                        ],
+                        "root": "Severity",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "input_values": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "0,1,2,3,4"
+                                        }
+                                    },
+                                    "mapped_values": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "Informational,Medium,Critical,High,Low"
+                                        }
+                                    }
+                                },
+                                "operator": "MapValuesTransformer"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                }
+            }
+        },
+        "dbot_classification_incident_type_all": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "category": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [
+
+                        ],
+                        "root": "Category",
+                        "transformers": [
+
+                        ]
+                    },
+                    "simple": ""
+                },
+                "severity": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [
+
+                        ],
+                        "root": "Severity",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "input_values": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "0,1,2,3,4"
+                                        }
+                                    },
+                                    "mapped_values": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "Informational,Medium,Critical,High,Low"
+                                        }
+                                    }
+                                },
+                                "operator": "MapValuesTransformer"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                }
+            }
+        }
+    },
+    "transformer": {
+        "complex": null,
+        "simple": "InstanceType"
+    },
+    "version": -1,
+    "fromVersion": "5.5.0",
+    "toVersion": "5.9.9"
+}
