@@ -76,7 +76,11 @@ script:
       name: duration
       required: false
     - default: false
+<<<<<<< HEAD
       description: "The start time of the search. This filter is optional. Default is last day. Syntax: start_time=YYYY-MM-DDTHH:mm:ss.sss-OH:om or '1 day/month/year'."
+=======
+      description: "The start time of the search. This filter is optional. Syntax: start_time=YYYY-MM-DDTHH:mm:ss.sss-OH:om or '1 day/month/year'. Default is 1 day."
+>>>>>>> origin/master
       isArray: false
       name: start_time
       required: false
@@ -116,7 +120,11 @@ script:
       secret: false
     - default: false
       defaultValue: 'concise'
+<<<<<<< HEAD
       description: Specifies the level of information to be returned. The default is concise.
+=======
+      description: 'The level of information to be returned. Possible values: "concise", "normal", and "extended".'
+>>>>>>> origin/master
       auto: PREDEFINED
       predefined:
         - 'concise'
@@ -133,7 +141,11 @@ script:
       required: false
       secret: false
     - default: false
+<<<<<<< HEAD
       description: The type of the malware object.
+=======
+      description: 'The type of the malware object. Possible values: "domain_match", "malware_callback", "malware_object", "web_infection", "infection_match", "riskware-infection", "riskware-callback", "riskware-object".'
+>>>>>>> origin/master
       predefined:
         - 'domain_match'
         - 'malware_callback'
@@ -173,7 +185,11 @@ script:
       secret: false
     - default: false
       defaultValue: '20'
+<<<<<<< HEAD
       description: Maximum number of alerts to return. Default is 20.
+=======
+      description: Maximum number of alerts to return. 
+>>>>>>> origin/master
       isArray: false
       name: limit
       required: false
@@ -211,13 +227,21 @@ script:
       description: The severity of the alert.
       type: String
     - contextPath: FireEyeCM.Alerts.sensor
+<<<<<<< HEAD
       description: The sensor name which the alert associated with.
+=======
+      description: The sensor name that the alert is associated with.
+>>>>>>> origin/master
       type: String
     - contextPath: FireEyeCM.Alerts.applianceId
       description: The appliance ID of the alert.
       type: String
     - contextPath: FireEyeCM.Alerts.sensorIp
+<<<<<<< HEAD
       description: The sensor IP which the alert associated with.
+=======
+      description: The sensor IP that the alert is associated with.
+>>>>>>> origin/master
       type: String
     - contextPath: FireEyeCM.Alerts.ack
       description: A flag indicating whether an acknowledgment is received.
@@ -233,7 +257,11 @@ script:
       type: Unknown
   - arguments:
     - default: false
+<<<<<<< HEAD
       description: The ID number of the alert to retrieve its details.
+=======
+      description: The ID of the alert for which to retrieve its details.
+>>>>>>> origin/master
       isArray: true
       name: alert_id
       required: true
@@ -271,13 +299,21 @@ script:
       description: The severity of the alert.
       type: String
     - contextPath: FireEyeCM.Alerts.sensor
+<<<<<<< HEAD
       description: The sensor name which the alert associated with.
+=======
+      description: The sensor name that the alert is associated with.
+>>>>>>> origin/master
       type: String
     - contextPath: FireEyeCM.Alerts.applianceId
       description: The appliance ID of the alert.
       type: String
     - contextPath: FireEyeCM.Alerts.sensorIp
+<<<<<<< HEAD
       description: The sensor IP which the alert associated with.
+=======
+      description: The sensor IP that the alert is associated with.
+>>>>>>> origin/master
       type: String
     - contextPath: FireEyeCM.Alerts.ack
       description: A flag indicating whether an acknowledgment is received.
@@ -311,7 +347,11 @@ script:
       secret: false
     - default: false
       defaultValue: '120'
+<<<<<<< HEAD
       description: Timeout to retrieve the artifacts. Default is 120.
+=======
+      description: Timeout to retrieve the artifacts. 
+>>>>>>> origin/master
       isArray: false
       name: timeout
       required: false
@@ -365,7 +405,11 @@ script:
       type: string
   - arguments:
     - default: false
+<<<<<<< HEAD
       description: Specifies the time interval to search. This filter is used with the end_time filter. If the duration is not specified, the system defaults to duration=12_hours, end_time=current_time.
+=======
+      description: The time interval in which to search. This filter is used with the end_time filter. If the duration is not specified, the system defaults to duration=12_hours, end_time=current_time.
+>>>>>>> origin/master
       auto: PREDEFINED
       predefined:
       - '1_hour'
@@ -379,7 +423,11 @@ script:
       required: false
       secret: false
     - default: false
+<<<<<<< HEAD
       description: "Specifies the end time of the search. This filter is used with the duration filter. If the end_time is specified but not the duration, the system defaults to duration=12_hours, ending at the specified end_time. Syntax: end_time=YYYY-MM-DDTHH:mm:ss.sss-OH:om"
+=======
+      description: "The end time of the search. This filter is used with the duration filter. If the end_time is specified but not the duration, the system defaults to duration=12_hours, ending at the specified end_time. Syntax: end_time=YYYY-MM-DDTHH:mm:ss.sss-OH:om"
+>>>>>>> origin/master
       isArray: false
       name: end_time
       required: false
@@ -390,14 +438,22 @@ script:
       predefined:
         - 'false'
         - 'true'
+<<<<<<< HEAD
       description: "Specifies whether to include all IPS events or MVX-correlated events only. Default is false"
+=======
+      description: 'Specifies whether to include all IPS events or MVX-correlated events only. Possible values: "true" and "false".'
+>>>>>>> origin/master
       isArray: false
       name: mvx_correlated_only
       required: false
       secret: false
     - default: false
       defaultValue: '20'
+<<<<<<< HEAD
       description: Maximum number of events to return. Default is 20.
+=======
+      description: Maximum number of events to return. 
+>>>>>>> origin/master
       isArray: false
       name: limit
       required: false
@@ -507,7 +563,11 @@ script:
       secret: false
     - default: false
       defaultValue: '20'
+<<<<<<< HEAD
       description: Number of emails to return. Default is 20.
+=======
+      description: Number of emails to return. 
+>>>>>>> origin/master
       isArray: false
       name: limit
       required: false
@@ -530,20 +590,32 @@ script:
       description: The quarantined email sender.
       type: string
     - contextPath: FireEyeCM.QuarantinedEmail.message_id
+<<<<<<< HEAD
       description: The quarantined email message id.
+=======
+      description: The quarantined email message ID.
+>>>>>>> origin/master
       type: string
     - contextPath: FireEyeCM.QuarantinedEmail.quarantine_path
       description: The quarantined email path.
       type: string
     - contextPath: FireEyeCM.QuarantinedEmail.The quarantined email queue id.
+<<<<<<< HEAD
       description: The quarantined email queue id.
+=======
+      description: The quarantined email queue ID.
+>>>>>>> origin/master
       type: string
     - contextPath: FireEyeCM.QuarantinedEmail.subject
       description: The quarantined email subject.
       type: string
   - arguments:
     - default: false
+<<<<<<< HEAD
       description: The quarantined emails queue IDs. Supports up to 100 IDs.
+=======
+      description: A comma-separated list of quarantined email queue IDs. Supports up to 100 IDs.
+>>>>>>> origin/master
       isArray: true
       name: queue_ids
       required: true
@@ -560,7 +632,11 @@ script:
     name: fireeye-cm-release-quarantined-emails
   - arguments:
     - default: false
+<<<<<<< HEAD
       description: The quarantined emails queue IDs. Supports up to 100 IDs.
+=======
+      description: A comma-separated list of quarantined email queue IDs. Supports up to 100 IDs.
+>>>>>>> origin/master
       isArray: true
       name: queue_ids
       required: true
@@ -640,7 +716,11 @@ script:
       secret: false
     - default: false
       defaultValue: '1 week'
+<<<<<<< HEAD
       description: "Specifies the start time of the search. This filter is optional. Default is last week. Syntax: end_time=YYYY-MM-DDTHH:mm:ss.sss-OH:om or '1 day/month/year'"
+=======
+      description: "The start time of the search. This filter is optional. Syntax: start_time=YYYY-MM-DDTHH:mm:ss.sss-OH:om or '1 day/month/year'"
+>>>>>>> origin/master
       isArray: false
       name: start_time
       required: false
@@ -653,7 +733,11 @@ script:
       secret: false
     - default: false
       defaultValue: '100'
+<<<<<<< HEAD
       description: Default is 100. This option is required only for IPS TopN reports. The limit option sets the maximum number (N) of items covered by each report.
+=======
+      description: The maximum number of items covered by each report. This option is required only for IPS TopN reports. 
+>>>>>>> origin/master
       isArray: false
       name: limit
       required: false
@@ -664,7 +748,11 @@ script:
       - 'A'
       - 'B'
       - 'AB'
+<<<<<<< HEAD
       description: This option is required only for IPS reports. The interface option sets ihe internet interface to one of the values.
+=======
+      description: The internet interface to one of the values. This option is required only for IPS reports. 
+>>>>>>> origin/master
       isArray: false
       name: interface
       required: false
@@ -682,7 +770,11 @@ script:
       required: false
       secret: false
     - default: false
+<<<<<<< HEAD
       description: Infection Type. This argument is only relevant when retrieving a report of type alertDetailsReport with conjunction to the infection_id argument.
+=======
+      description: 'Infection type. Possible values: "malware-object", "malware-callback", "infection-match", "domain-match", "web-infection". This argument is only relevant when retrieving a report of type alertDetailsReport with conjunction to the infection_id argument.'
+>>>>>>> origin/master
       auto: PREDEFINED
       predefined:
         - 'malware-object'
@@ -695,7 +787,11 @@ script:
       secret: false
     - default: false
       defaultValue: '120'
+<<<<<<< HEAD
       description: Timeout to retrieve the reports. Default is 120.
+=======
+      description: Timeout to retrieve the reports. 
+>>>>>>> origin/master
       isArray: false
       name: timeout
       required: false
@@ -728,7 +824,11 @@ script:
   script: '-'
   type: python
   subtype: python3
+<<<<<<< HEAD
   dockerimage: demisto/python3:3.9.5.20070
+=======
+  dockerimage: demisto/python3:3.9.5.21272
+>>>>>>> origin/master
 fromversion: 5.5.0
 tests:
 - FireEye Central Management - Test

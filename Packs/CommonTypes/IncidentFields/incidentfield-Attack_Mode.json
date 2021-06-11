@@ -5,7 +5,7 @@
   "name": "Attack Mode",
   "ownerOnly": false,
   "placeholder": "",
-  "description": "",
+  "description": "Attack mode as received from the integration JSON",
   "cliName": "attackmode",
   "type": "shortText",
   "closeForm": false,

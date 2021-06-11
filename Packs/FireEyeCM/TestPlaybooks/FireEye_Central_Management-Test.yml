@@ -14,6 +14,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -26,12 +27,16 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "1":
     id: "1"
-    taskid: a61ffb02-9b12-47d4-8f27-6a465339a869
+    taskid: 57d811e0-b6bc-49f9-89c4-73ac83c576af
     type: regular
     task:
-      id: a61ffb02-9b12-47d4-8f27-6a465339a869
+      id: 57d811e0-b6bc-49f9-89c4-73ac83c576af
       version: -1
       name: fireeye-cm-get-reports - ipsTopNAttack
       description: Returns reports on selected alerts.
@@ -47,6 +52,10 @@ tasks:
         simple: "100"
       report_type:
         simple: ipsTopNAttack
+      retry-count:
+        simple: "3"
+      retry-interval:
+        simple: "12"
       timeout:
         simple: "90"
     separatecontext: false
@@ -58,38 +67,16 @@ tasks:
         }
       }
     note: false
-  "2":
-    id: "2"
-    taskid: af52ea1f-2596-4eee-87eb-b6345d82a390
-    type: regular
-    task:
-      id: af52ea1f-2596-4eee-87eb-b6345d82a390
-      version: -1
-      name: fireeye-cm-get-events
-      description: Retrieve information about existing IPS NX events. An IPS enabled
-        appliance is a prequisite to be able to retrieve IPS event data.
-      script: '|||fireeye-cm-get-events'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "4"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 545
-        }
-      }
-    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "3":
     id: "3"
-    taskid: 871d3541-f0bb-47d0-8e71-550efd7e8176
+    taskid: b9d8b297-072e-4576-8ebf-aad2115358df
     type: regular
     task:
-      id: 871d3541-f0bb-47d0-8e71-550efd7e8176
+      id: b9d8b297-072e-4576-8ebf-aad2115358df
       version: -1
       name: fireeye-cm-get-reports alertDetailsReport
       description: Returns reports on selected alerts.
@@ -99,12 +86,16 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "2"
+      - "4"
     scriptarguments:
       alert_id:
         simple: "564"
       report_type:
         simple: alertDetailsReport
+      retry-count:
+        simple: "3"
+      retry-interval:
+        simple: "12"
     separatecontext: false
     view: |-
       {
@@ -114,6 +105,10 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "4":
     id: "4"
     taskid: 050df621-6425-431f-8e28-868c9c7cf0c0
@@ -122,25 +117,29 @@ tasks:
       id: 050df621-6425-431f-8e28-868c9c7cf0c0
       version: -1
       name: Done
-      description: "done"
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 720
+          "y": 545
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 735,
+        "height": 560,
         "width": 380,
         "x": 50,
         "y": 50
@@ -149,3 +148,4 @@ view: |-
   }
 inputs: []
 outputs: []
+description: ''
