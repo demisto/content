@@ -845,7 +845,7 @@ def main():
             playbook_name=demisto.args().get("playbook"),
             dependencies=r
         )
-        fr = fileResult("usecase.html", doc.html(), file_type=EntryType.ENTRY_INFO_FILE))
+        fr = fileResult("usecase.html", doc.html(), file_type=EntryType.ENTRY_INFO_FILE)
         return_results(fr)
         return_results(CommandResults(
             readable_output=doc.markdown(),
