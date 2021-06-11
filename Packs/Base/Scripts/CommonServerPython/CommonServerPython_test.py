@@ -2824,6 +2824,29 @@ def test_auto_detect_indicator_type(indicator_value, indicatory_type):
                              " use a docker image with it installed such as: demisto/jmespath"
 
 
+def test_auto_detect_indicator_type_tldextract(mocker):
+    """
+        Given
+            tldextract version is lower than 3.0.0
+
+        When
+            Trying to detect the type of an indicator.
+
+        Then
+            Run the auto_detect_indicator_type and validate that tldextract using `cache_file` arg and not `cache_dir`
+    """
+    if sys.version_info.major == 3 and sys.version_info.minor >= 8:
+        import tldextract as tlde
+        tlde.__version__ = '2.2.7'
+
+        mocker.patch.object(tlde, 'TLDExtract')
+
+        auto_detect_indicator_type('8')
+
+        res = tlde.TLDExtract.call_args
+        assert 'cache_file' in res[1].keys()
+
+
 def test_handle_proxy(mocker):
     os.environ['REQUESTS_CA_BUNDLE'] = '/test1.pem'
     mocker.patch.object(demisto, 'params', return_value={'insecure': True})
