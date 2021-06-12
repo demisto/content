@@ -7708,17 +7708,17 @@ def support_multithreading():
     :return: No data returned
     :rtype: ``None``
     """
-    class MultithreadedDemisto(Demisto):  # type: ignore[name-defined] # noqa: F821
-        lock = Lock()
-
-        def __do(self, cmd):
-            try:
-                if self.lock.acquire(timeout=60):  # type: ignore[call-arg]
-                    return super().__do(cmd)  # type: ignore[call-arg]
-                else:
-                    raise RuntimeError('Failed acquiring lock')
-            finally:
-                self.lock.release()
-
     global demisto
-    demisto = MultithreadedDemisto(demisto.callingContext)
+    prev_do = demisto._Demisto__do
+    demisto.lock = Lock()
+
+    def locked_do(cmd):
+        try:
+            if demisto.lock.acquire(timeout=60):  # type: ignore[call-arg]
+                return prev_do(cmd)  # type: ignore[call-arg]
+            else:
+                raise RuntimeError('Failed acquiring lock')
+        finally:
+            demisto.lock.release()
+
+    demisto._Demisto__do = locked_do
