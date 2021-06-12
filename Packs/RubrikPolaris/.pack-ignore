@@ -6,3 +6,8 @@ ignore=BA101
 
 [file:classifier-Rubrik_Polaris_Radar_-_Mapping.json]
 ignore=BA101
+[file:incidentfield-RubrikPolaris_Event_Completed.json]
+ignore=IF100
+
+[file:incidentfield-RubrikPolaris_Event_ID.json]
+ignore=IF100
