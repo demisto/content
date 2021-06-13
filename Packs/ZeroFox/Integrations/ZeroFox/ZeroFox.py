@@ -1,11 +1,11 @@
-import demistomock as demisto
-from CommonServerPython import *
-from CommonServerUserPython import *
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 
 ''' IMPORTS '''
-import requests
-from typing import Dict, List, Any, cast, Union
 from datetime import datetime, timedelta
+from typing import Any, Dict, List, Union, cast
+
+import requests
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -745,6 +745,7 @@ def main():
     }
     try:
         handle_proxy()
+        demisto.debug('GFR')
         commands[demisto.command()]()
 
     # Log exceptions
