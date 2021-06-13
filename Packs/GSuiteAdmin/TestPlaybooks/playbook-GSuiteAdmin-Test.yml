@@ -86,13 +86,13 @@ tasks:
       admin_email:
         simple: admin@demistodev.com
       first_name:
-        simple: XSOAR
+        simple: XSOAR1
       last_name:
-        simple: XSOAR
+        simple: XSOAR1
       password:
-        simple: Xsoar@111
+        simple: Xsoar@1111
       primary_email:
-        simple: xsoar11@demistodev.com
+        simple: xsoar111@demistodev.com
     separatecontext: false
     view: |-
       {
