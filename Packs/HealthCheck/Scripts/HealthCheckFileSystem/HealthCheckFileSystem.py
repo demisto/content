@@ -109,11 +109,7 @@ with open(path[0]['Contents']['path'], 'rb') as fh:
                     'resolution': RESOLUTION[0]
                     })
 
-print(largeFilesTable)
-
 aa = demisto.executeCommand('setIncident', {"largefiles": largeFilesTable})
-
-print(aa)
 
 results = CommandResults(
     readable_output="HealthCheckFileSysLog Done",

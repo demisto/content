@@ -1,7 +1,5 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-
-
 packs = []
 pack_list = []
 need_update = 0
@@ -12,8 +10,6 @@ config_json = demisto.executeCommand("demisto-api-get", {"uri": "/contentpacks/i
 
 for item in config_json:
     packs.append({"packs": item['name'], "currentversion": item['currentVersion'], 'updateavailable': item['updateAvailable']})
-    # pack_list.append({"packs": item['name'], "currentversion": item['currentVersion'], 'updateavailable': item['updateAvailable'],
-    #                   "fsv": item['fromServerVersion'], "tsv": item['toServerVersion'], "certification": item['certification']})
     if item['updateAvailable']:
         need_update += 1
     if item['certification'].lower() != 'certified':
