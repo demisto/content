@@ -4057,3 +4057,58 @@ Jamf Pro Server Objects → Mobile Devices → Create
 
 >### Computer 114 erased successfully
 
+### endpoint
+***
+Returns information about an endpoint.
+
+
+#### Base Command
+
+`endpoint`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| id | The endpoint ID. | Optional | 
+| ip | The endpoint IP address. | Optional | 
+| hostname | The endpoint hostname. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Endpoint.Hostname | String | The endpoint's hostname. | 
+| Endpoint.OS | String | The endpoint's operation system. | 
+| Endpoint.IPAddress | String | The endpoint's IP address. | 
+| Endpoint.ID | String | The endpoint's ID. | 
+| Endpoint.Status | String | The endpoint's status. | 
+| Endpoint.IsIsolated | String | The endpoint's isolation status. | 
+| Endpoint.MACAddress | String | The endpoint's MAC address. | 
+| Endpoint.Vendor | String | The integration name of the endpoint vendor. | 
+
+
+#### Command Example
+```!endpoint id=138```
+
+#### Context Example
+```json
+{
+    "Endpoint": {
+        "Hostname": "test MacBook Pro",
+        "ID": 138,
+        "MACAddress": "F0:18:98:3F:DB:8E",
+        "OS": "Mac",
+        "Vendor": "JAMF v2"
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Cortex XDR Endpoint
+>|Hostname|ID|MACAddress|OS|Vendor|
+>|---|---|---|---|---|
+>| test MacBook Pro | 138 | F0:18:98:3F:DB:8E | Mac | JAMF v2 |
+
+
