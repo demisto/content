@@ -60,13 +60,13 @@ args:
 - name: lat
   required: false
   default: true
-  description: Latitude (e.g. 32.064622)
+  description: Latitude (e.g. `32.064622`)
 - name: lng
   required: false
-  description: Longitude (e.g. 34.774131)
+  description: Longitude (e.g. `34.774131`)
 - name: address
   default: true
   required: false
-  description: Address (will be converted to coordinates and then shown)
+  description: Address (e.g. `1600 Pennsylvania ave, DC`)
 scripttarget: 0
 fromversion: 5.0.0
