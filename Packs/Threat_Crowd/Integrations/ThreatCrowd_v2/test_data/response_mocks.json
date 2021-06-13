@@ -1,5 +1,8 @@
 {
-  "ip_response": {
+  "empty_ip_response": {
+    "response_code": "0"
+  },
+    "ip_response": {
     "response_code": "1",
     "resolutions": [
       {
