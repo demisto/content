@@ -54,6 +54,10 @@
             "fromversion": "5.0.0"
         },
         {
+            "integrations": "FireEye Central Management",
+            "playbookID": "FireEye Central Management - Test"
+        },
+        {
             "integrations": "FireEyeNX",
             "playbookID": "FireEyeNX-Test"
         },
@@ -3367,6 +3371,12 @@
             "integrations": "NetscoutAED",
             "playbookID": "NetscoutAED-Test",
             "fromversion": "5.5.0"
+        },
+        {
+            "integrations": "CarbonBlackLiveResponseCloud",
+            "playbookID": "CarbonBlackLiveResponseCloud-Test",
+            "fromversion": "5.5.0",
+            "is_mockable": false
         }
     ],
     "skipped_tests": {
@@ -3437,7 +3447,6 @@
         "Create ServiceNow Ticket and Mirror Test": "Issue 30587",
         "palo_alto_panorama_test_pb": "Issue 34371",
         "Microsoft Defender - ATP - Indicators Test": "Issue 29279",
-        "Active Directory - Get User Manager Details - Test": "Issue 25604",
         "GSuiteAdmin-Test": "Issue 34784",
         "Test-BPA": "Issue 28406",
         "Test-BPA_Integration": "Issue 28236",
@@ -3768,6 +3777,9 @@
             },
             "demisto/boto3": {
                 "memory_threshold": 90
+            },
+            "demisto/flask-nginx": {
+                "pid_threshold": 11
             }
         }
     }
