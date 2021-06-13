@@ -43,6 +43,10 @@ MESSAGE_TYPES: dict = {
     'status_changed': 'incidentStatusChanged'
 }
 
+if '@' in BOT_ID:
+    BOT_ID, tenant_id, service_url = BOT_ID.split('@')
+    set_integration_context({'tenant_id': tenant_id, 'service_url': service_url})
+
 ''' HELPER FUNCTIONS '''
 
 
