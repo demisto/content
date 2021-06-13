@@ -1,0 +1,16 @@
+category: Authentication
+commonfields:
+  id: New Integration
+  version: -1
+configuration: []
+display: New Integration
+name: New Integration
+script:
+  dockerimage: demisto/python3:3.9.5.21272
+  runonce: false
+  script: ''
+  subtype: python3
+  type: python
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)

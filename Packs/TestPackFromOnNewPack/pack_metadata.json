@@ -1,0 +1,17 @@
+{
+    "name": " Test Pack from on new pack",
+    "description": "This is a test pack for RSS pack",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "testing",
+    "url": "",
+    "email": "",
+    "created": "2021-06-13T12:31:25Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "githubUser": [
+        "orhovy"
+    ]
+}
