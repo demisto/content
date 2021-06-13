@@ -162,7 +162,7 @@ Queries PolySwarm for URL reputation information.
 
 #### Context Example
 
-```
+
 
 #### Human Readable Output
 
