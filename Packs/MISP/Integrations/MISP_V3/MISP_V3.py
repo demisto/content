@@ -1233,31 +1233,6 @@ def add_domain_object(pymisp: ExpandedPyMISP, demisto_args: dict = {}):
     return add_object(event_id, obj, pymisp)
 
 
-def add_file_object(pymisp: ExpandedPyMISP, demisto_args: dict = {}):
-    """Adds a file object to MISP
-
-    """
-    args = ['text', 'creation_date', 'first_seen', 'last_seen']
-    event_id = demisto_args.get('event_id')
-    file_encoding = demisto_args.get('file_encoding')
-    file_name = demisto_args.get('filename')
-    full_path = demisto_args.get('full_path')
-    md5 = demisto_args.get('md5')
-    mimetype = demisto_args.get('mimetype')
-    sha1 = demisto_args.get('sha1')
-    sha256 = demisto_args.get('sha256')
-    size = demisto_args.get('size')
-    state = demisto_args.get('state')
-    text = demisto_args.get('text')
-    obj = MISPObject('file')
-    obj.add_attribute('file', value=domain)
-    for arg in args:
-        value = demisto_args.get(arg)
-        if value:
-            obj.add_attribute(arg, value=value)
-    return add_object(event_id, obj, pymisp)
-
-
 def add_url_object(pymisp: ExpandedPyMISP, demisto_args: dict = {}):
     """Building url object in MISP scheme
     Scheme described https://www.misp-project.org/objects.html#_url
@@ -1406,8 +1381,6 @@ def main():
             return_results(add_ip_object(demisto_args=args, pymisp=pymisp))  # checked V - split into sub-funcs
         elif command == 'misp-add-object':
             return_results(add_generic_object_command(demisto_args=args, pymisp=pymisp))  # checked V
-        elif command == 'misp-add-file-object':
-            return_results(add_file_object(demisto_args=args, pymisp=pymisp))  # checked
     except PyMISPError as e:
         return_error(e.message)
     except Exception as e:
