@@ -3447,7 +3447,6 @@
         "Create ServiceNow Ticket and Mirror Test": "Issue 30587",
         "palo_alto_panorama_test_pb": "Issue 34371",
         "Microsoft Defender - ATP - Indicators Test": "Issue 29279",
-        "GSuiteAdmin-Test": "Issue 34784",
         "Test-BPA": "Issue 28406",
         "Test-BPA_Integration": "Issue 28236",
         "EWS search-mailbox test": "Issue 27943",
