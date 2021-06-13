@@ -1,4 +1,5 @@
 import re
+
 from unittest.mock import patch
 from freezegun import freeze_time
 
@@ -29,12 +30,6 @@ CAMPAIGN_WITH_DURATION_RESULT = """
 CURRENT_TIME_MOCK = "05-08-2021 14:40:22"
 
 
-def compare_html_strings(a_string, b_string):
-    a_list = re.findall("<div.*>.*</div>", a_string)
-    b_list = re.findall("<div.*>.*</div>", b_string)
-    return a_list == b_list
-
-
 @pytest.mark.parametrize('EmailCampaign_context, result',
                          [({"firstIncidentDate": "04/07/2021, 16:00:52"}, CAMPAIGN_WITH_DURATION_RESULT)])
 @freeze_time(CURRENT_TIME_MOCK)
@@ -48,7 +43,7 @@ def test_campaign_with_duration(mocker, EmailCampaign_context, result):
 
     # run
     res = get_duration_html()
-    assert compare_html_strings(res, result)
+    assert "".join(res.split()) == "".join(result.split())
 
 
 @patch('GetCampaignDuration.return_error')
