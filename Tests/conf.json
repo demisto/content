@@ -3471,7 +3471,9 @@
         "PANW Threat Vault - Signature Search - Test": "Issue 30930",
         "TAXII_Feed_Test": "Issue 37588",
         "Git_Integration-Test": "Issue 37800",
-        "CrowdStrike Falcon Intel v2": "Issue 37620"
+        "CrowdStrike Falcon Intel v2": "Issue 37620",
+        "pyEWS_Test": "Issue 27942",
+        "EWS Public Folders Test": "Issue 27941"
     },
     "skipped_integrations": {
         
