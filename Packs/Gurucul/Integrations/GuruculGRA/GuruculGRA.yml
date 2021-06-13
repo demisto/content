@@ -937,7 +937,7 @@ script:
       description: Entities Flagged
       type: number
     description: Retrieve detailed anomaly summary of specified anomaly name.
-  dockerimage: demisto/python3:3.9.5.20958
+  dockerimage: demisto/python3:3.9.5.21272
   isfetch: true
   runonce: false
   subtype: python3
