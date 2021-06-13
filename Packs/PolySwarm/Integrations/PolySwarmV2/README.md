@@ -61,8 +61,10 @@ Returns a report from the Hash.
 | --------------------------------------- | --------------------------------------- | --------------------------------------- |
 | PolySwarm.Permalink                     | String                                  | The results of the PolySwarm Permalink. |
 | PolySwarm.Positives                     | Number                                  | The total Positives found.              |
-| PolySwarm.Scan\_UUID                    | String                                  | The PolySwarm Scan UUID.                |
+| PolySwarm.Scan_UUID                     | String                                  | The PolySwarm Scan UUID.                |
 | PolySwarm.Total                         | Number                                  | The total scan.                         |
+| PolySwarm.Artifact                      | String                                  | The artifact queried.                   |
+| 
 
 ##### Command Example
 
@@ -93,8 +95,9 @@ Queries Polyswarm for file reputation information.
 | ---------------------------- | ---------------------------- | ---------------------------- |
 | PolySwarm.Permalink          | String                       | PolySwarm Permalink results. |
 | PolySwarm.Positives          | Number                       | Total Positives found.       |
-| PolySwarm.Scan\_UUID         | String                       | The PolySwarm scan UUID.     |
+| PolySwarm.Scan_UUID          | String                       | The PolySwarm scan UUID.     |
 | PolySwarm.Total              | Number                       | The total Scan.              |
+| PolySwarm.Artifact           | String                       | The artifact queried.        |
 
 
 ##### Command Example
@@ -129,8 +132,16 @@ Queries Polyswarm for IP reputation information.
 | PolySwarm.Permalink          | String                       | PolySwarm Permalink Results. |
 | PolySwarm.Positives          | Number                       | Total Positives Found.       |
 | PolySwarm.Total              | Number                       | The total Scan.              |
-| PolySwarm.Scan\_UUID         | String                       | PolySwarm Scan UUID.         |
-
+| PolySwarm.Scan_UUID          | String                       | PolySwarm Scan UUID.         |
+| PolySwarm.Artifact           | String                       | The artifact queried.        |
+| DBotScore.Type               | String                       | The indicator type.          |
+| IP.MalwareFamily             | String                       | The malware family of the IP.|
+| DBotScore.Indicator          | String                       | The indicator was tested.    |
+| DBotScore.Vendor             | String                       | The vendor for the score.    |
+| DBotScore.Score              | Number                       | The actual score.            |
+| IP.Address                   | String                       | The IP address.              |
+| IP.Malicious.Vendor          | String                       | The vendor of the decision.  |
+| IP.Tags                      | String                       | Tags associated with the IP. |
 
 
 ##### Command Example
@@ -164,7 +175,8 @@ Queries Polyswarm for URL reputation information.
 | PolySwarm.Permalink          | String                       | PolySwarm Permalink Results. |
 | PolySwarm.Positives          | Number                       | Total Positives Found.       |
 | PolySwarm.Total              | Number                       | The total Scan.              |
-| PolySwarm.Scan\_UUID         | String                       | PolySwarm Scan UUID.         |
+| PolySwarm.Scan_UUID          | String                       | PolySwarm Scan UUID.         |
+| PolySwarm.Artifact           | String                       | The artifact queried.        |
 
 
 ##### Command Example
@@ -198,7 +210,8 @@ Queries Polyswarm for Domain reputation information.
 | PolySwarm.Permalink          | String                       | PolySwarm Permalink Results. |
 | PolySwarm.Positives          | Number                       | Total Positives Found.       |
 | PolySwarm.Total              | Number                       | The total Scan.              |
-| PolySwarm.Scan\_UUID         | String                       | PolySwarm Scan UUID.         |
+| PolySwarm.Scan_UUID          | String                       | PolySwarm Scan UUID.         |
+| PolySwarm.Artifact           | String                       | The artifact queried.        |
 
 
 ##### Command Example
@@ -232,7 +245,8 @@ Uploads a URL to Polyswarm and retrieves analysis results.
 | PolySwarm.Permalink          | String                       | PolySwarm Permalink Results. |
 | PolySwarm.Positives          | Number                       | Total Positives Found.       |
 | PolySwarm.Total              | Number                       | The total Scan.              |
-| PolySwarm.Scan\_UUID         | String                       | PolySwarm Scan UUID.         |
+| PolySwarm.Scan_UUID          | String                       | PolySwarm Scan UUID.         |
+| PolySwarm.Artifact           | String                       | The artifact queried.        |
 
 ##### Command Example
 
@@ -266,7 +280,8 @@ Rescans the uploaded artifact by hash.
 | PolySwarm.Permalink          | String                       | PolySwarm Permalink Results. |
 | PolySwarm.Positives          | Number                       | Total Positives Found.       |
 | PolySwarm.Total              | Number                       | The total Scan.              |
-| PolySwarm.Scan\_UUID         | String                       | PolySwarm Scan UUID.         |
+| PolySwarm.Scan_UUID          | String                       | PolySwarm Scan UUID.         |
+| PolySwarm.Artifact           | String                       | The artifact queried.        |
 
 
 
@@ -344,7 +359,8 @@ Uploads a file to Polyswarm and retrieves analysis results.
 | PolySwarm.Permalink          | String                       | PolySwarm Permalink Results. |
 | PolySwarm.Positives          | Number                       | Total Positives Found.       |
 | PolySwarm.Total              | Number                       | The total Scan.              |
-| PolySwarm.Scan\_UUID         | String                       | PolySwarm Scan UUID.         |
+| PolySwarm.Scan_UUID          | String                       | PolySwarm Scan UUID.         |
+| PolySwarm.Artifact           | String                       | The artifact queried.        |
 
 
 ##### Command Example
