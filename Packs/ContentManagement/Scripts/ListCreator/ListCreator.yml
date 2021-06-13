@@ -16,7 +16,7 @@ commonfields:
   version: -1
 enabled: false
 name: ListCreator
-comment: List Creator for the XSOAR Build pack.
+comment: List Creator for the Content Management pack.
 outputs:
 - contextPath: ConfigurationSetup.Lists.creationstatus
   description: The creation status of the list.
@@ -26,7 +26,7 @@ subtype: python3
 system: false
 tags:
 - configuration
-- XSOAR build
+- Content Management
 timeout: '0'
 type: python
 dockerimage: demisto/xsoar-tools:1.0.0.19258

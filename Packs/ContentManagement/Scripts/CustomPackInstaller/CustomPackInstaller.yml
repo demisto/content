@@ -1,26 +1,26 @@
 args:
 - default: true
-  description: The name of the job to configure.
+  description: The ID of the pack to install.
   isArray: false
-  name: job_name
+  name: pack_id
   required: true
   secret: false
 commonfields:
-  id: JobCreator
+  id: CustomPackInstaller
   version: -1
 enabled: false
-name: JobCreator
-comment: Job Creator for the XSOAR Build pack.
+name: CustomPackInstaller
+comment: Custom Packs Installer for the Content Management pack.
 outputs:
-- contextPath: ConfigurationSetup.Jobs.creationstatus
-  description: The creation status of the job.
+- contextPath: ConfigurationSetup.CustomPacks.installationstatus
+  description: The installtion status of the required pack.
   type: Unknown
 script: '-'
 subtype: python3
 system: false
 tags:
 - configuration
-- XSOAR build
+- Content Management
 timeout: '0'
 type: python
 dockerimage: demisto/xsoar-tools:1.0.0.19258

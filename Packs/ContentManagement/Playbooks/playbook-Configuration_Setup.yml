@@ -41,7 +41,7 @@ tasks:
       id: 70090998-8edf-4e41-8fe2-a07ea531cda6
       version: -1
       name: Configuration Setup with File
-      description: Configurtaion loader for the XSOAR Build pack.
+      description: Configurtaion loader for the Content Management pack.
       scriptName: ConfigurationSetup
       type: regular
       iscommand: false
@@ -303,7 +303,7 @@ tasks:
       id: b27bb8f2-7ab1-46f4-896d-a2ca922ff0f9
       version: -1
       name: Install Custom Packs
-      description: Custom Packs Installer for the XSOAR Build pack.
+      description: Custom Packs Installer for the Content Management pack.
       scriptName: CustomPackInstaller
       type: regular
       iscommand: false
@@ -363,7 +363,7 @@ tasks:
       id: 52ddaccc-bef7-40a4-86da-0c313f6e8552
       version: -1
       name: Install Marketplace Packs
-      description: Marketplace Packs Installer for the XSOAR Build pack.
+      description: Marketplace Packs Installer for the Content Management pack.
       scriptName: MarketplacePackInstaller
       type: regular
       iscommand: false
@@ -448,7 +448,7 @@ tasks:
       id: c2ae399f-b45c-4b1c-8f16-a43ab45a03fb
       version: -1
       name: Create Jobs
-      description: Job Creator for the XSOAR Build pack.
+      description: Job Creator for the Content Management pack.
       scriptName: JobCreator
       type: regular
       iscommand: false
@@ -480,7 +480,7 @@ tasks:
       id: 9ba2b5d4-b0c8-452a-805d-dbe89fd77702
       version: -1
       name: Create Lists
-      description: List Creator for the XSOAR Build pack.
+      description: List Creator for the Content Management pack.
       scriptName: ListCreator
       type: regular
       iscommand: false
@@ -603,7 +603,7 @@ tasks:
       id: 8278de62-5015-4d59-8797-a2302fe7d8a5
       version: -1
       name: Configuration Setup with InfoFile
-      description: Configurtaion loader for the XSOAR Build pack.
+      description: Configurtaion loader for the Content Management pack.
       scriptName: ConfigurationSetup
       type: regular
       iscommand: false

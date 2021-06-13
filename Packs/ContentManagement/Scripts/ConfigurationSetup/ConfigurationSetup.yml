@@ -5,7 +5,7 @@ args:
   name: configuration_file_entry_id
   required: false
   secret: false
-comment: Configurtaion loader for the XSOAR Build pack.
+comment: Configurtaion loader for the Content Management pack.
 commonfields:
   id: ConfigurationSetup
   version: -1
@@ -38,7 +38,7 @@ subtype: python3
 system: false
 tags:
 - configuration
-- XSOAR build
+- Content Management
 timeout: '0'
 type: python
 dockerimage: demisto/xsoar-tools:1.0.0.19258
