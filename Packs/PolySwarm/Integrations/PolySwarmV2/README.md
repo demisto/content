@@ -1,5 +1,4 @@
 Real-time threat intelligence from a crowd-sourced network of security experts and antivirus companies.
-This integration was integrated and tested with version xx of PolySwarmV2
 ## Configure PolySwarmV2 on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
