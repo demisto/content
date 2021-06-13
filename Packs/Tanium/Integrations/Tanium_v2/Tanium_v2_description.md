@@ -31,7 +31,7 @@ To use OAuth 2.0 follow the next steps:
  and password fields empty.
 3. Click the **Test** button to validate the instance configuration.
 
-#### Notes:
+**Notes:**
 1. **Trusted IP Addresses**: by default, the Tanium Server blocks API tokens from all addresses except registered Tanium
  Module Servers. To add additional allowed IP addresses for any API token, add the IP addresses to the api_token_trusted_ip_address_list global setting. To add allowed IP addresses for an individual API token, specify the IP addresses in the trusted_ip_addresses field of the api_token object.
 2. **Expiration Time**: by default, an api_token is valid for seven days. To change the expiration timeframe, edit the
