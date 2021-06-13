@@ -1,5 +1,7 @@
 id: Rundeck_test
 version: -1
+contentitemexportablefields:
+  contentitemfields: {}
 name: Rundeck_test
 description: test playbook
 starttaskid: "0"
@@ -125,10 +127,10 @@ tasks:
     quietmode: 0
   "4":
     id: "4"
-    taskid: 2900dffd-2707-489e-80de-325d9c27ad7f
+    taskid: 97c882ec-e968-47d4-8772-ec9cae951ced
     type: regular
     task:
-      id: 2900dffd-2707-489e-80de-325d9c27ad7f
+      id: 97c882ec-e968-47d4-8772-ec9cae951ced
       version: -1
       name: jobs list
       description: Gets a list of all the jobs exist in a project
@@ -140,15 +142,12 @@ tasks:
       '#none#':
       - "6"
     scriptarguments:
-      group_path: {}
-      group_path_exact: {}
       id_list:
         simple: 20339db3-9303-4b7f-a92d-7aae8dfa99e6,08c51ae2-9a7a-451b-b23b-2013af47590b
-      job_exact_filter: {}
-      job_filter: {}
+      project_name:
+        simple: Demisto
       scheduled_filter:
         simple: "false"
-      server_node_uuid_filter: {}
     separatecontext: false
     view: |-
       {
@@ -225,9 +224,6 @@ tasks:
         simple: 08c51ae2-9a7a-451b-b23b-2013af47590b
       log_level:
         simple: WARN
-      node_filter: {}
-      options: {}
-      run_at_time: {}
     separatecontext: false
     view: |-
       {
@@ -301,11 +297,8 @@ tasks:
     scriptarguments:
       all:
         simple: "no"
-      index: {}
       key:
         simple: Rundeck
-      keysToKeep: {}
-      subplaybook: {}
     separatecontext: false
     view: |-
       {
@@ -336,15 +329,10 @@ tasks:
       '#none#':
       - "11"
     scriptarguments:
-      arg_string: {}
-      as_user: {}
       job_id:
         simple: 08c51ae2-9a7a-451b-b23b-2013af47590b
-      log_level: {}
-      node_filter: {}
       options:
         simple: op1=val1,op2=val2
-      run_at_time: {}
     separatecontext: false
     view: |-
       {
@@ -498,7 +486,6 @@ tasks:
       '#none#':
       - "16"
     scriptarguments:
-      arg_string: {}
       as_user:
         simple: galb
       execution_id:
@@ -545,11 +532,8 @@ tasks:
     scriptarguments:
       all:
         simple: "no"
-      index: {}
       key:
         simple: Rundeck.ExecutedJobs
-      keysToKeep: {}
-      subplaybook: {}
     separatecontext: false
     view: |-
       {
@@ -631,31 +615,12 @@ tasks:
       '#none#':
       - "18"
     scriptarguments:
-      aborted_by_filter: {}
       adhoc:
         simple: "false"
-      begin: {}
-      end: {}
-      exclude_group_path: {}
-      exclude_group_path_exact: {}
-      exclude_job_exact_filter: {}
-      exclude_job_filter: {}
-      exclude_job_id_list_filter: {}
-      exclude_job_list_filter: {}
-      execution_type_filter: {}
-      group_path: {}
-      group_path_exact: {}
-      job_exact_filter: {}
-      job_filter: {}
-      job_id_list_filter: {}
-      job_list_filter: {}
       max_results:
         simple: "3"
-      offset: {}
-      older_filter: {}
       project_name:
         simple: Demisto
-      recent_filter: {}
       status_filter:
         simple: failed
       user_filter:
@@ -833,10 +798,8 @@ tasks:
         simple: testCommand
       exec_command:
         simple: echo hello
-      node_filter: {}
       node_keepgoing:
         simple: "true"
-      node_thread_count: {}
       project_name:
         simple: Demisto
     separatecontext: false
@@ -910,20 +873,12 @@ tasks:
       '#none#':
       - "24"
     scriptarguments:
-      body: {}
-      filename: {}
-      headers: {}
-      insecure: {}
       method:
         simple: GET
-      password: {}
-      proxy: {}
       saveAsFile:
         simple: "yes"
-      unsecure: {}
       url:
         simple: https://raw.githubusercontent.com/demisto/content/master/TestData/IndicatorsList.txt
-      username: {}
     separatecontext: false
     view: |-
       {
@@ -954,20 +909,12 @@ tasks:
       '#none#':
       - "25"
     scriptarguments:
-      arg_string: {}
       as_user:
         simple: testScriptFile
       entry_id:
         complex:
           root: File
           accessor: EntryID
-      file_extension: {}
-      interpreter_args_quoted: {}
-      node_filter: {}
-      node_keepgoing: {}
-      node_thread_count: {}
-      project_name: {}
-      script_interpreter: {}
     separatecontext: false
     view: |-
       {
@@ -983,10 +930,10 @@ tasks:
     quietmode: 0
   "25":
     id: "25"
-    taskid: f742560c-3d2e-4fce-810a-1ab5caddf6fa
+    taskid: 5d114357-dd2c-4e8c-8dbd-7c5293e303a2
     type: condition
     task:
-      id: f742560c-3d2e-4fce-810a-1ab5caddf6fa
+      id: 5d114357-dd2c-4e8c-8dbd-7c5293e303a2
       version: -1
       name: test adhoc script run
       description: test adhoc script run
@@ -1004,7 +951,7 @@ tasks:
           left:
             value:
               complex:
-                root: Rundeck.ExecuteScriptFile
+                root: Rundeck.ExecuteScriptFile.[0]
                 accessor: message
             iscontext: true
           right:
@@ -1039,16 +986,8 @@ tasks:
       '#none#':
       - "27"
     scriptarguments:
-      arg_string: {}
       as_user:
         simple: testfromurl
-      file_extension: {}
-      interpreter_args_quoted: {}
-      node_filter: {}
-      node_keepgoing: {}
-      node_thread_count: {}
-      project_name: {}
-      script_interpreter: {}
       script_url:
         simple: https://raw.githubusercontent.com/demisto/content/master/TestData/IndicatorsList.txt
     separatecontext: false
@@ -1066,10 +1005,10 @@ tasks:
     quietmode: 0
   "27":
     id: "27"
-    taskid: 713eb923-2b28-4ded-8d6e-be82bb6aeada
+    taskid: 89f27fce-58d2-4604-8fac-f98bcea5cbb9
     type: condition
     task:
-      id: 713eb923-2b28-4ded-8d6e-be82bb6aeada
+      id: 89f27fce-58d2-4604-8fac-f98bcea5cbb9
       version: -1
       name: test adhoc script from url
       description: test adhoc script from url
@@ -1087,7 +1026,7 @@ tasks:
           left:
             value:
               complex:
-                root: Rundeck.ScriptExecutionFromUrl
+                root: Rundeck.ExecuteScriptFile.[0]
                 accessor: message
             iscontext: true
           right:
@@ -1194,7 +1133,6 @@ tasks:
     scriptarguments:
       auth_token:
         simple: yu1taKjUv4CxRROo0btjnPgbu2X3tfqU
-      json: {}
       options:
         simple: op1=val1
     separatecontext: false
@@ -1264,4 +1202,4 @@ inputs: []
 outputs: []
 fromversion: 5.5.0
 tests:
- -  No tests
+- No tests
