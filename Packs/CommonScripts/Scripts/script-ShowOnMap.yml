@@ -21,21 +21,12 @@ script: >
       if (isError(commandResult)) {
           return commandResult;
       }
-
+      if (!commandResult.results){
+          return commandResult; // a non-error note indicating no places were found
+      }
       var ec = commandResult[0].EntryContext["GoogleMaps(val.lat && val.lat == obj.lat && val.lng && val.lng == obj.lng)"];
-      if (ec)
-      {
-          lat = ec.lat;
-          lng = ec.lng;
-      }
-      else { // EntryContext could not be parsed correctly
-          return commandResult;
-          return {
-              ContentsFormat: formats.text,
-              Type: entryTypes.error,
-              Contents: "Geocoding failed."
-          };
-      }
+      lat = ec.lat;
+      lng = ec.lng;
   }
 
   //  lat,lng are not null (whether they were valid arguments or geocoded)
