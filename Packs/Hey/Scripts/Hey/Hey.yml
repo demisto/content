@@ -2,6 +2,7 @@ commonfields:
   id: Hey
   version: -1
 fromversion: 5.5.0
+comment: Use rakyll/hey to test a web application with a load of requests.
 name: Hey
 script: ''
 type: python
@@ -55,10 +56,8 @@ outputs:
   description: The average time it took for a request to finish.
 scripttarget: 0
 subtype: python3
-pswd: ""
 runonce: false
 dockerimage: demisto/rakyll-hey:1.0.0.20326
 runas: DBotWeakRole
-engineinfo: {}
 tests:
 - No test

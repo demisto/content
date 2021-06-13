@@ -41,7 +41,6 @@ configuration:
   defaultvalue: "30000"
   type: 0
   required: false
-  hidden: true
 - display: Feed Fetch Interval
   name: feedFetchInterval
   type: 19
@@ -55,7 +54,6 @@ configuration:
   name: incidents_name
   type: 0
   required: false
-  hidden: true
 - display: Fieldnames (CSV)
   name: fieldnames
   defaultvalue: indicator,description,date

@@ -1,8 +1,8 @@
 commonfields:
   id: VerifyEnoughIndicators
   version: -1
-vcShouldKeepItemLegacyProdMachine: false
 name: VerifyEnoughIndicators
+fromversion: 5.5.0
 script: ''
 type: python
 tags: []
@@ -27,10 +27,8 @@ outputs:
   type: boolean
 scripttarget: 0
 subtype: python3
-pswd: ""
 runonce: false
-dockerimage: demisto/python3:3.9.5.20070
+dockerimage: demisto/python3:3.9.5.21272
 runas: DBotWeakRole
-engineinfo: {}
 tests:
 - No test
