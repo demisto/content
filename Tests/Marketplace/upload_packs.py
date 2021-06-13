@@ -628,7 +628,6 @@ def check_if_index_is_updated(index_folder_path: str, content_repo: Any, current
 
     """
     skipping_build_task_message = "Skipping Upload Packs To Marketplace Storage Step."
-    sys.exit(0)
 
     try:
         if storage_bucket.name not in (GCPConfig.CI_BUILD_BUCKET, GCPConfig.PRODUCTION_BUCKET):
