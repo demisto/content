@@ -10,7 +10,7 @@ args:
     \b.
 - name: group
   description: The matching group to return. If no group is provided the full match
-    will be returned. Te group value should start at 1.
+    will be returned. The group value should start at 1.
 - name: contextKey
   description: The context key to populate with the result.
 - name: flags
