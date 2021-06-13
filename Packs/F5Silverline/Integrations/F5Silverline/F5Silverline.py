@@ -76,6 +76,11 @@ def paging_args_to_params(page_size, page_number):
 
 
 def get_ip_and_mask_from_cidr(cidr_range):
+    """
+    The input can be one of the following:
+    1. an IPv4 address (i.e the input does not include the separator '/'). In this case the default mask is 32 .
+    2. a CIDR range which seems like this: IPv4/mask. for example : 1.2.3.4/32 .
+    """
     if '/' not in cidr_range:
         ip_address = cidr_range
         mask = '32'
@@ -146,7 +151,8 @@ def is_object_id_exist(client, object_id, list_type):
 def delete_ip_objects_command(client: Client, args: Dict[str, Any]):
     """
     Deletes an exist IP object from the requested list type (denylist or allowlist) by its object id or its ip.
-    Note: Human readable appears only if the HTTP request did not fail and the object id exists.
+    Note: Human readable appears only if the HTTP request did not fail and the object id exists. In case the ID does not
+    exist, an error will be raised.
     API docs: https://portal.f5silverline.com/docs/api/v1/ip_objects.md (DELETE section)
     """
     list_type = args['list_type']
