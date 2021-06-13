@@ -1,6 +1,6 @@
 {
     "name": "Qualys",
-    "description": "Network Security and Vulnerability Management",
+    "description": "Qualys Vulnerability Management let's you create, run, fetch and manage reports. Launch and manage vulnerability and compliance scans. Manage the host assets you want to scan for vulnerabilities and compliance",
     "support": "xsoar",
     "currentVersion": "1.0.4",
     "author": "Cortex XSOAR",
