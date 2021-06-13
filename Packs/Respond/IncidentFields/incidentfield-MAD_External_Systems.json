@@ -1,0 +1,60 @@
+{
+    "associatedToAll": false,
+    "associatedTypes": [
+        "Mandiant Automated Defense Incident"
+    ],
+    "caseInsensitive": true,
+    "cliName": "madexternalsystems",
+    "closeForm": false,
+    "columns": [
+        {
+            "displayName": "hostname",
+            "fieldCalcScript": "",
+            "isDefault": true,
+            "isReadOnly": false,
+            "key": "hostname",
+            "required": false,
+            "script": "",
+            "selectValues": null,
+            "type": "shortText",
+            "width": 150
+        },
+        {
+            "displayName": "ipaddress",
+            "fieldCalcScript": "",
+            "isDefault": true,
+            "isReadOnly": false,
+            "key": "ipaddress",
+            "required": false,
+            "script": "",
+            "selectValues": null,
+            "type": "shortText",
+            "width": 150
+        }
+    ],
+    "content": true,
+    "defaultRows": [
+        {},
+        {},
+        {}
+    ],
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_madexternalsystems",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "MAD External Systems",
+    "neverSetAsRequired": false,
+    "ownerOnly": false,
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "grid",
+    "unmapped": false,
+    "unsearchable": false,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "5.0.0"
+}

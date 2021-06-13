@@ -19,6 +19,7 @@ import xml.etree.cElementTree as ET
 from collections import OrderedDict
 from datetime import datetime, timedelta
 from abc import abstractmethod
+from distutils.version import LooseVersion
 
 import demistomock as demisto
 import warnings
@@ -565,15 +566,21 @@ def auto_detect_indicator_type(indicator_value):
         return FeedIndicatorType.File
 
     try:
-        no_cache_extract = tldextract.TLDExtract(cache_file=False, suffix_list_urls=None)
+        tldextract_version = tldextract.__version__
+        if LooseVersion(tldextract_version) < '3.0.0':
+            no_cache_extract = tldextract.TLDExtract(cache_file=False, suffix_list_urls=None)
+        else:
+            no_cache_extract = tldextract.TLDExtract(cache_dir=False, suffix_list_urls=None)
+
         if no_cache_extract(indicator_value).suffix:
             if '*' in indicator_value:
                 return FeedIndicatorType.DomainGlob
             return FeedIndicatorType.Domain
 
     except Exception:
-        pass
+        demisto.debug('tldextract failed to detect indicator type. indicator value: {}'.format(indicator_value))
 
+    demisto.debug('Failed to detect indicator type. Indicator value: {}'.format(indicator_value))
     return None
 
 
