@@ -3070,35 +3070,41 @@ def run_snippet_code_script_command(client: Client, args: Dict) -> CommandResult
     )
 
 
-def get_script_execution_status_command(client: Client, args: Dict) -> CommandResults:
-    action_id = args.get('action_id', '')
-    response = client.get_script_execution_status(action_id)
-    reply = response.get('reply')
-    reply['action_id'] = int(action_id)
-    return CommandResults(
-        readable_output=tableToMarkdown(f'Script Execution Status - {action_id}', reply),
-        outputs_prefix=f'{INTEGRATION_CONTEXT_BRAND}.ScriptStatus',
-        outputs_key_field='action_id',
-        outputs=reply,
-        raw_response=response,
-    )
+def get_script_execution_status_command(client: Client, args: Dict) -> List[CommandResults]:
+    action_ids = argToList(args.get('action_id', ''))
+    command_results = []
+    for action_id in action_ids:
+        response = client.get_script_execution_status(action_id)
+        reply = response.get('reply')
+        reply['action_id'] = int(action_id)
+        command_results.append(CommandResults(
+            readable_output=tableToMarkdown(f'Script Execution Status - {action_id}', reply),
+            outputs_prefix=f'{INTEGRATION_CONTEXT_BRAND}.ScriptStatus',
+            outputs_key_field='action_id',
+            outputs=reply,
+            raw_response=response,
+        ))
+    return command_results
 
 
-def get_script_execution_results_command(client: Client, args: Dict) -> CommandResults:
-    action_id = args.get('action_id', '')
-    response = client.get_script_execution_results(action_id)
-    results = response.get('reply', {}).get('results')
-    context = {
-        'action_id': int(action_id),
-        'results': results,
-    }
-    return CommandResults(
-        readable_output=tableToMarkdown(f'Script Execution Results - {action_id}', results),
-        outputs_prefix=f'{INTEGRATION_CONTEXT_BRAND}.ScriptResult',
-        outputs_key_field='action_id',
-        outputs=context,
-        raw_response=response,
-    )
+def get_script_execution_results_command(client: Client, args: Dict) -> List[CommandResults]:
+    action_ids = argToList(args.get('action_id', ''))
+    command_results = []
+    for action_id in action_ids:
+        response = client.get_script_execution_results(action_id)
+        results = response.get('reply', {}).get('results')
+        context = {
+            'action_id': int(action_id),
+            'results': results,
+        }
+        command_results.append(CommandResults(
+            readable_output=tableToMarkdown(f'Script Execution Results - {action_id}', results),
+            outputs_prefix=f'{INTEGRATION_CONTEXT_BRAND}.ScriptResult',
+            outputs_key_field='action_id',
+            outputs=context,
+            raw_response=response,
+        ))
+    return command_results
 
 
 def get_script_execution_result_files_command(client: Client, args: Dict) -> Dict:

@@ -2220,7 +2220,7 @@ def test_get_script_execution_status_command(requests_mock):
     response = get_script_execution_status_command(client, args)
 
     api_response['reply']['action_id'] = int(action_id)
-    assert response.outputs == api_response.get('reply')
+    assert response[0].outputs == api_response.get('reply')
     assert requests_mock.request_history[0].json() == {
         'request_data': {
             'action_id': action_id
@@ -2258,7 +2258,7 @@ def test_get_script_execution_results_command(requests_mock):
         'action_id': int(action_id),
         'results': api_response.get('reply').get('results')
     }
-    assert response.outputs == expected_output
+    assert response[0].outputs == expected_output
     assert requests_mock.request_history[0].json() == {
         'request_data': {
             'action_id': action_id

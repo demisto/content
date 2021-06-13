@@ -2483,7 +2483,7 @@ script:
       type: Number
   - arguments:
     - default: false
-      description: Action ID retrieved from the xdr-run-script command.
+      description: Action IDs retrieved from the xdr-run-script command.
       isArray: true
       name: action_id
       required: true
@@ -2533,7 +2533,7 @@ script:
       type: Number
   - arguments:
     - default: false
-      description: Action ID retrieved from the xdr-run-script command.
+      description: Action IDs retrieved from the xdr-run-script command.
       isArray: true
       name: action_id
       required: true
@@ -2674,7 +2674,8 @@ script:
       required: true
       secret: false
     - default: false
-      description: Paths of the files to delete. Paths of the files to check for existence. All of the given files will run on all of the endpoints.
+      description: Paths of the files to delete. Paths of the files to check for existence.
+        All of the given files will run on all of the endpoints.
       isArray: true
       name: file_path
       required: true
@@ -2707,7 +2708,8 @@ script:
       required: true
       secret: false
     - default: false
-      description: Paths of the files to check for existence. All of the given files will run on all of the endpoints.
+      description: Paths of the files to check for existence. All of the given files
+        will run on all of the endpoints.
       isArray: true
       name: file_path
       required: true
@@ -2739,7 +2741,8 @@ script:
       required: true
       secret: false
     - default: false
-      description: Names of processes to kill. Will kill all of the given processes on all of the endpoints.
+      description: Names of processes to kill. Will kill all of the given processes
+        on all of the endpoints.
       isArray: true
       name: process_name
       required: true
@@ -2810,7 +2813,7 @@ script:
     - contextPath: Endpoint.Vendor
       description: The integration name of the endpoint vendor.
       type: String
-  dockerimage: demisto/python3:3.9.5.20070
+  dockerimage: demisto/python3:3.9.5.21272
   feed: false
   isfetch: true
   longRunning: false

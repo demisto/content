@@ -2159,7 +2159,7 @@ Retrieves the status of a script execution action.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| action_id | Action ID retrieved from the [xdr-run-script](#xdr-run-script) command. | Required | 
+| action_id | Action IDs retrieved from the [xdr-run-script](#xdr-run-script) command. | Required | 
 
 
 #### Context Output
@@ -2223,7 +2223,7 @@ Retrieves the results of a script execution action.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| action_id | Action ID retrieved from the [xdr-run-script](#xdr-run-script) command. | Required | 
+| action_id | Action IDs retrieved from the [xdr-run-script](#xdr-run-script) command. | Required | 
 
 
 #### Context Output
