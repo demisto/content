@@ -84,7 +84,7 @@ configuration:
   name: days_before_hire_to_enable_ad
   required: false
   type: 0
-- additionalinfo: Events will be fetched only for User Profiles with Source Priority
+- additionalinfo: Events will be fetched only for User Profiles with a Source Priority
     value less than or equals to the value of this parameter.
   defaultvalue: '1'
   display: Source Priority Level
