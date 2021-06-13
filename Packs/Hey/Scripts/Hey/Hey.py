@@ -28,9 +28,15 @@ class HeyPerformanceResult:
         if c_in_n != int(c_in_n):
             self._n = int(c_in_n) * self._c
         self._result = result or ''
-        self._ext_results_map = {}
+        self._ext_results_map: Dict[str, str] = {}
         if results_map:
-            self._ext_results_map = dict(item.split("=") for item in results_map.split(";"))
+            ext_results_map = {}
+            for item in results_map.split(';'):
+                if isinstance(item, str):
+                    key_val = item.split(item)
+                    if len(key_val) > 1:
+                        ext_results_map[key_val[0]] = key_val[1]
+            self._ext_results_map = ext_results_map
 
     def to_results(self) -> CommandResults:
         df = pd.read_csv(StringIO(self._result), usecols=['response-time', 'status-code'])
@@ -49,7 +55,7 @@ class HeyPerformanceResult:
             total_time = response_times.sum() / int(self._c)  # not 100% accurate
             status_codes = df.get('status-code')
             successful_responses = len(tuple(code == 200 for code in status_codes))
-        outputs = {
+        outputs: Dict[str, Any] = {
             "TimeoutPerRequest": self._t,
             "Concurrency": self._c,
             "Requests": requests_num,
@@ -83,8 +89,8 @@ def run_command(command: str) -> str:
 
 
 def run_hey_test(url: str, n: Optional[str] = None, t: Optional[str] = None, c: Optional[str] = None,
-                 z: Optional[str] = None, m: Optional[str] = None,
-                 results_map: Optional[dict] = None) -> CommandResults:
+                 z: Optional[str] = None, m: Optional[str] = None, disable_compression: Optional[str] = None,
+                 results_map: Optional[str] = None) -> CommandResults:
     hey_map = assign_params(
         t=t,
         n=n,
@@ -93,7 +99,10 @@ def run_hey_test(url: str, n: Optional[str] = None, t: Optional[str] = None, c: 
         z=z + 's' if z else None,
         o='csv'
     )
-    hey_query = f"hey --disable-compression " + " ".join(f"-{k} {v}" for k, v in hey_map.items()) + f' {url}'
+    hey_query = "hey "
+    if disable_compression == 'true':
+        hey_query += '--disable-compression '
+    hey_query += " ".join(f"-{k} {v}" for k, v in hey_map.items()) + f' {url}'
     result = run_command(hey_query)
     return HeyPerformanceResult(result=result, results_map=results_map, **hey_map).to_results()
 

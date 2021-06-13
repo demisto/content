@@ -3389,7 +3389,7 @@
             "fromversion": "6.0.0",
             "timeout": 6000,
             "memory_threshold": 900,
-            "pid_threshold": 12,
+            "pid_threshold": 12
         }
     ],
     "skipped_tests": {
@@ -3747,9 +3747,6 @@
         "GCP Whitelist Feed",
         "Cortex Data Lake",
         "Mail Listener v2"
-    ],
-    "performance_tests": [
-        "EDL Performance Test"
     ],
     "docker_thresholds": {
 

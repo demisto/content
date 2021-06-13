@@ -30,6 +30,12 @@ args:
   - HEAD
   - OPTIONS
   description: HTTP method.
+- name: disable_compression
+  auto: PREDEFINED
+  predefined:
+  - true
+  - false
+  description: Disable compression.
 - name: results_map
   description: Additional information to add to the result. Semicolon separated list
     of "key=value". e.g. Type=IP;Size=100.
