@@ -91,7 +91,7 @@ tasks:
       - "9"
     scriptarguments:
       apps:
-        simple: git,zsh,libxmlsec1,protobuf,jq,protoc-gen-go,protoc-gen-go,elastic/tap/elasticsearch-full,pyenv,goenv,nodenv,pipenv
+        simple: git,zsh,libxmlsec1,protobuf,jq,protoc-gen-go,protoc-gen-go,elastic/tap/elasticsearch-full,pyenv,nodenv,pipenv
       cask_apps:
         simple: pycharm-ce,goland,webstorm,visual-studio-code,iterm2,postman,docker
       execution-timeout:
@@ -268,7 +268,7 @@ tasks:
       execution-timeout:
         simple: "7200"
       globals:
-        simple: 3.8.5,2.7.18
+        simple: 3.8.5
       retry-count:
         simple: "2"
       versions:
@@ -692,6 +692,8 @@ tasks:
       '#none#':
       - "20"
     scriptarguments:
+      execution-timeout:
+        simple: "7200"
       dest:
         simple: ~/dev/go/src/github.com/demisto/server
       force:
