@@ -18,7 +18,7 @@ Returns a map entry with a marker on the given coordinate (lat, lng).
 | --- | --- |
 | lat | The latitude. For example, `32.064622`. |
 | lng | The longitude. For example, `34.774131`. |
-| address | A location description. For example, `45 Rothschild, Tel Aviv, Israel` or `Mount Kilimanjaro`.|
+| address | A location description. For example, `1600 pennsylvania ave, DC` or `Mount Kilimanjaro`.|
 
 ## Outputs
 ---
