@@ -50,7 +50,7 @@ script: >
 type: javascript
 tags:
 - Utility
-comment: Returns a map entry with marker on the given coordinates (lat, lng), or address (requires a configured GoogleMaps instance)
+comment: Returns a map entry with marker on the given coordinates (lat, lng), or address (requires a configured GoogleMaps instance).
 enabled: true
 args:
 - name: lat

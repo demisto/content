@@ -46,7 +46,7 @@ def google_maps_geocode_command(client: Client, search_address: str, error_on_no
 
 
 def test_module(client: Client) -> str:
-    """Tests GoogleMaps by geocoding the address of Demisto's (original) HQ"""
+    """Tests GoogleMaps by geocoding a specific address"""
     client.google_maps_geocode('45 Rothschild, Tel Aviv', True)
     return 'ok'  # on any failure, an exception is raised
 
