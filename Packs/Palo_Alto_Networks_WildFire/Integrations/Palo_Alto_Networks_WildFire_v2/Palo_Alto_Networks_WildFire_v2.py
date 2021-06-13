@@ -91,7 +91,7 @@ def http_request(url: str, method: str, headers: dict = None, body=None, params=
         params=params,
         files=files
     )
-
+    demisto.debug(f'raw response is - {result.__dict__}')
     if str(result.reason) == 'Not Found':
         raise NotFoundError('Not Found.')
 
