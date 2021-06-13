@@ -64,7 +64,7 @@ Integration with Tanium REST API. Available from Tanium version 7.3.0. You can m
     </ol>
     </li>
 </ol>
-<h5>Notes:</h5>
+<strong>Notes:</strong>
 <ol>
     <li><strong>Trusted IP Addresses:</strong> by default, the Tanium Server blocks API tokens from all addresses except
      registered Tanium Module Servers. To add allowed IP addresses for any API token, add the IP addresses to the api_token_trusted_ip_address_list global setting. To add allowed IP addresses for an individual API token, specify the IP addresses in the trusted_ip_addresses field of the api_token object.</li>
