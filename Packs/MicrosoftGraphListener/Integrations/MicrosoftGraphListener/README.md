@@ -593,6 +593,14 @@ The following permissions are required for all commands:
  alt="image" width="749" height="412"></a>
  -->
 </p>
+<p>
+  <h5>Sending mails with embedded images</h5>
+  In order to send a mail with embedded image, the image content ID should be passed the <b>attach_cids</b> argument and referenced in the HTML mark-up.
+  Note: You will have to specify this CID reference when you add the attachment to the mail message.
+  For example:
+
+  <code>!send-mail subject="Mail with an embedded image" attach_cids=1@2 body_type=HTML body="&lt;h1&gt;A mail with an embedded image &lt;img src='cid:1@2' /&gt;&lt;/h1&gt;"</code>
+</p>
 
 <h3 id="msgraph-mail-reply-to">3. msgraph-mail-reply-to</h3>
 <hr>

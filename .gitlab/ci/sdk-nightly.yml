@@ -119,7 +119,7 @@ demisto-sdk-nightly:run-commands-against-instance:
     - section_start "Download Entities from XSOAR Instance" --collapsed
     - demisto-sdk download -o Packs/HelloWorld/ -i HelloWorld --insecure -f
     - demisto-sdk download -o Packs/HelloWorld/ -i HelloWorld-Test --insecure -f
-    - demisto-sdk download -o Packs/HelloWorld/ -i "Hello World Incident Test" --insecure -f
+    - demisto-sdk download -o Packs/HelloWorld/ -i "Hello World IncidentField Test" --insecure -f
     - demisto-sdk download -o Packs/HelloWorld/ -i "Hello World Alert Test" --insecure -f
     - demisto-sdk download -o Packs/HelloWorld/ -i "Hello World Test - Incoming Mapper" --insecure -f
     - section_end "Download Entities from XSOAR Instance"
