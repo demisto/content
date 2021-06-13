@@ -1,3 +1,5 @@
+from requests import Response
+
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 from CommonServerUserPython import *  # noqa
 
@@ -22,27 +24,31 @@ class Client(BaseClient):
                          proxy=proxy)
         self.api_key = api_key
 
-    def google_maps_geocode(self, search_address: str, error_on_no_results: bool) -> List[CommandResults]:
-        response = self._http_request(method='GET', url_suffix='geocode/json?',
-                                      params=assign_params(address=search_address, key=self.api_key))
+    def http_request(self, params: Dict):
+        return self._http_request(method='GET',
+                                  url_suffix='geocode/json?',
+                                  params={**params,
+                                          'key': self.api_key})
 
-        status = demisto.get(response, 'status')
-        if status == STATUS_OK:
-            return parse_response(response, search_address)
-
-        elif status == STATUS_ZERO_RESULTS:
-            if error_on_no_results:
-                raise DemistoException(message=MESSAGE_ZERO_RESULTS, res=response)
-            return [CommandResults(readable_output=MESSAGE_ZERO_RESULTS)]
-
-        else:
-            error_message = demisto.get(response, 'error_message') or ''
-            raise DemistoException(message=error_message, res=response)
+    def google_maps_geocode(self, search_address: str) -> Union[dict, str, Response]:
+        return self.http_request(params={'address': search_address})
 
 
 def google_maps_geocode_command(client: Client, search_address: str, error_on_no_results: bool) -> List[CommandResults]:
-    return client.google_maps_geocode(search_address=search_address,
-                                      error_on_no_results=error_on_no_results)
+    response = client.google_maps_geocode(search_address)
+
+    status = demisto.get(response, 'status')
+    if status == STATUS_OK:
+        return parse_response(response, search_address)
+
+    elif status == STATUS_ZERO_RESULTS:
+        if error_on_no_results:
+            raise DemistoException(message=MESSAGE_ZERO_RESULTS, res=response)
+        return [CommandResults(readable_output=MESSAGE_ZERO_RESULTS)]
+
+    else:
+        error_message = demisto.get(response, 'error_message') or ''
+        raise DemistoException(message=error_message, res=response)
 
 
 def test_module(client: Client) -> str:
@@ -104,7 +110,9 @@ def parse_response(response: Dict, search_address: str) -> List[CommandResults]:
             country = demisto.get(component, 'long_name')
             break
 
-    note_outputs = {'SearchAddress': search_address, 'Address': response_address, 'Country': country,
+    note_outputs = {'SearchAddress': search_address,
+                    'Address': response_address,
+                    'Country': country,
                     **coordinate_dict}
 
     # noinspection PyTypeChecker
@@ -122,6 +130,7 @@ def parse_response(response: Dict, search_address: str) -> List[CommandResults]:
 
     result_map = CommandResults(entry_type=EntryType.MAP_ENTRY_TYPE,
                                 raw_response=coordinate_dict)
+
     return [result_note, result_map]
 
 
