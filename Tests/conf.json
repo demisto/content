@@ -3432,7 +3432,6 @@
         "Carbon Black Enterprise Protection V2 Test": "Issue 32322",
         "Google_Vault-Search_And_Display_Results_test": "Issue 24348",
         "FeedThreatConnect-Test": "Issue 32317",
-        "HelloWorldPremium_Scan-Test": "Issue 32512",
         "Palo_Alto_Networks_Enterprise_DLP - Test": "Issue 32568",
         "JoeSecurityTestDetonation": "Issue 25650",
         "JoeSecurityTestPlaybook": "Issue 25649",
@@ -3474,9 +3473,7 @@
         "get_original_email_-_ews-_test": "Issue 27571",
         "PANW Threat Vault - Signature Search - Test": "Issue 30930",
         "TAXII_Feed_Test": "Issue 37588",
-        "Git_Integration-Test": "Issue 37800",
-        "pyEWS_Test": "Issue 27942",
-        "EWS Public Folders Test": "Issue 27941"
+        "Git_Integration-Test": "Issue 37800"
     },
     "skipped_integrations": {
         
@@ -3570,9 +3567,8 @@
         "Lastline": "issue 20323",
         "Google Resource Manager": "Cannot create projects because have reached allowed quota.",
         "Looker": "Warehouse 'DEMO_WH' cannot be resumed because resource monitor 'LIMITER' has exceeded its quota.",
-        "Ipstack": "Issue 26266",
-        
-        "_comment4": "~~~ OTHER ~~~",
+
+      "_comment4": "~~~ OTHER ~~~",
         "Pentera": "authentication method will not work with testing",
         "AlienVault OTX TAXII Feed": "Issue 29197",
         "EclecticIQ Platform": "Issue 8821",
@@ -3735,6 +3731,9 @@
         "GCP Whitelist Feed",
         "Cortex Data Lake",
         "Mail Listener v2"
+    ],
+    "private_tests": [
+        "HelloWorldPremium_Scan-Test"
     ],
     "docker_thresholds": {
         
