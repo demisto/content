@@ -6,10 +6,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 2eb9ddd0-ccf2-4f2a-87b7-fa3d85dbadae
+    taskid: b4488115-73b7-495b-8600-e4a2be5b2468
     type: start
     task:
-      id: 2eb9ddd0-ccf2-4f2a-87b7-fa3d85dbadae
+      id: b4488115-73b7-495b-8600-e4a2be5b2468
       version: -1
       name: ""
       iscommand: false
@@ -34,10 +34,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: 9418d23c-443f-4b4c-85cd-547c437aa5bd
+    taskid: bf61a569-4d29-4316-815e-25fbb8be4cb0
     type: regular
     task:
-      id: 9418d23c-443f-4b4c-85cd-547c437aa5bd
+      id: bf61a569-4d29-4316-815e-25fbb8be4cb0
       version: -1
       name: Clear Context
       description: Delete field from context
@@ -69,10 +69,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: 1076862d-ae4a-4255-8c98-859cd020e4f9
+    taskid: 63a5612d-76cb-4892-8edd-cc6832cc87ad
     type: title
     task:
-      id: 1076862d-ae4a-4255-8c98-859cd020e4f9
+      id: 63a5612d-76cb-4892-8edd-cc6832cc87ad
       version: -1
       name: 10,000 Indicators
       type: title
@@ -80,7 +80,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "3"
+      - "29"
     separatecontext: false
     view: |-
       {
@@ -98,10 +98,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: 10dbaa6b-47a6-480a-8a11-4d606c011d8e
+    taskid: 5758dd86-5cb9-4fc2-8efe-08e11027ce77
     type: playbook
     task:
-      id: 10dbaa6b-47a6-480a-8a11-4d606c011d8e
+      id: 5758dd86-5cb9-4fc2-8efe-08e11027ce77
       version: -1
       name: EDL Performance Test - Concurrency
       playbookName: EDL Performance Test - Concurrency
@@ -136,7 +136,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2965
+          "y": 4365
         }
       }
     note: false
@@ -148,10 +148,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: 6e631bba-210b-49c3-8ddc-4006a454a40a
+    taskid: a4ce7f17-8c94-43d9-8e62-9889406a45c0
     type: playbook
     task:
-      id: 6e631bba-210b-49c3-8ddc-4006a454a40a
+      id: a4ce7f17-8c94-43d9-8e62-9889406a45c0
       version: -1
       name: EDL Performance Test - Concurrency
       playbookName: EDL Performance Test - Concurrency
@@ -182,7 +182,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 3635
+          "y": 6610
         }
       }
     note: false
@@ -194,10 +194,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: 4f4bda2f-7322-44be-879e-1639abd40fe7
+    taskid: 0cceb9fc-7fc4-49ed-8c37-e072d39189cc
     type: title
     task:
-      id: 4f4bda2f-7322-44be-879e-1639abd40fe7
+      id: 0cceb9fc-7fc4-49ed-8c37-e072d39189cc
       version: -1
       name: 50,000 Indicators
       type: title
@@ -205,13 +205,13 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "4"
+      - "38"
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 3490
+          "y": 5065
         }
       }
     note: false
@@ -223,10 +223,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: 35507e73-efd2-4aaa-8fa5-c3296820bd82
+    taskid: c7839f2d-70a7-433a-8894-c607b4ab4ef3
     type: title
     task:
-      id: 35507e73-efd2-4aaa-8fa5-c3296820bd82
+      id: c7839f2d-70a7-433a-8894-c607b4ab4ef3
       version: -1
       name: 100,000 Indicators
       type: title
@@ -234,13 +234,13 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "7"
+      - "48"
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 4160
+          "y": 7310
         }
       }
     note: false
@@ -252,10 +252,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    taskid: 9a5ef27f-b926-44d6-82ab-bab7f7159549
+    taskid: d3a31449-2ce9-47c5-835c-b9bc99236878
     type: playbook
     task:
-      id: 9a5ef27f-b926-44d6-82ab-bab7f7159549
+      id: d3a31449-2ce9-47c5-835c-b9bc99236878
       version: -1
       name: EDL Performance Test - Concurrency
       playbookName: EDL Performance Test - Concurrency
@@ -286,7 +286,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 4305
+          "y": 8855
         }
       }
     note: false
@@ -298,10 +298,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: 9823e492-a8ac-4e0f-852a-b0012feeb71f
+    taskid: 5efa7e8b-ed93-400b-80b3-f9acfaf6805c
     type: regular
     task:
-      id: 9823e492-a8ac-4e0f-852a-b0012feeb71f
+      id: 5efa7e8b-ed93-400b-80b3-f9acfaf6805c
       version: -1
       name: Set Small Outputs
       description: Set a value in context under the key you entered.
@@ -311,7 +311,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "9"
+      - "37"
     scriptarguments:
       key:
         simple: EDLHey.Small
@@ -322,7 +322,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 3140
+          "y": 4540
         }
       }
     note: false
@@ -334,10 +334,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    taskid: dcc11d96-e0df-4645-8ebb-5f48d580cd9c
+    taskid: 41d2a16c-6284-4786-82b3-2f9d2ffd493d
     type: regular
     task:
-      id: dcc11d96-e0df-4645-8ebb-5f48d580cd9c
+      id: 41d2a16c-6284-4786-82b3-2f9d2ffd493d
       version: -1
       name: Clear Hey Context
       description: Delete field from context
@@ -359,7 +359,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 3315
+          "y": 4890
         }
       }
     note: false
@@ -371,10 +371,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "10":
     id: "10"
-    taskid: 71e346aa-cafa-4722-8d11-83771646f766
+    taskid: 291c4179-91c4-4f03-81e0-3fb39cec492a
     type: regular
     task:
-      id: 71e346aa-cafa-4722-8d11-83771646f766
+      id: 291c4179-91c4-4f03-81e0-3fb39cec492a
       version: -1
       name: Set Medium Outputs
       description: Set a value in context under the key you entered.
@@ -384,7 +384,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "11"
+      - "46"
     scriptarguments:
       key:
         simple: EDLHey.Meduim
@@ -395,7 +395,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 3810
+          "y": 6785
         }
       }
     note: false
@@ -407,10 +407,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "11":
     id: "11"
-    taskid: 576cec4e-952f-4898-8a43-d290794a9d65
+    taskid: bbb74850-f77d-4389-86b9-d17e6c5f63b5
     type: regular
     task:
-      id: 576cec4e-952f-4898-8a43-d290794a9d65
+      id: bbb74850-f77d-4389-86b9-d17e6c5f63b5
       version: -1
       name: Clear Hey Context
       description: Delete field from context
@@ -432,7 +432,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 3985
+          "y": 7135
         }
       }
     note: false
@@ -444,10 +444,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "12":
     id: "12"
-    taskid: f08e3e3b-f4ab-427d-8ed7-3ffff340becc
+    taskid: 78eba83d-1642-4d95-895a-1b2ed80137ce
     type: regular
     task:
-      id: f08e3e3b-f4ab-427d-8ed7-3ffff340becc
+      id: 78eba83d-1642-4d95-895a-1b2ed80137ce
       version: -1
       name: Set Large Outputs
       description: Set a value in context under the key you entered.
@@ -457,7 +457,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "13"
+      - "47"
     scriptarguments:
       key:
         simple: EDLHey.Large
@@ -468,41 +468,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 4480
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "13":
-    id: "13"
-    taskid: c4db1a84-b7d7-4238-8eab-3af7174d3806
-    type: regular
-    task:
-      id: c4db1a84-b7d7-4238-8eab-3af7174d3806
-      version: -1
-      name: Clear Hey Context
-      description: Delete field from context
-      scriptName: DeleteContext
-      type: regular
-      iscommand: false
-      brand: ""
-    scriptarguments:
-      all:
-        simple: "no"
-      key:
-        simple: Hey
-    continueonerror: true
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 4655
+          "y": 9030
         }
       }
     note: false
@@ -514,10 +480,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "14":
     id: "14"
-    taskid: b65aa856-4fd4-401d-8f9e-ea8d923defdd
+    taskid: 5fa7f355-501f-4fcb-887e-caa603d57fc4
     type: regular
     task:
-      id: b65aa856-4fd4-401d-8f9e-ea8d923defdd
+      id: 5fa7f355-501f-4fcb-887e-caa603d57fc4
       version: -1
       name: Check IP Is Ready
       description: Returns, whether there're, are enough indicators in the system.
@@ -550,10 +516,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "15":
     id: "15"
-    taskid: 278af3d2-10fb-440c-833b-faafbd0622dd
+    taskid: 0e157eb8-fa50-4124-8b29-0267f1ae6319
     type: condition
     task:
-      id: 278af3d2-10fb-440c-833b-faafbd0622dd
+      id: 0e157eb8-fa50-4124-8b29-0267f1ae6319
       version: -1
       name: Verify IP Is Ready
       type: condition
@@ -589,10 +555,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "16":
     id: "16"
-    taskid: 27fb58d9-ee50-4dc1-8c3b-160343aa698b
+    taskid: 8d51ee5c-9e0b-4e23-8c26-47789627ac2f
     type: regular
     task:
-      id: 27fb58d9-ee50-4dc1-8c3b-160343aa698b
+      id: 8d51ee5c-9e0b-4e23-8c26-47789627ac2f
       version: -1
       name: Clear Context
       description: Delete field from context
@@ -624,10 +590,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "17":
     id: "17"
-    taskid: 7a127cae-5c09-447b-80e1-4ffc2bd8ed3f
+    taskid: 9a6a81c4-f27f-431a-8ac2-c673596db6d6
     type: playbook
     task:
-      id: 7a127cae-5c09-447b-80e1-4ffc2bd8ed3f
+      id: 9a6a81c4-f27f-431a-8ac2-c673596db6d6
       version: -1
       name: GenericPolling
       description: |-
@@ -684,10 +650,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "18":
     id: "18"
-    taskid: 2e890bb8-a0ac-4a48-802d-cdf70ea36a61
+    taskid: da52b9be-968a-4c2d-8dc8-b3244390bf2d
     type: regular
     task:
-      id: 2e890bb8-a0ac-4a48-802d-cdf70ea36a61
+      id: da52b9be-968a-4c2d-8dc8-b3244390bf2d
       version: -1
       name: Check Domain Is Ready
       description: Returns, whether there're, are enough indicators in the system.
@@ -720,10 +686,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "19":
     id: "19"
-    taskid: 636a581d-84f7-444f-8a08-68dad3bf9330
+    taskid: 7e15ad6b-178f-494a-8cc4-2ac8cea7a54b
     type: condition
     task:
-      id: 636a581d-84f7-444f-8a08-68dad3bf9330
+      id: 7e15ad6b-178f-494a-8cc4-2ac8cea7a54b
       version: -1
       name: Verify Domain Is Ready
       type: condition
@@ -759,10 +725,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "20":
     id: "20"
-    taskid: 392a8f1f-19c6-48f7-863f-69519804e184
+    taskid: 020c90ec-94b9-4e04-849e-c3cfb674ad72
     type: regular
     task:
-      id: 392a8f1f-19c6-48f7-863f-69519804e184
+      id: 020c90ec-94b9-4e04-849e-c3cfb674ad72
       version: -1
       name: Clear Context
       description: Delete field from context
@@ -794,10 +760,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "21":
     id: "21"
-    taskid: ffd406a0-04c5-4846-890b-36f6eddc270f
+    taskid: 1156e1f5-12de-45d9-8d77-a8e4040fc318
     type: playbook
     task:
-      id: ffd406a0-04c5-4846-890b-36f6eddc270f
+      id: 1156e1f5-12de-45d9-8d77-a8e4040fc318
       version: -1
       name: GenericPolling
       description: |-
@@ -854,10 +820,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "22":
     id: "22"
-    taskid: cebb39e4-4109-4b3c-8fc2-ea773a81f5a2
+    taskid: 7c679279-e1e5-4ea3-81af-b082c86f7e27
     type: regular
     task:
-      id: cebb39e4-4109-4b3c-8fc2-ea773a81f5a2
+      id: 7c679279-e1e5-4ea3-81af-b082c86f7e27
       version: -1
       name: Check URL Is Ready
       description: Returns, whether there're, are enough indicators in the system.
@@ -890,10 +856,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "23":
     id: "23"
-    taskid: 3f0abebd-024d-42a5-86a2-c142ee96e775
+    taskid: ff8f9c90-9001-4158-8a65-24984d16e65a
     type: regular
     task:
-      id: 3f0abebd-024d-42a5-86a2-c142ee96e775
+      id: ff8f9c90-9001-4158-8a65-24984d16e65a
       version: -1
       name: Clear Context
       description: Delete field from context
@@ -906,7 +872,7 @@ tasks:
       - "28"
     scriptarguments:
       all:
-        simple: "no"
+        simple: "yes"
     continueonerror: true
     separatecontext: false
     view: |-
@@ -925,10 +891,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "24":
     id: "24"
-    taskid: df125a0e-2738-4ca8-8f9a-80d512f06ce2
+    taskid: d637ff73-90c5-420b-8790-ee27e005f47c
     type: condition
     task:
-      id: df125a0e-2738-4ca8-8f9a-80d512f06ce2
+      id: d637ff73-90c5-420b-8790-ee27e005f47c
       version: -1
       name: Verify URL Is Ready
       type: condition
@@ -964,10 +930,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "25":
     id: "25"
-    taskid: a7c13bdf-f1e9-486a-8976-cab792f9bc4f
+    taskid: 3e0cc38c-bf8b-40c9-89e2-2f27b0d2d86d
     type: playbook
     task:
-      id: a7c13bdf-f1e9-486a-8976-cab792f9bc4f
+      id: 3e0cc38c-bf8b-40c9-89e2-2f27b0d2d86d
       version: -1
       name: GenericPolling
       description: |-
@@ -1024,10 +990,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "27":
     id: "27"
-    taskid: cd4abc13-d518-4934-803f-4a6fa7a70f38
+    taskid: 300049c5-0788-4766-8b1b-f6ea9ba49caa
     type: regular
     task:
-      id: cd4abc13-d518-4934-803f-4a6fa7a70f38
+      id: 300049c5-0788-4766-8b1b-f6ea9ba49caa
       version: -1
       name: Set URL
       description: Set a value in context under the key you entered.
@@ -1082,10 +1048,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "28":
     id: "28"
-    taskid: aabc615a-cae3-424a-8f7d-c6e0476eecfb
+    taskid: faef39b4-8c1e-4f08-8e31-f98ab96c56ac
     type: regular
     task:
-      id: aabc615a-cae3-424a-8f7d-c6e0476eecfb
+      id: faef39b4-8c1e-4f08-8e31-f98ab96c56ac
       version: -1
       name: Get Server URL
       description: Get the Server URL.
@@ -1111,12 +1077,1184 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "29":
+    id: "29"
+    taskid: d0c858e0-a913-454f-8675-ab4665095629
+    type: regular
+    task:
+      id: d0c858e0-a913-454f-8675-ab4665095629
+      version: -1
+      name: Send URL EDL Query
+      description: Sends http request. Returns the response as json.
+      scriptName: http
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "30"
+    scriptarguments:
+      method:
+        simple: GET
+      url:
+        complex:
+          root: ServerURL
+          transformers:
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: ?n=10000&q=type:URL
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2965
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "30":
+    id: "30"
+    taskid: 3864ccc3-3611-4c8a-8083-185ec7ed14da
+    type: condition
+    task:
+      id: 3864ccc3-3611-4c8a-8083-185ec7ed14da
+      version: -1
+      name: Assert Search Time OK
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "33"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: lessThanOrEqual
+          left:
+            value:
+              complex:
+                root: HttpRequest.Response.Headers
+                accessor: X-Edl-Query-Time-Secs
+                transformers:
+                - operator: round
+            iscontext: true
+          right:
+            value:
+              simple: "8"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3140
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "31":
+    id: "31"
+    taskid: 1a0c2c03-7d55-4d79-8c3f-d78bc6e971fe
+    type: regular
+    task:
+      id: 1a0c2c03-7d55-4d79-8c3f-d78bc6e971fe
+      version: -1
+      name: Send IP EDL Query
+      description: Sends http request. Returns the response as json.
+      scriptName: http
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "32"
+    scriptarguments:
+      method:
+        simple: GET
+      url:
+        complex:
+          root: ServerURL
+          transformers:
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: ?n=10000&q=type:IP
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3490
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "32":
+    id: "32"
+    taskid: 909d6051-faad-4a5f-8910-3b56a7fbd399
+    type: condition
+    task:
+      id: 909d6051-faad-4a5f-8910-3b56a7fbd399
+      version: -1
+      name: Assert Search Time OK
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "34"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: lessThanOrEqual
+          left:
+            value:
+              complex:
+                root: HttpRequest.Response.Headers
+                accessor: X-Edl-Query-Time-Secs
+                transformers:
+                - operator: round
+            iscontext: true
+          right:
+            value:
+              simple: "8"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3665
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "33":
+    id: "33"
+    taskid: 4b8f5db2-b1cf-458a-852e-a55c875ecb0e
+    type: regular
+    task:
+      id: 4b8f5db2-b1cf-458a-852e-a55c875ecb0e
+      version: -1
+      name: Clear Context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "31"
+    scriptarguments:
+      all:
+        simple: "no"
+      key:
+        simple: ${HttpRequest}
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3315
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "34":
+    id: "34"
+    taskid: 1bf0d744-e98f-40c2-8f22-c7d0175bdb69
+    type: regular
+    task:
+      id: 1bf0d744-e98f-40c2-8f22-c7d0175bdb69
+      version: -1
+      name: Clear Context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "35"
+    scriptarguments:
+      all:
+        simple: "no"
+      key:
+        simple: ${HttpRequest}
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3840
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "35":
+    id: "35"
+    taskid: 82baf477-4cd6-413b-8f03-99cb1441c450
+    type: regular
+    task:
+      id: 82baf477-4cd6-413b-8f03-99cb1441c450
+      version: -1
+      name: Send Domain EDL Query
+      description: Sends http request. Returns the response as json.
+      scriptName: http
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "36"
+    scriptarguments:
+      method:
+        simple: GET
+      url:
+        complex:
+          root: ServerURL
+          transformers:
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: ?n=10000&q=type:Domain
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4015
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "36":
+    id: "36"
+    taskid: 6b377328-b046-4750-8bb4-599e622223a2
+    type: condition
+    task:
+      id: 6b377328-b046-4750-8bb4-599e622223a2
+      version: -1
+      name: Assert Search Time OK
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "3"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: lessThanOrEqual
+          left:
+            value:
+              complex:
+                root: HttpRequest.Response.Headers
+                accessor: X-Edl-Query-Time-Secs
+                transformers:
+                - operator: round
+            iscontext: true
+          right:
+            value:
+              simple: "8"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4190
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "37":
+    id: "37"
+    taskid: 4ddbedd2-0b9a-4c17-8c72-0ca577fc4b5d
+    type: condition
+    task:
+      id: 4ddbedd2-0b9a-4c17-8c72-0ca577fc4b5d
+      version: -1
+      name: Assert Slowest Time Is OK
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "9"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: lessThanOrEqual
+          left:
+            value:
+              complex:
+                root: Hey
+                accessor: SlowestTime
+                transformers:
+                - operator: round
+            iscontext: true
+          right:
+            value:
+              simple: "1"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4715
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "38":
+    id: "38"
+    taskid: b5984491-79d3-469c-87ca-a9e1051ec817
+    type: regular
+    task:
+      id: b5984491-79d3-469c-87ca-a9e1051ec817
+      version: -1
+      name: Send URL EDL Query
+      description: Sends http request. Returns the response as json.
+      scriptName: http
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "39"
+    scriptarguments:
+      method:
+        simple: GET
+      url:
+        complex:
+          root: ServerURL
+          transformers:
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: ?n=50000&q=type:URL
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5210
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "39":
+    id: "39"
+    taskid: 8002bc97-552a-46ee-8787-1d0c21e5df4e
+    type: condition
+    task:
+      id: 8002bc97-552a-46ee-8787-1d0c21e5df4e
+      version: -1
+      name: Assert Search Time OK
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "40"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: lessThanOrEqual
+          left:
+            value:
+              complex:
+                root: HttpRequest.Response.Headers
+                accessor: X-Edl-Query-Time-Secs
+                transformers:
+                - operator: round
+            iscontext: true
+          right:
+            value:
+              simple: "30"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5385
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "40":
+    id: "40"
+    taskid: 42b24e86-418d-4cf6-838f-daf01049a16f
+    type: regular
+    task:
+      id: 42b24e86-418d-4cf6-838f-daf01049a16f
+      version: -1
+      name: Clear Context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "41"
+    scriptarguments:
+      all:
+        simple: "no"
+      key:
+        simple: ${HttpRequest}
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5560
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "41":
+    id: "41"
+    taskid: 32b39e59-fecb-4697-86d3-aa2736639df3
+    type: regular
+    task:
+      id: 32b39e59-fecb-4697-86d3-aa2736639df3
+      version: -1
+      name: Send IP EDL Query
+      description: Sends http request. Returns the response as json.
+      scriptName: http
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "42"
+    scriptarguments:
+      method:
+        simple: GET
+      url:
+        complex:
+          root: ServerURL
+          transformers:
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: ?n=50000&q=type:IP
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5735
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "42":
+    id: "42"
+    taskid: 6516dbff-204d-42be-8d22-b270f9f52957
+    type: condition
+    task:
+      id: 6516dbff-204d-42be-8d22-b270f9f52957
+      version: -1
+      name: Assert Search Time OK
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "43"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: lessThanOrEqual
+          left:
+            value:
+              complex:
+                root: HttpRequest.Response.Headers
+                accessor: X-Edl-Query-Time-Secs
+                transformers:
+                - operator: round
+            iscontext: true
+          right:
+            value:
+              simple: "30"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5910
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "43":
+    id: "43"
+    taskid: affb4eec-8f9e-48ef-82b3-d248012d8293
+    type: regular
+    task:
+      id: affb4eec-8f9e-48ef-82b3-d248012d8293
+      version: -1
+      name: Clear Context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "44"
+    scriptarguments:
+      all:
+        simple: "no"
+      key:
+        simple: ${HttpRequest}
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 6085
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "44":
+    id: "44"
+    taskid: f4e1e2f2-63c3-421b-8484-7a8acbaf7522
+    type: regular
+    task:
+      id: f4e1e2f2-63c3-421b-8484-7a8acbaf7522
+      version: -1
+      name: Send Domain EDL Query
+      description: Sends http request. Returns the response as json.
+      scriptName: http
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "45"
+    scriptarguments:
+      method:
+        simple: GET
+      url:
+        complex:
+          root: ServerURL
+          transformers:
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: ?n=50000&q=type:Domain
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 6260
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "45":
+    id: "45"
+    taskid: 72d52309-8618-4868-8a03-de9c1c989429
+    type: condition
+    task:
+      id: 72d52309-8618-4868-8a03-de9c1c989429
+      version: -1
+      name: Assert Search Time OK
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: lessThanOrEqual
+          left:
+            value:
+              complex:
+                root: HttpRequest.Response.Headers
+                accessor: X-Edl-Query-Time-Secs
+                transformers:
+                - operator: round
+            iscontext: true
+          right:
+            value:
+              simple: "30"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 6435
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "46":
+    id: "46"
+    taskid: 9e0d2dc4-e19a-4939-8635-9d7dce4645a5
+    type: condition
+    task:
+      id: 9e0d2dc4-e19a-4939-8635-9d7dce4645a5
+      version: -1
+      name: Assert Slowest Time Is OK
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "11"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: lessThanOrEqual
+          left:
+            value:
+              complex:
+                root: Hey
+                accessor: SlowestTime
+                transformers:
+                - operator: round
+            iscontext: true
+          right:
+            value:
+              simple: "2"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 6960
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "47":
+    id: "47"
+    taskid: 2217a330-3464-49da-8ff9-c4f05cf02344
+    type: condition
+    task:
+      id: 2217a330-3464-49da-8ff9-c4f05cf02344
+      version: -1
+      name: Assert Slowest Time Is OK
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "56"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: lessThanOrEqual
+          left:
+            value:
+              complex:
+                root: Hey
+                accessor: SlowestTime
+                transformers:
+                - operator: round
+            iscontext: true
+          right:
+            value:
+              simple: "2"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 9205
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "48":
+    id: "48"
+    taskid: 91653521-ac33-4f26-822b-f7579a32b12e
+    type: regular
+    task:
+      id: 91653521-ac33-4f26-822b-f7579a32b12e
+      version: -1
+      name: Send URL EDL Query
+      description: Sends http request. Returns the response as json.
+      scriptName: http
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "49"
+    scriptarguments:
+      method:
+        simple: GET
+      url:
+        complex:
+          root: ServerURL
+          transformers:
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: ?n=100000&q=type:URL
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 7455
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "49":
+    id: "49"
+    taskid: c1a082f9-b79e-4d12-8aa9-6f61b37f244e
+    type: condition
+    task:
+      id: c1a082f9-b79e-4d12-8aa9-6f61b37f244e
+      version: -1
+      name: Assert Search Time OK
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "50"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: lessThanOrEqual
+          left:
+            value:
+              complex:
+                root: HttpRequest.Response.Headers
+                accessor: X-Edl-Query-Time-Secs
+                transformers:
+                - operator: round
+            iscontext: true
+          right:
+            value:
+              simple: "70"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 7630
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "50":
+    id: "50"
+    taskid: 86d1e7f5-bc38-4335-8b57-01a67b60273e
+    type: regular
+    task:
+      id: 86d1e7f5-bc38-4335-8b57-01a67b60273e
+      version: -1
+      name: Clear Context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "51"
+    scriptarguments:
+      all:
+        simple: "no"
+      key:
+        simple: ${HttpRequest}
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 7805
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "51":
+    id: "51"
+    taskid: 40181413-20ea-4632-8cea-99b1803e9693
+    type: regular
+    task:
+      id: 40181413-20ea-4632-8cea-99b1803e9693
+      version: -1
+      name: Send IP EDL Query
+      description: Sends http request. Returns the response as json.
+      scriptName: http
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "52"
+    scriptarguments:
+      method:
+        simple: GET
+      url:
+        complex:
+          root: ServerURL
+          transformers:
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: ?n=100000&q=type:IP
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 7980
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "52":
+    id: "52"
+    taskid: dbe8baf7-e9cb-40c4-85db-f5b5f89d7e19
+    type: condition
+    task:
+      id: dbe8baf7-e9cb-40c4-85db-f5b5f89d7e19
+      version: -1
+      name: Assert Search Time OK
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "53"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: lessThanOrEqual
+          left:
+            value:
+              complex:
+                root: HttpRequest.Response.Headers
+                accessor: X-Edl-Query-Time-Secs
+                transformers:
+                - operator: round
+            iscontext: true
+          right:
+            value:
+              simple: "70"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 8155
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "53":
+    id: "53"
+    taskid: aa03fe51-133d-41a5-8f5f-5a8c912ababf
+    type: regular
+    task:
+      id: aa03fe51-133d-41a5-8f5f-5a8c912ababf
+      version: -1
+      name: Clear Context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "54"
+    scriptarguments:
+      all:
+        simple: "no"
+      key:
+        simple: ${HttpRequest}
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 8330
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "54":
+    id: "54"
+    taskid: 7fc05497-af80-4ed7-8c82-72e66d29e414
+    type: regular
+    task:
+      id: 7fc05497-af80-4ed7-8c82-72e66d29e414
+      version: -1
+      name: Send Domain EDL Query
+      description: Sends http request. Returns the response as json.
+      scriptName: http
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "55"
+    scriptarguments:
+      method:
+        simple: GET
+      url:
+        complex:
+          root: ServerURL
+          transformers:
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: ?n=100000&q=type:Domain
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 8505
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "55":
+    id: "55"
+    taskid: 9827f939-3d73-459c-87ff-dea5d5029398
+    type: condition
+    task:
+      id: 9827f939-3d73-459c-87ff-dea5d5029398
+      version: -1
+      name: Assert Search Time OK
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "7"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: lessThanOrEqual
+          left:
+            value:
+              complex:
+                root: HttpRequest.Response.Headers
+                accessor: X-Edl-Query-Time-Secs
+                transformers:
+                - operator: round
+            iscontext: true
+          right:
+            value:
+              simple: "70"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 8680
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "56":
+    id: "56"
+    taskid: a27fc7fb-0254-4e84-8a83-5000665a8f2b
+    type: title
+    task:
+      id: a27fc7fb-0254-4e84-8a83-5000665a8f2b
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 9380
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 4700,
+        "height": 9395,
         "width": 492.5,
         "x": 50,
         "y": 50
