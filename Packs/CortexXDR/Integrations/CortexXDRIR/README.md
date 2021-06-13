@@ -2385,7 +2385,7 @@ Initiates a new endpoint script execution to delete the specified file.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | endpoint_ids | Comma-separated list of endpoint IDs. Can be retrieved by running the [xdr-get-endpoints](#8-xdr-get-endpoints) command. | Required |
-| file_path |  Paths of the files to delete. All files will run on all endpoints. | Required |
+| file_path |  Paths of the files to delete, in a comma-separated list. Paths of the files to check for existence. All of the given file paths will run on all of the endpoints. | Required |
 | timeout | The timeout in seconds for this execution. Default is 600. | Optional |
 
 
@@ -2436,7 +2436,7 @@ Initiates a new endpoint script execution to check if the file exists.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | endpoint_ids | Comma-separated list of endpoint IDs. Can be retrieved by running the [xdr-get-endpoints](#8-xdr-get-endpoints) command. | Required |
-| file_path | Paths of the files to check for existence. All files will run on all endpoints. | Required |
+| file_path | Paths of the files to check for existence, in a comma-separated list. All of the given file paths will run on all of the endpoints. | Required |
 | timeout | The timeout in seconds for this execution. Default is 600. | Optional |
 
 
