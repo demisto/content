@@ -1,6 +1,6 @@
 import pytest
-import Qualys_v2
-from Qualys_v2 import is_empty_result, format_and_validate_response,\
+import Qualysv2
+from Qualysv2 import is_empty_result, format_and_validate_response,\
     parse_two_keys_dict, create_ip_list_dicts, build_args_dict, handle_general_result,\
     change_dict_keys, COMMANDS_ARGS_DATA, limit_ip_results
 from CommonServerPython import DemistoException
@@ -172,7 +172,7 @@ class TestHandleGeneralResult:
             - return the path requested
         """
         json_obj = {'IP_LIST_OUTPUT': {'RESPONSE': {'DATETIME': 'sometime', 'IP_SET': {'IP': ['1.1.1.1']}}}}
-        mocker.patch.object(Qualys_v2, 'format_and_validate_response', return_value=json_obj)
+        mocker.patch.object(Qualysv2, 'format_and_validate_response', return_value=json_obj)
         dummy_response = requests.Response()
 
         assert handle_general_result(dummy_response, 'qualys-ip-list') == {'DATETIME': 'sometime',
@@ -192,8 +192,8 @@ class TestHandleGeneralResult:
         with pytest.raises(ValueError):
             json_obj = {'IP_LIST_OUTPUT': {'RESPONSE': {'DATETIME': 'sometime', 'IP_SET': {'IP': ['1.1.1.1']}}}}
             path = {'qualys-ip-list': {'json_path': ['IP_SET', 'WHAT']}}
-            mocker.patch.object(Qualys_v2, 'format_and_validate_response', return_value=json_obj)
-            mocker.patch.object(Qualys_v2, 'COMMANDS_PARSE_AND_OUTPUT_DATA', path)
+            mocker.patch.object(Qualysv2, 'format_and_validate_response', return_value=json_obj)
+            mocker.patch.object(Qualysv2, 'COMMANDS_PARSE_AND_OUTPUT_DATA', path)
             dummy_response = requests.Response()
 
             handle_general_result(dummy_response, 'qualys-ip-list')
@@ -212,8 +212,8 @@ class TestHandleGeneralResult:
         with pytest.raises(ValueError):
             json_obj = {}
             path = {'qualys-ip-list': {'json_path': ['IP_SET', 'WHAT']}}
-            mocker.patch.object(Qualys_v2, 'format_and_validate_response', return_value=json_obj)
-            mocker.patch.object(Qualys_v2, 'COMMANDS_PARSE_AND_OUTPUT_DATA', path)
+            mocker.patch.object(Qualysv2, 'format_and_validate_response', return_value=json_obj)
+            mocker.patch.object(Qualysv2, 'COMMANDS_PARSE_AND_OUTPUT_DATA', path)
             dummy_response = requests.Response()
 
             handle_general_result(dummy_response, 'qualys-ip-list')
@@ -232,8 +232,8 @@ class TestHandleGeneralResult:
         with pytest.raises(ValueError):
             json_obj = None
             path = {'qualys-ip-list': {'json_path': ['IP_SET', 'WHAT']}}
-            mocker.patch.object(Qualys_v2, 'format_and_validate_response', return_value=json_obj)
-            mocker.patch.object(Qualys_v2, 'COMMANDS_PARSE_AND_OUTPUT_DATA', path)
+            mocker.patch.object(Qualysv2, 'format_and_validate_response', return_value=json_obj)
+            mocker.patch.object(Qualysv2, 'COMMANDS_PARSE_AND_OUTPUT_DATA', path)
             dummy_response = requests.Response()
 
             handle_general_result(dummy_response, 'qualys-ip-list')
@@ -251,8 +251,8 @@ class TestHandleGeneralResult:
         """
         json_obj = {'IP_LIST_OUTPUT': {'RESPONSE': {'DATETIME': 'sometime', 'IP_SET': {'IP': ['1.1.1.1']}}}}
         path = {'qualys-ip-list': {'json_path': []}}
-        mocker.patch.object(Qualys_v2, 'format_and_validate_response', return_value=json_obj)
-        mocker.patch.object(Qualys_v2, 'COMMANDS_PARSE_AND_OUTPUT_DATA', path)
+        mocker.patch.object(Qualysv2, 'format_and_validate_response', return_value=json_obj)
+        mocker.patch.object(Qualysv2, 'COMMANDS_PARSE_AND_OUTPUT_DATA', path)
         dummy_response = requests.Response()
 
         result = handle_general_result(dummy_response, 'qualys-ip-list')
@@ -556,7 +556,7 @@ class TestBuildArgsDict:
         command_args_data = COMMANDS_ARGS_DATA['qualys-ip-list']
 
         build_args_dict(args, command_args_data, False)
-        assert Qualys_v2.args_values == args
+        assert Qualysv2.args_values == args
 
     def test_build_api_args_dict_missing_args(self):
         """
@@ -573,7 +573,7 @@ class TestBuildArgsDict:
         command_args_data = COMMANDS_ARGS_DATA['qualys-ip-list']
 
         build_args_dict(args, command_args_data, False)
-        assert Qualys_v2.args_values == args
+        assert Qualysv2.args_values == args
 
     def test_build_api_args_dict_empty_date(self):
         """
@@ -590,7 +590,7 @@ class TestBuildArgsDict:
         command_args_data = COMMANDS_ARGS_DATA['qualys-vulnerability-list']
 
         build_args_dict(args, command_args_data, False)
-        assert Qualys_v2.args_values == {}
+        assert Qualysv2.args_values == {}
 
     def test_build_inner_args_dict_all_args(self):
         """
@@ -606,7 +606,7 @@ class TestBuildArgsDict:
         command_args_data = COMMANDS_ARGS_DATA['qualys-report-fetch']
 
         build_args_dict(args, command_args_data, True)
-        assert Qualys_v2.inner_args_values == {'file_format': 'xml'}
+        assert Qualysv2.inner_args_values == {'file_format': 'xml'}
 
     def test_build_args_dict_none_args(self):
         """
@@ -621,7 +621,7 @@ class TestBuildArgsDict:
         args = None
         command_args_data = COMMANDS_ARGS_DATA['test-module']
         build_args_dict(args, command_args_data, False)
-        assert Qualys_v2.args_values == {}
+        assert Qualysv2.args_values == {}
 
 
 def test_handle_general_result_missing_output_builder():

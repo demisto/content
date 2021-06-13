@@ -2357,7 +2357,7 @@ script:
       description: Status of the restricted ips feature
     description: Get the list of restricted IPs within the user's subscription.
     execution: true
-  dockerimage: demisto/python3:3.9.5.20070
+  dockerimage: demisto/python3:3.9.5.21272
   feed: false
   isfetch: false
   longRunning: false
@@ -2367,5 +2367,5 @@ script:
   subtype: python3
   type: python
 tests:
-- Qualys_v2-Test
+- QualysVulnerabilityManagement-Test
 fromversion: 5.5.0
