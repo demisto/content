@@ -100,7 +100,7 @@ class Pack(object):
         self._keywords = None  # initialized in enhance_pack_attributes function
         self._dependencies = None  # initialized in enhance_pack_attributes function
         self._pack_statistics_handler = None  # initialized in enhance_pack_attributes function
-        self._is_missing_details = False
+        self._is_missing_dependencies = False  # a flag that specifies if pack is missing dependencies
 
     @property
     def name(self):
@@ -309,10 +309,10 @@ class Pack(object):
         return self._uploaded_integration_images
 
     @property
-    def is_missing_details(self):
-        """ bool: whether the as missing details or not.
+    def is_missing_dependencies(self):
+        """ bool: whether the as missing dependencies or not.
         """
-        return self._is_missing_details
+        return self._is_missing_dependencies
 
     def _get_latest_version(self):
         """ Return latest semantic version of the pack.
@@ -602,12 +602,15 @@ class Pack(object):
 
         return pack_metadata
 
-    def _load_pack_dependencies(self, index_folder_path, first_level_dependencies, all_level_displayed_dependencies, pack_names, packs_list):
+    def _load_pack_dependencies(self, index_folder_path, first_level_dependencies, all_level_displayed_dependencies,
+                                pack_names):
         """ Loads dependencies metadata and returns mapping of pack id and it's loaded data.
         Args:
             index_folder_path (str): full path to download index folder.
             first_level_dependencies (dict): user defined dependencies.
             all_level_displayed_dependencies (list): all level pack's images to display.
+            pack_names (list)List of all packs.
+
         Returns:
             dict: pack id as key and loaded metadata of packs as value.
         """
@@ -626,21 +629,12 @@ class Pack(object):
                     dependency_metadata = json.load(metadata_file)
                     dependencies_data_result[dependency_pack_id] = dependency_metadata
             elif dependency_pack_id in pack_names:
-                for pack in packs_list:
-                    if pack.name == dependency_pack_id:
-                        _, meta = pack.load_user_metadata()
-                        dependencies_data_result[dependency_pack_id] = {
-                            "mandatory": first_level_dependencies.get(dependency_pack_id, {}).get('mandatory', True),
-                            "minVersion": pack.current_version,
-                            "author": meta.get('author', ''),
-                            "name": pack.display_name,
-                            "certification": meta.get('certification', 'certified')
-                        }
-                logging.warning(f"{self._pack_name} pack dependency with id {dependency_pack_id} was not found in index  Adds it from metadata")
+                self._is_missing_dependencies = True
+                logging.warning(f"{self._pack_name} pack dependency with id {dependency_pack_id} "
+                                f"was not found in index Marks it as missing details")
             else:
                 logging.warning(f"{self._pack_name} pack dependency with id {dependency_pack_id} was not found")
                 continue
-            logging.info(dependencies_data_result[dependency_pack_id])
         return dependencies_data_result
 
     def _create_changelog_entry(self, release_notes, version_display_name, build_number, pack_was_modified=False,
@@ -1697,7 +1691,7 @@ class Pack(object):
         )
 
     def format_metadata(self, user_metadata, index_folder_path, packs_dependencies_mapping, build_number, commit_hash,
-                        pack_was_modified, statistics_handler, pack_names, packs_list):
+                        pack_was_modified, statistics_handler, pack_names):
         """ Re-formats metadata according to marketplace metadata format defined in issue #19786 and writes back
         the result.
 
@@ -1710,6 +1704,7 @@ class Pack(object):
             commit_hash (str): current commit hash.
             pack_was_modified (bool): Indicates whether the pack was modified or not.
             statistics_handler (StatisticsHandler): The marketplace statistics handler
+            pack_names (list)List of all packs.
 
         Returns:
             bool: True is returned in case metadata file was parsed successfully, otherwise False.
@@ -1725,7 +1720,7 @@ class Pack(object):
                 logging.info(f"Adding auto generated display images for {self._pack_name} pack")
             dependencies_data = self._load_pack_dependencies(index_folder_path,
                                                              user_metadata.get('dependencies', {}),
-                                                             user_metadata.get('displayedImages', []), pack_names, packs_list)
+                                                             user_metadata.get('displayedImages', []), pack_names)
 
             self._enhance_pack_attributes(
                 user_metadata, index_folder_path, pack_was_modified, dependencies_data, statistics_handler

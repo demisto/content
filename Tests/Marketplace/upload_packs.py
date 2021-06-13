@@ -958,7 +958,10 @@ def main():
 
     # clean index and gcs from non existing or invalid packs
     clean_non_existing_packs(index_folder_path, private_packs, storage_bucket)
-    packs_missing_details = []
+
+    # Packages that depend on new packs that are not in the previous index.json
+    packs_missing_dependencies = []
+
     # starting iteration over packs
     for pack in packs_list:
         task_status, user_metadata = pack.load_user_metadata()
@@ -1000,10 +1003,10 @@ def main():
             continue
 
         task_status = pack.format_metadata(user_metadata, index_folder_path, packs_dependencies_mapping, build_number,
-                                           current_commit_hash, pack_was_modified, statistics_handler, pack_names, packs_list)
+                                           current_commit_hash, pack_was_modified, statistics_handler, pack_names)
 
-        if pack.is_missing_details:
-            packs_missing_details.append(pack)
+        if pack.is_missing_dependencies:
+            packs_missing_dependencies.append(pack)
             continue
 
         if not task_status:
@@ -1087,19 +1090,12 @@ def main():
 
         pack.status = PackStatus.SUCCESS.name
 
-    for pack in packs_missing_details:
+    for pack in packs_missing_dependencies:
         task_status = pack.format_metadata(user_metadata, index_folder_path, packs_dependencies_mapping, build_number,
                                            current_commit_hash, pack_was_modified, statistics_handler, pack_names)
 
         if not task_status:
             pack.status = PackStatus.FAILED_METADATA_PARSING.name
-            pack_names.remove(pack.name)
-            pack.cleanup()
-            continue
-
-        task_status, exists_in_index = pack.check_if_exists_in_index(index_folder_path)
-        if not task_status:
-            pack.status = PackStatus.FAILED_SEARCHING_PACK_IN_INDEX.name
             pack_names.remove(pack.name)
             pack.cleanup()
             continue
