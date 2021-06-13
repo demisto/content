@@ -1,5 +1,3 @@
-from requests import Response
-
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 from CommonServerUserPython import *  # noqa
 
@@ -30,7 +28,7 @@ class Client(BaseClient):
                                   params={**params,
                                           'key': self.api_key})
 
-    def google_maps_geocode(self, search_address: str) -> Union[dict, str, Response]:
+    def google_maps_geocode(self, search_address: str) -> dict:
         return self.http_request(params={'address': search_address})
 
 
@@ -53,7 +51,7 @@ def google_maps_geocode_command(client: Client, search_address: str, error_on_no
 
 def test_module(client: Client) -> str:
     """Tests GoogleMaps by geocoding a specific address"""
-    client.google_maps_geocode('45 Rothschild, Tel Aviv', True)
+    google_maps_geocode_command(client, '45 Rothschild, Tel Aviv', True)
     return 'ok'  # on any failure, an exception is raised
 
 
