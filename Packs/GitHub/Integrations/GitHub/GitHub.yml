@@ -2909,6 +2909,96 @@ script:
       type: String
   - arguments:
     - default: false
+      description: Commit message.
+      isArray: false
+      name: commit_message
+      required: true
+      secret: false
+    - default: false
+      description: Path to the file in the Github repo (including file name and file
+        ending).
+      isArray: false
+      name: path_to_file
+      required: true
+      secret: false
+    - default: false
+      description: Entry ID for the file to commit. Either "entry_id" or "file_text" must be provided.
+      isArray: false
+      name: entry_id
+      required: false
+      secret: false
+    - default: false
+      description: Plain text for the file to commit. Either "entry_id" or "file_text" must be provided.
+      isArray: false
+      name: file_text
+      required: false
+      secret: false
+    - default: false
+      description: The branch name.
+      isArray: false
+      name: branch_name
+      required: true
+      secret: false
+    - default: false
+      description: The blob SHA of the file being replaced. Use the Github-list-files command
+        to get the SHA value of the file.  Required if you are updating a file. 
+      isArray: false
+      name: file_sha
+      required: false
+      secret: false
+    deprecated: false
+    description: Commits a given file.
+    execution: false
+    name: Github-commit-file
+  - arguments:
+    - default: false
+      description: The name of the release.
+      isArray: false
+      name: name
+      required: false
+      secret: false
+    - default: false
+      description: The name of the release tag.
+      isArray: false
+      name: tag_name
+      required: true
+      secret: false
+    - default: false
+      description: Text describing the contents of the tag.
+      isArray: false
+      name: body
+      required: false
+      secret: false
+    - default: false
+      description: Whether to create a draft (unpublished) release.
+      isArray: false
+      name: draft
+      required: false
+      secret: false
+      auto: PREDEFINED
+      predefined:
+      - 'True'
+      - 'False'
+      defaultValue: 'True'
+    deprecated: false
+    description: Create a release.
+    execution: false
+    name: GitHub-create-release
+    outputs:
+    - contextPath: GitHub.Release.draft
+      description: Whether the release is a draft.
+      type: Boolean
+    - contextPath: GitHub.Release.html_url
+      description: The release URL.
+      type: String
+    - contextPath: GitHub.Release.id
+      description: The ID of the release.
+      type: Number
+    - contextPath: GitHub.Release.url
+      description: Github API URL link to the release.
+      type: String
+  - arguments:
+    - default: false
       description: The branch name from which to retrieve pull requests.
       isArray: false
       name: branch_name

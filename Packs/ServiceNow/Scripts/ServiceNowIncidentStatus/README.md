@@ -7,7 +7,7 @@ populates the value of the ServiceNow Ticket State field and display it in a lay
 | --- | --- |
 | Script Type | python3 |
 | Tags | dynamic-section, python, servicenow v2 |
-| Demisto Version | 5.0.0 |
+| Cortex XSOAR Version | 5.0.0 |
 
 ## Inputs
 ---

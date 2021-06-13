@@ -4,7 +4,7 @@
 <hr>
 <p>Use the JASK integration to manage entities, signals, and insights.</p>
 <p> </p>
-<h2>Configure the JASK Integration on Demisto</h2>
+<h2>Configure the JASK Integration on Cortex XSOAR</h2>
 <hr>
 <ol>
 <li>Navigate to <strong>Settings</strong> &gt; <strong>Integrations</strong> &gt; <strong>Servers &amp; Services</strong>.</li>
@@ -28,7 +28,7 @@
 <p> </p>
 <h2>Commands</h2>
 <hr>
-<p>You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
+<p>You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
 <ol>
 <li><a href="#h_78423230251533534464758">Get details for an insight: jask-get-insight-details</a></li>
 <li><a href="#h_455075379781533534471017">Get comments for an insight: jask-get-insight-comments</a></li>
