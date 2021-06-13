@@ -57,6 +57,43 @@ def test_module(client: Client) -> str:
     return 'ok'  # on any failure, an exception is raised
 
 
+def parse_response(response: Dict, search_address: str) -> List[CommandResults]:
+    """ Parses Google Maps API to a list of CommandResult objects """
+    first_result = (response.get('results') or [])[0]
+
+    coordinate_dict = demisto.get(first_result, 'geometry.location')
+    response_address = demisto.get(first_result, 'formatted_address')
+
+    country = None
+    for component in first_result['address_components']:
+        if 'country' in (demisto.get(component, 'types') or []):
+            country = demisto.get(component, 'long_name')
+            break
+
+    note_outputs = {'SearchAddress': search_address,
+                    'Address': response_address,
+                    'Country': country,
+                    **coordinate_dict}
+
+    # noinspection PyTypeChecker
+    readable_output = tableToMarkdown(name='Geocoding Results',
+                                      t=note_outputs,
+                                      headers=list(note_outputs.keys()),
+                                      headerTransform=pascalToSpace)
+
+    result_note = CommandResults(outputs_prefix=OUTPUTS_PREFIX,
+                                 outputs_key_field=['lat', 'lng'],
+                                 outputs=note_outputs,
+                                 readable_output=readable_output,
+                                 entry_type=EntryType.NOTE,
+                                 raw_response=response)
+
+    result_map = CommandResults(entry_type=EntryType.MAP_ENTRY_TYPE,
+                                raw_response=coordinate_dict)
+
+    return [result_note, result_map]
+
+
 def main():
     params = demisto.params()
     args = demisto.args()
@@ -95,43 +132,6 @@ def main():
             error_parts.extend(('Raw response:', str(e.res)))  # pylint: disable=E1101
 
         return_error('\n'.join(error_parts))
-
-
-def parse_response(response: Dict, search_address: str) -> List[CommandResults]:
-    """ Parses Google Maps API to a list of CommandResult objects """
-    first_result = (response.get('results') or [])[0]
-
-    coordinate_dict = demisto.get(first_result, 'geometry.location')
-    response_address = demisto.get(first_result, 'formatted_address')
-
-    country = None
-    for component in first_result['address_components']:
-        if 'country' in (demisto.get(component, 'types') or []):
-            country = demisto.get(component, 'long_name')
-            break
-
-    note_outputs = {'SearchAddress': search_address,
-                    'Address': response_address,
-                    'Country': country,
-                    **coordinate_dict}
-
-    # noinspection PyTypeChecker
-    readable_output = tableToMarkdown(name='Geocoding Results',
-                                      t=note_outputs,
-                                      headers=list(note_outputs.keys()),
-                                      headerTransform=pascalToSpace)
-
-    result_note = CommandResults(outputs_prefix=OUTPUTS_PREFIX,
-                                 outputs_key_field=['lat', 'lng'],
-                                 outputs=note_outputs,
-                                 readable_output=readable_output,
-                                 entry_type=EntryType.NOTE,
-                                 raw_response=response)
-
-    result_map = CommandResults(entry_type=EntryType.MAP_ENTRY_TYPE,
-                                raw_response=coordinate_dict)
-
-    return [result_note, result_map]
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
