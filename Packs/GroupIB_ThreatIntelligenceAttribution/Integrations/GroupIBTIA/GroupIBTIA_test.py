@@ -1,6 +1,6 @@
 import pytest
 from json import load
-from GroupIB_TIA import fetch_incidents_command, Client
+from GroupIBTIA import fetch_incidents_command, Client
 
 
 with open('test_data/example.json') as example:

@@ -54,6 +54,10 @@
             "fromversion": "5.0.0"
         },
         {
+            "integrations": "FireEye Central Management",
+            "playbookID": "FireEye Central Management - Test"
+        },
+        {
             "integrations": "FireEyeNX",
             "playbookID": "FireEyeNX-Test"
         },
@@ -3312,7 +3316,7 @@
             "timeout": 1000
         },
         {
-           "integrations": "HPEArubaClearPass",
+            "integrations": "HPEArubaClearPass",
             "playbookID": "HPEArubaClearPass_TestPlaybook"
         },
         {
@@ -3564,9 +3568,8 @@
         "Lastline": "issue 20323",
         "Google Resource Manager": "Cannot create projects because have reached allowed quota.",
         "Looker": "Warehouse 'DEMO_WH' cannot be resumed because resource monitor 'LIMITER' has exceeded its quota.",
-        "Ipstack": "Issue 26266",
-        
-        "_comment4": "~~~ OTHER ~~~",
+
+      "_comment4": "~~~ OTHER ~~~",
         "Pentera": "authentication method will not work with testing",
         "AlienVault OTX TAXII Feed": "Issue 29197",
         "EclecticIQ Platform": "Issue 8821",
@@ -3773,6 +3776,9 @@
             },
             "demisto/boto3": {
                 "memory_threshold": 90
+            },
+            "demisto/flask-nginx": {
+                "pid_threshold": 11
             }
         }
     }
