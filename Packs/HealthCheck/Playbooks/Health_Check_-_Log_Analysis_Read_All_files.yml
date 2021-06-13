@@ -17,12 +17,12 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 184c35ce-88e8-42f8-882c-5b09ac51cdfb
+      id: 141a56c2-4c49-465b-8c3b-e16317a705b3
       iscommand: false
       name: ""
       version: -1
       description: ''
-    taskid: 184c35ce-88e8-42f8-882c-5b09ac51cdfb
+    taskid: 141a56c2-4c49-465b-8c3b-e16317a705b3
     timertriggers: []
     type: start
     view: |-
@@ -60,13 +60,13 @@ tasks:
     task:
       brand: ""
       description: Read license_data.log and set customer name, license end date
-      id: 1c875104-a0e8-46cd-8164-2af3c86b30d3
+      id: 0b6b00f1-0803-45a3-89f1-41d702196f02
       iscommand: false
       name: Read license_data.log and set customer name, license end date
       script: HealthCheckLicenseData
       type: regular
       version: -1
-    taskid: 1c875104-a0e8-46cd-8164-2af3c86b30d3
+    taskid: 0b6b00f1-0803-45a3-89f1-41d702196f02
     timertriggers: []
     type: regular
     view: |-
@@ -117,7 +117,7 @@ tasks:
       brand: ""
       description: Read server log file line by line and display warnings, fatal errors
         and keyword results in a table to the war room
-      id: 873938b4-e712-404f-87f9-440a75851d8d
+      id: 06b9f346-42b6-46a7-8c51-9958dd1b1526
       iscommand: false
       name: Read server.log file and display
       script: HealthCheckServerLog
@@ -125,7 +125,7 @@ tasks:
       - ServerResults
       type: regular
       version: -1
-    taskid: 873938b4-e712-404f-87f9-440a75851d8d
+    taskid: 06b9f346-42b6-46a7-8c51-9958dd1b1526
     timertriggers: []
     type: regular
     view: |-
@@ -148,13 +148,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: bf6d870a-c9d0-4c6d-85af-86e93ac75ca3
+      id: 662c7b7c-b151-4b68-8b08-b0287adba5ab
       iscommand: false
       name: Read all files
       type: title
       version: -1
       description: ''
-    taskid: bf6d870a-c9d0-4c6d-85af-86e93ac75ca3
+    taskid: 662c7b7c-b151-4b68-8b08-b0287adba5ab
     timertriggers: []
     type: title
     view: |-
@@ -193,13 +193,13 @@ tasks:
     task:
       brand: ""
       description: Read docker log file
-      id: 2f74f358-4634-472f-8ff3-6bab17e8f48e
+      id: 9f23bcec-7a2b-4a14-8045-8260c6be2240
       iscommand: false
       name: Read the Docker.log file
       script: HealthCheckDockerLog
       type: regular
       version: -1
-    taskid: 2f74f358-4634-472f-8ff3-6bab17e8f48e
+    taskid: 9f23bcec-7a2b-4a14-8045-8260c6be2240
     timertriggers: []
     type: regular
     view: |-
@@ -235,12 +235,12 @@ tasks:
     task:
       brand: ""
       description: Check if docker log exist
-      id: a03a6fc0-747e-4bb7-8ea5-ef5a232a60a3
+      id: 92ab5cd8-f013-4a32-858f-133e0ab364f6
       iscommand: false
       name: 'Do we have a docker log in the bundle ? '
       type: condition
       version: -1
-    taskid: a03a6fc0-747e-4bb7-8ea5-ef5a232a60a3
+    taskid: 92ab5cd8-f013-4a32-858f-133e0ab364f6
     timertriggers: []
     type: condition
     view: |-
@@ -278,13 +278,13 @@ tasks:
     task:
       brand: ""
       description: read and parse filesystem.log
-      id: 21bd0207-8b47-4ab4-89b6-7f030c24ecfc
+      id: b613cd32-4a90-4df3-8807-7c464c9c28a1
       iscommand: false
       name: Read the filesystem.log file
-      script: HealthCheckReadConf
+      script: HealthCheckFileSystem
       type: regular
       version: -1
-    taskid: 21bd0207-8b47-4ab4-89b6-7f030c24ecfc
+    taskid: b613cd32-4a90-4df3-8807-7c464c9c28a1
     timertriggers: []
     type: regular
     view: |-
@@ -303,13 +303,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 1ef9e1e7-9e4f-4f5d-8338-791dfbb55dbf
+      id: a8f38987-e074-4f70-89a7-9c1d1a5b156c
       iscommand: false
       name: Done
       type: title
       version: -1
       description: ''
-    taskid: 1ef9e1e7-9e4f-4f5d-8338-791dfbb55dbf
+    taskid: a8f38987-e074-4f70-89a7-9c1d1a5b156c
     timertriggers: []
     type: title
     view: |-
@@ -347,13 +347,13 @@ tasks:
     task:
       brand: ""
       description: Read the conf.log file extracted from the log bundle
-      id: dfbfc220-2231-4d0e-88a0-27eab0c6f6c1
+      id: 0c30fee6-ff4c-40b2-85e2-034c404db34d
       iscommand: false
       name: 'Read the conf.log (demisto.conf) file '
       script: HealthCheckReadConf
       type: regular
       version: -1
-    taskid: dfbfc220-2231-4d0e-88a0-27eab0c6f6c1
+    taskid: 0c30fee6-ff4c-40b2-85e2-034c404db34d
     timertriggers: []
     type: regular
     view: |-
@@ -391,13 +391,13 @@ tasks:
     task:
       brand: ""
       description: Read Telemetry file
-      id: d1cfcae5-babd-42f7-88a6-23ba4eb5efed
+      id: a7ff0891-5450-4c36-8b5a-b7f633748615
       iscommand: false
       name: Read Telemetry file (check for API)
       script: HealthCheckReadTemeletryLog
       type: regular
       version: -1
-    taskid: d1cfcae5-babd-42f7-88a6-23ba4eb5efed
+    taskid: a7ff0891-5450-4c36-8b5a-b7f633748615
     timertriggers: []
     type: regular
     view: |-
@@ -435,13 +435,13 @@ tasks:
     task:
       brand: ""
       description: Read the version_control.log file extracted from the log bundle
-      id: 7e2fc9a1-e4c2-47f6-8aa0-4b697b4f8f8d
+      id: 9b95fbda-3d05-4da5-8f66-67166ee9be56
       iscommand: false
       name: Read the version_control.log file to collect dev prod details
       script: HealthCheckReadVC
       type: regular
       version: -1
-    taskid: 7e2fc9a1-e4c2-47f6-8aa0-4b697b4f8f8d
+    taskid: 9b95fbda-3d05-4da5-8f66-67166ee9be56
     timertriggers: []
     type: regular
     view: |-
@@ -464,13 +464,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: e803260a-357e-4c10-8fa9-2c70d4f4c135
+      id: b12e5da6-7cd4-4c1c-8665-cfb787adaccd
       iscommand: false
       name: Continue
       type: title
       version: -1
       description: ''
-    taskid: e803260a-357e-4c10-8fa9-2c70d4f4c135
+    taskid: b12e5da6-7cd4-4c1c-8665-cfb787adaccd
     timertriggers: []
     type: title
     view: |-
@@ -492,13 +492,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 8e0df53e-4440-449b-8b36-05b59fa2b3d1
+      id: 1a2bc69b-7246-4c28-8a22-5f8aa591cca8
       iscommand: false
       name: Server Logs Logic
       type: title
       version: -1
       description: ''
-    taskid: 8e0df53e-4440-449b-8b36-05b59fa2b3d1
+    taskid: 1a2bc69b-7246-4c28-8a22-5f8aa591cca8
     timertriggers: []
     type: title
     view: |-
@@ -521,6 +521,6 @@ view: |-
       }
     }
   }
+fromversion: 6.0.0
 tests:
 - No tests (auto formatted)
-fromversion: 6.0.0

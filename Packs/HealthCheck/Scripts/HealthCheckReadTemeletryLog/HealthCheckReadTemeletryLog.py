@@ -1,6 +1,7 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
+
 res = demisto.executeCommand('getFilePath', {'id': demisto.args().get('entryID')})
 if res[0]['Type'] == entryTypes['error']:
     demisto.executeCommand("setIncident", {'telemetrystatus': 'Not Enabled'})

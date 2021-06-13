@@ -4,7 +4,7 @@
         "Internal Log analysis",
         "Log Analysis",
         "Zendesk Ticket",
-        "Health Check"
+        "System Diagnostics and Health Check"
     ],
     "caseInsensitive": true,
     "cliName": "installedpacks",
@@ -23,7 +23,7 @@
             "width": 267
         },
         {
-            "displayName": "currentVersion",
+            "displayName": "Current Version",
             "fieldCalcScript": "",
             "isDefault": true,
             "isReadOnly": false,
@@ -35,7 +35,7 @@
             "width": 349
         },
         {
-            "displayName": "updateAvailable",
+            "displayName": "Update Available",
             "fieldCalcScript": "",
             "isDefault": true,
             "isReadOnly": false,
@@ -68,7 +68,7 @@
     "threshold": 72,
     "type": "grid",
     "unmapped": false,
-    "unsearchable": false,
+    "unsearchable": true,
     "useAsKpi": false,
     "version": -1,
     "fromVersion": "6.0.0"

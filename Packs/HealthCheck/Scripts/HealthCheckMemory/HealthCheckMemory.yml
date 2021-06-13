@@ -10,7 +10,7 @@ comment: Present or analyze memory usage
 commonfields:
   id: HealthCheckMemory
   version: -1
-dockerimage: demisto/python3:3.9.5.20070
+dockerimage: demisto/python3:3.9.5.21272
 enabled: true
 name: HealthCheckMemory
 runas: DBotWeakRole

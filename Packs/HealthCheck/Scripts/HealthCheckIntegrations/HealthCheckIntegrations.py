@@ -1,5 +1,7 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
+
+
 res = demisto.executeCommand(
     "demisto-api-post",
     {
@@ -9,9 +11,7 @@ res = demisto.executeCommand(
         },
     })[0]["Contents"]["response"]
 
-
 enabledInstances = list(filter(lambda x: x['enabled'] == "true", res['instances']))
-print(res[])
 enabledInstancesNames = []
 for instance in enabledInstances:
     if instance['name'] in ['testmodule', 'd2']:

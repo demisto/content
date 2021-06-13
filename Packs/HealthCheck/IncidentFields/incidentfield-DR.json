@@ -4,7 +4,7 @@
         "Internal Log analysis",
         "Log Analysis",
         "Zendesk Ticket",
-        "Health Check"
+        "System Diagnostics and Health Check"
     ],
     "caseInsensitive": true,
     "cliName": "dr",
@@ -25,8 +25,8 @@
     "threshold": 72,
     "type": "shortText",
     "unmapped": false,
-    "unsearchable": false,
-    "useAsKpi": true,
+    "unsearchable": true,
+    "useAsKpi": false,
     "version": -1,
     "fromVersion": "6.0.0"
 }

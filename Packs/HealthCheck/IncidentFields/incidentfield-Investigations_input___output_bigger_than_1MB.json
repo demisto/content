@@ -29,11 +29,11 @@
             "width": 150
         },
         {
-            "displayName": "Column Header 3",
+            "displayName": "Task ID",
             "fieldCalcScript": "",
             "isDefault": true,
             "isReadOnly": false,
-            "key": "columnheader3",
+            "key": "taskid",
             "required": false,
             "script": "",
             "selectValues": null,

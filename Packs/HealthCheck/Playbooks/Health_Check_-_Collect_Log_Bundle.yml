@@ -80,12 +80,12 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 1f2c5f39-053b-4826-8359-8fe16c22bf41
+      id: 553a5e76-4da2-4657-8b99-85c205fcb881
       iscommand: false
       name: ""
       version: -1
       description: ''
-    taskid: 1f2c5f39-053b-4826-8359-8fe16c22bf41
+    taskid: 553a5e76-4da2-4657-8b99-85c205fcb881
     timertriggers: []
     type: start
     view: |-
@@ -143,13 +143,13 @@ tasks:
       brand: ""
       description: "Extract files from log bundle - supports tar.gz & tar \n\nhandle\
         \ unsupported use cases and unextracted files. "
-      id: 1566df6b-9270-4dcf-8ae5-2f7edb524dfd
+      id: 1b372fe6-3bdf-4da9-80a2-4f0e76e46430
       iscommand: false
       name: UnPack the zipped log file
       script: HealthCheckUnpack
       type: condition
       version: -1
-    taskid: 1566df6b-9270-4dcf-8ae5-2f7edb524dfd
+    taskid: 1b372fe6-3bdf-4da9-80a2-4f0e76e46430
     timertriggers: []
     type: condition
     view: |-
@@ -168,20 +168,20 @@ tasks:
     note: false
     quietmode: 0
     scriptarguments:
-      value:
-        simple: file type is not supported
+      message:
+        simple: File type is not supported
     separatecontext: false
     skipunavailable: false
     task:
       brand: ""
-      description: Prints text to war room (Markdown supported)
-      id: 795bbb07-fa0d-42f7-813e-54389d0a9881
+      description: Prints an error entry with a given message
+      id: 420252be-9dfa-4870-8755-5e4a376bb0ce
       iscommand: false
       name: File Type is not supported
-      script: Print
+      script: PrintErrorEntry
       type: regular
       version: -1
-    taskid: 795bbb07-fa0d-42f7-813e-54389d0a9881
+    taskid: 420252be-9dfa-4870-8755-5e4a376bb0ce
     timertriggers: []
     type: regular
     view: |-
@@ -207,13 +207,13 @@ tasks:
     task:
       brand: ""
       description: Prints an error entry with a given message
-      id: 3c5e2348-819b-4197-83ef-06b86c5c9a71
+      id: ec5a2324-1056-4f84-875f-560028d61ce1
       iscommand: false
       name: File can't be extracted
       script: PrintErrorEntry
       type: regular
       version: -1
-    taskid: 3c5e2348-819b-4197-83ef-06b86c5c9a71
+    taskid: ec5a2324-1056-4f84-875f-560028d61ce1
     timertriggers: []
     type: regular
     view: |-
@@ -232,13 +232,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 8fbd14b4-1b4c-46f2-861c-abd290e75a67
+      id: 751a3357-1fc4-4a57-867c-c77da5226b87
       iscommand: false
       name: continue
       type: title
       version: -1
       description: ''
-    taskid: 8fbd14b4-1b4c-46f2-861c-abd290e75a67
+    taskid: 751a3357-1fc4-4a57-867c-c77da5226b87
     timertriggers: []
     type: title
     view: |-
@@ -266,13 +266,13 @@ tasks:
     task:
       brand: ""
       description: Download files from Demisto server
-      id: f4ab0e04-2513-4528-85b5-ec97fef63682
+      id: f1f2ab80-b03f-4d90-83b4-6410a05eac37
       iscommand: true
       name: Download log bundle
       script: '|||demisto-api-download'
       type: regular
       version: -1
-    taskid: f4ab0e04-2513-4528-85b5-ec97fef63682
+    taskid: f1f2ab80-b03f-4d90-83b4-6410a05eac37
     timertriggers: []
     type: regular
     view: |-
@@ -302,13 +302,13 @@ tasks:
     task:
       brand: ""
       description: Set a value in context under the key you entered.
-      id: 6b1d2ffb-78e7-4801-8beb-2ab65bbd0a56
+      id: 13addb5e-5e4c-4eea-8fe5-c0c41e19e216
       iscommand: false
       name: Save Thresholds to Context
       script: Set
       type: regular
       version: -1
-    taskid: 6b1d2ffb-78e7-4801-8beb-2ab65bbd0a56
+    taskid: 13addb5e-5e4c-4eea-8fe5-c0c41e19e216
     timertriggers: []
     type: regular
     view: |-
@@ -331,6 +331,6 @@ view: |-
       }
     }
   }
+fromversion: 6.0.0
 tests:
 - No tests (auto formatted)
-fromversion: 6.0.0

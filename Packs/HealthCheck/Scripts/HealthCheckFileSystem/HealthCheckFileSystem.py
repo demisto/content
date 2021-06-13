@@ -1,5 +1,7 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
+# noqa: F401
+# noqa: F401
 import os
 import sys
 import re

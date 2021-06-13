@@ -1,7 +1,7 @@
 {
     "associatedToAll": false,
     "associatedTypes": [
-        "Health Check"
+        "System Diagnostics and Health Check"
     ],
     "caseInsensitive": true,
     "cliName": "investigationsbiggerthan1mb",
@@ -41,7 +41,7 @@
             "script": "",
             "selectValues": null,
             "type": "number",
-            "width": 150
+            "width": 130
         },
         {
             "displayName": "Date",
@@ -75,7 +75,7 @@
     "threshold": 72,
     "type": "grid",
     "unmapped": false,
-    "unsearchable": false,
+    "unsearchable": true,
     "useAsKpi": false,
     "version": -1,
     "fromVersion": "6.0.0"
