@@ -47,8 +47,7 @@ class Client(BaseClient):
                         "rawJSON": {'value': indicator, 'type': 'Report', "firstseenbysource": published_iso},
                         "fields": {
                             'publications': publications,
-                            'description': 'tal',
-                            "summary": indicator.get('summary'),
+                            'description': text,
                             'tags': self.feed_tags,
                         }
                     }
@@ -59,54 +58,27 @@ class Client(BaseClient):
 
         return parsed_indicators
 
-
-# def fetch_indicators(client: Client) -> list:
-    # last_run = demisto.getLastRun()
-    # last_fetch = last_run.get('last_fetch')
-    #
-    # if last_fetch is None:
-    #     last_fetch = datetime(1970, 1, 1)
-    # else:
-    #     last_fetch = datetime.strptime(last_fetch, '%Y-%m-%dT%H:%M:%S.%f')
-
-    # for entry in reversed(client.feed_data.entries):
-    #
-    #     date_parsed = email.utils.parsedate(entry.published)
-    #     if date_parsed:
-    #         dt = datetime.fromtimestamp(mktime(date_parsed))
-    #
-    #         if dt > last_fetch:
-    #             incident = {
-    #                 'name': entry.title,
-    #                 'occurred': dt.isoformat(),
-    #                 'rawJSON': json.dumps(entry)
-    #             }
-    #
-    #             indicators.append(incident)
-    #
-    # dtnow = datetime.now().strftime('%Y-%m-%dT%H:%M:%S.%f')
-    # demisto.setLastRun({'last_fetch': dtnow})
-    #
-    # return client.parsed_indicators
-
-
     def get_url_content(self, link):
-        text = self._http_request(method='GET', full_url=link)
+        response_url = self._http_request(method='GET', full_url=link, resp_type='str')
         report_content = ''
-        nested_tags = ['ol', 'ul']  # , 'table'] TODO: add
-        soup = BeautifulSoup(text, "html.parser")
+        # nested_tags = ['ol', 'ul']  # , 'table'] TODO: add
+        soup = BeautifulSoup(response_url.text, "html.parser")
         for tag in soup.find_all():
             if tag.name in html_tags:
-                if tag.name in nested_tags:
-                    nested_text = [li.text.strip() for li in tag.find_all('li')]
-                    report_content += ''.join(nested_text)
-                else:
-                    report_content += tag.text.strip()
+                for string in tag.stripped_strings:
+                    report_content += ' ' + string
+            #     if tag.name in nested_tags:
+            #        for string in tag.stripped_strings:
+            #            report_content += ' ' + string
+            #         nested_text = [li.text.strip() for li in tag.find_all('li')] # no need when using stripped_strings
+            #         report_content += ''.join(nested_text) # no need when using stripped_strings
+            #     else:
+            #         report_content += ' ' + tag.text.strip()
         return report_content
 
-    def get_indicators(client: Client, args: dict) -> CommandResults:
+
+def get_indicators(client: Client, args: dict) -> CommandResults:
     limit = int(args.get('limit', 10))
-    headers = ['value', 'summary', 'link', 'author']
     hr_ = tableToMarkdown(name='RSS Feed:', t=client.parsed_indicators[:limit], headers=headers)
     return CommandResults(
         readable_output=hr_,
@@ -141,6 +113,35 @@ def main():
     except Exception as err:
         demisto.error(traceback.format_exc())  # print the traceback
         return_error(f"Failed to execute {command} command.\nError:\n{str(err)}")
+
+# def fetch_indicators(client: Client) -> list:
+    # last_run = demisto.getLastRun()
+    # last_fetch = last_run.get('last_fetch')
+    #
+    # if last_fetch is None:
+    #     last_fetch = datetime(1970, 1, 1)
+    # else:
+    #     last_fetch = datetime.strptime(last_fetch, '%Y-%m-%dT%H:%M:%S.%f')
+
+    # for entry in reversed(client.feed_data.entries):
+    #
+    #     date_parsed = email.utils.parsedate(entry.published)
+    #     if date_parsed:
+    #         dt = datetime.fromtimestamp(mktime(date_parsed))
+    #
+    #         if dt > last_fetch:
+    #             incident = {
+    #                 'name': entry.title,
+    #                 'occurred': dt.isoformat(),
+    #                 'rawJSON': json.dumps(entry)
+    #             }
+    #
+    #             indicators.append(incident)
+    #
+    # dtnow = datetime.now().strftime('%Y-%m-%dT%H:%M:%S.%f')
+    # demisto.setLastRun({'last_fetch': dtnow})
+    #
+    # return client.parsed_indicators
 
 
 if __name__ in ('builtin__', 'builtins', '__main__'):

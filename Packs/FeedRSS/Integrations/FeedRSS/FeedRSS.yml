@@ -106,7 +106,7 @@ script:
     description: Gets the reports from the RSS feed.
     execution: false
     name: rss-get-indicators
-  dockerimage: docker.io/devtesting/feed-html-parser-2:1.0.0.1623226936     # TODO change to demisto when merged
+  dockerimage: devtesting/feed-html-parser-2:1.0.0.1623226936     # TODO change to demisto when merged
   feed: true
   isfetch: false
   longRunning: false
