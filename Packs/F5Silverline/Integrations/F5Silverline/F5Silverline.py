@@ -140,12 +140,13 @@ def define_body_for_add_ip_command(list_target, mask, ip_address, duration, note
         }
 
 
-def is_object_id_exist(client, object_id, list_type):
-    _, outputs = get_ip_objects_by_ids(client, [object_id], list_type, {})
-    for output in outputs:
-        if output.get('id') == object_id:
-            return True
-    return False
+def is_object_id_exist(client, object_id_list, list_type):
+    try:
+        _, outputs = get_ip_objects_by_ids(client, object_id_list, list_type, {})
+        return True
+    except Exception:
+        demisto.debug(f"The following ids {object_id_list} were not found in {list_type} list.")
+        raise DemistoException(f"An object with the given identifier was not found. ")
 
 
 def delete_ip_objects_command(client: Client, args: Dict[str, Any]):
@@ -158,16 +159,23 @@ def delete_ip_objects_command(client: Client, args: Dict[str, Any]):
     list_type = args['list_type']
     object_id = args.get('object_id')
     object_ip = args.get('object_ip')
+    object_id_list = []
     if not object_id and not object_ip:
         raise DemistoException("At least one of the following should be given: object_ip, object_id.")
 
     if not object_id:
-        object_id = get_object_id_by_ip(client, list_type, object_ip)
+        # we have got an ip, so we want to get all the matched ids for the given ip
+        object_id_list = get_object_id_by_ip(client, list_type, object_ip)
+    else:
+        # we have got a specific id to be deleted
+        object_id_list.append(object_id)
 
-    url_suffix = f'{list_type}/ip_objects/{object_id}'
-    if is_object_id_exist(client, object_id, list_type):
-        client.request_ip_objects(body={}, method='DELETE', url_suffix=url_suffix, params={}, resp_type='content')
-        human_readable = f"IP object with ID: {object_id} deleted successfully from the {list_type} list."
+    if is_object_id_exist(client, object_id_list, list_type):
+        human_readable = ""
+        for object_id in object_id_list:
+            url_suffix = f'{list_type}/ip_objects/{object_id}'
+            client.request_ip_objects(body={}, method='DELETE', url_suffix=url_suffix, params={}, resp_type='content')
+            human_readable += f"IP object with ID: {object_id} deleted successfully from the {list_type} list. \n"
         return CommandResults(readable_output=human_readable)
 
 
@@ -175,12 +183,15 @@ def get_object_id_by_ip(client, list_type, object_ip):
     url_suffix = f'{list_type}/ip_objects'
     response = client.request_ip_objects(body={}, method='GET', url_suffix=url_suffix, params={})
     all_objects = response.get('data')
+    all_match_ids = []
     for obj in all_objects:
         attributes = obj.get('attributes')
         ip = attributes.get('ip', "")
         if ip == object_ip:
-            return obj.get("id")
-    raise DemistoException("An object with the given IP address was not found.")
+            all_match_ids.append(obj.get("id"))
+    if not all_match_ids:
+        raise DemistoException("An object with the given IP address was not found.")
+    return all_match_ids
 
 
 def handle_paging(page_number, page_size):
@@ -198,6 +209,16 @@ def handle_paging(page_number, page_size):
 
 
 def add_paging_to_outputs(paging_dict, page_number):
+    """
+    As the API returns a dict of links, for example:
+    "links": {
+        "self": "https://f5silverline.com/api/v1/ip_lists/allowlist/ip_objects?page[number]=1&page[size]=1",
+        "first": "https://f5silverline.com/api/v1/ip_lists/allowlist/ip_objects?page[number]=1&page[size]=1",
+        "last": "https://f5silverline.com/api/v1/ip_lists/allowlist/ip_objects?page[number]=20&page[size]=1",
+        "next": "https://f5silverline.com/api/v1/ip_lists/allowlist/ip_objects?page[number]=2&page[size]=1"
+    }
+    we would like to get page numbers by regex filtering.
+    """
     link_to_current_obj = paging_dict.get('self')
     link_to_last_obj = paging_dict.get('last')
     current_page_number = re.search(PAGE_NUMBER_PATTERN, link_to_current_obj)
