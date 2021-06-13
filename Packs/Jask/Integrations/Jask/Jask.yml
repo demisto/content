@@ -40,7 +40,7 @@ configuration:
   name: fetchLimit
   required: false
   type: 0
-description: Freeing the analyst with autonomous decisions
+description: Freeing the analyst with autonomous decisions. This pack will be deprecated around November 2021 - use Sumo Logic Cloud SIEM pack instead.
 display: Jask (Deprecated)
 name: Jask
 script:
