@@ -1257,5 +1257,5 @@ script:
   subtype: python3
   type: python
 tests:
-- No tests
+- Group-IB Threat Intelligence & Attribution-Test
 fromversion: 6.0.0
