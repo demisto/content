@@ -127,7 +127,7 @@ def main():
                        str(e)]
 
         if isinstance(e, DemistoException):
-            error_parts.extend(('Raw response:', str(e.res)))  # pylint: disable=E1101
+            error_parts.extend(('Raw response:', str(e.res)))
 
         return_error('\n'.join(error_parts))
 
