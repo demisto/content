@@ -774,7 +774,7 @@ def command_results_endpoint_command(standard_endpoints, outputs):
     return command_results
 
 
-def paging_outputs_dict(total_results, page_size, current_page):
+def get_paging_hr_and_outputs(total_results, page_size, current_page):
     paging_outputs = {
         'total_results': total_results,
         'page_size': page_size,
@@ -828,7 +828,7 @@ def get_computers_command(client: Client, args: Dict[str, Any], basic_subset: bo
 
     total_results = len(computers_response.get('computers'))
     computers_response = pagination(computers_response.get('computers'), limit, page)
-    paging_outputs, paging_readable_output = paging_outputs_dict(total_results, limit, page)
+    paging_outputs, paging_readable_output = get_paging_hr_and_outputs(total_results, limit, page)
 
     readable_output = get_computers_readable_output(computers_response, basic_subset=basic_subset, match=match)
 
@@ -958,7 +958,7 @@ def get_users_command(client: Client, args: Dict[str, Any]) -> List[CommandResul
     total_results = len(user_response.get('users'))
     user_response = pagination(user_response.get('users'), limit, page)
 
-    paging_outputs, paging_readable_output = paging_outputs_dict(total_results, limit, page)
+    paging_outputs, paging_readable_output = get_paging_hr_and_outputs(total_results, limit, page)
 
     readable_output = get_users_readable_output(user_response)
 
@@ -1025,7 +1025,7 @@ def get_mobile_devices_command(client: Client, args: Dict[str, Any]) -> List[Com
     mobile_response = pagination(mobile_response.get('mobile_devices'), limit, page)
 
     readable_output = get_mobile_devices_readable_output(mobile_response)
-    paging_outputs, paging_readable_output = paging_outputs_dict(total_results, limit, page)
+    paging_outputs, paging_readable_output = get_paging_hr_and_outputs(total_results, limit, page)
 
     return [
         CommandResults(
@@ -1115,7 +1115,7 @@ def get_computers_by_app_command(client: Client, args: Dict[str, Any]) -> List[C
     readable_output = get_computers_by_app_readable_output(computer_response.get('computer_applications'))[:limit]
     outputs = {'Application': app, 'Computer': computers_list}
 
-    paging_outputs, paging_readable_output = paging_outputs_dict(total_results, limit, page)
+    paging_outputs, paging_readable_output = get_paging_hr_and_outputs(total_results, limit, page)
 
     return [
         CommandResults(
