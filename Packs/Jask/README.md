@@ -1,1 +1,1 @@
-Note: This pack will be deprecated around November 2021, use ***Sumo Logic Cloud SIEM*** pack instead.
+Note: This pack is deprecated and will be declared End-of-Life around November 2021; use ***Sumo Logic Cloud SIEM*** pack instead.
