@@ -1,7 +1,7 @@
 commonfields:
   id: JsonToTable
   version: -1
-fromversion: 5.5
+fromversion: 5.5.0
 name: JsonToTable
 script: ''
 type: python
