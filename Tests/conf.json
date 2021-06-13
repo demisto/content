@@ -54,6 +54,10 @@
             "fromversion": "5.0.0"
         },
         {
+            "integrations": "FireEye Central Management",
+            "playbookID": "FireEye Central Management - Test"
+        },
+        {
             "integrations": "FireEyeNX",
             "playbookID": "FireEyeNX-Test"
         },
@@ -3313,6 +3317,10 @@
             "timeout": 1000
         },
         {
+           "integrations": "HPEArubaClearPass",
+            "playbookID": "HPEArubaClearPass_TestPlaybook"
+        },
+        {
             "integrations": "CrowdstrikeFalcon",
             "playbookID": "Get endpoint details - Generic - test",
             "fromversion": "5.5.0"
@@ -3361,6 +3369,17 @@
             "fromversion": "5.5.0"
         },
         {
+            "integrations": "NetscoutAED",
+            "playbookID": "NetscoutAED-Test",
+            "fromversion": "5.5.0"
+        },
+        {
+            "integrations": "CarbonBlackLiveResponseCloud",
+            "playbookID": "CarbonBlackLiveResponseCloud-Test",
+            "fromversion": "5.5.0",
+            "is_mockable": false
+        },
+        {
             "playbookID": "EDL Performance Test",
             "instance_names": "edl_auto",
             "integrations": [
@@ -3371,7 +3390,6 @@
             "timeout": 6000,
             "memory_threshold": 900,
             "pid_threshold": 12,
-            "performance_result_dt": "EDLHey"
         }
     ],
     "skipped_tests": {
@@ -3410,7 +3428,7 @@
         "Tanium v2 - Test": "Issue 26822",
         "hashIncidentFields-test": "Issue 26850",
         "Fidelis Elevate Network": "Issue 26453",
-        "Cortex XDR - IOC - Test": "Issue 25598",
+        "Cortex XDR - IOC - Test": "Issue 37957",
         "Cherwell Example Scripts - test": "Issue 26780",
         "Cherwell - test": "Issue 26780",
         "PAN-OS Query Logs For Indicators Test": "Issue 28753",
@@ -3442,7 +3460,6 @@
         "Create ServiceNow Ticket and Mirror Test": "Issue 30587",
         "palo_alto_panorama_test_pb": "Issue 34371",
         "Microsoft Defender - ATP - Indicators Test": "Issue 29279",
-        "Active Directory - Get User Manager Details - Test": "Issue 25604",
         "GSuiteAdmin-Test": "Issue 34784",
         "Test-BPA": "Issue 28406",
         "Test-BPA_Integration": "Issue 28236",
@@ -3466,11 +3483,11 @@
         "Centreon-Test-Playbook": "Issue 37022",
         "PAN-OS - Block URL - Custom URL Category Test": "Issue 37024",
         "Service Desk Plus - Generic Polling Test": "Issue 30798",
-        "Pwned v2 test": "Issue 26601",
         "TestEmailRepIOPlaybook": "Issue 33219",
         "get_original_email_-_ews-_test": "Issue 27571",
         "PANW Threat Vault - Signature Search - Test": "Issue 30930",
-        "TAXII_Feed_Test": "Issue 37588"
+        "TAXII_Feed_Test": "Issue 37588",
+        "Git_Integration-Test": "Issue 37800"
     },
     "skipped_integrations": {
 
@@ -3777,6 +3794,9 @@
             },
             "demisto/boto3": {
                 "memory_threshold": 90
+            },
+            "demisto/flask-nginx": {
+                "pid_threshold": 11
             }
         }
     }
