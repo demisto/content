@@ -8,7 +8,6 @@ from CommonServerPython import *  # noqa: F401
 class FieldNotExists(Exception):
     pass
 
-
 def get_duration_html():
     try:
         incident_id = demisto.incident().get('id', {})
@@ -19,8 +18,8 @@ def get_duration_html():
         if isinstance(first_date, list):
             first_date = first_date[-1]
         now = datetime.now()
-        first_date = dateutil.parser.parse(first_date)
-        diff = dateutil.relativedelta.relativedelta(now, first_date)
+        first_date = dateutil.parser.parse(first_date) # type: ignore
+        diff = dateutil.relativedelta.relativedelta(now, first_date) # type: ignore
         return f"""
                     <div class="demisto-duration vertical-strech">
                         <div class="duration-widget">
