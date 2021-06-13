@@ -146,7 +146,7 @@ def is_object_id_exist(client, object_id_list, list_type):
         return True
     except Exception:
         demisto.debug(f"The following ids {object_id_list} were not found in {list_type} list.")
-        raise DemistoException(f"An object with the given identifier was not found. ")
+        raise DemistoException("An object with the given identifier was not found. ")
 
 
 def delete_ip_objects_command(client: Client, args: Dict[str, Any]):

@@ -21,10 +21,10 @@ IP_ADDRESSES_TO_ADD = [
 ]
 
 IP_ADDRESSES_TO_DELETE = [
-    ({'list_type': 'denylist', 'object_id': '850f7418-2ac9'}, "IP object with ID: 850f7418-2ac9 deleted successfully "
-                                                              "from the denylist list.", True),
+    ({'list_type': 'denylist', 'object_id': '850f7418-2ac9'},
+     "IP object with ID: 850f7418-2ac9 deleted successfully from the denylist list. \n", True),
     ({'list_type': 'allowlist', 'object_id': '850f7418-2ac9', 'note': "test"},
-     "IP object with ID: 850f7418-2ac9 deleted successfully from the allowlist list.", True),
+     "IP object with ID: 850f7418-2ac9 deleted successfully from the allowlist list. \n", True),
     ({'list_type': 'allowlist', 'object_id': '850f7418-2ac9', 'note': "test"},
      "", False),
 ]
