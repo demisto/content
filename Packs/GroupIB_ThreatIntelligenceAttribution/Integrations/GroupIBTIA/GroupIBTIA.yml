@@ -1247,7 +1247,7 @@ script:
     - contextPath: additional_info
       description: Additional info about feed
       type: String
-  dockerimage: demisto/python3:3.9.5.20958
+  dockerimage: demisto/python3:3.9.5.21272
   feed: false
   isfetch: true
   longRunning: false
@@ -1257,5 +1257,5 @@ script:
   subtype: python3
   type: python
 tests:
-- Group-IB Threat Intelligence & Attribution-Test
+- No tests
 fromversion: 6.0.0
