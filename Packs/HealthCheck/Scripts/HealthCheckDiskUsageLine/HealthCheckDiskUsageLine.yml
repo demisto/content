@@ -1,12 +1,4 @@
-args:
-- auto: PREDEFINED
-  defaultValue: "True"
-  description: Define if that in Widget Context or analyse data.
-  name: isWidget
-  predefined:
-  - "True"
-  - "False"
-comment: 'Present or parse Disk usage stats '
+comment: Present Disk usage stats line widget
 commonfields:
   id: HealthCheckDiskUsageLine
   version: -1

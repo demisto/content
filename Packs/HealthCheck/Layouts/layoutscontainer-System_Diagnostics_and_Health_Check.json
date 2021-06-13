@@ -588,6 +588,24 @@
                         "w": 1,
                         "x": 2,
                         "y": 0
+                    },
+                    {
+                        "h": 2,
+                        "hideName": false,
+                        "i": "fwrsfiljze-538ca050-cc7f-11eb-a11f-ed12573d1791",
+                        "items": [],
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Disk Usage Last 24 Hours",
+                        "query": "HealthCheckDiskUsageLine",
+                        "queryType": "script",
+                        "static": false,
+                        "type": "dynamic",
+                        "w": 3,
+                        "x": 0,
+                        "y": 6
                     }
                 ],
                 "type": "custom"

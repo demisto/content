@@ -2,38 +2,10 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
 
-RESOLUTION = ["Free up Disk Space with Data Archiving: https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-0/"
-              "cortex-xsoar-admin/manage-data/free-up-disc-space-with-data-archiving"]
-
-
-def analyzeData(res):
-    addActions = []
-
-    if res[len(res) - 1]['data'][0] > 90:
-        addActions.append({'category': 'Disk usage analysis', 'severity': 'High',
-                           'description': "Disk usage has reached 90%", "resolution": f"{RESOLUTION[0]}"})
-    elif res[len(res) - 1]['data'][0] > 80:
-        addActions.append({'category': 'Disk usage analysis', 'severity': 'Medium',
-                           'description': "Disk usage has reached 80%", "resolution": f"{RESOLUTION[0]}"})
-    elif res[len(res) - 1]['data'][0] > 70:
-        addActions.append({'category': 'Disk usage analysis', 'severity': 'Low',
-                           'description': "Disk usage has reached 70%", "resolution": f"{RESOLUTION[0]}"})
-    if (res[len(res) - 1]['data'][0] - res[0]['data'][0]) > 1:
-        addActions.append({'category': 'Disk usage analysis', 'severity': 'High',
-                           'description': "Disk usage was increased significantly in the last 24 hours",
-                           "resolution": f"{RESOLUTION[0]}"})
-    return addActions
-
-
-incident = demisto.incidents()[0]
-
-
+config_json = demisto.executeCommand("demisto-api-get", {"uri": "/system/config"})[0]["Contents"]["response"]
 partition = "/"
-if incident['CustomFields']["serverconfiguration"]:
-    for entry in incident['CustomFields']["serverconfiguration"]:
-        if entry.get('key', "") == 'disk.partitions.to.monitor':
-            partition = entry['value']
-
+if config_json.get("sysConf").get("disk.partitions.to.monitor", None):
+    partition = config_json.get("sysConf").get("disk.partitions.to.monitor", None)
 
 stats = demisto.executeCommand(
     "demisto-api-post",
@@ -57,27 +29,31 @@ stats = demisto.executeCommand(
     })
 
 res = stats[0]["Contents"]["response"]
+output = []
+counter = 0
+higher = 0
+
+buildNumber = demisto.executeCommand("DemistoVersion", {})[0]['Contents']['DemistoVersion']['buildNumber']
+if int(buildNumber) >= 618657:
+    # Line graph:
+    for entry in res:
+        higher = max(entry["data"][0], higher)
+        if counter % 2 == 0:
+            output.append({"name": counter, "data": [higher]})
+            higher = 0
+        counter += 1
 
 data = {
     "Type": 17,
     "ContentsFormat": "line",
     "Contents": {
-        "stats": res,
+        "stats": output,
         "params": {
-            "currencySign": "%",
-            "signAlignment": "right",
-            "colors": {
-                "isEnabled": True,
-                "items": {
-                    "#00CD33": {"value": -1},
-                    "#FAC100": {"value": 60},
-                    "#FF1B15": {"value": 80}
-                },
-                "type": "above"
-            }
+            "timeFrame": "minutes",
+            "format": "HH:mm",
+            "layout": "vertical"
         }
     }
 }
-
 
 demisto.results(data)

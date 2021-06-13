@@ -1,7 +1,6 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 packs = []
-pack_list = []
 need_update = 0
 not_certified = 0
 
