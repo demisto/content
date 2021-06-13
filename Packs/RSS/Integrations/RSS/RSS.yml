@@ -15,19 +15,21 @@ configuration:
   name: incidentType
   required: false
   type: 13
+- defaultvalue: '1'
+  display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  required: false
+  type: 19
 description: Simple RSS reader that can ingest new items as Incidents
 display: RSS
 name: RSS
 script:
-  dockerimage: demisto/feed-parser:1.0.0.14495
-  feed: false
+  dockerimage: demisto/feed-parser:1.0.0.21485
   isfetch: true
-  longRunning: false
-  longRunningPort: false
   runonce: false
-  script: '-'
+  script: ''
   subtype: python3
   type: python
+fromversion: 6.0.0
 tests:
 - No tests
-fromversion: 6.0.0
