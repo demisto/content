@@ -1908,7 +1908,7 @@
         },
         {
             "integrations": "AWS - IAM",
-            "playbookID": "d5cb69b1-c81c-4f27-8a40-3106c0cb2620"
+            "playbookID": "AWS - IAM Test Playbook"
         },
         {
             "integrations": "McAfee Active Response",
