@@ -86,11 +86,15 @@ def main():
     if demisto.command() == 'fetch-indicators':
         indicator_types = argToList(demisto.params().get('indicator_type'))
 
+        integration_context = get_integration_context()
         if not indicator_types:
             indicator_types = ['IP']
+        amount_indicators = int(demisto.getParam('amount_indicators'))
         demisto.info(f'starting feed with types {indicator_types}')
-        demisto.info(f'starting feed with types {len(indicator_types)} size')
+        demisto.info(f'starting feed with types {amount_indicators} size')
         for indicator_type in indicator_types:
+            if int(integration_context.get(indicator_type, 0)) >= amount_indicators:
+                continue
             indicators = []
             csv_file = TYPE_TO_FILENAME[indicator_type]
             indicators_csv_file = open(Path('/perf/' + csv_file), newline='')
@@ -157,7 +161,7 @@ def main():
                     indicators.append(currentIndicator)
                     prev_indicator = indicator_val
                     prev_type = indicator_type
-                    if count == int(demisto.getParam('amount_inidcators')):
+                    if count == amount_indicators:
                         break
                 else:
                     raise Exception("abc")
@@ -165,7 +169,7 @@ def main():
             batch_size = int(demisto.params().get('batch_size'))
             batches = []
             feed_start = timer()
-            indicators = indicators[:int(demisto.params().get('amount_inidcators'))]
+            indicators = indicators[:amount_indicators]
             demisto.info(f'starting feed of {len(indicators)} size')
             for b in good_batch(indicators, batch_size):
                 batch_start = timer()
@@ -181,6 +185,8 @@ def main():
             incidents = [{"name": demisto.params().get('incidents_name'), "type": "Access", "details": json.dumps(run_info)}]
             demisto.createIncidents(incidents)
             demisto.info('feed finished create result incident')
+            integration_context[indicator_type] = amount_indicators
+            set_integration_context(integration_context)
     elif demisto.command() == 'test-module':
         demisto.results('ok')
     elif demisto.command() == 'random-score-indicators':

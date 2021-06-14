@@ -17,10 +17,16 @@ configuration:
   - IP
   - URL
 - display: Amount of indicators
-  name: amount_inidcators
+  name: amount_indicators
   defaultvalue: "100000"
   type: 0
   required: false
+- display: Incremental Feed
+  defaultvalue: true
+  hidden: true
+  name: feedIncremental
+  required: false
+  type: 8
 - display: Indicators custom field length
   name: indicators_custom_field_length
   defaultvalue: "200"
