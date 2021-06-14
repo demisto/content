@@ -161,7 +161,7 @@ def test_get_report_not_found(mocker):
     def error_400_mock(*kwargs):
         raise Exception(error_msg)
 
-    mocker.patch.object(Client, '_generate_token', return_value='token')
+    mocker.patch.object(FireEyeClient, '_generate_token', return_value='token')
     client = Client(base_url="https://fireeye.cm.com/", username='user', password='pass', verify=False, proxy=False)
 
     mocker.patch('FireEyeCM.Client.get_reports_request', side_effect=error_400_mock)
@@ -183,9 +183,9 @@ def test_get_events_no_events(mocker):
     Then
     - Validate the human readable
     """
-    mocker.patch.object(Client, '_generate_token', return_value='token')
+    mocker.patch.object(FireEyeClient, '_generate_token', return_value='token')
     client = Client(base_url="https://fireeye.cm.com/", username='user', password='pass', verify=False, proxy=False)
-    mocker.patch.object(Client, 'get_events_request',
+    mocker.patch.object(FireEyeClient, 'get_events_request',
                         return_value=util_load_json('test_data/get_events_none.json'))
     command_results = get_events(client=client, args={'end_time': '2020-05-19T23:00:00.000-00:00',
                                                       'duration': '48_hours', 'limit': '3'})
@@ -204,9 +204,9 @@ def test_get_events(mocker):
     Then
     - Validate The entry context
     """
-    mocker.patch.object(Client, '_generate_token', return_value='token')
+    mocker.patch.object(FireEyeClient, '_generate_token', return_value='token')
     client = Client(base_url="https://fireeye.cm.com/", username='user', password='pass', verify=False, proxy=False)
-    mocker.patch.object(Client, 'get_events_request',
+    mocker.patch.object(FireEyeClient, 'get_events_request',
                         return_value=util_load_json('test_data/get_events.json'))
     command_results = get_events(client=client, args={'end_time': '2021-05-19T23:00:00.000-00:00',
                                                       'duration': '48_hours', 'limit': '3'})
@@ -240,9 +240,9 @@ def test_release_quarantined_emails(mocker):
 
         return MockResponse({"1234": "Unable to release the email:quarantined email does not exist\\n"}, 200)
 
-    mocker.patch.object(Client, '_generate_token', return_value='token')
+    mocker.patch.object(FireEyeClient, '_generate_token', return_value='token')
     client = Client(base_url="https://fireeye.cm.com/", username='user', password='pass', verify=False, proxy=False)
-    mocker.patch.object(Client, 'release_quarantined_emails_request',
+    mocker.patch.object(FireEyeClient, 'release_quarantined_emails_request',
                         side_effect=mocked_release_quarantined_emails_requests)
     with pytest.raises(DemistoException):
         release_quarantined_emails(client=client, args={'sensor_name': 'FireEyeEX', 'queue_ids': '1234'})
@@ -275,9 +275,9 @@ def test_delete_quarantined_emails(mocker):
 
         return MockResponse({"1234": "Unable to delete the email:quarantined email does not exist\\n"}, 200)
 
-    mocker.patch.object(Client, '_generate_token', return_value='token')
+    mocker.patch.object(FireEyeClient, '_generate_token', return_value='token')
     client = Client(base_url="https://fireeye.cm.com/", username='user', password='pass', verify=False, proxy=False)
-    mocker.patch.object(Client, 'delete_quarantined_emails_request',
+    mocker.patch.object(FireEyeClient, 'delete_quarantined_emails_request',
                         side_effect=mocked_delete_quarantined_emails_requests)
     with pytest.raises(DemistoException):
         delete_quarantined_emails(client=client, args={'sensor_name': 'FireEyeEX', 'queue_ids': '1234'})
@@ -296,9 +296,9 @@ def test_fetch_incidents(mocker):
     - run the fetch incidents command using the Client
     Validate The length of the results and the last_run.
     """
-    mocker.patch.object(Client, '_generate_token', return_value='token')
+    mocker.patch.object(FireEyeClient, '_generate_token', return_value='token')
     client = Client(base_url="https://fireeye.cm.com/", username='user', password='pass', verify=False, proxy=False)
-    mocker.patch.object(Client, 'get_alerts_request', return_value=util_load_json('test_data/alerts.json'))
+    mocker.patch.object(FireEyeClient, 'get_alerts_request', return_value=util_load_json('test_data/alerts.json'))
     last_run, incidents = fetch_incidents(client=client,
                                           last_run={},
                                           first_fetch='1 year',
@@ -321,9 +321,9 @@ def test_fetch_incidents_with_limit(mocker):
     - run the fetch incidents command using the Client
     Validate The length of the results and the last_run of the limited incident.
     """
-    mocker.patch.object(Client, '_generate_token', return_value='token')
+    mocker.patch.object(FireEyeClient, '_generate_token', return_value='token')
     client = Client(base_url="https://fireeye.cm.com/", username='user', password='pass', verify=False, proxy=False)
-    mocker.patch.object(Client, 'get_alerts_request', return_value=util_load_json('test_data/alerts.json'))
+    mocker.patch.object(FireEyeClient, 'get_alerts_request', return_value=util_load_json('test_data/alerts.json'))
     last_run, incidents = fetch_incidents(client=client,
                                           last_run={},
                                           first_fetch='1 year',
@@ -347,9 +347,9 @@ def test_fetch_incidents_last_alert_ids(mocker):
     - Validate that no incidents will be returned.
     - Validate that the last_run is "now"
     """
-    mocker.patch.object(Client, '_generate_token', return_value='token')
+    mocker.patch.object(FireEyeClient, '_generate_token', return_value='token')
     client = Client(base_url="https://fireeye.cm.com/", username='user', password='pass', verify=False, proxy=False)
-    mocker.patch.object(Client, 'get_alerts_request', return_value=util_load_json('test_data/alerts.json'))
+    mocker.patch.object(FireEyeClient, 'get_alerts_request', return_value=util_load_json('test_data/alerts.json'))
     last_run = {
         'time': "whatever",
         'last_alert_ids': '["35267", "35268", "35269", "35272", "35273", "35274",'

@@ -324,6 +324,7 @@ def update_allowedlist(client: Client, args: Dict[str, Any]) -> CommandResults:
     if not raw_response:
         md_ = 'No allowed lists records were updated.'
     else:
+        # demisto.results(str(raw_response))
         md_ = tableToMarkdown(name=f'{INTEGRATION_NAME} Allowed lists updated:', t=raw_response, removeNull=True)
 
     return CommandResults(
