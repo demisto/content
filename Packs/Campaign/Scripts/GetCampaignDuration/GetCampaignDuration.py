@@ -5,7 +5,7 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
 
-class FieldNotExists(Exception):
+class FieldNotFound(Exception):
     pass
 
 
