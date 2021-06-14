@@ -162,16 +162,16 @@ def get_zipped_packs_names(zip_path):
     return zipped_packs
 
 
-def download_packs_from_gcp(storage_bucket_name, destination_path):
+def download_packs_from_gcp(storage_bucket_name, dest_path):
     """
     Copies all content in the gcp path to destination_path
     Args:
         storage_bucket_name: The name of the GCP bucket to download from.
-        destination_path: The path to download the packs to.
+        dest_path: The path to download the packs to.
     """
     src_path = os.path.join('gs://', storage_bucket_name, GCPConfig.STORAGE_BASE_PATH)
 
-    process = subprocess.check_output(["Tests/scripts/cp_gcp_dir.sh", src_path, destination_path])
+    process = subprocess.check_output(['gsutil', '-m', 'cp', '-r', src_path, dest_path])
     if process:
         logging.info(f"cp_gcp_dir.sh output: {process}")
 
