@@ -1,6 +1,6 @@
 id: SignalSciences-Test
-version: 11
-vcShouldKeepItemLegacyProdMachine: false
+version: -1
+fromversion: 5.0.0
 name: SignalSciences-Test
 starttaskid: "0"
 tasks:
