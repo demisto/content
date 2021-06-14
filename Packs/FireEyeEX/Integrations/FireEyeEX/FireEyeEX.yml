@@ -244,6 +244,11 @@ script:
       name: alert_id
       required: true
       secret: false
+    - default: false
+      defaultValue: '30'
+      description: Timeout to retrieve the alert details.
+      isArray: true
+      name: timeout
     deprecated: false
     description: Searches and retrieves the details of a single alert.
     execution: false

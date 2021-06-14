@@ -28,8 +28,9 @@ class FireEyeClient(BaseClient):
         return self._http_request(method='GET', url_suffix='alerts', params=request_params, resp_type='json')
 
     @logger
-    def get_alert_details_request(self, alert_id: str) -> Dict[str, str]:
-        return self._http_request(method='GET', url_suffix=f'alerts/alert/{alert_id}', resp_type='json')
+    def get_alert_details_request(self, alert_id: str, timeout: int) -> Dict[str, str]:
+        return self._http_request(method='GET', url_suffix=f'alerts/alert/{alert_id}', resp_type='json',
+                                  timeout=timeout)
 
     @logger
     def alert_acknowledge_request(self, uuid: str) -> Dict[str, str]:

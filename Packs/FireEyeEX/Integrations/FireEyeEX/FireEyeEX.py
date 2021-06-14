@@ -107,12 +107,14 @@ def get_alerts(client: Client, args: Dict[str, Any]) -> CommandResults:
 @logger
 def get_alert_details(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
     alert_ids = argToList(args.get('alert_id'))
+    timeout = int(args.get('timeout', '30'))
+
     command_results: List[CommandResults] = []
 
     headers = ['id', 'occurred', 'product', 'name', 'malicious', 'action', 'src', 'dst', 'severity', 'alertUrl']
 
     for alert_id in alert_ids:
-        raw_response = client.fe_client.get_alert_details_request(alert_id)
+        raw_response = client.fe_client.get_alert_details_request(alert_id, timeout)
 
         alert_details = raw_response.get('alert')
         if not alert_details:
