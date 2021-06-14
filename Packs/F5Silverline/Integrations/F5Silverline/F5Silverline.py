@@ -220,18 +220,19 @@ def add_paging_to_outputs(paging_dict, page_number):
     we would like to get page numbers by regex filtering.
     """
     link_to_current_obj = paging_dict.get('self')
-    link_to_last_obj = paging_dict.get('last')
-    current_page_number = re.search(PAGE_NUMBER_PATTERN, link_to_current_obj)
-    last_page_number = re.search(PAGE_NUMBER_PATTERN, link_to_last_obj)
-    if current_page_number:
-        current_page_number = current_page_number.group(0) if link_to_current_obj else page_number
-    else:
+    if not link_to_current_obj:
+        demisto.debug(f"The paging response seems to be broken {paging_dict}")
         raise DemistoException("An error occurred when trying to parse paging response")
 
-    if last_page_number:
-        last_page_number = last_page_number.group(0) if link_to_last_obj else current_page_number
-    else:
-        raise DemistoException("An error occurred when trying to parse paging response")
+    current_page_number = re.search(PAGE_NUMBER_PATTERN, link_to_current_obj)
+    current_page_number = current_page_number.group(0) if current_page_number else page_number
+
+    link_to_last_obj = paging_dict.get('last')
+    last_page_number = current_page_number
+    if link_to_last_obj:
+        last_page_number = re.search(PAGE_NUMBER_PATTERN, link_to_last_obj)
+        if last_page_number:
+            last_page_number = last_page_number.group(0)
     return current_page_number, last_page_number
 
 
@@ -276,7 +277,12 @@ def get_ip_objects_list_command(client: Client, args: Dict[str, Any]) -> Command
         outputs = response.get('data')
         human_results = parse_get_ip_object_list_results(response)
         if is_paging_required and outputs:
-            current_page_number, last_page_number = add_paging_to_outputs(response.get('links'), page_number)
+            to_page = response.get('links')
+            if list_type == "allowlist":
+                current_page_number, last_page_number = add_paging_to_outputs(to_page, page_number)
+            else:
+                to_page = to_page.get('links')
+                current_page_number, last_page_number = add_paging_to_outputs(to_page, page_number)
             paging_data = paging_outputs_dict(current_page_number, last_page_number, page_size)
             paging_data_human_readable = paging_data_to_human_readable(current_page_number, last_page_number, page_size)
     else:
