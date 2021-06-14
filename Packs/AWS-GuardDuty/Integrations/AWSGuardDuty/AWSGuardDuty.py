@@ -714,7 +714,7 @@ def get_members(args):
             AccountIds=accountId_list
         )
 
-        members_response = response.get('Members')
+        members_response = response.get('Members', [])
         filtered_members = [member for member in members_response if member]
 
         ec = {"AWS.GuardDuty.Members(val.AccountId === obj.AccountId)": filtered_members} \
