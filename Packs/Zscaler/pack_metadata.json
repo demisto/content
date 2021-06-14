@@ -10,7 +10,9 @@
     "categories": [
         "Network Security"
     ],
-    "tags": [],
+    "tags": [
+        "foo"
+    ],
     "useCases": [],
     "keywords": []
 }
