@@ -4,7 +4,7 @@ name: FireEyeNX-Test
 description: This playbook uses the FireEye NX integration and tests the scenarios
   of the various commands like fireeye-nx-get-artifacts-metadata-by-alert, fireeye-nx-get-alert-details,
   fireeye-nx-get-reports, fireeye-nx-get-alerts, fireeye-nx-get-artifacts-by-alert
-  and fireeye-nx-get-events..
+  and fireeye-nx-get-events.
 starttaskid: "0"
 tasks:
   "0":
