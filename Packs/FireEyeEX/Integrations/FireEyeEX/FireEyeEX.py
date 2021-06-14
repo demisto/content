@@ -303,8 +303,8 @@ def create_allowedlist(client: Client, args: Dict[str, Any]) -> CommandResults:
     current_allowed_list = client.fe_client.list_allowedlist_request(type_)
     for entry in current_allowed_list:
         if entry_value == entry.get('name'):
-            raise DemistoException(str(f'Cannot create the entry_value as it is already exist in the Allowedlist'
-                                       f' of type {type_}'))
+            raise DemistoException(str(f'Cannot create the entry_value {entry_value} as it is already exist in the '
+                                       f'Allowedlist of type {type_}.'))
 
     # gets 200 back without content if successful
     client.fe_client.create_allowedlist_request(type_, entry_value, matches)
@@ -327,8 +327,8 @@ def update_allowedlist(client: Client, args: Dict[str, Any]) -> CommandResults:
         if entry_value == entry.get('name'):
             exist = True
     if not exist:
-        raise DemistoException(str(f'Cannot update the entry_value as it does not exist in the Allowedlist'
-                                   f' of type {type_}'))
+        raise DemistoException(str(f'Cannot update the entry_value {entry_value} as it does not exist in the '
+                                   f'Allowedlist of type {type_}.'))
 
     # gets 200 back without content if successful
     client.fe_client.update_allowedlist_request(type_, entry_value, matches)
@@ -350,8 +350,8 @@ def delete_allowedlist(client: Client, args: Dict[str, Any]) -> CommandResults:
         if entry_value == entry.get('name'):
             exist = True
     if not exist:
-        raise DemistoException(str(f'Cannot delete the entry_value as it does not exist in the Allowedlist'
-                                   f' of type {type_}'))
+        raise DemistoException(str(f'Cannot delete the entry_value {entry_value }as it does not exist in the '
+                                   f'Allowedlist of type {type_}.'))
 
     # gets 200 back without content if successful
     client.fe_client.delete_allowedlist_request(type_, entry_value)
@@ -390,8 +390,8 @@ def create_blockedlist(client: Client, args: Dict[str, Any]) -> CommandResults:
     current_blocked_list = client.fe_client.list_blockedlist_request(type_)
     for entry in current_blocked_list:
         if entry_value == entry.get('name'):
-            raise DemistoException(str(f'Cannot create the entry_value as it is already exist in the Blockedlist'
-                                       f' of type {type_}'))
+            raise DemistoException(str(f'Cannot create the entry_value {entry_value} as it is already exist in the '
+                                       f'Blockedlist of type {type_}.'))
 
     # gets 200 back without content if successful
     client.fe_client.create_blockedlist_request(type_, entry_value, matches)
@@ -414,8 +414,8 @@ def update_blockedlist(client: Client, args: Dict[str, Any]) -> CommandResults:
         if entry_value == entry.get('name'):
             exist = True
     if not exist:
-        raise DemistoException(str(f'Cannot update the entry_value as it does not exist in the Blockedlist'
-                                   f' of type {type_}'))
+        raise DemistoException(str(f'Cannot update the entry_value {entry_value} as it does not exist in the '
+                                   f'Blockedlist of type {type_}.'))
 
     # gets 200 back without content if successful
     client.fe_client.update_blockedlist_request(type_, entry_value, matches)
@@ -437,8 +437,8 @@ def delete_blockedlist(client: Client, args: Dict[str, Any]) -> CommandResults:
         if entry_value == entry.get('name'):
             exist = True
     if not exist:
-        raise DemistoException(str(f'Cannot delete the entry_value as it does not exist in the Blockedlist'
-                                   f' of type {type_}'))
+        raise DemistoException(str(f'Cannot delete the entry_value {entry_value} as it does not exist in the '
+                                   f'Blockedlist of type {type_}.'))
 
     # gets 200 back without content if successful
     client.fe_client.delete_blockedlist_request(type_, entry_value)
