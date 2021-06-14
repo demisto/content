@@ -2134,7 +2134,7 @@ def get_rules(client_obj, args: Dict[str, str]) -> Tuple[Dict[str, Any], Dict[st
     if int(page_size) > 1000:
         raise ValueError('Page size should be in the range from 1 to 1000.')
 
-    live_rule = args.get('live_rule', '').lower()
+    live_rule = argToBoolean(args.get('live_rule', ''))
     if live_rule and live_rule != 'true' and live_rule != 'false':
         raise ValueError('Live rule should be true or false.')
 
