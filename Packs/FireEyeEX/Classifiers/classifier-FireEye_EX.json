@@ -1,8 +1,8 @@
 {
-  "name": "FireEye Central Management - Classifier",
+  "name": "FFireEye Email Security - Classifier",
   "type": "classification",
-  "id": "FireEye Central Management - Classifier",
-  "description": "Classifies FireEye Alerts.",
+  "id": "FireEye Email Security - Classifier",
+  "description": "Classifies FireEye Email Security Alerts.",
   "keyTypeMap": {
     "EMAIL_MPS": "FireEye EX Alert"
   },
