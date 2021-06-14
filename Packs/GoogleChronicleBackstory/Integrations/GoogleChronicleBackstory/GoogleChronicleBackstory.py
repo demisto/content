@@ -2146,14 +2146,13 @@ def get_rules(client_obj, args: Dict[str, str]) -> Tuple[Dict[str, Any], Dict[st
 
     # get list of rules from Chronicle Backstory
     json_data = validate_response(client_obj, request_url)
-    if live_rule:
-        if live_rule == 'true':
-            list_live_rule = [rule for rule in json_data.get('rules', []) if rule.get('liveRuleEnabled')]
-        else:
-            list_live_rule = [rule for rule in json_data.get('rules', []) if not rule.get('liveRuleEnabled')]
-        json_data = {
-            'rules': list_live_rule
-        }
+      if live_rule:
+          list_live_rule = [rule for rule in json_data.get('rules', []) if rule.get('liveRuleEnabled')]
+      else:
+          list_live_rule = [rule for rule in json_data.get('rules', []) if not rule.get('liveRuleEnabled')]
+      json_data = {
+          'rules': list_live_rule
+      }
     raw_resp = deepcopy(json_data)
     parsed_ec, token_ec = get_context_for_rules(json_data)
     ec: Dict[str, Any] = {
