@@ -741,7 +741,7 @@ script:
     deprecated: false
     description: Deletes allowed sender domain.
     execution: false
-    name: fireeye-ex-deletes-allowedlist
+    name: fireeye-ex-delete-allowedlist
     outputs:
     - contextPath: FireEyeEX.name
       description: The allowed domain name.
@@ -893,7 +893,7 @@ script:
     deprecated: false
     description: Deletes blocked sender domain.
     execution: false
-    name: fireeye-ex-deletes-blockedlist
+    name: fireeye-ex-delete-blockedlist
     outputs:
     - contextPath: FireEyeEX.name
       description: The allowed domain name.

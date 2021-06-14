@@ -320,20 +320,11 @@ def update_allowedlist(client: Client, args: Dict[str, Any]) -> CommandResults:
     entry_value = args.get('entry_value', '')
     matches = args.get('matches')
 
-    raw_response = client.fe_client.update_allowedlist_request(type_, entry_value, matches)
-    raise Exception(str(raw_response.content))
-    if not raw_response:
-        md_ = 'No allowed lists records were updated.'
-    else:
-        demisto.results(str(raw_response))
-        md_ = tableToMarkdown(name=f'{INTEGRATION_NAME} Allowed lists updated:', t=raw_response, removeNull=True)
+    # gets 200 back without content if successful
+    client.fe_client.update_allowedlist_request(type_, entry_value, matches)
 
     return CommandResults(
-        readable_output=md_,
-        outputs_prefix=f'{INTEGRATION_CONTEXT_NAME}.Allowedlists',
-        outputs_key_field='name',
-        outputs=raw_response,
-        raw_response=raw_response
+        readable_output=f'Allowedlist entry {entry_value} of type {type_} was updated.'
     )
 
 
@@ -342,18 +333,11 @@ def delete_allowedlist(client: Client, args: Dict[str, Any]) -> CommandResults:
     type_ = args.get('type', '')
     entry_value = args.get('entry_value', '')
 
-    raw_response = client.fe_client.delete_allowedlist_request(type_, entry_value)
-    if not raw_response:
-        md_ = 'No allowed lists records were deleted.'
-    else:
-        md_ = tableToMarkdown(name=f'{INTEGRATION_NAME} Allowed lists deleted:', t=raw_response, removeNull=True)
+    # gets 200 back without content if successful
+    client.fe_client.delete_allowedlist_request(type_, entry_value)
 
     return CommandResults(
-        readable_output=md_,
-        outputs_prefix=f'{INTEGRATION_CONTEXT_NAME}.Allowedlists',
-        outputs_key_field='name',
-        outputs=raw_response,
-        raw_response=raw_response
+        readable_output=f'Allowedlist entry {entry_value} of type {type_} was deleted.'
     )
 
 
@@ -403,18 +387,11 @@ def update_blockedlist(client: Client, args: Dict[str, Any]) -> CommandResults:
     entry_value = args.get('entry_value', '')
     matches = args.get('matches')
 
-    raw_response = client.fe_client.update_blockedlist_request(type_, entry_value, matches)
-    if not raw_response:
-        md_ = 'No blocked lists records were updated.'
-    else:
-        md_ = tableToMarkdown(name=f'{INTEGRATION_NAME} Blockedlowed lists updated:', t=raw_response, removeNull=True)
+    # gets 200 back without content if successful
+    client.fe_client.update_blockedlist_request(type_, entry_value, matches)
 
     return CommandResults(
-        readable_output=md_,
-        outputs_prefix=f'{INTEGRATION_CONTEXT_NAME}.Blockedlists',
-        outputs_key_field='name',
-        outputs=raw_response,
-        raw_response=raw_response
+        readable_output=f'Blockedlist entry {entry_value} of type {type_} was updated.'
     )
 
 
@@ -423,18 +400,11 @@ def delete_blockedlist(client: Client, args: Dict[str, Any]) -> CommandResults:
     type_ = args.get('type', '')
     entry_value = args.get('entry_value', '')
 
-    raw_response = client.fe_client.delete_blockedlist_request(type_, entry_value)
-    if not raw_response:
-        md_ = 'No blocked lists records were deleted.'
-    else:
-        md_ = tableToMarkdown(name=f'{INTEGRATION_NAME} Blocked lists deleted:', t=raw_response, removeNull=True)
+    # gets 200 back without content if successful
+    client.fe_client.delete_blockedlist_request(type_, entry_value)
 
     return CommandResults(
-        readable_output=md_,
-        outputs_prefix=f'{INTEGRATION_CONTEXT_NAME}.Blockedlists',
-        outputs_key_field='name',
-        outputs=raw_response,
-        raw_response=raw_response
+        readable_output=f'Blockedlist entry {entry_value} of type {type_} was deleted.'
     )
 
 
