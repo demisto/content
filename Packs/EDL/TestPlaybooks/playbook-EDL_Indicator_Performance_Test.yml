@@ -56,6 +56,8 @@ tasks:
         simple: "Type=IP"
       t:
         simple: ${inputs.t}
+      o:
+        simple: "csv"
       url:
         complex:
           root: inputs.url
@@ -107,6 +109,8 @@ tasks:
         simple: "Type=URL"
       t:
         simple: ${inputs.t}
+      o:
+        simple: "csv"
       url:
         complex:
           root: inputs.url
@@ -155,6 +159,8 @@ tasks:
         simple: "Type=Domain"
       t:
         simple: ${inputs.t}
+      o:
+        simple: "csv"
       url:
         complex:
           root: inputs.url

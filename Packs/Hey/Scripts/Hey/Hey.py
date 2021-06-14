@@ -20,10 +20,12 @@ class HeyPerformanceResult:
                  t: Optional[str] = None,
                  c: Optional[str] = None,
                  n: Optional[str] = None,
+                 o: Optional[str] = None,
                  **args):
         self._t = int(t or 20)
         self._c = int(c or 50)
         self._n = int(n or 200)
+        self._o = o
         c_in_n = self._n / self._c
         if c_in_n != int(c_in_n):
             self._n = int(c_in_n) * self._c
@@ -39,6 +41,9 @@ class HeyPerformanceResult:
             self._ext_results_map = ext_results_map
 
     def to_results(self) -> CommandResults:
+        if self._o != 'csv':
+            outputs = {"Result": self._result}
+            return CommandResults(outputs=outputs, outputs_prefix="Hey")
         df = pd.read_csv(StringIO(self._result), usecols=['response-time', 'status-code'])
         requests_num = self._n
         if len(df) == 0:
@@ -90,14 +95,14 @@ def run_command(command: str) -> str:
 
 def run_hey_test(url: str, n: Optional[str] = None, t: Optional[str] = None, c: Optional[str] = None,
                  z: Optional[str] = None, m: Optional[str] = None, disable_compression: Optional[str] = None,
-                 results_map: Optional[str] = None) -> CommandResults:
+                 results_map: Optional[str] = None, output_type: Optional[str] = None) -> CommandResults:
     hey_map = assign_params(
         t=t,
         n=n,
         c=c,
         m=m,
         z=z + 's' if z else None,
-        o='csv'
+        o='csv' if output_type == 'csv' else None
     )
     hey_query = "hey "
     if disable_compression == 'true':

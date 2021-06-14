@@ -36,6 +36,13 @@ args:
   - "true"
   - "false"
   description: Disable compression.
+- defaultvalue: "csv"
+  name: disable_compression
+  auto: PREDEFINED
+  predefined:
+  - "human_readable"
+  - "csv"
+  description: Disable compression.
 - name: results_map
   description: Additional information to add to the result. Semicolon separated list
     of "key=value". e.g. Type=IP;Size=100.
@@ -60,6 +67,10 @@ outputs:
   type: number
 - contextPath: Hey.AverageTime
   description: The average time it took for a request to finish.
+  type: number
+- contextPath: Hey.Result
+  description: The full result in text format when output is set to "human_readable"
+  type: number
 scripttarget: 0
 subtype: python3
 runonce: false
