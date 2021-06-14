@@ -1,5 +1,5 @@
 {
-  "name": "FFireEye Email Security - Classifier",
+  "name": "FireEye Email Security - Classifier",
   "type": "classification",
   "id": "FireEye Email Security - Classifier",
   "description": "Classifies FireEye Email Security Alerts.",
