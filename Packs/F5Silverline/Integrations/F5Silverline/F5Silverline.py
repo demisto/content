@@ -281,7 +281,7 @@ def get_ip_objects_list_command(client: Client, args: Dict[str, Any]) -> Command
             if list_type == "allowlist":
                 current_page_number, last_page_number = add_paging_to_outputs(to_page, page_number)
             else:
-                to_page = to_page.get('links')
+                to_page = to_page.get('links')  # type: ignore
                 current_page_number, last_page_number = add_paging_to_outputs(to_page, page_number)
             paging_data = paging_outputs_dict(current_page_number, last_page_number, page_size)
             paging_data_human_readable = paging_data_to_human_readable(current_page_number, last_page_number, page_size)
