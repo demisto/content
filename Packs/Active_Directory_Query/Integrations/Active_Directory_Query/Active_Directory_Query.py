@@ -52,7 +52,7 @@ DEFAULT_COMPUTER_ATTRIBUTES = [
     'memberOf'
 ]
 FIELDS_THAT_CANT_BE_MODIFIED = [
-    "dn", "samaccountname", "cn", "ou"
+    "dn", "cn", "ou"
 ]
 
 ''' HELPER FUNCTIONS '''
@@ -821,9 +821,7 @@ def create_user_iam(default_base_dn, args, mapper_out, disabled_users_group_cn):
         return iam_user_profile
 
 
-def get_old_samaccountname(user_profile, mapper_out):
-    user_profile = json.loads(user_profile)
-    old_user_data = user_profile.get('olduserdata')
+def get_old_samaccountname(old_user_data, mapper_out):
     iam_old_user_profile = IAMUserProfile(user_profile=old_user_data)
     ad_old_user = iam_old_user_profile.map_object(mapper_name=mapper_out)
     return ad_old_user.get("samaccountname")
@@ -842,6 +840,8 @@ def update_user_iam(default_base_dn, args, create_if_not_exists, mapper_out, dis
     try:
         user_profile = args.get("user-profile")
         allow_enable = args.get('allow-enable') == 'true'
+        old_sam_account_name = ''
+        old_user_exists = ''
 
         user_profile_delta = args.get('user-profile-delta')
         iam_user_profile = IAMUserProfile(user_profile=user_profile, user_profile_delta=user_profile_delta)
@@ -850,7 +850,6 @@ def update_user_iam(default_base_dn, args, create_if_not_exists, mapper_out, dis
 
         # check it user exists and if it doesn't, create it
         sam_account_name = ad_user.get("samaccountname")
-        old_sam_account_name = get_old_samaccountname(user_profile, mapper_out)
 
         if not sam_account_name:
             raise DemistoException("User must have a sAMAccountName, please make sure a mapping "
@@ -862,13 +861,27 @@ def update_user_iam(default_base_dn, args, create_if_not_exists, mapper_out, dis
                                    "and schema type, under the \"ou\" field.")
 
         new_ou = ad_user.get("ou")
-        user_exists = check_if_user_exists_by_samaccountname(default_base_dn, old_sam_account_name)
+        user_exists = check_if_user_exists_by_samaccountname(default_base_dn, sam_account_name)
 
-        if not user_exists and create_if_not_exists:
+        if old_user_data := user_profile.get('olduserdata'):
+            # if olduserdata exists - the user's email is updated:
+            old_sam_account_name = get_old_samaccountname(old_user_data, mapper_out)
+            old_user_exists = check_if_user_exists_by_samaccountname(default_base_dn, old_sam_account_name)
+
+        if not user_exists and not old_user_exists and create_if_not_exists:
             iam_user_profile = create_user_iam(default_base_dn, args, mapper_out, disabled_users_group_cn)
 
-        elif user_exists:
+        elif old_user_exists and user_exists:
+            # In this case we update the user but using an email that is already in use
+            raise DemistoException("The sAMAccountName \"" + sam_account_name + "\" already exists."
+                                   "Try to update \"" + old_sam_account_name + "\" with a different sAMAccountName.")
 
+        elif user_exists or old_user_exists:
+            # There are 2 options here:
+            # 1. We update the user, the email stays the same - therefore user_exists=True and old_user_exists=False
+            # 2. We update the user, the email changes too - therefore user_exists=False and old_user_exists=True
+            if not old_user_exists:
+                old_sam_account_name = sam_account_name
             dn = user_dn(old_sam_account_name, default_base_dn)
 
             if allow_enable:
