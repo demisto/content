@@ -242,7 +242,8 @@ inputs:
   description: Action ID of the specific request.
   playbookInputQuery:
 - key: timeout
-  value: {}
+  value:
+    simple: "10"
   required: false
   description: Amount of time to poll before declaring a timeout and resuming the
     playbook (in minutes).
