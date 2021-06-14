@@ -6,8 +6,10 @@ inputs:
   key: endpoint_id
   playbookInputQuery:
   required: false
-  value: {}
-- description: Path of the file to check.
+value: {}
+- description: |-
+    A comma-separated list of file paths to check.
+    files will be checked on all provided endpoint ids 
   key: file_path
   playbookInputQuery:
   required: false
@@ -15,10 +17,17 @@ inputs:
 - description: |-
     The timeout in seconds for this execution.
     (Default is: '600')
-  key: timeout
+  key: script_timeout
   playbookInputQuery:
   required: false
   value: {}
+- description: Amount of time to poll action status before declaring a timeout and
+    resuming the playbook (in minutes).
+  key: polling_timeout
+  playbookInputQuery:
+  required: false
+  value:
+    simple: "10"
 name: Cortex XDR - check file existence
 outputs:
 - contextPath: PaloAltoNetworksXDR.ScriptResult.results._return_value
@@ -70,19 +79,19 @@ tasks:
           root: inputs.file_path
       timeout:
         complex:
-          root: inputs.timeout
+          root: inputs.script_timeout
     separatecontext: false
     skipunavailable: false
     task:
       brand: ""
-      description: Initiates a new endpoint script execution to check if the file exists.
-      id: af2ebc62-afc0-4284-8a90-aa07d85df504
+      description: Initiates a new endpoint script execution to check if file exists.
+      id: bec36928-edb0-47cb-8e9c-43f12518e007
       iscommand: true
       name: Run script file exists
       script: '|||xdr-run-script-file-exists'
       type: regular
       version: -1
-    taskid: af2ebc62-afc0-4284-8a90-aa07d85df504
+    taskid: bec36928-edb0-47cb-8e9c-43f12518e007
     timertriggers: []
     type: regular
     view: |-
@@ -110,18 +119,22 @@ tasks:
         complex:
           accessor: action_id
           root: PaloAltoNetworksXDR.ScriptRun
+      timeout:
+        complex:
+          root: inputs.polling_timeout
     separatecontext: true
     skipunavailable: false
     task:
       brand: ""
-      id: eaf294e5-bbf8-4591-89f2-e8a40efeb086
+      description: Checks the action status of an action ID. \nEnter the action ID
+        of the action whose status you want to know.
+      id: 6862c91f-c2a4-4f92-84a1-fbc3ec676398
       iscommand: false
       name: Cortex XDR - Check Action Status
       playbookId: Cortex XDR - Check Action Status
       type: playbook
       version: -1
-      description: ''
-    taskid: eaf294e5-bbf8-4591-89f2-e8a40efeb086
+    taskid: 6862c91f-c2a4-4f92-84a1-fbc3ec676398
     timertriggers: []
     type: playbook
     view: |-

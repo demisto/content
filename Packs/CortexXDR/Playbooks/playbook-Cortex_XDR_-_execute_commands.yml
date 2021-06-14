@@ -1,5 +1,5 @@
-description: 'Initiates a new script execution of shell commands. '
-id: Cortex XDR - execute commands
+description: Initiates a new script execution of shell commands.
+id: Cortex XDR - Execute commands
 inputs:
 - description: A comma-separated list of endpoint IDs.
   key: endpoint_ids
@@ -14,11 +14,18 @@ inputs:
 - description: |-
     The timeout in seconds for this execution.
     (Default is: '600')
-  key: timeout
+  key: script_timeout
   playbookInputQuery:
   required: false
   value: {}
-name: Cortex XDR - execute commands
+- description: Amount of time to poll action status before declaring a timeout and
+    resuming the playbook (in minutes).
+  key: polling_timeout
+  playbookInputQuery:
+  required: false
+  value:
+    simple: "10"
+name: Cortex XDR - Execute commands
 outputs: []
 starttaskid: "0"
 tasks:
@@ -66,19 +73,19 @@ tasks:
           root: inputs.endpoint_ids
       timeout:
         complex:
-          root: inputs.timeout
+          root: inputs.script_timeout
     separatecontext: false
     skipunavailable: false
     task:
       brand: ""
       description: Initiate a new endpoint script execution of shell commands.
-      id: b4d2936d-31c5-4ea1-8587-9d7cb439245d
+      id: fded77b1-3d84-4346-81ee-dc408e4edafa
       iscommand: true
       name: Run script execute commands
       script: '|||xdr-run-script-execute-commands'
       type: regular
       version: -1
-    taskid: b4d2936d-31c5-4ea1-8587-9d7cb439245d
+    taskid: fded77b1-3d84-4346-81ee-dc408e4edafa
     timertriggers: []
     type: regular
     view: |-
@@ -106,18 +113,22 @@ tasks:
         complex:
           accessor: action_id
           root: PaloAltoNetworksXDR.ScriptRun
+      timeout:
+        complex:
+          root: inputs.polling_timeout
     separatecontext: true
     skipunavailable: false
     task:
       brand: ""
-      id: e780f6c6-9065-4730-809c-54ff6b2ff4eb
+      description: Checks the action status of an action ID. \nEnter the action ID
+        of the action whose status you want to know.
+      id: 0c7c90aa-c8f7-4710-897a-518a5ce810f3
       iscommand: false
       name: Cortex XDR - Check Action Status
       playbookId: Cortex XDR - Check Action Status
       type: playbook
       version: -1
-      description: ''
-    taskid: e780f6c6-9065-4730-809c-54ff6b2ff4eb
+    taskid: 0c7c90aa-c8f7-4710-897a-518a5ce810f3
     timertriggers: []
     type: playbook
     view: |-
@@ -199,6 +210,6 @@ view: |-
       }
     }
   }
+fromversion: 5.5.0
 tests:
 - No tests (auto formatted)
-fromversion: 5.5.0

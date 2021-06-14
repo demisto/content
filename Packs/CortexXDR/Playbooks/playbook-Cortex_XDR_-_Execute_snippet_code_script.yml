@@ -1,5 +1,5 @@
-description: |
-  Initiates a new endpoint script execution action using the provided snippet code and retrieve the file results.
+description: Initiates a new endpoint script execution action using the provided snippet
+  code and retrieves the file results.
 id: Cortex XDR - Execute snippet code script
 inputs:
 - description: 'A comma-separated list of endpoint IDs. '
