@@ -23,7 +23,7 @@ This playbook does not use any scripts.
 | --- | --- | --- | --- |
 | endpoint_ids | A comma-separated list of endpoint IDs.  |  | Optional |
 | script_uid | Unique identifier of the script. Can be retrieved by running the xdr-get-scripts command. |  | Optional |
-| parameters | Dictionary contains the parameter name as key and its value for this execution as the value. For example, \{"param1":"param1_value","param2":"param2_value"\} |  | Optional |
+| parameters | Dictionary contains the parameter name as key and its value for this execution as the value. For example, \{"param1":"param1_value","param2":"param2_value"\}. The required parameters for each script can be retrieved by running xdr-get-script-metadata with the script uid. |  | Optional |
 | script_timeout | The timeout in seconds for this execution.<br/>\(Default is: '600'\) |  | Optional |
 | polling_timeout | Amount of time to poll action status before declaring a timeout and resuming the playbook \(in minutes\). | 10 | Optional |
 
