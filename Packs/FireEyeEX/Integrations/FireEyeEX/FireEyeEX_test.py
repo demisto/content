@@ -274,22 +274,3 @@ def test_fetch_incidents_last_alert_ids(mocker):
     assert len(incidents) == 0
     # trim miliseconds to avoid glitches such as 2021-05-19T10:21:52.121+00:00 != 2021-05-19T10:21:52.123+00:00
     assert last_run.get('time')[:-8] == to_fe_datetime_converter('now')[:-8]
-
-
-@pytest.mark.parametrize('severity_str, dbot_score', [
-    ('minr', 1),
-    ('majr', 2),
-    ('crit', 3),
-    ('kookoo', 0)
-])
-def test_alert_severity_to_dbot_score(severity_str: str, dbot_score: int):
-    """Unit test
-    Given
-    - alert_severity_to_dbot_score command
-    - severity string
-    When
-    - running alert_severity_to_dbot_score
-    Then
-    - Validate that the dbot score is as expected
-    """
-    assert alert_severity_to_dbot_score(severity_str) == dbot_score

@@ -379,19 +379,6 @@ def fetch_incidents(client: Client, last_run: dict, first_fetch: str, max_fetch:
     return next_run, incidents
 
 
-def alert_severity_to_dbot_score(severity_str: str):
-    severity = severity_str.lower()
-    if severity == 'minr':
-        return 1
-    if severity == 'majr':
-        return 2
-    if severity == 'crit':
-        return 3
-    demisto.info(f'{INTEGRATION_NAME} incident severity: {severity} is not known. '
-                 f'Setting as unknown(DBotScore of 0).')
-    return 0
-
-
 def main() -> None:
     params = demisto.params()
     username = params.get('credentials').get('identifier')

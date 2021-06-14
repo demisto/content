@@ -207,3 +207,15 @@ def to_fe_datetime_converter(time_given: str = 'now') -> str:
         given_timezone = f'{date_obj.strftime("%z")[:3]}:{date_obj.strftime("%z")[3:]}'  # converting the timezone
     fe_time += given_timezone
     return fe_time
+
+
+def alert_severity_to_dbot_score(severity_str: str):
+    severity = severity_str.lower()
+    if severity == 'minr':
+        return 1
+    if severity == 'majr':
+        return 2
+    if severity == 'crit':
+        return 3
+    demisto.info(f'FireEye Incident severity: {severity} is not known. Setting as unknown(DBotScore of 0).')
+    return 0

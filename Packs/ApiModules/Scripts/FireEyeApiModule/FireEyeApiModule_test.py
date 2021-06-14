@@ -1,3 +1,5 @@
+import pytest
+
 from FireEyeApiModule import *
 
 
@@ -20,3 +22,22 @@ def test_to_fe_datetime_converter():
 
     # now > 1 day
     assert to_fe_datetime_converter('now') > to_fe_datetime_converter('1 day')
+
+
+@pytest.mark.parametrize('severity_str, dbot_score', [
+    ('minr', 1),
+    ('majr', 2),
+    ('crit', 3),
+    ('kookoo', 0)
+])
+def test_alert_severity_to_dbot_score(severity_str: str, dbot_score: int):
+    """Unit test
+    Given
+    - alert_severity_to_dbot_score command
+    - severity string
+    When
+    - running alert_severity_to_dbot_score
+    Then
+    - Validate that the dbot score is as expected
+    """
+    assert alert_severity_to_dbot_score(severity_str) == dbot_score
