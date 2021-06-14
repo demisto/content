@@ -138,7 +138,7 @@ def test_alerts_to_incidents_and_fetch_start_from(requests_mock):
     requests_mock.get('https://demistodev.eu2.portal.cloudappsecurity.com/api/v1/alerts/',
                       json=incidents["incidents"])
     res_incidents, fetch_start_time, new_last_fetch_id = \
-        alerts_to_incidents_and_fetch_start_from(incidents["incidents"], 1602771392519,
+        alerts_to_incidents_and_fetch_start_from(incidents["incidents"], '1602771392519',
                                                  {"last_fetch": 1603365903,
                                                   "last_fetch_id": "5f919e55b0703c2f5a23d9d8"})
     assert fetch_start_time == 1603385903000
@@ -150,7 +150,7 @@ def test_alerts_to_incidents_and_fetch_start_from(requests_mock):
     requests_mock.get('https://demistodev.eu2.portal.cloudappsecurity.com/api/v1/alerts/',
                       json=[])
     res_incidents, fetch_start_time, new_last_fetch_id = \
-        alerts_to_incidents_and_fetch_start_from([], 1602771392519, {"last_fetch": 1603365903,
+        alerts_to_incidents_and_fetch_start_from([], '1602771392519', {"last_fetch": 1603365903,
                                                                      "last_fetch_id": "5f919e55b0703c2f5a23d9d8"})
     assert fetch_start_time == 1602771392519
     assert new_last_fetch_id == "5f919e55b0703c2f5a23d9d8"

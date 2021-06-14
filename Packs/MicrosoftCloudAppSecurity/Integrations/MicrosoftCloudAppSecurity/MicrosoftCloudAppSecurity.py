@@ -1,16 +1,6 @@
-import json
-from typing import Dict, Any, Union
-
 from dateparser import parse
 from pytz import utc
-
-import demistomock as demisto
-import requests
 from CommonServerPython import *  # noqa: E402 lgtm [py/polluting-import]
-from CommonServerUserPython import *  # noqa: E402 lgtm [py/polluting-import]
-
-# IMPORTS
-
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -301,9 +291,9 @@ def args_to_filter_for_dismiss_and_resolve_alerts(alert_ids: Any, custom_filter:
     elif custom_filter:
         request_data = json.loads(custom_filter)
     else:
-        request_data = args_to_filter(arguments)
+        raise DemistoException("Error: You must enter at least one of these arguments: alert ID, custom filter.")
     request_data = {'filters': request_data} if 'filters' not in request_data.keys() else request_data
-    return request_data, url_suffix
+    return request_data
 
 
 def test_module(client: Client, is_fetch: bool, custom_filter: Optional[str]):
@@ -346,7 +336,7 @@ def alerts_to_human_readable(alerts: List[dict]):
 def create_ip_command_results(activities: List[dict]):
     command_results: List[CommandResults] = []
     for activity in activities:
-        ip_address = dict_safe_get(activity, ['device', 'clientIP'])
+        ip_address = str(dict_safe_get(activity, ['device', 'clientIP']))
         indicator = Common.IP(
             ip=ip_address,
             dbot_score=Common.DBotScore(
@@ -355,8 +345,8 @@ def create_ip_command_results(activities: List[dict]):
                 INTEGRATION_NAME,
                 Common.DBotScore.NONE,
             ),
-            geo_latitude=dict_safe_get(activity, ['location', 'latitude']),
-            geo_longitude=dict_safe_get(activity, ['location', 'longitude']),
+            geo_latitude=str(dict_safe_get(activity, ['location', 'latitude'])),
+            geo_longitude=str(dict_safe_get(activity, ['location', 'longitude'])),
         )
         human_readable = activity_to_human_readable(activity)
         command_results.append(CommandResults(
@@ -637,7 +627,7 @@ def fetch_incidents(client: Client, max_results: Optional[str], last_run: dict, 
     alerts = alerts_response_data.get('data')
     alerts = arrange_alerts_by_incident_type(alerts)
     incidents, fetch_start_time, last_fetch_id = alerts_to_incidents_and_fetch_start_from(
-        alerts, fetch_start_time, last_run)
+        alerts, str(fetch_start_time), last_run)
     if incidents:
         # since we use gte filter, we increase the latest event timestamp by 1 to avoid duplicates in the next fetch
         fetch_start_time += 1
