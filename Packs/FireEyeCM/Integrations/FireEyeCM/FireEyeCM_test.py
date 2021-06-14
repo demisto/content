@@ -1,12 +1,8 @@
 import io
-import json
 
 import pytest
 
-from CommonServerPython import DemistoException
-from FireEyeCM import Client, get_alerts, get_alert_details, alert_acknowledge, get_quarantined_emails, \
-    get_artifacts_metadata_by_uuid, get_events, get_reports, release_quarantined_emails, delete_quarantined_emails, \
-    alert_severity_to_dbot_score, fetch_incidents
+from FireEyeCM import *
 from test_data.result_constants import QUARANTINED_EMAILS_CONTEXT, GET_ALERTS_CONTEXT, GET_ALERTS_DETAILS_CONTEXT, \
     GET_ARTIFACTS_METADATA_CONTEXT, GET_EVENTS_CONTEXT
 
@@ -28,9 +24,9 @@ def test_get_alerts(mocker):
     Then
     - Validate The entry context
     """
-    mocker.patch.object(Client, '_generate_token', return_value='token')
+    mocker.patch.object(FireEyeClient, '_generate_token', return_value='token')
     client = Client(base_url="https://fireeye.cm.com/", username='user', password='pass', verify=False, proxy=False)
-    mocker.patch.object(Client, 'get_alerts_request',
+    mocker.patch.object(FireEyeClient, 'get_alerts_request',
                         return_value=util_load_json('test_data/get_alerts.json'))
     command_results = get_alerts(client=client,
                                  args={'limit': '2', 'start_time': '8 days', 'src_ip': '2.2.2.2'})
@@ -49,9 +45,9 @@ def test_get_alert_details(mocker):
     Then
     - Validate The entry context
     """
-    mocker.patch.object(Client, '_generate_token', return_value='token')
+    mocker.patch.object(FireEyeClient, '_generate_token', return_value='token')
     client = Client(base_url="https://fireeye.cm.com/", username='user', password='pass', verify=False, proxy=False)
-    mocker.patch.object(Client, 'get_alert_details_request',
+    mocker.patch.object(FireEyeClient, 'get_alert_details_request',
                         return_value=util_load_json('test_data/get_alert_details.json'))
     command_results = get_alert_details(client=client, args={'alert_id': '563'})
     assert command_results[0].outputs == GET_ALERTS_DETAILS_CONTEXT
@@ -69,9 +65,9 @@ def test_alert_acknowledge(mocker):
     Then
     - Validate the human readable
     """
-    mocker.patch.object(Client, '_generate_token', return_value='token')
+    mocker.patch.object(FireEyeClient, '_generate_token', return_value='token')
     client = Client(base_url="https://fireeye.cm.com/", username='user', password='pass', verify=False, proxy=False)
-    mocker.patch.object(Client, 'alert_acknowledge_request', return_value=None)
+    mocker.patch.object(FireEyeClient, 'alert_acknowledge_request', return_value=None)
     command_results = alert_acknowledge(client=client, args={'uuid': 'uuid'})
     assert command_results[0].readable_output == 'Alert uuid was acknowledged successfully.'
 
@@ -95,10 +91,10 @@ def test_alert_acknowledge_already_acknowledged(mocker):
     def error_404_mock(*kwargs):
         raise Exception(error_msg)
 
-    mocker.patch.object(Client, '_generate_token', return_value='token')
+    mocker.patch.object(FireEyeClient, '_generate_token', return_value='token')
     client = Client(base_url="https://fireeye.cm.com/", username='user', password='pass', verify=False, proxy=False)
 
-    mocker.patch('FireEyeCM.Client.alert_acknowledge_request', side_effect=error_404_mock)
+    mocker.patch('FireEyeCM.Client.FireEyeClient.alert_acknowledge_request', side_effect=error_404_mock)
 
     command_results = alert_acknowledge(client=client, args={'uuid': 'uuid'})
     assert command_results[0].readable_output == \
@@ -117,9 +113,9 @@ def test_get_artifacts_metadata(mocker):
     Then
     - Validate The entry context
     """
-    mocker.patch.object(Client, '_generate_token', return_value='token')
+    mocker.patch.object(FireEyeClient, '_generate_token', return_value='token')
     client = Client(base_url="https://fireeye.cm.com/", username='user', password='pass', verify=False, proxy=False)
-    mocker.patch.object(Client, 'get_artifacts_metadata_by_uuid_request',
+    mocker.patch.object(FireEyeClient, 'get_artifacts_metadata_by_uuid_request',
                         return_value=util_load_json('test_data/get_artifact_metadata.json'))
     command_results = get_artifacts_metadata_by_uuid(client=client, args={'uuid': 'uuid'})
     assert command_results[0].outputs == GET_ARTIFACTS_METADATA_CONTEXT
@@ -137,9 +133,9 @@ def test_get_quarantined_emails(mocker):
     Then
     - Validate The entry context
     """
-    mocker.patch.object(Client, '_generate_token', return_value='token')
+    mocker.patch.object(FireEyeClient, '_generate_token', return_value='token')
     client = Client(base_url="https://fireeye.cm.com/", username='user', password='pass', verify=False, proxy=False)
-    mocker.patch.object(Client, 'get_quarantined_emails_request',
+    mocker.patch.object(FireEyeClient, 'get_quarantined_emails_request',
                         return_value=util_load_json('test_data/quarantined_emails.json'))
     command_results = get_quarantined_emails(client=client, args={})
     assert command_results.outputs == QUARANTINED_EMAILS_CONTEXT
@@ -229,6 +225,7 @@ def test_release_quarantined_emails(mocker):
     Then
     - Validate that an error is raised from the command
     """
+
     def mocked_release_quarantined_emails_requests(*args):
         class MockResponse:
             def __init__(self, json_data, status_code):
@@ -263,6 +260,7 @@ def test_delete_quarantined_emails(mocker):
     Then
     - Validate that an error is raised from the command
     """
+
     def mocked_delete_quarantined_emails_requests(*args):
         class MockResponse:
             def __init__(self, json_data, status_code):
