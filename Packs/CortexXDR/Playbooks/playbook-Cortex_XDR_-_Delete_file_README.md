@@ -4,10 +4,10 @@ Initiates a new endpoint script execution to delete the specified file and retri
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
-Cortex XDR - Check Action Status
+* Cortex XDR - Check Action Status
 
 ### Integrations
-CortexXDRIR
+* CortexXDRIR
 
 ### Scripts
 This playbook does not use any scripts.
@@ -22,8 +22,9 @@ This playbook does not use any scripts.
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
 | endpoint_id | A comma-separated list of endpoint IDs.  |  | Optional |
-| file_path | Path of the file to delete. |  | Optional |
-| timeout | The timeout in seconds for this execution.<br/>\(Default is: '600'\) |  | Optional |
+| file_path | A comma-separated list of file paths to delete.<br/>files will be deleted on all provided endpoint ids  |  | Optional |
+| script_timeout | The timeout in seconds for this execution.<br/>\(Default is: '600'\) |  | Optional |
+| polling_timeout | Amount of time to poll action status before declaring a timeout and resuming the playbook \(in minutes\). | 10 | Optional |
 
 ## Playbook Outputs
 ---
@@ -34,4 +35,4 @@ This playbook does not use any scripts.
 
 ## Playbook Image
 ---
-![Cortex XDR - Delete file](Insert the link to your image here)
+![Cortex XDR - delete file](Insert the link to your image here)

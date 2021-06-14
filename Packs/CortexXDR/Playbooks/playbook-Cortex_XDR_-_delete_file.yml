@@ -7,9 +7,9 @@ inputs:
   playbookInputQuery:
   required: false
   value: {}
-- description: |- 
+- description: |-
     A comma-separated list of file paths to delete.
-    files will be deleted on all provided endpoint ids 
+    Files will be deleted on all provided endpoint ids
   key: file_path
   playbookInputQuery:
   required: false

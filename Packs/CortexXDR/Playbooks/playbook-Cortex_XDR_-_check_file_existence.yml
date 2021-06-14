@@ -6,10 +6,10 @@ inputs:
   key: endpoint_id
   playbookInputQuery:
   required: false
-value: {}
+  value: {}
 - description: |-
     A comma-separated list of file paths to check.
-    files will be checked on all provided endpoint ids 
+    Files will be checked on all provided endpoint ids.
   key: file_path
   playbookInputQuery:
   required: false

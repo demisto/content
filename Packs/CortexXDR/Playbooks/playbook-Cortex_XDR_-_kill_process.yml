@@ -1,15 +1,16 @@
+id: Cortex XDR - kill process
+version: -1
 description: Initiates a new endpoint script execution kill process and retrieves
   the results.
-id: Cortex XDR - kill process
 inputs:
 - description: 'A comma-separated list of endpoint IDs. '
   key: endpoint_id
   playbookInputQuery:
   required: false
   value: {}
--  description: |-
-    A comma-separated list of process name to kill.
-    process will be killed on all provided endpoint ids 
+- description: |2-
+     A comma-separated list of process names to kill.
+    Process will be killed on all provided endpoint ids.
   key: process_name
   playbookInputQuery:
   required: false
@@ -204,7 +205,6 @@ tasks:
           "y": 710
         }
       }
-version: -1
 view: |-
   {
     "linkLabelsPosition": {},
