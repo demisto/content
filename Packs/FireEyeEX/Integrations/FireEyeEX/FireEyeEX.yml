@@ -857,7 +857,7 @@ script:
     deprecated: false
     description: Updates blocked sender domain.
     execution: false
-    name: fireeye-ex-update-blocklist
+    name: fireeye-ex-update-blockedlist
     outputs:
     - contextPath: FireEyeEX.name
       description: The allowed domain name.
