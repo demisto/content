@@ -3070,35 +3070,41 @@ def run_snippet_code_script_command(client: Client, args: Dict) -> CommandResult
     )
 
 
-def get_script_execution_status_command(client: Client, args: Dict) -> CommandResults:
-    action_id = args.get('action_id', '')
-    response = client.get_script_execution_status(action_id)
-    reply = response.get('reply')
-    reply['action_id'] = int(action_id)
-    return CommandResults(
-        readable_output=tableToMarkdown(f'Script Execution Status - {action_id}', reply),
-        outputs_prefix=f'{INTEGRATION_CONTEXT_BRAND}.ScriptStatus',
-        outputs_key_field='action_id',
-        outputs=reply,
-        raw_response=response,
-    )
+def get_script_execution_status_command(client: Client, args: Dict) -> List[CommandResults]:
+    action_ids = argToList(args.get('action_id', ''))
+    command_results = []
+    for action_id in action_ids:
+        response = client.get_script_execution_status(action_id)
+        reply = response.get('reply')
+        reply['action_id'] = int(action_id)
+        command_results.append(CommandResults(
+            readable_output=tableToMarkdown(f'Script Execution Status - {action_id}', reply),
+            outputs_prefix=f'{INTEGRATION_CONTEXT_BRAND}.ScriptStatus',
+            outputs_key_field='action_id',
+            outputs=reply,
+            raw_response=response,
+        ))
+    return command_results
 
 
-def get_script_execution_results_command(client: Client, args: Dict) -> CommandResults:
-    action_id = args.get('action_id', '')
-    response = client.get_script_execution_results(action_id)
-    results = response.get('reply', {}).get('results')
-    context = {
-        'action_id': int(action_id),
-        'results': results,
-    }
-    return CommandResults(
-        readable_output=tableToMarkdown(f'Script Execution Results - {action_id}', results),
-        outputs_prefix=f'{INTEGRATION_CONTEXT_BRAND}.ScriptResult',
-        outputs_key_field='action_id',
-        outputs=context,
-        raw_response=response,
-    )
+def get_script_execution_results_command(client: Client, args: Dict) -> List[CommandResults]:
+    action_ids = argToList(args.get('action_id', ''))
+    command_results = []
+    for action_id in action_ids:
+        response = client.get_script_execution_results(action_id)
+        results = response.get('reply', {}).get('results')
+        context = {
+            'action_id': int(action_id),
+            'results': results,
+        }
+        command_results.append(CommandResults(
+            readable_output=tableToMarkdown(f'Script Execution Results - {action_id}', results),
+            outputs_prefix=f'{INTEGRATION_CONTEXT_BRAND}.ScriptResult',
+            outputs_key_field='action_id',
+            outputs=context,
+            raw_response=response,
+        ))
+    return command_results
 
 
 def get_script_execution_result_files_command(client: Client, args: Dict) -> Dict:
@@ -3128,49 +3134,62 @@ def run_script_execute_commands_command(client: Client, args: Dict) -> CommandRe
     )
 
 
-def run_script_delete_file_command(client: Client, args: Dict) -> CommandResults:
+def run_script_delete_file_command(client: Client, args: Dict) -> List[CommandResults]:
     endpoint_ids = argToList(args.get('endpoint_ids'))
     timeout = arg_to_number(args.get('timeout', 600)) or 600
-    parameters = {'file_path': args.get('file_path')}
-    response = client.run_script('548023b6e4a01ec51a495ba6e5d2a15d', endpoint_ids, parameters, timeout)
-    reply = response.get('reply')
-    return CommandResults(
-        readable_output=tableToMarkdown('Run Script Delete File', reply),
-        outputs_prefix=f'{INTEGRATION_CONTEXT_BRAND}.ScriptRun',
-        outputs_key_field='action_id',
-        outputs=reply,
-        raw_response=response,
-    )
+    file_paths = argToList(args.get('file_path'))
+    all_files_response = []
+    for file_path in file_paths:
+        parameters = {'file_path': file_path}
+        response = client.run_script('548023b6e4a01ec51a495ba6e5d2a15d', endpoint_ids, parameters, timeout)
+        reply = response.get('reply')
+        all_files_response.append(CommandResults(
+            readable_output=tableToMarkdown(f'Run Script Delete File on {file_path}', reply),
+            outputs_prefix=f'{INTEGRATION_CONTEXT_BRAND}.ScriptRun',
+            outputs_key_field='action_id',
+            outputs=reply,
+            raw_response=response,
+        ))
+    return all_files_response
 
 
-def run_script_file_exists_command(client: Client, args: Dict) -> CommandResults:
+def run_script_file_exists_command(client: Client, args: Dict) -> List[CommandResults]:
     endpoint_ids = argToList(args.get('endpoint_ids'))
     timeout = arg_to_number(args.get('timeout', 600)) or 600
-    parameters = {'path': args.get('file_path')}
-    response = client.run_script('414763381b5bfb7b05796c9fe690df46', endpoint_ids, parameters, timeout)
-    reply = response.get('reply')
-    return CommandResults(
-        readable_output=tableToMarkdown('Run Script File Exists', reply),
-        outputs_prefix=f'{INTEGRATION_CONTEXT_BRAND}.ScriptRun',
-        outputs_key_field='action_id',
-        outputs=reply,
-        raw_response=response,
-    )
+    file_paths = argToList(args.get('file_path'))
+    all_files_response = []
+    for file_path in file_paths:
+        parameters = {'path': file_path}
+        response = client.run_script('414763381b5bfb7b05796c9fe690df46', endpoint_ids, parameters, timeout)
+        reply = response.get('reply')
+        all_files_response.append(CommandResults(
+            readable_output=tableToMarkdown(f'Run Script File Exists on {file_path}', reply),
+            outputs_prefix=f'{INTEGRATION_CONTEXT_BRAND}.ScriptRun',
+            outputs_key_field='action_id',
+            outputs=reply,
+            raw_response=response,
+        ))
+    return all_files_response
 
 
-def run_script_kill_process_command(client: Client, args: Dict) -> CommandResults:
+def run_script_kill_process_command(client: Client, args: Dict) -> List[CommandResults]:
     endpoint_ids = argToList(args.get('endpoint_ids'))
     timeout = arg_to_number(args.get('timeout', 600)) or 600
-    parameters = {'process_name': args.get('process_name')}
-    response = client.run_script('fd0a544a99a9421222b4f57a11839481', endpoint_ids, parameters, timeout)
-    reply = response.get('reply')
-    return CommandResults(
-        readable_output=tableToMarkdown('Run Script Kill Process', reply),
-        outputs_prefix=f'{INTEGRATION_CONTEXT_BRAND}.ScriptRun',
-        outputs_key_field='action_id',
-        outputs=reply,
-        raw_response=response,
-    )
+    processes_names = argToList(args.get('process_name'))
+    all_processes_response = []
+    for process_name in processes_names:
+        parameters = {'process_name': process_name}
+        response = client.run_script('fd0a544a99a9421222b4f57a11839481', endpoint_ids, parameters, timeout)
+        reply = response.get('reply')
+        all_processes_response.append(CommandResults(
+            readable_output=tableToMarkdown(f'Run Script Kill Process on {process_name}', reply),
+            outputs_prefix=f'{INTEGRATION_CONTEXT_BRAND}.ScriptRun',
+            outputs_key_field='action_id',
+            outputs=reply,
+            raw_response=response,
+        ))
+
+    return all_processes_response
 
 
 def main():
