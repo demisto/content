@@ -5,31 +5,10 @@ import pytest
 
 from CommonServerPython import DemistoException
 from FireEyeEX import Client, get_alerts, get_alert_details, get_quarantined_emails, \
-    get_artifacts_metadata_by_uuid, get_events, get_reports, release_quarantined_emails, delete_quarantined_emails, \
-    alert_severity_to_dbot_score, fetch_incidents, to_fe_datetime_converter
+    get_artifacts_metadata_by_uuid, get_reports, release_quarantined_emails, delete_quarantined_emails, \
+    alert_severity_to_dbot_score, fetch_incidents
 from test_data.result_constants import QUARANTINED_EMAILS_CONTEXT, GET_ALERTS_CONTEXT, GET_ALERTS_DETAILS_CONTEXT, \
     GET_ARTIFACTS_METADATA_CONTEXT, GET_EVENTS_CONTEXT
-
-
-def test_to_fe_datetime_converter():
-    """Unit test
-    Given
-    - to_fe_datetime_converter command
-    - time in a string
-    When
-    - running to_fe_datetime_converter
-    Then
-    - Validate that the FE time is as expected
-    """
-    # fe time will not change
-    assert to_fe_datetime_converter('2021-05-14T01:08:04.000-02:00') == '2021-05-14T01:08:04.000-02:00'
-
-    # "now"/ "1 day" / "3 months:" time will be without any timezone
-    assert to_fe_datetime_converter('now')[23:] == '+00:00'
-    assert to_fe_datetime_converter('3 months')[23:] == '+00:00'
-
-    # now > 1 day
-    assert to_fe_datetime_converter('now') > to_fe_datetime_converter('1 day')
 
 
 def util_load_json(path):
@@ -146,48 +125,6 @@ def test_get_report_not_found(mocker):
     command_results = get_reports(client=client, args={'report_type': 'alertDetailsReport', 'infection_id': '34013',
                                                        'infection_type': 'mallware-callback'})
     assert command_results.readable_output == 'Report alertDetailsReport was not found with the given arguments.'
-
-
-def test_get_events_no_events(mocker):
-    """Unit test
-    Given
-    - get_events command
-    - command args
-    - command raw response
-    When
-    - mock the Client's token generation.
-    - mock the Client's get_events_request response for no events.
-    Then
-    - Validate the human readable
-    """
-    mocker.patch.object(Client, '_generate_token', return_value='token')
-    client = Client(base_url="https://fireeye.cm.com/", username='user', password='pass', verify=False, proxy=False)
-    mocker.patch.object(Client, 'get_events_request',
-                        return_value=util_load_json('test_data/get_events_none.json'))
-    command_results = get_events(client=client, args={'end_time': '2020-05-19T23:00:00.000-00:00',
-                                                      'duration': '48_hours', 'limit': '3'})
-    assert command_results.readable_output == 'No events in the given timeframe were found.'
-
-
-def test_get_events(mocker):
-    """Unit test
-    Given
-    - get_events command
-    - command args
-    - command raw response
-    When
-    - mock the Client's token generation.
-    - mock the Client's get_events_request response.
-    Then
-    - Validate The entry context
-    """
-    mocker.patch.object(Client, '_generate_token', return_value='token')
-    client = Client(base_url="https://fireeye.cm.com/", username='user', password='pass', verify=False, proxy=False)
-    mocker.patch.object(Client, 'get_events_request',
-                        return_value=util_load_json('test_data/get_events.json'))
-    command_results = get_events(client=client, args={'end_time': '2021-05-19T23:00:00.000-00:00',
-                                                      'duration': '48_hours', 'limit': '3'})
-    assert command_results.outputs == GET_EVENTS_CONTEXT
 
 
 def test_release_quarantined_emails(mocker):
