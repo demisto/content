@@ -3478,7 +3478,8 @@
         "get_original_email_-_ews-_test": "Issue 27571",
         "PANW Threat Vault - Signature Search - Test": "Issue 30930",
         "TAXII_Feed_Test": "Issue 37588",
-        "Git_Integration-Test": "Issue 37800"
+        "Git_Integration-Test": "Issue 37800",
+        "CrowdStrike Falcon Intel v2": "Issue 37620"
     },
     "skipped_integrations": {
         
@@ -3572,8 +3573,8 @@
         "Lastline": "issue 20323",
         "Google Resource Manager": "Cannot create projects because have reached allowed quota.",
         "Looker": "Warehouse 'DEMO_WH' cannot be resumed because resource monitor 'LIMITER' has exceeded its quota.",
-
-      "_comment4": "~~~ OTHER ~~~",
+        
+        "_comment4": "~~~ OTHER ~~~",
         "Pentera": "authentication method will not work with testing",
         "AlienVault OTX TAXII Feed": "Issue 29197",
         "EclecticIQ Platform": "Issue 8821",
