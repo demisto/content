@@ -7,7 +7,7 @@ description: "Create ServiceNow Ticket allows you to open new tickets as a task 
   \ select to mirror the ServiceNow ticket and incident fields. Mirroring includes\
   \ its equivalent for StatePolling -  FieldPolling.\nTo apply either of these options,\
   \ set the SyncTicket value in the playbook inputs to one of the following options:\
-  \ \n1. StatePolling\n2. Mirror\n3. Leave Blank to use none."
+  \ \n1. StatePolling\n2. Mirror\n3. Leave Blank to use none.."
 starttaskid: "0"
 tasks:
   "0":
