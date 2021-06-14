@@ -308,8 +308,8 @@ def get_reports(client: Client, args: Dict[str, Any]):
                 raise DemistoException(err_str)
 
     try:
-        raw_response = client.fe_client.get_reports_request(report_type, start_time, end_time, limit, interface, alert_id,
-                                                  infection_type, infection_id, timeout)
+        raw_response = client.fe_client.get_reports_request(report_type, start_time, end_time, limit, interface,
+                                                            alert_id, infection_type, infection_id, timeout)
         csv_reports = {'empsEmailAVReport', 'empsEmailHourlyStat', 'mpsCallBackServer', 'mpsInfectedHostsTrend',
                        'mpsWebAVReport'}
         prefix = 'csv' if report_type in csv_reports else 'pdf'
