@@ -150,7 +150,7 @@ def create_context_for_campaign_details(campaign_found=False, incidents_df=None,
 
         incident_df.rename({FROM_DOMAIN_FIELD: 'emailfromdomain'}, axis=1, inplace=True)
         incidents_context = incident_df.fillna(1).to_dict(orient='records')
-        datetimes = incidents_df['created_dt'].dropna()  # type: ignore
+        datetimes: pandas.DataFrame = incidents_df['created_dt'].dropna()  # type: ignore
         min_datetime = min(datetimes).strftime("%m/%d/%Y, %H:%M:%S")
         return {
             'isCampaignFound': campaign_found,
