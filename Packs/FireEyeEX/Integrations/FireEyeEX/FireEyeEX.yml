@@ -483,10 +483,7 @@ script:
       type: String
   - arguments:
     - default: false
-      description: "The report type. Requests for ipsTopNAttack, ipsTopNAttacker,\
-        \ ipsTopNVictim, or ipsTopNMvxVerified reports must be used with the limit\
-        \ parameter set to either 25, 50, 75, or 100. You must have an Intrusion Prevention\
-        \ System (IPS)-enabled appliance to be able to generate the IPS reports."
+      description: The report type.
       auto: PREDEFINED
       predefined:
       - 'empsEmailAVReport'
@@ -498,11 +495,6 @@ script:
       - 'mpsInfectedHostsTrend'
       - 'mpsMalwareActivity'
       - 'mpsWebAVReport'
-      - 'ipsExecutiveSummary'
-      - 'ipsTopNAttack'
-      - 'ipsTopNAttacker'
-      - 'ipsTopNVictim'
-      - 'ipsTopNMvxVerified'
       - 'alertDetailsReport'
       isArray: false
       name: report_type
@@ -647,14 +639,13 @@ script:
       required: true
       secret: false
     - default: false
-      description: The entry value we want to add.
+      description: The entry value we want to create.
       isArray: false
       name: entry_value
       required: true
       secret: false
     - default: false
-      description: The number of matches for the domain name against the incoming
-        emails.
+      description: The number of matches for the domain name against the incoming emails.
       isArray: false
       name: matches
       required: true
@@ -671,8 +662,7 @@ script:
       description: The time the domain name was added to the list.
       type: string
     - contextPath: FireEyeEX.matches
-      description: The Number of matches for the domain name against the incoming
-        emails.
+      description: The Number of matches for the domain name against the incoming emails.
       type: string
   - arguments:
     - default: false
@@ -690,14 +680,13 @@ script:
       required: true
       secret: false
     - default: false
-      description: The entry value we want to add.
+      description: The entry value we want to update.
       isArray: false
       name: entry_value
       required: true
       secret: false
     - default: false
-      description: The number of matches for the domain name against the incoming
-        emails.
+      description: The number of matches for the domain name against the incoming emails.
       isArray: false
       name: matches
       required: true
@@ -714,8 +703,7 @@ script:
       description: The time the domain name was added to the list.
       type: string
     - contextPath: FireEyeEX.matches
-      description: The Number of matches for the domain name against the incoming
-        emails.
+      description: The Number of matches for the domain name against the incoming emails.
       type: string
   - arguments:
     - default: false
@@ -733,7 +721,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: The entry value we want to add.
+      description: The entry value we want to delete.
       isArray: false
       name: entry_value
       required: true
@@ -750,8 +738,7 @@ script:
       description: The time the domain name was added to the list.
       type: string
     - contextPath: FireEyeEX.matches
-      description: The Number of matches for the domain name against the incoming
-        emails.
+      description: The Number of matches for the domain name against the incoming emails.
       type: string
   - arguments:
     - default: false
@@ -799,14 +786,13 @@ script:
       required: true
       secret: false
     - default: false
-      description: The entry value we want to add.
+      description: The entry value we want to create.
       isArray: false
       name: entry_value
       required: true
       secret: false
     - default: false
-      description: The number of matches for the domain name against the incoming
-        emails.
+      description: The number of matches for the domain name against the incoming emails.
       isArray: false
       name: matches
       required: true
@@ -842,14 +828,13 @@ script:
       required: true
       secret: false
     - default: false
-      description: The entry value we want to add.
+      description: The entry value we want to update.
       isArray: false
       name: entry_value
       required: true
       secret: false
     - default: false
-      description: The number of matches for the domain name against the incoming
-        emails.
+      description: The number of matches for the domain name against the incoming emails.
       isArray: false
       name: matches
       required: true
@@ -866,8 +851,7 @@ script:
       description: The time the domain name was added to the list.
       type: string
     - contextPath: FireEyeEX.matches
-      description: The Number of matches for the domain name against the incoming
-        emails.
+      description: The Number of matches for the domain name against the incoming emails.
       type: string
   - arguments:
     - default: false
@@ -885,7 +869,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: The entry value we want to add.
+      description: The entry value we want to delete.
       isArray: false
       name: entry_value
       required: true
@@ -902,8 +886,7 @@ script:
       description: The time the domain name was added to the list.
       type: string
     - contextPath: FireEyeEX.matches
-      description: The Number of matches for the domain name against the incoming
-        emails.
+      description: The Number of matches for the domain name against the incoming emails.
       type: string
   isfetch: true
   runonce: false
