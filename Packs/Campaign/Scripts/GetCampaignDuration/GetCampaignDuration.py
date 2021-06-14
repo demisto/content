@@ -1,8 +1,11 @@
 from datetime import datetime
 
-import dateutil
+import dateutil.parser
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
+import pytz
+
+utc = pytz.UTC
 
 
 class FieldNotFound(Exception):
@@ -16,13 +19,13 @@ def get_duration_html():
         first_date = demisto.get(context[0]['Contents']['context'], "EmailCampaign.firstIncidentDate")
 
         if not first_date:
-            raise FieldNotExists()
+            raise FieldNotFound()
         if isinstance(first_date, list):
             first_date = first_date[-1]
 
-        now = datetime.now()
-        first_date = dateutil.parser.parse(first_date)  # type: ignore
-        diff = dateutil.relativedelta.relativedelta(now, first_date)  # type: ignore
+        now = datetime.now().replace(tzinfo=utc)
+        parsed_first_date: datetime = dateutil.parser.isoparse(first_date).replace(tzinfo=utc)
+        diff = now - parsed_first_date
 
         return f"""
                     <div class="demisto-duration vertical-strech">
@@ -31,9 +34,9 @@ def get_duration_html():
                                 <div class="duration-icon"><i class="wait icon home"></i></div>
                                 <div class="days-number">{diff.days}</div>
                                 <div class="colon center aligned">:</div>
-                                <div class="hours-number">{diff.hours}</div>
+                                <div class="hours-number">{(diff.seconds//3600) % 24}</div>
                                 <div class="colon-2 center aligned">:</div>
-                                <div class="one column wide minutes-number">{diff.minutes}</div>
+                                <div class="one column wide minutes-number">{(diff.seconds//60) % 60}</div>
                                 <div class="days-label time-unit title-h5 opacity-description">DAYS</div>
                                 <div class="hours-label time-unit title-h5 opacity-description">HOURS</div>
                                 <div class="minutes-label time-unit title-h5 opacity-description">MIN</div>
@@ -42,8 +45,8 @@ def get_duration_html():
                     </div>
 
     """
-    except FieldNotExists:
-        return_error("Cant find firstIncidentDate in context, please run FindEmailCampaign")
+    except FieldNotFound:
+        return_error("Can't find firstIncidentDate in context, please run FindEmailCampaign")
     except Exception as e:
         demisto.error(traceback.format_exc())
         return_error(f"Error calculating duration\n{str(e)}")
