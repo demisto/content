@@ -243,8 +243,6 @@ script:
       description: Timeout to retrieve the alert details.
       isArray: false
       name: timeout
-      required: fasle
-      secret: false
     deprecated: false
     description: Searches and retrieves the details of a single alert.
     execution: false
