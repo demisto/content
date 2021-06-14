@@ -1,13 +1,5 @@
 Use rakyll/hey to test a web application with a load of requests.
 
-## Script Data
----
-
-| **Name** | **Description** |
-| --- | --- |
-| Script Type | python3 |
-| Demisto Version | 5.5.0 |
-
 ## Inputs
 ---
 

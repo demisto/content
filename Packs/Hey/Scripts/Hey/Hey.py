@@ -41,6 +41,7 @@ class HeyPerformanceResult:
             self._ext_results_map = ext_results_map
 
     def to_results(self) -> CommandResults:
+        outputs: Dict[str, Any]
         if self._o != 'csv':
             outputs = {"Result": self._result}
             return CommandResults(outputs=outputs, outputs_prefix="Hey")
