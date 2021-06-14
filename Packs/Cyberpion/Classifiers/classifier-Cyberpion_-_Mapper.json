@@ -6,7 +6,7 @@
         "Cyberpion": {
             "dontMapEventToLabels": false,
             "internalMapping": {
-                "Category Name": {
+                "Cyberpion Category": {
                     "complex": null,
                     "simple": "category"
                 }
@@ -45,7 +45,7 @@
                     "complex": null,
                     "simple": "category"
                 },
-                "Cyberpion Description": {
+                "Cyberpion Vulnerability Description": {
                     "complex": {
                         "accessor": "",
                         "filters": [],
@@ -86,7 +86,7 @@
                     "complex": null,
                     "simple": "link"
                 },
-                "Domain": {
+                "Cyberpion Domain": {
                     "complex": null,
                     "simple": "domain"
                 },
