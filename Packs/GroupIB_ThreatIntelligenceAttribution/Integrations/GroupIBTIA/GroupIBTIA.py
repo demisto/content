@@ -771,7 +771,7 @@ def fetch_incidents_command(client: Client, last_run: Dict, first_fetch_time: st
         # Handle first time fetch
         date_from = None
         seq_update = None
-        if last_fetch:
+        if not last_fetch:
             date_from = dateparser.parse(first_fetch_time)
             if date_from is None:
                 raise DemistoException('Inappropriate first_fetch format, '

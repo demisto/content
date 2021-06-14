@@ -82,8 +82,23 @@ else
     IS_FORCE_UPLOAD=false
   fi
   python3 ./Tests/Marketplace/upload_packs.py -a $PACK_ARTIFACTS -d $ARTIFACTS_FOLDER/packs_dependencies.json -e $EXTRACT_FOLDER -b $GCS_BUILD_BUCKET -s "$GCS_MARKET_KEY" -n $CI_BUILD_ID -p "$PACKS_LIST" -o $OVERRIDE_ALL_PACKS -sb $TARGET_PATH -k $PACK_SIGNING_KEY -rt $REMOVE_PBS -bu $BUCKET_UPLOAD_FLOW -pb "$GCS_PRIVATE_BUCKET" -c $CI_COMMIT_BRANCH -f $IS_FORCE_UPLOAD
-  gsutil cp -z json $ARTIFACTS_FOLDER/index.json $ARTIFACTS_FOLDER/corepacks.json "gs://$PACKS_FULL_TARGET_PATH"
-  gsutil cp -z json $ARTIFACTS_FOLDER/id_set.json "gs://$CONTENT_FULL_TARGET_PATH"
+
+  if [ -f $ARTIFACTS_FOLDER/index.json ]; then
+    gsutil cp -z json $ARTIFACTS_FOLDER/index.json "gs://$PACKS_FULL_TARGET_PATH"
+  else
+    echo "Skipping uploading index.json file."
+  fi
+  if [ -f $ARTIFACTS_FOLDER/corepacks.json ]; then
+    gsutil cp -z json $ARTIFACTS_FOLDER/corepacks.json "gs://$PACKS_FULL_TARGET_PATH"
+  else
+    echo "Skipping uploading corepacks.json file."
+  fi
+  if [ -f $ARTIFACTS_FOLDER/id_set.json ]; then
+    gsutil cp -z json $ARTIFACTS_FOLDER/id_set.json "gs://$CONTENT_FULL_TARGET_PATH"
+  else
+    echo "Skipping uploading id_set.json file."
+  fi
+
   echo "Finished updating content packs successfully."
 fi
 
