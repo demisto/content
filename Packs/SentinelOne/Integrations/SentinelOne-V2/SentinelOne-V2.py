@@ -455,7 +455,7 @@ def get_groups_command(client: Client, args: dict) -> CommandResults:
         name=args.get('name'),
         query=args.get('query'),
         rank=args.get('rank'),
-        limit=int(args.get('limit', 50)),
+        limit=int(limit),
     )
     groups = client.get_groups_request(query_params)
 
