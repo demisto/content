@@ -204,7 +204,7 @@ class EWSClient:
         self.account_email = default_target_mailbox
         self.config = self.__prepare(insecure)
         self.protocol = BaseProtocol(self.config)
-        self.encoding = default_encoding
+        self.default_encoding = default_encoding
 
     def __prepare(self, insecure):
         """
