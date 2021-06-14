@@ -139,21 +139,21 @@ class FireEyeClient(BaseClient):
                                   url_suffix=f'devicemgmt/emlconfig/policy/allowed_lists/{type_}',
                                   params={'operation': 'create'},
                                   json_data={"name": entry_value, "matches": matches},
-                                  resp_type='content')
+                                  resp_type='resp')
 
     @logger
     def update_allowedlist_request(self, type_: str, entry_value: str, matches: str) -> Dict[str, str]:
         return self._http_request(method='POST',
                                   url_suffix=f'devicemgmt/emlconfig/policy/allowed_lists/{type_}/{entry_value}',
                                   json_data={"matches": matches},
-                                  resp_type='content')
+                                  resp_type='resp')
 
     @logger
     def delete_allowedlist_request(self, type_: str, entry_value: str) -> Dict[str, str]:
         return self._http_request(method='POST',
                                   url_suffix=f'devicemgmt/emlconfig/policy/allowed_lists/{type_}/{entry_value}',
                                   params={'operation': 'delete'},
-                                  resp_type='content')
+                                  resp_type='resp')
 
     @logger
     def list_blockedlist_request(self, type_: str) -> Dict[str, str]:
@@ -166,21 +166,21 @@ class FireEyeClient(BaseClient):
                                   url_suffix=f'devicemgmt/emlconfig/policy/blocked_lists/{type_}',
                                   params={'operation': 'create'},
                                   json_data={"name": entry_value, "matches": matches},
-                                  resp_type='content')
+                                  resp_type='resp')
 
     @logger
     def update_blockedlist_request(self, type_: str, entry_value: str, matches: str) -> Dict[str, str]:
         return self._http_request(method='POST',
                                   url_suffix=f'devicemgmt/emlconfig/policy/blocked_lists/{type_}/{entry_value}',
                                   json_data={"matches": matches},
-                                  resp_type='content')
+                                  resp_type='resp')
 
     @logger
     def delete_blockedlist_request(self, type_: str, entry_value: str) -> Dict[str, str]:
         return self._http_request(method='POST',
                                   url_suffix=f'devicemgmt/emlconfig/policy/blocked_lists/{type_}/{entry_value}',
                                   params={'operation': 'delete'},
-                                  resp_type='content')
+                                  resp_type='resp')
 
 
 def to_fe_datetime_converter(time_given: str = 'now') -> str:

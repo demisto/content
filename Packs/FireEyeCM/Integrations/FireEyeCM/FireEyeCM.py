@@ -23,7 +23,7 @@ class Client:
 
 @logger
 def test_module(client: Client) -> str:
-    # check get alerts for fetch purposes
+    client.fe_client.get_alerts_request({'info_level': 'concise'})
     return 'ok'
 
 
@@ -424,7 +424,7 @@ def main() -> None:
             f'{INTEGRATION_COMMAND_NAME}-download-quarantined-emails': download_quarantined_emails,
             f'{INTEGRATION_COMMAND_NAME}-get-reports': get_reports,
         }
-        if demisto.command() == 'test-module':
+        if command == 'test-module':
             return_results(test_module(client))
         elif command == 'fetch-incidents':
             next_run, incidents = fetch_incidents(

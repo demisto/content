@@ -23,7 +23,7 @@ class Client:
 
 @logger
 def test_module(client: Client) -> str:
-    # check get alerts for fetch purposes
+    client.fe_client.get_alerts_request({'info_level': 'concise'})
     return 'ok'
 
 
@@ -321,10 +321,11 @@ def update_allowedlist(client: Client, args: Dict[str, Any]) -> CommandResults:
     matches = args.get('matches')
 
     raw_response = client.fe_client.update_allowedlist_request(type_, entry_value, matches)
+    raise Exception(str(raw_response.content))
     if not raw_response:
         md_ = 'No allowed lists records were updated.'
     else:
-        # demisto.results(str(raw_response))
+        demisto.results(str(raw_response))
         md_ = tableToMarkdown(name=f'{INTEGRATION_NAME} Allowed lists updated:', t=raw_response, removeNull=True)
 
     return CommandResults(
@@ -544,7 +545,7 @@ def main() -> None:
             f'{INTEGRATION_COMMAND_NAME}-update-blockedlist': update_blockedlist,
             f'{INTEGRATION_COMMAND_NAME}-delete-blocklist': delete_blockedlist,
         }
-        if demisto.command() == 'test-module':
+        if command == 'test-module':
             return_results(test_module(client))
         elif command == 'fetch-incidents':
             next_run, incidents = fetch_incidents(
