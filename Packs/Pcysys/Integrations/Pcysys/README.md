@@ -7,19 +7,19 @@ This integration was integrated and tested with version 3.3.2 of Pentera by Pcys
 ## Use Cases
 
 Integration Use Cases:
-1. Integrate PenTera’s Automated Penetration Testing findings within Demisto for playbook-driven enrichment and response
+1. Integrate PenTera’s Automated Penetration Testing findings within Cortex XSOAR for playbook-driven enrichment and response
 2. Address penetration testing findings, prioritize, and automate response tasks
-3. Leverage Demisto’s third-party product integrations 
+3. Leverage Cortex XSOAR’s third-party product integrations 
 
 Use Case #1: Automate Dynamic Vulnerability Alerts - Password Policy 
 Challenge: Password policies are a continuous undertaking that organizations need to review regularly. 
-Solution: With the Demisto-PenTera integration, PenTera can continuously validate the effectiveness of enterprise passwords and take action on easily crackable passwords with focus on high privileged accounts. Once PenTera flags a password that doesn’t meet the standard, automated playbooks through Demisto take action and remediate the vulnerability based on corporate policy.
+Solution: With the Cortex XSOAR-PenTera integration, PenTera can continuously validate the effectiveness of enterprise passwords and take action on easily crackable passwords with focus on high privileged accounts. Once PenTera flags a password that doesn’t meet the standard, automated playbooks through Cortex XSOAR take action and remediate the vulnerability based on corporate policy.
 
 Use Case #2: Automated real-time validation for critical vulnerabilities
 Challenge: Continuous security validation is critical for the ongoing cyber hygiene of an organization’s network. However, critical vulnerabilities require on-demand testing as they influence many components of the network. Security teams struggle with prioritizing remediation and understanding the true impact vulnerabilities have on their specific network.
-Solution: After running automated single-action tests for critical vulnerabilities, the Demisto integration allows security teams to automate the response process based on the findings. For example, PenTera discovers the vulnerability of different components of the network, e.g a server or an endpoint. The latter is a simpler fix that should go through one workflow, perhaps even be automatically remediated, while the first, a much more complex process, will create a high-risk task in the relevant workflow, automatically prioritizing the response tasks based on business impact severity.
+Solution: After running automated single-action tests for critical vulnerabilities, the Cortex XSOAR integration allows security teams to automate the response process based on the findings. For example, PenTera discovers the vulnerability of different components of the network, e.g a server or an endpoint. The latter is a simpler fix that should go through one workflow, perhaps even be automatically remediated, while the first, a much more complex process, will create a high-risk task in the relevant workflow, automatically prioritizing the response tasks based on business impact severity.
 
-## Configure Pentera on Demisto
+## Configure Pentera on Cortex XSOAR
 
 1. Navigate to __Settings__ > __Integrations__ > __Servers & Services__.
 2. Search for Pentera.
@@ -34,7 +34,7 @@ Solution: After running automated single-action tests for critical vulnerabiliti
 4. Click __Test__ to validate the URLs, token, and connection.
 
 ## Commands
-You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.
+You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 1. pentera-run-template-by-name
 2. pentera-get-task-run-status

@@ -11,7 +11,6 @@ commonfields:
   version: -1
 enabled: false
 name: DeleteIndicatorRelationships
-outputs:
 script: '-'
 system: false
 tags:
@@ -19,7 +18,7 @@ tags:
 timeout: '0'
 type: python
 subtype: python3
-dockerimage: demisto/python3:3.9.4.18682
+dockerimage: demisto/python3:3.9.4.19537
 fromversion: 6.2.0
 tests:
-- No test
+- Relationships scripts - Test

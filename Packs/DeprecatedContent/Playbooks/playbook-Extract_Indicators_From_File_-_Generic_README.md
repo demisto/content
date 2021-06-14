@@ -1,5 +1,5 @@
+Deprecated. Use the "Extract Indicators From File - Generic v2" playbook instead.
 Extracts indicators from a file.
-
 Supported file types:
 - PDF
 - TXT
@@ -16,10 +16,10 @@ This playbook does not use any sub-playbooks.
 This playbook does not use any integrations.
 
 ### Scripts
-* Set
-* ReadPDFFile
-* ExtractIndicatorsFromWordFile
 * ExtractIndicatorsFromTextFile
+* ExtractIndicatorsFromWordFile
+* ReadPDFFile
+* Set
 
 ### Commands
 This playbook does not use any commands.
@@ -27,32 +27,32 @@ This playbook does not use any commands.
 ## Playbook Inputs
 ---
 
-| **Name** | **Description** | **Default Value** | **Source** | **Required** |
-| --- | --- | --- | --- | --- |
-| File | The file to extract indicators from. | None | File | Optional |
+| **Name** | **Description** | **Default Value** | **Required** |
+| --- | --- | --- | --- |
+| File | The file to extract indicators from. | File.None | Optional |
 
 ## Playbook Outputs
 ---
 
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
-| Domain.Name | The extracted domains. | unknown |
-| Account.Email.Address | The extracted emails. | unknown |
-| File.MD5 | The extracted MD5 hash of the file. | unknown |
-| File.SHA1 | The extracted SHA1 hash of the file. | unknown |
-| File.SHA256 | The extracted SHA256 hash of the file. | unknown |
-| IP.Address | The extracted IP address. | unknown |
-| File.Text | The PDF file extracted from the text. | unknown |
-| File.Producer | The producer of the PDF file. | unknown |
-| File.Title | The title of the PDF file. | unknown |
-| File.xap | The XAP of the PDF file. | unknown |
-| File.Author | The author of the PDF file. | unknown |
-| File.dc | The DC of the PDF file. | unknown |
-| File.xapmm | The XAPMM of the PDF file. | unknown |
-| File.ModDate | The modified date of the PDF file. | unknown |
-| File.CreationDate | The creation date of the PDF file. | unknown |
-| File.Pages | The number of pages in the PDF file. | unknown |
-| URL.Data | The list of URLs that were extracted from the PDF file. | unknown |
+| Domain.Name | Extracted domains | unknown |
+| Account.Email.Address | Extracted emails | unknown |
+| File.MD5 | Extracted MD5 | unknown |
+| File.SHA1 | Extracted SHA1 | unknown |
+| File.SHA256 | Extracted SHA256 | unknown |
+| IP.Address | Extracted IPs | unknown |
+| File.Text | The PDF File extracted text | unknown |
+| File.Producer | The PDF File producer | unknown |
+| File.Title | The PDF File Title | unknown |
+| File.xap | The PDF File xap | unknown |
+| File.Author | The PDF File Author | unknown |
+| File.dc | The PDF File dc | unknown |
+| File.xapmm | The PDF File xapmm | unknown |
+| File.ModDate | The PDF File ModDate | unknown |
+| File.CreationDate | The PDF File CreationDate | unknown |
+| File.Pages | Number of pages in PDF file | unknown |
+| URL.Data | List of URLs that were extracted from the PDF file | unknown |
 
 ## Playbook Image
 ---

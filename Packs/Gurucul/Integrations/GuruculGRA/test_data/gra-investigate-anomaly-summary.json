@@ -1,0 +1,33 @@
+{
+  "analyticalFeatures": {
+    "eventdesc": 8
+  },
+  "entityCount": "466",
+  "resourceCount": "4",
+  "records": {
+    "anomalyBaseline": "Baseline period is not configured.",
+    "anomalyLastCatch": "2020-12-06 10:00:59",
+    "executionDays": "null",
+    "chainDetails": [
+      {
+        "resourceName": "resourceName",
+        "type": "model",
+        "value": "modelName"
+      }
+    ],
+    "anomalousActivity": 0,
+    "anomalyName": "modelName",
+    "classifier": "Categories -> Categories Name, Categories -> Default, Resources -> resourceName",
+    "anomalyFirstCatch": "2020-11-08 12:15:00",
+    "anomalyDescription": "This template can be used to create models using the saved search query."
+  },
+  "similarTemplateAnomalies": {
+    "anomaly1": 442,
+    "anomaly2": 4,
+    "anomaly3": 4,
+    "anomaly4": 21,
+    "anomaly5": 8,
+    "anomaly6": 1
+  },
+  "entitiesFlagged": 0
+}

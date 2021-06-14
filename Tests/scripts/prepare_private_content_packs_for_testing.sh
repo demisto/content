@@ -5,9 +5,7 @@ set -e
 
 GIT_BRANCH=${BRANCH_NAME:-unknown}
 GITHUB_RUN_NUMBER=${GITHUB_RUN_NUMBER:-00000}
-ARTIFACTS_FOLDER=${ARTIFACTS_FOLDER}
 PACK_ARTIFACTS=$ARTIFACTS_FOLDER/content_packs.zip
-ID_SET=$ARTIFACTS_FOLDER/id_set.json
 EXTRACT_FOLDER=$(mktemp -d)
 
 if [[ -z "$GCS_MARKET_KEY" ]]; then
@@ -61,7 +59,7 @@ else
     echo "Did not get content packs to update in the bucket."
   else
     echo "Updating the following content packs: $CONTENT_PACKS_TO_INSTALL ..."
-    python3 ./Tests/private_build/upload_packs_private.py -b $GCS_TESTING_BUCKET -pb $GCS_PRIVATE_TESTING_BUCKET -a $PACK_ARTIFACTS -d $ARTIFACTS_FOLDER/packs_dependencies.json -e $EXTRACT_FOLDER -s $KF -n $GITHUB_RUN_NUMBER -p $NEW_PACK_NAME -sb $PUBLIC_TARGET_PATH -k $PACK_SIGN_KEY -rt false --id_set_path $ID_SET -nek $PACK_ENCRYPTION_KEY_NEW -bn $GIT_BRANCH -ek $PACK_ENCRYPTION_KEY -inf $IS_INFRA_BUILD -o
+    python3 ./Tests/private_build/upload_packs_private.py -b $GCS_TESTING_BUCKET -pb $GCS_PRIVATE_TESTING_BUCKET -a $PACK_ARTIFACTS -d $ARTIFACTS_FOLDER/packs_dependencies.json -e $EXTRACT_FOLDER -s $KF -n $GITHUB_RUN_NUMBER -p $NEW_PACK_NAME -sb $PUBLIC_TARGET_PATH -k $PACK_SIGN_KEY -rt false -nek $PACK_ENCRYPTION_KEY_NEW -bn $GIT_BRANCH -ek $PACK_ENCRYPTION_KEY -inf $IS_INFRA_BUILD -o
     NEW_EXTRACT_FOLDER_FOR_INDEX=$(mktemp -d)
     NEW_EXTRACT_FOLDER_FOR_ARTIFACTS=$(mktemp -d)
     python3 ./Tests/Marketplace/prepare_public_index_for_private_testing.py -b $GCS_TESTING_BUCKET -pb $GCS_PRIVATE_TESTING_BUCKET -n $GITHUB_RUN_NUMBER -e $NEW_EXTRACT_FOLDER_FOR_INDEX -sb $PUBLIC_TARGET_PATH -s $KF -p $NEW_PACK_NAME -a $PACK_ARTIFACTS -ea $NEW_EXTRACT_FOLDER_FOR_ARTIFACTS -di private/dummy_index

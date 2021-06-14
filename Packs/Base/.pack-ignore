@@ -8,13 +8,41 @@ ignore=BA101
 ignore=SC105
 
 [file:DBotFindSimilarIncidentsByIndicators.yml]
-ignore=SC105
+ignore=SC105,BA109
 
 [file:DBotFindSimilarIncidents.yml]
-ignore=SC105
+ignore=SC105,BA109
 
 [file:GetIncidentsByQuery.yml]
-ignore=SC105
+ignore=SC105,BA109
 
 [file:DrawRelatedIncidentsCanvas.yml]
 ignore=SC105
+
+[file:DBotPredictPhishingWords.yml]
+ignore=BA109
+
+[file:DBotPreprocessTextData.yml]
+ignore=BA109
+
+[file:DBotTrainTextClassifierV2.yml]
+ignore=BA109
+
+[file:FindSimilarIncidentsByText.yml]
+ignore=BA109
+
+[file:GetIndicatorsByQuery.yml]
+ignore=BA109
+
+[file:WordTokenizerV2.yml]
+ignore=BA109
+
+[file:README.md]
+ignore=RM106
+
+[file:SaneDocReportV2.yml]
+ignore=SC101
+
+[file:SanePdfReport.yml]
+ignore=SC101
+
