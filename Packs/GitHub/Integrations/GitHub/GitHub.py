@@ -1611,6 +1611,27 @@ def get_github_get_check_run():
     return_results(command_results)
 
 
+def create_release_command():
+    args = demisto.args()
+    tag_name = args.get('tag_name')
+    data = {
+        'tag_name': tag_name,
+        'name': args.get('name'),
+        'body': args.get('body'),
+        'draft': argToBoolean(args.get('draft')),
+    }
+    response = http_request('POST', url_suffix=RELEASE_SUFFIX, data=data)
+    release_url = response.get('html_url')
+
+    return_results(CommandResults(
+        outputs_prefix='GitHub.Release',
+        outputs=response,
+        outputs_key_field='id',
+        readable_output=f'Release {tag_name} created successfully for repo {REPOSITORY}: {release_url}',
+        raw_response=response
+    ))
+
+
 def fetch_incidents_command():
     last_run = demisto.getLastRun()
     if last_run and 'start_time' in last_run:
@@ -1701,6 +1722,7 @@ COMMANDS = {
     'GitHub-list-branch-pull-requests': list_branch_pull_requests_command,
     'Github-get-check-run': get_github_get_check_run,
     'Github-commit-file': commit_file_command,
+    'GitHub-create-release': create_release_command,
 }
 
 

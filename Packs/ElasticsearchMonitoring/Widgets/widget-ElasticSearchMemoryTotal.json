@@ -1,0 +1,44 @@
+{
+    "id": "es-memory-total",
+    "version": -1,
+    "fromVersion": "6.1.0",
+    "modified": "2021-01-14T08:17:30.93578Z",
+    "name": "Elasticsearch Total Memory",
+    "dataType": "system",
+    "widgetType": "number",
+    "query": "es-memory.total",
+    "isPredefined": true,
+    "description": "Elasticsearch Total memory in Giga-bytes",
+    "dateRange": {
+        "fromDate": "0001-01-01T00:00:00Z",
+        "toDate": "0001-01-01T00:00:00Z",
+        "period": {
+            "by": "",
+            "byTo": "",
+            "byFrom": "",
+            "toValue": null,
+            "fromValue": null,
+            "field": ""
+        },
+        "fromDateLicense": "0001-01-01T00:00:00Z"
+    },
+    "params": {
+        "colors": {
+            "isEnabled": true,
+            "items": {
+                "#00CD33": {
+                    "value": 15
+                },
+                "#FAC100": {
+                    "value": 7
+                },
+                "#FF1B15": {
+                    "value": -1
+                }
+            },
+            "type": "above"
+        },
+        "currencySign": "GB",
+        "signAlignment": "right"
+    }
+}
