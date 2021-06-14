@@ -54,7 +54,7 @@ script:
       - contextPath: Sixgill.CVE.Modified
         description: The modified date of the CVE.
         type: Date
-      - contextPath: Sixgill.CVE.Cyberdixgill_DVE_score_current
+      - contextPath: Sixgill.CVE.Cybersixgill_DVE_score_current
         description: The current Sixgill DVE Score.
         type: String
       - contextPath: Sixgill.CVE.Cybersixgill_DVE_score_highest_ever_date
