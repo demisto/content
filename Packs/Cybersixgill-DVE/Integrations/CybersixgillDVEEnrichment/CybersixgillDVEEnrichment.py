@@ -29,39 +29,6 @@ def test_module(client_id, client_secret, channel_code, session, verify):
     return "ok"
 
 
-def create_fields(stix_obj, event_obj, nvd_obj, nvd_obj_v2, nvd_obj_v3, score_obj, ext_id):
-    try:
-        fields = {
-            "Description": stix_obj.get("description", ""),
-            "Created": stix_obj.get("created", ""),
-            "Modified": stix_obj.get("modified", ""),
-            "External id": ext_id,
-            "Cybersixgill DVE score - current": score_obj.get("current", ""),
-            "Cybersixgill DVE score - highest ever date": score_obj.get("highest", {}).get("date", ""),
-            "Cybersixgill DVE score - highest ever": score_obj.get("highest", {}).get("value", ""),
-            "Cybersixgill - Previously exploited probability": score_obj.get("previouslyExploited", ""),
-            "Event Name": event_obj.get("name", ""),
-            "Event Type": event_obj.get("type", ""),
-            "Event Action": event_obj.get("action", ""),
-            "Previous Level": event_obj.get("prev_level", ""),
-            "Event Description": event_obj.get("description", ""),
-            "Event Datetime": event_obj.get("event_datetime", ""),
-            "CVSS 3.1 score": nvd_obj_v3.get("exploitabilityScore", ""),
-            "CVSS 3.1 severity": nvd_obj_v3.get("severity", ""),
-            "NVD Link": nvd_obj.get("link", ""),
-            "NVD - last modified date": nvd_obj.get("modified", ""),
-            "NVD - publication date": nvd_obj.get("published", ""),
-            "CVSS 2.0 score": nvd_obj_v2.get("exploitabilityScore", ""),
-            "CVSS 2.0 severity": nvd_obj_v2.get("severity", ""),
-            "NVD Vector - V2.0": nvd_obj_v2.get("vector", ""),
-            "NVD Vector - V3.1": nvd_obj_v3.get("vector", ""),
-        }
-    except Exception as err:
-        err_msg = f"Error in DVE Enrichment Integration [{err}]\nTrace:\n{traceback.format_exc()}"
-        raise DemistoException(err_msg)
-    return fields
-
-
 def stix_to_indicator(stix_obj):
     indicator: Dict[str, Any] = {}
     try:
@@ -74,11 +41,25 @@ def stix_to_indicator(stix_obj):
         nvd_obj_v2 = stix_obj.get("x_sixgill_info", {}).get("nvd", {}).get("v2", {})
         nvd_obj_v3 = stix_obj.get("x_sixgill_info", {}).get("nvd", {}).get("v3", {})
         score_obj = stix_obj.get("x_sixgill_info", {}).get("score", {})
-        fields = create_fields(stix_obj, event_obj, nvd_obj, nvd_obj_v2, nvd_obj_v3, score_obj, ext_id)
         indicator["value"] = ext_id
-        indicator["Overview"] = fields
-        indicator["rawJSON"] = {"value": ext_id, "type": "CVE"}
-        indicator["rawJSON"].update(stix_obj)
+        indicator["Description"] = stix_obj.get("description", "")
+        indicator["Created"] = stix_obj.get("created", "")
+        indicator["Modified"] = stix_obj.get("modified", "")
+        indicator["Cybersixgill_DVE_score_current"] = score_obj.get("current", "")
+        indicator["Cybersixgill_DVE_score_highest_ever_date"] = score_obj.get("highest", {}).get("date", "")
+        indicator["Cybersixgill_DVE_score_highest_ever"] = score_obj.get("highest", {}).get("value", "")
+        indicator["Cybersixgill_Previously_exploited_probability"] = score_obj.get("previouslyExploited", "")
+        indicator["Previous_Level"] = event_obj.get("prev_level", "")
+        indicator["CVSS_3_1_score"] = nvd_obj_v3.get("exploitabilityScore", "")
+        indicator["CVSS_3_1_severity"] = nvd_obj_v3.get("severity", "")
+        indicator["NVD_Link"] = nvd_obj.get("link", "")
+        indicator["NVD_last_modified_date"] = nvd_obj.get("modified", "")
+        indicator["NVD_publication_date"] = nvd_obj.get("published", "")
+        indicator["CVSS_2_0_score"] = nvd_obj_v2.get("exploitabilityScore", "")
+        indicator["CVSS_2_0_severity"] = nvd_obj_v2.get("severity", "")
+        indicator["NVD_Vector_V2_0"] = nvd_obj_v2.get("vector", "")
+        indicator["NVD_Vector_V3_1"] = nvd_obj_v3.get("vector", "")
+        indicator["rawJSON"] = stix_obj
     except Exception as err:
         err_msg = f"Error in DVE Enrichment Integration [{err}]\nTrace:\n{traceback.format_exc()}"
         raise DemistoException(err_msg)
