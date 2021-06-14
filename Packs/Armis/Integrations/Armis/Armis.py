@@ -3,20 +3,14 @@
 from typing import List
 
 import pytz
-import demistomock as demisto
-from CommonServerPython import *
-from CommonServerUserPython import *
-
-import json
-
-import dateparser
 import urllib3
+
+from CommonServerPython import *
 
 # Disable insecure warnings
 urllib3.disable_warnings()
 
 ''' CONSTANTS '''
-DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 
 
 class AccessToken:
@@ -324,6 +318,9 @@ def fetch_incidents(client: Client,
     """
     # Get the last fetch time, if exists
     last_fetch = last_run.get('last_fetch')
+    latest_alert_fetch = last_run.get('latest_alert_fetch')
+    if latest_alert_fetch:
+        latest_alert_fetch = _ensure_timezone(dateparser.parse(latest_alert_fetch))
     incomplete_fetches = last_run.get('incomplete_fetches', 0)
 
     # Handle first time fetch
@@ -364,7 +361,11 @@ def fetch_incidents(client: Client,
         )
 
     for alert in data.get('results', []):
-        incident_created_time = dateparser.parse(alert.get('time'))
+        incident_created_time = _ensure_timezone(dateparser.parse(alert.get('time')))
+        # Alert was already fetched. Skipping
+        if latest_alert_fetch and latest_alert_fetch >= incident_created_time:
+            continue
+
         incident = {
             'name': alert.get('description'),
             'occurred': incident_created_time.strftime('%Y-%m-%dT%H:%M:%SZ'),
@@ -374,17 +375,19 @@ def fetch_incidents(client: Client,
         incidents.append(incident)
 
         # Update last run and add incident if the incident is newer than last fetch
-        incident_created_time = _ensure_timezone(incident_created_time)
 
         if incident_created_time > latest_created_time:
             latest_created_time = incident_created_time
 
+    latest_alert_fetch_iso_format = latest_created_time.isoformat()
     if data.get('next'):
         # if more than max_results alerts were returned, this fetch is incomplete and the extra results must be fetched
         # next time
-        next_run = {'last_fetch': last_fetch.strftime(DATE_FORMAT), 'incomplete_fetches': incomplete_fetches + 1}
+        next_run = {'last_fetch': last_fetch.isoformat(), 'incomplete_fetches': incomplete_fetches + 1,
+                    'latest_alert_fetch': latest_alert_fetch_iso_format}
     else:
-        next_run = {'last_fetch': latest_created_time.strftime(DATE_FORMAT), 'incomplete_fetches': 0}
+        next_run = {'last_fetch': latest_alert_fetch_iso_format, 'incomplete_fetches': 0,
+                    'latest_alert_fetch': latest_alert_fetch_iso_format}
     return next_run, incidents
 
 
