@@ -746,7 +746,7 @@ script:
       - Low
       - Medium
       - High
-      required: true
+      required: false
       secret: false
     - default: false
       description: String defining the alert name.
@@ -2674,8 +2674,9 @@ script:
       required: true
       secret: false
     - default: false
-      description: Paths of the files to delete, in a comma-separated list. Paths of the files to check for existence.
-        All of the given file paths will run on all of the endpoints.
+      description: Paths of the files to delete, in a comma-separated list. Paths
+        of the files to check for existence. All of the given file paths will run
+        on all of the endpoints.
       isArray: true
       name: file_path
       required: true
@@ -2708,8 +2709,8 @@ script:
       required: true
       secret: false
     - default: false
-      description: Paths of the files to check for existence, in a comma-separated list. All of the given file paths
-        will run on all of the endpoints.
+      description: Paths of the files to check for existence, in a comma-separated
+        list. All of the given file paths will run on all of the endpoints.
       isArray: true
       name: file_path
       required: true

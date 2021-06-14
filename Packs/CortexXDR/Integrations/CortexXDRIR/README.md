@@ -755,7 +755,7 @@ maximum of 60 alerts.
 | remote_ip | String value of the destination IP<br/>address. | Required | 
 | remote_port | Integer value for the destination<br/>port. | Required | 
 | event_timestamp | Integer value representing the epoch of the time the alert occurred in milliseconds or String value of date format 2019-10-23T10:00:00. If not set then the event time will be defined as now. | Optional | 
-| severity | String value of alert severity:<br/>Informational, Low, Medium or High | Required | 
+| severity | String value of alert severity:<br/>Informational, Low, Medium or High | Optional | 
 | alert_name | String defining the alert name | Required | 
 | alert_description | String defining the alert description | Optional | 
 
