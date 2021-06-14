@@ -14,7 +14,7 @@ inputs:
   required: false
   value: {}
 - description: Dictionary contains the parameter name as key and its value for this
-    execution as the value. For example, {"param1":"param1_value","param2":"param2_value"}
+    execution as the value. For example, {"param1":"param1_value","param2":"param2_value"}. The required parameters for each script can be retrieved by running xdr-get-script-metadata with the script uid.
   key: parameters
   playbookInputQuery:
   required: false
