@@ -116,7 +116,7 @@ def test_get_report_not_found(mocker):
     mocker.patch.object(FireEyeClient, '_generate_token', return_value='token')
     client = Client(base_url="https://fireeye.cm.com/", username='user', password='pass', verify=False, proxy=False)
 
-    mocker.patch('FireEyeEX.Client.fe_client.get_reports_request', side_effect=error_400_mock)
+    mocker.patch('FireEyeEX.FireEyeClient.get_reports_request', side_effect=error_400_mock)
 
     command_results = get_reports(client=client, args={'report_type': 'alertDetailsReport', 'infection_id': '34013',
                                                        'infection_type': 'mallware-callback'})
