@@ -33,10 +33,10 @@ def get_alerts(client: Client, args: Dict[str, Any]) -> CommandResults:
         alert_id = args.get('alert_id', '')
         start_time = args.get('start_time', '')
         if start_time:
-            start_time = to_fe_datetime_converter(start_time)
+            start_time = client.fe_client.to_fe_datetime_converter(start_time)
         end_time = args.get('end_time')
         if end_time:
-            end_time = to_fe_datetime_converter(end_time)
+            end_time = client.fe_client.to_fe_datetime_converter(end_time)
         duration = args.get('duration')
         callback_domain = args.get('callback_domain', '')
         dst_ip = args.get('dst_ip', '')
@@ -85,7 +85,7 @@ def get_alerts(client: Client, args: Dict[str, Any]) -> CommandResults:
     request_params = parse_request_params(args)
     limit = int(args.get('limit', '20'))
 
-    raw_response = client.get_alerts_request(request_params)
+    raw_response = client.fe_client.get_alerts_request(request_params)
 
     alerts = raw_response.get('alert')
     if not alerts:
@@ -112,7 +112,7 @@ def get_alert_details(client: Client, args: Dict[str, Any]) -> List[CommandResul
     headers = ['id', 'occurred', 'product', 'name', 'malicious', 'action', 'src', 'dst', 'severity', 'alertUrl']
 
     for alert_id in alert_ids:
-        raw_response = client.get_alert_details_request(alert_id)
+        raw_response = client.fe_client.get_alert_details_request(alert_id)
 
         alert_details = raw_response.get('alert')
         if not alert_details:
@@ -137,7 +137,7 @@ def get_artifacts_by_uuid(client: Client, args: Dict[str, Any]):
     timeout = int(args.get('timeout', '120'))
 
     for uuid in uuids:
-        artifact = client.get_artifacts_by_uuid_request(uuid, timeout)
+        artifact = client.fe_client.get_artifacts_by_uuid_request(uuid, timeout)
         demisto.results(fileResult(f'artifacts_{uuid}.zip', data=artifact, file_type=EntryType.ENTRY_INFO_FILE))
 
 
@@ -147,7 +147,7 @@ def get_artifacts_metadata_by_uuid(client: Client, args: Dict[str, Any]) -> List
     command_results: List[CommandResults] = []
 
     for uuid in uuids:
-        raw_response = client.get_artifacts_metadata_by_uuid_request(uuid)
+        raw_response = client.fe_client.get_artifacts_metadata_by_uuid_request(uuid)
 
         outputs = raw_response
         outputs['uuid'] = uuid  # type: ignore
@@ -167,14 +167,14 @@ def get_artifacts_metadata_by_uuid(client: Client, args: Dict[str, Any]) -> List
 
 @logger
 def get_quarantined_emails(client: Client, args: Dict[str, Any]) -> CommandResults:
-    start_time = to_fe_datetime_converter(args.get('start_time', '1 day'))
-    end_time = to_fe_datetime_converter(args.get('end_time', 'now'))
+    start_time = client.fe_client.to_fe_datetime_converter(args.get('start_time', '1 day'))
+    end_time = client.fe_client.to_fe_datetime_converter(args.get('end_time', 'now'))
     from_ = args.get('from', '')
     subject = args.get('subject', '')
     appliance_id = args.get('appliance_id', '')
     limit = (args.get('limit', '10000'))
 
-    raw_response = client.get_quarantined_emails_request(start_time, end_time, from_, subject, appliance_id, limit)
+    raw_response = client.fe_client.get_quarantined_emails_request(start_time, end_time, from_, subject, appliance_id, limit)
     if not raw_response:
         md_ = 'No emails with the given query arguments were found.'
     else:
@@ -196,7 +196,7 @@ def release_quarantined_emails(client: Client, args: Dict[str, Any]) -> CommandR
     sensor_name = args.get('sensor_name', '')
     queue_ids = argToList(args.get('queue_ids', ''))
 
-    raw_response = client.release_quarantined_emails_request(sensor_name, queue_ids)
+    raw_response = client.fe_client.release_quarantined_emails_request(sensor_name, queue_ids)
 
     if raw_response.text:  # returns 200 either way. if operation is successful than resp is empty
         raise DemistoException(raw_response.json())
@@ -213,7 +213,7 @@ def delete_quarantined_emails(client: Client, args: Dict[str, Any]) -> CommandRe
     sensor_name = args.get('sensor_name', '')
     queue_ids = argToList(args.get('queue_ids', ''))
 
-    raw_response = client.delete_quarantined_emails_request(sensor_name, queue_ids)
+    raw_response = client.fe_client.delete_quarantined_emails_request(sensor_name, queue_ids)
     if raw_response.text:  # returns 200 either way. if operation is successful than resp is empty
         raise DemistoException(raw_response.json())
     else:
@@ -231,7 +231,7 @@ def download_quarantined_emails(client: Client, args: Dict[str, Any]):
     queue_id = args.get('queue_id', '')
     timeout = int(args.get('timeout', '120'))
 
-    raw_response = client.download_quarantined_emails_request(sensor_name, queue_id, timeout)
+    raw_response = client.fe_client.download_quarantined_emails_request(sensor_name, queue_id, timeout)
 
     demisto.results(fileResult(f'quarantined_email_{queue_id}.eml', data=raw_response, file_type=EntryType.FILE))
 
@@ -239,8 +239,8 @@ def download_quarantined_emails(client: Client, args: Dict[str, Any]):
 @logger
 def get_reports(client: Client, args: Dict[str, Any]):
     report_type = args.get('report_type', '')
-    start_time = to_fe_datetime_converter(args.get('start_time', '1 week'))
-    end_time = to_fe_datetime_converter(args.get('end_time', 'now'))
+    start_time = client.fe_client.to_fe_datetime_converter(args.get('start_time', '1 week'))
+    end_time = client.fe_client.to_fe_datetime_converter(args.get('end_time', 'now'))
     limit = args.get('limit', '100')
     interface = args.get('interface', '')
     alert_id = args.get('alert_id', '')
@@ -260,7 +260,7 @@ def get_reports(client: Client, args: Dict[str, Any]):
                 raise DemistoException(err_str)
 
     try:
-        raw_response = client.get_reports_request(report_type, start_time, end_time, limit, interface, alert_id,
+        raw_response = client.fe_client.get_reports_request(report_type, start_time, end_time, limit, interface, alert_id,
                                                   infection_type, infection_id, timeout)
         csv_reports = {'empsEmailAVReport', 'empsEmailHourlyStat', 'mpsCallBackServer', 'mpsInfectedHostsTrend',
                        'mpsWebAVReport'}
@@ -278,7 +278,7 @@ def get_reports(client: Client, args: Dict[str, Any]):
 def list_allowedlist(client: Client, args: Dict[str, Any]) -> CommandResults:
     type_ = args.get('type', '')
 
-    raw_response = client.list_allowedlist_request(type_)
+    raw_response = client.fe_client.list_allowedlist_request(type_)
     if not raw_response:
         md_ = 'No allowed lists with the given type were found.'
     else:
@@ -299,7 +299,7 @@ def create_allowedlist(client: Client, args: Dict[str, Any]) -> CommandResults:
     entry_value = args.get('entry_value', '')
     matches = args.get('matches')
 
-    raw_response = client.create_allowedlist_request(type_, entry_value, matches)
+    raw_response = client.fe_client.create_allowedlist_request(type_, entry_value, matches)
     if not raw_response:
         md_ = 'No allowed lists records were created.'
     else:
@@ -320,7 +320,7 @@ def update_allowedlist(client: Client, args: Dict[str, Any]) -> CommandResults:
     entry_value = args.get('entry_value', '')
     matches = args.get('matches')
 
-    raw_response = client.update_allowedlist_request(type_, entry_value, matches)
+    raw_response = client.fe_client.update_allowedlist_request(type_, entry_value, matches)
     if not raw_response:
         md_ = 'No allowed lists records were updated.'
     else:
@@ -340,7 +340,7 @@ def delete_allowedlist(client: Client, args: Dict[str, Any]) -> CommandResults:
     type_ = args.get('type', '')
     entry_value = args.get('entry_value', '')
 
-    raw_response = client.delete_allowedlist_request(type_, entry_value)
+    raw_response = client.fe_client.delete_allowedlist_request(type_, entry_value)
     if not raw_response:
         md_ = 'No allowed lists records were deleted.'
     else:
@@ -359,7 +359,7 @@ def delete_allowedlist(client: Client, args: Dict[str, Any]) -> CommandResults:
 def list_blockedlist(client: Client, args: Dict[str, Any]) -> CommandResults:
     type_ = args.get('type', '')
 
-    raw_response = client.list_blockedlist_request(type_)
+    raw_response = client.fe_client.list_blockedlist_request(type_)
     if not raw_response:
         md_ = 'No blocked lists with the given type were found.'
     else:
@@ -380,7 +380,7 @@ def create_blockedlist(client: Client, args: Dict[str, Any]) -> CommandResults:
     entry_value = args.get('entry_value', '')
     matches = args.get('matches')
 
-    raw_response = client.create_blockedlist_request(type_, entry_value, matches)
+    raw_response = client.fe_client.create_blockedlist_request(type_, entry_value, matches)
     if not raw_response:
         md_ = 'No blocked lists records were created.'
     else:
@@ -401,7 +401,7 @@ def update_blockedlist(client: Client, args: Dict[str, Any]) -> CommandResults:
     entry_value = args.get('entry_value', '')
     matches = args.get('matches')
 
-    raw_response = client.update_blockedlist_request(type_, entry_value, matches)
+    raw_response = client.fe_client.update_blockedlist_request(type_, entry_value, matches)
     if not raw_response:
         md_ = 'No blocked lists records were updated.'
     else:
@@ -421,7 +421,7 @@ def delete_blockedlist(client: Client, args: Dict[str, Any]) -> CommandResults:
     type_ = args.get('type', '')
     entry_value = args.get('entry_value', '')
 
-    raw_response = client.delete_blockedlist_request(type_, entry_value)
+    raw_response = client.fe_client.delete_blockedlist_request(type_, entry_value)
     if not raw_response:
         md_ = 'No blocked lists records were deleted.'
     else:
@@ -441,15 +441,15 @@ def fetch_incidents(client: Client, last_run: dict, first_fetch: str, max_fetch:
                     info_level: str = 'concise') -> Tuple[dict, list]:
     if not last_run:  # if first time fetching
         next_run = {
-            'time': to_fe_datetime_converter(first_fetch),
+            'time': client.fe_client.to_fe_datetime_converter(first_fetch),
             'last_alert_ids': []
         }
     else:
         next_run = last_run
     demisto.info(f'{INTEGRATION_NAME} executing fetch with: {str(next_run.get("time"))}')
 
-    raw_response = client.get_alerts_request(request_params={
-        'start_time': to_fe_datetime_converter(first_fetch),
+    raw_response = client.fe_client.get_alerts_request(request_params={
+        'start_time': client.fe_client.to_fe_datetime_converter(first_fetch),
         'info_level': info_level
     })
     all_alerts = raw_response.get('alert')
@@ -457,7 +457,7 @@ def fetch_incidents(client: Client, last_run: dict, first_fetch: str, max_fetch:
     if not all_alerts:
         demisto.info(f'{INTEGRATION_NAME} no alerts were fetched at: {str(next_run)}')
         # as no alerts occurred till now, update last_run time accordingly
-        last_run['time'] = to_fe_datetime_converter('now')
+        last_run['time'] = client.fe_client.to_fe_datetime_converter('now')
         return last_run, []
 
     alerts = all_alerts[:max_fetch]
@@ -481,7 +481,7 @@ def fetch_incidents(client: Client, last_run: dict, first_fetch: str, max_fetch:
     if not incidents:
         demisto.info(f'{INTEGRATION_NAME} no new alerts were fetched at: {str(next_run)}')
         # as no alerts occurred till now, update last_run time accordingly
-        last_run['time'] = to_fe_datetime_converter('now')
+        last_run['time'] = client.fe_client.to_fe_datetime_converter('now')
         return last_run, []
 
     # as alerts occurred till now, update last_run time accordingly to the that of latest fetched alert
