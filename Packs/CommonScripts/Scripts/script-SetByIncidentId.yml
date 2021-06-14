@@ -2,23 +2,27 @@ commonfields:
   id: SetByIncidentId
   version: -1
 name: SetByIncidentId
-script: >-
+script: |
   incident_id = demisto.args()['id'] if 'id' in demisto.args() else demisto.incidents()[0]['id']
-
   key = demisto.args()['key']
-
   value = demisto.args()['value']
-
   append = demisto.args()['append']
-
+  error_unfinished = argToBoolean(demisto.args().get('errorUnfinished', "false"))
 
   args = {'key': key, 'value': value, 'append': append}
-
 
   res = demisto.executeCommand('executeCommandAt',
                               {'incidents': incident_id,
                                'command':'Set',
                                'arguments': args})
+  if error_unfinished:
+      result_string = res[-1].get('Contents',"")
+      result_string = result_string.strip('.')
+      numbers = [int(s) for s in result_string.split() if s.isdigit()]
+      if len(set(numbers)) > 1:  # check if the all the numbers are the same. Supposed to be 2 numbers.
+          # if the numbers are the same, Set succeed on all of the incidents.
+          return_error("Not all incidents were set.\n" + result_string)
+
 
   demisto.results(res)
 type: python
@@ -43,6 +47,13 @@ args:
   - "true"
   - "false"
   description: If false then the context key will be overwritten. If set to true then the script will append to existing context key
+  defaultValue: "false"
+- name: errorUnfinished
+  auto: PREDEFINED
+  predefined:
+  - "true"
+  - "false"
+  description: Returns an error if not all of the incidents where modified.
   defaultValue: "false"
 scripttarget: 0
 runas: DBotRole
