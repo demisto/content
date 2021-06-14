@@ -34,9 +34,9 @@ def get_duration_html():
                                 <div class="duration-icon"><i class="wait icon home"></i></div>
                                 <div class="days-number">{diff.days}</div>
                                 <div class="colon center aligned">:</div>
-                                <div class="hours-number">{(diff.seconds//3600) % 24}</div>
+                                <div class="hours-number">{(diff.seconds // 3600) % 24}</div>
                                 <div class="colon-2 center aligned">:</div>
-                                <div class="one column wide minutes-number">{(diff.seconds//60) % 60}</div>
+                                <div class="one column wide minutes-number">{(diff.seconds // 60) % 60}</div>
                                 <div class="days-label time-unit title-h5 opacity-description">DAYS</div>
                                 <div class="hours-label time-unit title-h5 opacity-description">HOURS</div>
                                 <div class="minutes-label time-unit title-h5 opacity-description">MIN</div>
