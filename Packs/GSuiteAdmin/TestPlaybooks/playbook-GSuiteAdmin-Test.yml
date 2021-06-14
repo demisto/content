@@ -48,7 +48,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "20"
+      - "55"
     scriptarguments:
       all:
         simple: "yes"
@@ -69,10 +69,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "20":
     id: "20"
-    taskid: 5b2c3655-2b60-4418-819d-481dad3a0568
+    taskid: eef6dce2-83b1-4c0d-8c81-9350f0050591
     type: regular
     task:
-      id: 5b2c3655-2b60-4418-819d-481dad3a0568
+      id: eef6dce2-83b1-4c0d-8c81-9350f0050591
       version: -1
       name: gsuite-user-create
       script: '|||gsuite-user-create'
@@ -86,19 +86,19 @@ tasks:
       admin_email:
         simple: admin@demistodev.com
       first_name:
-        simple: XSOAR1
+        simple: XSOAR
       last_name:
-        simple: XSOAR1
+        simple: XSOAR
       password:
-        simple: Xsoar@1111
+        simple: Xsoar@111
       primary_email:
-        simple: xsoar111@demistodev.com
+        simple: xsoar11@demistodev.com
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 370
+          "y": 545
         }
       }
     note: false
@@ -160,7 +160,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 545
+          "y": 720
         }
       }
     note: false
@@ -202,7 +202,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 895
+          "y": 1070
         }
       }
     note: false
@@ -237,7 +237,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1070
+          "y": 1245
         }
       }
     note: false
@@ -279,7 +279,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1245
+          "y": 1420
         }
       }
     note: false
@@ -324,7 +324,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1420
+          "y": 1595
         }
       }
     note: false
@@ -371,7 +371,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1595
+          "y": 1770
         }
       }
     note: false
@@ -397,7 +397,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2120
+          "y": 2295
         }
       }
     note: false
@@ -434,7 +434,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1770
+          "y": 1945
         }
       }
     note: false
@@ -446,10 +446,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "51":
     id: "51"
-    taskid: 68452776-98ca-4feb-8ae0-a63ee3e92a1a
+    taskid: 6d6cba01-dfb0-4b53-870b-f14a59db5a95
     type: regular
     task:
-      id: 68452776-98ca-4feb-8ae0-a63ee3e92a1a
+      id: 6d6cba01-dfb0-4b53-870b-f14a59db5a95
       version: -1
       name: gsuite-user-update
       description: Updates a user.
@@ -462,7 +462,7 @@ tasks:
       - "25"
     scriptarguments:
       first_name:
-        simple: XSOAR1
+        simple: test update
       user_key:
         simple: ${GSuite.User.id}
     separatecontext: false
@@ -470,7 +470,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 720
+          "y": 895
         }
       }
     note: false
@@ -487,7 +487,7 @@ tasks:
     task:
       id: e0b88bb8-d321-4428-887f-48813bf01450
       version: -1
-      name: sleep 60
+      name: sleep 10
       description: Sleep for X seconds
       scriptName: Sleep
       type: regular
@@ -498,13 +498,50 @@ tasks:
       - "47"
     scriptarguments:
       seconds:
-        simple: "60"
+        simple: "10"
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 1945
+          "y": 2120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "55":
+    id: "55"
+    taskid: 2bfcd934-b2fb-421d-8558-2426c926bb81
+    type: regular
+    task:
+      id: 2bfcd934-b2fb-421d-8558-2426c926bb81
+      version: -1
+      name: gsuite-user-delete
+      description: Deletes a user.
+      script: '|||gsuite-user-delete'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "20"
+    scriptarguments:
+      admin_email:
+        simple: admin@demistodev.com
+      user_key:
+        simple: "106069619714671355842"
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 40,
+          "y": 370
         }
       }
     note: false
@@ -519,9 +556,9 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 2135,
-        "width": 380,
-        "x": 50,
+        "height": 2310,
+        "width": 390,
+        "x": 40,
         "y": 50
       }
     }
