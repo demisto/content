@@ -94,7 +94,7 @@ def test_alert_acknowledge_already_acknowledged(mocker):
     mocker.patch.object(FireEyeClient, '_generate_token', return_value='token')
     client = Client(base_url="https://fireeye.cm.com/", username='user', password='pass', verify=False, proxy=False)
 
-    mocker.patch('FireEyeCM.Client.fe_client.alert_acknowledge_request', side_effect=error_404_mock)
+    mocker.patch('FireEyeCM.FireEyeClient.alert_acknowledge_request', side_effect=error_404_mock)
 
     command_results = alert_acknowledge(client=client, args={'uuid': 'uuid'})
     assert command_results[0].readable_output == \

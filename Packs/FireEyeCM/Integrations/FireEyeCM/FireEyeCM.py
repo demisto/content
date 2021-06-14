@@ -22,7 +22,7 @@ class Client:
 
 
 @logger
-def test_module(client: Client) -> str:
+def run_test_module(client: Client) -> str:
     client.fe_client.get_alerts_request({'info_level': 'concise'})
     return 'ok'
 
@@ -425,7 +425,7 @@ def main() -> None:
             f'{INTEGRATION_COMMAND_NAME}-get-reports': get_reports,
         }
         if command == 'test-module':
-            return_results(test_module(client))
+            return_results(run_test_module(client))
         elif command == 'fetch-incidents':
             next_run, incidents = fetch_incidents(
                 client=client,
