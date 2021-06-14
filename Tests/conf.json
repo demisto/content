@@ -54,6 +54,10 @@
             "fromversion": "5.0.0"
         },
         {
+            "integrations": "FireEye Central Management",
+            "playbookID": "FireEye Central Management - Test"
+        },
+        {
             "integrations": "FireEyeNX",
             "playbookID": "FireEyeNX-Test"
         },
@@ -2876,6 +2880,11 @@
             "memory_threshold": 190
         },
         {
+            "integrations": "F5Silverline",
+            "playbookID": "F5Silverline_TestPlaybook",
+            "fromversion": "6.0.0"
+        },
+        {
             "integrations": "Carbon Black Enterprise EDR",
             "playbookID": "Carbon Black Enterprise EDR Test",
             "fromversion": "5.0.0"
@@ -3312,6 +3321,10 @@
             "timeout": 1000
         },
         {
+            "integrations": "HPEArubaClearPass",
+            "playbookID": "HPEArubaClearPass_TestPlaybook"
+        },
+        {
             "integrations": "CrowdstrikeFalcon",
             "playbookID": "Get endpoint details - Generic - test",
             "fromversion": "5.5.0"
@@ -3363,6 +3376,12 @@
             "integrations": "NetscoutAED",
             "playbookID": "NetscoutAED-Test",
             "fromversion": "5.5.0"
+        },
+        {
+            "integrations": "CarbonBlackLiveResponseCloud",
+            "playbookID": "CarbonBlackLiveResponseCloud-Test",
+            "fromversion": "5.5.0",
+            "is_mockable": false
         }
     ],
     "skipped_tests": {
@@ -3401,7 +3420,7 @@
         "Tanium v2 - Test": "Issue 26822",
         "hashIncidentFields-test": "Issue 26850",
         "Fidelis Elevate Network": "Issue 26453",
-        "Cortex XDR - IOC - Test": "Issue 25598",
+        "Cortex XDR - IOC - Test": "Issue 37957",
         "Cherwell Example Scripts - test": "Issue 26780",
         "Cherwell - test": "Issue 26780",
         "PAN-OS Query Logs For Indicators Test": "Issue 28753",
@@ -3418,7 +3437,6 @@
         "Carbon Black Enterprise Protection V2 Test": "Issue 32322",
         "Google_Vault-Search_And_Display_Results_test": "Issue 24348",
         "FeedThreatConnect-Test": "Issue 32317",
-        "HelloWorldPremium_Scan-Test": "Issue 32512",
         "Palo_Alto_Networks_Enterprise_DLP - Test": "Issue 32568",
         "JoeSecurityTestDetonation": "Issue 25650",
         "JoeSecurityTestPlaybook": "Issue 25649",
@@ -3430,11 +3448,8 @@
         "Extract Indicators From File - Generic v2 - Test": "Issue 30071",
         "Kenna Test": "Missing data",
         "Trend Micro Apex - Test": "Issue 27280",
-        "Create ServiceNow Ticket and Mirror Test": "Issue 30587",
         "palo_alto_panorama_test_pb": "Issue 34371",
         "Microsoft Defender - ATP - Indicators Test": "Issue 29279",
-        "Active Directory - Get User Manager Details - Test": "Issue 25604",
-        "GSuiteAdmin-Test": "Issue 34784",
         "Test-BPA": "Issue 28406",
         "Test-BPA_Integration": "Issue 28236",
         "EWS search-mailbox test": "Issue 27943",
@@ -3460,10 +3475,11 @@
         "TestEmailRepIOPlaybook": "Issue 33219",
         "get_original_email_-_ews-_test": "Issue 27571",
         "PANW Threat Vault - Signature Search - Test": "Issue 30930",
-        "TAXII_Feed_Test": "Issue 37588"
+        "TAXII_Feed_Test": "Issue 37588",
+        "Git_Integration-Test": "Issue 37800"
     },
     "skipped_integrations": {
-
+        
         "_comment1": "~~~ NO INSTANCE ~~~",
         "SolarWinds": "No instance - developed by Crest",
         "trustwave secure email gateway": "No instance - developed by Qmasters",
@@ -3543,19 +3559,18 @@
         "FraudWatch": "Issue 34299",
         "Cisco Stealthwatch": "No instance - developed by Qmasters",
         "Armis": "No instance - developed by SOAR Experts",
-
+        
         "_comment2": "~~~ UNSTABLE ~~~",
         "Tenable.sc": "unstable instance",
         "ThreatConnect v2": "unstable instance",
         "Infoblox": "Unstable instance, issue 25651",
-
+        
         "_comment3": "~~~ QUOTA ISSUES ~~~",
         "XFE_v2": "Required proper instance, otherwise we get quota errors",
         "Lastline": "issue 20323",
         "Google Resource Manager": "Cannot create projects because have reached allowed quota.",
         "Looker": "Warehouse 'DEMO_WH' cannot be resumed because resource monitor 'LIMITER' has exceeded its quota.",
-        "Ipstack": "Issue 26266",
-
+        
         "_comment4": "~~~ OTHER ~~~",
         "Pentera": "authentication method will not work with testing",
         "AlienVault OTX TAXII Feed": "Issue 29197",
@@ -3720,8 +3735,11 @@
         "Cortex Data Lake",
         "Mail Listener v2"
     ],
+    "private_tests": [
+        "HelloWorldPremium_Scan-Test"
+    ],
     "docker_thresholds": {
-
+        
         "_comment": "Add here docker images which are specific to an integration and require a non-default threshold (such as rasterize or ews). That way there is no need to define this multiple times. You can specify full image name with version or without.",
         "images": {
             "demisto/chromium": {
@@ -3763,6 +3781,9 @@
             },
             "demisto/boto3": {
                 "memory_threshold": 90
+            },
+            "demisto/flask-nginx": {
+                "pid_threshold": 11
             }
         }
     }
