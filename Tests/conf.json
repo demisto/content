@@ -3,6 +3,9 @@
     "testInterval": 20,
     "tests": [
         {
+            "playbookID": "SupportMultithreading - Test"
+        },
+        {
             "fromversion": "5.0.0",
             "integrations": [
                 "WildFire-v2"
