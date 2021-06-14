@@ -36,13 +36,13 @@ args:
   - "true"
   - "false"
   description: Disable compression.
-- defaultvalue: "csv"
-  name: disable_compression
+- defaultValue: "csv"
+  name: output_type
   auto: PREDEFINED
   predefined:
   - "human_readable"
   - "csv"
-  description: Disable compression.
+  description: Output type of the result.
 - name: results_map
   description: Additional information to add to the result. Semicolon separated list
     of "key=value". e.g. Type=IP;Size=100.
