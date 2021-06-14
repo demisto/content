@@ -1093,8 +1093,10 @@ def main():
     logging.info(f"packs_missing_dependencies: {packs_missing_dependencies}")
 
     for pack in packs_missing_dependencies:
-        task_status = pack.reformat_metadata_with_missing_dependencies(user_metadata, index_folder_path, build_number,
-                                                                       current_commit_hash, pack_names)
+        # task_status = pack.reformat_metadata_with_missing_dependencies(user_metadata, index_folder_path, build_number,
+        #                                                                current_commit_hash, pack_names)
+        task_status = pack.format_metadata(user_metadata, index_folder_path, packs_dependencies_mapping, build_number,
+                                           current_commit_hash, pack_was_modified, statistics_handler, pack_names)
 
         if not task_status:
             pack.status = PackStatus.FAILED_METADATA_PARSING.name
