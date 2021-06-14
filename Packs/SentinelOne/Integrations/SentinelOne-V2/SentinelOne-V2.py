@@ -455,7 +455,7 @@ def get_groups_command(client: Client, args: dict) -> CommandResults:
         name=args.get('name'),
         query=args.get('query'),
         rank=args.get('rank'),
-        limit=int(limit),
+        limit=int(args.get('limit', 50)),
     )
     groups = client.get_groups_request(query_params)
 
@@ -958,7 +958,7 @@ def list_agents_command(client: Client, args: dict) -> CommandResults:
         scan_status=args.get('scan_status'),
         os_type=args.get('os_type'),
         created_at=args.get('created_at'),
-        limit=int(args.get('limit')),
+        limit=int(args.get('limit', 50)),
     )
 
     # Make request and get raw response
