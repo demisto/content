@@ -241,9 +241,9 @@ script:
     - default: false
       defaultValue: '30'
       description: Timeout to retrieve the alert details.
-      isArray: true
+      isArray: false
       name: timeout
-      required: true
+      required: fasle
       secret: false
     deprecated: false
     description: Searches and retrieves the details of a single alert.
