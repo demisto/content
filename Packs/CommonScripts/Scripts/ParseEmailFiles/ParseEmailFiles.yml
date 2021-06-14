@@ -21,10 +21,10 @@ comment: Parse an email from an eml or msg file and populate all relevant contex
   only the "Label/x" context items that originated from the labels, and the best practice
   is to rely on these for the remainder of the playbook.
 commonfields:
-  id: ParseEmailFiles_SMIME_FIX
+  id: ParseEmailFiles
   version: -1
 enabled: true
-name: ParseEmailFiles_SMIME_FIX
+name: ParseEmailFiles
 outputs:
 - contextPath: Email.To
   description: This shows to whom the message was addressed, but may not contain the
@@ -102,6 +102,6 @@ tags:
 - enhancement
 - file
 type: python
-fromversion: 6.0.0
+fromversion: 5.0.0
 tests:
 - No tests (auto formatted)
