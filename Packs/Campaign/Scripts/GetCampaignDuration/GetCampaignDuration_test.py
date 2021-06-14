@@ -22,7 +22,7 @@ CAMPAIGN_WITH_DURATION_RESULT = """
                                 <div class="minutes-label time-unit title-h5 opacity-description">MIN</div>
                             </div>
                         </div>
-                    </div>  
+                    </div>
     """
 
 CURRENT_TIME_MOCK = "05-08-2021 14:40:22"
