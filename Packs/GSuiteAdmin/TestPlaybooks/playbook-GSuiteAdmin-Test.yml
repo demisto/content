@@ -462,7 +462,7 @@ tasks:
       - "25"
     scriptarguments:
       first_name:
-        simple: test update
+        simple: XSOAR1
       user_key:
         simple: ${GSuite.User.id}
     separatecontext: false
