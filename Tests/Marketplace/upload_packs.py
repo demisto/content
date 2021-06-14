@@ -1007,7 +1007,6 @@ def main():
 
         if pack.is_missing_dependencies:
             packs_missing_dependencies.append(pack)
-            continue
 
         if not task_status:
             pack.status = PackStatus.FAILED_METADATA_PARSING.name
@@ -1083,6 +1082,7 @@ def main():
 
         # in case that pack already exist at cloud storage path and in index, don't show that the pack was changed
         if skipped_upload and exists_in_index:
+            logging.info(f"{pack.name} pack status is {PackStatus.PACK_ALREADY_EXISTS.name}")
             pack.status = PackStatus.PACK_ALREADY_EXISTS.name
             pack_names.remove(pack.name)
             pack.cleanup()
@@ -1090,19 +1090,14 @@ def main():
 
         pack.status = PackStatus.SUCCESS.name
 
+    logging.info(f"packs_missing_dependencies: {packs_missing_dependencies}")
+
     for pack in packs_missing_dependencies:
-        task_status = pack.format_metadata(user_metadata, index_folder_path, packs_dependencies_mapping, build_number,
-                                           current_commit_hash, pack_was_modified, statistics_handler, pack_names)
+        task_status = pack.reformat_metadata_with_missing_dependencies(user_metadata, index_folder_path, build_number,
+                                                                       current_commit_hash, pack_names)
 
         if not task_status:
             pack.status = PackStatus.FAILED_METADATA_PARSING.name
-            pack_names.remove(pack.name)
-            pack.cleanup()
-            continue
-
-        task_status = pack.prepare_for_index_upload()
-        if not task_status:
-            pack.status = PackStatus.FAILED_PREPARING_INDEX_FOLDER.name
             pack_names.remove(pack.name)
             pack.cleanup()
             continue

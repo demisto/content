@@ -634,7 +634,6 @@ class Pack(object):
                                 f"was not found in index Marks it as missing details")
             else:
                 logging.warning(f"{self._pack_name} pack dependency with id {dependency_pack_id} was not found")
-                continue
         return dependencies_data_result
 
     def _create_changelog_entry(self, release_notes, version_display_name, build_number, pack_was_modified=False,
@@ -1725,6 +1724,45 @@ class Pack(object):
             self._enhance_pack_attributes(
                 user_metadata, index_folder_path, pack_was_modified, dependencies_data, statistics_handler
             )
+            formatted_metadata = self._parse_pack_metadata(user_metadata, build_number, commit_hash)
+            metadata_path = os.path.join(self._pack_path, Pack.METADATA)  # deployed metadata path after parsing
+            json_write(metadata_path, formatted_metadata)  # writing back parsed metadata
+
+            logging.success(f"Finished formatting {self._pack_name} packs's {Pack.METADATA} {metadata_path} file.")
+            task_status = True
+
+        except Exception as e:
+            logging.exception(f"Failed in formatting {self._pack_name} pack metadata. Additional Info: {str(e)}")
+
+        finally:
+            return task_status
+
+    def reformat_metadata_with_missing_dependencies(self, user_metadata, index_folder_path, build_number, commit_hash, pack_names):
+        """ Re-formats metadata with missing dependencies on new packs that are not in the previous index.
+
+        Args:
+            user_metadata (dict): user defined pack_metadata, prior the parsing process.
+            public url.
+            index_folder_path (str): downloaded index folder directory path.
+            build_number (str): circleCI build number.
+            commit_hash (str): current commit hash.
+            pack_names (list)List of all packs.
+
+        Returns:
+            bool: True is returned in case metadata file was parsed successfully, otherwise False.
+
+        """
+        task_status = False
+        try:
+            dependencies_data = self._load_pack_dependencies(index_folder_path,
+                                                             user_metadata.get('dependencies', {}),
+                                                             user_metadata.get('displayedImages', []), pack_names)
+
+            self._dependencies = self._parse_pack_dependencies(user_metadata.get('dependencies', {}), dependencies_data)
+            self._related_integration_images = self._get_all_pack_images(
+                self._displayed_integration_images, user_metadata.get('displayedImages', []), dependencies_data,
+                self._pack_statistics_handler.displayed_dependencies_sorted)
+
             formatted_metadata = self._parse_pack_metadata(user_metadata, build_number, commit_hash)
             metadata_path = os.path.join(self._pack_path, Pack.METADATA)  # deployed metadata path after parsing
             json_write(metadata_path, formatted_metadata)  # writing back parsed metadata

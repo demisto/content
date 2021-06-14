@@ -31,6 +31,10 @@
         "CommonScripts": {
             "mandatory": true,
             "display_name": "Common Scripts"
+        },
+        "aa": {
+            "mandatory": true,
+            "display_name": "aa"
         }
     }
 }
