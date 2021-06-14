@@ -134,7 +134,7 @@ class FireEyeClient(BaseClient):
                                   resp_type='json')
 
     @logger
-    def create_allowedlist_request(self, type_: str, entry_value: str, matches: str) -> Dict[str, str]:
+    def create_allowedlist_request(self, type_: str, entry_value: str, matches: int) -> Dict[str, str]:
         return self._http_request(method='POST',
                                   url_suffix=f'devicemgmt/emlconfig/policy/allowed_lists/{type_}',
                                   params={'operation': 'create'},
@@ -142,7 +142,7 @@ class FireEyeClient(BaseClient):
                                   resp_type='resp')
 
     @logger
-    def update_allowedlist_request(self, type_: str, entry_value: str, matches: str) -> Dict[str, str]:
+    def update_allowedlist_request(self, type_: str, entry_value: str, matches: int) -> Dict[str, str]:
         return self._http_request(method='POST',
                                   url_suffix=f'devicemgmt/emlconfig/policy/allowed_lists/{type_}/{entry_value}',
                                   json_data={"matches": matches},
@@ -161,15 +161,15 @@ class FireEyeClient(BaseClient):
                                   resp_type='json')
 
     @logger
-    def create_blockedlist_request(self, type_: str, entry_value: str, matches: str) -> Dict[str, str]:
+    def create_blockedlist_request(self, type_: str, entry_value: str, matches: int) -> Dict[str, str]:
         return self._http_request(method='POST',
                                   url_suffix=f'devicemgmt/emlconfig/policy/blocked_lists/{type_}',
                                   params={'operation': 'create'},
-                                  json_data={"name": entry_value, "matches": matches},
+                                  json_data={'name': entry_value, 'matches': matches},
                                   resp_type='resp')
 
     @logger
-    def update_blockedlist_request(self, type_: str, entry_value: str, matches: str) -> Dict[str, str]:
+    def update_blockedlist_request(self, type_: str, entry_value: str, matches: int) -> Dict[str, str]:
         return self._http_request(method='POST',
                                   url_suffix=f'devicemgmt/emlconfig/policy/blocked_lists/{type_}/{entry_value}',
                                   json_data={"matches": matches},

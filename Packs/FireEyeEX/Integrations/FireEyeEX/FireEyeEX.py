@@ -297,7 +297,7 @@ def list_allowedlist(client: Client, args: Dict[str, Any]) -> CommandResults:
 def create_allowedlist(client: Client, args: Dict[str, Any]) -> CommandResults:
     type_ = args.get('type', '')
     entry_value = args.get('entry_value', '')
-    matches = args.get('matches')
+    matches = int(args.get('matches', '0'))
 
     raw_response = client.fe_client.create_allowedlist_request(type_, entry_value, matches)
     if not raw_response:
@@ -318,7 +318,7 @@ def create_allowedlist(client: Client, args: Dict[str, Any]) -> CommandResults:
 def update_allowedlist(client: Client, args: Dict[str, Any]) -> CommandResults:
     type_ = args.get('type', '')
     entry_value = args.get('entry_value', '')
-    matches = args.get('matches')
+    matches = int(args.get('matches', '0'))
 
     # gets 200 back without content if successful
     client.fe_client.update_allowedlist_request(type_, entry_value, matches)
@@ -364,7 +364,7 @@ def list_blockedlist(client: Client, args: Dict[str, Any]) -> CommandResults:
 def create_blockedlist(client: Client, args: Dict[str, Any]) -> CommandResults:
     type_ = args.get('type', '')
     entry_value = args.get('entry_value', '')
-    matches = args.get('matches')
+    matches = int(args.get('matches', '0'))
 
     raw_response = client.fe_client.create_blockedlist_request(type_, entry_value, matches)
     if not raw_response:
@@ -385,7 +385,7 @@ def create_blockedlist(client: Client, args: Dict[str, Any]) -> CommandResults:
 def update_blockedlist(client: Client, args: Dict[str, Any]) -> CommandResults:
     type_ = args.get('type', '')
     entry_value = args.get('entry_value', '')
-    matches = args.get('matches')
+    matches = int(args.get('matches', '0'))
 
     # gets 200 back without content if successful
     client.fe_client.update_blockedlist_request(type_, entry_value, matches)
