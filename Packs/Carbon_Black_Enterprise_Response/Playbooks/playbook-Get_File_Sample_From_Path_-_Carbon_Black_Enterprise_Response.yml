@@ -2,8 +2,7 @@ id: get_file_sample_from_path_-_carbon_black_enterprise_response
 version: -1
 name: Get File Sample From Path - Carbon Black Enterprise Response
 fromversion: "5.0.0"
-description: Returns a file sample to the war-room from a path on an endpoint using
-  Carbon Black Enterprise Response
+description: Returns a file sample to the war-room from a path on an endpoint using Carbon Black Enterprise Response
 starttaskid: "0"
 tasks:
   "0":
@@ -104,8 +103,7 @@ tasks:
       id: 6361a341-4a5c-4735-8ffe-ce13d9539b91
       version: -1
       name: Get File
-      description: Use Carbon black Response Live session to retrieve a file from
-        an endpoint. Endpoint needs to have a CbResponse sensor deployed.
+      description: Use Carbon black Response Live session to retrieve a file from an endpoint. Endpoint needs to have a CbResponse sensor deployed.
       scriptName: CBLiveGetFile_V2
       type: regular
       iscommand: false

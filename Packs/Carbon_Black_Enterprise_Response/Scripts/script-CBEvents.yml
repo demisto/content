@@ -3,8 +3,7 @@ commonfields:
   version: -1
 name: CBEvents
 script: >-
-  //Searches for all processes with a given query - and lists events associated with
-  processes.
+  //Searches for all processes with a given query - and lists events associated with processes.
 
   //Args - process search query
 
@@ -24,8 +23,7 @@ script: >-
               }
               entry.push(row);
           }
-          output.push({ContentsFormat: formats.table, Type: entryTypes.note, Contents:
-  entry});
+          output.push({ContentsFormat: formats.table, Type: entryTypes.note, Contents: entry});
       }
   }
 
@@ -35,26 +33,18 @@ script: >-
       var list = res[0].Contents.results;
       if (typeof (list) !== 'undefined') {
           if (list.length === 0) {
-              output.push({ContentsFormat: formats.text, Type: entryTypes.note, Contents:
-  "No results"});
+              output.push({ContentsFormat: formats.text, Type: entryTypes.note, Contents: "No results"});
           }
           for (var i = 0; i < list.length; i++) {
               var process = list[i];
-              var res1 = executeCommand("process-events", {pid: process.id.toString(),
-  segid: process.segment_id.toString()});
+              var res1 = executeCommand("process-events", {pid: process.id.toString(), segid: process.segment_id.toString()});
               var pevent = res1[0].Contents;
-              formatEvents(["time","md5","path"],pevent.process.process_name,process.id,
-  process.segment_id, pevent.process.modload_complete);
-              formatEvents(["type","time","reg path"],pevent.process.process_name,process.id,
-  process.segment_id, pevent.process.regmod_complete);
-              formatEvents(["type","time","file path","last md5","file type","tamper"],pevent.process.process_name,process.id,
-  process.segment_id, pevent.process.filemod_complete);
-              formatEvents(["time","remote ip","remote port","proto","dns name","outbound"],pevent.process.process_name,process.id,
-  process.segment_id, pevent.process.netconn_complete);
-              formatEvents(["time","uid","md5","path","pid","started","tamper"],pevent.process.process_name,process.id,
-  process.segment_id, pevent.process.childproc_complete);
-              formatEvents(["type","time","uid","md5","path","sub-type","access","tamper"],pevent.process.process_name,process.id,
-  process.segment_id, pevent.process.crossproc_complete);
+              formatEvents(["time","md5","path"],pevent.process.process_name,process.id, process.segment_id, pevent.process.modload_complete);
+              formatEvents(["type","time","reg path"],pevent.process.process_name,process.id, process.segment_id, pevent.process.regmod_complete);
+              formatEvents(["type","time","file path","last md5","file type","tamper"],pevent.process.process_name,process.id, process.segment_id, pevent.process.filemod_complete);
+              formatEvents(["time","remote ip","remote port","proto","dns name","outbound"],pevent.process.process_name,process.id, process.segment_id, pevent.process.netconn_complete);
+              formatEvents(["time","uid","md5","path","pid","started","tamper"],pevent.process.process_name,process.id, process.segment_id, pevent.process.childproc_complete);
+              formatEvents(["type","time","uid","md5","path","sub-type","access","tamper"],pevent.process.process_name,process.id, process.segment_id, pevent.process.crossproc_complete);
           }
       } else {
           output.push(res);
@@ -81,6 +71,3 @@ dependson:
   - process-events
 timeout: 0s
 fromversion: 5.0.0
-tests:
-- Carbon Black Response Test
-- CBFindIP - Test
