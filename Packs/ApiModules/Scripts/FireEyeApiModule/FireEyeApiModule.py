@@ -1,5 +1,3 @@
-from CommonServerUserPython import *
-
 from CommonServerPython import *
 
 # Disable insecure warnings
@@ -184,28 +182,28 @@ class FireEyeClient(BaseClient):
                                   params={'operation': 'delete'},
                                   resp_type='json')
 
-    @staticmethod
-    def to_fe_datetime_converter(time_given: str = 'now') -> str:
-        """Generates a string in the FireEye format, e.g: 2015-01-24T16:30:00.000-07:00
 
-        Examples:
-            >>> to_fe_datetime_converter('2021-05-14T01:08:04.000-02:00')
-            2021-05-14T01:08:04.000-02:00
-            >>> to_fe_datetime_converter('now')
-            2021-05-23T06:45:16.688+00:00
+def to_fe_datetime_converter(time_given: str = 'now') -> str:
+    """Generates a string in the FireEye format, e.g: 2015-01-24T16:30:00.000-07:00
 
-        Args:
-            time_given: the time given, if none given, the default is now.
+    Examples:
+        >>> to_fe_datetime_converter('2021-05-14T01:08:04.000-02:00')
+        2021-05-14T01:08:04.000-02:00
+        >>> to_fe_datetime_converter('now')
+        2021-05-23T06:45:16.688+00:00
 
-        Returns:
-            The time given in FireEye format.
-        """
-        date_obj = dateparser.parse(time_given)
-        fe_time = date_obj.strftime(FE_DATE_FORMAT)
-        fe_time += f'.{date_obj.strftime("%f")[:3]}'
-        if not date_obj.tzinfo:
-            given_timezone = '+00:00'
-        else:
-            given_timezone = f'{date_obj.strftime("%z")[:3]}:{date_obj.strftime("%z")[3:]}'  # converting the timezone
-        fe_time += given_timezone
-        return fe_time
+    Args:
+        time_given: the time given, if none given, the default is now.
+
+    Returns:
+        The time given in FireEye format.
+    """
+    date_obj = dateparser.parse(time_given)
+    fe_time = date_obj.strftime(FE_DATE_FORMAT)
+    fe_time += f'.{date_obj.strftime("%f")[:3]}'
+    if not date_obj.tzinfo:
+        given_timezone = '+00:00'
+    else:
+        given_timezone = f'{date_obj.strftime("%z")[:3]}:{date_obj.strftime("%z")[3:]}'  # converting the timezone
+    fe_time += given_timezone
+    return fe_time

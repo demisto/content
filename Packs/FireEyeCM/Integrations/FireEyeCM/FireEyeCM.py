@@ -33,10 +33,10 @@ def get_alerts(client: Client, args: Dict[str, Any]) -> CommandResults:
         alert_id = args.get('alert_id', '')
         start_time = args.get('start_time', '')
         if start_time:
-            start_time = client.fe_client.to_fe_datetime_converter(start_time)
+            start_time = to_fe_datetime_converter(start_time)
         end_time = args.get('end_time')
         if end_time:
-            end_time = client.fe_client.to_fe_datetime_converter(end_time)
+            end_time = to_fe_datetime_converter(end_time)
         duration = args.get('duration')
         callback_domain = args.get('callback_domain', '')
         dst_ip = args.get('dst_ip', '')
@@ -190,7 +190,7 @@ def get_artifacts_metadata_by_uuid(client: Client, args: Dict[str, Any]) -> List
 @logger
 def get_events(client: Client, args: Dict[str, Any]) -> CommandResults:
     duration = args.get('duration', '12_hours')
-    end_time = client.fe_client.to_fe_datetime_converter(args.get('end_time', 'now'))
+    end_time = to_fe_datetime_converter(args.get('end_time', 'now'))
     mvx_correlated_only = argToBoolean(args.get('mvx_correlated_only', 'false'))
     limit = int(args.get('limit', '20'))
 
@@ -215,8 +215,8 @@ def get_events(client: Client, args: Dict[str, Any]) -> CommandResults:
 
 @logger
 def get_quarantined_emails(client: Client, args: Dict[str, Any]) -> CommandResults:
-    start_time = client.fe_client.to_fe_datetime_converter(args.get('start_time', '1 day'))
-    end_time = client.fe_client.to_fe_datetime_converter(args.get('end_time', 'now'))
+    start_time = to_fe_datetime_converter(args.get('start_time', '1 day'))
+    end_time = to_fe_datetime_converter(args.get('end_time', 'now'))
     from_ = args.get('from', '')
     subject = args.get('subject', '')
     appliance_id = args.get('appliance_id', '')
@@ -287,8 +287,8 @@ def download_quarantined_emails(client: Client, args: Dict[str, Any]):
 @logger
 def get_reports(client: Client, args: Dict[str, Any]):
     report_type = args.get('report_type', '')
-    start_time = client.fe_client.to_fe_datetime_converter(args.get('start_time', '1 week'))
-    end_time = client.fe_client.to_fe_datetime_converter(args.get('end_time', 'now'))
+    start_time = (args.get('start_time', '1 week'))
+    end_time = to_fe_datetime_converter(args.get('end_time', 'now'))
     limit = args.get('limit', '100')
     interface = args.get('interface', '')
     alert_id = args.get('alert_id', '')
@@ -327,7 +327,7 @@ def fetch_incidents(client: Client, last_run: dict, first_fetch: str, max_fetch:
                     info_level: str = 'concise') -> Tuple[dict, list]:
     if not last_run:  # if first time fetching
         next_run = {
-            'time': client.fe_client.to_fe_datetime_converter(first_fetch),
+            'time': to_fe_datetime_converter(first_fetch),
             'last_alert_ids': []
         }
     else:
@@ -335,7 +335,7 @@ def fetch_incidents(client: Client, last_run: dict, first_fetch: str, max_fetch:
     demisto.info(f'{INTEGRATION_NAME} executing fetch with: {str(next_run.get("time"))}')
 
     raw_response = client.fe_client.get_alerts_request(request_params={
-        'start_time': client.fe_client.to_fe_datetime_converter(first_fetch),
+        'start_time': to_fe_datetime_converter(first_fetch),
         'info_level': info_level
     })
     all_alerts = raw_response.get('alert')
@@ -343,7 +343,7 @@ def fetch_incidents(client: Client, last_run: dict, first_fetch: str, max_fetch:
     if not all_alerts:
         demisto.info(f'{INTEGRATION_NAME} no alerts were fetched at: {str(last_run)}')
         # as no alerts occurred till now, update last_run time accordingly
-        last_run['time'] = client.fe_client.to_fe_datetime_converter('now')
+        last_run['time'] = to_fe_datetime_converter('now')
         return last_run, []
 
     alerts = all_alerts[:max_fetch]
@@ -367,7 +367,7 @@ def fetch_incidents(client: Client, last_run: dict, first_fetch: str, max_fetch:
     if not incidents:
         demisto.info(f'{INTEGRATION_NAME} no new alerts were fetched at: {str(next_run)}')
         # as no alerts occurred till now, update last_run time accordingly
-        next_run['time'] = client.fe_client.to_fe_datetime_converter('now')
+        next_run['time'] = to_fe_datetime_converter('now')
         return next_run, []
 
     # as alerts occurred till now, update last_run time accordingly to the that of latest fetched alert
