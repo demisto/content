@@ -224,13 +224,13 @@ def add_paging_to_outputs(paging_dict, page_number):
         demisto.debug(f"The paging response seems to be broken {paging_dict}")
         raise DemistoException("An error occurred when trying to parse paging response")
 
-    current_page_number = re.search(PAGE_NUMBER_PATTERN, link_to_current_obj)
+    current_page_number = re.search(PAGE_NUMBER_PATTERN, link_to_current_obj)  # guardrails-disable-line
     current_page_number = current_page_number.group(0) if current_page_number else page_number
 
     link_to_last_obj = paging_dict.get('last')
     last_page_number = current_page_number
     if link_to_last_obj:
-        last_page_number = re.search(PAGE_NUMBER_PATTERN, link_to_last_obj)
+        last_page_number = re.search(PAGE_NUMBER_PATTERN, link_to_last_obj)  # guardrails-disable-line
         if last_page_number:
             last_page_number = last_page_number.group(0)
     return current_page_number, last_page_number
