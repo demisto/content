@@ -1,0 +1,84 @@
+{
+    "description": "",
+    "feed": false,
+    "id": "da9a50e0-d0f8-412b-8bb7-fd8fd16b2911",
+    "mapping": {
+        "Carbon Black EDR": {
+            "dontMapEventToLabels": true,
+            "internalMapping": {
+                "Device External IP": {
+                    "complex": null,
+                    "simple": "interface_ip"
+                },
+                "Device Id": {
+                    "complex": null,
+                    "simple": "sensor_id"
+                },
+                "Device Name": {
+                    "complex": null,
+                    "simple": "hostname"
+                },
+                "Event Type": {
+                    "complex": null,
+                    "simple": "alert_type"
+                },
+                "IOC Value": {
+                    "complex": null,
+                    "simple": "ioc_value"
+                },
+                "Incident Link": {
+                    "complex": null,
+                    "simple": "link"
+                },
+                "Log Source": {
+                    "complex": null,
+                    "simple": "feed_name"
+                },
+                "MD5": {
+                    "complex": null,
+                    "simple": "md5"
+                },
+                "OS": {
+                    "complex": null,
+                    "simple": "os_type"
+                },
+                "PID": {
+                    "complex": null,
+                    "simple": "process_id"
+                },
+                "ProcessName": {
+                    "complex": null,
+                    "simple": "process_name"
+                },
+                "ProcessPath": {
+                    "complex": null,
+                    "simple": "process_path"
+                },
+                "Resource Type": {
+                    "complex": null,
+                    "simple": "ioc_type"
+                },
+                "Username": {
+                    "complex": null,
+                    "simple": "username"
+                },
+                "WatchlistId": {
+                    "complex": null,
+                    "simple": "watchlist_id"
+                },
+                "WatchlistName": {
+                    "complex": null,
+                    "simple": "watchlist_name"
+                },
+                "severity": {
+                    "complex": null,
+                    "simple": "alert_severity"
+                }
+            }
+        }
+    },
+    "name": "Carbon Black EDR Mapper",
+    "type": "mapping-incoming",
+    "version": -1,
+    "fromVersion": "6.0.0"
+}

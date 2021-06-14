@@ -232,7 +232,7 @@ def _create_query_string(params: dict, allow_empty_params: bool = False) -> str:
         raise Exception(f'{INTEGRATION_NAME} - Searching with both query and other filters is not allowed.'
                         f'Please provide either a search query or one of the possible filters.')
     elif 'query' in params:
-         return params['query']
+        return params['query']
 
     current_query = [f"{query_field}:{params[query_field]}" for query_field in params]
     current_query = ' AND '.join(current_query)
@@ -537,8 +537,8 @@ def binary_search_command(client: Client, md5: str = None, product_name: str = N
 
     md = f'{INTEGRATION_NAME} - Binary Search Results'
     md += tableToMarkdown(f"\nShowing {start} - {len(res.get('results', []))} out of "
-                         f"{res.get('total_results', '0')} results.", human_readable_data, headers=[
-        'md5', 'Group','OS Type', 'Host Count', 'Last Seen', 'Is Executable Image', 'Timestamp'])
+                          f"{res.get('total_results', '0')} results.", human_readable_data, headers=[
+                              'md5', 'Group', 'OS Type', 'Host Count', 'Last Seen', 'Is Executable Image', 'Timestamp'])
     return CommandResults(outputs=outputs, outputs_prefix='CarbonBlackEDR.BinarySearch',
                           outputs_key_field='md5',
                           readable_output=md)
@@ -637,10 +637,10 @@ def processes_search_command(client: Client, process_name: str = None, group: st
             })
     md = f'#### {INTEGRATION_NAME} - Process Search Results'
     md += tableToMarkdown(f"\nShowing {start} - {len(res.get('results', []))} out of {res.get('total_results', '0')} results.",
-                         human_readable_data,
-                         headers=['Process Path', 'Process ID', 'Segment ID', 'Process md5', 'Process Name','Hostname',
-                                  'Process PID', 'Username', 'Last Update', 'Is Terminated'],
-                         removeNull=True)
+                          human_readable_data,
+                          headers=['Process Path', 'Process ID', 'Segment ID', 'Process md5', 'Process Name', 'Hostname',
+                                   'Process PID', 'Username', 'Last Update', 'Is Terminated'],
+                          removeNull=True)
 
     return CommandResults(outputs=outputs, outputs_prefix='CarbonBlackEDR.ProcessSearch', outputs_key_field='Terms',
                           readable_output=md)
@@ -761,7 +761,7 @@ def test_module(client: Client) -> str:
     try:
         client.get_processes(limit='5', allow_empty=True)
         if demisto.params().get('isFetch'):
-            client.get_alerts(allow_empty_params=True, limit='5')
+            client.get_alerts(allow_empty_params=False, limit='5')
         return 'ok'
     except DemistoException as e:
         if 'Forbidden' in str(e) or 'UNAUTHORIZED' in str(e):
@@ -823,7 +823,7 @@ def main() -> None:
                 client=client,
                 max_results=params.get('max_fetch'),
                 last_run=demisto.getLastRun(),
-                first_fetch_time= params.get('first_fetch', '3 days'),
+                first_fetch_time=params.get('first_fetch', '3 days'),
                 status=params.get('alert_status', None),
                 feedname=params.get('alert_feed_name', None),
                 query=params.get('alert_query', None))

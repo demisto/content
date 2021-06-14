@@ -1,6 +1,6 @@
 {
 	"associatedToAll": true,
-	"associatedTypes": ["Tripwire File Change"],
+	"associatedTypes": ["Tripwire File Change", "Carbon Black EDR"],
 	"breachScript": "",
 	"caseInsensitive": true,
 	"cliName": "deviceid",

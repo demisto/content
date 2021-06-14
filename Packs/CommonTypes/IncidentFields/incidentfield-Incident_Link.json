@@ -18,7 +18,8 @@
     "group": 0,
     "hidden": false,
     "associatedTypes": [
-        "FraudWatch Incident"
+        "FraudWatch Incident",
+        "Carbon Black EDR"
     ],
     "associatedToAll": false,
     "unmapped": false,

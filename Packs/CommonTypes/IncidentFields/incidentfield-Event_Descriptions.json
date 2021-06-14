@@ -1,7 +1,8 @@
 {
     "associatedToAll": false,
     "associatedTypes": [
-        "Qradar Generic"
+        "Qradar Generic",
+        "Carbon Black EDR"
     ],
     "breachScript": "",
     "caseInsensitive": true,

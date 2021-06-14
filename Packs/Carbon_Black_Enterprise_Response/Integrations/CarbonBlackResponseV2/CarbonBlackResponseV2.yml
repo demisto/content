@@ -134,8 +134,8 @@ script:
       secret: false
       auto: PREDEFINED
       predefined:
-        - 'true'
-        - 'false'
+      - 'true'
+      - 'false'
     - default: false
       auto: PREDEFINED
       description: facet field name to return. Multiple facet.field parameters can
@@ -174,7 +174,8 @@ script:
     name: cb-edr-processes-search
     outputs:
     - contextPath: CarbonBlackEDR.ProcessSearch.Terms
-      description: A list of strings, each representing a token as parsed by the query parser.
+      description: A list of strings, each representing a token as parsed by the query
+        parser.
       type: String
     - contextPath: CarbonBlackEDR.ProcessSearch.Results.process_md5
       description: The md5 of the binary image backing the process.
@@ -292,7 +293,8 @@ script:
       description: The count of child processes launched by this process.
       type: Number
     - contextPath: CarbonBlackEDR.ProcessSearch.Results.unique_id
-      description: An internal CB process id combining of the process id and segment id.
+      description: An internal CB process id combining of the process id and segment
+        id.
       type: String
   - arguments:
     - default: false
@@ -316,8 +318,8 @@ script:
       secret: false
       auto: PREDEFINED
       predefined:
-        - 'true'
-        - 'false'
+      - 'true'
+      - 'false'
     deprecated: false
     description: Gets basic process information for segment  of process.
     execution: false
@@ -1441,7 +1443,8 @@ script:
     name: cb-edr-alert-search
     outputs:
     - contextPath: CarbonBlackEDR.Alert.Terms
-      description: A list of strings, each representing a token as parsed by the query parser.
+      description: A list of strings, each representing a token as parsed by the query
+        parser.
       type: String
     - contextPath: CarbonBlackEDR.Alert.Results.username
       description: ''
@@ -1834,7 +1837,8 @@ script:
     name: cb-edr-binary-search
     outputs:
     - contextPath: CarbonBlackEDR.BinarySearch.terms
-      description: A list of strings, each representing a token as parsed by the query parser.
+      description: A list of strings, each representing a token as parsed by the query
+        parser.
       type: String
     - contextPath: CarbonBlackEDR.BinarySearch.total_results
       description: The number of matching binaries.
