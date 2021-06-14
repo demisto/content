@@ -25,9 +25,11 @@
     }
   ],
   "links": {
-    "self": "https://portal.f5silverline.com/api/v1/ip_lists/allowlist/ip_objects?page[number]=1&page[size]=1",
-    "first": "https://portal.f5silverline.com/api/v1/ip_lists/allowlist/ip_objects?page[number]=1&page[size]=1",
-    "last": "https://portal.f5silverline.com/api/v1/ip_lists/allowlist/ip_objects?page[number]=20&page[size]=1",
-    "next": "https://portal.f5silverline.com/api/v1/ip_lists/allowlist/ip_objects?page[number]=2&page[size]=1"
+    "links": {
+      "self": "https://portal.f5silverline.com/api/v1/ip_lists/allowlist/ip_objects?page[number]=1&page[size]=1",
+      "first": "https://portal.f5silverline.com/api/v1/ip_lists/allowlist/ip_objects?page[number]=1&page[size]=1",
+      "last": "https://portal.f5silverline.com/api/v1/ip_lists/allowlist/ip_objects?page[number]=20&page[size]=1",
+      "next": "https://portal.f5silverline.com/api/v1/ip_lists/allowlist/ip_objects?page[number]=2&page[size]=1"
+    }
   }
 }
