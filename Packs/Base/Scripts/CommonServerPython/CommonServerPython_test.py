@@ -4669,6 +4669,98 @@ class TestEntityRelationship:
             assert "Invalid entity B type: DomainTest" in str(exception)
 
 
+class TestSetAndGetLastRun:
+
+    def test_get_last_run_in_6_2_when_get_last_run_has_results(self, mocker):
+        """
+        Given: 6.2.0 environment and getLastRun returns results
+        When: Fetch indicators
+        Then: Returning all indicators from demisto.getLastRun object
+        """
+        import demistomock as demisto
+        from CommonServerPython import get_feed_last_run
+        mocker.patch('CommonServerPython.get_demisto_version', return_value={"version": "6.2.0"})
+        mocker.patch.object(demisto, 'getLastRun', return_value={1: "first indicator"})
+        result = get_feed_last_run()
+        assert result == {1: "first indicator"}
+
+    def test_get_last_run_in_6_1_when_get_integration_context_has_results(self, mocker):
+        """
+        Given: 6.1.0 environment and getIntegrationContext return results
+        When: Fetch indicators
+                This can happen when updating XSOAR version to 6.2.0 while a feed instance is already set.
+        Then: Returning all indicators from demisto.getIntegrationContext object
+        """
+        import demistomock as demisto
+        from CommonServerPython import get_feed_last_run
+        mocker.patch('CommonServerPython.get_demisto_version', return_value={"version": "6.1.0"})
+        mocker.patch.object(demisto, 'getIntegrationContext', return_value={1: "first indicator"})
+        result = get_feed_last_run()
+        assert result == {1: "first indicator"}
+
+    def test_get_last_run_in_6_2_when_get_last_run_has_no_results(self, mocker):
+        """
+        Given: 6.2.0 environment and getLastRun and getIntegrationContext are empty
+        When: Fetch indicators
+        Then: function will return empty dict
+        """
+        import demistomock as demisto
+        from CommonServerPython import get_feed_last_run
+        mocker.patch('CommonServerPython.get_demisto_version', return_value={"version": "6.2.0"})
+        mocker.patch.object(demisto, 'getIntegrationContext', return_value={})
+        mocker.patch.object(demisto, 'getLastRun', return_value={})
+        result = get_feed_last_run()
+        assert result == {}
+
+    def test_get_last_run_in_6_2_when_get_last_is_empty_and_get_integration_is_not(self, mocker):
+        """
+        Given: 6.2.0 environment and getLastRun is empty and getIntegrationContext has results.
+        When: Fetch indicators
+        Then: function will return empty dict
+        """
+        import demistomock as demisto
+        from CommonServerPython import get_feed_last_run
+        mocker.patch('CommonServerPython.get_demisto_version', return_value={"version": "6.2.0"})
+        mocker.patch.object(demisto, 'getIntegrationContext', return_value={1: "first indicator"})
+        mocker.patch.object(demisto, 'getLastRun', return_value={})
+        set_last_run = mocker.patch.object(demisto, 'setLastRun', return_value={})
+        set_integration_context = mocker.patch.object(demisto, 'setIntegrationContext', return_value={})
+        result = get_feed_last_run()
+        assert result == {1: "first indicator"}
+        set_last_run.assert_called_with({1: "first indicator"})
+        set_integration_context.assert_called_with({})
+
+    def test_set_last_run_in_6_2(self, mocker):
+        """
+        Given: 6.2.0 environment
+        When: Fetch indicators
+        Then: Using demisto.setLastRun to save results
+        """
+        import demistomock as demisto
+        from CommonServerPython import set_feed_last_run
+        mocker.patch('CommonServerPython.get_demisto_version', return_value={"version": "6.2.0"})
+        set_last_run = mocker.patch.object(demisto, 'setLastRun', return_value={})
+        set_integration_context = mocker.patch.object(demisto, 'setIntegrationContext', return_value={})
+        set_feed_last_run({1: "first indicator"})
+        assert set_integration_context.called is False
+        set_last_run.assert_called_with({1: "first indicator"})
+
+    def test_set_last_run_in_6_1(self, mocker):
+        """
+        Given: 6.1.0 environment
+        When: Fetch indicators
+        Then: Using demisto.setIntegrationContext to save results
+        """
+        import demistomock as demisto
+        from CommonServerPython import set_feed_last_run
+        mocker.patch('CommonServerPython.get_demisto_version', return_value={"version": "6.1.0"})
+        set_last_run = mocker.patch.object(demisto, 'setLastRun', return_value={})
+        set_integration_context = mocker.patch.object(demisto, 'setIntegrationContext', return_value={})
+        set_feed_last_run({1: "first indicator"})
+        set_integration_context.assert_called_with({1: "first indicator"})
+        assert set_last_run.called is False
+
+
 class TestIsDemistoServerGE:
     @classmethod
     @pytest.fixture(scope='function', autouse=True)
