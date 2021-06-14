@@ -371,7 +371,6 @@ def get_event_details(entry, workday_user, demisto_user, days_before_hire_to_syn
         if old_user_data:
             workday_user[OLD_USER_DATA_FIELD] = old_user_data
 
-
     else:
         demisto.debug(f'Could not detect changes in report for user with email address {user_email} - skipping.')
         return None
