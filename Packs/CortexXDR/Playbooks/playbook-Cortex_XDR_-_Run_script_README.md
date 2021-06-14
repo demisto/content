@@ -1,4 +1,4 @@
-Initiates a new endpoint script execution action using a provided script unique ID from the Cortex XDR script library.
+Initiates a new endpoint script execution action using a provided script unique id from Cortex XDR script library.
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.
@@ -13,8 +13,8 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 This playbook does not use any scripts.
 
 ### Commands
-* xdr-get-script-execution-results
 * xdr-run-script
+* xdr-get-script-execution-results
 
 ## Playbook Inputs
 ---
@@ -24,7 +24,8 @@ This playbook does not use any scripts.
 | endpoint_ids | A comma-separated list of endpoint IDs.  |  | Optional |
 | script_uid | Unique identifier of the script. Can be retrieved by running the xdr-get-scripts command. |  | Optional |
 | parameters | Dictionary contains the parameter name as key and its value for this execution as the value. For example, \{"param1":"param1_value","param2":"param2_value"\} |  | Optional |
-| timeout | The timeout in seconds for this execution.<br/>\(Default is: '600'\) |  | Optional |
+| script_timeout | The timeout in seconds for this execution.<br/>\(Default is: '600'\) |  | Optional |
+| polling_timeout | Amount of time to poll action status before declaring a timeout and resuming the playbook \(in minutes\). | 10 | Optional |
 
 ## Playbook Outputs
 ---

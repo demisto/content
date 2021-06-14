@@ -4,10 +4,10 @@ Initiates a new endpoint script execution kill process and retrieves the results
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
-Cortex XDR - Check Action Status
+* Cortex XDR - Check Action Status
 
 ### Integrations
-CortexXDRIR
+* CortexXDRIR
 
 ### Scripts
 This playbook does not use any scripts.
@@ -22,8 +22,9 @@ This playbook does not use any scripts.
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
 | endpoint_id | A comma-separated list of endpoint IDs.  |  | Optional |
-| process_name | Name of the process to kill. |  | Optional |
-| timeout | The timeout in seconds for this execution.<br/>\(Default is: '600'\) |  | Optional |
+| process_name |  A comma-separated list of process names to kill.<br/>Process will be killed on all provided endpoint ids. |  | Optional |
+| script_timeout | The timeout in seconds for this execution.<br/>\(Default is: '600'\) |  | Optional |
+| polling_timeout | Amount of time to poll action status before declaring a timeout and resuming the playbook \(in minutes\). | 10 | Optional |
 
 ## Playbook Outputs
 ---

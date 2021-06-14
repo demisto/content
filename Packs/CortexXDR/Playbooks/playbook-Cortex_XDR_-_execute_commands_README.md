@@ -13,8 +13,8 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 This playbook does not use any scripts.
 
 ### Commands
-* xdr-run-script-execute-commands
 * xdr-get-script-execution-results
+* xdr-run-script-execute-commands
 
 ## Playbook Inputs
 ---

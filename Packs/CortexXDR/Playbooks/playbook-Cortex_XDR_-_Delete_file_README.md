@@ -13,8 +13,8 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 This playbook does not use any scripts.
 
 ### Commands
-* xdr-run-script-delete-file
 * xdr-get-script-execution-results
+* xdr-run-script-delete-file
 
 ## Playbook Inputs
 ---
@@ -22,7 +22,7 @@ This playbook does not use any scripts.
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
 | endpoint_id | A comma-separated list of endpoint IDs.  |  | Optional |
-| file_path | A comma-separated list of file paths to delete.<br/>files will be deleted on all provided endpoint ids  |  | Optional |
+| file_path | A comma-separated list of file paths to delete.<br/>Files will be deleted on all provided endpoint ids |  | Optional |
 | script_timeout | The timeout in seconds for this execution.<br/>\(Default is: '600'\) |  | Optional |
 | polling_timeout | Amount of time to poll action status before declaring a timeout and resuming the playbook \(in minutes\). | 10 | Optional |
 
