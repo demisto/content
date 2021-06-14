@@ -19,6 +19,16 @@ class Client:
 
 
 def test_get_members(mocker):
+    """
+    Given
+    - get-members command
+
+    When
+    - running get-members, that returns empty map
+
+    Then
+    - Ensure that empty map is not returned to the context
+    """
     client = Client
     mocker.patch('AWSGuardDuty.aws_session', return_value=client)
     members_res = get_members({})
