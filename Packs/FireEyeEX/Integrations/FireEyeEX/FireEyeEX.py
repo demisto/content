@@ -10,189 +10,15 @@ INTEGRATION_NAME = 'FireEye Email Security'
 INTEGRATION_COMMAND_NAME = 'fireeye-ex'
 INTEGRATION_CONTEXT_NAME = 'FireEyeEX'
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
-FE_DATE_FORMAT = '%Y-%m-%dT%H:%M:%S'
-''' CLIENT CLASS '''
 
 
-class Client(BaseClient):
-    def __init__(self, base_url: str, username: str, password: str, verify: bool, proxy: bool):
-        super().__init__(base_url=base_url, auth=(username, password), verify=verify, proxy=proxy)
-        self._headers = {
-            'X-FeApi-Token': self._generate_token(),
-            'Accept': 'application/json',
-        }
-
-    @logger
-    def _generate_token(self) -> str:
-        resp = self._http_request(method='POST', url_suffix='auth/login', resp_type='response')
-        if resp.status_code != 200:
-            raise DemistoException(f'Token request failed with status code {resp.status_code}. message: {str(resp)}')
-        return resp.headers['X-FeApi-Token']
-
-    @logger
-    def get_alerts_request(self, request_params: Dict[str, Any]) -> Dict[str, str]:
-        return self._http_request(method='GET', url_suffix='alerts', params=request_params, resp_type='json')
-
-    @logger
-    def get_alert_details_request(self, alert_id: str) -> Dict[str, str]:
-        return self._http_request(method='GET', url_suffix=f'alerts/alert/{alert_id}', resp_type='json')
-
-    @logger
-    def get_artifacts_by_uuid_request(self, uuid: str, timeout: int) -> Dict[str, str]:
-        self._headers.pop('Accept')  # returns a file, hence this header is disruptive
-        return self._http_request(method='GET', url_suffix=f'artifacts/{uuid}', resp_type='content', timeout=timeout)
-
-    @logger
-    def get_artifacts_metadata_by_uuid_request(self, uuid: str) -> Dict[str, str]:
-        return self._http_request(method='GET', url_suffix=f'artifacts/{uuid}/meta', resp_type='json')
-
-    @logger
-    def get_quarantined_emails_request(self, start_time: str, end_time: str, from_: str, subject: str,
-                                       appliance_id: str, limit: int) -> Dict[str, str]:
-        params = {
-            'start_time': start_time,
-            'end_time': end_time,
-            'limit': limit
-        }
-        if from_:
-            params['from'] = from_
-        if subject:
-            params['subject'] = subject
-        if appliance_id:
-            params['appliance_id'] = appliance_id
-
-        return self._http_request(method='GET', url_suffix='emailmgmt/quarantine', params=params, resp_type='json')
-
-    @logger
-    def release_quarantined_emails_request(self, sensor_name: str, queue_ids: list):
-        return self._http_request(method='POST',
-                                  url_suffix='emailmgmt/quarantine/release',
-                                  params={'sensorName': sensor_name},
-                                  json_data={"queue_ids": queue_ids},
-                                  resp_type='resp')
-
-    @logger
-    def delete_quarantined_emails_request(self, sensor_name: str, queue_ids: list):
-        return self._http_request(method='POST',
-                                  url_suffix='emailmgmt/quarantine/delete',
-                                  params={'sensorName': sensor_name},
-                                  json_data={"queue_ids": queue_ids},
-                                  resp_type='resp')
-
-    @logger
-    def download_quarantined_emails_request(self, sensor_name: str, queue_id: str, timeout: str):
-        self._headers.pop('Accept')  # returns a file, hence this header is disruptive
-        return self._http_request(method='GET',
-                                  url_suffix=f'emailmgmt/quarantine/{queue_id}',
-                                  params={'sensorName': sensor_name},
-                                  resp_type='content',
-                                  timeout=timeout)
-
-    @logger
-    def get_reports_request(self, report_type: str, start_time: str, end_time: str, limit: str, interface: str,
-                            alert_id: str, infection_type: str, infection_id: str, timeout: int):
-        params = {
-            'report_type': report_type,
-            'start_time': start_time,
-            'end_time': end_time
-        }
-        if limit:
-            params['limit'] = limit
-        if interface:
-            params['interface'] = interface
-        if alert_id:
-            params['id'] = alert_id
-        if infection_type:
-            params['infection_type'] = infection_type
-        if infection_id:
-            params['infection_id'] = infection_id
-
-        return self._http_request(method='GET',
-                                  url_suffix='reports/report',
-                                  params=params,
-                                  resp_type='content',
-                                  timeout=timeout)
-
-    @logger
-    def list_allowedlist_request(self, type_: str) -> Dict[str, str]:
-        return self._http_request(method='GET', url_suffix=f'devicemgmt/emlconfig/policy/allowed_lists/{type_}',
-                                  resp_type='json')
-
-    @logger
-    def create_allowedlist_request(self, type_: str, entry_value: str, matches: str) -> Dict[str, str]:
-        return self._http_request(method='POST',
-                                  url_suffix=f'devicemgmt/emlconfig/policy/allowed_lists/{type_}',
-                                  params={'operation': 'create'},
-                                  json_data={"name": entry_value, "matches": matches},
-                                  resp_type='json')
-
-    @logger
-    def update_allowedlist_request(self, type_: str, entry_value: str, matches: str) -> Dict[str, str]:
-        return self._http_request(method='POST',
-                                  url_suffix=f'devicemgmt/emlconfig/policy/allowed_lists/{type_}/{entry_value}',
-                                  json_data={"matches": matches},
-                                  resp_type='json')
-
-    @logger
-    def delete_allowedlist_request(self, type_: str, entry_value: str) -> Dict[str, str]:
-        return self._http_request(method='POST',
-                                  url_suffix=f'devicemgmt/emlconfig/policy/allowed_lists/{type_}/{entry_value}',
-                                  params={'operation': 'delete'},
-                                  resp_type='json')
-
-    @logger
-    def list_blockedlist_request(self, type_: str) -> Dict[str, str]:
-        return self._http_request(method='GET', url_suffix=f'devicemgmt/emlconfig/policy/blocked_lists/{type_}',
-                                  resp_type='json')
-
-    @logger
-    def create_blockedlist_request(self, type_: str, entry_value: str, matches: str) -> Dict[str, str]:
-        return self._http_request(method='POST',
-                                  url_suffix=f'devicemgmt/emlconfig/policy/blocked_lists/{type_}',
-                                  params={'operation': 'create'},
-                                  json_data={"name": entry_value, "matches": matches},
-                                  resp_type='json')
-
-    @logger
-    def update_blockedlist_request(self, type_: str, entry_value: str, matches: str) -> Dict[str, str]:
-        return self._http_request(method='POST',
-                                  url_suffix=f'devicemgmt/emlconfig/policy/blocked_lists/{type_}/{entry_value}',
-                                  json_data={"matches": matches},
-                                  resp_type='json')
-
-    @logger
-    def delete_blockedlist_request(self, type_: str, entry_value: str) -> Dict[str, str]:
-        return self._http_request(method='POST',
-                                  url_suffix=f'devicemgmt/emlconfig/policy/blocked_lists/{type_}/{entry_value}',
-                                  params={'operation': 'delete'},
-                                  resp_type='json')
-
-
-@logger
-def to_fe_datetime_converter(time_given: str = 'now') -> str:
-    """Generates a string in the FireEye format, e.g: 2015-01-24T16:30:00.000-07:00
-
-    Examples:
-        >>> to_fe_datetime_converter('2021-05-14T01:08:04.000-02:00')
-        2021-05-14T01:08:04.000-02:00
-        >>> to_fe_datetime_converter('now')
-        2021-05-23T06:45:16.688+00:00
-
-    Args:
-        time_given: the time given, if none given, the default is now.
-
-    Returns:
-        The time given in FireEye format.
+class Client:
     """
-    date_obj = dateparser.parse(time_given)
-    fe_time = date_obj.strftime(FE_DATE_FORMAT)
-    fe_time += f'.{date_obj.strftime("%f")[:3]}'
-    if not date_obj.tzinfo:
-        given_timezone = '+00:00'
-    else:
-        given_timezone = f'{date_obj.strftime("%z")[:3]}:{date_obj.strftime("%z")[3:]}'  # converting the timezone
-    fe_time += given_timezone
-    return fe_time
+    The integration's client
+    """
+    def __init__(self, base_url: str, username: str, password: str, verify: bool, proxy: bool):
+        self.fe_client: FireEyeClient = FireEyeClient(base_url=base_url, username=username, password=password,
+                                                      verify=verify, proxy=proxy)
 
 
 @logger
@@ -744,6 +570,8 @@ def main() -> None:
         demisto.error(traceback.format_exc())  # print the traceback
         return_error(str(err), err)
 
+
+from FireEyeApiModule import *  # noqa: E402
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()

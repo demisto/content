@@ -10,155 +10,15 @@ INTEGRATION_NAME = 'FireEye Central Management'
 INTEGRATION_COMMAND_NAME = 'fireeye-cm'
 INTEGRATION_CONTEXT_NAME = 'FireEyeCM'
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
-FE_DATE_FORMAT = '%Y-%m-%dT%H:%M:%S'
-''' CLIENT CLASS '''
 
 
-class Client(BaseClient):
-    def __init__(self, base_url: str, username: str, password: str, verify: bool, proxy: bool):
-        super().__init__(base_url=base_url, auth=(username, password), verify=verify, proxy=proxy)
-        self._headers = {
-            'X-FeApi-Token': self._generate_token(),
-            'Accept': 'application/json',
-        }
-
-    @logger
-    def _generate_token(self) -> str:
-        resp = self._http_request(method='POST', url_suffix='auth/login', resp_type='response')
-        if resp.status_code != 200:
-            raise DemistoException(f'Token request failed with status code {resp.status_code}. message: {str(resp)}')
-        return resp.headers['X-FeApi-Token']
-
-    @logger
-    def get_alerts_request(self, request_params: Dict[str, Any]) -> Dict[str, str]:
-        return self._http_request(method='GET', url_suffix='alerts', params=request_params, resp_type='json')
-
-    @logger
-    def get_alert_details_request(self, alert_id: str) -> Dict[str, str]:
-        return self._http_request(method='GET', url_suffix=f'alerts/alert/{alert_id}', resp_type='json')
-
-    @logger
-    def alert_acknowledge_request(self, uuid: str) -> Dict[str, str]:
-        # data here is redundant, but without it we are getting an error.
-        # "Bad Request" with Invalid input. code:ALRTCONF001
-        return self._http_request(method='POST', url_suffix=f'alerts/alert/{uuid}',
-                                  params={'schema_compatibility': True}, json_data={"annotation": "<test>"},
-                                  resp_type='resp')
-
-    @logger
-    def get_artifacts_by_uuid_request(self, uuid: str, timeout: int) -> Dict[str, str]:
-        self._headers.pop('Accept')  # returns a file, hence this header is disruptive
-        return self._http_request(method='GET', url_suffix=f'artifacts/{uuid}', resp_type='content', timeout=timeout)
-
-    @logger
-    def get_artifacts_metadata_by_uuid_request(self, uuid: str) -> Dict[str, str]:
-        return self._http_request(method='GET', url_suffix=f'artifacts/{uuid}/meta', resp_type='json')
-
-    @logger
-    def get_events_request(self, duration: str, end_time: str, mvx_correlated_only: bool) -> Dict[str, str]:
-        return self._http_request(method='GET',
-                                  url_suffix='events',
-                                  params={
-                                      'event_type': 'Ips Event',
-                                      'duration': duration,
-                                      'end_time': end_time,
-                                      'mvx_correlated_only': mvx_correlated_only
-                                  },
-                                  resp_type='json')
-
-    @logger
-    def get_quarantined_emails_request(self, start_time: str, end_time: str, from_: str, subject: str,
-                                       appliance_id: str, limit: int) -> Dict[str, str]:
-        params = {
-            'start_time': start_time,
-            'end_time': end_time,
-            'limit': limit
-        }
-        if from_:
-            params['from'] = from_
-        if subject:
-            params['subject'] = subject
-        if appliance_id:
-            params['appliance_id'] = appliance_id
-
-        return self._http_request(method='GET', url_suffix='emailmgmt/quarantine', params=params, resp_type='json')
-
-    @logger
-    def release_quarantined_emails_request(self, sensor_name: str, queue_ids: list):
-        return self._http_request(method='POST',
-                                  url_suffix='emailmgmt/quarantine/release',
-                                  params={'sensorName': sensor_name},
-                                  json_data={"queue_ids": queue_ids},
-                                  resp_type='resp')
-
-    @logger
-    def delete_quarantined_emails_request(self, sensor_name: str, queue_ids: list):
-        return self._http_request(method='POST',
-                                  url_suffix='emailmgmt/quarantine/delete',
-                                  params={'sensorName': sensor_name},
-                                  json_data={"queue_ids": queue_ids},
-                                  resp_type='resp')
-
-    @logger
-    def download_quarantined_emails_request(self, sensor_name: str, queue_id: str, timeout: str):
-        self._headers.pop('Accept')  # returns a file, hence this header is disruptive
-        return self._http_request(method='GET',
-                                  url_suffix=f'emailmgmt/quarantine/{queue_id}',
-                                  params={'sensorName': sensor_name},
-                                  resp_type='content',
-                                  timeout=timeout)
-
-    @logger
-    def get_reports_request(self, report_type: str, start_time: str, end_time: str, limit: str, interface: str,
-                            alert_id: str, infection_type: str, infection_id: str, timeout: int):
-        params = {
-            'report_type': report_type,
-            'start_time': start_time,
-            'end_time': end_time
-        }
-        if limit:
-            params['limit'] = limit
-        if interface:
-            params['interface'] = interface
-        if alert_id:
-            params['id'] = alert_id
-        if infection_type:
-            params['infection_type'] = infection_type
-        if infection_id:
-            params['infection_id'] = infection_id
-
-        return self._http_request(method='GET',
-                                  url_suffix='reports/report',
-                                  params=params,
-                                  resp_type='content',
-                                  timeout=timeout)
-
-
-@logger
-def to_fe_datetime_converter(time_given: str = 'now') -> str:
-    """Generates a string in the FireEye format, e.g: 2015-01-24T16:30:00.000-07:00
-
-    Examples:
-        >>> to_fe_datetime_converter('2021-05-14T01:08:04.000-02:00')
-        2021-05-14T01:08:04.000-02:00
-        >>> to_fe_datetime_converter('now')
-        2021-05-23T06:45:16.688+00:00
-
-    Args:
-        time_given: the time given, if none given, the default is now.
-
-    Returns:
-        The time given in FireEye format.
+class Client:
     """
-    date_obj = dateparser.parse(time_given)
-    fe_time = date_obj.strftime(FE_DATE_FORMAT)
-    fe_time += f'.{date_obj.strftime("%f")[:3]}'
-    if not date_obj.tzinfo:
-        given_timezone = '+00:00'
-    else:
-        given_timezone = f'{date_obj.strftime("%z")[:3]}:{date_obj.strftime("%z")[3:]}'  # converting the timezone
-    fe_time += given_timezone
-    return fe_time
+    The integration's client
+    """
+    def __init__(self, base_url: str, username: str, password: str, verify: bool, proxy: bool):
+        self.fe_client: FireEyeClient = FireEyeClient(base_url=base_url, username=username, password=password,
+                                                      verify=verify, proxy=proxy)
 
 
 @logger
@@ -173,10 +33,10 @@ def get_alerts(client: Client, args: Dict[str, Any]) -> CommandResults:
         alert_id = args.get('alert_id', '')
         start_time = args.get('start_time', '')
         if start_time:
-            start_time = to_fe_datetime_converter(start_time)
+            start_time = client.fe_client.to_fe_datetime_converter(start_time)
         end_time = args.get('end_time')
         if end_time:
-            end_time = to_fe_datetime_converter(end_time)
+            end_time = client.fe_client.to_fe_datetime_converter(end_time)
         duration = args.get('duration')
         callback_domain = args.get('callback_domain', '')
         dst_ip = args.get('dst_ip', '')
@@ -225,7 +85,7 @@ def get_alerts(client: Client, args: Dict[str, Any]) -> CommandResults:
     request_params = parse_request_params(args)
     limit = int(args.get('limit', '20'))
 
-    raw_response = client.get_alerts_request(request_params)
+    raw_response = client.fe_client.get_alerts_request(request_params)
 
     alerts = raw_response.get('alert')
     if not alerts:
@@ -252,7 +112,7 @@ def get_alert_details(client: Client, args: Dict[str, Any]) -> List[CommandResul
     headers = ['id', 'occurred', 'product', 'name', 'malicious', 'action', 'src', 'dst', 'severity', 'alertUrl']
 
     for alert_id in alert_ids:
-        raw_response = client.get_alert_details_request(alert_id)
+        raw_response = client.fe_client.get_alert_details_request(alert_id)
 
         alert_details = raw_response.get('alert')
         if not alert_details:
@@ -278,7 +138,7 @@ def alert_acknowledge(client: Client, args: Dict[str, Any]) -> List[CommandResul
 
     for uuid in uuids:
         try:
-            client.alert_acknowledge_request(uuid)
+            client.fe_client.alert_acknowledge_request(uuid)
             md_ = f'Alert {uuid} was acknowledged successfully.'
         except Exception as err:
             if 'Error in API call [404]' in str(err):
@@ -299,7 +159,7 @@ def get_artifacts_by_uuid(client: Client, args: Dict[str, Any]):
     timeout = int(args.get('timeout', '120'))
 
     for uuid in uuids:
-        artifact = client.get_artifacts_by_uuid_request(uuid, timeout)
+        artifact = client.fe_client.get_artifacts_by_uuid_request(uuid, timeout)
         demisto.results(fileResult(f'artifacts_{uuid}.zip', data=artifact, file_type=EntryType.ENTRY_INFO_FILE))
 
 
@@ -309,7 +169,7 @@ def get_artifacts_metadata_by_uuid(client: Client, args: Dict[str, Any]) -> List
     command_results: List[CommandResults] = []
 
     for uuid in uuids:
-        raw_response = client.get_artifacts_metadata_by_uuid_request(uuid)
+        raw_response = client.fe_client.get_artifacts_metadata_by_uuid_request(uuid)
 
         outputs = raw_response
         outputs['uuid'] = uuid  # type: ignore
@@ -330,11 +190,11 @@ def get_artifacts_metadata_by_uuid(client: Client, args: Dict[str, Any]) -> List
 @logger
 def get_events(client: Client, args: Dict[str, Any]) -> CommandResults:
     duration = args.get('duration', '12_hours')
-    end_time = to_fe_datetime_converter(args.get('end_time', 'now'))
+    end_time = client.fe_client.to_fe_datetime_converter(args.get('end_time', 'now'))
     mvx_correlated_only = argToBoolean(args.get('mvx_correlated_only', 'false'))
     limit = int(args.get('limit', '20'))
 
-    raw_response = client.get_events_request(duration, end_time, mvx_correlated_only)
+    raw_response = client.fe_client.get_events_request(duration, end_time, mvx_correlated_only)
 
     events = raw_response.get('events')
     if not events:
@@ -355,14 +215,14 @@ def get_events(client: Client, args: Dict[str, Any]) -> CommandResults:
 
 @logger
 def get_quarantined_emails(client: Client, args: Dict[str, Any]) -> CommandResults:
-    start_time = to_fe_datetime_converter(args.get('start_time', '1 day'))
-    end_time = to_fe_datetime_converter(args.get('end_time', 'now'))
+    start_time = client.fe_client.to_fe_datetime_converter(args.get('start_time', '1 day'))
+    end_time = client.fe_client.to_fe_datetime_converter(args.get('end_time', 'now'))
     from_ = args.get('from', '')
     subject = args.get('subject', '')
     appliance_id = args.get('appliance_id', '')
     limit = (args.get('limit', '10000'))
 
-    raw_response = client.get_quarantined_emails_request(start_time, end_time, from_, subject, appliance_id, limit)
+    raw_response = client.fe_client.get_quarantined_emails_request(start_time, end_time, from_, subject, appliance_id, limit)
     if not raw_response:
         md_ = 'No emails with the given query arguments were found.'
     else:
@@ -384,7 +244,7 @@ def release_quarantined_emails(client: Client, args: Dict[str, Any]) -> CommandR
     sensor_name = args.get('sensor_name', '')
     queue_ids = argToList(args.get('queue_ids', ''))
 
-    raw_response = client.release_quarantined_emails_request(sensor_name, queue_ids)
+    raw_response = client.fe_client.release_quarantined_emails_request(sensor_name, queue_ids)
 
     if raw_response.text:  # returns 200 either way. if operation is successful than resp is empty
         raise DemistoException(raw_response.json())
@@ -401,7 +261,7 @@ def delete_quarantined_emails(client: Client, args: Dict[str, Any]) -> CommandRe
     sensor_name = args.get('sensor_name', '')
     queue_ids = argToList(args.get('queue_ids', ''))
 
-    raw_response = client.delete_quarantined_emails_request(sensor_name, queue_ids)
+    raw_response = client.fe_client.delete_quarantined_emails_request(sensor_name, queue_ids)
     if raw_response.text:  # returns 200 either way. if operation is successful than resp is empty
         raise DemistoException(raw_response.json())
     else:
@@ -419,7 +279,7 @@ def download_quarantined_emails(client: Client, args: Dict[str, Any]):
     queue_id = args.get('queue_id', '')
     timeout = int(args.get('timeout', '120'))
 
-    raw_response = client.download_quarantined_emails_request(sensor_name, queue_id, timeout)
+    raw_response = client.fe_client.download_quarantined_emails_request(sensor_name, queue_id, timeout)
 
     demisto.results(fileResult(f'quarantined_email_{queue_id}.eml', data=raw_response, file_type=EntryType.FILE))
 
@@ -427,8 +287,8 @@ def download_quarantined_emails(client: Client, args: Dict[str, Any]):
 @logger
 def get_reports(client: Client, args: Dict[str, Any]):
     report_type = args.get('report_type', '')
-    start_time = to_fe_datetime_converter(args.get('start_time', '1 week'))
-    end_time = to_fe_datetime_converter(args.get('end_time', 'now'))
+    start_time = client.fe_client.to_fe_datetime_converter(args.get('start_time', '1 week'))
+    end_time = client.fe_client.to_fe_datetime_converter(args.get('end_time', 'now'))
     limit = args.get('limit', '100')
     interface = args.get('interface', '')
     alert_id = args.get('alert_id', '')
@@ -448,7 +308,7 @@ def get_reports(client: Client, args: Dict[str, Any]):
                 raise DemistoException(err_str)
 
     try:
-        raw_response = client.get_reports_request(report_type, start_time, end_time, limit, interface, alert_id,
+        raw_response = client.fe_client.get_reports_request(report_type, start_time, end_time, limit, interface, alert_id,
                                                   infection_type, infection_id, timeout)
         csv_reports = {'empsEmailAVReport', 'empsEmailHourlyStat', 'mpsCallBackServer', 'mpsInfectedHostsTrend',
                        'mpsWebAVReport'}
@@ -467,15 +327,15 @@ def fetch_incidents(client: Client, last_run: dict, first_fetch: str, max_fetch:
                     info_level: str = 'concise') -> Tuple[dict, list]:
     if not last_run:  # if first time fetching
         next_run = {
-            'time': to_fe_datetime_converter(first_fetch),
+            'time': client.fe_client.to_fe_datetime_converter(first_fetch),
             'last_alert_ids': []
         }
     else:
         next_run = last_run
     demisto.info(f'{INTEGRATION_NAME} executing fetch with: {str(next_run.get("time"))}')
 
-    raw_response = client.get_alerts_request(request_params={
-        'start_time': to_fe_datetime_converter(first_fetch),
+    raw_response = client.fe_client.get_alerts_request(request_params={
+        'start_time': client.fe_client.to_fe_datetime_converter(first_fetch),
         'info_level': info_level
     })
     all_alerts = raw_response.get('alert')
@@ -483,7 +343,7 @@ def fetch_incidents(client: Client, last_run: dict, first_fetch: str, max_fetch:
     if not all_alerts:
         demisto.info(f'{INTEGRATION_NAME} no alerts were fetched at: {str(last_run)}')
         # as no alerts occurred till now, update last_run time accordingly
-        last_run['time'] = to_fe_datetime_converter('now')
+        last_run['time'] = client.fe_client.to_fe_datetime_converter('now')
         return last_run, []
 
     alerts = all_alerts[:max_fetch]
@@ -507,7 +367,7 @@ def fetch_incidents(client: Client, last_run: dict, first_fetch: str, max_fetch:
     if not incidents:
         demisto.info(f'{INTEGRATION_NAME} no new alerts were fetched at: {str(next_run)}')
         # as no alerts occurred till now, update last_run time accordingly
-        next_run['time'] = to_fe_datetime_converter('now')
+        next_run['time'] = client.fe_client.to_fe_datetime_converter('now')
         return next_run, []
 
     # as alerts occurred till now, update last_run time accordingly to the that of latest fetched alert
@@ -541,7 +401,7 @@ def main() -> None:
     verify = not argToBoolean(params.get('insecure', 'false'))
     proxy = argToBoolean(params.get('proxy'))
 
-    # # fetch params
+    # fetch params
     max_fetch = int(params.get('max_fetch', '50'))
     first_fetch = params.get('first_fetch', '3 days').strip()
     info_level = params.get('info_level', 'concise')
@@ -591,6 +451,8 @@ def main() -> None:
         demisto.error(traceback.format_exc())  # print the traceback
         return_error(str(err), err)
 
+
+from FireEyeApiModule import *  # noqa: E402
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()

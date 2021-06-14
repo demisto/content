@@ -6,30 +6,9 @@ import pytest
 from CommonServerPython import DemistoException
 from FireEyeCM import Client, get_alerts, get_alert_details, alert_acknowledge, get_quarantined_emails, \
     get_artifacts_metadata_by_uuid, get_events, get_reports, release_quarantined_emails, delete_quarantined_emails, \
-    alert_severity_to_dbot_score, fetch_incidents, to_fe_datetime_converter
+    alert_severity_to_dbot_score, fetch_incidents
 from test_data.result_constants import QUARANTINED_EMAILS_CONTEXT, GET_ALERTS_CONTEXT, GET_ALERTS_DETAILS_CONTEXT, \
     GET_ARTIFACTS_METADATA_CONTEXT, GET_EVENTS_CONTEXT
-
-
-def test_to_fe_datetime_converter():
-    """Unit test
-    Given
-    - to_fe_datetime_converter command
-    - time in a string
-    When
-    - running to_fe_datetime_converter
-    Then
-    - Validate that the FE time is as expected
-    """
-    # fe time will not change
-    assert to_fe_datetime_converter('2021-05-14T01:08:04.000-02:00') == '2021-05-14T01:08:04.000-02:00'
-
-    # "now"/ "1 day" / "3 months:" time will be without any timezone
-    assert to_fe_datetime_converter('now')[23:] == '+00:00'
-    assert to_fe_datetime_converter('3 months')[23:] == '+00:00'
-
-    # now > 1 day
-    assert to_fe_datetime_converter('now') > to_fe_datetime_converter('1 day')
 
 
 def util_load_json(path):
