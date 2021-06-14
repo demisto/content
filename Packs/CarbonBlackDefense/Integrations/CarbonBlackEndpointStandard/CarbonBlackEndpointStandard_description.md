@@ -19,7 +19,7 @@ In this integration we use 2 rest API's with 2 different permissions. One for th
 1. In the Carbon Black Cloud console, go to **Settings** > **API Access** > **API Keys** tab.
 2. Select **Add API Key** from the far right.
 3. Give the API key a unique name, and select the appropriate access level. If you select
-   "Custom", you will need to choose the Access Level you created in [Create a Custom Access Level](#create-a-custom-access-level).
+   "Custom", you will need to choose the Access Level you created in the *Create a Custom Access Level* section.
 4. Click **Save**. You will be provided with your API key credentials:
    - API Secret Key
    - API Key
