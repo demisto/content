@@ -516,10 +516,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "55":
     id: "55"
-    taskid: 2bfcd934-b2fb-421d-8558-2426c926bb81
+    taskid: 4150c4ed-a8f5-456d-888f-07d1931c7358
     type: regular
     task:
-      id: 2bfcd934-b2fb-421d-8558-2426c926bb81
+      id: 4150c4ed-a8f5-456d-888f-07d1931c7358
       version: -1
       name: gsuite-user-delete
       description: Deletes a user.
@@ -534,7 +534,7 @@ tasks:
       admin_email:
         simple: admin@demistodev.com
       user_key:
-        simple: "106069619714671355842"
+        simple: xsoar11@demistodev.com
     continueonerror: true
     separatecontext: false
     view: |-
