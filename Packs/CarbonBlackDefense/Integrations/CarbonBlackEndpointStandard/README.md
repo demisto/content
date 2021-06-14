@@ -18,9 +18,9 @@ The Carbon Black Endpoint Standard v2 integration supports the following new com
     * [cbd-device-unquarantine](#cbd-device-unquarantine) Unquarantines the device.
 * [cbd-alerts-search](#cbd-alerts-search) Retrieves all alerts using some arguments (query, ID, type, category) to filter the results.
 * [cbd-find-events-details](#cbd-find-events-details) Retrieves details for enriched events.
-* [cbd-find-processes-results](#cbd-find-processes-results) Retrieves the results of a process search identified by the job ID.
-* [cbd-find-events-results](#cbd-find-events-results) Retrieves the result for an enriched events search request for a given job ID.
 * [cbd-find-events-details-results](#cbd-find-events-details-results) Retrieves the status for an enriched events detail request for a given job ID.
+* [cbd-find-events-results](#cbd-find-events-results) Retrieves the result for an enriched events search request for a given job ID.
+* [cbd-find-processes-results](#cbd-find-processes-results) Retrieves the results of a process search identified by the job ID.
 
 #### Deprecated Commands in Carbon Black Endpoint Standard v1
 The following commands from the Carbon Black Endpoint Standard v1 integration have been deprecated and replaced with the v2 commands as shown.
@@ -30,7 +30,8 @@ The following commands from the Carbon Black Endpoint Standard v1 integration ha
 | cbd-get-device-status | [cbd-device-search](#cbd-device-search) |
 | cbd-get-devices-status | [cbd-device-search](#cbd-device-search) |
 | cbd-change-device-status | - [cbd-device-quarantine](#cbd-device-quarantine)<br/>- [cbd-device-unquarantine](#cbd-device-unquarantine)<br/>- [cbd-device-background-scan](#cbd-device-background-scan)<br/>- [cbd-device-background-scan-stop](#cbd-device-background-scan-stop)<br/>- [cbd-device-bypass](#cbd-device-bypass)<br/>- [cbd-device-unbypass](#cbd-device-unbypass)<br/>- [cbd-device-policy-update](#cbd-device-policy-update)<br/>- [cbd-device-update-sensor-version](#cbd-device-update-sensor-version) |
-| cbd-find-event | [cbd-find-events](#cbd-find-events) returns a *job_id* to use in the [cbd-find-processes-results](#cbd-find-processes-results) command as an argument |
+| cbd-find-events | [cbd-find-events](#cbd-find-events) returns a *job_id* to use in the [cbd-find-events-results](#cbd-find-events-results) command as an argument. |
+| cbd-find-processes | [cbd-find-processes](#cbd-find-processes) returns a *job_id* to use in the [cbd-find-processes-results](#cbd-find-processes-results) command as an argument. |
 
 ### Playbooks
 There are 3 new playbooks:
