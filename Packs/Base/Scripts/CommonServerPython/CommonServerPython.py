@@ -7709,16 +7709,16 @@ def support_multithreading():
     :rtype: ``None``
     """
     global demisto
-    prev_do = demisto._Demisto__do
-    demisto.lock = Lock()
+    prev_do = demisto._Demisto__do  # type: ignore[attr-defined]
+    demisto.lock = Lock()  # type: ignore[attr-defined]
 
     def locked_do(cmd):
         try:
-            if demisto.lock.acquire(timeout=60):  # type: ignore[call-arg]
+            if demisto.lock.acquire(timeout=60):  # type: ignore[call-arg,attr-defined]
                 return prev_do(cmd)  # type: ignore[call-arg]
             else:
                 raise RuntimeError('Failed acquiring lock')
         finally:
-            demisto.lock.release()
+            demisto.lock.release()  # type: ignore[attr-defined]
 
-    demisto._Demisto__do = locked_do
+    demisto._Demisto__do = locked_do  # type: ignore[attr-defined]
