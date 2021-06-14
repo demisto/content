@@ -299,18 +299,18 @@ def create_allowedlist(client: Client, args: Dict[str, Any]) -> CommandResults:
     entry_value = args.get('entry_value', '')
     matches = int(args.get('matches', '0'))
 
-    raw_response = client.fe_client.create_allowedlist_request(type_, entry_value, matches)
-    if not raw_response:
-        md_ = 'No allowed lists records were created.'
-    else:
-        md_ = tableToMarkdown(name=f'{INTEGRATION_NAME} Allowed lists created:', t=raw_response, removeNull=True)
+    # check that the entry_value does not exist
+    current_allowed_list = client.fe_client.list_allowedlist_request(type_)
+    for entry in current_allowed_list:
+        if entry_value == entry.get('name'):
+            raise DemistoException(str(f'Cannot create the entry_value as it is already exist in the Allowedlist'
+                                       f' of type {type_}'))
+
+    # gets 200 back without content if successful
+    client.fe_client.create_allowedlist_request(type_, entry_value, matches)
 
     return CommandResults(
-        readable_output=md_,
-        outputs_prefix=f'{INTEGRATION_CONTEXT_NAME}.Allowedlists',
-        outputs_key_field='name',
-        outputs=raw_response,
-        raw_response=raw_response
+        readable_output=f'Allowedlist entry {entry_value} of type {type_} was created.'
     )
 
 
@@ -319,6 +319,16 @@ def update_allowedlist(client: Client, args: Dict[str, Any]) -> CommandResults:
     type_ = args.get('type', '')
     entry_value = args.get('entry_value', '')
     matches = int(args.get('matches', '0'))
+
+    # check that the entry_value does exist
+    exist = False
+    current_allowed_list = client.fe_client.list_allowedlist_request(type_)
+    for entry in current_allowed_list:
+        if entry_value == entry.get('name'):
+            exist = True
+    if not exist:
+        raise DemistoException(str(f'Cannot update the entry_value as it does not exist in the Allowedlist'
+                                   f' of type {type_}'))
 
     # gets 200 back without content if successful
     client.fe_client.update_allowedlist_request(type_, entry_value, matches)
@@ -332,6 +342,16 @@ def update_allowedlist(client: Client, args: Dict[str, Any]) -> CommandResults:
 def delete_allowedlist(client: Client, args: Dict[str, Any]) -> CommandResults:
     type_ = args.get('type', '')
     entry_value = args.get('entry_value', '')
+
+    # check that the entry_value does exist
+    exist = False
+    current_allowed_list = client.fe_client.list_allowedlist_request(type_)
+    for entry in current_allowed_list:
+        if entry_value == entry.get('name'):
+            exist = True
+    if not exist:
+        raise DemistoException(str(f'Cannot delete the entry_value as it does not exist in the Allowedlist'
+                                   f' of type {type_}'))
 
     # gets 200 back without content if successful
     client.fe_client.delete_allowedlist_request(type_, entry_value)
@@ -366,18 +386,18 @@ def create_blockedlist(client: Client, args: Dict[str, Any]) -> CommandResults:
     entry_value = args.get('entry_value', '')
     matches = int(args.get('matches', '0'))
 
-    raw_response = client.fe_client.create_blockedlist_request(type_, entry_value, matches)
-    if not raw_response:
-        md_ = 'No blocked lists records were created.'
-    else:
-        md_ = tableToMarkdown(name=f'{INTEGRATION_NAME} Blocked lists created:', t=raw_response, removeNull=True)
+    # check that the entry_value does not exist
+    current_blocked_list = client.fe_client.list_blockedlist_request(type_)
+    for entry in current_blocked_list:
+        if entry_value == entry.get('name'):
+            raise DemistoException(str(f'Cannot create the entry_value as it is already exist in the Blockedlist'
+                                       f' of type {type_}'))
+
+    # gets 200 back without content if successful
+    client.fe_client.create_blockedlist_request(type_, entry_value, matches)
 
     return CommandResults(
-        readable_output=md_,
-        outputs_prefix=f'{INTEGRATION_CONTEXT_NAME}.Blockedlists',
-        outputs_key_field='name',
-        outputs=raw_response,
-        raw_response=raw_response
+        readable_output=f'Blockedlist entry {entry_value} of type {type_} was created.'
     )
 
 
@@ -386,6 +406,16 @@ def update_blockedlist(client: Client, args: Dict[str, Any]) -> CommandResults:
     type_ = args.get('type', '')
     entry_value = args.get('entry_value', '')
     matches = int(args.get('matches', '0'))
+
+    # check that the entry_value does exist
+    exist = False
+    current_allowed_list = client.fe_client.list_blockedlist_request(type_)
+    for entry in current_allowed_list:
+        if entry_value == entry.get('name'):
+            exist = True
+    if not exist:
+        raise DemistoException(str(f'Cannot update the entry_value as it does not exist in the Blockedlist'
+                                   f' of type {type_}'))
 
     # gets 200 back without content if successful
     client.fe_client.update_blockedlist_request(type_, entry_value, matches)
@@ -399,6 +429,16 @@ def update_blockedlist(client: Client, args: Dict[str, Any]) -> CommandResults:
 def delete_blockedlist(client: Client, args: Dict[str, Any]) -> CommandResults:
     type_ = args.get('type', '')
     entry_value = args.get('entry_value', '')
+
+    # check that the entry_value does exist
+    exist = False
+    current_allowed_list = client.fe_client.list_blockedlist_request(type_)
+    for entry in current_allowed_list:
+        if entry_value == entry.get('name'):
+            exist = True
+    if not exist:
+        raise DemistoException(str(f'Cannot delete the entry_value as it does not exist in the Blockedlist'
+                                   f' of type {type_}'))
 
     # gets 200 back without content if successful
     client.fe_client.delete_blockedlist_request(type_, entry_value)
