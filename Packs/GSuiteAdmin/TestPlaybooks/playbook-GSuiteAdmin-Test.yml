@@ -446,10 +446,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "51":
     id: "51"
-    taskid: 6d6cba01-dfb0-4b53-870b-f14a59db5a95
+    taskid: b8e96b64-e657-454b-8df0-3cf084db672e
     type: regular
     task:
-      id: 6d6cba01-dfb0-4b53-870b-f14a59db5a95
+      id: b8e96b64-e657-454b-8df0-3cf084db672e
       version: -1
       name: gsuite-user-update
       description: Updates a user.
@@ -461,10 +461,14 @@ tasks:
       '#none#':
       - "25"
     scriptarguments:
+      execution-timeout:
+        simple: "120"
       first_name:
         simple: test update
+      retry-count:
+        simple: "3"
       user_key:
-        simple: ${GSuite.User.id}
+        simple: ${GSuite.User.primaryEmail}
     separatecontext: false
     view: |-
       {
