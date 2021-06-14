@@ -4564,7 +4564,58 @@ script:
     - contextPath: Panorama.UserIDAgents.Disabled
       description: Whether the user-ID agent is disbaled.
       type: String
-  dockerimage: demisto/python3:3.9.2.17246
+  - name: panorama-upload-content-update-file
+    arguments:
+    - name: entryID
+      required: true
+      description: Entry ID of the file to upload.
+    - name: category
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - wildfire
+      - anti-virus
+      - content
+      description: The category of the content.
+    outputs:
+    - contextPath: Panorama.Content.Upload.Status
+      description: Content upload status.
+      type: string
+    - contextPath: Panorama.Content.Upload.Message
+      description: Content upload message.
+      type: string
+    description: Uploads a content file to Panorama.
+  - name: panorama-install-file-content-update
+    arguments:
+    - name: version_name
+      required: true
+      description: Update file name to be installed on PAN-OS.
+    - name: category
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - wildfire
+      - anti-virus
+      - content
+      description: The category of the content.
+    - name: skip_validity_check
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - "yes"
+      - "no"
+      description: Skips file validity check with PAN-OS update server. Use this option
+        for air-gapped networks and only if you trust the content file.
+      defaultValue: "no"
+    outputs:
+    - contextPath: Panorama.Content.Install.JobID
+      description: JobID of the installation.
+      type: string
+    - contextPath: Panorama.Content.Install.Status
+      description: Installation status.
+      type: string
+    description: Installs specific content update file.
+  dockerimage: demisto/python3:3.9.5.20070
   feed: false
   isfetch: false
   longRunning: false

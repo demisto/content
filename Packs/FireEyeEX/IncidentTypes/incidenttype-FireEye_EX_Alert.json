@@ -1,0 +1,23 @@
+{
+    "id": "FireEye EX Alert",
+    "version": -1,
+    "vcShouldIgnore": false,
+    "locked": false,
+    "name": "FireEye EX Alert",
+    "prevName": "FireEye EX Alert",
+    "color": "#753ffb",
+    "hours": 0,
+    "days": 0,
+    "weeks": 0,
+    "hoursR": 0,
+    "daysR": 0,
+    "weeksR": 0,
+    "system": false,
+    "readonly": false,
+    "default": false,
+    "autorun": false,
+    "disabled": false,
+    "reputationCalc": 0,
+    "layout": "FireEye EX Alert",
+    "fromVersion": "5.5.0"
+}

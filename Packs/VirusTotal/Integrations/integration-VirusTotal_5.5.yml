@@ -31,6 +31,20 @@ configuration:
   defaultvalue: ""
   type: 4
   required: true
+- additionalinfo: Reliability of the source providing the intelligence data.
+  defaultvalue: C - Fairly reliable
+  display: Source Reliability
+  name: integrationReliability
+  options:
+  - A+ - 3rd party enrichment
+  - A - Completely reliable
+  - B - Usually reliable
+  - C - Fairly reliable
+  - D - Not usually reliable
+  - E - Unreliable
+  - F - Reliability cannot be judged
+  required: true
+  type: 15
 - display: Use system proxy settings
   name: useproxy
   defaultvalue: "true"
@@ -102,6 +116,23 @@ script:
     if (isNaN(FILE_THRESHOLD) || isNaN(IP_THRESHOLD) || isNaN(URL_THRESHOLD) || isNaN(DOMAIN_THRESHOLD)) {
         throw 'Threshold parameters must be numbers.\n';
     }
+
+    var isValidReliability = function(reliability) {
+        var reliability_options = ['A+ - 3rd party enrichment', 'A - Completely reliable', 'B - Usually reliable', 'C - Fairly reliable', 'D - Not usually reliable', 'E - Unreliable', 'F - Reliability cannot be judged'];
+        return reliability_options.indexOf(reliability) >= 0;
+    }
+
+    var reliability = '';
+    if (params['integrationReliability']) {
+        reliability = params.integrationReliability;
+    }
+    if(!reliability) {
+        reliability = 'C - Fairly reliable';
+    }
+    if(!isValidReliability(reliability)) {
+        return 'Error, Source Reliability value is invalid. Please choose from available reliability options.';
+    }
+
     function isEnoughPreferredVendors(scanResults) {
         if (!(PREFERRED_VENDORS && PREFERRED_VENDORS_THRESHOLD)) {
             return false;
@@ -245,14 +276,7 @@ script:
         threshold = parseInt(threshold);
 
         var res = withRetries(waitForRateLimit, retries, function() {return doReq('POST', 'file/report', {resource: hash});});
-        var o = res.obj;
-        var ec = {};
-        if (o.response_code === 0) {
-            ec[DBOTSCORE_KEY] = {Indicator: hash, Type: 'hash', Vendor: 'VirusTotal', Score: 0};
-            ec[DBOTSCORE_KEY] = {Indicator: hash, Type: 'file', Vendor: 'VirusTotal', Score: 0};
-            return {Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json, EntryContext: ec,
-                HumanReadable: 'VirusTotal does not have details about ' + hash + '\n' + res.obj.verbose_msg};
-        }
+
         var r = [];
         if (Array.isArray(res.obj)) { // Got multiple hashes so need to nicely iterate
             r = res.obj;
@@ -261,6 +285,21 @@ script:
         }
         var entryList = [];
         for (var i=0; i<r.length; i++) {
+            if (r[i].response_code === 0) {
+                var ec = {};
+                ec[DBOTSCORE_KEY] = {Indicator: hash, Type: 'hash', Vendor: 'VirusTotal', Score: 0, Reliability: reliability};
+                ec[DBOTSCORE_KEY] = {Indicator: hash, Type: 'file', Vendor: 'VirusTotal', Score: 0, Reliability: reliability};
+                entryList.push(
+                    {
+                        Type: entryTypes.note,
+                        Contents: res.body,
+                        ContentsFormat: formats.json,
+                        EntryContext: ec,
+                        HumanReadable: '## VirusTotal does not have details about ' + r[i].resource + '\n' + res.obj.verbose_msg
+                    }
+                );
+                continue;
+            }
             ec = {};
             ec[DBOTSCORE_KEY] = [];
             ec[outputPaths.file] = [];
@@ -287,14 +326,14 @@ script:
                 dbotScore = 1;
             }
 
-            ec[DBOTSCORE_KEY].push({Indicator: r[i].md5, Type: 'hash', Vendor: 'VirusTotal', Score: dbotScore});
-            ec[DBOTSCORE_KEY].push({Indicator: r[i].md5, Type: 'file', Vendor: 'VirusTotal', Score: dbotScore});
+            ec[DBOTSCORE_KEY].push({Indicator: r[i].md5, Type: 'hash', Vendor: 'VirusTotal', Score: dbotScore, Reliability: reliability});
+            ec[DBOTSCORE_KEY].push({Indicator: r[i].md5, Type: 'file', Vendor: 'VirusTotal', Score: dbotScore, Reliability: reliability});
 
-            ec[DBOTSCORE_KEY].push({Indicator: r[i].sha1, Type: 'hash', Vendor: 'VirusTotal', Score: dbotScore});
-            ec[DBOTSCORE_KEY].push({Indicator: r[i].sha1, Type: 'file', Vendor: 'VirusTotal', Score: dbotScore});
+            ec[DBOTSCORE_KEY].push({Indicator: r[i].sha1, Type: 'hash', Vendor: 'VirusTotal', Score: dbotScore, Reliability: reliability});
+            ec[DBOTSCORE_KEY].push({Indicator: r[i].sha1, Type: 'file', Vendor: 'VirusTotal', Score: dbotScore, Reliability: reliability});
 
-            ec[DBOTSCORE_KEY].push({Indicator: r[i].sha256, Type: 'hash', Vendor: 'VirusTotal', Score: dbotScore});
-            ec[DBOTSCORE_KEY].push({Indicator: r[i].sha256, Type: 'file', Vendor: 'VirusTotal', Score: dbotScore});
+            ec[DBOTSCORE_KEY].push({Indicator: r[i].sha256, Type: 'hash', Vendor: 'VirusTotal', Score: dbotScore, Reliability: reliability});
+            ec[DBOTSCORE_KEY].push({Indicator: r[i].sha256, Type: 'file', Vendor: 'VirusTotal', Score: dbotScore, Reliability: reliability});
 
             md += 'MD5 / SHA1 / SHA256: **' + r[i].md5 + ' / ' + r[i].sha1 + ' / ' + r[i].sha256 + '**\n';
             longFormat = FULL_RESPONSE? 'true': longFormat;
@@ -419,7 +458,7 @@ script:
             var o = res.obj;
             var ec = {};
             if (o.response_code === 0) {
-                ec[DBOTSCORE_KEY]  = {Indicator: ip, Type: 'ip', Vendor: 'VirusTotal', Score: 0};
+                ec[DBOTSCORE_KEY]  = {Indicator: ip, Type: 'ip', Vendor: 'VirusTotal', Score: 0, Reliability: reliability};
                 entryList.push({Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json, EntryContext: ec,
                     HumanReadable: 'VirusTotal does not have details about ' + ip + ' ,it sent the following response:\n' + res.obj.verbose_msg});
                 continue;
@@ -446,11 +485,11 @@ script:
             } else {
                 dbotScore = 1;
             }
-            ec[DBOTSCORE_KEY] = {Indicator: ip, Type: 'ip', Vendor: 'VirusTotal', Score: dbotScore};
+            ec[DBOTSCORE_KEY] = {Indicator: ip, Type: 'ip', Vendor: 'VirusTotal', Score: dbotScore, Reliability: reliability};
             var md = '## VirusTotal IP Reputation for: ' + ip + '\n';
             md += (o.asn) ? 'ASN: **' + o.asn + ' (' + o.as_owner + ')**\n' : 'ASN: N/A\n';
             md += 'Country: **' + o.country + '**\n';
-            md += 'VT Link: [' + ip + '](https://www.virustotal.com/en/search?query=' + encodeURIComponent(ip) + ')\n';
+            md += 'VT Link: [' + ip + '](https://www.virustotal.com/gui/ip-address/' + encodeURIComponent(ip) + '/detection)\n';
             var detectedUrls = o.detected_urls || [];
             var detectedDownloadedSamples = o.detected_downloaded_samples || [];
             var undetectedDownloadedSamples = o.undetected_downloaded_samples || [];
@@ -564,7 +603,7 @@ script:
             var o = res.obj;
             var ec = {};
             if (o.response_code === 0) {
-                ec[DBOTSCORE_KEY] = {Indicator: url, Type: 'url', Vendor: 'VirusTotal', Score: 0};
+                ec[DBOTSCORE_KEY] = {Indicator: url, Type: 'url', Vendor: 'VirusTotal', Score: 0, Reliability: reliability};
                 entryList({Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json, EntryContext: ec,
                     HumanReadable: 'VirusTotal does not have details about ' + url + '\n' + res.obj.verbose_msg});
                 continue;
@@ -604,7 +643,7 @@ script:
                 } else {
                     dbotScore = 1;
                 }
-                ec[DBOTSCORE_KEY] = {Indicator: url, Type: 'url', Vendor: 'VirusTotal', Score: dbotScore};
+                ec[DBOTSCORE_KEY] = {Indicator: url, Type: 'url', Vendor: 'VirusTotal', Score: dbotScore, Reliability: reliability};
                 longFormat = FULL_RESPONSE? 'true': longFormat;
                 if (longFormat === 'true') { // add scans table
                     scansTable = createScansTable(o.scans);
@@ -687,7 +726,7 @@ script:
             var o = res.obj;
             var ec = {};
             if (o.response_code === 0) {
-                ec[DBOTSCORE_KEY] = {Indicator: domain, Type: 'domain', Vendor: 'VirusTotal', Score: 0};
+                ec[DBOTSCORE_KEY] = {Indicator: domain, Type: 'domain', Vendor: 'VirusTotal', Score: 0, Reliability: reliability};
                 entryList.push({Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json, EntryContext: ec,
                     HumanReadable: 'VirusTotal does not have details about ' + domain + '\n' + res.obj.verbose_msg});
                 continue;
@@ -710,10 +749,10 @@ script:
             } else {
                 dbotScore = 1;
             }
-            ec[DBOTSCORE_KEY] = {Indicator: domain, Type: 'domain', Vendor: 'VirusTotal', Score: dbotScore};
+            ec[DBOTSCORE_KEY] = {Indicator: domain, Type: 'domain', Vendor: 'VirusTotal', Score: dbotScore, Reliability: reliability};
             var md = '## VirusTotal Domain Reputation for: ' + domain + '\n';
             md += '#### Domain categories: *' + o.categories + "*\n";
-            md += 'VT Link: [' + domain + '](https://www.virustotal.com/en/search?query=' + encodeURIComponent(domain) + ')\n';
+            md += 'VT Link: [' + domain + '](https://www.virustotal.com/gui/domain/' + encodeURIComponent(domain) + '/detection)\n';
             var detectedUrls = o.detected_urls || [];
             var detectedDownloadedSamples = o.detected_downloaded_samples || [];
             var undetectedDownloadedSamples = o.undetected_downloaded_samples || [];
@@ -1077,12 +1116,19 @@ script:
         file hash.
     - contextPath: DBotScore.Indicator
       description: The indicator that was tested.
+      type: String
     - contextPath: DBotScore.Type
       description: The indicator type.
+      type: String
     - contextPath: DBotScore.Vendor
       description: The vendor used to calculate the score.
+      type: String
     - contextPath: DBotScore.Score
       description: The actual score.
+      type: Number
+    - contextPath: DBotScore.Reliability
+      description: Reliability of the source providing the intelligence data.
+      type: String
     - contextPath: File.VirusTotal.Scans.Source
       description: Vendor used to scan the hash.
     - contextPath: File.VirusTotal.Scans.Detected
@@ -1152,12 +1198,19 @@ script:
       description: For malicious IPs, the reason that the vendor made the decision.
     - contextPath: DBotScore.Indicator
       description: The indicator that was tested.
+      type: String
     - contextPath: DBotScore.Type
       description: The indicator type.
+      type: String
     - contextPath: DBotScore.Vendor
       description: The vendor used to calculate the score.
+      type: String
     - contextPath: DBotScore.Score
       description: The actual score.
+      type: Number
+    - contextPath: DBotScore.Reliability
+      description: Reliability of the source providing the intelligence data.
+      type: String
     - contextPath: IP.VirusTotal.DownloadedHashes
       description: Latest files that were detected by at least one antivirus solution,
         and were downloaded by VirusTotal from the IP address.
@@ -1224,12 +1277,19 @@ script:
       description: For malicious URLs, the reason that the vendor made the decision.
     - contextPath: DBotScore.Indicator
       description: The indicator that was tested.
+      type: String
     - contextPath: DBotScore.Type
       description: The indicator type.
+      type: String
     - contextPath: DBotScore.Vendor
       description: The vendor used to calculate the score.
+      type: String
     - contextPath: DBotScore.Score
       description: The actual score.
+      type: Number
+    - contextPath: DBotScore.Reliability
+      description: Reliability of the source providing the intelligence data.
+      type: String
     - contextPath: URL.VirusTotal.Scans.Source
       description: Vendor that scanned this URL.
     - contextPath: URL.VirusTotal.Scans.Detected
@@ -1296,12 +1356,19 @@ script:
       description: For malicious domains, the reason that the vendor made the decision.
     - contextPath: DBotScore.Indicator
       description: The indicator that was tested.
+      type: String
     - contextPath: DBotScore.Type
       description: The indicator type.
+      type: String
     - contextPath: DBotScore.Vendor
       description: The vendor used to calculate the score.
+      type: String
     - contextPath: DBotScore.Score
       description: The actual score.
+      type: Number
+    - contextPath: DBotScore.Reliability
+      description: Reliability of the source providing the intelligence data.
+      type: String
     - contextPath: Domain.VirusTotal.DownloadedHashes
       description: Hashes of files that were downloaded from this domain.
     - contextPath: Domain.VirusTotal.CommunicatingHashes

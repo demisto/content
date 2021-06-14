@@ -3,7 +3,7 @@ commonfields:
   version: -1
 name: ExampleJSScript
 script: >-
-  // This is an Example server-side script that shows how to use and create JavaScript scripts in the Demisto server
+  // This is an Example server-side script that shows how to use and create JavaScript scripts in the Cortex XSOAR server
 
   // The log function allows you to print data during script execution
 
@@ -65,7 +65,7 @@ script: >-
 
   // Util function http
 
-  var res = http('http://www.demisto.com');
+  var res = http('http://www.paloaltonetworks.com');
 
   log('Http GET call result StatusCode = ' +res.StatusCode);
 
@@ -121,3 +121,5 @@ scripttarget: 0
 dependson: {}
 timeout: 0s
 fromversion: 5.0.0
+tests:
+  - No tests

@@ -3,33 +3,21 @@ from CommonServerPython import *
 from CommonServerUserPython import *
 
 import re
+
 from base64 import b64decode
-from multiprocessing import Process
-from gevent.pywsgi import WSGIServer
-from tempfile import NamedTemporaryFile
 from flask import Flask, Response, request
 from netaddr import IPAddress, IPSet
-from typing import Callable, List, Any, Dict, cast, Tuple
-from ssl import SSLContext, SSLError, PROTOCOL_TLSv1_2
+from typing import Callable, Any, Dict, cast, Tuple
+from math import ceil
+import urllib3
+import dateparser
 
-
-class Handler:
-    @staticmethod
-    def write(msg: str):
-        demisto.info(msg)
-
-
-class ErrorHandler:
-    @staticmethod
-    def write(msg: str):
-        demisto.error(msg)
-
+# Disable insecure warnings
+urllib3.disable_warnings()
 
 ''' GLOBAL VARIABLES '''
 INTEGRATION_NAME: str = 'EDL'
 PAGE_SIZE: int = 2000
-DEMISTO_LOGGER: Handler = Handler()
-ERROR_LOGGER: ErrorHandler = ErrorHandler()
 APP: Flask = Flask('demisto-edl')
 EDL_VALUES_KEY: str = 'dmst_edl_values'
 EDL_LIMIT_ERR_MSG: str = 'Please provide a valid integer for EDL Size'
@@ -101,24 +89,6 @@ def list_to_str(inp_list: list, delimiter: str = ',', map_func: Callable = str) 
         else:
             raise AttributeError('Invalid inp_list provided to list_to_str')
     return str_res
-
-
-def get_params_port(params: dict = demisto.params()) -> int:
-    """
-    Gets port from the integration parameters
-    """
-    port_mapping: str = params.get('longRunningPort', '')
-    err_msg: str
-    port: int
-    if port_mapping:
-        err_msg = f'Listen Port must be an integer. {port_mapping} is not valid.'
-        if ':' in port_mapping:
-            port = try_parse_integer(port_mapping.split(':')[1], err_msg)
-        else:
-            port = try_parse_integer(port_mapping, err_msg)
-    else:
-        raise ValueError('Please provide a Listen Port.')
-    return port
 
 
 def refresh_edl_context(request_args: RequestArguments, save_integration_context: bool = False) -> str:
@@ -214,13 +184,15 @@ def find_indicators_to_limit_loop(indicator_query: str, limit: int, total_fetche
         (tuple): The iocs and the last page
     """
     iocs: List[dict] = []
+    filter_fields = "name,type"  # based on func ToIoC https://github.com/demisto/server/blob/master/domain/insight.go
+    search_indicators = IndicatorsSearcher(page=next_page, filter_fields=filter_fields)
     if last_found_len is None:
         last_found_len = PAGE_SIZE
     if not last_found_len:
         last_found_len = total_fetched
     # last_found_len should be PAGE_SIZE (or PAGE_SIZE - 1, as observed for some users) for full pages
     while last_found_len in (PAGE_SIZE, PAGE_SIZE - 1) and limit and total_fetched < limit:
-        fetched_iocs = demisto.searchIndicators(query=indicator_query, page=next_page, size=PAGE_SIZE).get('iocs')
+        fetched_iocs = search_indicators.search_indicators_by_version(query=indicator_query, size=PAGE_SIZE).get('iocs')
         # In case the result from searchIndicators includes the key `iocs` but it's value is None
         fetched_iocs = fetched_iocs or []
 
@@ -229,8 +201,7 @@ def find_indicators_to_limit_loop(indicator_query: str, limit: int, total_fetche
                     for ioc in fetched_iocs)
         last_found_len = len(fetched_iocs)
         total_fetched += last_found_len
-        next_page += 1
-    return iocs, next_page
+    return iocs, search_indicators.page
 
 
 def ip_groups_to_cidrs(ip_range_groups: list):
@@ -486,22 +457,39 @@ def route_edl_values() -> Response:
     credentials = params.get('credentials') if params.get('credentials') else {}
     username: str = credentials.get('identifier', '')
     password: str = credentials.get('password', '')
+    cache_refresh_rate: str = params.get('cache_refresh_rate')
     if username and password:
         headers: dict = cast(Dict[Any, Any], request.headers)
         if not validate_basic_authentication(headers, username, password):
             err_msg: str = 'Basic authentication failed. Make sure you are using the right credentials.'
             demisto.debug(err_msg)
-            return Response(err_msg, status=401)
+            return Response(err_msg, status=401, mimetype='text/plain', headers=[
+                ('WWW-Authenticate', 'Basic realm="Login Required"'),
+            ])
 
     request_args = get_request_args(request.args, params)
     on_demand = params.get('on_demand')
-
+    created = datetime.now(timezone.utc)
     values = get_edl_ioc_values(
         on_demand=on_demand,
         request_args=request_args,
-        cache_refresh_rate=params.get('cache_refresh_rate'),
+        cache_refresh_rate=cache_refresh_rate,
     )
-    return Response(values, status=200, mimetype='text/plain')
+    query_time = (datetime.now(timezone.utc) - created).total_seconds()
+    edl_size = 0
+    if values.strip():
+        edl_size = values.count('\n') + 1  # add 1 as last line doesn't have a \n
+    max_age = ceil((datetime.now() - dateparser.parse(cache_refresh_rate)).total_seconds())  # type: ignore[operator]
+    demisto.debug(f'Returning edl of size: [{edl_size}], created: [{created}], query time seconds: [{query_time}],'
+                  f' max age: [{max_age}]')
+    resp = Response(values, status=200, mimetype='text/plain', headers=[
+        ('X-EDL-Created', created.isoformat()),
+        ('X-EDL-Query-Time-Secs', "{:.3f}".format(query_time)),
+        ('X-EDL-Size', str(edl_size))
+    ])
+    resp.cache_control.max_age = max_age
+    resp.cache_control['stale-if-error'] = '600'  # number of seconds we are willing to serve stale content when there is an error
+    return resp
 
 
 def get_request_args(request_args: dict, params: dict) -> RequestArguments:
@@ -576,65 +564,6 @@ def test_module(_: Dict, params: Dict):
     return 'ok', {}, {}
 
 
-def run_long_running(params: Dict, is_test: bool = False):
-    """
-    Start the long running server
-    :param params: Demisto params
-    :param is_test: Indicates whether it's test-module run or regular run
-    :return: None
-    """
-    certificate: str = params.get('certificate', '')
-    private_key: str = params.get('key', '')
-
-    certificate_path = str()
-    private_key_path = str()
-
-    try:
-        port = get_params_port(params)
-        ssl_args = dict()
-
-        if (certificate and not private_key) or (private_key and not certificate):
-            raise DemistoException('If using HTTPS connection, both certificate and private key should be provided.')
-
-        if certificate and private_key:
-            certificate_file = NamedTemporaryFile(delete=False)
-            certificate_path = certificate_file.name
-            certificate_file.write(bytes(certificate, 'utf-8'))
-            certificate_file.close()
-
-            private_key_file = NamedTemporaryFile(delete=False)
-            private_key_path = private_key_file.name
-            private_key_file.write(bytes(private_key, 'utf-8'))
-            private_key_file.close()
-            context = SSLContext(PROTOCOL_TLSv1_2)
-            context.load_cert_chain(certificate_path, private_key_path)
-            ssl_args['ssl_context'] = context
-            demisto.debug('Starting HTTPS Server')
-        else:
-            demisto.debug('Starting HTTP Server')
-
-        server = WSGIServer(('0.0.0.0', port), APP, **ssl_args, log=DEMISTO_LOGGER, error_log=ERROR_LOGGER)
-        if is_test:
-            server_process = Process(target=server.serve_forever)
-            server_process.start()
-            time.sleep(5)
-            server_process.terminate()
-        else:
-            server.serve_forever()
-    except SSLError as e:
-        ssl_err_message = f'Failed to validate certificate and/or private key: {str(e)}'
-        demisto.error(ssl_err_message)
-        raise ValueError(ssl_err_message)
-    except Exception as e:
-        demisto.error(f'An error occurred in long running loop: {str(e)}')
-        raise ValueError(str(e))
-    finally:
-        if certificate_path:
-            os.unlink(certificate_path)
-        if private_key_path:
-            os.unlink(private_key_path)
-
-
 def update_edl_command(args: Dict, params: Dict):
     """
     Updates the EDL values and format on demand
@@ -693,6 +622,9 @@ def main():
     except Exception as e:
         err_msg = f'Error in {INTEGRATION_NAME} Integration [{e}]'
         return_error(err_msg)
+
+
+from NGINXApiModule import *  # noqa: E402
 
 
 if __name__ in ['__main__', '__builtin__', 'builtins']:

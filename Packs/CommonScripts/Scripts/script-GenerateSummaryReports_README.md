@@ -7,7 +7,7 @@ Generates a report summary for past incidents.
 | --- | --- |
 | Script Type | javascript |
 | Tags | Utility |
-| Demisto Version | 4.1.0+ |
+| Cortex XSOAR Version | 4.1.0+ |
 
 ## Inputs
 ---

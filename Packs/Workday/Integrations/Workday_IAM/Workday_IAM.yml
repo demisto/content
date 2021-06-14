@@ -81,7 +81,7 @@ description: Use the Workday IAM Integration as part of the IAM premium pack.
 display: Workday IAM
 name: Workday IAM
 script:
-  dockerimage: demisto/python3:3.9.2.17957
+  dockerimage: demisto/python3:3.9.5.20958
   feed: false
   isfetch: true
   longRunning: false

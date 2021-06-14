@@ -312,11 +312,36 @@ def test_get_all_endpoints_using_limit(requests_mock):
         'page': 0,
         'sort_order': 'asc'
     }
-
     _, outputs, _ = get_endpoints_command(client, args)
     expected_endpoint = get_endpoints_response.get('reply')[0]
 
     assert [expected_endpoint] == outputs['PaloAltoNetworksXDR.Endpoint(val.endpoint_id == obj.endpoint_id)']
+
+
+def test_endpoint_command(requests_mock):
+    from CortexXDRIR import endpoint_command, Client
+
+    get_endpoints_response = load_test_data('./test_data/get_endpoints.json')
+    requests_mock.post(f'{XDR_URL}/public_api/v1/endpoints/get_endpoint/', json=get_endpoints_response)
+
+    client = Client(
+        base_url=f'{XDR_URL}/public_api/v1', headers={}
+    )
+    args = {'id': 'identifier'}
+
+    outputs = endpoint_command(client, args)
+
+    get_endpoints_response = {
+        Common.Endpoint.CONTEXT_PATH: [{'ID': '1111',
+                                        'Hostname': 'ip-3.3.3.3',
+                                        'IPAddress': '3.3.3.3',
+                                        'OS': 'Linux',
+                                        'Vendor': 'Cortex XDR - IR',
+                                        'Status': 'Offline',
+                                        'IsIsolated': 'No'}]}
+
+    results = outputs[0].to_context()
+    assert results.get("EntryContext") == get_endpoints_response
 
 
 def test_insert_parsed_alert(requests_mock):
@@ -2120,7 +2145,7 @@ def test_run_script_command_empty_params(requests_mock):
                 'operator': 'in',
                 'value': endpoint_ids.split(',')
             }],
-            'parameters_values': parameters
+            'parameters_values': {}
         }
     }
 
@@ -2195,7 +2220,7 @@ def test_get_script_execution_status_command(requests_mock):
     response = get_script_execution_status_command(client, args)
 
     api_response['reply']['action_id'] = int(action_id)
-    assert response.outputs == api_response.get('reply')
+    assert response[0].outputs == api_response.get('reply')
     assert requests_mock.request_history[0].json() == {
         'request_data': {
             'action_id': action_id
@@ -2233,7 +2258,7 @@ def test_get_script_execution_results_command(requests_mock):
         'action_id': int(action_id),
         'results': api_response.get('reply').get('results')
     }
-    assert response.outputs == expected_output
+    assert response[0].outputs == expected_output
     assert requests_mock.request_history[0].json() == {
         'request_data': {
             'action_id': action_id
@@ -2371,7 +2396,7 @@ def test_run_script_delete_file_command(requests_mock):
 
     response = run_script_delete_file_command(client, args)
 
-    assert response.outputs == api_response.get('reply')
+    assert response[0].outputs == api_response.get('reply')
     assert requests_mock.request_history[0].json() == {
         'request_data': {
             'script_uid': '548023b6e4a01ec51a495ba6e5d2a15d',
@@ -2382,6 +2407,63 @@ def test_run_script_delete_file_command(requests_mock):
                 'value': endpoint_ids.split(',')
             }],
             'parameters_values': {'file_path': args.get('file_path')}
+        }
+    }
+
+
+def test_run_script_delete_multiple_files_command(requests_mock):
+    """
+    Given:
+        - XDR client
+        - Endpoint IDs and files paths
+    When
+        - Running run-script-delete-file command
+    Then
+        - Verify expected output
+        - Ensure request body sent as expected
+    """
+    from CortexXDRIR import run_script_delete_file_command, Client
+
+    api_response = load_test_data('./test_data/run_script_multiple_inputs_and_endpoints.json')
+    requests_mock.post(f'{XDR_URL}/public_api/v1/scripts/run_script/', json=api_response)
+
+    client = Client(
+        base_url=f'{XDR_URL}/public_api/v1', headers={}
+    )
+    endpoint_ids = 'endpoint_id1,endpoint_id2'
+    timeout = '10'
+    file_path = 'my_file.txt,test.txt'
+    args = {
+        'endpoint_ids': endpoint_ids,
+        'timeout': timeout,
+        'file_path': file_path
+    }
+
+    response = run_script_delete_file_command(client, args)
+
+    assert response[0].outputs == api_response.get('reply')
+    assert requests_mock.request_history[0].json() == {
+        'request_data': {
+            'script_uid': '548023b6e4a01ec51a495ba6e5d2a15d',
+            'timeout': int(timeout),
+            'filters': [{
+                'field': 'endpoint_id_list',
+                'operator': 'in',
+                'value': endpoint_ids.split(',')
+            }],
+            'parameters_values': {'file_path': 'my_file.txt'}
+        }
+    }
+    assert requests_mock.request_history[1].json() == {
+        'request_data': {
+            'script_uid': '548023b6e4a01ec51a495ba6e5d2a15d',
+            'timeout': int(timeout),
+            'filters': [{
+                'field': 'endpoint_id_list',
+                'operator': 'in',
+                'value': endpoint_ids.split(',')
+            }],
+            'parameters_values': {'file_path': 'test.txt'}
         }
     }
 
@@ -2416,7 +2498,7 @@ def test_run_script_file_exists_command(requests_mock):
 
     response = run_script_file_exists_command(client, args)
 
-    assert response.outputs == api_response.get('reply')
+    assert response[0].outputs == api_response.get('reply')
     assert requests_mock.request_history[0].json() == {
         'request_data': {
             'script_uid': '414763381b5bfb7b05796c9fe690df46',
@@ -2427,6 +2509,63 @@ def test_run_script_file_exists_command(requests_mock):
                 'value': endpoint_ids.split(',')
             }],
             'parameters_values': {'path': args.get('file_path')}
+        }
+    }
+
+
+def test_run_script_file_exists_multiple_files_command(requests_mock):
+    """
+    Given:
+        - XDR client
+        - Endpoint IDs and files paths
+    When
+        - Running run-script-file-exists command
+    Then
+        - Verify expected output
+        - Ensure request body sent as expected
+    """
+    from CortexXDRIR import run_script_file_exists_command, Client
+
+    api_response = load_test_data('./test_data/run_script_multiple_inputs_and_endpoints.json')
+    requests_mock.post(f'{XDR_URL}/public_api/v1/scripts/run_script/', json=api_response)
+
+    client = Client(
+        base_url=f'{XDR_URL}/public_api/v1', headers={}
+    )
+    endpoint_ids = 'endpoint_id1,endpoint_id2'
+    timeout = '10'
+    file_path = 'my_file.txt,test.txt'
+    args = {
+        'endpoint_ids': endpoint_ids,
+        'timeout': timeout,
+        'file_path': file_path
+    }
+
+    response = run_script_file_exists_command(client, args)
+
+    assert response[0].outputs == api_response.get('reply')
+    assert requests_mock.request_history[0].json() == {
+        'request_data': {
+            'script_uid': '414763381b5bfb7b05796c9fe690df46',
+            'timeout': int(timeout),
+            'filters': [{
+                'field': 'endpoint_id_list',
+                'operator': 'in',
+                'value': endpoint_ids.split(',')
+            }],
+            'parameters_values': {'path': 'my_file.txt'}
+        }
+    }
+    assert requests_mock.request_history[1].json() == {
+        'request_data': {
+            'script_uid': '414763381b5bfb7b05796c9fe690df46',
+            'timeout': int(timeout),
+            'filters': [{
+                'field': 'endpoint_id_list',
+                'operator': 'in',
+                'value': endpoint_ids.split(',')
+            }],
+            'parameters_values': {'path': 'test.txt'}
         }
     }
 
@@ -2461,7 +2600,7 @@ def test_run_script_kill_process_command(requests_mock):
 
     response = run_script_kill_process_command(client, args)
 
-    assert response.outputs == api_response.get('reply')
+    assert response[0].outputs == api_response.get('reply')
     assert requests_mock.request_history[0].json() == {
         'request_data': {
             'script_uid': 'fd0a544a99a9421222b4f57a11839481',
@@ -2472,5 +2611,62 @@ def test_run_script_kill_process_command(requests_mock):
                 'value': endpoint_ids.split(',')
             }],
             'parameters_values': {'process_name': process_name}
+        }
+    }
+
+
+def test_run_script_kill_multiple_processes_command(requests_mock):
+    """
+    Given:
+        - XDR client
+        - Endpoint IDs and multiple processes names
+    When
+        - Running run-script-kill-process command
+    Then
+        - Verify expected output
+        - Ensure request body sent as expected
+    """
+    from CortexXDRIR import run_script_kill_process_command, Client
+
+    api_response = load_test_data('./test_data/run_script_multiple_inputs_and_endpoints.json')
+    requests_mock.post(f'{XDR_URL}/public_api/v1/scripts/run_script/', json=api_response)
+
+    client = Client(
+        base_url=f'{XDR_URL}/public_api/v1', headers={}
+    )
+    endpoint_ids = 'endpoint_id1,endpoint_id2'
+    timeout = '10'
+    processes_names = 'process1.exe,process2.exe'
+    args = {
+        'endpoint_ids': endpoint_ids,
+        'timeout': timeout,
+        'process_name': processes_names
+    }
+
+    response = run_script_kill_process_command(client, args)
+
+    assert response[0].outputs == api_response.get('reply')
+    assert requests_mock.request_history[0].json() == {
+        'request_data': {
+            'script_uid': 'fd0a544a99a9421222b4f57a11839481',
+            'timeout': int(timeout),
+            'filters': [{
+                'field': 'endpoint_id_list',
+                'operator': 'in',
+                'value': endpoint_ids.split(',')
+            }],
+            'parameters_values': {'process_name': 'process1.exe'}
+        }
+    }
+    assert requests_mock.request_history[1].json() == {
+        'request_data': {
+            'script_uid': 'fd0a544a99a9421222b4f57a11839481',
+            'timeout': int(timeout),
+            'filters': [{
+                'field': 'endpoint_id_list',
+                'operator': 'in',
+                'value': endpoint_ids.split(',')
+            }],
+            'parameters_values': {'process_name': 'process2.exe'}
         }
     }

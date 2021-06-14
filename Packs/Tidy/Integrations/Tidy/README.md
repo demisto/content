@@ -1,6 +1,6 @@
 ## Tidy
 ### Description:
-Usually, the main bottlenecks in an on-boarding process are the various softwared and programs required for the new recruit's computer.
+Usually, the main bottlenecks in an on-boarding process are the various software and programs required for the new recruit's computer.
 Whether if it's a developer, customer success engineer, or a product specialist, on average it takes about three days to get everything up and running. Also, this process generally requires help from other colleagues.
 The **Tidy** pack reduces the on-boarding process for new recruits to a matter of minutes.
 The **Tidy** pack uses **Ansible** to connect to the new recruit's laptop over ssh and executing predefined commands.

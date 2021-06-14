@@ -26,14 +26,6 @@ configuration:
   - F - Reliability cannot be judged
   required: true
   type: 15
-- display: Trust any certificate (not secure)
-  name: insecure
-  required: false
-  type: 8
-- display: Use system proxy settings
-  name: proxy
-  required: false
-  type: 8
 - defaultvalue: '7'
   display: IP Threshold. Minimum risk score for the IP to be considered malicious
     (ranges from 1 to 10).
@@ -55,6 +47,20 @@ configuration:
   name: cve_threshold
   required: false
   type: 0
+- defaultvalue: 'true'
+  additionalinfo: Create relationships between indicators as part of Enrichment.
+  display: Create relationships
+  name: create_relationships
+  required: false
+  type: 8
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
 description: IBM X-Force Exchange lets you receive threat intelligence about applications,
   IP addresses, URls and hashes
 display: IBM X-Force Exchange v2
@@ -179,6 +185,21 @@ script:
     - contextPath: File.Malicious.Description
       description: For malicious files, the reason for the vendor to make the decision
       type: String
+    - contextPath: File.Relationships.EntityA
+      description: The source of the relationship.
+      type: string
+    - contextPath: File.Relationships.EntityB
+      description: The destination of the relationship.
+      type: string
+    - contextPath: File.Relationships.Relationship
+      description: The name of the relationship.
+      type: string
+    - contextPath: File.Relationships.EntityAType
+      description: The type of the source of the relationship.
+      type: string
+    - contextPath: File.Relationships.EntityBType
+      description: The type of the destination of the relationship.
+      type: string
     - contextPath: DBotScore.Indicator
       description: The indicator that was tested.
       type: string
@@ -522,7 +543,7 @@ script:
     - contextPath: XFE.CVESearch.Bookmark
       description: Bookmark used to page through results.
       type: String
-  dockerimage: demisto/python3:3.9.2.17957
+  dockerimage: demisto/python3:3.9.5.21272
   feed: false
   isfetch: false
   longRunning: false

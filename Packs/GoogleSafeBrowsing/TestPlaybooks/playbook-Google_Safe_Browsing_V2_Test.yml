@@ -1,0 +1,244 @@
+id: Google Safe Browsing V2 Test
+version: -1
+name: Google Safe Browsing V2 Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: bff370c3-4717-4374-83be-4efb8ab5cf16
+    type: start
+    task:
+      id: bff370c3-4717-4374-83be-4efb8ab5cf16
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: ac62a7e7-05fb-471b-8e22-ac3b0a21658e
+    type: regular
+    task:
+      id: ac62a7e7-05fb-471b-8e22-ac3b0a21658e
+      version: -1
+      name: Delete Context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 180
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: 5dd11f0d-8261-4484-8653-e0f08871f768
+    type: regular
+    task:
+      id: 5dd11f0d-8261-4484-8653-e0f08871f768
+      version: -1
+      name: Check for Malicious URL
+      description: Searches for the specified URL on lists.
+      script: Google Safe Browsing v2|||url
+      type: regular
+      iscommand: true
+      brand: Google Safe Browsing v2
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      url:
+        simple: http://malware.testing.google.test/testing/malware/
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 380
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 14f2c9e6-a5c1-48d6-88a0-09581128a7bc
+    type: condition
+    task:
+      id: 14f2c9e6-a5c1-48d6-88a0-09581128a7bc
+      version: -1
+      name: Check DbotScore
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualNumber
+          left:
+            value:
+              simple: DBotScore.Score
+            iscontext: true
+          right:
+            value:
+              simple: "3"
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 580
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: 06260395-94b4-4efe-83c2-87dc1bdec348
+    type: regular
+    task:
+      id: 06260395-94b4-4efe-83c2-87dc1bdec348
+      version: -1
+      name: Check for URL with no matches
+      description: Searches for the specified URL on lists.
+      script: Google Safe Browsing v2|||url
+      type: regular
+      iscommand: true
+      brand: Google Safe Browsing v2
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      url:
+        simple: http://slashdot.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 790
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: dabee77e-dc07-4bac-897b-83310e86c109
+    type: condition
+    task:
+      id: dabee77e-dc07-4bac-897b-83310e86c109
+      version: -1
+      name: Check DbotScore
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualNumber
+          left:
+            value:
+              simple: DBotScore.Score
+            iscontext: true
+          right:
+            value:
+              simple: "0"
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 970
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: 281ef348-5ee3-4c67-8e68-10778d3a4a3c
+    type: title
+    task:
+      id: 281ef348-5ee3-4c67-8e68-10778d3a4a3c
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1190
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1205,
+        "width": 380,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.5.0

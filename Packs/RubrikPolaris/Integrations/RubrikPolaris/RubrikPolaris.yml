@@ -26,8 +26,8 @@ configuration:
   type: 13
 - defaultvalue: 1 hour
   display: First fetch time
-  additionalinfo: The time interval for the first fetch (retroactive). Examples
-    of supported values can be found at https://dateparser.readthedocs.io/en/latest/#relative-date.
+  additionalinfo: The time interval for the first fetch (retroactive). Examples of
+    supported values can be found at https://dateparser.readthedocs.io/en/latest/#relative-date.
   name: first_fetch
   required: false
   type: 0
@@ -36,19 +36,45 @@ configuration:
   name: max_fetch
   required: false
   type: 0
+- display: Radar Critical Severity Level Mapping
+  additionalinfo: When a Radar event of Critical severity is detected and fetched, this setting indicates what severity will get assigned within XSOAR.
+  name: radar_critical_severity_mapping
+  defaultvalue: XSOAR HIGH
+  type: 15
+  required: false
+  options:
+  - XSOAR CRITICAL
+  - XSOAR HIGH
+  - XSOAR MEDIUM
+  - XSOAR LOW
+- display: Radar Warning Severity Level Mapping
+  additionalinfo: When a Radar event of Warning severity is detected and fetched, this setting indicates what severity will get assigned within XSOAR.
+  name: radar_warning_severity_mapping
+  defaultvalue: XSOAR LOW
+  type: 15
+  required: false
+  options:
+  - XSOAR CRITICAL
+  - XSOAR HIGH
+  - XSOAR MEDIUM
+  - XSOAR LOW
+  
 
-defaultclassifier: Rubrik Polaris Radar - Classification
-defaultmapperin: Rubrik Polaris Radar - Mapping
+defaultclassifier: c3e38fe1-e429-4836-8050-a8d399518fe8
+defaultmapperin: 97b3f7dc-5bdb-40c8-819b-8c1beb95cb09
 description: Create a new incident when a Polaris Radar anomaly event is detected
   and determine if any Sonar data classification hits were found on that object.
-display: Rubrik Polaris
+display: Rubrik Radar
 name: RubrikPolaris
 script:
   commands:
   - arguments:
-    - description: The ID of the Polaris Event Series. When used in combination with "Rubrik Radar Anomaly" incidents, this value will automatically be looked up using the incident context. Otherwise it is a required value.
+    - description: (Deprecated) The ID of the Polaris Event Series. When used in combination with
+        "Rubrik Radar Anomaly" incidents, this value will automatically be looked
+        up using the incident context. Otherwise it is a required value.
       name: activitySeriesId
-    description: Check the Radar Event for updates.
+    description: (Deprecated) Check the Radar Event for updates.
+    deprecated: true
     name: rubrik-radar-analysis-status
     outputs:
     - contextPath: Rubrik.Radar.EventComplete
@@ -80,7 +106,27 @@ script:
     - contextPath: Rubrik.Radar.ActivitySeriesId
       description: The ID of the Rubrik Polaris Activity Series.
       type: String
-  dockerimage: demisto/python3:3.9.1.15759
+  - arguments:
+    - description: |
+        The id of the CDM cluster. When used in combination with "Rubrik Radar Anomaly" incidents, this value will automatically be looked up using the incident context. Otherwise, it is a required value.
+      name: clusterId
+    description: Find the CDM GeoLocation of a CDM Cluster.
+    name: rubrik-cdm-cluster-location
+    outputs:
+    - contextPath: Rubrik.CDM.Cluster.Location
+      description: The GeoLocation of the Rubrik CDM Cluster.
+      type: String
+  - arguments:
+    - description: |
+        The id of the CDM cluster. When used in combination with "Rubrik Radar Anomaly" incidents, this value will automatically be looked up using the incident context. Otherwise, it is a required value.
+      name: clusterId
+    description: Find the CDM Connection State of a CDM Cluster.
+    name: rubrik-cdm-cluster-connection-state
+    outputs:
+    - contextPath: Rubrik.CDM.Cluster.ConnectionState
+      description: The Connection State of the Rubrik CDM Cluster.
+      type: String
+  dockerimage: demisto/python3:3.9.5.20070
   isfetch: true
   runonce: false
   script: ''

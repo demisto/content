@@ -1,0 +1,23 @@
+{
+    "id": "es-failed-nodes",
+    "version": -1,
+    "fromVersion": "6.1.0",
+    "modified": "2021-01-12T08:09:18.164305Z",
+    "name": "Elasticsearch Failing Nodes",
+    "dataType": "system",
+    "widgetType": "number",
+    "query": "es-node.failed",
+    "isPredefined": true,
+    "description": "Elasticsearch total number of nodes that are currently failed",
+    "params": {
+        "colors": {
+            "isEnabled": true,
+            "items": {
+                "#FF1B15": {
+                    "value": 0
+                }
+            },
+            "type": "above"
+        }
+    }
+}

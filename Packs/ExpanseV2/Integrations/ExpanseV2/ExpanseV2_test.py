@@ -232,8 +232,8 @@ def test_fetch_incidents(requests_mock):
 
     next_run, result = fetch_incidents(client, max_incidents=int(MOCK_LIMIT), last_run=last_run, business_units=MOCK_BU,
                                        first_fetch=None, priority=None, activity_status=None, progress_status=None,
-                                       issue_types=None, tags=None, mirror_direction=None, sync_tags=False,
-                                       fetch_details=None)
+                                       issue_types=None, tags=None, cloud_management_status=None, mirror_direction=None,
+                                       sync_tags=False, fetch_details=None)
 
     assert next_run == {
         'last_fetch': datestring_to_timestamp_us(MOCK_NEXT_FETCH_TIME),
@@ -1503,7 +1503,7 @@ def test_expanse_get_certificate_by_hash(requests_mock):
     mock_certificate_data = util_load_json("test_data/expanse_certificate.json")
     mock_result_data = util_load_json("test_data/expanse_certificate_stdctx.json")
 
-    mock_result_data['Expanse.Certificate(val.id == obj.id)'] = [mock_certificate_data]
+    mock_result_data['Expanse.Certificate(val.id && val.id == obj.id)'] = [mock_certificate_data]
 
     client = Client(api_key="key", base_url="https://example.com/api/", verify=True, proxy=False)
     requests_mock.get(
@@ -1580,7 +1580,7 @@ def test_certificate_command(requests_mock, mocker):
     mock_ioc_data = util_load_json("test_data/expanse_certcommand_ioc.json")
     mock_result_data = util_load_json("test_data/expanse_certificate_stdctx.json")
 
-    mock_result_data['Expanse.Certificate(val.id == obj.id)'] = [mock_certificate_data]
+    mock_result_data['Expanse.Certificate(val.id && val.id == obj.id)'] = [mock_certificate_data]
 
     client = Client(api_key="key", base_url="https://example.com/api/", verify=True, proxy=False)
     requests_mock.get(

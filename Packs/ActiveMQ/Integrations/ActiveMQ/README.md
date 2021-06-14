@@ -3,16 +3,16 @@
 
 Integration with ActiveMQ.
 This integration uses ActiveMQ STOMP protocol, that must be enabled (usually port 61613 by default) in order to work.
-Fetch incidents is based on using Durable Topic Subscribers, in order to fetch messages, and convert to Demisto incidents.
+Fetch incidents is based on using Durable Topic Subscribers, in order to fetch messages, and convert to Cortex XSOAR incidents.
 
 
 ## Use Cases
 ---
 - Send messages to queue or topic
 - Read messages from queue or topic
-- Fetch messages from queue or topic and create incidents in Demisto per message
+- Fetch messages from queue or topic and create incidents in Cortex XSOAR per message
 
-## Configure ActiveMQ on Demisto
+## Configure ActiveMQ on Cortex XSOAR
 ---
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
@@ -38,12 +38,12 @@ Fetch incidents is based on using Durable Topic Subscribers, in order to fetch m
 4. Click __Test__ to validate the URLs, token, and connection.
 ## Fetched Incidents Data
 ---
-Returns the messages in the queue or topic. Creates incidents in Demisto and populate the incident `details` field 
+Returns the messages in the queue or topic. Creates incidents in Cortex XSOAR and populate the incident `details` field 
 with the message content.
 
 ## Commands
 ---
-You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.
+You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 1. activemq-send
 2. activemq-subscribe

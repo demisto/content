@@ -605,7 +605,7 @@ def validate_auth_header(headers: dict) -> bool:
         demisto.info('Authorization header validation - failed to verify schema')
         return False
 
-    decoded_payload: dict = jwt.decode(jwt_token, verify=False)
+    decoded_payload: dict = jwt.decode(jwt=jwt_token, options={'verify_signature': False})
     issuer: str = decoded_payload.get('iss', '')
     if issuer != 'https://api.botframework.com':
         demisto.info('Authorization header validation - failed to verify issuer')
@@ -670,7 +670,8 @@ def validate_auth_header(headers: dict) -> bool:
     public_key: str = RSAAlgorithm.from_jwk(json.dumps(key_object))
     options = {
         'verify_aud': False,
-        'verify_exp': True
+        'verify_exp': True,
+        'verify_signature': False,
     }
     decoded_payload = jwt.decode(jwt_token, public_key, options=options)
 
@@ -1302,8 +1303,9 @@ def channel_mirror_loop():
     """
     while True:
         found_channel_to_mirror: bool = False
-        integration_context = get_integration_context()
+        integration_context = {}
         try:
+            integration_context = get_integration_context()
             teams: list = json.loads(integration_context.get('teams', '[]'))
             for team in teams:
                 mirrored_channels = team.get('mirrored_channels', [])

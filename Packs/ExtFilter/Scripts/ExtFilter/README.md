@@ -221,8 +221,11 @@ You can make filters with comlex and combination conditions for the context data
 | ctx_incident | From Previous Tasks | incident | Enable to access the incident context and use `${incident.}` |
 
    *NOTE:* `${list.}` doesn't work in XSOAR 6.0 in transformer. 
-   
-  Also, `local` prefix (`${local.}`) can be available for referring to the root value of the target. No parameters set is required for using `${local.}`.
+  
+  `local` prefix (`${local.}`) and `.` prefix  (`${..}`) can be available for additional DT references.<br>
+  `${local}` refers the root value of the target, and `${local.<name>}` refers the value property located at the relateve path to the root.<br>
+  `${..}` refers the current value of the target, and `${.<name>}` refers the value property located at the relateve path to the current value.<br>
+  No parameters set is required for using `${local.}` and `${..}`.
 
 
 #### Example 1
@@ -381,12 +384,14 @@ Available operators
 * `abort`
 * `email-header: decode`
 * `regex: replace`
+* `is individually transformed with`
+* `is collectively transformed with`
 
 
 ----
 ### Operator: `is transformed with`
 <details><summary>
-Transform each element with `transformers` given in a filter.
+Transforms elements with `transformers` given in a filter.
 See `Filter Syntax` for the details of `transformers`.
 </summary><p/>
 
@@ -477,6 +482,40 @@ See `Filter Syntax` for the details of `transformers`.
     }
 
 
+#### Example 3
+##### Input
+    [
+      {
+        "Name": "a.dat",
+        "Size": 100
+      },
+      {
+        "Name": "b.exe",
+        "Size": 200
+      }
+    ]
+
+##### Filter
+> **Operator**: is transformed with
+
+> **Path**: 
+
+> **Filter**:
+
+    {
+      "is replaced with": {
+        "User": "JDOE"
+      }
+    }
+
+##### Output
+    [
+      {
+        "User": "JDOE"
+      }
+    ]
+
+
 </details>
 
 
@@ -527,6 +566,7 @@ See `Filter Syntax` for the details of `conditions`.
         "Size": 200
       }
     ]
+
 </details>
 
 ----
@@ -8470,5 +8510,241 @@ Returns the data given in "matched" if matched, "unmatch" otherwise.
 ##### Output
     XYZ
 
+
+</details>
+
+
+----
+### Operator: `is individually transformed with`
+<details><summary>
+Transform each element with `transformers` given in a filter.
+See `Filter Syntax` for the details of `transformers`.
+</summary><p/>
+
+> **Filter Format**: `transformers`
+
+#### Example 1
+##### Input
+    [
+      {
+        "Name": "a.dat",
+        "Size": 100
+      },
+      {
+        "Name": "b.exe",
+        "Size": 200
+      },
+      {
+        "Name": "c.txt",
+        "Size": 300
+      }
+    ]
+
+##### Filter
+> **Operator**: is individually transformed with
+
+> **Path**: 
+
+> **Filter**:
+
+    {
+      "json: encode": {},
+      "base64: encode": {}
+    }
+
+##### Output
+    [
+      "eyJOYW1lIjogImEuZGF0IiwgIlNpemUiOiAxMDB9",
+      "eyJOYW1lIjogImIuZXhlIiwgIlNpemUiOiAyMDB9",
+      "eyJOYW1lIjogImMudHh0IiwgIlNpemUiOiAzMDB9"
+    ]
+
+
+#### Example 2
+##### Input
+    {
+      "File": [
+        {
+          "Name": "a.dat",
+          "Size": 100
+        },
+        {
+          "Name": "b.exe",
+          "Size": 200
+        }
+      ],
+      "IP": [
+        "1.1.1.1",
+        "2.2.2.2"
+      ]
+    }
+
+##### Filter
+> **Operator**: is individually transformed with
+
+> **Path**: File
+
+> **Filter**:
+
+    {
+      "is filtered with": {
+        "Name": {
+          "ends with": ".exe"
+        }
+      },
+      "json: encode": {},
+      "base64: encode": {}
+    }
+
+##### Output
+    {
+      "File": [
+        "eyJOYW1lIjogImIuZXhlIiwgIlNpemUiOiAyMDB9"
+      ],
+      "IP": [
+        "1.1.1.1",
+        "2.2.2.2"
+      ]
+    }
+
+#### Example 3
+##### Input
+    [
+      {
+        "Name": "a.dat",
+        "Size": 100
+      },
+      {
+        "Name": "b.exe",
+        "Size": 200
+      }
+    ]
+
+##### Filter
+> **Operator**: is individually transformed with
+
+> **Path**: 
+
+> **Filter**:
+
+    {
+      "is replaced with": {
+        "User": "JDOE"
+      }
+    }
+
+##### Output
+    [
+      {
+        "User": "JDOE"
+      },
+      {
+        "User": "JDOE"
+      }
+    ]
+
+
+#### Example 4
+##### Input
+    [
+      {
+        "Name": "a.dat",
+        "Size": 100
+      },
+      {
+        "Name": "b.exe",
+        "Size": 200
+      }
+    ]
+
+##### Filter
+> **Operator**: is individually transformed with
+
+> **Path**: 
+
+> **Filter**:
+
+    {
+      "is updated with": {
+        "Size": "${..Size=val+1}"
+      }
+    }
+
+##### Output
+    [
+      {
+        "Name": "a.dat",
+        "Size": 101
+      },
+      {
+        "Name": "b.exe",
+        "Size": 201
+      }
+    ]
+
+</details>
+
+
+----
+### Operator: `is collectively transformed with`
+<details><summary>
+Transform elements with `transformers` given in a filter. The elements are handled and transformed as one value at the first level if the type of it is array.
+See `Filter Syntax` for the details of `transformers`.
+</summary><p/>
+
+> **Filter Format**: `transformers`
+
+#### Example 1
+##### Input
+    [
+      {
+        "Name": "a.dat",
+        "Trusted": true
+      },
+      {
+        "Name": "b.exe",
+        "Trusted": false
+      },
+      {
+        "Name": "c.txt",
+        "Trusted": true
+      }
+    ]
+
+##### Filter
+> **Operator**: is collectively transformed with
+
+> **Path**: 
+
+> **Filter**:
+
+    {
+      "switch-case": {
+        "switch": {
+          "#has_untrusted": {
+            "is filtered with": {
+              "Trusted": {
+                "===": false
+              }
+            }
+          }
+        },
+        "#has_untrusted": {
+          "is replaced with": [
+            "Untrusted"
+          ]
+        },
+        "default": {
+          "is replaced with": [
+            "Trusted"
+          ]
+        }
+      }
+    }
+
+##### Output
+    [
+      "Untrusted"
+    ]
 
 </details>

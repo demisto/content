@@ -1,14 +1,15 @@
 import concurrent.futures
 import secrets
 from enum import Enum
+from ipaddress import ip_address
 from threading import Lock
 from typing import Tuple
 
 import pytz
 import urllib3
+from CommonServerUserPython import *  # noqa
 
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
-from CommonServerUserPython import *  # noqa
 
 # Disable insecure warnings
 urllib3.disable_warnings()  # pylint: disable=no-member
@@ -63,15 +64,6 @@ MIRROR_DIRECTION: Dict[str, Optional[str]] = {
     'No Mirroring': None,
     'Mirror Offense': 'In'
 }
-EVENT_COLUMNS_DEFAULT_VALUE = \
-    'QIDNAME(qid), LOGSOURCENAME(logsourceid), CATEGORYNAME(highlevelcategory), ' \
-    'CATEGORYNAME(category), PROTOCOLNAME(protocolid), sourceip, sourceport, destinationip, ' \
-    'destinationport, QIDDESCRIPTION(qid), username, PROTOCOLNAME(protocolid), ' \
-    'RULENAME("creEventList"), sourcegeographiclocation, sourceMAC, sourcev6, ' \
-    'destinationgeographiclocation, destinationv6, LOGSOURCETYPENAME(devicetype), ' \
-    'credibility, severity, magnitude, eventcount, eventDirection, postNatDestinationIP, ' \
-    'postNatDestinationPort, postNatSourceIP, postNatSourcePort, preNatDestinationPort, ' \
-    'preNatSourceIP, preNatSourcePort, UTF8(payload), starttime, devicetime '
 UTC_TIMEZONE = pytz.timezone('utc')
 ID_QUERY_REGEX = re.compile(r'(?:\s+|^)id((\s)*)>(=?)((\s)*)((\d)+)(?:\s+|$)')
 ASCENDING_ID_ORDER = '+id'
@@ -286,6 +278,9 @@ FULL_ASSET_PROPERTIES_NAMES_MAP = {
     'Group Name': 'GroupName',
     'Vulnerabilities': 'Vulnerabilities',
 }
+LONG_RUNNING_REQUIRED_PARAMS = {'fetch_mode': 'Fetch mode',
+                                'offenses_per_fetch': 'Number of offenses to pull per API call (max 50)',
+                                'events_limit': 'Maximum number of events per incident.'}
 
 ''' ENUMS '''
 
@@ -298,8 +293,6 @@ class FetchMode(Enum):
     all_events = 'Fetch With All Events'
     correlations_events_only = 'Fetch Correlation Events Only'
 
-
-FETCH_MODE_DEFAULT_VALUE = FetchMode.all_events.value
 
 ''' CLIENT CLASS '''
 
@@ -315,7 +308,8 @@ class Client(BaseClient):
         else:
             auth = (username, password)
             self.base_headers = {'Version': api_version}
-        super().__init__(base_url=server, verify=verify, proxy=proxy, auth=auth)
+        base_url = urljoin(server, '/api')
+        super().__init__(base_url=base_url, verify=verify, proxy=proxy, auth=auth)
         self.password = password
         self.server = server
 
@@ -722,6 +716,15 @@ def build_headers(first_headers: List[str], all_headers: Set[str]) -> List[str]:
     return first_headers + list(set.difference(all_headers, first_headers))
 
 
+def is_valid_ip(ip: str) -> bool:
+    try:
+        ip_address(ip)
+        return True
+    except ValueError:
+        print_debug_msg(f'IP {ip} was found invalid.')
+        return False
+
+
 def get_offense_types(client: Client, offenses: List[Dict]) -> Dict:
     """
     Receives list of offenses, and performs API call to QRadar service to retrieve the offense type names
@@ -842,9 +845,9 @@ def create_single_asset_for_offense_enrichment(asset: Dict) -> Dict:
         'mac_address': interface.get('mac_address'),
         'id': interface.get('id'),
         'ip_addresses': [{
-            'type': ip_address.get('type'),
-            'value': ip_address.get('value')
-        } for ip_address in interface.get('ip_addresses', [])]
+            'type': ip_add.get('type'),
+            'value': ip_add.get('value')
+        } for ip_add in interface.get('ip_addresses', [])]
     } for interface in asset.get('interfaces', [])]}
     properties = {prop.get('name'): prop.get('value') for prop in asset.get('properties', [])
                   if 'name' in prop and 'value' in prop}
@@ -865,8 +868,12 @@ def enrich_offense_with_assets(client: Client, offense_ips: List[str]) -> List[D
 
     def get_assets_for_ips_batch(b: List):
         filter_query = ' or '.join([f'interfaces contains ip_addresses contains value="{ip}"' for ip in b])
-        return client.assets_list(filter_=filter_query)
+        try:
+            return client.assets_list(filter_=filter_query)
+        except Exception as e:
+            raise DemistoException(f'Error occurred during asset enrichment. Query: {filter_query}') from e
 
+    offense_ips = [offense_ip for offense_ip in offense_ips if is_valid_ip(offense_ip)]
     # Submit addresses in batches to avoid overloading QRadar service
     assets = [asset for b in batch(offense_ips[:OFF_ENRCH_LIMIT], batch_size=int(BATCH_SIZE))
               for asset in get_assets_for_ips_batch(b)]
@@ -906,11 +913,12 @@ def enrich_offenses_result(client: Client, offenses: Any, enrich_ip_addresses: b
     destination_addresses_id_ip_dict = get_offense_addresses(client, offenses, True) if enrich_ip_addresses else dict()
 
     def create_enriched_offense(offense: Dict) -> Dict:
+        link_to_offense_suffix = '/console/do/sem/offensesummary?appName=Sem&pageId=OffenseSummary&summaryId' \
+                                 f'''={offense.get('id')}'''
         basic_enriches = {
             'offense_type': offense_types_id_name_dict.get(offense.get('offense_type')),
             'closing_reason_id': closing_reasons_id_name_dict.get(offense.get('closing_reason_id')),
-            'LinkToOffense': f'{client.server}/console/do/sem/offensesummary?'
-                             f'''appName=Sem&pageId=OffenseSummary&summaryId={offense.get('id')}''',
+            'LinkToOffense': urljoin(client.server, link_to_offense_suffix),
         }
 
         domain_enrich = {
@@ -1028,9 +1036,9 @@ def enrich_assets_results(client: Client, assets: Any, full_enrichment: bool) ->
         os_name = next((prop.get('value') for prop in properties if prop.get('name') == 'Primary OS ID'), None)
 
         ip_enrichment = {
-            'IPAddress': [ip_address.get('value') for interface in interfaces
-                          for ip_address in interface.get('ip_addresses', [])
-                          if ip_address.get('value')]
+            'IPAddress': [ip_add.get('value') for interface in interfaces
+                          for ip_add in interface.get('ip_addresses', [])
+                          if ip_add.get('value')]
         }
 
         os_enrichment = {'OS': os_name} if os_name else dict()
@@ -1139,6 +1147,21 @@ def is_reset_triggered(handle_reset: bool = False):
     return False
 
 
+def validate_long_running_params(params: Dict) -> None:
+    """
+    Receives params, checks whether the required parameters for long running execution is configured.
+    Args:
+        params (Dict): Cortex XSOAR params.
+
+    Returns:
+        (None): If all required params are set, raises DemistoException otherwise.
+    """
+    for param_field, param_display in LONG_RUNNING_REQUIRED_PARAMS.items():
+        if param_field not in params:
+            raise DemistoException(f'Parameter {param_display} is required when enabling long running execution.'
+                                   ' Please set a value for it.')
+
+
 ''' COMMAND FUNCTIONS '''
 
 
@@ -1160,13 +1183,14 @@ def test_module_command(client: Client, params: Dict) -> str:
     try:
         is_long_running = params.get('longRunning')
         if is_long_running:
+            validate_long_running_params(params)
             ip_enrich, asset_enrich = get_offense_enrichment(params.get('enrichment', 'IPs And Assets'))
             get_incidents_long_running_execution(
                 client=client,
                 offenses_per_fetch=1,
                 user_query=params.get('query', ''),
-                fetch_mode=params.get('fetch_mode', FETCH_MODE_DEFAULT_VALUE),
-                events_columns=params.get('events_columns', EVENT_COLUMNS_DEFAULT_VALUE),
+                fetch_mode=params.get('fetch_mode', ''),
+                events_columns=params.get('events_columns', ''),
                 events_limit=1,
                 ip_enrich=ip_enrich,
                 asset_enrich=asset_enrich,
@@ -1424,12 +1448,13 @@ def long_running_execution_command(client: Client, params: Dict):
         params (Dict): Demisto params.
 
     """
-    fetch_mode = params.get('fetch_mode', FETCH_MODE_DEFAULT_VALUE)
+    validate_long_running_params(params)
+    fetch_mode = params.get('fetch_mode', '')
     ip_enrich, asset_enrich = get_offense_enrichment(params.get('enrichment', 'IPs And Assets'))
-    offenses_per_fetch = int(params.get('offenses_per_fetch', DEFAULT_OFFENSES_PER_FETCH))
+    offenses_per_fetch = int(params.get('offenses_per_fetch'))  # type: ignore
     user_query = params.get('query', '')
-    events_columns = params.get('events_columns', EVENT_COLUMNS_DEFAULT_VALUE)
-    events_limit = int(params.get('events_limit', DEFAULT_EVENTS_LIMIT))
+    events_columns = params.get('events_columns', '')
+    events_limit = int(params.get('events_limit') or DEFAULT_EVENTS_LIMIT)
     incident_type = params.get('incident_type')
     mirror_direction = MIRROR_DIRECTION.get(params.get('mirror_options', DEFAULT_MIRRORING_DIRECTION))
     while True:
@@ -2258,7 +2283,8 @@ def qradar_indicators_upload_command(client: Client, args: Dict) -> CommandResul
         else:
             raise e
 
-    indicators = demisto.searchIndicators(query=query, page=page, size=limit).get('iocs', [])
+    search_indicators = IndicatorsSearcher(page=page)
+    indicators = search_indicators.search_indicators_by_version(query=query, size=limit).get('iocs', [])
     indicators_data = [{'Indicator Value': indicator.get('value'), 'Indicator Type': indicator.get('indicator_type')}
                        for indicator in indicators if 'value' in indicator and 'indicator_type' in indicator]
     indicator_values: List[Any] = [indicator.get('Indicator Value') for indicator in indicators_data]
@@ -2709,7 +2735,7 @@ def main() -> None:
         except Exception as e:
             raise DemistoException(f'Failed to parse advanced params. Error: {e}')
 
-    server = urljoin(params.get('server'), '/api')
+    server = params.get('server')
     verify_certificate = not params.get('insecure', False)
     proxy = params.get('proxy', False)
     api_version = params.get('api_version')

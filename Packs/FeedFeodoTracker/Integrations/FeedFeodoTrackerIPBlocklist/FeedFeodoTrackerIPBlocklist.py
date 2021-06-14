@@ -13,6 +13,8 @@ def main():
                 "regex": r"^.+,\"?(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})\"?",
                 "transform": "\\1"
             },
+            'relationship_name': EntityRelationship.Relationships.INDICATOR_OF,
+            'relationship_entity_b_type': 'STIX Malware',
             "fields": [{
                 'firstseenbysource': {
                     "regex": r"^(\d{4}-\d{2}-\d{2}\s\d{2}:\d{2}:\d{2})",
@@ -28,6 +30,10 @@ def main():
                 },
                 "malwarefamily": {
                     "regex": r"^.+,.+,.+,.+,(.+)",
+                    "transform": "\\1"
+                },
+                "relationship_entity_b": {
+                    "regex": r"^.+,.+,.+,.+,\"(.+)\"",
                     "transform": "\\1"
                 }
             }],
@@ -51,7 +57,8 @@ def main():
         "firstseenbysource": "firstseenbysource",
         "port": "port",
         "lastseenbysource": "lastseenbysource",
-        "malwarefamily": "malwarefamily"
+        "malwarefamily": "malwarefamily",
+        "relationship_entity_b": "relationship_entity_b"
     }
 
     # Call the main execution of the HTTP API module.
@@ -61,5 +68,5 @@ def main():
 from HTTPFeedApiModule import *  # noqa: E402
 
 
-if __name__ == '__builtin__' or __name__ == 'builtins':
+if __name__ in ('__builtin__', 'builtins', '__main__'):
     main()

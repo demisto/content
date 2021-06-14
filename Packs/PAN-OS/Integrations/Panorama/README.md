@@ -1,50 +1,45 @@
 This integration supports both Palo Alto Networks Panorama and Palo Alto Networks Firewall. You can create separate instances of each integration, and they are not necessarily related or dependent on one another.
-Manage Palo Alto Networks Firewall and Panorama. For more information see Panorama documentation.
-This integration was integrated and tested with version 8.1.0 and 9.0.1 of Palo Alto Firewall, Palo Alto Panorama
 
-## Panorama Playbook
-* **PanoramaCommitConfiguration** : Based on the playbook input, the Playbook will commit the configuration to Palo Alto Firewall, or push the configuration from Panorama to predefined device groups of firewalls. The integration is available from Demisto v3.0, but playbook uses the GenericPooling sub-playbook, which is only available from Demisto v4.0.
-* **Panorama Query Logs** : Wraps several commands (listed below) with genericPolling to enable a complete flow to query the following log types: traffic, threat, URL, data-filtering, and Wildfire.
-   * [panorama-query-logs](#panorama-query-logs)
-   * [panorama-check-logs-status](#panorama-check-logs-status)
-   * [panorama-get-logs](#panorama-get-logs)
-* PAN-OS DAG Configuration
-* PAN-OS EDL Setup
+This integration enables you to manage the Palo Alto Networks Firewall and Panorama. For more information see the [PAN-OS documentation](https://docs.paloaltonetworks.com/pan-os.html).
+This integration was integrated and tested with version 8.1.0 and 9.0.1 of Palo Alto Firewall, Palo Alto Panorama.
+
 
 ## Use Cases
 * Create custom security rules in Palo Alto Networks PAN-OS.
-* Creating and updating address objects, address-groups, custom URL categories, URL filtering objects.
+* Create and update address objects, address-groups, custom URL categories, and URL filtering objects.
 * Use the URL Filtering category information from Palo Alto Networks to enrich URLs by checking the *use_url_filtering* parameter. A valid license for the Firewall is required.
-* Get URL Filtering category information from Palo Alto - Request Change is a known Palo Alto limitation.
+* Get URL Filtering category information from Palo Alto. Request Change is a known Palo Alto limitation.
 * Add URL filtering objects including overrides to Palo Alto Panorama and Firewall.
-* Committing configuration to Palo Alto FW and to Panorama, and pushing configuration from Panorama to Pre-Defined Device-Groups of Firewalls.
+* Commit a configuration to Palo Alto Firewall and to Panorama, and push a configuration from Panorama to Pre-Defined Device-Groups of Firewalls.
 * Block IP addresses using registered IP tags from PAN-OS without committing the PAN-OS instance. First you have to create a registered IP tag, DAG, and security rule, and commit the instance. You can then register additional IP addresses to the tag without committing the instance.
 
-   i. Create a registered IP tag and add the necessary IP addresses by running the [panorama-register-ip-tag](#panorama-register-ip-tag) command.
+     1. Create a registered IP tag and add the necessary IP addresses by running the [panorama-register-ip-tag](#panorama-register-ip-tag) command.
    
-   ii. Create a dynamic address group (DAG), by running the [panorama-create-address-group](#panorama-create-address-group) command. Specify values for the following arguments: type="dynamic", match={ tagname }.
+     2. Create a dynamic address group (DAG), by running the [panorama-create-address-group](#panorama-create-address-group) command. Specify values for the following arguments: type="dynamic", match={ tagname }.
    
-   iii. Create a security rule using the DAG created in the previous step, by running the [panorama-create-rule](#panorama-create-rule) command.
+     3. Create a security rule using the DAG created in the previous step, by running the [panorama-create-rule](#panorama-create-rule) command.
    
-   iv. Commit the PAN-OS instance by running the PanoramaCommitConfiguration playbook.
+     4. Commit the PAN-OS instance by running the PanoramaCommitConfiguration playbook.
    
-   v. You can now register IP addresses to, or unregister IP addresses from, the IP tag by running the [panorama-register-ip-tag](#panorama-register-ip-tag) command, or [panorama-unregister-ip-tag command](#panorama-unregister-ip-tag), respectively, without committing the PAN-OS instance.
+     5. You can now register IP addresses to, or unregister IP addresses from the IP tag by running the [panorama-register-ip-tag](#panorama-register-ip-tag) command, or [panorama-unregister-ip-tag](#panorama-unregister-ip-tag) command, respectively, without committing the PAN-OS instance.
 
 * Create a predefined security profiles with the best practices by Palo Alto Networks.
-* Get security profiles best practices as defined by Palo Alto Networks. For more inforamtion about Palo Alto Networks best practices, visit [Palo Alto Networks best practices](https://docs.paloaltonetworks.com/best-practices/9-0/internet-gateway-best-practices/best-practice-internet-gateway-security-policy/create-best-practice-security-profiles).
+* Get security profiles best practices as defined by Palo Alto Networks. For more information about Palo Alto Networks best practices, visit [Palo Alto Networks best practices](https://docs.paloaltonetworks.com/best-practices/9-0/internet-gateway-best-practices/best-practice-internet-gateway-security-policy/create-best-practice-security-profiles).
 * Apply security profiles to specific rule.
 * Set default categories to block in the URL filtering profile.
 * Enforce WildFire best practice.
    
-   i. Set file upload to the maximum size.
-   ii. WildFire Update Schedule is set to download and install updates every minute.
-   iii. All file types are forwarded.
+   1. Set file upload to the maximum size.
+   
+   2. Set WildFire Update Schedule to download and install updates every minute.
+   
+   3. All file types are forwarded.
 
 ## Known Limitations
 * Maximum commit queue length is 3. Running numerous Panorama commands simultaneously might cause errors.
-* After you run `panorama-create-` commands and the object is not committed, then the `panorama-edit` commands or `panorama-get` commands might not run correctly.
+* After you run `panorama-create-` commands and the object is not committed, the `panorama-edit` commands or `panorama-get` commands might not run correctly.
 * URL Filtering `request change` of a URL is not available via the API. Instead, you need to use the https://urlfiltering.paloaltonetworks.com website.
-* If you do not specify a vsys (Firewall instances) or a device group (Panorama instances), you will only be able to execute certain commands.
+* If you do not specify a vsys (Firewall instances) or a device group (Panorama instances), you will only be able to execute the following commands.
    * [panorama-get-url-category](#panorama-get-url-category)
    * [panorama-commit](#panorama-commit)
    * [panorama-push-to-device-group](#panorama-push-to-device-group)
@@ -78,7 +73,7 @@ This integration was integrated and tested with version 8.1.0 and 9.0.1 of Palo 
    
 
 ## Commands
-You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.
+You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 1. [Run any command supported in the Panorama API: panorama](#panorama)
@@ -4623,3 +4618,72 @@ Retrieves list of user-ID agents configured in the system.
 >|---|---|---|---|---|---|---|
 >| testing |  | mine | 12 | demisto | yes | yes |
 >| withSerial | panorama |  |  |  |  |  |
+
+
+### panorama-upload-content-update-file
+***
+Uploads a content file to Panorama.
+
+
+#### Base Command
+
+`panorama-upload-content-update-file`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| entryID | Entry ID of the file to upload. | Required | 
+| category | The category of the content. Possible values are: wildfire, anti-virus, content. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Panorama.Content.Upload.Status | string | Content upload status. | 
+| Panorama.Content.Upload.Message | string | Content upload message. | 
+
+
+#### Command Example
+```panorama-upload-content-update-file entryID="32@14183" category="content" ```
+
+#### Human Readable Output
+>### Results
+>|Status|Message|
+>|---|---|
+>| Success | line: <file_name> saved |
+
+
+### panorama-install-file-content-update
+***
+Installs specific content update file.
+
+
+#### Base Command
+
+`panorama-install-file-content-update`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| version_name | Update file name to be installed on PAN-OS. | Required | 
+| category | The category of the content. Possible values are: wildfire, anti-virus, content. | Required | 
+| skip_validity_check | Skips file validity check with PAN-OS update server. Use this option for air-gapped networks and only if you trust the content file. Possible values are: yes, no. Default is no. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Panorama.Content.Install.JobID | string | JobID of the installation. | 
+| Panorama.Content.Install.Status | string | Installation status. | 
+
+
+#### Command Example
+```panorama-install-file-content-update version_name="panupv2-all-contents-8322-6317" category="content" skip_validity_check="yes" ```
+
+#### Human Readable Output
+>### Results
+>|JobID|Status|
+>|---|---|
+>| 30 | Pending |

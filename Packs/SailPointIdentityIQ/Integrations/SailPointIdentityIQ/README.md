@@ -46,22 +46,22 @@ Search identities by search/filter parameters (id, email, risk & active) using I
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| SailPointIdentityIQ.Identity.userName | String | The IdentityIQ username \(primary id\). | 
-| SailPointIdentityIQ.Identity.id | String | The IdentityIQ internal id \(uuid\). | 
-| SailPointIdentityIQ.Identity.name.formatted | String | The display name of the identity. | 
-| SailPointIdentityIQ.Identity.name.familyName | String | The last name of the identity. | 
-| SailPointIdentityIQ.Identity.name.givenName | String | The first name of the identity. | 
-| SailPointIdentityIQ.Identity.active | Boolean | Indicates whether the id is active or inactive in IdentityIQ. | 
-| SailPointIdentityIQ.Identity.manager.userName | String | The IdentityIQ username \(primary id\) of the identities manager. | 
-| SailPointIdentityIQ.Identity.lastModified | Date | Timestamp of when the identity was last modified. | 
-| SailPointIdentityIQ.Identity.displayName | String | The display name of the identity. | 
-| SailPointIdentityIQ.Identity.emails | Unknown | Array of email objects. | 
-| SailPointIdentityIQ.Identity.emails.type | String | Type of the email being returned. | 
-| SailPointIdentityIQ.Identity.emails.value | String | The email address of the identity. | 
-| SailPointIdentityIQ.Identity.emails.primary | Boolean | Indicates if this email address is the identities primary email. | 
-| SailPointIdentityIQ.Identity.entitlements | Unknown | Array of entitlements objects that the identity has. | 
-| SailPointIdentityIQ.Identity.roles | Unknown | Array of role objects that the identity has. | 
-| SailPointIdentityIQ.Identity.capabilities | Unknown | Array of string representations of the IdentityIQ capabilities assigned to this identity. | 
+| IdentityIQ.Identity.userName | String | The IdentityIQ username \(primary id\). | 
+| IdentityIQ.Identity.id | String | The IdentityIQ internal id \(uuid\). | 
+| IdentityIQ.Identity.name.formatted | String | The display name of the identity. | 
+| IdentityIQ.Identity.name.familyName | String | The last name of the identity. | 
+| IdentityIQ.Identity.name.givenName | String | The first name of the identity. | 
+| IdentityIQ.Identity.active | Boolean | Indicates whether the id is active or inactive in IdentityIQ. | 
+| IdentityIQ.Identity.manager.userName | String | The IdentityIQ username \(primary id\) of the identities manager. | 
+| IdentityIQ.Identity.lastModified | Date | Timestamp of when the identity was last modified. | 
+| IdentityIQ.Identity.displayName | String | The display name of the identity. | 
+| IdentityIQ.Identity.emails | Unknown | Array of email objects. | 
+| IdentityIQ.Identity.emails.type | String | Type of the email being returned. | 
+| IdentityIQ.Identity.emails.value | String | The email address of the identity. | 
+| IdentityIQ.Identity.emails.primary | Boolean | Indicates if this email address is the identities primary email. | 
+| IdentityIQ.Identity.entitlements | Unknown | Array of entitlements objects that the identity has. | 
+| IdentityIQ.Identity.roles | Unknown | Array of role objects that the identity has. | 
+| IdentityIQ.Identity.capabilities | Unknown | Array of string representations of the IdentityIQ capabilities assigned to this identity. | 
 
 
 #### Command Examples
@@ -103,13 +103,13 @@ Fetch policy violation by id or all policy violations using IdentityIQ SCIM API'
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| SailPointIdentityIQ.PolicyViolation.policyName | String | Name of the policy that was violated. | 
-| SailPointIdentityIQ.PolicyViolation.constraintName | String | Name of the constraint being violated. | 
-| SailPointIdentityIQ.PolicyViolation.status | String | Status of the violation \(open/closed\). | 
-| SailPointIdentityIQ.PolicyViolation.description | String | Description of the policy/conflict. | 
-| SailPointIdentityIQ.PolicyViolation.identity.value | Unknown | Internal id of the IdentityIQ identity in violation. | 
-| SailPointIdentityIQ.PolicyViolation.identity.displayName | String | Display name of the IdentityIQ identity in violation. | 
-| SailPointIdentityIQ.PolicyViolation.id | String | Internal id of the task result. | 
+| IdentityIQ.PolicyViolation.policyName | String | Name of the policy that was violated. | 
+| IdentityIQ.PolicyViolation.constraintName | String | Name of the constraint being violated. | 
+| IdentityIQ.PolicyViolation.status | String | Status of the violation \(open/closed\). | 
+| IdentityIQ.PolicyViolation.description | String | Description of the policy/conflict. | 
+| IdentityIQ.PolicyViolation.identity.value | Unknown | Internal id of the IdentityIQ identity in violation. | 
+| IdentityIQ.PolicyViolation.identity.displayName | String | Display name of the IdentityIQ identity in violation. | 
+| IdentityIQ.PolicyViolation.id | String | Internal id of the task result. | 
 
 
 #### Command Example
@@ -147,17 +147,17 @@ Fetch task result by id or all task results using IdentityIQ SCIM API's.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| SailPointIdentityIQ.TaskResult.id | String | Internal id of the task result. | 
-| SailPointIdentityIQ.TaskResult.progress | String | String representation of the status of the task. | 
-| SailPointIdentityIQ.TaskResult.launched | Date | Date representation of when the task was launched in IdentityIQ. | 
-| SailPointIdentityIQ.TaskResult.taskDefinition | String | Name of the task template that this task result is an instantiation of. | 
-| SailPointIdentityIQ.TaskResult.host | String | Host name of the IdentityIQ application server that is executing this task. | 
-| SailPointIdentityIQ.TaskResult.type | String | Type of the task being executed. | 
-| SailPointIdentityIQ.TaskResult.pendingSignoffs | Number | Number of signoffs on the task result that have not been done. | 
-| SailPointIdentityIQ.TaskResult.completionStatus | String | Status of task 'success', 'termianted', 'failure', etc. | 
-| SailPointIdentityIQ.TaskResult.launcher | String | Name of the IdentityIQ identity who launched the task. | 
-| SailPointIdentityIQ.TaskResult.name | String | Unique name of the task that was launched. | 
-| SailPointIdentityIQ.TaskResult.completed | Date | Timestamp of when the task was completed \(if not currently executed\). | 
+| IdentityIQ.TaskResult.id | String | Internal id of the task result. | 
+| IdentityIQ.TaskResult.progress | String | String representation of the status of the task. | 
+| IdentityIQ.TaskResult.launched | Date | Date representation of when the task was launched in IdentityIQ. | 
+| IdentityIQ.TaskResult.taskDefinition | String | Name of the task template that this task result is an instantiation of. | 
+| IdentityIQ.TaskResult.host | String | Host name of the IdentityIQ application server that is executing this task. | 
+| IdentityIQ.TaskResult.type | String | Type of the task being executed. | 
+| IdentityIQ.TaskResult.pendingSignoffs | Number | Number of signoffs on the task result that have not been done. | 
+| IdentityIQ.TaskResult.completionStatus | String | Status of task 'success', 'termianted', 'failure', etc. | 
+| IdentityIQ.TaskResult.launcher | String | Name of the IdentityIQ identity who launched the task. | 
+| IdentityIQ.TaskResult.name | String | Unique name of the task that was launched. | 
+| IdentityIQ.TaskResult.completed | Date | Timestamp of when the task was completed \(if not currently executed\). | 
 
 
 #### Command Example
@@ -201,14 +201,14 @@ Fetch accounts by search/filter parameters (id, display_name, last_refresh, nati
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| SailPointIdentityIQ.Account.id | String | Internal id of the account. | 
-| SailPointIdentityIQ.Account.identity.value | String | Internal id of the identity that this account belongs to. | 
-| SailPointIdentityIQ.Account.identity.displayName | String | Display name of the identity that this account belongs to. | 
-| SailPointIdentityIQ.Account.hasEntitlements | Boolean | True if the account has access entitlements assigned to it, else false. | 
-| SailPointIdentityIQ.Account.application.value | Unknown | Internal id of the application that this account is on. | 
-| SailPointIdentityIQ.Account.application.displayName | String | Display name of the application that this account is on. | 
-| SailPointIdentityIQ.Account.nativeIdentity | String | The name of the account as it exists on the application. | 
-| SailPointIdentityIQ.Account.lastRefreshed | Date | Timestamp of when this account was last refreshed in IdentityIQ. | 
+| IdentityIQ.Account.id | String | Internal id of the account. | 
+| IdentityIQ.Account.identity.value | String | Internal id of the identity that this account belongs to. | 
+| IdentityIQ.Account.identity.displayName | String | Display name of the identity that this account belongs to. | 
+| IdentityIQ.Account.hasEntitlements | Boolean | True if the account has access entitlements assigned to it, else false. | 
+| IdentityIQ.Account.application.value | Unknown | Internal id of the application that this account is on. | 
+| IdentityIQ.Account.application.displayName | String | Display name of the application that this account is on. | 
+| IdentityIQ.Account.nativeIdentity | String | The name of the account as it exists on the application. | 
+| IdentityIQ.Account.lastRefreshed | Date | Timestamp of when this account was last refreshed in IdentityIQ. | 
 
 
 #### Command Example
@@ -252,7 +252,7 @@ Disable account's active status by id using IdentityIQ SCIM API's.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| SailPointIdentityIQ.AccountDisable.active | Boolean | Indicates the status of account \(should be false after request is successfully completed\). | 
+| IdentityIQ.AccountDisable.active | Boolean | Indicates the status of account \(should be false after request is successfully completed\). | 
 
 
 #### Command Example
@@ -289,7 +289,7 @@ Enable account's active status by id using IdentityIQ SCIM API's.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| SailPointIdentityIQ.AccountDisable.active | Boolean | Indicates the status of account \(should be true after request is successfully completed\). | 
+| IdentityIQ.AccountDisable.active | Boolean | Indicates the status of account \(should be true after request is successfully completed\). | 
 
 
 #### Command Example
@@ -355,20 +355,20 @@ Fetch launched workflow by id or all launched workflows using IdentityIQ SCIM AP
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| SailPointIdentityIQ.Workflow.workflowName | String | Name of the workflow that was launched. | 
-| SailPointIdentityIQ.Workflow.identityRequestId | String | Unique id of the identity request that launched this workflow \(if exists\). | 
-| SailPointIdentityIQ.Workflow.workflowCaseId | String | Internal id of the workflowcase for this workflow. | 
-| SailPointIdentityIQ.Workflow.launched | Date | Timestamp of when this workflow was launched. | 
-| SailPointIdentityIQ.Workflow.targetClass | String | Type of object targeted by the workflow, usually identity. | 
-| SailPointIdentityIQ.Workflow.targetName | String | Unique name of the object \(username in the case of identity\). | 
-| SailPointIdentityIQ.Workflow.type | String | The type of workflow. | 
-| SailPointIdentityIQ.Workflow.id | String | Internal id of the workflow. | 
-| SailPointIdentityIQ.Workflow.completionStatus | String | Status of workflow – 'success', 'failure', 'pending' etc. | 
-| SailPointIdentityIQ.Workflow.launcher | String | Name of the identity that launched the workflow. | 
-| SailPointIdentityIQ.Workflow.terminated | Boolean | Indicates whether this workflow was terminated due to error or intentionally stopped. | 
-| SailPointIdentityIQ.Workflow.name | String | Name of the workflow that was launched. | 
-| SailPointIdentityIQ.Workflow.attributes | Unknown | Array of key/value pairs that are the inputs and their values to the workflow. | 
-| SailPointIdentityIQ.Workflow.output | Unknown | Array of key/type/value objects that list the output of the workflow. | 
+| IdentityIQ.Workflow.workflowName | String | Name of the workflow that was launched. | 
+| IdentityIQ.Workflow.identityRequestId | String | Unique id of the identity request that launched this workflow \(if exists\). | 
+| IdentityIQ.Workflow.workflowCaseId | String | Internal id of the workflowcase for this workflow. | 
+| IdentityIQ.Workflow.launched | Date | Timestamp of when this workflow was launched. | 
+| IdentityIQ.Workflow.targetClass | String | Type of object targeted by the workflow, usually identity. | 
+| IdentityIQ.Workflow.targetName | String | Unique name of the object \(username in the case of identity\). | 
+| IdentityIQ.Workflow.type | String | The type of workflow. | 
+| IdentityIQ.Workflow.id | String | Internal id of the workflow. | 
+| IdentityIQ.Workflow.completionStatus | String | Status of workflow – 'success', 'failure', 'pending' etc. | 
+| IdentityIQ.Workflow.launcher | String | Name of the identity that launched the workflow. | 
+| IdentityIQ.Workflow.terminated | Boolean | Indicates whether this workflow was terminated due to error or intentionally stopped. | 
+| IdentityIQ.Workflow.name | String | Name of the workflow that was launched. | 
+| IdentityIQ.Workflow.attributes | Unknown | Array of key/value pairs that are the inputs and their values to the workflow. | 
+| IdentityIQ.Workflow.output | Unknown | Array of key/type/value objects that list the output of the workflow. | 
 
 
 #### Command Example
@@ -406,17 +406,17 @@ Fetch role by id or all roles using IdentityIQ SCIM API's.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| SailPointIdentityIQ.Role.name | String | Unique name of the role object in IdentityIQ. | 
-| SailPointIdentityIQ.Role.owner.value | String | Internal id of the role owner identity. | 
-| SailPointIdentityIQ.Role.owner.displayName | String | Displayname of the owner of the role. | 
-| SailPointIdentityIQ.Role.active | Boolean | Indicates whether the role is active in IdentityIQ. | 
-| SailPointIdentityIQ.Role.displayableName | String | Display name of the role in IdentityIQ. | 
-| SailPointIdentityIQ.Role.permits | Unknown | Array of roles that this role permits in IdentityIQ. | 
-| SailPointIdentityIQ.Role.type.name | String | Template role on which this role is based. | 
-| SailPointIdentityIQ.Role.type.autoAssignment | Boolean | Indicates whether this type of role can be auto-assigned to identities. | 
-| SailPointIdentityIQ.Role.type.displayName | String | Display name of the template role on which this role was based. | 
-| SailPointIdentityIQ.Role.type.manualAssignment | String | Indicates whether this role type can be manually assigned. | 
-| SailPointIdentityIQ.Role.descriptions.value | String | Description of the role shown in the UI. | 
+| IdentityIQ.Role.name | String | Unique name of the role object in IdentityIQ. | 
+| IdentityIQ.Role.owner.value | String | Internal id of the role owner identity. | 
+| IdentityIQ.Role.owner.displayName | String | Displayname of the owner of the role. | 
+| IdentityIQ.Role.active | Boolean | Indicates whether the role is active in IdentityIQ. | 
+| IdentityIQ.Role.displayableName | String | Display name of the role in IdentityIQ. | 
+| IdentityIQ.Role.permits | Unknown | Array of roles that this role permits in IdentityIQ. | 
+| IdentityIQ.Role.type.name | String | Template role on which this role is based. | 
+| IdentityIQ.Role.type.autoAssignment | Boolean | Indicates whether this type of role can be auto-assigned to identities. | 
+| IdentityIQ.Role.type.displayName | String | Display name of the template role on which this role was based. | 
+| IdentityIQ.Role.type.manualAssignment | String | Indicates whether this role type can be manually assigned. | 
+| IdentityIQ.Role.descriptions.value | String | Description of the role shown in the UI. | 
 
 
 #### Command Example
@@ -454,17 +454,17 @@ Fetch entitlement by id or all entitlements using IdentityIQ SCIM API's.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| SailPointIdentityIQ.Entitlement.application.value | String | Internal id of the application that this entitlement resides on. | 
-| SailPointIdentityIQ.Entitlement.application.displayName | String | Display name of the application that this entitlement resides on. | 
-| SailPointIdentityIQ.Entitlement.attribute | String | String representing the attribute on the application that this entitlement represents. | 
-| SailPointIdentityIQ.Entitlement.type | String | String representing the type of attribute on the application that this entitlement represents. | 
-| SailPointIdentityIQ.Entitlement.descriptions | Unknown | Array of description objects that contain a locale, and a value. | 
-| SailPointIdentityIQ.Entitlement.id | String | Internal id of the entitlement object in IdentityIQ. | 
-| SailPointIdentityIQ.Entitlement.requestable | Boolean | Boolean indicates whether this entitlement is directly requestable in the IdentityIQ UI. | 
-| SailPointIdentityIQ.Entitlement.owner.value | String | Internal id of the owner of the entitlement in IdentityIQ. | 
-| SailPointIdentityIQ.Entitlement.owner.displayName | String | Display name of the owner of the entitlement in IdentityIQ. | 
-| SailPointIdentityIQ.Entitlement.aggregated | String | Indicates whether this entitlement was aggregated from the source system or not. | 
-| SailPointIdentityIQ.Entitlement.created | Date | Timestamp indicates when the entitlement was created in IdentityIQ. | 
+| IdentityIQ.Entitlement.application.value | String | Internal id of the application that this entitlement resides on. | 
+| IdentityIQ.Entitlement.application.displayName | String | Display name of the application that this entitlement resides on. | 
+| IdentityIQ.Entitlement.attribute | String | String representing the attribute on the application that this entitlement represents. | 
+| IdentityIQ.Entitlement.type | String | String representing the type of attribute on the application that this entitlement represents. | 
+| IdentityIQ.Entitlement.descriptions | Unknown | Array of description objects that contain a locale, and a value. | 
+| IdentityIQ.Entitlement.id | String | Internal id of the entitlement object in IdentityIQ. | 
+| IdentityIQ.Entitlement.requestable | Boolean | Boolean indicates whether this entitlement is directly requestable in the IdentityIQ UI. | 
+| IdentityIQ.Entitlement.owner.value | String | Internal id of the owner of the entitlement in IdentityIQ. | 
+| IdentityIQ.Entitlement.owner.displayName | String | Display name of the owner of the entitlement in IdentityIQ. | 
+| IdentityIQ.Entitlement.aggregated | String | Indicates whether this entitlement was aggregated from the source system or not. | 
+| IdentityIQ.Entitlement.created | Date | Timestamp indicates when the entitlement was created in IdentityIQ. | 
 
 
 #### Command Example
@@ -502,14 +502,14 @@ Fetch alert by id or all alerts using IdentityIQ SCIM API's.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| SailPointIdentityIQ.Alert.id | String | Internal id of the Alert in IdentityIQ. | 
-| SailPointIdentityIQ.Alert.lastProcessed | Date | Timestamp of when this alert was processed by IdentityIQ for match. | 
-| SailPointIdentityIQ.Alert.displayName | String | Display name of the alert in IdentityIQ. | 
-| SailPointIdentityIQ.Alert.meta.created | Date | Timestamp of when this alert was created in IdentityIQ | 
-| SailPointIdentityIQ.Alert.name | String | Name of the alert in IdentityIQ | 
-| SailPointIdentityIQ.Alert.attributes | Unknown | Array of attributes associated with this alert. | 
-| SailPointIdentityIQ.Alert.actions | Unknown | Array of actions taken on this alert after processing. | 
-| SailPointIdentityIQ.Alert.application | String | List of applications that are related to this alert. | 
+| IdentityIQ.Alert.id | String | Internal id of the Alert in IdentityIQ. | 
+| IdentityIQ.Alert.lastProcessed | Date | Timestamp of when this alert was processed by IdentityIQ for match. | 
+| IdentityIQ.Alert.displayName | String | Display name of the alert in IdentityIQ. | 
+| IdentityIQ.Alert.meta.created | Date | Timestamp of when this alert was created in IdentityIQ | 
+| IdentityIQ.Alert.name | String | Name of the alert in IdentityIQ | 
+| IdentityIQ.Alert.attributes | Unknown | Array of attributes associated with this alert. | 
+| IdentityIQ.Alert.actions | Unknown | Array of actions taken on this alert after processing. | 
+| IdentityIQ.Alert.application | String | List of applications that are related to this alert. | 
 
 
 #### Command Example
@@ -548,14 +548,14 @@ Create an alert using IdentityIQ SCIM API's.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| SailPointIdentityIQ.Alert.id | String | Internal id of the Alert in IdentityIQ. | 
-| SailPointIdentityIQ.Alert.lastProcessed | Date | Timestamp of when this alert was processed by IdentityIQ for match. | 
-| SailPointIdentityIQ.Alert.displayName | String | Display name of the alert in IdentityIQ. | 
-| SailPointIdentityIQ.Alert.meta.created | Date | Timestamp of when this alert. | 
-| SailPointIdentityIQ.Alert.name | String | Unique name of the alert in IdentityIQ. | 
-| SailPointIdentityIQ.Alert.attributes | Unknown | Array of attributes associated with this alert. | 
-| SailPointIdentityIQ.Alert.actions | Unknown | Array of actions taken on this alert after processing. | 
-| SailPointIdentityIQ.Alert.application | String | List of applications that are related to this alert. | 
+| IdentityIQ.Alert.id | String | Internal id of the Alert in IdentityIQ. | 
+| IdentityIQ.Alert.lastProcessed | Date | Timestamp of when this alert was processed by IdentityIQ for match. | 
+| IdentityIQ.Alert.displayName | String | Display name of the alert in IdentityIQ. | 
+| IdentityIQ.Alert.meta.created | Date | Timestamp of when this alert. | 
+| IdentityIQ.Alert.name | String | Unique name of the alert in IdentityIQ. | 
+| IdentityIQ.Alert.attributes | Unknown | Array of attributes associated with this alert. | 
+| IdentityIQ.Alert.actions | Unknown | Array of actions taken on this alert after processing. | 
+| IdentityIQ.Alert.application | String | List of applications that are related to this alert. | 
 
 
 #### Command Example

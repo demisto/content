@@ -149,6 +149,11 @@ def http_request(method, url_suffix, params=None, files=None, ignore_errors=Fals
 
         err = find_error(response)
         if err:
+            if "no jobs were created" in build_errors_string(err):
+                err_message = err[0].get("error_msg") + ' \nThere is a possibility this file has been analyzed ' \
+                                                        'before. Please try using the command with the argument: ' \
+                                                        'reanalyze=true.'
+                err[0]['error_msg'] = err_message
             return_error(ERROR_FORMAT.format(r.status_code, err))
         return response
     except ValueError:
@@ -625,11 +630,11 @@ def get_threat_indicators_command():
             entry_context_list.append(entry)
 
         human_readable = tableToMarkdown(
-            'Threat indicators for sample ID: {}. Showing first indicator:'.format(
+            'Threat indicators for sample ID: {}:'.format(
                 sample_id
             ),
-            entry_context_list[0],
-            headers=['AnalysisID', 'Category', 'Classification', 'Operation'],
+            entry_context_list,
+            headers=['ID', 'AnalysisID', 'Category', 'Classification', 'Operation'],
         )
 
         entry_context = {'VMRay.ThreatIndicator(obj.ID === val.ID)': entry_context_list}
@@ -881,32 +886,37 @@ def get_iocs_command():
     return_outputs(human_readable, entry_context, raw_response=raw_response)
 
 
-try:
-    COMMAND = demisto.command()
-    if COMMAND == 'test-module':
-        # This is the call made when pressing the integration test button.
-        test_module()
-    elif COMMAND in ('upload_sample', 'vmray-upload-sample', 'file'):
-        upload_sample_command()
-    elif COMMAND == 'vmray-get-submission':
-        get_submission_command()
-    elif COMMAND in ('get_results', 'vmray-get-analysis-by-sample'):
-        get_analysis_command()
-    elif COMMAND == 'vmray-get-sample':
-        get_sample_command()
-    elif COMMAND in (
-            'vmray-get-job-by-sample',
-            'get_job_sample',
-            'vmray-get-job-by-id',
-    ):
-        get_job_command()
-    elif COMMAND == 'vmray-get-threat-indicators':
-        get_threat_indicators_command()
-    elif COMMAND == 'vmray-add-tag':
-        post_tags()
-    elif COMMAND == 'vmray-delete-tag':
-        delete_tags()
-    elif COMMAND == 'vmray-get-iocs':
-        get_iocs_command()
-except Exception as exc:
-    return_error(str(exc))
+def main():
+    try:
+        COMMAND = demisto.command()
+        if COMMAND == 'test-module':
+            # This is the call made when pressing the integration test button.
+            test_module()
+        elif COMMAND in ('upload_sample', 'vmray-upload-sample', 'file'):
+            upload_sample_command()
+        elif COMMAND == 'vmray-get-submission':
+            get_submission_command()
+        elif COMMAND in ('get_results', 'vmray-get-analysis-by-sample'):
+            get_analysis_command()
+        elif COMMAND == 'vmray-get-sample':
+            get_sample_command()
+        elif COMMAND in (
+                'vmray-get-job-by-sample',
+                'get_job_sample',
+                'vmray-get-job-by-id',
+        ):
+            get_job_command()
+        elif COMMAND == 'vmray-get-threat-indicators':
+            get_threat_indicators_command()
+        elif COMMAND == 'vmray-add-tag':
+            post_tags()
+        elif COMMAND == 'vmray-delete-tag':
+            delete_tags()
+        elif COMMAND == 'vmray-get-iocs':
+            get_iocs_command()
+    except Exception as exc:
+        return_error(str(exc))
+
+
+if __name__ in ('__builtin__', 'builtins', '__main__'):
+    main()
