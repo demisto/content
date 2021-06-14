@@ -33,8 +33,8 @@ args:
 - name: disable_compression
   auto: PREDEFINED
   predefined:
-  - true
-  - false
+  - "true"
+  - "false"
   description: Disable compression.
 - name: results_map
   description: Additional information to add to the result. Semicolon separated list

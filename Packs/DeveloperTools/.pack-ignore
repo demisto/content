@@ -4,11 +4,5 @@ ignore=auto-test
 [file:script-VerifyHumanReadableEquals.yml]
 ignore=BA101
 
-[file:playbook-EDL_Indicator_Performance_Test.yml]
-ignore=auto-test
-
-[file:playbook-EDL_Performance_Test_-_Concurrency.yml]
-ignore=auto-test
-
-[file:playbook-EDL_Performance_Test_-_Timeout.yml]
-ignore=auto-test
+[file:CreateMockFeed.yml]
+ignore=DO102,DO107
