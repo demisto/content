@@ -44,9 +44,7 @@ Returns information for each CVE in the input list
 #### Context Output
 
 | **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| Sixgill.CVE.Overview | String | Overview of the CVE enrich information. | 
-| Sixgill.CVE.rawJSON | String | The raw JSON of the CVE entich information. | 
+| --- | --- | --- | 
 | Sixgill.CVE.value | String | The value of the CVE. | 
 | Sixgill.CVE.Description | String | Description of the given DVE ID. | 
 | Sixgill.CVE.Created | Date | The creation date of the CVE. | 
