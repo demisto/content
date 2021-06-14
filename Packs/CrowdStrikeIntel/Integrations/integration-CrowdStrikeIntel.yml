@@ -911,6 +911,6 @@ script:
     description: Retrieve the Falcon Intel Report PDF
   runonce: false
 tests:
-- No tests - deprecated
+- No tests
 fromversion: 5.0.0
 deprecated: true
