@@ -287,7 +287,7 @@ def download_quarantined_emails(client: Client, args: Dict[str, Any]):
 @logger
 def get_reports(client: Client, args: Dict[str, Any]):
     report_type = args.get('report_type', '')
-    start_time = (args.get('start_time', '1 week'))
+    start_time = to_fe_datetime_converter(args.get('start_time', '1 week'))
     end_time = to_fe_datetime_converter(args.get('end_time', 'now'))
     limit = args.get('limit', '100')
     interface = args.get('interface', '')
