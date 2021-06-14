@@ -881,7 +881,9 @@ def update_user_iam(default_base_dn, args, create_if_not_exists, mapper_out, dis
             # 1. We update the user, the email stays the same - therefore user_exists=True and old_user_exists=False
             # 2. We update the user, the email changes too - therefore user_exists=False and old_user_exists=True
             if not old_user_exists:
+                # In this case the sAMAccountName doesn't change
                 old_sam_account_name = sam_account_name
+
             dn = user_dn(old_sam_account_name, default_base_dn)
 
             if allow_enable:
