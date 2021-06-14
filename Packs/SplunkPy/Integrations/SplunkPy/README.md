@@ -55,32 +55,12 @@ The (!) *Earliest time to fetch* and *Latest time to fetch* are search parameter
 
 **Note:** To use a Splunk Cloud instance, contact Splunk support to request API access. Use a non-SAML account to access the API.
 
-### Configure Splunk to Produce Alerts for SplunkPy
-It is recommended that Splunk is configured to produce basic alerts that the SplunkPy integration can ingest, by creating a summary index in which alerts are stored. The SplunkPy integration can then query that index for incident ingestion. It is not recommended to use the Cortex XSOAR application with Splunk for routine event consumption because this method is not able to be monitored and is not scalable.
+## Splunk Enterprise Security Users
 
-1. Create a summary index in Splunk. For more information, click [here](https://docs.splunk.com/Documentation/Splunk/7.3.0/Indexer/Setupmultipleindexes#Create_events_indexes_2).
-2. Build a query to return relevant alerts.
-![image](https://user-images.githubusercontent.com/50324325/63265602-ae7fba00-c296-11e9-898c-afc98c56a1cb.png)
-3. Identify the fields list from the Splunk query and save it to a local file.
-![image](https://user-images.githubusercontent.com/50324325/63265613-b6d7f500-c296-11e9-81d7-854ee4ee9685.png)
-4. Define a search macro to capture the fields list that you saved locally. For more information, click [here](https://docs.splunk.com/Documentation/Splunk/7.3.0/Knowledge/Definesearchmacros).
-Use the following naming convention: (demisto_fields_{type}).
-![image](https://user-images.githubusercontent.com/50324325/63265773-08807f80-c297-11e9-86a1-355a261c356b.png)
-![image](https://user-images.githubusercontent.com/50324325/63265623-bccdd600-c296-11e9-9303-47b9791b0205.png)
-5. Define a scheduled search, the results of which are stored in the summary index. For more information about scheduling searches, click [here](https://docs.splunk.com/Documentation/Splunk/7.3.0/Knowledge/Definesearchmacros). 
-![image](https://user-images.githubusercontent.com/50324325/63265640-c5261100-c296-11e9-9bd6-426fb328c09c.png)
-6. In the Summary indexing section, select the summary index, and enter the {key:value} pair for Cortex XSOAR classification.
-![image](https://user-images.githubusercontent.com/50324325/63265665-d0793c80-c296-11e9-9919-cf6c6af33294.png)
-7. Configure the incident type in Cortex XSOAR by navigating to __Settings > Advanced > Incident Types.__
-![image](https://user-images.githubusercontent.com/50324325/63265677-d66f1d80-c296-11e9-95df-190ab18ae484.png)
-8. Navigate to __Settings > Integrations > Classification & Mapping__, and drag the value to the appropriate incident type.
-![image](https://user-images.githubusercontent.com/50324325/63265720-ea1a8400-c296-11e9-8062-dd40606c5a42.png)
-9. Click the __Edit mapping__ link to map the Splunk fields to Cortex XSOAR.
-![image](https://user-images.githubusercontent.com/50324325/63265811-1d5d1300-c297-11e9-8026-52ff1cf30cbf.png)
-10. (Optional) Create custom fields.
-11. Build a playbook and assign it as the default for this incident type.
+**Note:** The following information is for Splunk Enterprise Security Users.  
+For Splunk non-Enterprise Security Users, see [Splunk non-Enterprise Security Users](#splunk-non-enterprise-security-users).
 
-### Fetching notable events.
+### Fetching notable events
 The integration allows for fetching Splunk notable events using a default query. The query can be changed and modified to support different Splunk use cases. (See [Existing users](#existing-users)).
 
 ### Enriching notable events
@@ -165,8 +145,45 @@ To use this feature, you must set several integration instance parameters:
 This integration supports the *Select Schema* feature of XSOAR 6.0 by providing the ***get-mapping-fields*** command. 
 When creating a new field mapping for fetched incidents, the *Pull Instances* option retrieves current alerts which can be clicked to visually map fields.
 If the user has configured the *Use CIM Schemas for Mapping* parameter then the *Select Schema* option retrieves fields based on Splunk CIM.
-For more information see: https://docs.splunk.com/Documentation/CIM/4.18.0/User/Overview
+For more information see: https://docs.splunk.com/Documentation/CIM/4.18.0/User/Overview.
 The CIM mapping fields implemented in this integration are of 4.18.0 version.
+
+
+
+## Splunk non-Enterprise Security Users
+
+### Configure Splunk to Produce Alerts for SplunkPy for non-ES Splunk Users
+
+It is recommended that Splunk is configured to produce basic alerts that the SplunkPy integration can ingest, by creating a summary index in which alerts are stored. The SplunkPy integration can then query that index for incident ingestion. It is not recommended to use the Cortex XSOAR application with Splunk for routine event consumption because this method is not able to be monitored and is not scalable.
+
+1. Create a summary index in Splunk. For more information, click [here](https://docs.splunk.com/Documentation/Splunk/7.3.0/Indexer/Setupmultipleindexes#Create_events_indexes_2).
+2. Build a query to return relevant alerts.
+![image](https://user-images.githubusercontent.com/50324325/63265602-ae7fba00-c296-11e9-898c-afc98c56a1cb.png)
+3. Identify the fields list from the Splunk query and save it to a local file.
+![image](https://user-images.githubusercontent.com/50324325/63265613-b6d7f500-c296-11e9-81d7-854ee4ee9685.png)
+4. Define a search macro to capture the fields list that you saved locally. For more information, click [here](https://docs.splunk.com/Documentation/Splunk/7.3.0/Knowledge/Definesearchmacros).
+Use the following naming convention: (demisto_fields_{type}).
+![image](https://user-images.githubusercontent.com/50324325/63265773-08807f80-c297-11e9-86a1-355a261c356b.png)
+![image](https://user-images.githubusercontent.com/50324325/63265623-bccdd600-c296-11e9-9303-47b9791b0205.png)
+5. Define a scheduled search, the results of which are stored in the summary index. For more information about scheduling searches, click [here](https://docs.splunk.com/Documentation/Splunk/7.3.0/Knowledge/Definesearchmacros). 
+![image](https://user-images.githubusercontent.com/50324325/63265640-c5261100-c296-11e9-9bd6-426fb328c09c.png)
+6. In the Summary indexing section, select the summary index, and enter the {key:value} pair for Cortex XSOAR classification.
+![image](https://user-images.githubusercontent.com/50324325/63265665-d0793c80-c296-11e9-9919-cf6c6af33294.png)
+7. Configure the incident type in Cortex XSOAR by navigating to __Settings > Advanced > Incident Types.__
+![image](https://user-images.githubusercontent.com/50324325/63265677-d66f1d80-c296-11e9-95df-190ab18ae484.png)
+8. Navigate to __Settings > Integrations > Classification & Mapping__, and drag the value to the appropriate incident type.
+![image](https://user-images.githubusercontent.com/50324325/63265720-ea1a8400-c296-11e9-8062-dd40606c5a42.png)
+9. Click the __Edit mapping__ link to map the Splunk fields to Cortex XSOAR.
+![image](https://user-images.githubusercontent.com/50324325/63265811-1d5d1300-c297-11e9-8026-52ff1cf30cbf.png)
+10. (Optional) Create custom fields.
+11. Build a playbook and assign it as the default for this incident type.
+
+### Constraints
+The following features are not supported in non-ES (Enterprise Security) Splunk.
+- Incident Mirroring
+- Enrichment.
+- Content in the Splunk content pack (such as mappers, layout, playbooks, incident fields, and the incident type). Therefore, you will need to create your own content. See the [Cortex XSOAR Administrator’s Guide](https://docs.paloaltonetworks.com/cortex/cortex-xsoar.html) for information.
+
 
 ## Commands
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
