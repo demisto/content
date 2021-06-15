@@ -17,6 +17,10 @@
         "CiscoASA": {
             "mandatory": true,
             "display_name": "Cisco ASA"
+        },
+        "aa": {
+            "mandatory": true,
+            "display_name": "aa"
         }
     }
 }
