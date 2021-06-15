@@ -16,7 +16,7 @@
     "manualMapping": {},
     "mergeContext": false,
     "regex": "",
-    "reputationCommand": "",
+    "reputationCommand": "attack-pattern",
     "reputationScriptName": "",
     "sortValues": null,
     "system": false,
