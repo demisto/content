@@ -1,6 +1,6 @@
 import pytest
 
-from Tests.Marketplace.zip_packs import get_latest_pack_zip_from_blob, zip_packs,\
+from Tests.Marketplace.zip_packs import get_latest_pack_zip_from_pack_files, zip_packs,\
     remove_test_playbooks_if_exist, remove_test_playbooks_from_signatures, get_zipped_packs_names,\
     copy_zipped_packs_to_artifacts
 
@@ -33,7 +33,7 @@ class TestZipPacks:
             Return the correct pack zip blob
         """
 
-        blob_name = get_latest_pack_zip_from_blob('Slack', TestZipPacks.BLOB_NAMES)
+        blob_name = get_latest_pack_zip_from_pack_files('Slack', TestZipPacks.BLOB_NAMES)
         assert blob_name == 'content/packs/Slack/1.0.2/Slack.zip'
 
     def test_get_zipped_packs_name(self, mocker):

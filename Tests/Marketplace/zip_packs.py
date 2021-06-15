@@ -13,7 +13,6 @@ import subprocess
 from pathlib import Path
 
 ARTIFACT_NAME = 'content_marketplace_packs.zip'
-MAX_THREADS = 4
 
 
 def option_handler():
@@ -27,12 +26,8 @@ def option_handler():
     # disable-secrets-detection-start
     parser.add_argument('-a', '--artifacts_path', help="Path of the CircleCI artifacts to save the zip file in",
                         required=False)
-    parser.add_argument('-gp', '--gcp_path', help="Path of the content packs in the GCP bucket",
-                        required=False)
     parser.add_argument('-z', '--zip_path', help="Full path of folder to zip packs in", required=True)
     parser.add_argument('-b', '--bucket_name', help="Storage bucket name", required=True)
-    parser.add_argument('-br', '--branch_name', help="Name of the branch", required=False)
-    parser.add_argument('-n', '--circle_build', help="Number of the circle build", required=False)
     parser.add_argument('-sbp', '--storage_base_path', help="Storage base path of the directory to download from.",
                         required=False)
     parser.add_argument('-s', '--service_account',
@@ -150,7 +145,7 @@ def get_zipped_packs_names(zip_path):
         if entry not in IGNORED_FILES and entry in packs_list and os.path.isdir(entry_path):
             # This is a pack directory, should keep only most recent release zip
             pack_files = get_pack_files(entry_path)
-            latest_zip = get_latest_pack_zip_from_blob(entry, pack_files)
+            latest_zip = get_latest_pack_zip_from_pack_files(entry, pack_files)
             if not latest_zip:
                 logging.warning(f'Failed to get the zip of the pack {entry} from GCP')
                 continue
@@ -173,7 +168,7 @@ def download_packs_from_gcp(storage_bucket_name, dest_path):
 
     process = subprocess.check_output(['gsutil', '-m', 'cp', '-r', src_path, dest_path])
     if process:
-        logging.info(f"cp_gcp_dir.sh output: {process}")
+        logging.info(f"gsutil cp command output: {process}")
 
 
 def copy_zipped_packs_to_artifacts(zipped_packs):
@@ -192,10 +187,6 @@ def copy_zipped_packs_to_artifacts(zipped_packs):
                             f'packs/{name}.zip')
 
 
-def executor_submit(executor, download_path, blob):
-    executor.submit(blob.download_to_filename, download_path)
-
-
 def cleanup(destination_path):
     """
     Cleans up the destination path directory by removing everything except the packs zip.
@@ -210,27 +201,26 @@ def cleanup(destination_path):
             os.remove(file_)
 
 
-def get_latest_pack_zip_from_blob(pack, blobs):
+def get_latest_pack_zip_from_pack_files(pack, pack_files):
     """
     Returns the latest zip of a pack from a list of blobs.
     Args:
         pack: The pack name
-        blobs: The blob list
-
+        pack_files: A list of string which are paths of the pack's files
     Returns:
-        latest_blob_name: The zip blob of the pack with the latest version.
+        latest_zip_path: The zip path of the pack with the latest version.
     """
-    latest_blob_name = None
-    latest_blob_version = None
-    for current_blob in blobs:
-        current_pack_name = os.path.splitext(os.path.basename(current_blob))[0]
-        if current_pack_name == pack and current_blob.endswith('.zip'):
-            current_pack_zip_version = LooseVersion(os.path.basename(os.path.dirname(current_blob)))
-            if not latest_blob_version or latest_blob_version < current_pack_zip_version:
-                latest_blob_version = current_pack_zip_version
-                latest_blob_name = current_blob
+    latest_zip_path = None
+    latest_zip_version = None
+    for current_file_path in pack_files:
+        current_pack_name = os.path.splitext(os.path.basename(current_file_path))[0]
+        if current_pack_name == pack and current_file_path.endswith('.zip'):
+            current_pack_zip_version = LooseVersion(os.path.basename(os.path.dirname(current_file_path)))
+            if not latest_zip_version or latest_zip_version < current_pack_zip_version:
+                latest_zip_version = current_pack_zip_version
+                latest_zip_path = current_file_path
 
-    return latest_blob_name
+    return latest_zip_path
 
 
 def main():
