@@ -221,7 +221,7 @@ def submit_url(client, args):
         Submit the URL
     """
     url = args.get('url')
-    engines = argToList(args.get('engines','[]')) 
+    engines = argToList(args.get('engines', '[]'))
     parameters = args.get('parameters')
     priority = args.get('priority', 10)
     profile = args.get('profile')
@@ -257,7 +257,7 @@ def submit_file(client, args):
     file_entry_id = args.get('entry_id')
     file_path = demisto.getFilePath(file_entry_id)['path']
     file_name = demisto.getFilePath(file_entry_id)['name']
-    engines = argToList(args.get('engines','[]'))
+    engines = argToList(args.get('engines', '[]'))
     priority = args.get('priority', 10)
     profile = args.get('profile')
 
@@ -265,7 +265,8 @@ def submit_file(client, args):
     priority = validate_priority(priority)
 
     with open(file_path, 'rb') as file:
-        result = client.submit_file(file_name=file_name, file_obj=file.read(), engine_list=engines, priority=priority, profile=profile)
+        result = client.submit_file(file_name=file_name, file_obj=file.read(), engine_list=engines,
+                                    priority=priority, profile=profile)
 
     readable_output = '## Submitted File\n'
     readable_output += tableToMarkdown('Twinwave Submissions', result,
@@ -591,7 +592,7 @@ def main():
 
     api_token = params.get('api-token')
     verify_certificate = not params.get('insecure', False)
-    proxy = handle_proxy() 
+    proxy = handle_proxy()
 
     LOG(f'Command being called is {demisto.command()}')
     try:
