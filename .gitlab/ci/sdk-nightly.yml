@@ -1,6 +1,12 @@
 .sdk-nightly-schedule-rule:
   rules:
-    - if: '$CI_PIPELINE_SOURCE =~ /^(schedule)$/ && $DEMISTO_SDK_NIGHTLY == "true"'
+    - if: '$CI_PIPELINE_SOURCE =~ /^(schedule|trigger)$/ && $DEMISTO_SDK_NIGHTLY == "true"'
+
+# used for jobs which we want to run in a pipeline even when previous jobs in the pipeline fail e.g. slack notification
+.sdk-nightly-schedule-rule-always:
+  rules:
+    - if: '$CI_PIPELINE_SOURCE =~ /^(schedule|trigger)$/ && $DEMISTO_SDK_NIGHTLY == "true"'
+      when: always
 
 
 .upload-entities-to-cortex-xsoar: &upload-entities-to-cortex-xsoar
@@ -8,7 +14,7 @@
   - demisto-sdk upload -i Packs/HelloWorld/Integrations/ --insecure
   - demisto-sdk upload -i Packs/HelloWorld/TestPlaybooks/playbook-HelloWorld-Test.yml --insecure
   - demisto-sdk upload -i Packs/HelloWorld/Layouts/layoutscontainer-Hello_World_Test_Layout.json --insecure
-  - demisto-sdk upload -i Packs/HelloWorld/IncidentFields/incidentfield-Hello_World_Incident_Test.json --insecure
+  - demisto-sdk upload -i Packs/HelloWorld/IncidentFields/incidentfield-Hello_World_IncidentField_Test.json --insecure
   - demisto-sdk upload -i Packs/HelloWorld/IncidentTypes/incidenttype-Hello_World_Alert_Test.json --insecure
   - demisto-sdk upload -i Packs/HelloWorld/Classifiers/classifier-mapper-incoming-HelloWorldTest.json --insecure
   - section_end "Upload Entities to Cortex XSOAR"
@@ -32,6 +38,7 @@ demisto_sdk_nightly:check_idset_dependent_commands:
     - .default-job-settings
     - .sdk-nightly-schedule-rule
   stage: unittests-and-validations
+  needs: []
   inherit:
     variables: true
   variables:
@@ -93,13 +100,9 @@ demisto-sdk-nightly:create-instance:
 demisto-sdk-nightly:run-commands-against-instance:
   extends:
     - .default-job-settings
-    - .sdk-nightly-schedule-rule
+    - .sdk-nightly-schedule-rule-always
   variables:
-    DESTROY_INSTANCES: "true"
     INSTANCE_ROLE: "Server Master"
-  needs: ["demisto-sdk-nightly:create-instance"]
-  dependencies:
-    - demisto-sdk-nightly:create-instance
   stage: run-instances
   script:
     - !reference [.open-ssh-tunnel]
@@ -119,7 +122,7 @@ demisto-sdk-nightly:run-commands-against-instance:
     - section_start "Download Entities from XSOAR Instance" --collapsed
     - demisto-sdk download -o Packs/HelloWorld/ -i HelloWorld --insecure -f
     - demisto-sdk download -o Packs/HelloWorld/ -i HelloWorld-Test --insecure -f
-    - demisto-sdk download -o Packs/HelloWorld/ -i "Hello World Incident Test" --insecure -f
+    - demisto-sdk download -o Packs/HelloWorld/ -i "Hello World IncidentField Test" --insecure -f
     - demisto-sdk download -o Packs/HelloWorld/ -i "Hello World Alert Test" --insecure -f
     - demisto-sdk download -o Packs/HelloWorld/ -i "Hello World Test - Incoming Mapper" --insecure -f
     - section_end "Download Entities from XSOAR Instance"
@@ -141,10 +144,11 @@ demisto-sdk-nightly:run-commands-against-instance:
 demisto-sdk-nightly:trigger-slack-notify:
   extends:
     - .trigger-slack-notification
-  rules:
-    - if: '$CI_PIPELINE_SOURCE =~ /^(schedule)$/ && $DEMISTO_SDK_NIGHTLY == "true"'
-      when: always
+    - .sdk-nightly-schedule-rule-always
   variables:
     PIPELINE_TO_QUERY: $CI_PIPELINE_ID
     WORKFLOW: 'Demisto SDK Nightly'
     JOB_NAME: 'demisto-sdk-nightly:run-commands-against-instance'
+    # Passes the environment variable from the parent pipeline to the child which can be useful for cases
+    # when triggering pipeline with alternate env variable value passed in the API call
+    SLACK_CHANNEL: $SLACK_CHANNEL
