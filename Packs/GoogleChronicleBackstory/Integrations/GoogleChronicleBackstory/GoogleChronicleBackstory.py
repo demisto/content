@@ -21,6 +21,7 @@ SCOPES = ['https://www.googleapis.com/auth/chronicle-backstory']
 
 BACKSTORY_API_V1_URL = 'https://{}backstory.googleapis.com/v1'
 BACKSTORY_API_V2_URL = 'https://{}backstory.googleapis.com/v2'
+MAX_ATTEMPTS = 60
 
 REGIONS = {
     "General": "",
@@ -174,7 +175,8 @@ def validate_response(client, url, method='GET'):
     if raw_response[0].status == 429:
         raise ValueError('API rate limit exceeded. Reattempt will be initiated.')
     if raw_response[0].status == 400 or raw_response[0].status == 404:
-        raise ValueError('Status code: {}\nError: {}'.format(raw_response[0].status, parse_error_message(raw_response[1])))
+        raise ValueError(
+            'Status code: {}\nError: {}'.format(raw_response[0].status, parse_error_message(raw_response[1])))
     if raw_response[0].status != 200:
         return_error(
             'Status code: {}\nError: {}'.format(raw_response[0].status, parse_error_message(raw_response[1])))
@@ -1612,7 +1614,12 @@ def convert_events_to_actionable_incidents(events: list) -> list:
 
 def fetch_detections(client_obj, start_time, end_time, max_fetch, detection_to_process, detection_to_pull,
                      pending_rule_or_version_id: list, alert_state, simple_backoff_rules):
-    """Fetch detections in given time slot."""
+    """
+    Fetch detections in given time slot. This method calls the get_max_fetch_detections method.
+    If detections are more than max_fetch then it partition it into 2 part, from which
+    one part(total detection = max_fetch) will be pushed and another part(detection more than max_fetch) will be
+    kept in 'detection_to_process' for next cycle. If all rule_id covers, then it will return empty list.
+    """
 
     if not pending_rule_or_version_id and not detection_to_process and not detection_to_pull and not simple_backoff_rules:
         return [], detection_to_process, detection_to_pull, pending_rule_or_version_id, simple_backoff_rules
@@ -1633,8 +1640,15 @@ def fetch_detections(client_obj, start_time, end_time, max_fetch, detection_to_p
 
 def get_max_fetch_detections(client_obj, start_time, end_time, max_fetch, detection_incidents, detection_to_pull,
                              pending_rule_or_version_id, alert_state, simple_backoff_rules):
-    """Get list of detection using detection_to_pull and pending_rule_or_version_id."""
+    """
+    Get list of detection using detection_to_pull and pending_rule_or_version_id. If the API responds
+    with 429, 500 error then it will retry it for 60 times(each attempt take one minute). If it responds
+    with 400 or 404 error, then it will skip that rule_id. In case of an empty response for any next_page_token
+    it will skip that rule_id.
+    """
 
+    # loop if length of detection is less than max_fetch and if any further rule_id(with or without next_page_token)
+    # or any retry attempt remaining
     while len(detection_incidents) < max_fetch and (len(pending_rule_or_version_id) != 0
                                                     or detection_to_pull or simple_backoff_rules):
 
@@ -1654,7 +1668,7 @@ def get_max_fetch_detections(client_obj, start_time, end_time, max_fetch, detect
         except ValueError as e:
             if str(e).endswith('Reattempt will be initiated.'):
                 attempts = simple_backoff_rules.get('attempts', 0)
-                if attempts < 60:
+                if attempts < MAX_ATTEMPTS:
                     demisto.error(
                         f"[CHRONICLE DETECTIONS] Error while fetching incidents: {str(e)} Attempt no : {attempts + 1} "
                         f"for the rule_id : {rule_id} and next_page_token : {next_page_token}")
@@ -1662,7 +1676,7 @@ def get_max_fetch_detections(client_obj, start_time, end_time, max_fetch, detect
                                             'attempts': attempts + 1}
                 else:
                     demisto.error(f"[CHRONICLE DETECTIONS] Skipping the rule_id : {rule_id} due to the maximum "
-                                  f"number of attempts (60). You'll experience data loss for the given rule_id. "
+                                  f"number of attempts ({MAX_ATTEMPTS}). You'll experience data loss for the given rule_id. "
                                   f"Switching to next rule id.")
                     simple_backoff_rules = {}
                     detection_to_pull = {}
@@ -1670,9 +1684,11 @@ def get_max_fetch_detections(client_obj, start_time, end_time, max_fetch, detect
 
             if str(e).startswith('Status code: 404') or str(e).startswith('Status code: 400'):
                 if str(e).startswith('Status code: 404'):
-                    demisto.error(f"[CHRONICLE DETECTIONS] Error while fetching incidents: Rule with ID {rule_id} not found.")
+                    demisto.error(
+                        f"[CHRONICLE DETECTIONS] Error while fetching incidents: Rule with ID {rule_id} not found.")
                 else:
-                    demisto.error(f"[CHRONICLE DETECTIONS] Error while fetching incidents: Rule with ID {rule_id} is invalid.")
+                    demisto.error(
+                        f"[CHRONICLE DETECTIONS] Error while fetching incidents: Rule with ID {rule_id} is invalid.")
                 detection_to_pull = {}
                 simple_backoff_rules = {}
                 break
@@ -2134,7 +2150,7 @@ def get_rules(client_obj, args: Dict[str, str]) -> Tuple[Dict[str, Any], Dict[st
     if int(page_size) > 1000:
         raise ValueError('Page size should be in the range from 1 to 1000.')
 
-    live_rule = argToBoolean(args.get('live_rule', ''))
+    live_rule = args.get('live_rule', '').lower()
     if live_rule and live_rule != 'true' and live_rule != 'false':
         raise ValueError('Live rule should be true or false.')
 
@@ -2146,13 +2162,14 @@ def get_rules(client_obj, args: Dict[str, str]) -> Tuple[Dict[str, Any], Dict[st
 
     # get list of rules from Chronicle Backstory
     json_data = validate_response(client_obj, request_url)
-      if live_rule:
-          list_live_rule = [rule for rule in json_data.get('rules', []) if rule.get('liveRuleEnabled')]
-      else:
-          list_live_rule = [rule for rule in json_data.get('rules', []) if not rule.get('liveRuleEnabled')]
-      json_data = {
-          'rules': list_live_rule
-      }
+    if live_rule:
+        if live_rule == 'true':
+            list_live_rule = [rule for rule in json_data.get('rules', []) if rule.get('liveRuleEnabled')]
+        else:
+            list_live_rule = [rule for rule in json_data.get('rules', []) if not rule.get('liveRuleEnabled')]
+        json_data = {
+            'rules': list_live_rule
+        }
     raw_resp = deepcopy(json_data)
     parsed_ec, token_ec = get_context_for_rules(json_data)
     ec: Dict[str, Any] = {
