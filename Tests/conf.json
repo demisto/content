@@ -54,6 +54,10 @@
             "fromversion": "5.0.0"
         },
         {
+            "integrations": "FireEye Central Management",
+            "playbookID": "FireEye Central Management - Test"
+        },
+        {
             "integrations": "FireEyeNX",
             "playbookID": "FireEyeNX-Test"
         },
@@ -1904,7 +1908,7 @@
         },
         {
             "integrations": "AWS - IAM",
-            "playbookID": "d5cb69b1-c81c-4f27-8a40-3106c0cb2620"
+            "playbookID": "AWS - IAM Test Playbook"
         },
         {
             "integrations": "McAfee Active Response",
@@ -2876,6 +2880,11 @@
             "memory_threshold": 190
         },
         {
+            "integrations": "F5Silverline",
+            "playbookID": "F5Silverline_TestPlaybook",
+            "fromversion": "6.0.0"
+        },
+        {
             "integrations": "Carbon Black Enterprise EDR",
             "playbookID": "Carbon Black Enterprise EDR Test",
             "fromversion": "5.0.0"
@@ -3312,7 +3321,7 @@
             "timeout": 1000
         },
         {
-           "integrations": "HPEArubaClearPass",
+            "integrations": "HPEArubaClearPass",
             "playbookID": "HPEArubaClearPass_TestPlaybook"
         },
         {
@@ -3367,6 +3376,12 @@
             "integrations": "NetscoutAED",
             "playbookID": "NetscoutAED-Test",
             "fromversion": "5.5.0"
+        },
+        {
+            "integrations": "CarbonBlackLiveResponseCloud",
+            "playbookID": "CarbonBlackLiveResponseCloud-Test",
+            "fromversion": "5.5.0",
+            "is_mockable": false
         }
     ],
     "skipped_tests": {
@@ -3422,7 +3437,6 @@
         "Carbon Black Enterprise Protection V2 Test": "Issue 32322",
         "Google_Vault-Search_And_Display_Results_test": "Issue 24348",
         "FeedThreatConnect-Test": "Issue 32317",
-        "HelloWorldPremium_Scan-Test": "Issue 32512",
         "Palo_Alto_Networks_Enterprise_DLP - Test": "Issue 32568",
         "JoeSecurityTestDetonation": "Issue 25650",
         "JoeSecurityTestPlaybook": "Issue 25649",
@@ -3434,11 +3448,8 @@
         "Extract Indicators From File - Generic v2 - Test": "Issue 30071",
         "Kenna Test": "Missing data",
         "Trend Micro Apex - Test": "Issue 27280",
-        "Create ServiceNow Ticket and Mirror Test": "Issue 30587",
         "palo_alto_panorama_test_pb": "Issue 34371",
         "Microsoft Defender - ATP - Indicators Test": "Issue 29279",
-        "Active Directory - Get User Manager Details - Test": "Issue 25604",
-        "GSuiteAdmin-Test": "Issue 34784",
         "Test-BPA": "Issue 28406",
         "Test-BPA_Integration": "Issue 28236",
         "EWS search-mailbox test": "Issue 27943",
@@ -3495,7 +3506,6 @@
         "Nessus": "No instance",
         "Cisco CloudLock": "No instance",
         "Vectra v2": "No instance",
-        "AWS - IAM": "Issue 21401",
         "GoogleCloudSCC": "No instance, outsourced",
         "FortiGate": "License expired, and not going to get one (issue 14723)",
         "Attivo Botsink": "no instance, not going to get it",
@@ -3559,7 +3569,6 @@
         "Lastline": "issue 20323",
         "Google Resource Manager": "Cannot create projects because have reached allowed quota.",
         "Looker": "Warehouse 'DEMO_WH' cannot be resumed because resource monitor 'LIMITER' has exceeded its quota.",
-        "Ipstack": "Issue 26266",
         
         "_comment4": "~~~ OTHER ~~~",
         "Pentera": "authentication method will not work with testing",
@@ -3725,6 +3734,9 @@
         "Cortex Data Lake",
         "Mail Listener v2"
     ],
+    "private_tests": [
+        "HelloWorldPremium_Scan-Test"
+    ],
     "docker_thresholds": {
         
         "_comment": "Add here docker images which are specific to an integration and require a non-default threshold (such as rasterize or ews). That way there is no need to define this multiple times. You can specify full image name with version or without.",
@@ -3768,6 +3780,9 @@
             },
             "demisto/boto3": {
                 "memory_threshold": 90
+            },
+            "demisto/flask-nginx": {
+                "pid_threshold": 11
             }
         }
     }

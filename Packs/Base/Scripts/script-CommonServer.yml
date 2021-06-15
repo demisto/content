@@ -1582,11 +1582,7 @@ script: >-
    */
   function isIPInSubnet(ip, subnet) {
       function IPnumber(IPaddress) {
-          var parsedIp = IPaddress.match(/^(\d+)\.(\d+)\.(\d+)\.(\d+)$/);
-          if(parsedIp) {
-              return (+parsedIp[1]<<24) + (+parsedIp[2]<<16) + (+parsedIp[3]<<8) + (+parsedIp[4]);
-          }
-          return null;
+          return IPaddress.split('.').reduce(function(int, oct) {return (int << 8) + parseInt(oct, 10);}, 0) >>> 0;
       }
 
       function IPmask(maskSize) {
@@ -1597,10 +1593,7 @@ script: >-
       if (parts.length == 1) {
           return ip == parts[0];
       }
-      if (IPnumber(parts[0]) && parts[1].match(/^(\d+)/)) {
-          return (IPnumber(ip) & IPmask(parts[1])) == IPnumber(parts[0]);
-      }
-      return false;
+      return (IPnumber(ip) & IPmask(parts[1])) === (IPnumber(parts[0]) & IPmask(parts[1]));
   }
 
 
