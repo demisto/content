@@ -1,0 +1,30 @@
+{
+    "id": "incident_f5silverlinewebapplicationname",
+    "version": -1,
+    "modified": "2021-05-13T15:19:05.239028713Z",
+    "name": "F5 Silverline Web Application Name",
+    "ownerOnly": false,
+    "cliName": "f5silverlinewebapplicationname",
+    "type": "shortText",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "associatedTypes": [
+        "F5 Silverline WAF Events"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": false,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.0.0"
+}
