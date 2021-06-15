@@ -614,7 +614,7 @@ script:
           description: Relationships of the mitigation (only visible when extending the data).
           type: Unknown
       deprecated: false
-      description: List all alerts. When an alert ID is given, only the relevant alert will be fetched.
+      description: Add a TMS or flowspec mitigation with the attributes and relationships passed in the JSON sub_object.
       execution: false
       name: na-sightline-mitigation-create
     - arguments:
@@ -989,7 +989,7 @@ script:
       description: Get a list of available TMS groups.
       execution: false
       name: na-sightline-tms-group-list
-  dockerimage: demisto/python3:3.9.5.20070
+  dockerimage: demisto/python3:3.9.5.21272
   feed: false
   isfetch: true
   longRunning: false

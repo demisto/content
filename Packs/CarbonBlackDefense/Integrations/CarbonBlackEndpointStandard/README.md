@@ -1,9 +1,52 @@
 VMware Carbon Black Endpoint Standard (formerly known as Carbon Black Defense) is a next-generation antivirus + EDR in one cloud-delivered platform that stops commodity malware, advanced malware, non-malware attacks, and ransomware.
 This integration was integrated and tested with version 1.1.2 of Carbon Black Endpoint Standard
 
-## The changes v1
-The old integration is deprecated because Carbon Black have released a new version of their API.
-The new integration supports new commands, Also added a Mapper and a Layout.
+## New Features in Carbon Black Endpoint Standard v2
+The Carbon Black Endpoint Standard v1 integration is deprecated because Carbon Black released a new version of their API. Use the Carbon Black Endpoint Standard v2 integration instead. The following are the new features in V2.
+
+### New Commands
+
+The Carbon Black Endpoint Standard v2 integration supports the following new commands:
+* Operations on devices:
+    * [cbd-device-background-scan](#cbd-device-background-scan) Starts a background scan on a device by ID.
+    * [cbd-device-background-scan-stop](#cbd-device-background-scan-stop) Stops a background scan on a device by ID.
+    * [cbd-device-bypass](#cbd-device-bypass) Bypasses a device.
+    * [cbd-device-unbypass](#cbd-device-unbypass) Unbypasses a device.
+    * [cbd-device-policy-update](#cbd-device-policy-update) Updates the devices to the specified policy ID.
+    * [cbd-device-update-sensor-version](#cbd-device-update-sensor-version) Updates the version of a sensor.
+    * [cbd-device-quarantine](#cbd-device-quarantine) Quarantines the device.
+    * [cbd-device-unquarantine](#cbd-device-unquarantine) Unquarantines the device.
+* [cbd-alerts-search](#cbd-alerts-search) Retrieves all alerts using some arguments (query, ID, type, category) to filter the results.
+* [cbd-find-events-details](#cbd-find-events-details) Retrieves details for enriched events.
+* [cbd-find-events-details-results](#cbd-find-events-details-results) Retrieves the status for an enriched events detail request for a given job ID.
+* [cbd-find-events-results](#cbd-find-events-results) Retrieves the result for an enriched events search request for a given job ID.
+* [cbd-find-processes-results](#cbd-find-processes-results) Retrieves the results of a process search identified by the job ID.
+
+#### Deprecated Commands in Carbon Black Endpoint Standard v1
+The following commands from the Carbon Black Endpoint Standard v1 integration have been deprecated and replaced with the v2 commands as shown.
+
+| Deprecated Command | Replaced with v2 Commands | 
+| --- | --- |
+| cbd-get-device-status | [cbd-device-search](#cbd-device-search) |
+| cbd-get-devices-status | [cbd-device-search](#cbd-device-search) |
+| cbd-change-device-status | - [cbd-device-quarantine](#cbd-device-quarantine)<br/>- [cbd-device-unquarantine](#cbd-device-unquarantine)<br/>- [cbd-device-background-scan](#cbd-device-background-scan)<br/>- [cbd-device-background-scan-stop](#cbd-device-background-scan-stop)<br/>- [cbd-device-bypass](#cbd-device-bypass)<br/>- [cbd-device-unbypass](#cbd-device-unbypass)<br/>- [cbd-device-policy-update](#cbd-device-policy-update)<br/>- [cbd-device-update-sensor-version](#cbd-device-update-sensor-version) |
+| cbd-find-events | [cbd-find-events](#cbd-find-events) returns a *job_id* to use in the [cbd-find-events-results](#cbd-find-events-results) command as an argument. |
+| cbd-find-processes | [cbd-find-processes](#cbd-find-processes) returns a *job_id* to use in the [cbd-find-processes-results](#cbd-find-processes-results) command as an argument. |
+
+### Playbooks
+There are 3 new playbooks:
+* **Carbon Black Endpoint Standard Find Events** - Finds events using a search query (or device_id, etc.).
+* **Carbon Black Endpoint Standard Find Event Details** - Receives event IDs and returns details about the event.
+* **Carbon Black Endpoint Standard Find Processes** - Finds processes using a search query (or device_id, etc.).
+
+### Mapper
+**Carbon Black Endpoint Standard Mapper**.
+
+### Layout
+**Carbon Black Endpoint Standard Incoming Layout**.
+
+### Classifier
+**Carbon Black Endpoint Standard**
 
 ## Configure Carbon Black Endpoint Standard on Cortex XSOAR
 
@@ -2007,7 +2050,7 @@ Live Response Permissions Required
 
 
 #### Command Example
-```!cbd-set-policy policy=123456 keyValue=`{"policyInfo": {"description": "update example", "name": "demisto test1", "id": 123456, "policy": {"sensorSettings": [{"name": "SHOW_UI", "value": "true"}]}, "priorityLevel": "HIGH"}}````
+```!cbd-set-policy policy=123456 keyValue=`{"policyInfo": {"description": "update example", "name": "xsoar test1", "id": 123456, "policy": {"sensorSettings": [{"name": "SHOW_UI", "value": "true"}]}, "priorityLevel": "HIGH"}}````
 
 #### Context Example
 ```json
@@ -2017,7 +2060,7 @@ Live Response Permissions Required
             "description": "update example",
             "id": 123456,
             "latestRevision": 1617542937951,
-            "name": "demisto test1",
+            "name": "xsoar test1",
             "policy": {
                 "avSettings": {
                     "apc": {
@@ -2216,7 +2259,7 @@ Live Response Permissions Required
 >### Carbon Black Endpoint Standard Policy
 >|Id|Description|Name|Latest Revision|Version|Priority Level|System Policy|
 >|---|---|---|---|---|---|---|
->| 123456 | update example | demisto test1 | 2021-04-04T13:28:57.000Z | 2 | HIGH | false |
+>| 123456 | update example | xsoar test1 | 2021-04-04T13:28:57.000Z | 2 | HIGH | false |
 
 
 ### cbd-create-policy
@@ -2254,17 +2297,17 @@ Live Response Permissions Required
 
 
 #### Command Example
-```!cbd-create-policy description=`This is Demisto's test policy` name=`Demisto test3` priorityLevel=HIGH policy=`{}````
+```!cbd-create-policy description=`This is xsoar's test policy` name=`xsoar test3` priorityLevel=HIGH policy=`{}````
 
 #### Context Example
 ```json
 {
     "CarbonBlackDefense": {
         "Policy": {
-            "description": "This is Demisto's test policy",
+            "description": "This is xsoar's test policy",
             "id": 67586,
             "latestRevision": 1617542929543,
-            "name": "Demisto test3",
+            "name": "xsoar test3",
             "policy": {
                 "avSettings": {
                     "apc": {
@@ -2664,7 +2707,7 @@ Live Response Permissions Required
 >### Carbon Black Endpoint Standard Policy
 >|Id|Description|Name|Latest Revision|Version|Priority Level|System Policy|
 >|---|---|---|---|---|---|---|
->| 67586 | This is Demisto's test policy | Demisto test3 | 2021-04-04T13:28:49.000Z | 2 | HIGH | false |
+>| 67586 | This is xsoar's test policy | xsoar test3 | 2021-04-04T13:28:49.000Z | 2 | HIGH | false |
 
 
 ### cbd-delete-policy
@@ -2735,17 +2778,17 @@ Live Response Permissions Required
 
 
 #### Command Example
-```!cbd-update-policy id=123456 description=`This is Demisto's test policy after an update` name=`demisto test1` priorityLevel=LOW policy=`{"sensorSettings": [{"name": "SHOW_UI", "value": "false"}]}````
+```!cbd-update-policy id=123456 description=`This is xsoar's test policy after an update` name=`xsoar test1` priorityLevel=LOW policy=`{"sensorSettings": [{"name": "SHOW_UI", "value": "false"}]}````
 
 #### Context Example
 ```json
 {
     "CarbonBlackDefense": {
         "Policy": {
-            "description": "This is Demisto's test policy after an update",
+            "description": "This is xsoar's test policy after an update",
             "id": 123456,
             "latestRevision": 1617542940381,
-            "name": "demisto test1",
+            "name": "xsoar test1",
             "policy": {
                 "avSettings": {
                     "apc": {
@@ -2944,7 +2987,7 @@ Live Response Permissions Required
 >### Carbon Black Endpoint Standard Policy
 >|Id|Description|Name|Latest Revision|Version|Priority Level|System Policy|
 >|---|---|---|---|---|---|---|
->| 123456 | This is Demisto's test policy after an update | demisto test1 | 2021-04-04T13:29:00.000Z | 2 | LOW | false |
+>| 123456 | This is xsoar's test policy after an update | xsoar test1 | 2021-04-04T13:29:00.000Z | 2 | LOW | false |
 
 
 ### cbd-add-rule-to-policy
@@ -2981,10 +3024,10 @@ There is no context output for this command.
 {
     "CarbonBlackDefense": {
         "Policy": {
-            "description": "This is Demisto's test policy after an update",
+            "description": "This is xsoar's test policy after an update",
             "id": 123456,
             "latestRevision": 1617542944659,
-            "name": "demisto test1",
+            "name": "xsoar test1",
             "policy": {
                 "avSettings": {
                     "apc": {
@@ -3194,7 +3237,7 @@ There is no context output for this command.
 >### Carbon Black Endpoint Standard Policy
 >|Id|Description|Name|Latest Revision|Version|Priority Level|System Policy|
 >|---|---|---|---|---|---|---|
->| 123456 | This is Demisto's test policy after an update | demisto test1 | 2021-04-04T13:29:04.000Z | 2 | LOW | false |
+>| 123456 | This is xsoar's test policy after an update | xsoar test1 | 2021-04-04T13:29:04.000Z | 2 | LOW | false |
 
 
 ### cbd-update-rule-in-policy
@@ -3232,10 +3275,10 @@ There is no context output for this command.
 {
     "CarbonBlackDefense": {
         "Policy": {
-            "description": "This is Demisto's test policy after an update",
+            "description": "This is xsoar's test policy after an update",
             "id": 123456,
             "latestRevision": 1617542947344,
-            "name": "demisto test1",
+            "name": "xsoar test1",
             "policy": {
                 "avSettings": {
                     "apc": {
@@ -3445,7 +3488,7 @@ There is no context output for this command.
 >### Carbon Black Endpoint Standard Policy
 >|Id|Description|Name|Latest Revision|Version|Priority Level|System Policy|
 >|---|---|---|---|---|---|---|
->| 123456 | This is Demisto's test policy after an update | demisto test1 | 2021-04-04T13:29:07.000Z | 2 | LOW | false |
+>| 123456 | This is xsoar's test policy after an update | xsoar test1 | 2021-04-04T13:29:07.000Z | 2 | LOW | false |
 
 
 ### cbd-delete-rule-from-policy

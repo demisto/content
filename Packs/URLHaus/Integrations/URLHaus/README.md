@@ -1,7 +1,7 @@
 <!-- HTML_DOC -->
 <p>Use the URLhaus integration to get information about URLs and domains, and to download malware samples.</p>
 <h2>
-<a id="Configure_URLhaus_on_Demisto_3"></a>Configure URLhaus on Demisto</h2>
+<a id="Configure_URLhaus_on_Demisto_3"></a>Configure URLhaus on Cortex XSOAR</h2>
 <ol>
 <li>Navigate to<span> </span><strong>Settings</strong><span> </span>&gt;<span> </span><strong>Integrations</strong><span> </span>&gt;<span> </span><strong>Servers &amp; Services</strong>.</li>
 <li>Search for URLhaus.</li>
@@ -21,7 +21,7 @@
 </ol>
 <h2>
 <a id="Commands_16"></a>Commands</h2>
-<p>You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
+<p>You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
 <ol>
 <li><a href="#h_d1d27e6a-8238-418c-bdb3-d4a9f01495d1" target="_self">Get information for a URL: url</a></li>
 <li><a href="#h_986aaa83-1a4c-410c-ad19-827ee0b3b282" target="_self">Get information for a domain: domain</a></li>

@@ -10,7 +10,7 @@
 </div>
 <div class="cl-preview-section">
 <h3>Forescout Module Requirements</h3>
-<p>Before you can use this integration in Demisto, you need to enable certain modules in your Forescout environment.</p>
+<p>Before you can use this integration in Cortex XSOAR, you need to enable certain modules in your Forescout environment.</p>
 <ol>
 <li>In the Forescout console, from the navigation bar select<span> </span><em>Tools &gt; Options</em>.</li>
 <li>In the dialog that appears, from the categories section on the left, click<span> </span><em>Modules</em>.</li>
@@ -23,9 +23,9 @@
 <ol>
 <li>In the Forescout console, from the top navigation bar, click<span> </span><em>Tools &gt; Options</em>.</li>
 <li>From the dialog that appears, in the categories section on the left, click<span> </span><em>Web API</em>, and select<span> </span><em>User Settings</em>.</li>
-<li>Create a username and password by clicking the<span> </span><em>Add</em><span> </span>button, and completing the fields. These are the credentials that you will enter when configuring the Demisto-Forescout integration:<span> </span><em>Web API Username</em><span> </span>and<span> </span><em>Password</em>.</li>
+<li>Create a username and password by clicking the<span> </span><em>Add</em><span> </span>button, and completing the fields. These are the credentials that you will enter when configuring the Cortex XSOAR-Forescout integration:<span> </span><em>Web API Username</em><span> </span>and<span> </span><em>Password</em>.</li>
 <li>Select<span> </span><em>Client IPs</em><span> </span>towards the top of the main area of the dialog, next to<span> </span><em>User Settings</em>.</li>
-<li>Add the IP address where your Demisto instance is hosted or allow requests from all IP addresses to make sure that requests made by the Demisto-Forescout integration will be permitted.</li>
+<li>Add the IP address where your Cortex XSOAR instance is hosted or allow requests from all IP addresses to make sure that requests made by the Cortex XSOAR-Forescout integration will be permitted.</li>
 <li>Click the<span> </span><em>Apply</em><span> </span>button to save the changes you made.</li>
 </ol>
 <p><strong>Data Exchange (DEX) Username</strong><span> </span>and<span> </span><strong>Password</strong><br> The credentials entered here should be those created in the Forescout console for<span> </span><em>Data Exchange (DEX)</em>.</p>
@@ -36,14 +36,14 @@
 <li>Create a username and password by clicking the<span> </span><em>Add</em><span> </span>button, and completing the fields.<span> </span><strong>Note</strong>: The value you entered for the<span> </span><em>Name</em><span> </span>field in the account-creation pop-up window is the value that you should enter for the<span> </span><em>Data Exchange (DEX) Account</em><span> </span>configuration parameter.</li>
 <li>Click the<span> </span><em>Apply</em><span> </span>button to save the changes you made.</li>
 </ol>
-<p>The username and password entered in the account-creation dialog are the credentials that you will enter when configuring the Demisto-Forescout integration:<span> </span><em>Data Exchange (DEX) Username</em><span> </span>and<span> </span><em>Password</em>.</p>
+<p>The username and password entered in the account-creation dialog are the credentials that you will enter when configuring the Cortex XSOAR-Forescout integration:<span> </span><em>Data Exchange (DEX) Username</em><span> </span>and<span> </span><em>Password</em>.</p>
 <p><strong>Data Exchange (DEX) Account</strong><br> The<span> </span><strong>Data Exchange (DEX)</strong><span> </span>credentials<span> </span><strong><em>Name</em></strong><span> </span>field. This can be found by navigating to<span> </span><strong>Tools &gt; Options &gt; Data Exchange (DEX) &gt; CounterACT Web Service &gt; Accounts</strong>.</p>
 <h3>
 <a id="user-content-important-usage-notes" class="anchor" href="https://github.com/demisto/content/blob/284b80afd53fdc12ff18a6953a888f5a0abed67d/Integrations/Forescout/Forescout_description.md#important-usage-notes" aria-hidden="true"></a>Important Usage Notes</h3>
-<p>This integration allows the user to update host properties and Forescout Lists. To create Forescout properties, which can then be updated using the Demisto-Forescout integration, from the Forescout console, navigate to<span> </span><strong>Tools &gt; Options &gt; Data Exchange (DEX) &gt; CounterACT Web Console &gt; Properties</strong>. This is where you create new properties. Make sure to associate the properties with the account you created, and which you used in the configuration parameters of the Forescout integration in Demisto. Lists must also be defined and created in the Forescout console before you can update them using the Demisto-Forescout integration. For more information, reference the<span> </span><em>Defining and Managing Lists</em><span> </span>section in the<span> </span><a href="https://www.forescout.com/wp-content/uploads/2018/04/CounterACT_Administration_Guide_8.0.pdf" rel="nofollow">Forescout Administration Guide</a>.</p>
+<p>This integration allows the user to update host properties and Forescout Lists. To create Forescout properties, which can then be updated using the Cortex XSOAR-Forescout integration, from the Forescout console, navigate to<span> </span><strong>Tools &gt; Options &gt; Data Exchange (DEX) &gt; CounterACT Web Console &gt; Properties</strong>. This is where you create new properties. Make sure to associate the properties with the account you created, and which you used in the configuration parameters of the Forescout integration in Cortex XSOAR. Lists must also be defined and created in the Forescout console before you can update them using the Cortex XSOAR-Forescout integration. For more information, reference the<span> </span><em>Defining and Managing Lists</em><span> </span>section in the<span> </span><a href="https://www.forescout.com/wp-content/uploads/2018/04/CounterACT_Administration_Guide_8.0.pdf" rel="nofollow">Forescout Administration Guide</a>.</p>
 </div>
 <div class="cl-preview-section">
-<h2 id="configure-forescout-on-demisto">Configure Forescout on Demisto</h2>
+<h2 id="configure-forescout-on-demisto">Configure Forescout on Cortex XSOAR</h2>
 </div>
 <div class="cl-preview-section">
 <ol>
@@ -70,7 +70,7 @@
 <h2 id="commands">Commands</h2>
 </div>
 <div class="cl-preview-section">
-<p>You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
+<p>You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
 </div>
 <div class="cl-preview-section">
 <ol>

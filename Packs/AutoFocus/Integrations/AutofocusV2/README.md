@@ -46,11 +46,11 @@ For more information on activating the license see [Activating AutoFocus License
 
 ## Commands
 ---
-You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.
+You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### Search for samples
 ---
-Searches for samples. To view the results provide polling=true, or run the `autofocus-samples-search-results` command with the returned Af Cookie. The AF Cookie expires 120 seconds after the search completes. Use the query that was created in AutoFocus within playbooks "as-is". To run the command with the query in Demisto, wrap the query in backticks ``. For example:
+Searches for samples. To view the results provide polling=true, or run the `autofocus-samples-search-results` command with the returned Af Cookie. The AF Cookie expires 120 seconds after the search completes. Use the query that was created in AutoFocus within playbooks "as-is". To run the command with the query in Cortex XSOAR, wrap the query in backticks ``. For example:
 ```
 !autofocus-search-samples query=`{"operator":"all","children":[{"field":"sample.malware","operator":"is","value":1}]}` scope=Global sort="First Seen (Create Date)" order=Ascending
 ```
@@ -1250,6 +1250,11 @@ Returns the reputation of an IP address.
 | IP.Address | String | The IP address. | 
 | IP.Tags | String | Tags that are associated with the IP. | 
 | IP.MalwareFamily | String | The malware family associated with the IP. |
+| IP.Relationships.EntityA | String | The source of the relationship. |
+| IP.Relationships.EntityAType | String | The type of the source of the relationship. |
+| IP.Relationships.EntityB | String | The destination of the relationship. |
+| IP.Relationships.EntityBType | String | The type of the destination of the relationship. |
+| IP.Relationships.Relationship | String |  The name of the relationship. |
 | AutoFocus.IP.IndicatorValue | String | The IP address value. | 
 | AutoFocus.IP.IndicatorType | String | The indicator type. | 
 | AutoFocus.IP.LatestPanVerdicts | Unknown | The latest verdicts from Palo Alto Networks products. Can be either "PAN_DB" or "WF_SAMPLE"(WildFire). | 
@@ -1333,6 +1338,11 @@ Returns the reputation of a URL.
 | URL.Data | String | The URL address. | 
 | URL.Tags | String | Tags that are associated with the URL. | 
 | URL.MalwareFamily | String | The malware family associated with the URL. |
+| URL.Relationships.EntityA | String | The source of the relationship. |
+| URL.Relationships.EntityAType | String | The type of the source of the relationship. |
+| URL.Relationships.EntityB | String | The destination of the relationship. |
+| URL.Relationships.EntityBType | String | The type of the destination of the relationship. |
+| URL.Relationships.Relationship | String |  The name of the relationship. |
 | AutoFocus.URL.IndicatorValue | String | The URL value. | 
 | AutoFocus.URL.IndicatorType | String | The indicator type. | 
 | AutoFocus.URL.LatestPanVerdicts | Unknown |The latest verdicts from Palo Alto Networks products. Can be either "PAN_DB" or "WF_SAMPLE"(WildFire). | 
@@ -1419,6 +1429,11 @@ Returns the reputation of a file.
 | File.SHA256 | String | The SHA256 hash of the file. | 
 | File.Tags | String | Tags that are associated with the file. | 
 | File.MalwareFamily | String | The malware family associated with the file. |
+| File.Relationships.EntityA | String | The source of the relationship. |
+| File.Relationships.EntityAType | String | The type of the source of the relationship. |
+| File.Relationships.EntityB | String | The destination of the relationship. |
+| File.Relationships.EntityBType | String | The type of the destination of the relationship. |
+| File.Relationships.Relationship | String |  The name of the relationship. |
 | AutoFocus.File.IndicatorValue | String | The SHA256 hash value of the file. | 
 | AutoFocus.File.IndicatorType | String | The indicator type. | 
 | AutoFocus.File.LatestPanVerdicts | Unknown | The latest verdicts from Palo Alto Networks products. Can be either "PAN_DB" or "WF_SAMPLE"(WildFire). | 
@@ -1511,6 +1526,11 @@ Returns the reputation of a domain.
 | Domain.Name | String | The name of the domain. | 
 | Domain.Tags | String | Tags that are associated with the domain. | 
 | Domain.MalwareFamily | String | The malware family associated with the domain. |
+| Domain.Relationships.EntityA | String | The source of the relationship. |
+| Domain.Relationships.EntityAType | String | The type of the source of the relationship. |
+| Domain.Relationships.EntityB | String | The destination of the relationship. |
+| Domain.Relationships.EntityBType | String | The type of the destination of the relationship. |
+| Domain.Relationships.Relationship | String |  The name of the relationship. |
 | AutoFocus.Domain.IndicatorValue | String | The value of the domain. | 
 | AutoFocus.Domain.IndicatorType | String | The indicator type. | 
 | AutoFocus.Domain.LatestPanVerdicts | Unknown | The latest verdicts from Palo Alto Networks products. Can be either "PAN_DB" or "WF_SAMPLE"(WildFire). | 

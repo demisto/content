@@ -2,7 +2,7 @@
 <h2>Overview</h2>
 <p>Use Centreon to check the status of hosts and services.</p>
 <p>This integration was integrated and tested with Centreon v2.8.20.</p>
-<p><strong>NOTE</strong>: Demisto only works for Centreon v2.8.14 and later.</p>
+<p><strong>NOTE</strong>: Cortex XSOAR only works for Centreon v2.8.14 and later.</p>
 <hr>
 <h2>Use Cases</h2>
 <ul>
@@ -10,7 +10,7 @@
 <li>Check the status of services.</li>
 </ul>
 <hr>
-<h2>Configure Centreon on Demisto</h2>
+<h2>Configure Centreon on Cortex XSOAR</h2>
 <ol>
 <li>Navigate to <strong>Settings</strong> &gt; <strong>Integrations</strong> &gt; <strong>Servers &amp; Services</strong>.</li>
 <li>Search for Centreon.</li>
@@ -28,7 +28,7 @@
 </ol>
 <hr>
 <h2>Commands</h2>
-<p>You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
+<p>You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
 <ul>
 <li>
 <p><a href="#h_5712255351527683650738">Get host status: centreon-get-host-status</a></p>
