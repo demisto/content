@@ -1078,7 +1078,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: A CSV list of names of attachments to send. Should be the same number of elements as attachIDs.
+      description: A CSV list of names of attachments to send. Should be the same
+        number of elements as attachIDs.
       isArray: true
       name: attachNames
       required: false
@@ -1120,7 +1121,7 @@ script:
     - contextPath: MicrosoftGraph.SentMail.ID
       description: The immutable ID of the message.
       type: String
-  dockerimage: demisto/crypto:1.0.0.18288
+  dockerimage: demisto/crypto:1.0.0.19032
   feed: false
   isfetch: true
   longRunning: false

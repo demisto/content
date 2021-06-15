@@ -9,7 +9,7 @@ Authentication from a REST API Client
 Cisco recommends that you use different accounts for interfacing with the API and the Firepower User Interface. Credentials cannot be used for both interfaces simultaneously, and will be logged out without warning if used for both.
 
 
-## Configure Cisco Firepower on Demisto
+## Configure Cisco Firepower on Cortex XSOAR
 ---
 
 1. Navigate to __Settings__ > __Integrations__ > __Servers & Services__.
@@ -25,7 +25,7 @@ Cisco recommends that you use different accounts for interfacing with the API an
 
 ## Commands
 ---
-You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.
+You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 1. ciscofp-list-zones
 2. ciscofp-list-ports
@@ -4508,11 +4508,12 @@ Retrieves a list of all devices with configuration changes that are ready to dep
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| limit | The maximum number of items to return. The default is 50. | Optional | 
-| offset | Index of first item to return. The default is 0. | Optional | 
+| limit | The maximum number of items to return.<br/>The default is 50. | Optional | 
+| offset | Index of first item to return.<br/>The default is 0. | Optional | 
+| container_uuid | The container UUID. | Optional | 
 
 
-##### Context Output
+#### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
@@ -4522,33 +4523,22 @@ Retrieves a list of all devices with configuration changes that are ready to dep
 | CiscoFP.DeployableDevices.DeviceName | String | Device name. | 
 | CiscoFP.DeployableDevices.DeviceType | String | Device type. | 
 | CiscoFP.DeployableDevices.Version | String | Device version. | 
+| CiscoFP.PendingDeployment.ID | String | Device ID. | 
+| CiscoFP.PendingDeployment.Name | String | Device name. | 
+| CiscoFP.PendingDeployment.Type | String | Device type. | 
+| CiscoFP.PendingDeployment.Status | String | Device status. | 
+| CiscoFP.PendingDeployment.StartTime | String | Start time of the deployment. | 
+| CiscoFP.PendingDeployment.EndTime | String | End time of the deployment. | 
 
 
-##### Command Example
-```!ciscofp-get-deployable-devices```
+#### Command Example
+``` !ciscofp-get-deployable-devices container_uuid=a24eca98-7a3a-11eb-999c-cdd9570e11cf ```
 
-##### Context Example
-```
-{
-    "CiscoFP.DeployableDevices": [
-        {
-            "DeviceName": "FTD_10.8.49.209", 
-            "CanBeDeployed": true, 
-            "UpToDate": false, 
-            "Version": "1585679109082", 
-            "DeviceType": "SENSOR", 
-            "DeviceID": "43e032dc-07c5-11ea-b83d-d5fdc079bf65"
-        }
-    ]
-}
-```
-
-##### Human Readable Output
-### Cisco Firepower - List of deployable devices:
-|CanBeDeployed|UpToDate|DeviceID|DeviceName|DeviceType|Version|
+#### Human Readable Output
+### Cisco Firepower - List of devices status pending deployment:
+|EndTime|ID|Name|StartTime|Status|Type|
 |---|---|---|---|---|---|
-| true | false | 43e032dc-07c5-11ea-b83d-d5fdc079bf65 | FTD_10.8.49.209 | SENSOR | 1585679109082 |
-
+| 1618225761 | 00224867-78A7-0ed3-0000-128849018939 | api_user_job_2021-04-12 11:08:43.523 | 1618225723 | PARTIALLY_SUCCEEDED | Deployment |
 
 
 ### 33. ciscofp-get-device-records
@@ -4693,3 +4683,82 @@ Retrieves information about a previously submitted pending job or task with the 
 |Status|
 |---|
 | Deployed |
+
+### 36. ciscofp-get-url-groups-object
+---
+Retrieves the groups of url objects and addresses associated with the specified ID. If not supplied, retrieves a list of all url objects.
+
+
+#### Base Command
+
+`ciscofp-get-url-groups-object`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| id | ID of the group. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| CiscoFP.URLGroups.ID | string | The group ID. | 
+| CiscoFP.URLGroups.Name | string | The group Name. | 
+| CiscoFP.URLGroups.Overridable | string | Boolean indicating whether objects can be overridden. | 
+| CiscoFP.URLGroups.Description | string | The group description. | 
+| CiscoFP.URLGroups.Addresses.Value | string | The group addresses. | 
+| CiscoFP.URLGroups.Objects.Name | string | The group object name. | 
+| CiscoFP.URLGroups.Objects.ID | string | The object ID. | 
+| CiscoFP.URLGroups.Objects.Type | string | The object type. | 
+
+
+#### Command Example
+``` !ciscofp-get-url-groups-object id=00224867-78A7-0ed3-0000-004294969111 ```
+
+#### Human Readable Output
+### Cisco Firepower - url group object:
+|ID|Name|Overridable|Description|Addresses|Objects|
+|---|---|---|---|---|---|
+| 00224867-78A7-0ed3-0000-004294969111 | xxx_Proactive_Response_URL | true |   | 2000 | 0 |
+
+### 37. ciscofp-update-url-groups-objects
+---
+Updates the ID of a group of url objects.
+
+
+#### Base Command
+
+`ciscofp-update-url-groups-objects`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| id | The ID of the group to update. | Required | 
+| url_objects_id_list | A comma-separated list of object IDs to add the url. | Optional | 
+| url_list | A comma-separated list of url to add the group. | Optional | 
+| description | The new description for the object. | Optional | 
+| overridable | Boolean indicating whether object values can be overridden. Default is false. | Optional | 
+| name | The group name. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| CiscoFP.URLGroups.Addresses.Type | string | The addresses type in the group object. | 
+| CiscoFP.URLGroups.Addresses.Url | string | The addresses url in the group object. | 
+| CiscoFP.URLGroups.Description | string | The group description. | 
+| CiscoFP.URLGroups.ID | string | The group ID. | 
+| CiscoFP.URLGroups.Name | string | The group name. | 
+| CiscoFP.URLGroups.Objects | unknown | The group object information. | 
+| CiscoFP.URLGroups.Overridable | string | Boolean indicating whether objects can be overridden. | 
+
+#### Command Example
+``` !ciscofp-update-url-groups-objects id=00224867-78A7-0ed3-0000-004294969111 name=XXX_Proactive_Response_URL url_list=1.1.1.1 ```
+
+#### Human Readable Output
+### Cisco Firepower - url group has been updated.
+|ID|Name|Overridable|Description|Addresses|Objects|
+|---|---|---|---|---|---|
+| 00224867-78A7-0ed3-0000-004294969111 | XXX_Proactive_Response_URL | false |  | 1 | 0 |

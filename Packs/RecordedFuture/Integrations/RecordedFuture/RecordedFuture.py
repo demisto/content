@@ -14,7 +14,7 @@ STATUS_TO_RETRY = [500, 501, 502, 503, 504]
 # disable insecure warnings
 requests.packages.urllib3.disable_warnings()  # pylint:disable=no-member
 
-__version__ = '2.1'
+__version__ = '2.1.1'
 
 
 def rename_keys(old_to_new: Dict[str, str], original: Dict[str, Any]):
@@ -50,7 +50,9 @@ class Client(BaseClient):
         )
 
     def entity_enrich(
-        self, entity: str, entity_type: str, related: bool, risky: bool, profile: str = 'All'
+        self, entity: str, entity_type: str,
+            related: bool, risky: bool,
+            profile: str = 'All'
     ) -> Dict[str, Any]:
         """Entity enrich."""
 
@@ -119,6 +121,8 @@ class Client(BaseClient):
                 "cvss",
                 "nvdDescription",
                 "relatedEntities",
+                "cpe",
+                "relatedLinks"
             ],
             "url": [
                 "entity",
@@ -138,7 +142,7 @@ class Client(BaseClient):
         fields = intel_map[entity_type]
         if entity_type == "ip" and not risky:
             fields.remove("riskyCIDRIPs")
-        if not related and not profile:
+        if not related and profile != 'All':
             fields.remove("relatedEntities")
         req_fields = ",".join(fields)
         params = {"fields": req_fields}
@@ -147,7 +151,7 @@ class Client(BaseClient):
             retries=3,
             status_list_to_retry=STATUS_TO_RETRY
         )
-        if profile != 'All':
+        if profile != 'All' and related:
             related_entities = resp['data']['relatedEntities']
             related_entities = [
                 entry for entry in related_entities
@@ -217,6 +221,37 @@ def translate_score(score: int, threshold: int) -> int:
         return Common.DBotScore.SUSPICIOUS
     else:
         return Common.DBotScore.NONE
+
+
+def parse_cpe(cpes: list) -> list:
+    dicts = []
+    parts = {
+        'o': 'Operating System',
+        'a': 'Application',
+        'h': 'Hardware',
+        '*': 'Any',
+        '-': 'NA'
+    }
+    cpe_regex = re.compile(
+        r'cpe:2\.3:(?P<Part>[aoh*-]):(?P<Vendor>[a-zA-Z_-]+):'
+        r'(?P<Product>[A-Za-z0-9_-]+):(?P<Version>[0-9.]+):(?P<Update>[a-zA-Z0-9*]+):'
+        r'(?P<Edition>[a-zA-Z0-9*]+):(?P<Language>[a-zA-Z0-9*]+):'
+        r'(?P<swedition>[a-zA-Z0-9*]+):(?P<targetsw>[a-zA-Z0-9*]+):'
+        r'(?P<targethw>[a-zA-Z0-9*]+):(?P<Other>[a-zA-Z0-9*]+)'
+    )
+    for cpe in cpes:
+        try:
+            match = cpe_regex.match(cpe)
+            if match:
+                tmp_dict = match.groupdict()
+                tmp_dict['Part'] = parts[tmp_dict.get('Part', '-')]
+                tmp_dict['Software Edition'] = tmp_dict.pop('swedition')
+                tmp_dict['Target Software'] = tmp_dict.pop('targetsw')
+                tmp_dict['Target Hardware'] = tmp_dict.pop('targethw')
+                dicts.append(tmp_dict)
+        except:
+            continue
+    return dicts
 
 
 def determine_hash(hash_value: str) -> str:
@@ -778,6 +813,21 @@ def build_intel_markdown(entity_data: Dict[str, Any], entity_type: str) -> str:
                     f'{prettify_time(cdata.get("lastModified"))}',
                 ]
             markdown.extend(cvss)
+            if data.get("cpe", None):
+                markdown.append(
+                    tableToMarkdown(
+                        "CPE Information",
+                        parse_cpe(data.get("cpe")),
+                        ['Part', 'Vendor', 'Product', 'Version', 'Update', 'Edition',
+                         'Language', 'Software Edition', 'Target Software',
+                         'Target Hardware', 'Other']
+                    )
+                )
+            if data.get('relatedLinks', None):
+                markdown.append(tableToMarkdown(
+                    "Related Links",
+                    [{'Related Links': x} for x in data.get('relatedLinks')]
+                ))
         evidence_table = [
             {
                 "Rule Criticality": detail.get("criticalityLabel"),
@@ -830,13 +880,18 @@ def build_intel_context(
         entity_type = "cve"
     command_results: List[CommandResults] = []
     if entity_data and ("error" not in entity_data):
-        data = entity_data["data"]
-        data.update(data.pop("entity"))
-        data.update(data.pop("risk"))
-        data.update(data.pop("timestamps"))
-        evidence_details = data['evidenceDetails']
-        rules = ','.join([e['rule'] for e in evidence_details])
-        data['concatRules'] = rules
+        data = entity_data.get("data")  # type: ignore
+        if data:
+            data.update(data.pop("entity"))
+            data.update(data.pop("risk"))
+            data.update(data.pop("timestamps"))
+            evidence_details = data['evidenceDetails']
+            rules = ','.join([e['rule'] for e in evidence_details])
+            data['concatRules'] = rules
+            if data.get('relatedEntities'):
+                data['relatedEntities'] = handle_related_entities(
+                    data.pop('relatedEntities')
+                )
 
         command_results.append(
             CommandResults(
@@ -857,7 +912,10 @@ def build_intel_context(
         )
         command_results.append(
             CommandResults(
-                readable_output=tableToMarkdown('New indicator was created', indicator.to_context()),
+                readable_output=tableToMarkdown(
+                    'New indicator was created',
+                    indicator.to_context()
+                ),
                 indicator=indicator
             )
         )
@@ -871,7 +929,10 @@ def build_intel_context(
             )
             command_results.append(
                 CommandResults(
-                    readable_output=tableToMarkdown("New indicator was created", indicator.to_context()),
+                    readable_output=tableToMarkdown(
+                        "New indicator was created",
+                        indicator.to_context()
+                    ),
                     indicator=indicator
                 )
             )
@@ -889,9 +950,7 @@ def build_intel_context(
     return command_results
 
 
-def handle_related_entities(
-    data: List[Dict[str, Any]]
-) -> List[Dict[str, Any]]:
+def handle_related_entities(data: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
     return_data = []
     for related in data:
         return_data.append(
@@ -1076,7 +1135,8 @@ def get_alert_single_command(client: Client, _id: str) -> CommandResults:
             return entity_formatting(data)
         return document_formatting(data)
     except Exception:
-        msg = 'This alert rule currently does not support a human readable format, please let us know if you want it to be supported'
+        msg = 'This alert rule currently does not support a human readable format, ' \
+              'please let us know if you want it to be supported'
         return CommandResults(
             outputs_prefix="",
             outputs={},

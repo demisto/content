@@ -2,7 +2,7 @@ id: Endace Search Archive and Download
 version: -1
 hidden: true
 name: Endace Search Archive and Download
-description: Deprecated. This playbook has been deprecated. This playbook uses Endace APIs to search, archive and download PCAP file
+description: Deprecated. No available replacement. This playbook uses Endace APIs to search, archive and download PCAP file
   from either a single EndaceProbe or many via the InvestigationManager and enables
   integration of full historical packet capture into security automation workflows.
 starttaskid: '0'
@@ -605,3 +605,4 @@ outputs:
 fromversion: 5.0.0
 tests:
 - No test - Deprecated playbook
+deprecated: true

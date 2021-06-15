@@ -9,9 +9,9 @@ Use the Chronicle integration to retrieve Asset alerts or IOC Domain matches as 
 #### Troubleshoot
 
 ##### Problem #1
-Demisto invokes data pull every minute and looks for alerts/events generated at the last minute. The alert/event has 2 timestamps; the time when the event was generated (event timestamp) on the source product(EDR, Firewall, etc) and the event hit Chronicle(ingestion timestamp).
+Cortex XSOAR invokes data pull every minute and looks for alerts/events generated at the last minute. The alert/event has 2 timestamps; the time when the event was generated (event timestamp) on the source product(EDR, Firewall, etc) and the event hit Chronicle(ingestion timestamp).
 
-Considering the latency of the data pipeline usually, the ingestion timestamp can be significantly delayed compared to the event timestamp. Given the fact that Chronicle APIs fetches the alerts/events based on event timestamp, if queried in real-time there are high chances of the alerts getting missed. Considering Demisto queries for events in the last 1 minute and if the pipeline latency is greater than a minute, such events are missed in Demisto.
+Considering the latency of the data pipeline usually, the ingestion timestamp can be significantly delayed compared to the event timestamp. Given the fact that Chronicle APIs fetches the alerts/events based on event timestamp, if queried in real-time there are high chances of the alerts getting missed. Considering Cortex XSOAR queries for events in the last 1 minute and if the pipeline latency is greater than a minute, such events are missed in Cortex XSOAR.
 
 ##### Solution #1
 In order to fetch the missed events, the ingestion should query the historical time range. i.e. the time window to query needs to be increased from the current last minute to a larger window (15 mins, 30 mins, etc). The time window parameter in the integration configuration is provided to achieve the same. Select the time window to query Chronicle with a historical time range. While selecting the time window consider the time delay for an event to appear in Chronicle after generation.
@@ -68,7 +68,7 @@ Error 404, "Failed to execute fetch-incidents command" when trying to pull detec
 
 ## Fetched Incidents Data
 ---
-Fetch-incidents feature can pull events from Google Chronicle which can be converted into actionable incidents for further investigation. It is the function that Demisto calls every minute to import new incidents and can be enabled by the "Fetches incidents" parameter in the integration configuration.
+Fetch-incidents feature can pull events from Google Chronicle which can be converted into actionable incidents for further investigation. It is the function that Cortex XSOAR calls every minute to import new incidents and can be enabled by the "Fetches incidents" parameter in the integration configuration.
 
 #### Configuration Parameters for Fetch-incidents
  - First fetch time interval. The time range to consider for initial data fetch.(&lt;number&gt; &lt;unit&gt;, e.g. 1 day, 7 days, 3 months, 1 year): **Default** 3 days
@@ -132,7 +132,7 @@ Fetch-incidents feature can pull events from Google Chronicle which can be conve
 
 ## Commands
 ---
-You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.
+You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 1. gcb-list-iocs
 2. gcb-assets

@@ -15,37 +15,33 @@ import urllib3
 RFC3339_DATETIME_FORMAT = '%Y-%m-%dT%H:%M:%S.%fZ'
 DEMISTO_DATETIME_FORMAT = '%Y-%m-%dT%H:%M:%S'
 
-SERVICE_ACCOUNT_JSON = demisto.params().get('service_account_json', '')
-INSECURE = demisto.params().get('insecure', False)
-
-client: storage.Client
-
 
 ''' HELPER FUNCTIONS '''
 
 
-def initialize_module():
-    global client
-
+def initialize_module(service_account, insecure):
     # Allow an un-initialized client for the sake of unit tests
-    if SERVICE_ACCOUNT_JSON:
-        client = init_storage_client()
+    client = None
+    if service_account:
+        client = init_storage_client(service_account)
 
-    if INSECURE:
+    if insecure:
         disable_tls_verification()
 
     # Remove proxy if not set to true in params
     handle_proxy()
 
+    return client
 
-def init_storage_client():
+
+def init_storage_client(service_account):
     """Creates the Python API client for Google Cloud Storage."""
     cur_directory_path = os.getcwd()
     credentials_file_name = demisto.uniqueFile() + '.json'
     credentials_file_path = os.path.join(cur_directory_path, credentials_file_name)
 
     with open(credentials_file_path, 'w') as creds_file:
-        json_object = json.loads(SERVICE_ACCOUNT_JSON)
+        json_object = json.loads(service_account)
         json.dump(json_object, creds_file)
 
     return storage.Client.from_service_account_json(credentials_file_path)
@@ -64,6 +60,15 @@ def disable_tls_verification():
     requests.Session.merge_environment_settings = merge_environment_settings  # type: ignore
 
     urllib3.disable_warnings(category=urllib3.exceptions.InsecureRequestWarning)
+
+
+def get_bucket_name(args, default_bucket):
+    bucket_name = args.get('bucket_name') or default_bucket
+
+    if not bucket_name:
+        raise DemistoException('Missing argument: "bucket_name"\nSpecify a bucket name in the command argument or'
+                               ' set a default bucket name as an integration parameter.')
+    return bucket_name
 
 
 def ec_key(path, *merge_by):
@@ -109,14 +114,14 @@ def human_readable_table(title, contents):
     return tableToMarkdown(title, contents, ordered_headers, header_transform)
 
 
-def format_error(ex):
+def format_error(exc):
     """Creates a human-readable error message for the given raised error."""
     msg = 'Error occurred in the Google Cloud Storage Integration'
 
-    if hasattr(ex, '__class__'):
-        class_name = ex.__class__.__name__
-        details = str(ex)
-        if isinstance(ex, BaseException) and details:
+    if hasattr(exc, '__class__'):
+        class_name = exc.__class__.__name__
+        details = str(exc)
+        if isinstance(exc, BaseException) and details:
             msg = '{}: {}'.format(class_name, details)
         else:
             msg += ' ({})'.format(details if details else class_name)
@@ -127,8 +132,20 @@ def format_error(ex):
 ''' COMMANDS + REQUESTS FUNCTIONS '''
 
 
-def module_test():
-    next(client.list_buckets().pages)
+def module_test(client, default_bucket):
+    if default_bucket:
+        client.get_bucket(default_bucket)
+    else:
+        # in case default bucket was not specified in the instance parameters
+        demisto.debug('default bucket was not specified, querying bucket list instead.')
+        try:
+            next(client.list_buckets().pages)
+        except Exception as exc:
+            if 'does not have storage.buckets.list access' in str(exc):
+                raise DemistoException('Either specify a default bucket or add storage.buckets.list access '
+                                       'to the service account.', exception=exc)
+
+            raise
 
 
 ''' Bucket management '''
@@ -144,7 +161,7 @@ def bucket2dict(bucket):
     }
 
 
-def gcs_list_buckets():
+def gcs_list_buckets(client):
     buckets = client.list_buckets()
     result = [bucket2dict(bucket) for bucket in buckets]
 
@@ -155,8 +172,8 @@ def gcs_list_buckets():
     )
 
 
-def gcs_get_bucket():
-    bucket_name = demisto.args()['bucket_name']
+def gcs_get_bucket(client, default_bucket, args):
+    bucket_name = get_bucket_name(args, default_bucket)
 
     bucket = client.get_bucket(bucket_name)
     result = bucket2dict(bucket)
@@ -168,10 +185,10 @@ def gcs_get_bucket():
     )
 
 
-def gcs_create_bucket():
-    bucket_name = demisto.args()['bucket_name']
-    bucket_acl = demisto.args().get('bucket_acl', '')
-    default_object_acl = demisto.args().get('default_object_acl', '')
+def gcs_create_bucket(client, args):
+    bucket_name = args['bucket_name']
+    bucket_acl = args.get('bucket_acl', '')
+    default_object_acl = args.get('default_object_acl', '')
 
     bucket = client.create_bucket(bucket_name)
     if bucket_acl:
@@ -186,9 +203,9 @@ def gcs_create_bucket():
     })
 
 
-def gcs_delete_bucket():
-    bucket_name = demisto.args()['bucket_name']
-    force = demisto.args().get('force', '') == 'true'
+def gcs_delete_bucket(client, args):
+    bucket_name = args['bucket_name']
+    force = args.get('force', '') == 'true'
 
     bucket = client.get_bucket(bucket_name)
     bucket.delete(force)
@@ -221,7 +238,7 @@ def blob2dict(blob):
     }
 
 
-def download_blob(blob, file_name=''):
+def download_blob(client, blob, file_name=''):
     cur_directory_path = os.getcwd()
     file_name = file_name or blob.name.replace('\\', '/').split('/')[-1] or demisto.uniqueFile()
     file_path = os.path.join(cur_directory_path, file_name)
@@ -232,7 +249,7 @@ def download_blob(blob, file_name=''):
     return file_name
 
 
-def upload_blob(file_path, bucket_name, object_name):
+def upload_blob(client, file_path, bucket_name, object_name):
     bucket = client.get_bucket(bucket_name)
     blob = bucket.blob(object_name)
 
@@ -241,8 +258,8 @@ def upload_blob(file_path, bucket_name, object_name):
     return blob
 
 
-def gcs_list_bucket_objects():
-    bucket_name = demisto.args()['bucket_name']
+def gcs_list_bucket_objects(client, default_bucket, args):
+    bucket_name = get_bucket_name(args, default_bucket)
 
     blobs = client.list_blobs(bucket_name)
     result = [blob2dict(blob) for blob in blobs]
@@ -254,28 +271,28 @@ def gcs_list_bucket_objects():
     )
 
 
-def gcs_download_file():
-    bucket_name = demisto.args()['bucket_name']
-    blob_name = demisto.args()['object_name']
-    saved_file_name = demisto.args().get('saved_file_name', '')
+def gcs_download_file(client, default_bucket, args):
+    blob_name = args['object_name']
+    saved_file_name = args.get('saved_file_name', '')
+    bucket_name = get_bucket_name(args, default_bucket)
 
     bucket = client.get_bucket(bucket_name)
     blob = storage.Blob(blob_name, bucket)
-    saved_file_name = download_blob(blob, saved_file_name)
+    saved_file_name = download_blob(client, blob, saved_file_name)
 
     demisto.results(file_result_existing_file(saved_file_name))
 
 
-def gcs_upload_file():
-    entry_id = demisto.args()['entry_id']
-    bucket_name = demisto.args()['bucket_name']
-    object_name = demisto.args()['object_name']
-    object_acl = demisto.args().get('object_acl', '')
+def gcs_upload_file(client, default_bucket, args):
+    entry_id = args['entry_id']
+    object_name = args['object_name']
+    object_acl = args.get('object_acl', '')
+    bucket_name = get_bucket_name(args, default_bucket)
 
     context_file = demisto.getFilePath(entry_id)
     file_path = context_file['path']
     file_name = context_file['name']
-    blob = upload_blob(file_path, bucket_name, object_name)
+    blob = upload_blob(client, file_path, bucket_name, object_name)
     if object_acl:
         blob.acl.save_predefined(object_acl)
 
@@ -307,7 +324,7 @@ def acl2dict(acl_entry, include_object_name=False):
     return result
 
 
-def get_acl_entries(acl):
+def get_acl_entries(client, acl):
     """Retrieves the entries of the given ACL (access control list) in their raw dictionary form."""
     path = acl.reload_path
     parsed_json = client._connection.api_request(method='GET', path=path)
@@ -325,12 +342,12 @@ def delete_acl_entry(acl, entity):
     acl.save()
 
 
-def gcs_list_bucket_policy():
-    bucket_name = demisto.args()['bucket_name']
+def gcs_list_bucket_policy(client, default_bucket, args):
+    bucket_name = get_bucket_name(args, default_bucket)
 
     acl = client.get_bucket(bucket_name).acl
 
-    acl_entries = get_acl_entries(acl)
+    acl_entries = get_acl_entries(client, acl)
     result = [acl2dict(entry) for entry in acl_entries]
 
     return_outputs(
@@ -340,10 +357,10 @@ def gcs_list_bucket_policy():
     )
 
 
-def gcs_create_bucket_policy():
-    bucket_name = demisto.args()['bucket_name']
-    entity = demisto.args()['entity']
-    role = demisto.args()['role']
+def gcs_create_bucket_policy(client, default_bucket, args):
+    entity = args['entity']
+    role = args['role']
+    bucket_name = get_bucket_name(args, default_bucket)
 
     acl = client.get_bucket(bucket_name).acl
     if acl.has_entity(entity):
@@ -359,10 +376,10 @@ def gcs_create_bucket_policy():
     })
 
 
-def gcs_put_bucket_policy():
-    bucket_name = demisto.args()['bucket_name']
-    entity = demisto.args()['entity']
-    role = demisto.args()['role']
+def gcs_put_bucket_policy(client, default_bucket, args):
+    entity = args['entity']
+    role = args['role']
+    bucket_name = get_bucket_name(args, default_bucket)
 
     acl = client.get_bucket(bucket_name).acl
     if not acl.has_entity(entity):
@@ -378,9 +395,9 @@ def gcs_put_bucket_policy():
     })
 
 
-def gcs_delete_bucket_policy():
-    bucket_name = demisto.args()['bucket_name']
-    entity = demisto.args()['entity']
+def gcs_delete_bucket_policy(client, default_bucket, args):
+    entity = args['entity']
+    bucket_name = get_bucket_name(args, default_bucket)
 
     acl = client.get_bucket(bucket_name).acl
     if not acl.has_entity(entity):
@@ -398,18 +415,18 @@ def gcs_delete_bucket_policy():
 ''' Object policy (ACL) '''
 
 
-def get_blob_acl(bucket_name, blob_name):
+def get_blob_acl(client, bucket_name, blob_name):
     bucket = client.get_bucket(bucket_name)
     blob = storage.Blob(blob_name, bucket)
     return blob.acl
 
 
-def gcs_list_bucket_object_policy():
-    bucket_name = demisto.args()['bucket_name']
-    blob_name = demisto.args()['object_name']
+def gcs_list_bucket_object_policy(client, default_bucket, args):
+    blob_name = args['object_name']
+    bucket_name = get_bucket_name(args, default_bucket)
 
-    acl = get_blob_acl(bucket_name, blob_name)
-    acl_entries = get_acl_entries(acl)
+    acl = get_blob_acl(client, bucket_name, blob_name)
+    acl_entries = get_acl_entries(client, acl)
     result = [acl2dict(entry, include_object_name=True) for entry in acl_entries]
 
     return_outputs(
@@ -419,13 +436,13 @@ def gcs_list_bucket_object_policy():
     )
 
 
-def gcs_create_bucket_object_policy():
-    bucket_name = demisto.args()['bucket_name']
-    blob_name = demisto.args()['object_name']
-    entity = demisto.args()['entity']
-    role = demisto.args()['role']
+def gcs_create_bucket_object_policy(client, default_bucket, args):
+    blob_name = args['object_name']
+    entity = args['entity']
+    role = args['role']
+    bucket_name = get_bucket_name(args, default_bucket)
 
-    acl = get_blob_acl(bucket_name, blob_name)
+    acl = get_blob_acl(client, bucket_name, blob_name)
     if acl.has_entity(entity):
         raise ValueError(f'Entity {entity} already exists in the ACL of object {blob_name}'
                          ' (use gcs-put-bucket-object-policy to update it)')
@@ -439,13 +456,13 @@ def gcs_create_bucket_object_policy():
     })
 
 
-def gcs_put_bucket_object_policy():
-    bucket_name = demisto.args()['bucket_name']
-    blob_name = demisto.args()['object_name']
-    entity = demisto.args()['entity']
-    role = demisto.args()['role']
+def gcs_put_bucket_object_policy(client, default_bucket, args):
+    blob_name = args['object_name']
+    entity = args['entity']
+    role = args['role']
+    bucket_name = get_bucket_name(args, default_bucket)
 
-    acl = get_blob_acl(bucket_name, blob_name)
+    acl = get_blob_acl(client, bucket_name, blob_name)
     if not acl.has_entity(entity):
         raise ValueError(f'Entity {entity} does not exist in the ACL of object {blob_name}'
                          ' (use gcs-create-bucket-object-policy to create it)')
@@ -459,12 +476,12 @@ def gcs_put_bucket_object_policy():
     })
 
 
-def gcs_delete_bucket_object_policy():
-    bucket_name = demisto.args()['bucket_name']
-    blob_name = demisto.args()['object_name']
-    entity = demisto.args()['entity']
+def gcs_delete_bucket_object_policy(client, default_bucket, args):
+    blob_name = args['object_name']
+    entity = args['entity']
+    bucket_name = get_bucket_name(args, default_bucket)
 
-    acl = get_blob_acl(bucket_name, blob_name)
+    acl = get_blob_acl(client, bucket_name, blob_name)
     if not acl.has_entity(entity):
         raise ValueError(f'Entity {entity} does not exist in the ACL of object {blob_name}')
 
@@ -479,72 +496,89 @@ def gcs_delete_bucket_object_policy():
 
 ''' COMMANDS MANAGER / SWITCH PANEL '''
 
-LOG('Command being called is ' + demisto.command())
 
-try:
-    initialize_module()
+def main():
+    params = demisto.params()
+    args = demisto.args()
+    command = demisto.command()
 
-    if demisto.command() == 'test-module':
-        module_test()
-        demisto.results('ok')
+    service_account = params.get('service_account_json', '')
+    default_bucket = params.get('default_bucket')
+    insecure = params.get('insecure', False)
 
-    #
-    # Bucket management
-    #
-    elif demisto.command() == 'gcs-list-buckets':
-        gcs_list_buckets()
+    LOG(f'Command being called is {command}')
 
-    elif demisto.command() == 'gcs-get-bucket':
-        gcs_get_bucket()
+    try:
+        client: storage.Client = initialize_module(service_account, insecure)
 
-    elif demisto.command() == 'gcs-create-bucket':
-        gcs_create_bucket()
+        if command == 'test-module':
+            module_test(client, default_bucket)
+            demisto.results('ok')
 
-    elif demisto.command() == 'gcs-delete-bucket':
-        gcs_delete_bucket()
+        #
+        # Bucket management
+        #
+        elif command == 'gcs-list-buckets':
+            gcs_list_buckets(client)
 
-    #
-    # Object operations
-    #
-    elif demisto.command() == 'gcs-list-bucket-objects':
-        gcs_list_bucket_objects()
+        elif command == 'gcs-get-bucket':
+            gcs_get_bucket(client, default_bucket, args)
 
-    elif demisto.command() == 'gcs-download-file':
-        gcs_download_file()
+        elif command == 'gcs-create-bucket':
+            gcs_create_bucket(client, args)
 
-    elif demisto.command() == 'gcs-upload-file':
-        gcs_upload_file()
+        elif command == 'gcs-delete-bucket':
+            gcs_delete_bucket(client, args)
 
-    #
-    # Bucket policy (ACL)
-    #
-    elif demisto.command() == 'gcs-list-bucket-policy':
-        gcs_list_bucket_policy()
+        #
+        # Object operations
+        #
+        elif command == 'gcs-list-bucket-objects':
+            gcs_list_bucket_objects(client, default_bucket, args)
 
-    elif demisto.command() == 'gcs-create-bucket-policy':
-        gcs_create_bucket_policy()
+        elif command == 'gcs-download-file':
+            gcs_download_file(client, default_bucket, args)
 
-    elif demisto.command() == 'gcs-put-bucket-policy':
-        gcs_put_bucket_policy()
+        elif command == 'gcs-upload-file':
+            gcs_upload_file(client, default_bucket, args)
 
-    elif demisto.command() == 'gcs-delete-bucket-policy':
-        gcs_delete_bucket_policy()
+        #
+        # Bucket policy (ACL)
+        #
+        elif command == 'gcs-list-bucket-policy':
+            gcs_list_bucket_policy(client, default_bucket, args)
 
-    #
-    # Object policy (ACL)
-    #
-    elif demisto.command() == 'gcs-list-bucket-object-policy':
-        gcs_list_bucket_object_policy()
+        elif command == 'gcs-create-bucket-policy':
+            gcs_create_bucket_policy(client, default_bucket, args)
 
-    elif demisto.command() == 'gcs-create-bucket-object-policy':
-        gcs_create_bucket_object_policy()
+        elif command == 'gcs-put-bucket-policy':
+            gcs_put_bucket_policy(client, default_bucket, args)
 
-    elif demisto.command() == 'gcs-put-bucket-object-policy':
-        gcs_put_bucket_object_policy()
+        elif command == 'gcs-delete-bucket-policy':
+            gcs_delete_bucket_policy(client, default_bucket, args)
 
-    elif demisto.command() == 'gcs-delete-bucket-object-policy':
-        gcs_delete_bucket_object_policy()
+        #
+        # Object policy (ACL)
+        #
+        elif command == 'gcs-list-bucket-object-policy':
+            gcs_list_bucket_object_policy(client, default_bucket, args)
 
-except Exception as e:
-    LOG(traceback.format_exc())
-    return_error(format_error(e))
+        elif command == 'gcs-create-bucket-object-policy':
+            gcs_create_bucket_object_policy(client, default_bucket, args)
+
+        elif command == 'gcs-put-bucket-object-policy':
+            gcs_put_bucket_object_policy(client, default_bucket, args)
+
+        elif command == 'gcs-delete-bucket-object-policy':
+            gcs_delete_bucket_object_policy(client, default_bucket, args)
+
+        else:
+            raise NotImplementedError(f'Command not implemented: {command}')
+
+    except Exception as e:
+        LOG(traceback.format_exc())
+        return_error(format_error(e))
+
+
+if __name__ in ('__main__', '__builtin__', 'builtins'):
+    main()

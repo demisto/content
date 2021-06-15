@@ -37,3 +37,7 @@ Scripts/**/__init__.py
 Integrations/**/__init__.py
 Packs/**/__init__.py
 .demisto-sdk-conf
+
+# coverage related
+/coverage_report
+.coverage

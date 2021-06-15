@@ -1,0 +1,5 @@
+[file:README.md]
+ignore=RM104
+
+[file:classifier-mapper-incoming-Tripwire.json]
+ignore=BA101

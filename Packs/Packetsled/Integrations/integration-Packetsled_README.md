@@ -19,7 +19,7 @@
 <li>Confirm firewall rules to enable access to PacketSled API</li>
 </ul>
 <hr>
-<h2> Configure PacketSled on Demisto</h2>
+<h2> Configure PacketSled on Cortex XSOAR</h2>
 <ol>
 <li>Navigate to<strong> Settings</strong> &gt; <strong>Integrations</strong> &gt; <strong>Servers &amp; Services.</strong>
 </li>
@@ -30,7 +30,7 @@
 <strong>Name:</strong><em> </em>textual name for the integration instance</li>
 <li>
 <strong>Server URL</strong> (https://&lt;customer_id&gt;.packetsled.com)</li>
-<li>If you want to Demisto incidents to be created automatically from this integration instance, click <strong>Fetch Incidents.</strong>
+<li>If you want to Cortex XSOAR incidents to be created automatically from this integration instance, click <strong>Fetch Incidents.</strong>
 </li>
 <li>
 <strong>Credentials</strong>: PacketSled username</li>
@@ -43,7 +43,7 @@
 </ol>
 <hr>
 <h2>Commands</h2>
-<p>You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
+<p>You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
 <ol>
 <li><a href="#h_25013883861528275295126">Extract incidents: packetsled-get-incidents</a></li>
 <li><a href="#h_500531863251528275308393">Enumerate sensors: packetsled-get-sensors</a></li>

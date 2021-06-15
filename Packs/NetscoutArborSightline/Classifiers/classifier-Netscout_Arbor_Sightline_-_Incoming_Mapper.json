@@ -1,0 +1,68 @@
+{
+    "description": "",
+    "feed": false,
+    "id": "Netscout Arbor Sightline - Incoming Mapper",
+    "mapping": {
+        "dbot_classification_incident_type_all": {
+            "dontMapEventToLabels": true,
+            "internalMapping": {
+                "Netscout Arbor Sightline Alert Type": {
+                    "complex": null,
+                    "simple": "attributes.alert_class"
+                },
+                "Classification": {
+                    "complex": null,
+                    "simple": "attributes.classification"
+                },
+                "Close Time": {
+                    "complex": null,
+                    "simple": "attributes.stop_time"
+                },
+                "Country Name": {
+                    "complex": null,
+                    "simple": "attributes.subobject.countries"
+                },
+                "Description": {
+                    "complex": null,
+                    "simple": "attributes.subobject.description"
+                },
+                "Destination IP": {
+                    "complex": null,
+                    "simple": "attributes.subobject.dst_address"
+                },
+                "Destination MAC Address": {
+                    "complex": null,
+                    "simple": "attributes.subobject.destination_mac_address"
+                },
+                "Device Local IP": {
+                    "complex": null,
+                    "simple": "attributes.subobject.host_address"
+                },
+                "Is Active": {
+                    "complex": null,
+                    "simple": "attributes.ongoing"
+                },
+                "Start Time": {
+                    "complex": null,
+                    "simple": "attributes.start_time"
+                },
+                "Subtype": {
+                    "complex": null,
+                    "simple": "attributes.alert_type"
+                },
+                "Traffic Direction": {
+                    "complex": null,
+                    "simple": "attributes.subobject.direction"
+                },
+                "severity": {
+                    "complex": null,
+                    "simple": "attributes.importance"
+                }
+            }
+        }
+    },
+    "name": "Netscout Arbor Sightline - Incoming Mapper",
+    "type": "mapping-incoming",
+    "version": -1,
+    "fromVersion": "6.0.0"
+}

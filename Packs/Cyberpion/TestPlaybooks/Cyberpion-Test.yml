@@ -1,0 +1,475 @@
+id: Cyberpion-Test
+inputs:
+- description: ""
+  key: domain
+  playbookInputQuery:
+  required: false
+  value:
+    simple: sd6604.$anon100-1.com
+name: Cyberpion-Test
+outputs: []
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "1"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: e1a6a57e-6d99-4f72-84ac-49cd82261494
+      iscommand: false
+      name: ""
+      version: -1
+      description: ''
+    taskid: e1a6a57e-6d99-4f72-84ac-49cd82261494
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+  "1":
+    id: "1"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "13"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 6cf1647c-18bc-4627-80c2-65328d912413
+      iscommand: true
+      name: DeleteContext
+      script: DeleteContext
+      type: regular
+      version: -1
+    taskid: 6cf1647c-18bc-4627-80c2-65328d912413
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+  "3":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: Cyberpion.DomainState.id
+          operator: isNotEmpty
+        - left:
+            iscontext: true
+            value:
+              simple: Cyberpion.DomainState
+          operator: isEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: Cyberpion.DomainState.domain
+          operator: isNotEmpty
+        - left:
+            iscontext: true
+            value:
+              simple: Cyberpion.DomainState
+          operator: isEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: Cyberpion.DomainState.ips
+          operator: isNotEmpty
+        - left:
+            iscontext: true
+            value:
+              simple: Cyberpion.DomainState
+          operator: isEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: Cyberpion.DomainState.risk_rank
+          operator: isNotEmpty
+        - left:
+            iscontext: true
+            value:
+              simple: Cyberpion.DomainState
+          operator: isEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: Cyberpion.DomainState.vuln_count
+          operator: isNotEmpty
+        - left:
+            iscontext: true
+            value:
+              simple: Cyberpion.DomainState
+          operator: isEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: Cyberpion.DomainState.cname_chain
+          operator: isNotEmpty
+        - left:
+            iscontext: true
+            value:
+              simple: Cyberpion.DomainState
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: Cyberpion.DomainState.domain_types
+          operator: isNotEmpty
+        - left:
+            iscontext: true
+            value:
+              simple: Cyberpion.DomainState
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: Cyberpion.DomainState.discovery_date
+          operator: isNotEmpty
+        - left:
+            iscontext: true
+            value:
+              simple: Cyberpion.DomainState
+          operator: isNotEmpty
+      label: "yes"
+    id: "3"
+    ignoreworker: false
+    nexttasks:
+      "yes":
+      - "12"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 464ed7b7-e487-4e65-8884-abcbf71023f7
+      iscommand: false
+      name: Verify Outputs
+      type: condition
+      version: -1
+    taskid: 464ed7b7-e487-4e65-8884-abcbf71023f7
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 520
+        }
+      }
+  "6":
+    id: "6"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "7"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      domain:
+        simple: ${inputs.domain}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: f343b125-4220-46a1-873d-4b0f183351ca
+      iscommand: true
+      name: cyberpion-get-domain-action-items
+      script: '|||cyberpion-get-domain-action-items'
+      type: regular
+      version: -1
+    taskid: f343b125-4220-46a1-873d-4b0f183351ca
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 840
+        }
+      }
+  "7":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: Cyberpion.DomainData.Vulnerabilities.id
+          operator: isNotEmpty
+        - left:
+            iscontext: true
+            value:
+              simple: Cyberpion.DomainData.Vulnerabilities
+          operator: isEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: Cyberpion.DomainData.Domain
+          operator: isNotEmpty
+        - left:
+            iscontext: true
+            value:
+              simple: Cyberpion.DomainData.Vulnerabilities
+          operator: isEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: Cyberpion.DomainData.Vulnerabilities.category
+          operator: isNotEmpty
+        - left:
+            iscontext: true
+            value:
+              simple: Cyberpion.DomainData.Vulnerabilities
+          operator: isEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: Cyberpion.DomainData.Vulnerabilities.urgency
+          operator: isNotEmpty
+        - left:
+            iscontext: true
+            value:
+              simple: Cyberpion.DomainData.Vulnerabilities
+          operator: isEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: Cyberpion.DomainData.Vulnerabilities.is_open
+          operator: isNotEmpty
+        - left:
+            iscontext: true
+            value:
+              simple: Cyberpion.DomainData.Vulnerabilities
+          operator: isEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: Cyberpion.DomainData.Vulnerabilities.creation_time
+          operator: isNotEmpty
+        - left:
+            iscontext: true
+            value:
+              simple: Cyberpion.DomainData.Vulnerabilities
+          operator: isEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: Cyberpion.DomainData.Vulnerabilities.link
+          operator: isNotEmpty
+        - left:
+            iscontext: true
+            value:
+              simple: Cyberpion.DomainData.Vulnerabilities
+          operator: isEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: Cyberpion.DomainData.Vulnerabilities.title
+          operator: isNotEmpty
+        - left:
+            iscontext: true
+            value:
+              simple: Cyberpion.DomainData.Vulnerabilities
+          operator: isEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: Cyberpion.DomainData.Vulnerabilities.impact
+          operator: isNotEmpty
+        - left:
+            iscontext: true
+            value:
+              simple: Cyberpion.DomainData.Vulnerabilities
+          operator: isEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: Cyberpion.DomainData.Vulnerabilities.summary
+          operator: isNotEmpty
+        - left:
+            iscontext: true
+            value:
+              simple: Cyberpion.DomainData.Vulnerabilities
+          operator: isEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: Cyberpion.DomainData.Vulnerabilities.solution
+          operator: isNotEmpty
+        - left:
+            iscontext: true
+            value:
+              simple: Cyberpion.DomainData.Vulnerabilities
+          operator: isEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: Cyberpion.DomainData.Vulnerabilities.description
+          operator: isNotEmpty
+        - left:
+            iscontext: true
+            value:
+              simple: Cyberpion.DomainData.Vulnerabilities
+          operator: isEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: Cyberpion.DomainData.Vulnerabilities.technical_details
+          operator: isNotEmpty
+        - left:
+            iscontext: true
+            value:
+              simple: Cyberpion.DomainData.Vulnerabilities
+          operator: isEmpty
+      label: "yes"
+    id: "7"
+    ignoreworker: false
+    nexttasks:
+      "yes":
+      - "8"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 842c4b2e-9362-4744-8993-9e3916c7d57c
+      iscommand: false
+      name: Verify Outputs
+      type: condition
+      version: -1
+    taskid: 842c4b2e-9362-4744-8993-9e3916c7d57c
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 995
+        }
+      }
+  "8":
+    id: "8"
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 6612be91-2173-47ed-8d55-87e1da7c41c5
+      iscommand: false
+      name: Test Done
+      type: title
+      version: -1
+      description: ''
+    taskid: 6612be91-2173-47ed-8d55-87e1da7c41c5
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1190
+        }
+      }
+  "12":
+    id: "12"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "6"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      seconds:
+        simple: "3"
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Sleep for X seconds
+      id: 18c63ff4-1dd7-4b35-8449-405b62aa1b6a
+      iscommand: false
+      name: Sleep
+      script: Sleep
+      type: regular
+      version: -1
+    taskid: 18c63ff4-1dd7-4b35-8449-405b62aa1b6a
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 685
+        }
+      }
+  "13":
+    id: "13"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      domain:
+        simple: ${inputs.domain}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Retrieves domain's info and current state
+      id: 6686ced8-5d40-4bd1-81c1-96ceb15e7410
+      iscommand: true
+      name: cyberpion-get-domain-state
+      script: '|||cyberpion-get-domain-state'
+      type: regular
+      version: -1
+    taskid: 6686ced8-5d40-4bd1-81c1-96ceb15e7410
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 360
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1205,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+fromversion: 6.0.0
+description: ''

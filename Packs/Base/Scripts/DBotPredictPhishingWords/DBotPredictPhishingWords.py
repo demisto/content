@@ -2,8 +2,8 @@
 
 from CommonServerPython import *
 from string import punctuation
-from nltk import word_tokenize
 import demisto_ml
+import numpy as np
 
 FASTTEXT_MODEL_TYPE = 'FASTTEXT_MODEL_TYPE'
 TORCH_TYPE = 'torch'
@@ -47,14 +47,38 @@ def handle_error(message, is_return_error):
 
 def preprocess_text(text, model_type, is_return_error):
     if model_type in [FASTTEXT_MODEL_TYPE, UNKNOWN_MODEL_TYPE]:
-        language = demisto.args().get('language', 'English')
-        tokenization = demisto.args().get('tokenizationMethod', 'tokenizer')
-        res = demisto.executeCommand('WordTokenizerNLP', {'value': text,
-                                                          'hashWordWithSeed': demisto.args().get('hashSeed'),
-                                                          'language': language,
-                                                          'tokenizationMethod': tokenization})
-        if is_error(res[0]):
-            handle_error(res[0]['Contents'], is_return_error)
+        preprocess_type = 'nlp'
+        hash_seed = demisto.args().get('hashSeed')
+        clean_html = 'true'
+    elif model_type == TORCH_TYPE:
+        preprocess_type = 'none'
+        hash_seed = None
+        clean_html = 'false'
+    if isinstance(text, str):
+        input_type = 'string'
+        input_ = text
+    elif isinstance(text, list):
+        input_type = 'json_string'
+        input_ = json.dumps(text)
+    language = demisto.args().get('language', 'English')
+    tokenization = demisto.args().get('tokenizationMethod', 'tokenizer')
+    args = {'input': input_,
+            'hashSeed': hash_seed,
+            'language': language,
+            'tokenizationMethod': tokenization,
+            'inputType': input_type,
+            'preProcessType': preprocess_type,
+            'dedupThreshold': '-1',
+            'outputFormat': 'json',
+            'textFields': 'text',
+            'removeShortTextThreshold': '-1',
+            'cleanHTML': clean_html}
+    res = demisto.executeCommand('DBotPreProcessTextData', args)
+    if is_error(res):
+        handle_error(res[0]['Contents'], is_return_error)
+    if isinstance(text, list):
+        return [x['dbot_processed_text'] for x in json.loads(res[0]['Contents'])]
+    elif isinstance(text, str):
         tokenized_text_result = res[0]['Contents']
         input_text = tokenized_text_result['hashedTokenizedText'] if tokenized_text_result.get(
             'hashedTokenizedText') else \
@@ -63,11 +87,7 @@ def preprocess_text(text, model_type, is_return_error):
             words_to_token_maps = tokenized_text_result['wordsToHashedTokens']
         else:
             words_to_token_maps = tokenized_text_result['originalWordsToTokens']
-
-    elif model_type == TORCH_TYPE:
-        input_text = text
-        words_to_token_maps = {w: w.lower() for w in word_tokenize(text)}
-    return input_text, words_to_token_maps
+        return input_text, words_to_token_maps
 
 
 def predict_phishing_words(model_name, model_store_type, email_subject, email_body, min_text_length, label_threshold,
@@ -90,20 +110,23 @@ def predict_phishing_words(model_name, model_store_type, email_subject, email_bo
 
 
 def predict_batch_incidents_light_output(email_subject, email_body, phishing_model, model_type, min_text_length):
+    text_list = [{'text': "%s \n%s" % (subject, body)} for subject, body in zip(email_subject, email_body)]
+    preprocessed_text_list = preprocess_text(text_list, model_type, is_return_error=False)
     batch_predictions = []
-    for subject, body in zip(email_subject, email_body):
-        incident_res = {'Label': None, 'Probability': None, 'Error': ''}
-        text = "%s \n%s" % (subject, body)
-        input_text, _ = preprocess_text(text, model_type, is_return_error=False)
+    for input_text in preprocessed_text_list:
+        incident_res = {'Label': -1, 'Probability': -1, 'Error': ''}
         filtered_text, filtered_text_number_of_words = phishing_model.filter_model_words(input_text)
         if filtered_text_number_of_words == 0:
             incident_res['Error'] = "The model does not contain any of the input text words"
         elif filtered_text_number_of_words < min_text_length:
             incident_res['Error'] = "The model contains fewer than %d words" % min_text_length
         else:
-            pred = phishing_model.predict(text)
+            pred = phishing_model.predict(input_text)
             incident_res['Label'] = pred[0]
-            incident_res['Probability'] = pred[1]
+            prob = pred[1]
+            if isinstance(prob, np.floating):
+                prob = prob.item()
+            incident_res['Probability'] = prob
         batch_predictions.append(incident_res)
     return {
         'Type': entryTypes['note'],
@@ -118,7 +141,6 @@ def predict_single_incident_full_output(email_subject, email_body, is_return_err
                                         word_threshold):
     text = "%s \n%s" % (email_subject, email_body)
     input_text, words_to_token_maps = preprocess_text(text, model_type, is_return_error)
-
     filtered_text, filtered_text_number_of_words = phishing_model.filter_model_words(input_text)
     if filtered_text_number_of_words == 0:
         handle_error("The model does not contain any of the input text words", is_return_error)
