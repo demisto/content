@@ -201,6 +201,7 @@ tasks:
       id: 06d6eb8d-ae65-4dc6-833d-4e3d41fead15
       version: -1
       name: Is Google Compute integration enabled?
+      description: ""
       type: condition
       iscommand: false
       brand: ""
@@ -285,6 +286,7 @@ tasks:
       id: c796cea1-6199-4288-80dc-dc4687c04301
       version: -1
       name: GCP Firewall found?
+      description: ""
       type: condition
       iscommand: false
       brand: ""
@@ -388,6 +390,7 @@ tasks:
       id: aa69ad2b-9911-439d-8b39-603117c9a2f6
       version: -1
       name: Engineer - Fix Firewall Name and rerun
+      description: ""
       type: regular
       iscommand: false
       brand: ""
@@ -497,4 +500,4 @@ inputs:
 outputs: []
 tests:
 - No tests (auto formatted)
-fromversion: 5.5.0
+fromversion: 6.0.0
