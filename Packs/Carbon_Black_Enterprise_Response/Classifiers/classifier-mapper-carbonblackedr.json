@@ -62,11 +62,11 @@
                     "complex": null,
                     "simple": "username"
                 },
-                "Carbon Black EDR Watchlist Id": {
+                "Carbon Black EDR WatchlistId": {
                     "complex": null,
                     "simple": "watchlist_id"
                 },
-                "Carbon Black EDR Watchlist Name": {
+                "Carbon Black EDR WatchlistName": {
                     "complex": null,
                     "simple": "watchlist_name"
                 },
