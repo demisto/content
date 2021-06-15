@@ -12,6 +12,7 @@ Through a powerful set of Playbooks, analysts can correlate the discovered infor
 ##### How to use this pack?
 - After the Expanse API key is added in the **Expanse v2** integration and the parameters are set, the Expanse issues will start getting mapped to Expanse Incident type and the **Handle Expanse Incident** Playbook will automatically be launched.
 - If you are only interested in Enrichment and Attribution, you can use the **Handle Expanse Incident - Attribution Only** Playbook instead, by assigning it to the **Expanse Issue** Incident Type.
+- This pack also includes a generic playbook called "Xpasne Incident Handling - Generic" and a matching incoming mapper called "ExpanseV2 Generic - Incoming Mapper". In order to use it, please configure the instance without any classifier, choose "Expanse Issue - Generic" as the incident type and "ExpanseV2 Generic - Incoming Mapper" as the incoming mapper.
 
 ##### Screenshots
 
