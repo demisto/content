@@ -183,7 +183,7 @@ def main() -> None:
     proxy = params.get('proxy', False)
 
     headers = {
-        'Authorization': f'Bearer {api_key}'
+        'Authorization': f'Bearer {api_key}keykey'
     }
 
     try:
