@@ -239,7 +239,7 @@ class Client(BaseClient):
                      ip_only: bool, object_type: str):
         body = {'limit': limit, 'offset': offset, 'filter': filter_search,
                 "ip-only": ip_only, 'type': object_type}
-        return self._http_request(method='POST', url_suffix='v1.5/show-objects',
+        return self._http_request(method='POST', url_suffix='show-objects',
                                   headers=self.headers, json_data=body)
 
     def list_application_site_categories(self, limit: int, offset: int):
@@ -1776,13 +1776,19 @@ def test_module(base_url: str, sid: str, verify_certificate) -> str:
     Returning 'ok' indicates that the integration works like it is supposed to.
     Connection to the service is successful.
     """
-    response = requests.post(base_url + 'show-api-versions',
-                             headers={'Content-Type': 'application/json', 'X-chkp-sid': sid},
-                             verify=verify_certificate, json={})
-    reason = ''
-    if response.json().get('message') == "Missing header: [X-chkp-sid]":
-        reason = '\nWrong credentials! Please check the username and password you entered and try' \
-                 ' again.\n'
+    try:
+        response = requests.post(base_url + 'show-api-versions',
+                                 headers={'Content-Type': 'application/json', 'X-chkp-sid': sid},
+                                 verify=verify_certificate, json={})
+        reason = ''
+        if response.json().get('message') == "Missing header: [X-chkp-sid]":
+            reason = '\nWrong credentials! Please check the username and password you entered and try' \
+                     ' again.\n'
+    except Exception as e:
+        if '500' in str(e):  # for status code 500
+            return 'Server Error: make sure Server URL and Server Port are correctly set'
+        else:
+            raise e
     return 'ok' if response else f'Connection failed.{reason}\nFull response: {response.json()}'
 
 
@@ -1796,6 +1802,8 @@ def main():
     password = params.get('username', {}).get('password')
 
     server = params['server']
+    if server[-1] == "/":
+        server = server[:-1]
     port = params['port']
     base_url = f'https://{server}:{port}/web_api/'
 
