@@ -80,7 +80,7 @@ class NotFoundError(Exception):
 
 
 def http_request(url: str, method: str, headers: dict = None, body=None, params=None, files=None,
-                 resp_type: str = 'xml'):
+                 resp_type: str = 'xml', return_raw: bool = False):
     LOG('running request with url=%s' % url)
     result = requests.request(
         method,
@@ -112,8 +112,8 @@ def http_request(url: str, method: str, headers: dict = None, body=None, params=
     if result.text.find("Forbidden. (403)") != -1:
         raise Exception('Request Forbidden - 403, check SERVER URL and API Key')
 
-    if ('Content-Type' in result.headers and result.headers['Content-Type'] == 'application/octet-stream') or (
-            'Transfer-Encoding' in result.headers and result.headers['Transfer-Encoding'] == 'chunked'):
+    if (('Content-Type' in result.headers and result.headers['Content-Type'] == 'application/octet-stream') or (
+            'Transfer-Encoding' in result.headers and result.headers['Transfer-Encoding'] == 'chunked')) and return_raw:
         return result
 
     if resp_type == 'json':
@@ -511,7 +511,8 @@ def wildfire_get_webartifacts(url: str, types: str) -> dict:
         get_webartifacts_uri,
         'POST',
         headers=DEFAULT_HEADERS,
-        params=params
+        params=params,
+        return_raw=True
     )
     return result
 
@@ -675,7 +676,7 @@ def create_file_report(file_hash: str, reports, file_info, format_: str = 'xml',
             'hash': file_hash
         }
 
-        res_pdf = http_request(get_report_uri, 'POST', headers=DEFAULT_HEADERS, params=params)
+        res_pdf = http_request(get_report_uri, 'POST', headers=DEFAULT_HEADERS, params=params, return_raw=True)
 
         file_name = 'wildfire_report_' + file_hash + '.pdf'
         file_type = entryTypes['entryInfoFile']
@@ -857,7 +858,7 @@ def wildfire_get_sample(file_hash):
         'apikey': TOKEN,
         'hash': file_hash
     }
-    result = http_request(get_report_uri, 'POST', headers=DEFAULT_HEADERS, params=params)
+    result = http_request(get_report_uri, 'POST', headers=DEFAULT_HEADERS, params=params, return_raw=True)
     return result
 
 

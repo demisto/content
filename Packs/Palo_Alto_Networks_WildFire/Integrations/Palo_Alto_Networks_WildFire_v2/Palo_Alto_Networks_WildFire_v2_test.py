@@ -137,7 +137,16 @@ def test_report_chunked_response(mocker):
         'Connection': 'keep-alive',
         'x-envoy-upstream-service-time': '258'
     }
-    get_sample_response._content = b'<?xml version="1.0" encoding="UTF-8"?>\n<wildfire>\n    <version>2.0</version>\n    <file_info>\n        <file_signer>None</file_signer>\n        <malware>no</malware>\n        <sha1></sha1>\n        <filetype>PDF</filetype>\n        <sha256>8decc8571946d4cd70a024949e033a2a2a54377fe9f1c1b944c20f9ee11a9e51</sha256>\n        <md5>4b41a3475132bd861b30a878e30aa56a</md5>\n        <size>3028</size>\n    </file_info>\n<task_info> \n<report>\n  <version>2.0</version>\n  <platform>100</platform>\n  <software>PDF Static Analyzer</software>\n  <sha256>8decc8571946d4cd70a024949e033a2a2a54377fe9f1c1b944c20f9ee11a9e51</sha256>\n  <md5>4b41a3475132bd861b30a878e30aa56a</md5>\n  <malware>no</malware>\n  <summary/>\n</report>\n</task_info> \n</wildfire>'
+    get_sample_response._content = b'<?xml version="1.0" encoding="UTF-8"?><wildfire><version>2.0</version><file_info>'\
+                                   b'<file_signer>None</file_signer><malware>no</malware><sha1></sha1><filetype>PDF' \
+                                   b'</filetype><sha256>' \
+                                   b'8decc8571946d4cd70a024949e033a2a2a54377fe9f1c1b944c20f9ee11a9e51</sha256><md5>' \
+                                   b'4b41a3475132bd861b30a878e30aa56a</md5><size>3028</size></file_info><task_info>' \
+                                   b'<report><version>2.0</version><platform>100</platform><software>' \
+                                   b'PDF Static Analyzer</software><sha256>' \
+                                   b'8decc8571946d4cd70a024949e033a2a2a54377fe9f1c1b944c20f9ee11a9e51</sha256>' \
+                                   b'<md5>4b41a3475132bd861b30a878e30aa56a</md5><malware>no</malware><summary/>' \
+                                   b'</report></task_info></wildfire>'
     mocker.patch(
         'requests.request',
         return_value=get_sample_response
@@ -146,17 +155,23 @@ def test_report_chunked_response(mocker):
                         return_value={'hash': '8decc8571946d4cd70a024949e033a2a2a54377fe9f1c1b944c20f9ee11a9e51',
                                       'format': 'xml'})
     wildfire_get_report_command()
-    result = {'Type': 1, 'Contents': [{'version': '2.0', 'platform': '100', 'software': 'PDF Static Analyzer',
-                                       'sha256': '8decc8571946d4cd70a024949e033a2a2a54377fe9f1c1b944c20f9ee11a9e51',
-                                       'md5': '4b41a3475132bd861b30a878e30aa56a', 'malware': 'no', 'summary': None}],
+    result = {'Type': 1,
+              'Contents': [{'version': '2.0', 'platform': '100', 'software': 'PDF Static Analyzer',
+                            'sha256': '8decc8571946d4cd70a024949e033a2a2a54377fe9f1c1b944c20f9ee11a9e51',
+                            'md5': '4b41a3475132bd861b30a878e30aa56a', 'malware': 'no', 'summary': None}],
               'ContentsFormat': 'json',
-              'HumanReadable': '### WildFire File Report\n|FileType|MD5|SHA256|Size|Status|\n|---|---|---|---|---|\n| PDF | 4b41a3475132bd861b30a878e30aa56a | 8decc8571946d4cd70a024949e033a2a2a54377fe9f1c1b944c20f9ee11a9e51 | 3028 | Completed |\n',
-              'ReadableContentsFormat': 'markdown', 'EntryContext': {
-            'WildFire.Report(val.SHA256 === obj.SHA256)': {'Status': 'Success',
-                                                           'SHA256': '8decc8571946d4cd70a024949e033a2a2a54377fe9f1c1b944c20f9ee11a9e51'},
-            'DBotScore': [
-                {'Indicator': '8decc8571946d4cd70a024949e033a2a2a54377fe9f1c1b944c20f9ee11a9e51', 'Type': 'hash',
-                 'Vendor': 'WildFire', 'Score': 1},
-                {'Indicator': '8decc8571946d4cd70a024949e033a2a2a54377fe9f1c1b944c20f9ee11a9e51', 'Type': 'file',
-                 'Vendor': 'WildFire', 'Score': 1}]}}
+              'HumanReadable': '### WildFire File Report\n|FileType|MD5|SHA256|Size|Status|\n|---|---|---|---|---|\n'
+                               '| PDF | 4b41a3475132bd861b30a878e30aa56a | '
+                               '8decc8571946d4cd70a024949e033a2a2a54377fe9f1c1b944c20f9ee11a9e51 | 3028 '
+                               '| Completed |\n',
+              'ReadableContentsFormat': 'markdown',
+              'EntryContext':
+                  {'WildFire.Report(val.SHA256 === obj.SHA256)':
+                   {'Status': 'Success',
+                    'SHA256': '8decc8571946d4cd70a024949e033a2a2a54377fe9f1c1b944c20f9ee11a9e51'},
+                   'DBotScore': [
+                       {'Indicator': '8decc8571946d4cd70a024949e033a2a2a54377fe9f1c1b944c20f9ee11a9e51', 'Type': 'hash',
+                        'Vendor': 'WildFire', 'Score': 1},
+                       {'Indicator': '8decc8571946d4cd70a024949e033a2a2a54377fe9f1c1b944c20f9ee11a9e51', 'Type': 'file',
+                        'Vendor': 'WildFire', 'Score': 1}]}}
     assert demisto.results.call_args[0][0] == result
