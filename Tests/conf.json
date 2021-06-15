@@ -3746,7 +3746,9 @@
         "McAfee DXL",
         "GCP Whitelist Feed",
         "Cortex Data Lake",
-        "Mail Listener v2"
+        "Mail Listener v2",
+        "EDL",
+        "Create-Mock-Feed-Relationships"
     ],
     "private_tests": [
         "HelloWorldPremium_Scan-Test"
