@@ -466,6 +466,13 @@ script:
       name: queue_id
       required: true
       secret: false
+    - default: false
+      defaultValue: '120'
+      description: Timeout to retrieve the emails. Default is 120.
+      isArray: false
+      name: timeout
+      required: false
+      secret: false
     deprecated: false
     description: Download quarantined emails.
     execution: false
