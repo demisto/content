@@ -1290,7 +1290,7 @@ class Pack(object):
                                                                              version_display_name=latest_release_notes,
                                                                              build_number=build_number,
                                                                              pack_was_modified=pack_was_modified,
-                                                                             new_version=False)
+                                                                             new_version=False)  # need to understand why do we need this part
 
                         else:
                             logging.info(f"Created new release notes for version: {latest_release_notes}")
