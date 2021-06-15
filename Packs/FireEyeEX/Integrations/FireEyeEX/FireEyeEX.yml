@@ -618,6 +618,7 @@ script:
       predefined:
       - 'sender_email_address'
       - 'sender_domain'
+      - 'sender_ip'
       - 'recipient_email_address'
       - 'url'
       - 'md5sum'
@@ -647,6 +648,7 @@ script:
       predefined:
       - 'sender_email_address'
       - 'sender_domain'
+      - 'sender_ip'
       - 'recipient_email_address'
       - 'url'
       - 'md5sum'
@@ -687,6 +689,7 @@ script:
       predefined:
       - 'sender_email_address'
       - 'sender_domain'
+      - 'sender_ip'
       - 'recipient_email_address'
       - 'url'
       - 'md5sum'
@@ -727,6 +730,7 @@ script:
       predefined:
       - 'sender_email_address'
       - 'sender_domain'
+      - 'sender_ip'
       - 'recipient_email_address'
       - 'url'
       - 'md5sum'
@@ -761,6 +765,7 @@ script:
       predefined:
       - 'sender_email_address'
       - 'sender_domain'
+      - 'sender_ip'
       - 'recipient_email_address'
       - 'url'
       - 'md5sum'
@@ -790,6 +795,7 @@ script:
       predefined:
       - 'sender_email_address'
       - 'sender_domain'
+      - 'sender_ip'
       - 'recipient_email_address'
       - 'url'
       - 'md5sum'
@@ -831,6 +837,7 @@ script:
       predefined:
       - 'sender_email_address'
       - 'sender_domain'
+      - 'sender_ip'
       - 'recipient_email_address'
       - 'url'
       - 'md5sum'
@@ -871,6 +878,7 @@ script:
       predefined:
       - 'sender_email_address'
       - 'sender_domain'
+      - 'sender_ip'
       - 'recipient_email_address'
       - 'url'
       - 'md5sum'
