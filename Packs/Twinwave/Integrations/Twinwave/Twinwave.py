@@ -221,7 +221,7 @@ def submit_url(client, args):
         Submit the URL
     """
     url = args.get('url')
-    engines = args.get('engines')
+    engines = argToList(args.get('engines','[]')) 
     parameters = args.get('parameters')
     priority = args.get('priority', 10)
     profile = args.get('profile')

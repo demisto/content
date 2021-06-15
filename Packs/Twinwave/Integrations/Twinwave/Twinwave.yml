@@ -61,6 +61,7 @@ script:
         the analysis. If you''d like to use the default Engines for your account,
         omit this field or specify the empty array []. '
       name: engines
+      isArray: true
     - description: 'Optional list of parameters to customize behavior during analysis
         of the job. (E.g., passwords for archives.) {"archive_document_password":
         "", "decode_rewritten_urls": "true/false"}'
