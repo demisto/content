@@ -1,6 +1,6 @@
 from Palo_Alto_Networks_WildFire_v2 import prettify_upload, prettify_report_entry, prettify_verdict, \
     create_dbot_score_from_verdict, prettify_verdicts, create_dbot_score_from_verdicts, hash_args_handler, \
-    file_args_handler, wildfire_get_sample_command
+    file_args_handler, wildfire_get_sample_command, wildfire_get_report_command
 
 import demistomock as demisto
 from requests import Response
@@ -114,3 +114,49 @@ def test_get_sample(mocker):
     wildfire_get_sample_command()
     results = demisto.results.call_args[0]
     assert results[0]['File'] == filename
+
+
+def test_report_chunked_response(mocker):
+    """
+    Given:
+     - hash of file.
+
+    When:
+     - Running report command.
+
+    Then:
+     - outputs is valid.
+    """
+    mocker.patch.object(demisto, 'results')
+    get_sample_response = Response()
+    get_sample_response.status_code = 200
+    get_sample_response.headers = {
+        'Server': 'nginx',
+        'Date': 'Thu, 28 May 2020 15:03:35 GMT',
+        'Transfer-Encoding': 'chunked',
+        'Connection': 'keep-alive',
+        'x-envoy-upstream-service-time': '258'
+    }
+    get_sample_response._content = b'<?xml version="1.0" encoding="UTF-8"?>\n<wildfire>\n    <version>2.0</version>\n    <file_info>\n        <file_signer>None</file_signer>\n        <malware>no</malware>\n        <sha1></sha1>\n        <filetype>PDF</filetype>\n        <sha256>8decc8571946d4cd70a024949e033a2a2a54377fe9f1c1b944c20f9ee11a9e51</sha256>\n        <md5>4b41a3475132bd861b30a878e30aa56a</md5>\n        <size>3028</size>\n    </file_info>\n<task_info> \n<report>\n  <version>2.0</version>\n  <platform>100</platform>\n  <software>PDF Static Analyzer</software>\n  <sha256>8decc8571946d4cd70a024949e033a2a2a54377fe9f1c1b944c20f9ee11a9e51</sha256>\n  <md5>4b41a3475132bd861b30a878e30aa56a</md5>\n  <malware>no</malware>\n  <summary/>\n</report>\n</task_info> \n</wildfire>'
+    mocker.patch(
+        'requests.request',
+        return_value=get_sample_response
+    )
+    mocker.patch.object(demisto, "args",
+                        return_value={'hash': '8decc8571946d4cd70a024949e033a2a2a54377fe9f1c1b944c20f9ee11a9e51',
+                                      'format': 'xml'})
+    wildfire_get_report_command()
+    result = {'Type': 1, 'Contents': [{'version': '2.0', 'platform': '100', 'software': 'PDF Static Analyzer',
+                                       'sha256': '8decc8571946d4cd70a024949e033a2a2a54377fe9f1c1b944c20f9ee11a9e51',
+                                       'md5': '4b41a3475132bd861b30a878e30aa56a', 'malware': 'no', 'summary': None}],
+              'ContentsFormat': 'json',
+              'HumanReadable': '### WildFire File Report\n|FileType|MD5|SHA256|Size|Status|\n|---|---|---|---|---|\n| PDF | 4b41a3475132bd861b30a878e30aa56a | 8decc8571946d4cd70a024949e033a2a2a54377fe9f1c1b944c20f9ee11a9e51 | 3028 | Completed |\n',
+              'ReadableContentsFormat': 'markdown', 'EntryContext': {
+            'WildFire.Report(val.SHA256 === obj.SHA256)': {'Status': 'Success',
+                                                           'SHA256': '8decc8571946d4cd70a024949e033a2a2a54377fe9f1c1b944c20f9ee11a9e51'},
+            'DBotScore': [
+                {'Indicator': '8decc8571946d4cd70a024949e033a2a2a54377fe9f1c1b944c20f9ee11a9e51', 'Type': 'hash',
+                 'Vendor': 'WildFire', 'Score': 1},
+                {'Indicator': '8decc8571946d4cd70a024949e033a2a2a54377fe9f1c1b944c20f9ee11a9e51', 'Type': 'file',
+                 'Vendor': 'WildFire', 'Score': 1}]}}
+    assert demisto.results.call_args[0][0] == result
