@@ -195,10 +195,9 @@ def get_quarantined_emails(client: Client, args: Dict[str, Any]) -> CommandResul
 
 @logger
 def release_quarantined_emails(client: Client, args: Dict[str, Any]) -> CommandResults:
-    sensor_name = args.get('sensor_name', '')
     queue_ids = argToList(args.get('queue_ids', ''))
 
-    raw_response = client.fe_client.release_quarantined_emails_request(sensor_name, queue_ids)
+    raw_response = client.fe_client.release_quarantined_emails_request(queue_ids)
 
     if raw_response.text:  # returns 200 either way. if operation is successful than resp is empty
         raise DemistoException(raw_response.json())
@@ -212,10 +211,9 @@ def release_quarantined_emails(client: Client, args: Dict[str, Any]) -> CommandR
 
 @logger
 def delete_quarantined_emails(client: Client, args: Dict[str, Any]) -> CommandResults:
-    sensor_name = args.get('sensor_name', '')
     queue_ids = argToList(args.get('queue_ids', ''))
 
-    raw_response = client.fe_client.delete_quarantined_emails_request(sensor_name, queue_ids)
+    raw_response = client.fe_client.delete_quarantined_emails_request(queue_ids)
     if raw_response.text:  # returns 200 either way. if operation is successful than resp is empty
         raise DemistoException(raw_response.json())
     else:
@@ -229,11 +227,10 @@ def delete_quarantined_emails(client: Client, args: Dict[str, Any]) -> CommandRe
 
 @logger
 def download_quarantined_emails(client: Client, args: Dict[str, Any]):
-    sensor_name = args.get('sensor_name', '')
     queue_id = args.get('queue_id', '')
     timeout = int(args.get('timeout', '120'))
 
-    raw_response = client.fe_client.download_quarantined_emails_request(sensor_name, queue_id, timeout)
+    raw_response = client.fe_client.download_quarantined_emails_request(queue_id, timeout)
 
     demisto.results(fileResult(f'quarantined_email_{queue_id}.eml', data=raw_response, file_type=EntryType.FILE))
 

@@ -1,12 +1,9 @@
-fireeye-ex-get-alerts
-fireeye-ex-get-alert-details alert_id=563,564,34800
-fireeye-ex-get-artifacts-by-uuid uuid=b38b83a0-4b96-408c-999f-4e97a5099f61
-fireeye-ex-get-artifacts-metadata-by-uuid uuid=b38b83a0-4b96-408c-999f-4e97a5099f61
-fireeye-ex-get-events duration="48_hours" end_time="2021-05-14T01:08:04.000-02:00" mvx_correlated_only="true"
-fireeye-ex-get-quarantined-emails start_time="1 year" limit=4
-fireeye-ex-release-quarantined-emails queue_ids=<queue_id> sensor_name=<sensor_name>
-fireeye-ex-delete-download-emails queue_ids=<queue_id> sensor_name=<sensor_name>
-fireeye-ex-download-quarantined-emails sensor_name=FireEyeEX queue_id=4FpWV31wpbzTgF9
-fireeye-ex-get-reports report_type=alertDetailsReport alert_id=564
-fireeye-ex-get-reports report_type=ipsExecutiveSummary start_time="1 year"
-fireeye-ex-get-reports report_type=mpsCallBackServer start_time="1 year"
+fireeye-ex-get-alerts start_time="2 month" sender_email="test@malicious.net" limit=4
+fireeye-ex-get-alert-details alert_id=3
+fireeye-ex-get-artifacts-by-uuid uuid=44f2a6f0-aa3f-451d-956f-25565671c4d3
+fireeye-ex-get-artifacts-metadata-by-uuid uuid=44f2a6f0-aa3f-451d-956f-25565671c4d3
+fireeye-ex-get-quarantined-emails limit=2
+fireeye-ex-release-quarantined-emails queue_ids=4G3bll2j0RzTgTh
+fireeye-ex-delete-download-emails queue_ids=4G3bll2j0RzTgTh
+fireeye-ex-download-quarantined-emails queue_id=4G3bll2j0RzTgTh
+fireeye-ex-get-reports report_type=alertDetailsReport alert_id=3

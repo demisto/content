@@ -342,6 +342,30 @@ script:
       type: string
   - arguments:
     - default: false
+      description: The universally unique identifier (UUID) for the alert.
+      isArray: true
+      name: uuid
+      required: true
+      secret: false
+    deprecated: false
+    description: Gets artifacts metadata for the specified UUID.
+    execution: false
+    name: fireeye-ex-get-artifacts-metadata-by-uuid
+    outputs:
+    - contextPath: FireEyeEX.Alerts.uuid
+      description: Universally unique ID (UUID) of the alert.
+      type: string
+    - contextPath: FireEyeEX.Alerts.artifactsInfoList.artifactType
+      description: The artifact type.
+      type: string
+    - contextPath: FireEyeEX.Alerts.artifactsInfoList.artifactName
+      description: The artifact name.
+      type: string
+    - contextPath: FireEyeEX.Alerts.artifactsInfoList.artifactSize
+      description: The zipped artifact size in bytes.
+      type: string
+  - arguments:
+    - default: false
       defaultValue: '1 day'
       description: "Specifies the start time of the search. This filter is optional.\
         \ Default is last day. Syntax: end_time=YYYY-MM-DDTHH:mm:ss.sss-OH:om or '1\
@@ -418,12 +442,6 @@ script:
       name: queue_ids
       required: true
       secret: false
-    - default: false
-      description: The sensor display name.
-      isArray: false
-      name: sensor_name
-      required: true
-      secret: false
     deprecated: false
     description: Releases and deletes quarantined emails. This is not available when
       Email Security is in Drop mode.
@@ -436,12 +454,6 @@ script:
       name: queue_ids
       required: true
       secret: false
-    - default: false
-      description: The sensor display name.
-      isArray: false
-      name: sensor_name
-      required: true
-      secret: false
     deprecated: false
     description: Deletes quarantined emails. This is not available when Email Security
       is in Drop mode.
@@ -452,12 +464,6 @@ script:
       description: The quarantined emails queue ID.
       isArray: false
       name: queue_id
-      required: true
-      secret: false
-    - default: false
-      description: The sensor display name.
-      isArray: false
-      name: sensor_name
       required: true
       secret: false
     deprecated: false

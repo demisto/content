@@ -80,7 +80,7 @@ class FireEyeClient(BaseClient):
         return self._http_request(method='GET', url_suffix='emailmgmt/quarantine', params=params, resp_type='json')
 
     @logger
-    def release_quarantined_emails_request(self, sensor_name: str, queue_ids: list):
+    def release_quarantined_emails_request(self, queue_ids: list, sensor_name: str):
         return self._http_request(method='POST',
                                   url_suffix='emailmgmt/quarantine/release',
                                   params={'sensorName': sensor_name},
@@ -88,7 +88,7 @@ class FireEyeClient(BaseClient):
                                   resp_type='resp')
 
     @logger
-    def delete_quarantined_emails_request(self, sensor_name: str, queue_ids: list):
+    def delete_quarantined_emails_request(self, queue_ids: list, sensor_name: str = ''):
         return self._http_request(method='POST',
                                   url_suffix='emailmgmt/quarantine/delete',
                                   params={'sensorName': sensor_name},
@@ -96,7 +96,7 @@ class FireEyeClient(BaseClient):
                                   resp_type='resp')
 
     @logger
-    def download_quarantined_emails_request(self, sensor_name: str, queue_id: str, timeout: str):
+    def download_quarantined_emails_request(self, queue_id: str, timeout: str, sensor_name: str):
         self._headers.pop('Accept')  # returns a file, hence this header is disruptive
         return self._http_request(method='GET',
                                   url_suffix=f'emailmgmt/quarantine/{queue_id}',
