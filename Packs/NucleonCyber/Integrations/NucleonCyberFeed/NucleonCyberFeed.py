@@ -433,7 +433,7 @@ def fetch_indicators(client: Client, tlp_color: Optional[str] = None, feed_tags:
                 'osversion': osVersion_,
                 'os': os_,
                 'port': port_,
-                'segment': segment_,
+                'nucleonsegment': segment_,
                 #    'expiration':exp_,
             },
             # A dictionary of the raw data returned from the feed source about the indicator.
