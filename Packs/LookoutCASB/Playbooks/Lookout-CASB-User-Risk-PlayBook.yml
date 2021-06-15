@@ -1,0 +1,231 @@
+id: c71eea31-db04-4556-8027-c626d2361cec
+version: 2
+name: Lookout-CASB-User-Risk-PlayBook
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 9794b31a-80bb-41f4-8a21-e9d962726754
+    type: start
+    task:
+      id: 9794b31a-80bb-41f4-8a21-e9d962726754
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: 9d2d551d-0b3c-4884-88b4-9ddb37ad1242
+    type: regular
+    task:
+      id: 9d2d551d-0b3c-4884-88b4-9ddb37ad1242
+      version: -1
+      name: Get User Risk Level
+      description: Get information about user or content.
+      script: '|||lookout-get-information'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      end_time:
+        simple: "2020-11-29T15:32:26.000-00:00"
+      entity_id:
+        simple: ${incident.useremail}
+      entity_type:
+        simple: User
+      result_type:
+        simple: Location
+      start_time:
+        simple: "2020-10-29T15:32:26.000-00:00"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: 088bd2ef-5b55-4362-8720-fef43fbbcd6b
+    type: condition
+    task:
+      id: 088bd2ef-5b55-4362-8720-fef43fbbcd6b
+      version: -1
+      name: Is High risk?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "4"
+      "yes":
+      - "3"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: CipherCloud.Info.userRiskRating
+            iscontext: true
+          right:
+            value:
+              simple: high
+    view: |-
+      {
+        "position": {
+          "x": 470,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 37855752-e7f6-4206-8037-b45d51544e51
+    type: regular
+    task:
+      id: 37855752-e7f6-4206-8037-b45d51544e51
+      version: -1
+      name: Update Incident Severity to high
+      description: Optionally increases the incident severity to the new value if
+        it is greater than the existing severity.
+      scriptName: IncreaseIncidentSeverity
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      severity:
+        simple: High
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: c26ebfe8-c8e2-47cf-89c2-1206b6c2ff88
+    type: regular
+    task:
+      id: c26ebfe8-c8e2-47cf-89c2-1206b6c2ff88
+      version: -1
+      name: Close Incident
+      description: commands.local.cmd.close.inv
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    scriptarguments:
+      assetid: {}
+      closeNotes: {}
+      closeReason:
+        simple: User is not a high risk user.
+      code42alerttype: {}
+      emailclassification: {}
+      id: {}
+      phishingsubtype: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: 7167535a-71bd-41c4-8dfd-d4db0bf6d731
+    type: condition
+    task:
+      id: 7167535a-71bd-41c4-8dfd-d4db0bf6d731
+      version: -1
+      name: Is Violation?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "2"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: incident.eventtype
+            iscontext: true
+          right:
+            value:
+              simple: Violation
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 765,
+        "width": 810,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+sourceplaybookid: 11fab473-6486-49b8-82bc-e37c82e8b729

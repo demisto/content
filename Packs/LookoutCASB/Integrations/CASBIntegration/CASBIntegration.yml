@@ -1,0 +1,161 @@
+commonfields:
+  id: Lookout CASB
+  version: -1
+name: Lookout CASB
+display: Lookout CASB
+category: Data Enrichment & Threat Intelligence
+description: Lookout CASB Integration
+configuration:
+- display: Server URL (e.g. https://management-server.ciphercloud.com)
+  name: url
+  defaultvalue: https://krypton-ms.next.ciphercloud.in
+  type: 0
+  required: true
+- display: Fetch incidents
+  name: isFetch
+  defaultvalue: ""
+  type: 8
+  required: false
+- display: Incident type
+  name: incidentType
+  defaultvalue: ""
+  type: 13
+  required: false
+- display: Maximum number of incidents per fetch
+  name: max_fetch
+  defaultvalue: "1000"
+  type: 0
+  required: false
+- display: Client Id
+  name: client_id
+  defaultvalue: cortexdev
+  type: 0
+  required: true
+- display: Client Secret
+  name: client_secret
+  defaultvalue: XFrGiFHrQ8cG6a2ZMuYiKWBhf+4tLO7wg2aAdnyhDiA=
+  type: 4
+  required: true
+- display: First fetch time
+  name: first_fetch
+  defaultvalue: 45 days
+  type: 0
+  required: false
+- display: Trust any certificate (not secure)
+  name: insecure
+  defaultvalue: "false"
+  type: 8
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  defaultvalue: ""
+  type: 8
+  required: false
+- display: Start Time
+  name: start_time
+  defaultvalue: ""
+  type: 0
+  required: false
+- display: End Time
+  name: end_time
+  defaultvalue: ""
+  type: 0
+  required: false
+script:
+  script: ''
+  type: python
+  commands:
+  - name: lookout-get-violations
+    arguments:
+    - name: start_time
+    - name: end_time
+    description: Get all violations for the given time interval.
+  - name: lookout-get-events
+    arguments:
+    - name: start_time
+    - name: end_time
+    description: Get all user activity events for the given time interval.
+  - name: lookout-get-anomalies
+    arguments:
+    - name: start_time
+    - name: end_time
+    description: Get all anomalous events for the given time interval.
+  - name: lookout-get-information
+    arguments:
+    - name: entity_id
+      required: true
+    - name: entity_type
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - Application
+      - Content
+      - Device
+      - Location
+      - User
+      defaultValue: User
+    - name: result_type
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - Application
+      - Content
+      - Device
+      - Location
+      - User
+      defaultValue: Content
+    - name: start_time
+    - name: end_time
+    outputs:
+    - contextPath: CipherCloud.Info.userRiskRating
+      description: 'User risk rating: High, Medium, Low'
+      type: string
+    - contextPath: CipherCloud.Info.Location
+      type: string
+    - contextPath: CipherCloud.Info.User
+      type: string
+    - contextPath: CipherCloud.Info.Application
+      type: string
+    - contextPath: CipherCloud.Info.Device
+      type: string
+    - contextPath: CipherCloud.Info.Content
+      type: string
+    description: Get information about user or content.
+  - name: lookout-profile-user
+    arguments:
+    - name: email
+      required: true
+    - name: risk_rating
+      auto: PREDEFINED
+      predefined:
+      - Low
+      - Medium
+      - High
+    - name: action
+      auto: PREDEFINED
+      predefined:
+      - Get
+      - Update
+      - Delete
+      defaultValue: Get
+    outputs:
+    - contextPath: CipherCloud.UserProfile.userEmail
+      description: Email
+      type: string
+    - contextPath: CipherCloud.UserProfile.userRiskRating
+      description: Risk Rating
+      type: string
+    - contextPath: CipherCloud.UserProfile.status
+      description: 'Status '
+    - contextPath: CipherCloud.UserProfile.statusCode
+      description: Status Code
+      type: number
+    - contextPath: CipherCloud.UserProfile.message
+      description: Descriptive message
+      type: string
+    description: Update user profile for realtime enforcements.
+  dockerimage: demisto/python3:3.8.2.6981
+  isfetch: true
+  runonce: false
+  subtype: python3
+sourcemoduleid: CCHelloWorld
