@@ -1,0 +1,15 @@
+{
+    "blacklisted-urls": [
+        {
+            "annotation": [],
+            "cid": [
+                -1
+            ],
+            "pgid": [
+                -1
+            ],
+            "updateTime": 1616086346,
+            "url": "google.com"
+        }
+    ]
+}

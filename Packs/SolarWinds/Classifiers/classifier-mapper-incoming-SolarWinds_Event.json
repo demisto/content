@@ -1,0 +1,74 @@
+{
+    "description": "Incoming mapper for SolarWinds Event",
+    "feed": false,
+    "id": "inoming-solarwinds-event-mapper",
+    "mapping": {
+        "SolarWinds Event": {
+            "dontMapEventToLabels": true,
+            "internalMapping": {
+                "SolarWinds Acknowledged": {
+                    "complex": null,
+                    "simple": "Acknowledged"
+                },
+                "SolarWinds Description": {
+                    "complex": null,
+                    "simple": "Description"
+                },
+                "SolarWinds Display Name": {
+                    "complex": null,
+                    "simple": "DisplayName"
+                },
+                "SolarWinds Event Engine ID": {
+                    "complex": null,
+                    "simple": "EngineID"
+                },
+                "SolarWinds Event ID": {
+                    "complex": null,
+                    "simple": "EventID"
+                },
+                "SolarWinds Event NetObject ID": {
+                    "complex": null,
+                    "simple": "NetObjectID"
+                },
+                "SolarWinds Event NetObject Type": {
+                    "complex": null,
+                    "simple": "NetObjectType"
+                },
+                "SolarWinds Event NetObject Value": {
+                    "complex": null,
+                    "simple": "NetObjectValue"
+                },
+                "SolarWinds Event Type": {
+                    "complex": null,
+                    "simple": "Name"
+                },
+                "SolarWinds Instance Site ID": {
+                    "complex": null,
+                    "simple": "InstanceSiteId"
+                },
+                "SolarWinds Instance Type": {
+                    "complex": null,
+                    "simple": "InstanceType"
+                },
+                "SolarWinds Message": {
+                    "complex": null,
+                    "simple": "Message"
+                },
+                "SolarWinds URI": {
+                    "complex": null,
+                    "simple": "Uri"
+                }
+            }
+        },
+        "dbot_classification_incident_type_all": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+
+            }
+        }
+    },
+    "name": "SolarWinds Event - Incoming Mapper",
+    "type": "mapping-incoming",
+    "version": -1,
+    "fromVersion": "6.0.0"
+}
