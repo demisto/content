@@ -229,7 +229,7 @@ def _create_query_string(params: dict, allow_empty_params: bool = False) -> str:
     # If user provided both params and query, it means he is not experienced, and might expect different results,
     # therefore we decided to prohibit the use of both in search commands.
     if 'query' in params and len(params) > 1:
-        raise Exception(f'{INTEGRATION_NAME} - Searching with both query and other filters is not allowed.'
+        raise DemistoException(f'{INTEGRATION_NAME} - Searching with both query and other filters is not allowed. '
                         f'Please provide either a search query or one of the possible filters.')
     elif 'query' in params:
         return params['query']
@@ -238,7 +238,7 @@ def _create_query_string(params: dict, allow_empty_params: bool = False) -> str:
     current_query = ' AND '.join(current_query)
 
     if not current_query and not allow_empty_params:
-        raise Exception(f'{INTEGRATION_NAME} - Search without any filter is not permitted.')
+        raise DemistoException(f'{INTEGRATION_NAME} - Search without any filter is not permitted.')
 
     return current_query
 

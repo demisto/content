@@ -22,7 +22,7 @@
                     "complex": null,
                     "simple": "alert_type"
                 },
-                "IOC Value": {
+                "Carbon Black EDR IOC Value": {
                     "complex": null,
                     "simple": "ioc_value"
                 },
@@ -46,11 +46,11 @@
                     "complex": null,
                     "simple": "process_id"
                 },
-                "ProcessName": {
+                "Process Name": {
                     "complex": null,
                     "simple": "process_name"
                 },
-                "ProcessPath": {
+                "Process Path": {
                     "complex": null,
                     "simple": "process_path"
                 },
@@ -62,11 +62,11 @@
                     "complex": null,
                     "simple": "username"
                 },
-                "WatchlistId": {
+                "Carbon Black EDR Watchlist Id": {
                     "complex": null,
                     "simple": "watchlist_id"
                 },
-                "WatchlistName": {
+                "Carbon Black EDR Watchlist Name": {
                     "complex": null,
                     "simple": "watchlist_name"
                 },

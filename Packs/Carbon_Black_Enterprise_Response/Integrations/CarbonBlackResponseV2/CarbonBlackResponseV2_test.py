@@ -15,16 +15,12 @@ def util_load_json(path):
 
 QUERY_STRING_CASES = [
     (
-        {'hostname': 'ec2amaz-l4c2okc', 'query': 'chrome.exe'}, False,  # case both query and params
+        {'query': 'chrome.exe'}, False,  # case both query and params
         'chrome.exe'  # expected
     ),
     (
         {'hostname': 'ec2amaz-l4c2okc'}, False,  # case only params
         'hostname:ec2amaz-l4c2okc'  # expected
-    ),
-    (
-        {'query': 'chrome.exe'}, False,  # case only query
-        'chrome.exe'  # expected
     ),
     (
         {}, True,  # case no params
@@ -48,12 +44,19 @@ def test_create_query_string(params, empty, expected_results):
     """
     from CarbonBlackResponseV2 import _create_query_string
 
-    query_string = _create_query_string(params, allow_empty=empty)
+    query_string = _create_query_string(params, allow_empty_params=empty)
 
     assert query_string == expected_results
 
+QUERY_STRING_CASES_FAILS = [
+    (
+        {'hostname': 'ec2amaz-l4c2okc', 'query': 'chrome.exe'}, False,  # case both query and params
+        'Carbon Black EDR - Searching with both query and other filters is not allowed. Please provide either a search query or one of the possible filters.'  # expected
+    ),
+    ({}, False, 'Carbon Black EDR - Search without any filter is not permitted.')]
 
-def test_fail_create_query_string():
+@pytest.mark.parametrize('params, empty, expected_results', QUERY_STRING_CASES_FAILS)
+def test_fail_create_query_string(params, empty, expected_results):
     """
     Given:
         - En empty dictionary of params
@@ -66,9 +69,11 @@ def test_fail_create_query_string():
 
     """
     from CarbonBlackResponseV2 import _create_query_string
-    with pytest.raises(Exception) as e:
-        _create_query_string({})
-    assert str(e.value) == 'Carbon Black EDR - Search without any filter is not permitted.'
+    from CommonServerPython import DemistoException
+
+    with pytest.raises(DemistoException) as e:
+        _create_query_string(params, allow_empty_params=empty)
+    assert str(e.value) == expected_results
 
 
 PARSE_FIELD_CASES = [
