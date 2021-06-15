@@ -336,13 +336,13 @@ tasks:
     task:
       brand: ""
       description: Send an email
-      id: 9a3bb982-5dbd-451c-8f5c-e89b8aed4d51
+      id: 231ddd44-4364-4524-8721-7c5a0a6447d0
       iscommand: true
       name: Send E-mail
       script: '|||send-mail'
       type: regular
       version: -1
-    taskid: 9a3bb982-5dbd-451c-8f5c-e89b8aed4d51
+    taskid: 231ddd44-4364-4524-8721-7c5a0a6447d0
     timertriggers: []
     type: regular
     view: |-

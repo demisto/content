@@ -83,7 +83,7 @@ tasks:
     ignoreworker: false
     nexttasks:
       '#none#':
-      - "9"
+      - "12"
     note: false
     quietmode: 0
     scriptarguments:
@@ -134,7 +134,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 1245
+          "y": 1420
         }
       }
   "4":
@@ -176,7 +176,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 895
+          "y": 1070
         }
       }
   "5":
@@ -212,7 +212,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 1070
+          "y": 1245
         }
       }
   "6":
@@ -248,7 +248,7 @@ tasks:
       {
         "position": {
           "x": 695,
-          "y": 1070
+          "y": 1245
         }
       }
   "7":
@@ -275,7 +275,7 @@ tasks:
               right:
                 iscontext: true
                 value:
-                  simple: incident.contentpackselection
+                  simple: FilterList
           root: ContentDataPreCheck
           transformers:
           - args:
@@ -289,20 +289,20 @@ tasks:
     task:
       brand: ""
       description: Set a value in context under the key you entered.
-      id: d0130637-563c-4096-87be-9116a98f7141
+      id: 8a928eb3-1f15-44f5-8b0a-c73fd58660f9
       iscommand: false
       name: Set the output
       scriptName: Set
       type: regular
       version: -1
-    taskid: d0130637-563c-4096-87be-9116a98f7141
+    taskid: 8a928eb3-1f15-44f5-8b0a-c73fd58660f9
     timertriggers: []
     type: regular
     view: |-
       {
         "position": {
           "x": 265,
-          "y": 720
+          "y": 895
         }
       }
   "8":
@@ -349,7 +349,7 @@ tasks:
           right:
             iscontext: true
             value:
-              simple: incident.contentpackselection
+              simple: FilterList
       label: "yes"
     id: "9"
     ignoreworker: false
@@ -364,19 +364,19 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 51b14c72-4d0c-4466-812e-f62aeafeefa4
+      id: 346fcf6b-c798-411a-86b1-959e4e18ac19
       iscommand: false
       name: Are we checking for all updates?
       type: condition
       version: -1
-    taskid: 51b14c72-4d0c-4466-812e-f62aeafeefa4
+    taskid: 346fcf6b-c798-411a-86b1-959e4e18ac19
     timertriggers: []
     type: condition
     view: |-
       {
         "position": {
           "x": 480,
-          "y": 545
+          "y": 720
         }
       }
   "10":
@@ -420,7 +420,7 @@ tasks:
       {
         "position": {
           "x": 695,
-          "y": 720
+          "y": 895
         }
       }
   "11":
@@ -457,13 +457,57 @@ tasks:
           "y": 195
         }
       }
+  "12":
+    id: "12"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "9"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      append:
+        simple: "false"
+      key:
+        simple: FilterList
+      value:
+        complex:
+          accessor: contentpackselection
+          root: incident
+          transformers:
+          - args:
+              delimiter:
+                value:
+                  simple: ','
+            operator: split
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Set a value in context under the key you entered.
+      id: f1616dbd-6e06-4511-8960-83fe72b878e8
+      iscommand: false
+      name: Set filter list
+      scriptName: Set
+      type: regular
+      version: -1
+    taskid: f1616dbd-6e06-4511-8960-83fe72b878e8
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 545
+        }
+      }
 version: -1
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1260,
+        "height": 1435,
         "width": 1240,
         "x": 50,
         "y": 50

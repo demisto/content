@@ -14,11 +14,11 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 * Set
 
 ### Commands
-* send-mail
 * closeInvestigation
 * send-notification
-* demisto-api-get
 * setIncident
+* send-mail
+* demisto-api-get
 
 ## Playbook Inputs
 ---
