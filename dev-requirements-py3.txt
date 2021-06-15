@@ -5,7 +5,7 @@ git+https://github.com/demisto/demisto-sdk.git@get-pack-name-change
 pytest==6.2.1
 pytest-mock==3.4.0
 requests-mock==1.8.0
-ruamel.yaml==0.17.4
+ruamel.yaml<0.17
 pipenv==2020.11.15
 autopep8==1.5.4
 mypy==0.782
