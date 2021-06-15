@@ -1,5 +1,5 @@
 id: d38c3657-cbad-4480-8982-bea60ab02399
-version: 5
+version: 6
 vcShouldKeepItemLegacyProdMachine: false
 name: Carbon Black EDR - Enrich Process
 starttaskid: "0"
@@ -163,12 +163,14 @@ view: |-
   }
 inputs:
 - key: Process ID
-  value: {}
+  value:
+    simple: ${incident.pid}
   required: true
   description: The id of the requested process.
   playbookInputQuery: null
 - key: Segment ID
-  value: {}
+  value:
+    simple: ${incident.carbonblackedrsegmentid}
   required: true
   description: The id of the segment of the requested process.
   playbookInputQuery: null
