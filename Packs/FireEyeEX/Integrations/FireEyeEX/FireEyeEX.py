@@ -279,7 +279,7 @@ def list_allowedlist(client: Client, args: Dict[str, Any]) -> CommandResults:
 
     raw_response = client.fe_client.list_allowedlist_request(type_)
     if not raw_response:
-        md_ = 'No allowed lists with the given type were found.'
+        md_ = f'No allowed lists with the given type {type_} were found.'
     else:
         md_ = tableToMarkdown(name=f'{INTEGRATION_NAME} Allowed lists:', t=raw_response, removeNull=True)
 
@@ -366,7 +366,7 @@ def list_blockedlist(client: Client, args: Dict[str, Any]) -> CommandResults:
 
     raw_response = client.fe_client.list_blockedlist_request(type_)
     if not raw_response:
-        md_ = 'No blocked lists with the given type were found.'
+        md_ = f'No blocked lists with the given type {type_} were found.'
     else:
         md_ = tableToMarkdown(name=f'{INTEGRATION_NAME} Blocked lists:', t=raw_response, removeNull=True)
 

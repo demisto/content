@@ -273,8 +273,8 @@ def test_list_blockedlist_no_entries(mocker):
     mocker.patch.object(FireEyeClient, '_generate_token', return_value='token')
     client = Client(base_url="https://fireeye.ex.com/", username='user', password='pass', verify=False, proxy=False)
     mocker.patch.object(FireEyeClient, 'list_blockedlist_request', return_value={})
-    command_results = list_blockedlist(client=client, args={'type': 'url'})
-    assert command_results.readable_output == 'No blocked lists with the given type were found.'
+    command_results = list_blockedlist(client=client, args={'type': 'sender_domain'})
+    assert command_results.readable_output == 'No blocked lists with the given type sender_domain were found.'
 
 
 def test_fetch_incidents_with_limit(mocker):
