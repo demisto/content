@@ -8,6 +8,11 @@ configuration:
   name: server_url
   required: true
   type: 0
+- display: Article content max size
+  description: Default is 45KB. If you increase the limit substantialy, it may slow performance. You need to specify only a number, for example 50.
+  name: max_size
+  required: false
+  type: 0
 - display: Fetch indicators
   name: feed
   defaultvalue: 'true'
@@ -25,7 +30,7 @@ configuration:
   - Bad
   additionalinfo: Indicators from this integration instance will be marked with this
     reputation
-- defaultvalue: D - Not usually reliable
+- defaultvalue: F - Reliability cannot be judged
   display: Source Reliability
   name: feedReliability
   options:

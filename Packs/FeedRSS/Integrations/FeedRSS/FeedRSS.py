@@ -17,10 +17,11 @@ class Client(BaseClient):
         proxy(str): Use system proxy.
     """
 
-    def __init__(self, server_url, use_ssl, proxy, feed_tags, tlp_color):
+    def __init__(self, server_url, use_ssl, proxy, feed_tags, tlp_color, content_max_size=45):
         super().__init__(base_url=server_url, proxy=proxy, verify=use_ssl)
         self.feed_tags = feed_tags
         self.tlp_color = tlp_color
+        self.content_max_size = content_max_size*1000
         feed_content = self._http_request(method='GET', resp_type='response')
         self.feed_data = feedparser.parse(feed_content.text)
         self.parsed_indicators = self.create_indicators_from_response()
@@ -43,7 +44,6 @@ class Client(BaseClient):
                     text = self.get_url_content(indicator.get('link'))
                     indicator_obj = {
                         "type": 'Report',
-                        "Reliability": "F - Reliability cannot be judged",
                         "value": indicator.get('title'),
                         "rawJSON": {'value': indicator, 'type': 'Report', "firstseenbysource": published_iso},
                         "fields": {
@@ -75,6 +75,9 @@ class Client(BaseClient):
             #         report_content += ''.join(nested_text) # no need when using stripped_strings
             #     else:
             #         report_content += ' ' + tag.text.strip()
+        if len(report_content.encode('utf-8')) > self.content_max_size:  # Ensure report_content does not exceed the
+            # indicator size limit (~50KB)
+            report_content = report_content.encode('utf-8')[:self.content_max_size].decode('utf-8')
         return report_content
 
 
@@ -103,7 +106,8 @@ def main():
                         use_ssl=not params.get('insecure', False),
                         proxy=params.get('proxy'),
                         feed_tags=argToList(params.get('feedTags')),
-                        tlp_color=params.get('tlp_color'))
+                        tlp_color=params.get('tlp_color'),
+                        content_max_size=int(params.get('max_size')))
 
         if demisto.command() == 'test-module':
             # if the client was created successfully and there is data in feed the test is successful.
@@ -117,6 +121,8 @@ def main():
             raise NotImplementedError(f'Command {command} is not implemented.')
             # Log exceptions and return errors
 
+    except ValueError:
+        raise DemistoException("Article content max size must be a number, for example 50.")
     except Exception as err:
         demisto.error(traceback.format_exc())  # print the traceback
         return_error(f"Failed to execute {command} command.\nError:\n{str(err)}")
