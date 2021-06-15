@@ -6,6 +6,10 @@
         "Carbon Black EDR": {
             "dontMapEventToLabels": true,
             "internalMapping": {
+                "Segment ID": {
+					"complex": null,
+					"simple": "segment_id"
+				},
                 "Device External IP": {
                     "complex": null,
                     "simple": "interface_ip"
@@ -22,7 +26,7 @@
                     "complex": null,
                     "simple": "alert_type"
                 },
-                "Carbon Black EDR IOC Value": {
+                "IOC Value": {
                     "complex": null,
                     "simple": "ioc_value"
                 },
@@ -62,11 +66,11 @@
                     "complex": null,
                     "simple": "username"
                 },
-                "Carbon Black EDR WatchlistId": {
+                "WatchlistId": {
                     "complex": null,
                     "simple": "watchlist_id"
                 },
-                "Carbon Black EDR WatchlistName": {
+                "WatchlistName": {
                     "complex": null,
                     "simple": "watchlist_name"
                 },

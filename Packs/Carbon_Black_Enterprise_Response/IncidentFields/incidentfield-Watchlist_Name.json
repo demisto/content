@@ -2,7 +2,7 @@
     "id": "incident_carbonblack_edrwatchlistname",
     "version": -1,
     "modified": "2021-05-30T15:52:44.774368+03:00",
-    "name": "Carbon Black EDR WatchlistName",
+    "name": "WatchlistName",
     "ownerOnly": false,
     "cliName": "carbonblackedrwatchlistname",
     "type": "shortText",
