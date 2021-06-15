@@ -1,6 +1,6 @@
 id: EDL Indicator Performance Test
 version: -1
-fromversion: 5.5.0
+fromversion: 6.0.0
 name: EDL Indicator Performance Test
 starttaskid: "0"
 tasks:
@@ -234,6 +234,5 @@ inputs:
 outputs:
 - contextPath: Hey
   type: unknown
-sourceplaybookid: 37d1cfda-2d21-4eab-87fa-4449cf2f5427
 tests:
 - No test

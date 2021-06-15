@@ -1,15 +1,15 @@
-id: EDL Performance Test - Concurrency
+id: EDL Indicator Performance Test
 version: -1
-fromversion: 5.5.0
-name: EDL Performance Test - Concurrency
+fromversion: 6.0.0
+name: EDL Indicator Performance Test
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 58ddedec-ec9b-400a-8475-44f960138f83
+    taskid: 483a1d4e-fdfc-42b2-86b1-9a79d45e797c
     type: start
     task:
-      id: 58ddedec-ec9b-400a-8475-44f960138f83
+      id: 483a1d4e-fdfc-42b2-86b1-9a79d45e797c
       version: -1
       name: ""
       iscommand: false
@@ -21,7 +21,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 450,
           "y": 50
         }
       }
@@ -34,24 +34,97 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: 1726f02e-2802-4379-83e3-3719c9f415b6
-    type: title
+    taskid: 7f7c541d-d6a3-4874-8be2-5224c1c64f2d
+    type: regular
     task:
-      id: 1726f02e-2802-4379-83e3-3719c9f415b6
+      id: 7f7c541d-d6a3-4874-8be2-5224c1c64f2d
       version: -1
-      name: Concurrency 1
-      type: title
+      name: Hey edl IP
+      scriptName: Hey
+      type: regular
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
-      - "12"
+      - "2"
+    scriptarguments:
+      c:
+        simple: ${inputs.c}
+      "n":
+        simple: ${inputs.n}
+      results_map:
+        simple: Type=IP
+      t:
+        simple: ${inputs.t}
+      url:
+        complex:
+          root: inputs.url
+          transformers:
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: '&q=type:IP'
+      z:
+        simple: ${inputs.z}
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 195
+          "x": 450,
+          "y": 210
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 9a03c737-5a5c-46bd-8fb2-71f39606c5de
+    type: regular
+    task:
+      id: 9a03c737-5a5c-46bd-8fb2-71f39606c5de
+      version: -1
+      name: Hey edl URL
+      scriptName: Hey
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      c:
+        simple: ${inputs.c}
+      "n":
+        simple: ${inputs.n}
+      results_map:
+        simple: Type=URL
+      t:
+        simple: ${inputs.t}
+      url:
+        complex:
+          root: inputs.url
+          transformers:
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: '&q=type:URL'
+      z:
+        simple: ${inputs.z}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 390
         }
       }
     note: false
@@ -63,24 +136,46 @@ tasks:
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: 52fcbd14-a3a3-43ac-8e79-c8706525be37
-    type: title
+    taskid: d497e20e-1f9d-4929-8c8a-b33591536f35
+    type: regular
     task:
-      id: 52fcbd14-a3a3-43ac-8e79-c8706525be37
+      id: d497e20e-1f9d-4929-8c8a-b33591536f35
       version: -1
-      name: Concurrency 10
-      type: title
+      name: Hey edl Domain
+      scriptName: Hey
+      type: regular
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
-      - "13"
+      - "4"
+    scriptarguments:
+      c:
+        simple: ${inputs.c}
+      "n":
+        simple: ${inputs.n}
+      results_map:
+        simple: Type=Domain
+      t:
+        simple: ${inputs.t}
+      url:
+        complex:
+          root: inputs.url
+          transformers:
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: '&q=type:Domain'
+      z:
+        simple: ${inputs.z}
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 515
+          "x": 450,
+          "y": 570
         }
       }
     note: false
@@ -90,326 +185,68 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "6":
-    id: "6"
-    taskid: e75c46c9-75fd-44c1-8f9b-0216124dcd1a
-    type: title
+  "4":
+    id: "4"
+    taskid: ce50328a-84a0-48ed-85fd-15bc1c0691d9
+    type: condition
     task:
-      id: e75c46c9-75fd-44c1-8f9b-0216124dcd1a
+      id: ce50328a-84a0-48ed-85fd-15bc1c0691d9
       version: -1
-      name: Concurrency 20
-      type: title
+      name: Assert All Requests Received Successful Responses
+      type: condition
       iscommand: false
       brand: ""
     nexttasks:
-      '#none#':
-      - "14"
+      "yes":
+      - "5"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualNumber
+          left:
+            value:
+              complex:
+                root: Hey
+                accessor: Requests
+            iscontext: true
+          right:
+            value:
+              complex:
+                root: Hey
+                accessor: SuccessfulResponses
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 760
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 2c40dcec-74d7-49a1-80b9-57ad0aba55fb
+    type: title
+    task:
+      id: 2c40dcec-74d7-49a1-80b9-57ad0aba55fb
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 835
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "8":
-    id: "8"
-    taskid: 362d01cd-fde8-4015-84b7-8077039482af
-    type: title
-    task:
-      id: 362d01cd-fde8-4015-84b7-8077039482af
-      version: -1
-      name: Concurrency 100
-      type: title
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "15"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1155
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "11":
-    id: "11"
-    taskid: bda3dadd-e66a-4dee-8808-4d650a30d295
-    type: title
-    task:
-      id: bda3dadd-e66a-4dee-8808-4d650a30d295
-      version: -1
-      name: Concurrency 200
-      type: title
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "16"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1475
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "12":
-    id: "12"
-    taskid: 2dbcb848-a52c-4476-8925-4a3586cdf3f7
-    type: playbook
-    task:
-      id: 2dbcb848-a52c-4476-8925-4a3586cdf3f7
-      version: -1
-      name: EDL Indicator Performance Test
-      playbookName: EDL Indicator Performance Test
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "3"
-    scriptarguments:
-      c:
-        simple: "1"
-      "n":
-        simple: ${inputs.n}
-      results_map:
-        simple: ${inputs.results_map}
-      t:
-        simple: "2"
-      url:
-        complex:
-          root: inputs.url
-      z:
-        simple: ${inputs.z}
-    separatecontext: true
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-      max: 0
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 340
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "13":
-    id: "13"
-    taskid: 2f278c79-b488-41bf-844d-9bd22a74f62f
-    type: playbook
-    task:
-      id: 2f278c79-b488-41bf-844d-9bd22a74f62f
-      version: -1
-      name: EDL Indicator Performance Test
-      playbookName: EDL Indicator Performance Test
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "6"
-    scriptarguments:
-      c:
-        simple: "10"
-      "n":
-        simple: ${inputs.n}
-      results_map:
-        simple: ${inputs.results_map}
-      t:
-        simple: "2"
-      url:
-        complex:
-          root: inputs.url
-      z:
-        simple: ${inputs.z}
-    separatecontext: true
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-      max: 0
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 660
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "14":
-    id: "14"
-    taskid: 387572ca-e958-40d8-8709-20582c07dd75
-    type: playbook
-    task:
-      id: 387572ca-e958-40d8-8709-20582c07dd75
-      version: -1
-      name: EDL Indicator Performance Test
-      playbookName: EDL Indicator Performance Test
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "8"
-    scriptarguments:
-      c:
-        simple: "20"
-      "n":
-        simple: ${inputs.n}
-      results_map:
-        simple: ${inputs.results_map}
-      t:
-        simple: "2"
-      url:
-        complex:
-          root: inputs.url
-      z:
-        simple: ${inputs.z}
-    separatecontext: true
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-      max: 0
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 980
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "15":
-    id: "15"
-    taskid: ac38c0da-9689-4ffb-8860-d5bb6c70e85d
-    type: playbook
-    task:
-      id: ac38c0da-9689-4ffb-8860-d5bb6c70e85d
-      version: -1
-      name: EDL Indicator Performance Test
-      playbookName: EDL Indicator Performance Test
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "11"
-    scriptarguments:
-      c:
-        simple: "100"
-      "n":
-        simple: ${inputs.n}
-      results_map:
-        simple: ${inputs.results_map}
-      t:
-        simple: "2"
-      url:
-        complex:
-          root: inputs.url
-      z:
-        simple: ${inputs.z}
-    separatecontext: true
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-      max: 0
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1300
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "16":
-    id: "16"
-    taskid: cfd9fdd9-6bf1-4a14-8d19-386563b1c0b5
-    type: playbook
-    task:
-      id: cfd9fdd9-6bf1-4a14-8d19-386563b1c0b5
-      version: -1
-      name: EDL Indicator Performance Test
-      playbookName: EDL Indicator Performance Test
-      type: playbook
-      iscommand: false
-      brand: ""
-    scriptarguments:
-      c:
-        simple: "200"
-      "n":
-        simple: ${inputs.n}
-      results_map:
-        simple: ${inputs.results_map}
-      t:
-        simple: "2"
-      url:
-        complex:
-          root: inputs.url
-      z:
-        simple: ${inputs.z}
-    separatecontext: true
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-      max: 0
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1620
+          "x": 450,
+          "y": 940
         }
       }
     note: false
@@ -424,9 +261,9 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1665,
+        "height": 955,
         "width": 380,
-        "x": 50,
+        "x": 450,
         "y": 50
       }
     }
@@ -437,12 +274,12 @@ inputs:
   required: false
   description: The URL of the EDL instance with with query in the end
   playbookInputQuery: null
-- key: results_map
+- key: "n"
   value: {}
   required: false
   description: ""
   playbookInputQuery: null
-- key: "n"
+- key: t
   value: {}
   required: false
   description: ""
@@ -452,9 +289,18 @@ inputs:
   required: false
   description: ""
   playbookInputQuery: null
+- key: results_map
+  value: {}
+  required: false
+  description: ""
+  playbookInputQuery: null
+- key: c
+  value: {}
+  required: false
+  description: Concurrent requests to be sent.
+  playbookInputQuery: null
 outputs:
 - contextPath: Hey
   type: unknown
-sourceplaybookid: 37d1cfda-2d21-4eab-87fa-4449cf2f5427
 tests:
 - No test
