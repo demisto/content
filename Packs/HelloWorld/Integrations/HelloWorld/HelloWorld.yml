@@ -25,15 +25,17 @@ configuration:
   name: apikey
   required: true
   type: 4
-- defaultvalue: '65'
+- additionalinfo: Set this to determine the HelloWorld score that will determine if
+    an IP is malicious (0-100)
+  defaultvalue: '65'
   display: Score threshold for IP reputation command
-  additionalinfo: Set this to determine the HelloWorld score that will determine if an IP is malicious (0-100)
   name: threshold_ip
   required: false
   type: 0
-- defaultvalue: '65'
+- additionalinfo: Set this to determine the HelloWorld score that will determine if
+    a domain is malicious (0-100)
+  defaultvalue: '65'
   display: Score threshold for domain reputation command
-  additionalinfo: Set this to determine the HelloWorld score that will determine if a domain is malicious (0-100)
   name: threshold_domain
   required: false
   type: 0
@@ -45,12 +47,13 @@ configuration:
   - CLOSED
   required: false
   type: 15
-- display: Fetch alerts with type
-  additionalinfo: Comma-separated list of types of alerts to fetch. Types might change over time. Some examples are 'Bug' and 'Vulnerability'
+- additionalinfo: Comma-separated list of types of alerts to fetch. Types might change
+    over time. Some examples are 'Bug' and 'Vulnerability'
+  display: Fetch alerts with type
   name: alert_type
   required: false
   type: 0
-- defaultvalue: 'Low'
+- defaultvalue: Low
   display: Minimum severity of alerts to fetch
   name: min_severity
   options:
@@ -123,7 +126,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: "Filter by start time. \nExamples:\n  \"3 days ago\"\n  \"1 month\"\n  \"2019-10-10T12:22:00\"\n  \"2019-10-10\""
+      description: "Filter by start time. \nExamples:\n  \"3 days ago\"\n  \"1 month\"\
+        \n  \"2019-10-10T12:22:00\"\n  \"2019-10-10\""
       isArray: false
       name: start_time
       required: false
@@ -215,15 +219,26 @@ script:
     - contextPath: HelloWorld.Alert.alert_status
       description: Alert status. Can be 'ACTIVE' or 'CLOSED'.
       type: String
-  - name: ip
-    arguments:
-    - name: ip
-      default: true
+  - arguments:
+    - default: true
       description: List of IPs.
       isArray: true
-    - name: threshold
-      description: If the IP has reputation above the threshold then the IP defined as malicious. If threshold not set, then threshold from instance configuration is used.
-      defaultValue: 65
+      name: ip
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '65'
+      description: If the IP has reputation above the threshold then the IP defined
+        as malicious. If threshold not set, then threshold from instance configuration
+        is used.
+      isArray: false
+      name: threshold
+      required: false
+      secret: false
+    deprecated: false
+    description: Return IP information and reputation
+    execution: false
+    name: ip
     outputs:
     - contextPath: DBotScore.Indicator
       description: The indicator that was tested.
@@ -325,7 +340,8 @@ script:
       description: Additional raw data for the IP address.
       type: Unknown
     - contextPath: HelloWorld.IP.score
-      description: Reputation score from HelloWorld for this IP (0 to 100, where higher is worse).
+      description: Reputation score from HelloWorld for this IP (0 to 100, where higher
+        is worse).
       type: Number
     - contextPath: IP.Address
       description: IP address.
@@ -339,16 +355,26 @@ script:
     - contextPath: IP.ASN
       description: The autonomous system name for the IP address.
       type: String
-    description: Return IP information and reputation
-  - name: domain
-    arguments:
-    - name: domain
-      default: true
+  - arguments:
+    - default: true
       description: List of Domains.
       isArray: true
-    - name: threshold
-      description: If the domain has reputation above the threshold then the domain defined as malicious. If threshold not set, then threshold from instance configuration is used.
-      defaultValue: 65
+      name: domain
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '65'
+      description: If the domain has reputation above the threshold then the domain
+        defined as malicious. If threshold not set, then threshold from instance configuration
+        is used.
+      isArray: false
+      name: threshold
+      required: false
+      secret: false
+    deprecated: false
+    description: Returns Domain information and reputation.
+    execution: false
+    name: domain
     outputs:
     - contextPath: DBotScore.Indicator
       description: The indicator that was tested.
@@ -387,7 +413,8 @@ script:
       description: The expiration date of the domain. Format is ISO8601 (i.e. '2020-04-30T10:35:00.000Z').
       type: Date
     - contextPath: Domain.UpdatedDate
-      description: The date when the domain was last updated. Format is ISO8601 (i.e. '2020-04-30T10:35:00.000Z').
+      description: The date when the domain was last updated. Format is ISO8601 (i.e.
+        '2020-04-30T10:35:00.000Z').
       type: Date
     - contextPath: Domain.NameServers
       description: Name servers of the domain.
@@ -399,7 +426,8 @@ script:
       description: The creation date of the domain. Format is ISO8601 (i.e. '2020-04-30T10:35:00.000Z').
       type: Date
     - contextPath: Domain.WHOIS.UpdatedDate
-      description: The date when the domain was last updated. Format is ISO8601 (i.e. '2020-04-30T10:35:00.000Z').
+      description: The date when the domain was last updated. Format is ISO8601 (i.e.
+        '2020-04-30T10:35:00.000Z').
       type: Date
     - contextPath: Domain.WHOIS.ExpirationDate
       description: The expiration date of the domain.
@@ -453,7 +481,8 @@ script:
       description: Domain registrar.
       type: String
     - contextPath: HelloWorld.Domain.score
-      description: Reputation score from HelloWorld for this domain (0 to 100, where higher is worse).
+      description: Reputation score from HelloWorld for this domain (0 to 100, where
+        higher is worse).
       type: Number
     - contextPath: HelloWorld.Domain.state
       description: Domain admin state.
@@ -470,7 +499,6 @@ script:
     - contextPath: HelloWorld.Domain.zipcode
       description: Domain admin zipcode.
       type: Unknown
-    description: Returns Domain information and reputation.
   - arguments:
     - default: false
       description: Asset to start the scan against.
@@ -576,6 +604,7 @@ script:
       description: The ID of the CVE.
       type: string
   dockerimage: demisto/python3:3.9.1.14969
+  feed: false
   isfetch: true
   longRunning: false
   longRunningPort: false
@@ -583,6 +612,6 @@ script:
   script: '-'
   subtype: python3
   type: python
-defaultclassifier: HelloWorld
 defaultmapperin: HelloWorld-mapper
+defaultclassifier: HelloWorld
 fromversion: 5.0.0

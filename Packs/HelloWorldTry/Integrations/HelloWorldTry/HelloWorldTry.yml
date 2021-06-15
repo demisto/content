@@ -1,0 +1,133 @@
+category: Analytics & SIEM
+commonfields:
+  id: HelloWorldTry
+  version: -1
+configuration:
+- defaultvalue: https://example.com/
+  display: Your server URL
+  name: url
+  required: true
+  type: 0
+- additionalinfo: The username to use for connection
+  display: user name
+  name: username
+  required: false
+  type: 0
+- additionalinfo: The password to use for connection
+  display: password
+  name: password
+  required: false
+  type: 0
+- additionalinfo: The usrn to use for connection
+  display: usrn
+  name: usrn
+  required: false
+  type: 0
+- additionalinfo: The clientID to use for connection
+  display: clientID
+  name: clientid
+  required: false
+  type: 0
+- defaultvalue: 'true'
+  display: Fetch indicators
+  name: feed
+  required: false
+  type: 8
+
+- defaultvalue: '30'
+  display: Feed Fetch Interval
+  name: feedFetchInterval
+  required: false
+  type: 19
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+description: '[Enter a comprehensive, yet concise, description of what the integration
+  does, what use cases it is designed for, etc.]'
+display: HelloWorldTry
+name: HelloWorldTry
+script:
+  commands:
+  - arguments:
+    - default: false
+      description: alert id to retrew
+      isArray: false
+      name: alert_id
+      required: true
+      secret: false
+    description: blaaa
+    deprecated: false
+    execution: false
+    name : HelloWorldTry-get-alert 
+    outputs:
+    - contextPath: HelloWorldTry.Alert
+      description: 'alert description '
+      type: String
+  - arguments:
+    - default: false
+      description:  ip to retrew
+      isArray: false
+      name: ip
+      required: true
+      secret: false
+    description: blaaa
+    deprecated: false
+    execution: false
+    name : HelloWorldTry-get-ip 
+    outputs:
+    - contextPath: HelloWorldTry.Ip.ip
+      description: 'IP description '
+      type: String
+    - contextPath: HelloWorldTry.Ip.exp
+      description: 'exp description '
+      type: String 
+    - contextPath: HelloWorldTry.Ip.attackDetails
+      description: 'attackDetails description '
+      type: Dict
+  - arguments:
+    - default: false
+      description:  ip to retrew
+      isArray: false
+      # name: indicators
+      # required: true
+      secret: false
+    deprecated: false
+    description: 'type description '
+    execution: false
+    name : helloworldTry-get-indicators
+    type: String         
+  - arguments:
+    - default: false
+      description: '[Enter a description of the argument, including any important
+        information users need to know, for example, default values.]'
+      isArray: false
+      name: dummy
+      required: true
+      secret: false
+    deprecated: false
+    description: '[Enter a description of the command, including any important information
+      users need to know, for example required permissions.]'
+    execution: false
+    name: baseintegration-dummy
+    outputs:
+    - contextPath: BaseIntegration.Output
+      description: '[Enter a description of the data returned in this output.]'
+      type: String
+ 
+  dockerimage: demisto/python3:3.9.1.15759
+  feed: false
+  isfetch: false
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+tests:
+- No tests (auto formatted)
+fromversion: 5.5.0

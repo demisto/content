@@ -1,0 +1,60 @@
+Executed: helloworld-get-indicators
+Instance HelloWorld Feed_instance_1
+Arguments {
+  "limit": "10"
+}
+Start time 2021-06-01T08:58:51.417239136Z
+
+
+2021-06-01T08:58:51.418796278Z info: (HelloWorld Feed_instance_1_HelloWorld Feed_helloworld-get-indicators) debug-mode started.
+#### http client print found: False.
+#### Env {'PATH': '/usr/local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin', 'HOSTNAME': '5da86a5cd1ea', 'HTTP_PROXY': '', 'http_proxy': '', 'HTTPS_PROXY': '', 'https_proxy': '', 'LANG': 'C.UTF-8', 'GPG_KEY': 'E3FF2839C048B25C084DEBE9B26995E310250568', 'PYTHON_VERSION': '3.9.2', 'PYTHON_PIP_VERSION': '21.0.1', 'PYTHON_GET_PIP_URL': 'https://github.com/pypa/get-pip/raw/b60e2320d9e8d02348525bd74e871e466afdf77c/get-pip.py', 'PYTHON_GET_PIP_SHA256': 'c3b81e5d06371e135fb3156dc7d8fd6270735088428c4a9a5ec1f342e2024565', 'DOCKER_IMAGE': 'demisto/python3:3.9.2.17957', 'HOME': '/root'}.
+#### Params: {
+  "feed": true,
+  "feedBypassExclusionList": true,
+  "feedExpirationInterval": null,
+  "feedExpirationPolicy": null,
+  "feedFetchInterval": "30",
+  "feedReliability": "F - Reliability cannot be judged",
+  "feedReputation": "Bad",
+  "feedTags": null,
+  "insecure": false,
+  "proxy": false,
+  "tlp_color": null,
+  "url": "https://openphish.com/feed.txt"
+}.
+#### Docker image: [demisto/python3:3.9.2.17957]
+#### Integration: brand: [HelloWorld Feed] instance: [HelloWorld Feed_instance_1]
+2021-06-01T08:58:51.419497788Z debug: (HelloWorld Feed_instance_1_HelloWorld Feed_helloworld-get-indicators) Command being called is helloworld-get-indicators
+2021-06-01T08:58:51.420508244Z info: (HelloWorld Feed_instance_1_HelloWorld Feed_helloworld-get-indicators) python logging: DEBUG [urllib3.connectionpool] - Starting new HTTPS connection (1): openphish.com:443
+2021-06-01T08:58:51.695179364Z info: (HelloWorld Feed_instance_1_HelloWorld Feed_helloworld-get-indicators) send: b'GET /feed.txt HTTP/1.1\r\nHost: openphish.com\r\nUser-Agent: python-requests/2.25.1\r\nAccept-Encoding: gzip, deflate\r\nAccept: */*\r\nConnection: keep-alive\r\n\r\n'
+2021-06-01T08:58:51.87031046Z info: (HelloWorld Feed_instance_1_HelloWorld Feed_helloworld-get-indicators) reply: 'HTTP/1.1 200 OK\r\n'
+2021-06-01T08:58:51.870943952Z info: (HelloWorld Feed_instance_1_HelloWorld Feed_helloworld-get-indicators) header: Server: nginx
+2021-06-01T08:58:51.871301717Z info: (HelloWorld Feed_instance_1_HelloWorld Feed_helloworld-get-indicators) header: Date: Tue, 01 Jun 2021 08:58:51 GMT
+2021-06-01T08:58:51.871643321Z info: (HelloWorld Feed_instance_1_HelloWorld Feed_helloworld-get-indicators) header: Content-Type: text/plain
+2021-06-01T08:58:51.871971517Z info: (HelloWorld Feed_instance_1_HelloWorld Feed_helloworld-get-indicators) header: Content-Length: 104908
+2021-06-01T08:58:51.872301014Z info: (HelloWorld Feed_instance_1_HelloWorld Feed_helloworld-get-indicators) header: Last-Modified: Tue, 01 Jun 2021 00:00:02 GMT
+2021-06-01T08:58:51.872627015Z info: (HelloWorld Feed_instance_1_HelloWorld Feed_helloworld-get-indicators) header: Connection: keep-alive
+2021-06-01T08:58:51.872953958Z info: (HelloWorld Feed_instance_1_HelloWorld Feed_helloworld-get-indicators) header: ETag: "60b57882-199cc"
+2021-06-01T08:58:51.873285578Z info: (HelloWorld Feed_instance_1_HelloWorld Feed_helloworld-get-indicators) header: Strict-Transport-Security: max-age=31536000; includeSubdomains;
+2021-06-01T08:58:51.873755271Z info: (HelloWorld Feed_instance_1_HelloWorld Feed_helloworld-get-indicators) header: X-Frame-Options: SAMEORIGIN
+2021-06-01T08:58:51.874083599Z info: (HelloWorld Feed_instance_1_HelloWorld Feed_helloworld-get-indicators) header: Accept-Ranges: bytes
+2021-06-01T08:58:51.874422908Z info: (HelloWorld Feed_instance_1_HelloWorld Feed_helloworld-get-indicators) python logging: DEBUG [urllib3.connectionpool] - https://openphish.com:443 "GET /feed.txt HTTP/1.1" 200 104908
+
+Entry
+Executed on 2021-06-01T08:58:52.063226608Z
+
+Context Outputs:
+{}
+
+Human Readable section:
+"### Indicators from HelloWorld Feed:\n|Value|Type|\n|---|---|\n| https://codashopfrercom.duckdns.org/ | URL |\n| https://firlandovascarjmar-887b6e.ingress-erytho.easywp.com/modefise/medioes/654b5166a40a792211b7f799397fa580/f0864518c0e3bfd/login.php | URL |\n| https://www.gzsxycy.com/mobile/ | URL |\n| http://indiquez-votre-compte-orange23.yolasite.com/ | URL |\n| https://securesecurity1.serveirc.com/Signin/Netflix231/ | URL |\n| https://services.runescape.com-vzla.ru/m=weblogin/loginform496,737,197,55389384,2167 | URL |\n| https://freoplata.net.ru/b/bw9c?order_id=49200729\u0026order_idNew=49200729 | URL |\n| https://paaaaatepaaaael.000webhostapp.com/ | URL |\n| https://104.129.12.10/ | URL |\n| http://testpage001.cloudns.cl/ | URL |\n"
+
+Raw Response section:
+[{"fields":{},"rawJSON":{"FeedURL":"https://openphish.com/feed.txt","type":"URL","value":"https://codashopfrercom.duckdns.org/"},"service":"HelloWorld","type":"URL","value":"https://codashopfrercom.duckdns.org/"},{"fields":{},"rawJSON":{"FeedURL":"https://openphish.com/feed.txt","type":"URL","value":"https://firlandovascarjmar-887b6e.ingress-erytho.easywp.com/modefise/medioes/654b5166a40a792211b7f799397fa580/f0864518c0e3bfd/login.php"},"service":"HelloWorld","type":"URL","value":"https://firlandovascarjmar-887b6e.ingress-erytho.easywp.com/modefise/medioes/654b5166a40a792211b7f799397fa580/f0864518c0e3bfd/login.php"},{"fields":{},"rawJSON":{"FeedURL":"https://openphish.com/feed.txt","type":"URL","value":"https://www.gzsxycy.com/mobile/"},"service":"HelloWorld","type":"URL","value":"https://www.gzsxycy.com/mobile/"},{"fields":{},"rawJSON":{"FeedURL":"https://openphish.com/feed.txt","type":"URL","value":"http://indiquez-votre-compte-orange23.yolasite.com/"},"service":"HelloWorld","type":"URL","value":"http://indiquez-votre-compte-orange23.yolasite.com/"},{"fields":{},"rawJSON":{"FeedURL":"https://openphish.com/feed.txt","type":"URL","value":"https://securesecurity1.serveirc.com/Signin/Netflix231/"},"service":"HelloWorld","type":"URL","value":"https://securesecurity1.serveirc.com/Signin/Netflix231/"},{"fields":{},"rawJSON":{"FeedURL":"https://openphish.com/feed.txt","type":"URL","value":"https://services.runescape.com-vzla.ru/m=weblogin/loginform496,737,197,55389384,2167"},"service":"HelloWorld","type":"URL","value":"https://services.runescape.com-vzla.ru/m=weblogin/loginform496,737,197,55389384,2167"},{"fields":{},"rawJSON":{"FeedURL":"https://openphish.com/feed.txt","type":"URL","value":"https://freoplata.net.ru/b/bw9c?order_id=49200729\u0026order_idNew=49200729"},"service":"HelloWorld","type":"URL","value":"https://freoplata.net.ru/b/bw9c?order_id=49200729\u0026order_idNew=49200729"},{"fields":{},"rawJSON":{"FeedURL":"https://openphish.com/feed.txt","type":"URL","value":"https://paaaaatepaaaael.000webhostapp.com/"},"service":"HelloWorld","type":"URL","value":"https://paaaaatepaaaael.000webhostapp.com/"},{"fields":{},"rawJSON":{"FeedURL":"https://openphish.com/feed.txt","type":"URL","value":"https://104.129.12.10/"},"service":"HelloWorld","type":"URL","value":"https://104.129.12.10/"},{"fields":{},"rawJSON":{"FeedURL":"https://openphish.com/feed.txt","type":"URL","value":"http://testpage001.cloudns.cl/"},"service":"HelloWorld","type":"URL","value":"http://testpage001.cloudns.cl/"}]
+
+
+2021-06-01T08:58:52.064114152Z info: (HelloWorld Feed_instance_1_HelloWorld Feed_helloworld-get-indicators) cURL:
+curl -X GET https://openphish.com/feed.txt -H "Accept: */*" --noproxy "*" 
+
+End time 2021-06-01T08:58:52.064646773Z

@@ -1,0 +1,16 @@
+{
+    "name": "HelloWorldTry",
+    "description": "first try",
+    "support": "partner",
+    "currentVersion": "1.0.0",
+    "author": "y",
+    "url": "",
+    "email": "",
+    "categories": [
+        "Analytics & SIEM"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "githubUser": []
+}

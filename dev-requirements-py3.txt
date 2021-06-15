@@ -21,3 +21,4 @@ coloredlogs==15.0
 pandas==1.2.0
 timeout-decorator==0.5.0
 sendgrid==6.6.0
+redis==2.6.2
