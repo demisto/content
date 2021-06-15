@@ -15,15 +15,6 @@ configuration:
 #   name: url
 #   required: true
 #   type: 0
-
-
-- defaultvalue: https://api.nucleoncyber.com/feed/activethreats
-  display: Ip'S indicators api URL
-  additionalinfo: "NucleonCyber activeThreats api for fetching ip indicators"
-  name: ips_url
-  required: true
-  type: 0
-
 - defaultvalue: "username"
   display: User Name
   additionalinfo:  The given username to use for NucleonCyber API connection
@@ -46,21 +37,6 @@ configuration:
   display: ClientID
   additionalinfo:  The given clientID to use for NucleonCyber API connection
   name: clientid
-  required: true
-  type: 0
-
-
-- defaultvalue: http://api.cybercure.ai/feed/get_url
-  display:  Url's indicators api URL
-  additionalinfo: "NucleonCyber cybercure api for fetching URL indicators"
-  name: urls_indicators_url
-  required: true
-  type: 0
-
-- defaultvalue: http://api.cybercure.ai/feed/get_hash
-  display:  hashes's indicators api URL
-  additionalinfo: "NucleonCyber cybercure api for fetching Hashes indicators"
-  name: hashs_indicators_url
   required: true
   type: 0
 
