@@ -11,25 +11,25 @@ The phases of this playbook are:
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
-* Expanse Load-Create List
 * Extract and Enrich Expanse Indicators
 * Calculate Severity - Standard
+* Expanse Load-Create List
 
 ### Integrations
 * ExpanseV2
 
 ### Scripts
 * AddKeyToList
-* ExpanseRefreshIssueAssets
 * Set
+* ExpanseRefreshIssueAssets
 
 ### Commands
-* expanse-get-certificate
 * expanse-update-issue
 * expanse-create-tag
-* expanse-get-issue-comments
+* expanse-get-certificate
 * expanse-assign-tags-to-asset
 * closeInvestigation
+* expanse-get-issue-comments
 
 ## Playbook Inputs
 ---
@@ -40,7 +40,6 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 | EnrichIndicators | Whether to extract and enrich indicators automatically using the "Entity Enrichment - Generic V3" playbook or not. | True | Optional |
 | CalculateSeverity | Whether to calculate the severity of the incident automatically using the "Calculate Severity - Standard" playbook or not. | True | Optional |
 | CommonTags | Common tags which your organization uses.<br/>Should be a comma separated list \(lower case letters\), for example:<br/>tag1, tag2, tag3 ... |  | Optional |
-| OutgoingMirrorTag | If a value is provided for this field, the comment of the analyst will be tagged with it.<br/>In order to mirror it, please configure the same value under the integration's instance outgoing mirror configurations. | MirrorToXpanse | Optional |
 | CloseWhenExcluded | True - Close the incident automatically if the current issue's certificate or a domain are excluded. If an IP is excluded, close automatically only if there is no domain for the incident.<br/><br/>False - Let the analyst go over the incident manually even if the assets are excluded. |  | Optional |
 | AutomaticTagValue | If the value of "CloseWhenExcluded" is "True", tag associated assets with this value in Xpanse. <br/>For example, if the value of "AutomaticTagValue" is "excluded-in-xsoar", the tag "excluded-in-xsoar" will be assigned to the assets. | excluded-in-xsoar | Optional |
 
@@ -50,4 +49,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![Xpanse Incident Handling - Generic](https://github.com/demisto/content/raw/e58dbd66a736cc13d0d074cbaf00dea7bd5f200b/Packs/ExpanseV2/doc_files/Xpanse_Incident_Handling_-_Generic.png)
+![Xpanse Incident Handling - Generic](Insert the link to your image here)

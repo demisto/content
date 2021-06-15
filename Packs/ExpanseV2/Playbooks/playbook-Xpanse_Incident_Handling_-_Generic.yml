@@ -739,8 +739,6 @@ tasks:
       version: -1
       name: Set Expanse issue "Progress" Value
       description: Update a property of an Expanse issue.
-      tags:
-      - ${inputs.OutgoingMirrorTag}
       script: '|||expanse-update-issue'
       type: regular
       iscommand: true
@@ -3616,14 +3614,6 @@ inputs:
     Common tags which your organization uses.
     Should be a comma separated list (lower case letters), for example:
     tag1, tag2, tag3 ...
-  playbookInputQuery:
-- key: OutgoingMirrorTag
-  value:
-    simple: MirrorToXpanse
-  required: false
-  description: |-
-    If a value is provided for this field, the comment of the analyst will be tagged with it.
-    In order to mirror it, please configure the same value under the integration's instance outgoing mirror configurations.
   playbookInputQuery:
 - key: CloseWhenExcluded
   value: {}
