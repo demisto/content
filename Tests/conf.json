@@ -1909,7 +1909,7 @@
         },
         {
             "integrations": "AWS - IAM",
-            "playbookID": "d5cb69b1-c81c-4f27-8a40-3106c0cb2620"
+            "playbookID": "AWS - IAM Test Playbook"
         },
         {
             "integrations": "McAfee Active Response",
@@ -3471,7 +3471,6 @@
         "PAN OS EDL Management - Test": "Issue 35652",
         "PAN-OS EDL Setup v3 Test": "Issue 35386",
         "Google-Vault-Generic-Test": "Issue 24347",
-        "FireEyeNX-Test": "Issue 33216",
         "GmailTest": "Issue 27057",
         "Gmail Single User - Test": "Issue 27361",
         "AWS - EC2 Test Playbook": "Issue 36486",
@@ -3520,7 +3519,6 @@
         "Nessus": "No instance",
         "Cisco CloudLock": "No instance",
         "Vectra v2": "No instance",
-        "AWS - IAM": "Issue 21401",
         "GoogleCloudSCC": "No instance, outsourced",
         "FortiGate": "License expired, and not going to get one (issue 14723)",
         "Attivo Botsink": "no instance, not going to get it",
