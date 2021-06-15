@@ -37,6 +37,10 @@
         "Identity": {
             "mandatory": true,
             "display_name": "Identity"
+        },
+        "aa": {
+            "mandatory": true,
+            "display_name": "aa"
         }
     },
     "displayedImages": [
