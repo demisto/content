@@ -1034,6 +1034,65 @@ def search_attributes() -> Tuple[dict, Any]:
 
     response = MISP.search(**args)
 
+    if response: #todo talk to Yuval about the deepcopy issue
+        print(response)
+        response_for_context = build_attribute_context(copy.deepcopy(response))
+
+        md = f'## MISP attributes-search returned {len(response_for_context)} attributes.\n'
+
+        # if attributes were returned, display one to the warroom to visualize the result:
+        if len(response_for_context) > 0:
+            md += tableToMarkdown(f'Attribute ID: {response_for_context[0].get("ID")}', response_for_context[0])
+
+        demisto.results({
+            'Type': entryTypes['note'],
+            'Contents': response,
+            'ContentsFormat': formats['json'],
+            'HumanReadable': md,
+            'ReadableContentsFormat': formats['markdown'],
+            'EntryContext': {
+                MISP_ATTRIBUTE_PATH: response_for_context
+            }
+        })
+        return response_for_context, response
+    else:
+        demisto.results(f"No attributes found in MISP for {args}")
+        return {}, {}
+
+def search_objects() -> Tuple[dict, Any]:
+    """
+    Execute a MIPS search using the 'objects' controller.
+    """
+    d_args = demisto.args()
+    # List of all applicable search arguments
+    search_args = [
+        'value',
+        'type',
+        'category',
+        'uuid',
+        'to_ids',
+        'last',
+        'include_decay_score'
+    ]
+    args = dict()
+    # Create dict to pass into the search
+    for arg in search_args:
+        if arg in d_args:
+            args[arg] = d_args[arg]
+    # Replacing keys and values from Demisto to Misp's keys
+    if 'type' in args:
+        args['type_attribute'] = d_args.pop('type')
+    # search function 'to_ids' parameter gets 0 or 1 instead of bool.
+    if 'to_ids' in args:
+        args['to_ids'] = 1 if d_args.get('to_ids') in ('true', '1', 1) else 0
+    if 'include_decay_score' in args:
+        args['includeDecayScore'] = 1 if d_args.get('include_decay_score') in ('true', '1', 1) else 0
+
+    # Set the controller to attributes to search for attributes and not events
+    args['controller'] = 'attributes'
+
+    response = MISP.search(**args)
+
     if response:
         response_for_context = build_attribute_context(copy.deepcopy(response))
 
@@ -1355,6 +1414,8 @@ def main():
             search()
         elif command == 'misp-search-attributes':
             search_attributes()
+        elif command == 'misp-search-objects':
+            search_objects()
         elif command == 'misp-delete-event':
             return_results(delete_event(demisto_args=args, pymisp=pymisp))  # checked
         elif command == 'misp-add-sighting':
