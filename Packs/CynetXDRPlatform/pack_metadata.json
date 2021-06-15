@@ -1,0 +1,17 @@
+{
+    "name": "Cynet XDR Platform",
+    "description": "This content pack contains the 1st version of integration with Cynet XDR.",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "michelangelomarinetti",
+    "url": "",
+    "email": "",
+    "created": "2021-06-15T15:02:29Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "githubUser": [
+        "michelangelomarinetti"
+    ]
+}

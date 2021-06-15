@@ -1,0 +1,111 @@
+category: Data Enrichment & Threat Intelligence
+commonfields:
+  id: Cynet XDR Platform
+  version: -1
+configuration:
+- defaultvalue: https://
+  display: Cynet server URL (e.g., https://192.168.0.1)
+  name: url
+  required: true
+  type: 0
+- defaultvalue: "6443"
+  display: Cynet server port (e.g., 6443)
+  name: port
+  required: true
+  type: 0
+- display: 'API Username '
+  name: user_name
+  required: true
+  type: 0
+- display: Password
+  name: password
+  required: true
+  type: 4
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+description: |-
+  Cynet XDR prevents and detects threats on endpoints, networks, and users and triggers for each identified threat an
+  automated investigation flow that reveals the attack’s scope and root cause and applies automated remediation.
+  The 24×7 MDR team continuously monitors and optimizes this process to maintain top quality and precision.
+display: Cynet XDR Platform
+name: Cynet XDR Platform
+script:
+  commands:
+  - arguments:
+    - default: true
+      defaultValue: 01-01-2010
+      name: LastSeen
+    description: List hosts from Cynet XDR
+    name: cynet-get-hosts
+  - arguments:
+    - name: hostname
+      required: true
+    description: Host details from Cynet XDR
+    name: cynet-get-host-details
+  - arguments:
+    - name: hostname
+      required: true
+    description: Host full details from Cynet XDR
+    name: cynet-get-host-full-details
+  - arguments:
+    - default: true
+      defaultValue: 01-01-2010
+      description: 'Format: mm-dd-yyyy'
+      name: fromDate
+      required: true
+    description: Missing windows patches details from Cynet XDR
+    name: cynet-get-missing-windows-patches-details
+  - arguments:
+    - default: true
+      defaultValue: 01-01-2010
+      description: 'Format: mm-dd-yyyy'
+      name: fromDate
+      required: true
+    description: Existing windows patches details from Cynet XDR
+    name: cynet-get-existing-windows-patches-details
+  - arguments:
+    - default: true
+      defaultValue: 01-01-2010
+      description: 'Format: mm-dd-yyyy'
+      name: fromDate
+      required: true
+    description: Risky Application details from Cynet XDR
+    name: cynet-get-risky-application-details
+  - arguments:
+    - default: true
+      defaultValue: 01-01-2010
+      description: 'Format: mm-dd-yyyy'
+      name: fromDate
+      required: true
+    description: ' Installed Softwares details from Cynet XDR'
+    name: cynet-get-installed-softwares-details
+  - arguments:
+    - default: true
+      defaultValue: 01-01-2010
+      description: 'Format: mm-dd-yyyy'
+      name: fromDate
+      required: true
+    description: ' Outdates applications details from Cynet XDR'
+    name: cynet-get-outdates-application-details
+  - arguments:
+    - default: true
+      defaultValue: 01-01-2010
+      description: 'Format: mm-dd-yyyy'
+      name: fromDate
+      required: true
+    description: Agent validation details from Cynet XDR
+    name: cynet-get-agent-validation-details
+  dockerimage: demisto/python:2.7.18.20958
+  runonce: false
+  script: ''
+  subtype: python3
+  type: python
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)
