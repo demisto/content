@@ -230,7 +230,7 @@ def _create_query_string(params: dict, allow_empty_params: bool = False) -> str:
     # therefore we decided to prohibit the use of both in search commands.
     if 'query' in params and len(params) > 1:
         raise DemistoException(f'{INTEGRATION_NAME} - Searching with both query and other filters is not allowed. '
-                        f'Please provide either a search query or one of the possible filters.')
+                               f'Please provide either a search query or one of the possible filters.')
     elif 'query' in params:
         return params['query']
 

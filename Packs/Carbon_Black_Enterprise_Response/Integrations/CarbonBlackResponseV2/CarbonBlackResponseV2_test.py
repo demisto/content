@@ -48,12 +48,15 @@ def test_create_query_string(params, empty, expected_results):
 
     assert query_string == expected_results
 
+
 QUERY_STRING_CASES_FAILS = [
     (
         {'hostname': 'ec2amaz-l4c2okc', 'query': 'chrome.exe'}, False,  # case both query and params
-        'Carbon Black EDR - Searching with both query and other filters is not allowed. Please provide either a search query or one of the possible filters.'  # expected
+        'Carbon Black EDR - Searching with both query and other filters is not allowed. '
+        'Please provide either a search query or one of the possible filters.'  # expected
     ),
     ({}, False, 'Carbon Black EDR - Search without any filter is not permitted.')]
+
 
 @pytest.mark.parametrize('params, empty, expected_results', QUERY_STRING_CASES_FAILS)
 def test_fail_create_query_string(params, empty, expected_results):
@@ -265,15 +268,16 @@ def test_crossproc(data_str, expected):
     res = crossproc_complete(data_str).format()
     assert res == expected
 
+
 @freeze_time("2021-03-14T13:34:14.758295Z")
 def test_fetch_incidents_first_fetch(mocker):
     """
         Given
-            fetch incidents command
+            fetch incidents command running for the first time.
         When
             mock the Client's http_request.
         Then
-            validate fetch incidents command using the Client
+            validate fetch incidents command using the Client gets all relevant incidents
     """
     from CarbonBlackResponseV2 import fetch_incidents, Client
     alerts = util_load_json('test_data/commands_test_data.json').get('fetch_incident_data')
@@ -284,8 +288,17 @@ def test_fetch_incidents_first_fetch(mocker):
     assert len(incidents) == 3
     assert incidents[0].get('name') == 'Carbon Black EDR: 1 svchost.exe'
 
+
 @freeze_time("2021-03-16T13:34:14.758295Z")
 def test_fetch_incidents(mocker):
+    """
+        Given
+            fetch incidents command running for a second time.
+        When
+            mock the Client's http_request.
+        Then
+            validate fetch incidents command using the Client only returns new incidents
+    """
     from CarbonBlackResponseV2 import fetch_incidents, Client
     last_run = {'last_fetch': dateparser.parse('2021-03-12T14:13:20+00:00').timestamp()}
     alerts = util_load_json('test_data/commands_test_data.json').get('fetch_incident_data')
