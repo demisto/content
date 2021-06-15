@@ -96,7 +96,7 @@ class FireEyeClient(BaseClient):
                                   resp_type='resp')
 
     @logger
-    def download_quarantined_emails_request(self, queue_id: str, timeout: str, sensor_name: str):
+    def download_quarantined_emails_request(self, queue_id: str, timeout: str, sensor_name: str = ''):
         self._headers.pop('Accept')  # returns a file, hence this header is disruptive
         return self._http_request(method='GET',
                                   url_suffix=f'emailmgmt/quarantine/{queue_id}',

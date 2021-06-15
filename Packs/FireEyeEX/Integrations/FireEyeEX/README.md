@@ -599,7 +599,26 @@ Download quarantined emails.
 
 
 #### Command Example
-``` ```
+```!fireeye-ex-download-quarantined-emails queue_id=queue```
+
+#### Context Example
+```json
+{
+    "File": {
+        "EntryID": "479@2c246757-e02c-458a-8620-dbc236283fb8",
+        "Extension": "eml",
+        "Info": "message/rfc822",
+        "MD5": "b0320e23db6da746c694b79a60dac111",
+        "Name": "queue.eml",
+        "SHA1": "af85d7ebeeb359d94ea9a4d363acc429845042cf",
+        "SHA256": "e543f92e16f3eab595c9167e8739afd38156065e1c7c41a27ed399e14cd4cf2e",
+        "SHA512": "28a34e0042efa0a7b7dc865c9ce8f178228ccdb9f6d7fde11addef0bdbed95837bd3de4cbda79575be1ce67740d5e23634a63667de5f2c5a4f3b1209f6fd0f1e",
+        "SSDeep": "6:tnWrw+bcnWd4jXQ93f9FfZPl1WbZiAi1rzfSY4SXfT8oERf:tnWrwWcnWd4M9fZfWbG4MfPE5",
+        "Size": 269,
+        "Type": "RFC 822 mail text, ASCII text"
+    }
+}
+```
 
 #### Human Readable Output
 
