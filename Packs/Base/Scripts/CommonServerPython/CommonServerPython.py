@@ -225,6 +225,7 @@ class DBotScoreType(object):
     DBotScoreType.ACCOUNT
     DBotScoreType.CRYPTOCURRENCY
     DBotScoreType.EMAIL
+    DBotScoreType.ATTACKPATTERN
     :return: None
     :rtype: ``None``
     """
@@ -239,6 +240,7 @@ class DBotScoreType(object):
     CERTIFICATE = 'certificate'
     CRYPTOCURRENCY = 'cryptocurrency'
     EMAIL = 'email'
+    ATTACKPATTERN = 'attackpattern'
 
     def __init__(self):
         # required to create __init__ for create_server_docs.py purpose
@@ -260,6 +262,7 @@ class DBotScoreType(object):
             DBotScoreType.CERTIFICATE,
             DBotScoreType.CRYPTOCURRENCY,
             DBotScoreType.EMAIL,
+            DBotScoreType.ATTACKPATTERN,
         )
 
 
@@ -3813,6 +3816,84 @@ class Common(object):
 
             ret_value = {
                 Common.Cryptocurrency.CONTEXT_PATH: crypto_context
+            }
+
+            if self.dbot_score:
+                ret_value.update(self.dbot_score.to_context())
+
+            return ret_value
+
+    class AttackPattern(Indicator):
+        """
+        Attack Pattern indicator
+        :type stix_id: ``str``
+        :param stix_id: The Attack Pattern STIX ID
+
+        :type kill_chain_phases: ``str``
+        :param kill_chain_phases: The Attack Pattern kill chain phases.
+
+        :type first_seen_by_source: ``str``
+        :param first_seen_by_source: The Attack Pattern first seen by source
+
+        :type modified: ``str``
+        :param modified: The Attack Pattern modified time.
+
+        :type description: ``str``
+        :param description: The Attack Pattern description
+
+        :type operating_system_refs: ``str``
+        :param operating_system_refs: The operating system refs of the Attack Pattern.
+
+        :type publications: ``str``
+        :param publications: The Attack Pattern publications
+
+        :type mitre_id: ``str``
+        :param mitre_id: The Attack Pattern kill mitre id.
+
+        :type tags: ``str``
+        :param tags: The Attack Pattern kill tags.
+
+        :type dbot_score: ``DBotScore``
+        :param dbot_score:  If the address has reputation then create DBotScore object.
+
+        :return: None
+        :rtype: ``None``
+        """
+        CONTEXT_PATH = 'AttackPattern(val.value && val.Address == obj.value)'
+
+        def __init__(self, stix_id, kill_chain_phases, first_seen_by_source, modified, description,
+                     operating_system_refs, publications, mitre_id, tags, dbot_score):
+            self.stix_id = stix_id
+            self.kill_chain_phases = kill_chain_phases
+            self.first_seen_by_source = first_seen_by_source
+            self.modified = modified
+            self.description = description
+            self.operating_system_refs = operating_system_refs
+            self.publications = publications
+            self.mitre_id = mitre_id
+            self.tags = tags
+
+            self.dbot_score = dbot_score
+
+        def to_context(self):
+            attack_pattern_context = {
+                'STIXID': self.stix_id,
+                "KillChainPhases": self.kill_chain_phases,
+                "FirstSeenBySource": self.first_seen_by_source,
+                'OperatingSystemRefs': self.operating_system_refs,
+                "Publications": self.publications,
+                "MITREID": self.mitre_id,
+                "Tags": self.tags
+            }
+
+            if self.dbot_score and self.dbot_score.score == Common.DBotScore.BAD:
+                attack_pattern_context['Malicious'] = {
+                    'Vendor': self.dbot_score.integration_name,
+                    'Description': self.dbot_score.malicious_description
+                }
+
+            ret_value = {
+                Common.AttackPattern.CONTEXT_PATH: attack_pattern_context
             }
 
             if self.dbot_score:
