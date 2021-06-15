@@ -1737,7 +1737,8 @@ class Pack(object):
         finally:
             return task_status
 
-    def reformat_metadata_with_missing_dependencies(self, user_metadata, index_folder_path, build_number, commit_hash, pack_names):
+    def reformat_metadata_with_missing_dependencies(self, user_metadata, index_folder_path, packs_dependencies_mapping,
+                                                    build_number, commit_hash, pack_names):
         """ Re-formats metadata with missing dependencies on new packs that are not in the previous index.
 
         Args:
@@ -1754,6 +1755,12 @@ class Pack(object):
         """
         task_status = False
         try:
+            self.set_pack_dependencies(user_metadata, packs_dependencies_mapping)
+            if 'displayedImages' not in user_metadata:
+                user_metadata['displayedImages'] = packs_dependencies_mapping.get(
+                    self._pack_name, {}).get('displayedImages', [])
+                logging.info(f"Adding auto generated display images for {self._pack_name} pack")
+
             dependencies_data = self._load_pack_dependencies(index_folder_path,
                                                              user_metadata.get('dependencies', {}),
                                                              user_metadata.get('displayedImages', []), pack_names)
