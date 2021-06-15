@@ -79,3 +79,5 @@
 <p><code>lock-release-all</code></p>
 <h5>Input</h5>
 <p>There is no input for this command.</p>
+<h2>Troubleshooting</h2>
+If you use multiple locks which might be set in parallel, it is recommended to enable the <b>Sync integration cache</b> (Available from Cortex XSOAR 6.2.0).
