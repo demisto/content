@@ -6,3 +6,9 @@ ignore=RM106
 
 [file:classifier-mapper-incoming-Gsuite-gmail.json]
 ignore=BA101
+
+[file:README.md]
+ignore=RM106
+
+[file:classifier-mapper-incoming-Gsuite-gmail.json]
+ignore=BA101
