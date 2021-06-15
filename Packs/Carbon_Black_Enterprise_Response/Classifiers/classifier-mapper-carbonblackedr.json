@@ -1,5 +1,5 @@
 {
-    "description": "",
+    "description": "Maps CarbonBlack EDR alerts.",
     "feed": false,
     "id": "Carbon Black EDR Mapper",
     "mapping": {
