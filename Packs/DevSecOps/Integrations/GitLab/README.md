@@ -900,3 +900,295 @@ There are no input arguments for this command.
 >|---|---|
 >| 18e3d7de8d5 | 13.6.0-pre |
 
+
+
+### gitlab-pipelines-schedules-list
+***
+Get details of pipeline schedules.
+
+
+#### Base Command
+
+`gitlab-pipelines-schedules-list`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| project_id | Project ID to retrieve pipeline schedules from. | Required | 
+| pipeline_schedule_id | ID of specific pipeline schedule to retrieve its details. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GitLab.PipelineSchedule.id | Number | Pipeline schedule ID. | 
+| GitLab.PipelineSchedule.description | String | Pipeline schedule description. | 
+| GitLab.PipelineSchedule.ref | String | Pipeline schedule ref. | 
+| GitLab.PipelineSchedule.next_run_at | Date | Pipeline schedule next run scheduled time. | 
+| GitLab.PipelineSchedule.active | Boolean | Whether pipeline schedule is active. | 
+| GitLab.PipelineSchedule.created_at | Date | When pipeline schedule was created. | 
+| GitLab.PipelineSchedule.updated_at | Date | When pipeline schedule was last updated. | 
+| GitLab.PipelineSchedule.last_pipeline.id | Number | ID of the last pipe line that was run by the scheduled pipeline. Relevant only when given pipeline schedule ID is given. | 
+| GitLab.PipelineSchedule.last_pipeline.sha | String | SHA of the last pipe line that was run by the scheduled pipeline. Relevant only when given pipeline schedule ID is given. | 
+| GitLab.PipelineSchedule.last_pipeline.ref | String | Ref of the last pipe line that was run by the scheduled pipeline. Relevant only when given pipeline schedule ID is given. | 
+| GitLab.PipelineSchedule.last_pipeline.status | String | Status of the last pipe line that was run by the scheduled pipeline. Relevant only when given pipeline schedule ID is given. | 
+
+
+#### Command Example
+```!gitlab-pipelines-schedules-list project_id=123```
+
+#### Context Example
+```json
+{
+    "GitLab": {
+        "PipelineSchedule": [
+            {
+                "active": true,
+                "created_at": "2021-05-23T14:00:34.105Z",
+                "description": "Run the nightly build",
+                "id": 336,
+                "next_run_at": "2021-06-16T00:05:00.000Z",
+                "ref": "master",
+                "updated_at": "2021-06-15T00:05:06.617Z"
+            },
+            {
+                "active": false,
+                "created_at": "2021-05-12T11:57:47.436Z",
+                "description": "Upload",
+                "id": 331,
+                "next_run_at": "2021-05-24T02:05:00.000Z",
+                "ref": "upload_flow",
+                "updated_at": "2021-05-23T08:28:39.885Z"
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### GitLab Pipeline Schedules
+>|active|created_at|description|id|next_run_at|ref|updated_at|
+>|---|---|---|---|---|---|---|
+>| true | 2021-05-23T14:00:34.105Z | Run the nightly build | 336 | 2021-06-16T00:05:00.000Z | master | 2021-06-15T00:05:06.617Z |
+>| false | 2021-05-12T11:57:47.436Z | Upload | 331 | 2021-05-24T02:05:00.000Z | upload_flow | 2021-05-23T08:28:39.885Z |
+>| true | 2021-05-12T09:42:42.788Z | bucket_upload | 330 | 2021-06-15T21:05:00.000Z | master | 2021-06-15T09:05:05.711Z |
+>| true | 2021-05-10T13:58:35.217Z | Instance testing trigger | 329 | 2021-06-16T02:05:00.000Z | master | 2021-06-15T02:05:03.368Z |
+>| true | 2021-05-09T09:52:47.379Z | Nightly build | 328 | 2021-06-16T00:05:00.000Z | master | 2021-06-15T00:05:06.234Z |
+
+
+### gitlab-pipelines-list
+***
+Get details of pipeline schedules.
+
+
+#### Base Command
+
+`gitlab-pipelines-list`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| project_id | Project ID to retrieve pipeline schedules from. | Required | 
+| pipeline_id | ID of specific pipeline to retrieve its details. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GitLab.Pipeline.id | Number | Pipeline ID. | 
+| GitLab.Pipeline.project_id | Number | Project ID the pipeline belongs to. | 
+| GitLab.Pipeline.status | String | Status of the pipeline. | 
+| GitLab.Pipeline.ref | String | Ref of the pipeline. | 
+| GitLab.Pipeline.sha | String | SHA of the pipeline. | 
+| GitLab.Pipeline.created_at | Date | Time when pipeline was created. | 
+| GitLab.Pipeline.updated_at | Date | Time when pipeline was last updated. | 
+| GitLab.Pipeline.started_at | Date | Time when pipeline was started. | 
+| GitLab.Pipeline.finished_at | Date | Time when pipeline was finished. | 
+| GitLab.Pipeline.duration | Number | Duration of the pipeline. | 
+| GitLab.Pipeline.web_url | String | Web URL of the pipeline. | 
+
+
+#### Command Example
+```!gitlab-pipelines-list project_id=123 pipeline_id=1254426```
+
+#### Context Example
+```json
+{
+    "GitLab": {
+        "Pipeline": {
+            "created_at": "2021-06-15T00:05:09.041Z",
+            "duration": 5945,
+            "finished_at": "2021-06-15T01:44:17.788Z",
+            "id": 1254426,
+            "project_id": 123,
+            "ref": "master",
+            "sha": "asas4kj124kjasdas5hn125hakjs5h15jh2jas5kljas5",
+            "started_at": "2021-06-15T00:05:11.131Z",
+            "status": "failed",
+            "updated_at": "2021-06-15T01:44:17.793Z",
+            "web_url": "https://server_url/-/pipelines/1254426"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### GitLab Pipelines
+>|created_at|duration|finished_at|id|project_id|ref|sha|started_at|status|updated_at|web_url|
+>|---|---|---|---|---|---|---|---|---|---|---|
+>| 2021-06-15T00:05:09.041Z | 5945 | 2021-06-15T01:44:17.788Z | 1254426 | 123 | master | asas4kj124kjasdas5hn125hakjs5h15jh2jas5kljas5 | 2021-06-15T00:05:11.131Z | failed | 2021-06-15T01:44:17.793Z | https://server_url/-/pipelines/1254426 |
+
+
+### gitlab-jobs-list
+***
+Get details of pipeline schedules.
+
+
+#### Base Command
+
+`gitlab-jobs-list`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| project_id | Project ID to retrieve pipeline schedules from. | Required | 
+| pipeline_id | ID of the pipeline to retrieve its jobs. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GitLab.Job.created_at | Date | Time job was created. | 
+| GitLab.Job.started_at | Date | Time job was started. | 
+| GitLab.Job.finished_at | Date | Time job was finished. | 
+| GitLab.Job.duration | Number | Duration of the job. | 
+| GitLab.Job.id | Number | ID of the job. | 
+| GitLab.Job.name | String | Name of the job. | 
+| GitLab.Job.pipeline.id | Number | Pipeline job belongs to. | 
+| GitLab.Job.pipeline.project_id | Number | Project ID job belongs to. | 
+| GitLab.Job.pipeline.ref | String | Ref of the pipeline job belongs to. | 
+| GitLab.Job.pipeline.sha | String | Sha of the Pipeline job belongs to. | 
+| GitLab.Job.pipeline.status | String | Status of the Pipeline job belongs to. | 
+| GitLab.Job.ref | String | Ref name of the job | 
+| GitLab.Job.stage | String | Stage of the job. | 
+| GitLab.Job.web_url | String | Web URL of the job. | 
+
+
+#### Command Example
+```!gitlab-jobs-list project_id=123 pipeline_id=1254426```
+
+#### Context Example
+```json
+{
+    "GitLab": {
+        "Job": [
+            {
+                "created_at": "2021-06-15T00:05:09.139Z",
+                "duration": 4104.433651,
+                "finished_at": "2021-06-15T01:44:16.559Z",
+                "id": 6054873,
+                "name": "server_master",
+                "pipeline": {
+                    "created_at": "2021-06-15T00:05:09.041Z",
+                    "id": 1254426,
+                    "project_id": 123,
+                    "ref": "master",
+                    "sha": "asas4kj124kjasdas5hn125hakjs5h15jh2jas5kljas5",
+                    "status": "failed",
+                    "updated_at": "2021-06-15T01:44:17.793Z",
+                    "web_url": "https://server_url/-/pipelines/1254426"
+                },
+                "ref": "master",
+                "stage": "run-instances",
+                "started_at": "2021-06-15T00:35:52.125Z",
+                "web_url": "https://server_url/-/jobs/6054873"
+            },
+            {
+                "created_at": "2021-06-15T00:05:09.078Z",
+                "duration": 1841.130269,
+                "finished_at": "2021-06-15T00:35:51.306Z",
+                "id": 6054872,
+                "name": "create-instances",
+                "pipeline": {
+                    "created_at": "2021-06-15T00:05:09.041Z",
+                    "id": 1254426,
+                    "project_id": 123,
+                    "ref": "master",
+                    "sha": "asas4kj124kjasdas5hn125hakjs5h15jh2jas5kljas5",
+                    "status": "failed",
+                    "updated_at": "2021-06-15T01:44:17.793Z",
+                    "web_url": "https://server_url/-/pipelines/1254426"
+                },
+                "ref": "master",
+                "stage": "create-instances",
+                "started_at": "2021-06-15T00:05:10.176Z",
+                "web_url": "https://server_url/-/jobs/6054872"
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### GitLab Jobs
+>|created_at|duration|finished_at|id|name|pipeline|ref|stage|started_at|web_url|
+>|---|---|---|---|---|---|---|---|---|---|
+>| 2021-06-15T00:05:09.139Z | 4104.433651 | 2021-06-15T01:44:16.559Z | 6054873 | server_master | id: 1254426<br/>project_id: 123<br/>sha: asas4kj124kjasdas5hn125hakjs5h15jh2jas5kljas5<br/>ref: master<br/>status: failed<br/>created_at: 2021-06-15T00:05:09.041Z<br/>updated_at: 2021-06-15T01:44:17.793Z<br/>web_url: https://server_url/-/pipelines/1254426 | master | run-instances | 2021-06-15T00:35:52.125Z | https://server_url/-/jobs/6054873 |
+>| 2021-06-15T00:05:09.078Z | 1841.130269 | 2021-06-15T00:35:51.306Z | 6054872 | create-instances | id: 1254426<br/>project_id: 123<br/>sha: asas4kj124kjasdas5hn125hakjs5h15jh2jas5kljas5<br/>ref: master<br/>status: failed<br/>created_at: 2021-06-15T00:05:09.041Z<br/>updated_at: 2021-06-15T01:44:17.793Z<br/>web_url: https://server_url/-/pipelines/1254426 | master | create-instances | 2021-06-15T00:05:10.176Z | https://server_url/-/jobs/6054872 |
+
+
+### gitlab-artifact-get
+***
+Get details of pipeline schedules.
+
+
+#### Base Command
+
+`gitlab-artifact-get`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| project_id | Project ID to retrieve pipeline schedules from. | Required | 
+| job_id | ID of specific job to retrieve its details. | Required | 
+| artifact_path_suffix | Suffix to the path of the artifact to retrieve its data. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GitLab.Artifact.job_id | String | Job ID from whom artifact was taken. | 
+| GitLab.Artifact.artifact_path_suffix | String | Suffix of the artifact path given. | 
+| GitLab.Artifact.artifact_data | String | Data of the artifact requested. | 
+
+
+#### Command Example
+```!gitlab-artifact-get project_id=123 job_id=6063195 artifact_path_suffix=artifacts/failed_tests.txt```
+
+#### Context Example
+```json
+{
+    "GitLab": {
+        "Artifact": {
+            "artifact_data": "Carbon Black Response Test",
+            "artifact_path_suffix": "artifacts/failed_tests.txt",
+            "job_id": "6063195"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Results
+>|artifact_data|artifact_path_suffix|job_id|
+>|---|---|---|
+>| Carbon Black Response Test | artifacts/failed_tests.txt | 6063195 |
+

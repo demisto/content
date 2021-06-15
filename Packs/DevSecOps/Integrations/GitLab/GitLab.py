@@ -2,6 +2,13 @@ import demistomock as demisto
 import urllib3
 from CommonServerPython import *
 
+JOB_FIELDS_TO_EXTRACT = {'created_at', 'started_at', 'finished_at', 'duration', 'id', 'name', 'pipeline', 'ref',
+                         'stage', 'web_url'}
+PIPELINE_SCHEDULE_FIELDS_TO_EXTRACT = {'id', 'description', 'ref', 'next_run_at', 'active', 'created_at', 'updated_at',
+                                       'last_pipeline'}
+PIPELINE_FIELDS_TO_EXTRACT = {'id', 'project_id', 'status', 'ref', 'sha', 'created_at', 'updated_at', 'started_at',
+                              'finished_at', 'duration', 'web_url'}
+
 
 class Client(BaseClient):
     def __init__(self, server_url, verify, proxy, headers):
@@ -77,6 +84,32 @@ class Client(BaseClient):
     def get_version_request(self):
         headers = self._headers
         response = self._http_request('get', 'version', headers=headers)
+        return response
+
+    def get_pipeline_schedules_request(self, project_id: str, pipeline_schedule_id: Optional[str]):
+        headers = self._headers
+        base_suffix = f'projects/{project_id}/pipeline_schedules'
+        final_suffix = f'{base_suffix}/{pipeline_schedule_id}' if pipeline_schedule_id else base_suffix
+        response = self._http_request('get', final_suffix, headers=headers)
+        return response
+
+    def get_pipeline_request(self, project_id: str, pipeline_id: Optional[str]):
+        headers = self._headers
+        base_suffix = f'projects/{project_id}/pipelines'
+        final_suffix = f'{base_suffix}/{pipeline_id}' if pipeline_id else base_suffix
+        response = self._http_request('get', final_suffix, headers=headers)
+        return response
+
+    def get_pipeline_job_request(self, project_id: str, pipeline_id: str):
+        headers = self._headers
+        suffix = f'projects/{project_id}/pipelines/{pipeline_id}/jobs'
+        response = self._http_request('get', suffix, headers=headers)
+        return response
+
+    def get_job_artifact_request(self, project_id: str, job_id: str, artifact_path_suffix: str):
+        headers = self._headers
+        suffix = f'projects/{project_id}/jobs/{job_id}/artifacts/{artifact_path_suffix}'
+        response = self._http_request('get', suffix, headers=headers, resp_type='text')
         return response
 
 
@@ -241,6 +274,118 @@ def get_version_command(client, args):
     return command_results
 
 
+def gitlab_pipelines_schedules_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    """
+    Returns pipeline schedules corresponding to given arguments.
+    Args:
+        client (Client): Client to perform calls to GitLab services.
+        args (Dict[str, Any]): XSOAR arguments:
+            - 'project_id' (Required): Project ID to retrieve pipeline schedules from.
+            - 'pipeline_schedule_id': ID of specific pipeline schedule to retrieve its details.
+
+    Returns:
+        (CommandResults).
+    """
+    project_id = args.get('project_id', '')
+    pipeline_schedule_id = args.get('pipeline_schedule_id')
+    response = client.get_pipeline_schedules_request(project_id, pipeline_schedule_id)
+    response = response if isinstance(response, list) else [response]
+    outputs = [{k: v for k, v in output.items() if k in PIPELINE_SCHEDULE_FIELDS_TO_EXTRACT} for output in response]
+
+    return CommandResults(
+        outputs_prefix='GitLab.PipelineSchedule',
+        outputs_key_field='id',
+        outputs=outputs,
+        raw_response=response,
+        readable_output=tableToMarkdown('GitLab Pipeline Schedules', outputs)
+    )
+
+
+def gitlab_pipelines_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    """
+    Returns pipelines corresponding to given arguments.
+    Args:
+        client (Client): Client to perform calls to GitLab services.
+        args (Dict[str, Any]): XSOAR arguments:
+            - 'project_id' (Required): Project ID to retrieve pipeline schedules from.
+            - 'pipeline_id': ID of specific pipeline to retrieve its details.
+
+    Returns:
+        (CommandResults).
+    """
+    project_id = args.get('project_id', '')
+    pipeline_id = args.get('pipeline_id')
+    response = client.get_pipeline_request(project_id, pipeline_id)
+    response = response if isinstance(response, list) else [response]
+    outputs = [{k: v for k, v in output.items() if k in PIPELINE_FIELDS_TO_EXTRACT} for output in response]
+
+    return CommandResults(
+        outputs_prefix='GitLab.Pipeline',
+        outputs_key_field='id',
+        outputs=outputs,
+        raw_response=response,
+        readable_output=tableToMarkdown('GitLab Pipelines', outputs)
+    )
+
+
+def gitlab_jobs_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    """
+    Returns pipeline jobs corresponding to given arguments.
+    Args:
+        client (Client): Client to perform calls to GitLab services.
+        args (Dict[str, Any]): XSOAR arguments:
+            - 'project_id' (Required): Project ID to retrieve pipeline schedules from.
+            - 'pipeline_id': ID of specific pipeline to retrieve its jobs.
+
+    Returns:
+        (CommandResults).
+    """
+    project_id = args.get('project_id', '')
+    pipeline_id = args.get('pipeline_id', '')
+    response = client.get_pipeline_job_request(project_id, pipeline_id)
+    response = response if isinstance(response, list) else [response]
+    outputs = [{k: v for k, v in output.items() if k in JOB_FIELDS_TO_EXTRACT} for output in response]
+
+    return CommandResults(
+        outputs_prefix='GitLab.Job',
+        outputs_key_field='id',
+        outputs=outputs,
+        raw_response=response,
+        readable_output=tableToMarkdown('GitLab Jobs', outputs)
+    )
+
+
+def gitlab_artifact_get_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    """
+    Returns artifact corresponding to given artifact path suffix of the given job ID.
+    Args:
+        client (Client): Client to perform calls to GitLab services.
+        args (Dict[str, Any]): XSOAR arguments:
+            - 'project_id' (Required): Project ID to retrieve pipeline schedules from.
+            - 'job_id': ID of specific job to retrieve artifact from.
+            - 'artifact_path_suffix': Suffix to artifact in the artifacts directory of the job.
+
+    Returns:
+        (CommandResults).
+    """
+    project_id = args.get('project_id', '')
+    job_id = args.get('job_id', '')
+    artifact_path_suffix = args.get('artifact_path_suffix', '')
+    response = client.get_job_artifact_request(project_id, job_id, artifact_path_suffix)
+    outputs = {
+        'job_id': job_id,
+        'artifact_path_suffix': artifact_path_suffix,
+        'artifact_data': response
+    }
+
+    return CommandResults(
+        outputs_prefix='GitLab.Artifact',
+        outputs_key_field=['job_id', 'artifact_path_suffix'],
+        outputs=outputs,
+        raw_response=response
+    )
+
+
 def test_module(client):
     # Test functions here
     response = client.get_version_request()
@@ -277,6 +422,10 @@ def main():
             'gitlab-projects-delete-repository-branch': projects_delete_repository_branch_command,
             'gitlab-projects-delete-repository-merged-branches': projects_delete_repository_merged_branches_command,
             'gitlab-get-version': get_version_command,
+            'gitlab-pipelines-schedules-list': gitlab_pipelines_schedules_list_command,
+            'gitlab-pipelines-list': gitlab_pipelines_list_command,
+            'gitlab-jobs-list': gitlab_jobs_list_command,
+            'gitlab-artifact-get': gitlab_artifact_get_command
         }
 
         if command == 'test-module':
