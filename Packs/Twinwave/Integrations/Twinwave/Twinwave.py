@@ -590,7 +590,7 @@ def main():
 
     api_token = params.get('api-token')
     verify_certificate = not params.get('insecure', False)
-    proxy = params.get('proxy', False)
+    proxy = handle_proxy() 
 
     LOG(f'Command being called is {demisto.command()}')
     try:
