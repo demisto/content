@@ -88,7 +88,7 @@ def ip_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
         markdown = f"### Threat crowd report for ip {ip}: \n  ### DBotScore: {score_str} \n" \
                    f"{tableToMarkdown('Resolutions', resolutions, removeNull=True)} \n " \
                    f"{tableToMarkdown('Hashes', hashes, headers='Hashes', removeNull=True)}" \
-                   f"{tableToMarkdown('References', res.get('references'), removeNull=True)}"
+                   f"{tableToMarkdown('References', res.get('references'), removeNull=True, headers='References')}"
 
         outputs = {
             'hashes': hashes,

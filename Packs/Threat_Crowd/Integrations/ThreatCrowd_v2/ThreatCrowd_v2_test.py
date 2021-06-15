@@ -110,6 +110,9 @@ def test_ip_command(mocker):
     assert res[0].indicator.dbot_score.reliability == DBotScoreReliability.C
     assert res[0].indicator.dbot_score.score == 3
     assert res[0].indicator.dbot_score.indicator == "0.0.0.0"
+    assert len(res[0].outputs['resolutions']) == 2
+    assert len(res[0].outputs['references']) == 2
+    assert len(res[0].outputs['hashes']) == 3
     assert len(res) == 2
 
 
