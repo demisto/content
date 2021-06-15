@@ -60,7 +60,7 @@ USECASE_MD_DOCUMENT_TEMPLATE = """
 
 {{ data.integrations.as_markdown() }}
 
-{{ data.incidentfields.as_markdown() }} 
+{{ data.incidentfields.as_markdown() }}
 
 {{ data.automations.as_markdown() }}
 """
@@ -70,7 +70,7 @@ MD_DOCUMENT_TEMPLATE = """
 
 {{ closed_incidents }}
 
-{{ reports }} 
+{{ reports }}
 
 {{ dashboards }}
 
@@ -209,7 +209,7 @@ contat details, project scope, etc."></textarea>
     {% endif %}
 </div>
 </body>
-"""
+"""  # noqa: E501
 
 HTML_DOCUMENT_TEMPLATE = """
 <head>
@@ -358,7 +358,7 @@ contat details, project scope, etc."></textarea>
     <p style="page-break-after: always;"></p>
 </div>
 </body>
-"""
+"""  # noqa: E501
 
 
 class TableData:
@@ -421,10 +421,10 @@ class NoneTableData:
     def __bool__(self):
         return False
 
-    def as_markdown(self, *args, **kwargs):
+    def as_markdown(self, *args, **kwargs):  # noqa: F841
         return ""
 
-    def as_html(self, *args, **kwargs):
+    def as_html(self, *args, **kwargs):  # noqa: F841
         return ""
 
 
@@ -582,7 +582,6 @@ def get_api_request(url):
         return_error(f'API Request failed, no response from API call to {url}')
 
 
-
 def get_all_incidents(days=7, size=1000):
     body = {
         "userFilter": False,
@@ -681,10 +680,9 @@ def get_installed_packs():
     # if tis doesn't work, return nothing.
     r = get_api_request(DEMISTO_INSTALLED_PATH)
     if not r:
-        rd = NoneTableData()
+        return NoneTableData()
     else:
-        rd = SortedTableData(r, "Installed Content Packs", "name")
-    return rd
+        return SortedTableData(r, "Installed Content Packs", "name")
 
 
 def get_custom_playbooks():
@@ -800,7 +798,7 @@ def get_playbook_dependencies(playbook_name):
     if not dependencies:
         return_error(f"Failed to retrieve dependencies for {playbook_id}")
 
-    types = {}
+    types: dict = {}
     for dependency in dependencies:
         d_type = dependency.get("type")
         if d_type not in types:
