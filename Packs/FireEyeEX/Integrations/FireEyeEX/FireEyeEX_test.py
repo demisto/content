@@ -193,31 +193,6 @@ def test_delete_quarantined_emails(mocker):
         delete_quarantined_emails(client=client, args={'queue_ids': '1234'})
 
 
-def test_fetch_incidents(mocker):
-    """Unit test
-    Given
-    - fetch incidents command
-    - command args
-    - command raw response
-    When
-    - mock the Client's token generation.
-    - mock the Client's get_alerts_request.
-    Then
-    - run the fetch incidents command using the Client
-    Validate The length of the results and the last_run.
-    """
-    mocker.patch.object(FireEyeClient, '_generate_token', return_value='token')
-    client = Client(base_url="https://fireeye.ex.com/", username='user', password='pass', verify=False, proxy=False)
-    mocker.patch.object(FireEyeClient, 'get_alerts_request', return_value=util_load_json('test_data/alerts.json'))
-    last_run, incidents = fetch_incidents(client=client,
-                                          last_run={},
-                                          first_fetch='1 year',
-                                          max_fetch=50,
-                                          info_level='concise')
-    assert len(incidents) == 5
-    assert last_run.get('time') == '2021-02-14 17:01:14 +0000'  # occurred time of the last alert
-
-
 def test_list_allowedlist(mocker):
     """Unit test
     Given
@@ -236,6 +211,69 @@ def test_list_allowedlist(mocker):
                         return_value=util_load_json('test_data/list_allowedlist.json'))
     command_results = list_allowedlist(client=client, args={'type': 'url'})
     assert command_results.outputs == ALLOWEDLIST
+
+
+def test_create_allowedlist_already_exist(mocker):
+    """Unit test
+    Given
+    - create_allowedlist_request command
+    - an already existing entry_value
+    - command raw response
+    When
+    - mock the Client's token generation.
+    - mock the Client's list_allowedlist_request response.
+    Then
+    - Validate The a proper error is raised
+    """
+    mocker.patch.object(FireEyeClient, '_generate_token', return_value='token')
+    client = Client(base_url="https://fireeye.ex.com/", username='user', password='pass', verify=False, proxy=False)
+    mocker.patch.object(FireEyeClient, 'list_allowedlist_request',
+                        return_value=util_load_json('test_data/list_allowedlist.json'))
+    err_str = 'Cannot create the entry_value www.demisto.com as it is already exist in the Allowedlist of type url.'
+    with pytest.raises(DemistoException, match=err_str):
+        create_allowedlist(client=client, args={'type': 'url', 'entry_value': 'www.demisto.com', 'matches': '2'})
+
+
+def test_update_allowedlist_not_exist(mocker):
+    """Unit test
+    Given
+    - update_allowedlist_request command
+    - a non existing entry_value
+    - command raw response
+    When
+    - mock the Client's token generation.
+    - mock the Client's list_allowedlist_request response.
+    Then
+    - Validate The a proper error is raised
+    """
+    mocker.patch.object(FireEyeClient, '_generate_token', return_value='token')
+    client = Client(base_url="https://fireeye.ex.com/", username='user', password='pass', verify=False, proxy=False)
+    mocker.patch.object(FireEyeClient, 'list_allowedlist_request',
+                        return_value=util_load_json('test_data/list_allowedlist.json'))
+    err_str = 'Cannot update the entry_value www.fake.com as it does not exist in the Allowedlist of type url.'
+    with pytest.raises(DemistoException, match=err_str):
+        update_allowedlist(client=client, args={'type': 'url', 'entry_value': 'www.fake.com', 'matches': '2'})
+
+
+def test_delete_allowedlist_not_exist(mocker):
+    """Unit test
+    Given
+    - delete_allowedlist_request command
+    - a non existing entry_value
+    - command raw response
+    When
+    - mock the Client's token generation.
+    - mock the Client's list_allowedlist_request response.
+    Then
+    - Validate The a proper error is raised
+    """
+    mocker.patch.object(FireEyeClient, '_generate_token', return_value='token')
+    client = Client(base_url="https://fireeye.ex.com/", username='user', password='pass', verify=False, proxy=False)
+    mocker.patch.object(FireEyeClient, 'list_allowedlist_request',
+                        return_value=util_load_json('test_data/list_allowedlist.json'))
+    err_str = 'Cannot delete the entry_value www.fake.com as it does not exist in the Allowedlist of type url.'
+    with pytest.raises(DemistoException, match=err_str):
+        delete_allowedlist(client=client, args={'type': 'url', 'entry_value': 'www.fake.com'})
 
 
 def test_list_blockedlist(mocker):
@@ -275,6 +313,96 @@ def test_list_blockedlist_no_entries(mocker):
     mocker.patch.object(FireEyeClient, 'list_blockedlist_request', return_value={})
     command_results = list_blockedlist(client=client, args={'type': 'sender_domain'})
     assert command_results.readable_output == 'No blocked lists with the given type sender_domain were found.'
+
+
+def test_create_blockedlist_already_exist(mocker):
+    """Unit test
+    Given
+    - create_blockedlist_request command
+    - an already existing entry_value
+    - command raw response
+    When
+    - mock the Client's token generation.
+    - mock the Client's list_allowedlist_request response.
+    Then
+    - Validate The a proper error is raised
+    """
+    mocker.patch.object(FireEyeClient, '_generate_token', return_value='token')
+    client = Client(base_url="https://fireeye.ex.com/", username='user', password='pass', verify=False, proxy=False)
+    mocker.patch.object(FireEyeClient, 'list_blockedlist_request',
+                        return_value=util_load_json('test_data/list_blockedlist.json'))
+    err_str = 'Cannot create the entry_value www.blocksite1.net/path/test.html as it is already exist in the ' \
+              'Blockedlist of type url.'
+    with pytest.raises(DemistoException, match=err_str):
+        create_blockedlist(client=client, args={'type': 'url', 'entry_value': 'www.blocksite1.net/path/test.html',
+                                                'matches': '2'})
+
+
+def test_update_blockedlist_not_exist(mocker):
+    """Unit test
+    Given
+    - update_blockedlist_request command
+    - a non existing entry_value
+    - command raw response
+    When
+    - mock the Client's token generation.
+    - mock the Client's list_blockedlist_request response.
+    Then
+    - Validate The a proper error is raised
+    """
+    mocker.patch.object(FireEyeClient, '_generate_token', return_value='token')
+    client = Client(base_url="https://fireeye.ex.com/", username='user', password='pass', verify=False, proxy=False)
+    mocker.patch.object(FireEyeClient, 'list_blockedlist_request',
+                        return_value=util_load_json('test_data/list_blockedlist.json'))
+    err_str = 'Cannot update the entry_value www.fake.com as it does not exist in the Blockedlist of type url.'
+    with pytest.raises(DemistoException, match=err_str):
+        update_blockedlist(client=client, args={'type': 'url', 'entry_value': 'www.fake.com', 'matches': '2'})
+
+
+def test_delete_blockedlist_not_exist(mocker):
+    """Unit test
+    Given
+    - delete_blockedlist_request command
+    - an non existing entry_value
+    - command raw response
+    When
+    - mock the Client's token generation.
+    - mock the Client's list_blockedlist_request response.
+    Then
+    - Validate The a proper error is raised
+    """
+    mocker.patch.object(FireEyeClient, '_generate_token', return_value='token')
+    client = Client(base_url="https://fireeye.ex.com/", username='user', password='pass', verify=False, proxy=False)
+    mocker.patch.object(FireEyeClient, 'list_blockedlist_request',
+                        return_value=util_load_json('test_data/list_blockedlist.json'))
+    err_str = 'Cannot delete the entry_value www.fake.com as it does not exist in the Blockedlist of type url.'
+    with pytest.raises(DemistoException, match=err_str):
+        delete_blockedlist(client=client, args={'type': 'url', 'entry_value': 'www.fake.com'})
+
+
+def test_fetch_incidents(mocker):
+    """Unit test
+    Given
+    - fetch incidents command
+    - command args
+    - command raw response
+    When
+    - mock the Client's token generation.
+    - mock the Client's get_alerts_request.
+    Then
+    - run the fetch incidents command using the Client
+    Validate The length of the results and the last_run.
+    """
+    mocker.patch.object(FireEyeClient, '_generate_token', return_value='token')
+    client = Client(base_url="https://fireeye.ex.com/", username='user', password='pass', verify=False, proxy=False)
+    mocker.patch.object(FireEyeClient, 'get_alerts_request', return_value=util_load_json('test_data/alerts.json'))
+    last_run, incidents = fetch_incidents(client=client,
+                                          last_run={},
+                                          first_fetch='1 year',
+                                          max_fetch=50,
+                                          info_level='concise')
+    assert len(incidents) == 5
+    assert last_run.get('time') == '2021-02-14 17:01:14 +0000'  # occurred time of the last alert
 
 
 def test_fetch_incidents_with_limit(mocker):
