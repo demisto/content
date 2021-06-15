@@ -1,0 +1,518 @@
+category: Endpoint
+commonfields:
+  id: AMP
+  version: -1
+configuration:
+- defaultvalue: https://api.amp.cisco.com
+  display: Server URL (e.g. https://api.amp.cisco.com)
+  name: server
+  required: true
+  type: 0
+- display: Client ID
+  name: credentials
+  required: true
+  type: 9
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Fetch incidents
+  name: isFetch
+  required: false
+  type: 8
+- display: Incident type
+  name: incidentType
+  required: false
+  type: 13
+- defaultvalue: 3 days
+  display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
+  name: fetch_time
+  required: false
+  type: 0
+- defaultvalue: '0'
+  display: Offset for fetch timezone (in integer)
+  name: fetch_time_offset
+  required: false
+  type: 0
+- display: Event Type ID to fetch
+  name: fetch_event_type
+  required: false
+  type: 0
+- defaultvalue: '1'
+  display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  required: false
+  type: 19
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ''
+    itemVersion: ''
+    packID: 6b08c7f9-0a68-4d1c-8166-3ffb166425c4
+    propagationLabels:
+    - all
+    toServerVersion: ''
+description: Cisco AMP integration that supports fetching events as incidents per
+  list of Event Type IDs.
+display: AMP
+name: AMP
+script:
+  commands:
+  - arguments:
+    - description: Maximum number of results to return.
+      name: limit
+    - description: Filter results by hostname.
+      name: hostname
+    - description: Filter results by internal IP address.
+      name: internal_ip
+    - description: Filter results by external IP address.
+      name: external_ip
+    - description: Filter results by group GUID.
+      name: group_guid
+    description: Returns a list of computers on which agents are deployed. You can
+      use filters (arguments) to narrow the search.
+    name: amp_get_computers
+    outputs:
+    - contextPath: CiscoAMP.GetComputers
+      description: Get Computers from AMP
+      type: string
+  - arguments:
+    - default: true
+      description: The connector GUID for which to return information.
+      name: connector_guid
+      required: true
+    description: Returns information for the specified computer.
+    name: amp_get_computer_by_connector
+    outputs:
+    - contextPath: CiscoAMP.GetComputerByConnector
+      description: Computer info by connector
+      type: string
+  - arguments:
+    - description: The IP address, SHA256 hash, or URL.
+      name: q
+    - description: Maximum number of results to return.
+      name: limit
+    - default: true
+      description: The connector GUID.
+      name: connector_guid
+      required: true
+    description: Returns a list of all activities associated with a particular computer.
+      This is analogous to the Device Trajectory on the FireAMP Console. Use the Q
+      argument to search for an IP address, SHA256 hash, or URL.
+    name: amp_get_computer_trajectory
+    outputs:
+    - contextPath: CiscoAMP.GetComputerByTrajectory
+      description: Computer info by trajectory
+      type: string
+  - arguments:
+    - default: true
+      description: The connector GUID.
+      name: connector_guid
+      required: true
+    - description: The group GUID.
+      name: group_guid
+      required: true
+    description: Moves a computer to a group with the corresponding connector_guid
+      and group_guid, respectively.
+    name: amp_move_computer
+    outputs:
+    - contextPath: CiscoAMP.MoveComputer
+      description: Moved Computer info
+      type: string
+  - arguments:
+    - description: An IPv4 address, SHA256 hash, filename, or URL fragment.
+      name: q
+      required: true
+    - description: Maximum number of results to return.
+      name: limit
+    - default: true
+      defaultValue: '0'
+      description: offset
+      name: offset
+    description: This endpoint enables you to search all computers across your organization
+      for any events or activities associated with a file or network operation, and
+      returns computers that match the specified criteria. You can then query the
+      /computers/{connector-guid}/trajectory endpoint for specific details.
+    name: amp_get_computer_activity
+    outputs:
+    - contextPath: CiscoAMP.GetComputerActivity
+      description: Computer activity
+      type: string
+  - arguments:
+    - description: Maximum number of results to return.
+      name: limit
+    - description: The connector GUID.
+      name: connector_guid
+    - description: The group GUID.
+      name: group_guid
+    - description: The detected SHA256 hash.
+      name: detection_sha256
+    - description: The application SHA256.
+      name: application_sha256
+    - description: The event type.
+      isArray: true
+      name: event_type
+    - description: The offset.
+      name: offset
+    - description: The start date for the query, in ISO8601 format.
+      name: start_date
+    description: A general query interface for events. This is analogous to the Events
+      view on the FireAMP Console.
+    name: amp_get_events
+    outputs:
+    - contextPath: CiscoAMP.GetEvents
+      description: Events info
+      type: string
+  - arguments: []
+    description: Events are identified and filtered by a unique ID. This endpoint
+      provides a human readable name and short description of each event (by ID).
+    name: amp_get_event_types
+    outputs:
+    - contextPath: CiscoAMP.GetEventTypes
+      description: Event Types
+      type: string
+  - arguments:
+    - description: Maximum number of results to return.
+      name: limit
+    - description: The offset.
+      name: offset
+    - description: Name of the file.
+      name: name
+    description: Returns a list of application blocking file lists. You can filter
+      this list by name
+    name: amp_get_application_blocking
+    outputs:
+    - contextPath: CiscoAMP.GetApplicationBlocking
+      description: Application Blocking
+      type: string
+  - arguments:
+    - default: true
+      description: Retrieves information about a particular file_list.
+      name: file_list_guid
+      required: true
+    description: Returns a particular file list for application blocking or simple
+      custom detection. You need to specify the file_list_guid argument to retrieve
+      information about a particular file_list.
+    name: amp_get_file_list_by_guid
+    outputs:
+    - contextPath: CiscoAMP.GetFileList
+      description: File list by GUID
+  - arguments:
+    - description: Maximum number of results to return.
+      name: limit
+    - description: The offset.
+      name: offset
+    - description: Name of the detection.
+      name: name
+    description: Returns a list of simple custom detection file lists. You can filter
+      this list by detection name.
+    name: amp_get_simple_custom_detections
+    outputs:
+    - contextPath: CiscoAMP.GetSimpleCustomDetections
+      description: Simple Custom Detections
+      type: string
+  - arguments:
+    - description: Maximum number of results to return.
+      name: limit
+    - description: The offset.
+      name: offset
+    - default: true
+      description: Retrieves information about a particular file_list.
+      name: file_list_guid
+      required: true
+    description: Returns a list of items for a particular file_list. You need to specify
+      the file_list_guid argument to retrieve these items.
+    name: amp_get_file_list_files
+    outputs:
+    - contextPath: CiscoAMP.GetFileListFiles
+      description: File list files
+      type: string
+  - arguments:
+    - default: true
+      description: Retrieves information about a particular file_list.
+      name: file_list_guid
+      required: true
+    - description: SHA256 hash.
+      name: sha256
+      required: true
+    description: Returns a particular item for a given file_list. You need to specify
+      the sha256 argument and the file_list_guid argument to retrieve an item.
+    name: amp_get_file_list_files_by_sha
+    outputs:
+    - contextPath: CiscoAMP.GetFileListFilesBySHA256
+      description: Get File List Info
+      type: string
+  - arguments:
+    - default: true
+      description: Retrieves information about a particular file_list.
+      name: file_list_guid
+      required: true
+    - description: SHA256 hash.
+      name: sha256
+      required: true
+    - description: Description of the SHA256 hash.
+      name: description
+    description: Adds a SHA256 hash to a file list, using file_list_guid.
+    name: amp_set_file_list_files_by_sha
+    outputs:
+    - contextPath: CiscoAMP.SetFileList
+      description: Set File List
+      type: string
+  - arguments:
+    - default: true
+      description: The file_list_guid to retrieve information about a particular file_list
+      name: file_list_guid
+      required: true
+    - description: SHA256 hash.
+      name: sha256
+      required: true
+    description: Deletes an item from a file_list using the SHA256 hash and file_list_guid.
+    name: amp_delete_file_list_files_by_sha
+    outputs:
+    - contextPath: CiscoAMP.DeleteFileList
+      description: Deleted file list info
+      type: string
+  - arguments:
+    - description: amount of results
+      name: limit
+    - description: name of the group
+      name: name
+    description: Returns basic information about groups in your organization. You
+      can map group names to GUIDs for filtering on the events endpoint.
+    name: amp_get_groups
+    outputs:
+    - contextPath: CiscoAMP.GetGroups
+      description: Groups info
+      type: string
+  - arguments:
+    - default: true
+      description: The particular group guid
+      name: group_guid
+      required: true
+    description: Returns a particular group
+    name: amp_get_group
+    outputs:
+    - contextPath: CiscoAMP.GetGroup
+      description: Group info
+      type: string
+  - arguments:
+    - default: true
+      description: The group GUID.
+      name: group_guid
+      required: true
+    - description: The Linux policy guide.
+      name: linux_policy_guid
+    - description: The Android policy guide.
+      name: android_policy_guid
+    - description: The Mac policy guide.
+      name: mac_policy_guid
+    - description: The Windows policy guide.
+      name: windows_policy_guid
+    description: Sets a security policy to a group of endpoints.
+    name: amp_set_group_policy
+    outputs:
+    - contextPath: CiscoAMP.SetGroupPolicy
+      description: Set Group Policy
+      type: string
+  - arguments:
+    - description: Maximum number of results to return.
+      name: limit
+    - description: The offset.
+      name: offset
+    - description: The policy name.
+      name: name
+    - description: The policy product.
+      name: product
+    description: Returns a list of policies. You can filter this list by name and
+      product.
+    name: amp_get_policies
+    outputs:
+    - contextPath: CiscoAMP.GetPolicies
+      description: Policies Information
+      type: string
+  - arguments:
+    - default: true
+      description: The policy GUID.
+      name: policy_guid
+      required: true
+    description: Retrieves information about a particular policy, based on policy_guid.
+    name: amp_get_policy
+    outputs:
+    - contextPath: CiscoAMP.GetPolicy
+      description: Policy Info
+      type: string
+  - arguments: []
+    description: Fetches a list of versions.
+    name: amp_get_version
+    outputs:
+    - contextPath: CiscoAMP.GetVersion
+      description: Version info
+      type: string
+  - arguments:
+    - default: true
+      description: connector GUID.
+      name: connector_guid
+      required: true
+    description: Performs a feature availability request on a computer. Can also be
+      used as a course-grained isolation status request.
+    name: amp_delete_computers_isolation
+    outputs:
+    - contextPath: CiscoAMP.DeleteComputerIsolation
+      description: Deleted isolation information
+      type: string
+  - arguments:
+    - default: true
+      description: connector GUID.
+      name: connector_guid
+      required: true
+    description: Request Isolation for a Computer.  If a computer is already isolated
+      a 409 Conflict error status will be sent. Returns the same result of a GET request
+      on the /isolation endpoint.
+    name: amp_put_computers_isolation
+    outputs:
+    - contextPath: CiscoAMP.PutComputerIsolation
+      description: Isolation request status
+      type: string
+  - arguments:
+    - default: true
+      description: connector GUID.
+      name: connector_guid
+      required: true
+    description: 'Returns a fine grained isolation status for a computer.  The available
+      flag is set to true if isolation can be performed on the computer.  status will
+      be set to one of:  not_isolated pending_start isolated pending_stop'
+    name: amp_get_computers_isolation
+    outputs:
+    - contextPath: CiscoAMP.GetComputerIsolation
+      description: Computer Isolation info
+      type: string
+  - arguments:
+    - description: username
+      name: q
+      required: true
+    - defaultValue: '3'
+      description: Limit results
+      name: limit
+    - default: true
+      defaultValue: '0'
+      description: Offset
+      name: offset
+    description: Fetch a specific computer's trajectory with given connector_guid
+      and filter for events with user name activity
+    name: amp_get_user_activity
+    outputs:
+    - contextPath: CiscoAMP.GetUserActivity
+      description: Users Activity
+      type: string
+  - arguments:
+    - description: Username to filter with
+      name: q
+      required: true
+    - default: true
+      defaultValue: '3'
+      description: Limit results
+      name: limit
+    - description: Connector GUID to search
+      name: connector_guid
+      required: true
+    description: Fetch a specific computer's trajectory with given connector_guid
+      and filter for events with user name activity
+    name: amp_get_user_trajectory
+    outputs:
+    - contextPath: CiscoAMP.GetUserByTrajectory
+      description: Users Trajectory
+      type: string
+  - arguments:
+    - description: Connector GUID
+      name: connector_guid
+      required: true
+    description: Deletes a specific computer with given connector_guid
+    execution: true
+    name: amp_delete_computer
+    outputs:
+    - contextPath: CiscoAMP.DeleteComputer
+      description: Delete Computer
+      type: string
+  - arguments:
+    - description: connector_guid of the computer
+      name: connector_guid
+      required: true
+    description: Get Isolation features from computer
+    name: amp_get_computers_isolation_feature_availability
+    outputs:
+    - contextPath: CiscoAMP.ComputerIsolationFeature
+      description: Isolation Features Supported
+      type: string
+  - arguments:
+    - description: child_guid to use
+      name: child_guid
+      required: true
+    - description: parent_group_guid if you want to add as a child of the parent_group_guid
+      name: parent_group_guid
+    description: Converts an existing group to a child of another group or an existing
+      child group to a root group (that is, one with no parent groups).
+    name: amp_set_group_child_policy
+    outputs:
+    - contextPath: CiscoAMP.SetGroupChild
+      description: Child relationship
+      type: string
+  - arguments:
+    - description: Name of the group
+      name: name
+      required: true
+    - description: Description of the group
+      name: description
+    description: Creates a new group, along with a group name or description.
+    name: amp_create_group
+    outputs:
+    - contextPath: CiscoAMP.CreateGroup
+      description: Created Group info
+      type: string
+  - arguments:
+    - description: group_guid
+      name: group_guid
+      required: true
+    description: Destroys group with a given guid
+    execution: true
+    name: amp_delete_group
+    outputs:
+    - contextPath: CiscoAMP.DeleteGroup
+      description: Deleted Group info
+      type: string
+  - arguments:
+    - description: Limit the amount of indicators to get
+      name: limit
+    - description: Offset where to start
+      name: offset
+    description: Returns a list of indicators.
+    name: amp_get_indicators
+    outputs:
+    - contextPath: CiscoAMP.Indicators
+      description: Indicators
+      type: string
+  - arguments:
+    - description: indicator_guid
+      name: indicator_guid
+      required: true
+    description: Shows information about a specific indicator.
+    name: amp_get_indicator
+    outputs:
+    - contextPath: CiscoAMP.Indicator
+      description: Shows information about a specific indicator.
+      type: string
+  - arguments:
+    - description: ios_bid
+      name: ios_bid
+      required: true
+    description: retrieve app_trajectory queries for a given ios bundle id
+    name: amp_get_app_trajectory
+    outputs:
+    - contextPath: CiscoAMP.GetAppTrajectory
+      description: retrieve app_trajectory queries for a given ios bundle id
+      type: string
+  dockerimage: demisto/python3:3.9.5.20958
+  isFetchSamples: true
+  isfetch: true
+  runonce: false
+  script: ''
+  subtype: python3
+  type: python
