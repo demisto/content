@@ -22,7 +22,7 @@
             "w": 2,
             "h": 1,
             "widget": {
-                "id": "es-cpu-current-usage",
+                "id": "es-cpu-current",
                 "version": -1,
                 "modified": "2021-01-10T13:24:20.812878Z",
                 "name": "Elasticsearch CPU Current Usage",
@@ -61,7 +61,7 @@
             "w": 2,
             "h": 1,
             "widget": {
-                "id": "es-disk-current-usage",
+                "id": "es-disk-current",
                 "version": -1,
                 "modified": "2021-01-10T13:24:20.812147Z",
                 "name": "Elasticsearch Disk Current Usage",
@@ -102,7 +102,7 @@
             "w": 2,
             "h": 1,
             "widget": {
-                "id": "es-jvm-memory-current-usage",
+                "id": "es-jvm-memory-current",
                 "version": -1,
                 "modified": "2021-01-10T13:24:20.812147Z",
                 "name": "Elasticsearch JVM Memory Current Usage",
