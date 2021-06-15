@@ -565,7 +565,7 @@
             "integrations": "Cortex XDR - IR",
             "playbookID": "Test XDR Playbook",
             "fromversion": "4.1.0",
-            "timeout": 800
+            "timeout": 1500
         },
         {
             "integrations": "Cortex XDR - IOC",
