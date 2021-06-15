@@ -1,0 +1,21 @@
+commonfields:
+  id: ExtractAttackPattern
+  version: -1
+name: ExtractAttackPattern
+comment: Extract Attack Pattern Threat Intel Object.
+script: |2
+type: python
+tags:
+- indicator-format
+enabled: true
+args:
+- name: input
+  description: Extract Attack Pattern value from ID.
+  default: true
+  isArray: true
+scripttarget: 0
+subtype: python3
+runonce: false
+dockerimage: demisto/taxii2:1.0.0.19258
+runas: DBotWeakRole
+fromversion: 5.0.0
