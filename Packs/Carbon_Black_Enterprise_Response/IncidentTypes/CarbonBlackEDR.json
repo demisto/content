@@ -1,0 +1,42 @@
+[
+	{
+		"id": "Carbon Black EDR",
+		"version": 3,
+		"modified": "2021-06-15T15:59:53.335159+03:00",
+		"sortValues": null,
+		"packID": "",
+		"itemVersion": "",
+		"fromServerVersion": "",
+		"toServerVersion": "",
+		"vcShouldIgnore": false,
+		"vcShouldKeepItemLegacyProdMachine": false,
+		"commitMessage": "",
+		"shouldCommit": false,
+		"locked": false,
+		"name": "Carbon Black EDR",
+		"prevName": "Carbon Black EDR",
+		"color": "#F8C89A",
+		"playbookId": "d38c3657-cbad-4480-8982-bea60ab02399",
+		"hours": 0,
+		"days": 0,
+		"weeks": 0,
+		"hoursR": 0,
+		"daysR": 0,
+		"weeksR": 0,
+		"system": false,
+		"readonly": false,
+		"default": false,
+		"autorun": false,
+		"preProcessingScript": "",
+		"closureScript": "",
+		"disabled": false,
+		"reputationCalc": 0,
+		"onChangeRepAlg": 0,
+		"layout": "94affdcc-6f5a-445a-8581-165094c19f35",
+		"detached": false,
+		"extractSettings": {
+			"mode": "Specific",
+			"fieldCliNameToExtractSettings": {}
+		}
+	}
+]
