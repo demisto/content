@@ -643,7 +643,7 @@ script:
       type: string
   - arguments:
     - default: false
-      description: The type of objects to retrieve.
+      description: The type of the entry.
       auto: PREDEFINED
       predefined:
       - 'sender_email_address'
@@ -657,16 +657,17 @@ script:
       required: true
       secret: false
     - default: false
-      description: The entry value we want to create.
+      description: The entry value.
       isArray: false
       name: entry_value
       required: true
       secret: false
     - default: false
-      description: The number of matches for the domain name against the incoming emails.
+      defaultValue: '0'
+      description: The number of matches for the entry value against the incoming emails.
       isArray: false
       name: matches
-      required: true
+      required: false
       secret: false
     deprecated: false
     description: Creates allowed sender domain.
@@ -684,7 +685,7 @@ script:
       type: string
   - arguments:
     - default: false
-      description: The type of objects to retrieve.
+      description: The type of the entry.
       auto: PREDEFINED
       predefined:
       - 'sender_email_address'
@@ -698,16 +699,17 @@ script:
       required: true
       secret: false
     - default: false
-      description: The entry value we want to update.
+      description: The entry value.
       isArray: false
       name: entry_value
       required: true
       secret: false
     - default: false
-      description: The number of matches for the domain name against the incoming emails.
+      defaultValue: '0'
+      description: The number of matches for the entry value against the incoming emails.
       isArray: false
       name: matches
-      required: true
+      required: false
       secret: false
     deprecated: false
     description: Updates allowed sender domain.
@@ -725,7 +727,7 @@ script:
       type: string
   - arguments:
     - default: false
-      description: The type of objects to retrieve.
+      description: The type of entry.
       auto: PREDEFINED
       predefined:
       - 'sender_email_address'
@@ -739,7 +741,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: The entry value we want to delete.
+      description: The entry value.
       isArray: false
       name: entry_value
       required: true
@@ -760,7 +762,7 @@ script:
       type: string
   - arguments:
     - default: false
-      description: The type of objects to retrieve.
+      description: The type of the entry.
       auto: PREDEFINED
       predefined:
       - 'sender_email_address'
@@ -790,7 +792,7 @@ script:
       type: string
   - arguments:
     - default: false
-      description: The type of objects to retrieve.
+      description: The type of the entry.
       auto: PREDEFINED
       predefined:
       - 'sender_email_address'
@@ -804,16 +806,17 @@ script:
       required: true
       secret: false
     - default: false
-      description: The entry value we want to create.
+      description: The entry value.
       isArray: false
       name: entry_value
       required: true
       secret: false
     - default: false
-      description: The number of matches for the domain name against the incoming emails.
+      defaultValue: '0'
+      description: The number of matches for the entry value against the incoming emails.
       isArray: false
       name: matches
-      required: true
+      required: false
       secret: false
     deprecated: false
     description: Creates blocked sender domain.
@@ -832,7 +835,7 @@ script:
       type: string
   - arguments:
     - default: false
-      description: The type of objects to retrieve.
+      description: The type of the entry.
       auto: PREDEFINED
       predefined:
       - 'sender_email_address'
@@ -846,16 +849,17 @@ script:
       required: true
       secret: false
     - default: false
-      description: The entry value we want to update.
+      description: The entry value.
       isArray: false
       name: entry_value
       required: true
       secret: false
     - default: false
-      description: The number of matches for the domain name against the incoming emails.
+      defaultValue: '0'
+      description: The number of matches for the entry value against the incoming emails.
       isArray: false
       name: matches
-      required: true
+      required: false
       secret: false
     deprecated: false
     description: Updates blocked sender domain.
@@ -873,7 +877,7 @@ script:
       type: string
   - arguments:
     - default: false
-      description: The type of objects to retrieve.
+      description: The type of the entry.
       auto: PREDEFINED
       predefined:
       - 'sender_email_address'
@@ -887,7 +891,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: The entry value we want to delete.
+      description: The entry value.
       isArray: false
       name: entry_value
       required: true

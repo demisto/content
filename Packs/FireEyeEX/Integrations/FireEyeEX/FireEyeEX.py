@@ -92,7 +92,7 @@ def get_alerts(client: Client, args: Dict[str, Any]) -> CommandResults:
         md_ = f'No alerts with the given arguments were found.\n Arguments {str(request_params)}'
     else:
         alerts = alerts[:limit]
-        headers = ['id', 'occurred', 'product', 'name', 'malicious', 'severity', 'alertUrl']
+        headers = ['id', 'occurred', 'name', 'action', 'smtpMessage', 'src', 'dst', 'alertUrl']
         md_ = tableToMarkdown(name=f'{INTEGRATION_NAME} Alerts:', t=alerts, headers=headers, removeNull=True)
 
     return CommandResults(
@@ -111,7 +111,7 @@ def get_alert_details(client: Client, args: Dict[str, Any]) -> List[CommandResul
 
     command_results: List[CommandResults] = []
 
-    headers = ['id', 'occurred', 'product', 'name', 'malicious', 'action', 'src', 'dst', 'severity', 'alertUrl']
+    headers = ['id', 'occurred', 'name', 'action', 'smtpMessage', 'src', 'dst', 'alertUrl']
 
     for alert_id in alert_ids:
         raw_response = client.fe_client.get_alert_details_request(alert_id, timeout)
