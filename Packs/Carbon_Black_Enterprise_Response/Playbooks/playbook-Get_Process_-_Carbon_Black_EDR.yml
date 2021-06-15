@@ -1,6 +1,5 @@
-id: d38c3657-cbad-4480-8982-bea60ab02399
-version: 6
-vcShouldKeepItemLegacyProdMachine: false
+id: Carbon Black EDR - Enrich Process
+version: -1
 name: Carbon Black EDR - Enrich Process
 starttaskid: "0"
 tasks:
@@ -14,6 +13,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -30,8 +30,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "1":
     id: "1"
     taskid: ac928890-ed94-4fd1-8327-4e695992eccf
@@ -83,8 +81,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "3":
     id: "3"
     taskid: 6257b06f-4b2a-4b5e-82a0-f41e18fb0cca
@@ -121,8 +117,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "4":
     id: "4"
     taskid: 9b0191cf-a91a-4d71-89c2-3e495608591d
@@ -134,6 +128,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {
@@ -147,8 +142,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {},
@@ -167,18 +160,24 @@ inputs:
     simple: ${incident.pid}
   required: true
   description: The id of the requested process.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: Segment ID
   value:
     simple: ${incident.carbonblackedrsegmentid}
   required: true
   description: The id of the segment of the requested process.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: Enrich with related processes?
   value:
     simple: "false"
   required: true
   description: Does the data fetched should include related processes (parent, sibling
     and child processes) if available?
-  playbookInputQuery: null
+  playbookInputQuery:
 outputs: []
+tests:
+- Carbon Black Response Test
+- Carbon Black Edr - Test
+- CBFindIP - Test
+fromversion: 5.5.0
+description: Test Playbook for Carbon Black EDR

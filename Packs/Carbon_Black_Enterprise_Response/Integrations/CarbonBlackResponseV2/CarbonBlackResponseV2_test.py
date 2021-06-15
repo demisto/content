@@ -295,7 +295,7 @@ def test_fetch_incidents(mocker):
         Given
             fetch incidents command running for a second time.
         When
-            mock the Client's http_request.
+            mock the Client's http_request, and there are incident prior to last fetch
         Then
             validate fetch incidents command using the Client only returns new incidents
     """
