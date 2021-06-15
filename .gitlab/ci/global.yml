@@ -64,7 +64,7 @@
   - |
     if [ -n "${DEMISTO_SDK_NIGHTLY}" ]; then
       echo "Installing SDK from master branch" | tee --append $ARTIFACTS_FOLDER/logs/installations.log
-      pip3 install git+https://github.com/demisto/demisto-sdk@lint-multipath-input >> $ARTIFACTS_FOLDER/logs/installations.log 2>&1
+      pip3 install git+https://github.com/demisto/demisto-sdk@master >> $ARTIFACTS_FOLDER/logs/installations.log 2>&1
     fi
   - section_end "Installing Virtualenv"
 
