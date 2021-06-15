@@ -10,13 +10,11 @@ configuration:
   type: 12
 - additionalinfo: Client Id for OAuth 2.0
   display: Client Id (for OAuth 2.0)
-  hidden: false
   name: client_id
   required: true
   type: 4
 - additionalinfo: Client Secret for OAuth 2.0
   display: Client Secret (for OAuth 2.0)
-  hidden: false
   name: client_secret
   required: true
   type: 4
@@ -46,6 +44,11 @@ configuration:
   name: first_fetch
   required: false
   type: 0
+- defaultvalue: '1'
+  display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  required: false
+  type: 19
 description: SailPoint IdentityIQ context pack enables XSOAR customers to utilize
   the deep, enriched contextual data in the SailPoint predictive identity platform
   to better drive identity-aware security practices.
@@ -54,36 +57,18 @@ name: SailPointIdentityIQ
 script:
   commands:
   - arguments:
-    - default: false
-      description: Internal id of the identity being requested.
-      isArray: false
+    - description: Internal id of the identity being requested.
       name: id
-      required: false
-      secret: false
-    - default: false
-      description: Email address of the identity being requested.
-      isArray: false
+    - description: Email address of the identity being requested.
       name: email
-      required: false
-      secret: false
-    - default: false
-      defaultValue: 'true'
+    - defaultValue: 'true'
       description: Determines whether search will return only active identities.
-      isArray: false
       name: active
-      required: false
-      secret: false
-    - default: false
-      description: Numeric value of baseline risk score, users above this will be
+    - description: Numeric value of baseline risk score, users above this will be
         returned.
-      isArray: false
       name: risk
-      required: false
-      secret: false
-    deprecated: false
     description: Search identities by search/filter parameters (id, email, risk &
       active) using IdentityIQ SCIM API's.
-    execution: false
     name: identityiq-search-identities
     outputs:
     - contextPath: IdentityIQ.Identity.userName
@@ -136,16 +121,10 @@ script:
         assigned to this identity.
       type: Unknown
   - arguments:
-    - default: false
-      description: Internal id of the policy violation being requested.
-      isArray: false
+    - description: Internal id of the policy violation being requested.
       name: id
-      required: false
-      secret: false
-    deprecated: false
     description: Fetch policy violation by id or all policy violations using IdentityIQ
       SCIM API's.
-    execution: false
     name: identityiq-get-policyviolations
     outputs:
     - contextPath: IdentityIQ.PolicyViolation.policyName
@@ -170,16 +149,10 @@ script:
       description: Internal id of the task result.
       type: String
   - arguments:
-    - default: false
-      description: Internal id of the task result being requested.
-      isArray: false
+    - description: Internal id of the task result being requested.
       name: id
-      required: false
-      secret: false
-    deprecated: false
     description: Fetch task result by id or all task results using IdentityIQ SCIM
       API's.
-    execution: false
     name: identityiq-get-taskresults
     outputs:
     - contextPath: IdentityIQ.TaskResult.id
@@ -218,57 +191,27 @@ script:
       description: Timestamp of when the task was completed (if not currently executed).
       type: Date
   - arguments:
-    - default: false
-      description: Internal id of the account to be returned.
-      isArray: false
+    - description: Internal id of the account to be returned.
       name: id
-      required: false
-      secret: false
-    - default: false
-      description: displayName of the account to be returned.
-      isArray: false
+    - description: displayName of the account to be returned.
       name: display_name
-      required: false
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         Timestamp of the last time the account(s) were refreshed from the target system.
         [format : yyyy-MM-dd'T'HH:mm:ss or yyyy-MM-dd]
-      isArray: false
       name: last_refresh
-      required: false
-      secret: false
-    - default: false
-      description: Unique identifier of the account on the target system.
-      isArray: false
+    - description: Unique identifier of the account on the target system.
       name: native_identity
-      required: false
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         Timestamp of the last targeted aggregation of the account from the target system.
         [format : yyyy-MM-dd'T'HH:mm:ss or yyyy-MM-dd]
-      isArray: false
       name: last_target_agg
-      required: false
-      secret: false
-    - default: false
-      description: Unique name of the identity for which all accounts will be returned.
-      isArray: false
+    - description: Unique name of the identity for which all accounts will be returned.
       name: identity_name
-      required: false
-      secret: false
-    - default: false
-      description: Unique name of the application for which all accounts will be returned.
-      isArray: false
+    - description: Unique name of the application for which all accounts will be returned.
       name: application_name
-      required: false
-      secret: false
-    deprecated: false
     description: Fetch accounts by search/filter parameters (id, display_name, last_refresh,
       native_identity, last_target_agg, identity_name & application_name) using IdentityIQ
       SCIM API's.
-    execution: false
     name: identityiq-get-accounts
     outputs:
     - contextPath: IdentityIQ.Account.id
@@ -297,15 +240,10 @@ script:
       description: Timestamp of when this account was last refreshed in IdentityIQ.
       type: Date
   - arguments:
-    - default: false
-      description: Internal id of the specific account to be disabled.
-      isArray: false
+    - description: Internal id of the specific account to be disabled.
       name: id
       required: true
-      secret: false
-    deprecated: false
     description: Disable account's active status by id using IdentityIQ SCIM API's.
-    execution: false
     name: identityiq-disable-account
     outputs:
     - contextPath: IdentityIQ.AccountDisable.active
@@ -313,15 +251,10 @@ script:
         is successfully completed).
       type: Boolean
   - arguments:
-    - default: false
-      description: Internal id of the specific account to be enabled.
-      isArray: false
+    - description: Internal id of the specific account to be enabled.
       name: id
       required: true
-      secret: false
-    deprecated: false
     description: Enable account's active status by id using IdentityIQ SCIM API's.
-    execution: false
     name: identityiq-enable-account
     outputs:
     - contextPath: IdentityIQ.AccountDisable.active
@@ -329,27 +262,17 @@ script:
         successfully completed).
       type: Boolean
   - arguments:
-    - default: false
-      description: Internal id of the specific account to be deleted.
-      isArray: false
+    - description: Internal id of the specific account to be deleted.
       name: id
       required: true
-      secret: false
-    deprecated: false
     description: Delete account by id using IdentityIQ SCIM API's.
     execution: true
     name: identityiq-delete-account
   - arguments:
-    - default: false
-      description: Internal id of the specific launched workflow being requested.
-      isArray: false
+    - description: Internal id of the specific launched workflow being requested.
       name: id
-      required: false
-      secret: false
-    deprecated: false
     description: Fetch launched workflow by id or all launched workflows using IdentityIQ
       SCIM API's.
-    execution: false
     name: identitytiq-get-launched-workflows
     outputs:
     - contextPath: IdentityIQ.Workflow.workflowName
@@ -398,15 +321,9 @@ script:
       description: Array of key/type/value objects that list the output of the workflow.
       type: Unknown
   - arguments:
-    - default: false
-      description: Internal id of the specific role being requested.
-      isArray: false
+    - description: Internal id of the specific role being requested.
       name: id
-      required: false
-      secret: false
-    deprecated: false
     description: Fetch role by id or all roles using IdentityIQ SCIM API's.
-    execution: false
     name: identityiq-get-roles
     outputs:
     - contextPath: IdentityIQ.Role.name
@@ -443,16 +360,10 @@ script:
       description: Description of the role shown in the UI.
       type: String
   - arguments:
-    - default: false
-      description: Internal id of the specific entitlement being requested.
-      isArray: false
+    - description: Internal id of the specific entitlement being requested.
       name: id
-      required: false
-      secret: false
-    deprecated: false
     description: Fetch entitlement by id or all entitlements using IdentityIQ SCIM
       API's.
-    execution: false
     name: identityiq-get-entitlements
     outputs:
     - contextPath: IdentityIQ.Entitlement.application.value
@@ -493,15 +404,9 @@ script:
       description: Timestamp indicates when the entitlement was created in IdentityIQ.
       type: Date
   - arguments:
-    - default: false
-      description: Internal id of the specific alert being requested.
-      isArray: false
+    - description: Internal id of the specific alert being requested.
       name: id
-      required: false
-      secret: false
-    deprecated: false
     description: Fetch alert by id or all alerts using IdentityIQ SCIM API's.
-    execution: false
     name: identityiq-get-alerts
     outputs:
     - contextPath: IdentityIQ.Alert.id
@@ -529,27 +434,18 @@ script:
       description: List of applications that are related to this alert.
       type: String
   - arguments:
-    - default: false
-      description: Display name of the alert.
-      isArray: false
+    - description: Display name of the alert.
       name: display_name
       required: true
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         List of JSON objects with the following structure.
         {
             'key': '',
             'value': '',
             'type': ''
         }
-      isArray: false
       name: attributes
-      required: false
-      secret: false
-    deprecated: false
     description: Create an alert using IdentityIQ SCIM API's.
-    execution: false
     name: identityiq-create-alert
     outputs:
     - contextPath: IdentityIQ.Alert.id
@@ -577,16 +473,11 @@ script:
       description: List of applications that are related to this alert.
       type: String
   dockerimage: demisto/python3:3.9.5.21272
-  feed: false
   isfetch: true
-  longRunning: false
-  longRunningPort: false
   runonce: false
-  script: '-'
+  script: ''
   subtype: python3
   type: python
+fromversion: 6.0.0
 tests:
 - SailPointIdentityIQ-Test
-defaultmapperin: SailPoint IdentityIQ Alert Mapper
-defaultclassifier: SailPoint IdentityIQ Alert Classifier
-fromversion: 6.0.0
