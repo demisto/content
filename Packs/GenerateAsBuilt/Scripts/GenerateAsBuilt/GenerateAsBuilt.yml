@@ -12,7 +12,7 @@ args:
   required: true
   secret: false
 - default: false
-  defaultValue: 7
+  defaultValue: '7'
   description: Days back to search for incidents.
   isArray: false
   name: days
