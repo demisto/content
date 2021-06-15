@@ -1,7 +1,7 @@
 {
     "description": "",
     "feed": false,
-    "id": "da9a50e0-d0f8-412b-8bb7-fd8fd16b2911",
+    "id": "Carbon Black EDR Mapper",
     "mapping": {
         "Carbon Black EDR": {
             "dontMapEventToLabels": true,
