@@ -1,0 +1,699 @@
+{
+    "brandName": "Proofpoint TAP v2",
+    "custom": true,
+    "feed": false,
+    "id": "7e6a629b-a5d9-4acf-8c06-be5cc6edbb42",
+    "isDefault": false,
+    "keyTypeMap": {
+        "clicks blocked": "Proofpoint TAP - Click Blocked",
+        "clicks permitted": "Proofpoint TAP - Click Permitted",
+        "messages blocked": "Proofpoint TAP - Message Blocked",
+        "messages delivered": "Proofpoint TAP - Message Delivered"
+    },
+    "mapping": {
+        "Proofpoint TAP - Click Blocked": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "Proofpoint TAP Classification": {
+                    "complex": null,
+                    "simple": "classification"
+                },
+                "Proofpoint TAP Click IP": {
+                    "complex": null,
+                    "simple": "clickIP"
+                },
+                "Proofpoint TAP Click Time": {
+                    "complex": null,
+                    "simple": "clickTime"
+                },
+                "Proofpoint TAP GUID": {
+                    "complex": null,
+                    "simple": "GUID"
+                },
+                "Proofpoint TAP ID": {
+                    "complex": null,
+                    "simple": "id"
+                },
+                "Proofpoint TAP Message ID": {
+                    "complex": null,
+                    "simple": "messageID"
+                },
+                "Proofpoint TAP SMTP Recipient": {
+                    "complex": null,
+                    "simple": "recipient"
+                },
+                "Proofpoint TAP SMTP Sender": {
+                    "complex": null,
+                    "simple": "sender"
+                },
+                "Proofpoint TAP Sender IP": {
+                    "complex": null,
+                    "simple": "senderIP"
+                },
+                "Proofpoint TAP Suspicious URL": {
+                    "complex": null,
+                    "simple": "url"
+                },
+                "Proofpoint TAP Threat ID": {
+                    "complex": null,
+                    "simple": "threatID"
+                },
+                "Proofpoint TAP Threat Status": {
+                    "complex": null,
+                    "simple": "threatStatus"
+                },
+                "Proofpoint TAP Threat Time": {
+                    "complex": null,
+                    "simple": "threatTime"
+                },
+                "Proofpoint TAP Threat URL": {
+                    "complex": null,
+                    "simple": "threatURL"
+                },
+                "Proofpoint TAP Type": {
+                    "complex": null,
+                    "simple": "type"
+                },
+                "Proofpoint TAP User Agent": {
+                    "complex": null,
+                    "simple": "userAgent"
+                }
+            }
+        },
+        "Proofpoint TAP - Click Permitted": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "Proofpoint TAP Classification": {
+                    "complex": null,
+                    "simple": "classification"
+                },
+                "Proofpoint TAP Click IP": {
+                    "complex": null,
+                    "simple": "clickIP"
+                },
+                "Proofpoint TAP Click Time": {
+                    "complex": null,
+                    "simple": "clickTime"
+                },
+                "Proofpoint TAP GUID": {
+                    "complex": null,
+                    "simple": "GUID"
+                },
+                "Proofpoint TAP ID": {
+                    "complex": null,
+                    "simple": "id"
+                },
+                "Proofpoint TAP Message ID": {
+                    "complex": null,
+                    "simple": "messageID"
+                },
+                "Proofpoint TAP SMTP Recipient": {
+                    "complex": null,
+                    "simple": "recipient"
+                },
+                "Proofpoint TAP SMTP Sender": {
+                    "complex": null,
+                    "simple": "sender"
+                },
+                "Proofpoint TAP Sender IP": {
+                    "complex": null,
+                    "simple": "senderIP"
+                },
+                "Proofpoint TAP Suspicious URL": {
+                    "complex": null,
+                    "simple": "url"
+                },
+                "Proofpoint TAP Threat ID": {
+                    "complex": null,
+                    "simple": "threatID"
+                },
+                "Proofpoint TAP Threat Status": {
+                    "complex": null,
+                    "simple": "threatStatus"
+                },
+                "Proofpoint TAP Threat Time": {
+                    "complex": null,
+                    "simple": "threatTime"
+                },
+                "Proofpoint TAP Threat URL": {
+                    "complex": null,
+                    "simple": "threatURL"
+                },
+                "Proofpoint TAP Type": {
+                    "complex": null,
+                    "simple": "type"
+                },
+                "Proofpoint TAP User Agent": {
+                    "complex": null,
+                    "simple": "userAgent"
+                }
+            }
+        },
+        "Proofpoint TAP - Message Blocked": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "Proofpoint TAP Click Time": {
+                    "complex": null,
+                    "simple": "cluster"
+                },
+                "Proofpoint TAP Examined By": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "modulesRun",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "separator": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": ","
+                                        }
+                                    }
+                                },
+                                "operator": "join"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                },
+                "Proofpoint TAP GUID": {
+                    "complex": null,
+                    "simple": "GUID"
+                },
+                "Proofpoint TAP Header CC": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "ccAddresses",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "separator": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": ","
+                                        }
+                                    }
+                                },
+                                "operator": "join"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                },
+                "Proofpoint TAP Headers From": {
+                    "complex": null,
+                    "simple": "headerFrom"
+                },
+                "Proofpoint TAP Headers Reply To": {
+                    "complex": null,
+                    "simple": "headerReplyTo"
+                },
+                "Proofpoint TAP ID": {
+                    "complex": null,
+                    "simple": "id"
+                },
+                "Proofpoint TAP Imposter Score": {
+                    "complex": null,
+                    "simple": "impostorScore"
+                },
+                "Proofpoint TAP Malware Score": {
+                    "complex": null,
+                    "simple": "malwareScore"
+                },
+                "Proofpoint TAP Message ID": {
+                    "complex": null,
+                    "simple": "messageID"
+                },
+                "Proofpoint TAP Message Parts": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "messageParts",
+                        "transformers": [
+                            {
+                                "args": {},
+                                "operator": "ConvertKeysToTableFieldFormat"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                },
+                "Proofpoint TAP Message Size": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "messageSize",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "by": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "1000"
+                                        }
+                                    }
+                                },
+                                "operator": "division"
+                            },
+                            {
+                                "args": {
+                                    "prefix": {
+                                        "isContext": false,
+                                        "value": null
+                                    },
+                                    "suffix": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": " KB"
+                                        }
+                                    }
+                                },
+                                "operator": "concat"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                },
+                "Proofpoint TAP Phishing Score": {
+                    "complex": null,
+                    "simple": "phishScore"
+                },
+                "Proofpoint TAP Policies": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "policyRoutes",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "separator": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": ","
+                                        }
+                                    }
+                                },
+                                "operator": "join"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                },
+                "Proofpoint TAP Quarantine Folder": {
+                    "complex": null,
+                    "simple": "quarantineFolder"
+                },
+                "Proofpoint TAP Quarantine Rule": {
+                    "complex": null,
+                    "simple": "quarantineRule"
+                },
+                "Proofpoint TAP Reply To Address": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "replyToAddress",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "separator": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": ","
+                                        }
+                                    }
+                                },
+                                "operator": "join"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                },
+                "Proofpoint TAP SMTP Recipient": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "recipient",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "separator": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": ","
+                                        }
+                                    }
+                                },
+                                "operator": "join"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                },
+                "Proofpoint TAP SMTP Sender": {
+                    "complex": null,
+                    "simple": "sender"
+                },
+                "Proofpoint TAP Sender Address": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "fromAddress",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "separator": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": ","
+                                        }
+                                    }
+                                },
+                                "operator": "join"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                },
+                "Proofpoint TAP Spam Score": {
+                    "complex": null,
+                    "simple": "spamScore"
+                },
+                "Proofpoint TAP Subject": {
+                    "complex": null,
+                    "simple": "subject"
+                },
+                "Proofpoint TAP Threat Info Map": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "threatsInfoMap",
+                        "transformers": [
+                            {
+                                "args": {},
+                                "operator": "ConvertKeysToTableFieldFormat"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                },
+                "Proofpoint TAP Type": {
+                    "complex": null,
+                    "simple": "type"
+                },
+                "Proofpoint TAP Xmailer": {
+                    "complex": null,
+                    "simple": "xmailer"
+                }
+            }
+        },
+        "Proofpoint TAP - Message Delivered": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "Proofpoint TAP Click Time": {
+                    "complex": null,
+                    "simple": "cluster"
+                },
+                "Proofpoint TAP Examined By": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "modulesRun",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "separator": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": ","
+                                        }
+                                    }
+                                },
+                                "operator": "join"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                },
+                "Proofpoint TAP GUID": {
+                    "complex": null,
+                    "simple": "GUID"
+                },
+                "Proofpoint TAP Header CC": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "ccAddresses",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "separator": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": ","
+                                        }
+                                    }
+                                },
+                                "operator": "join"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                },
+                "Proofpoint TAP Headers From": {
+                    "complex": null,
+                    "simple": "headerFrom"
+                },
+                "Proofpoint TAP Headers Reply To": {
+                    "complex": null,
+                    "simple": "headerReplyTo"
+                },
+                "Proofpoint TAP ID": {
+                    "complex": null,
+                    "simple": "id"
+                },
+                "Proofpoint TAP Imposter Score": {
+                    "complex": null,
+                    "simple": "impostorScore"
+                },
+                "Proofpoint TAP Malware Score": {
+                    "complex": null,
+                    "simple": "malwareScore"
+                },
+                "Proofpoint TAP Message ID": {
+                    "complex": null,
+                    "simple": "messageID"
+                },
+                "Proofpoint TAP Message Parts": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "messageParts",
+                        "transformers": [
+                            {
+                                "args": {},
+                                "operator": "ConvertKeysToTableFieldFormat"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                },
+                "Proofpoint TAP Message Size": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "messageSize",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "by": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "1000"
+                                        }
+                                    }
+                                },
+                                "operator": "division"
+                            },
+                            {
+                                "args": {
+                                    "prefix": {
+                                        "isContext": false,
+                                        "value": null
+                                    },
+                                    "suffix": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": " KB"
+                                        }
+                                    }
+                                },
+                                "operator": "concat"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                },
+                "Proofpoint TAP Phishing Score": {
+                    "complex": null,
+                    "simple": "phishScore"
+                },
+                "Proofpoint TAP Policies": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "policyRoutes",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "separator": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": ","
+                                        }
+                                    }
+                                },
+                                "operator": "join"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                },
+                "Proofpoint TAP Quarantine Folder": {
+                    "complex": null,
+                    "simple": "quarantineFolder"
+                },
+                "Proofpoint TAP Quarantine Rule": {
+                    "complex": null,
+                    "simple": "quarantineRule"
+                },
+                "Proofpoint TAP Reply To Address": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "replyToAddress",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "separator": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": ","
+                                        }
+                                    }
+                                },
+                                "operator": "join"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                },
+                "Proofpoint TAP SMTP Recipient": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "recipient",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "separator": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": ","
+                                        }
+                                    }
+                                },
+                                "operator": "join"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                },
+                "Proofpoint TAP SMTP Sender": {
+                    "complex": null,
+                    "simple": "sender"
+                },
+                "Proofpoint TAP Sender Address": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "fromAddress",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "separator": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": ","
+                                        }
+                                    }
+                                },
+                                "operator": "join"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                },
+                "Proofpoint TAP Spam Score": {
+                    "complex": null,
+                    "simple": "spamScore"
+                },
+                "Proofpoint TAP Subject": {
+                    "complex": null,
+                    "simple": "subject"
+                },
+                "Proofpoint TAP Threat Info Map": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "threatsInfoMap",
+                        "transformers": [
+                            {
+                                "args": {},
+                                "operator": "ConvertKeysToTableFieldFormat"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                },
+                "Proofpoint TAP Type": {
+                    "complex": null,
+                    "simple": "type"
+                },
+                "Proofpoint TAP Xmailer": {
+                    "complex": null,
+                    "simple": "xmailer"
+                }
+            }
+        }
+    },
+    "transformer": {
+        "complex": {
+            "accessor": "",
+            "filters": [],
+            "root": "type",
+            "transformers": []
+        },
+        "simple": ""
+    },
+    "version": -1,
+    "fromVersion": "5.0.0",
+    "toVersion": "5.9.9"
+}

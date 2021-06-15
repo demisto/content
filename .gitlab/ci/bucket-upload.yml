@@ -8,6 +8,18 @@
   variables:
     GCS_PRODUCTION_BUCKET: "marketplace-dist-dev" # remove this after testing period
 
+.bucket-upload-rule-always:
+  rules:
+    - if: '$GCS_MARKET_BUCKET == "marketplace-dist"' # remove this after testing period
+      when: never # remove this after testing period
+    - if: '$CI_COMMIT_BRANCH =~ /pull\/[0-9]+/'
+      when: never
+    - if: '$BUCKET_UPLOAD == "true"'
+      when: always
+  variables:
+    GCS_PRODUCTION_BUCKET: "marketplace-dist-dev" # remove this after testing period
+
+
 .check_user_permissions_to_upload_packs: &check_user_permissions_to_upload_packs
   - section_start "Check User Permissions to Upload Packs" # if bucket upload and uploading to marketplace-dist
   - |
@@ -25,6 +37,20 @@
     fi
   - section_end "Check User Permissions to Upload Packs"
 
+
+run-validations-upload-flow:
+  extends:
+    - .run-validations
+    - .bucket-upload-rule
+
+
+# Uncomment when docker in docker will work
+# run-unittests-and-lint-upload-flow:
+#   extends:
+#     - .run-unittests-and-lint
+#     - .bucket-upload-rule
+
+
 create-instances-upload-flow:
   extends:
     - create-instances
@@ -38,6 +64,7 @@ create-instances-upload-flow:
       when: never
     - if: '$BUCKET_UPLOAD == "true"'
     - if: '$FORCE_BUCKET_UPLOAD == "true"'
+
 
 .install_packs_in_server:
   needs: ["create-instances-upload-flow"]
@@ -75,15 +102,18 @@ create-instances-upload-flow:
     - section_end "Destroy instances"
     - exit "$EXIT_CODE"
 
+
 install-packs-in-server6_0:
   extends: .install_packs_in_server
   variables:
     INSTANCE_ROLE: "Server 6.0"
 
+
 install-packs-in-server-master:
   extends: .install_packs_in_server
   variables:
     INSTANCE_ROLE: "Server Master"
+
 
 upload-packs-to-marketplace:
   needs: ["run-validations-upload-flow", "install-packs-in-server6_0", "install-packs-in-server-master"] # add "run-unittests-and-lint-upload-flow" after docker in docker is resolved.
@@ -99,7 +129,7 @@ upload-packs-to-marketplace:
     SSH_TUNNEL_TIMEOUT: 10
     TIME_TO_LIVE: ""
   extends:
-    - .bucket-upload-rule
+    - .bucket-upload-rule-always
     - .default-job-settings
   script:
     - !reference [.open-ssh-tunnel]
@@ -127,6 +157,7 @@ upload-packs-to-marketplace:
       fi
     - section_end "Validate Premium Packs"
 
+
 force-pack-upload:
   stage: upload-to-marketplace
   needs: ["create-instances-upload-flow"]
@@ -152,29 +183,14 @@ force-pack-upload:
     - python3 ./Tests/Marketplace/copy_and_upload_packs.py -a $PACK_ARTIFACTS -e $EXTRACT_FOLDER -pb "$GCS_MARKET_BUCKET" -bb "$GCS_BUILD_BUCKET" -s $GCS_MARKET_KEY -n $CI_PIPELINE_ID -c $CI_COMMIT_BRANCH -p "${PACKS_TO_UPLOAD}" -pbp "${STORAGE_BASE_PATH}"
 
 
-run-validations-upload-flow:
-  extends:
-    - .run-validations
-    - .bucket-upload-rule
-
-# Uncomment when docker in docker will work
-# run-unittests-and-lint-upload-flow:
-#   extends:
-#     - .run-unittests-and-lint
-#     - .bucket-upload-rule
-
-
 slack-notify-bucket-upload:
-  extends:
-    - .trigger-slack-notification
-  rules:
-    - if: '$GCS_MARKET_BUCKET == "marketplace-dist"' # remove this after testing period
-      when: never # remove this after testing period
-    - if: '$CI_COMMIT_BRANCH =~ /pull\/[0-9]+/'
-      when: never
-    - if: '$BUCKET_UPLOAD == "true"'
-      when: always
   variables:
     PIPELINE_TO_QUERY: $CI_PIPELINE_ID
     WORKFLOW: 'Upload Packs to Marketplace Storage'
     JOB_NAME: 'upload-packs-to-marketplace'
+    # Passes the environment variable from the parent pipeline to the child which can be useful for cases
+    # when triggering pipeline with alternate env variable value passed in the API call
+    SLACK_CHANNEL: $SLACK_CHANNEL
+  extends:
+    - .trigger-slack-notification
+    - .bucket-upload-rule-always
