@@ -1890,6 +1890,10 @@
             "fromversion": "5.0.0"
         },
         {
+            "integrations": "carbonblack-v3",
+            "playbookID": "CarbonBlackEdr_Test"
+        },
+        {
             "integrations": "Cisco Umbrella Investigate",
             "playbookID": "Cisco Umbrella Test"
         },

@@ -2081,5 +2081,5 @@ script:
   subtype: python3
   type: python
 tests:
-- No tests (auto formatted)
+- CarbonBlackEdr_Test
 fromversion: 5.5.0
