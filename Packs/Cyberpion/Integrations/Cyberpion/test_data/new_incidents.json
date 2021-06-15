@@ -1,0 +1,39 @@
+{
+  "count": 2,
+  "next": null,
+  "previous": null,
+  "results": [
+    {
+      "id": 169321,
+      "domain": "$anon100-4.com",
+      "category": "DNS",
+      "urgency": 4.0,
+      "is_open": false,
+      "creation_time": "2020-11-18 07:55:31.242711 UTC",
+      "technical_details": "",
+      "alert_type": "cyberpion_action_item",
+      "impact": "The availability of the DNS infrastructure is limited. Abusing this single point of failure, hackers can block/disrupt the traffic to and from the organization.",
+      "description": "DNS is the basis for every online communication, misconfiguration issues might expose the organization to critical security risks:\n1) The nameservers that are specified in the NS records of the domain or not geo-separated (contradicts RFC 2182), which allows hackers to more easily conduct a denial of service (DoS) attacks.\n2) The authoritative nameservers of the domain or not geo-separated (contradicts RFC 2182), which allows hackers to more easily conduct a denial of service (DoS) attacks.\n",
+      "title": "Fix DNS issues: Nameservers are not geo-separated, Authoritative nameservers are not geo-separated",
+      "solution": "According to RFC 2182, there should be at least 3 nameservers, geo-separated, to avoid having a single point of failure. Practically, it is recommended to have at least 2 geo-separated DNS servers in each level of the hierarchical resolution process.",
+      "link": "https://api.test.com/static/new/index.html#/pages/assessments/dnsTests/dns_test_report;$anon100-4.com",
+      "summary": "The domain $anon100-4.com has nameservers (as specified in its NS records) that are not geo-separated and has authoritative nameservers that are not geo-separated"
+    },
+    {
+      "id": 175358,
+      "domain": "$anon100-4.com",
+      "category": "PKI",
+      "alert_type": "cyberpion_action_item",
+      "urgency": 6.0,
+      "is_open": true,
+      "creation_time": "2020-11-19 14:27:05.811645 UTC",
+      "technical_details": "",
+      "impact": "Bad PKI design (anomalies, inconsistency, or ignoring best practices) indicates on missing management. PKI anomalies might become security vulnerability, mainly, due to the difficulty in following them.",
+      "description": "Certificates are used to authenticate (confirm the identity) when establishing online communication channels. The authentication relies on chain of trust. By trusting the certificate authority (CA) that issued the certificate to the third-party, and assuming that it verifies the identity behind each certificate, trusting a limited set of CAs, allows to trust millions of entities. However, some CAs do not perform identity auditing before issuing a certificate (e.g., to support encryption). Relying on such CAs, makes the forge of your certificate easier and reduces your credability.",
+      "title": "Fix PKI issue: Weak certificate issuer",
+      "solution": "Issue a new certificate for the domain, but use a certificate authority that validates the identity of the domain's owner.",
+      "link": "https://https://api.test.com/static/new/index.html#/pages/assessments/certificates/cert_test_report;$anon100-4.com",
+      "summary": "The domain $anon100-4.com uses certificate that was issued by weak certificate authority"
+    }
+  ]
+}
