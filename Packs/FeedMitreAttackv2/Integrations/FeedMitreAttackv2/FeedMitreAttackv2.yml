@@ -128,6 +128,20 @@ script:
     description: Shows the feed names and IDs from TAXII.
     execution: false
     name: mitre-show-feeds
+  - name: attack-pattern
+    arguments:
+    - name: attack_pattern
+      required: true
+      default: true
+      description: Indicator to look up.
+    outputs:
+    - contextPath: MITRE.ATT&CK.value
+      description: The indicator value.
+      type: string
+    - contextPath: MITRE.ATT&CK.indicatorid
+      description: Indicator ID.
+      type: number
+    description: Lookup reputation in the indicators.
   dockerimage: demisto/taxii2:1.0.0.19258
   feed: true
   isfetch: false

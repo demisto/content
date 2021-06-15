@@ -17,7 +17,7 @@
     "file": false,
     "updateAfter": 0,
     "mergeContext": false,
-    "formatScript": "ExtractAttackPattern",
+    "formatScript": "",
     "contextPath": "",
     "contextValue": "",
     "excludedBrands": [],
