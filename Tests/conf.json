@@ -1908,7 +1908,7 @@
         },
         {
             "integrations": "AWS - IAM",
-            "playbookID": "d5cb69b1-c81c-4f27-8a40-3106c0cb2620"
+            "playbookID": "AWS - IAM Test Playbook"
         },
         {
             "integrations": "McAfee Active Response",
@@ -2880,6 +2880,11 @@
             "memory_threshold": 190
         },
         {
+            "integrations": "F5Silverline",
+            "playbookID": "F5Silverline_TestPlaybook",
+            "fromversion": "6.0.0"
+        },
+        {
             "integrations": "Carbon Black Enterprise EDR",
             "playbookID": "Carbon Black Enterprise EDR Test",
             "fromversion": "5.0.0"
@@ -3443,10 +3448,8 @@
         "Extract Indicators From File - Generic v2 - Test": "Issue 30071",
         "Kenna Test": "Missing data",
         "Trend Micro Apex - Test": "Issue 27280",
-        "Create ServiceNow Ticket and Mirror Test": "Issue 30587",
         "palo_alto_panorama_test_pb": "Issue 34371",
         "Microsoft Defender - ATP - Indicators Test": "Issue 29279",
-        "GSuiteAdmin-Test": "Issue 34784",
         "Test-BPA": "Issue 28406",
         "Test-BPA_Integration": "Issue 28236",
         "EWS search-mailbox test": "Issue 27943",
@@ -3454,7 +3457,6 @@
         "PAN OS EDL Management - Test": "Issue 35652",
         "PAN-OS EDL Setup v3 Test": "Issue 35386",
         "Google-Vault-Generic-Test": "Issue 24347",
-        "FireEyeNX-Test": "Issue 33216",
         "GmailTest": "Issue 27057",
         "Gmail Single User - Test": "Issue 27361",
         "AWS - EC2 Test Playbook": "Issue 36486",
@@ -3503,7 +3505,6 @@
         "Nessus": "No instance",
         "Cisco CloudLock": "No instance",
         "Vectra v2": "No instance",
-        "AWS - IAM": "Issue 21401",
         "GoogleCloudSCC": "No instance, outsourced",
         "FortiGate": "License expired, and not going to get one (issue 14723)",
         "Attivo Botsink": "no instance, not going to get it",
@@ -3567,8 +3568,8 @@
         "Lastline": "issue 20323",
         "Google Resource Manager": "Cannot create projects because have reached allowed quota.",
         "Looker": "Warehouse 'DEMO_WH' cannot be resumed because resource monitor 'LIMITER' has exceeded its quota.",
-
-      "_comment4": "~~~ OTHER ~~~",
+        
+        "_comment4": "~~~ OTHER ~~~",
         "Pentera": "authentication method will not work with testing",
         "AlienVault OTX TAXII Feed": "Issue 29197",
         "EclecticIQ Platform": "Issue 8821",
