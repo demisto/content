@@ -3457,7 +3457,6 @@
         "PAN OS EDL Management - Test": "Issue 35652",
         "PAN-OS EDL Setup v3 Test": "Issue 35386",
         "Google-Vault-Generic-Test": "Issue 24347",
-        "FireEyeNX-Test": "Issue 33216",
         "GmailTest": "Issue 27057",
         "Gmail Single User - Test": "Issue 27361",
         "AWS - EC2 Test Playbook": "Issue 36486",
