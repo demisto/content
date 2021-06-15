@@ -863,6 +863,7 @@ def update_user_iam(default_base_dn, args, create_if_not_exists, mapper_out, dis
         new_ou = ad_user.get("ou")
         user_exists = check_if_user_exists_by_samaccountname(default_base_dn, sam_account_name)
 
+        user_profile = json.loads(user_profile)
         if old_user_data := user_profile.get('olduserdata'):
             # if olduserdata exists - the user's email is updated:
             old_sam_account_name = get_old_samaccountname(old_user_data, mapper_out)
