@@ -94,3 +94,27 @@ QUARANTINED_EMAILS_CONTEXT = [
         'subject': 'test'
     }
 ]
+ALLOWEDLIST = [
+    {
+        "created_at": "2021/06/14 10:41:31",
+        "matches": 7,
+        "name": "www.demisto.com"
+    },
+    {
+        "created_at": "2021/06/14 10:43:13",
+        "matches": 2,
+        "name": "www.demisto2.com"
+    }
+]
+BLOCKEDLIST = [
+    {
+        "created_at": "2021/04/19 14:22:06",
+        "matches": 0,
+        "name": "gmail.com"
+    },
+    {
+        "created_at": "2021/04/19 14:27:35",
+        "matches": 0,
+        "name": "www.blocksite1.net/path/test.html"
+    }
+]

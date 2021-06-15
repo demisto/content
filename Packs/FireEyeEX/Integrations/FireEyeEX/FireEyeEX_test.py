@@ -4,7 +4,7 @@ import pytest
 
 from FireEyeEX import *
 from test_data.result_constants import QUARANTINED_EMAILS_CONTEXT, GET_ALERTS_CONTEXT, GET_ALERTS_DETAILS_CONTEXT, \
-    GET_ARTIFACTS_METADATA_CONTEXT
+    GET_ARTIFACTS_METADATA_CONTEXT, ALLOWEDLIST, BLOCKEDLIST
 
 
 def util_load_json(path):
@@ -216,6 +216,65 @@ def test_fetch_incidents(mocker):
                                           info_level='concise')
     assert len(incidents) == 5
     assert last_run.get('time') == '2021-02-14 17:01:14 +0000'  # occurred time of the last alert
+
+
+def test_list_allowedlist(mocker):
+    """Unit test
+    Given
+    - list_allowedlist_request command
+    - command args
+    - command raw response
+    When
+    - mock the Client's token generation.
+    - mock the Client's list_allowedlist_request response.
+    Then
+    - Validate The entry context
+    """
+    mocker.patch.object(FireEyeClient, '_generate_token', return_value='token')
+    client = Client(base_url="https://fireeye.ex.com/", username='user', password='pass', verify=False, proxy=False)
+    mocker.patch.object(FireEyeClient, 'list_allowedlist_request',
+                        return_value=util_load_json('test_data/list_allowedlist.json'))
+    command_results = list_allowedlist(client=client, args={'type': 'url'})
+    assert command_results.outputs == ALLOWEDLIST
+
+
+def test_list_blockedlist(mocker):
+    """Unit test
+    Given
+    - list_blockedlist_request command
+    - command args
+    - command raw response
+    When
+    - mock the Client's token generation.
+    - mock the Client's list_blockedlist_request response.
+    Then
+    - Validate The entry context
+    """
+    mocker.patch.object(FireEyeClient, '_generate_token', return_value='token')
+    client = Client(base_url="https://fireeye.ex.com/", username='user', password='pass', verify=False, proxy=False)
+    mocker.patch.object(FireEyeClient, 'list_blockedlist_request',
+                        return_value=util_load_json('test_data/list_blockedlist.json'))
+    command_results = list_blockedlist(client=client, args={'type': 'url'})
+    assert command_results.outputs == BLOCKEDLIST
+
+
+def test_list_blockedlist_no_entries(mocker):
+    """Unit test
+    Given
+    - list_blockedlist_request command
+    - command args
+    - command raw response
+    When
+    - mock the Client's token generation.
+    - mock the Client's list_blockedlist_request response.
+    Then
+    - Validate The human readable yields an appropriate message
+    """
+    mocker.patch.object(FireEyeClient, '_generate_token', return_value='token')
+    client = Client(base_url="https://fireeye.ex.com/", username='user', password='pass', verify=False, proxy=False)
+    mocker.patch.object(FireEyeClient, 'list_blockedlist_request', return_value={})
+    command_results = list_blockedlist(client=client, args={'type': 'url'})
+    assert command_results.readable_output == 'No blocked lists with the given type were found.'
 
 
 def test_fetch_incidents_with_limit(mocker):
