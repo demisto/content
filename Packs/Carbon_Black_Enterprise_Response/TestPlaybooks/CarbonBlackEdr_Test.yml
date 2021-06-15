@@ -1,0 +1,1793 @@
+id: CarbonBlackEdr_Test
+version: 58
+vcShouldKeepItemLegacyProdMachine: false
+name: CarbonBlackEdr_Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 0235e09c-8a23-4fa9-8782-0fbefa7340ec
+    type: start
+    task:
+      id: 0235e09c-8a23-4fa9-8782-0fbefa7340ec
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 1dd27bd2-45e8-40a5-88c1-1e442ee6f184
+    type: regular
+    task:
+      id: 1dd27bd2-45e8-40a5-88c1-1e442ee6f184
+      version: -1
+      name: DeleteContext
+      script: DeleteContext
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: fcb50dda-d341-4565-8b9a-ea14d0487a91
+    type: regular
+    task:
+      id: fcb50dda-d341-4565-8b9a-ea14d0487a91
+      version: -1
+      name: cb-edr-processes-search
+      script: '|||cb-edr-processes-search'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      limit:
+        simple: "1"
+      process_name:
+        simple: chrome.exe
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3345
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 6815179f-cf36-4eed-8d1f-39732c2bd238
+    type: condition
+    task:
+      id: 6815179f-cf36-4eed-8d1f-39732c2bd238
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CarbonBlackEDR.Process.Results.process_md5
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CarbonBlackEDR.Process.Results.sensor_id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CarbonBlackEDR.Process.Results.process_name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CarbonBlackEDR.Process.Results.segment_id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CarbonBlackEDR.Process.Results.path
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3520
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 3fc56dbf-7315-4f0b-875e-6ed189f1b7b3
+    type: regular
+    task:
+      id: 3fc56dbf-7315-4f0b-875e-6ed189f1b7b3
+      version: -1
+      name: cb-edr-process-get
+      script: '|||cb-edr-process-get'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      get_related:
+        simple: "True"
+      process_id:
+        simple: ${CarbonBlackEDR.Process.Results.id}
+      segment_id:
+        simple: ${CarbonBlackEDR.Process.Results.segment_id}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3695
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 7e89f366-362a-443d-84b9-7f99f73248aa
+    type: condition
+    task:
+      id: 7e89f366-362a-443d-84b9-7f99f73248aa
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CarbonBlackEDR.Process.process.process_md5
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CarbonBlackEDR.Process.process.sensor_id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CarbonBlackEDR.Process.process.id
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: CarbonBlackEDR.Process.process.terminated
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CarbonBlackEDR.Process.process.hostname
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CarbonBlackEDR.Process.process.process_pid
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CarbonBlackEDR.Process.process.username
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CarbonBlackEDR.Process.process.process_name
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3870
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: e78a5c36-5efa-436b-8ae3-6a257eb665b1
+    type: regular
+    task:
+      id: e78a5c36-5efa-436b-8ae3-6a257eb665b1
+      version: -1
+      name: cb-edr-process-segments-get
+      script: '|||cb-edr-process-segments-get'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      process_id:
+        simple: ${CarbonBlackEDR.Process.process.id}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4045
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: 860dcec6-de04-4209-8415-1a4cdf6d5ea2
+    type: condition
+    task:
+      id: 860dcec6-de04-4209-8415-1a4cdf6d5ea2
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "9"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CarbonBlackEDR.ProcessSegments.segments.last_server_update
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CarbonBlackEDR.ProcessSegments.segments.event_counts.filemod
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CarbonBlackEDR.ProcessSegments.segments.event_counts.netconn
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CarbonBlackEDR.ProcessSegments.segments.event_counts.crossproc
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CarbonBlackEDR.ProcessSegments.segments.unique_id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CarbonBlackEDR.ProcessSegments.segments.last_update
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: 5defa9fc-fa80-4691-8e0f-c344cb60281e
+    type: regular
+    task:
+      id: 5defa9fc-fa80-4691-8e0f-c344cb60281e
+      version: -1
+      name: cb-edr-process-events-list
+      script: '|||cb-edr-process-events-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      process_id:
+        simple: ${CarbonBlackEDR.Process.process.id}
+      segment_id:
+        simple: ${CarbonBlackEDR.Process.process.segment_id}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4395
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: 6c0fec92-20d0-4385-8a5c-0f5f5150ef69
+    type: condition
+    task:
+      id: 6c0fec92-20d0-4385-8a5c-0f5f5150ef69
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "24"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CarbonBlackEDR.Events.process_md5
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CarbonBlackEDR.Events.sensor_id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CarbonBlackEDR.Events.max_last_update
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CarbonBlackEDR.Events.group
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CarbonBlackEDR.Events.hostname
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CarbonBlackEDR.Events.start
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CarbonBlackEDR.Events.process_name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CarbonBlackEDR.Events.emet_count
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CarbonBlackEDR.Events.path
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CarbonBlackEDR.Events.netconn_count
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CarbonBlackEDR.Events.parent_pid
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CarbonBlackEDR.Events.segment_id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CarbonBlackEDR.Events.host_type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CarbonBlackEDR.Events.os_type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CarbonBlackEDR.Events.unique_id
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4570
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: 89f479ea-0991-410b-809e-c2193f9cda4f
+    type: regular
+    task:
+      id: 89f479ea-0991-410b-809e-c2193f9cda4f
+      version: -1
+      name: cb-edr-unquarantine-device
+      script: '|||cb-edr-unquarantine-device'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "31"
+    scriptarguments:
+      sensor_id:
+        complex:
+          root: CarbonBlackEDR.Sensor
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: CarbonBlackEDR.Sensor.status
+                iscontext: true
+              right:
+                value:
+                  simple: Online
+          accessor: id
+          transformers:
+          - operator: atIndex
+            args:
+              index:
+                value:
+                  simple: "0"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: c986608d-5f33-4510-8ad9-24e3a905f558
+    type: regular
+    task:
+      id: c986608d-5f33-4510-8ad9-24e3a905f558
+      version: -1
+      name: cb-edr-quarantine-device
+      script: '|||cb-edr-quarantine-device'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      sensor_id:
+        complex:
+          root: CarbonBlackEDR.Sensor
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: CarbonBlackEDR.Sensor.status
+                iscontext: true
+              right:
+                value:
+                  simple: Online
+          accessor: id
+          transformers:
+          - operator: atIndex
+            args:
+              index:
+                value:
+                  simple: "0"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: 3adc86af-ee0a-46f5-84b8-ff39ad2e94a8
+    type: regular
+    task:
+      id: 3adc86af-ee0a-46f5-84b8-ff39ad2e94a8
+      version: -1
+      name: cb-edr-sensors-list
+      script: '|||cb-edr-sensors-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      limit:
+        simple: "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: 6ff073d6-e495-4080-8daa-b0cc62377160
+    type: condition
+    task:
+      id: 6ff073d6-e495-4080-8daa-b0cc62377160
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "12"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CarbonBlackEDR.Sensor.id
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: CarbonBlackEDR.Sensor.is_isolating
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: CarbonBlackEDR.Sensor.network_isolation_enabled
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CarbonBlackEDR.Sensor.computer_name
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: 2e3e8ed2-d86c-42c5-84a9-2ef0630a6314
+    type: regular
+    task:
+      id: 2e3e8ed2-d86c-42c5-84a9-2ef0630a6314
+      version: -1
+      name: cb-edr-watchlist-delete
+      script: '|||cb-edr-watchlist-delete'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "18"
+    scriptarguments:
+      id:
+        complex:
+          root: CarbonBlackEDR.Watchlist
+          accessor: id
+          transformers:
+          - operator: atIndex
+            args:
+              index:
+                value:
+                  simple: "0"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2820
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "16":
+    id: "16"
+    taskid: c8f2b31a-bd82-4456-8e39-b3324b91ee26
+    type: regular
+    task:
+      id: c8f2b31a-bd82-4456-8e39-b3324b91ee26
+      version: -1
+      name: cb-edr-watchlist-update
+      script: '|||cb-edr-watchlist-update'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      description:
+        simple: updating description for test playbook.
+      id:
+        simple: ${CarbonBlackEDR.Watchlist.id}
+      search_query:
+        simple: chrome.exe
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2645
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: ae9c04bb-16c1-4d7b-82c7-6e179ae15be6
+    type: regular
+    task:
+      id: ae9c04bb-16c1-4d7b-82c7-6e179ae15be6
+      version: -1
+      name: cb-edr-watchlist-create
+      script: '|||cb-edr-watchlist-create'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      description:
+        simple: plyabook test
+      name:
+        simple: Test
+      search_query:
+        simple: chrome.exe
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: 6a3849a8-c6e7-4b10-8921-e6a72d61b029
+    type: regular
+    task:
+      id: 6a3849a8-c6e7-4b10-8921-e6a72d61b029
+      version: -1
+      name: cb-edr-watchlists-list
+      script: '|||cb-edr-watchlists-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "19"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2995
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "19":
+    id: "19"
+    taskid: dd79b577-0d32-41c3-8ac6-4f26e885195d
+    type: condition
+    task:
+      id: dd79b577-0d32-41c3-8ac6-4f26e885195d
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "2"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CarbonBlackEDR.Watchlist.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CarbonBlackEDR.Watchlist.name
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: CarbonBlackEDR.Watchlist.enabled
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: CarbonBlackEDR.Watchlist.search_query
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3170
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "21":
+    id: "21"
+    taskid: 77fabb71-eec1-43b2-878b-e5a805a4dc66
+    type: regular
+    task:
+      id: 77fabb71-eec1-43b2-878b-e5a805a4dc66
+      version: -1
+      name: cb-edr-binary-bans-list
+      description: Returns a list of banned hashes
+      script: '|||cb-edr-binary-bans-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "22"
+    scriptarguments:
+      limit:
+        simple: "5"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "22":
+    id: "22"
+    taskid: cd4423b8-041e-49c3-8a35-7be1bdcadb5c
+    type: condition
+    task:
+      id: cd4423b8-041e-49c3-8a35-7be1bdcadb5c
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "29"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CarbonBlackEDR.BinaryBan.username
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CarbonBlackEDR.BinaryBan.text
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CarbonBlackEDR.BinaryBan.md5hash
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CarbonBlackEDR.BinaryBan.block_count
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CarbonBlackEDR.BinaryBan.user_id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CarbonBlackEDR.BinaryBan.enabled
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CarbonBlackEDR.BinaryBan.timestamp
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "23":
+    id: "23"
+    taskid: 212fd434-8bce-42c2-81f1-d0908d685ed7
+    type: regular
+    task:
+      id: 212fd434-8bce-42c2-81f1-d0908d685ed7
+      version: -1
+      name: cb-edr-alert-update
+      script: '|||cb-edr-alert-update'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "34"
+    scriptarguments:
+      alert_ids:
+        complex:
+          root: CarbonBlackEDR.Alert.Results
+          accessor: unique_id
+          transformers:
+          - operator: atIndex
+            args:
+              index:
+                value:
+                  simple: "0"
+      status:
+        simple: In Progress
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5095
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "24":
+    id: "24"
+    taskid: cf5d39ef-7d5a-4704-8bf5-2855cab6af5d
+    type: regular
+    task:
+      id: cf5d39ef-7d5a-4704-8bf5-2855cab6af5d
+      version: -1
+      name: cb-edr-alert-search
+      script: '|||cb-edr-alert-search'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "25"
+    scriptarguments:
+      status:
+        simple: Unresolved
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4745
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "25":
+    id: "25"
+    taskid: 76aa598b-b9c6-4e7a-862f-7ab07ee71e29
+    type: condition
+    task:
+      id: 76aa598b-b9c6-4e7a-862f-7ab07ee71e29
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "23"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CarbonBlackEDR.Alert.Results.username
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CarbonBlackEDR.Alert.Results.alert_type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CarbonBlackEDR.Alert.Results.sensor_criticality
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CarbonBlackEDR.Alert.Results.modload_count
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CarbonBlackEDR.Alert.Results.report_score
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CarbonBlackEDR.Alert.Results.watchlist_id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CarbonBlackEDR.Alert.Results.sensor_id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CarbonBlackEDR.Alert.Results.feed_name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CarbonBlackEDR.Alert.Results.created_time
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CarbonBlackEDR.Alert.Results.report_ignored
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CarbonBlackEDR.Alert.Results.ioc_type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CarbonBlackEDR.Alert.Results.watchlist_name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CarbonBlackEDR.Alert.Results.ioc_confidence
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CarbonBlackEDR.Alert.Results.ioc_attr
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CarbonBlackEDR.Alert.Results.alert_severity
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CarbonBlackEDR.Alert.Results.crossproc_count
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CarbonBlackEDR.Alert.Results.group
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CarbonBlackEDR.Alert.Results.hostname
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CarbonBlackEDR.Alert.Results.filemod_count
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CarbonBlackEDR.Alert.Results.comms_ip
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CarbonBlackEDR.Alert.Results.netconn_count
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CarbonBlackEDR.Alert.Results.interface_ip
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CarbonBlackEDR.Alert.Results.status
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CarbonBlackEDR.Alert.Results.process_path
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CarbonBlackEDR.Alert.Results.description
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CarbonBlackEDR.Alert.Results.process_name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CarbonBlackEDR.Alert.Results.process_unique_id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CarbonBlackEDR.Alert.Results.process_id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CarbonBlackEDR.Alert.Results.link
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CarbonBlackEDR.Alert.Results._version_
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CarbonBlackEDR.Alert.Results.regmod_count
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CarbonBlackEDR.Alert.Results.md5
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CarbonBlackEDR.Alert.Results.segment_id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CarbonBlackEDR.Alert.Results.total_hosts
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CarbonBlackEDR.Alert.Results.feed_id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CarbonBlackEDR.Alert.Results.ioc_value
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CarbonBlackEDR.Alert.Results.os_type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CarbonBlackEDR.Alert.Results.childproc_count
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CarbonBlackEDR.Alert.Results.unique_id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CarbonBlackEDR.Alert.Results.feed_rating
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4920
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "26":
+    id: "26"
+    taskid: 3d3b628e-9991-4107-8bfb-89afd3021a68
+    type: regular
+    task:
+      id: 3d3b628e-9991-4107-8bfb-89afd3021a68
+      version: -1
+      name: cb-edr-binary-summary
+      script: '|||cb-edr-binary-summary'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "27"
+    scriptarguments:
+      md5:
+        complex:
+          root: CarbonBlackEDR.BinarySearch.Results
+          accessor: md5
+          transformers:
+          - operator: atIndex
+            args:
+              index:
+                value:
+                  simple: "0"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "27":
+    id: "27"
+    taskid: ee0ed20a-8e33-4cf8-82b3-ef7ba48f4862
+    type: condition
+    task:
+      id: ee0ed20a-8e33-4cf8-82b3-ef7ba48f4862
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "17"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CarbonBlackEDR.BinaryMetadata.host_count
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CarbonBlackEDR.BinaryMetadata.digsig_result
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CarbonBlackEDR.BinaryMetadata.observed_filename
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CarbonBlackEDR.BinaryMetadata.product_version
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CarbonBlackEDR.BinaryMetadata.signed
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CarbonBlackEDR.BinaryMetadata.group
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CarbonBlackEDR.BinaryMetadata.file_version
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CarbonBlackEDR.BinaryMetadata.company_name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CarbonBlackEDR.BinaryMetadata.internal_name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CarbonBlackEDR.BinaryMetadata.icon
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CarbonBlackEDR.BinaryMetadata.digsig_result_code
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CarbonBlackEDR.BinaryMetadata.timestamp
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CarbonBlackEDR.BinaryMetadata.copied_mod_len
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CarbonBlackEDR.BinaryMetadata.server_added_timestamp
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CarbonBlackEDR.BinaryMetadata.facet_id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CarbonBlackEDR.BinaryMetadata.md5
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CarbonBlackEDR.BinaryMetadata.endpoint
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CarbonBlackEDR.BinaryMetadata.watchlists.wid
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CarbonBlackEDR.BinaryMetadata.watchlists.value
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CarbonBlackEDR.BinaryMetadata.original_filename
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CarbonBlackEDR.BinaryMetadata.cb_version
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CarbonBlackEDR.BinaryMetadata.os_type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CarbonBlackEDR.BinaryMetadata.file_desc
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CarbonBlackEDR.BinaryMetadata.last_seen
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2295
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "29":
+    id: "29"
+    taskid: 48e84e78-6689-425a-80b8-a111abdfd62b
+    type: regular
+    task:
+      id: 48e84e78-6689-425a-80b8-a111abdfd62b
+      version: -1
+      name: cb-edr-binary-search
+      description: Binary search
+      script: '|||cb-edr-binary-search'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "30"
+    scriptarguments:
+      company_name:
+        simple: Microsoft
+      limit:
+        simple: "3"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "30":
+    id: "30"
+    taskid: 8c75c2b0-82d0-4b05-823d-22caf5353dc9
+    type: condition
+    task:
+      id: 8c75c2b0-82d0-4b05-823d-22caf5353dc9
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "26"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CarbonBlackEDR.BinarySearch.terms
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CarbonBlackEDR.BinarySearch.total_results
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CarbonBlackEDR.BinarySearch.Results.original_filename
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CarbonBlackEDR.BinarySearch.Results.digsig_result
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CarbonBlackEDR.BinarySearch.Results.observed_filename
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CarbonBlackEDR.BinarySearch.Results.product_version
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CarbonBlackEDR.BinarySearch.Results.md5
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CarbonBlackEDR.BinarySearch.Results.group
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CarbonBlackEDR.BinarySearch.Results.digsig_result_code
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CarbonBlackEDR.BinarySearch.Results.file_version
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CarbonBlackEDR.BinarySearch.Results.signed
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CarbonBlackEDR.BinarySearch.Results.company_name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CarbonBlackEDR.BinarySearch.Results.cb_version
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1945
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "31":
+    id: "31"
+    taskid: 4fcdfe74-c69b-4c33-8a32-a8e4092da4c1
+    type: regular
+    task:
+      id: 4fcdfe74-c69b-4c33-8a32-a8e4092da4c1
+      version: -1
+      name: endpoint
+      script: '|||endpoint'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "32"
+    scriptarguments:
+      id:
+        complex:
+          root: CarbonBlackEDR.Sensor
+          accessor: id
+          transformers:
+          - operator: atIndex
+            args:
+              index:
+                value:
+                  simple: "0"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "32":
+    id: "32"
+    taskid: b7cfa2ce-331a-4a13-8dcf-36679d175078
+    type: condition
+    task:
+      id: b7cfa2ce-331a-4a13-8dcf-36679d175078
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "21"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Endpoint.ID
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Endpoint.Status
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Endpoint.Vendor
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "33":
+    id: "33"
+    taskid: 492385d3-233c-457f-8afa-6f63bd79f0bf
+    type: title
+    task:
+      id: 492385d3-233c-457f-8afa-6f63bd79f0bf
+      version: -1
+      name: Test Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5445
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "34":
+    id: "34"
+    taskid: da5f0cec-1910-4cdc-8bbf-948f43d04a76
+    type: regular
+    task:
+      id: da5f0cec-1910-4cdc-8bbf-948f43d04a76
+      version: -1
+      name: cb-edr-alert-update (revert)
+      script: '|||cb-edr-alert-update'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "33"
+    scriptarguments:
+      alert_ids:
+        complex:
+          root: CarbonBlackEDR.Alert.Results
+          accessor: unique_id
+          transformers:
+          - operator: atIndex
+            args:
+              index:
+                value:
+                  simple: "0"
+      status:
+        simple: Unresolved
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5270
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 5460,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
