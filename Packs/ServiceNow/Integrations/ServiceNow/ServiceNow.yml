@@ -45,7 +45,8 @@ configuration:
   required: false
   type: 0
 - defaultvalue: 10 minutes
-  display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days, 3 months, 1 year)
+  display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days, 3
+    months, 1 year)
   name: fetch_time
   required: false
   type: 0
@@ -224,7 +225,9 @@ script:
       description: The date and time when the ticket was created.
       type: date
     - contextPath: Ticket.Assignee
-      description: Specifies the user assigned to complete the ticket. By default, this field uses a reference qualifier to only display users with the itil role.
+      description: Specifies the user assigned to complete the ticket. By default,
+        this field uses a reference qualifier to only display users with the itil
+        role.
       type: string
     - contextPath: Ticket.State
       description: Status of the ticket.
@@ -236,7 +239,8 @@ script:
       description: The display value of the ticket.
       type: string
     - contextPath: Ticket.Active
-      description: Specifies whether work is still being done on a task or whether the work for the task is complete.
+      description: Specifies whether work is still being done on a task or whether
+        the work for the task is complete.
       type: boolean
     - contextPath: Ticket.AdditionalComments
       description: Comments about the task record.
@@ -718,7 +722,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'Custom(user defined) fields in the format: fieldname1=value;fieldname2=value; custom fields start with a "u_".'
+      description: 'Custom(user defined) fields in the format: fieldname1=value;fieldname2=value;
+        custom fields start with a "u_".'
       isArray: false
       name: custom_fields
       required: false
@@ -1259,7 +1264,8 @@ script:
       required: false
       secret: false
     deprecated: true
-    description: Deprecated. Use servicenow-create-ticket or servicenow-create-record instead
+    description: Deprecated. Use servicenow-create-ticket or servicenow-create-record
+      instead
     execution: false
     name: servicenow-create
     outputs:
@@ -2164,7 +2170,8 @@ script:
       required: true
       secret: false
     - default: false
-      description: 'Custom(user defined) fields in the format: fieldname1=value;fieldname2=value; custom fields start with a "u_".'
+      description: 'Custom(user defined) fields in the format: fieldname1=value;fieldname2=value;
+        custom fields start with a "u_".'
       isArray: false
       name: custom_fields
       required: false
@@ -2659,7 +2666,8 @@ script:
       required: false
       secret: false
     deprecated: true
-    description: Deprecated. Use servicenow-update-ticket or servicenow-update-record instead
+    description: Deprecated. Use servicenow-update-ticket or servicenow-update-record
+      instead
     execution: false
     name: servicenow-update
   - arguments:
@@ -3076,7 +3084,8 @@ script:
       required: true
       secret: false
     deprecated: true
-    description: Deprecated. Use servicenow-update-ticket or servicenow-update-record instead
+    description: Deprecated. Use servicenow-update-ticket or servicenow-update-record
+      instead
     execution: false
     name: servicenow-incident-update
   - arguments:
@@ -3125,13 +3134,15 @@ script:
       required: false
       secret: false
     - default: false
-      description: The actual link to publish in ServiceNow ticket, valid url format, like http://www.demisto.com
+      description: The actual link to publish in ServiceNow ticket, valid url format,
+        like http://www.demisto.com
       isArray: false
       name: link
       required: true
       secret: false
     - default: false
-      description: Publish the link as comment on the ticket, if false will publish the link as WorkNote, format bool
+      description: Publish the link as comment on the ticket, if false will publish
+        the link as WorkNote, format bool
       isArray: false
       name: post-as-comment
       required: false
@@ -3166,13 +3177,15 @@ script:
       required: false
       secret: false
     - default: false
-      description: The actual link to publish in ServiceNow ticket, valid url format, like http://www.demisto.com
+      description: The actual link to publish in ServiceNow ticket, valid url format,
+        like http://www.demisto.com
       isArray: false
       name: link
       required: true
       secret: false
     - default: false
-      description: Publish the link as comment on the ticket, by default true, if false will publish the link as WorkNote, format bool
+      description: Publish the link as comment on the ticket, by default true, if
+        false will publish the link as WorkNote, format bool
       isArray: false
       name: post-as-comment
       required: false
@@ -3255,7 +3268,8 @@ script:
       required: true
       secret: false
     - default: false
-      description: Publish the link as comment on the ticket, if false will publish the link as WorkNote, format bool
+      description: Publish the link as comment on the ticket, if false will publish
+        the link as WorkNote, format bool
       isArray: false
       name: post-as-comment
       required: false
@@ -3314,7 +3328,9 @@ script:
       description: The date and time when the ticket was created.
       type: date
     - contextPath: Ticket.Assignee
-      description: Specifies the user assigned to complete the ticket. By default, this field uses a reference qualifier to only display users with the itil role.
+      description: Specifies the user assigned to complete the ticket. By default,
+        this field uses a reference qualifier to only display users with the itil
+        role.
       type: string
     - contextPath: Ticket.State
       description: Status of the ticket.
@@ -3326,7 +3342,8 @@ script:
       description: The display value of the ticket.
       type: string
     - contextPath: Ticket.Active
-      description: Specifies whether work is still being done on a task or whether the work for the task is complete.
+      description: Specifies whether work is still being done on a task or whether
+        the work for the task is complete.
       type: boolean
     - contextPath: Ticket.AdditionalComments
       description: Comments about the task record.
@@ -3375,7 +3392,8 @@ script:
       required: false
       secret: false
     deprecated: true
-    description: Deprecated. Use servicenow-query-table or servicenow-query-tickets instead.
+    description: Deprecated. Use servicenow-query-table or servicenow-query-tickets
+      instead.
     execution: false
     name: servicenow-query
     outputs:
@@ -3424,7 +3442,8 @@ script:
       required: false
       secret: false
     deprecated: true
-    description: Deprecated. Use servicenow-query-table or servicenow-query-tickets instead.
+    description: Deprecated. Use servicenow-query-table or servicenow-query-tickets
+      instead.
     execution: false
     name: servicenow-incidents-query
     outputs:
@@ -3474,7 +3493,8 @@ script:
       required: true
       secret: false
     - default: false
-      description: Filename of uploaded file to override the existing file name in entry
+      description: Filename of uploaded file to override the existing file name in
+        entry
       isArray: false
       name: file_name
       required: false
@@ -3519,7 +3539,8 @@ script:
       required: true
       secret: false
     - default: false
-      description: Filename of uploaded file to override the existing file name in entry
+      description: Filename of uploaded file to override the existing file name in
+        entry
       isArray: false
       name: file_name
       required: false
@@ -3591,7 +3612,8 @@ script:
       required: true
       secret: false
     - default: false
-      description: Comma separated table fields to display and output to the context, e.g name,tag,company. ID field is added by default.
+      description: Comma separated table fields to display and output to the context,
+        e.g name,tag,company. ID field is added by default.
       isArray: false
       name: fields
       required: false
@@ -3611,10 +3633,12 @@ script:
       description: The unique record identifier for the record.
       type: string
     - contextPath: ServiceNow.Record.UpdatedBy
-      description: A string field that indicates the user who most recently updated the record.
+      description: A string field that indicates the user who most recently updated
+        the record.
       type: string
     - contextPath: ServiceNow.Record.UpdatedAt
-      description: A time-stamp field that indicates the date and time of the most recent update.
+      description: A time-stamp field that indicates the date and time of the most
+        recent update.
       type: date
     - contextPath: ServiceNow.Record.CreatedBy
       description: A string field that indicates the user who created the record.
@@ -3637,13 +3661,15 @@ script:
       required: false
       secret: false
     - default: false
-      description: The query to run. For more information about querying in ServiceNow, see https://docs.servicenow.com/bundle/istanbul-servicenow-platform/page/use/common-ui-elements/reference/r_OpAvailableFiltersQueries.html
+      description: The query to run. For more information about querying in ServiceNow,
+        see https://docs.servicenow.com/bundle/istanbul-servicenow-platform/page/use/common-ui-elements/reference/r_OpAvailableFiltersQueries.html
       isArray: false
       name: query
       required: false
       secret: false
     - default: false
-      description: Comma separated table fields to display and output to the context, e.g name,tag,company. ID field is added by default.
+      description: Comma separated table fields to display and output to the context,
+        e.g name,tag,company. ID field is added by default.
       isArray: true
       name: fields
       required: false
@@ -3664,10 +3690,12 @@ script:
       description: The unique record identifier for the record.
       type: string
     - contextPath: ServiceNow.Results.UpdatedBy
-      description: A string field that indicates the user who most recently updated the record.
+      description: A string field that indicates the user who most recently updated
+        the record.
       type: string
     - contextPath: ServiceNow.Results.UpdatedAt
-      description: A time-stamp field that indicates the date and time of the most recent update.
+      description: A time-stamp field that indicates the date and time of the most
+        recent update.
       type: date
     - contextPath: ServiceNow.Results.CreatedBy
       description: A string field that indicates the user who created the record.
@@ -3683,7 +3711,8 @@ script:
       required: true
       secret: false
     - default: false
-      description: 'Fields and their values to create the record with, in the format: fieldname1=value;fieldname2=value;...'
+      description: 'Fields and their values to create the record with, in the format:
+        fieldname1=value;fieldname2=value;...'
       isArray: false
       name: fields
       required: false
@@ -3703,10 +3732,12 @@ script:
       description: The unique record identifier for the record.
       type: string
     - contextPath: ServiceNow.Record.UpdatedBy
-      description: A string field that indicates the user who most recently updated the record.
+      description: A string field that indicates the user who most recently updated
+        the record.
       type: string
     - contextPath: ServiceNow.Record.UpdatedAt
-      description: A time-stamp field that indicates the date and time of the most recent update.
+      description: A time-stamp field that indicates the date and time of the most
+        recent update.
       type: date
     - contextPath: ServiceNow.Record.CreatedBy
       description: A string field that indicates the user who created the record.
@@ -3728,13 +3759,15 @@ script:
       required: true
       secret: false
     - default: false
-      description: 'Fields and their values to update in the record, in the format: fieldname1=value;fieldname2=value;...'
+      description: 'Fields and their values to update in the record, in the format:
+        fieldname1=value;fieldname2=value;...'
       isArray: false
       name: fields
       required: false
       secret: false
     - default: false
-      description: 'Custom(User defined) fields and their values to update in the record, in the format: fieldname1=value;fieldname2=value;...'
+      description: 'Custom(User defined) fields and their values to update in the
+        record, in the format: fieldname1=value;fieldname2=value;...'
       isArray: false
       name: custom_fields
       required: false
@@ -3748,10 +3781,12 @@ script:
       description: The unique record identifier for the record.
       type: string
     - contextPath: ServiceNow.Record.UpdatedBy
-      description: A string field that indicates the user who most recently updated the record.
+      description: A string field that indicates the user who most recently updated
+        the record.
       type: string
     - contextPath: ServiceNow.Record.UpdatedAt
-      description: A time-stamp field that indicates the date and time of the most recent update.
+      description: A time-stamp field that indicates the date and time of the most
+        recent update.
       type: date
     - contextPath: ServiceNow.Record.CreatedBy
       description: A string field that indicates the user who created the record.
@@ -3805,7 +3840,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: Query by specified query, for more information about querying in ServiceNow, see https://docs.servicenow.com/bundle/istanbul-servicenow-platform/page/use/common-ui-elements/reference/r_OpAvailableFiltersQueries.html
+      description: Query by specified query, for more information about querying in
+        ServiceNow, see https://docs.servicenow.com/bundle/istanbul-servicenow-platform/page/use/common-ui-elements/reference/r_OpAvailableFiltersQueries.html
       isArray: false
       name: query
       required: false
@@ -3882,7 +3918,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: Query by specified query, for more information about querying in ServiceNow, see https://docs.servicenow.com/bundle/istanbul-servicenow-platform/page/use/common-ui-elements/reference/r_OpAvailableFiltersQueries.html
+      description: Query by specified query, for more information about querying in
+        ServiceNow, see https://docs.servicenow.com/bundle/istanbul-servicenow-platform/page/use/common-ui-elements/reference/r_OpAvailableFiltersQueries.html
       isArray: false
       name: query
       required: false
@@ -3935,7 +3972,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: Query by specified query, for more information about querying in ServiceNow, see https://docs.servicenow.com/bundle/istanbul-servicenow-platform/page/use/common-ui-elements/reference/r_OpAvailableFiltersQueries.html
+      description: Query by specified query, for more information about querying in
+        ServiceNow, see https://docs.servicenow.com/bundle/istanbul-servicenow-platform/page/use/common-ui-elements/reference/r_OpAvailableFiltersQueries.html
       isArray: false
       name: query
       required: false
@@ -4033,7 +4071,8 @@ script:
       required: false
       secret: false
     deprecated: true
-    description: Get notes from the specified ServiceNow ticket - Read permissions are required for the sys_journal_field table.
+    description: Get notes from the specified ServiceNow ticket - Read permissions
+      are required for the sys_journal_field table.
     execution: false
     name: servicenow-get-ticket-notes
     outputs:
