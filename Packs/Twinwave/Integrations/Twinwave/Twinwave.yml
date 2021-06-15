@@ -88,6 +88,11 @@ script:
     - name: entry_id
       required: true
       description: The entry id of the File.
+    - description: 'Array of strings (EngineName). List of engines to be used during
+        the analysis. If you''d like to use the default Engines for your account,
+        omit this field or specify the empty array []. '
+      name: engines
+      isArray: true
     - defaultValue: "10"
       description: The job's priority relative to other jobs. Jobs with a lower priority
         value are processed before those with a higher value. (e.g., a priority=1

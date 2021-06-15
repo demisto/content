@@ -252,11 +252,12 @@ def submit_url(client, args):
 
 def submit_file(client, args):
     """
-        Submit the URL
+        Submit the File
     """
     file_entry_id = args.get('entry_id')
     file_path = demisto.getFilePath(file_entry_id)['path']
     file_name = demisto.getFilePath(file_entry_id)['name']
+    engines = argToList(args.get('engines','[]'))
     priority = args.get('priority', 10)
     profile = args.get('profile')
 
@@ -264,7 +265,7 @@ def submit_file(client, args):
     priority = validate_priority(priority)
 
     with open(file_path, 'rb') as file:
-        result = client.submit_file(file_name=file_name, file_obj=file.read(), priority=priority, profile=profile)
+        result = client.submit_file(file_name=file_name, file_obj=file.read(), engine_list=engines, priority=priority, profile=profile)
 
     readable_output = '## Submitted File\n'
     readable_output += tableToMarkdown('Twinwave Submissions', result,
