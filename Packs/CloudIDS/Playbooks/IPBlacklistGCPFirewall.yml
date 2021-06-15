@@ -1,5 +1,5 @@
-id: 92607a74-996d-4dd3-85e3-9d1fe958a75a
-version: 8
+id: IP Blacklist - GCP Firewall
+version: -1
 name: IP Blacklist - GCP Firewall
 description: Set a list of IP addresses in GCP firewall.
 starttaskid: "0"
@@ -14,6 +14,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "3"
@@ -41,6 +42,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "29"
@@ -261,6 +263,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {
@@ -360,6 +363,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "38"
@@ -460,7 +464,7 @@ inputs:
   playbookInputQuery:
     query: ""
     queryEntity: indicators
-    results: null
+    results:
     daterange:
       fromdate: 0001-01-01T00:00:00Z
       todate: 0001-01-01T00:00:00Z
@@ -468,8 +472,8 @@ inputs:
         by: ""
         byto: ""
         byfrom: ""
-        tovalue: null
-        fromvalue: null
+        tovalue:
+        fromvalue:
         field: ""
       fromdatelicenseval: 0001-01-01T00:00:00Z
     runFromLastJobTime: false
@@ -477,18 +481,20 @@ inputs:
   value: {}
   required: true
   description: IP addresses to whitelist in GCP Firewall
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: GCPFirewallName
   value:
     simple: fw-test-ids-cortex
   required: true
   description: Name of the GCP Firewall where the playbook should set the IPs
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: IndicatorTagName
   value:
     simple: GCP_IP_Whitelist
   required: true
   description: Name of the Indicator Tag to apply to any IPs whitelisted by this playbook.
-  playbookInputQuery: null
+  playbookInputQuery:
 outputs: []
-sourceplaybookid: IP Whitelist - GCP Firewall
+tests:
+- No tests (auto formatted)
+fromversion: 5.5.0
