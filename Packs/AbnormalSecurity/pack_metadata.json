@@ -1,0 +1,21 @@
+{
+    "name": "Abnormal Security",
+    "description": "Abnormal Security stuff",
+    "support": "partner",
+    "currentVersion": "1.0.0",
+    "author": "Integrations Platform Team",
+    "url": "",
+    "email": "",
+    "categories": [
+        "Email Gateway"
+    ],
+    "tags": [
+        "email",
+        "abnormal"
+    ],
+    "useCases": [],
+    "keywords": [],
+    "githubUser": [
+        "dschuan"
+    ]
+}

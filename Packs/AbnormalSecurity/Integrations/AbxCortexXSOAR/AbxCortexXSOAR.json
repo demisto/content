@@ -1,0 +1,493 @@
+{
+    "name": "Abnormal Security Client API",
+    "description": "This is the specification for Abnormal Security Client API which can be used for managing security threats detected by Abnormal Security.  h2 Who is this API for? /h2  This API is for managing threats to an organization identified by Abnormal Security. The organization should be integrated with Abnormal Security and enabled for real-time detection of malicious emails.  h2  Integration Steps  /h2   h3  Step 1: Generating the authentication token  /h3   Reach out to your Account Manager who can configure your access token and provide it to you securely. You will use this token to view and modify your Abnormal-detected threats and cases.  Keep the token safe, as it grants access to sensitive threat data related to your organization. Store it in a secure place, such as an encrypted password vault, and do not share it unless absolutely necessary. If you feel that the token has been compromised, please contact your Account Manager immediately.  Once obtained, the token can be used in a request from any HTTP client, such as cURL:  pre  curl -H \"Authorization: Bearer     ACCESS_TOKEN   \" https://api.abnormalplatform.com/v1/threats  /pre    h3  Step 2: IP whitelisting  /h3   IP whitelisting ensures that API access is only possible from IP addresses explicitly belonging to your organization. It prevents users from unauthorized networks to access your Abnormal SOAR data. This second layer of security helps keep your data safe from unauthorized users, and protects you in the event of a token compromise.  To whitelist your organization\u2019s IPs, please provide your Account Manager with specific IPv4 / IPv6 addresses, or a range of addresses using a  a href=\"https://www.ipaddressguide.com/cidr\"  CIDR block /a . ",
+    "category": "Utilities",
+    "url": "https://api.abnormalplatform.com/v1",
+    "auth": [
+        "apiKey"
+    ],
+    "context_path": "AbxCortexXSOAR",
+    "commands": [
+        {
+            "name": "check-the-status-of-an-action-requested-on-a-case",
+            "path": "cases/{caseId}/actions/{actionId}",
+            "method": "get",
+            "description": "Check the status of an action requested on a case.",
+            "arguments": [
+                {
+                    "name": "caseId",
+                    "description": "A string representing the case",
+                    "required": true,
+                    "default": "",
+                    "in": "path",
+                    "ref": "",
+                    "type": "string",
+                    "options": null,
+                    "properties": {}
+                },
+                {
+                    "name": "actionId",
+                    "description": "A UUID representing the action id for a case",
+                    "required": true,
+                    "default": "",
+                    "in": "path",
+                    "ref": "",
+                    "type": "string",
+                    "options": null,
+                    "properties": {}
+                }
+            ],
+            "outputs": [
+                {
+                    "name": "status",
+                    "description": "",
+                    "type": "String"
+                },
+                {
+                    "name": "description",
+                    "description": "",
+                    "type": "String"
+                }
+            ],
+            "context_path": "ActionStatus",
+            "root_object": "",
+            "headers": [],
+            "unique_key": ""
+        },
+        {
+            "name": "check-the-status-of-an-action-requested-on-a-threat",
+            "path": "threats/{threatId}/actions/{actionId}",
+            "method": "get",
+            "description": "Check the status of an action requested on a threat.",
+            "arguments": [
+                {
+                    "name": "threatId",
+                    "description": "A UUID representing the threat.",
+                    "required": true,
+                    "default": "",
+                    "in": "path",
+                    "ref": "",
+                    "type": "string",
+                    "options": null,
+                    "properties": {}
+                },
+                {
+                    "name": "actionId",
+                    "description": "A UUID representing the action id for a threat.",
+                    "required": true,
+                    "default": "",
+                    "in": "path",
+                    "ref": "",
+                    "type": "string",
+                    "options": null,
+                    "properties": {}
+                }
+            ],
+            "outputs": [
+                {
+                    "name": "status",
+                    "description": "",
+                    "type": "String"
+                },
+                {
+                    "name": "description",
+                    "description": "",
+                    "type": "String"
+                }
+            ],
+            "context_path": "ActionStatus",
+            "root_object": "",
+            "headers": [],
+            "unique_key": ""
+        },
+        {
+            "name": "get-a-list-of-abnormal-cases-identified-by-abnormal-security",
+            "path": "cases",
+            "method": "get",
+            "description": "Get a list of Abnormal cases identified by Abnormal Security",
+            "arguments": [
+                {
+                    "name": "filter",
+                    "description": "Value must be of the format filter={FILTER KEY} gte YYYY-MM-DDTHH:MM:SSZ lte YYYY-MM-DDTHH:MM:SSZ. A {FILTER KEY} must be specified, and currently the only key that is supported for /cases is lastModifiedTime. At least 1 of gte/lte must be specified, with a datetime string following the YYYY-MM-DDTHH:MM:SSZ format.",
+                    "required": false,
+                    "default": "",
+                    "in": "query",
+                    "ref": "",
+                    "type": "string",
+                    "options": null,
+                    "properties": {}
+                },
+                {
+                    "name": "pageSize",
+                    "description": "Number of cases that on in each page. Each page of data will have at most pageSize threats. Has no effect if filter is not specified.",
+                    "required": false,
+                    "default": "",
+                    "in": "query",
+                    "ref": "",
+                    "type": "integer",
+                    "options": null,
+                    "properties": {}
+                },
+                {
+                    "name": "pageNumber",
+                    "description": "1-indexed page number to get a particular page of cases. Has no effect if filter is not specified.",
+                    "required": false,
+                    "default": "",
+                    "in": "query",
+                    "ref": "",
+                    "type": "integer",
+                    "options": null,
+                    "properties": {}
+                }
+            ],
+            "outputs": [
+                {
+                    "name": "cases.caseId",
+                    "description": "A unique identifier for this case.",
+                    "type": "String"
+                },
+                {
+                    "name": "cases.severity",
+                    "description": "Description of the severity level for this case.",
+                    "type": "String"
+                },
+                {
+                    "name": "pageNumber",
+                    "description": "The current page number. Will not be be in the response if no filter query  meter is passed in via the request.",
+                    "type": "Number"
+                },
+                {
+                    "name": "nextPageNumber",
+                    "description": "The next page number. Wil not be includedin the response if there are no more pages of data or if  no filter query  meter is passed in via the request",
+                    "type": "Number"
+                }
+            ],
+            "context_path": "inline_response_200_1",
+            "root_object": "",
+            "headers": [],
+            "unique_key": ""
+        },
+        {
+            "name": "get-a-list-of-threats",
+            "path": "threats",
+            "method": "get",
+            "description": "Get a list of threats",
+            "arguments": [
+                {
+                    "name": "filter",
+                    "description": "Value must be of the format filter={FILTER KEY} gte YYYY-MM-DDTHH:MM:SSZ lte YYYY-MM-DDTHH:MM:SSZ. A {FILTER KEY} must be specified, and currently the only key that is supported for /threats is receivedTime. At least 1 of gte/lte must be specified, with a datetime string following the YYYY-MM-DDTHH:MM:SSZ format.",
+                    "required": false,
+                    "default": "",
+                    "in": "query",
+                    "ref": "",
+                    "type": "string",
+                    "options": null,
+                    "properties": {}
+                },
+                {
+                    "name": "pageSize",
+                    "description": "Number of threats that on in each page. Each page of data will have at most pageSize threats. Has no effect if filter is not specified.",
+                    "required": false,
+                    "default": "",
+                    "in": "query",
+                    "ref": "",
+                    "type": "integer",
+                    "options": null,
+                    "properties": {}
+                },
+                {
+                    "name": "pageNumber",
+                    "description": "1-indexed page number to get a particular page of threats. Has no effect if filter is not specified.",
+                    "required": false,
+                    "default": "",
+                    "in": "query",
+                    "ref": "",
+                    "type": "integer",
+                    "options": null,
+                    "properties": {}
+                }
+            ],
+            "outputs": [
+                {
+                    "name": "threats.threatId",
+                    "description": "An id which maps to a threat campaign. A threat campaign might be received by multiple users.",
+                    "type": "String"
+                },
+                {
+                    "name": "pageNumber",
+                    "description": "The current page number. Will not be be in the response if no filter query  meter is passed in via the request.",
+                    "type": "Number"
+                },
+                {
+                    "name": "nextPageNumber",
+                    "description": "The next page number. Wil not be includedin the response if there are no more pages of data or if  no filter query  meter is passed in via the request",
+                    "type": "Number"
+                }
+            ],
+            "context_path": "inline_response_200",
+            "root_object": "",
+            "headers": [],
+            "unique_key": ""
+        },
+        {
+            "name": "get-details-of-a-threat",
+            "path": "threats/{threatId}",
+            "method": "get",
+            "description": "Get details of a threat",
+            "arguments": [
+                {
+                    "name": "threatId",
+                    "description": "A UUID representing the threat.",
+                    "required": true,
+                    "default": "",
+                    "in": "path",
+                    "ref": "",
+                    "type": "string",
+                    "options": null,
+                    "properties": {}
+                }
+            ],
+            "outputs": [
+                {
+                    "name": "threatId",
+                    "description": "An id which maps to a threat campaign. A threat campaign might be received by multiple users.",
+                    "type": "String"
+                },
+                {
+                    "name": "messages.threatId",
+                    "description": "An id which maps to a threat campaign. A threat campaign might be received by multiple users.",
+                    "type": "String"
+                },
+                {
+                    "name": "messages.abxMessageId",
+                    "description": "A unique identifier for an individual message within a threat (i.e email campaign).",
+                    "type": "Unknown"
+                },
+                {
+                    "name": "messages.abxPortalUrl",
+                    "description": "The URL at which the specific message details are viewable in Abnormal Security's Portal web interface.",
+                    "type": "String"
+                },
+                {
+                    "name": "messages.subject",
+                    "description": "The email subject.",
+                    "type": "String"
+                },
+                {
+                    "name": "messages.fromAddress",
+                    "description": "The email address of the sender.",
+                    "type": "String"
+                },
+                {
+                    "name": "messages.fromName",
+                    "description": "The display name of the sender.",
+                    "type": "String"
+                },
+                {
+                    "name": "messages.toAddresses",
+                    "description": "All the email addresses to which the message was sent, comma-se ted & truncated at 255 chars.",
+                    "type": "String"
+                },
+                {
+                    "name": "messages.recipientAddress",
+                    "description": "the email address of the user who actually received the message.",
+                    "type": "String"
+                },
+                {
+                    "name": "messages.receivedTime",
+                    "description": "The timestamp at which this message arrived.",
+                    "type": "String"
+                },
+                {
+                    "name": "messages.sentTime",
+                    "description": "The timestamp at which this message was sent.",
+                    "type": "String"
+                },
+                {
+                    "name": "messages.internetMessageId",
+                    "description": "The internet message ID, per RFC 822",
+                    "type": "String"
+                },
+                {
+                    "name": "messages.autoRemediated",
+                    "description": "Abnormal has automatically detected and remediated this message from the user's mailbox.",
+                    "type": "Boolean"
+                },
+                {
+                    "name": "messages.postRemediated",
+                    "description": "Email campaigns that were remediated at a later time, after landing in user's mailbox.",
+                    "type": "Boolean"
+                },
+                {
+                    "name": "messages.attackType",
+                    "description": "The type of threat the message represents.",
+                    "type": "String"
+                },
+                {
+                    "name": "messages.attackStrategy",
+                    "description": "",
+                    "type": "String"
+                },
+                {
+                    "name": "messages.returnPath",
+                    "description": "",
+                    "type": "String"
+                },
+                {
+                    "name": "messages.senderIpAddress",
+                    "description": "IP address of sender.",
+                    "type": "String"
+                },
+                {
+                    "name": "messages.impersonatedParty",
+                    "description": "Impersonated party, if any.",
+                    "type": "String"
+                },
+                {
+                    "name": "messages.attackVector",
+                    "description": "The attack medium.",
+                    "type": "String"
+                },
+                {
+                    "name": "messages.remediationTimestamp",
+                    "description": "The timestamp at which this message was remediated, or empty if it has not been remediated.",
+                    "type": "String"
+                },
+                {
+                    "name": "messages.isRead",
+                    "description": "Whether an email has been read",
+                    "type": "Boolean"
+                },
+                {
+                    "name": "messages.attackedParty",
+                    "description": "The party that was targeted by an attack.",
+                    "type": "String"
+                }
+            ],
+            "context_path": "ThreatDetails",
+            "root_object": "",
+            "headers": [],
+            "unique_key": "threatId"
+        },
+        {
+            "name": "get-details-of-an-abnormal-case",
+            "path": "cases/{caseId}",
+            "method": "get",
+            "description": "Get details of an Abnormal case",
+            "arguments": [
+                {
+                    "name": "caseId",
+                    "description": "A string representing the case",
+                    "required": true,
+                    "default": "",
+                    "in": "path",
+                    "ref": "",
+                    "type": "string",
+                    "options": null,
+                    "properties": {}
+                }
+            ],
+            "outputs": [
+                {
+                    "name": "caseId",
+                    "description": "A unique identifier for this case.",
+                    "type": "String"
+                },
+                {
+                    "name": "severity",
+                    "description": "Description of the severity level for this case.",
+                    "type": "String"
+                },
+                {
+                    "name": "affectedEmployee",
+                    "description": "Which employee this case pertains to.",
+                    "type": "String"
+                },
+                {
+                    "name": "firstObserved",
+                    "description": "First time suspicious behavior was observed.",
+                    "type": "String"
+                }
+            ],
+            "context_path": "AbnormalCaseDetails",
+            "root_object": "",
+            "headers": [],
+            "unique_key": ""
+        },
+        {
+            "name": "get-the-latest-threat-intel-feed",
+            "path": "threat-intel",
+            "method": "get",
+            "description": "Get the latest threat intel feed.",
+            "arguments": [],
+            "outputs": [],
+            "context_path": "",
+            "root_object": "",
+            "headers": [],
+            "unique_key": ""
+        },
+        {
+            "name": "manage-a-threat-identified-by-abnormal-security",
+            "path": "threats/{threatId}",
+            "method": "post",
+            "description": "Manage a Threat identified by Abnormal Security",
+            "arguments": [
+                {
+                    "name": "threatId",
+                    "description": "A UUID representing the threat.",
+                    "required": true,
+                    "default": "",
+                    "in": "path",
+                    "ref": "",
+                    "type": "string",
+                    "options": null,
+                    "properties": {}
+                }
+            ],
+            "outputs": [],
+            "context_path": "",
+            "root_object": "",
+            "headers": [],
+            "unique_key": ""
+        },
+        {
+            "name": "manage-an-abnormal-case",
+            "path": "cases/{caseId}",
+            "method": "post",
+            "description": "Manage an Abnormal Case.",
+            "arguments": [
+                {
+                    "name": "caseId",
+                    "description": "A string representing the case",
+                    "required": true,
+                    "default": "",
+                    "in": "path",
+                    "ref": "",
+                    "type": "string",
+                    "options": null,
+                    "properties": {}
+                }
+            ],
+            "outputs": [],
+            "context_path": "",
+            "root_object": "",
+            "headers": [],
+            "unique_key": ""
+        },
+        {
+            "name": "submit-an-inquiry-to-request-a-report-on-misjudgement-by-abnormal-security",
+            "path": "inquiry",
+            "method": "post",
+            "description": "Submit an Inquiry to request a report on misjudgement by Abnormal Security",
+            "arguments": [],
+            "outputs": [],
+            "context_path": "",
+            "root_object": "",
+            "headers": [],
+            "unique_key": ""
+        }
+    ],
+    "code_type": "python",
+    "code_subtype": "python3",
+    "docker_image": "demisto/python3:3.9.5.21272"
+}

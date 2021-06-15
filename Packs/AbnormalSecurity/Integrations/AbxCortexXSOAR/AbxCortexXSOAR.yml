@@ -1,0 +1,288 @@
+category: Utilities
+commonfields:
+  id: Abnormal Security Client API
+  version: -1
+configuration:
+- defaultvalue: https://api.abnormalplatform.com/v1
+  display: Server URL (e.g. https://api.abnormalplatform.com/v1)
+  name: url
+  required: true
+  type: 0
+- defaultvalue: ''
+  display: API Key
+  name: api_key
+  required: true
+  type: 4
+- defaultvalue: ''
+  display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- defaultvalue: ''
+  display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+description: "This is the specification for Abnormal Security Client API which can\
+  \ be used for managing security threats detected by Abnormal Security.  h2 Who is\
+  \ this API for? /h2  This API is for managing threats to an organization identified\
+  \ by Abnormal Security. The organization should be integrated with Abnormal Security\
+  \ and enabled for real-time detection of malicious emails.  h2  Integration Steps\
+  \  /h2   h3  Step 1: Generating the authentication token  /h3   Reach out to your\
+  \ Account Manager who can configure your access token and provide it to you securely.\
+  \ You will use this token to view and modify your Abnormal-detected threats and\
+  \ cases.  Keep the token safe, as it grants access to sensitive threat data related\
+  \ to your organization. Store it in a secure place, such as an encrypted password\
+  \ vault, and do not share it unless absolutely necessary. If you feel that the token\
+  \ has been compromised, please contact your Account Manager immediately.  Once obtained,\
+  \ the token can be used in a request from any HTTP client, such as cURL:  pre  curl\
+  \ -H \"Authorization: Bearer     ACCESS_TOKEN   \" https://api.abnormalplatform.com/v1/threats\
+  \  /pre    h3  Step 2: IP whitelisting  /h3   IP whitelisting ensures that API access\
+  \ is only possible from IP addresses explicitly belonging to your organization.\
+  \ It prevents users from unauthorized networks to access your Abnormal SOAR data.\
+  \ This second layer of security helps keep your data safe from unauthorized users,\
+  \ and protects you in the event of a token compromise.  To whitelist your organization\u2019\
+  s IPs, please provide your Account Manager with specific IPv4 / IPv6 addresses,\
+  \ or a range of addresses using a  a href=\"https://www.ipaddressguide.com/cidr\"\
+  \  CIDR block /a . "
+display: Abnormal Security Client API
+name: Abnormal Security Client API
+script:
+  commands:
+  - arguments:
+    - description: A string representing the case
+      isArray: false
+      name: caseId
+      required: true
+    - description: A UUID representing the action id for a case
+      isArray: false
+      name: actionId
+      required: true
+    description: Check the status of an action requested on a case.
+    name: abxcortexxsoar-check-the-status-of-an-action-requested-on-a-case
+    outputs:
+    - contextPath: AbxCortexXSOAR.ActionStatus.status
+      description: ''
+      type: String
+    - contextPath: AbxCortexXSOAR.ActionStatus.description
+      description: ''
+      type: String
+  - arguments:
+    - description: A UUID representing the threat.
+      isArray: false
+      name: threatId
+      required: true
+    - description: A UUID representing the action id for a threat.
+      isArray: false
+      name: actionId
+      required: true
+    description: Check the status of an action requested on a threat.
+    name: abxcortexxsoar-check-the-status-of-an-action-requested-on-a-threat
+    outputs:
+    - contextPath: AbxCortexXSOAR.ActionStatus.status
+      description: ''
+      type: String
+    - contextPath: AbxCortexXSOAR.ActionStatus.description
+      description: ''
+      type: String
+  - arguments:
+    - description: Value must be of the format filter={FILTER KEY} gte YYYY-MM-DDTHH:MM:SSZ
+        lte YYYY-MM-DDTHH:MM:SSZ. A {FILTER KEY} must be specified, and currently
+        the only key that is supported for /cases is lastModifiedTime. At least 1
+        of gte/lte must be specified, with a datetime string following the YYYY-MM-DDTHH:MM:SSZ
+        format.
+      isArray: false
+      name: filter
+      required: false
+    - description: Number of cases that on in each page. Each page of data will have
+        at most pageSize threats. Has no effect if filter is not specified.
+      isArray: false
+      name: pageSize
+      required: false
+    - description: 1-indexed page number to get a particular page of cases. Has no
+        effect if filter is not specified.
+      isArray: false
+      name: pageNumber
+      required: false
+    description: Get a list of Abnormal cases identified by Abnormal Security
+    name: abxcortexxsoar-get-a-list-of-abnormal-cases-identified-by-abnormal-security
+    outputs:
+    - contextPath: AbxCortexXSOAR.inline_response_200_1.cases.caseId
+      description: A unique identifier for this case.
+      type: String
+    - contextPath: AbxCortexXSOAR.inline_response_200_1.cases.severity
+      description: Description of the severity level for this case.
+      type: String
+    - contextPath: AbxCortexXSOAR.inline_response_200_1.pageNumber
+      description: The current page number. Will not be be in the response if no filter
+        query  meter is passed in via the request.
+      type: Number
+    - contextPath: AbxCortexXSOAR.inline_response_200_1.nextPageNumber
+      description: The next page number. Wil not be includedin the response if there
+        are no more pages of data or if  no filter query  meter is passed in via the
+        request
+      type: Number
+  - arguments:
+    - description: Value must be of the format filter={FILTER KEY} gte YYYY-MM-DDTHH:MM:SSZ
+        lte YYYY-MM-DDTHH:MM:SSZ. A {FILTER KEY} must be specified, and currently
+        the only key that is supported for /threats is receivedTime. At least 1 of
+        gte/lte must be specified, with a datetime string following the YYYY-MM-DDTHH:MM:SSZ
+        format.
+      isArray: false
+      name: filter
+      required: false
+    - description: Number of threats that on in each page. Each page of data will
+        have at most pageSize threats. Has no effect if filter is not specified.
+      isArray: false
+      name: pageSize
+      required: false
+    - description: 1-indexed page number to get a particular page of threats. Has
+        no effect if filter is not specified.
+      isArray: false
+      name: pageNumber
+      required: false
+    description: Get a list of threats
+    name: abxcortexxsoar-get-a-list-of-threats
+    outputs:
+    - contextPath: AbxCortexXSOAR.inline_response_200.threats.threatId
+      description: An id which maps to a threat campaign. A threat campaign might
+        be received by multiple users.
+      type: String
+    - contextPath: AbxCortexXSOAR.inline_response_200.pageNumber
+      description: The current page number. Will not be be in the response if no filter
+        query  meter is passed in via the request.
+      type: Number
+    - contextPath: AbxCortexXSOAR.inline_response_200.nextPageNumber
+      description: The next page number. Wil not be includedin the response if there
+        are no more pages of data or if  no filter query  meter is passed in via the
+        request
+      type: Number
+  - arguments:
+    - description: A UUID representing the threat.
+      isArray: false
+      name: threatId
+      required: true
+    description: Get details of a threat
+    name: abxcortexxsoar-get-details-of-a-threat
+    outputs:
+    - contextPath: AbxCortexXSOAR.ThreatDetails.threatId
+      description: An id which maps to a threat campaign. A threat campaign might
+        be received by multiple users.
+      type: String
+    - contextPath: AbxCortexXSOAR.ThreatDetails.messages.threatId
+      description: An id which maps to a threat campaign. A threat campaign might
+        be received by multiple users.
+      type: String
+    - contextPath: AbxCortexXSOAR.ThreatDetails.messages.abxMessageId
+      description: A unique identifier for an individual message within a threat (i.e
+        email campaign).
+      type: Unknown
+    - contextPath: AbxCortexXSOAR.ThreatDetails.messages.abxPortalUrl
+      description: The URL at which the specific message details are viewable in Abnormal
+        Security's Portal web interface.
+      type: String
+    - contextPath: AbxCortexXSOAR.ThreatDetails.messages.subject
+      description: The email subject.
+      type: String
+    - contextPath: AbxCortexXSOAR.ThreatDetails.messages.fromAddress
+      description: The email address of the sender.
+      type: String
+    - contextPath: AbxCortexXSOAR.ThreatDetails.messages.fromName
+      description: The display name of the sender.
+      type: String
+    - contextPath: AbxCortexXSOAR.ThreatDetails.messages.toAddresses
+      description: All the email addresses to which the message was sent, comma-se
+        ted & truncated at 255 chars.
+      type: String
+    - contextPath: AbxCortexXSOAR.ThreatDetails.messages.recipientAddress
+      description: the email address of the user who actually received the message.
+      type: String
+    - contextPath: AbxCortexXSOAR.ThreatDetails.messages.receivedTime
+      description: The timestamp at which this message arrived.
+      type: String
+    - contextPath: AbxCortexXSOAR.ThreatDetails.messages.sentTime
+      description: The timestamp at which this message was sent.
+      type: String
+    - contextPath: AbxCortexXSOAR.ThreatDetails.messages.internetMessageId
+      description: The internet message ID, per RFC 822
+      type: String
+    - contextPath: AbxCortexXSOAR.ThreatDetails.messages.autoRemediated
+      description: Abnormal has automatically detected and remediated this message
+        from the user's mailbox.
+      type: Boolean
+    - contextPath: AbxCortexXSOAR.ThreatDetails.messages.postRemediated
+      description: Email campaigns that were remediated at a later time, after landing
+        in user's mailbox.
+      type: Boolean
+    - contextPath: AbxCortexXSOAR.ThreatDetails.messages.attackType
+      description: The type of threat the message represents.
+      type: String
+    - contextPath: AbxCortexXSOAR.ThreatDetails.messages.attackStrategy
+      description: ''
+      type: String
+    - contextPath: AbxCortexXSOAR.ThreatDetails.messages.returnPath
+      description: ''
+      type: String
+    - contextPath: AbxCortexXSOAR.ThreatDetails.messages.senderIpAddress
+      description: IP address of sender.
+      type: String
+    - contextPath: AbxCortexXSOAR.ThreatDetails.messages.impersonatedParty
+      description: Impersonated party, if any.
+      type: String
+    - contextPath: AbxCortexXSOAR.ThreatDetails.messages.attackVector
+      description: The attack medium.
+      type: String
+    - contextPath: AbxCortexXSOAR.ThreatDetails.messages.remediationTimestamp
+      description: The timestamp at which this message was remediated, or empty if
+        it has not been remediated.
+      type: String
+    - contextPath: AbxCortexXSOAR.ThreatDetails.messages.isRead
+      description: Whether an email has been read
+      type: Boolean
+    - contextPath: AbxCortexXSOAR.ThreatDetails.messages.attackedParty
+      description: The party that was targeted by an attack.
+      type: String
+  - arguments:
+    - description: A string representing the case
+      isArray: false
+      name: caseId
+      required: true
+    description: Get details of an Abnormal case
+    name: abxcortexxsoar-get-details-of-an-abnormal-case
+    outputs:
+    - contextPath: AbxCortexXSOAR.AbnormalCaseDetails.caseId
+      description: A unique identifier for this case.
+      type: String
+    - contextPath: AbxCortexXSOAR.AbnormalCaseDetails.severity
+      description: Description of the severity level for this case.
+      type: String
+    - contextPath: AbxCortexXSOAR.AbnormalCaseDetails.affectedEmployee
+      description: Which employee this case pertains to.
+      type: String
+    - contextPath: AbxCortexXSOAR.AbnormalCaseDetails.firstObserved
+      description: First time suspicious behavior was observed.
+      type: String
+  - description: Get the latest threat intel feed.
+    name: abxcortexxsoar-get-the-latest-threat-intel-feed
+  - arguments:
+    - description: A UUID representing the threat.
+      isArray: false
+      name: threatId
+      required: true
+    description: Manage a Threat identified by Abnormal Security
+    name: abxcortexxsoar-manage-a-threat-identified-by-abnormal-security
+  - arguments:
+    - description: A string representing the case
+      isArray: false
+      name: caseId
+      required: true
+    description: Manage an Abnormal Case.
+    name: abxcortexxsoar-manage-an-abnormal-case
+  - description: Submit an Inquiry to request a report on misjudgement by Abnormal
+      Security
+    name: abxcortexxsoar-submit-an-inquiry-to-request-a-report-on-misjudgement-by-abnormal-security
+  dockerimage: demisto/python3:3.9.5.21272
+  isfetch: false
+  script: ''
+  subtype: python3
+  type: python
