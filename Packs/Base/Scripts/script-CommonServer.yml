@@ -2138,7 +2138,7 @@ script: >-
       }
       if (isDemistoVersionGE('6.2.0')) {
           var integrationContext = getIntegrationContext(sync);
-          if (withVersion) {
+          if (!sync || withVersion) {
               return integrationContext;
           } else {
               return integrationContext.context;
