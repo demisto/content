@@ -3,6 +3,8 @@ import io
 
 import dateparser
 import pytest
+from freezegun import freeze_time
+
 import demistomock as demisto
 
 
@@ -258,15 +260,33 @@ def test_crossproc(data_str, expected):
     res = crossproc_complete(data_str).format()
     assert res == expected
 
-
-def test_fetch_incidents(mocker):
+@freeze_time("2021-03-14T13:34:14.758295Z")
+def test_fetch_incidents_first_fetch(mocker):
+    """
+        Given
+            fetch incidents command
+        When
+            mock the Client's http_request.
+        Then
+            validate fetch incidents command using the Client
+    """
     from CarbonBlackResponseV2 import fetch_incidents, Client
-    # last_run = {'lastRun': '2018-10-24T14:13:20+00:00'}
     alerts = util_load_json('test_data/commands_test_data.json').get('fetch_incident_data')
     client = Client(base_url="url", apitoken="api_key", use_ssl=True, use_proxy=False)
     mocker.patch.object(Client, 'get_alerts', return_value=alerts)
-    first_fetch_time = dateparser.parse(demisto.params().get('first_fetch', '3 days'))
-    first_fetch_timestamp = int(first_fetch_time.timestamp()) if first_fetch_time else None
-    _, incidents = fetch_incidents(client, last_run={}, first_fetch_time=first_fetch_timestamp, max_results='3')
+    first_fetch_time = '7 days'
+    _, incidents = fetch_incidents(client, last_run={}, first_fetch_time=first_fetch_time, max_results='3')
     assert len(incidents) == 3
     assert incidents[0].get('name') == 'Carbon Black EDR: 1 svchost.exe'
+
+@freeze_time("2021-03-16T13:34:14.758295Z")
+def test_fetch_incidents(mocker):
+    from CarbonBlackResponseV2 import fetch_incidents, Client
+    last_run = {'last_fetch': dateparser.parse('2021-03-12T14:13:20+00:00').timestamp()}
+    alerts = util_load_json('test_data/commands_test_data.json').get('fetch_incident_data')
+    client = Client(base_url="url", apitoken="api_key", use_ssl=True, use_proxy=False)
+    mocker.patch.object(Client, 'get_alerts', return_value=alerts)
+    first_fetch_time = '7 days'
+    _, incidents = fetch_incidents(client, last_run=last_run, first_fetch_time=first_fetch_time, max_results='3')
+    assert len(incidents) == 1
+    assert incidents[0].get('name') == 'Carbon Black EDR: 2 svchost.exe'

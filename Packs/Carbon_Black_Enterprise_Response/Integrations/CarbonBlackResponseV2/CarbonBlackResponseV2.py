@@ -700,8 +700,7 @@ def fetch_incidents(client: Client, max_results: int, last_run: dict, first_fetc
 
     # How much time before the first fetch to retrieve incidents
     first_fetch_time = dateparser.parse(first_fetch_time)
-    first_fetch_timestamp_ms = int(first_fetch_time.timestamp() * 1000) if first_fetch_time else None
-
+    first_fetch_timestamp_ms = int(first_fetch_time.timestamp()) if first_fetch_time else None
     last_fetch = last_run.get('last_fetch', None)
     # Handle first fetch time
     if last_fetch is None:
@@ -726,7 +725,7 @@ def fetch_incidents(client: Client, max_results: int, last_run: dict, first_fetc
 
     for alert in alerts:
         incident_created_time = dateparser.parse(alert.get('created_time'))
-        incident_created_time_ms = int(incident_created_time.timestamp()) * 1000 if incident_created_time else '0'
+        incident_created_time_ms = int(incident_created_time.timestamp()) if incident_created_time else '0'
 
         # to prevent duplicates, adding incidents with creation_time > last fetched incident
         if last_fetch:
@@ -757,10 +756,10 @@ def fetch_incidents(client: Client, max_results: int, last_run: dict, first_fetc
     return next_run, incidents
 
 
-def test_module(client: Client) -> str:
+def test_module(client: Client, isFetched: bool) -> str:
     try:
         client.get_processes(limit='5', allow_empty=True)
-        if demisto.params().get('isFetch'):
+        if isFetched:
             client.get_alerts(allow_empty_params=False, limit='5')
         return 'ok'
     except DemistoException as e:
@@ -814,7 +813,7 @@ def main() -> None:
                                          }
 
         if command == 'test-module':
-            result = test_module(client)
+            result = test_module(client, params.get('isFetch'))
             return_results(result)
 
         elif command == 'fetch-incidents':

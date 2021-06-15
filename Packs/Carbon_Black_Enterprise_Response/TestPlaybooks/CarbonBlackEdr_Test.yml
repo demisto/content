@@ -1,8 +1,9 @@
 id: CarbonBlackEdr_Test
-version: 58
+version: -1
 vcShouldKeepItemLegacyProdMachine: false
 name: CarbonBlackEdr_Test
 starttaskid: "0"
+fromversion: 5.0.0
 tasks:
   "0":
     id: "0"
