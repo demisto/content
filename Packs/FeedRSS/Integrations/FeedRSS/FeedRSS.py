@@ -6,11 +6,11 @@ import feedparser
 from CommonServerPython import *
 from bs4 import BeautifulSoup
 
-html_tags = ['p', 'table', 'ul', 'ol', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6']
+HTML_TAGS = ['p', 'table', 'ul', 'ol', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6']
 
 
 class Client(BaseClient):
-    """Client for RSS Feed - gets STIX reports from the website
+    """Client for RSS Feed - gets Reports from the website
     Attributes:
         server_url(str): The RSS URL.
         use_ssl: Whether to use ssl.
@@ -43,6 +43,7 @@ class Client(BaseClient):
                     text = self.get_url_content(indicator.get('link'))
                     indicator_obj = {
                         "type": 'Report',
+                        "Reliability": "F - Reliability cannot be judged",
                         "value": indicator.get('title'),
                         "rawJSON": {'value': indicator, 'type': 'Report', "firstseenbysource": published_iso},
                         "fields": {
@@ -60,11 +61,11 @@ class Client(BaseClient):
 
     def get_url_content(self, link):
         response_url = self._http_request(method='GET', full_url=link, resp_type='str')
-        report_content = ''
-        # nested_tags = ['ol', 'ul']  # , 'table'] TODO: add
+        report_content = 'This is a dumped content of the article. Use the link under Publications field to read ' \
+                         'the full article. \n\n'
         soup = BeautifulSoup(response_url.text, "html.parser")
         for tag in soup.find_all():
-            if tag.name in html_tags:
+            if tag.name in HTML_TAGS:
                 for string in tag.stripped_strings:
                     report_content += ' ' + string
             #     if tag.name in nested_tags:
@@ -79,7 +80,13 @@ class Client(BaseClient):
 
 def get_indicators(client: Client, args: dict) -> CommandResults:
     limit = int(args.get('limit', 10))
-    hr_ = tableToMarkdown(name='RSS Feed:', t=client.parsed_indicators[:limit], headers=headers)
+    parsed_indicators = client.parsed_indicators[:limit]
+    parsed_for_hr = [{'Title': indicator.get('value'),
+                      'Link': indicator.get('fields').get('publications')[0].get('link'),
+                      'Type': indicator.get('type')}
+                     for indicator in parsed_indicators]
+    headers = ['Title', 'Link', 'Type']
+    hr_ = tableToMarkdown(name='RSS Feed:', t=parsed_for_hr, headers=headers)
     return CommandResults(
         readable_output=hr_,
         raw_response=client.feed_data
@@ -113,35 +120,6 @@ def main():
     except Exception as err:
         demisto.error(traceback.format_exc())  # print the traceback
         return_error(f"Failed to execute {command} command.\nError:\n{str(err)}")
-
-# def fetch_indicators(client: Client) -> list:
-    # last_run = demisto.getLastRun()
-    # last_fetch = last_run.get('last_fetch')
-    #
-    # if last_fetch is None:
-    #     last_fetch = datetime(1970, 1, 1)
-    # else:
-    #     last_fetch = datetime.strptime(last_fetch, '%Y-%m-%dT%H:%M:%S.%f')
-
-    # for entry in reversed(client.feed_data.entries):
-    #
-    #     date_parsed = email.utils.parsedate(entry.published)
-    #     if date_parsed:
-    #         dt = datetime.fromtimestamp(mktime(date_parsed))
-    #
-    #         if dt > last_fetch:
-    #             incident = {
-    #                 'name': entry.title,
-    #                 'occurred': dt.isoformat(),
-    #                 'rawJSON': json.dumps(entry)
-    #             }
-    #
-    #             indicators.append(incident)
-    #
-    # dtnow = datetime.now().strftime('%Y-%m-%dT%H:%M:%S.%f')
-    # demisto.setLastRun({'last_fetch': dtnow})
-    #
-    # return client.parsed_indicators
 
 
 if __name__ in ('builtin__', 'builtins', '__main__'):

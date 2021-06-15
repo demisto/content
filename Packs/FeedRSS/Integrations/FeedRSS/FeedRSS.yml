@@ -4,6 +4,7 @@ commonfields:
   version: -1
 configuration:
 - display: Feed URL
+  description: The RSS URL
   name: server_url
   required: true
   type: 0
