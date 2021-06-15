@@ -148,8 +148,9 @@ def get_reg_results(reg, type_to_keys):
 
 
 def main():
-    reg = get_registry(demisto.args()['entryID'])
-    registry_data = demisto.args()['registryData']
+    args = demisto.args()
+    reg = get_registry(args.get('entryID'))
+    registry_data = args.get('registryData')
     if registry_data == 'All':
         registry_types = REGISTRY_TYPE_TO_KEY.keys()
     elif registry_data == 'None':
@@ -159,7 +160,7 @@ def main():
         registry_types = [x for x in registry_types if x in REGISTRY_TYPE_TO_KEY]  # type: ignore[assignment]
 
     registry_types_to_keys = {k: REGISTRY_TYPE_TO_KEY[k] for k in registry_types}
-    custom_reg_paths = demisto.args().get('customRegistryPaths')
+    custom_reg_paths = args.get('customRegistryPaths')
     if custom_reg_paths:
         for reg_path in argToList(custom_reg_paths):
             reg_path = reg_path.strip()

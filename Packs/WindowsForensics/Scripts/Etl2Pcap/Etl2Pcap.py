@@ -23,7 +23,7 @@ def get_file_name(entry_id):
 
 
 def main():
-    entry_id = demisto.args()['EntryID']
+    entry_id = demisto.args().get('EntryID')
     res = demisto.getFilePath(entry_id)
     if not res or res.get('path') is None:
         return_error("Cannot find file path for entry ID: " + entry_id)
