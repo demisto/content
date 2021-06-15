@@ -22,7 +22,7 @@
  "system": false,
  "type": "markdown",
  "unmapped": false,
- "unsearchable": false,
+ "unsearchable": true,
  "useAsKpi": false,
  "version": -1,
  "fromVersion": "5.0.0"
