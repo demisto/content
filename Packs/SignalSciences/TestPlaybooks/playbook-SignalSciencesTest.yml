@@ -1,14 +1,15 @@
 id: SignalSciences-Test
 version: -1
+fromversion: 5.0.0
 name: SignalSciences-Test
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 3e66b865-a6e4-4379-8d41-fcfe5bea4d84
+    taskid: 49a0e644-55be-4440-8ea3-d0cdb067c084
     type: start
     task:
-      id: 3e66b865-a6e4-4379-8d41-fcfe5bea4d84
+      id: 49a0e644-55be-4440-8ea3-d0cdb067c084
       version: -1
       name: ""
       iscommand: false
@@ -29,12 +30,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: 53db8d7a-cd14-45c9-8d56-5543af771844
+    taskid: dfcce3a7-d1d3-4e2f-8842-04dba4c9b377
     type: regular
     task:
-      id: 53db8d7a-cd14-45c9-8d56-5543af771844
+      id: dfcce3a7-d1d3-4e2f-8842-04dba4c9b377
       version: -1
       name: Add ip to blacklist
       script: '|||sigsci-blacklist-add-ip'
@@ -45,13 +48,12 @@ tasks:
       '#none#':
       - "4"
     scriptarguments:
-      expires: {}
       ip:
         simple: 8.3.3.3
       note:
         simple: test blacklist
       siteName:
-        simple: demisto
+        simple: node_goat
     separatecontext: false
     view: |-
       {
@@ -65,12 +67,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: 32a45e66-c07e-4149-8b7e-b0036cc09f0f
+    taskid: 50a5122a-9632-43e1-8ea2-57e854d433ab
     type: regular
     task:
-      id: 32a45e66-c07e-4149-8b7e-b0036cc09f0f
+      id: 50a5122a-9632-43e1-8ea2-57e854d433ab
       version: -1
       name: Get blacklist
       script: '|||sigsci-get-blacklist'
@@ -82,7 +86,7 @@ tasks:
       - "52"
     scriptarguments:
       siteName:
-        simple: demisto
+        simple: node_goat
     separatecontext: false
     view: |-
       {
@@ -96,12 +100,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: dd529a0e-a522-4126-8961-ba4b75e07a89
+    taskid: 1a80e9bd-3889-4355-8982-72b175a4f40f
     type: regular
     task:
-      id: dd529a0e-a522-4126-8961-ba4b75e07a89
+      id: 1a80e9bd-3889-4355-8982-72b175a4f40f
       version: -1
       name: Remove IP from blacklist
       script: '|||sigsci-blacklist-remove-ip'
@@ -115,7 +121,7 @@ tasks:
       IP:
         simple: ${SigSciences.Corp.Site.Blacklist.Source}
       siteName:
-        simple: demisto
+        simple: node_goat
     separatecontext: false
     view: |-
       {
@@ -129,12 +135,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: 724835f6-ca7a-49f2-8911-1c54ad2584fb
+    taskid: e7042dbe-6891-4943-87f8-82830f622e65
     type: regular
     task:
-      id: 724835f6-ca7a-49f2-8911-1c54ad2584fb
+      id: e7042dbe-6891-4943-87f8-82830f622e65
       version: -1
       name: Add ip to whitelist
       script: '|||sigsci-whitelist-add-ip'
@@ -145,13 +153,12 @@ tasks:
       '#none#':
       - "7"
     scriptarguments:
-      expires: {}
       ip:
         simple: 8.3.3.3
       note:
         simple: test adding ip to whitelist
       siteName:
-        simple: demisto
+        simple: node_goat
     separatecontext: false
     view: |-
       {
@@ -165,12 +172,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    taskid: 4bb2a80e-d007-445e-8432-5cb9ae22db1f
+    taskid: 55798587-f4e8-45b9-86e7-7398b77b04ce
     type: regular
     task:
-      id: 4bb2a80e-d007-445e-8432-5cb9ae22db1f
+      id: 55798587-f4e8-45b9-86e7-7398b77b04ce
       version: -1
       name: Get whitelist
       script: '|||sigsci-get-whitelist'
@@ -182,7 +191,7 @@ tasks:
       - "63"
     scriptarguments:
       siteName:
-        simple: demisto
+        simple: node_goat
     separatecontext: false
     view: |-
       {
@@ -196,12 +205,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: 12b9c83d-5189-454e-8ff4-aa4e5044ca26
+    taskid: df33e137-bd62-4559-8d59-d37c15c55b94
     type: regular
     task:
-      id: 12b9c83d-5189-454e-8ff4-aa4e5044ca26
+      id: df33e137-bd62-4559-8d59-d37c15c55b94
       version: -1
       name: Remove IP from whitelist
       script: '|||sigsci-whitelist-remove-ip'
@@ -215,7 +226,7 @@ tasks:
       IP:
         simple: ${SigSciences.Corp.Site.Whitelist.Source}
       siteName:
-        simple: demisto
+        simple: node_goat
     separatecontext: false
     view: |-
       {
@@ -229,12 +240,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    taskid: 5db77826-38cc-4511-8150-2e00e8a3c1d8
+    taskid: f0dca8f9-5f94-4887-8463-2f9d121c0b73
     type: regular
     task:
-      id: 5db77826-38cc-4511-8150-2e00e8a3c1d8
+      id: f0dca8f9-5f94-4887-8463-2f9d121c0b73
       version: -1
       name: Delete Context
       scriptName: DeleteContext
@@ -250,10 +263,6 @@ tasks:
     scriptarguments:
       all:
         simple: "yes"
-      index: {}
-      key: {}
-      keysToKeep: {}
-      subplaybook: {}
     separatecontext: false
     view: |-
       {
@@ -267,12 +276,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "10":
     id: "10"
-    taskid: 75fa0e0c-fbb8-4b27-8fda-ea9792463510
+    taskid: 2140ee46-02cd-4c20-8d2a-c01874ac880e
     type: regular
     task:
-      id: 75fa0e0c-fbb8-4b27-8fda-ea9792463510
+      id: 2140ee46-02cd-4c20-8d2a-c01874ac880e
       version: -1
       name: Add alert
       script: '|||sigsci-add-alert'
@@ -292,7 +303,7 @@ tasks:
       long_name:
         simple: demisto-test
       siteName:
-        simple: test
+        simple: node_goat
       tag_name:
         simple: USERAGENT
       threshold:
@@ -310,12 +321,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "11":
     id: "11"
-    taskid: 500e5a1a-1386-46e0-8ab5-9effc4c9f508
+    taskid: 2be3bf87-329d-4fca-8002-045e87ad2cf7
     type: regular
     task:
-      id: 500e5a1a-1386-46e0-8ab5-9effc4c9f508
+      id: 2be3bf87-329d-4fca-8002-045e87ad2cf7
       version: -1
       name: Get alerts
       script: '|||sigsci-get-alert'
@@ -329,7 +342,7 @@ tasks:
       alert_id:
         simple: ${SigSciences.Corp.Site.Alert.ID}
       siteName:
-        simple: test
+        simple: node_goat
     separatecontext: false
     view: |-
       {
@@ -343,12 +356,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "12":
     id: "12"
-    taskid: c6496ba5-3f76-4a96-8b71-ea566dbcf2c0
+    taskid: df9abb3b-5f47-44b0-844b-63e5cc5f527b
     type: regular
     task:
-      id: c6496ba5-3f76-4a96-8b71-ea566dbcf2c0
+      id: df9abb3b-5f47-44b0-844b-63e5cc5f527b
       version: -1
       name: Update alert
       script: '|||sigsci-update-alert'
@@ -368,9 +383,9 @@ tasks:
       interval:
         simple: "1"
       long_name:
-        simple: demisto-test-alert-2
+        simple: node_goat-test-alert-2
       siteName:
-        simple: test
+        simple: node_goat
       tag_name:
         simple: USERAGENT
       threshold:
@@ -388,12 +403,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "13":
     id: "13"
-    taskid: 2ff2f0b8-be2a-4121-8ea8-8d11e7b6553a
+    taskid: ade46ea1-d4f0-43e6-871d-3da7e30ff5a6
     type: regular
     task:
-      id: 2ff2f0b8-be2a-4121-8ea8-8d11e7b6553a
+      id: ade46ea1-d4f0-43e6-871d-3da7e30ff5a6
       version: -1
       name: Get updated alert
       script: '|||sigsci-get-alert'
@@ -407,7 +424,7 @@ tasks:
       alert_id:
         simple: ${SigSciences.Corp.Site.Alert.ID}
       siteName:
-        simple: test
+        simple: node_goat
     separatecontext: false
     view: |-
       {
@@ -421,12 +438,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "14":
     id: "14"
-    taskid: ad306f49-310e-4acd-8fea-44f264b4ceb5
+    taskid: 4568db69-b794-4065-872a-432e05d9e688
     type: condition
     task:
-      id: ad306f49-310e-4acd-8fea-44f264b4ceb5
+      id: 4568db69-b794-4065-872a-432e05d9e688
       version: -1
       name: Verify alert has been updated
       type: condition
@@ -459,12 +478,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "15":
     id: "15"
-    taskid: 6e1ae0fb-3e2a-4fcf-8ec3-2282fc64d9d5
+    taskid: 11360e2f-f719-4108-8aab-532df2e54e23
     type: regular
     task:
-      id: 6e1ae0fb-3e2a-4fcf-8ec3-2282fc64d9d5
+      id: 11360e2f-f719-4108-8aab-532df2e54e23
       version: -1
       name: Delete alert
       script: '|||sigsci-delete-alert'
@@ -478,7 +499,7 @@ tasks:
       alert_id:
         simple: ${SigSciences.Corp.Site.Alert.ID}
       siteName:
-        simple: test
+        simple: node_goat
     separatecontext: false
     view: |-
       {
@@ -492,12 +513,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "16":
     id: "16"
-    taskid: 42c66e85-acd1-4de7-8ea7-d264f2af613f
+    taskid: d351128f-8013-40da-8a8a-00f0017b71f8
     type: title
     task:
-      id: 42c66e85-acd1-4de7-8ea7-d264f2af613f
+      id: d351128f-8013-40da-8a8a-00f0017b71f8
       version: -1
       name: Test blacklist and whitelist
       type: title
@@ -519,12 +542,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "17":
     id: "17"
-    taskid: 59da0653-953d-40ac-80a4-dd17fccb7654
+    taskid: c0991ddb-0a11-4a16-89f7-5d5a33f23e31
     type: title
     task:
-      id: 59da0653-953d-40ac-80a4-dd17fccb7654
+      id: c0991ddb-0a11-4a16-89f7-5d5a33f23e31
       version: -1
       name: Test alerts
       type: title
@@ -546,12 +571,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "18":
     id: "18"
-    taskid: 408289c9-83b2-473f-80e0-d963fdc1dc78
+    taskid: 5fd74439-9e0a-4305-8fc1-c6310439aa5f
     type: title
     task:
-      id: 408289c9-83b2-473f-80e0-d963fdc1dc78
+      id: 5fd74439-9e0a-4305-8fc1-c6310439aa5f
       version: -1
       name: Test lists
       type: title
@@ -573,12 +600,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "19":
     id: "19"
-    taskid: de0b84f5-0dc0-47bb-8142-075f65f28a36
+    taskid: 5aa7daf0-76cf-4772-8ba6-5cc7594c278f
     type: regular
     task:
-      id: de0b84f5-0dc0-47bb-8142-075f65f28a36
+      id: 5aa7daf0-76cf-4772-8ba6-5cc7594c278f
       version: -1
       name: Create site list
       script: '|||sigsci-create-site-list'
@@ -589,7 +618,6 @@ tasks:
       '#none#':
       - "20"
     scriptarguments:
-      description: {}
       entries_list:
         simple: 1.2.3.4,5.6.7.8
       list_name:
@@ -597,13 +625,13 @@ tasks:
       list_type:
         simple: IP
       siteName:
-        simple: test
+        simple: node_goat
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 780,
-          "y": 1675
+          "x": 790,
+          "y": 1260
         }
       }
     note: false
@@ -611,12 +639,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "20":
     id: "20"
-    taskid: 09c49f17-f953-4707-8131-f4363a822070
+    taskid: 475ea121-1180-41d9-89d8-8f4c76b72c73
     type: regular
     task:
-      id: 09c49f17-f953-4707-8131-f4363a822070
+      id: 475ea121-1180-41d9-89d8-8f4c76b72c73
       version: -1
       name: Get site list
       script: '|||sigsci-get-site-list'
@@ -628,15 +658,15 @@ tasks:
       - "21"
     scriptarguments:
       list_id:
-        simple: ${SigSciences.Corp.Site.List.ID}
+        simple: site.test-site-list
       siteName:
-        simple: test
+        simple: node_goat
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 780,
-          "y": 1885
+          "x": 790,
+          "y": 1440
         }
       }
     note: false
@@ -644,12 +674,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "21":
     id: "21"
-    taskid: dd970728-5470-4f18-8ce1-a582ce8c3525
+    taskid: 03e7440d-01a1-4ec1-8c80-fa430c4f4e27
     type: regular
     task:
-      id: dd970728-5470-4f18-8ce1-a582ce8c3525
+      id: 03e7440d-01a1-4ec1-8c80-fa430c4f4e27
       version: -1
       name: Update site list
       script: '|||sigsci-update-site-list'
@@ -660,7 +692,6 @@ tasks:
       '#none#':
       - "22"
     scriptarguments:
-      description: {}
       entries_list:
         complex:
           root: SigSciences
@@ -672,17 +703,17 @@ tasks:
                 value:
                   simple: "0"
       list_id:
-        simple: ${SigSciences.Corp.Site.List.ID}
+        simple: site.test-site-list
       method:
         simple: Remove
       siteName:
-        simple: test
+        simple: node_goat
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 780,
-          "y": 2100
+          "x": 790,
+          "y": 1640
         }
       }
     note: false
@@ -690,12 +721,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "22":
     id: "22"
-    taskid: 21421526-1856-4ee8-8012-c77298e66a86
+    taskid: 1cdde08e-b17e-418f-85d4-2019a1586367
     type: condition
     task:
-      id: 21421526-1856-4ee8-8012-c77298e66a86
+      id: 1cdde08e-b17e-418f-85d4-2019a1586367
       version: -1
       name: Verify site list has been updated
       type: condition
@@ -703,7 +736,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "23"
+        - "23"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -719,8 +752,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 780,
-          "y": 2280
+          "x": 790,
+          "y": 1810
         }
       }
     note: false
@@ -728,12 +761,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "23":
     id: "23"
-    taskid: fb381d6a-cbf5-4a59-8025-a34e7c44f278
+    taskid: 3add0235-f406-4448-832c-3c475c6534d3
     type: regular
     task:
-      id: fb381d6a-cbf5-4a59-8025-a34e7c44f278
+      id: 3add0235-f406-4448-832c-3c475c6534d3
       version: -1
       name: Delete site list
       script: '|||sigsci-delete-site-list'
@@ -745,15 +780,15 @@ tasks:
       - "28"
     scriptarguments:
       list_id:
-        simple: ${SigSciences.Corp.Site.List.ID}
+        simple: site.test-site-list
       siteName:
-        simple: test
+        simple: node_goat
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 780,
-          "y": 2480
+          "x": 790,
+          "y": 1975
         }
       }
     note: false
@@ -761,12 +796,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "24":
     id: "24"
-    taskid: 561b07ec-6cb0-4022-8470-93ac62886eae
+    taskid: 6422a55b-0200-4d2d-89ab-f5ae03feed12
     type: regular
     task:
-      id: 561b07ec-6cb0-4022-8470-93ac62886eae
+      id: 6422a55b-0200-4d2d-89ab-f5ae03feed12
       version: -1
       name: Get all alerts
       script: '|||sigsci-get-all-alerts'
@@ -778,7 +815,7 @@ tasks:
       - "25"
     scriptarguments:
       siteName:
-        simple: test
+        simple: node_goat
     separatecontext: false
     view: |-
       {
@@ -792,12 +829,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "25":
     id: "25"
-    taskid: 1923cb34-5a27-4158-8cac-4fc724fc3a0c
+    taskid: 702cd6ee-9dc7-41c2-8676-1b50baa7fd1f
     type: condition
     task:
-      id: 1923cb34-5a27-4158-8cac-4fc724fc3a0c
+      id: 702cd6ee-9dc7-41c2-8676-1b50baa7fd1f
       version: -1
       name: Verify alert was deleted
       type: condition
@@ -805,7 +844,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "27"
+        - "27"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -817,7 +856,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: demisto-test-tag-2
+              simple: node_goat-test-tag-2
     view: |-
       {
         "position": {
@@ -830,12 +869,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "26":
     id: "26"
-    taskid: a9062e4c-ae3b-447a-867c-2403a2b5a07b
+    taskid: 9fe968a0-e9b7-49be-8075-14fd5d85beef
     type: regular
     task:
-      id: a9062e4c-ae3b-447a-867c-2403a2b5a07b
+      id: 9fe968a0-e9b7-49be-8075-14fd5d85beef
       version: -1
       name: Delete Context
       scriptName: DeleteContext
@@ -848,11 +889,8 @@ tasks:
     scriptarguments:
       all:
         simple: "no"
-      index: {}
       key:
         simple: SigSciences.Corp.Site.Alert
-      keysToKeep: {}
-      subplaybook: {}
     separatecontext: false
     view: |-
       {
@@ -866,12 +904,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "27":
     id: "27"
-    taskid: bcadaf39-b37e-4e12-83a1-9b735099267c
+    taskid: 5dd8435c-3cb8-4c4e-88db-456cc649126b
     type: title
     task:
-      id: bcadaf39-b37e-4e12-83a1-9b735099267c
+      id: 5dd8435c-3cb8-4c4e-88db-456cc649126b
       version: -1
       name: Success
       type: title
@@ -890,12 +930,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "28":
     id: "28"
-    taskid: 93bc3ed4-c831-45da-8102-01daf401c767
+    taskid: c23db929-bbbd-4b72-8b32-916e4d0ff8f8
     type: regular
     task:
-      id: 93bc3ed4-c831-45da-8102-01daf401c767
+      id: c23db929-bbbd-4b72-8b32-916e4d0ff8f8
       version: -1
       name: Delete Context
       scriptName: DeleteContext
@@ -908,17 +950,14 @@ tasks:
     scriptarguments:
       all:
         simple: "no"
-      index: {}
       key:
         simple: SigSciences.Corp.Site.List
-      keysToKeep: {}
-      subplaybook: {}
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 780,
-          "y": 2650
+          "x": 790,
+          "y": 2160
         }
       }
     note: false
@@ -926,12 +965,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "29":
     id: "29"
-    taskid: 124db72b-46f3-47af-8d25-32bfdd76cf2b
+    taskid: 6844ea39-dcd9-47f0-8ed7-d33df7a7c941
     type: regular
     task:
-      id: 124db72b-46f3-47af-8d25-32bfdd76cf2b
+      id: 6844ea39-dcd9-47f0-8ed7-d33df7a7c941
       version: -1
       name: Get all site lists
       script: '|||sigsci-get-all-site-lists'
@@ -943,13 +984,13 @@ tasks:
       - "30"
     scriptarguments:
       siteName:
-        simple: test
+        simple: node_goat
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 780,
-          "y": 2820
+          "x": 790,
+          "y": 2325
         }
       }
     note: false
@@ -957,12 +998,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "30":
     id: "30"
-    taskid: 58324e4c-74ff-4fcf-8b39-9f2532dbd6fb
+    taskid: 4c9b9da5-c78c-43fe-8145-b26df5527ad0
     type: condition
     task:
-      id: 58324e4c-74ff-4fcf-8b39-9f2532dbd6fb
+      id: 4c9b9da5-c78c-43fe-8145-b26df5527ad0
       version: -1
       name: Verify site list was deleted
       type: condition
@@ -970,21 +1013,24 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "32"
+      - "43"
     separatecontext: false
     conditions:
     - label: "yes"
       condition:
-      - - operator: isNotExists
+      - - operator: isNotEqualString
           left:
             value:
               simple: SigSciences.Corp.Site.List.Name
             iscontext: true
+          right:
+            value:
+              simple: test-site-list
     view: |-
       {
         "position": {
-          "x": 780,
-          "y": 2990
+          "x": 790,
+          "y": 2530
         }
       }
     note: false
@@ -992,12 +1038,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "31":
     id: "31"
-    taskid: e1383552-007e-45b5-8dd3-7c4a656be4f7
+    taskid: 233ba8b2-1ddb-452d-8df8-e0f89eb867e4
     type: title
     task:
-      id: e1383552-007e-45b5-8dd3-7c4a656be4f7
+      id: 233ba8b2-1ddb-452d-8df8-e0f89eb867e4
       version: -1
       name: Test site lists
       type: title
@@ -1019,311 +1067,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "32":
-    id: "32"
-    taskid: 7840ac66-30c9-43f3-8b21-2969f272fa06
-    type: title
-    task:
-      id: 7840ac66-30c9-43f3-8b21-2969f272fa06
-      version: -1
-      name: Test corp lists
-      type: title
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "67"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 780,
-          "y": 3125
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "33":
-    id: "33"
-    taskid: e4638616-b7bf-4fba-8756-5c6823552c19
-    type: regular
-    task:
-      id: e4638616-b7bf-4fba-8756-5c6823552c19
-      version: -1
-      name: Create corp list
-      script: '|||sigsci-create-corp-list'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "34"
-    scriptarguments:
-      description:
-        simple: '"test description"'
-      entries_list:
-        simple: 1.1.1.1,2.2.2.2
-      list_name:
-        simple: test-corp-list
-      list_type:
-        simple: IP
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 780,
-          "y": 4090
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "34":
-    id: "34"
-    taskid: e3a7f3fe-c844-4aa1-8ef9-d7204056bf58
-    type: regular
-    task:
-      id: e3a7f3fe-c844-4aa1-8ef9-d7204056bf58
-      version: -1
-      name: Get corp list
-      script: '|||sigsci-get-corp-list'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "35"
-    scriptarguments:
-      list_id:
-        simple: ${SigSciences.Corp.List.ID}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 780,
-          "y": 4260
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "35":
-    id: "35"
-    taskid: 37031f13-0c60-4e36-89bd-6c410f00f959
-    type: regular
-    task:
-      id: 37031f13-0c60-4e36-89bd-6c410f00f959
-      version: -1
-      name: Update corp list
-      script: '|||sigsci-update-corp-list'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "38"
-    scriptarguments:
-      description: {}
-      entries_list:
-        simple: 3.3.3.3,4.4.4.4,5.5.5.5
-      list_id:
-        simple: ${SigSciences.Corp.List.ID}
-      method:
-        simple: Add
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 780,
-          "y": 4430
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "38":
-    id: "38"
-    taskid: 7707d5a8-6124-4c1d-872d-315eacd86915
-    type: condition
-    task:
-      id: 7707d5a8-6124-4c1d-872d-315eacd86915
-      version: -1
-      name: Verify site list has been updated
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "39"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: containsGeneral
-          left:
-            value:
-              simple: SigSciences.Corp.List.Entries
-            iscontext: true
-          right:
-            value:
-              simple: 3.3.3.3
-    view: |-
-      {
-        "position": {
-          "x": 780,
-          "y": 4600
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "39":
-    id: "39"
-    taskid: b2724791-6b16-4ca1-88f8-93d48c4e2c61
-    type: regular
-    task:
-      id: b2724791-6b16-4ca1-88f8-93d48c4e2c61
-      version: -1
-      name: Delete corp list
-      script: '|||sigsci-delete-corp-list'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "40"
-    scriptarguments:
-      list_id:
-        simple: ${SigSciences.Corp.List.ID}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 780,
-          "y": 4780
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "40":
-    id: "40"
-    taskid: 336712d8-05ae-44a8-8188-7351a02ab859
-    type: regular
-    task:
-      id: 336712d8-05ae-44a8-8188-7351a02ab859
-      version: -1
-      name: Delete context
-      scriptName: DeleteContext
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "41"
-    scriptarguments:
-      all:
-        simple: "no"
-      index: {}
-      key:
-        simple: SigSciences.Corp.List
-      keysToKeep: {}
-      subplaybook: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 780,
-          "y": 4960
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "41":
-    id: "41"
-    taskid: 500a6a40-2f4e-4630-8d08-0c5cde4514fe
-    type: regular
-    task:
-      id: 500a6a40-2f4e-4630-8d08-0c5cde4514fe
-      version: -1
-      name: Get all corp lists
-      script: '|||sigsci-get-all-corp-lists'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "42"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 780,
-          "y": 5140
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "42":
-    id: "42"
-    taskid: e2cf056a-27cf-4ae3-8857-f2ff97311520
-    type: condition
-    task:
-      id: e2cf056a-27cf-4ae3-8857-f2ff97311520
-      version: -1
-      name: Verify corp list has been deleted
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "43"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotExists
-          left:
-            value:
-              simple: SigSciences.Corp.List.Name
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 780,
-          "y": 5310
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "43":
     id: "43"
-    taskid: 81c26479-6134-4e63-8e69-9ba7bcb31696
+    taskid: 921051f6-fcae-47d0-8df5-e632e2926f80
     type: title
     task:
-      id: 81c26479-6134-4e63-8e69-9ba7bcb31696
+      id: 921051f6-fcae-47d0-8df5-e632e2926f80
       version: -1
       name: Success
       type: title
@@ -1333,8 +1084,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 780,
-          "y": 5515
+          "x": 790,
+          "y": 2705
         }
       }
     note: false
@@ -1342,12 +1093,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "44":
     id: "44"
-    taskid: 9f7228db-e8eb-4335-847e-b74e92528ede
+    taskid: 1cf1cc46-d921-475d-8c6f-008213b250a6
     type: title
     task:
-      id: 9f7228db-e8eb-4335-847e-b74e92528ede
+      id: 1cf1cc46-d921-475d-8c6f-008213b250a6
       version: -1
       name: Test requests / events
       type: title
@@ -1369,12 +1122,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "45":
     id: "45"
-    taskid: f72f75c0-36c0-4325-82c6-32180a00f40b
+    taskid: 0ac142d5-7c96-4ab0-8e29-f9f4e284be08
     type: title
     task:
-      id: f72f75c0-36c0-4325-82c6-32180a00f40b
+      id: 0ac142d5-7c96-4ab0-8e29-f9f4e284be08
       version: -1
       name: Test requests
       type: title
@@ -1396,12 +1151,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "46":
     id: "46"
-    taskid: 76f666bd-a21a-47dd-8622-a95572cd3d1b
+    taskid: 91ccc7ef-e596-4fff-89df-a91b29b3afdd
     type: regular
     task:
-      id: 76f666bd-a21a-47dd-8622-a95572cd3d1b
+      id: 91ccc7ef-e596-4fff-89df-a91b29b3afdd
       version: -1
       name: Get requests
       script: '|||sigsci-get-requests'
@@ -1412,12 +1169,11 @@ tasks:
       '#none#':
       - "47"
     scriptarguments:
-      limit: {}
-      page: {}
       q:
-        simple: '"https://dashboard.signalsciences.net/api/v0/corps/demisto/sites/demisto/requests?q=from:-7d tag:sqli tag:xss tag:cmdexe tag:traversal"'
+        simple: '"https://dashboard.signalsciences.net/api/v0/corps/demisto/sites/demisto/requests?q=from:-7d
+          tag:sqli tag:xss tag:cmdexe tag:traversal"'
       siteName:
-        simple: demisto
+        simple: node_goat
     separatecontext: false
     view: |-
       {
@@ -1431,12 +1187,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "47":
     id: "47"
-    taskid: b9f9362f-a464-41e8-82b3-99fcb8d1c8d4
+    taskid: f587589b-e112-4884-8628-189a77039def
     type: regular
     task:
-      id: b9f9362f-a464-41e8-82b3-99fcb8d1c8d4
+      id: f587589b-e112-4884-8628-189a77039def
       version: -1
       name: Get request by ID
       script: '|||sigsci-get-request-by-id'
@@ -1447,7 +1205,7 @@ tasks:
       request_id:
         simple: 5c82c5d0b62acc0007d8eb03
       siteName:
-        simple: demisto
+        simple: node_goat
     separatecontext: false
     view: |-
       {
@@ -1461,12 +1219,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "52":
     id: "52"
-    taskid: 3800c74e-b1b3-4b7b-8797-49e7572fb852
+    taskid: 6e65cab2-69ea-41b3-837e-bbc95874fb0e
     type: condition
     task:
-      id: 3800c74e-b1b3-4b7b-8797-49e7572fb852
+      id: 6e65cab2-69ea-41b3-837e-bbc95874fb0e
       version: -1
       name: Verify IP was added to blacklist
       type: condition
@@ -1499,12 +1259,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "53":
     id: "53"
-    taskid: c8dc6a41-5dbe-4eeb-84a2-624efefd0f00
+    taskid: 1cc6bd51-ef37-4ed6-8c6c-77a1f9481dfb
     type: regular
     task:
-      id: c8dc6a41-5dbe-4eeb-84a2-624efefd0f00
+      id: 1cc6bd51-ef37-4ed6-8c6c-77a1f9481dfb
       version: -1
       name: Get blacklist
       script: '|||sigsci-get-blacklist'
@@ -1516,7 +1278,7 @@ tasks:
       - "55"
     scriptarguments:
       siteName:
-        simple: demisto
+        simple: node_goat
     separatecontext: false
     view: |-
       {
@@ -1530,12 +1292,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "54":
     id: "54"
-    taskid: f8dec5a0-b3f1-430e-8c12-488dab708652
+    taskid: 65e9adc8-ec74-48ae-82d4-22cd60b5fd42
     type: regular
     task:
-      id: f8dec5a0-b3f1-430e-8c12-488dab708652
+      id: 65e9adc8-ec74-48ae-82d4-22cd60b5fd42
       version: -1
       name: Delete Context
       scriptName: DeleteContext
@@ -1548,11 +1312,8 @@ tasks:
     scriptarguments:
       all:
         simple: "no"
-      index: {}
       key:
         simple: SigSciences.Corp.Site.Blacklist
-      keysToKeep: {}
-      subplaybook: {}
     separatecontext: false
     view: |-
       {
@@ -1566,12 +1327,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "55":
     id: "55"
-    taskid: 0f0242ae-018b-4dac-866c-13f4fc701ca8
+    taskid: 52e27bc4-d0ec-4297-868d-1b6891e8f1e7
     type: condition
     task:
-      id: 0f0242ae-018b-4dac-866c-13f4fc701ca8
+      id: 52e27bc4-d0ec-4297-868d-1b6891e8f1e7
       version: -1
       name: Verify IP was deleted from blacklist (blacklist is empty)
       type: condition
@@ -1601,12 +1364,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "57":
     id: "57"
-    taskid: 2a2a7b4b-4fb2-4865-8ac8-859dfc77533f
+    taskid: b3c6a7a2-230b-4437-8be5-1a032ae48208
     type: regular
     task:
-      id: 2a2a7b4b-4fb2-4865-8ac8-859dfc77533f
+      id: b3c6a7a2-230b-4437-8be5-1a032ae48208
       version: -1
       name: Delete Context
       scriptName: DeleteContext
@@ -1619,11 +1384,8 @@ tasks:
     scriptarguments:
       all:
         simple: "no"
-      index: {}
       key:
         simple: SigSciences.Corp.Site.Whitelist
-      keysToKeep: {}
-      subplaybook: {}
     separatecontext: false
     view: |-
       {
@@ -1637,12 +1399,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "59":
     id: "59"
-    taskid: 13bd8912-62e8-42c8-8430-80aacd976a22
+    taskid: 00e460f6-38bb-4958-8daa-ce780253f289
     type: regular
     task:
-      id: 13bd8912-62e8-42c8-8430-80aacd976a22
+      id: 00e460f6-38bb-4958-8daa-ce780253f289
       version: -1
       name: Get whitelist
       script: '|||sigsci-get-whitelist'
@@ -1654,7 +1418,7 @@ tasks:
       - "62"
     scriptarguments:
       siteName:
-        simple: demisto
+        simple: node_goat
     separatecontext: false
     view: |-
       {
@@ -1668,12 +1432,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "60":
     id: "60"
-    taskid: 1435e9be-e363-4875-8b1d-9d1a0241ff03
+    taskid: 5e026177-04f8-4094-80c2-27acee3169c2
     type: title
     task:
-      id: 1435e9be-e363-4875-8b1d-9d1a0241ff03
+      id: 5e026177-04f8-4094-80c2-27acee3169c2
       version: -1
       name: Success
       type: title
@@ -1692,12 +1458,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "62":
     id: "62"
-    taskid: 20bdfb5b-1116-4f9d-8743-c7011c96d402
+    taskid: b45004c0-702c-4996-8817-ffa3c54f7969
     type: condition
     task:
-      id: 20bdfb5b-1116-4f9d-8743-c7011c96d402
+      id: b45004c0-702c-4996-8817-ffa3c54f7969
       version: -1
       name: Verify IP was deleted from whitelist (whitelist is empty)
       type: condition
@@ -1727,12 +1495,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "63":
     id: "63"
-    taskid: d5f043c9-71cc-46eb-88a7-31a3bb4b08ef
+    taskid: 58b69ce7-9e79-47e3-80ab-a3b1c6057741
     type: condition
     task:
-      id: d5f043c9-71cc-46eb-88a7-31a3bb4b08ef
+      id: 58b69ce7-9e79-47e3-80ab-a3b1c6057741
       version: -1
       name: Verify IP was added to whitelist
       type: condition
@@ -1765,12 +1535,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "64":
     id: "64"
-    taskid: ca26e6a9-2ab0-4c3f-8d43-8038d6a35a4f
+    taskid: c3a81e8c-88c2-469d-806a-c40861be36f7
     type: regular
     task:
-      id: ca26e6a9-2ab0-4c3f-8d43-8038d6a35a4f
+      id: c3a81e8c-88c2-469d-806a-c40861be36f7
       version: -1
       name: Get all site lists
       script: '|||sigsci-get-all-site-lists'
@@ -1779,10 +1551,10 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "70"
+      - "66"
     scriptarguments:
       siteName:
-        simple: test
+        simple: node_goat
     separatecontext: false
     view: |-
       {
@@ -1796,46 +1568,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "65":
-    id: "65"
-    taskid: 0e324b22-5c72-4f95-8933-f5c5e057a833
-    type: regular
-    task:
-      id: 0e324b22-5c72-4f95-8933-f5c5e057a833
-      version: -1
-      name: Delete all site lists
-      description: Deletes a site list in Signal Sciences.
-      script: '|||sigsci-delete-site-list'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "66"
-    scriptarguments:
-      list_id:
-        simple: ${SigSciences.Corp.Site.List.ID}
-      siteName:
-        simple: test
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 1180,
-          "y": 1260
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "66":
     id: "66"
-    taskid: 899acc0f-122a-4831-8c41-8285815bd0f8
+    taskid: ea5022a8-ba4a-4cee-8bcc-b7a7114a2e68
     type: regular
     task:
-      id: 899acc0f-122a-4831-8c41-8285815bd0f8
+      id: ea5022a8-ba4a-4cee-8bcc-b7a7114a2e68
       version: -1
       name: Delete Context
       scriptName: DeleteContext
@@ -1848,144 +1588,9 @@ tasks:
     scriptarguments:
       all:
         simple: "no"
-      index: {}
       key:
         simple: SigSciences.Corp.Site.List
-      keysToKeep: {}
-      subplaybook: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 780,
-          "y": 1500
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "67":
-    id: "67"
-    taskid: f8c3178f-5133-4df9-8e34-fd4145f3852a
-    type: regular
-    task:
-      id: f8c3178f-5133-4df9-8e34-fd4145f3852a
-      version: -1
-      name: Get all corp lists
-      script: '|||sigsci-get-all-corp-lists'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "71"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 780,
-          "y": 3290
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "68":
-    id: "68"
-    taskid: 1659df0a-3ef8-46b8-837f-2cec03acbcf7
-    type: regular
-    task:
-      id: 1659df0a-3ef8-46b8-837f-2cec03acbcf7
-      version: -1
-      name: Delete corp list
-      script: '|||sigsci-delete-corp-list'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "69"
-    scriptarguments:
-      list_id:
-        simple: ${SigSciences.Corp.List.ID}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 1200,
-          "y": 3660
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "69":
-    id: "69"
-    taskid: 6d9bb448-9f3d-41c1-8294-08b6cd296806
-    type: regular
-    task:
-      id: 6d9bb448-9f3d-41c1-8294-08b6cd296806
-      version: -1
-      name: Delete context
-      scriptName: DeleteContext
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "33"
-    scriptarguments:
-      all:
-        simple: "no"
-      index: {}
-      key:
-        simple: SigSciences.Corp.List
-      keysToKeep: {}
-      subplaybook: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 780,
-          "y": 3920
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "70":
-    id: "70"
-    taskid: f1e70021-6ac4-4752-8939-8404e86677b1
-    type: condition
-    task:
-      id: f1e70021-6ac4-4752-8939-8404e86677b1
-      version: -1
-      name: Check if any site list exists in site
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "66"
-      "yes":
-      - "65"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isExists
-          left:
-            value:
-              simple: SigSciences.Corp.Site.List.Name
-            iscontext: true
     view: |-
       {
         "position": {
@@ -1998,49 +1603,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "71":
-    id: "71"
-    taskid: b6dadb5c-1400-44ee-89d9-fa7921282801
-    type: condition
-    task:
-      id: b6dadb5c-1400-44ee-89d9-fa7921282801
-      version: -1
-      name: Does any corp list exist
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "69"
-      "yes":
-      - "68"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isExists
-          left:
-            value:
-              simple: SigSciences.Corp.List.Name
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 780,
-          "y": 3460
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 5530,
+        "height": 3310,
         "width": 2470,
         "x": -320,
         "y": 50
@@ -2049,4 +1619,3 @@ view: |-
   }
 inputs: []
 outputs: []
-fromversion: 5.0.0

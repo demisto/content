@@ -119,7 +119,10 @@ def get_headers(base_url: str, client_id: str, client_secret: str, grant_type: s
             'Content-Type': 'application/json'
         }
     else:
-        return None
+        err_msg = 'Failed to get response'
+        if oauth_response is not None:
+            err_msg += f' {oauth_response.status_code}'
+        raise DemistoException(err_msg)
 
 
 def transform_object_list(object_type: str, object_list=None):
@@ -676,17 +679,16 @@ def main():
     proxy = demisto.params().get('proxy', False)
     request_timeout = 10
 
-    headers = get_headers(base_url, client_id, client_secret, grant_type)
-    client = Client(
-        base_url=base_url,
-        verify=verify_certificate,
-        proxy=proxy,
-        headers=headers,
-        max_results=max_results,
-        request_timeout=request_timeout)
-
     demisto.debug(f'Command being called is {demisto.command()}')
     try:
+        headers = get_headers(base_url, client_id, client_secret, grant_type)
+        client = Client(
+            base_url=base_url,
+            verify=verify_certificate,
+            proxy=proxy,
+            headers=headers,
+            max_results=max_results,
+            request_timeout=request_timeout)
         results = None
         if demisto.command() == 'test-module':
             # This is the call made when pressing the integration Test button.

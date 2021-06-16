@@ -508,7 +508,8 @@ class MsGraphClient:
                 'contentBytes': b64_encoded_data.decode('utf-8'),
                 'isInline': is_inline,
                 'name': attach_name if provided_names else uploaded_file_name,
-                'size': file_size
+                'size': file_size,
+                'contentId': attach_id,
             }
             file_attachments_result.append(attachment)
 

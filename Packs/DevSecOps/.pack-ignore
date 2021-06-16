@@ -1,0 +1,12 @@
+
+[file:DevSecOps_CodeQL_Alerts.json]
+ignore=IF100
+
+[file:DevSecOps_Git_Issue_Details.json]
+ignore=IF100
+
+[file:DevSecOps_Git_Issue_Number.json]
+ignore=IF100
+
+[file:DevSecOps_PR_Head_Open_Issues.json]
+ignore=IF100

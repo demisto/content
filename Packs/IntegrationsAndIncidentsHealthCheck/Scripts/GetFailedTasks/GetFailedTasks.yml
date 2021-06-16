@@ -31,7 +31,7 @@ subtype: python3
 system: false
 timeout: '0'
 type: python
-dockerimage: demisto/python3:3.9.2.17246
+dockerimage: demisto/python3:3.9.5.20958
 runas: DBotWeakRole
 runonce: false
 tests:

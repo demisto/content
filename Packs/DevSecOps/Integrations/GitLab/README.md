@@ -8,7 +8,7 @@ This integration was integrated and tested with version v4.0 of GitLab API
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
-| url | Server URL \(e.g. https://gitlab.com/api/v4\) | True |
+| url | Server URL (e.g. `https://gitlab.com/api/v4`) | True |
 | api_key | API Key | True |
 | insecure | Trust any certificate \(not secure\) | False |
 | proxy | Use system proxy settings | False |
