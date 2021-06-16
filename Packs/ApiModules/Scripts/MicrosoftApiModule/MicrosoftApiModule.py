@@ -26,13 +26,14 @@ REFRESH_TOKEN = 'refresh_token'  # guardrails-disable-line
 DEVICE_CODE = 'urn:ietf:params:oauth:grant-type:device_code'
 REGEX_SEARCH_URL = '(?P<url>https?://[^\s]+)'
 SESSION_STATE = 'session_state'
+AUTH_ENDPOINTS = {'default (.com)': 'com', 'GCC High US (.us)': 'us'}
 
 
 class MicrosoftClient(BaseClient):
     def __init__(self, tenant_id: str = '',
                  auth_id: str = '',
                  enc_key: str = '',
-                 token_retrieval_url: str = 'https://login.microsoftonline.com/{tenant_id}/oauth2/v2.0/token',
+                 token_retrieval_url: str = 'https://login.microsoftonline.{endpoint}/{tenant_id}/oauth2/v2.0/token',
                  app_name: str = '',
                  refresh_token: str = '',
                  auth_code: str = '',
@@ -44,7 +45,8 @@ class MicrosoftClient(BaseClient):
                  resources: List[str] = None,
                  verify: bool = True,
                  self_deployed: bool = False,
-                 azure_ad_endpoint: str = 'https://login.microsoftonline.com',
+                 azure_ad_endpoint: str = 'https://login.microsoftonline.{endpoint}',
+                 auth_endpoint: str = 'default (.com)',
                  *args, **kwargs):
         """
         Microsoft Client class that implements logic to authenticate with oproxy or self deployed applications.
@@ -62,6 +64,7 @@ class MicrosoftClient(BaseClient):
             self_deployed: Indicates whether the integration mode is self deployed or oproxy
         """
         super().__init__(verify=verify, *args, **kwargs)  # type: ignore[misc]
+        self.auth_endpoint = AUTH_ENDPOINTS.get(auth_endpoint)
         if not self_deployed:
             auth_id_and_token_retrieval_url = auth_id.split('@')
             auth_id = auth_id_and_token_retrieval_url[0]
@@ -77,7 +80,7 @@ class MicrosoftClient(BaseClient):
             self.refresh_token = refresh_token
 
         else:
-            self.token_retrieval_url = token_retrieval_url.format(tenant_id=tenant_id)
+            self.token_retrieval_url = token_retrieval_url.format(tenant_id=tenant_id, endpoint=self.auth_endpoint)
             self.client_id = auth_id
             self.client_secret = enc_key
             self.tenant_id = tenant_id
@@ -89,7 +92,7 @@ class MicrosoftClient(BaseClient):
 
         self.auth_type = SELF_DEPLOYED_AUTH_TYPE if self_deployed else OPROXY_AUTH_TYPE
         self.verify = verify
-        self.azure_ad_endpoint = azure_ad_endpoint
+        self.azure_ad_endpoint = azure_ad_endpoint.format(endpoint=self.auth_endpoint)
 
         self.multi_resource = multi_resource
         if self.multi_resource:
@@ -240,7 +243,8 @@ class MicrosoftClient(BaseClient):
                 'app_name': self.app_name,
                 'registration_id': self.auth_id,
                 'encrypted_token': self.get_encrypted(content, self.enc_key),
-                'scope': scope
+                'scope': scope,
+                'auth_endpoint': self.auth_endpoint
             },
             verify=self.verify
         )
