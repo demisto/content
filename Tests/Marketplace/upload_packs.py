@@ -1006,6 +1006,10 @@ def main():
                                            current_commit_hash, pack_was_modified, statistics_handler, pack_names)
 
         if pack.is_missing_dependencies:
+            # If the pack is dependent on a new pack (which is not yet in the index.json)
+            # we will note that it is missing dependencies.
+            # And finally after updating all the packages in index.json.
+            # We will go over the pack again to add what was missing
             packs_missing_dependencies.append(pack)
 
         if not task_status:
@@ -1092,13 +1096,12 @@ def main():
 
     logging.info(f"packs_missing_dependencies: {packs_missing_dependencies}")
 
+    # will go over all the packs what was marked as missing dependencies and will update them with the new index.json
     for pack in packs_missing_dependencies:
+
         task_status = pack.reformat_metadata_with_missing_dependencies(user_metadata, index_folder_path,
                                                                        packs_dependencies_mapping, build_number,
                                                                        current_commit_hash, pack_names)
-        # task_status = pack.format_metadata(user_metadata, index_folder_path, packs_dependencies_mapping, build_number,
-        #                                    current_commit_hash, pack_was_modified, statistics_handler, pack_names)
-
         if not task_status:
             pack.status = PackStatus.FAILED_METADATA_PARSING.name
             pack_names.remove(pack.name)

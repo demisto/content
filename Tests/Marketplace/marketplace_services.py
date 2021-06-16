@@ -629,9 +629,13 @@ class Pack(object):
                     dependency_metadata = json.load(metadata_file)
                     dependencies_data_result[dependency_pack_id] = dependency_metadata
             elif dependency_pack_id in pack_names:
+                # If the pack is dependent on a new pack (which is not yet in the index.json)
+                # we will note that it is missing dependencies.
+                # And finally after updating all the packages in index.json.
+                # We will go over the pack again to add what was missing
                 self._is_missing_dependencies = True
                 logging.warning(f"{self._pack_name} pack dependency with id {dependency_pack_id} "
-                                f"was not found in index Marks it as missing details")
+                                f"was not found in index, Marks it as missing dependencies")
             else:
                 logging.warning(f"{self._pack_name} pack dependency with id {dependency_pack_id} was not found")
         return dependencies_data_result
