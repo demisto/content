@@ -1,6 +1,6 @@
 ## Qualys Vulnerability Management Help
 
-- Users with a Qualys user account may use the integration. When a subscription has multiple users, all users with any user role (except Contact) can use the Qualys integration. Each user’s permissions correspond to their assigned user role.
+-You need a Qualys user account to use the Qualys integration. If a subscription has multiple users, all users with any user role (except Contact) can use the Qualys integration. Each user’s permissions correspond to their assigned user role.
   
 - Qualys Vulnerability Management uses basic authentication. You'll need your Qualys login credentials in order to use this integration.
   
