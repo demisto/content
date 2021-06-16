@@ -13,9 +13,42 @@
     "formatScript": "ExtractAttackPattern",
     "id": "Attack Pattern",
     "locked": false,
-    "manualMapping": {},
+    "manualMapping": {
+        "description": {
+            "simple": "AttackPattern.Description",
+            "complex": null
+        },
+        "firstseenbysource": {
+            "simple": "AttackPattern.FirstSeenBySource",
+            "complex": null
+        },
+        "killchainphases": {
+            "simple": "AttackPattern.KillChainPhases",
+            "complex": null
+        },
+        "mitreid": {
+            "simple": "AttackPattern.MITREID",
+            "complex": null
+        },
+        "operatingsystemrefs": {
+            "simple": "AttackPattern.OperatingSystemRefs",
+            "complex": null
+        },
+        "publications": {
+            "simple": "AttackPattern.Publications",
+            "complex": null
+        },
+        "stixid": {
+            "simple": "AttackPattern.STIXID",
+            "complex": null
+        },
+        "tags": {
+            "simple": "AttackPattern.Tags",
+            "complex": null
+        }
+    },
     "mergeContext": false,
-    "regex": "\\b((T\\d{3,4}\\.\\d{3})|(MOB-T|T|TA|G|S|M)\\d{3,4})\\b|\\b(((attack-pattern–)|intrusion-set|malware|tool|course-of-action|x-mitre-tactic|x-mitre-matrix)[a-z0-9]{8}(-[a-z0-9]{4}){3}-[a-z0-9]{12})\\b|\\b(((APT)|(CAPEC\\-))\\d{1,4})\\b",
+    "regex": "(T\\d{3,4}\\.\\d{3}|T\\d{3,4})",
     "reputationCommand": "attack-pattern",
     "reputationScriptName": "",
     "sortValues": null,
