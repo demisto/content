@@ -9,6 +9,8 @@ from taxii2client.v20 import Server, Collection, ApiRoot
 
 ''' CONSTANT VARIABLES '''
 
+INTEGRATION_NAME = 'MITRE ATTACK'
+
 MITRE_TYPE_TO_DEMISTO_TYPE = {
     "attack-pattern": ThreatIntel.ObjectsNames.ATTACK_PATTERN,
     "course-of-action": ThreatIntel.ObjectsNames.COURSE_OF_ACTION,
@@ -379,67 +381,6 @@ def show_feeds_command(client):
     })
 
 
-# def build_attack_context():
-#     command_results: List[CommandResults] = []
-#     if entity_data and ("error" not in entity_data):
-#         for ent in entity_data["data"]["results"]:
-#             try:
-#                 evidence = ent["risk"]["rule"]["evidence"]
-#             except KeyError:
-#                 evidence = {}
-#             concat_rules = ','.join([e["rule"] for e in evidence.values()])
-#             context = (
-#                 {
-#                     "riskScore": ent["risk"]["score"],
-#                     "Evidence": [
-#                         {
-#                             "rule": dic["rule"],
-#                             "mitigation": dic["mitigation"],
-#                             "description": dic["description"],
-#                             "timestamp": prettify_time(dic["timestamp"]),
-#                             "level": dic["level"],
-#                             "ruleid": key,
-#                         }
-#                         if dic.get("mitigation", None)
-#                         else {
-#                             "rule": dic["rule"],
-#                             "description": dic["description"],
-#                             "timestamp": prettify_time(dic["timestamp"]),
-#                             "level": dic["level"],
-#                             "ruleid": key,
-#                         }
-#                         for key, dic in evidence.items()
-#                     ],
-#                     "riskLevel": ent["risk"]["level"],
-#                     "id": ent["entity"]["id"],
-#                     "ruleCount": ent["risk"]["rule"]["count"],
-#                     "rules": concat_rules,
-#                     "maxRules": ent["risk"]["rule"]["maxCount"],
-#                     "description": ent["entity"].get("description", ""),
-#                     "name": ent["entity"]["name"],
-#                 }
-#             )
-#             indicator = create_indicator(
-#                 ent["entity"]["name"],
-#                 entity_type,
-#                 ent["risk"]["score"],
-#                 ent["entity"].get("description", ""),
-#             )
-#             command_results.append(CommandResults(
-#                 outputs_prefix=get_output_prefix(entity_type),
-#                 outputs=context,
-#                 raw_response=entity_data,
-#                 readable_output=build_rep_markdown(ent, entity_type),
-#                 outputs_key_field='name',
-#                 indicator=indicator
-#             ))
-#         return command_results
-#     else:
-#         return [CommandResults(
-#             readable_output="No records found"
-#         )]
-
-
 def attack_pattern_reputation_command(client, args):
     command_results: List[CommandResults] = []
 
@@ -464,24 +405,33 @@ def attack_pattern_reputation_command(client, args):
             value = mitre_data.get('name')
             md = f"## {[value]}:\n {custom_fields.get('mitredescription', '')}"
 
-            attack_obj.update({
-                "value": value,
-                "score": score,
-                "type": ThreatIntel.ObjectsNames.ATTACK_PATTERN,
-                "rawJSON": json.loads(str(mitre_data)),
-            })
+            dbot_score = Common.DBotScore(
+                indicator=value,
+                indicator_type=DBotScoreType.ATTACKPATTERN,
+                integration_name=INTEGRATION_NAME,  # Vendor
+                score=score,
+            )
+            attack_context = Common.AttackPattern(
+                stix_id=attack_obj.get('stixid'),
+                kill_chain_phases=attack_obj.get('killchainphases'),
+                first_seen_by_source=attack_obj.get('firstseenbysource'),
+                description=attack_obj.get('description'),
+                operating_system_refs=attack_obj.get('operatingsystemrefs'),
+                publications=attack_obj.get('publications'),
+                mitre_id=attack_obj.get('mitreid'),
+                tags=attack_obj.get('tags'),
+                dbot_score=dbot_score,
+            )
+
             command_results.append(CommandResults(
-                outputs_prefix='MITRE ATT&CK.AttackPattern',
-                outputs=attack_obj,
+                outputs_prefix='MITREATTACK',
                 readable_output=md,
-                outputs_key_field='IndicatorValue',
-                indicator=name
+                outputs_key_field='name',
+                indicator=attack_context,
             ))
-        return command_results
-    else:
-        return [CommandResults(
-            readable_output="No records found"
-        )]
+            break
+
+    return command_results
 
 
 def main():

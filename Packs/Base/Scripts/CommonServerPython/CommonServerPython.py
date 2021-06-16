@@ -3861,12 +3861,11 @@ class Common(object):
         """
         CONTEXT_PATH = 'AttackPattern(val.value && val.Address == obj.value)'
 
-        def __init__(self, stix_id, kill_chain_phases, first_seen_by_source, modified, description,
+        def __init__(self, stix_id, kill_chain_phases, first_seen_by_source, description,
                      operating_system_refs, publications, mitre_id, tags, dbot_score):
             self.stix_id = stix_id
             self.kill_chain_phases = kill_chain_phases
             self.first_seen_by_source = first_seen_by_source
-            self.modified = modified
             self.description = description
             self.operating_system_refs = operating_system_refs
             self.publications = publications
