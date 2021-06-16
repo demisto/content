@@ -133,7 +133,11 @@
     - section_start "Install Docker"
     - curl -fsSL https://get.docker.com | sh # disable-secrets-detection
     - section_end "Install Docker"
-    - echo "$DOCKER_READ_ONLY_PASSWORD" | docker login --username $DOCKER_READ_ONLY_USER --password-stdin
+    - section_start "Configure Docker Login"
+    - mkdir -p $HOME/.docker
+    - echo $DOCKER_AUTH_CONFIG > $HOME/.docker/config.json
+    # - echo "$DOCKER_READ_ONLY_PASSWORD" | docker login --username $DOCKER_READ_ONLY_USER --password-stdin
+    - section_end "Configure Docker Login"
     - section_start "Test Infrustracture"
     - |
       if [ -n "$RUN_INFRA_LINT_AND_TESTS" ]; then
