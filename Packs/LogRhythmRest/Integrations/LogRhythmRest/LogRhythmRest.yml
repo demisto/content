@@ -552,6 +552,34 @@ script:
       required: true
     description: Execute evidence query for a specific case-id
     name: lr-case-query
+    outputs:
+    - contextPath: Logrhythm.Search.Evidence.status
+      description: Status
+      type: String
+    - contextPath: Logrhythm.Search.Evidence.text
+      description: Evidence Text
+      type: String
+    - contextPath: Logrhythm.Search.Evidence.number
+      description: Evidence ID
+      type: Number
+    - contextPath: Logrhythm.Search.Evidence.dateCreated
+      description: Created date
+      type: Date
+    - contextPath: Logrhythm.Search.Evidence.pinned
+      description: isPinned
+      type: Boolean
+    - contextPath: Logrhythm.Search.Evidence.lastUpdatedBy.name
+      description: Last updated by
+      type: String
+    - contextPath: Logrhythm.Search.Evidence.createdBy.name
+      description: Created by
+      type: String
+    - contextPath: Logrhythm.Search.Evidence.dateUpdated
+      description: Date updated
+      type: Date
+    - contextPath: Logrhythm.Search.Evidence.type
+      description: Evidence type
+      type: String
   - arguments:
     - description: Number of dates to search
       name: number-of-date
@@ -1538,12 +1566,68 @@ script:
       name: ipaddress
     description: Execute search query to Log Rhythm log database
     name: lr-execute-search-query
+    outputs:
+    - contextPath: Logrhythm.Search.Tasks.taskID
+      description: Task ID
+      type: String
   - arguments:
     - description: Task ID from lr-execute-search-query command
       name: task_id
     description: Get search query result with task ID output from lr-execute-search-query
       command
     name: lr-get-query-result
+    outputs:
+    - contextPath: Logrhythm.Search.Results.originEntityId
+      description: Entity ID
+      type: Number
+    - contextPath: Logrhythm.Search.Results.impactedIp
+      description: Impacted IP
+      type: String
+    - contextPath: Logrhythm.Search.Results.classificationTypeName
+      description: Classification Name
+      type: String
+    - contextPath: Logrhythm.Search.Results.logSourceName
+      description: Log Source Name
+      type: String
+    - contextPath: Logrhythm.Search.Results.entityName
+      description: Entity Name
+      type: String
+    - contextPath: Logrhythm.Search.Results.normalDate
+      description: Date
+      type: Date
+    - contextPath: Logrhythm.Search.Results.vendorMessageId
+      description: Vendor Log message
+      type: String
+    - contextPath: Logrhythm.Search.Results.priority
+      description: Log priority
+      type: Number
+    - contextPath: Logrhythm.Search.Results.sequenceNumber
+      description: Seq number
+      type: String
+    - contextPath: Logrhythm.Search.Results.originHostId
+      description: Origin Host ID
+      type: Number
+    - contextPath: Logrhythm.Search.Results.mpeRuleId
+      description: Log Rhythm rule ID
+      type: Number
+    - contextPath: Logrhythm.Search.Results.originIp
+      description: Origin IP
+      type: String
+    - contextPath: Logrhythm.Search.Results.mpeRuleName
+      description: Log Rhythm rule name
+      type: String
+    - contextPath: Logrhythm.Search.Results.logSourceHostId
+      description: Log Source host ID
+      type: Number
+    - contextPath: Logrhythm.Search.Results.originHost
+      description: Origin Host
+      type: String
+    - contextPath: Logrhythm.Search.Results.logDate
+      description: Log Date
+      type: Date
+    - contextPath: Logrhythm.Search.Results.classificationName
+      description: Log classification name
+      type: String
   isfetch: true
   runonce: false
   script: ''
