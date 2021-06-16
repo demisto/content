@@ -5,7 +5,7 @@ args:
   required: true
 comment: Loads a json from string input, and returns a json escaped  result
 commonfields:
-  id: bd41ea36-c3fe-4612-8c44-5f4afc7ba7f5
+  id: PrepareArcannaRawJson
   version: -1
 dockerimage: demisto/python3:3.9.5.21272
 enabled: true
@@ -13,7 +13,6 @@ name: PrepareArcannaRawJson
 outputs:
 - contextPath: JsonObject
   description: The JSON object loaded from input and escaped for Arcanna to be used
-pswd: ""
 runas: DBotWeakRole
 runonce: false
 script: ''
@@ -22,3 +21,6 @@ subtype: python3
 tags:
 - Utility
 type: python
+fromversion: 5.0.0
+tests:
+- No tests (auto formatted)

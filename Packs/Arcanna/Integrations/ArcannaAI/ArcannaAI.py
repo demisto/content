@@ -4,10 +4,10 @@ from CommonServerUserPython import *  # noqa: F401
 
 import json
 import urllib3
-import dateparser
+import dateparser  # noqa: F401
 import traceback
 import requests
-from typing import Any, Dict, Tuple, List, Optional, Union, cast
+from typing import Any, Dict, List, Optional, Union  # noqa: F401
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -31,7 +31,6 @@ class Client:
         self.proxy = proxy
         self.api_key = api_key
         self.default_job_id = default_job_id
-
 
     def get_headers(self):
         """   Adds header
@@ -86,35 +85,6 @@ class Client:
         return json.loads(raw_response.text)
 
 
-def parse_domain_date(domain_date: Union[List[str], str], date_format: str = '%Y-%m-%dT%H:%M:%S.000Z') -> Optional[str]:
-    """Converts whois date format to an ISO8601 string
-    :return: Parsed time in ISO8601 format
-    :rtype: ``Optional[str]``
-    """
-
-    if isinstance(domain_date, str):
-        # if str parse the value
-        domain_date_dt = dateparser.parse(domain_date)
-        if domain_date_dt:
-            return domain_date_dt.strftime(date_format)
-    elif isinstance(domain_date, list) and len(domain_date) > 0 and isinstance(domain_date[0], str):
-        # if list with at least one element, parse the first element
-        domain_date_dt = dateparser.parse(domain_date[0])
-        if domain_date_dt:
-            return domain_date_dt.strftime(date_format)
-    # in any other case return nothing
-    return None
-
-
-def convert_to_demisto_severity(severity: str) -> int:
-    return {
-        'Low': IncidentSeverity.LOW,
-        'Medium': IncidentSeverity.MEDIUM,
-        'High': IncidentSeverity.HIGH,
-        'Critical': IncidentSeverity.CRITICAL
-    }[severity]
-
-
 ''' COMMAND FUNCTIONS '''
 
 
@@ -131,7 +101,7 @@ def test_module(client: Client) -> str:
 
 
 def get_jobs(client: Client) -> CommandResults:
-    demisto.info(f'Running get_jobs command')
+    demisto.info('Running get_jobs command')
     result = client.list_jobs()
 
     headers = ["job_id", "title", "data_type", "status"]
@@ -147,7 +117,7 @@ def get_jobs(client: Client) -> CommandResults:
 
 
 def post_event(client: Client, args: Dict[str, Any]) -> CommandResults:
-    demisto.info(f'Running send_event command')
+    demisto.info('Running send_event command')
 
     raw_payload = args.get("event_json")
     title = args.get("title")
@@ -165,7 +135,7 @@ def post_event(client: Client, args: Dict[str, Any]) -> CommandResults:
 
 
 def get_event_status(client: Client, args: Dict[str, Any]) -> CommandResults:
-    demisto.info(f'Running get_event_status command')
+    demisto.info('Running get_event_status command')
     job_id = args.get("job_id")
     event_id = args.get("event_id")
     response = client.get_event_status(job_id, event_id)
@@ -180,7 +150,7 @@ def get_event_status(client: Client, args: Dict[str, Any]) -> CommandResults:
 
 
 def get_default_job_id(client: Client) -> CommandResults:
-    demisto.info(f'Running get_default_job_id command')
+    demisto.info('Running get_default_job_id command')
     response = client.get_default_job_id()
     readable_output = f'## {response}'
 
@@ -244,23 +214,23 @@ def main() -> None:
 
         if demisto.command() == 'test-module':
             # This is the call made when pressing the integration Test button.
-            result = test_module(client)
-            return_results(result)
+            result_test = test_module(client)
+            return_results(result_test)
         elif demisto.command() == "get_jobs":
-            result = get_jobs(client)
-            return_results(result)
+            result_get_jobs = get_jobs(client)
+            return_results(result_get_jobs)
         elif demisto.command() == "send_event":
-            result = post_event(client, demisto.args())
-            return_results(result)
+            result_send_event = post_event(client, demisto.args())
+            return_results(result_send_event)
         elif demisto.command() == "get_event_status":
-            result = get_event_status(client, demisto.args())
-            return_results(result)
+            result_get_event = get_event_status(client, demisto.args())
+            return_results(result_get_event)
         elif demisto.command() == "get_default_job_id":
-            result = get_default_job_id(client)
-            return_results(result)
+            result_get_default_id = get_default_job_id(client)
+            return_results(result_get_default_id)
         elif demisto.command() == "set_default_job_id":
-            result = set_default_job_id(client, demisto.args())
-            return_results(result)
+            result_set_default_id = set_default_job_id(client, demisto.args())
+            return_results(result_set_default_id)
 
     # Log exceptions and return errors
     except Exception as e:

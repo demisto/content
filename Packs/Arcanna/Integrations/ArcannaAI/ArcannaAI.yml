@@ -4,19 +4,13 @@ commonfields:
   version: -1
 configuration:
 - defaultvalue: https://arcanna.ai
+  additionalinfo: URL of Arcanna API
   display: Server URL (e.g. https://<your arcanna ai api>)
   name: url
   required: true
   type: 0
-- display: Fetch incidents
-  name: isFetch
-  required: false
-  type: 8
-- display: Incident type
-  name: incidentType
-  required: false
-  type: 13
 - display: API Key
+  additionalinfo: Api Key for Arcanna API
   name: apikey
   required: true
   type: 4
@@ -28,23 +22,12 @@ configuration:
   name: proxy
   required: false
   type: 8
-- defaultvalue: '1'
-  display: Incidents Fetch Interval
-  name: incidentFetchInterval
-  required: false
-  type: 19
-- display: Port mapping (<port> or <host port>:<docker port>)
-  name: longRunningPort
-  required: false
-  type: 0
 - defaultvalue: '-1'
   display: Default Arcanna Job Id
   hidden: false
   name: default_job_id
   required: false
   type: 0
-defaultMapperIn: 'null'
-defaultMapperOut: 'null'
 defaultclassifier: 'null'
 description: Arcanna integration for using the power of AI in SOC
 display: arcanna-demisto
@@ -57,14 +40,15 @@ script:
     name: get_jobs
     outputs:
     - contextPath: arcanna_jobs
-      description: jobs json
+      description: Arcanna jobs displayed as table Markdown
       type: String
   - deprecated: false
-    description: checks if arcanna is available
+    description: Checks if arcanna is available
     execution: false
     name: check_arcanna_status
     outputs:
     - contextPath: arcanna_status
+      description: inputs arcannas status in War room
       type: string
   - arguments:
     - default: false
@@ -111,24 +95,32 @@ script:
       name: job_id
       required: true
       secret: false
+      description: Arcanna Job Id
     - default: false
       isArray: false
       name: event_id
       required: true
       secret: false
+      description: Arcanna generated unique event id
     deprecated: false
     execution: false
     name: get_event_status
+    description: Retrieves Arcanna Inference result
     outputs:
     - contextPath: arcanna.event_status
       type: Unknown
+      description: event_status
     - contextPath: arcanna.ingest_ts
       type: Unknown
+      description: arcanna.ingest_ts
     - contextPath: arcanna.confidence_level
       type: Unknown
+      description: arcanna.confidence_level
     - contextPath: arcanna.result
       type: Unknown
+      description: arcanna_event_id
     - contextPath: arcanna.is_duplicated
+      description: is_duplicated
       type: Unknown
   - deprecated: false
     description: Retrieves Arcanna Default Job id
@@ -144,11 +136,12 @@ script:
       name: job_id
       required: true
       secret: false
+      description: job_id
     deprecated: false
     description: Sets Arcanna Default Job id
     execution: false
     name: set_default_job_id
-  dockerimage: demisto/python3:3.9.1.14969
+  dockerimage: demisto/python3:3.9.5.21272
   feed: false
   isfetch: false
   longRunning: false
@@ -157,4 +150,6 @@ script:
   script: '-'
   subtype: python3
   type: python
-vcShouldKeepItemLegacyProdMachine: false
+fromversion: 5.0.0
+tests:
+- No tests (auto formatted)

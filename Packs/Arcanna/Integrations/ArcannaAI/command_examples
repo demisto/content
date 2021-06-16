@@ -1,5 +1,5 @@
 !get_default_job_id
 !set_default_job_id job_id=111
-!send_event job_id="111" event_json="{\"offset\": 1739561255, \"destination\": {\"address\": \"169.254.169.254\", \"port\": 80, \"bytes\": 170, \"ip\": \"169.254.169.254\", \"domain\": \"metadata.google.internal\", \"packets\": 3}, \"rule\": {\"name\": \"ET POLICY Python-urllib/ Suspicious User Agent\", \"id\": \"2013031\", \"category\": \"Attempted Information Leak\"}, \"source\": {\"address\": \"10.128.0.6\", \"port\": 34768, \"bytes\": 494, \"ip\": \"10.128.0.6\}}"
+!send_event job_id="111" event_json="{\"offset\": 1739561255, \"destination\": {\"address\": \"8.8.8.8\", \"port\": 80, \"bytes\": 170, \"ip\": \"8.8.8.2\", \"domain\": \"metadata.google.internal\", \"packets\": 3}, \"rule\": {\"name\": \"ET POLICY Python-urllib/ Suspicious User Agent\", \"id\": \"2013031\", \"category\": \"Attempted Information Leak\"}, \"source\": {\"address\": \"10.128.0.6\", \"port\": 34768, \"bytes\": 494, \"ip\": \"10.128.0.6\}}"
 !get_event_status job_id="111" event_id="11313031051449"
 !get_jobs

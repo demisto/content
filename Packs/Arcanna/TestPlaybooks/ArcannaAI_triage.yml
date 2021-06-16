@@ -1,4 +1,4 @@
-id: e7ba7153-451b-441a-82bb-48c487c626de
+id: ArcannaAI_triage
 inputs: []
 name: ArcannaAI_triage
 outputs: []
@@ -20,6 +20,7 @@ tasks:
       iscommand: false
       name: ""
       version: -1
+      description: ''
     taskid: abf399b3-a5bc-4c2f-8de0-78494798342f
     timertriggers: []
     type: start
@@ -44,6 +45,7 @@ tasks:
       name: DOne
       type: title
       version: -1
+      description: ''
     taskid: f1509fb2-2e78-45e1-897a-6f5f2cc092ae
     timertriggers: []
     type: title
@@ -522,3 +524,5 @@ view: |-
       }
     }
   }
+fromversion: 6.0.0
+description: Arcanna.AI playbook for alert triage
