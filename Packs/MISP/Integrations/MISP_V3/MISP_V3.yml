@@ -19,8 +19,8 @@ configuration:
   name: insecure
   required: false
   type: 8
-- display: Select which attribute data fields of the event to save to context.
-    Leave empty to save all attributes.
+- display: Select which attribute data fields of the event to save to context. Leave
+    empty to save all attributes.
   name: context_select
   options:
   - Category
@@ -44,15 +44,18 @@ configuration:
   required: false
   type: 16
 - additionalinfo: This field limits the number of attributes for every event that
-    will be written to the context. Raising the number of attributes above 1000 may result in high memory
-    and disk usage. Contact Cortex XSOAR support before attempting to raise
-    this field above 1000.
+    will be written to the context. Raising the number of attributes above 1000 may
+    result in high memory and disk usage. Contact Cortex XSOAR support before attempting
+    to raise this field above 1000.
   defaultvalue: '1000'
   display: Maximum attributes in the event
   hidden: false
   name: attributes_limit
   required: false
   type: 0
+defaultMapperIn: 'null'
+defaultMapperOut: 'null'
+defaultclassifier: 'null'
 description: Malware information sharing platform and threat sharing.
 display: MISP v3
 name: MISP V3
@@ -84,9 +87,9 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'A comma-separated list of tags to include in the results. To exclude a tag, prefix the
-        tag name with "!". Can be: "AND", "OR", and "NOT" followed by ":". To chain logical operators use ";".
-        for example, "AND:tag1,tag2;OR:tag3".'
+      description: 'A comma-separated list of tags to include in the results. To exclude
+        a tag, prefix the tag name with "!". Can be: "AND", "OR", and "NOT" followed
+        by ":". To chain logical operators use ";". for example, "AND:tag1,tag2;OR:tag3".'
       isArray: false
       name: tags
       required: false
@@ -450,7 +453,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'false'
-      description: Whether to create the event with the Intrusion Detection System flag.
+      description: Whether to create the event with the Intrusion Detection System
+        flag.
       isArray: false
       name: to_ids
       predefined:
@@ -663,7 +667,8 @@ script:
     - auto: PREDEFINED
       default: true
       defaultValue: 'false'
-      description: True to return all files unzipped. False to return one zipped file.  Default is "false".
+      description: True to return all files unzipped. False to return one zipped file.  Default
+        is "false".
       isArray: false
       name: unzip
       predefined:
@@ -1028,7 +1033,8 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Adds an OSINT feed. Only feeds from format misp are allowed (i.e have manifest.json).
+    description: Adds an OSINT feed. Only feeds from format misp are allowed (i.e
+      have manifest.json).
     execution: false
     name: misp-add-events-from-feed
     outputs:
@@ -1541,9 +1547,9 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: 'Adds an IP object to the MISP event. The following arguments are optional,
-      but at least one must be supplied for the command to run successfully: "ip",
-      "dst_port", "src_port", "domain", "hostname", "ip_src", and "ip_dst".'
+    description: 'Adds an IP object to the MISP event. The following arguments are
+      optional, but at least one must be supplied for the command to run successfully:
+      "ip", "dst_port", "src_port", "domain", "hostname", "ip_src", and "ip_dst".'
     execution: false
     name: misp-add-ip-object
     outputs:
@@ -1653,7 +1659,6 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      defaultValue: 'false'
       description: Whether to return only the attributes set with the "to_ids" flag.
       isArray: false
       name: to_ids
@@ -1675,6 +1680,59 @@ script:
       description: Whether to include the decay score at the attribute level.
       isArray: false
       name: include_decay_score
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    - default: false
+      description: Search by the creator organisation by supplying the organisation
+        identifier.
+      isArray: false
+      name: org
+      required: false
+      secret: false
+    - default: false
+      description: Tags to search or to exclude. You can pass a list, or the output
+        of `build_complex_query`
+      isArray: true
+      name: tags
+      required: false
+      secret: false
+    - default: false
+      description: Events with the date set to a date after the one specified. This
+        filter will use the date of the event.
+      isArray: false
+      name: from
+      required: false
+      secret: false
+    - default: false
+      description: Events with the date set to a date before the one specified. This filter will use the date of the event.
+      isArray: false
+      name: to
+      required: false
+      secret: false
+    - default: false
+      description: The events that should be included / excluded from the search
+      isArray: false
+      name: event_id
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Whether to include the sightings.
+      isArray: false
+      name: include_sightings
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Whether to include the correlations of the matching attributes.
+      isArray: false
+      name: include_correlations
       predefined:
       - 'true'
       - 'false'

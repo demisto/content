@@ -394,6 +394,7 @@ def build_attribute_context(response: Union[dict, requests.Response]) -> dict:
         'Tag',
         'decay_score'
     ]
+    print(response)
     if isinstance(response, str):
         response = json.loads(json.dumps(response))
     attributes = response.get('Attribute')
@@ -923,7 +924,7 @@ def build_misp_complex_filter(demisto_query: str) -> str:
     return demisto_query
 
 
-def search(post_to_warroom: bool = True) -> Tuple[dict, Any]:
+def search(pymisp, post_to_warroom: bool = True) -> Tuple[dict, Any]:
     """
     will search in MISP
     Returns
@@ -961,7 +962,7 @@ def search(post_to_warroom: bool = True) -> Tuple[dict, Any]:
     if 'tags' in args:
         args['tags'] = build_misp_complex_filter(args['tags'])
 
-    response = MISP.search(**args)
+    response = pymisp.search(**args)
     if response:
         response_for_context = build_context(response)
 
@@ -1000,122 +1001,171 @@ def search(post_to_warroom: bool = True) -> Tuple[dict, Any]:
         return {}, {}
 
 
-def search_attributes() -> Tuple[dict, Any]:
+def prepare_args_to_search():
+    search_args = [
+        'value',
+        'type',
+        'category',
+        'org',
+        'tags',
+        'from',
+        'to',
+        'event_id',
+        'uuid',
+        'to_ids',
+        'last',
+        'include_decay_score',
+        'include_sightings',
+        'include_correlations',
+        'limit',
+        'page'
+    ]
+    d_args = demisto.args()
+
+    # List of all applicable search arguments
+    args = dict()
+    # Create dict to pass into the search
+    for arg in search_args:
+        if arg in d_args:
+            args[arg] = d_args[arg]
+    # Replacing keys and values from Demisto to Misp's keys
+    if 'type' in args:
+        args['type_attribute'] = d_args.pop('type')
+    # search function 'to_ids' parameter gets 0 or 1 instead of bool.
+    if 'to_ids' in args:
+        args['to_ids'] = 1 if d_args.get('to_ids') in ('true', '1', 1) else 0
+
+    if 'from' in args:
+        args['from_date'] = d_args.pop('from')
+    if 'to' in args:
+        args['to_date'] = d_args.pop('to')
+    if 'event_id' in args:
+        args['eventid'] = d_args.pop('event_id')
+    if 'last' in args:
+        args['publish_timestamp'] = d_args.pop('last')
+    if 'include_decay_score' in args:
+        args['include_decay_score'] = 1 if d_args.get('include_decay_score') in ('true', '1', 1) else 0
+    if 'include_sightings' in args:
+        args['include_sightings'] = 1 if d_args.get('include_sightings') in ('true', '1', 1) else 0
+    if 'include_correlations' in args:
+        args['include_correlations'] = 1 if d_args.get('include_correlations') in ('true', '1', 1) else 0
+
+    print(args)
+    demisto.debug(f"args for request search command are {args}")
+    return args
+
+
+def build_attributes_search_response(response_object: Union[dict, requests.Response]) -> dict:
+    """
+    Convert the response of attribute search returned from MIPS to the context output format.
+    """
+    attribute_fields = [
+        'id',
+        'event_id',
+        'object_id',
+        'object_relation',
+        'category',
+        'type',
+        'to_ids',
+        'uuid',
+        'timestamp',
+        'distribution',
+        'sharing_group_id',
+        'comment',
+        'deleted',
+        'disable_correlation',
+        'first_seen',
+        'last_seen',
+        'value',
+        'Event',
+        'Object',
+        'Galaxy',  # field wasn't tested as we don't see it in our responses. Was added by customer's request.
+        'Tag',
+        'decay_score'
+    ]
+    if isinstance(response_object, str):
+        response = json.loads(json.dumps(response_object))
+    attributes = response_object.get('Attribute')
+    parsed_attributes = dict()
+    for i in range(len(attributes)):
+        parsed_attributes[i] = {key: attributes[i].get(key) for key in attribute_fields if key in attributes[i]}
+
+        # Build Galaxy
+        if attributes[i].get('Galaxy'):
+            parsed_attributes[i]['Galaxy'] = [
+                {
+                    'name': star.get('name'),
+                    'type': star.get('type'),
+                    'description': star.get('description')
+                } for star in attributes[i]['Galaxy']
+            ]
+
+        # Build Tag
+        if attributes[i].get('Tag'):
+            parsed_attributes[i]['Tag'] = [
+                {'Name': tag.get('name')} for tag in attributes[i].get('Tag')
+            ]
+
+    parsed_attributes = replace_keys(parsed_attributes)
+    return parsed_attributes
+
+
+def search_attributes(pymisp) -> CommandResults:
     """
     Execute a MIPS search using the 'attributes' controller.
     """
-    d_args = demisto.args()
-    # List of all applicable search arguments
-    search_args = [
-        'value',
-        'type',
-        'category',
-        'uuid',
-        'to_ids',
-        'last',
-        'include_decay_score'
-    ]
-    args = dict()
-    # Create dict to pass into the search
-    for arg in search_args:
-        if arg in d_args:
-            args[arg] = d_args[arg]
-    # Replacing keys and values from Demisto to Misp's keys
-    if 'type' in args:
-        args['type_attribute'] = d_args.pop('type')
-    # search function 'to_ids' parameter gets 0 or 1 instead of bool.
-    if 'to_ids' in args:
-        args['to_ids'] = 1 if d_args.get('to_ids') in ('true', '1', 1) else 0
-    if 'include_decay_score' in args:
-        args['includeDecayScore'] = 1 if d_args.get('include_decay_score') in ('true', '1', 1) else 0
-
+    args = prepare_args_to_search()
     # Set the controller to attributes to search for attributes and not events
     args['controller'] = 'attributes'
-
-    response = MISP.search(**args)
-
-    if response: #todo talk to Yuval about the deepcopy issue
-        print(response)
-        response_for_context = build_attribute_context(copy.deepcopy(response))
-
-        md = f'## MISP attributes-search returned {len(response_for_context)} attributes.\n'
-
-        # if attributes were returned, display one to the warroom to visualize the result:
-        if len(response_for_context) > 0:
-            md += tableToMarkdown(f'Attribute ID: {response_for_context[0].get("ID")}', response_for_context[0])
-
-        demisto.results({
-            'Type': entryTypes['note'],
-            'Contents': response,
-            'ContentsFormat': formats['json'],
-            'HumanReadable': md,
-            'ReadableContentsFormat': formats['markdown'],
-            'EntryContext': {
-                MISP_ATTRIBUTE_PATH: response_for_context
-            }
-        })
-        return response_for_context, response
-    else:
-        demisto.results(f"No attributes found in MISP for {args}")
-        return {}, {}
-
-def search_objects() -> Tuple[dict, Any]:
-    """
-    Execute a MIPS search using the 'objects' controller.
-    """
-    d_args = demisto.args()
-    # List of all applicable search arguments
-    search_args = [
-        'value',
-        'type',
-        'category',
-        'uuid',
-        'to_ids',
-        'last',
-        'include_decay_score'
-    ]
-    args = dict()
-    # Create dict to pass into the search
-    for arg in search_args:
-        if arg in d_args:
-            args[arg] = d_args[arg]
-    # Replacing keys and values from Demisto to Misp's keys
-    if 'type' in args:
-        args['type_attribute'] = d_args.pop('type')
-    # search function 'to_ids' parameter gets 0 or 1 instead of bool.
-    if 'to_ids' in args:
-        args['to_ids'] = 1 if d_args.get('to_ids') in ('true', '1', 1) else 0
-    if 'include_decay_score' in args:
-        args['includeDecayScore'] = 1 if d_args.get('include_decay_score') in ('true', '1', 1) else 0
-
-    # Set the controller to attributes to search for attributes and not events
-    args['controller'] = 'attributes'
-
-    response = MISP.search(**args)
+    response = pymisp.search(**args)
 
     if response:
-        response_for_context = build_attribute_context(copy.deepcopy(response))
+        response_for_context = build_attributes_search_response(response)
 
-        md = f'## MISP attributes-search returned {len(response_for_context)} attributes.\n'
+        md = f'## MISP search-attributes returned {len(response_for_context)} attributes.\n'
 
-        # if attributes were returned, display one to the warroom to visualize the result:
+        # if attributes were returned, display one to the war-room to visualize the result:
         if len(response_for_context) > 0:
             md += tableToMarkdown(f'Attribute ID: {response_for_context[0].get("ID")}', response_for_context[0])
 
-        demisto.results({
-            'Type': entryTypes['note'],
-            'Contents': response,
-            'ContentsFormat': formats['json'],
-            'HumanReadable': md,
-            'ReadableContentsFormat': formats['markdown'],
-            'EntryContext': {
-                MISP_ATTRIBUTE_PATH: response_for_context
-            }
-        })
-        return response_for_context, response
+        return CommandResults(
+            raw_response=response,
+            readable_output=md,
+            outputs=response_for_context,
+            outputs_prefix="MISP.Attribute",
+            outputs_key_field="ID"
+        )
     else:
-        demisto.results(f"No attributes found in MISP for {args}")
-        return {}, {}
+        return CommandResults(readable_output=f"No attributes found in MISP for the given filters: {args}")
+
+
+def search_events(pymisp) -> CommandResults:
+    """
+    Execute a MIPS search using the 'event' controller.
+    """
+    args = prepare_args_to_search()
+    # Set the controller to events to search for events by the given args
+    args['controller'] = 'events'
+    response = pymisp.search(**args)
+
+    if response:
+        response_for_context = build_attributes_search_response(response)
+
+        md = f'## MISP search-attributes returned {len(response_for_context)} attributes.\n'
+
+        # if attributes were returned, display one to the war-room to visualize the result:
+        if len(response_for_context) > 0:
+            md += tableToMarkdown(f'Attribute ID: {response_for_context[0].get("ID")}', response_for_context[0])
+
+        return CommandResults(
+            raw_response=response,
+            readable_output=md,
+            outputs=response_for_context,
+            outputs_prefix="MISP.Attribute",
+            outputs_key_field="ID"
+        )
+    else:
+        return CommandResults(readable_output=f"No attributes found in MISP for the given filters: {args}")
 
 
 def delete_event(pymisp: ExpandedPyMISP, demisto_args: dict):
@@ -1410,12 +1460,10 @@ def main():
         elif command == 'misp-add-attribute':
             return_results(
                 add_attribute(demisto_args=args, pymisp=pymisp, data_keys_to_save=data_keys_to_save))  # checked V
-        elif command == 'misp-search':
-            search()
+        elif command == 'misp-search-events':
+            return_results(search_events(pymisp))  # checked
         elif command == 'misp-search-attributes':
-            search_attributes()
-        elif command == 'misp-search-objects':
-            search_objects()
+            return_results(search_attributes(pymisp))  # checked V
         elif command == 'misp-delete-event':
             return_results(delete_event(demisto_args=args, pymisp=pymisp))  # checked
         elif command == 'misp-add-sighting':
