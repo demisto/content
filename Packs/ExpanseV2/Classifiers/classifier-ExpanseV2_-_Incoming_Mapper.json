@@ -272,6 +272,10 @@
                     "complex": null,
                     "simple": "annotations.tags.name"
                 },
+                "Expanse Cloud Management Status": {
+					"complex": null,
+					"simple": "cloudManagementStatus.id"
+				},
                 "dbotMirrorDirection": {
                     "complex": null,
                     "simple": "xsoar_mirroring.mirror_direction"

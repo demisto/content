@@ -2,6 +2,7 @@ from typing import Union
 
 from requests_oauthlib import OAuth1
 from dateparser import parse
+from datetime import timedelta
 from CommonServerPython import *
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -872,31 +873,42 @@ def get_entries_for_fetched_incident(ticket_id, should_get_comments, should_get_
 def fetch_incidents(query, id_offset, should_get_attachments, should_get_comments, should_mirror_in, should_mirror_out,
                     comment_tag, attachment_tag, fetch_by_created=None):
     last_run = demisto.getLastRun()
-    demisto.debug(f"last_run: {last_run}" if last_run else 'last_run is empty')
-    if last_run and last_run.get("idOffset"):
-        id_offset = last_run.get("idOffset")
+    demisto.debug(f'last_run: {last_run}' if last_run else 'last_run is empty')
+    last_created_time = ''
+    if last_run:
+        id_offset = last_run.get('idOffset') or ''
+        last_created_time = last_run.get('lastCreatedTime') or ''
     if not id_offset:
         id_offset = 0
 
     incidents, max_results = [], 50
-    if id_offset:
-        query = f'{query} AND id >= {id_offset}'
-    if fetch_by_created:
-        query = f'{query} AND created>-1m'
+    if fetch_by_created and last_created_time:
+        last_issue_time = parse(last_created_time)
+        minute_to_fetch = last_issue_time - timedelta(minutes=2)
+        formatted_minute_to_fetch = minute_to_fetch.strftime('%Y-%m-%d %H:%M')
+        query = f'{query} AND created>=\"{formatted_minute_to_fetch}\"'
+    else:
+        if id_offset:
+            query = f'{query} AND id >= {id_offset}'
+        if fetch_by_created:
+            query = f'{query} AND created>-1m'
 
     res = run_query(query, '', max_results)
     if res:
-        curr_id = id_offset
+        curr_id = int(id_offset)
         for ticket in res.get('issues'):
-            ticket_id = int(ticket.get("id"))
-            if ticket_id == curr_id:
+            ticket_id = int(ticket.get('id'))
+            ticket_created = ticket.get('fields', {}).get('created', '')
+            if ticket_id <= curr_id:
                 continue
-            id_offset = max(int(id_offset), ticket_id)
+            if ticket_id > int(id_offset):
+                id_offset = ticket_id
+                last_created_time = ticket_created
             incidents.append(create_incident_from_ticket(ticket, should_get_attachments, should_get_comments,
                                                          should_mirror_in, should_mirror_out, comment_tag,
                                                          attachment_tag))
 
-    demisto.setLastRun({"idOffset": id_offset})
+    demisto.setLastRun({'idOffset': id_offset, 'lastCreatedTime': last_created_time})
     return incidents
 
 

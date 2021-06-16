@@ -5,7 +5,7 @@ import pytest
 from VirusTotalV3 import (ScoreCalculator, encode_to_base64,
                           encode_url_to_base64, epoch_to_timestamp,
                           get_working_id, raise_if_hash_not_valid,
-                          raise_if_ip_not_valid)
+                          raise_if_ip_not_valid, create_relationships)
 
 from CommonServerPython import DemistoException
 
@@ -154,3 +154,26 @@ class TestHelpers:
     def test_get_working_id_no_entry(self):
         with pytest.raises(DemistoException):
             assert get_working_id('1451', '')
+
+
+def test_create_relationships():
+    """
+    Given:
+    - The IP response from the api.
+
+    When:
+    - create relationships function.
+
+    Then:
+    - Validate that the relationships were created as expected.
+    """
+    expected_name = ['communicates-with', 'communicates-with', 'related-to', 'related-to']
+    relationships = create_relationships(entity_a='Test', entity_a_type='IP',
+                                         relationships_response=json.load(open('./TestData/relationships.json')),
+                                         reliability='B - Usually reliable')
+    relation_entry = [relation.to_entry() for relation in relationships]
+
+    for relation, expected_relation_name in zip(relation_entry, expected_name):
+        assert relation.get('name') == expected_relation_name
+        assert relation.get('entityA') == 'Test'
+        assert relation.get('entityBType') == 'File'

@@ -284,7 +284,7 @@ Get a report of an email address.
         "Type": "email",
         "Vendor": "Threat Crowd"
     },
-    "EMAIL": {
+    "Email": {
         "Address": "example@example.com"
     },
     "ThreatCrowd": {

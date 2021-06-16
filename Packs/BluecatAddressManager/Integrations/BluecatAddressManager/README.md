@@ -1,6 +1,6 @@
 <!-- HTML_DOC -->
 <p>Use the BlueCat integration to enrich IP addresses and manage response policies.</p>
-<h2>Configure BluecatAddressManager on Demisto</h2>
+<h2>Configure BluecatAddressManager on Cortex XSOAR</h2>
 <ol>
 <li>Navigate to<span> </span><strong>Settings</strong><span> </span>&gt;<span> </span><strong>Integrations</strong><span> </span>&gt;<span> </span><strong>Servers &amp; Services</strong>.</li>
 <li>Search for BluecatAddressManager.</li>
@@ -19,7 +19,7 @@
 <li>Click<span> </span><strong>Test</strong><span> </span>to validate the URLs, token, and connection.</li>
 </ol>
 <h2>Commands</h2>
-<p>You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
+<p>You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
 <ol>
 <li><a href="#h_ad8eee3b-a87d-41c0-b040-3f294b59e922" target="_self">Enrich an IP address: bluecat-am-query-ip</a></li>
 <li><a href="#h_859247e3-9b45-4b4b-850e-3295e96c2f98" target="_self">Get all response policies: bluecat-am-get-response-policies</a></li>

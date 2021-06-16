@@ -43,6 +43,8 @@ MIRROR_DIRECTION = {
     'Outgoing': 'Out',
     'Incoming And Outgoing': 'Both'
 }
+OUTGOING_MIRRORED_FIELDS = ['comment', 'status', 'owner', 'urgency']
+INCOMING_MIRRORED_FIELDS = ['comment', 'status', 'owner', 'urgency', 'status_label']
 
 # =========== Enrichment Mechanism Globals ===========
 ENABLED_ENRICHMENTS = params.get('enabled_enrichments', [])
@@ -993,21 +995,26 @@ def get_remote_data_command(service, args, close_incident):
 
     for item in results.ResultsReader(service.jobs.oneshot(search)):
         updated_notable = parse_notable(item, to_dict=True)
+    delta = {field: updated_notable.get(field) for field in INCOMING_MIRRORED_FIELDS if updated_notable.get(field)}
 
-    demisto.debug('notable {} status: {}'.format(notable_id, updated_notable.get('status')))
-    if updated_notable.get('status') == '5' and close_incident:
-        demisto.info('Closing incident related to notable {}'.format(notable_id))
-        entries.append({
-            'Type': EntryType.NOTE,
-            'Contents': {
-                'dbotIncidentClose': True,
-                'closeReason': 'Notable event was closed on Splunk.'
-            },
-            'ContentsFormat': EntryFormat.JSON
-        })
+    if delta:
+        demisto.debug('notable {} delta: {}'.format(notable_id, delta))
+        if delta.get('status') == '5' and close_incident:
+            demisto.info('Closing incident related to notable {}'.format(notable_id))
+            entries = [{
+                'Type': EntryType.NOTE,
+                'Contents': {
+                    'dbotIncidentClose': True,
+                    'closeReason': 'Notable event was closed on Splunk.'
+                },
+                'ContentsFormat': EntryFormat.JSON
+            }]
 
-    demisto.debug('Updated notable {}'.format(notable_id))
-    return_results(GetRemoteDataResponse(mirrored_object=updated_notable, entries=entries))
+        demisto.debug('Updated notable {}'.format(notable_id))
+    else:
+        demisto.debug('no delta was found for notable {}'.format(notable_id))
+
+    return_results(GetRemoteDataResponse(mirrored_object=delta, entries=entries))
 
 
 def get_modified_remote_data_command(service, args):
@@ -1056,9 +1063,9 @@ def update_remote_system_command(args, params, service, auth_token):
     if parsed_args.incident_changed and delta:
         demisto.debug('Got the following delta keys {} to update incident corresponding to notable '
                       '{}'.format(str(list(delta.keys())), notable_id))
-        changed_data = {'comment': None, 'status': None, 'owner': None, 'urgency': None}
+        changed_data = {field: None for field in OUTGOING_MIRRORED_FIELDS}
         for field in delta:
-            if field in ('comment', 'status', 'owner', 'urgency'):
+            if field in OUTGOING_MIRRORED_FIELDS:
                 changed_data[field] = delta[field]
 
         # Close notable if relevant
@@ -1384,6 +1391,8 @@ def rawToDict(raw):
             key_val_arr = raw.split(",")
             for key_val in key_val_arr:
                 single_key_val = key_val.split(":", 1)
+                if len(single_key_val) <= 1:
+                    single_key_val = key_val.split("=", 1)
                 if len(single_key_val) > 1:
                     val = single_key_val[1]
                     key = single_key_val[0].strip()
@@ -2002,7 +2011,8 @@ def kv_store_collection_add_entries(service):
     timeline = None
     if indicator_path:
         kv_store_data = json.loads(kv_store_data)
-        indicator = extract_indicator(indicator_path, [kv_store_data] if not isinstance(kv_store_data, list) else kv_store_data)
+        indicator = extract_indicator(indicator_path,
+                                      [kv_store_data] if not isinstance(kv_store_data, list) else kv_store_data)
         timeline = {
             'Value': indicator,
             'Message': 'Indicator added to {} store in Splunk'.format(kv_store_collection_name),

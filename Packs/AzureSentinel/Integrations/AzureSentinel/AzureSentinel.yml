@@ -289,7 +289,7 @@ script:
       - High
       - Medium
       - Low
-      - Informal
+      - Informational
       required: false
       secret: false
     - auto: PREDEFINED
@@ -327,6 +327,18 @@ script:
       - IncorrectAlertLogic
       - SuspiciousActivity
       - SuspiciousButExpected
+      required: false
+      secret: false
+    - default: false
+      description: The email address of the incident assignee. Note that the updated API field is `owner.email`.
+      isArray: false
+      name: assignee_email
+      required: false
+      secret: false
+    - default: false
+      description: Incident labels. Note that all labels will be set as labelType='User'.
+      isArray: true
+      name: labels
       required: false
       secret: false
     deprecated: false

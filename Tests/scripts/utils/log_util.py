@@ -86,8 +86,7 @@ def install_logging(log_file_name: str, include_process_name=False) -> str:
         os.path.join(ARTIFACTS_PATH, 'logs')) else os.path.join(ARTIFACTS_PATH, log_file_name)
     fh = logging.FileHandler(log_file_path)
     fh.setFormatter(formatter)
-    ch_log_level = logging.INFO if os.getenv('CIRCLECI') else logging.WARNING
-    ch.setLevel(ch_log_level)
+    ch.setLevel(logging.INFO)
     fh.setLevel(logging.DEBUG)
     configure_root_logger(ch, fh)
     return log_file_path

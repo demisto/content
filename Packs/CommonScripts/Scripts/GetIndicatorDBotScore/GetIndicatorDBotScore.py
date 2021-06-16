@@ -26,12 +26,15 @@ def get_dbot_score_data(indicator, indicator_type, source, score):
 def iterate_indicator_entry(indicator, entry):
     indicator_type = entry["indicator_type"]
     indicator_type = INDICATOR_TYPES.get(indicator_type, indicator_type).lower()
-    sources = entry.get('sourceBrands', [])
-    sources = sources if sources else [None]
-    for source in sources:
+    sources = entry.get('moduleToFeedMap', {})
+    if entry.get('manualScore'):
+        sources[entry.get('setBy')] = {}
+    elif not sources:
+        sources[None] = {}
+    for source, data in sources.items():
         if not source:
             source = DEFAULT_SOURCE
-        dbot_score = get_dbot_score_data(indicator, indicator_type, source, entry["score"])
+        dbot_score = get_dbot_score_data(indicator, indicator_type, source, data.get('score', entry["score"]))
         command_results = CommandResults(
             readable_output=tableToMarkdown('Indicator DBot Score: {}'.format(indicator), dbot_score),
             outputs={CONTEXT_PATH: dbot_score}

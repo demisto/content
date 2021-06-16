@@ -1,0 +1,28 @@
+{
+    "autorun": false,
+    "color": "#F8E7A5",
+    "days": 0,
+    "daysR": 0,
+    "default": false,
+    "detached": false,
+    "disabled": false,
+    "extractSettings": {
+        "fieldCliNameToExtractSettings": {},
+        "mode": "All"
+    },
+    "hours": 0,
+    "hoursR": 0,
+    "id": "Splunk Notable Generic",
+    "playbookId": "Splunk Generic",
+    "layout": "Splunk Notable Generic",
+    "locked": false,
+    "name": "Splunk Notable Generic",
+    "onChangeRepAlg": 0,
+    "readonly": false,
+    "reputationCalc": 2,
+    "system": false,
+    "version": -1,
+    "weeks": 0,
+    "weeksR": 0,
+    "fromVersion": "6.0.0"
+}

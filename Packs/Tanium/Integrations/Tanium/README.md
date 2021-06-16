@@ -1,7 +1,7 @@
 <!-- HTML_DOC -->
 <p>Use the Tanium integration to manage questions, packages, and actions.</p>
 <p>This integration was integrated and tested with version 7.0.314 of Tanium v7.0.314 and Pytan v2.2.2.</p>
-<h2>Configure Tanium on Demisto</h2>
+<h2>Configure Tanium on Cortex XSOAR</h2>
 <ol>
 <li>Navigate to <strong>Settings</strong> &gt; <strong>Integrations</strong> &gt; <strong>Servers &amp; Services</strong>.</li>
 <li>Search for Tanium.</li>
@@ -18,7 +18,7 @@
 </li>
 </ol>
 <h2>Commands</h2>
-<p>You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.<br> After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
+<p>You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.<br> After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
 <h3>Action Commands</h3>
 <ol>
 <li><a href="#h_68592942981536234345847">Parse question text: tn-ask-question</a></li>

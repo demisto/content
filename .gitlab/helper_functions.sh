@@ -1,9 +1,9 @@
 #!/bin/bash
 
-DARK_CYAN="\e[38;2;1;189;189m"
+CYAN="\e[0;36m"
 CLEAR="\e[0m"
-SECTION_START="\e[0Ksection_start:$(date +%s):section_id\r\e[0K${DARK_CYAN}section_header${CLEAR}"
-SECTION_END="\e[0Ksection_end:$(date +%s):section_id\r\e[0K"
+SECTION_START="\e[0Ksection_start:the_time:section_id\r\e[0K${CYAN}section_header${CLEAR}"
+SECTION_END="\e[0Ksection_end:the_time:section_id\r\e[0K"
 
 section_start() {
     local section_header section_id start
@@ -35,12 +35,14 @@ section_start() {
         echo "--collapse indicates that you would like those log steps to be collapsed in the job log output by default"
         exit 9
     fi
-    start="$(echo "$start" | sed -e "s/section_id/$section_id/" -e "s/section_header/$section_header/")"
+    start_time=$(date +%s)
+    start="$(echo "$start" | sed -e "s/the_time/$start_time/" -e "s/section_id/$section_id/" -e "s/section_header/$section_header/")"
     echo -e "$start"
 }
 
 section_end() {
     local section_id end
+    end="$SECTION_END"
     if [[ "$#" -eq 1 ]]; then
         section_id="$(echo "$1" | tr -c '[:alnum:]\n\r' '_')"
     else
@@ -51,6 +53,7 @@ section_end() {
         echo "where <section-start-id> or <section-header> is that of the section this marks the end of"
         exit 9
     fi
-    end="${SECTION_END/section_id/$section_id}"
+    end_time=$(date +%s)
+    end="$(echo "$end" | sed -e "s/the_time/$end_time/" -e "s/section_id/$section_id/")"
     echo -e "$end"
 }

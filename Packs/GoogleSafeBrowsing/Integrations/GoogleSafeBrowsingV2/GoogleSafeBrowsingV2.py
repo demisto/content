@@ -141,7 +141,7 @@ def arrange_results_to_urls(results: List, url_list: List) -> Dict:
     return urls_results
 
 
-def url_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
+def url_command(client: Client, args: Dict[str, Any]) -> Union[List[CommandResults], CommandResults]:
     """
     url command: Returns URL details for a list of URL
     """
@@ -150,7 +150,27 @@ def url_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
 
     result = client.url_request(client.client_body, url)
 
-    if not result or result.get('StatusCode'):
+    if not result:
+        dbot_score = Common.DBotScore(
+            indicator=url,
+            indicator_type=DBotScoreType.URL,
+            integration_name=INTEGRATION_NAME,
+            score=0,
+            reliability=client.reliability
+        )
+        url_standard_context = Common.URL(
+            url=url,
+            dbot_score=dbot_score
+        )
+        return CommandResults(
+            readable_output=f'No information was found for url {url}',
+            outputs_prefix=URL_OUTPUT_PREFIX,
+            outputs_key_field='IndicatorValue',
+            outputs=result,
+            indicator=url_standard_context
+        )
+
+    if result.get('StatusCode'):
         handle_errors(result)
 
     urls_data = arrange_results_to_urls(result.get('matches'), url)  # type: ignore

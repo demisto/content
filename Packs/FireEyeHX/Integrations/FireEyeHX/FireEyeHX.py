@@ -2351,11 +2351,14 @@ def fetch_incidents():
 
     last_run = demisto.getLastRun()
     alerts = []  # type: List[Dict[str, str]]
+    fetch_limit = int(demisto.params().get('fetch_limit') or '100')
+
     if last_run and last_run.get('min_id'):
         # get all alerts with id greater than min_id
         alerts = get_all_alerts(
             min_id=last_run.get('min_id'),
-            sort='_id+ascending'
+            sort='_id+ascending',
+            limit=fetch_limit
         )
         # results are sorted in ascending order - the last alert holds the greatest id
         min_id = alerts[-1].get('_id') if alerts else None
@@ -2363,7 +2366,7 @@ def fetch_incidents():
         # get the last 100 alerts
         alerts = get_all_alerts(
             sort='_id+descending',
-            limit=100
+            limit=fetch_limit
         )
         # results are sorted in descending order - the first alert holds the greatest id
         min_id = alerts[0].get('_id') if alerts else None

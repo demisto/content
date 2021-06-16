@@ -1,0 +1,568 @@
+id: LogPoint SIEM Integration - Test Playbook 3
+version: -1
+name: LogPoint SIEM Integration - Test Playbook 3
+description: This is a test playbook that contains LogPoint search api commands.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 2139919f-c8ea-4ff5-852b-156f4b34f40b
+    type: start
+    task:
+      id: 2139919f-c8ea-4ff5-852b-156f4b34f40b
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: 8e9437bb-398b-411c-8ee9-6b1ce761b0f4
+    type: regular
+    task:
+      id: 8e9437bb-398b-411c-8ee9-6b1ce761b0f4
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: 06092637-ad6c-4fbc-8fdb-6db3c5ca6cf9
+    type: regular
+    task:
+      id: 06092637-ad6c-4fbc-8fdb-6db3c5ca6cf9
+      version: -1
+      name: lp-get-users-preference
+      description: Get LogPoint user's preference like timezone, date format etc.
+      script: '|||lp-get-users-preference'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: ff420a0b-1d2f-410e-8729-94ee806bf34e
+    type: condition
+    task:
+      id: ff420a0b-1d2f-410e-8729-94ee806bf34e
+      version: -1
+      name: Verify
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LogPoint.User.Preference.timezone
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: 549ee229-1f8e-4b81-89d8-0dd7470a87cd
+    type: regular
+    task:
+      id: 549ee229-1f8e-4b81-89d8-0dd7470a87cd
+      version: -1
+      name: lp-get-logpoints
+      description: Get user's LogPoints.
+      script: '|||lp-get-logpoints'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: 26c59141-bde2-455d-8f1b-b524fbc5592d
+    type: condition
+    task:
+      id: 26c59141-bde2-455d-8f1b-b524fbc5592d
+      version: -1
+      name: Verify
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "7"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LogPoint.LogPoints.ip
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: eb8e8b48-8a2c-4eea-80f6-473e9c94fa3e
+    type: title
+    task:
+      id: eb8e8b48-8a2c-4eea-80f6-473e9c94fa3e
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2820
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: 5b1f1f47-8d1d-41d1-8aca-75e806111f89
+    type: regular
+    task:
+      id: 5b1f1f47-8d1d-41d1-8aca-75e806111f89
+      version: -1
+      name: lp-get-repos
+      description: Get the list of LogPoint repos that can be accessed by the user.
+      script: '|||lp-get-repos'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: b8570469-bc34-4098-8427-49b96b76e95e
+    type: condition
+    task:
+      id: b8570469-bc34-4098-8427-49b96b76e95e
+      version: -1
+      name: Verify
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "9"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LogPoint.Repos.repo
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "9":
+    id: "9"
+    taskid: 74f984fd-c0ea-4345-89ce-bacd549d53f5
+    type: regular
+    task:
+      id: 74f984fd-c0ea-4345-89ce-bacd549d53f5
+      version: -1
+      name: lp-get-devices
+      description: Get devices associated with the LogPoint.
+      script: '|||lp-get-devices'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "10":
+    id: "10"
+    taskid: 26b8ecb7-7f50-4ea1-80b4-e060c4c1955c
+    type: condition
+    task:
+      id: 26b8ecb7-7f50-4ea1-80b4-e060c4c1955c
+      version: -1
+      name: Verify
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "11"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LogPoint.Devices.address
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "11":
+    id: "11"
+    taskid: d335d699-a718-441f-8031-3beafa7f6842
+    type: regular
+    task:
+      id: d335d699-a718-441f-8031-3beafa7f6842
+      version: -1
+      name: lp-get-livesearches
+      description: Get live searches.
+      script: '|||lp-get-livesearches'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "12":
+    id: "12"
+    taskid: 517a1c30-f1bd-421e-8741-81d4c79365a4
+    type: regular
+    task:
+      id: 517a1c30-f1bd-421e-8741-81d4c79365a4
+      version: -1
+      name: lp-get-searchid
+      description: Gets Search Id based on the provided search parameters.
+      script: '|||lp-get-searchid'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      limit:
+        simple: "5"
+      query:
+        simple: '| chart count() by col_type'
+      repos: {}
+      time_range: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "13":
+    id: "13"
+    taskid: 775dd925-db5b-436f-8c53-95970120937b
+    type: regular
+    task:
+      id: 775dd925-db5b-436f-8c53-95970120937b
+      version: -1
+      name: lp-search-logs
+      description: Gets LogPoint search result. Takes search_id as an argument.
+      script: '|||lp-search-logs'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      search_id:
+        simple: ${LogPoint.search_id}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "14":
+    id: "14"
+    taskid: ebaaedad-0192-4713-8765-65285b0e22c5
+    type: condition
+    task:
+      id: ebaaedad-0192-4713-8765-65285b0e22c5
+      version: -1
+      name: Verify
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "12"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LogPoint.LiveSearches
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1945
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "15":
+    id: "15"
+    taskid: 333896c6-f353-47df-8719-6a13ddbfb45a
+    type: condition
+    task:
+      id: 333896c6-f353-47df-8719-6a13ddbfb45a
+      version: -1
+      name: Verify
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "13"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LogPoint.search_id
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2295
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "16":
+    id: "16"
+    taskid: 0cf36d2a-63c3-430f-8651-1d1b0966d398
+    type: condition
+    task:
+      id: 0cf36d2a-63c3-430f-8651-1d1b0966d398
+      version: -1
+      name: Verify
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LogPoint.SearchLogs
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2645
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 2835,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+sourceplaybookid: LogPoint SIEM Integration - Test Playbook 2
+fromversion: 6.0.0

@@ -89,7 +89,7 @@
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "stixaliases",
+                                "fieldId": "aliases",
                                 "height": 22,
                                 "id": "60dd8e70-a81e-11eb-8bae-034332f83c9b",
                                 "index": 1,
@@ -98,7 +98,7 @@
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "stixgoals",
+                                "fieldId": "goals",
                                 "height": 22,
                                 "id": "662e2ec0-a81e-11eb-8bae-034332f83c9b",
                                 "index": 2,
@@ -107,7 +107,7 @@
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "stixresourcelevel",
+                                "fieldId": "resourcelevel",
                                 "height": 22,
                                 "id": "6b496730-a81e-11eb-8bae-034332f83c9b",
                                 "index": 3,
@@ -125,7 +125,7 @@
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "stixsecondarymotivations",
+                                "fieldId": "secondarymotivations",
                                 "height": 22,
                                 "id": "70310c80-a81e-11eb-8bae-034332f83c9b",
                                 "index": 5,
@@ -279,7 +279,7 @@
                             {
                                 "dropEffect": "move",
                                 "endCol": 4,
-                                "fieldId": "stixdescription",
+                                "fieldId": "description",
                                 "height": 106,
                                 "id": "3a65d1d0-d17d-11ea-b39d-69849bf59ed7",
                                 "index": 0,
@@ -476,7 +476,7 @@
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "stixaliases",
+                                "fieldId": "aliases",
                                 "height": 22,
                                 "id": "8c529640-a81e-11eb-8bae-034332f83c9b",
                                 "index": 1,
@@ -486,7 +486,7 @@
                             {
                                 "dropEffect": "move",
                                 "endCol": 2,
-                                "fieldId": "stixgoals",
+                                "fieldId": "goals",
                                 "height": 22,
                                 "id": "92e330a0-a81e-11eb-8bae-034332f83c9b",
                                 "index": 2,
@@ -496,7 +496,7 @@
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "stixresourcelevel",
+                                "fieldId": "resourcelevel",
                                 "height": 22,
                                 "id": "989e0470-a81e-11eb-8bae-034332f83c9b",
                                 "index": 3,
@@ -515,7 +515,7 @@
                             {
                                 "dropEffect": "move",
                                 "endCol": 2,
-                                "fieldId": "stixsecondarymotivations",
+                                "fieldId": "secondarymotivations",
                                 "height": 22,
                                 "id": "8962a240-a81e-11eb-8bae-034332f83c9b",
                                 "index": 5,
@@ -563,7 +563,7 @@
                         "items": [
                             {
                                 "endCol": 2,
-                                "fieldId": "stixdescription",
+                                "fieldId": "description",
                                 "height": 22,
                                 "id": "514ccc90-d183-11ea-b1ee-39abdac77dba",
                                 "index": 0,
@@ -590,7 +590,7 @@
                 "name": "Relationships",
                 "sections": [
                     {
-                        "h": 2,
+                        "h": 4,
                         "i": "se889tdxik-09585430-979f-11eb-a8d1-098e2c945225",
                         "items": [],
                         "maxW": 3,

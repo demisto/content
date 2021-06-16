@@ -22,7 +22,7 @@ subtype: python3
 system: false
 timeout: '0'
 type: python
-dockerimage: demisto/python3:3.8.2.6981
+dockerimage: demisto/python3:3.9.5.20958
 runas: DBotWeakRole
 runonce: false
 tags: []

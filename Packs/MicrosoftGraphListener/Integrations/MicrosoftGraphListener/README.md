@@ -1,4 +1,4 @@
-<p>Microsoft Graph allows Demisto authorized access to a user's Outlook mail data in a personal or organization account. This integration was tested with version 1.0 of Microsoft Graph Mail Single User.</p>
+<p>Microsoft Graph allows Cortex XSOAR authorized access to a user's Outlook mail data in a personal or organization account. This integration was tested with version 1.0 of Microsoft Graph Mail Single User.</p>
 <h2>Use Cases</h2>
 <ul>
 <li>Monitor a specific email account and create incidents from incoming emails to the defined folder.</li>
@@ -6,10 +6,12 @@
 </ul>
 
 <h2>Fetch Incidents</h2>
-<p>The integration imports email messages from the destination folder in the target mailbox as incidents. If the message contains any attachments, they are uploaded to the War Room as files. If the attachment is an email (item attachment), Demisto fetches information about the attached email and downloads all of its attachments (if there are any) as files. To use Fetch incidents, configure a new instance and select the Fetches incidents option in the instance settings.</p>
+<p>The integration imports email messages from the destination folder in the target mailbox as incidents. If the message contains any attachments, they are uploaded to the War Room as files. If the attachment is an email (item attachment), Cortex XSOAR fetches information about the attached email and downloads all of its attachments (if there are any) as files. To use Fetch incidents, configure a new instance and select the Fetches incidents option in the instance settings.</p>
 
 <h2>Authentication</h2>
 For more details about the authentication used in this integration, see <a href="https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication">Microsoft Integrations - Authentication</a>.
+
+<b>Note:</b> For this integration, you cannot use a "Shared mailbox" regardless of the authentication method used.
 
 <h3>Required Permissions</h3>
 The following permissions are required for all commands:
@@ -48,7 +50,7 @@ The following permissions are required for all commands:
 
 <h2>Commands</h2>
 <p>
-  You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.
+  You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
   After you successfully execute a command, a DBot message appears in the War Room with the command details.
 </p>
 <ol>
@@ -592,6 +594,14 @@ The following permissions are required for all commands:
 <a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
  alt="image" width="749" height="412"></a>
  -->
+</p>
+<p>
+  <h5>Sending mails with embedded images</h5>
+  In order to send a mail with embedded image, the image content ID should be passed the <b>attach_cids</b> argument and referenced in the HTML mark-up.
+  Note: You will have to specify this CID reference when you add the attachment to the mail message.
+  For example:
+
+  <code>!send-mail subject="Mail with an embedded image" attach_cids=1@2 body_type=HTML body="&lt;h1&gt;A mail with an embedded image &lt;img src='cid:1@2' /&gt;&lt;/h1&gt;"</code>
 </p>
 
 <h3 id="msgraph-mail-reply-to">3. msgraph-mail-reply-to</h3>

@@ -137,7 +137,8 @@ script:
       description: Sample ID in the analysis.
       type: Number
     - contextPath: VMRay.Analysis.Severity
-      description: Severity of the sample (Malicious, Suspicious, Good, Blacklisted, Whitelisted, Unknown).
+      description: Severity of the sample (Malicious, Suspicious, Good, Blacklisted,
+        Whitelisted, Unknown).
       type: String
     - contextPath: VMRay.Analysis.JobCreated
       description: Date when the analysis job started.
@@ -198,7 +199,8 @@ script:
       type: String
   - arguments:
     - default: false
-      description: ID of the submission. Can be obtained by running the 'vmray-upload-sample' command.
+      description: ID of the submission. Can be obtained by running the 'vmray-upload-sample'
+        command.
       isArray: false
       name: submission_id
       required: true
@@ -230,7 +232,8 @@ script:
       description: ssdeep hash of the sample in the submission.
       type: String
     - contextPath: VMRay.Submission.Severity
-      description: Severity of the sample in the submission (Malicious, Suspicious, Good, Blacklisted, Whitelisted, Unknown).
+      description: Severity of the sample in the submission (Malicious, Suspicious,
+        Good, Blacklisted, Whitelisted, Unknown).
       type: String
     - contextPath: VMRay.Submission.SampleID
       description: ID of the sample in the submission.
@@ -266,7 +269,8 @@ script:
       description: ssdeep hash of the sample.
       type: String
     - contextPath: VMRay.Sample.Severity
-      description: Severity of the sample in the submission (Malicious, Suspicious, Good, Blacklisted, Whitelisted, Unknown).
+      description: Severity of the sample in the submission (Malicious, Suspicious,
+        Good, Blacklisted, Whitelisted, Unknown).
       type: String
     - contextPath: VMRay.Sample.Type
       description: File type.
@@ -496,7 +500,8 @@ script:
       required: true
       secret: false
     deprecated: true
-    description: This command performs a function similiar to the 'vmray-get-job-by-sample' command.
+    description: This command performs a function similiar to the 'vmray-get-job-by-sample'
+      command.
     execution: false
     name: get_job_sample
   - arguments:
@@ -514,10 +519,12 @@ script:
     description: Retrieves a sample using the sample ID. (Deprecated)
     execution: false
     name: upload_sample
-  dockerimage: demisto/python:2.7.18.18413
+  dockerimage: demisto/python:2.7.18.19851
   isfetch: false
   runonce: false
   script: ''
   type: python
   subtype: python2
 fromversion: 5.0.0
+tests:
+- No tests (auto formatted)
