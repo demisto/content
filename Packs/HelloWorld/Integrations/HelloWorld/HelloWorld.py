@@ -554,20 +554,14 @@ def test_module(client: Client, first_fetch_time: int) -> str:
     # invalid').
     # Cortex XSOAR will print everything you return different than 'ok' as
     # an error
-
-
-    # try:
-    #     client.search_alerts(max_results=1, start_time=first_fetch_time, alert_status=None, alert_type=None,
-    #                          severity=None)
-    # except DemistoException as e:
-    #     if 'Forbidden' in str(e):
-    #         return 'Authorization Error: make sure API Key is correctly set'
-    #     else:
-    #         raise e
     try:
-        5/0
-    except Exception as e:
-        raise e
+        client.search_alerts(max_results=1, start_time=first_fetch_time, alert_status=None, alert_type=None,
+                             severity=None)
+    except DemistoException as e:
+        if 'Forbidden' in str(e):
+            return 'Authorization Error: make sure API Key is correctly set'
+        else:
+            raise e
     return 'ok'
 
 
