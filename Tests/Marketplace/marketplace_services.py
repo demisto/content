@@ -1236,6 +1236,17 @@ class Pack(object):
                 modified_rn_files.append(modified_file_path_parts[-1])
         return modified_rn_files
 
+    def only_release_notes_were_modified(self, modified_files_paths):
+        """
+        Check if all the paths in the modified files paths are of files in the ReleaseNotes directory.
+
+        Args:
+            modified_files_paths (list): list of paths of the pack's modified file
+        Returns:
+            bool: whether the files changed are only ReleaseNotes files
+        """
+        return all(self.RELEASE_NOTES in path for path in modified_files_paths)
+
     def prepare_release_notes(self, index_folder_path, build_number, pack_was_modified=False,
                               modified_files_paths=None):
         """
@@ -1285,12 +1296,16 @@ class Pack(object):
                         return task_status, not_updated_build
                     else:
                         if latest_release_notes in changelog:
+                            #  Check if the modified files are not only release notes
+                            #  If the modified files are only release notes, don't change the timestamp of the entry
+                            if pack_was_modified:
+                                pack_was_modified = not self.only_release_notes_were_modified(modified_files_paths)
                             logging.info(f"Found existing release notes for version: {latest_release_notes}")
                             version_changelog = self._create_changelog_entry(release_notes=release_notes_lines,
                                                                              version_display_name=latest_release_notes,
                                                                              build_number=build_number,
                                                                              pack_was_modified=pack_was_modified,
-                                                                             new_version=False)  # need to understand why do we need this part
+                                                                             new_version=False)
 
                         else:
                             logging.info(f"Created new release notes for version: {latest_release_notes}")
@@ -1309,7 +1324,7 @@ class Pack(object):
                                     release_notes=modified_release_notes_lines,
                                     version_display_name=version,
                                     build_number=build_number,
-                                    pack_was_modified=True,
+                                    pack_was_modified=False,
                                     new_version=False)
                                 changelog[version] = changelog_entry
 
