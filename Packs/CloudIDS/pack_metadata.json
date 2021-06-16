@@ -1,6 +1,6 @@
 {
     "name": "Cloud-IDS",
-    "description": "Cloud IDS",
+    "description": "Google Cloud IDS, a next-generation advanced intrusion detection service that provides threat detection for intrusions, malware, spyware and command-and-control attacks.",
     "support": "community",
     "currentVersion": "1.0.0",
     "author": "Cortex XSOAR",
@@ -12,4 +12,4 @@
     "tags": [],
     "useCases": [],
     "keywords": []
-}
+}å
