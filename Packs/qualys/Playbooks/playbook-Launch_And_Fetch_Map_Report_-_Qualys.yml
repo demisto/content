@@ -1,7 +1,7 @@
 id: Launch And Fetch Map Report - Qualys
 version: -1
 name: Launch And Fetch Map Report - Qualys
-description: First launches a  map scan report and then fetch the report when it's
+description: Launches a map scan report and fetches the report when it's
   ready.
 starttaskid: "0"
 tasks:
@@ -212,7 +212,7 @@ inputs:
   value: {}
   required: false
   description: (Valid for CSV format report only). Specify hide_header=1 to omit the
-    header information from the report. By default this information is included.
+    header information from the report. By default, this information is included.
   playbookInputQuery:
 - key: recipient_group_id
   value: {}
