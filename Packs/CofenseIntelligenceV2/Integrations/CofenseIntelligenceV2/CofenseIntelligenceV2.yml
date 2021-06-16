@@ -75,11 +75,6 @@ configuration:
   - Moderate
   - Major
   additionalinfo: Threshold for email reletad threats' severity.
-- display: Number of Reports to show
-  name: Threats_limit
-  defaultvalue: 1
-  type: 0
-  additionalinfo: Limit the number of threats' reports that will be displayed in the command results
 - display: Time limit for collecting data
   name: days_back
   defaultvalue: 90
