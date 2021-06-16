@@ -1,7 +1,8 @@
 import io
 from CofenseIntelligenceV2 import *
 
-mock_params = {'url_threshold': 'Major', 'file_threshold': 'Major', 'email_threshold': 'Major', 'ip_threshold': 'Major'}
+mock_params = {'url_threshold': 'Major', 'file_threshold': 'Major', 'email_threshold': 'Major', 'ip_threshold': 'Major',
+               'days_back': 90}
 
 mock_base_url = 'mock_base_url'
 mock_username = 'mock_username'
@@ -75,7 +76,7 @@ def test_extracted_string(mocker):
 
     return_value = test_data.get('string_search_response')
     mocker.patch.object(client, 'threat_search_call', return_value=return_value)
-    response = extracted_string(client, mock_args)
+    response = extracted_string(client, mock_args, mock_params)
     mock_outputs = test_data.get('mock_outputs')
     mock_readable_outputs = test_data.get('mock_readable')
     assert mock_outputs == str(response.outputs)
