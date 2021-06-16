@@ -18,11 +18,8 @@ script: >
     }
     // An active instance of GoogleMaps exists, geocoding is possible
       var commandResult = executeCommand("google-maps-geocode", {"search_address" : address});
-      if (isError(commandResult)) {
+      if (isError(commandResult) || !commandResult || !commandResult.results) {
           return commandResult;
-      }
-      if (!commandResult.results){
-          return commandResult; // a non-error note indicating no places were found
       }
       var ec = commandResult[0].EntryContext["GoogleMaps(val.lat && val.lat == obj.lat && val.lng && val.lng == obj.lng)"];
       lat = ec.lat;
