@@ -593,6 +593,7 @@ def is_the_first_alert_is_already_fetched_in_previous_fetch(alerts: List[dict], 
 
 
 def alerts_to_incidents_and_fetch_start_from(alerts: List[dict], fetch_start_time: str, last_run: dict):
+    fetch_start_time = int(fetch_start_time)
     incidents = []
     current_last_incident_fetched = ''
     if alerts and is_the_first_alert_is_already_fetched_in_previous_fetch(alerts, last_run):
