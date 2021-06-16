@@ -583,6 +583,7 @@ script:
   - arguments:
     - description: Number of dates to search
       name: number-of-date
+      required: true
     - auto: PREDEFINED
       description: Log source type
       name: source-type
