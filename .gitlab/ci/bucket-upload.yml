@@ -8,6 +8,17 @@
   variables:
     GCS_PRODUCTION_BUCKET: "marketplace-dist-dev" # remove this after testing period
 
+.bucket-upload-rule-always:
+  rules:
+    - if: '$GCS_MARKET_BUCKET == "marketplace-dist"' # remove this after testing period
+      when: never # remove this after testing period
+    - if: '$CI_COMMIT_BRANCH =~ /pull\/[0-9]+/'
+      when: never
+    - if: '$BUCKET_UPLOAD == "true"'
+      when: always
+  variables:
+    GCS_PRODUCTION_BUCKET: "marketplace-dist-dev" # remove this after testing period
+
 
 .check_user_permissions_to_upload_packs: &check_user_permissions_to_upload_packs
   - section_start "Check User Permissions to Upload Packs" # if bucket upload and uploading to marketplace-dist
@@ -118,7 +129,7 @@ upload-packs-to-marketplace:
     SSH_TUNNEL_TIMEOUT: 10
     TIME_TO_LIVE: ""
   extends:
-    - .bucket-upload-rule
+    - .bucket-upload-rule-always
     - .default-job-settings
   script:
     - !reference [.open-ssh-tunnel]
@@ -173,20 +184,13 @@ force-pack-upload:
 
 
 slack-notify-bucket-upload:
-  extends:
-    - .trigger-slack-notification
-  rules:
-    - if: '$GCS_MARKET_BUCKET == "marketplace-dist"' # remove this after testing period
-      when: never # remove this after testing period
-    - if: '$CI_COMMIT_BRANCH =~ /pull\/[0-9]+/'
-      when: never
-    - if: '$BUCKET_UPLOAD == "true"'
-      when: always
   variables:
     PIPELINE_TO_QUERY: $CI_PIPELINE_ID
     WORKFLOW: 'Upload Packs to Marketplace Storage'
     JOB_NAME: 'upload-packs-to-marketplace'
     # Passes the environment variable from the parent pipeline to the child which can be useful for cases
     # when triggering pipeline with alternate env variable value passed in the API call
-    SLACK_CHANNEL: '$SLACK_CHANNEL'
-    GCS_PRODUCTION_BUCKET: "marketplace-dist-dev" # remove this after testing period
+    SLACK_CHANNEL: $SLACK_CHANNEL
+  extends:
+    - .trigger-slack-notification
+    - .bucket-upload-rule-always
