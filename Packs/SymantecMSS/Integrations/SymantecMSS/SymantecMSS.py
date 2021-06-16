@@ -117,7 +117,8 @@ def isoformat(date):
 
 def test():
     now = datetime.utcnow()
-    get_incidents_list_request(isoformat(now), None, None, 1)
+    # get_incidents_list_request(isoformat(now), None, None, 1)
+    get_incidents_list_request(None, None, None, 1)
     demisto.results("ok")
 
 
