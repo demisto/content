@@ -263,6 +263,14 @@ def get_agent_validation_details(api_token):
     })
 
 
+def test(statuscode):
+
+    if statuscode == 200:
+        demisto.results('ok')
+    else:
+        return_error('cynet has not connected.')
+
+
 def main():
     command = demisto.command()
     import requests
@@ -279,13 +287,12 @@ def main():
     }
 
     response = requests.request("POST", url, json=payload, headers=headers, verify=USE_SSL)
-
     # print(response.text)
     api_token = response.json()
 
     try:
         if command == 'test-module':
-            test()
+            test(response.status_code)
         elif command == 'cynet-get-hosts':
             get_hosts(api_token)
         elif command == 'cynet-get-host-details':
