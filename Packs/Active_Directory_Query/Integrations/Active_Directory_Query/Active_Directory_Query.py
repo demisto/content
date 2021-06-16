@@ -167,9 +167,20 @@ def base_dn_verified(base_dn):
     return True
 
 
-def generate_dn_and_remove_from_user_profile(user):
+def validate_cn(default_base_dn, cn):
+
+    changing_cn = cn
+    i = 1
+    while check_if_user_exists_by_cn(default_base_dn, changing_cn):
+        changing_cn = cn+str(i)
+        i += 1
+    return changing_cn
+
+
+def generate_dn_and_remove_from_user_profile(default_base_dn, user):
     """Generates a user dn, in case user dn is included in the user, will return it, otherwise
     will generate one using the cn and ou values
+    :param default_base_dn: The location in the DIT where the search will start
     :param user: The user dict including his values
     :return: The user's dn.
     """
@@ -178,7 +189,8 @@ def generate_dn_and_remove_from_user_profile(user):
         user.pop("dn")
         return user_dn
 
-    cn = user.get("cn")
+    cn = validate_cn(default_base_dn, user.get("cn"))
+
     if not cn:
         raise Exception("User must have cn, please provide a valid value")
     ou = user.get("ou")
@@ -186,6 +198,27 @@ def generate_dn_and_remove_from_user_profile(user):
         raise Exception("User must have ou, please provide a valid value")
 
     return 'CN=' + str(cn) + ',' + str(ou)
+
+
+def check_if_user_exists_by_cn(default_base_dn, cn):
+    """Check if user exists base on his samaccountname
+    :param default_base_dn: The location in the DIT where the search will start
+    :param cn: The user's unique cn
+    :return: True if the user exists, False otherwise.
+    """
+    query = f'(&(objectClass=User)(objectCategory=person)(cn={cn}))'
+    entries = search_with_paging(
+        query,
+        default_base_dn,
+        attributes=["cn"],
+        size_limit=1,
+        page_size=1
+    )
+
+    if entries.get('flat'):
+        return True
+
+    return False
 
 
 def check_if_user_exists_by_samaccountname(default_base_dn, samaccountname):
@@ -791,7 +824,7 @@ def create_user_iam(default_base_dn, args, mapper_out, disabled_users_group_cn):
             iam_user_profile = update_user_iam(default_base_dn, args, False, mapper_out, disabled_users_group_cn)
 
         else:
-            user_dn = generate_dn_and_remove_from_user_profile(ad_user)
+            user_dn = generate_dn_and_remove_from_user_profile(default_base_dn, ad_user)
             object_classes = ["top", "person", "organizationalPerson", "user"]
             ad_user.pop('ou')
 
