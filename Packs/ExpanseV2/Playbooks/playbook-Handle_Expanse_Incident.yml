@@ -1929,7 +1929,7 @@ tasks:
                 filters:
                 - - operator: isTrue
                     left:
-                      value:]
+                      value:
                         simple: ShadowITCondition.value
                       iscontext: true
             iscontext: true
