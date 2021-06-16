@@ -1,0 +1,256 @@
+id: 69e94029-944d-4652-86f5-652b2404a0f6
+version: 19
+vcShouldKeepItemLegacyProdMachine: false
+name: rss_indicators_extraction
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: f6d8ee66-a39e-46fa-8f70-6f686014c91a
+    type: start
+    task:
+      id: f6d8ee66-a39e-46fa-8f70-6f686014c91a
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": 40
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 014ecbfb-f5a8-43e3-8786-1d63da637663
+    type: playbook
+    task:
+      id: 014ecbfb-f5a8-43e3-8786-1d63da637663
+      version: -1
+      name: extract_and_create_relationship
+      playbookName: extract_and_create_relationship
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      description:
+        simple: ${playbookQuery.CustomFields.description}
+      report_name:
+        simple: ${playbookQuery.value}
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+      forEach: true
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": 410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 7ea93539-a782-440b-808f-6af06c9e28aa
+    type: regular
+    task:
+      id: 7ea93539-a782-440b-808f-6af06c9e28aa
+      version: -1
+      name: Tag report as "processed"
+      description: commands.local.cmd.add.values.to.indicator.multi.select.field
+      script: Builtin|||appendIndicatorField
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      field:
+        simple: tags
+      fieldValue:
+        simple: ${inputs.tag}
+      indicatorsValues:
+        simple: ${playbookQuery.value}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": 600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: c4fcd607-d654-468d-82fe-648eb6ce8f9c
+    type: regular
+    task:
+      id: c4fcd607-d654-468d-82fe-648eb6ce8f9c
+      version: -1
+      name: Tag reports "in process"
+      description: commands.local.cmd.add.values.to.indicator.multi.select.field
+      script: Builtin|||appendIndicatorField
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      field:
+        simple: tags
+      fieldValue:
+        simple: in_process
+      indicatorsValues:
+        simple: ${playbookQuery.value}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": 200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 44915943-daba-4689-80da-79432ade2d7b
+    type: regular
+    task:
+      id: 44915943-daba-4689-80da-79432ade2d7b
+      version: -1
+      name: Remove tag "in process"
+      description: commands.local.cmd.remove.values.to.indicator.multi.select.field
+      script: Builtin|||removeIndicatorField
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      field:
+        simple: tags
+      fieldValue:
+        simple: in_process
+      indicatorsValues:
+        simple: ${playbookQuery.value}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": 800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 2d68f4e4-bfff-4d6e-8575-0d1e2ff9f772
+    type: title
+    task:
+      id: 2d68f4e4-bfff-4d6e-8575-0d1e2ff9f772
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": 980
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1005,
+        "width": 380,
+        "x": 460,
+        "y": 40
+      }
+    }
+  }
+inputs:
+- key: ""
+  value: {}
+  required: false
+  description: ""
+  playbookInputQuery:
+    query: type:Report -tags:processed -tags:in_process
+    queryEntity: indicators
+    results: null
+    daterange:
+      fromdate: 0001-01-01T00:00:00Z
+      todate: 0001-01-01T00:00:00Z
+      period:
+        by: ""
+        byto: ""
+        byfrom: ""
+        tovalue: null
+        fromvalue: null
+        field: ""
+      fromdatelicenseval: 0001-01-01T00:00:00Z
+    runFromLastJobTime: true
+- key: tag
+  value:
+    simple: processed
+  required: false
+  description: ""
+  playbookInputQuery: null
+outputs: []
+quiet: true
