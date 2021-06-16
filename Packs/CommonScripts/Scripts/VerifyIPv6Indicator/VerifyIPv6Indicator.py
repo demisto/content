@@ -24,9 +24,9 @@ def main():
             continue
 
     if entries_list:
-        demisto.results(entries_list)
+        return_results(entries_list)
     else:
-        demisto.results([])
+        return_results('')
 
 
 # python2 uses __builtin__ python3 uses builtins
