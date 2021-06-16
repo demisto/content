@@ -171,20 +171,18 @@ def download_packs_from_gcp(storage_bucket_name, dest_path):
         logging.info(f"gsutil cp command output: {process}")
 
 
-def copy_zipped_packs_to_artifacts(zipped_packs):
+def copy_zipped_packs_to_artifacts(zipped_packs, artifacts_path):
     """
     Copies zip files if needed
     Args:
         zipped_packs: A list of dictionaries containing pack name as key and it's latest zip path as value
+        artifacts_path: Path of the artifacts folder
     """
-    if os.path.exists('/home/runner/work/content-private/content-private/content/artifacts/'):
+    if os.path.exists(artifacts_path):
         for zip_pack in zipped_packs:
             for name, path in zip_pack.items():
-                logging.info(f"Copying pack from {path} to /home/runner/work/content-private/"
-                             f"content-private/content/artifacts/packs/{name}.zip")
-                shutil.copy(path,
-                            f'/home/runner/work/content-private/content-private/content/artifacts/'
-                            f'packs/{name}.zip')
+                logging.info(f"Copying pack from {path} to {artifacts_path}/packs/{name}.zip")
+                shutil.copy(path, f'{artifacts_path}/packs/{name}.zip')
 
 
 def cleanup(destination_path):
@@ -262,7 +260,7 @@ def main():
 
     if private_build:
         try:
-            copy_zipped_packs_to_artifacts(zipped_packs)
+            copy_zipped_packs_to_artifacts(zipped_packs, artifacts_path)
         except Exception as e:
             logging.exception(f'Failed to copy to artifacts, {e}')
             success = False
