@@ -196,7 +196,7 @@ ALARM_STATUS = {
 
 # Mapping type and name fields
 
-SOURCE_TYPE_MAP_ = _{
+SOURCE_TYPE_MAP = {
     "API_-_AWS_CloudTrail": 1000598,
     "API_-_AWS_CloudWatch_Alarm": 1000607,
     "API_-_AWS_Config_Event": 1000610,
