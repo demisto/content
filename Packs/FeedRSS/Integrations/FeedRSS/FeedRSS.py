@@ -107,7 +107,7 @@ def main():
                         proxy=params.get('proxy'),
                         feed_tags=argToList(params.get('feedTags')),
                         tlp_color=params.get('tlp_color'),
-                        content_max_size=int(params.get('max_size')))
+                        content_max_size=int(params.get('max_size', '45')))  # TODO: consult Bar id we want to cut the string with the max 45 size as demisto is handle or should we let the user configure it
 
         if demisto.command() == 'test-module':
             # if the client was created successfully and there is data in feed the test is successful.

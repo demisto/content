@@ -11,6 +11,7 @@ configuration:
 - display: Article content max size
   description: Default is 45KB. If you increase the limit substantialy, it may slow performance. You need to specify only a number, for example 50.
   name: max_size
+  defaultvalue: '45'
   required: false
   type: 0
 - display: Fetch indicators
