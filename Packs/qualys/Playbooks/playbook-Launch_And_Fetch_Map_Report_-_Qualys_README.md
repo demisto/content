@@ -4,10 +4,10 @@ Launches a map scan report and fetches the report when it's ready.
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
-* GenericPolling
+GenericPolling
 
 ### Integrations
-* QualysV2
+QualysV2
 
 ### Scripts
 This playbook does not use any scripts.
