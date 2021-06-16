@@ -826,10 +826,10 @@ def report_tests_status(preupdate_fails, postupdate_fails, preupdate_success, po
         logging.critical('Integration instances that had ("Test" Button) failures only after content was updated:\n'
                          f'{pformat(failed_only_after_update_string)}.\n'
                          f'This indicates that your updates introduced breaking changes to the integration.')
-    # else:  # remove the elif!!!!
-    #     # creating this file to indicates that this instance passed post update tests
-    #     with open("./Tests/is_post_update_passed_{}.txt".format(build.ami_env.replace(' ', '')), 'a'):
-    #         pass
+    else:  # remove the elif!!!!
+        # creating this file to indicates that this instance passed post update tests
+        with open("./Tests/is_post_update_passed_{}.txt".format(build.ami_env.replace(' ', '')), 'a'):
+            pass
 
     return testing_status
 
