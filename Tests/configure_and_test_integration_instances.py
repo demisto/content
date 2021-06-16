@@ -810,7 +810,7 @@ def report_tests_status(preupdate_fails, postupdate_fails, preupdate_success, po
             [f'Integration: "{integration_of_instance}", Instance: "{instance_name}"'
              for instance_name, integration_of_instance in failed_but_is_new])
         logging.warning(f'New Integrations ("Test" Button) Failures:\n{failed_but_is_new_string}')
-    if failed_pre_and_post:
+    elif failed_pre_and_post:
         failed_pre_and_post_string = "\n".join(
             [f'Integration: "{integration_of_instance}", Instance: "{instance_name}"'
              for instance_name, integration_of_instance in failed_pre_and_post])
@@ -818,7 +818,7 @@ def report_tests_status(preupdate_fails, postupdate_fails, preupdate_success, po
                         f'both before and after the content update:\n{pformat(failed_pre_and_post_string)}')
 
     # fail the step if there are instances that only failed after content was updated
-    if failed_only_after_update:
+    elif failed_only_after_update:
         failed_only_after_update_string = "\n".join(
             [f'Integration: "{integration_of_instance}", Instance: "{instance_name}"' for
              instance_name, integration_of_instance in failed_only_after_update])
@@ -826,7 +826,7 @@ def report_tests_status(preupdate_fails, postupdate_fails, preupdate_success, po
         logging.critical('Integration instances that had ("Test" Button) failures only after content was updated:\n'
                          f'{pformat(failed_only_after_update_string)}.\n'
                          f'This indicates that your updates introduced breaking changes to the integration.')
-    else: # try to remove the situation where before and after fails, so it will not be created, so instance will not be destroyed
+    else:  # remove the elif!!!!
         # creating this file to indicates that this instance passed post update tests
         with open("./Tests/is_post_update_passed_{}.txt".format(build.ami_env.replace(' ', '')), 'a'):
             pass
