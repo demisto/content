@@ -1,7 +1,7 @@
 id: Launch And Fetch Scan Based Findings Report - Qualys
 version: -1
 name: Launch And Fetch Scan Based Findings Report - Qualys
-description: First launches a scan based report and then fetch the report when it's
+description: Launches a scan based report and fetcesh the report when it's
   ready.
 starttaskid: "0"
 tasks:
@@ -40,7 +40,7 @@ tasks:
       id: db1e0be1-8c7f-4074-8a7c-777ef8a21bf7
       version: -1
       name: qualys-report-launch-scan-based-findings
-      description: launches a scan report including scan based findings
+      description: Launches a scan report including scan based findings
       script: QualysV2|||qualys-report-launch-scan-based-findings
       type: regular
       iscommand: true
