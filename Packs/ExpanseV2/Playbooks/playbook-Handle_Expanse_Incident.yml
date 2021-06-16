@@ -7,7 +7,7 @@ description: |-
   Main Playbook to Handle Expanse Incidents.
 
   There are several phases:
-  1. Enrichment: all the related information from the incident is extracted and related Indicators (types IP, CIDR, Domain, DomainGlob, Certificate) are created and enriched.
+  1. Enrichment: all the related information from the incident is extracted and related indicators (IP, CIDR, Domain, DomainGlob, Certificate) are created and enriched.
   2. Validation: the found IP and FQDN are correlated with the information available in other products:
     - Risky or non-compliant communications to and from the IP with external IPs as flagged in Expanse's Behavior
     - Firewall logs from Cortex Data Lake, Panorama and Splunk
@@ -298,7 +298,7 @@ tasks:
     task:
       id: a1c4930f-a238-48a9-841e-00377e459cd9
       version: -1
-      name: Done Network  Remediation
+      name: Done Network Remediation
       type: title
       iscommand: false
       brand: ""
@@ -328,7 +328,7 @@ tasks:
       version: -1
       name: Is Issue AutoRemediable with PAN-OS? (On-Prem and has IP:Port)
       description: Check whether the issue can be auto-remediated with PAN-OS (on-prem
-        and ip/port found)
+        and ip/port found).
       type: condition
       iscommand: false
       brand: ""
@@ -730,7 +730,7 @@ tasks:
       id: 8dc40050-592a-4d16-8562-0c12a90e3a00
       version: -1
       name: Start Validation
-      description: Start validation of Incident
+      description: Start validation of Incident.
       type: title
       iscommand: false
       brand: ""
@@ -884,7 +884,7 @@ tasks:
       id: 85cb41f2-41a8-4eb9-8f11-c91fdee71118
       version: -1
       name: Firewall or Panorama?
-      description: Check whether target device is a Firewall or Panorama
+      description: Check whether target device is a Firewall or Panorama.
       type: condition
       iscommand: false
       brand: ""
@@ -1081,7 +1081,7 @@ tasks:
       id: 9d163411-019d-4a56-8112-fef2603e0c37
       version: -1
       name: Extract Risky Flows from Behavior
-      description: Retrieve Expanse Behavior Risky Flows
+      description: Retrieve Expanse Behavior Risky Flows.
       script: '|||expanse-get-risky-flows'
       type: regular
       iscommand: true
@@ -1842,7 +1842,7 @@ tasks:
       id: f2267b0d-0a69-438c-81b8-cf3bd6d8ac3e
       version: -1
       name: Notify OU Owner
-      description: Send an email
+      description: Send an email.
       script: '|||send-mail'
       type: regular
       iscommand: true
@@ -1929,7 +1929,7 @@ tasks:
                 filters:
                 - - operator: isTrue
                     left:
-                      value:
+                      value:]
                         simple: ShadowITCondition.value
                       iscontext: true
             iscontext: true
@@ -3157,7 +3157,7 @@ tasks:
         tooltip: ""
         readonly: false
       title: Add New Organization Unit
-      description: Specify thew Organization Unit name, name and email of the assets
+      description: Specify the Organization Unit name, name and email of the assets
         owner.
       sender: Your SOC team
       expired: false
@@ -3900,7 +3900,7 @@ tasks:
       id: 0f638d94-a06c-409f-8123-a48e4445ec3b
       version: -1
       name: Copy Suggestion Notes to Created Incident
-      description: Copy notes from current incident to a remote incident
+      description: Copy notes from current incident to a remote incident.
       scriptName: CopyNotesToIncident
       type: regular
       iscommand: false
@@ -4017,7 +4017,7 @@ tasks:
       id: 1cf90da1-5be2-4a1c-8071-e9361f03e623
       version: -1
       name: Are assets in Prisma Cloud found?
-      description: Check whether assets are found in Prisma Cloud
+      description: Check whether assets are found in Prisma Cloud.
       type: condition
       iscommand: false
       brand: ""
@@ -4162,7 +4162,7 @@ tasks:
       id: 8aa14c11-857a-440a-8c29-66cee2143db9
       version: -1
       name: Determine Target
-      description: Determine the target Device Group
+      description: Determine the target Device Group.
       type: condition
       iscommand: false
       brand: ""
@@ -4323,7 +4323,7 @@ tasks:
         readonly: false
       title: Choose Device Group Name and Tag
       description: Insert Device Group name to enforce this policy, and the corresponding
-        tag to attach to the asset
+        tag to attach to the asset.
       sender: ""
       expired: false
       totalanswers: 0
@@ -4931,7 +4931,7 @@ tasks:
       id: 1087caa3-49a0-4b40-83d6-a497e9cc9683
       version: -1
       name: Did User reply to the Shadow IT question?
-      description: Check whether user answered to the Shadow IT question.
+      description: Check whether user answered the Shadow IT question.
       type: condition
       iscommand: false
       brand: ""
@@ -5317,7 +5317,7 @@ tasks:
       id: d02a612b-f698-4687-89ee-307f5ed896a2
       version: -1
       name: On-prem with high confidence?
-      description: Check whether the asset is market as on prem with a high degree
+      description: Check whether the asset is marked as on prem with a high degree
         of confidence.
       type: condition
       iscommand: false
@@ -5516,7 +5516,7 @@ tasks:
     task:
       id: b0efd4f5-e68e-4f53-8c24-223e769d1112
       version: -1
-      name: 'Extract XSOAR Incident Tags related to OU Attribtion '
+      name: 'Extract XSOAR Incident Tags related to OU Attribtion'
       description: Set a value in context under the key you entered. If no value is
         entered, the script doesn't do anything.
       scriptName: SetAndHandleEmpty
@@ -5783,7 +5783,7 @@ tasks:
       version: -1
       name: Extract and Enrich Expanse Indicators
       description: Extract and Enrich Indicators (CIDRs, IPs, Certificates and Domains)
-        from an Expanse Issue
+        from an Expanse Issue.
       playbookName: Extract and Enrich Expanse Indicators
       type: playbook
       iscommand: false
@@ -6112,7 +6112,7 @@ tasks:
       version: -1
       name: Set Shadow IT Pack Incident Fields
       description: If the Shadow IT content pack is enabled and the Shadow IT incident
-        fields are provided, this tasks sets the fields accordingly. If the Pack is
+        fields are provided, this task sets the fields accordingly. If the Pack is
         not enabled, no change happens.
       script: Builtin|||setIncident
       type: regular
@@ -7463,14 +7463,14 @@ inputs:
     simple: low confidence
   required: false
   description: Comma separated list of tags to be used to identify IP ranges attributed
-    with low confidence
+    with low confidence.
   playbookInputQuery:
 - key: InvalidTag
   value:
     simple: xsoar-invalid
   required: false
   description: Tag to be used for Expanse assets that do not belong to org (set when
-    the Analyst selects Invalid in the OU data collection)
+    the Analyst selects Invalid in the OU data collection).
   playbookInputQuery:
 - key: WriteToExpanse
   value:
@@ -7509,19 +7509,19 @@ inputs:
   value:
     simple: ExpanseOrganizationUnitsToOwner
   required: false
-  description: Name of XSOAR List that contains the mapping between OU and Owners
+  description: Name of XSOAR List that contains the mapping between OU and Owners.
   playbookInputQuery:
 - key: OrganizationUnitsToTagName
   value:
     simple: ExpanseOrganizationUnitsToTag
   required: false
-  description: Name of XSOAR List that contains the mapping between OU and Tag names
+  description: Name of XSOAR List that contains the mapping between OU and Tag names.
   playbookInputQuery:
 - key: NumberOfDaysInThePast
   value:
     simple: "75"
   required: false
-  description: How many days to go back in time when searching logs
+  description: How many days to go back in time when searching logs.
   playbookInputQuery:
 outputs: []
 tests:
