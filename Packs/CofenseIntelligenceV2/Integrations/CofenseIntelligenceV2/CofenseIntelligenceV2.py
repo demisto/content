@@ -75,7 +75,7 @@ def remove_false_vendors_detections_from_threat(threats):
         for exe in threat.get('executableSet'):
             detections = []
             for detection in exe.get('vendorDetections', []):
-                if detection.get('detected') == True:
+                if detection.get('detected'):
                     detections.append(detection)
             exe['vendorDetections'] = detections
 
@@ -83,7 +83,7 @@ def remove_false_vendors_detections_from_threat(threats):
 def get_n_days_back_epoch(days_back: int):
     today = datetime.now()
     d = timedelta(days=days_back)
-    return int((today-d).timestamp())
+    return int((today - d).timestamp())
 
 
 def create_threat_md_row(threat: Dict, severity_level: int = None):
