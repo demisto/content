@@ -1,13 +1,13 @@
-First launches a scheduled report and then fetch the report when it's ready.
+Launches a scheduled report and fetches the report when it's ready.
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
-* GenericPolling
+GenericPolling
 
 ### Integrations
-* QualysV2
+QualysV2
 
 ### Scripts
 This playbook does not use any scripts.
