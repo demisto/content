@@ -1,7 +1,12 @@
+
 {
     "testTimeout": 160,
     "testInterval": 20,
     "tests": [
+        {
+            "playbookID": "SupportMultithreading - Test",
+            "is_mockable": false
+        },
         {
             "fromversion": "5.0.0",
             "integrations": [
@@ -565,7 +570,7 @@
             "integrations": "Cortex XDR - IR",
             "playbookID": "Test XDR Playbook",
             "fromversion": "4.1.0",
-            "timeout": 800
+            "timeout": 1500
         },
         {
             "integrations": "Cortex XDR - IOC",
@@ -3457,7 +3462,6 @@
         "PAN OS EDL Management - Test": "Issue 35652",
         "PAN-OS EDL Setup v3 Test": "Issue 35386",
         "Google-Vault-Generic-Test": "Issue 24347",
-        "FireEyeNX-Test": "Issue 33216",
         "GmailTest": "Issue 27057",
         "Gmail Single User - Test": "Issue 27361",
         "AWS - EC2 Test Playbook": "Issue 36486",
