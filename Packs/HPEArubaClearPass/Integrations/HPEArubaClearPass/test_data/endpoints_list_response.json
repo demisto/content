@@ -1,0 +1,43 @@
+{
+    "_links": {
+        "self": {
+            "href": "https://example:57345/api/endpoint?calculate_count=false&offset=0&limit=25&sort=%2Bid&filter=%7B%7D"
+        },
+        "first": {
+            "href": "https://example:57345/api/endpoint?calculate_count=false&offset=0&limit=25&sort=%2Bid&filter=%7B%7D"
+        }
+    },
+    "_embedded": {
+        "items": [
+            {
+                "id": 1,
+                "mac_address": "001234567891",
+                "description": "new desc1",
+                "status": "Unknown",
+                "attributes": {
+                    "A": "B",
+                    "C": "D"
+                },
+                "_links": {
+                    "self": {
+                        "href": "https://example:57345/api/endpoint/1"
+                    }
+                }
+            },
+            {
+                "id": 2,
+                "mac_address": "001234567892",
+                "description": "aaaa",
+                "status": "Known",
+                "attributes": {
+                    "demisto_test": "aaaaa"
+                },
+                "_links": {
+                    "self": {
+                        "href": "https://example:57345/api/endpoint/2"
+                    }
+                }
+            }
+        ]
+    }
+}

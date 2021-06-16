@@ -36,9 +36,10 @@ def test_fetch_incidents(requests_mock):
         action="fetch_entity_anomalies"
     )
     expected_response = util_load_json('test_data/formatted_fetch_incident.json')
-    # raise ValueError(integration_response.incidents,":::::",expected_response)
-    # THEN the response should be returned and formatted
-    assert integration_response[1] == expected_response
+    responsejson = integration_response[1][0]
+    responsejson['rawJSON'] = json.loads(responsejson['rawJSON'])
+
+    assert responsejson == expected_response[0]
 
 
 def test_fetch_entity_anomalies(requests_mock):

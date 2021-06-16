@@ -4,5 +4,5 @@ ignore=IN126,IN136
 [file:README.md]
 ignore=RM102,RM104,RM106
 
-[file:Classifiers/classifier-CrowdStrike_Falcon_Mapper.json]
+[file:classifier-CrowdStrike_Falcon_Mapper.json]
 ignore=BA101
