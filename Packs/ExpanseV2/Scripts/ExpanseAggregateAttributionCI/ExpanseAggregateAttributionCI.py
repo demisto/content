@@ -75,7 +75,7 @@ def aggregate_command(args: Dict[str, Any]) -> CommandResults:
     if current_sys_ids.get("Unknown") is not None:
         del current_sys_ids["Unknown"]
 
-    human_readable = tableToMarkdown("## ExpanseAggregateAttributionCI",  list(current_sys_ids.values()),
+    human_readable = tableToMarkdown("## ExpanseAggregateAttributionCI", list(current_sys_ids.values()),
                                      headers=["name", "sys_id", "asset_display_value"])
     outputs = list(current_sys_ids.values())
 
