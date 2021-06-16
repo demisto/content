@@ -1,10 +1,53 @@
 import json
 import io
+import demistomock as demisto
+import CheckPointFirewallV2
 
 
 def util_load_json(path):
     with io.open(path, mode='r', encoding='utf-8') as f:
         return json.loads(f.read())
+
+
+MOCK_PARAMS = {
+    "server": "www.example.com/",
+    "port": "443",
+    "username": {
+        "identifier": "admin",
+        "password": "admin"
+    }
+}
+
+
+MOCK_ARGS = {
+    "session_timeout": "600"
+}
+
+
+def mock_get_sid(base_url, username, password, verify_certificate, session_timeout, domain_arg):
+    return base_url
+
+
+def test_check_base_url(mocker):
+    """
+       Given:
+           Login to CheckPoint (with a backslash in the end of the url)
+       When:
+           checkpoint_login_and_get_sid_command is running
+       Then:
+           Assert that the backslash is removed in the base url is in the right syntax
+    """
+    mocker.patch.object(demisto, 'params', return_value=MOCK_PARAMS)
+    mocker.patch.object(demisto, 'args', return_value=MOCK_ARGS)
+    mocker.patch.object(demisto, 'command', return_value='checkpoint-login-and-get-session-id')
+    mocker.patch.object(demisto, 'results')
+    mocker.patch('CheckPointFirewallV2.checkpoint_login_and_get_sid_command', side_effect=mock_get_sid)
+
+    CheckPointFirewallV2.main()
+
+    results = demisto.results
+
+    assert results.call_args.args[0] == 'https://www.example.com:443/web_api/'
 
 
 def test_checkpoint_list_hosts_command(mocker):
