@@ -1,7 +1,7 @@
 id: Launch And Fetch Compliance Report - Qualys
 version: -1
 name: Launch And Fetch Compliance Report - Qualys
-description: First launches a  compliance report and then fetch the report when it's
+description: Launches a compliance report and then fetches the report when it's
   ready.
 starttaskid: "0"
 tasks:
