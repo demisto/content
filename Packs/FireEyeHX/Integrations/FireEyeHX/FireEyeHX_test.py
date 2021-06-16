@@ -1,7 +1,12 @@
 import demistomock as demisto
+import pytest
 
 
-def test_parse_alert_to_incident(mocker):
+@pytest.mark.parametrize('alert, expected', [
+    ({'event_values': []}, {'name': 'New Event: ', 'rawJSON': '{"event_values": []}'}),
+    ({'event_type': u'\u37cb'}, {}),
+])
+def test_parse_alert_to_incident(mocker, alert, expected):
     """
     Given:
         - Alert with event_values as list
@@ -27,4 +32,4 @@ def test_parse_alert_to_incident(mocker):
         }
     )
     from FireEyeHX import parse_alert_to_incident
-    assert parse_alert_to_incident({'event_values': []}) == {'name': 'New Event: ', 'rawJSON': '{"event_values": []}'}
+    assert parse_alert_to_incident(alert) == expected
