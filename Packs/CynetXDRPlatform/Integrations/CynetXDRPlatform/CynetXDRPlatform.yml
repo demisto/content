@@ -40,16 +40,19 @@ script:
   - arguments:
     - default: true
       defaultValue: 01-01-2010
+      description: 'Format: mm-dd-yyyy'
       name: LastSeen
     description: List hosts from Cynet XDR
     name: cynet-get-hosts
   - arguments:
-    - name: hostname
+    - description: Hostname
+      name: hostname
       required: true
     description: Host details from Cynet XDR
     name: cynet-get-host-details
   - arguments:
-    - name: hostname
+    - description: Hostname
+      name: hostname
       required: true
     description: Host full details from Cynet XDR
     name: cynet-get-host-full-details
@@ -101,7 +104,7 @@ script:
       required: true
     description: Agent validation details from Cynet XDR
     name: cynet-get-agent-validation-details
-  dockerimage: demisto/python:2.7.18.20958
+  dockerimage: demisto/python3:3.9.5.21272
   runonce: false
   script: ''
   subtype: python3
