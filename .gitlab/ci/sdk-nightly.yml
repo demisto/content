@@ -152,6 +152,14 @@ demisto-sdk-nightly:run-unittests-and-lint:
 #     - python3 ./Tests/scripts/destroy_instances.py $ARTIFACTS_FOLDER $ARTIFACTS_FOLDER/env_results.json "$INSTANCE_ROLE" "$TIME_TO_LIVE"
 #     - section_end "Destroy instances"
 
+demisto-sdk-nightly:concentrate-artifacts:
+  stage: fan-in
+  extends:
+    - .default-job-settings
+    - .sdk-nightly-schedule-rule-always
+  script:
+    - echo "WHATs Up???"
+
 
 demisto-sdk-nightly:trigger-slack-notify:
   extends:
@@ -160,7 +168,7 @@ demisto-sdk-nightly:trigger-slack-notify:
   variables:
     PIPELINE_TO_QUERY: $CI_PIPELINE_ID
     WORKFLOW: 'Demisto SDK Testing Unit Tests Functionality'
-    JOB_NAME: 'demisto-sdk-nightly:run-unittests-and-lint'
+    JOB_NAME: 'demisto-sdk-nightly:concentrate-artifacts'
     # Passes the environment variable from the parent pipeline to the child which can be useful for cases
     # when triggering pipeline with alternate env variable value passed in the API call
     SLACK_CHANNEL: $SLACK_CHANNEL
