@@ -1312,7 +1312,21 @@ def generate_query_item(filterType, valueType, value):
                 }
             ]
         }
-
+    
+    elif valueType == 5:
+        query = {
+            "filterItemType": 0,
+            "fieldOperator": 1,
+            "filterMode": 1,
+            "values": [
+                {
+                    "filterType": filterType,
+                    "valueType": valueType,
+                    "value": str(value)
+                }
+            ]
+        }
+    
     else:
         query = {
             "filterItemType": 0,
@@ -1719,7 +1733,7 @@ def lr_execute_search_query(data_args):
 
     results = CommandResults(
         outputs={"taskID": task_id},
-        outputs_prefix="Logrhythm.SearchResult"
+        outputs_prefix="Logrhythm.Search.Tasks"
     )
 
     return_results(results)
@@ -1765,7 +1779,7 @@ def lr_get_query_result(data_args):
             results = CommandResults(
                 readable_output=markdown,
                 outputs=search_result["Items"],
-                outputs_prefix="Logrhythm.SearchResult"
+                outputs_prefix="Logrhythm.Search.Results"
             )
 
             break
