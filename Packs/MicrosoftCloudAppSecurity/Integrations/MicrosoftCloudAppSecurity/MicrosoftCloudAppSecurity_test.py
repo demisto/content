@@ -86,8 +86,8 @@ def test_list_activities_command(requests_mock):
     assert res[0].outputs[0] == activities["ACTIVITIES_BY_ID_DATA_CONTEXT"]
     assert isinstance(res[0].indicator, Common.IP)
     assert res[0].indicator.ip == '8.8.8.8'
-    assert res[0].indicator.geo_latitude == 32.0679
-    assert res[0].indicator.geo_longitude == 34.7604
+    assert float(res[0].indicator.geo_latitude) == 32.0679
+    assert float(res[0].indicator.geo_longitude) == 34.7604
 
 
 def test_list_files_command(requests_mock):
