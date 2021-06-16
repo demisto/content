@@ -1,8 +1,7 @@
 id: Launch And Fetch Compliance Policy Report - Qualys
 version: -1
 name: Launch And Fetch Compliance Policy Report - Qualys
-description:Launches a compliance policy report and then fetches the report when
-  it's ready.
+description: Launches a compliance policy report and then fetches the report when it's ready.
 starttaskid: "0"
 tasks:
   "0":

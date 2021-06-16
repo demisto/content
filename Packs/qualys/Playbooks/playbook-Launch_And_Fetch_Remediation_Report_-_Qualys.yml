@@ -1,8 +1,7 @@
 id: Launch And Fetch Remediation Report - Qualys
 version: -1
 name: Launch And Fetch Remediation Report - Qualys
-description: Launches a remediation report and fetches the report when it's
-  ready.
+description: Launches a remediation report and fetches the report when it's ready.
 starttaskid: "0"
 tasks:
   "0":
