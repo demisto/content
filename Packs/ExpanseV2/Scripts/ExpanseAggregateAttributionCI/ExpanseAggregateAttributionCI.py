@@ -13,9 +13,9 @@ import traceback
 ''' STANDALONE FUNCTION '''
 
 
-def deconstruct_entry(ServiceNowCMDBContext: Dict[str, Any]) -> Tuple[Optional[str],
+def deconstruct_entry(ServiceNowCMDBContext: Dict[str, Any]) -> Tuple[str,
                                                                       Optional[str],
-                                                                      str,
+                                                                      Optional[str],
                                                                       Optional[str],
                                                                       Optional[str],
                                                                       Optional[str]]:
@@ -39,7 +39,7 @@ def deconstruct_entry(ServiceNowCMDBContext: Dict[str, Any]) -> Tuple[Optional[s
     asset_link = ServiceNowCMDBContext.get("Attributes", {}).get("asset", {}).get("link")
     asset_value = ServiceNowCMDBContext.get("Attributes", {}).get("asset", {}).get("value")
 
-    return name, sys_class_name, sys_id, asset_display_value, asset_link, asset_value
+    return sys_id, name, sys_class_name, asset_display_value, asset_link, asset_value
 
 
 ''' COMMAND FUNCTION '''
@@ -58,7 +58,7 @@ def aggregate_command(args: Dict[str, Any]) -> CommandResults:
         if not isinstance(entry, dict):
             continue
 
-        name, sys_class_name, sys_id, asset_display_value, asset_link, asset_value = deconstruct_entry(entry)
+        sys_id, name, sys_class_name, asset_display_value, asset_link, asset_value = deconstruct_entry(entry)
 
         current_state = current_sys_ids.get(sys_id)
         if current_state is None:

@@ -49,5 +49,5 @@ def test_aggregate_command():
     })
 
     assert result.outputs_prefix == "Expanse.AttributionCI"
-    assert result.outputs_key_field == ["name", "sys_id", "sys_class_name"]
+    assert result.outputs_key_field == ["sys_id"]
     assert result.outputs == RESULT

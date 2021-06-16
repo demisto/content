@@ -114,7 +114,7 @@ tasks:
       version: -1
       name: Was associated domain found?
       description: Check if a given value exists in the context. Will return 'no'
-        for empty empty arrays. To be used mostly with DQ and selectors.
+        for empty arrays. To be used mostly with DQ and selectors.
       scriptName: Exists
       type: condition
       iscommand: false
@@ -127,8 +127,8 @@ tasks:
     scriptarguments:
       value:
         complex:
-          root: ${Expanse.Service
-          accessor: domains}
+          root: Expanse.Service
+          accessor: domains
     separatecontext: false
     view: |-
       {
@@ -151,7 +151,7 @@ tasks:
       version: -1
       name: Was associated certificate found?
       description: Check if a given value exists in the context. Will return 'no'
-        for empty empty arrays. To be used mostly with DQ and selectors.
+        for empty arrays. To be used mostly with DQ and selectors.
       scriptName: Exists
       type: condition
       iscommand: false
@@ -165,8 +165,8 @@ tasks:
     scriptarguments:
       value:
         complex:
-          root: ${Expanse.Service.certificates.certificate
-          accessor: md5Fingerprint}
+          root: Expanse.Service.certificates.certificate
+          accessor: md5Fingerprint
     separatecontext: false
     view: |-
       {
@@ -198,7 +198,9 @@ tasks:
       - "19"
     scriptarguments:
       certificate:
-        simple: ${Expanse.Service.certificates.certificate.md5Fingerprint}
+        complex:
+          root: Expanse.Service.certificates.certificate
+          accessor: md5Fingerprint
       set_expanse_fields: {}
     separatecontext: false
     view: |-
@@ -232,8 +234,8 @@ tasks:
     scriptarguments:
       domain:
         complex:
-          root: ${Expanse.Service.domains
-          accessor: domain}
+          root: Expanse.Service.domains
+          accessor: domain
           transformers:
           - operator: FirstArrayElement
     separatecontext: false
@@ -258,7 +260,7 @@ tasks:
       version: -1
       name: Do Services Exist?
       description: Check if a given value exists in the context. Will return 'no'
-        for empty empty arrays. To be used mostly with DQ and selectors.
+        for empty arrays. To be used mostly with DQ and selectors.
       scriptName: Exists
       type: condition
       iscommand: false
@@ -271,9 +273,7 @@ tasks:
       - "4"
     scriptarguments:
       value:
-        complex:
-          root: ${Expanse
-          accessor: Service}
+        simple: ${Expanse.Service}
     separatecontext: false
     view: |-
       {
@@ -340,8 +340,8 @@ tasks:
           left:
             value:
               complex:
-                root: ${Expanse.Issue.cloudManagementStatus
-                accessor: id}
+                root: Expanse.Issue.cloudManagementStatus
+                accessor: id
                 transformers:
                 - operator: FirstArrayElement
             iscontext: true
@@ -465,7 +465,9 @@ tasks:
       columns:
         simple: subjectName,subjectAlternativeNames,subjectEmail,subjectOrg
       data:
-        simple: ${Expanse.Service.certificates.certificate}
+        complex:
+          root: Expanse.Service.certificates
+          accessor: certificate
       title:
         simple: Related Certificates Subject Details
     separatecontext: false
@@ -513,22 +515,26 @@ tasks:
           left:
             value:
               complex:
-                root: ${Expanse.Service.certificates.certificate
-                accessor: subjectEmail}
+                root: Expanse.Service.certificates.certificate
+                accessor: subjectEmail
             iscontext: true
     - label: certificatePoC
       condition:
       - - operator: isNotEmpty
           left:
             value:
-              simple: ${Expanse.Certificate.annotations.pointOfContact.email}
+              complex:
+                root: Expanse.Certificate.annotations.pointOfContact
+                accessor: email
             iscontext: true
     - label: domainPoC
       condition:
       - - operator: isNotEmpty
           left:
             value:
-              simple: ${Expanse.Domain.annotations.pointOfContact.email}
+              complex:
+                root: Expanse.Domain.annotations.pointOfContact
+                accessor: email
             iscontext: true
     view: |-
       {
@@ -623,7 +629,7 @@ tasks:
       version: -1
       name: Domain Exists
       description: Check if a given value exists in the context. Will return 'no'
-        for empty empty arrays. To be used mostly with DQ and selectors.
+        for empty arrays. To be used mostly with DQ and selectors.
       scriptName: Exists
       type: condition
       iscommand: false
@@ -658,7 +664,7 @@ tasks:
       version: -1
       name: Certificate Exists
       description: Check if a given value exists in the context. Will return 'no'
-        for empty empty arrays. To be used mostly with DQ and selectors.
+        for empty arrays. To be used mostly with DQ and selectors.
       scriptName: Exists
       type: condition
       iscommand: false
@@ -693,10 +699,10 @@ tasks:
       version: -1
       name: Send email to certificate Subject email
       description: Send an email
-      script: Mail Sender (New)|||send-mail
+      script: "|||send-mail"
       type: regular
       iscommand: true
-      brand: Mail Sender (New)
+      brand: ""
     nexttasks:
       '#none#':
       - "23"
@@ -716,7 +722,9 @@ tasks:
         simple: Security Issue on cloud asset - ${Expanse.Certificate}
       templateParams: {}
       to:
-        simple: ${Expanse.Service.certificates.certificate.subjectEmail}
+        complex:
+          root: Expanse.Service.certificates.certificate
+          accessor: subjectEmail
       transientFile: {}
       transientFileCID: {}
       transientFileContent: {}
@@ -743,10 +751,10 @@ tasks:
       version: -1
       name: Send email to certificate owner
       description: Send an email
-      script: Mail Sender (New)|||send-mail
+      script: "|||send-mail"
       type: regular
       iscommand: true
-      brand: Mail Sender (New)
+      brand: ""
     nexttasks:
       '#none#':
       - "23"
@@ -766,7 +774,9 @@ tasks:
         simple: Security Issue on cloud asset - ${Expanse.Certificate}
       templateParams: {}
       to:
-        simple: ${Expanse.Certificate.annotations.pointOfContact.email}
+        complex:
+          root: Expanse.Certificate.annotations.pointOfContact
+          accessor: email
       transientFile: {}
       transientFileCID: {}
       transientFileContent: {}
@@ -793,10 +803,10 @@ tasks:
       version: -1
       name: Send Email to domain owner
       description: Send an email
-      script: Mail Sender (New)|||send-mail
+      script: "|||send-mail"
       type: regular
       iscommand: true
-      brand: Mail Sender (New)
+      brand: ""
     nexttasks:
       '#none#':
       - "23"
@@ -818,7 +828,9 @@ tasks:
           accessor: domain}
       templateParams: {}
       to:
-        simple: ${Expanse.Domain.annotations.pointOfContact.email}
+        complex:
+          root: Expanse.Domain.annotations.pointOfContact
+          accessor: email
       transientFile: {}
       transientFileCID: {}
       transientFileContent: {}
