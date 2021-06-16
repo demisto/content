@@ -38,7 +38,7 @@ class Client(BaseClient):
     def threat_search_call(self, days_back=90, ip=None, file=None, email=None, url=None, string=None):
         """Performs the API call to the threats-search endpoint with the requested query param
             Args:
-                - days_back (int): search for data not older then 'days_back' days
+                - days_back (string): search for data not older then 'days_back' days
                 - ip (string): search for threats associated with this ip address
                 - file (string): search for threats associated with this file hash
                 - email (string): search for threats associated with this email address
@@ -47,7 +47,7 @@ class Client(BaseClient):
             return:
              Json: The response returned from the API call
         """
-        params = {'beginTimestamp': get_n_days_back_epoch(days_back)}
+        params = {'beginTimestamp': get_n_days_back_epoch(int(days_back))}
         if ip:
             params['ip'] = ip
 
