@@ -5,3 +5,4 @@ Support and maintenance for this integration are provided by the author. Please 
 - **URL**: [https://support.sailpoint.com/hc/en-us/requests/new](https://support.sailpoint.com/hc/en-us/requests/new)
 ***
 [View Integration Documentation](https://xsoar.pan.dev/docs/reference/integrations/sail-point-identity-iq)
+  
