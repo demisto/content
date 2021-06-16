@@ -1,4 +1,4 @@
-Launches a compliance report and then fetches the report when it's ready.
+Launches a compliance report and fetches the report when it's ready.
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.
