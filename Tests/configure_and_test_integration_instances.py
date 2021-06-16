@@ -1146,12 +1146,13 @@ def instance_testing(build: Build,
             success, _ = __test_integration_instance(testing_client, instance)
         if not success:
             failed_tests.add((instance_name, integration_of_instance))
-            failed_instances.add(instance)
+            failed_instances.append(instance)
         else:
             successful_tests.add((instance_name, integration_of_instance))
 
     # in case some tests failed post update, wait a 15 secs, runs the tests again
     if failed_instances and not pre_update and first_call:
+        logging.info("some post-update tests failed, sleeping for 15 seconds, then running the failed tests again")
         sleep(15)
         tmp, failed_tests = instance_testing(build, failed_instances, pre_update=False, first_call=False)
 
