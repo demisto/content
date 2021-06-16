@@ -1,7 +1,7 @@
 id: Launch And Fetch VM Scan - Qualys
 version: -1
 name: Launch And Fetch VM Scan - Qualys
-description: First launches a scan and then fetch the scan when it's ready.
+description: Launches a scan and fetches the scan when it's ready.
 starttaskid: "0"
 tasks:
   "0":
