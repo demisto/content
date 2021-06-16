@@ -3519,8 +3519,8 @@ tasks:
     task:
       id: ec3ed863-e897-4ee9-8e77-c455954bce8c
       version: -1
-      name: Update Expanse Comment
-      description: Update a property of an Expanse issue.
+      name: Update Xpanse Comment
+      description: Update a property of an Xpanse issue.
       script: '|||expanse-update-issue'
       type: regular
       iscommand: true
