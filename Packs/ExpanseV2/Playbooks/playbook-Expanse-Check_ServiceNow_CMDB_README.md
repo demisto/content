@@ -26,4 +26,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![Expanse Check ServiceNow CMDB](./../doc_files/Expanse_Check_ServiceNow_CMDB.png)
+![Expanse Check ServiceNow CMDB](https://raw.githubusercontent.com/demisto/content/master/Packs/ExpanseV2/doc_files/Expanse_Check_ServiceNow_CMDB.png)

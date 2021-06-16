@@ -82,7 +82,7 @@ tasks:
       name: tenable-io-get-vulnerabilities-by-asset
       description: Get a list of up to 5000 of the vulnerabilities recorded for a
         given asset.
-      script: Tenable.io|||tenable-io-get-vulnerabilities-by-asset
+      script: "|||tenable-io-get-vulnerabilities-by-asset"
       type: regular
       iscommand: true
       brand: Tenable.io
@@ -119,7 +119,7 @@ tasks:
       name: tenable-io-get-vulnerabilities-by-asset
       description: Get a list of up to 5000 of the vulnerabilities recorded for a
         given asset.
-      script: Tenable.io|||tenable-io-get-vulnerabilities-by-asset
+      script: "|||tenable-io-get-vulnerabilities-by-asset"
       type: regular
       iscommand: true
       brand: Tenable.io
@@ -601,7 +601,7 @@ tasks:
       name: Nexpose find Asset by IP
       description: Returns all assets for which you have access that match the given
         search criteria.
-      script: Rapid7 Nexpose|||nexpose-search-assets
+      script: "|||nexpose-search-assets"
       type: regular
       iscommand: true
       brand: Rapid7 Nexpose
@@ -644,7 +644,7 @@ tasks:
       name: Nexpose find Asset by Domain
       description: Returns all assets for which you have access that match the given
         search criteria.
-      script: Rapid7 Nexpose|||nexpose-search-assets
+      script: "|||nexpose-search-assets"
       type: regular
       iscommand: true
       brand: Rapid7 Nexpose

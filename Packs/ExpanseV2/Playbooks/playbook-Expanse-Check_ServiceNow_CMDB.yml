@@ -7,15 +7,15 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 83b0ce67-7295-4dca-8f0c-e3f120c28054
+    taskid: bb15edd2-89c7-4b4c-856f-5841c36c40d7
     type: start
     task:
-      id: 83b0ce67-7295-4dca-8f0c-e3f120c28054
+      id: bb15edd2-89c7-4b4c-856f-5841c36c40d7
       version: -1
       name: ""
+      description: ''
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -34,17 +34,19 @@ tasks:
     quietmode: 0
   "1":
     id: "1"
-    taskid: 2fdc225a-3233-4044-8f6e-8f4fbf9019d0
+    taskid: 93fe3230-caa9-4faf-875f-5f97e731a3e1
     type: condition
     task:
-      id: 2fdc225a-3233-4044-8f6e-8f4fbf9019d0
+      id: 93fe3230-caa9-4faf-875f-5f97e731a3e1
       version: -1
+      description: ''
       name: Is ServiceNow CMDB Enabled?
       type: condition
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
+      '#default#':
+      - "7"
       "yes":
       - "2"
     separatecontext: false
@@ -88,10 +90,10 @@ tasks:
     quietmode: 0
   "2":
     id: "2"
-    taskid: cc90fb88-c40d-4f0b-8c32-974254bfba09
+    taskid: e0b3c1b6-80fe-4f33-8f95-aa9bfdbeb968
     type: condition
     task:
-      id: cc90fb88-c40d-4f0b-8c32-974254bfba09
+      id: e0b3c1b6-80fe-4f33-8f95-aa9bfdbeb968
       version: -1
       name: Is Asset On-Prem?
       description: Check if a given value exists in the context. Will return 'no'
@@ -102,7 +104,7 @@ tasks:
       brand: ""
     nexttasks:
       "no":
-      - "11"
+      - "7"
       "yes":
       - "3"
     scriptarguments:
@@ -133,10 +135,10 @@ tasks:
     quietmode: 0
   "3":
     id: "3"
-    taskid: 13dc7c7a-ee92-496e-8249-322c7ac55a10
+    taskid: 5c3cc067-c2c5-4f5e-8431-dda66fdbb0e4
     type: condition
     task:
-      id: 13dc7c7a-ee92-496e-8249-322c7ac55a10
+      id: 5c3cc067-c2c5-4f5e-8431-dda66fdbb0e4
       version: -1
       name: IP Address Exists
       description: Check if a given value exists in the context. Will return 'no'
@@ -147,14 +149,14 @@ tasks:
       brand: ""
     nexttasks:
       "no":
-      - "11"
+      - "7"
       "yes":
       - "4"
     scriptarguments:
       value:
         complex:
-          root: ${incident.labels
-          accessor: ip}
+          root: incident.labels
+          accessor: ip
     separatecontext: false
     view: |-
       {
@@ -170,14 +172,14 @@ tasks:
     quietmode: 0
   "4":
     id: "4"
-    taskid: 11fdd2d7-d729-4a27-800a-62b19db3a9ae
+    taskid: fd14c144-d53b-4c4f-865a-e6b609f04aec
     type: regular
     task:
-      id: 11fdd2d7-d729-4a27-800a-62b19db3a9ae
+      id: fd14c144-d53b-4c4f-865a-e6b609f04aec
       version: -1
       name: Get Network Adaptor CMDB record
       description: Query records for a CMDB class.
-      script: ServiceNow CMDB|||servicenow-cmdb-records-list
+      script: "|||servicenow-cmdb-records-list"
       type: regular
       iscommand: true
       brand: ServiceNow CMDB
@@ -206,14 +208,14 @@ tasks:
     quietmode: 0
   "5":
     id: "5"
-    taskid: 2cdd1987-60f1-418b-8146-eefefad04b9b
+    taskid: 8105cca9-5366-4023-8c5e-3bb8ce963472
     type: regular
     task:
-      id: 2cdd1987-60f1-418b-8146-eefefad04b9b
+      id: 8105cca9-5366-4023-8c5e-3bb8ce963472
       version: -1
       name: servicenow-cmdb-record-get-by-id
       description: Query attributes and relationship information for a specific record.
-      script: ServiceNow CMDB|||servicenow-cmdb-record-get-by-id
+      script: "|||servicenow-cmdb-record-get-by-id"
       type: regular
       iscommand: true
       brand: ServiceNow CMDB
@@ -245,14 +247,14 @@ tasks:
     quietmode: 0
   "6":
     id: "6"
-    taskid: 80635be8-0ff3-4f26-82fb-36a0caca5854
+    taskid: 9eceafd6-03c1-48e1-87c6-06c836a32fa2
     type: regular
     task:
-      id: 80635be8-0ff3-4f26-82fb-36a0caca5854
+      id: 9eceafd6-03c1-48e1-87c6-06c836a32fa2
       version: -1
       name: Get CMDB class type and record using the network adaptor
       description: Query attributes and relationship information for a specific record.
-      script: ServiceNow CMDB|||servicenow-cmdb-record-get-by-id
+      script: "|||servicenow-cmdb-record-get-by-id"
       type: regular
       iscommand: true
       brand: ServiceNow CMDB
@@ -284,22 +286,22 @@ tasks:
     quietmode: 0
   "7":
     id: "7"
-    taskid: 0f2eb583-d692-4200-881b-51ac73cfaa51
+    taskid: 3c0553a0-e377-4f03-8bc8-843a8cc6a70d
     type: title
     task:
-      id: 0f2eb583-d692-4200-881b-51ac73cfaa51
+      id: 3c0553a0-e377-4f03-8bc8-843a8cc6a70d
       version: -1
       name: Playbook End
       type: title
+      description: ''
       iscommand: false
       brand: ""
-      description: ''
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 1240,
-          "y": 1900
+          "x": 1360,
+          "y": 1920
         }
       }
     note: false
@@ -309,10 +311,10 @@ tasks:
     quietmode: 0
   "8":
     id: "8"
-    taskid: 12afbf6a-203f-49b9-88a9-b49445dc0602
+    taskid: 574270ca-cb34-49c2-8c0d-b373a9ab01ce
     type: condition
     task:
-      id: 12afbf6a-203f-49b9-88a9-b49445dc0602
+      id: 574270ca-cb34-49c2-8c0d-b373a9ab01ce
       version: -1
       name: Network Adaptor exist?
       description: Check if a given value exists in the context. Will return 'no'
@@ -344,16 +346,16 @@ tasks:
     quietmode: 0
   "9":
     id: "9"
-    taskid: 51aeffd3-7e17-4bd4-854e-ac75dacff7dc
+    taskid: 8422c9d1-4362-4814-87b0-7d9fef8f0fec
     type: condition
     task:
-      id: 51aeffd3-7e17-4bd4-854e-ac75dacff7dc
+      id: 8422c9d1-4362-4814-87b0-7d9fef8f0fec
       version: -1
       name: Add asset in CMDB?
       type: condition
+      description: ''
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       "No":
       - "7"
@@ -364,7 +366,7 @@ tasks:
       {
         "position": {
           "x": 890,
-          "y": 1250
+          "y": 1330
         }
       }
     note: false
@@ -373,13 +375,13 @@ tasks:
     message:
       to:
         simple: Analyst
-      subject:
+      subject: null
       body:
         simple: Do you want to add this asset in the CMDB?
       methods: []
       format: ""
-      bcc:
-      cc:
+      bcc: null
+      cc: null
       timings:
         retriescount: 2
         retriesinterval: 360
@@ -391,10 +393,10 @@ tasks:
     quietmode: 0
   "10":
     id: "10"
-    taskid: 9c1230a2-8464-43d4-88e8-9401749000b9
+    taskid: 55efc89e-56f9-43f6-86fb-6ab4b2ec952f
     type: regular
     task:
-      id: 9c1230a2-8464-43d4-88e8-9401749000b9
+      id: 55efc89e-56f9-43f6-86fb-6ab4b2ec952f
       version: -1
       name: Manually add asset in CMDB
       description: The asset is not in your CMDB, please manually add asset in ServiceNow
@@ -409,68 +411,7 @@ tasks:
       {
         "position": {
           "x": 890,
-          "y": 1455
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "11":
-    id: "11"
-    taskid: 4b4c231f-689f-4e30-85aa-449fceb9d19b
-    type: regular
-    task:
-      id: 4b4c231f-689f-4e30-85aa-449fceb9d19b
-      version: -1
-      name: Manually add asset to cloud inventory
-      description: The asset is not On-Prem. Check your cloud inventory tool to see
-        if this asset is inventoried.
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "7"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 890,
-          "y": 840
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "12":
-    id: "12"
-    taskid: add6f322-e074-461b-8013-01f2b725f113
-    type: regular
-    task:
-      id: add6f322-e074-461b-8013-01f2b725f113
-      version: -1
-      name: Asset is in CMDB!
-      description: Prints text to war room (Markdown supported)
-      scriptName: Print
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "7"
-    scriptarguments:
-      value:
-        simple: Asset is in CMDB!
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 440,
-          "y": 1930
+          "y": 1525
         }
       }
     note: false
@@ -480,10 +421,10 @@ tasks:
     quietmode: 0
   "13":
     id: "13"
-    taskid: 64a48b46-9251-4e5e-86cf-363792f3c78e
+    taskid: 4cab2d04-6806-4a30-8a01-7243c120bb51
     type: regular
     task:
-      id: 64a48b46-9251-4e5e-86cf-363792f3c78e
+      id: 4cab2d04-6806-4a30-8a01-7243c120bb51
       version: -1
       name: Save CMDB information in Evidence
       description: Convert an array to a nice table display. Usually, from the context.
@@ -493,7 +434,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "12"
+      - "7"
     scriptarguments:
       columns:
         simple: name,sys_class_name,sys_id,asset.display_value,asset.link,asset.value
@@ -524,15 +465,18 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1975,
-        "width": 1180,
+        "height": 1935,
+        "width": 1300,
         "x": 440,
         "y": 50
       }
     }
   }
 inputs: []
-outputs: []
+outputs:
+- contextPath: ServiceNowCMDB.Record
+  description: Discovered CI records
+  type: unknown
 tests:
 - No tests
 fromversion: 6.0.0

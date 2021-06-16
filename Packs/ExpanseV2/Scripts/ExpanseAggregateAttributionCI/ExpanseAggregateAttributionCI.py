@@ -32,12 +32,12 @@ def deconstruct_entry(ServiceNowCMDBContext: Dict[str, Any]) -> Tuple[Optional[s
         is the asset value or None.
     :rtype: ``Tuple[Optional[str], Optional[str], Optional[str], Optional[int], Optional[str], Optional[str]]``
     """
-    name = ServiceNowCMDBContext.get("name")
-    sys_class_name = ServiceNowCMDBContext.get("sys_class_name")
-    sys_id = ServiceNowCMDBContext.get("sys_id", "Unknown")
-    asset_display_value = ServiceNowCMDBContext.get("asset", {}).get("display_value")
-    asset_link = ServiceNowCMDBContext.get("asset", {}).get("link")
-    asset_value = ServiceNowCMDBContext.get("asset", {}).get("value")
+    name = ServiceNowCMDBContext.get("Attributes", {}).get("name")
+    sys_class_name = ServiceNowCMDBContext.get("Attributes", {}).get("sys_class_name")
+    sys_id = ServiceNowCMDBContext.get("Attributes", {}).get("sys_id", "Unknown")
+    asset_display_value = ServiceNowCMDBContext.get("Attributes", {}).get("asset", {}).get("display_value")
+    asset_link = ServiceNowCMDBContext.get("Attributes", {}).get("asset", {}).get("link")
+    asset_value = ServiceNowCMDBContext.get("Attributes", {}).get("asset", {}).get("value")
 
     return name, sys_class_name, sys_id, asset_display_value, asset_link, asset_value
 
@@ -72,14 +72,18 @@ def aggregate_command(args: Dict[str, Any]) -> CommandResults:
             }
             current_sys_ids[sys_id] = current_state
 
-    markdown = '## ExpanseAggregateAttributionCI'
+    if current_sys_ids.get("Unknown") is not None:
+        del current_sys_ids["Unknown"]
+
+    human_readable = tableToMarkdown("## ExpanseAggregateAttributionCI",  list(current_sys_ids.values()),
+                                     headers=["name", "sys_id", "asset_display_value"])
     outputs = list(current_sys_ids.values())
 
     return CommandResults(
-        readable_output=markdown,
+        readable_output=human_readable,
         outputs=outputs or None,
         outputs_prefix="Expanse.AttributionCI",
-        outputs_key_field=["name", "sys_id", "sys_class_name"]
+        outputs_key_field=["sys_id"]
     )
 
 

@@ -7,15 +7,15 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: d2c0497b-49cd-4b91-825a-5a80d45a123d
+    taskid: 2ec43d18-a2c3-4a9f-801f-7d58c2f13052
     type: start
     task:
-      id: d2c0497b-49cd-4b91-825a-5a80d45a123d
+      id: 2ec43d18-a2c3-4a9f-801f-7d58c2f13052
       version: -1
       name: ""
       iscommand: false
-      brand: ""
       description: ''
+      brand: ""
     nexttasks:
       '#none#':
       - "8"
@@ -34,16 +34,16 @@ tasks:
     quietmode: 0
   "1":
     id: "1"
-    taskid: 7e90b4a0-2124-4fdf-8a99-98ee38ca4b36
+    taskid: 966cfc74-e977-42b5-8c0d-324a24149d09
     type: title
     task:
-      id: 7e90b4a0-2124-4fdf-8a99-98ee38ca4b36
+      id: 966cfc74-e977-42b5-8c0d-324a24149d09
       version: -1
       name: Find Related Assets from Expanse
       type: title
       iscommand: false
-      brand: ""
       description: ''
+      brand: ""
     nexttasks:
       '#none#':
       - "2"
@@ -62,10 +62,10 @@ tasks:
     quietmode: 0
   "2":
     id: "2"
-    taskid: eae0f34b-c6f4-4c04-882a-20a9162064f3
+    taskid: 9e2b6d27-d02a-4f38-8a6a-eed143a47722
     type: regular
     task:
-      id: eae0f34b-c6f4-4c04-882a-20a9162064f3
+      id: 9e2b6d27-d02a-4f38-8a6a-eed143a47722
       version: -1
       name: expanse-get-services
       description: Retrieve all Expanse services matching the supplied parameters.
@@ -107,10 +107,10 @@ tasks:
     quietmode: 0
   "3":
     id: "3"
-    taskid: e8e4c9f3-be8a-46f7-8e55-ddb103dc686b
+    taskid: e9c90fa5-0954-4431-8ec7-88b53ca53fec
     type: condition
     task:
-      id: e8e4c9f3-be8a-46f7-8e55-ddb103dc686b
+      id: e9c90fa5-0954-4431-8ec7-88b53ca53fec
       version: -1
       name: Was associated domain found?
       description: Check if a given value exists in the context. Will return 'no'
@@ -144,10 +144,10 @@ tasks:
     quietmode: 0
   "4":
     id: "4"
-    taskid: 2b3eae93-2864-4ef5-8da3-39daaaf70ca5
+    taskid: 5a57b39e-8dfc-4811-8b70-c4b93f9b0536
     type: condition
     task:
-      id: 2b3eae93-2864-4ef5-8da3-39daaaf70ca5
+      id: 5a57b39e-8dfc-4811-8b70-c4b93f9b0536
       version: -1
       name: Was associated certificate found?
       description: Check if a given value exists in the context. Will return 'no'
@@ -182,10 +182,10 @@ tasks:
     quietmode: 0
   "5":
     id: "5"
-    taskid: 17532bc5-94ee-4a59-8e0f-8369d7ee71f3
+    taskid: 614f810f-10d8-457c-89fc-772eda0b8457
     type: regular
     task:
-      id: 17532bc5-94ee-4a59-8e0f-8369d7ee71f3
+      id: 614f810f-10d8-457c-89fc-772eda0b8457
       version: -1
       name: Fetch Certificate
       description: Provides data enrichment for an X509 Certificate from Expanse.
@@ -215,10 +215,10 @@ tasks:
     quietmode: 0
   "6":
     id: "6"
-    taskid: c17deaab-ea5d-4d46-8028-bd08b869afd2
+    taskid: 0271cea7-5da9-4572-834f-4c169c970cab
     type: regular
     task:
-      id: c17deaab-ea5d-4d46-8028-bd08b869afd2
+      id: 0271cea7-5da9-4572-834f-4c169c970cab
       version: -1
       name: Fetch Domain
       description: Provides data enrichment for domains.
@@ -251,10 +251,10 @@ tasks:
     quietmode: 0
   "7":
     id: "7"
-    taskid: e7e0a23a-aa03-49ec-8c65-28e408568b31
+    taskid: 3de4838c-0e07-4bb8-8cf1-0982de9c844b
     type: condition
     task:
-      id: e7e0a23a-aa03-49ec-8c65-28e408568b31
+      id: 3de4838c-0e07-4bb8-8cf1-0982de9c844b
       version: -1
       name: Do Services Exist?
       description: Check if a given value exists in the context. Will return 'no'
@@ -289,16 +289,16 @@ tasks:
     quietmode: 0
   "8":
     id: "8"
-    taskid: 7c712809-8855-4e4a-8ed5-d717fe7b6832
+    taskid: 6d99090b-9a10-4ffc-8408-10eabdd01fb9
     type: title
     task:
-      id: 7c712809-8855-4e4a-8ed5-d717fe7b6832
+      id: 6d99090b-9a10-4ffc-8408-10eabdd01fb9
       version: -1
       name: Is Asset Unmanaged?
       type: title
+      description: ''
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "10"
@@ -317,16 +317,16 @@ tasks:
     quietmode: 0
   "9":
     id: "9"
-    taskid: 9636c45d-49e0-4415-8947-4df27eee9e66
+    taskid: e994a279-bdf6-422a-8f1e-8b4197590f3c
     type: condition
     task:
-      id: 9636c45d-49e0-4415-8947-4df27eee9e66
+      id: e994a279-bdf6-422a-8f1e-8b4197590f3c
       version: -1
+      description: ''
       name: Is Incident Asset Unmanaged?
       type: condition
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#default#':
       - "12"
@@ -362,10 +362,10 @@ tasks:
     quietmode: 0
   "10":
     id: "10"
-    taskid: a5da6fb3-c214-4d7a-8005-39509e01354a
+    taskid: aad784b8-2fdc-4cbc-8ef3-872fdff3e6db
     type: regular
     task:
-      id: a5da6fb3-c214-4d7a-8005-39509e01354a
+      id: aad784b8-2fdc-4cbc-8ef3-872fdff3e6db
       version: -1
       name: Fetch Issue From Expanse
       description: Retrieve Expanse issue by issue ID.
@@ -394,16 +394,16 @@ tasks:
     quietmode: 0
   "11":
     id: "11"
-    taskid: 4e5b6a13-d0e4-4b31-8dfd-42f138b494a9
+    taskid: 2b878eb8-725b-41cf-8591-03d1b7c7eab8
     type: title
     task:
-      id: 4e5b6a13-d0e4-4b31-8dfd-42f138b494a9
+      id: 2b878eb8-725b-41cf-8591-03d1b7c7eab8
       version: -1
       name: Enrichment
       type: title
+      description: ''
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -422,16 +422,16 @@ tasks:
     quietmode: 0
   "12":
     id: "12"
-    taskid: 1f048273-776f-4ce0-845a-d4759333a730
+    taskid: d725a3ff-dd03-471e-8bcf-60aa729185a0
     type: title
     task:
-      id: 1f048273-776f-4ce0-845a-d4759333a730
+      id: d725a3ff-dd03-471e-8bcf-60aa729185a0
       version: -1
       name: Done
+      description: ''
       type: title
       iscommand: false
       brand: ""
-      description: ''
     separatecontext: false
     view: |-
       {
@@ -447,10 +447,10 @@ tasks:
     quietmode: 0
   "14":
     id: "14"
-    taskid: cd0ecaec-c81c-48ab-8a4a-6f2a74737d77
+    taskid: 50be9179-755c-4633-811f-767407b702de
     type: regular
     task:
-      id: cd0ecaec-c81c-48ab-8a4a-6f2a74737d77
+      id: 50be9179-755c-4633-811f-767407b702de
       version: -1
       name: Print Related Certificates
       description: Convert an array to a nice table display. Usually, from the context.
@@ -486,16 +486,16 @@ tasks:
     quietmode: 0
   "15":
     id: "15"
-    taskid: 77d509ff-bc20-46f4-8cb3-01be15b61c41
+    taskid: ed47d70f-bede-4a5d-8194-b0e2798625aa
     type: condition
     task:
-      id: 77d509ff-bc20-46f4-8cb3-01be15b61c41
+      id: ed47d70f-bede-4a5d-8194-b0e2798625aa
       version: -1
       name: Do Related Emails Exist?
       type: condition
+      description: ''
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#default#':
       - "23"
@@ -544,10 +544,10 @@ tasks:
     quietmode: 0
   "16":
     id: "16"
-    taskid: 43c2ef5b-b7ca-4fab-894d-462c22fec637
+    taskid: 24039c66-2cee-4f0e-868a-8f2705a2662a
     type: regular
     task:
-      id: 43c2ef5b-b7ca-4fab-894d-462c22fec637
+      id: 24039c66-2cee-4f0e-868a-8f2705a2662a
       version: -1
       name: Print Found Certificates
       description: Convert an array to a nice table display. Usually, from the context.
@@ -559,10 +559,12 @@ tasks:
       '#none#':
       - "24"
     scriptarguments:
-      columns: {}
+      columns:
+        simple: commonName,annotations.contact.email,providers.name
       data:
         simple: ${Expanse.Certificate}
-      title: {}
+      title:
+        simple: Related Certificate Details
     separatecontext: false
     view: |-
       {
@@ -578,10 +580,10 @@ tasks:
     quietmode: 0
   "17":
     id: "17"
-    taskid: 9bd246b4-0967-4af6-8cd7-d84b2ac3135d
+    taskid: 394df8b0-188b-4c81-8b8b-0498c064125d
     type: regular
     task:
-      id: 9bd246b4-0967-4af6-8cd7-d84b2ac3135d
+      id: 394df8b0-188b-4c81-8b8b-0498c064125d
       version: -1
       name: Print Found Domains
       description: Convert an array to a nice table display. Usually, from the context.
@@ -593,10 +595,12 @@ tasks:
       '#none#':
       - "24"
     scriptarguments:
-      columns: {}
+      columns:
+        simple: domain, annotations.contact.email,providers.name
       data:
         simple: ${Expanse.Domain}
-      title: {}
+      title:
+        simple: Related Domain Details
     separatecontext: false
     view: |-
       {
@@ -612,10 +616,10 @@ tasks:
     quietmode: 0
   "18":
     id: "18"
-    taskid: e008ce3a-8dfa-4bf0-841d-6b22dd090db4
+    taskid: 8133aacc-644b-473e-82ef-80c5e39e9281
     type: condition
     task:
-      id: e008ce3a-8dfa-4bf0-841d-6b22dd090db4
+      id: 8133aacc-644b-473e-82ef-80c5e39e9281
       version: -1
       name: Domain Exists
       description: Check if a given value exists in the context. Will return 'no'
@@ -647,10 +651,10 @@ tasks:
     quietmode: 0
   "19":
     id: "19"
-    taskid: 640f50d1-7678-4d10-8ee5-5e32f746864d
+    taskid: 85f5f08c-6fed-4162-8f3d-479d857ff2d0
     type: condition
     task:
-      id: 640f50d1-7678-4d10-8ee5-5e32f746864d
+      id: 85f5f08c-6fed-4162-8f3d-479d857ff2d0
       version: -1
       name: Certificate Exists
       description: Check if a given value exists in the context. Will return 'no'
@@ -682,10 +686,10 @@ tasks:
     quietmode: 0
   "20":
     id: "20"
-    taskid: 76a6a390-b75a-4015-8e81-5e07bffd2e4d
+    taskid: 2849ab02-f465-4024-8444-a45d144ff34d
     type: regular
     task:
-      id: 76a6a390-b75a-4015-8e81-5e07bffd2e4d
+      id: 2849ab02-f465-4024-8444-a45d144ff34d
       version: -1
       name: Send email to certificate Subject email
       description: Send an email
@@ -732,10 +736,10 @@ tasks:
     quietmode: 0
   "21":
     id: "21"
-    taskid: 712a0468-db38-4159-83d7-168b828a97dd
+    taskid: 8fbeb774-464c-4fde-81d0-0ff44f384047
     type: regular
     task:
-      id: 712a0468-db38-4159-83d7-168b828a97dd
+      id: 8fbeb774-464c-4fde-81d0-0ff44f384047
       version: -1
       name: Send email to certificate owner
       description: Send an email
@@ -782,10 +786,10 @@ tasks:
     quietmode: 0
   "22":
     id: "22"
-    taskid: 0951d3a2-8695-4315-8b8a-5ddc3f5e7721
+    taskid: 3ea1e331-fdb3-4845-8954-8406800df5be
     type: regular
     task:
-      id: 0951d3a2-8695-4315-8b8a-5ddc3f5e7721
+      id: 3ea1e331-fdb3-4845-8954-8406800df5be
       version: -1
       name: Send Email to domain owner
       description: Send an email
@@ -834,16 +838,16 @@ tasks:
     quietmode: 0
   "23":
     id: "23"
-    taskid: a5930cf8-09aa-4167-8caf-6fc7860552c8
+    taskid: 23b26c04-a623-45a0-8b88-6a15b3e3bc52
     type: regular
     task:
-      id: a5930cf8-09aa-4167-8caf-6fc7860552c8
+      id: 23b26c04-a623-45a0-8b88-6a15b3e3bc52
       version: -1
       name: Add Account to Prisma Cloud
       type: regular
+      description: ''
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "12"
@@ -866,16 +870,16 @@ tasks:
     quietmode: 0
   "24":
     id: "24"
-    taskid: e1888391-c52d-44fa-8ffa-39688aff718a
+    taskid: dbd8c2b7-380f-400f-8fe0-c66e8fe848a1
     type: title
     task:
-      id: e1888391-c52d-44fa-8ffa-39688aff718a
+      id: dbd8c2b7-380f-400f-8fe0-c66e8fe848a1
       version: -1
       name: Notify Potential Owner
+      description: ''
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "15"

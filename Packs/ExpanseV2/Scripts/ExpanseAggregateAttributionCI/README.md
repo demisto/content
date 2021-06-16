@@ -1,4 +1,4 @@
-Aggregate entries from multiple sources into AttributionCI
+Aggregate entries from ServiceNow CMDB into AttributionCI
 
 ## Script Data
 ---

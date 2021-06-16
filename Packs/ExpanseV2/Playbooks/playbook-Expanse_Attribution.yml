@@ -1678,9 +1678,13 @@ tasks:
       - "3"
     scriptarguments:
       current:
-        simple: ${Expanse.AttributionCI}
+        complex:
+          root: Expanse
+          accessor: AttributionCI
       input:
-        simple: ${ServiceNowCMDB.Report}
+        complex:
+          root: ServiceNowCMDB
+          accessor: Record
     separatecontext: false
     view: |-
       {
