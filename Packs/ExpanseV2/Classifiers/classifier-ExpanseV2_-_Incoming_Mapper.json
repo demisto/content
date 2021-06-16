@@ -1,7 +1,7 @@
 {
     "description": "",
     "feed": false,
-    "id": "XpanseV2-mapper",
+    "id": "ExpanseV2-mapper",
     "mapping": {
         "Expanse Issue": {
             "dontMapEventToLabels": false,
@@ -611,7 +611,7 @@
             }
         }
     },
-    "name": "XpanseV2 - Incoming Mapper",
+    "name": "ExpanseV2 - Incoming Mapper",
     "type": "mapping-incoming",
     "version": -1,
     "fromVersion": "6.0.0"
