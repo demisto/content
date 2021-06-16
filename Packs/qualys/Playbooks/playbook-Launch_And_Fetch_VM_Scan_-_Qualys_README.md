@@ -1,4 +1,4 @@
-Launches a scan and fetcesh the scan when it's ready.
+Launches a scan and fetches the scan when it's ready.
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.
