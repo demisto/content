@@ -1,0 +1,235 @@
+description: Initiates a new endpoint script execution action using a provided script
+  unique id from Cortex XDR script library.
+id: Cortex XDR - Run script
+inputs:
+- description: 'A comma-separated list of endpoint IDs. '
+  key: endpoint_ids
+  playbookInputQuery:
+  required: false
+  value: {}
+- description: Unique identifier of the script. Can be retrieved by running the xdr-get-scripts
+    command.
+  key: script_uid
+  playbookInputQuery:
+  required: false
+  value: {}
+- description: Dictionary contains the parameter name as key and its value for this
+    execution as the value. For example, {"param1":"param1_value","param2":"param2_value"}. The required parameters for each script can be retrieved by running xdr-get-script-metadata with the script uid.
+  key: parameters
+  playbookInputQuery:
+  required: false
+  value: {}
+- description: |-
+    The timeout in seconds for this execution.
+    (Default is: '600')
+  key: script_timeout
+  playbookInputQuery:
+  required: false
+  value: {}
+- description: Amount of time to poll action status before declaring a timeout and
+    resuming the playbook (in minutes).
+  key: polling_timeout
+  playbookInputQuery:
+  required: false
+  value:
+    simple: "10"
+name: Cortex XDR - Run script
+outputs:
+- contextPath: PaloAltoNetworksXDR.ScriptResult.results._return_value
+  description: Value returned by the script in case the type is not a dictionary.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "1"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 0a2f4a6b-3a8c-45f2-89ed-89eea47b1500
+      iscommand: false
+      name: ""
+      version: -1
+      description: ''
+    taskid: 0a2f4a6b-3a8c-45f2-89ed-89eea47b1500
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 60
+        }
+      }
+  "1":
+    id: "1"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "2"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      endpoint_ids:
+        complex:
+          root: inputs.endpoint_ids
+      parameters:
+        complex:
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: inputs.parameters
+              operator: isNotEmpty
+          root: inputs.parameters
+      script_uid:
+        complex:
+          root: inputs.script_uid
+      timeout:
+        complex:
+          root: inputs.script_timeout
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Initiates a new endpoint script execution action using a script
+        from the script library.
+      id: e8ee8d47-e29a-4285-875c-b3ea05156877
+      iscommand: true
+      name: Execute Cortex XDR Script
+      script: '|||xdr-run-script'
+      type: regular
+      version: -1
+    taskid: e8ee8d47-e29a-4285-875c-b3ea05156877
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 190
+        }
+      }
+  "2":
+    id: "2"
+    ignoreworker: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      max: 100
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      action_id:
+        complex:
+          accessor: action_id
+          root: PaloAltoNetworksXDR.ScriptRun
+      timeout:
+        complex:
+          root: inputs.polling_timeout
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Checks the action status of an action ID. \nEnter the action ID
+        of the action whose status you want to know.
+      id: 35c56893-2cd3-45bb-8f06-bd3015333825
+      iscommand: false
+      name: Cortex XDR - Check Action Status
+      playbookId: Cortex XDR - Check Action Status
+      type: playbook
+      version: -1
+    taskid: 35c56893-2cd3-45bb-8f06-bd3015333825
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 380
+        }
+      }
+  "3":
+    id: "3"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "4"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      action_id:
+        complex:
+          accessor: action_id
+          root: PaloAltoNetworksXDR.ScriptRun
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Retrieve the results of a script execution action.
+      id: 5487d7f4-691d-434e-828e-01190a697e56
+      iscommand: true
+      name: Get script execution results
+      script: '|||xdr-get-script-execution-results'
+      type: regular
+      version: -1
+    taskid: 5487d7f4-691d-434e-828e-01190a697e56
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 570
+        }
+      }
+  "4":
+    id: "4"
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 8de1f7d1-e21d-48a4-8760-0ed56299c77f
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+      description: ''
+    taskid: 8de1f7d1-e21d-48a4-8760-0ed56299c77f
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 730
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 735,
+        "width": 380,
+        "x": 450,
+        "y": 60
+      }
+    }
+  }
+tests:
+- No tests (auto formatted)
+fromversion: 5.5.0
