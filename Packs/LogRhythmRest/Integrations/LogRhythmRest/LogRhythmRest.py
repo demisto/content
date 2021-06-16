@@ -1765,7 +1765,7 @@ def lr_get_query_result(data_args):
             results = CommandResults(
                 readable_output=markdown,
                 outputs=search_result["Items"],
-                outputs_prefix="LogRhythm.SearchResult"
+                outputs_prefix="Logrhythm.SearchResult"
             )
 
             break
