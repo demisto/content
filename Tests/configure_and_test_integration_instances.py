@@ -1155,6 +1155,8 @@ def instance_testing(build: Build,
         logging.info("some post-update tests failed, sleeping for 15 seconds, then running the failed tests again")
         sleep(15)
         tmp, failed_tests = instance_testing(build, failed_instances, pre_update=False, first_call=False)
+        if failed_tests:
+            logging.info('============= some tests still failed post update')
 
     return successful_tests, failed_tests
 
