@@ -1,5 +1,5 @@
 {
-    "name": "FireEyeEX",
+    "name": "FireEye Email Security (EX)",
     "description": "FireEye Email Security series protects against breaches caused by advanced email attacks.",
     "support": "xsoar",
     "currentVersion": "1.0.0",
