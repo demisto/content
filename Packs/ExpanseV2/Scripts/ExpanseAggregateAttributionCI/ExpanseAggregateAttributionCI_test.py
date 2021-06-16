@@ -5,13 +5,15 @@ import ExpanseAggregateAttributionCI
 
 INPUT = [
     {
-        "name": "server 1",
-        "sys_id": "1234",
-        "sys_class_name": "cmdb_ci",
-        "asset": {
-            "display_value": "server 1",
-            "link": "https://servicenow.com/5678",
-            "value": "5678"
+        "Attributes": {
+            "name": "server 1",
+            "sys_id": "1234",
+            "sys_class_name": "cmdb_ci",
+            "asset": {
+                "display_value": "server 1",
+                "link": "https://servicenow.com/5678",
+                "value": "5678"
+            }
         }
     }
 ]
