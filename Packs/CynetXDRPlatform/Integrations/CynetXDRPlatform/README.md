@@ -1,7 +1,7 @@
 Cynet XDR prevents and detects threats on endpoints, networks, and users and triggers for each identified threat an
 automated investigation flow that reveals the attack’s scope and root cause and applies automated remediation.
 The 24×7 MDR team continuously monitors and optimizes this process to maintain top quality and precision.
-This integration was integrated and tested with version 6.2 of Cynet XDR Platform
+This integration was integrated and tested with version 4.2.12.11749 of Cynet XDR Platform
 ## Configure Cynet XDR Platform on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
