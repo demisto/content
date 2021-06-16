@@ -35,9 +35,10 @@ class Client(BaseClient):
     For this  implementation, no special attributes defined
     """
 
-    def threat_search_call(self, ip=None, file=None, email=None, url=None, string=None):
+    def threat_search_call(self, days_back=90, ip=None, file=None, email=None, url=None, string=None):
         """Performs the API call to the threats-search endpoint with the requested query param
             Args:
+                - days_back (int): search for data not older then 'days_back' days
                 - ip (string): search for threats associated with this ip address
                 - file (string): search for threats associated with this file hash
                 - email (string): search for threats associated with this email address
@@ -46,7 +47,7 @@ class Client(BaseClient):
             return:
              Json: The response returned from the API call
         """
-        params = {}
+        params = {'beginTimestamp': get_n_days_back_epoch(days_back)}
         if ip:
             params['ip'] = ip
 
@@ -77,6 +78,12 @@ def remove_false_vendors_detections_from_threat(threats):
                 if detection.get('detected') == True:
                     detections.append(detection)
             exe['vendorDetections'] = detections
+
+
+def get_n_days_back_epoch(days_back: int):
+    today = datetime.now()
+    d = timedelta(days=days_back)
+    return int((today-d).timestamp())
 
 
 def create_threat_md_row(threat: Dict, severity_level: int = None):
@@ -287,7 +294,7 @@ def search_url_command(client: Client, args: Dict[str, Any], params) -> List[Com
         raise ValueError('url not specified')
     results_list = []
     for url in urls:
-        result = client.threat_search_call(url=url)
+        result = client.threat_search_call(url=url, days_back=params.get('days_back'))
         threats = result.get('data', {}).get('threats', [])
         remove_false_vendors_detections_from_threat(threats)
         outputs = {'Data': url, 'Threats': threats}
@@ -335,7 +342,7 @@ def check_ip_command(client: Client, args: Dict[str, Any], params) -> List[Comma
             raise ValueError('Invalid IP')
 
         # Call the Client function and get the raw response
-        result = client.threat_search_call(ip=ip)
+        result = client.threat_search_call(ip=ip, days_back=params.get('days_back'))
         threats = result.get('data', {}).get('threats', [])
         remove_false_vendors_detections_from_threat(threats)
         outputs = {'Data': ip, 'Threats': threats}
@@ -382,7 +389,7 @@ def check_email_command(client: Client, args: Dict[str, Any], params) -> List[Co
             raise ValueError('Invalid email')
 
         # Call the Client function and get the raw response
-        result = client.threat_search_call(email=email)
+        result = client.threat_search_call(email=email, days_back=params.get('days_back'))
         threats = result.get('data', {}).get('threats', [])
         remove_false_vendors_detections_from_threat(threats)
         outputs = {'Data': email, 'Threats': threats}
@@ -423,7 +430,7 @@ def check_md5_command(client: Client, args: Dict[str, Any], params) -> List[Comm
     results_list = []
     for file in files:
         # Call the Client function and get the raw response
-        result = client.threat_search_call(file=file)
+        result = client.threat_search_call(file=file, days_back=params.get('days_back'))
         threats = result.get('data', {}).get('threats', [])
         remove_false_vendors_detections_from_threat(threats)
         outputs = {'Data': file, 'Threats': threats}
@@ -449,7 +456,7 @@ def check_md5_command(client: Client, args: Dict[str, Any], params) -> List[Comm
     return results_list
 
 
-def extracted_string(client: Client, args: Dict[str, Any]) -> CommandResults:
+def extracted_string(client: Client, args: Dict[str, Any], params) -> CommandResults:
     """ Performs the api call to cofense threts-search endpoint to get all threats associated with the given string,
      analyze the response and generates the command result object for the cofense-search command
             Args:
@@ -468,7 +475,7 @@ def extracted_string(client: Client, args: Dict[str, Any]) -> CommandResults:
         limit = 10
 
     # Call the Client function and get the raw response
-    result = client.threat_search_call(string=string)
+    result = client.threat_search_call(string=string, days_back=params.get('days_back'))
     threats = result.get('data', {}).get('threats', [])
     md_data = []
     count_threats = 0
@@ -528,7 +535,7 @@ def main() -> None:
             return_results(search_url_command(client, args, params))
 
         elif command == "cofense-search":
-            return_results(extracted_string(client, args))
+            return_results(extracted_string(client, args, params))
 
         elif command == "email":
             return_results(check_email_command(client, args, params))

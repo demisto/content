@@ -80,6 +80,11 @@ configuration:
   defaultvalue: 1
   type: 0
   additionalinfo: Limit the number of threats' reports that will be displayed in the command results
+- display: Time limit for collecting data
+  name: days_back
+  defaultvalue: 90
+  type: 0
+  additionalinfo: Limit the number of days from wich we should start returning data. 90 days limit is recomended by Cofense.
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
