@@ -42,4 +42,5 @@ subtype: python3
 system: false
 timeout: '0'
 type: python
-dockerimage: demisto/teams:1.0.0.14902
+fromversion: 6.0.0
+dockerimage: demisto/teams:1.0.0.20407
