@@ -403,12 +403,12 @@ def attack_pattern_reputation_command(client, args):
             custom_fields = attack_obj or {}
             score = INDICATOR_TYPE_TO_SCORE.get('Attack Pattern')
             value = mitre_data.get('name')
-            md = f"## {[value]}:\n {custom_fields.get('mitredescription', '')}"
+            md = f"## {[value]}:\n {custom_fields.get('description', '')}"
 
             dbot_score = Common.DBotScore(
                 indicator=value,
                 indicator_type=DBotScoreType.ATTACKPATTERN,
-                integration_name=INTEGRATION_NAME,  # Vendor
+                integration_name=INTEGRATION_NAME,
                 score=score,
             )
             attack_context = Common.AttackPattern(
@@ -454,7 +454,7 @@ def main():
             get_indicators_command(client, args)
 
         elif demisto.command() == 'attack-pattern':
-            attack_pattern_reputation_command(client, args)
+            return_results(attack_pattern_reputation_command(client, args))
 
         elif demisto.command() == 'mitre-show-feeds':
             show_feeds_command(client)

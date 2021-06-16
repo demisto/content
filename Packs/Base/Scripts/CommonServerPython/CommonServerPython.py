@@ -3835,9 +3835,6 @@ class Common(object):
         :type first_seen_by_source: ``str``
         :param first_seen_by_source: The Attack Pattern first seen by source
 
-        :type modified: ``str``
-        :param modified: The Attack Pattern modified time.
-
         :type description: ``str``
         :param description: The Attack Pattern description
 
@@ -3882,7 +3879,8 @@ class Common(object):
                 'OperatingSystemRefs': self.operating_system_refs,
                 "Publications": self.publications,
                 "MITREID": self.mitre_id,
-                "Tags": self.tags
+                "Tags": self.tags,
+                "Description": self.description
             }
 
             if self.dbot_score and self.dbot_score.score == Common.DBotScore.BAD:
