@@ -1361,4 +1361,6 @@ for key, value in redactDictBASIC.items():
     text = text.replace(str(key).strip(), str(value).strip())
 for key, value in ROOOT_Domain_List.items():
     text = text.replace(str(key).strip(), str(value).strip())
+context = demisto.context()
+demisto.executeCommand('Set', {'key': "Redacted_inicator", 'value': text})
 return_results(text)
