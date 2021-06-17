@@ -1,8 +1,9 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
-INCIDENTS_HEADER = ['id', 'name', 'email_from', 'recipients', 'severity', 'status', 'created']
+HEADER_SORTED = ['id', 'name', 'email_from', 'recipients', 'severity', 'status', 'created']
 KEYS_FETCHED_BY_QUERY = ['status', 'severity']
+IGNORE_HEADERS = ['similarity', 'emailfromdomain', 'recipientsdomain']
 NO_CAMPAIGN_INCIDENTS_MSG = 'There is no Campaign Incidents in the Context'
 LINKABLE_ID_FORMAT = '[{incident_id}](#/Details/{incident_id})'
 STATUS_DICT = {
@@ -71,12 +72,14 @@ def get_campaign_incidents_from_context():
     return demisto.get(demisto.context(), 'EmailCampaign.incidents')
 
 
-def get_incidents_info_md(incidents):
+def get_incidents_info_md(incidents, fields_to_display=None):
     """
         Get the campaign incidents relevant info in MD table
 
         :type incidents: ``list``
         :param incidents: the campaign incidents to collect the info from
+        :type fields_to_display: ``list``
+        :param fields_to_display: list of result headers
 
         :rtype: ``str``
         :return the MD table str
@@ -84,17 +87,17 @@ def get_incidents_info_md(incidents):
     """
 
     if incidents:
-        # get all the keys from the incidents
-        all_headers = set().union(*(incident.keys() for incident in incidents))
-        # removing headers that already in INCIDENTS_HEADER
-        unique_headers = all_headers - set(INCIDENTS_HEADER)
-        sorted_headers = INCIDENTS_HEADER + list(unique_headers)
+        if not fields_to_display:
+            headers = HEADER_SORTED
+        else:
+            headers = [header for header in HEADER_SORTED if fields_to_display]
+            headers += list(set(fields_to_display) - set(HEADER_SORTED))
 
         return tableToMarkdown(
             name='',
             t=incidents,
             headerTransform=string_to_table_header,
-            headers=sorted_headers,
+            headers=headers,
             removeNull=True,
         )
 
@@ -117,10 +120,11 @@ def update_empty_fields():
 def main():
     try:
         incidents = get_campaign_incidents_from_context()
+        fields_to_display = demisto.get(demisto.context(), 'EmailCampaign.fieldsToDisplay')
         if incidents:
             update_incident_with_required_keys(incidents, KEYS_FETCHED_BY_QUERY)
             update_empty_fields()
-            readable_output = get_incidents_info_md(incidents)
+            readable_output = get_incidents_info_md(incidents, fields_to_display)
         else:
             readable_output = NO_CAMPAIGN_INCIDENTS_MSG
 
