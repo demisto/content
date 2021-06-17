@@ -44,7 +44,8 @@ class Client(BaseClient):
                     text = self.get_url_content(indicator.get('link'))
                     indicator_obj = {
                         "type": 'Report',
-                        "value": indicator.get('title'),
+                        "value": indicator.get('title').replace(',', ''),  # Remove comma because the script of create
+                        # relationship includes that as a list of titles.
                         "rawJSON": {'value': indicator, 'type': 'Report', "firstseenbysource": published_iso},
                         "fields": {
                             'publications': publications,

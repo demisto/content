@@ -1,7 +1,7 @@
 id: 69e94029-944d-4652-86f5-652b2404a0f6
-version: 19
+version: 26
 vcShouldKeepItemLegacyProdMachine: false
-name: rss_indicators_extraction
+name: RSS Create Indicators From Report
 starttaskid: "0"
 tasks:
   "0":
@@ -21,8 +21,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 460,
-          "y": 40
+          "x": 50,
+          "y": 50
         }
       }
     note: false
@@ -34,13 +34,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: 014ecbfb-f5a8-43e3-8786-1d63da637663
+    taskid: 489c7e3e-57c5-43e3-8da4-714030e0b498
     type: playbook
     task:
-      id: 014ecbfb-f5a8-43e3-8786-1d63da637663
+      id: 489c7e3e-57c5-43e3-8da4-714030e0b498
       version: -1
-      name: extract_and_create_relationship
-      playbookName: extract_and_create_relationship
+      name: Extract and create relationship
+      playbookName: Extract and Create Relationships
       type: playbook
       iscommand: false
       brand: ""
@@ -62,8 +62,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 460,
-          "y": 410
+          "x": 50,
+          "y": 370
         }
       }
     note: false
@@ -75,10 +75,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: 7ea93539-a782-440b-808f-6af06c9e28aa
+    taskid: 60ead64b-99c4-4533-844e-2707f291babc
     type: regular
     task:
-      id: 7ea93539-a782-440b-808f-6af06c9e28aa
+      id: 60ead64b-99c4-4533-844e-2707f291babc
       version: -1
       name: Tag report as "processed"
       description: commands.local.cmd.add.values.to.indicator.multi.select.field
@@ -100,8 +100,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 460,
-          "y": 600
+          "x": 50,
+          "y": 545
         }
       }
     note: false
@@ -113,10 +113,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: c4fcd607-d654-468d-82fe-648eb6ce8f9c
+    taskid: 66d8db03-d387-49e9-8eef-e0ef62f0a2b4
     type: regular
     task:
-      id: c4fcd607-d654-468d-82fe-648eb6ce8f9c
+      id: 66d8db03-d387-49e9-8eef-e0ef62f0a2b4
       version: -1
       name: Tag reports "in process"
       description: commands.local.cmd.add.values.to.indicator.multi.select.field
@@ -138,8 +138,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 460,
-          "y": 200
+          "x": 50,
+          "y": 195
         }
       }
     note: false
@@ -151,10 +151,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: 44915943-daba-4689-80da-79432ade2d7b
+    taskid: 3208ea82-1aa4-4d61-8d47-50eaf185354c
     type: regular
     task:
-      id: 44915943-daba-4689-80da-79432ade2d7b
+      id: 3208ea82-1aa4-4d61-8d47-50eaf185354c
       version: -1
       name: Remove tag "in process"
       description: commands.local.cmd.remove.values.to.indicator.multi.select.field
@@ -176,8 +176,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 460,
-          "y": 800
+          "x": 50,
+          "y": 720
         }
       }
     note: false
@@ -189,10 +189,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: 2d68f4e4-bfff-4d6e-8575-0d1e2ff9f772
+    taskid: fc4676ba-8352-42e5-8adb-2d1a4358d225
     type: title
     task:
-      id: 2d68f4e4-bfff-4d6e-8575-0d1e2ff9f772
+      id: fc4676ba-8352-42e5-8adb-2d1a4358d225
       version: -1
       name: Done
       type: title
@@ -202,8 +202,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 460,
-          "y": 980
+          "x": 50,
+          "y": 895
         }
       }
     note: false
@@ -218,10 +218,10 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1005,
+        "height": 910,
         "width": 380,
-        "x": 460,
-        "y": 40
+        "x": 50,
+        "y": 50
       }
     }
   }
@@ -231,7 +231,7 @@ inputs:
   required: false
   description: ""
   playbookInputQuery:
-    query: type:Report -tags:processed -tags:in_process
+    query: type:Report -tags:processed -tags:in_process tags:test
     queryEntity: indicators
     results: null
     daterange:
@@ -253,4 +253,3 @@ inputs:
   description: ""
   playbookInputQuery: null
 outputs: []
-quiet: true
