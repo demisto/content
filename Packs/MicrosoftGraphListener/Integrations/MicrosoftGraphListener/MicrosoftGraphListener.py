@@ -853,7 +853,6 @@ class MsGraphClient:
             'attachments': MsGraphClient._build_file_attachments_input(attach_ids, attach_names, attach_cids, [])
         }
 
-
     def test_connection(self):
         """
         Basic connection test instead of test-module.
