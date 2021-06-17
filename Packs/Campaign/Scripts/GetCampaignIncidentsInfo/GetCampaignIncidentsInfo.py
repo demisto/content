@@ -1,5 +1,6 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
+import copy
 
 HEADER_SORTED = ['id', 'name', 'emailfrom', 'recipients', 'severity', 'status', 'created']
 KEYS_FETCHED_BY_QUERY = ['status', 'severity']
@@ -59,15 +60,19 @@ def convert_incident_to_hr(incident):
         :rtype: ``None``
         :return None
     """
-    for key in incident.keys():
+    converted_incident = copy.deepcopy(incident)
+
+    for key in converted_incident.keys():
 
         if key == 'status':
-            incident[key] = STATUS_DICT.get(incident.get(key))
+            converted_incident[key] = STATUS_DICT.get(converted_incident.get(key))
 
         if key == 'id':
-            incident[key] = LINKABLE_ID_FORMAT.format(incident_id=incident.get(key))
+            converted_incident[key] = LINKABLE_ID_FORMAT.format(incident_id=converted_incident.get(key))
 
-        incident[key] = incident.get(key.replace('_', ''))
+        converted_incident[key] = converted_incident.get(key.replace('_', ''))
+
+    return converted_incident
 
 
 def get_campaign_incidents_from_context():
@@ -95,12 +100,11 @@ def get_incidents_info_md(incidents, fields_to_display=None):
             headers = [header for header in HEADER_SORTED if fields_to_display]
             headers += list(set(fields_to_display) - set(HEADER_SORTED))
 
-        for incident in incidents:
-            convert_incident_to_hr(incident)
+        converted_incidents = [convert_incident_to_hr(incident) for incident in incidents]
 
         return tableToMarkdown(
             name='',
-            t=incidents,
+            t=converted_incidents,
             headerTransform=string_to_table_header,
             headers=headers,
             removeNull=True,
