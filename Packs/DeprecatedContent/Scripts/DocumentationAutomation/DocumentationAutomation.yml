@@ -80,6 +80,7 @@ tags: []
 runas: DBotWeakRole
 runonce: false
 subtype: python2
+dockerimage: demisto/python:2.7.18.20958
 fromversion: 5.0.0
 deprecated: true
 tests:
