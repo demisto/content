@@ -20,6 +20,11 @@ MAPPING = {
     'links_reportTotalCount': 'intel471reporttotalcount',
     'links_instantMessageTotalCount': 'intel471instantmessagetotalcount',
 }
+DEMISTO_VERSION = demisto.demistoVersion()
+CONTENT_PACK = 'Intel471 Feed/2.0.1'
+INTEGRATION = 'Intel471 Actors Feed'
+USER_AGENT = 'XSOAR/' + DEMISTO_VERSION['version'] + '.' + DEMISTO_VERSION['buildNumber'] \
+    + ' - ' + CONTENT_PACK + ' - ' + INTEGRATION
 
 
 def _create_url(**kwargs):
@@ -53,6 +58,7 @@ def custom_build_iterator(client: Client, feed: Dict, limit: int = 0, **kwargs) 
     result: List[Dict] = []
     should_continue = True
     total_count = 0
+    request_headers = {'user-agent': USER_AGENT}
 
     while should_continue:
         r = requests.get(
@@ -60,7 +66,7 @@ def custom_build_iterator(client: Client, feed: Dict, limit: int = 0, **kwargs) 
             verify=client.verify,
             auth=client.auth,
             cert=client.cert,
-            headers=client.headers,
+            headers=request_headers,
             params=params,
             **kwargs
         )
