@@ -628,7 +628,7 @@ class Pack(object):
         return dependencies_data_result
 
     def _create_changelog_entry(self, release_notes, version_display_name, build_number, pack_was_modified=False,
-                                new_version=True, initial_release=False):
+                                new_version=True, initial_release=False, initial_entry_time=None):
         """ Creates dictionary entry for changelog.
 
         Args:
@@ -657,6 +657,11 @@ class Pack(object):
             return {'releaseNotes': release_notes,
                     'displayName': f'{version_display_name} - R{build_number}',
                     'released': datetime.utcnow().strftime(Metadata.DATE_FORMAT)}
+
+        elif initial_entry_time:
+            return {'releaseNotes': release_notes,
+                    'displayName': f'{version_display_name} - R{build_number}',
+                    'released': initial_entry_time}
 
         return {}
 
@@ -1320,12 +1325,16 @@ class Pack(object):
                         if modified_release_notes_lines_dict:
                             logging.info("Creating changelog entries for modified rn")
                             for version, modified_release_notes_lines in modified_release_notes_lines_dict.items():
+                                #  For modified old entries, keep the initial release timestamp
+                                initial_entry_time = changelog[version]['released']
                                 changelog_entry = self._create_changelog_entry(
                                     release_notes=modified_release_notes_lines,
                                     version_display_name=version,
                                     build_number=build_number,
                                     pack_was_modified=False,
-                                    new_version=False)
+                                    new_version=False,
+                                    initial_entry_time=initial_entry_time,
+                                )
                                 changelog[version] = changelog_entry
 
                 else:  # will enter only on initial version and release notes folder still was not created
