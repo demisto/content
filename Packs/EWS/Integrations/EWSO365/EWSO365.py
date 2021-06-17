@@ -177,7 +177,6 @@ class EWSClient:
         :param request_timeout: Timeout (in seconds) for HTTP requests to Exchange Server
         :param max_fetch: Max incidents per fetch
         :param insecure: Trust any certificate (not secure)
-            succeeds
         """
         BaseProtocol.TIMEOUT = int(request_timeout)
         self.ews_server = "https://outlook.office365.com/EWS/Exchange.asmx/"
