@@ -7123,6 +7123,8 @@ tasks:
     scriptarguments:
       ListName:
         simple: ${inputs.OrganizationUnitsToOwnerName}
+      ListValues:
+        simple: '{}'
     separatecontext: true
     loop:
       iscommand: false
@@ -7160,6 +7162,8 @@ tasks:
     scriptarguments:
       ListName:
         simple: ${inputs.FirewallTagListName}
+      ListValues:
+        simple: '{}'
     separatecontext: true
     loop:
       iscommand: false
