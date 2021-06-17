@@ -1,20 +1,32 @@
 args:
-- name: indicator
+- default: false
+  description: Indicator to be redacted
+  isArray: false
+  name: indicator
   required: true
-- name: searchkey
+  secret: false
+- default: false
+  description: 'string which should be REDACTED '
+  isArray: false
+  name: searchkey
+  required: false
+  secret: false
+comment: Redactindicator can help you to defang/redact any kind of indicator (IPv4,
+  url, domain and email), IP addresses will be in the dotted representation like 8.8.8[.].8,
+  all domains will be example[.]com. Optional you can define a "searchkey" which does
+  not to be case sensitive, which will be replaced as <REDACTED>
 commonfields:
-  id: Redact_Indicator
+  id: 6e9660a8-4178-4c32-8f06-19225737bcba
   version: -1
-dockerimage: demisto/python3:3.9.5.21272
 enabled: true
-name: Redact_Indicator
+name: redactindicator
+script: '-'
+subtype: python3
+system: false
+timeout: '0'
+type: python
+dockerimage: demisto/python3:3.9.5.21272
 runas: DBotWeakRole
 runonce: false
-script: ''
-scripttarget: 0
-subtype: python3
-tags: []
-type: python
-fromversion: 6.0.0
-tests:
-- No tests (auto formatted)
+pswd: ''
+vcShouldKeepItemLegacyProdMachine: false
