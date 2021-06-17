@@ -800,7 +800,7 @@ class MsGraphClient:
 
     def reply_mail(self, args):
         email_to = argToList(args.get('to'))
-        email_from = args.get('from', self.ms_client._mailbox_to_fetch)
+        email_from = args.get('from', self._mailbox_to_fetch)
         message_id = args.get('inReplyTo')
         email_body = args.get('body', "")
         email_subject = args.get('subject', "")
@@ -814,9 +814,9 @@ class MsGraphClient:
         message_body = html_body or email_body
 
         suffix_endpoint = f'/users/{email_from}/messages/{message_id}/reply'
-        reply = self.ms_client.build_message_to_reply(email_to, email_cc, email_bcc, email_subject, message_body,
-                                                      attach_ids,
-                                                      attach_names, attach_cids)
+        reply = self.build_message_to_reply(email_to, email_cc, email_bcc, email_subject, message_body,
+                                            attach_ids,
+                                            attach_names, attach_cids)
         self.ms_client.http_request('POST', suffix_endpoint, json_data={'message': reply, 'comment': message_body},
                                     resp_type="text")
 

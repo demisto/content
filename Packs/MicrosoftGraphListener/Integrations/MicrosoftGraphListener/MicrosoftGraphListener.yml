@@ -286,7 +286,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Replies to an email using Graph Mail.
+    description: Replies to an email using Graph Mail Single User.
     execution: false
     name: reply-mail
     outputs:

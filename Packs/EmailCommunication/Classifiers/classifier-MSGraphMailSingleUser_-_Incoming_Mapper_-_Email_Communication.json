@@ -1,7 +1,7 @@
 {
 	"description": "Maps incoming MS Graph Mail Single User email message fields.",
 	"feed": false,
-	"id": "4f31271a-c22a-4615-862d-2e486105973e",
+	"id": "MS Graph Mail Single User - Incoming Mapper - Email Communication",
 	"mapping": {
 		"Email Communication": {
 			"dontMapEventToLabels": false,
