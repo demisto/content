@@ -60,8 +60,6 @@ def main():
             if aws_functions.isError(rminstance):
                 logging.error(rminstance['Message'])
         else:
-            if not os.path.isfile("./Tests/is_post_update_passed_{}.txt".format(env["Role"].replace(' ', ''))):
-                logging.info('post updates tests failed')
             logging.warning(f'Tests, Post-Update Tests for some integration failed on {env.get("Role", "Unknown role")}'
                             f', keeping instance alive')
 

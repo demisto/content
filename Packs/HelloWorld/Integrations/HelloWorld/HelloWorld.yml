@@ -3,6 +3,10 @@ commonfields:
   id: HelloWorld
   version: -1
 configuration:
+- display: for test
+  name: test
+  required: true
+  type: 0
 - defaultvalue: https://soar.monstersofhack.com
   display: Server URL (e.g. https://soar.monstersofhack.com)
   name: url
