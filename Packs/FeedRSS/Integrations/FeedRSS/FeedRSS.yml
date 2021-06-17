@@ -124,4 +124,4 @@ script:
   type: python
 tests:
 - No tests
-fromversion: 6.0.0  # TODO: 6.2?? because Publication added on 6.2
+fromversion: 6.2.0
