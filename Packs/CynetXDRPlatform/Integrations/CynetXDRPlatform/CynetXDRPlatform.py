@@ -112,7 +112,7 @@ def get_missing_windows_patches_details(api_token):
 
     missing_patches = response1.json()
     my_list = ["list"]
-    res = {key: [] for key in my_list}
+    res: dict = {key: [] for key in my_list}
 
     for x in missing_patches:
         # print(x)
@@ -139,7 +139,7 @@ def get_existing_windows_patches_details(api_token):
 
     existing_patches = response1.json()
     my_list = ["list"]
-    res = {key: [] for key in my_list}
+    res: dict = {key: [] for key in my_list}
 
     for x in existing_patches:
         # print(x)
@@ -166,7 +166,7 @@ def get_risky_application_details(api_token):
 
     risky_app = response1.json()
     my_list = ["list"]
-    res = {key: [] for key in my_list}
+    res: dict = {key: [] for key in my_list}
 
     for x in risky_app:
         # print(x)
@@ -193,7 +193,7 @@ def get_installed_softwares_details(api_token):
 
     installed_app = response1.json()
     my_list = ["list"]
-    res = {key: [] for key in my_list}
+    res: dict = {key: [] for key in my_list}
 
     for x in installed_app:
         # print(x)
@@ -220,7 +220,7 @@ def get_outdates_application_details(api_token):
 
     outdates_app = response1.json()
     my_list = ["list"]
-    res = {key: [] for key in my_list}
+    res: dict = {key: [] for key in my_list}
 
     for x in outdates_app:
         # print(x)
@@ -247,7 +247,7 @@ def get_agent_validation_details(api_token):
 
     agents = response1.json()
     my_list = ["list"]
-    res = {key: [] for key in my_list}
+    res: dict = {key: [] for key in my_list}
 
     for x in agents:
         # print(x)
