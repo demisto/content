@@ -1139,6 +1139,88 @@ def search_attributes(pymisp) -> CommandResults:
         return CommandResults(readable_output=f"No attributes found in MISP for the given filters: {args}")
 
 
+def build_events_search_response(response_object: Union[dict, requests.Response]) -> dict:
+    """
+    Convert the response of event search returned from MIPS to the context output format.
+    """
+
+
+
+
+    'ShadowAttribute',
+    'RelatedEvent',
+    'Galaxy',
+    'Tag',
+    'Object'
+    event_fields = [
+        'id',
+        'orgc_id',
+        'org_id',
+        'date'
+        'threat_level_id',
+        'info',
+        'published',
+        'uuid',
+        'analysis',
+        'timestamp',
+        'distribution',
+        'proposal_email_lock',
+        'locked',
+        'publish_timestamp',
+        'sharing_group_id',
+        'disable_correlation',
+        'event_creator_email',
+        'Org',
+        'Orgc',
+        'Attribute',
+
+
+        'object_relation',
+        'category',
+        'type',
+        'to_ids',
+
+
+
+        'comment',
+        'deleted',
+        'disable_correlation',
+        'first_seen',
+        'last_seen',
+        'value',
+        'Event',
+        'Object',
+        'Galaxy',  # field wasn't tested as we don't see it in our responses. Was added by customer's request.
+        'Tag',
+        'decay_score'
+    ]
+    if isinstance(response_object, str):
+        response = json.loads(json.dumps(response_object))
+    attributes = response_object.get('Attribute')
+    parsed_attributes = dict()
+    for i in range(len(attributes)):
+        parsed_attributes[i] = {key: attributes[i].get(key) for key in attribute_fields if key in attributes[i]}
+
+        # Build Galaxy
+        if attributes[i].get('Galaxy'):
+            parsed_attributes[i]['Galaxy'] = [
+                {
+                    'name': star.get('name'),
+                    'type': star.get('type'),
+                    'description': star.get('description')
+                } for star in attributes[i]['Galaxy']
+            ]
+
+        # Build Tag
+        if attributes[i].get('Tag'):
+            parsed_attributes[i]['Tag'] = [
+                {'Name': tag.get('name')} for tag in attributes[i].get('Tag')
+            ]
+
+    parsed_attributes = replace_keys(parsed_attributes)
+    return parsed_attributes
+
+
 def search_events(pymisp) -> CommandResults:
     """
     Execute a MIPS search using the 'event' controller.
@@ -1147,25 +1229,26 @@ def search_events(pymisp) -> CommandResults:
     # Set the controller to events to search for events by the given args
     args['controller'] = 'events'
     response = pymisp.search(**args)
+    print(response)
 
     if response:
         response_for_context = build_attributes_search_response(response)
 
-        md = f'## MISP search-attributes returned {len(response_for_context)} attributes.\n'
+        md = f'## MISP search-events returned {len(response_for_context)} events.\n'
 
-        # if attributes were returned, display one to the war-room to visualize the result:
+        # if events were returned, display one to the war-room to visualize the result:
         if len(response_for_context) > 0:
-            md += tableToMarkdown(f'Attribute ID: {response_for_context[0].get("ID")}', response_for_context[0])
+            md += tableToMarkdown(f'Event ID: {response_for_context[0].get("ID")}', response_for_context[0])
 
         return CommandResults(
             raw_response=response,
             readable_output=md,
             outputs=response_for_context,
-            outputs_prefix="MISP.Attribute",
+            outputs_prefix="MISP.Event",
             outputs_key_field="ID"
         )
     else:
-        return CommandResults(readable_output=f"No attributes found in MISP for the given filters: {args}")
+        return CommandResults(readable_output=f"No events found in MISP for the given filters: {args}")
 
 
 def delete_event(pymisp: ExpandedPyMISP, demisto_args: dict):

@@ -117,7 +117,7 @@ script:
     - default: false
       description: The events to include or exclude from the search.
       isArray: true
-      name: eventid
+      name: event_id
       required: false
       secret: false
     - default: false
@@ -138,10 +138,52 @@ script:
       - 'false'
       required: false
       secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Whether to include the sightings.
+      isArray: false
+      name: include_sightings
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Whether to include the correlations of the matching attributes.
+      isArray: false
+      name: include_correlations
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Whether to include the decay score at the attribute level.
+      isArray: false
+      name: include_decay_score
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    - default: false
+      description: If a limit is set, sets the page to be returned. page 3, limit 100 will return records 201->300).
+      isArray: false
+      name: page
+      required: false
+      secret: false
+    - default: false
+      description: Limit the number of results returned, depending on the scope (for example 10 attributes or 10 full events).
+      isArray: false
+      name: limit
+      required: false
+      secret: false
     deprecated: false
     description: Search for events in MISP.
     execution: false
-    name: misp-search
+    name: misp-search-events
     outputs:
     - contextPath: MISP.Event.ID
       description: MISP event ID.
@@ -1736,6 +1778,18 @@ script:
       predefined:
       - 'true'
       - 'false'
+      required: false
+      secret: false
+    - default: false
+      description: If a limit is set, sets the page to be returned. page 3, limit 100 will return records 201->300).
+      isArray: false
+      name: page
+      required: false
+      secret: false
+    - default: false
+      description: Limit the number of results returned, depending on the scope (for example 10 attributes or 10 full events).
+      isArray: false
+      name: limit
       required: false
       secret: false
     deprecated: false
