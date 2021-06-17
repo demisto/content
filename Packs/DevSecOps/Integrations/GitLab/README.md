@@ -980,7 +980,7 @@ Get details of pipeline schedules.
 
 ### gitlab-pipelines-list
 ***
-Get details of pipeline schedules.
+Get details of pipelines.
 
 
 #### Base Command
@@ -990,7 +990,7 @@ Get details of pipeline schedules.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| project_id | Project ID to retrieve pipeline schedules from. | Required | 
+| project_id | Project ID to retrieve pipelines from. | Required | 
 | pipeline_id | ID of specific pipeline to retrieve its details. | Optional | 
 
 
@@ -1045,7 +1045,7 @@ Get details of pipeline schedules.
 
 ### gitlab-jobs-list
 ***
-Get details of pipeline schedules.
+Get details of jobs.
 
 
 #### Base Command
@@ -1055,7 +1055,7 @@ Get details of pipeline schedules.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| project_id | Project ID to retrieve pipeline schedules from. | Required | 
+| project_id | Project ID to retrieve jobs details from. | Required | 
 | pipeline_id | ID of the pipeline to retrieve its jobs. | Required | 
 
 
@@ -1155,8 +1155,8 @@ Get details of pipeline schedules.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| project_id | Project ID to retrieve pipeline schedules from. | Required | 
-| job_id | ID of specific job to retrieve its details. | Required | 
+| project_id | Project ID to retrieve artifact from. | Required | 
+| job_id | ID of specific job to retrieve its artifact. | Required | 
 | artifact_path_suffix | Suffix to the path of the artifact to retrieve its data. | Required | 
 
 

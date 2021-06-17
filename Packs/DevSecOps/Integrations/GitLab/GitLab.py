@@ -44,7 +44,8 @@ class Client(BaseClient):
     def projects_approve_access_request(self, id_, user_id, access_level):
         params = assign_params(access_level=access_level)
         headers = self._headers
-        response = self._http_request('put', f'projects/{id_}/access_requests/{user_id}/approve', params=params, headers=headers)
+        response = self._http_request('put', f'projects/{id_}/access_requests/{user_id}/approve', params=params,
+                                      headers=headers)
         return response
 
     def projects_deny_access_request(self, id_, user_id):
@@ -297,7 +298,7 @@ def gitlab_pipelines_schedules_list_command(client: Client, args: Dict[str, Any]
         outputs_key_field='id',
         outputs=outputs,
         raw_response=response,
-        readable_output=tableToMarkdown('GitLab Pipeline Schedules', outputs)
+        readable_output=tableToMarkdown('GitLab Pipeline Schedules', outputs, removeNull=True)
     )
 
 
@@ -324,7 +325,7 @@ def gitlab_pipelines_list_command(client: Client, args: Dict[str, Any]) -> Comma
         outputs_key_field='id',
         outputs=outputs,
         raw_response=response,
-        readable_output=tableToMarkdown('GitLab Pipelines', outputs)
+        readable_output=tableToMarkdown('GitLab Pipelines', outputs, removeNull=True)
     )
 
 
@@ -351,7 +352,7 @@ def gitlab_jobs_list_command(client: Client, args: Dict[str, Any]) -> CommandRes
         outputs_key_field='id',
         outputs=outputs,
         raw_response=response,
-        readable_output=tableToMarkdown('GitLab Jobs', outputs)
+        readable_output=tableToMarkdown('GitLab Jobs', outputs, removeNull=True)
     )
 
 
@@ -377,10 +378,13 @@ def gitlab_artifact_get_command(client: Client, args: Dict[str, Any]) -> Command
         'artifact_path_suffix': artifact_path_suffix,
         'artifact_data': response
     }
+    human_readable = tableToMarkdown(f'Artifact {artifact_path_suffix} From Job {job_id}', outputs) if len(
+        response) <= 100 else f'## Data for artifact {artifact_path_suffix} From Job {job_id} Has Been Retrieved.'
 
     return CommandResults(
         outputs_prefix='GitLab.Artifact',
         outputs_key_field=['job_id', 'artifact_path_suffix'],
+        readable_output=human_readable,
         outputs=outputs,
         raw_response=response
     )
@@ -396,7 +400,6 @@ def test_module(client):
 
 
 def main():
-
     params = demisto.params()
     args = demisto.args()
     url = params.get('url')

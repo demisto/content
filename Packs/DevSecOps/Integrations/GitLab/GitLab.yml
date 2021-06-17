@@ -456,7 +456,7 @@ script:
       type: String
   - arguments:
     - default: false
-      description: Project ID to retrieve pipeline schedules from.
+      description: Project ID to retrieve pipelines from.
       isArray: false
       name: project_id
       required: true
@@ -468,7 +468,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Get details of pipeline schedules.
+    description: Get details of pipelines.
     execution: false
     name: gitlab-pipelines-list
     outputs:
@@ -507,7 +507,7 @@ script:
       type: String
   - arguments:
     - default: false
-      description: Project ID to retrieve pipeline schedules from.
+      description: Project ID to retrieve jobs details from.
       isArray: false
       name: project_id
       required: true
@@ -519,7 +519,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Get details of pipeline schedules.
+    description: Get details of jobs.
     execution: false
     name: gitlab-jobs-list
     outputs:
@@ -567,13 +567,13 @@ script:
       type: String
   - arguments:
     - default: false
-      description: Project ID to retrieve pipeline schedules from.
+      description: Project ID to retrieve artifact from.
       isArray: false
       name: project_id
       required: true
       secret: false
     - default: false
-      description: ID of specific job to retrieve its details.
+      description: ID of specific job to retrieve its artifact.
       isArray: false
       name: job_id
       required: true
@@ -585,7 +585,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Get details of pipeline schedules.
+    description: Get artifcat from given artifact path corresponding to job ID given.
     execution: false
     name: gitlab-artifact-get
     outputs:
@@ -598,7 +598,6 @@ script:
     - contextPath: GitLab.Artifact.artifact_data
       description: Data of the artifact requested.
       type: String
-
   dockerimage: demisto/python3:3.9.5.21272
   feed: false
   isfetch: false
