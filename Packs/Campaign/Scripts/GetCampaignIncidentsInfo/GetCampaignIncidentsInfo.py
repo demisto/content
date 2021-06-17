@@ -1,9 +1,8 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
-HEADER_SORTED = ['id', 'name', 'email_from', 'recipients', 'severity', 'status', 'created']
+HEADER_SORTED = ['id', 'name', 'emailfrom', 'recipients', 'severity', 'status', 'created']
 KEYS_FETCHED_BY_QUERY = ['status', 'severity']
-IGNORE_HEADERS = ['similarity', 'emailfromdomain', 'recipientsdomain']
 NO_CAMPAIGN_INCIDENTS_MSG = 'There is no Campaign Incidents in the Context'
 LINKABLE_ID_FORMAT = '[{incident_id}](#/Details/{incident_id})'
 STATUS_DICT = {
@@ -46,9 +45,10 @@ def update_incident_with_required_keys(incidents, required_keys):
             incident[key] = updated_incident.get(key)
 
 
-def get_incident_val(incident, key):
+def convert_incident_to_hr(incident):
     """
         Get the value from incident dict and convert it in some cases e.g. make id linkable etc.
+        Note: this script change the original incident
 
         :type incident: ``dict``
         :param incident: the incident to get the value from
@@ -56,16 +56,18 @@ def get_incident_val(incident, key):
         :type key: ``str``
         :param key: the key in dict
 
-        :rtype: ``str``
-        :return the value form dict
+        :rtype: ``None``
+        :return None
     """
-    if key == 'status':
-        return STATUS_DICT.get(incident.get(key))
+    for key in incident.keys():
 
-    if key == 'id':
-        return LINKABLE_ID_FORMAT.format(incident_id=incident.get(key))
+        if key == 'status':
+            incident[key] = STATUS_DICT.get(incident.get(key))
 
-    return incident.get(key.replace('_', ''))
+        if key == 'id':
+            incident[key] = LINKABLE_ID_FORMAT.format(incident_id=incident.get(key))
+
+        incident[key] = incident.get(key.replace('_', ''))
 
 
 def get_campaign_incidents_from_context():
@@ -92,6 +94,9 @@ def get_incidents_info_md(incidents, fields_to_display=None):
         else:
             headers = [header for header in HEADER_SORTED if fields_to_display]
             headers += list(set(fields_to_display) - set(HEADER_SORTED))
+
+        for incident in incidents:
+            convert_incident_to_hr(incident)
 
         return tableToMarkdown(
             name='',
