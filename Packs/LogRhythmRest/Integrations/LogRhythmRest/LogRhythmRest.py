@@ -13,7 +13,6 @@ import requests
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
 
-
 ''' GLOBALS/PARAMS '''
 
 TOKEN = demisto.params().get('token', '')
@@ -1164,7 +1163,7 @@ def fix_date_values(item):
 
     for key in date_keys:
         if item.get(key):
-            item[key] = datetime.fromtimestamp(item.get(key) / 1000.0).\
+            item[key] = datetime.fromtimestamp(item.get(key) / 1000.0). \
                 strftime('%Y-%m-%d %H:%M:%S')
 
 
@@ -1298,53 +1297,34 @@ def update_persons_keys(persons):
     return new_persons
 
 
-def generate_query_item(filterType, valueType, value):
+def generate_query_value(valueType, value):
     if valueType == 2:
-        query = {
-            "filterItemType": 0,
-            "fieldOperator": 1,
-            "filterMode": 1,
-            "values": [
-                {
-                    "filterType": filterType,
-                    "valueType": valueType,
-                    "value": int(value)
-                }
-            ]
-        }
-    
+        val = int(value)
     elif valueType == 5:
-        query = {
-            "filterItemType": 0,
-            "fieldOperator": 1,
-            "filterMode": 1,
-            "values": [
-                {
-                    "filterType": filterType,
-                    "valueType": valueType,
-                    "value": str(value)
-                }
-            ]
-        }
-    
+        val = str(value)
     else:
-        query = {
-            "filterItemType": 0,
-            "fieldOperator": 1,
-            "filterMode": 1,
-            "values": [
-                {
-                    "filterType": filterType,
-                    "valueType": valueType,
-                    "value": {
-                        "value": value,
-                        "matchType": 2
-                    }
-                }
-            ]
+        val = {
+            "value": value,
+            "matchType": 2
         }
+    return (val)
 
-    return(query)
+
+def generate_query_item(filterType, valueType, value):
+    query = {
+        "filterItemType": 0,
+        "fieldOperator": 1,
+        "filterMode": 1,
+        "values": [
+            {
+                "filterType": filterType,
+                "valueType": valueType,
+                "value": generate_query_value(valueType, value)
+            }
+        ]
+    }
+
+    return (query)
 
 
 ''' COMMANDS + REQUESTS FUNCTIONS '''
@@ -1482,7 +1462,7 @@ def execute_query(data_args):
                 "Channel": str(root.find(xml_ns + 'Channel').text),  # type: ignore
                 "Computer": str(root.find(xml_ns + 'Computer').text),  # type: ignore
                 "EventData": str(root.find(xml_ns + 'EventData').text)  # type: ignore
-                .replace('\\r\\n', '\n').replace('\\t', '\t')
+                    .replace('\\r\\n', '\n').replace('\\t', '\t')
             }
             logs_response.append(log_item)
         except Exception:
@@ -1659,6 +1639,8 @@ def lr_execute_search_query(data_args):
     process_name = data_args.get('process-name')
     object = data_args.get('object')
     ipaddress = data_args.get('ipaddress')
+    max_message = data_args.get('max-massage')
+    query_timeout = data_args.get('query-timeout')
 
     # Create filter query
     query = []
@@ -1701,9 +1683,9 @@ def lr_execute_search_query(data_args):
 
     # Search and get TaskID
     querybody = {
-        "maxMsgsToQuery": 50,
+        "maxMsgsToQuery": int(max_message),
         "logCacheSize": 10000,
-        "queryTimeout": 60,
+        "queryTimeout": int(query_timeout),
         "queryRawLog": True,
         "queryEventManager": False,
         "dateCriteria": {
@@ -1725,7 +1707,7 @@ def lr_execute_search_query(data_args):
         }
     }
 
-    headers = dict(HEADERS)
+    headers = HEADERS
     headers['Content-Type'] = 'application/json'
 
     search_task = http_request('POST', 'lr-search-api/actions/search-task', json.dumps(querybody), headers)
@@ -1733,7 +1715,9 @@ def lr_execute_search_query(data_args):
 
     results = CommandResults(
         outputs={"taskID": task_id},
-        outputs_prefix="Logrhythm.Search.Tasks"
+        outputs_prefix="Logrhythm.Search.Tasks",
+        outputs_key_field='taskID',
+        raw_response=search_task
     )
 
     return_results(results)
@@ -1757,34 +1741,41 @@ def lr_get_query_result(data_args):
             }
         })
 
-    headers = dict(HEADERS)
+    headers = HEADERS
     headers['Content-Type'] = 'application/json'
 
-    run = 1
-    while True:
-        if run == 16:
-            return_results("Sorry, we have been waiting 90 seconds but LR returned nothing, please try again")
-            break
+    ## Execute query to get result
+    search_result = http_request('POST', 'lr-search-api/actions/search-result', queryresult, headers)
 
-        time.sleep(5)
-        search_result = http_request('POST', 'lr-search-api/actions/search-result', queryresult, headers)
+    ctx = {
+        "TaskID": task_id,
+        "TaskStatus": search_result["TaskStatus"],
+        "Results": search_result["Items"]
+    }
 
-        if search_result["TaskStatus"] != "Searching":
+    if search_result["TaskStatus"] == "Completed: No Results":
+        message = "#### No results, please modify your search"
 
-            for log in search_result["Items"]:
-                log.pop('logMessage', None)
+    elif search_result["TaskStatus"] == "Searching":
+        message = "#### Searching"
 
-            markdown = tableToMarkdown("Your search result", search_result["Items"])
+    elif search_result["TaskStatus"] == "Search Failed":
+        message = "#### The search is timed out, please try again or modify your search"
 
-            results = CommandResults(
-                readable_output=markdown,
-                outputs=search_result["Items"],
-                outputs_prefix="Logrhythm.Search.Results"
-            )
+    elif search_result["Items"] != []:
+        for log in search_result["Items"]:
+            log.pop('logMessage', None)
+        message = tableToMarkdown("Your search result", search_result["Items"])
+    else:
+        message = "#### Please try again later"
 
-            break
-        run += 1
-
+    results = CommandResults(
+        readable_output=message,
+        outputs=ctx,
+        outputs_key_field='TaskID',
+        outputs_prefix="Logrhythm.Search.Results",
+        raw_response=search_result
+    )
     return_results(results)
 
 
