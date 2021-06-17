@@ -19802,7 +19802,7 @@ fetch scan results for a scan
 {
     "Qualys": {
         "PC": {
-            "COMPANY": "Demisto",
+            "COMPANY": "SomeCompany",
             "DATE": "2021-04-21T15:42:48Z",
             "DURATION": "00:05:42",
             "EXCLUDED_TARGET": "N/A",
@@ -19825,7 +19825,7 @@ fetch scan results for a scan
 >### Policy Compliance Scan
 >|COMPANY|DATE|DURATION|EXCLUDED_TARGET|NBHOST_ALIVE|NBHOST_TOTAL|OPTIONS|REPORT_TYPE|SCAN_HOST|STATUS|TARGET|TITLE|USERNAME|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|
->| Demisto | 2021-04-21T15:42:48Z | 00:05:42 | N/A | 1 | 1 | Scanned Ports: Targeted Scan, Hosts to Scan in Parallel - External Scanners: 15, Hosts to Scan in Parallel - Scanner Appliances: 30, Total Processes to Run in Parallel: 10, HTTP Processes to Run in Parallel: 10, Packet (Burst) Delay: Medium, Intensity: Normal, Overall Performance: Normal, ICMP Host Discovery, Ignore RST packets: Off, Ignore firewall-generated SYN-ACK packets: Off, Do not send ACK or SYN-ACK packets during host discovery: Off | API | 64.39.99.101 (Scanner 12.3.51-1, Vulnerability Signatures 2.5.162-3) | FINISHED | 1.1.1.1 | N/A | demst2nr |
+>| SomeCompany | 2021-04-21T15:42:48Z | 00:05:42 | N/A | 1 | 1 | Scanned Ports: Targeted Scan, Hosts to Scan in Parallel - External Scanners: 15, Hosts to Scan in Parallel - Scanner Appliances: 30, Total Processes to Run in Parallel: 10, HTTP Processes to Run in Parallel: 10, Packet (Burst) Delay: Medium, Intensity: Normal, Overall Performance: Normal, ICMP Host Discovery, Ignore RST packets: Off, Ignore firewall-generated SYN-ACK packets: Off, Do not send ACK or SYN-ACK packets during host discovery: Off | API | 64.39.99.101 (Scanner 12.3.51-1, Vulnerability Signatures 2.5.162-3) | FINISHED | 1.1.1.1 | N/A | demst2nr |
 
 
 ### qualys-report-cancel
