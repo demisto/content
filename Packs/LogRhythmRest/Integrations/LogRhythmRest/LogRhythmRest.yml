@@ -1,3 +1,4 @@
+
 category: Analytics & SIEM
 commonfields:
   id: LogRhythmRest
@@ -1565,6 +1566,12 @@ script:
       name: object
     - description: IP Address
       name: ipaddress
+    - description: Max log message to query
+      name: max-massage
+      defaultValue: "10"
+    - description: Max log message to query
+      name: query-timeout
+      defaultValue: "60"
     description: Execute search query to Log Rhythm log database
     name: lr-execute-search-query
     outputs:
@@ -1578,55 +1585,61 @@ script:
       command
     name: lr-get-query-result
     outputs:
-    - contextPath: Logrhythm.Search.Results.originEntityId
+    - contextPath: Logrhythm.Search.Results.TaskStatus
+      description: Task Status
+      type: String
+    - contextPath: Logrhythm.Search.Results.TaskID
+      description: Task ID
+      type: String
+    - contextPath: Logrhythm.Search.Results.Results.originEntityId
       description: Entity ID
       type: Number
-    - contextPath: Logrhythm.Search.Results.impactedIp
+    - contextPath: Logrhythm.Search.Results.Results.impactedIp
       description: Impacted IP
       type: String
-    - contextPath: Logrhythm.Search.Results.classificationTypeName
+    - contextPath: Logrhythm.Search.Results.Results.classificationTypeName
       description: Classification Name
       type: String
-    - contextPath: Logrhythm.Search.Results.logSourceName
+    - contextPath: Logrhythm.Search.Results.Results.logSourceName
       description: Log Source Name
       type: String
-    - contextPath: Logrhythm.Search.Results.entityName
+    - contextPath: Logrhythm.Search.Results.Results.entityName
       description: Entity Name
       type: String
-    - contextPath: Logrhythm.Search.Results.normalDate
+    - contextPath: Logrhythm.Search.Results.Results.normalDate
       description: Date
       type: Date
-    - contextPath: Logrhythm.Search.Results.vendorMessageId
+    - contextPath: Logrhythm.Search.Results.Results.vendorMessageId
       description: Vendor Log message
       type: String
-    - contextPath: Logrhythm.Search.Results.priority
+    - contextPath: Logrhythm.Search.Results.Results.priority
       description: Log priority
       type: Number
-    - contextPath: Logrhythm.Search.Results.sequenceNumber
+    - contextPath: Logrhythm.Search.Results.Results.sequenceNumber
       description: Seq number
       type: String
-    - contextPath: Logrhythm.Search.Results.originHostId
+    - contextPath: Logrhythm.Search.Results.Results.originHostId
       description: Origin Host ID
       type: Number
-    - contextPath: Logrhythm.Search.Results.mpeRuleId
+    - contextPath: Logrhythm.Search.Results.Results.mpeRuleId
       description: Log Rhythm rule ID
       type: Number
-    - contextPath: Logrhythm.Search.Results.originIp
+    - contextPath: Logrhythm.Search.Results.Results.originIp
       description: Origin IP
       type: String
-    - contextPath: Logrhythm.Search.Results.mpeRuleName
+    - contextPath: Logrhythm.Search.Results.Results.mpeRuleName
       description: Log Rhythm rule name
       type: String
-    - contextPath: Logrhythm.Search.Results.logSourceHostId
+    - contextPath: Logrhythm.Search.Results.Results.logSourceHostId
       description: Log Source host ID
       type: Number
-    - contextPath: Logrhythm.Search.Results.originHost
+    - contextPath: Logrhythm.Search.Results.Results.originHost
       description: Origin Host
       type: String
-    - contextPath: Logrhythm.Search.Results.logDate
+    - contextPath: Logrhythm.Search.Results.Results.logDate
       description: Log Date
       type: Date
-    - contextPath: Logrhythm.Search.Results.classificationName
+    - contextPath: Logrhythm.Search.Results.Results.classificationName
       description: Log classification name
       type: String
   isfetch: true
