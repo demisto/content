@@ -153,7 +153,7 @@ class Client(BaseClient):
         """
         resp = Response()
         headers['X-FeApi-Token'] = TOKEN
-        demisto.results("&&&HTTP HEADERS&&")
+        demisto.results("&&&HTTP HEADERS&&&")
         demisto.results(headers)
         try:
             resp = super()._http_request(method=method, url_suffix=url_suffix, json_data=json_data, params=params,
