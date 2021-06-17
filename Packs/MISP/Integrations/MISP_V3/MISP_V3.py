@@ -979,19 +979,18 @@ def prepare_args_to_search():
             args[arg] = d_args[arg]
     # Replacing keys and values from Demisto to Misp's keys
     if 'type' in args:
-        args['type_attribute'] = d_args.pop('type')
+        args['type_attribute'] = args.pop('type')
     # search function 'to_ids' parameter gets 0 or 1 instead of bool.
     if 'to_ids' in args:
         args['to_ids'] = 1 if d_args.get('to_ids') in ('true', '1', 1) else 0
-
     if 'from' in args:
-        args['from_date'] = d_args.pop('from')
+        args['from_date'] = args.pop('from')
     if 'to' in args:
-        args['to_date'] = d_args.pop('to')
+        args['to_date'] = args.pop('to')
     if 'event_id' in args:
-        args['eventid'] = d_args.pop('event_id')
+        args['eventid'] = args.pop('event_id')
     if 'last' in args:
-        args['publish_timestamp'] = d_args.pop('last')
+        args['publish_timestamp'] = args.pop('last')
     if 'include_decay_score' in args:
         args['include_decay_score'] = 1 if d_args.get('include_decay_score') in ('true', '1', 1) else 0
     if 'include_sightings' in args:
@@ -1034,7 +1033,6 @@ def build_attributes_search_response(response_object: Union[dict, requests.Respo
     ]
     if isinstance(response_object, str):
         response_object = json.loads(json.dumps(response_object))
-    print(response_object)
     attributes = response_object.get('Attribute')
     for i in range(len(attributes)):
         attributes[i] = {key: attributes[i].get(key) for key in attribute_fields if key in attributes[i]}
