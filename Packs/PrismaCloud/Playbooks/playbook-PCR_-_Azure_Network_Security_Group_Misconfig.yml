@@ -63,10 +63,10 @@ tasks:
     quietmode: 0
   "1":
     id: "1"
-    taskid: 4404047d-d05c-4394-8bae-0d1f8b97c6fb
+    taskid: f35db865-3886-4477-886a-c4d6a0ccb9c3
     type: regular
     task:
-      id: 4404047d-d05c-4394-8bae-0d1f8b97c6fb
+      id: f35db865-3886-4477-886a-c4d6a0ccb9c3
       version: -1
       name: Remove the offending security group rule
       description: Delete the offending security group rule.
@@ -80,13 +80,15 @@ tasks:
     scriptarguments:
       security_group_name:
         complex:
-          root: incident
+          root: incident.labels
+          accessor: resource
           transformers:
+          - operator: ParseJSON
           - operator: getField
             args:
               field:
                 value:
-                  simple: resourcename
+                  simple: name
       security_rule_name:
         simple: ${ruleName}
     separatecontext: false
@@ -962,9 +964,6 @@ inputs:
   required: false
   description: Port number.
   playbookInputQuery:
-outputs:
-- contextPath: incident.resourcename
-  description: Security group name.
-  type: string
+outputs: []
 tests:
 - No Test
