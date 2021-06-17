@@ -1,6 +1,6 @@
 
 #### Server URL:
-Please add your server URL (e.g.: https://yourdomain.jamfcloud.com)
+Your server URL (e.g.: https://yourdomain.jamfcloud.com)
 #### Username:
 The username of a user with relevant permissions to your Jamf Pro admin console
 #### Password:
