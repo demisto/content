@@ -102,11 +102,11 @@ class TestZipPacks:
         """
         import shutil
         zipped_packs = [{'Slack': 'content/packs/Slack/1.0.1/Slack.zip'}]
-        artifatcs_path = 'dummy_path'
+        artifacts_path = 'dummy_path'
         mocker.patch.object(shutil, 'copy', side_effect=None)
         mocker.patch('os.path.exists', return_value=True)
 
-        copy_zipped_packs_to_artifacts(zipped_packs, artifatcs_path)
+        copy_zipped_packs_to_artifacts(zipped_packs, artifacts_path)
 
         assert shutil.copy.call_count == 1
 
@@ -121,11 +121,11 @@ class TestZipPacks:
         """
         import shutil
         zipped_packs = []
-        artifatcs_path = 'dummy_path'
+        artifacts_path = 'dummy_path'
         mocker.patch.object(shutil, 'copy', side_effect=None)
         mocker.patch('os.path.exists', return_value=True)
 
-        copy_zipped_packs_to_artifacts(zipped_packs, artifatcs_path)
+        copy_zipped_packs_to_artifacts(zipped_packs, artifacts_path)
 
         assert shutil.copy.call_count == 0
 
