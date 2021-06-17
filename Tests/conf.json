@@ -3,6 +3,10 @@
     "testInterval": 20,
     "tests": [
         {
+            "playbookID": "SupportMultithreading - Test",
+            "is_mockable": false
+        },
+        {
             "fromversion": "5.0.0",
             "integrations": [
                 "WildFire-v2"
@@ -565,7 +569,7 @@
             "integrations": "Cortex XDR - IR",
             "playbookID": "Test XDR Playbook",
             "fromversion": "4.1.0",
-            "timeout": 800
+            "timeout": 1500
         },
         {
             "integrations": "Cortex XDR - IOC",
@@ -3475,7 +3479,8 @@
         "get_original_email_-_ews-_test": "Issue 27571",
         "PANW Threat Vault - Signature Search - Test": "Issue 30930",
         "TAXII_Feed_Test": "Issue 37588",
-        "Git_Integration-Test": "Issue 37800"
+        "Git_Integration-Test": "Issue 37800",
+        "Majestic Million Test Playbook": "Issue 30931"
     },
     "skipped_integrations": {
         
