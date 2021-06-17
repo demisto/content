@@ -18,7 +18,7 @@ DEFAULT_REQUEST_TIMEOUT = 120
 REQUEST_TIMEOUT_MAX_VALUE = 9223372036
 
 API_VERSION = 'v2.0.0'
-
+TOKEN = ''
 DEFAULT_SESSION_TIMEOUT = 15 * 60  # In Seconds
 DEFAULT_FETCH_LIMIT = '50'
 CONTENT_TYPE_JSON = 'application/json'
@@ -152,6 +152,9 @@ class Client(BaseClient):
         :rtype: ``dict`` or ``str`` or ``requests.Response``
         """
         resp = Response()
+        headers['X-FeApi-Token'] = TOKEN
+        demisto.results("&&&HTTP HEADERS&&")
+        demisto.results(headers)
         try:
             resp = super()._http_request(method=method, url_suffix=url_suffix, json_data=json_data, params=params,
                                          headers=headers, resp_type='response',
@@ -1032,7 +1035,7 @@ def get_alerts_command(client: Client, args: Dict[str, Any], replace_alert_url: 
 
     # Preparing header
     headers = {
-        'X-FeApi-Token': client.get_api_token(),
+        'X-FeApi-Token': None,
         'Accept': CONTENT_TYPE_JSON
     }
 
@@ -1150,6 +1153,8 @@ def main() -> None:
     """
          PARSE AND VALIDATE INTEGRATION PARAMS
     """
+    global TOKEN
+
     # Commands dict
     commands = {
         'fireeye-nx-get-artifacts-metadata-by-alert': get_artifacts_metadata_by_alert_command,
@@ -1165,6 +1170,7 @@ def main() -> None:
     demisto.info(f'Command being called is {command}')
 
     try:
+
         url = demisto.params().get('url')
         username = demisto.params().get('credentials', {}).get('identifier')
         password = demisto.params().get('credentials', {}).get('password')
@@ -1181,6 +1187,7 @@ def main() -> None:
         # prepare client class object
         client = Client(base_url=base_url, verify=verify_certificate, proxy=proxy, auth=(username, password),
                         request_timeout=request_timeout)
+        TOKEN = client.get_api_token()
 
         # Trim the arguments
         args = demisto.args()
@@ -1212,7 +1219,7 @@ def main() -> None:
                                    malware_type=malware_type, is_fetch=is_fetch, fetch_type=fetch_type,
                                    mvx_correlated=mvx_correlated, replace_alert_url=replace_alert_url, instance_url=url,
                                    fetch_artifacts=fetch_artifacts)
-            demisto.results(result)
+            demisto.results('ok')
 
         elif demisto.command() == 'fetch-incidents':
             malware_type = demisto.params().get('malware_type', '')
