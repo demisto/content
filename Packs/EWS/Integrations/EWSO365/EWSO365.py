@@ -165,7 +165,6 @@ class EWSClient:
             self_deployed=True,
             insecure=True,
             proxy=False,
-            default_encoding='utf-8',
             **kwargs,
     ):
         """
@@ -178,7 +177,6 @@ class EWSClient:
         :param request_timeout: Timeout (in seconds) for HTTP requests to Exchange Server
         :param max_fetch: Max incidents per fetch
         :param insecure: Trust any certificate (not secure)
-        :param default_encoding: default encoding to apply to mail attachments in case the detected encoding does not
             succeeds
         """
         BaseProtocol.TIMEOUT = int(request_timeout)
@@ -204,7 +202,6 @@ class EWSClient:
         self.account_email = default_target_mailbox
         self.config = self.__prepare(insecure)
         self.protocol = BaseProtocol(self.config)
-        self.default_encoding = default_encoding
 
     def __prepare(self, insecure):
         """
@@ -1968,11 +1965,10 @@ def get_item_as_eml(client: EWSClient, item_id, target_mailbox=None):
         return file_result
 
 
-def parse_incident_from_item(item, default_encoding):
+def parse_incident_from_item(item):
     """
     Parses an incident from an item
     :param item: item to parse
-    :param default_encoding: default encoding to apply in case detected encoding fails
     :return: Parsed item
     """
     incident = {}
@@ -2076,14 +2072,9 @@ def parse_incident_from_item(item, default_encoding):
                         data = attached_email_bytes.decode(encoding)
                     except UnicodeDecodeError:
                         # In case the detected encoding fails apply the default encoding
-                        demisto.debug(f'Could not decode data using detected encoding:{encoding}, retrying using '
-                                      f'default encoding: {default_encoding}')
-
-                        try:
-                            data = attached_email_bytes.decode(default_encoding)
-                        except Exception as e:
-                            demisto.debug(f'attached_email bytes:\n{attached_email}')
-                            demisto.debug(e)
+                        demisto.info(f'Could not decode attached email using detected encoding:{encoding}, retrying '
+                                     f'using utf-8.\nAttached email:\n{attached_email}')
+                        data = attached_email_bytes.decode('utf-8')
 
                     file_result = fileResult(
                         get_attachment_name(attachment.name) + ".eml",
@@ -2170,7 +2161,7 @@ def fetch_emails_as_incidents(client: EWSClient, last_run):
         for item in last_emails:
             if item.message_id:
                 ids.append(item.message_id)
-                incident = parse_incident_from_item(item, client.default_encoding)
+                incident = parse_incident_from_item(item)
                 incidents.append(incident)
 
                 if len(incidents) >= client.max_fetch:
