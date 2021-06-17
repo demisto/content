@@ -1,7 +1,7 @@
 commonfields:
   id: Hey
   version: -1
-fromversion: 5.5.0
+fromversion: 6.0.0
 comment: Use rakyll/hey to test a web application with a load of requests.
 name: Hey
 script: ''
@@ -31,12 +31,13 @@ args:
   - OPTIONS
   description: HTTP method.
 - name: disable_compression
+  defaultValue: "true"
   auto: PREDEFINED
   predefined:
   - "true"
   - "false"
   description: Disable compression.
-- defaultValue: "csv"
+- defaultValue: "human_readable"
   name: output_type
   auto: PREDEFINED
   predefined:

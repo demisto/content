@@ -1,5 +1,7 @@
 from io import StringIO
-from subprocess import PIPE, Popen
+import subprocess
+import re
+from typing import Tuple
 
 import pandas as pd
 import urllib3
@@ -9,6 +11,15 @@ from CommonServerPython import *  # noqa: F401
 
 # disable insecure warnings
 urllib3.disable_warnings()
+
+
+# ---------- HELPER FUNCTIONS ---------- #
+
+def try_re(pattern: str, string: str, i: int) -> Optional[Any]:
+    re_res = re.findall(pattern, string)
+    if len(re_res) == i + 1:
+        return re_res[i]
+    return None
 
 # ---------- CLASSES ---------- #
 
@@ -35,18 +46,62 @@ class HeyPerformanceResult:
             ext_results_map = {}
             for item in results_map.split(';'):
                 if isinstance(item, str):
-                    key_val = item.split(item)
+                    key_val = item.split('=')
                     if len(key_val) > 1:
                         ext_results_map[key_val[0]] = key_val[1]
             self._ext_results_map = ext_results_map
 
+    @staticmethod
+    def _get_summary(res: List[str]) -> Tuple[dict, int]:
+        summary = {}
+        i = 0
+        for i in range(len(res)):
+            if 'Summary' in res[i]:
+                continue
+            if 'Response' in res[i]:
+                break
+            if 'Total:' in res[i]:
+                summary['TotalTime'] = try_re(r'\d+\.\d+', res[i], 0)
+            if 'Slowest' in res[i]:
+                summary['SlowestTime'] = try_re(r'\d+\.\d+', res[i], 0)
+            if 'Fastest' in res[i]:
+                summary['FastestTime'] = try_re(r'\d+\.\d+', res[i], 0)
+            if 'Average' in res[i]:
+                summary['AverageTime'] = try_re(r'\d+\.\d+', res[i], 0)
+            if 'Requests' in res[i]:
+                summary['RequestsPerSecond'] = try_re(r'\d+\.\d+', res[i], 0)
+            if 'Total data' in res[i]:
+                summary['TotalData'] = try_re(r'\d+ bytes', res[i], 0)
+            if 'Size' in res[i]:
+                summary['SizePerRequest'] = try_re(r'\d+ bytes', res[i], 0)
+        return summary, i
+
+    @staticmethod
+    def _get_successful_responses(res: List[str], response_i):
+        for i in range(response_i, len(res)):
+            if '[200]' in res[i]:
+                return try_re(r'\d+', res[i], 1) or 0
+        return 0
+
+    def human_readable_to_outputs(self):
+        res = [line for line in self._result.split('\n') if line.strip() != '']
+        outputs, response_i = self._get_summary(res)
+        outputs['SuccessfulResponses'] = self._get_successful_responses(res, response_i)
+        outputs.update({
+            "TimeoutPerRequest": self._t,
+            "Concurrency": self._c,
+            "Requests": self._n,
+        })
+        if self._ext_results_map:
+            outputs.update(self._ext_results_map)
+        return outputs
+
     def to_results(self) -> CommandResults:
         outputs: Dict[str, Any]
         if self._o != 'csv':
-            outputs = {"Result": self._result}
-            return CommandResults(outputs=outputs, outputs_prefix="Hey")
+            outputs = self.human_readable_to_outputs()
+            return CommandResults(outputs=outputs, outputs_prefix="Hey", readable_output=self._result)
         df = pd.read_csv(StringIO(self._result), usecols=['response-time', 'status-code'])
-        requests_num = self._n
         if len(df) == 0:
             max_time = 0
             avg_time = 0
@@ -64,7 +119,7 @@ class HeyPerformanceResult:
         outputs: Dict[str, Any] = {
             "TimeoutPerRequest": self._t,
             "Concurrency": self._c,
-            "Requests": requests_num,
+            "Requests": self._n,
             "SlowestTime": max_time,
             "FastestTime": min_time,
             "AverageTime": avg_time,
@@ -74,25 +129,6 @@ class HeyPerformanceResult:
         if self._ext_results_map:
             outputs.update(self._ext_results_map)
         return CommandResults(outputs=outputs, outputs_prefix="Hey")
-
-
-# ---------- HELPER FUNCTIONS ---------- #
-
-def run_command(command: str) -> str:
-    """Run a bash command in the shell.
-
-    Args:
-        command (string): The string of the command you want to execute.
-
-    Returns:
-        string. The output of the command you are trying to execute.
-    """
-    p = Popen(command.split(), stdout=PIPE, stderr=PIPE, universal_newlines=True)
-    output, err = p.communicate()
-    if err:
-        raise RuntimeError('Failed to run command {}\nerror details:\n{}'.format(command, err))
-
-    return output
 
 
 def run_hey_test(url: str, n: Optional[str] = None, t: Optional[str] = None, c: Optional[str] = None,
@@ -110,7 +146,7 @@ def run_hey_test(url: str, n: Optional[str] = None, t: Optional[str] = None, c: 
     if disable_compression == 'true':
         hey_query += '--disable-compression '
     hey_query += " ".join(f"-{k} {v}" for k, v in hey_map.items()) + f' {url}'
-    result = run_command(hey_query)
+    result = subprocess.check_output(hey_query.split(), stderr=subprocess.STDOUT, text=True)
     return HeyPerformanceResult(result=result, results_map=results_map, **hey_map).to_results()
 
 

@@ -1,6 +1,6 @@
 id: EDL Performance Test - Concurrency
 version: -1
-fromvversion: 6.0.0
+fromversion: 6.0.0
 name: EDL Performance Test - Concurrency
 starttaskid: "0"
 tasks:
@@ -326,10 +326,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "15":
     id: "15"
-    taskid: 8bb105cc-3a31-4ec0-8b23-10a459766272
+    taskid: b5c12718-851b-4163-8ce2-9a2713757ff8
     type: playbook
     task:
-      id: 8bb105cc-3a31-4ec0-8b23-10a459766272
+      id: b5c12718-851b-4163-8ce2-9a2713757ff8
       version: -1
       name: EDL Indicator Performance Test
       playbookName: EDL Indicator Performance Test
@@ -347,7 +347,7 @@ tasks:
       results_map:
         simple: ${inputs.results_map}
       t:
-        simple: "4"
+        simple: "2"
       url:
         complex:
           root: inputs.url
@@ -375,10 +375,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "16":
     id: "16"
-    taskid: ea46ccf1-86d0-4d2a-8ef0-97846644d22d
+    taskid: 718346ee-5d2b-4f50-8865-561e3d848cf2
     type: playbook
     task:
-      id: ea46ccf1-86d0-4d2a-8ef0-97846644d22d
+      id: 718346ee-5d2b-4f50-8865-561e3d848cf2
       version: -1
       name: EDL Indicator Performance Test
       playbookName: EDL Indicator Performance Test
@@ -396,7 +396,7 @@ tasks:
       results_map:
         simple: ${inputs.results_map}
       t:
-        simple: "8"
+        simple: "2"
       url:
         complex:
           root: inputs.url

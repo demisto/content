@@ -180,4 +180,5 @@ script:
   type: python
 tests:
 - Test_EDL
+- EDL Performance Test
 fromversion: 5.5.0

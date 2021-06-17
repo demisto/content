@@ -34,10 +34,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: af86f47c-7086-4821-84ba-bf620a0afdb0
+    taskid: 7d36e09a-5adf-4496-8ff7-feee66e04ce0
     type: regular
     task:
-      id: af86f47c-7086-4821-84ba-bf620a0afdb0
+      id: 7d36e09a-5adf-4496-8ff7-feee66e04ce0
       version: -1
       name: Hey edl IP
       scriptName: Hey
@@ -50,6 +50,8 @@ tasks:
     scriptarguments:
       c:
         simple: ${inputs.c}
+      disable_compression:
+        simple: "true"
       "n":
         simple: ${inputs.n}
       o:
@@ -87,10 +89,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: bd1ec985-fb00-487c-8417-98723c03a0e7
+    taskid: bd64cdc0-09f8-420f-8311-814dcf6ab5e4
     type: regular
     task:
-      id: bd1ec985-fb00-487c-8417-98723c03a0e7
+      id: bd64cdc0-09f8-420f-8311-814dcf6ab5e4
       version: -1
       name: Hey edl URL
       scriptName: Hey
@@ -103,6 +105,8 @@ tasks:
     scriptarguments:
       c:
         simple: ${inputs.c}
+      disable_compression:
+        simple: "true"
       "n":
         simple: ${inputs.n}
       o:
@@ -140,10 +144,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: ffe8ef50-0c2a-43b7-80c9-c402114a346a
+    taskid: ac3241b9-e9be-4c81-8e2b-930297606c4f
     type: regular
     task:
-      id: ffe8ef50-0c2a-43b7-80c9-c402114a346a
+      id: ac3241b9-e9be-4c81-8e2b-930297606c4f
       version: -1
       name: Hey edl Domain
       scriptName: Hey
@@ -156,6 +160,8 @@ tasks:
     scriptarguments:
       c:
         simple: ${inputs.c}
+      disable_compression:
+        simple: "true"
       "n":
         simple: ${inputs.n}
       o:
