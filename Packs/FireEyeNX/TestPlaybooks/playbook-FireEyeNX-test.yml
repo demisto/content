@@ -435,10 +435,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "14":
     id: "14"
-    taskid: acfa359f-01e1-4f74-8f4d-7a0333160897
+    taskid: 22c4e392-83fc-4bcf-89f6-8cb981bc1a28
     type: regular
     task:
-      id: acfa359f-01e1-4f74-8f4d-7a0333160897
+      id: 22c4e392-83fc-4bcf-89f6-8cb981bc1a28
       version: -1
       name: fireeye-nx-get-alerts
       description: Search and Retrieve FireEye alerts based on several filters.
@@ -450,8 +450,8 @@ tasks:
       '#none#':
       - "15"
     scriptarguments:
-      alert_id:
-        simple: "36076"
+      execution-timeout:
+        simple: "120"
     separatecontext: false
     view: |-
       {
