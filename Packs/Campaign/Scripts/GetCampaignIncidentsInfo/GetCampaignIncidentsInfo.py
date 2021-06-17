@@ -82,15 +82,19 @@ def get_incidents_info_md(incidents):
         :return the MD table str
 
     """
+
     if incidents:
-        incidents_info = [
-            {key: get_incident_val(incident, key) for key in INCIDENTS_HEADER} for incident in incidents
-        ]
+        # get all the keys from the incidents
+        all_headers = set().union(*(incident.keys() for incident in incidents))
+        # removing headers that already in INCIDENTS_HEADER
+        unique_headers = all_headers - set(INCIDENTS_HEADER)
+        sorted_headers = INCIDENTS_HEADER + list(unique_headers)
+
         return tableToMarkdown(
             name='',
-            t=incidents_info,
+            t=incidents,
             headerTransform=string_to_table_header,
-            headers=INCIDENTS_HEADER,
+            headers=sorted_headers,
             removeNull=True,
         )
 
