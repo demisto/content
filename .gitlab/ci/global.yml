@@ -141,6 +141,7 @@
     - section_start "Test Infrustracture"
     - |
       if [ -n "$RUN_INFRA_LINT_AND_TESTS" ]; then
+        echo "running infrastructure tests because RUN_INFRA_LINT_AND_TESTS=$RUN_INFRA_LINT_AND_TESTS"
         python3 -m pytest ./Tests/scripts/infrastructure_tests/ -v
         python3 -m pytest ./Tests/Marketplace/Tests/ -v
         python3 -m pytest ./Tests/scripts/utils/tests -v
@@ -153,6 +154,7 @@
     - |
       if [ -n "${DEMISTO_SDK_NIGHTLY}" ] ; then
         if [ -n "$RUN_INFRA_LINT_AND_TESTS" ]; then
+          echo "running infrastructure pylint because RUN_INFRA_LINT_AND_TESTS=$RUN_INFRA_LINT_AND_TESTS"
           ./Tests/scripts/sdk_pylint_check.sh
         else
           echo "Skipping running infrastructure pylint because "RUN_INFRA_LINT_AND_TESTS=$RUN_INFRA_LINT_AND_TESTS""
@@ -181,8 +183,25 @@
           if [[ -n "$PARALLEL" && -n "$CI_NODE_INDEX" ]]; then
             mkdir -p "./unit-tests/$CI_NODE_INDEX" || true
             mkdir -p "$ARTIFACTS_FOLDER/$CI_NODE_INDEX" || true
-            dirs_to_test=$(cat "$ARTIFACTS_FOLDER/test_groups/test_dirs_$CI_NODE_INDEX.txt" | tr '\n' ',' | sed -E 's/,$//')
-            demisto-sdk lint -p 8 -q --test-xml "./unit-tests/$CI_NODE_INDEX" --log-path "$ARTIFACTS_FOLDER/$CI_NODE_INDEX" --failure-report "$ARTIFACTS_FOLDER/$CI_NODE_INDEX" -i "$dirs_to_test"
+            # dirs_to_test=$(cat "$ARTIFACTS_FOLDER/test_groups/test_dirs_$CI_NODE_INDEX.txt" | tr '\n' ',' | sed -E 's/,$//')
+            # demisto-sdk lint -p 8 -q --test-xml "./unit-tests/$CI_NODE_INDEX" --log-path "$ARTIFACTS_FOLDER/$CI_NODE_INDEX" --failure-report "$ARTIFACTS_FOLDER/$CI_NODE_INDEX" -i "$dirs_to_test"
+            if [[ "$CI_NODE_INDEX" -eq "1" ]]; then
+              demisto-sdk lint -p 8 -q --test-xml "./unit-tests/$CI_NODE_INDEX" --log-path "$ARTIFACTS_FOLDER/$CI_NODE_INDEX" --failure-report "$ARTIFACTS_FOLDER/$CI_NODE_INDEX" -i "Packs/ExpanseV2,Packs/EWS"
+            elif [[ "$CI_NODE_INDEX" -eq "2" ]]; then
+              demisto-sdk lint -p 8 -q --test-xml "./unit-tests/$CI_NODE_INDEX" --log-path "$ARTIFACTS_FOLDER/$CI_NODE_INDEX" --failure-report "$ARTIFACTS_FOLDER/$CI_NODE_INDEX" -i "Packs/Cymptom,Packs/CrowdStrikeMalquery"
+            elif [[ "$CI_NODE_INDEX" -eq "3" ]]; then
+              demisto-sdk lint -p 8 -q --test-xml "./unit-tests/$CI_NODE_INDEX" --log-path "$ARTIFACTS_FOLDER/$CI_NODE_INDEX" --failure-report "$ARTIFACTS_FOLDER/$CI_NODE_INDEX" -i ""
+            elif [[ "$CI_NODE_INDEX" -eq "4" ]]; then
+              demisto-sdk lint -p 8 -q --test-xml "./unit-tests/$CI_NODE_INDEX" --log-path "$ARTIFACTS_FOLDER/$CI_NODE_INDEX" --failure-report "$ARTIFACTS_FOLDER/$CI_NODE_INDEX" -i "Packs/CortexXDR,Packs/illuminate"
+            elif [[ "$CI_NODE_INDEX" -eq "5" ]]; then
+              demisto-sdk lint -p 8 -q --test-xml "./unit-tests/$CI_NODE_INDEX" --log-path "$ARTIFACTS_FOLDER/$CI_NODE_INDEX" --failure-report "$ARTIFACTS_FOLDER/$CI_NODE_INDEX" -i "Packs/Zabbix,Packs/X509Certificate"
+            elif [[ "$CI_NODE_INDEX" -eq "6" ]]; then
+              demisto-sdk lint -p 8 -q --test-xml "./unit-tests/$CI_NODE_INDEX" --log-path "$ARTIFACTS_FOLDER/$CI_NODE_INDEX" --failure-report "$ARTIFACTS_FOLDER/$CI_NODE_INDEX" -i "Packs/VirusTotal,Packs/TrustwaveSEG"
+            elif [[ "$CI_NODE_INDEX" -eq "7" ]]; then
+              demisto-sdk lint -p 8 -q --test-xml "./unit-tests/$CI_NODE_INDEX" --log-path "$ARTIFACTS_FOLDER/$CI_NODE_INDEX" --failure-report "$ARTIFACTS_FOLDER/$CI_NODE_INDEX" -i "Packs/Threat_Crowd,Packs/Tenable_io"
+            elif [[ "$CI_NODE_INDEX" -eq "8" ]]; then
+              demisto-sdk lint -p 8 -q --test-xml "./unit-tests/$CI_NODE_INDEX" --log-path "$ARTIFACTS_FOLDER/$CI_NODE_INDEX" --failure-report "$ARTIFACTS_FOLDER/$CI_NODE_INDEX" -i "Packs/SymantecManagementCenter,Packs/SophosXGFirewall"
+            fi
           else
             demisto-sdk lint -p 8 -a -q --test-xml ./unit-tests --log-path $ARTIFACTS_FOLDER --failure-report $ARTIFACTS_FOLDER
           fi

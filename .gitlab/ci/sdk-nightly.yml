@@ -30,20 +30,13 @@ demisto-sdk-nightly:prepare-unittests:
 
 
 demisto-sdk-nightly:run-unittests-and-lint:
-  # extends:
-  #   - .run-unittests-and-lint
-  #   - .sdk-nightly-schedule-rule
-  # needs: ["demisto-sdk-nightly:prepare-unittests"]
-  # variables:
-  #   PARALLEL: 8
-  # parallel: 8
   extends:
+    - .run-unittests-and-lint
     - .sdk-nightly-schedule-rule
-    - .default-job-settings
-  stage: unittests-and-validations
-  script:
-    - echo "Failing purposely"
-    - exit 1
+  needs: ["demisto-sdk-nightly:prepare-unittests"]
+  variables:
+    PARALLEL: 8
+  parallel: 8
 
 
 # demisto-sdk-nightly:run-validations:
