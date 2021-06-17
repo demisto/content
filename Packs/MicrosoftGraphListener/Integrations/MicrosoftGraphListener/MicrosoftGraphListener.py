@@ -930,7 +930,7 @@ def main():
         elif command == 'send-mail':
             human_readable, ec = client.send_email(**args)
             return_outputs(human_readable, ec)
-        elif command == 'replay-mail':
+        elif command == 'reply-mail':
             return_results(client.reply_mail(args))
     except Exception as e:
         return_error(str(e))
