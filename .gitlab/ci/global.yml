@@ -139,6 +139,9 @@
     # - echo "$DOCKER_READ_ONLY_PASSWORD" | docker login --username $DOCKER_READ_ONLY_USER --password-stdin
     - section_end "Configure Docker Login"
     - section_start "Test Infrustracture"
+    # Only run the infrastructure tests and linting if we are running the job normally or in the first index of a set of parallel jobs
+    - |
+      [[ -z "$CI_NODE_INDEX" || "$CI_NODE_INDEX" -eq "1" ]] && export RUN_INFRA_LINT_AND_TESTS=true || true
     - |
       if [ -n "$RUN_INFRA_LINT_AND_TESTS" ]; then
         echo "running infrastructure tests because RUN_INFRA_LINT_AND_TESTS=$RUN_INFRA_LINT_AND_TESTS"
