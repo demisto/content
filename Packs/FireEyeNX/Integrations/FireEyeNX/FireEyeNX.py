@@ -267,6 +267,8 @@ class Client(BaseClient):
 
         demisto.debug('Calling authentication API for retrieve api-token')
         resp = self.http_request(method='POST', url_suffix=URL_SUFFIX['GET_TOKEN'], headers=headers)
+        demisto.debug('&&&&&API TOKEN RESPONSE&&&&')
+        demisto.debug(resp)
         integration_context = self.set_integration_context(resp)
 
         return integration_context.get('api_token')
@@ -890,13 +892,16 @@ def test_function(**kwargs) -> str:
                         is_test=True, fetch_type=kwargs['fetch_type'], mvx_correlated=kwargs['mvx_correlated'],
                         replace_alert_url=kwargs['replace_alert_url'], instance_url=kwargs['instance_url'],
                         fetch_artifacts=kwargs['fetch_artifacts'])
+        return 'ok'
     else:
-        headers = {
-            'Accept': CONTENT_TYPE_JSON
-        }
-        kwargs['client'].http_request(method='POST', url_suffix=URL_SUFFIX['GET_TOKEN'], headers=headers)
+        if kwargs['client'].get_api_token():
+            return 'ok'
+#        headers = {
+#            'Accept': CONTENT_TYPE_JSON
+#        }
+#        kwargs['client'].http_request(method='POST', url_suffix=URL_SUFFIX['GET_TOKEN'], headers=headers)
 
-    return 'ok'
+#    return 'ok'
 
 
 @logger
