@@ -9,10 +9,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 2ea115f8-fe75-421b-8f75-149455b18efa
+    taskid: bac6f935-59f4-4686-8ca8-d78db0382c8c
     type: start
     task:
-      id: 2ea115f8-fe75-421b-8f75-149455b18efa
+      id: bac6f935-59f4-4686-8ca8-d78db0382c8c
       version: -1
       name: ""
       iscommand: false
@@ -33,12 +33,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: 190983e0-83ff-4aaa-89b0-1ea850c4b1f8
+    taskid: da17aa66-4ba8-49e3-896a-53005bcb640b
     type: regular
     task:
-      id: 190983e0-83ff-4aaa-89b0-1ea850c4b1f8
+      id: da17aa66-4ba8-49e3-896a-53005bcb640b
       version: -1
       name: DeleteContext
       script: DeleteContext
@@ -64,12 +66,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: 71f73e0c-634c-4137-8ebf-cb08bf6a53d0
+    taskid: 64d45344-ad65-4e92-800c-442f8d711824
     type: regular
     task:
-      id: 71f73e0c-634c-4137-8ebf-cb08bf6a53d0
+      id: 64d45344-ad65-4e92-800c-442f8d711824
       version: -1
       name: fireeye-nx-get-artifacts-metadata-by-alert
       script: '|||fireeye-nx-get-artifacts-metadata-by-alert'
@@ -95,12 +99,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: fc582dc3-f816-4856-8811-bdd47b93a2c3
+    taskid: 62b9c161-2e9b-46fa-83d0-b2e9367f6232
     type: condition
     task:
-      id: fc582dc3-f816-4856-8811-bdd47b93a2c3
+      id: 62b9c161-2e9b-46fa-83d0-b2e9367f6232
       version: -1
       name: Verify Outputs
       type: condition
@@ -145,12 +151,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: 25b8b3b2-5875-462c-84f0-564d5811d990
+    taskid: b40ea12b-6102-4ad1-89aa-7dbeaacba6fb
     type: regular
     task:
-      id: 25b8b3b2-5875-462c-84f0-564d5811d990
+      id: b40ea12b-6102-4ad1-89aa-7dbeaacba6fb
       version: -1
       name: fireeye-nx-get-reports
       script: '|||fireeye-nx-get-reports'
@@ -163,10 +171,6 @@ tasks:
     scriptarguments:
       end_time:
         simple: 2020-02-29T23:59:59
-      infection_id: {}
-      infection_type: {}
-      interface: {}
-      limit: {}
       report_type:
         simple: IPS Executive Summary Report
       start_time:
@@ -188,12 +192,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: 4076b1ed-51a9-441c-8fed-a1e2090365c2
+    taskid: 31a74435-a1ea-4d82-8bb3-acf6335cbea9
     type: condition
     task:
-      id: 4076b1ed-51a9-441c-8fed-a1e2090365c2
+      id: 31a74435-a1ea-4d82-8bb3-acf6335cbea9
       version: -1
       name: Verify Outputs
       type: condition
@@ -243,12 +249,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    taskid: eb346c07-aa59-4a8d-873f-cd69268e38de
+    taskid: 962eec23-135b-47c5-8448-6f7276d01824
     type: title
     task:
-      id: eb346c07-aa59-4a8d-873f-cd69268e38de
+      id: 962eec23-135b-47c5-8448-6f7276d01824
       version: -1
       name: Test Done
       type: title
@@ -267,12 +275,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "10":
     id: "10"
-    taskid: 890e53ba-1625-4329-8782-761edbc45943
+    taskid: 2ddf1bae-5998-4be6-8da4-cd13ea6854be
     type: regular
     task:
-      id: 890e53ba-1625-4329-8782-761edbc45943
+      id: 2ddf1bae-5998-4be6-8da4-cd13ea6854be
       version: -1
       name: fireeye-nx-get-artifacts-by-alert
       description: Downloads malware artifacts data for the specified UUID as a zip
@@ -300,12 +310,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "11":
     id: "11"
-    taskid: 9759379b-1d7d-4453-80ae-cb5756a4e46d
+    taskid: 77ed0b8c-d261-42a8-81a6-a49bdc6b17fc
     type: condition
     task:
-      id: 9759379b-1d7d-4453-80ae-cb5756a4e46d
+      id: 77ed0b8c-d261-42a8-81a6-a49bdc6b17fc
       version: -1
       name: Verify Outputs
       type: condition
@@ -385,12 +397,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "12":
     id: "12"
-    taskid: 744d5b62-167c-42a6-8cd9-16d6b6d169fb
+    taskid: 395d4a96-23e5-418e-8c9b-b17bc0f43c78
     type: regular
     task:
-      id: 744d5b62-167c-42a6-8cd9-16d6b6d169fb
+      id: 395d4a96-23e5-418e-8c9b-b17bc0f43c78
       version: -1
       name: fireeye-nx-get-events
       description: Search and Retrieve FireEye events based on several filters.
@@ -404,9 +418,6 @@ tasks:
     scriptarguments:
       duration:
         simple: 48_hours
-      end_time: {}
-      mvx_correlated_only: {}
-      start_time: {}
     separatecontext: false
     view: |-
       {
@@ -420,12 +431,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "14":
     id: "14"
-    taskid: 8dfaa087-6028-4314-877b-e477244e570b
+    taskid: acfa359f-01e1-4f74-8f4d-7a0333160897
     type: regular
     task:
-      id: 8dfaa087-6028-4314-877b-e477244e570b
+      id: acfa359f-01e1-4f74-8f4d-7a0333160897
       version: -1
       name: fireeye-nx-get-alerts
       description: Search and Retrieve FireEye alerts based on several filters.
@@ -437,22 +450,8 @@ tasks:
       '#none#':
       - "15"
     scriptarguments:
-      alert_id: {}
-      callback_domain: {}
-      dst_ip: {}
-      duration: {}
-      end_time: {}
-      file_name: {}
-      file_type: {}
-      info_level: {}
-      malware_name: {}
-      malware_type: {}
-      md5: {}
-      recipient_email: {}
-      sender_email: {}
-      src_ip: {}
-      start_time: {}
-      url: {}
+      alert_id:
+        simple: "36076"
     separatecontext: false
     view: |-
       {
@@ -466,12 +465,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "15":
     id: "15"
-    taskid: 1652b2d0-6184-4059-81b7-fd26d72ac045
+    taskid: 3a659f6c-89cf-4d71-801e-4d02e68ad9c5
     type: condition
     task:
-      id: 1652b2d0-6184-4059-81b7-fd26d72ac045
+      id: 3a659f6c-89cf-4d71-801e-4d02e68ad9c5
       version: -1
       name: Verify Outputs
       type: condition
@@ -576,12 +577,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "16":
     id: "16"
-    taskid: dafe7db0-4ee7-47b0-8626-bd6b54a1e075
+    taskid: 119f71d9-9a3e-42d6-8226-c4401931bc59
     type: condition
     task:
-      id: dafe7db0-4ee7-47b0-8626-bd6b54a1e075
+      id: 119f71d9-9a3e-42d6-8226-c4401931bc59
       version: -1
       name: Verify Outputs
       type: condition
@@ -693,7 +696,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-system: true
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {},
