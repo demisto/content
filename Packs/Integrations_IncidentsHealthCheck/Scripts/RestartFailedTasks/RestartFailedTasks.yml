@@ -1,0 +1,41 @@
+args:
+- defaultValue: Job
+  description: Comma Separated list of failed tasks to exclude from restart based
+    on playbook string match
+  name: PlaybookExclusion
+- defaultValue: "180"
+  description: Sleep between restarting batch task (seconds)
+  name: SleepTime
+- defaultValue: "100"
+  description: Limit of number of incidents to restart tasks on
+  name: IncidentLimit
+- defaultValue: "10"
+  description: Integer of how many tasks you want to be restarted at a time (grouping)
+    before a sleep period (as to not overwhelm the system)
+  name: GroupSize
+comment: Run in the same incident that `GetFailedTasks` to be able to restart all
+  (or a some) of the failed tasks
+commonfields:
+  id: RestartFailedTasks
+  version: -1
+dependson:
+  must:
+  - Demisto REST API|||demisto-api-post
+dockerimage: demisto/python3:3.9.5.21272
+enabled: true
+important:
+- related: ""
+name: RestartFailedTasks
+outputs:
+- {}
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags: []
+timeout: 1.2µs
+type: python
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)
