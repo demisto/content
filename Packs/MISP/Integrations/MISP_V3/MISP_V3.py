@@ -258,18 +258,20 @@ def limit_attributes_count(event: dict) -> dict:
     Returns:
         dict: context output
     """
-    if event and 'Attribute' in event and len(event['Attribute']) > MAX_ATTRIBUTES:
-        attributes = event['Attribute']
-        attributes_num = len(attributes)
-        event_id = event.get('id', '')
-        event_uuid = event.get('uuid')
-        demisto.info(f'Limiting amount of attributes in event to {MAX_ATTRIBUTES} '
-                     f'to keep context from being overwhelmed. '
-                     f'This limit can be changed in the integration configuration. '
-                     f'Event ID: {event_id}, Event UUID: {event_uuid}, Attributes in event: {attributes_num}')
-        sorted_attributes = sorted(attributes, key=lambda at: int(at.get('timestamp', 0)))
-        event['Attribute'] = sorted_attributes[attributes_num - MAX_ATTRIBUTES:]
-        return event
+    if event:
+        attributes_list = event.get('Attribute')
+        num_of_attributes = len(attributes_list)
+        should_limit_attributes_amount = attributes_list and num_of_attributes > MAX_ATTRIBUTES
+        if should_limit_attributes_amount:
+            event_id = event.get('id', '')
+            event_uuid = event.get('uuid')
+            demisto.info(f'Limiting amount of attributes in event to {MAX_ATTRIBUTES} '
+                         f'to keep context from being overwhelmed. '
+                         f'This limit can be changed in the integration configuration. '
+                         f'Event ID: {event_id}, Event UUID: {event_uuid}, Attributes in event: {num_of_attributes}')
+            sorted_attributes = sorted(attributes_list, key=lambda at: int(at.get('timestamp', 0)))
+            event['Attribute'] = sorted_attributes[num_of_attributes - MAX_ATTRIBUTES:]
+            return event
     return event
 
 
@@ -366,59 +368,6 @@ def build_context(response: Union[dict, requests.Response], data_keys_to_save=[]
     events = replace_keys(events)  # type: ignore
     arrange_context_according_to_user_selection(events, data_keys_to_save)  # type: ignore
     return events  # type: ignore
-
-
-def build_attribute_context(response: Union[dict, requests.Response]) -> dict:
-    """
-    Convert the response of attribute search returned from MIPS to the context output format.
-    """
-    attribute_fields = [
-        'id',
-        'event_id',
-        'object_id',
-        'object_relation',
-        'category',
-        'type',
-        'to_ids',
-        'uuid',
-        'timestamp',
-        'distribution',
-        'sharing_group_id',
-        'comment',
-        'deleted',
-        'disable_correlation',
-        'value',
-        'Event',
-        'Object',
-        'Galaxy',  # field wasn't tested as we don't see it in our responses. Was added by customer's request.
-        'Tag',
-        'decay_score'
-    ]
-    print(response)
-    if isinstance(response, str):
-        response = json.loads(json.dumps(response))
-    attributes = response.get('Attribute')
-    for i in range(len(attributes)):
-        attributes[i] = {key: attributes[i].get(key) for key in attribute_fields if key in attributes[i]}
-
-        # Build Galaxy
-        if attributes[i].get('Galaxy'):
-            attributes[i]['Galaxy'] = [
-                {
-                    'name': star.get('name'),
-                    'type': star.get('type'),
-                    'description': star.get('description')
-                } for star in attributes[i]['Galaxy']
-            ]
-
-        # Build Tag
-        if attributes[i].get('Tag'):
-            attributes[i]['Tag'] = [
-                {'Name': tag.get('name')} for tag in attributes[i].get('Tag')
-            ]
-
-    attributes = replace_keys(attributes)
-    return attributes
 
 
 def get_misp_threat_level(threat_level_id: str) -> str:  # type: ignore
@@ -1084,15 +1033,15 @@ def build_attributes_search_response(response_object: Union[dict, requests.Respo
         'decay_score'
     ]
     if isinstance(response_object, str):
-        response = json.loads(json.dumps(response_object))
+        response_object = json.loads(json.dumps(response_object))
+    print(response_object)
     attributes = response_object.get('Attribute')
-    parsed_attributes = dict()
     for i in range(len(attributes)):
-        parsed_attributes[i] = {key: attributes[i].get(key) for key in attribute_fields if key in attributes[i]}
+        attributes[i] = {key: attributes[i].get(key) for key in attribute_fields if key in attributes[i]}
 
         # Build Galaxy
         if attributes[i].get('Galaxy'):
-            parsed_attributes[i]['Galaxy'] = [
+            attributes[i]['Galaxy'] = [
                 {
                     'name': star.get('name'),
                     'type': star.get('type'),
@@ -1102,12 +1051,14 @@ def build_attributes_search_response(response_object: Union[dict, requests.Respo
 
         # Build Tag
         if attributes[i].get('Tag'):
-            parsed_attributes[i]['Tag'] = [
-                {'Name': tag.get('name')} for tag in attributes[i].get('Tag')
+            attributes[i]['Tag'] = [
+                {'Name': tag.get('name'),
+                 'is_galaxy': tag.get('is_galaxy')
+                 } for tag in attributes[i].get('Tag')
             ]
 
-    parsed_attributes = replace_keys(parsed_attributes)
-    return parsed_attributes
+    attributes = replace_keys(attributes)
+    return attributes
 
 
 def search_attributes(pymisp) -> CommandResults:
@@ -1120,7 +1071,7 @@ def search_attributes(pymisp) -> CommandResults:
     response = pymisp.search(**args)
 
     if response:
-        response_for_context = build_attributes_search_response(response)
+        response_for_context = build_attributes_search_response(copy.deepcopy(response))
 
         md = f'## MISP search-attributes returned {len(response_for_context)} attributes.\n'
 
@@ -1139,19 +1090,10 @@ def search_attributes(pymisp) -> CommandResults:
         return CommandResults(readable_output=f"No attributes found in MISP for the given filters: {args}")
 
 
-def build_events_search_response(response_object: Union[dict, requests.Response]) -> dict:
+def build_events_search_response(response_object: Union[dict, requests.Response], data_keys_to_save) -> dict:
     """
     Convert the response of event search returned from MIPS to the context output format.
     """
-
-
-
-
-    'ShadowAttribute',
-    'RelatedEvent',
-    'Galaxy',
-    'Tag',
-    'Object'
     event_fields = [
         'id',
         'orgc_id',
@@ -1173,55 +1115,55 @@ def build_events_search_response(response_object: Union[dict, requests.Response]
         'Org',
         'Orgc',
         'Attribute',
-
-
-        'object_relation',
-        'category',
-        'type',
-        'to_ids',
-
-
-
-        'comment',
-        'deleted',
-        'disable_correlation',
-        'first_seen',
-        'last_seen',
-        'value',
-        'Event',
-        'Object',
-        'Galaxy',  # field wasn't tested as we don't see it in our responses. Was added by customer's request.
+        'ShadowAttribute',
+        'RelatedEvent',
+        'Galaxy',
         'Tag',
-        'decay_score'
+        'Object'
     ]
     if isinstance(response_object, str):
-        response = json.loads(json.dumps(response_object))
-    attributes = response_object.get('Attribute')
-    parsed_attributes = dict()
-    for i in range(len(attributes)):
-        parsed_attributes[i] = {key: attributes[i].get(key) for key in attribute_fields if key in attributes[i]}
+        response_object = json.loads(json.dumps(response_object))
 
+    events = [event.get('Event') for event in response_object]
+    for i in range(0, len(events)):
+        events[i] = limit_attributes_count(events[i])
+        # Filter object from keys in event_args
+        events[i] = {key: events[i].get(key) for key in event_fields if key in events[i]}
+        # Remove 'Event' keyword from 'RelatedEvent'
+        if events[i].get('RelatedEvent'):
+            events[i]['RelatedEvent'] = [r_event.get('Event') for r_event in events[i].get('RelatedEvent')]
+            # Get only IDs from related event
+            events[i]['RelatedEvent'] = [
+                {
+                    'id': r_event.get('id')
+                } for r_event in events[i].get('RelatedEvent')
+            ]
         # Build Galaxy
-        if attributes[i].get('Galaxy'):
-            parsed_attributes[i]['Galaxy'] = [
+        if events[i].get('Galaxy'):
+            events[i]['Galaxy'] = [
                 {
                     'name': star.get('name'),
                     'type': star.get('type'),
                     'description': star.get('description')
-                } for star in attributes[i]['Galaxy']
+                } for star in events[i]['Galaxy']
             ]
-
-        # Build Tag
-        if attributes[i].get('Tag'):
-            parsed_attributes[i]['Tag'] = [
-                {'Name': tag.get('name')} for tag in attributes[i].get('Tag')
+        # Build tag
+        if events[i].get('Tag'):
+            events[i]['Tag'] = [
+                {'Name': tag.get('name'),
+                 'is_galaxy': tag.get('is_galaxy')
+                 } for tag in events[i].get('Tag')
             ]
+        # Build attributes
+        events[i]['Attribute'] = build_attributes_search_response(events[i])
 
-    parsed_attributes = replace_keys(parsed_attributes)
-    return parsed_attributes
+    events = replace_keys(events)  # type: ignore
+    arrange_context_according_to_user_selection(events, data_keys_to_save)  # type: ignore
+
+    return events  # type: ignore
 
 
-def search_events(pymisp) -> CommandResults:
+def search_events(pymisp, data_keys_to_save) -> CommandResults:
     """
     Execute a MIPS search using the 'event' controller.
     """
@@ -1229,10 +1171,9 @@ def search_events(pymisp) -> CommandResults:
     # Set the controller to events to search for events by the given args
     args['controller'] = 'events'
     response = pymisp.search(**args)
-    print(response)
 
     if response:
-        response_for_context = build_attributes_search_response(response)
+        response_for_context = build_events_search_response(copy.deepcopy(response), data_keys_to_save)
 
         md = f'## MISP search-events returned {len(response_for_context)} events.\n'
 
@@ -1544,7 +1485,7 @@ def main():
             return_results(
                 add_attribute(demisto_args=args, pymisp=pymisp, data_keys_to_save=data_keys_to_save))  # checked V
         elif command == 'misp-search-events':
-            return_results(search_events(pymisp))  # checked
+            return_results(search_events(pymisp, data_keys_to_save))  # checked
         elif command == 'misp-search-attributes':
             return_results(search_attributes(pymisp))  # checked V
         elif command == 'misp-delete-event':
