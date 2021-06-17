@@ -1,6 +1,6 @@
 {
     "name": "Abnormal Security Client API",
-    "description": "This is the specification for Abnormal Security Client API which can be used for managing security threats detected by Abnormal Security.  h2 Who is this API for? /h2  This API is for managing threats to an organization identified by Abnormal Security. The organization should be integrated with Abnormal Security and enabled for real-time detection of malicious emails.  h2  Integration Steps  /h2   h3  Step 1: Generating the authentication token  /h3   Reach out to your Account Manager who can configure your access token and provide it to you securely. You will use this token to view and modify your Abnormal-detected threats and cases.  Keep the token safe, as it grants access to sensitive threat data related to your organization. Store it in a secure place, such as an encrypted password vault, and do not share it unless absolutely necessary. If you feel that the token has been compromised, please contact your Account Manager immediately.  Once obtained, the token can be used in a request from any HTTP client, such as cURL:  pre  curl -H \"Authorization: Bearer     ACCESS_TOKEN   \" https://api.abnormalplatform.com/v1/threats  /pre    h3  Step 2: IP whitelisting  /h3   IP whitelisting ensures that API access is only possible from IP addresses explicitly belonging to your organization. It prevents users from unauthorized networks to access your Abnormal SOAR data. This second layer of security helps keep your data safe from unauthorized users, and protects you in the event of a token compromise.  To whitelist your organization\u2019s IPs, please provide your Account Manager with specific IPv4 / IPv6 addresses, or a range of addresses using a  a href=\"https://www.ipaddressguide.com/cidr\"  CIDR block /a . ",
+    "description": "This is the specification for Abnormal Security Client API which can be used for managing security threats detected by Abnormal Security.  h2 Who is this API for? /h2  This API is for managing threats to an organization identified by Abnormal Security. The organization should be integrated with Abnormal Security and enabled for real-time detection of malicious emails.  h2  Integration Steps  /h2  Go to `https://portal.abnormalsecurity.com/home/settings/integrations` & click on `Abnormal REST API`  h3  Step 1: Generating the authentication token  /h3   Retrieve your authentication token via the  a href=\"https://portal.abnormalsecurity.com/home/settings/integrations\" Abnormal portal /a . You will use this token to view and modify your Abnormal-detected threats and cases.  Keep the token safe, as it grants access to sensitive threat data related to your organization. Store it in a secure place, such as an encrypted password vault, and do not share it unless absolutely necessary. If you feel that the token has been compromised, please contact your Account Manager immediately.  Once obtained, the token can be used in a request from any HTTP client, such as cURL:  pre  curl -H \"Authorization: Bearer     ACCESS_TOKEN   \" https://api.abnormalplatform.com/v1/threats  /pre    h3  Step 2: IP whitelisting  /h3   IP whitelisting ensures that API access is only possible from IP addresses explicitly belonging to your organization. It prevents users from unauthorized networks to access your Abnormal SOAR data. This second layer of security helps keep your data safe from unauthorized users, and protects you in the event of a token compromise.  To whitelist your organization\u2019s IPs, please provide enter into the  a href=\"https://portal.abnormalsecurity.com/home/settings/integrations\" Abnormal portal /a  specific IPv4 / IPv6 addresses, or a range of addresses using a  a href=\"https://www.ipaddressguide.com/cidr\"  CIDR block /a .   h3  Step 3: Try it out with Test Data  /h3   To confirm that  b Steps 1 & 2 /b  have been configured properly, send a request to the server with the following header set:   pre  curl -H \"Authorization: Bearer     ACCESS_TOKEN   \"  b -H \"Mock-Data: True\" /b  https://api.abnormalplatform.com/v1/threats  /pre   The server should respond with a body payload similar to the examples specified in this documentation.  ",
     "category": "Utilities",
     "url": "https://api.abnormalplatform.com/v1",
     "auth": [
@@ -31,6 +31,17 @@
                     "required": true,
                     "default": "",
                     "in": "path",
+                    "ref": "",
+                    "type": "string",
+                    "options": null,
+                    "properties": {}
+                },
+                {
+                    "name": "mock-data",
+                    "description": "Returns test data if set to `True`",
+                    "required": false,
+                    "default": "",
+                    "in": "header",
                     "ref": "",
                     "type": "string",
                     "options": null,
@@ -81,6 +92,17 @@
                     "type": "string",
                     "options": null,
                     "properties": {}
+                },
+                {
+                    "name": "mock-data",
+                    "description": "Returns test data if set to `True`",
+                    "required": false,
+                    "default": "",
+                    "in": "header",
+                    "ref": "",
+                    "type": "string",
+                    "options": null,
+                    "properties": {}
                 }
             ],
             "outputs": [
@@ -108,7 +130,7 @@
             "arguments": [
                 {
                     "name": "filter",
-                    "description": "Value must be of the format filter={FILTER KEY} gte YYYY-MM-DDTHH:MM:SSZ lte YYYY-MM-DDTHH:MM:SSZ. A {FILTER KEY} must be specified, and currently the only key that is supported for /cases is lastModifiedTime. At least 1 of gte/lte must be specified, with a datetime string following the YYYY-MM-DDTHH:MM:SSZ format.",
+                    "description": "Value must be of the format `filter={FILTER KEY} gte YYYY-MM-DDTHH:MM:SSZ lte YYYY-MM-DDTHH:MM:SSZ`. A `{FILTER KEY}` must be specified, and currently the only key that is supported for `/cases` is `lastModifiedTime`. At least 1 of `gte`/`lte` must be specified, with a datetime string following the `YYYY-MM-DDTHH:MM:SSZ` format.",
                     "required": false,
                     "default": "",
                     "in": "query",
@@ -136,6 +158,17 @@
                     "in": "query",
                     "ref": "",
                     "type": "integer",
+                    "options": null,
+                    "properties": {}
+                },
+                {
+                    "name": "mock-data",
+                    "description": "Returns test data if set to `True`",
+                    "required": false,
+                    "default": "",
+                    "in": "header",
+                    "ref": "",
+                    "type": "string",
                     "options": null,
                     "properties": {}
                 }
@@ -175,7 +208,7 @@
             "arguments": [
                 {
                     "name": "filter",
-                    "description": "Value must be of the format filter={FILTER KEY} gte YYYY-MM-DDTHH:MM:SSZ lte YYYY-MM-DDTHH:MM:SSZ. A {FILTER KEY} must be specified, and currently the only key that is supported for /threats is receivedTime. At least 1 of gte/lte must be specified, with a datetime string following the YYYY-MM-DDTHH:MM:SSZ format.",
+                    "description": "Value must be of the format `filter={FILTER KEY} gte YYYY-MM-DDTHH:MM:SSZ lte YYYY-MM-DDTHH:MM:SSZ`. A `{FILTER KEY}` must be specified, and currently the only keys that are supported for `/threats` are `receivedTime` and `lastModifiedTime`. At least 1 of `gte`/`lte` must be specified, with a datetime string following the `YYYY-MM-DDTHH:MM:SSZ format`.",
                     "required": false,
                     "default": "",
                     "in": "query",
@@ -203,6 +236,28 @@
                     "in": "query",
                     "ref": "",
                     "type": "integer",
+                    "options": null,
+                    "properties": {}
+                },
+                {
+                    "name": "mock-data",
+                    "description": "Returns test data if set to `True`",
+                    "required": false,
+                    "default": "",
+                    "in": "header",
+                    "ref": "",
+                    "type": "string",
+                    "options": null,
+                    "properties": {}
+                },
+                {
+                    "name": "source",
+                    "description": "Filters threats based on the source of detection.",
+                    "required": false,
+                    "default": "",
+                    "in": "query",
+                    "ref": "",
+                    "type": "string",
                     "options": null,
                     "properties": {}
                 }
@@ -241,6 +296,17 @@
                     "required": true,
                     "default": "",
                     "in": "path",
+                    "ref": "",
+                    "type": "string",
+                    "options": null,
+                    "properties": {}
+                },
+                {
+                    "name": "mock-data",
+                    "description": "Returns test data if set to `True`",
+                    "required": false,
+                    "default": "",
+                    "in": "header",
                     "ref": "",
                     "type": "string",
                     "options": null,
@@ -367,7 +433,7 @@
             "context_path": "ThreatDetails",
             "root_object": "",
             "headers": [],
-            "unique_key": "threatId"
+            "unique_key": ""
         },
         {
             "name": "get-details-of-an-abnormal-case",
@@ -381,6 +447,17 @@
                     "required": true,
                     "default": "",
                     "in": "path",
+                    "ref": "",
+                    "type": "string",
+                    "options": null,
+                    "properties": {}
+                },
+                {
+                    "name": "mock-data",
+                    "description": "Returns test data if set to `True`",
+                    "required": false,
+                    "default": "",
+                    "in": "header",
                     "ref": "",
                     "type": "string",
                     "options": null,
@@ -419,7 +496,19 @@
             "path": "threat-intel",
             "method": "get",
             "description": "Get the latest threat intel feed.",
-            "arguments": [],
+            "arguments": [
+                {
+                    "name": "mock-data",
+                    "description": "Returns test data if set to `True`",
+                    "required": false,
+                    "default": "",
+                    "in": "header",
+                    "ref": "",
+                    "type": "string",
+                    "options": null,
+                    "properties": {}
+                }
+            ],
             "outputs": [],
             "context_path": "",
             "root_object": "",
@@ -438,6 +527,17 @@
                     "required": true,
                     "default": "",
                     "in": "path",
+                    "ref": "",
+                    "type": "string",
+                    "options": null,
+                    "properties": {}
+                },
+                {
+                    "name": "mock-data",
+                    "description": "Returns test data if set to `True`",
+                    "required": false,
+                    "default": "",
+                    "in": "header",
                     "ref": "",
                     "type": "string",
                     "options": null,
@@ -466,6 +566,17 @@
                     "type": "string",
                     "options": null,
                     "properties": {}
+                },
+                {
+                    "name": "mock-data",
+                    "description": "Returns test data if set to `True`",
+                    "required": false,
+                    "default": "",
+                    "in": "header",
+                    "ref": "",
+                    "type": "string",
+                    "options": null,
+                    "properties": {}
                 }
             ],
             "outputs": [],
@@ -479,7 +590,19 @@
             "path": "inquiry",
             "method": "post",
             "description": "Submit an Inquiry to request a report on misjudgement by Abnormal Security",
-            "arguments": [],
+            "arguments": [
+                {
+                    "name": "mock-data",
+                    "description": "Returns test data if set to `True`",
+                    "required": false,
+                    "default": "",
+                    "in": "header",
+                    "ref": "",
+                    "type": "string",
+                    "options": null,
+                    "properties": {}
+                }
+            ],
             "outputs": [],
             "context_path": "",
             "root_object": "",

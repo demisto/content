@@ -23,28 +23,8 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: "This is the specification for Abnormal Security Client API which can\
-  \ be used for managing security threats detected by Abnormal Security.  h2 Who is\
-  \ this API for? /h2  This API is for managing threats to an organization identified\
-  \ by Abnormal Security. The organization should be integrated with Abnormal Security\
-  \ and enabled for real-time detection of malicious emails.  h2  Integration Steps\
-  \  /h2   h3  Step 1: Generating the authentication token  /h3   Reach out to your\
-  \ Account Manager who can configure your access token and provide it to you securely.\
-  \ You will use this token to view and modify your Abnormal-detected threats and\
-  \ cases.  Keep the token safe, as it grants access to sensitive threat data related\
-  \ to your organization. Store it in a secure place, such as an encrypted password\
-  \ vault, and do not share it unless absolutely necessary. If you feel that the token\
-  \ has been compromised, please contact your Account Manager immediately.  Once obtained,\
-  \ the token can be used in a request from any HTTP client, such as cURL:  pre  curl\
-  \ -H \"Authorization: Bearer     ACCESS_TOKEN   \" https://api.abnormalplatform.com/v1/threats\
-  \  /pre    h3  Step 2: IP whitelisting  /h3   IP whitelisting ensures that API access\
-  \ is only possible from IP addresses explicitly belonging to your organization.\
-  \ It prevents users from unauthorized networks to access your Abnormal SOAR data.\
-  \ This second layer of security helps keep your data safe from unauthorized users,\
-  \ and protects you in the event of a token compromise.  To whitelist your organization\u2019\
-  s IPs, please provide your Account Manager with specific IPv4 / IPv6 addresses,\
-  \ or a range of addresses using a  a href=\"https://www.ipaddressguide.com/cidr\"\
-  \  CIDR block /a . "
+description: "Abnormal Security detects the whole spectrum of email attacks, from vendor email compromise and spear-phishing to unwanted email spam and graymail. \
+To stop these advanced attacks, Abnormal leverages the industry’s most advanced behavioral data science to baseline known good behavior and detects anomalies."
 display: Abnormal Security Client API
 name: Abnormal Security Client API
 script:
@@ -58,6 +38,10 @@ script:
       isArray: false
       name: actionId
       required: true
+    - description: Returns test data if set to `True`
+      isArray: false
+      name: mock-data
+      required: false
     description: Check the status of an action requested on a case.
     name: abxcortexxsoar-check-the-status-of-an-action-requested-on-a-case
     outputs:
@@ -76,6 +60,10 @@ script:
       isArray: false
       name: actionId
       required: true
+    - description: Returns test data if set to `True`
+      isArray: false
+      name: mock-data
+      required: false
     description: Check the status of an action requested on a threat.
     name: abxcortexxsoar-check-the-status-of-an-action-requested-on-a-threat
     outputs:
@@ -86,10 +74,10 @@ script:
       description: ''
       type: String
   - arguments:
-    - description: Value must be of the format filter={FILTER KEY} gte YYYY-MM-DDTHH:MM:SSZ
-        lte YYYY-MM-DDTHH:MM:SSZ. A {FILTER KEY} must be specified, and currently
-        the only key that is supported for /cases is lastModifiedTime. At least 1
-        of gte/lte must be specified, with a datetime string following the YYYY-MM-DDTHH:MM:SSZ
+    - description: Value must be of the format `filter={FILTER KEY} gte YYYY-MM-DDTHH:MM:SSZ
+        lte YYYY-MM-DDTHH:MM:SSZ`. A `{FILTER KEY}` must be specified, and currently
+        the only key that is supported for `/cases` is `lastModifiedTime`. At least
+        1 of `gte`/`lte` must be specified, with a datetime string following the `YYYY-MM-DDTHH:MM:SSZ`
         format.
       isArray: false
       name: filter
@@ -103,6 +91,10 @@ script:
         effect if filter is not specified.
       isArray: false
       name: pageNumber
+      required: false
+    - description: Returns test data if set to `True`
+      isArray: false
+      name: mock-data
       required: false
     description: Get a list of Abnormal cases identified by Abnormal Security
     name: abxcortexxsoar-get-a-list-of-abnormal-cases-identified-by-abnormal-security
@@ -123,11 +115,11 @@ script:
         request
       type: Number
   - arguments:
-    - description: Value must be of the format filter={FILTER KEY} gte YYYY-MM-DDTHH:MM:SSZ
-        lte YYYY-MM-DDTHH:MM:SSZ. A {FILTER KEY} must be specified, and currently
-        the only key that is supported for /threats is receivedTime. At least 1 of
-        gte/lte must be specified, with a datetime string following the YYYY-MM-DDTHH:MM:SSZ
-        format.
+    - description: Value must be of the format `filter={FILTER KEY} gte YYYY-MM-DDTHH:MM:SSZ
+        lte YYYY-MM-DDTHH:MM:SSZ`. A `{FILTER KEY}` must be specified, and currently
+        the only keys that are supported for `/threats` are `receivedTime` and `lastModifiedTime`.
+        At least 1 of `gte`/`lte` must be specified, with a datetime string following
+        the `YYYY-MM-DDTHH:MM:SSZ format`.
       isArray: false
       name: filter
       required: false
@@ -140,6 +132,14 @@ script:
         no effect if filter is not specified.
       isArray: false
       name: pageNumber
+      required: false
+    - description: Returns test data if set to `True`
+      isArray: false
+      name: mock-data
+      required: false
+    - description: Filters threats based on the source of detection.
+      isArray: false
+      name: source
       required: false
     description: Get a list of threats
     name: abxcortexxsoar-get-a-list-of-threats
@@ -162,6 +162,10 @@ script:
       isArray: false
       name: threatId
       required: true
+    - description: Returns test data if set to `True`
+      isArray: false
+      name: mock-data
+      required: false
     description: Get details of a threat
     name: abxcortexxsoar-get-details-of-a-threat
     outputs:
@@ -247,6 +251,10 @@ script:
       isArray: false
       name: caseId
       required: true
+    - description: Returns test data if set to `True`
+      isArray: false
+      name: mock-data
+      required: false
     description: Get details of an Abnormal case
     name: abxcortexxsoar-get-details-of-an-abnormal-case
     outputs:
@@ -262,13 +270,26 @@ script:
     - contextPath: AbxCortexXSOAR.AbnormalCaseDetails.firstObserved
       description: First time suspicious behavior was observed.
       type: String
-  - description: Get the latest threat intel feed.
+  - arguments:
+    - description: Returns test data if set to `True`
+      isArray: false
+      name: mock-data
+      required: false
+    description: Get the latest threat intel feed.
     name: abxcortexxsoar-get-the-latest-threat-intel-feed
   - arguments:
     - description: A UUID representing the threat.
       isArray: false
       name: threatId
       required: true
+    - description: Action to perform on threat
+      isArray: false
+      name: action
+      required: true
+    - description: Returns test data if set to `True`
+      isArray: false
+      name: mock-data
+      required: false
     description: Manage a Threat identified by Abnormal Security
     name: abxcortexxsoar-manage-a-threat-identified-by-abnormal-security
   - arguments:
@@ -276,9 +297,18 @@ script:
       isArray: false
       name: caseId
       required: true
+    - description: Returns test data if set to `True`
+      isArray: false
+      name: mock-data
+      required: false
     description: Manage an Abnormal Case.
     name: abxcortexxsoar-manage-an-abnormal-case
-  - description: Submit an Inquiry to request a report on misjudgement by Abnormal
+  - arguments:
+    - description: Returns test data if set to `True`
+      isArray: false
+      name: mock-data
+      required: false
+    description: Submit an Inquiry to request a report on misjudgement by Abnormal
       Security
     name: abxcortexxsoar-submit-an-inquiry-to-request-a-report-on-misjudgement-by-abnormal-security
   dockerimage: demisto/python3:3.9.5.21272
@@ -286,4 +316,3 @@ script:
   script: ''
   subtype: python3
   type: python
-fromversion: 5.0.0

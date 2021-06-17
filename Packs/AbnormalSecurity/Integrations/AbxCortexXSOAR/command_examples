@@ -1,0 +1,8 @@
+!abxcortexxsoar-check-the-status-of-an-action-requested-on-a-case caseId=12345 actionId=abcdefgh-1234-5678-ijkl-mnop9qrstuvwx
+!abxcortexxsoar-check-the-status-of-an-action-requested-on-a-threat threatId=xwvutsrq-9pon-mlkj-i876-54321hgfedcba actionId=abcdefgh-1234-5678-ijkl-mnop9qrstuvwx
+!abxcortexxsoar-get-a-list-of-abnormal-cases-identified-by-abnormal-security
+!abxcortexxsoar-get-a-list-of-threats
+!abxcortexxsoar-get-details-of-a-threat threatId=xwvutsrq-9pon-mlkj-i876-54321hgfedcba
+!abxcortexxsoar-get-details-of-an-abnormal-case caseId=12345
+!abxcortexxsoar-manage-a-threat-identified-by-abnormal-security threatId=xwvutsrq-9pon-mlkj-i876-54321hgfedcba action=remediate
+!abxcortexxsoar-manage-an-abnormal-case caseId=12345 action=unremediate

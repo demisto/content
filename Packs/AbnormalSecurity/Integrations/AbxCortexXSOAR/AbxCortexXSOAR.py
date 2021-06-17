@@ -1,13 +1,16 @@
 import demistomock as demisto
 from CommonServerPython import *
 
+import re
+import requests
 
 class Client(BaseClient):
     def __init__(self, server_url, verify, proxy, headers, auth):
         super().__init__(base_url=server_url, verify=verify, proxy=proxy, headers=headers, auth=auth)
 
 
-    def check_the_status_of_an_action_requested_on_a_case_request(self, caseId, actionId):
+
+    def check_the_status_of_an_action_requested_on_a_case_request(self, caseId, actionId, mock_data):
 
         headers = self._headers
 
@@ -16,7 +19,7 @@ class Client(BaseClient):
         return response
 
 
-    def check_the_status_of_an_action_requested_on_a_threat_request(self, threatId, actionId):
+    def check_the_status_of_an_action_requested_on_a_threat_request(self, threatId, actionId, mock_data):
 
         headers = self._headers
 
@@ -25,7 +28,7 @@ class Client(BaseClient):
         return response
 
 
-    def get_a_list_of_abnormal_cases_identified_by_abnormal_security_request(self, filter_, pageSize, pageNumber):
+    def get_a_list_of_abnormal_cases_identified_by_abnormal_security_request(self, filter, pageSize, pageNumber, mock_data):
         params = assign_params(filter=filter, pageSize=pageSize, pageNumber=pageNumber)
 
         headers = self._headers
@@ -35,8 +38,8 @@ class Client(BaseClient):
         return response
 
 
-    def get_a_list_of_threats_request(self, filter_, pageSize, pageNumber):
-        params = assign_params(filter=filter, pageSize=pageSize, pageNumber=pageNumber)
+    def get_a_list_of_threats_request(self, filter, pageSize, pageNumber, mock_data, source):
+        params = assign_params(filter=filter, pageSize=pageSize, pageNumber=pageNumber, source=source)
 
         headers = self._headers
 
@@ -45,7 +48,7 @@ class Client(BaseClient):
         return response
 
 
-    def get_details_of_a_threat_request(self, threatId):
+    def get_details_of_a_threat_request(self, threatId, mock_data):
 
         headers = self._headers
 
@@ -54,7 +57,7 @@ class Client(BaseClient):
         return response
 
 
-    def get_details_of_an_abnormal_case_request(self, caseId):
+    def get_details_of_an_abnormal_case_request(self, caseId, mock_data):
 
         headers = self._headers
 
@@ -63,7 +66,7 @@ class Client(BaseClient):
         return response
 
 
-    def get_the_latest_threat_intel_feed_request(self):
+    def get_the_latest_threat_intel_feed_request(self, mock_data):
 
         headers = self._headers
 
@@ -72,25 +75,27 @@ class Client(BaseClient):
         return response
 
 
-    def manage_a_threat_identified_by_abnormal_security_request(self, threatId):
+    def manage_a_threat_identified_by_abnormal_security_request(self, threatId, mock_data, action):
 
         headers = self._headers
+        json_data = {'action': action}
 
-        response = self._http_request('post', f'threats/{threatId}', headers=headers)
+        response = self._http_request('post', f'threats/{threatId}', json_data=json_data, headers=headers)
 
         return response
 
 
-    def manage_an_abnormal_case_request(self, caseId):
+    def manage_an_abnormal_case_request(self, caseId, mock_data, action):
 
         headers = self._headers
+        json_data = {'action': action}
 
-        response = self._http_request('post', f'cases/{caseId}', headers=headers)
+        response = self._http_request('post', f'cases/{caseId}', json_data=json_data, headers=headers)
 
         return response
 
 
-    def submit_an_inquiry_to_request_a_report_on_misjudgement_by_abnormal_security_request(self):
+    def submit_an_inquiry_to_request_a_report_on_misjudgement_by_abnormal_security_request(self, mock_data):
 
         headers = self._headers
 
@@ -104,8 +109,9 @@ class Client(BaseClient):
 def check_the_status_of_an_action_requested_on_a_case_command(client, args):
     caseId = str(args.get('caseId', ''))
     actionId = str(args.get('actionId', ''))
+    mock_data = str(args.get('mock_data', ''))
 
-    response = client.check_the_status_of_an_action_requested_on_a_case_request(caseId, actionId)
+    response = client.check_the_status_of_an_action_requested_on_a_case_request(caseId, actionId, mock_data)
     command_results = CommandResults(
         outputs_prefix='AbxCortexXSOAR.ActionStatus',
         outputs_key_field='',
@@ -119,8 +125,9 @@ def check_the_status_of_an_action_requested_on_a_case_command(client, args):
 def check_the_status_of_an_action_requested_on_a_threat_command(client, args):
     threatId = str(args.get('threatId', ''))
     actionId = str(args.get('actionId', ''))
+    mock_data = str(args.get('mock_data', ''))
 
-    response = client.check_the_status_of_an_action_requested_on_a_threat_request(threatId, actionId)
+    response = client.check_the_status_of_an_action_requested_on_a_threat_request(threatId, actionId, mock_data)
     command_results = CommandResults(
         outputs_prefix='AbxCortexXSOAR.ActionStatus',
         outputs_key_field='',
@@ -132,11 +139,12 @@ def check_the_status_of_an_action_requested_on_a_threat_command(client, args):
 
 
 def get_a_list_of_abnormal_cases_identified_by_abnormal_security_command(client, args):
-    filter_ = str(args.get('filter', ''))
+    filter = str(args.get('filter', ''))
     pageSize = args.get('pageSize', None)
     pageNumber = args.get('pageNumber', None)
+    mock_data = str(args.get('mock_data', ''))
 
-    response = client.get_a_list_of_abnormal_cases_identified_by_abnormal_security_request(filter_, pageSize, pageNumber)
+    response = client.get_a_list_of_abnormal_cases_identified_by_abnormal_security_request(filter, pageSize, pageNumber, mock_data)
     command_results = CommandResults(
         outputs_prefix='AbxCortexXSOAR.inline_response_200_1',
         outputs_key_field='',
@@ -148,11 +156,13 @@ def get_a_list_of_abnormal_cases_identified_by_abnormal_security_command(client,
 
 
 def get_a_list_of_threats_command(client, args):
-    filter_ = str(args.get('filter', ''))
+    filter = str(args.get('filter', ''))
     pageSize = args.get('pageSize', None)
     pageNumber = args.get('pageNumber', None)
+    mock_data = str(args.get('mock_data', ''))
+    source = str(args.get('source', ''))
 
-    response = client.get_a_list_of_threats_request(filter_, pageSize, pageNumber)
+    response = client.get_a_list_of_threats_request(filter, pageSize, pageNumber, mock_data, source)
     command_results = CommandResults(
         outputs_prefix='AbxCortexXSOAR.inline_response_200',
         outputs_key_field='',
@@ -165,11 +175,12 @@ def get_a_list_of_threats_command(client, args):
 
 def get_details_of_a_threat_command(client, args):
     threatId = str(args.get('threatId', ''))
+    mock_data = str(args.get('mock_data', ''))
 
-    response = client.get_details_of_a_threat_request(threatId)
+    response = client.get_details_of_a_threat_request(threatId, mock_data)
     command_results = CommandResults(
         outputs_prefix='AbxCortexXSOAR.ThreatDetails',
-        outputs_key_field='threatId',
+        outputs_key_field='',
         outputs=response,
         raw_response=response
     )
@@ -179,8 +190,9 @@ def get_details_of_a_threat_command(client, args):
 
 def get_details_of_an_abnormal_case_command(client, args):
     caseId = str(args.get('caseId', ''))
+    mock_data = str(args.get('mock_data', ''))
 
-    response = client.get_details_of_an_abnormal_case_request(caseId)
+    response = client.get_details_of_an_abnormal_case_request(caseId, mock_data)
     command_results = CommandResults(
         outputs_prefix='AbxCortexXSOAR.AbnormalCaseDetails',
         outputs_key_field='',
@@ -192,8 +204,9 @@ def get_details_of_an_abnormal_case_command(client, args):
 
 
 def get_the_latest_threat_intel_feed_command(client, args):
+    mock_data = str(args.get('mock_data', ''))
 
-    response = client.get_the_latest_threat_intel_feed_request()
+    response = client.get_the_latest_threat_intel_feed_request(mock_data)
     command_results = CommandResults(
         outputs_prefix='AbxCortexXSOAR',
         outputs_key_field='',
@@ -206,8 +219,10 @@ def get_the_latest_threat_intel_feed_command(client, args):
 
 def manage_a_threat_identified_by_abnormal_security_command(client, args):
     threatId = str(args.get('threatId', ''))
+    action = str(args.get('action', ''))
+    mock_data = str(args.get('mock_data', ''))
 
-    response = client.manage_a_threat_identified_by_abnormal_security_request(threatId)
+    response = client.manage_a_threat_identified_by_abnormal_security_request(threatId, mock_data, action)
     command_results = CommandResults(
         outputs_prefix='AbxCortexXSOAR',
         outputs_key_field='',
@@ -220,8 +235,10 @@ def manage_a_threat_identified_by_abnormal_security_command(client, args):
 
 def manage_an_abnormal_case_command(client, args):
     caseId = str(args.get('caseId', ''))
+    action = str(args.get('action', ''))
+    mock_data = str(args.get('mock_data', ''))
 
-    response = client.manage_an_abnormal_case_request(caseId)
+    response = client.manage_an_abnormal_case_request(caseId, mock_data, action)
     command_results = CommandResults(
         outputs_prefix='AbxCortexXSOAR',
         outputs_key_field='',
@@ -233,8 +250,9 @@ def manage_an_abnormal_case_command(client, args):
 
 
 def submit_an_inquiry_to_request_a_report_on_misjudgement_by_abnormal_security_command(client, args):
+    mock_data = str(args.get('mock_data', ''))
 
-    response = client.submit_an_inquiry_to_request_a_report_on_misjudgement_by_abnormal_security_request()
+    response = client.submit_an_inquiry_to_request_a_report_on_misjudgement_by_abnormal_security_request(mock_data)
     command_results = CommandResults(
         outputs_prefix='AbxCortexXSOAR',
         outputs_key_field='',
@@ -246,8 +264,22 @@ def submit_an_inquiry_to_request_a_report_on_misjudgement_by_abnormal_security_c
 
 
 def test_module(client):
-    # Test functions here
-    return_results('ok')
+    # Test URL parameter
+    params = demisto.params()
+
+    url = params.get('url', '')
+    if url == '':
+        return_error('url field is empty')
+    suffix = url.split('/')[-1]
+    versioning_matched = re.match("v\d{1,2}", suffix)
+    if not bool(versioning_matched):
+        return_error('url field does not include a valid version')
+
+
+    response = client.get_details_of_a_threat_request('test', None)
+    demisto.results("ok")
+
+    
 
 
 def main():
@@ -258,7 +290,8 @@ def main():
     verify_certificate = not params.get('insecure', False)
     proxy = params.get('proxy', False)
     headers = {}
-    headers['Authorization'] = params['api_key']
+    headers['Authorization'] = f'Bearer {params["api_key"]}' 
+    headers['Soar-Integration-Origin'] = "Cortex XSOAR"   
 
     command = demisto.command()
     demisto.debug(f'Command being called is {command}')
@@ -281,7 +314,9 @@ def main():
         }
 
         if command == 'test-module':
-            test_module(client)
+            headers['Mock-Data'] = "True"
+            test_client = Client(urljoin(url, ''), verify_certificate, proxy, headers=headers, auth=None)
+            test_module(test_client)
         elif command in commands:
             return_results(commands[command](client, args))
         else:
