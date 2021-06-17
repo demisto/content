@@ -6,10 +6,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 8b37eccd-7b68-4a35-880e-8e3cbb57206e
+    taskid: e5f3dfb9-58b3-4c9f-8954-256da5ebce5f
     type: start
     task:
-      id: 8b37eccd-7b68-4a35-880e-8e3cbb57206e
+      id: e5f3dfb9-58b3-4c9f-8954-256da5ebce5f
       version: -1
       name: ""
       iscommand: false
@@ -21,7 +21,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
+          "x": 50,
           "y": 50
         }
       }
@@ -34,10 +34,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: bb4249c9-06da-49c5-8ad1-093af683f520
+    taskid: af86f47c-7086-4821-84ba-bf620a0afdb0
     type: regular
     task:
-      id: bb4249c9-06da-49c5-8ad1-093af683f520
+      id: af86f47c-7086-4821-84ba-bf620a0afdb0
       version: -1
       name: Hey edl IP
       scriptName: Hey
@@ -52,12 +52,12 @@ tasks:
         simple: ${inputs.c}
       "n":
         simple: ${inputs.n}
+      o:
+        simple: csv
       results_map:
-        simple: "Type=IP"
+        simple: Type=IP
       t:
         simple: ${inputs.t}
-      o:
-        simple: "csv"
       url:
         complex:
           root: inputs.url
@@ -74,8 +74,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 210
+          "x": 50,
+          "y": 195
         }
       }
     note: false
@@ -87,10 +87,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: fea7febe-ea3d-46e4-8a90-b49022248265
+    taskid: bd1ec985-fb00-487c-8417-98723c03a0e7
     type: regular
     task:
-      id: fea7febe-ea3d-46e4-8a90-b49022248265
+      id: bd1ec985-fb00-487c-8417-98723c03a0e7
       version: -1
       name: Hey edl URL
       scriptName: Hey
@@ -105,12 +105,12 @@ tasks:
         simple: ${inputs.c}
       "n":
         simple: ${inputs.n}
+      o:
+        simple: csv
       results_map:
-        simple: "Type=URL"
+        simple: Type=URL
       t:
         simple: ${inputs.t}
-      o:
-        simple: "csv"
       url:
         complex:
           root: inputs.url
@@ -127,8 +127,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 390
+          "x": 50,
+          "y": 370
         }
       }
     note: false
@@ -140,27 +140,30 @@ tasks:
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: 0a79181d-8964-47e8-862a-e90b6e0cc6c6
+    taskid: ffe8ef50-0c2a-43b7-80c9-c402114a346a
     type: regular
     task:
-      id: 0a79181d-8964-47e8-862a-e90b6e0cc6c6
+      id: ffe8ef50-0c2a-43b7-80c9-c402114a346a
       version: -1
       name: Hey edl Domain
       scriptName: Hey
       type: regular
       iscommand: false
       brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
     scriptarguments:
       c:
         simple: ${inputs.c}
       "n":
         simple: ${inputs.n}
+      o:
+        simple: csv
       results_map:
-        simple: "Type=Domain"
+        simple: Type=Domain
       t:
         simple: ${inputs.t}
-      o:
-        simple: "csv"
       url:
         complex:
           root: inputs.url
@@ -177,8 +180,157 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 570
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: c05d976c-85a4-4bcf-863e-8bfb56e0ac21
+    type: condition
+    task:
+      id: c05d976c-85a4-4bcf-863e-8bfb56e0ac21
+      version: -1
+      name: Check First Result
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "5"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualNumber
+          left:
+            value:
+              simple: Hey.[0].Requests
+            iscontext: true
+          right:
+            value:
+              simple: Hey.[0].SuccessfulResponses
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 58ab0d9b-699c-4685-84d4-ce0d3b875bf3
+    type: condition
+    task:
+      id: 58ab0d9b-699c-4685-84d4-ce0d3b875bf3
+      version: -1
+      name: Check Second Result
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualNumber
+          left:
+            value:
+              simple: Hey.[1].Requests
+            iscontext: true
+          right:
+            value:
+              simple: Hey.[1].SuccessfulResponses
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 34e9a9c3-85d8-419f-88dd-1d1a901ff783
+    type: condition
+    task:
+      id: 34e9a9c3-85d8-419f-88dd-1d1a901ff783
+      version: -1
+      name: Check Third Result
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "7"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualNumber
+          left:
+            value:
+              simple: Hey.[2].Requests
+            iscontext: true
+          right:
+            value:
+              simple: Hey.[2].SuccessfulResponses
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: bdb520b7-c3aa-4fa6-83b2-70043a3bc115
+    type: title
+    task:
+      id: bdb520b7-c3aa-4fa6-83b2-70043a3bc115
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1245
         }
       }
     note: false
@@ -193,9 +345,9 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 615,
+        "height": 1260,
         "width": 380,
-        "x": 450,
+        "x": 50,
         "y": 50
       }
     }

@@ -71,7 +71,8 @@ class HeyPerformanceResult:
             "TotalTime": total_time,
             "SuccessfulResponses": successful_responses
         }
-        outputs.update(self._ext_results_map)
+        if self._ext_results_map:
+            outputs.update(self._ext_results_map)
         return CommandResults(outputs=outputs, outputs_prefix="Hey")
 
 

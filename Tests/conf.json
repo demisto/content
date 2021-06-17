@@ -3392,7 +3392,7 @@
                 "Create-Mock-Feed-Relationships"
             ],
             "fromversion": "6.0.0",
-            "timeout": 6000,
+            "timeout": 3500,
             "memory_threshold": 900,
             "pid_threshold": 12,
             "context_print_dt": "EDLHey"
