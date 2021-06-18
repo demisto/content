@@ -42,14 +42,6 @@ script:
     - contextPath: arcanna_jobs
       description: Arcanna jobs displayed as table Markdown
       type: String
-  - deprecated: false
-    description: Checks if arcanna is available
-    execution: false
-    name: check_arcanna_status
-    outputs:
-    - contextPath: arcanna_status
-      description: inputs arcannas status in War room
-      type: string
   - arguments:
     - default: false
       description: arcanna running job_id
