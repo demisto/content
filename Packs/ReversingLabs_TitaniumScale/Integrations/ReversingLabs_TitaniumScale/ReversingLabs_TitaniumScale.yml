@@ -1,0 +1,105 @@
+category: Forensics & Malware Analysis
+commonfields:
+  id: ReversingLabs TitaniumScale
+  version: -1
+configuration:
+- display: ReversingLabs TitaniumScale instance URL
+  name: host
+  required: true
+  type: 0
+- display: API Token
+  name: token
+  required: true
+  type: 4
+- display: Verify host certificates
+  hidden: false
+  name: verify
+  required: false
+  type: 8
+- defaultvalue: C - Fairly reliable
+  display: Reliability
+  hidden: false
+  name: reliability
+  options:
+  - A+ - 3rd party enrichment
+  - A - Completely reliable
+  - B - Usually reliable
+  - C - Fairly reliable
+  - D - Not usually reliable
+  - E - Unreliable
+  - F - Reliability cannot be judged
+  required: false
+  type: 15
+description: ReversingLabs TitaniumScale description
+detaileddescription: TitaniumScale provides real-time and deep inspection of files.
+display: ReversingLabs TitaniumScale
+name: ReversingLabs TitaniumScale
+script:
+  commands:
+  - arguments:
+    - default: true
+      description: The file entry to upload
+      isArray: false
+      name: entryId
+      required: true
+      secret: false
+    deprecated: false
+    description: Upload sample to TitaniumScale and retrieve  analysis report.
+    execution: false
+    name: reversinglabs-titaniumscale-upload-sample-and-get-results
+    outputs:
+    - contextPath: File
+      description: File
+      type: Unknown
+    - contextPath: DBotScore
+      description: The indicator that was tested.
+      type: String
+    - contextPath: ReversingLabs.tc_report
+      description: Full report
+      type: String
+  - arguments:
+    - default: true
+      description: The file entry to upload
+      isArray: false
+      name: entryId
+      required: true
+      secret: false
+    deprecated: false
+    description: Upload sample to TitaniumScale for analysis.
+    execution: false
+    name: reversinglabs-titaniumscale-upload-sample
+    outputs:
+    - contextPath: ReversingLabs.task_Url
+      description: url to get report from
+      type: Unknown
+  - arguments:
+    - default: true
+      description: The file entry to upload
+      isArray: false
+      name: taskUrl
+      required: true
+      secret: false
+    deprecated: false
+    description: Retrieve report of a previously uploaded file from TitaniumScale.
+    execution: false
+    name: reversinglabs-titaniumscale-get-results
+    outputs:
+    - contextPath: File
+      description: File
+      type: Unknown
+    - contextPath: DBotScore
+      description: The indicator that was tested.
+      type: String
+    - contextPath: ReversingLabs.tc_report
+      description: Full report
+      type: String
+  dockerimage: demisto/reversinglabs-sdk-py3:1.1.0.19488
+  feed: false
+  isfetch: false
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+fromversion: 5.0.0

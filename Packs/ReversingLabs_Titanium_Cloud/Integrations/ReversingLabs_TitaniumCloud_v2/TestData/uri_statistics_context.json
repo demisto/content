@@ -1,0 +1,48 @@
+{
+    "Type": 1,
+    "ContentsFormat": "json",
+    "Contents": {
+        "uri_statistics": {
+            "rl": {
+                "uri_state": {
+                    "domain": "google.com",
+                    "sha1": "baea954b95731c68ae6e45bd1e252eb4560cdc45",
+                    "uri_type": "domain",
+                    "counters": {
+                        "known": 19103830,
+                        "malicious": 6252395,
+                        "suspicious": 156025
+                    }
+                }
+            }
+        }
+    },
+    "HumanReadable": "## ReversingLabs URI Statistics results for URI google.com\n ### Sample counters\n **KNOWN**: 19103830\n    **MALICIOUS**: 6252395\n    **SUSPICIOUS**: 156025\n    **SHA-1 hash**: baea954b95731c68ae6e45bd1e252eb4560cdc45\n    **URI type**: domain\n    **Domain**: google.com",
+    "EntryContext": {
+        "Domain(val.Name && val.Name == obj.Name)": [
+            {
+                "Name": "google.com"
+            }
+        ],
+        "ReversingLabs": {
+            "uri_statistics": {
+                "rl": {
+                    "uri_state": {
+                        "domain": "google.com",
+                        "sha1": "baea954b95731c68ae6e45bd1e252eb4560cdc45",
+                        "uri_type": "domain",
+                        "counters": {
+                            "known": 19103830,
+                            "malicious": 6252395,
+                            "suspicious": 156025
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "IndicatorTimeline": [],
+    "IgnoreAutoExtract": false,
+    "Note": false,
+    "Relationships": []
+}
