@@ -2,7 +2,7 @@ Use McAfee Database Activity Monitoring (DAM) Integration to fetch Alerts (incid
 
 This integration was integrated and developed with version 4.6.x of McAfee DAM.
 
-## Configure McAfeeDAM on Demisto
+## Configure McAfeeDAM on Cortex XSOAR
 
 Make sure that the XML API interface is enabled on your McAfee DAM server (**Settings > Interfaces > XML API**), and that the configured user has read permissions to query DAM Alerts and Sensors (XML API).
 
@@ -26,7 +26,7 @@ Instructions on how to configure and test the XML API for McAfee DAM are availab
 
 4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.
+You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### Get information for a single alert
 ***

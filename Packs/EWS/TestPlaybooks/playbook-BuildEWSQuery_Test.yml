@@ -29,6 +29,37 @@ tasks:
       }
   "1":
     id: "1"
+    taskid: b99e2862-da90-4a34-80e6-57057c37f9cb
+    type: regular
+    task:
+      id: b99e2862-da90-4a34-80e6-57057c37f9cb
+      version: -1
+      name: Delete Context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+        - "2"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: { }
+      key: { }
+      keysToKeep: { }
+      subplaybook: { }
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 200
+        }
+      }
+    note: false
+  "2":
+    id: "2"
     taskid: ad4f0f93-2d75-4125-8044-195cbaf6466f
     type: regular
     task:
@@ -42,7 +73,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "2"
+      - "3"
     scriptarguments:
       attachmentName: {}
       body: {}
@@ -60,11 +91,11 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 195
+          "y": 350
         }
       }
-  "2":
-    id: "2"
+  "3":
+    id: "3"
     taskid: 77878e94-c11b-415c-8cf7-d0dbaef65626
     type: regular
     task:
@@ -78,7 +109,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "3"
+      - "4"
     scriptarguments:
       expectedValue:
         simple: 'From:"jondoe@acme.com" AND Subject:"hello RE: w’orld" AND Received:"this week"'
@@ -91,11 +122,11 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 370
+          "y": 500
         }
       }
-  "3":
-    id: "3"
+  "4":
+    id: "4"
     taskid: d6e4eb15-eac3-4dab-8ef5-9b00d0a83e38
     type: title
     task:
@@ -112,7 +143,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 545
+          "y": 650
         }
       }
 view: |-

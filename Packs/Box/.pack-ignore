@@ -3,3 +3,6 @@ ignore=RM104
 
 [file:integration-Box_README.md]
 ignore=RM106
+
+[file:classifier-Box_Incoming_Mapper.json]
+ignore=BA101

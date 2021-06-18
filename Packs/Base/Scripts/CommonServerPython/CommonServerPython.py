@@ -19,6 +19,8 @@ import xml.etree.cElementTree as ET
 from collections import OrderedDict
 from datetime import datetime, timedelta
 from abc import abstractmethod
+from distutils.version import LooseVersion
+from threading import Lock
 
 import demistomock as demisto
 import warnings
@@ -565,15 +567,21 @@ def auto_detect_indicator_type(indicator_value):
         return FeedIndicatorType.File
 
     try:
-        no_cache_extract = tldextract.TLDExtract(cache_file=False, suffix_list_urls=None)
+        tldextract_version = tldextract.__version__
+        if LooseVersion(tldextract_version) < '3.0.0':
+            no_cache_extract = tldextract.TLDExtract(cache_file=False, suffix_list_urls=None)
+        else:
+            no_cache_extract = tldextract.TLDExtract(cache_dir=False, suffix_list_urls=None)
+
         if no_cache_extract(indicator_value).suffix:
             if '*' in indicator_value:
                 return FeedIndicatorType.DomainGlob
             return FeedIndicatorType.Domain
 
     except Exception:
-        pass
+        demisto.debug('tldextract failed to detect indicator type. indicator value: {}'.format(indicator_value))
 
+    demisto.debug('Failed to detect indicator type. Indicator value: {}'.format(indicator_value))
     return None
 
 
@@ -1265,7 +1273,7 @@ class IntegrationLogger(object):
         # set the os env COMMON_SERVER_NO_AUTO_REPLACE_STRS. Either in CommonServerUserPython, or docker env
         if (not os.getenv('COMMON_SERVER_NO_AUTO_REPLACE_STRS') and hasattr(demisto, 'getParam')):
             # add common params
-            sensitive_params = ('key', 'private', 'password', 'secret', 'token', 'credentials')
+            sensitive_params = ('key', 'private', 'password', 'secret', 'token', 'credentials', 'service_account')
             if demisto.params():
                 self._iter_sensistive_dict_obj(demisto.params(), sensitive_params)
 
@@ -7692,3 +7700,60 @@ class AutoFocusKeyRetriever:
             except ValueError as err:
                 raise DemistoException('AutoFocus API Key is only available on the main account for TIM customers. ' + str(err))
         self.key = api_key
+
+
+def get_feed_last_run():
+    """
+    This function gets the feed's last run: from XSOAR version 6.2.0: using `demisto.getLastRun()`.
+    Before XSOAR version 6.2.0: using `demisto.getIntegrationContext()`.
+    :rtype: ``dict``
+    :return: All indicators from the feed's last run
+    """
+    if is_demisto_version_ge('6.2.0'):
+        feed_last_run = demisto.getLastRun() or {}
+        if not feed_last_run:
+            integration_ctx = demisto.getIntegrationContext()
+            if integration_ctx:
+                feed_last_run = integration_ctx
+                demisto.setLastRun(feed_last_run)
+                demisto.setIntegrationContext({})
+    else:
+        feed_last_run = demisto.getIntegrationContext() or {}
+    return feed_last_run
+
+
+def set_feed_last_run(last_run_indicators):
+    """
+    This function sets the feed's last run: from XSOAR version 6.2.0: using `demisto.setLastRun()`.
+    Before XSOAR version 6.2.0: using `demisto.setIntegrationContext()`.
+    :type last_run_indicators: ``dict``
+    :param last_run_indicators: Indicators to save in "lastRun" object.
+    :rtype: ``None``
+    :return: None
+    """
+    if is_demisto_version_ge('6.2.0'):
+        demisto.setLastRun(last_run_indicators)
+    else:
+        demisto.setIntegrationContext(last_run_indicators)
+
+
+def support_multithreading():
+    """Adds lock on the calls to the Cortex XSOAR server from the Demisto object to support integration which use multithreading.
+
+    :return: No data returned
+    :rtype: ``None``
+    """
+    global demisto
+    prev_do = demisto._Demisto__do  # type: ignore[attr-defined]
+    demisto.lock = Lock()  # type: ignore[attr-defined]
+
+    def locked_do(cmd):
+        try:
+            if demisto.lock.acquire(timeout=60):  # type: ignore[call-arg,attr-defined]
+                return prev_do(cmd)  # type: ignore[call-arg]
+            else:
+                raise RuntimeError('Failed acquiring lock')
+        finally:
+            demisto.lock.release()  # type: ignore[attr-defined]
+
+    demisto._Demisto__do = locked_do  # type: ignore[attr-defined]

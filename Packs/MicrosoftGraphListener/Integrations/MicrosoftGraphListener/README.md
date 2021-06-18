@@ -11,6 +11,8 @@
 <h2>Authentication</h2>
 For more details about the authentication used in this integration, see <a href="https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication">Microsoft Integrations - Authentication</a>.
 
+<b>Note:</b> For this integration, you cannot use a "Shared mailbox" regardless of the authentication method used.
+
 <h3>Required Permissions</h3>
 The following permissions are required for all commands:
 <ul>
@@ -592,6 +594,14 @@ The following permissions are required for all commands:
 <a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
  alt="image" width="749" height="412"></a>
  -->
+</p>
+<p>
+  <h5>Sending mails with embedded images</h5>
+  In order to send a mail with embedded image, the image content ID should be passed the <b>attach_cids</b> argument and referenced in the HTML mark-up.
+  Note: You will have to specify this CID reference when you add the attachment to the mail message.
+  For example:
+
+  <code>!send-mail subject="Mail with an embedded image" attach_cids=1@2 body_type=HTML body="&lt;h1&gt;A mail with an embedded image &lt;img src='cid:1@2' /&gt;&lt;/h1&gt;"</code>
 </p>
 
 <h3 id="msgraph-mail-reply-to">3. msgraph-mail-reply-to</h3>
