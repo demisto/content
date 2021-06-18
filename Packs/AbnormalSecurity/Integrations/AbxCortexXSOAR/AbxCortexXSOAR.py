@@ -1,34 +1,29 @@
 import demistomock as demisto
 from CommonServerPython import *
 
-import re
 import requests
+
 
 class Client(BaseClient):
     def __init__(self, server_url, verify, proxy, headers, auth):
         super().__init__(base_url=server_url, verify=verify, proxy=proxy, headers=headers, auth=auth)
 
-
-
     def check_the_status_of_an_action_requested_on_a_case_request(self, caseId, actionId, mock_data):
-
         headers = self._headers
 
         response = self._http_request('get', f'cases/{caseId}/actions/{actionId}', headers=headers)
 
         return response
 
-
     def check_the_status_of_an_action_requested_on_a_threat_request(self, threatId, actionId, mock_data):
-
         headers = self._headers
 
         response = self._http_request('get', f'threats/{threatId}/actions/{actionId}', headers=headers)
 
         return response
 
-
-    def get_a_list_of_abnormal_cases_identified_by_abnormal_security_request(self, filter, pageSize, pageNumber, mock_data):
+    def get_a_list_of_abnormal_cases_identified_by_abnormal_security_request(self, filter, pageSize, pageNumber,
+                                                                             mock_data):
         params = assign_params(filter=filter, pageSize=pageSize, pageNumber=pageNumber)
 
         headers = self._headers
@@ -36,7 +31,6 @@ class Client(BaseClient):
         response = self._http_request('get', 'cases', params=params, headers=headers)
 
         return response
-
 
     def get_a_list_of_threats_request(self, filter, pageSize, pageNumber, mock_data, source):
         params = assign_params(filter=filter, pageSize=pageSize, pageNumber=pageNumber, source=source)
@@ -47,36 +41,29 @@ class Client(BaseClient):
 
         return response
 
-
     def get_details_of_a_threat_request(self, threatId, mock_data):
-
         headers = self._headers
 
         response = self._http_request('get', f'threats/{threatId}', headers=headers)
 
         return response
 
-
     def get_details_of_an_abnormal_case_request(self, caseId, mock_data):
-
         headers = self._headers
 
         response = self._http_request('get', f'cases/{caseId}', headers=headers)
 
         return response
 
-
-    def get_the_latest_threat_intel_feed_request(self, mock_data):
-
-        headers = self._headers
-
-        response = self._http_request('get', 'threat-intel', headers=headers)
-
-        return response
-
+    # def get_the_latest_threat_intel_feed_request(self, mock_data):
+    #
+    #     headers = self._headers
+    #
+    #     response = self._http_request('get', 'threat-intel', headers=headers)
+    #
+    #     return response
 
     def manage_a_threat_identified_by_abnormal_security_request(self, threatId, mock_data, action):
-
         headers = self._headers
         json_data = {'action': action}
 
@@ -84,9 +71,7 @@ class Client(BaseClient):
 
         return response
 
-
     def manage_an_abnormal_case_request(self, caseId, mock_data, action):
-
         headers = self._headers
         json_data = {'action': action}
 
@@ -94,16 +79,12 @@ class Client(BaseClient):
 
         return response
 
-
     def submit_an_inquiry_to_request_a_report_on_misjudgement_by_abnormal_security_request(self, mock_data):
-
         headers = self._headers
 
         response = self._http_request('post', 'inquiry', headers=headers)
 
         return response
-
-
 
 
 def check_the_status_of_an_action_requested_on_a_case_command(client, args):
@@ -144,7 +125,8 @@ def get_a_list_of_abnormal_cases_identified_by_abnormal_security_command(client,
     pageNumber = args.get('pageNumber', None)
     mock_data = str(args.get('mock_data', ''))
 
-    response = client.get_a_list_of_abnormal_cases_identified_by_abnormal_security_request(filter, pageSize, pageNumber, mock_data)
+    response = client.get_a_list_of_abnormal_cases_identified_by_abnormal_security_request(filter, pageSize, pageNumber,
+                                                                                           mock_data)
     command_results = CommandResults(
         outputs_prefix='AbxCortexXSOAR.inline_response_200_1',
         outputs_key_field='',
@@ -169,6 +151,7 @@ def get_a_list_of_threats_command(client, args):
         outputs=response,
         raw_response=response
     )
+    demisto.results(command_results.outputs)
 
     return command_results
 
@@ -203,18 +186,18 @@ def get_details_of_an_abnormal_case_command(client, args):
     return command_results
 
 
-def get_the_latest_threat_intel_feed_command(client, args):
-    mock_data = str(args.get('mock_data', ''))
-
-    response = client.get_the_latest_threat_intel_feed_request(mock_data)
-    command_results = CommandResults(
-        outputs_prefix='AbxCortexXSOAR',
-        outputs_key_field='',
-        outputs=response,
-        raw_response=response
-    )
-
-    return command_results
+# def get_the_latest_threat_intel_feed_command(client, args):
+#     mock_data = str(args.get('mock_data', ''))
+#
+#     response = client.get_the_latest_threat_intel_feed_request(mock_data)
+#     command_results = CommandResults(
+#         outputs_prefix='AbxCortexXSOAR',
+#         outputs_key_field='',
+#         outputs=response,
+#         raw_response=response
+#     )
+#
+#     return command_results
 
 
 def manage_a_threat_identified_by_abnormal_security_command(client, args):
@@ -264,34 +247,20 @@ def submit_an_inquiry_to_request_a_report_on_misjudgement_by_abnormal_security_c
 
 
 def test_module(client):
-    # Test URL parameter
-    params = demisto.params()
-
-    url = params.get('url', '')
-    if url == '':
-        return_error('url field is empty')
-    suffix = url.split('/')[-1]
-    versioning_matched = re.match("v\d{1,2}", suffix)
-    if not bool(versioning_matched):
-        return_error('url field does not include a valid version')
-
-
-    response = client.get_details_of_a_threat_request('test', None)
+    # Run a sample request to retrieve mock data
+    client.get_details_of_a_threat_request('test', None)
     demisto.results("ok")
-
-    
 
 
 def main():
-
     params = demisto.params()
     args = demisto.args()
     url = params.get('url')
     verify_certificate = not params.get('insecure', False)
     proxy = params.get('proxy', False)
     headers = {}
-    headers['Authorization'] = f'Bearer {params["api_key"]}' 
-    headers['Soar-Integration-Origin'] = "Cortex XSOAR"   
+    headers['Authorization'] = f'Bearer {params["api_key"]}'
+    headers['Soar-Integration-Origin'] = "Cortex XSOAR"
 
     command = demisto.command()
     demisto.debug(f'Command being called is {command}')
@@ -299,18 +268,27 @@ def main():
     try:
         requests.packages.urllib3.disable_warnings()
         client = Client(urljoin(url, ''), verify_certificate, proxy, headers=headers, auth=None)
-        
+
         commands = {
-    		'abxcortexxsoar-check-the-status-of-an-action-requested-on-a-case': check_the_status_of_an_action_requested_on_a_case_command,
-			'abxcortexxsoar-check-the-status-of-an-action-requested-on-a-threat': check_the_status_of_an_action_requested_on_a_threat_command,
-			'abxcortexxsoar-get-a-list-of-abnormal-cases-identified-by-abnormal-security': get_a_list_of_abnormal_cases_identified_by_abnormal_security_command,
-			'abxcortexxsoar-get-a-list-of-threats': get_a_list_of_threats_command,
-			'abxcortexxsoar-get-details-of-a-threat': get_details_of_a_threat_command,
-			'abxcortexxsoar-get-details-of-an-abnormal-case': get_details_of_an_abnormal_case_command,
-			'abxcortexxsoar-get-the-latest-threat-intel-feed': get_the_latest_threat_intel_feed_command,
-			'abxcortexxsoar-manage-a-threat-identified-by-abnormal-security': manage_a_threat_identified_by_abnormal_security_command,
-			'abxcortexxsoar-manage-an-abnormal-case': manage_an_abnormal_case_command,
-			'abxcortexxsoar-submit-an-inquiry-to-request-a-report-on-misjudgement-by-abnormal-security': submit_an_inquiry_to_request_a_report_on_misjudgement_by_abnormal_security_command,
+            'abxcortexxsoar-check-the-status-of-an-action-requested-on-a-case':
+                check_the_status_of_an_action_requested_on_a_case_command,
+            'abxcortexxsoar-check-the-status-of-an-action-requested-on-a-threat':
+                check_the_status_of_an_action_requested_on_a_threat_command,
+            'abxcortexxsoar-get-a-list-of-abnormal-cases-identified-by-abnormal-security':
+                get_a_list_of_abnormal_cases_identified_by_abnormal_security_command,
+            'abxcortexxsoar-get-a-list-of-threats':
+                get_a_list_of_threats_command,
+            'abxcortexxsoar-get-details-of-a-threat':
+                get_details_of_a_threat_command,
+            'abxcortexxsoar-get-details-of-an-abnormal-case':
+                get_details_of_an_abnormal_case_command,
+            # 'abxcortexxsoar-get-the-latest-threat-intel-feed': get_the_latest_threat_intel_feed_command,
+            'abxcortexxsoar-manage-a-threat-identified-by-abnormal-security':
+                manage_a_threat_identified_by_abnormal_security_command,
+            'abxcortexxsoar-manage-an-abnormal-case':
+                manage_an_abnormal_case_command,
+            'abxcortexxsoar-submit-an-inquiry-to-request-a-report-on-misjudgement-by-abnormal-security':
+                submit_an_inquiry_to_request_a_report_on_misjudgement_by_abnormal_security_command,
         }
 
         if command == 'test-module':

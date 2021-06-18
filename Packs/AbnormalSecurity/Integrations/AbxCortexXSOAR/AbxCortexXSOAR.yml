@@ -270,13 +270,14 @@ script:
     - contextPath: AbxCortexXSOAR.AbnormalCaseDetails.firstObserved
       description: First time suspicious behavior was observed.
       type: String
-  - arguments:
-    - description: Returns test data if set to `True`
-      isArray: false
-      name: mock-data
-      required: false
-    description: Get the latest threat intel feed.
-    name: abxcortexxsoar-get-the-latest-threat-intel-feed
+# Omitting the threat intel feed for now
+#  - arguments:
+#    - description: Returns test data if set to `True`
+#      isArray: false
+#      name: mock-data
+#      required: false
+#    description: Get the latest threat intel feed.
+#    name: abxcortexxsoar-get-the-latest-threat-intel-feed
   - arguments:
     - description: A UUID representing the threat.
       isArray: false
@@ -316,3 +317,4 @@ script:
   script: ''
   subtype: python3
   type: python
+fromversion: 5.0.0
