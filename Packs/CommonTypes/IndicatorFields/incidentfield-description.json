@@ -24,7 +24,10 @@
         "Campaign",
         "Course of Action",
         "Infrastructure",
-        "Intrusion Set"
+        "Intrusion Set",
+        "IP",
+        "File",
+        "URL"
     ],
     "caseInsensitive": true,
     "columns": null,

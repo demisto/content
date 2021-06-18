@@ -1,0 +1,52 @@
+{
+  "users": [
+    {
+      "identity": {
+        "guid": "44fa56cbf1-f9b5-d4ae-f22f-b49b49b1e4e3",
+        "customerUserId": null,
+        "emails": [
+          "xxxx@xxx.com"
+        ],
+        "name": null,
+        "department": null,
+        "location": null,
+        "title": null,
+        "vip": false
+      },
+      "clickStatistics": {
+        "clickCount": 2,
+        "families": [
+          {
+            "name": "Malware",
+            "clicks": 2
+          }
+        ]
+      }
+    },
+    {
+      "identity": {
+        "guid": "b4077fsv0e-3a2e-767f-7315-c049f831cc95",
+        "customerUserId": null,
+        "emails": [
+          "xxxx@xxx.com"
+        ],
+        "name": null,
+        "department": null,
+        "location": null,
+        "title": null,
+        "vip": false
+      },
+      "clickStatistics": {
+        "clickCount": 1,
+        "families": [
+          {
+            "name": "MalSpam",
+            "clicks": 1
+          }
+        ]
+      }
+    }
+  ],
+  "totalTopClickers": 2,
+  "interval": "2021-01-21T11:49:00Z/2021-04-21T11:49:00Z"
+}
