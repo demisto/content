@@ -4,10 +4,9 @@ from CommonServerUserPython import *  # noqa: F401
 
 import json
 import urllib3
-import dateparser  # noqa: F401
 import traceback
 import requests
-from typing import Any, Dict, List, Optional, Union  # noqa: F401
+from typing import Any, Dict
 
 # Disable insecure warnings
 urllib3.disable_warnings()
