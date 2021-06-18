@@ -11,4 +11,4 @@ ignore=BA108,BA109
 ignore=RM104,RM106
 
 [file:/playbook-Allow_IP_-_Okta_Zone.yml]
-ignore=PB112
+ignore=PB113
