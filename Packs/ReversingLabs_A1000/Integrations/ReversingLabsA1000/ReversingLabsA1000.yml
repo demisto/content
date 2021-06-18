@@ -26,7 +26,7 @@ configuration:
   name: verify
   required: false
   type: 8
-description: ReversingLabs A1000 Malware Analysis Platform
+description: Deprecated. Use the ReversingLabs A1000 v2 integration instead.
 display: ReversingLabs A1000 (Deprecated)
 name: ReversingLabs A1000
 deprecated: true

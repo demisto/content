@@ -31,9 +31,6 @@ configuration:
   - F - Reliability cannot be judged
   required: false
   type: 15
-defaultMapperIn: 'null'
-defaultMapperOut: 'null'
-defaultclassifier: 'null'
 description: ReversingLabs A1000 Malware Analysis Platform
 display: ReversingLabs A1000 v2
 name: ReversingLabs A1000 v2
@@ -189,6 +186,7 @@ script:
     name: reversinglabs-a1000-download-extracted-files
   - arguments:
     - default: false
+      description: The hash of a desired sample
       isArray: false
       name: hash
       required: true
@@ -210,6 +208,7 @@ script:
   - arguments:
     - default: false
       isArray: false
+      description: Advanced search query
       name: query
       required: true
       secret: false
@@ -217,6 +216,7 @@ script:
       defaultValue: '5000'
       isArray: false
       name: result-limit
+      description: Maximum number of results
       required: false
       secret: false
     deprecated: false
