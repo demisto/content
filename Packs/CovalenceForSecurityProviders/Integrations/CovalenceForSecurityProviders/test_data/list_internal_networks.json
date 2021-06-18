@@ -1,0 +1,6 @@
+[
+  {
+    "notes": "Internal network",
+    "cidr": "10.11.0.0/24"
+  }
+]
