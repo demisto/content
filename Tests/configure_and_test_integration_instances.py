@@ -1136,7 +1136,6 @@ def instance_testing(build: Build,
         logging.info(f'No integrations to configure for the chosen tests. ({update_status}-update)')
     failed_instances = []
     for instance in all_module_instances:
-        logging.info("=========== in for loop")
         integration_of_instance = instance.get('brand', '')
         instance_name = instance.get('name', '')
         # If there is a failure, __test_integration_instance will print it
@@ -1179,14 +1178,18 @@ def test_integration_with_mock(build: Build, instance: dict, pre_update: bool):
         The result of running the 'test-module' command for the given integration.
         If a record was executed - will return the result of the 'test--module' with the record mode only.
     """
+    logging.info("======== now in mock func")
     testing_client = build.servers[0].reconnect_client()
     integration_of_instance = instance.get('brand', '')
     logging.debug(f'Integration "{integration_of_instance}" is mockable, running test-module with mitmproxy')
     has_mock_file = build.proxy.has_mock_file(integration_of_instance)
     success = False
     if has_mock_file:
+        logging.info("============== it has mock file")
         with run_with_mock(build.proxy, integration_of_instance) as result_holder:
+            logging.info("=========== will try now")
             success, _ = __test_integration_instance(testing_client, instance)
+            logging.info("============= got success")
             result_holder[RESULT] = success
             if not success:
                 logging.warning(f'Running test-module for "{integration_of_instance}" has failed in playback mode')
