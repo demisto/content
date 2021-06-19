@@ -1,0 +1,17 @@
+{
+    "name": "Test Pack",
+    "description": "",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "glicht",
+    "url": "",
+    "email": "",
+    "created": "2021-06-19T18:12:23Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "githubUser": [
+        "glicht"
+    ]
+}
