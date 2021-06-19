@@ -258,10 +258,10 @@ def analyse_sample_file_request(file_entry, should_wait, internet_access, commen
     filename = demisto.getFilePath(file_entry)['name']
     if isinstance(filename, unicode):  # py2 way of checking if a var is of type unicode
         filename = filename.encode('ascii', 'ignore')
-    filename.replace('\\', '/')
+    fixed_filename = filename.replace('\\', '/')
 
     with open(demisto.getFilePath(file_entry)['path'], 'rb') as f:
-        res = http_post('v2/analysis/submit', data=data, files={'sample': (filename, f)})
+        res = http_post('v2/analysis/submit', data=data, files={'sample': (fixed_filename, f)})
 
     if res == 'nothing_to_analyze':
         return nothing_to_analyze_output

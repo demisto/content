@@ -127,4 +127,5 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 ## Known Limitations
 ---
 * Each security and compliance command creates a PSSession (PowerShell session). The security and compliance PowerShell limits the number of concurrent sessions to 3. Since this affects the behavior of multiple playbooks running concurrently it we recommend that you retry failed tasks when using the integration commands in playbooks.
-* In order to handle sessions limits, A retry mechanism is applied which will retry for 10 time with 30 sec breaks. (The retry isn't applied on the generic polling as its not supported yet)  
+* In order to handle sessions limits, A retry mechanism is applied which will retry for 10 time with 30 sec breaks. (The retry isn't applied on the generic polling as it's not supported yet)
+* Due to a Microsoft limitation, you can perform a search and purge operation on a maximum of 50,000 mailboxes. To work around this limitation, configure multiple instances of the integration each with different permission filtering so that the number of mailboxes in each instance does not exceed 50,000.

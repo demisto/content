@@ -21,19 +21,6 @@ trigger-private-build:
     - python3 Utils/get_private_build_status.py --github-token $GITHUB_TOKEN
 
 
-run-validations:
-  extends:
-    - .run-validations
-    - .push-rule
-
-
-# Uncomment when docker in docker will work
-# run-unittests-and-lint:
-#   extends:
-#     - .run-unittests-and-lint
-#     - .push-rule
-
-
 create-instances:
   extends:
     - .default-job-settings
@@ -160,6 +147,7 @@ server_master:
   rules:
     - if: '$CI_PIPELINE_SOURCE =~ /^(push)$/ && $CI_COMMIT_BRANCH !~ /^[0-9]{2}\.[0-9]{1,2}\.[0-9]$/'
     - if: '$NIGHTLY'
+      when: always
   variables:
     INSTANCE_ROLE: "Server Master"
 
@@ -174,3 +162,6 @@ slack-notify-nightly-build:
     PIPELINE_TO_QUERY: $CI_PIPELINE_ID
     WORKFLOW: 'Content Nightly'
     JOB_NAME: 'server_master'
+    # Passes the environment variable from the parent pipeline to the child which can be useful for cases
+    # when triggering pipeline with alternate env variable value passed in the API call
+    SLACK_CHANNEL: $SLACK_CHANNEL
