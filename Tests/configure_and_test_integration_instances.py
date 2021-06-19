@@ -1136,15 +1136,20 @@ def instance_testing(build: Build,
         logging.info(f'No integrations to configure for the chosen tests. ({update_status}-update)')
     failed_instances = []
     for instance in all_module_instances:
+        logging.info("=========== in for loop")
         integration_of_instance = instance.get('brand', '')
         instance_name = instance.get('name', '')
         # If there is a failure, __test_integration_instance will print it
         if integration_of_instance not in build.unmockable_integrations and use_mock:
+            logging.info("========= will use mock test")
             success = test_integration_with_mock(build, instance, pre_update)
         else:
+            logging.info("=========== will not use mock")
             testing_client = build.servers[0].reconnect_client()
             success, _ = __test_integration_instance(testing_client, instance)
+        logging.info("============= after if, should get success result")
         if not success:
+            logging.info(f"=========== not success will add {instance_name} of {integration_of_instance} to failure")
             failed_tests.add((instance_name, integration_of_instance))
             failed_instances.append(instance)
         else:
