@@ -30,7 +30,7 @@ def test_to_fe_datetime_converter():
     ('crit', 3),
     ('kookoo', 0)
 ])
-def test_alert_severity_to_dbot_score(severity_str: str, dbot_score: int):
+def test_alert_severity_to_dbot_score(severity_str, dbot_score):
     """Unit test
     Given
     - alert_severity_to_dbot_score command
