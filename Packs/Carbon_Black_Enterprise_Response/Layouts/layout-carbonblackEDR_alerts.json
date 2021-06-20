@@ -80,7 +80,7 @@
 								"fieldId": "playbookid",
 								"height": 22,
 								"id": "incident-playbookId-field",
-								"index": 6,
+								"index": 7,
 								"sectionItemType": "field",
 								"startCol": 0
 							}
@@ -106,12 +106,12 @@
 						"static": false,
 						"type": "notes",
 						"w": 1,
-						"x": 2,
+						"x": 1,
 						"y": 5
 					},
 					{
 						"displayType": "ROW",
-						"h": 2,
+						"h": 3,
 						"i": "caseinfoid-6aabad20-98b1-11e9-97d7-ed26ef9e46c8",
 						"maxW": 3,
 						"minH": 1,
@@ -121,7 +121,7 @@
 						"static": false,
 						"type": "workplan",
 						"w": 1,
-						"x": 0,
+						"x": 2,
 						"y": 2
 					},
 					{
@@ -138,7 +138,7 @@
 						"type": "linkedIncidents",
 						"w": 1,
 						"x": 1,
-						"y": 9
+						"y": 7
 					},
 					{
 						"displayType": "ROW",
@@ -153,7 +153,7 @@
 						"type": "childInv",
 						"w": 1,
 						"x": 2,
-						"y": 7
+						"y": 5
 					},
 					{
 						"displayType": "ROW",
@@ -167,7 +167,7 @@
 						"static": false,
 						"type": "evidence",
 						"w": 1,
-						"x": 1,
+						"x": 0,
 						"y": 5
 					},
 					{
@@ -184,7 +184,7 @@
 						"type": "team",
 						"w": 1,
 						"x": 2,
-						"y": 9
+						"y": 7
 					},
 					{
 						"displayType": "ROW",
@@ -199,12 +199,12 @@
 						"queryType": "input",
 						"static": false,
 						"type": "indicators",
-						"w": 2,
+						"w": 3,
 						"x": 0,
-						"y": 7
+						"y": 9
 					},
 					{
-						"displayType": "CARD",
+						"displayType": "ROW",
 						"h": 2,
 						"i": "caseinfoid-ac32f620-a0b0-11e9-b27f-13ae1773d289",
 						"items": [
@@ -270,8 +270,8 @@
 						"name": "Timeline Information",
 						"static": false,
 						"w": 1,
-						"x": 0,
-						"y": 4
+						"x": 1,
+						"y": 0
 					},
 					{
 						"displayType": "ROW",
@@ -315,12 +315,106 @@
 						"static": false,
 						"w": 1,
 						"x": 0,
-						"y": 9
+						"y": 7
 					},
 					{
-						"displayType": "CARD",
-						"h": 5,
+						"displayType": "ROW",
+						"h": 2,
 						"i": "caseinfoid-e54b1770-a0b1-11e9-b27f-13ae1773d289",
+						"isVisible": true,
+						"items": [
+							{
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "alertname",
+								"height": 22,
+								"id": "38ee0550-c9c7-11eb-b9c9-332ca1df4541",
+								"index": 0,
+								"listId": "caseinfoid-e54b1770-a0b1-11e9-b27f-13ae1773d289",
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "alertid",
+								"height": 22,
+								"id": "3c4853e0-c9c7-11eb-b9c9-332ca1df4541",
+								"index": 1,
+								"listId": "caseinfoid-e54b1770-a0b1-11e9-b27f-13ae1773d289",
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "carbonblackedrwatchlistname",
+								"height": 22,
+								"id": "7ce995d0-c9c7-11eb-b9c9-332ca1df4541",
+								"index": 2,
+								"listId": "caseinfoid-e54b1770-a0b1-11e9-b27f-13ae1773d289",
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "carbonblackedrwatchlistid",
+								"height": 22,
+								"id": "7a895eb0-c9c7-11eb-b9c9-332ca1df4541",
+								"index": 3,
+								"listId": "caseinfoid-e54b1770-a0b1-11e9-b27f-13ae1773d289",
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "deviceid",
+								"height": 22,
+								"id": "597225e0-c9c7-11eb-b9c9-332ca1df4541",
+								"index": 4,
+								"listId": "caseinfoid-e54b1770-a0b1-11e9-b27f-13ae1773d289",
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "devicename",
+								"height": 22,
+								"id": "4f0576a0-cce4-11eb-aa83-233b6cdb41a5",
+								"index": 5,
+								"listId": "caseinfoid-e54b1770-a0b1-11e9-b27f-13ae1773d289",
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "resourcetype",
+								"height": 22,
+								"id": "69252910-c9c7-11eb-b9c9-332ca1df4541",
+								"index": 6,
+								"listId": "caseinfoid-e54b1770-a0b1-11e9-b27f-13ae1773d289",
+								"sectionItemType": "field",
+								"startCol": 0
+							}
+						],
+						"maxW": 3,
+						"minH": 1,
+						"minW": 1,
+						"moved": false,
+						"name": "Alert Source",
+						"static": false,
+						"w": 1,
+						"x": 2,
+						"y": 0
+					},
+					{
+						"displayType": "ROW",
+						"h": 3,
+						"i": "caseinfoid-888f95b5-cf40-11eb-ab93-d96f5f380475",
 						"isVisible": true,
 						"items": [
 							{
@@ -328,7 +422,7 @@
 								"endCol": 1,
 								"fieldId": "eventtype",
 								"height": 53,
-								"id": "50faca20-c9c7-11eb-b9c9-332ca1df4541",
+								"id": "888f95a0-cf40-11eb-ab93-d96f5f380475",
 								"index": 0,
 								"listId": "caseinfoid-e54b1770-a0b1-11e9-b27f-13ae1773d289",
 								"sectionItemType": "field",
@@ -339,7 +433,7 @@
 								"endCol": 1,
 								"fieldId": "eventdescriptions",
 								"height": 53,
-								"id": "976123a0-c9c8-11eb-b9c9-332ca1df4541",
+								"id": "888f95a1-cf40-11eb-ab93-d96f5f380475",
 								"index": 1,
 								"listId": "caseinfoid-e54b1770-a0b1-11e9-b27f-13ae1773d289",
 								"sectionItemType": "field",
@@ -348,9 +442,90 @@
 							{
 								"dropEffect": "move",
 								"endCol": 1,
-								"fieldId": "alertid",
+								"fieldId": "username",
 								"height": 53,
-								"id": "3c4853e0-c9c7-11eb-b9c9-332ca1df4541",
+								"id": "888f95a9-cf40-11eb-ab93-d96f5f380475",
+								"index": 2,
+								"listId": "caseinfoid-888f95b5-cf40-11eb-ab93-d96f5f380475",
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "incidentlink",
+								"height": 53,
+								"id": "888f95b4-cf40-11eb-ab93-d96f5f380475",
+								"index": 3,
+								"listId": "caseinfoid-888f95b5-cf40-11eb-ab93-d96f5f380475",
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "dbotstatus",
+								"height": 53,
+								"id": "888f95b2-cf40-11eb-ab93-d96f5f380475",
+								"index": 0,
+								"listId": "caseinfoid-e54b1770-a0b1-11e9-b27f-13ae1773d289",
+								"sectionItemType": "field",
+								"startCol": 1
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "details",
+								"height": 106,
+								"id": "888f95b3-cf40-11eb-ab93-d96f5f380475",
+								"index": 1,
+								"listId": "caseinfoid-888f95b5-cf40-11eb-ab93-d96f5f380475",
+								"sectionItemType": "field",
+								"startCol": 1
+							}
+						],
+						"maxW": 3,
+						"minH": 1,
+						"minW": 1,
+						"moved": false,
+						"name": "Event Summary",
+						"static": false,
+						"w": 1,
+						"x": 0,
+						"y": 2
+					},
+					{
+						"displayType": "ROW",
+						"h": 3,
+						"i": "caseinfoid-e9c12d2f-cf40-11eb-ab93-d96f5f380475",
+						"isVisible": true,
+						"items": [
+							{
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "carbonblackedriocvalue",
+								"height": 22,
+								"id": "e9c12d25-cf40-11eb-ab93-d96f5f380475",
+								"index": 0,
+								"listId": "caseinfoid-e54b1770-a0b1-11e9-b27f-13ae1773d289",
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "deviceexternalip",
+								"height": 22,
+								"id": "e9c12d26-cf40-11eb-ab93-d96f5f380475",
+								"index": 1,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "logsource",
+								"height": 22,
+								"id": "e9c12d29-cf40-11eb-ab93-d96f5f380475",
 								"index": 2,
 								"listId": "caseinfoid-e54b1770-a0b1-11e9-b27f-13ae1773d289",
 								"sectionItemType": "field",
@@ -358,10 +533,10 @@
 							},
 							{
 								"dropEffect": "move",
-								"endCol": 1,
-								"fieldId": "alertname",
-								"height": 53,
-								"id": "38ee0550-c9c7-11eb-b9c9-332ca1df4541",
+								"endCol": 2,
+								"fieldId": "md5",
+								"height": 22,
+								"id": "e9c12d2a-cf40-11eb-ab93-d96f5f380475",
 								"index": 3,
 								"listId": "caseinfoid-e54b1770-a0b1-11e9-b27f-13ae1773d289",
 								"sectionItemType": "field",
@@ -369,186 +544,56 @@
 							},
 							{
 								"dropEffect": "move",
-								"endCol": 1,
-								"fieldId": "deviceid",
-								"height": 53,
-								"id": "597225e0-c9c7-11eb-b9c9-332ca1df4541",
-								"index": 4,
-								"listId": "caseinfoid-e54b1770-a0b1-11e9-b27f-13ae1773d289",
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"dropEffect": "move",
-								"endCol": 1,
-								"fieldId": "devicename",
-								"height": 53,
-								"id": "4f0576a0-cce4-11eb-aa83-233b6cdb41a5",
-								"index": 5,
-								"listId": "caseinfoid-e54b1770-a0b1-11e9-b27f-13ae1773d289",
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"dropEffect": "move",
-								"endCol": 1,
-								"fieldId": "resourcetype",
-								"height": 53,
-								"id": "69252910-c9c7-11eb-b9c9-332ca1df4541",
-								"index": 6,
-								"listId": "caseinfoid-e54b1770-a0b1-11e9-b27f-13ae1773d289",
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"dropEffect": "move",
-								"endCol": 1,
-								"fieldId": "iocvalue",
-								"height": 53,
-								"id": "189820b0-c9c7-11eb-b9c9-332ca1df4541",
-								"index": 7,
-								"listId": "caseinfoid-e54b1770-a0b1-11e9-b27f-13ae1773d289",
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"endCol": 1,
-								"fieldId": "deviceexternalip",
-								"height": 53,
-								"id": "ae1d2ed0-cce4-11eb-aa83-233b6cdb41a5",
-								"index": 8,
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"dropEffect": "move",
-								"endCol": 2,
-								"fieldId": "username",
-								"height": 53,
-								"id": "33b24c90-c9c7-11eb-b9c9-332ca1df4541",
-								"index": 0,
-								"listId": "caseinfoid-e54b1770-a0b1-11e9-b27f-13ae1773d289",
-								"sectionItemType": "field",
-								"startCol": 1
-							},
-							{
-								"dropEffect": "move",
-								"endCol": 2,
-								"fieldId": "carbonblackedrwatchlistid",
-								"height": 53,
-								"id": "7a895eb0-c9c7-11eb-b9c9-332ca1df4541",
-								"index": 1,
-								"listId": "caseinfoid-e54b1770-a0b1-11e9-b27f-13ae1773d289",
-								"sectionItemType": "field",
-								"startCol": 1
-							},
-							{
-								"dropEffect": "move",
-								"endCol": 2,
-								"fieldId": "carbonblackedrwatchlistname",
-								"height": 53,
-								"id": "7ce995d0-c9c7-11eb-b9c9-332ca1df4541",
-								"index": 1,
-								"listId": "caseinfoid-e54b1770-a0b1-11e9-b27f-13ae1773d289",
-								"sectionItemType": "field",
-								"startCol": 1
-							},
-							{
-								"dropEffect": "move",
-								"endCol": 2,
-								"fieldId": "logsource",
-								"height": 53,
-								"id": "3c871e70-cce4-11eb-aa83-233b6cdb41a5",
-								"index": 2,
-								"listId": "caseinfoid-e54b1770-a0b1-11e9-b27f-13ae1773d289",
-								"sectionItemType": "field",
-								"startCol": 1
-							},
-							{
-								"dropEffect": "move",
-								"endCol": 2,
-								"fieldId": "md5",
-								"height": 53,
-								"id": "ad1a8290-c9c8-11eb-b9c9-332ca1df4541",
-								"index": 4,
-								"listId": "caseinfoid-e54b1770-a0b1-11e9-b27f-13ae1773d289",
-								"sectionItemType": "field",
-								"startCol": 1
-							},
-							{
-								"dropEffect": "move",
 								"endCol": 2,
 								"fieldId": "pid",
-								"height": 53,
-								"id": "02c7fcd0-cce5-11eb-aa83-233b6cdb41a5",
-								"index": 5,
+								"height": 22,
+								"id": "e9c12d2b-cf40-11eb-ab93-d96f5f380475",
+								"index": 4,
 								"listId": "caseinfoid-e54b1770-a0b1-11e9-b27f-13ae1773d289",
 								"sectionItemType": "field",
-								"startCol": 1
+								"startCol": 0
 							},
 							{
 								"dropEffect": "move",
 								"endCol": 2,
 								"fieldId": "processname",
-								"height": 53,
-								"id": "dde58b30-cce4-11eb-aa83-233b6cdb41a5",
-								"index": 6,
+								"height": 22,
+								"id": "e9c12d2c-cf40-11eb-ab93-d96f5f380475",
+								"index": 5,
 								"listId": "caseinfoid-e54b1770-a0b1-11e9-b27f-13ae1773d289",
 								"sectionItemType": "field",
-								"startCol": 1
+								"startCol": 0
 							},
 							{
 								"dropEffect": "move",
 								"endCol": 2,
 								"fieldId": "processpath",
-								"height": 53,
-								"id": "6aee81f0-c9c8-11eb-b9c9-332ca1df4541",
-								"index": 7,
+								"height": 22,
+								"id": "e9c12d2d-cf40-11eb-ab93-d96f5f380475",
+								"index": 6,
 								"listId": "caseinfoid-e54b1770-a0b1-11e9-b27f-13ae1773d289",
 								"sectionItemType": "field",
-								"startCol": 1
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "carbonblackedrsegmentid",
+								"height": 22,
+								"id": "8266c850-cf41-11eb-ab93-d96f5f380475",
+								"index": 7,
+								"sectionItemType": "field",
+								"startCol": 0
 							},
 							{
 								"dropEffect": "move",
 								"endCol": 2,
 								"fieldId": "osversion",
-								"height": 53,
-								"id": "b3e0fa00-c9c8-11eb-b9c9-332ca1df4541",
+								"height": 22,
+								"id": "e9c12d2e-cf40-11eb-ab93-d96f5f380475",
 								"index": 8,
 								"listId": "caseinfoid-e54b1770-a0b1-11e9-b27f-13ae1773d289",
 								"sectionItemType": "field",
-								"startCol": 1
-							},
-							{
-								"dropEffect": "move",
-								"endCol": 3,
-								"fieldId": "dbotstatus",
-								"height": 53,
-								"id": "b772dca0-cce4-11eb-aa83-233b6cdb41a5",
-								"index": 0,
-								"listId": "caseinfoid-e54b1770-a0b1-11e9-b27f-13ae1773d289",
-								"sectionItemType": "field",
-								"startCol": 2
-							},
-							{
-								"dropEffect": "move",
-								"endCol": 4,
-								"fieldId": "details",
-								"height": 106,
-								"id": "incident-details-field",
-								"index": 1,
-								"listId": "caseinfoid-e54b1770-a0b1-11e9-b27f-13ae1773d289",
-								"sectionItemType": "field",
-								"startCol": 2
-							},
-							{
-								"endCol": 4,
-								"fieldId": "incidentlink",
-								"height": 53,
-								"id": "2fc68ad0-cce5-11eb-aa83-233b6cdb41a5",
-								"index": 2,
-								"sectionItemType": "field",
-								"startCol": 2
+								"startCol": 0
 							}
 						],
 						"maxW": 3,
@@ -557,9 +602,9 @@
 						"moved": false,
 						"name": "Investigation Data",
 						"static": false,
-						"w": 2,
+						"w": 1,
 						"x": 1,
-						"y": 0
+						"y": 2
 					}
 				],
 				"type": "custom"
@@ -936,7 +981,7 @@
 						"isVisible": true
 					},
 					{
-						"fieldId": "incident_pid",
+						"fieldId": "incident_processid",
 						"isVisible": true
 					},
 					{
@@ -1091,7 +1136,7 @@
 	},
 	"fromServerVersion": "",
 	"group": "incident",
-	"id": "Carbon Black EDR Incidents",
+	"id": "94affdcc-6f5a-445a-8581-165094c19f35",
 	"indicatorsDetails": null,
 	"indicatorsQuickView": null,
 	"itemVersion": "",
