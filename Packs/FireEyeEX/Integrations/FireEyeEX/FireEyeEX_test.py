@@ -24,7 +24,7 @@ def test_get_alerts(mocker):
     Then
     - Validate The entry context
     """
-    mocker.patch.object(FireEyeClient, '_generate_token', return_value='token')
+    mocker.patch.object(FireEyeClient, '_get_token', return_value='token')
     client = Client(base_url="https://fireeye.ex.com/", username='user', password='pass', verify=False, proxy=False)
     mocker.patch.object(FireEyeClient, 'get_alerts_request',
                         return_value=util_load_json('test_data/get_alerts.json'))
@@ -45,7 +45,7 @@ def test_get_alert_details(mocker):
     Then
     - Validate The entry context
     """
-    mocker.patch.object(FireEyeClient, '_generate_token', return_value='token')
+    mocker.patch.object(FireEyeClient, '_get_token', return_value='token')
     client = Client(base_url="https://fireeye.ex.com/", username='user', password='pass', verify=False, proxy=False)
     mocker.patch.object(FireEyeClient, 'get_alert_details_request',
                         return_value=util_load_json('test_data/get_alert_details.json'))
@@ -65,7 +65,7 @@ def test_get_artifacts_metadata(mocker):
     Then
     - Validate The entry context
     """
-    mocker.patch.object(FireEyeClient, '_generate_token', return_value='token')
+    mocker.patch.object(FireEyeClient, '_get_token', return_value='token')
     client = Client(base_url="https://fireeye.ex.com/", username='user', password='pass', verify=False, proxy=False)
     mocker.patch.object(FireEyeClient, 'get_artifacts_metadata_by_uuid_request',
                         return_value=util_load_json('test_data/get_artifact_metadata.json'))
@@ -85,7 +85,7 @@ def test_get_quarantined_emails(mocker):
     Then
     - Validate The entry context
     """
-    mocker.patch.object(FireEyeClient, '_generate_token', return_value='token')
+    mocker.patch.object(FireEyeClient, '_get_token', return_value='token')
     client = Client(base_url="https://fireeye.ex.com/", username='user', password='pass', verify=False, proxy=False)
     mocker.patch.object(FireEyeClient, 'get_quarantined_emails_request',
                         return_value=util_load_json('test_data/quarantined_emails.json'))
@@ -113,7 +113,7 @@ def test_get_report_not_found(mocker):
     def error_400_mock(*kwargs):
         raise Exception(error_msg)
 
-    mocker.patch.object(FireEyeClient, '_generate_token', return_value='token')
+    mocker.patch.object(FireEyeClient, '_get_token', return_value='token')
     client = Client(base_url="https://fireeye.ex.com/", username='user', password='pass', verify=False, proxy=False)
 
     mocker.patch('FireEyeEX.FireEyeClient.get_reports_request', side_effect=error_400_mock)
@@ -150,7 +150,7 @@ def test_release_quarantined_emails(mocker):
 
         return MockResponse({"1234": "Unable to release the email:quarantined email does not exist\\n"}, 200)
 
-    mocker.patch.object(FireEyeClient, '_generate_token', return_value='token')
+    mocker.patch.object(FireEyeClient, '_get_token', return_value='token')
     client = Client(base_url="https://fireeye.ex.com/", username='user', password='pass', verify=False, proxy=False)
     mocker.patch.object(FireEyeClient, 'release_quarantined_emails_request',
                         side_effect=mocked_release_quarantined_emails_requests)
@@ -185,7 +185,7 @@ def test_delete_quarantined_emails(mocker):
 
         return MockResponse({"1234": "Unable to delete the email:quarantined email does not exist\\n"}, 200)
 
-    mocker.patch.object(FireEyeClient, '_generate_token', return_value='token')
+    mocker.patch.object(FireEyeClient, '_get_token', return_value='token')
     client = Client(base_url="https://fireeye.cm.com/", username='user', password='pass', verify=False, proxy=False)
     mocker.patch.object(FireEyeClient, 'delete_quarantined_emails_request',
                         side_effect=mocked_delete_quarantined_emails_requests)
@@ -205,7 +205,7 @@ def test_list_allowedlist(mocker):
     Then
     - Validate The entry context
     """
-    mocker.patch.object(FireEyeClient, '_generate_token', return_value='token')
+    mocker.patch.object(FireEyeClient, '_get_token', return_value='token')
     client = Client(base_url="https://fireeye.ex.com/", username='user', password='pass', verify=False, proxy=False)
     mocker.patch.object(FireEyeClient, 'list_allowedlist_request',
                         return_value=util_load_json('test_data/list_allowedlist.json'))
@@ -225,7 +225,7 @@ def test_create_allowedlist_already_exist(mocker):
     Then
     - Validate The a proper error is raised
     """
-    mocker.patch.object(FireEyeClient, '_generate_token', return_value='token')
+    mocker.patch.object(FireEyeClient, '_get_token', return_value='token')
     client = Client(base_url="https://fireeye.ex.com/", username='user', password='pass', verify=False, proxy=False)
     mocker.patch.object(FireEyeClient, 'list_allowedlist_request',
                         return_value=util_load_json('test_data/list_allowedlist.json'))
@@ -246,7 +246,7 @@ def test_update_allowedlist_not_exist(mocker):
     Then
     - Validate The a proper error is raised
     """
-    mocker.patch.object(FireEyeClient, '_generate_token', return_value='token')
+    mocker.patch.object(FireEyeClient, '_get_token', return_value='token')
     client = Client(base_url="https://fireeye.ex.com/", username='user', password='pass', verify=False, proxy=False)
     mocker.patch.object(FireEyeClient, 'list_allowedlist_request',
                         return_value=util_load_json('test_data/list_allowedlist.json'))
@@ -267,7 +267,7 @@ def test_delete_allowedlist_not_exist(mocker):
     Then
     - Validate The a proper error is raised
     """
-    mocker.patch.object(FireEyeClient, '_generate_token', return_value='token')
+    mocker.patch.object(FireEyeClient, '_get_token', return_value='token')
     client = Client(base_url="https://fireeye.ex.com/", username='user', password='pass', verify=False, proxy=False)
     mocker.patch.object(FireEyeClient, 'list_allowedlist_request',
                         return_value=util_load_json('test_data/list_allowedlist.json'))
@@ -288,7 +288,7 @@ def test_list_blockedlist(mocker):
     Then
     - Validate The entry context
     """
-    mocker.patch.object(FireEyeClient, '_generate_token', return_value='token')
+    mocker.patch.object(FireEyeClient, '_get_token', return_value='token')
     client = Client(base_url="https://fireeye.ex.com/", username='user', password='pass', verify=False, proxy=False)
     mocker.patch.object(FireEyeClient, 'list_blockedlist_request',
                         return_value=util_load_json('test_data/list_blockedlist.json'))
@@ -308,7 +308,7 @@ def test_list_blockedlist_no_entries(mocker):
     Then
     - Validate The human readable yields an appropriate message
     """
-    mocker.patch.object(FireEyeClient, '_generate_token', return_value='token')
+    mocker.patch.object(FireEyeClient, '_get_token', return_value='token')
     client = Client(base_url="https://fireeye.ex.com/", username='user', password='pass', verify=False, proxy=False)
     mocker.patch.object(FireEyeClient, 'list_blockedlist_request', return_value={})
     command_results = list_blockedlist(client=client, args={'type': 'sender_domain'})
@@ -327,7 +327,7 @@ def test_create_blockedlist_already_exist(mocker):
     Then
     - Validate The a proper error is raised
     """
-    mocker.patch.object(FireEyeClient, '_generate_token', return_value='token')
+    mocker.patch.object(FireEyeClient, '_get_token', return_value='token')
     client = Client(base_url="https://fireeye.ex.com/", username='user', password='pass', verify=False, proxy=False)
     mocker.patch.object(FireEyeClient, 'list_blockedlist_request',
                         return_value=util_load_json('test_data/list_blockedlist.json'))
@@ -350,7 +350,7 @@ def test_update_blockedlist_not_exist(mocker):
     Then
     - Validate The a proper error is raised
     """
-    mocker.patch.object(FireEyeClient, '_generate_token', return_value='token')
+    mocker.patch.object(FireEyeClient, '_get_token', return_value='token')
     client = Client(base_url="https://fireeye.ex.com/", username='user', password='pass', verify=False, proxy=False)
     mocker.patch.object(FireEyeClient, 'list_blockedlist_request',
                         return_value=util_load_json('test_data/list_blockedlist.json'))
@@ -371,7 +371,7 @@ def test_delete_blockedlist_not_exist(mocker):
     Then
     - Validate The a proper error is raised
     """
-    mocker.patch.object(FireEyeClient, '_generate_token', return_value='token')
+    mocker.patch.object(FireEyeClient, '_get_token', return_value='token')
     client = Client(base_url="https://fireeye.ex.com/", username='user', password='pass', verify=False, proxy=False)
     mocker.patch.object(FireEyeClient, 'list_blockedlist_request',
                         return_value=util_load_json('test_data/list_blockedlist.json'))
@@ -393,7 +393,7 @@ def test_fetch_incidents(mocker):
     - run the fetch incidents command using the Client
     Validate The length of the results and the last_run.
     """
-    mocker.patch.object(FireEyeClient, '_generate_token', return_value='token')
+    mocker.patch.object(FireEyeClient, '_get_token', return_value='token')
     client = Client(base_url="https://fireeye.ex.com/", username='user', password='pass', verify=False, proxy=False)
     mocker.patch.object(FireEyeClient, 'get_alerts_request', return_value=util_load_json('test_data/alerts.json'))
     last_run, incidents = fetch_incidents(client=client,
@@ -418,7 +418,7 @@ def test_fetch_incidents_with_limit(mocker):
     - run the fetch incidents command using the Client
     Validate The length of the results and the last_run of the limited incident.
     """
-    mocker.patch.object(FireEyeClient, '_generate_token', return_value='token')
+    mocker.patch.object(FireEyeClient, '_get_token', return_value='token')
     client = Client(base_url="https://fireeye.ex.com/", username='user', password='pass', verify=False, proxy=False)
     mocker.patch.object(FireEyeClient, 'get_alerts_request', return_value=util_load_json('test_data/alerts.json'))
     last_run, incidents = fetch_incidents(client=client,
@@ -444,7 +444,7 @@ def test_fetch_incidents_last_alert_ids(mocker):
     - Validate that no incident will be returned.
     - Validate that the last_run is "now"
     """
-    mocker.patch.object(FireEyeClient, '_generate_token', return_value='token')
+    mocker.patch.object(FireEyeClient, '_get_token', return_value='token')
     client = Client(base_url="https://fireeye.cm.com/", username='user', password='pass', verify=False, proxy=False)
     mocker.patch.object(FireEyeClient, 'get_alerts_request', return_value=util_load_json('test_data/alerts.json'))
     last_run = {
