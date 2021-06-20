@@ -240,7 +240,7 @@ script:
       secret: false
     - default: false
       defaultValue: '30'
-      description: Timeout to retrieve the alert details.
+      description: Timeout to retrieve the alert details. Default is 30 seconds.
       isArray: false
       name: timeout
     deprecated: false
@@ -316,7 +316,7 @@ script:
       secret: false
     - default: false
       defaultValue: '120'
-      description: Timeout to retrieve the artifacts. 
+      description: Timeout to retrieve the artifacts. Default is 120 seconds.
       isArray: false
       name: timeout
       required: false
@@ -595,7 +595,7 @@ script:
       secret: false
     - default: false
       defaultValue: '120'
-      description: Timeout to retrieve the reports. Default is 120.
+      description: Timeout to retrieve the reports. Default is 120 seconds.
       isArray: false
       name: timeout
       required: false
@@ -707,7 +707,7 @@ script:
       secret: false
     - default: false
       defaultValue: '120'
-      description: Timeout to retrieve the reports. 
+      description: Timeout to retrieve the reports. Default is 120 seconds.
       isArray: false
       name: timeout
       required: false

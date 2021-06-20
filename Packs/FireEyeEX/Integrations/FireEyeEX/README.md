@@ -260,7 +260,7 @@ Searches and retrieves the details of a single alert.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | alert_id | The ID of the alert for which to retrieve its details. | Required | 
-| timeout | Timeout to retrieve the alert details. Default is 30. | Optional | 
+| timeout | Timeout to retrieve the alert details. Default is 30 seconds. | Optional | 
 
 
 #### Context Output
@@ -354,7 +354,7 @@ Downloads malware artifacts data for the specified UUID as a zip file.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | uuid | The universally unique identifier (UUID) for the alert. | Required | 
-| timeout | Timeout to retrieve the artifacts. Default is 120. Default is 120. | Optional | 
+| timeout | Timeout to retrieve the artifacts. Default is 120 seconds. | Optional | 
 
 
 #### Context Output
@@ -644,7 +644,7 @@ Returns reports on selected alerts.
 | alert_id | Alert ID. This argument is only relevant when retrieving a report of type alertDetailsReport. | Optional | 
 | infection_id | Infection ID. This argument is only relevant when retrieving a report of type alertDetailsReport with conjunction to the infection_type argument. | Optional | 
 | infection_type | Infection Type. This argument is only relevant when retrieving a report of type alertDetailsReport with conjunction to the infection_id argument. Possible values are: malware-object, malware-callback, infection-match, domain-match, web-infection. | Optional | 
-| timeout | Timeout to retrieve the reports. Default is 120. Default is 120. | Optional | 
+| timeout | Timeout to retrieve the reports. Default is 120 seconds. | Optional | 
 
 
 #### Context Output

@@ -180,7 +180,8 @@ Searches and retrieves the details of a single alert.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| alert_id | The ID of the alert for which to retrieve its details. | Required | 
+| alert_id | The ID of the alert for which to retrieve its details. | Required |
+| timeout | Timeout to retrieve the artifacts. Default is 30 seconds. | Optional |
 
 
 #### Context Output
