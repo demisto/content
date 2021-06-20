@@ -178,7 +178,7 @@ Lists all the servers.
 {
     "AzureSQL": {
         "Server": {
-            "administratorLogin": "demistoadmin",
+            "administratorLogin": "xsoaradmin",
             "fullyQualifiedDomainName": "sqlintegration.database.windows.net",
             "id": "/subscriptions/0123456789/resourceGroups/sql-integration/providers/Microsoft.Sql/servers/sqlintegration",
             "kind": "v12.0",
@@ -200,7 +200,7 @@ Lists all the servers.
 >### Servers List
 >|Administrator Login|Fully Qualified Domain Name|Id|Kind|Location|Name|Public Network Access|State|Type|Version|
 >|---|---|---|---|---|---|---|---|---|---|
->| demistoadmin | sqlintegration.database.windows.net | /subscriptions/0123456789/resourceGroups/sql-integration/providers/Microsoft.Sql/servers/sqlintegration | v12.0 | eastus | sqlintegration | Enabled | Ready | Microsoft.Sql/servers | 12.0 |
+>| xsoaradmin | sqlintegration.database.windows.net | /subscriptions/0123456789/resourceGroups/sql-integration/providers/Microsoft.Sql/servers/sqlintegration | v12.0 | eastus | sqlintegration | Enabled | Ready | Microsoft.Sql/servers | 12.0 |
 
 
 ### azure-sql-db-list

@@ -41,9 +41,9 @@ def executeCommand(command, args=None):
         return [{'Contents': {'modelData': "ModelDataML",
                               'model': {'type': {'type': ''}}},
                  'Type': 'note'}]
-    elif command == 'WordTokenizerNLP':
-        TOKENIZATION_RESULT['originalText'] = args['value']
-        TOKENIZATION_RESULT['tokenizedText'] = args['value']
+    elif command == 'DBotPreProcessTextData':
+        TOKENIZATION_RESULT['originalText'] = args['input']
+        TOKENIZATION_RESULT['tokenizedText'] = args['input']
         return [{'Contents': TOKENIZATION_RESULT,
                  'Type': 'note'}]
     elif command == 'HighlightWords':

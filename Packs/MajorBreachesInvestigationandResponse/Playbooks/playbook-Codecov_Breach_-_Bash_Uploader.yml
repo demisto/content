@@ -6,6 +6,7 @@ description: |-
   - Search for the Security Notice email sent from Codecov.
   - Collect indicators to be used in your threat hunting process.
   - Query network logs to detect related activity.
+  - Search for the use of Codecov bash uploader in GitHub repositories
   - Query Panorama to search for logs with related anti-spyware signatures
       - Data Exfiltration Traffic Detection
       - Malicious Modified Shell Script Detection
@@ -33,8 +34,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 180,
-          "y": -760
+          "x": 220,
+          "y": -870
         }
       }
     note: false
@@ -61,8 +62,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -650,
-          "y": 370
+          "x": -710,
+          "y": 325
         }
       }
     note: false
@@ -90,7 +91,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -650,
+          "x": -710,
           "y": 680
         }
       }
@@ -142,8 +143,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 180,
-          "y": -310
+          "x": 220,
+          "y": -420
         }
       }
     note: false
@@ -170,8 +171,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 180,
-          "y": -610
+          "x": 220,
+          "y": -700
         }
       }
     note: false
@@ -198,8 +199,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 180,
-          "y": -450
+          "x": 220,
+          "y": -560
         }
       }
     note: false
@@ -209,10 +210,10 @@ tasks:
     quietmode: 0
   "11":
     id: "11"
-    taskid: b03e2104-54ee-4c8b-82af-be28984243f5
+    taskid: 3b9af3e0-4fe9-4452-8f84-3e67ff7defd8
     type: regular
     task:
-      id: b03e2104-54ee-4c8b-82af-be28984243f5
+      id: 3b9af3e0-4fe9-4452-8f84-3e67ff7defd8
       version: -1
       name: 'Search for Codecov security notice email '
       description: Searches for items in the specified mailbox. Specific permissions
@@ -241,14 +242,14 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -650,
-          "y": -140
+          "x": -710,
+          "y": -245
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
+    skipunavailable: true
     quietmode: 0
   "12":
     id: "12"
@@ -281,8 +282,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -650,
-          "y": 20
+          "x": -710,
+          "y": -55
         }
       }
     note: false
@@ -316,8 +317,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 180,
-          "y": 190
+          "x": 220,
+          "y": 140
         }
       }
     note: false
@@ -327,10 +328,10 @@ tasks:
     quietmode: 0
   "14":
     id: "14"
-    taskid: ef392ad7-52b6-4bd7-8ecf-0169f82fdcf6
+    taskid: bc58af28-06c5-45a7-8b85-234f5c4ceea4
     type: playbook
     task:
-      id: ef392ad7-52b6-4bd7-8ecf-0169f82fdcf6
+      id: bc58af28-06c5-45a7-8b85-234f5c4ceea4
       version: -1
       name: Palo Alto Networks - Hunting And Threat Detection
       description: "This is a multipurpose playbook used for hunting and threat detection.\
@@ -347,7 +348,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "22"
+      - "29"
     scriptarguments:
       IPAddresses:
         complex:
@@ -381,31 +382,32 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -950,
+          "x": -960,
           "y": 960
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
+    skipunavailable: true
     quietmode: 0
   "16":
     id: "16"
-    taskid: 92dd310b-49b0-431d-8f32-5d2f55b0fc68
+    taskid: 974252c0-5c9b-4be0-8467-dfd39c59e3d1
     type: playbook
     task:
-      id: 92dd310b-49b0-431d-8f32-5d2f55b0fc68
+      id: 974252c0-5c9b-4be0-8467-dfd39c59e3d1
       version: -1
       name: QRadar Indicator Hunting V2
+      description: 'The Playbook queries QRadar SIEM for indicators such as file hashes,
+        IP addresses, domains, or urls. '
       playbookName: QRadar Indicator Hunting V2
       type: playbook
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
-      - "22"
+      - "29"
     scriptarguments:
       IPAddress:
         complex:
@@ -449,31 +451,33 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -480,
+          "x": -470,
           "y": 960
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
+    skipunavailable: true
     quietmode: 0
   "18":
     id: "18"
-    taskid: 96c6cef8-31fe-4c1f-8656-efc56def021f
+    taskid: e2c50a93-9dcd-4b92-8fe6-0e19a0ebeeba
     type: playbook
     task:
-      id: 96c6cef8-31fe-4c1f-8656-efc56def021f
+      id: e2c50a93-9dcd-4b92-8fe6-0e19a0ebeeba
       version: -1
       name: Splunk Indicator Hunting
+      description: This playbook queries Splunk for indicators such as file hashes,
+        IP addresses, domains, or urls. It outputs detected users, ip addresses, and
+        hostnames related to the indicators.
       playbookName: Splunk Indicator Hunting
       type: playbook
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
-      - "22"
+      - "29"
     scriptarguments:
       HostFieldsToReturn: {}
       IPAddress:
@@ -524,14 +528,14 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 10,
+          "x": -20,
           "y": 960
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
+    skipunavailable: true
     quietmode: 0
   "19":
     id: "19"
@@ -564,12 +568,12 @@ tasks:
     quietmode: 0
   "20":
     id: "20"
-    taskid: b5dc6ded-d51b-4ab1-879f-6569a930bbbf
+    taskid: 3b9ef253-5901-48dc-89c8-39decba4f79c
     type: title
     task:
-      id: b5dc6ded-d51b-4ab1-879f-6569a930bbbf
+      id: 3b9ef253-5901-48dc-89c8-39decba4f79c
       version: -1
-      name: Search in network logs
+      name: Hunt Network Logs
       type: title
       iscommand: false
       brand: ""
@@ -582,7 +586,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -950,
+          "x": -1190,
           "y": 820
         }
       }
@@ -626,8 +630,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -650,
-          "y": 510
+          "x": -710,
+          "y": 500
         }
       }
     note: false
@@ -654,8 +658,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -650,
-          "y": 1140
+          "x": -710,
+          "y": 1650
         }
       }
     note: false
@@ -684,8 +688,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -650,
-          "y": 1300
+          "x": -710,
+          "y": 1800
         }
       }
     note: false
@@ -715,8 +719,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -650,
-          "y": 1470
+          "x": -710,
+          "y": 1970
         }
       }
     note: false
@@ -745,8 +749,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -650,
-          "y": 1630
+          "x": -710,
+          "y": 2140
         }
       }
     note: false
@@ -777,8 +781,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -220,
-          "y": 1800
+          "x": -50,
+          "y": 2320
         }
       }
     note: false
@@ -803,7 +807,7 @@ tasks:
       {
         "position": {
           "x": 220,
-          "y": 2010
+          "y": 2540
         }
       }
     note: false
@@ -813,20 +817,21 @@ tasks:
     quietmode: 0
   "28":
     id: "28"
-    taskid: 85040bc3-ccf8-4ba8-85e4-232a4883733b
+    taskid: a037cfcc-aa5a-417c-81c7-dd569be7b783
     type: playbook
     task:
-      id: 85040bc3-ccf8-4ba8-85e4-232a4883733b
+      id: a037cfcc-aa5a-417c-81c7-dd569be7b783
       version: -1
-      name: Panorama Query Logs
+      name: Panorama search thread-ids in threat logs
+      description: 'Query Panorama Logs of types: traffic, threat, url, data-filtering
+        and wildfire.'
       playbookName: Panorama Query Logs
       type: playbook
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
-      - "22"
+      - "29"
     scriptarguments:
       action: {}
       addr-dst: {}
@@ -852,8 +857,124 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -1400,
+          "x": -1430,
           "y": 960
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+  "29":
+    id: "29"
+    taskid: b1872629-a361-4e70-8926-f496e1128990
+    type: title
+    task:
+      id: b1872629-a361-4e70-8926-f496e1128990
+      version: -1
+      name: Scope affected repositories
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "31"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -710,
+          "y": 1160
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "30":
+    id: "30"
+    taskid: 40bd0498-02d5-450c-8d93-2e436e69dec5
+    type: regular
+    task:
+      id: 40bd0498-02d5-450c-8d93-2e436e69dec5
+      version: -1
+      name: Search Codecov in Git repository
+      description: Searches for code in repositories that match a given query.
+      script: '|||GitHub-search-code'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "22"
+    scriptarguments:
+      limit: {}
+      page_number: {}
+      page_size: {}
+      query:
+        complex:
+          root: inputs.Github_Code_Search_query
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -430,
+          "y": 1480
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+  "31":
+    id: "31"
+    taskid: 3e428184-fcd8-4c78-830d-01779ad8f0b5
+    type: condition
+    task:
+      id: 3e428184-fcd8-4c78-830d-01779ad8f0b5
+      version: -1
+      name: Is GitHub integration enabled?
+      description: Checks if GitHub integration enabled.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "22"
+      "yes":
+      - "30"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: GitHub
+                accessor: state
+            iscontext: true
+          right:
+            value:
+              simple: active
+    view: |-
+      {
+        "position": {
+          "x": -710,
+          "y": 1310
         }
       }
     note: false
@@ -864,21 +985,23 @@ tasks:
 view: |-
   {
     "linkLabelsPosition": {
-      "12_13_#default#": 0.23,
+      "12_13_#default#": 0.2,
       "12_1_yes": 0.46,
       "13_1_Yes": 0.24,
       "13_27_#default#": 0.1,
       "25_26_Yes": 0.43,
       "25_27_#default#": 0.2,
-      "6_11_yes": 0.3,
-      "6_13_#default#": 0.21
+      "31_22_#default#": 0.56,
+      "31_30_yes": 0.54,
+      "6_11_yes": 0.17,
+      "6_13_#default#": 0.28
     },
     "paper": {
       "dimensions": {
-        "height": 2835,
-        "width": 2000,
-        "x": -1400,
-        "y": -760
+        "height": 3475,
+        "width": 2030,
+        "x": -1430,
+        "y": -870
       }
     }
   }
@@ -907,10 +1030,11 @@ inputs:
   required: false
   description: The limit of results to return from the search
   playbookInputQuery:
-- key: ThreatIDs
-  value: {}
+- key: Github_Code_Search_query
+  value:
+    simple: https://codecov.io/bash+in:file
   required: false
-  description: ""
+  description: Github query to search for Codecov bash uploader use.
   playbookInputQuery:
 outputs: []
 tests:

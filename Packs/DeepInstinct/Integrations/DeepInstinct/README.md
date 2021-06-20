@@ -5,7 +5,7 @@ Deep Instinct
 This integration was integrated and tested with version 2.3.1.17 of Deep Instinct
 
 
-## Configure Deep Instinct on Demisto
+## Configure Deep Instinct on Cortex XSOAR
 ---
 
 1. Navigate to __Settings__ > __Integrations__ > __Servers & Services__.
@@ -23,7 +23,7 @@ This integration was integrated and tested with version 2.3.1.17 of Deep Instinc
 
 ## Commands
 ---
-You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.
+You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 1. deepinstinct-get-device
 2. deepinstinct-get-events

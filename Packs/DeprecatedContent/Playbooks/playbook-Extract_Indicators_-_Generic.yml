@@ -237,3 +237,4 @@ outputs:
   type: string
 tests:
 - No tests - Deprecated
+deprecated: true

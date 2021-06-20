@@ -142,6 +142,7 @@ def test_fetch_incidents_no_incidents(mocker):
     mocker.patch.object(demisto, "info")
     mocker.patch.object(demisto, "debug")
     mocker.patch("JiraV2.run_query", return_value={})
+    mocker.patch.object(demisto, 'setLastRun')
     incidents = fetch_incidents(
         "status=Open AND labels=lies",
         id_offset=1,
@@ -153,6 +154,121 @@ def test_fetch_incidents_no_incidents(mocker):
         attachment_tag="",
     )
     assert incidents == []
+    assert demisto.setLastRun.call_count == 1
+    lastRun = demisto.setLastRun.call_args[0][0]
+    assert lastRun == {'idOffset': 0, 'lastCreatedTime': ''}
+
+
+def test_fetch_incidents_no_incidents_with_id_offset_in_last_run(mocker):
+    """
+    Given
+    - Jira fetch incidents command
+    - Last run is populated with idOffset but no lastCreatedTime
+
+
+    When
+    - Sending HTTP request and getting no issues from the query
+
+    Then
+    - Verify no incidents are returned
+    - Last run idOffset is not changed and an empty lastCreatedTime is added
+    """
+
+    from JiraV2 import fetch_incidents
+
+    mocker.patch.object(demisto, "info")
+    mocker.patch.object(demisto, "debug")
+    mocker.patch("JiraV2.run_query", return_value={})
+    mocker.patch.object(demisto, 'setLastRun')
+    mocker.patch.object(demisto, 'getLastRun', return_value={'idOffset': 30})
+    incidents = fetch_incidents(
+        "status=Open AND labels=lies",
+        id_offset=1,
+        should_get_attachments=False,
+        should_get_comments=False,
+        should_mirror_in=False,
+        should_mirror_out=False,
+        comment_tag="",
+        attachment_tag="",
+    )
+    assert incidents == []
+    assert demisto.setLastRun.call_count == 1
+    last_run = demisto.setLastRun.call_args[0][0]
+    assert last_run == {'idOffset': 30, 'lastCreatedTime': ''}
+
+
+def test_fetch_incidents_with_incidents_and_id_offset_in_last_run(mocker):
+    """
+    Given
+    - Jira fetch incidents command
+    - Last run is populated with idOffset but no lastCreatedTime
+
+    When
+    - Sending HTTP request and getting new issue
+
+    Then
+    - Verify last run is updated with the ticket id offset and created time
+    """
+
+    from JiraV2 import fetch_incidents
+    from test_data.raw_response import QUERY_ISSUE_RESPONSE
+
+    mocker.patch.object(demisto, "info")
+    mocker.patch.object(demisto, "debug")
+    mocker.patch("JiraV2.run_query", return_value=QUERY_ISSUE_RESPONSE)
+    mocker.patch.object(demisto, 'setLastRun')
+    mocker.patch.object(demisto, 'getLastRun', return_value={'idOffset': 30})
+    incidents = fetch_incidents(
+        "status=Open AND labels=lies",
+        id_offset=1,
+        should_get_attachments=False,
+        should_get_comments=False,
+        should_mirror_in=False,
+        should_mirror_out=False,
+        comment_tag="",
+        attachment_tag="",
+    )
+    assert len(incidents) == 1
+    assert demisto.setLastRun.call_count == 1
+    last_run = demisto.setLastRun.call_args[0][0]
+    assert last_run == {'idOffset': 12652, 'lastCreatedTime': '2019-05-04T00:44:31.743+0300'}
+
+
+def test_fetch_incidents_with_incidents_and_full_last_run(mocker):
+    """
+    Given
+    - Jira fetch incidents command
+    - Last run is populated with idOffset and lastCreatedTime
+
+    When
+    - Sending HTTP request and getting new issue
+
+    Then
+    - Verify last run is updated with the ticket id offset and are updated
+    """
+
+    from JiraV2 import fetch_incidents
+    from test_data.raw_response import QUERY_ISSUE_RESPONSE
+
+    mocker.patch.object(demisto, "info")
+    mocker.patch.object(demisto, "debug")
+    mocker.patch("JiraV2.run_query", return_value=QUERY_ISSUE_RESPONSE)
+    mocker.patch.object(demisto, 'setLastRun')
+    mocker.patch.object(demisto, 'getLastRun', return_value={'idOffset': 1000, 'lastCreatedTime': '2019-04-04T00:55:22.743+0300'})
+    incidents = fetch_incidents(
+        "status=Open AND labels=lies",
+        id_offset=1,
+        should_get_attachments=False,
+        should_get_comments=False,
+        should_mirror_in=False,
+        should_mirror_out=False,
+        comment_tag="",
+        attachment_tag="",
+    )
+    assert len(incidents) == 1
+    assert demisto.setLastRun.call_count == 1
+    last_run = demisto.setLastRun.call_args[0][0]
+    assert last_run == {'idOffset': 12652, 'lastCreatedTime': '2019-05-04T00:44:31.743+0300'}
 
 
 def test_module(mocker):

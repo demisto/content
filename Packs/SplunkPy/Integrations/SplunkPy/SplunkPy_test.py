@@ -758,7 +758,7 @@ def test_get_remote_data_command(mocker):
     splunk.get_remote_data_command(Service(), args, close_incident=False)
     results = demisto.results.call_args[0][0]
     assert demisto.results.call_count == 1
-    assert results == [updated_notable]
+    assert results == [{'status': '1'}]
 
 
 def test_get_remote_data_command_close_incident(mocker):
@@ -782,7 +782,7 @@ def test_get_remote_data_command_close_incident(mocker):
     results = demisto.results.call_args[0][0]
     assert demisto.results.call_count == 1
     assert results == [
-        updated_notable,
+        {'status': '5'},
         {
             'Type': EntryType.NOTE,
             'Contents': {

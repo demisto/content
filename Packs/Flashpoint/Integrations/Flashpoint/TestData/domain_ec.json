@@ -1,17 +1,61 @@
 {
-  "DBotScore": {
+  "DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor && val.Type == obj.Type)":[{
     "Indicator": "fakedomain.com",
     "Type": "domain",
     "Vendor": "Flashpoint",
     "Score": 3
-  },
-  "Domain(val.Name && val.Name == obj.Name)": {
+  }],
+  "Domain(val.Name && val.Name == obj.Name)": [{
     "Name": "fakedomain.com",
     "Malicious": {
       "Vendor": "Flashpoint",
       "Description": "Found in malicious indicators dataset"
-    }
-  },
+    },
+    "Relationships": [
+      {
+        "Relationship": "indicator-of",
+        "EntityA": "fakedomain.com",
+        "EntityAType": "Domain",
+        "EntityB": "AT1",
+        "EntityBType": "STIX Attack Pattern"
+      },
+      {
+        "Relationship": "indicator-of",
+        "EntityA": "fakedomain.com",
+        "EntityAType": "Domain",
+        "EntityB": "AT2",
+        "EntityBType": "STIX Attack Pattern"
+      },
+      {
+        "Relationship": "indicator-of",
+        "EntityA": "fakedomain.com",
+        "EntityAType": "Domain",
+        "EntityB": "AT3",
+        "EntityBType": "STIX Attack Pattern"
+      },
+      {
+        "Relationship": "indicator-of",
+        "EntityA": "fakedomain.com",
+        "EntityAType": "Domain",
+        "EntityB": "AT4",
+        "EntityBType": "STIX Attack Pattern"
+      },
+      {
+        "Relationship": "indicator-of",
+        "EntityA": "fakedomain.com",
+        "EntityAType": "Domain",
+        "EntityB": "AT5",
+        "EntityBType": "STIX Attack Pattern"
+      },
+      {
+        "Relationship": "indicator-of",
+        "EntityA": "fakedomain.com",
+        "EntityAType": "Domain",
+        "EntityB": "AT6",
+        "EntityBType": "STIX Attack Pattern"
+      }
+    ]
+  }],
   "Flashpoint.Domain.Event(val.Fpid && val.Fpid == obj.Fpid)": [
     {
       "Domain": "fakedomain.com",

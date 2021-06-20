@@ -1,0 +1,390 @@
+id: Prisma Cloud Remediation - Azure AKS Cluster Misconfiguration
+version: -1
+fromversion: 5.0.0
+contentitemexportablefields:
+  contentitemfields: {}
+name: Prisma Cloud Remediation - Azure AKS Cluster Misconfiguration
+description: |-
+  This playbook remediates the following Prisma Cloud Azure AKS cluster alerts.
+
+  Prisma Cloud policies remediated:
+
+  - Azure AKS cluster monitoring not enabled
+  - Azure AKS cluster HTTP application routing enabled
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 61bee172-14d4-4a48-815c-913b49bef800
+    type: start
+    task:
+      id: 61bee172-14d4-4a48-815c-913b49bef800
+      version: -1
+      name: ""
+      description: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 630,
+          "y": 0
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 1abd9220-e39e-4206-8aa3-dba2695c7f4e
+    type: title
+    task:
+      id: 1abd9220-e39e-4206-8aa3-dba2695c7f4e
+      version: -1
+      name: Done
+      description: ""
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 630,
+          "y": 880
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: 459ed991-95f6-4464-87f4-05e7035b97f7
+    type: condition
+    task:
+      id: 459ed991-95f6-4464-87f4-05e7035b97f7
+      version: -1
+      name: Execute remediation
+      description: Execute the appropriate remediation task using the Prisma Cloud
+        policy Id.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "10"
+      HTTP:
+      - "21"
+      monitoring:
+      - "12"
+    separatecontext: false
+    conditions:
+    - label: monitoring
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.policyId
+            iscontext: true
+          right:
+            value:
+              simple: be55c11a-981a-4f34-a2e7-81ce40d71aa5
+    - label: HTTP
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.policyId
+            iscontext: true
+          right:
+            value:
+              simple: 0429670c-5d2d-4d0f-ab33-59eb5e000305
+    view: |-
+      {
+        "position": {
+          "x": 900,
+          "y": 330
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "10":
+    id: "10"
+    taskid: 4ed76d93-cbb3-4192-8540-78a1c65ff20b
+    type: regular
+    task:
+      id: 4ed76d93-cbb3-4192-8540-78a1c65ff20b
+      version: -1
+      name: Manually update AKS cluster rules
+      description: |-
+        1. Sign in to the Azure portal.
+        2. Goto the Kubernetes Service and select your cluster.
+        3. Click Insights in the left window pane.
+        4. If you have an existing Log Analytics workspace in the same subscription as the cluster, select it in the drop-down list.
+        5. Select Enable.
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 840,
+          "y": 650
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "12":
+    id: "12"
+    taskid: 37757843-1ec6-4dfb-8238-7f70cb691654
+    type: title
+    task:
+      id: 37757843-1ec6-4dfb-8238-7f70cb691654
+      version: -1
+      name: Monitoring not enabled
+      description: ""
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "22"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 320,
+          "y": 500
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "15":
+    id: "15"
+    taskid: 0412d6b7-af2a-4c7d-8158-ca52c06e45bc
+    type: condition
+    task:
+      id: 0412d6b7-af2a-4c7d-8158-ca52c06e45bc
+      version: -1
+      name: Is Azure Kubernetes Services integration enabled?
+      description: Returns 'yes' if integration brand is available. Otherwise returns
+        'no'
+      scriptName: IsIntegrationAvailable
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "5"
+    scriptarguments:
+      brandname:
+        simple: Azure Kubernetes Services
+    results:
+    - brandInstances
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 630,
+          "y": 160
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "21":
+    id: "21"
+    taskid: 7b5e58cb-441c-4969-88a2-4e7666f0e616
+    type: title
+    task:
+      id: 7b5e58cb-441c-4969-88a2-4e7666f0e616
+      version: -1
+      name: HTTP routing enabled
+      description: ""
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "23"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1310,
+          "y": 500
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "22":
+    id: "22"
+    taskid: f9fb427f-314e-4ab7-8570-3f78e1e56f0b
+    type: regular
+    task:
+      id: f9fb427f-314e-4ab7-8570-3f78e1e56f0b
+      version: -1
+      name: Enable  cluster monitoring
+      description: Enables cluster monitoring for an AKS managed cluster.
+      script: Azure Kubernetes Services|||azure-ks-cluster-addon-update
+      type: regular
+      iscommand: true
+      brand: Azure Kubernetes Services
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      http_application_routing_enabled: {}
+      location:
+        complex:
+          root: incident.labels
+          accessor: resource
+          transformers:
+          - operator: ParseJSON
+          - operator: getField
+            args:
+              field:
+                value:
+                  simple: region
+      monitoring_agent_enabled:
+        simple: "true"
+      monitoring_resource_name: {}
+      resource_name:
+        complex:
+          root: incident.labels
+          accessor: resource
+          transformers:
+          - operator: ParseJSON
+          - operator: getField
+            args:
+              field:
+                value:
+                  simple: name
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 320,
+          "y": 650
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "23":
+    id: "23"
+    taskid: 1faf3571-08a2-49fd-884c-03448ac6f190
+    type: regular
+    task:
+      id: 1faf3571-08a2-49fd-884c-03448ac6f190
+      version: -1
+      name: Disable HTTP routing
+      description: Disables HTTP routing for an AKS managed cluster.
+      script: Azure Kubernetes Services|||azure-ks-cluster-addon-update
+      type: regular
+      iscommand: true
+      brand: Azure Kubernetes Services
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      http_application_routing_enabled:
+        simple: "false"
+      location:
+        complex:
+          root: incident.labels
+          accessor: resource
+          transformers:
+          - operator: ParseJSON
+          - operator: getField
+            args:
+              field:
+                value:
+                  simple: region
+      monitoring_agent_enabled: {}
+      monitoring_resource_name: {}
+      resource_name:
+        complex:
+          root: incident.labels
+          accessor: resource
+          transformers:
+          - operator: ParseJSON
+          - operator: getField
+            args:
+              field:
+                value:
+                  simple: name
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1310,
+          "y": 650
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {
+      "15_3_#default#": 0.1,
+      "15_5_yes": 0.55,
+      "5_10_#default#": 0.65,
+      "5_21_HTTP": 0.69
+    },
+    "paper": {
+      "dimensions": {
+        "height": 945,
+        "width": 1370,
+        "x": 320,
+        "y": 0
+      }
+    }
+  }
+inputs:
+- key: policyId
+  value: {}
+  required: true
+  description: Prisma Cloud policy Id.
+  playbookInputQuery:
+outputs:
+- contextPath: incident.labels.resource.name
+  description: AKS cluster name.
+  type: string
+tests:
+- No Test

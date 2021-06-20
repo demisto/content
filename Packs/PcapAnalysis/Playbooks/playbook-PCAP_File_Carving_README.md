@@ -10,9 +10,9 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 This playbook does not use any integrations.
 
 ### Scripts
+* PcapFileExtractor
 * Set
 * PcapMinerV2
-* PcapFileExtractor
 
 ### Commands
 * file
@@ -24,13 +24,14 @@ This playbook does not use any integrations.
 | --- | --- | --- | --- |
 | RsaDecryptKeyEntryID | This input specifies the file entry id for the RSA decrypt key if the user provided the key in the incident. | File.EntryID | Optional |
 | PcapFileEntryID | This input specifies the file entry id for the PCAP file if the user provided the file in the incident. One PCAP file can run per incident. | File.EntryID | Optional |
-| WpaPassword | This input value is used to provide a WPA \(Wi\-Fi Protected Access\) password to decrypt encrypted 802.11 Wi\-FI traffic. |  | Optional |
-| PcapFilter | This input specifies a search filter to be used on the PCAP file. Filters can be used to search only for a specific IP, protocols and other examples. The syntax is the same as in Wireshark which can be found here: https://www.wireshark.org/docs/man-pages/wireshark-filter.html <br/>For this playbook, using a PCAP filter will generate a new smaller PCAP file based on the provided filter therefor thus reducing the extraction of non relevant files. |  | Optional |
+| WpaPassword | This input value is used to provide a WPA \(Wi-Fi Protected Access\) password to decrypt encrypted 802.11 Wi-FI traffic. |  | Optional |
+| PcapFilter | This input specifies a search filter to be used on the PCAP file. Filters can be used to search only for a specific IP, protocols, and other examples. The syntax is the same as in Wireshark which can be found here: https://www.wireshark.org/docs/man-pages/wireshark-filter.html<br/>For this playbook, using a PCAP filter will generate a new smaller PCAP file based on the provided filter thus reducing the extraction of non relevant files. |  | Optional |
 | ExtractedFilesLimit | This input limits the number of files to be extracted from the PCAP file. Default value is 5. | 5 | Optional |
 | FileExtensionFilter | This input is used to select which file extensions to include or exclude from the PCAP file. Extensions must be comma separated, for example, png,gif,exe.<br/>This setting cannot be used with the FileTypeFilter. |  | Optional |
-| FileTypeFilter | This input is used to select which file type \(MIME type\) to include or exclude from the PCAP file. Extensions must be comma separated, for example, image/jpeg,application/x\-javascript<br/>This setting cannot be used with the FileExtensionFilter. |  | Optional |
+| FileTypeFilter | This input is used to select which file type \(MIME type\) to include or exclude from the PCAP file. Extensions must be comma separated, for example, image/jpeg,application/x-javascript<br/>This setting cannot be used with the FileExtensionFilter. |  | Optional |
 | FilterType | This input is combined with the FileExtensionFilter input or the FileTypeFilter input. It specifies if the type/extensions list is inclusive or exclusive. Can be "inclusive" or "exclusive". Default is "inclusive".<br/>Default value is 'inclusive' | inclusive | Optional |
-| AutoDetonateFiles | This input specifies whether to detonate files extracted from the PCAP. The default value is True, any other value will be considered as false. | True | Optional |
+| AutoDetonateFiles | This input specifies whether to detonate files extracted from the PCAP. The default value is True. Any other value will be considered as false. | True | Optional |
+| AutoEnrichFiles | This input specifies whether to enrich files extracted from the PCAP. The default value is True. Any other value will be considered as false. | True | Optional |
 
 ## Playbook Outputs
 ---
@@ -38,9 +39,20 @@ This playbook does not use any integrations.
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
 | DBotScore | The DBotScore object. | string |
-| File | The file object | string |
-| File.Malicious | The File malicious description | string |
+| File | The file object. | string |
+| File.Malicious | The file malicious description. | string |
+| File.Size | The file size. | string |
+| File.MD5 | The file MD5 hash. | string |
+| File.SHA1 | The file SHA1 hash. | string |
+| File.SHA256 | The file SHA256 hash. | string |
+| File.SHA512 | The file SHA512 hash. | string |
+| File.Name | The file name. | string |
+| File.SSDeep | The file SSDeep. | string |
+| File.EntryID | The file entry ID. | string |
+| File.Info | The file information. | string |
+| File.Type | The file type. | string |
+| File.Extension | The file extension. | string |
 
 ## Playbook Image
 ---
-![PCAP File Carving](https://raw.githubusercontent.com/demisto/content/bcca716ea174ff2dc7716db18d86872b1aab05c4/Packs/PcapAnalysis/doc_files/PCAP_File_Carving.png)
+![PCAP File Carving](https://raw.githubusercontent.com/demisto/content/e0d6d4931c90beed5db6a76db0c1d71bd6181b6f/Packs/PcapAnalysis/doc_files/PCAP_File_Carving.png)

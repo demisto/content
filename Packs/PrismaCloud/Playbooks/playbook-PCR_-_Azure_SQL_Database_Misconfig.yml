@@ -1,0 +1,445 @@
+id: Prisma Cloud Remediation - Azure SQL Database Misconfiguration
+version: -1
+fromversion: 5.0.0
+contentitemexportablefields:
+  contentitemfields: {}
+name: Prisma Cloud Remediation - Azure SQL Database Misconfiguration
+description: |-
+  This playbook remediates the following Prisma Cloud Azure SQL database alerts.
+
+  Prisma Cloud policies remediated:
+
+  - Azure SQL database auditing is disabled
+  - Azure SQL Database with Auditing Retention less than 90 days
+  - Azure Threat Detection on SQL databases is set to Off
+  - Azure SQL Database with Threat Retention less than or equals to 90 days
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 61bee172-14d4-4a48-815c-913b49bef800
+    type: start
+    task:
+      id: 61bee172-14d4-4a48-815c-913b49bef800
+      version: -1
+      name: ""
+      description: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 630,
+          "y": 0
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 1abd9220-e39e-4206-8aa3-dba2695c7f4e
+    type: title
+    task:
+      id: 1abd9220-e39e-4206-8aa3-dba2695c7f4e
+      version: -1
+      name: Done
+      description: ""
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 630,
+          "y": 880
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: 3b40741f-1c37-47df-8aad-4ff5fcd4d029
+    type: condition
+    task:
+      id: 3b40741f-1c37-47df-8aad-4ff5fcd4d029
+      version: -1
+      name: Execute remediation
+      description: Execute the appropriate remediation task using the Prisma Cloud
+        policy Id.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "10"
+      auditPolicy:
+      - "12"
+      threatPolicy:
+      - "21"
+    separatecontext: false
+    conditions:
+    - label: auditPolicy
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.policyId
+            iscontext: true
+          right:
+            value:
+              simple: 96b1b8e3-6936-434f-94ab-a154cd5967d9
+        - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.policyId
+            iscontext: true
+          right:
+            value:
+              simple: fa6fa903-8887-49dd-917f-91687df98dd1
+    - label: threatPolicy
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.policyId
+            iscontext: true
+          right:
+            value:
+              simple: 8f7eee48-dffb-4f18-9207-8ea48680b0e2
+        - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.policyId
+            iscontext: true
+          right:
+            value:
+              simple: c83a7b1d-ac74-475b-80fe-b1244daa1b27
+    view: |-
+      {
+        "position": {
+          "x": 900,
+          "y": 330
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "10":
+    id: "10"
+    taskid: aa685f71-f2a6-4079-8553-11774b7be594
+    type: regular
+    task:
+      id: aa685f71-f2a6-4079-8553-11774b7be594
+      version: -1
+      name: Manually update SQL database settings
+      description: |-
+        1. Log in to the Azure Portal
+        2. Go to SQL servers
+        3. Choose the reported each DB server
+        4. Under the Security section, Click on 'Auditing'
+        5. Set 'Auditing' to 'On'
+        6. Select 'Storage' and click on 'Storage Details'
+        7. Configure 'Retention (days)' setting to greater than or equal to 90 days
+        Note: The default value for the retention period is 0 (unlimited retention).
+        8. Click on 'Ok'
+        9. Click on 'Save'
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 840,
+          "y": 650
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "12":
+    id: "12"
+    taskid: 273fe351-27f0-481f-83ab-524a1bcd91c4
+    type: title
+    task:
+      id: 273fe351-27f0-481f-83ab-524a1bcd91c4
+      version: -1
+      name: Auditing is disabled
+      description: ""
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "22"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 290,
+          "y": 500
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "15":
+    id: "15"
+    taskid: 5505c422-1127-43cb-82d0-017fe3e729e1
+    type: condition
+    task:
+      id: 5505c422-1127-43cb-82d0-017fe3e729e1
+      version: -1
+      name: Is Azure SQL Management integration enabled?
+      description: Returns 'yes' if integration brand is available. Otherwise returns
+        'no'
+      scriptName: IsIntegrationAvailable
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "5"
+    scriptarguments:
+      brandname:
+        simple: Azure SQL Management
+    results:
+    - brandInstances
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 630,
+          "y": 160
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "21":
+    id: "21"
+    taskid: d94edb5a-d5dc-439c-80b0-ed661cb922d9
+    type: title
+    task:
+      id: d94edb5a-d5dc-439c-80b0-ed661cb922d9
+      version: -1
+      name: Threat Detection set to off
+      description: ""
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "27"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1350,
+          "y": 500
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "22":
+    id: "22"
+    taskid: c19af503-7e18-4879-874b-f84f1102467c
+    type: regular
+    task:
+      id: c19af503-7e18-4879-874b-f84f1102467c
+      version: -1
+      name: Enable auditing with 90 day retention
+      description: Enables the database's auditing policy with a 90 day retention.
+      script: Azure SQL Management|||azure-sql-db-audit-policy-create-update
+      type: regular
+      iscommand: true
+      brand: Azure SQL Management
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      audit_actions_groups: {}
+      db_name:
+        complex:
+          root: incident.labels
+          accessor: resource
+          transformers:
+          - operator: ParseJSON
+          - operator: getField
+            args:
+              field:
+                value:
+                  simple: name
+          - operator: substringFrom
+            args:
+              from:
+                value:
+                  simple: '/ '
+      is_azure_monitor_target_enabled: {}
+      is_storage_secondary_key_in_use: {}
+      queue_delay_ms: {}
+      retention_days:
+        simple: "90"
+      server_name:
+        complex:
+          root: incident.labels
+          accessor: resource
+          transformers:
+          - operator: ParseJSON
+          - operator: getField
+            args:
+              field:
+                value:
+                  simple: name
+          - operator: substringTo
+            args:
+              to:
+                value:
+                  simple: ' /'
+      state:
+        simple: Enabled
+      storage_account_access_key: {}
+      storage_account_subscription_id: {}
+      storage_endpoint: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 290,
+          "y": 650
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "27":
+    id: "27"
+    taskid: e1c3197a-b812-40b0-83b8-4b002703fd6a
+    type: regular
+    task:
+      id: e1c3197a-b812-40b0-83b8-4b002703fd6a
+      version: -1
+      name: Enable threat detection with 90 day retention
+      description: Enables the database's threat detection policy with a 90 day retention.
+      script: Azure SQL Management|||azure-sql-db-threat-policy-create-update
+      type: regular
+      iscommand: true
+      brand: Azure SQL Management
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      db_name:
+        complex:
+          root: incident.labels
+          accessor: resource
+          transformers:
+          - operator: ParseJSON
+          - operator: getField
+            args:
+              field:
+                value:
+                  simple: name
+          - operator: substringFrom
+            args:
+              from:
+                value:
+                  simple: '/ '
+      disabled_alerts: {}
+      email_account_admins: {}
+      email_addresses: {}
+      retention_days:
+        simple: "90"
+      server_name:
+        complex:
+          root: incident.labels
+          accessor: resource
+          transformers:
+          - operator: ParseJSON
+          - operator: getField
+            args:
+              field:
+                value:
+                  simple: name
+          - operator: substringTo
+            args:
+              to:
+                value:
+                  simple: ' /'
+      state:
+        simple: Enabled
+      storage_account_access_key: {}
+      storage_endpoint: {}
+      use_server_default: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1350,
+          "y": 650
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {
+      "15_3_#default#": 0.1,
+      "15_5_yes": 0.55,
+      "5_10_#default#": 0.65,
+      "5_21_threatPolicy": 0.62
+    },
+    "paper": {
+      "dimensions": {
+        "height": 945,
+        "width": 1440,
+        "x": 290,
+        "y": 0
+      }
+    }
+  }
+inputs:
+- key: policyId
+  value: {}
+  required: true
+  description: Prisma Cloud policy Id.
+  playbookInputQuery:
+outputs: []
+tests:
+- No Test

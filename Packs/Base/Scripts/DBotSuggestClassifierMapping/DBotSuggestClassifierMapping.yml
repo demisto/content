@@ -25,7 +25,7 @@ args:
       - ''
     required: false
     secret: false
-comment: Deprecated. Suggests a classifier mapping based on an advanced name matching algorithm.
+comment: Deprecated. No available replacement. Suggests a classifier mapping based on an advanced name matching algorithm.
 commonfields:
   id: DBotSuggestClassifierMapping
   version: -1

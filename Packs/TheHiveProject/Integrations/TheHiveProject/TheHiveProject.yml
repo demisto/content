@@ -589,15 +589,6 @@ script:
       - Resolved
       - Deleted
       description: Status
-    - name: resolutionStatus
-      auto: PREDEFINED
-      predefined:
-      - Indeterminate
-      - FalsePositive
-      - TruePositive
-      - Other
-      - Duplicated
-      description: Resolution Status
     outputs:
     - contextPath: TheHive.Cases._routing
       description: _routing
@@ -1450,7 +1441,7 @@ script:
       time. Note that this method is here for debugging purposes. The get-modified-remote-data
       command is used as part of a Mirroring feature, which is available from version
       6.1.
-  dockerimage: demisto/python3:3.9.2.18414
+  dockerimage: demisto/python3:3.9.4.19537
   isfetch: true
   runonce: false
   subtype: python3
@@ -1459,4 +1450,4 @@ script:
   isremotesyncout: true
 fromversion: 6.0.0
 tests:
-  - No tests (auto formatted)
+- No tests (auto formatted)

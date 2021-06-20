@@ -46,13 +46,13 @@ FIELD_DEFINITION_RES = [
     }
 ]
 
-GET_LEVELS_BY_APP = [
-    {'level': 123, 'mapping': {'1': {
+GET_LEVELS_BY_APP = {
+    'level': 123, 'mapping': {'1': {
         'Type': 7, 'Name': 'External Links', 'FieldId': "1", 'IsRequired': False, 'RelatedValuesListId': None},
         '2': {
-            'Type': 1, 'Name': 'Device Name', 'FieldId': "2",
-            'IsRequired': True, 'RelatedValuesListId': 8}
-    }}]
+        'Type': 1, 'Name': 'Device Name', 'FieldId': "2",
+        'IsRequired': True, 'RelatedValuesListId': 8}
+    }}
 
 GET_FIElD_DEFINITION_RES = {
     "RequestedObject": {"RelatedValuesListId": 62},
@@ -265,7 +265,7 @@ class TestArcherV2:
 
     def test_generate_field_contents(self):
         client = Client(BASE_URL, '', '', '', '')
-        field = generate_field_contents(client, '{"Device Name":"Macbook"}', GET_LEVELS_BY_APP[0]['mapping'])
+        field = generate_field_contents(client, '{"Device Name":"Macbook"}', GET_LEVELS_BY_APP['mapping'])
         assert field == {'2': {'Type': 1, 'Value': 'Macbook', 'FieldId': '2'}}
 
     def test_get_errors_from_res(self):

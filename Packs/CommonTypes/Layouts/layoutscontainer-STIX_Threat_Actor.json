@@ -1,13 +1,364 @@
 {
-    "name": "STIX Threat Actor",
-    "id": "STIX Threat Actor",
     "group": "indicator",
-    "description": "",
+    "id": "STIX Threat Actor",
     "indicatorsDetails": {
         "tabs": [
             {
-                "id": "main",
+                "hidden": false,
+                "id": "f6n7qgpsje",
                 "name": "Summary",
+                "sections": [
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "hideName": false,
+                        "i": "f6n7qgpsje-14a72590-b30c-11eb-941c-e725acf1fbbc",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "stixid",
+                                "height": 22,
+                                "id": "842ca570-b30c-11eb-941c-e725acf1fbbc",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "threatactortypes",
+                                "height": 22,
+                                "id": "86e47270-b30c-11eb-941c-e725acf1fbbc",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "aliases",
+                                "height": 22,
+                                "id": "8a3ff980-b30c-11eb-941c-e725acf1fbbc",
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "geocountry",
+                                "height": 22,
+                                "id": "8fc676e0-b30c-11eb-941c-e725acf1fbbc",
+                                "index": 3,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "region",
+                                "height": 22,
+                                "id": "91d6b940-b30c-11eb-941c-e725acf1fbbc",
+                                "index": 4,
+                                "listId": "f6n7qgpsje-14a72590-b30c-11eb-941c-e725acf1fbbc",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "roles",
+                                "height": 22,
+                                "id": "97d7bdd0-b30c-11eb-941c-e725acf1fbbc",
+                                "index": 5,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "goals",
+                                "height": 22,
+                                "id": "99762b90-b30c-11eb-941c-e725acf1fbbc",
+                                "index": 6,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "sophistication",
+                                "height": 22,
+                                "id": "9f10a620-b30c-11eb-941c-e725acf1fbbc",
+                                "index": 7,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "resourcelevel",
+                                "height": 22,
+                                "id": "a6cec400-b30c-11eb-941c-e725acf1fbbc",
+                                "index": 8,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "primarymotivation",
+                                "height": 22,
+                                "id": "a9c21360-b30c-11eb-941c-e725acf1fbbc",
+                                "index": 9,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "secondarymotivations",
+                                "height": 22,
+                                "id": "ac046240-b30c-11eb-941c-e725acf1fbbc",
+                                "index": 10,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "modified",
+                                "height": 22,
+                                "id": "b31fd780-b30c-11eb-941c-e725acf1fbbc",
+                                "index": 11,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "firstseen",
+                                "height": 22,
+                                "id": "b6019ab0-b30c-11eb-941c-e725acf1fbbc",
+                                "index": 12,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Threat Actor Details",
+                        "static": false,
+                        "w": 1,
+                        "x": 0,
+                        "y": 0
+                    },
+                    {
+                        "h": 2,
+                        "i": "f6n7qgpsje-1ce8cb50-b30c-11eb-941c-e725acf1fbbc",
+                        "items": [],
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Sources Data",
+                        "static": false,
+                        "type": "sources",
+                        "w": 1,
+                        "x": 1,
+                        "y": 0
+                    },
+                    {
+                        "displayType": "CARD",
+                        "h": 2,
+                        "hideName": false,
+                        "i": "f6n7qgpsje-3eeb0060-b30c-11eb-941c-e725acf1fbbc",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "tags",
+                                "height": 53,
+                                "id": "f72ca610-b30c-11eb-941c-e725acf1fbbc",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "args": {
+                                    "field": {
+                                        "simple": "tags"
+                                    }
+                                },
+                                "dropEffect": "move",
+                                "endCol": 1,
+                                "fieldId": "",
+                                "height": 53,
+                                "id": "85698e10-b313-11eb-941c-e725acf1fbbc",
+                                "index": 1,
+                                "listId": "f6n7qgpsje-3eeb0060-b30c-11eb-941c-e725acf1fbbc",
+                                "name": "Add tags",
+                                "scriptId": "Builtin|||appendIndicatorField",
+                                "sectionItemType": "button",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "trafficlightprotocol",
+                                "height": 53,
+                                "id": "fc34cbb0-b30c-11eb-941c-e725acf1fbbc",
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "args": {
+                                    "field": {
+                                        "simple": "tags"
+                                    }
+                                },
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "",
+                                "height": 53,
+                                "id": "8ad09c90-b313-11eb-941c-e725acf1fbbc",
+                                "index": 3,
+                                "listId": "f6n7qgpsje-3eeb0060-b30c-11eb-941c-e725acf1fbbc",
+                                "name": "Remove tags",
+                                "scriptId": "Builtin|||removeIndicatorField",
+                                "sectionItemType": "button",
+                                "startCol": 1
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Tags and TLP",
+                        "static": false,
+                        "w": 1,
+                        "x": 2,
+                        "y": 0
+                    },
+                    {
+                        "h": 3,
+                        "i": "f6n7qgpsje-4d0673a0-b30c-11eb-941c-e725acf1fbbc",
+                        "items": [],
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Related Incidents",
+                        "static": false,
+                        "type": "relatedIncidents",
+                        "w": 2,
+                        "x": 0,
+                        "y": 7
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 3,
+                        "hideName": false,
+                        "i": "f6n7qgpsje-556fecb0-b30c-11eb-941c-e725acf1fbbc",
+                        "items": [
+                            {
+                                "endCol": 4,
+                                "fieldId": "communitynotes",
+                                "height": 106,
+                                "id": "9439b2b0-b310-11eb-941c-e725acf1fbbc",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 4,
+                                "fieldId": "publications",
+                                "height": 106,
+                                "id": "96850240-b310-11eb-941c-e725acf1fbbc",
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Publications",
+                        "static": false,
+                        "w": 2,
+                        "x": 0,
+                        "y": 10
+                    },
+                    {
+                        "description": "",
+                        "displayType": "ROW",
+                        "h": 2,
+                        "hideItemTitleOnlyOne": true,
+                        "hideName": false,
+                        "i": "f6n7qgpsje-5fbb9340-b30c-11eb-941c-e725acf1fbbc",
+                        "items": [
+                            {
+                                "endCol": 6,
+                                "fieldId": "description",
+                                "height": 106,
+                                "id": "ffda2d00-b30c-11eb-941c-e725acf1fbbc",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Threat Actor Description",
+                        "static": false,
+                        "w": 3,
+                        "x": 0,
+                        "y": 2
+                    },
+                    {
+                        "h": 3,
+                        "i": "f6n7qgpsje-6b8e9d20-b30c-11eb-941c-e725acf1fbbc",
+                        "items": [],
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Relationships",
+                        "static": false,
+                        "type": "relationshipsTable",
+                        "w": 2,
+                        "x": 0,
+                        "y": 4
+                    },
+                    {
+                        "h": 6,
+                        "i": "f6n7qgpsje-70c3ed40-b30c-11eb-941c-e725acf1fbbc",
+                        "items": [],
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Timeline",
+                        "static": false,
+                        "type": "indicatorTimeline",
+                        "w": 1,
+                        "x": 2,
+                        "y": 4
+                    },
+                    {
+                        "h": 3,
+                        "i": "f6n7qgpsje-78251e10-b30c-11eb-941c-e725acf1fbbc",
+                        "items": [],
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Comments",
+                        "static": false,
+                        "type": "comments",
+                        "w": 1,
+                        "x": 2,
+                        "y": 10
+                    }
+                ],
+                "type": "custom"
+            },
+            {
+                "id": "main",
+                "name": "(Deprecated)",
                 "sections": [
                     {
                         "columns": [
@@ -58,7 +409,7 @@
                         "type": "relatedIncidents",
                         "w": 2,
                         "x": 0,
-                        "y": 11
+                        "y": 7
                     },
                     {
                         "displayType": "ROW",
@@ -81,11 +432,107 @@
                             {
                                 "dropEffect": "move",
                                 "endCol": 2,
-                                "fieldId": "firstseen",
+                                "fieldId": "stixid",
                                 "height": 22,
-                                "id": "4ccc29d0-ccca-11ea-a049-6b4b59f3b34f",
+                                "id": "f1ebc8a0-d17d-11ea-b39d-69849bf59ed7",
                                 "index": 0,
                                 "listId": "main-e2c8c970-a09d-11e9-8956-390f602b039a",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "stixthreatactortypes",
+                                "height": 22,
+                                "id": "ab4aafa0-97b7-11eb-9852-19a926060c76",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "stixaliases",
+                                "height": 22,
+                                "id": "9856d8f0-ccca-11ea-a049-6b4b59f3b34f",
+                                "index": 2,
+                                "listId": "main-e2c8c970-a09d-11e9-8956-390f602b039a",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "geocountry",
+                                "height": 22,
+                                "id": "beba93c0-97b7-11eb-9852-19a926060c76",
+                                "index": 3,
+                                "listId": "main-e2c8c970-a09d-11e9-8956-390f602b039a",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "region",
+                                "height": 22,
+                                "id": "b84fd0e0-97b7-11eb-9852-19a926060c76",
+                                "index": 4,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "stixroles",
+                                "height": 22,
+                                "id": "c7116f30-97b7-11eb-9852-19a926060c76",
+                                "index": 5,
+                                "listId": "main-e2c8c970-a09d-11e9-8956-390f602b039a",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "stixgoals",
+                                "height": 22,
+                                "id": "f057d730-97b7-11eb-9852-19a926060c76",
+                                "index": 6,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "stixsophistication",
+                                "height": 22,
+                                "id": "fd7673e0-97b7-11eb-9852-19a926060c76",
+                                "index": 7,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "stixresourcelevel",
+                                "height": 22,
+                                "id": "02329c60-97b8-11eb-9852-19a926060c76",
+                                "index": 8,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "stixprimarymotivation",
+                                "height": 22,
+                                "id": "0f599d80-97b8-11eb-9852-19a926060c76",
+                                "index": 9,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "stixsecondarymotivations",
+                                "height": 22,
+                                "id": "09558bb0-97b8-11eb-9852-19a926060c76",
+                                "index": 10,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
@@ -95,115 +542,35 @@
                                 "fieldId": "modified",
                                 "height": 22,
                                 "id": "54038b80-ccca-11ea-a049-6b4b59f3b34f",
-                                "index": 1,
+                                "index": 11,
                                 "listId": "main-e2c8c970-a09d-11e9-8956-390f602b039a",
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
-                                "fieldId": "stixid",
-                                "height": 22,
-                                "id": "f1ebc8a0-d17d-11ea-b39d-69849bf59ed7",
-                                "index": 2,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
                             {
                                 "dropEffect": "move",
                                 "endCol": 2,
-                                "fieldId": "stixthreatactortypes",
+                                "fieldId": "firstseen",
                                 "height": 22,
-                                "id": "a043da60-d17d-11ea-b39d-69849bf59ed7",
-                                "index": 3,
+                                "id": "4ccc29d0-ccca-11ea-a049-6b4b59f3b34f",
+                                "index": 12,
                                 "listId": "main-e2c8c970-a09d-11e9-8956-390f602b039a",
                                 "sectionItemType": "field",
                                 "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
-                                "fieldId": "stixaliases",
-                                "height": 22,
-                                "id": "9856d8f0-ccca-11ea-a049-6b4b59f3b34f",
-                                "index": 4,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "dropEffect": "move",
-                                "endCol": 4,
-                                "fieldId": "stixroles",
-                                "height": 22,
-                                "id": "a5efba10-d17d-11ea-b39d-69849bf59ed7",
-                                "index": 0,
-                                "listId": "main-e2c8c970-a09d-11e9-8956-390f602b039a",
-                                "sectionItemType": "field",
-                                "startCol": 2
-                            },
-                            {
-                                "dropEffect": "move",
-                                "endCol": 4,
-                                "fieldId": "stixgoals",
-                                "height": 22,
-                                "id": "ac371670-d17d-11ea-b39d-69849bf59ed7",
-                                "index": 1,
-                                "listId": "main-e2c8c970-a09d-11e9-8956-390f602b039a",
-                                "sectionItemType": "field",
-                                "startCol": 2
-                            },
-                            {
-                                "dropEffect": "move",
-                                "endCol": 4,
-                                "fieldId": "stixsophistication",
-                                "height": 22,
-                                "id": "ae5a6ba0-d17d-11ea-b39d-69849bf59ed7",
-                                "index": 2,
-                                "listId": "main-e2c8c970-a09d-11e9-8956-390f602b039a",
-                                "sectionItemType": "field",
-                                "startCol": 2
-                            },
-                            {
-                                "dropEffect": "move",
-                                "endCol": 4,
-                                "fieldId": "stixresourcelevel",
-                                "height": 22,
-                                "id": "ba64d930-d17d-11ea-b39d-69849bf59ed7",
-                                "index": 3,
-                                "listId": "main-e2c8c970-a09d-11e9-8956-390f602b039a",
-                                "sectionItemType": "field",
-                                "startCol": 2
-                            },
-                            {
-                                "endCol": 4,
-                                "fieldId": "stixprimarymotivation",
-                                "height": 22,
-                                "id": "ddb475d0-d17d-11ea-b39d-69849bf59ed7",
-                                "index": 4,
-                                "sectionItemType": "field",
-                                "startCol": 2
-                            },
-                            {
-                                "endCol": 4,
-                                "fieldId": "stixsecondarymotivations",
-                                "height": 22,
-                                "id": "e0bab0f0-d17d-11ea-b39d-69849bf59ed7",
-                                "index": 5,
-                                "sectionItemType": "field",
-                                "startCol": 2
                             }
                         ],
                         "maxW": 3,
                         "minH": 1,
                         "minW": 1,
                         "moved": false,
-                        "name": "Threat Actor Details",
+                        "name": "STIX Threat Actor Details",
                         "static": false,
-                        "w": 2,
+                        "w": 1,
                         "x": 0,
                         "y": 0
                     },
                     {
-                        "h": 5,
+                        "h": 6,
                         "i": "main-acbc9a10-3d54-11ea-8f80-71a50769e869",
                         "items": null,
                         "maxW": 3,
@@ -218,7 +585,7 @@
                         "y": 4
                     },
                     {
-                        "h": 5,
+                        "h": 3,
                         "i": "main-e608e030-3d54-11ea-8f80-71a50769e869",
                         "items": null,
                         "maxW": 3,
@@ -230,7 +597,7 @@
                         "type": "comments",
                         "w": 1,
                         "x": 2,
-                        "y": 9
+                        "y": 10
                     },
                     {
                         "displayType": "CARD",
@@ -304,65 +671,11 @@
                         "static": false,
                         "w": 1,
                         "x": 2,
-                        "y": 1
-                    },
-                    {
-                        "displayType": "ROW",
-                        "h": 1,
-                        "hideName": false,
-                        "i": "main-d59381d0-aa49-11ea-9e46-5ff91c1cf9b7",
-                        "items": [],
-                        "maxW": 3,
-                        "minH": 1,
-                        "minW": 1,
-                        "moved": false,
-                        "name": "Actions",
-                        "static": false,
-                        "w": 1,
-                        "x": 2,
                         "y": 0
                     },
                     {
-                        "description": "",
-                        "displayType": "CARD",
-                        "h": 1,
-                        "hideName": false,
-                        "i": "main-b915e930-b6dd-11ea-842d-c3903a6d3bd1",
-                        "items": [
-                            {
-                                "endCol": 1,
-                                "fieldId": "assigneduser",
-                                "height": 53,
-                                "id": "c78c26a0-b6dd-11ea-842d-c3903a6d3bd1",
-                                "index": 0,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "dropEffect": "move",
-                                "endCol": 2,
-                                "fieldId": "assignedrole",
-                                "height": 53,
-                                "id": "c5ba4cd0-b6dd-11ea-842d-c3903a6d3bd1",
-                                "index": 1,
-                                "listId": "main-b915e930-b6dd-11ea-842d-c3903a6d3bd1",
-                                "sectionItemType": "field",
-                                "startCol": 1
-                            }
-                        ],
-                        "maxW": 3,
-                        "minH": 1,
-                        "minW": 1,
-                        "moved": false,
-                        "name": "Assignee",
-                        "static": false,
-                        "w": 1,
-                        "x": 2,
-                        "y": 3
-                    },
-                    {
                         "displayType": "ROW",
-                        "h": 7,
+                        "h": 2,
                         "hideItemTitleOnlyOne": true,
                         "hideName": false,
                         "i": "main-a37f4790-cf12-11ea-99ca-719a20305a18",
@@ -383,68 +696,100 @@
                         "minH": 1,
                         "minW": 1,
                         "moved": false,
-                        "name": "Threat Actor Description",
+                        "name": "STIX Threat Actor Description",
                         "static": false,
-                        "w": 2,
+                        "w": 3,
                         "x": 0,
                         "y": 2
                     },
                     {
+                        "columns": [
+                            {
+                                "displayed": true,
+                                "isDefault": true,
+                                "key": "sources-field",
+                                "width": 150
+                            },
+                            {
+                                "displayed": true,
+                                "isDefault": true,
+                                "key": "reliability",
+                                "width": 150
+                            },
+                            {
+                                "displayed": true,
+                                "key": "First Seen By Source",
+                                "width": 153
+                            },
+                            {
+                                "displayed": true,
+                                "key": "Last Seen By Source",
+                                "width": 200
+                            }
+                        ],
                         "h": 2,
-                        "i": "main-f48c2580-dbcf-11ea-894b-59859b6b5482",
+                        "i": "main-3e18b0f0-979c-11eb-a8d1-098e2c945225",
                         "items": [],
                         "maxW": 3,
                         "minH": 1,
                         "minW": 1,
                         "moved": false,
-                        "name": "Feed Related Indicators",
-                        "query": "FeedRelatedIndicatorsWidget",
-                        "queryType": "script",
+                        "name": "Sources Data",
                         "static": false,
-                        "type": "dynamicIndicator",
-                        "w": 2,
-                        "x": 0,
-                        "y": 9
-                    }
-                ],
-                "type": "custom"
-            },
-            {
-                "hidden": false,
-                "id": "lkddep3o3f",
-                "name": "Additional Details",
-                "sections": [
-                    {
-                        "displayType": "ROW",
-                        "h": 9,
-                        "i": "lkddep3o3f-27940e50-ba17-11ea-96e1-0b84fdedf11e",
-                        "items": null,
-                        "maxW": 3,
-                        "minH": 1,
-                        "minW": 1,
-                        "moved": false,
-                        "name": "Extended Details",
-                        "static": false,
-                        "type": "extendedDetails",
-                        "w": 2,
-                        "x": 0,
+                        "type": "sources",
+                        "w": 1,
+                        "x": 1,
                         "y": 0
                     },
                     {
-                        "displayType": "ROW",
-                        "h": 9,
-                        "i": "lkddep3o3f-28a72c00-ba17-11ea-96e1-0b84fdedf11e",
-                        "items": null,
+                        "h": 3,
+                        "i": "main-979b5ae0-979e-11eb-a8d1-098e2c945225",
+                        "items": [],
                         "maxW": 3,
                         "minH": 1,
                         "minW": 1,
                         "moved": false,
-                        "name": "Custom Details",
+                        "name": "Relationships",
                         "static": false,
-                        "type": "customDetails",
-                        "w": 1,
-                        "x": 2,
-                        "y": 0
+                        "type": "relationshipsTable",
+                        "w": 2,
+                        "x": 0,
+                        "y": 4
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 3,
+                        "hideName": false,
+                        "i": "main-41973750-a819-11eb-8bae-034332f83c9b",
+                        "items": [
+                            {
+                                "endCol": 4,
+                                "fieldId": "communitynotes",
+                                "height": 106,
+                                "id": "4f709880-a819-11eb-8bae-034332f83c9b",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 4,
+                                "fieldId": "publications",
+                                "height": 106,
+                                "id": "51930350-a819-11eb-8bae-034332f83c9b",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Publications",
+                        "static": false,
+                        "w": 2,
+                        "x": 0,
+                        "y": 10
                     }
                 ],
                 "type": "custom"
@@ -454,12 +799,272 @@
     "indicatorsQuickView": {
         "tabs": [
             {
-                "id": "indicator-quick-view-info",
+                "hidden": false,
+                "id": "wsmusjqneo",
                 "name": "Info",
                 "sections": [
                     {
-                        "displayType": "CARD",
                         "h": 2,
+                        "i": "wsmusjqneo-aa3e2460-b310-11eb-941c-e725acf1fbbc",
+                        "items": [],
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Comments",
+                        "static": false,
+                        "type": "comments",
+                        "w": 1,
+                        "x": 0,
+                        "y": 7
+                    },
+                    {
+                        "h": 2,
+                        "i": "wsmusjqneo-ac356080-b310-11eb-941c-e725acf1fbbc",
+                        "items": [],
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Related Incidents",
+                        "static": false,
+                        "type": "relatedIncidents",
+                        "w": 1,
+                        "x": 0,
+                        "y": 5
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 1,
+                        "hideItemTitleOnlyOne": false,
+                        "hideName": false,
+                        "i": "wsmusjqneo-ae330540-b310-11eb-941c-e725acf1fbbc",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "tags",
+                                "height": 22,
+                                "id": "cd088b70-b310-11eb-941c-e725acf1fbbc",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "trafficlightprotocol",
+                                "height": 22,
+                                "id": "cecf1aa0-b310-11eb-941c-e725acf1fbbc",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Tags and TLP",
+                        "static": false,
+                        "w": 1,
+                        "x": 0,
+                        "y": 4
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "hideItemTitleOnlyOne": true,
+                        "hideName": false,
+                        "i": "wsmusjqneo-bb17cd40-b310-11eb-941c-e725acf1fbbc",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "description",
+                                "height": 22,
+                                "id": "d65a8fc0-b310-11eb-941c-e725acf1fbbc",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Threat Actor Description",
+                        "static": false,
+                        "w": 1,
+                        "x": 0,
+                        "y": 2
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "hideName": false,
+                        "i": "wsmusjqneo-c43ddf90-b310-11eb-941c-e725acf1fbbc",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "stixid",
+                                "height": 22,
+                                "id": "daec4ce0-b310-11eb-941c-e725acf1fbbc",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "threatactortypes",
+                                "height": 22,
+                                "id": "e3677930-b310-11eb-941c-e725acf1fbbc",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "aliases",
+                                "height": 22,
+                                "id": "e8aa36d0-b310-11eb-941c-e725acf1fbbc",
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "geocountry",
+                                "height": 22,
+                                "id": "eb4469b0-b310-11eb-941c-e725acf1fbbc",
+                                "index": 3,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "region",
+                                "height": 22,
+                                "id": "ed27a8a0-b310-11eb-941c-e725acf1fbbc",
+                                "index": 4,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "roles",
+                                "height": 22,
+                                "id": "f4f35b10-b310-11eb-941c-e725acf1fbbc",
+                                "index": 5,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "goals",
+                                "height": 22,
+                                "id": "f7b90ac0-b310-11eb-941c-e725acf1fbbc",
+                                "index": 6,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "sophistication",
+                                "height": 22,
+                                "id": "fa817990-b310-11eb-941c-e725acf1fbbc",
+                                "index": 7,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "resourcelevel",
+                                "height": 22,
+                                "id": "032a4590-b311-11eb-941c-e725acf1fbbc",
+                                "index": 8,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "primarymotivation",
+                                "height": 22,
+                                "id": "06f186c0-b311-11eb-941c-e725acf1fbbc",
+                                "index": 9,
+                                "listId": "wsmusjqneo-c43ddf90-b310-11eb-941c-e725acf1fbbc",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "secondarymotivations",
+                                "height": 22,
+                                "id": "09acd630-b311-11eb-941c-e725acf1fbbc",
+                                "index": 10,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "modified",
+                                "height": 22,
+                                "id": "0d52d3c0-b311-11eb-941c-e725acf1fbbc",
+                                "index": 11,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "firstseen",
+                                "height": 22,
+                                "id": "0f7fc5e0-b311-11eb-941c-e725acf1fbbc",
+                                "index": 12,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Threat Actor Details",
+                        "static": false,
+                        "w": 1,
+                        "x": 0,
+                        "y": 0
+                    }
+                ],
+                "type": "custom"
+            },
+            {
+                "hidden": false,
+                "id": "se889tdxik",
+                "name": "Relationships",
+                "sections": [
+                    {
+                        "h": 4,
+                        "i": "se889tdxik-09585430-979f-11eb-a8d1-098e2c945225",
+                        "items": [],
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Relationships",
+                        "static": false,
+                        "type": "relationshipsTable",
+                        "w": 1,
+                        "x": 0,
+                        "y": 0
+                    }
+                ],
+                "type": "custom"
+            },
+            {
+                "id": "indicator-quick-view-info",
+                "name": "(Deprecated)",
+                "sections": [
+                    {
+                        "displayType": "ROW",
+                        "h": 1,
                         "hideItemTitleOnlyOne": false,
                         "i": "indicator-quick-view-info-tags-section",
                         "items": [
@@ -490,60 +1095,46 @@
                         "static": false,
                         "w": 1,
                         "x": 0,
-                        "y": 0
+                        "y": 4
                     },
                     {
                         "h": 2,
                         "i": "indicator-quick-view-info-relatedIncidents",
+                        "maxW": 3,
                         "moved": false,
                         "name": "Related Incidents",
                         "static": false,
                         "type": "relatedIncidents",
                         "w": 1,
                         "x": 0,
-                        "y": 8
+                        "y": 5
                     },
                     {
                         "h": 2,
                         "i": "indicator-quick-view-info-comments",
+                        "maxW": 3,
                         "moved": false,
                         "name": "Comments",
                         "static": false,
                         "type": "comments",
                         "w": 1,
                         "x": 0,
-                        "y": 10
+                        "y": 7
                     },
                     {
                         "displayType": "ROW",
-                        "h": 4,
+                        "h": 2,
                         "hideName": false,
                         "i": "indicator-quick-view-info-3518e4c0-cccc-11ea-a049-6b4b59f3b34f",
                         "items": [
                             {
-                                "endCol": 2,
-                                "fieldId": "firstseen",
-                                "height": 22,
-                                "id": "3c8d7680-cccc-11ea-a049-6b4b59f3b34f",
-                                "index": 0,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
-                                "fieldId": "modified",
-                                "height": 22,
-                                "id": "3faf7700-cccc-11ea-a049-6b4b59f3b34f",
-                                "index": 1,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
+                                "dropEffect": "move",
                                 "endCol": 2,
                                 "fieldId": "stixid",
                                 "height": 22,
                                 "id": "20001a20-d183-11ea-b1ee-39abdac77dba",
-                                "index": 2,
+                                "index": 0,
+                                "listId": "indicator-quick-view-info-3518e4c0-cccc-11ea-a049-6b4b59f3b34f",
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
@@ -551,16 +1142,36 @@
                                 "endCol": 2,
                                 "fieldId": "stixthreatactortypes",
                                 "height": 22,
-                                "id": "25c43cc0-d183-11ea-b1ee-39abdac77dba",
+                                "id": "65b46570-97b8-11eb-9852-19a926060c76",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "stixaliases",
+                                "height": 22,
+                                "id": "28289290-d183-11ea-b1ee-39abdac77dba",
+                                "index": 2,
+                                "listId": "indicator-quick-view-info-3518e4c0-cccc-11ea-a049-6b4b59f3b34f",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "geocountry",
+                                "height": 22,
+                                "id": "6d9d8af0-97b8-11eb-9852-19a926060c76",
                                 "index": 3,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "stixaliases",
+                                "fieldId": "region",
                                 "height": 22,
-                                "id": "28289290-d183-11ea-b1ee-39abdac77dba",
+                                "id": "790b4350-97b8-11eb-9852-19a926060c76",
                                 "index": 4,
                                 "sectionItemType": "field",
                                 "startCol": 0
@@ -570,7 +1181,7 @@
                                 "endCol": 2,
                                 "fieldId": "stixroles",
                                 "height": 22,
-                                "id": "2cf97b90-d183-11ea-b1ee-39abdac77dba",
+                                "id": "7d6a30a0-97b8-11eb-9852-19a926060c76",
                                 "index": 5,
                                 "listId": "indicator-quick-view-info-3518e4c0-cccc-11ea-a049-6b4b59f3b34f",
                                 "sectionItemType": "field",
@@ -580,7 +1191,7 @@
                                 "endCol": 2,
                                 "fieldId": "stixgoals",
                                 "height": 22,
-                                "id": "2e79b2f0-d183-11ea-b1ee-39abdac77dba",
+                                "id": "80b34120-97b8-11eb-9852-19a926060c76",
                                 "index": 6,
                                 "sectionItemType": "field",
                                 "startCol": 0
@@ -589,7 +1200,7 @@
                                 "endCol": 2,
                                 "fieldId": "stixsophistication",
                                 "height": 22,
-                                "id": "331d2350-d183-11ea-b1ee-39abdac77dba",
+                                "id": "859d0950-97b8-11eb-9852-19a926060c76",
                                 "index": 7,
                                 "sectionItemType": "field",
                                 "startCol": 0
@@ -598,7 +1209,7 @@
                                 "endCol": 2,
                                 "fieldId": "stixresourcelevel",
                                 "height": 22,
-                                "id": "3a519ed0-d183-11ea-b1ee-39abdac77dba",
+                                "id": "89689040-97b8-11eb-9852-19a926060c76",
                                 "index": 8,
                                 "sectionItemType": "field",
                                 "startCol": 0
@@ -607,7 +1218,7 @@
                                 "endCol": 2,
                                 "fieldId": "stixprimarymotivation",
                                 "height": 22,
-                                "id": "342b5f00-d183-11ea-b1ee-39abdac77dba",
+                                "id": "8d4fdc90-97b8-11eb-9852-19a926060c76",
                                 "index": 9,
                                 "sectionItemType": "field",
                                 "startCol": 0
@@ -616,8 +1227,28 @@
                                 "endCol": 2,
                                 "fieldId": "stixsecondarymotivations",
                                 "height": 22,
-                                "id": "35299520-d183-11ea-b1ee-39abdac77dba",
+                                "id": "8f3ae3b0-97b8-11eb-9852-19a926060c76",
                                 "index": 10,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "modified",
+                                "height": 22,
+                                "id": "3faf7700-cccc-11ea-a049-6b4b59f3b34f",
+                                "index": 11,
+                                "listId": "indicator-quick-view-info-3518e4c0-cccc-11ea-a049-6b4b59f3b34f",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "firstseen",
+                                "height": 22,
+                                "id": "3c8d7680-cccc-11ea-a049-6b4b59f3b34f",
+                                "index": 12,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             }
@@ -626,11 +1257,11 @@
                         "minH": 1,
                         "minW": 1,
                         "moved": false,
-                        "name": "Threat Actor Details",
+                        "name": "STIX Threat Actor Details",
                         "static": false,
                         "w": 1,
                         "x": 0,
-                        "y": 2
+                        "y": 0
                     },
                     {
                         "displayType": "ROW",
@@ -653,17 +1284,20 @@
                         "minH": 1,
                         "minW": 1,
                         "moved": false,
-                        "name": "Threat Actor Description",
+                        "name": "STIX Threat Actor Description",
                         "static": false,
                         "w": 1,
                         "x": 0,
-                        "y": 6
+                        "y": 2
                     }
                 ],
                 "type": "custom"
             }
         ]
     },
+    "name": "Threat Actor",
+    "system": false,
+    "version": -1,
     "fromVersion": "6.0.0",
-    "version": -1
+    "description": ""
 }

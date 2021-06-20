@@ -7,7 +7,7 @@ This integration was integrated and tested with version v4.2.3 of MongoDB.
 The account user must have appropriate permissions -  ***root*** role to execute the API calls.
 
 
-## Configure MongoDB Key Value Store on Demisto
+## Configure MongoDB Key Value Store on Cortex XSOAR
 ---
 
 1. Navigate to __Settings__ > __Integrations__ > __Servers & Services__.
@@ -24,7 +24,7 @@ The account user must have appropriate permissions -  ***root*** role to execute
 
 ## Commands
 ---
-You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.
+You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 1. mongodb-write-key-value
 2. mongodb-get-key-value
@@ -43,7 +43,7 @@ Adds a key/value record for the incident. If the key exists, the existing value 
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| id | The Demisto incident number. | Optional | 
+| id | The XSOAR incident number. | Optional | 
 | key | Name/Key. | Required | 
 | value | Assigns a value to the name/key. | Required | 
 
@@ -88,7 +88,7 @@ Returns the value of the specified name/key of an incident.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| id | The Demisto incident number. | Optional | 
+| id | The XSOAR incident number. | Optional | 
 | key | Name/Key. | Required | 
 
 
@@ -133,7 +133,7 @@ Lists the keys and their values for the specified incident.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| id | The Demisto incident number. | Optional | 
+| id | The XSOAR incident number. | Optional | 
 
 
 ##### Context Output
@@ -190,7 +190,7 @@ Deletes the key/value record for an incident.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| id | The Demisto incident number. | Optional | 
+| id | The XSOAR incident number. | Optional | 
 | key | Name/Key. | Required | 
 
 
@@ -214,7 +214,7 @@ Purges all keys/values for an incident. A common use case for this command is wh
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| id | The Demisto incident number. | Optional | 
+| id | The XSOAR incident number. | Optional | 
 
 
 ##### Context Output
@@ -237,7 +237,7 @@ Returns the number of key/value pairs for an incident.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| id | The Demisto incident number. | Optional | 
+| id | The XSOAR incident number. | Optional | 
 
 
 ##### Context Output

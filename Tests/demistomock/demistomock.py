@@ -1002,7 +1002,8 @@ def createIndicators(indicators_batch):
     return ""
 
 
-def searchIndicators(fromDate='', query='', size=100, page=0, toDate='', value='', searchAfter=None):
+def searchIndicators(fromDate='', query='', size=100, page=0, toDate='', value='', searchAfter=None,
+                     populateFields=None):
     """Searches for indicators according to given query
 
     Args:
@@ -1013,6 +1014,7 @@ def searchIndicators(fromDate='', query='', size=100, page=0, toDate='', value='
       todate (str): The end date to search until to (Default value = '')
       value (str): The indicator value to search (Default value = '')
       searchAfter (str): Use the last searchIndicators() outputs for search batch (Default value = None)
+      populateFields (str): Comma separated fields to filter (e.g. "value,type")
 
     Returns:
       dict: Object contains the search results

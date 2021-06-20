@@ -1,11 +1,35 @@
 #!/usr/bin/env python3
 
 import os
+import json
 from datetime import datetime
 from typing import Optional
 
+CONTENT_ROOT_PATH = os.path.abspath(os.path.join(__file__, '../../..'))  # full path to content root repo
+
 # override print so we have a timestamp with each print
 org_print = print
+
+
+def load_json(file_path: str) -> dict:
+    """ Reads and loads json file.
+
+    Args:
+        file_path (str): full path to json file.
+
+    Returns:
+        dict: loaded json file.
+
+    """
+    try:
+        if file_path and os.path.exists(file_path):
+            with open(file_path, 'r') as json_file:
+                result = json.load(json_file)
+        else:
+            result = {}
+        return result
+    except json.decoder.JSONDecodeError:
+        return {}
 
 
 def timestamped_print(*args, **kwargs):

@@ -1,0 +1,479 @@
+{
+  "data": [
+    {
+      "accountId": "433241117337583618",
+      "accountName": "SentinelOne",
+      "agentComputerName": "EC2AMAZ-AJ0KANC",
+      "agentDomain": "WORKGROUP",
+      "agentId": "657613730168123595",
+      "agentInfected": false,
+      "agentIp": "3.122.240.42",
+      "agentIsActive": false,
+      "agentIsDecommissioned": true,
+      "agentMachineType": "server",
+      "agentNetworkStatus": "connecting",
+      "agentOsType": "windows",
+      "agentVersion": "3.1.3.38",
+      "annotation": null,
+      "automaticallyResolved": false,
+      "browserType": null,
+      "certId": "",
+      "classification": "Malware",
+      "classificationSource": "Static",
+      "classifierName": "STATIC",
+      "cloudVerdict": "black",
+      "collectionId": "433377870883088367",
+      "commandId": null,
+      "createdAt": "2019-09-15T12:05:49.095889Z",
+      "createdDate": "2019-09-15T12:05:49.095889Z",
+      "description": "malware detected - not mitigated yet (static engine)",
+      "engines": [
+        "reputation"
+      ],
+      "external_ticket_id": null,
+      "fileContentHash": "3395856ce81f2b7382dee72602f798b642f14140",
+      "fileCreatedDate": null,
+      "fileDisplayName": "Unconfirmed 123490.crdownload",
+      "fileExtensionType": "Unknown",
+      "fileIsDotNet": null,
+      "fileIsExecutable": false,
+      "fileIsSystem": false,
+      "fileMaliciousContent": null,
+      "fileObjectId": "88FABEEE0F7FE18E",
+      "filePath": "\\Device\\HarddiskVolume1\\Users\\Administrator\\Downloads\\Unconfirmed 123490.crdownload",
+      "fileSha256": null,
+      "fileVerificationType": "NotSigned",
+      "fromCloud": false,
+      "fromScan": false,
+      "id": "715718962991148224",
+      "indicators": [],
+      "initiatedBy": "agentPolicy",
+      "initiatedByDescription": "Agent Policy",
+      "initiatingUserId": null,
+      "isCertValid": false,
+      "isInteractiveSession": false,
+      "isPartialStory": false,
+      "maliciousGroupId": "A8F6CB4CB9AE09A1",
+      "maliciousProcessArguments": null,
+      "markedAsBenign": false,
+      "mitigationMode": "protect",
+      "mitigationReport": {
+        "kill": {
+          "status": "success"
+        },
+        "network_quarantine": {
+          "status": null
+        },
+        "quarantine": {
+          "status": "success"
+        },
+        "remediate": {
+          "status": null
+        },
+        "rollback": {
+          "status": null
+        },
+        "unquarantine": {
+          "status": null
+        }
+      },
+      "mitigationStatus": "mitigated",
+      "publisher": "",
+      "rank": 7,
+      "resolved": true,
+      "siteId": "475482421366727779",
+      "siteName": "demisto",
+      "threatAgentVersion": "3.1.3.38",
+      "threatName": "Unconfirmed 123490.crdownload",
+      "updatedAt": "2020-04-02T14:52:28.528753Z",
+      "username": "EC2AMAZ-AJ0KANC\\Administrator",
+      "whiteningOptions": [
+        "hash"
+      ]
+    },
+    {
+      "accountId": "43324111733712345",
+      "accountName": "SentinelOne",
+      "agentComputerName": "EC2AMAZ-AJ0KANC",
+      "agentDomain": "WORKGROUP",
+      "agentId": "657613730168123595",
+      "agentInfected": false,
+      "agentIp": "3.122.240.42",
+      "agentIsActive": false,
+      "agentIsDecommissioned": true,
+      "agentMachineType": "server",
+      "agentNetworkStatus": "connecting",
+      "agentOsType": "windows",
+      "agentVersion": "3.1.3.38",
+      "annotation": null,
+      "automaticallyResolved": false,
+      "browserType": null,
+      "certId": "",
+      "classification": "Malware",
+      "classificationSource": "Static",
+      "classifierName": "STATIC",
+      "cloudVerdict": "black",
+      "collectionId": "433377870883088367",
+      "commandId": null,
+      "createdAt": "2019-09-15T12:14:42.440985Z",
+      "createdDate": "2019-09-15T12:14:42.440985Z",
+      "description": "malware detected - not mitigated yet (static engine)",
+      "engines": [
+        "reputation"
+      ],
+      "external_ticket_id": null,
+      "fileContentHash": "3395856ce81f2b7382dee72602f798b642f14140",
+      "fileCreatedDate": null,
+      "fileDisplayName": "Unconfirmed 123490.crdownload",
+      "fileExtensionType": "Unknown",
+      "fileIsDotNet": null,
+      "fileIsExecutable": false,
+      "fileIsSystem": false,
+      "fileMaliciousContent": null,
+      "fileObjectId": "88FABEEE0F7FE18E",
+      "filePath": "\\Device\\HarddiskVolume1\\Users\\Administrator\\Downloads\\Unconfirmed 123490.crdownload",
+      "fileSha256": null,
+      "fileVerificationType": "NotSigned",
+      "fromCloud": false,
+      "fromScan": false,
+      "id": "1234518962991148224",
+      "indicators": [],
+      "initiatedBy": "agentPolicy",
+      "initiatedByDescription": "Agent Policy",
+      "initiatingUserId": null,
+      "isCertValid": false,
+      "isInteractiveSession": false,
+      "isPartialStory": false,
+      "maliciousGroupId": "A8F6CB4CB9AE09A1",
+      "maliciousProcessArguments": null,
+      "markedAsBenign": false,
+      "mitigationMode": "protect",
+      "mitigationReport": {
+        "kill": {
+          "status": "success"
+        },
+        "network_quarantine": {
+          "status": null
+        },
+        "quarantine": {
+          "status": "success"
+        },
+        "remediate": {
+          "status": null
+        },
+        "rollback": {
+          "status": null
+        },
+        "unquarantine": {
+          "status": null
+        }
+      },
+      "mitigationStatus": "mitigated",
+      "publisher": "",
+      "rank": 4,
+      "resolved": true,
+      "siteId": "475482421366727779",
+      "siteName": "demisto",
+      "threatAgentVersion": "3.1.3.38",
+      "threatName": "Unconfirmed 123490.crdownload",
+      "updatedAt": "2020-04-02T14:52:28.528753Z",
+      "username": "EC2AMAZ-AJ0KANC\\Administrator",
+      "whiteningOptions": [
+        "hash"
+      ]
+    },
+    {
+      "accountId": "433241117337583618",
+      "accountName": "SentinelOne",
+      "agentComputerName": "EC2AMAZ-AJ0KANC",
+      "agentDomain": "WORKGROUP",
+      "agentId": "657613730168123595",
+      "agentInfected": false,
+      "agentIp": "3.122.240.42",
+      "agentIsActive": false,
+      "agentIsDecommissioned": true,
+      "agentMachineType": "server",
+      "agentNetworkStatus": "connecting",
+      "agentOsType": "windows",
+      "agentVersion": "3.1.3.38",
+      "annotation": null,
+      "automaticallyResolved": false,
+      "browserType": null,
+      "certId": "CHIP DIGITAL GMBH",
+      "classification": "Malware",
+      "classificationSource": "Static",
+      "classifierName": "STATIC",
+      "cloudVerdict": "provider_unknown",
+      "collectionId": "715723437055225055",
+      "commandId": null,
+      "createdAt": "2019-09-15T12:14:42.440985Z",
+      "createdDate": "2019-09-15T12:14:41.260000Z",
+      "description": "malware detected - not mitigated yet (static engine)",
+      "engines": [
+        "pre_execution"
+      ],
+      "external_ticket_id": null,
+      "fileContentHash": "d8757a0396d05a1d532422827a70a7966c361366",
+      "fileCreatedDate": null,
+      "fileDisplayName": "Ncat Netcat Portable - CHIP-Installer.exe",
+      "fileExtensionType": "Executable",
+      "fileIsDotNet": null,
+      "fileIsExecutable": true,
+      "fileIsSystem": false,
+      "fileMaliciousContent": null,
+      "fileObjectId": "7EF9024D3A1B9660",
+      "filePath": "\\Device\\HarddiskVolume1\\Users\\Administrator\\Downloads\\Ncat Netcat Portable - CHIP-Installer.exe",
+      "fileSha256": null,
+      "fileVerificationType": "SignedVerified",
+      "fromCloud": false,
+      "fromScan": false,
+      "id": "715723437013282014",
+      "indicators": [
+        25,
+        24,
+        23,
+        6
+      ],
+      "initiatedBy": "agentPolicy",
+      "initiatedByDescription": "Agent Policy",
+      "initiatingUserId": null,
+      "isCertValid": true,
+      "isInteractiveSession": false,
+      "isPartialStory": false,
+      "maliciousGroupId": "8BF4207AFA583317",
+      "maliciousProcessArguments": null,
+      "markedAsBenign": false,
+      "mitigationMode": "protect",
+      "mitigationReport": {
+        "kill": {
+          "status": "success"
+        },
+        "network_quarantine": {
+          "status": null
+        },
+        "quarantine": {
+          "status": "success"
+        },
+        "remediate": {
+          "status": null
+        },
+        "rollback": {
+          "status": null
+        },
+        "unquarantine": {
+          "status": null
+        }
+      },
+      "mitigationStatus": "mitigated",
+      "publisher": "CHIP DIGITAL GMBH",
+      "rank": 0,
+      "resolved": true,
+      "siteId": "475482421366727779",
+      "siteName": "demisto",
+      "threatAgentVersion": "3.1.3.38",
+      "threatName": "Ncat Netcat Portable - CHIP-Installer.exe",
+      "updatedAt": "2020-04-02T14:52:28.534110Z",
+      "username": "EC2AMAZ-AJ0KANC\\Administrator",
+      "whiteningOptions": [
+        "certificate",
+        "hash",
+        "path"
+      ]
+    },
+    {
+      "accountId": "433241117337583618",
+      "accountName": "SentinelOne",
+      "agentComputerName": "EC2AMAZ-AJ0KANC",
+      "agentDomain": "WORKGROUP",
+      "agentId": "657613730168123595",
+      "agentInfected": false,
+      "agentIp": "3.122.240.42",
+      "agentIsActive": false,
+      "agentIsDecommissioned": true,
+      "agentMachineType": "server",
+      "agentNetworkStatus": "connecting",
+      "agentOsType": "windows",
+      "agentVersion": "3.1.3.38",
+      "annotation": null,
+      "automaticallyResolved": false,
+      "browserType": null,
+      "certId": "",
+      "classification": "Malware",
+      "classificationSource": "Static",
+      "classifierName": "STATIC",
+      "cloudVerdict": "provider_unknown",
+      "collectionId": "715723437055225055",
+      "commandId": null,
+      "createdAt": "2019-09-15T12:14:43.349807Z",
+      "createdDate": "2019-09-15T12:14:41.620000Z",
+      "description": "malware detected - not mitigated yet (static engine)",
+      "engines": [
+        "pre_execution"
+      ],
+      "external_ticket_id": null,
+      "fileContentHash": "d8757a0396d05a1d532422827a70a7966c361366",
+      "fileCreatedDate": null,
+      "fileDisplayName": "Ncat Netcat Portable - CHIP-Installer.exe",
+      "fileExtensionType": "Executable",
+      "fileIsDotNet": null,
+      "fileIsExecutable": false,
+      "fileIsSystem": false,
+      "fileMaliciousContent": null,
+      "fileObjectId": "62BB7314154C2FF7",
+      "filePath": "\\Device\\HarddiskVolume1\\Users\\Administrator\\Downloads\\Ncat Netcat Portable - CHIP-Installer.exe",
+      "fileSha256": null,
+      "fileVerificationType": "PathNotFound",
+      "fromCloud": false,
+      "fromScan": false,
+      "id": "715723444638526700",
+      "indicators": [
+        25,
+        24,
+        23,
+        6
+      ],
+      "initiatedBy": "agentPolicy",
+      "initiatedByDescription": "Agent Policy",
+      "initiatingUserId": null,
+      "isCertValid": false,
+      "isInteractiveSession": false,
+      "isPartialStory": false,
+      "maliciousGroupId": "3E41618589D5CB3E",
+      "maliciousProcessArguments": null,
+      "markedAsBenign": false,
+      "mitigationMode": "protect",
+      "mitigationReport": {
+        "kill": {
+          "status": "success"
+        },
+        "network_quarantine": {
+          "status": null
+        },
+        "quarantine": {
+          "status": "success"
+        },
+        "remediate": {
+          "status": null
+        },
+        "rollback": {
+          "status": null
+        },
+        "unquarantine": {
+          "status": null
+        }
+      },
+      "mitigationStatus": "mitigated",
+      "publisher": "",
+      "rank": 0,
+      "resolved": true,
+      "siteId": "475482421366727779",
+      "siteName": "demisto",
+      "threatAgentVersion": "3.1.3.38",
+      "threatName": "Ncat Netcat Portable - CHIP-Installer.exe",
+      "updatedAt": "2020-04-02T14:52:28.535860Z",
+      "username": "",
+      "whiteningOptions": [
+        "hash",
+        "path"
+      ]
+    },
+    {
+      "accountId": "433241117337583618",
+      "accountName": "SentinelOne",
+      "agentComputerName": "EC2AMAZ-AJ0KANC",
+      "agentDomain": "WORKGROUP",
+      "agentId": "657613730168123595",
+      "agentInfected": false,
+      "agentIp": "3.122.240.42",
+      "agentIsActive": false,
+      "agentIsDecommissioned": true,
+      "agentMachineType": "server",
+      "agentNetworkStatus": "connecting",
+      "agentOsType": "windows",
+      "agentVersion": "3.1.3.38",
+      "annotation": null,
+      "automaticallyResolved": false,
+      "browserType": null,
+      "certId": "CHIP DIGITAL GMBH",
+      "classification": "Malware",
+      "classificationSource": "Static",
+      "classifierName": "STATIC",
+      "cloudVerdict": "provider_unknown",
+      "collectionId": "715723450695101689",
+      "commandId": null,
+      "createdAt": "2019-09-15T12:14:44.069617Z",
+      "createdDate": "2019-09-15T12:14:43.215000Z",
+      "description": "malware detected - not mitigated yet (static engine)",
+      "engines": [
+        "pre_execution"
+      ],
+      "external_ticket_id": null,
+      "fileContentHash": "ccce727e39cb8d955a323bf2c0419f31fb917e5a",
+      "fileCreatedDate": null,
+      "fileDisplayName": "Ncat Netcat Portable - CHIP-Installer (1).exe",
+      "fileExtensionType": "Executable",
+      "fileIsDotNet": null,
+      "fileIsExecutable": true,
+      "fileIsSystem": false,
+      "fileMaliciousContent": null,
+      "fileObjectId": "357D086E6B4CED40",
+      "filePath": "\\Device\\HarddiskVolume1\\Users\\Administrator\\Downloads\\Ncat Netcat Portable - CHIP-Installer (1).exe",
+      "fileSha256": null,
+      "fileVerificationType": "SignedVerified",
+      "fromCloud": false,
+      "fromScan": false,
+      "id": "715723450678324472",
+      "indicators": [
+        25,
+        24,
+        23,
+        6
+      ],
+      "initiatedBy": "agentPolicy",
+      "initiatedByDescription": "Agent Policy",
+      "initiatingUserId": null,
+      "isCertValid": true,
+      "isInteractiveSession": false,
+      "isPartialStory": false,
+      "maliciousGroupId": "5F18360CAB4D45B7",
+      "maliciousProcessArguments": null,
+      "markedAsBenign": false,
+      "mitigationMode": "protect",
+      "mitigationReport": {
+        "kill": {
+          "status": "success"
+        },
+        "network_quarantine": {
+          "status": null
+        },
+        "quarantine": {
+          "status": "success"
+        },
+        "remediate": {
+          "status": null
+        },
+        "rollback": {
+          "status": null
+        },
+        "unquarantine": {
+          "status": null
+        }
+      },
+      "mitigationStatus": "mitigated",
+      "publisher": "CHIP DIGITAL GMBH",
+      "rank": 0,
+      "resolved": true,
+      "siteId": "475482421366727779",
+      "siteName": "demisto",
+      "threatAgentVersion": "3.1.3.38",
+      "threatName": "Ncat Netcat Portable - CHIP-Installer (1).exe",
+      "updatedAt": "2020-04-02T14:52:28.537685Z",
+      "username": "EC2AMAZ-AJ0KANC\\Administrator",
+      "whiteningOptions": [
+        "certificate",
+        "hash",
+        "path"
+      ]
+    }
+  ]
+}

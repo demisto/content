@@ -6,6 +6,7 @@ import re
 import sys
 
 import requests
+import gitlab
 from circleci.api import Api as circle_api
 from slack import WebClient as SlackClient
 
@@ -16,22 +17,34 @@ from demisto_sdk.commands.common.tools import str2bool, run_command
 
 DEMISTO_GREY_ICON = 'https://3xqz5p387rui1hjtdv1up7lw-wpengine.netdna-ssl.com/wp-content/' \
                     'uploads/2018/07/Demisto-Icon-Dark.png'
+ARTIFACTS_FOLDER = os.getenv('ARTIFACTS_FOLDER', './artifacts')
 UNITTESTS_TYPE = 'unittests'
 TEST_PLAYBOOK_TYPE = 'test_playbooks'
 SDK_UNITTESTS_TYPE = 'sdk_unittests'
-SDK_FAILED_STEPS_TYPE = 'sdk_faild_steps'
+SDK_FAILED_STEPS_TYPE = 'sdk_failed_steps'
 SDK_RUN_AGAINST_FAILED_STEPS_TYPE = 'sdk_run_against_failed_steps'
 SDK_BUILD_TITLE = 'SDK Nightly Build'
 SDK_XSOAR_BUILD_TITLE = 'Demisto SDK Nightly - Run Against Cortex XSOAR'
 CONTENT_CHANNEL = 'dmst-content-team'
+DMST_SDK_NIGHTLY_GITLAB_JOBS_PREFIX = 'demisto-sdk-nightly'
+SDK_NIGHTLY_CIRCLE_OPTS = {
+    SDK_UNITTESTS_TYPE, SDK_FAILED_STEPS_TYPE, SDK_RUN_AGAINST_FAILED_STEPS_TYPE
+}
 
 
-def get_faild_steps_list():
+def get_failed_steps_list():
     options = options_handler()
+    if options.gitlab_server:
+        return get_gitlab_failed_steps(options.ci_token, options.buildNumber, options.gitlab_server,
+                                       options.gitlab_project_id)
+    return get_circle_failed_steps(options.ci_token, options.buildNumber)
+
+
+def get_circle_failed_steps(ci_token, build_number):
     failed_steps_list = []
-    circle_client = circle_api(options.circleci)
+    circle_client = circle_api(ci_token)
     vcs_type = 'github'
-    build_report = circle_client.get_build_info(username='demisto', project='content', build_num=options.buildNumber,
+    build_report = circle_client.get_build_info(username='demisto', project='content', build_num=build_number,
                                                 vcs_type=vcs_type)
     for step in build_report.get('steps', []):
         step_name = step.get('name', '')
@@ -44,6 +57,20 @@ def get_faild_steps_list():
                     failed_steps_list.append(f'{step_name}: {action_name}')
                 else:
                     failed_steps_list.append(f'{step_name}')
+
+    return failed_steps_list
+
+
+def get_gitlab_failed_steps(ci_token, build_number, server_url, project_id):
+    failed_steps_list = []
+    gitlab_client = gitlab.Gitlab(server_url, private_token=ci_token)
+    project = gitlab_client.projects.get(int(project_id))
+    job = project.jobs.get(int(build_number))
+    logging.info(f'status of gitlab job with id {job.id} and name {job.name} is {job.status}')
+    if job.status == 'failed':
+        logging.info(f'collecting failed job {job.name}')
+        logging.info(f'pipeline associated with failed job is {job.pipeline.get("web_url")}')
+        failed_steps_list.append(f'{job.name}')
 
     return failed_steps_list
 
@@ -67,23 +94,27 @@ def options_handler():
     parser.add_argument('-u', '--url', help='The url of the current build', required=True)
     parser.add_argument('-b', '--buildNumber', help='The build number', required=True)
     parser.add_argument('-s', '--slack', help='The token for slack', required=True)
-    parser.add_argument('-c', '--circleci', help='The token for circleci', required=True)
-    parser.add_argument('-t', '--test_type', help='unittests or test_playbooks or sdk_unittests or sdk_faild_steps'
+    parser.add_argument('-c', '--ci_token', help='The token for circleci/gitlab', required=True)
+    parser.add_argument('-t', '--test_type', help='unittests or test_playbooks or sdk_unittests or sdk_failed_steps'
                                                   'or bucket_upload')
     parser.add_argument('-f', '--env_results_file_name', help='The env results file containing the dns address')
     parser.add_argument('-bu', '--bucket_upload', help='is bucket upload build?', required=True, type=str2bool)
-    parser.add_argument('-ca', '--circle_artifacts', help="The path to the circle artifacts directory")
+    parser.add_argument('-ca', '--ci_artifacts', help="The path to the ci artifacts directory")
     parser.add_argument('-j', '--job_name', help='The job name that is running the slack notifier')
     parser.add_argument('-ch', '--slack_channel', help='The slack channel in which to send the notification')
+    parser.add_argument('-g', '--gitlab_server', help='The gitlab server running the script, if left empty circleci '
+                                                      'is assumed.')
+    parser.add_argument('-gp', '--gitlab_project_id', help='The gitlab project_id. Only needed if the script is ran '
+                                                           'from gitlab.')
     options = parser.parse_args()
 
     return options
 
 
 def get_failing_unit_tests_file_data():
+    failing_ut_list = None
     try:
-        failing_ut_list = None
-        file_name = './artifacts/failed_lint_report.txt'
+        file_name = f'{ARTIFACTS_FOLDER}/failed_lint_report.txt'
         if os.path.isfile(file_name):
             logging.info('Extracting lint_report')
             with open(file_name, 'r') as failed_unittests_file:
@@ -100,7 +131,7 @@ def get_entities_fields(entity_title, report_file_name=''):
     if 'lint' in report_file_name:  # lint case
         failed_entities = get_failing_unit_tests_file_data()
     else:
-        failed_entities = get_faild_steps_list()
+        failed_entities = get_failed_steps_list()
     entity_fields = []
     if failed_entities:
         entity_fields.append({
@@ -141,7 +172,7 @@ def get_attachments_for_bucket_upload_flow(build_url, job_name, packs_results_fi
             "short": False
         }] + steps_fields
 
-    if job_name and job_name == BucketUploadFlow.UPLOAD_JOB_NAME:
+    if job_name and job_name in BucketUploadFlow.UPLOAD_JOB_NAMES:
         successful_packs, failed_packs, successful_private_packs, _ = get_upload_data(
             packs_results_file_path, BucketUploadFlow.UPLOAD_PACKS_TO_MARKETPLACE_STORAGE
         )
@@ -165,7 +196,7 @@ def get_attachments_for_bucket_upload_flow(build_url, job_name, packs_results_fi
                 "short": False
             }]
 
-    if job_name and job_name != 'Upload Packs To Marketplace' and color == 'good':
+    if job_name and job_name not in BucketUploadFlow.UPLOAD_JOB_NAMES and color == 'good':
         logging.info('On bucket upload flow we are not notifying on jobs that are not Upload Packs. exiting...')
         sys.exit(0)
 
@@ -283,7 +314,7 @@ def get_fields():
 
 
 def slack_notifier(build_url, slack_token, test_type, env_results_file_name=None, packs_results_file=None,
-                   job_name="", slack_channel=CONTENT_CHANNEL):
+                   job_name="", slack_channel=CONTENT_CHANNEL, gitlab_server=None):
     branches = run_command("git branch")
     branch_name_reg = re.search(r'\* (.*)', branches)
     branch_name = branch_name_reg.group(1)
@@ -308,16 +339,33 @@ def slack_notifier(build_url, slack_token, test_type, env_results_file_name=None
                 build_url=build_url, job_name=job_name, packs_results_file_path=packs_results_file
             )
         elif test_type == SDK_RUN_AGAINST_FAILED_STEPS_TYPE:
+            logging.info("Starting Slack notifications about SDK nightly build - run against an xsoar instance")
             content_team_attachments = get_attachments_for_all_steps(build_url, build_title=SDK_XSOAR_BUILD_TITLE)
+        elif job_name and test_type == job_name:
+            if job_name.startswith(DMST_SDK_NIGHTLY_GITLAB_JOBS_PREFIX):
+                # We run the various circleci sdk nightly builds in a single pipeline in GitLab
+                # as different jobs so it requires different handling
+                logging.info(f"Starting Slack notifications for {job_name}")
+                if 'unittest' in job_name:
+                    content_team_attachments = get_attachments_for_unit_test(build_url, is_sdk_build=True)
+                    # override the 'title' from the attachment to be the job name
+                    content_team_attachments[0]['title'] = content_team_attachments[0]['title'].replace(
+                        'SDK Nightly Unit Tests', job_name
+                    )
+                else:
+                    content_team_attachments = get_attachments_for_all_steps(build_url, build_title=job_name)
+                    # override the 'fields' from the attachment since any failure will be the same as the job name
+                    content_team_attachments[0]['fields'] = []
         else:
             raise NotImplementedError('The test_type parameter must be only \'test_playbooks\' or \'unittests\'')
         logging.info(f'Content team attachments:\n{content_team_attachments}')
-        logging.info("Sending Slack messages to #content-team")
+        logging.info(f"Sending Slack messages to {slack_channel}")
         slack_client = SlackClient(slack_token)
+        username = 'Content GitlabCI' if gitlab_server else 'Content CircleCI'
         slack_client.api_call(
             "chat.postMessage",
             json={'channel': slack_channel,
-                  'username': 'Content CircleCI',
+                  'username': username,
                   'as_user': 'False',
                   'attachments': content_team_attachments}
         )
@@ -332,18 +380,22 @@ def main():
     test_type = options.test_type
     env_results_file_name = options.env_results_file_name
     bucket_upload = options.bucket_upload
-    circle_artifacts_path = options.circle_artifacts
+    ci_artifacts_path = options.ci_artifacts
     job_name = options.job_name
     slack_channel = options.slack_channel or CONTENT_CHANNEL
+    gitlab_server = options.gitlab_server
     if nightly:
         slack_notifier(url, slack, test_type, env_results_file_name)
     elif bucket_upload:
         slack_notifier(url, slack, test_type,
                        packs_results_file=os.path.join(
-                           circle_artifacts_path, BucketUploadFlow.PACKS_RESULTS_FILE), job_name=job_name,
-                       slack_channel=slack_channel)
-    elif test_type in (SDK_UNITTESTS_TYPE, SDK_FAILED_STEPS_TYPE, SDK_RUN_AGAINST_FAILED_STEPS_TYPE):
-        slack_notifier(url, slack, test_type)
+                           ci_artifacts_path, BucketUploadFlow.PACKS_RESULTS_FILE), job_name=job_name,
+                       slack_channel=slack_channel, gitlab_server=gitlab_server)
+    elif test_type in SDK_NIGHTLY_CIRCLE_OPTS or test_type == job_name:
+        slack_notifier(
+            url, slack, test_type, job_name=job_name,
+            slack_channel=slack_channel, gitlab_server=gitlab_server
+        )
     else:
         logging.error("Not nightly build, stopping Slack Notifications about Content build")
 

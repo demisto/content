@@ -3,7 +3,7 @@
 Use the Cisco Adaptive Security Appliance Software integration to manage interfaces, rules, and network objects.
 This integration was integrated and tested with version 9.12(3) of Cisco ASA
 
-## Configure Cisco ASA on Demisto
+## Configure Cisco ASA on Cortex XSOAR
 ---
 
 1. Navigate to __Settings__ > __Integrations__ > __Servers & Services__.
@@ -20,7 +20,7 @@ This integration was integrated and tested with version 9.12(3) of Cisco ASA
 
 ## Commands
 ---
-You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.
+You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 1. cisco-asa-list-rules
 2. cisco-asa-backup

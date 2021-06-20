@@ -7,7 +7,7 @@ Returns integration instances configured in Cortex XSOAR. You can filter by inst
 | --- | --- |
 | Script Type | python3 |
 | Tags |  |
-| Demisto Version | 5.0.0 |
+| Cortex XSOAR Version | 5.0.0 |
 
 ## Inputs
 ---

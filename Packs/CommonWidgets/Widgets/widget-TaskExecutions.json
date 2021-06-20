@@ -1,0 +1,42 @@
+{
+    "size": 5,
+    "dataType": "tasks",
+    "params": {
+        "groupBy": [
+            "taskName"
+        ],
+        "keys": [
+            "sum|1"
+        ],
+        "limitType": "top",
+        "valuesFormat": "abbreviated"
+    },
+    "modified": "2021-06-02T06:59:50.499579051Z",
+    "name": "Task executions",
+    "dateRange": {
+        "fromDate": "0001-01-01T00:00:00Z",
+        "toDate": "0001-01-01T00:00:00Z",
+        "period": {
+            "by": "",
+            "byTo": "",
+            "byFrom": "days",
+            "toValue": null,
+            "fromValue": 7,
+            "field": ""
+        },
+        "fromDateLicense": "0001-01-01T00:00:00Z"
+    },
+    "isPredefined": true,
+    "version": -1,
+    "id": "task-execution-count",
+    "sort": [
+        {
+            "field": "taskName",
+            "fieldType": "",
+            "asc": false
+        }
+    ],
+    "widgetType": "pie",
+    "fromVersion": "6.2.0",
+    "description": "Task executions"
+}

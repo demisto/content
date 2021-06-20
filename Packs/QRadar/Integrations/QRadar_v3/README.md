@@ -25,6 +25,16 @@ This integration was integrated and tested with API versions 10.1-14.0 on QRadar
     | Use system proxy settings |  | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
+## Required Permissions
+| Component | Permission |
+| --- | --- |
+| Assets | Vulnerability Management *or* Assets |
+| Domains | Admin |
+| Offenses (Manage Closing Reason) | Manage Offense Closing Reasons |
+| Offenses (Assign Offenses to Users) | Assign Offenses to Users |
+| Offenses (Read) | Offenses |
+| References (Create/Update) | Admin |
+| References (Read) | View Reference Data |
 ## Mapping limitations for XSOAR users below 6.0.0
 * For XSOAR users below 6.0.0 version, using 'Pull from instance' option when creating a new mapper is not supported.
 ## Migration from QRadar v2 to QRadar v3

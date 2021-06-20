@@ -1,0 +1,970 @@
+id: Prisma Cloud Remediation - Azure Network Security Group Misconfiguration
+version: -1
+fromversion: 5.0.0
+contentitemexportablefields:
+  contentitemfields: {}
+name: Prisma Cloud Remediation - Azure Network Security Group Misconfiguration
+description: |-
+  This playbook remediates the following Prisma Cloud Azure Network security group alerts.
+
+  Prisma Cloud policies remediated:
+
+  - Azure Network Security Group (NSG) having Inbound rule overly permissive to allow all traffic from any source on any protocol
+  - Azure Network Security Group (NSG) having Inbound rule overly permissive to allow all traffic from any source on TCP protocol
+  - Azure Network Security Group (NSG) having Inbound rule overly permissive to allow all traffic from any source on UDP protocol
+  - Azure Network Security Group (NSG) allows SSH traffic from internet on port 22
+  - Azure Network Security Group (NSG) allows traffic from internet on port 3389
+  - Azure Network Security Group allows DNS (TCP Port 53)
+  - Azure Network Security Group allows FTP (TCP Port 21)
+  - Azure Network Security Group allows FTP-Data (TCP Port 20)
+  - Azure Network Security Group allows MSQL (TCP Port 4333)
+  - Azure Network Security Group allows MySQL (TCP Port 3306)
+  - Azure Network Security Group allows Windows RPC (TCP Port 135)
+  - Azure Network Security Group allows Windows SMB (TCP Port 445)
+  - Azure Network Security Group allows PostgreSQL (TCP Port 5432)
+  - Azure Network Security Group allows SMTP (TCP Port 25)
+  - Azure Network Security Group allows SqlServer (TCP Port 1433)
+  - Azure Network Security Group allows Telnet (TCP Port 23)
+  - Azure Network Security Group allows VNC Listener (TCP Port 5500)
+  - Azure Network Security Group allows all traffic on ICMP (Ping)
+  - Azure Network Security Group allows CIFS (UDP Port 445)
+  - Azure Network Security Group allows NetBIOS (UDP Port 137)
+  - Azure Network Security Group allows NetBIOS (UDP Port 138)
+  - Azure Network Security Group allows SQLServer (UDP Port 1434)
+  - Azure Network Security Group allows DNS (UDP Port 53)
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 61bee172-14d4-4a48-815c-913b49bef800
+    type: start
+    task:
+      id: 61bee172-14d4-4a48-815c-913b49bef800
+      version: -1
+      name: ""
+      description: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 630,
+          "y": 0
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: 4404047d-d05c-4394-8bae-0d1f8b97c6fb
+    type: regular
+    task:
+      id: 4404047d-d05c-4394-8bae-0d1f8b97c6fb
+      version: -1
+      name: Remove the offending security group rule
+      description: Delete the offending security group rule.
+      script: Azure Network Security Groups|||azure-nsg-security-rule-delete
+      type: regular
+      iscommand: true
+      brand: Azure Network Security Groups
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      security_group_name:
+        complex:
+          root: incident
+          transformers:
+          - operator: getField
+            args:
+              field:
+                value:
+                  simple: resourcename
+      security_rule_name:
+        simple: ${ruleName}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -480,
+          "y": 1130
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 1abd9220-e39e-4206-8aa3-dba2695c7f4e
+    type: title
+    task:
+      id: 1abd9220-e39e-4206-8aa3-dba2695c7f4e
+      version: -1
+      name: Done
+      description: ""
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 630,
+          "y": 1300
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: 2234f384-548b-4481-89b5-aa95620891bf
+    type: condition
+    task:
+      id: 2234f384-548b-4481-89b5-aa95620891bf
+      version: -1
+      name: Execute remediation
+      description: Execute the appropriate remediation task.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "10"
+      ICMP:
+      - "11"
+      SSH:
+      - "21"
+      commonTCPPorts:
+      - "7"
+      commonUDPPorts:
+      - "16"
+      overlyPermissive:
+      - "12"
+    separatecontext: false
+    conditions:
+    - label: commonTCPPorts
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.policyId
+            iscontext: true
+          right:
+            value:
+              simple: a36a7170-d628-47fe-aab2-0e734702373d
+        - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.policyId
+            iscontext: true
+          right:
+            value:
+              simple: 0c620876-4549-46c4-a5b3-16e86e3cefe7
+        - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.policyId
+            iscontext: true
+          right:
+            value:
+              simple: 472e08a2-c741-43eb-a3ca-e2f5cd275cf7
+        - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.policyId
+            iscontext: true
+          right:
+            value:
+              simple: f48eda6b-5d66-4d73-a62e-671de3844555
+        - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.policyId
+            iscontext: true
+          right:
+            value:
+              simple: 5826e50f-2f29-4444-9cad-3bb4e66ee3ca
+        - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.policyId
+            iscontext: true
+          right:
+            value:
+              simple: 5dbd0da1-cfa4-4bce-a753-56dade428bd4
+        - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.policyId
+            iscontext: true
+          right:
+            value:
+              simple: 4afdc071-53ca-4516-8a3c-d5c91345c409
+        - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.policyId
+            iscontext: true
+          right:
+            value:
+              simple: 500e9f2a-1063-4066-8eea-780efa90a0d7
+        - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.policyId
+            iscontext: true
+          right:
+            value:
+              simple: a0791206-a669-4948-a845-cc735212013c
+        - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.policyId
+            iscontext: true
+          right:
+            value:
+              simple: ac851899-1007-48c8-842f-dddb9a38c4ba
+        - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.policyId
+            iscontext: true
+          right:
+            value:
+              simple: 3aa12e75-d78b-4157-9eca-6049187a30d7
+        - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.policyId
+            iscontext: true
+          right:
+            value:
+              simple: 936dd3cb-a9cc-4a13-9a2c-ea5d40856072
+        - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.policyId
+            iscontext: true
+          right:
+            value:
+              simple: 91a53c5d-d629-45bb-9610-fbd2cb4c6f3c
+    - label: ICMP
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.policyId
+            iscontext: true
+          right:
+            value:
+              simple: 0a3f1d49-4c05-47c4-98e2-3a42b822d05b
+    - label: overlyPermissive
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.policyId
+            iscontext: true
+          right:
+            value:
+              simple: 840b4b1c-a50b-11e8-98d0-529269fb1459
+        - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.policyId
+            iscontext: true
+          right:
+            value:
+              simple: d979e854-a50d-11e8-98d0-529269fb1459
+        - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.policyId
+            iscontext: true
+          right:
+            value:
+              simple: 543c6a0a-a50c-11e8-98d0-529269fb1459
+    - label: commonUDPPorts
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.policyId
+            iscontext: true
+          right:
+            value:
+              simple: bc7929f8-fe70-48ec-8690-4288aa0b98ae
+        - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.policyId
+            iscontext: true
+          right:
+            value:
+              simple: 18e1dd76-9d0f-4cdb-96d4-9d01b5cd68dc
+        - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.policyId
+            iscontext: true
+          right:
+            value:
+              simple: 3784cdfd-dd25-4cf3-b506-ad77033ccc35
+        - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.policyId
+            iscontext: true
+          right:
+            value:
+              simple: 0546188d-6f21-449d-948e-677c285a5fcf
+        - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.policyId
+            iscontext: true
+          right:
+            value:
+              simple: 709b47cd-6b7a-4500-b99e-a58529a6c79e
+    - label: SSH
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.policyId
+            iscontext: true
+          right:
+            value:
+              simple: 3beed53c-3f2d-47b6-bb6f-95da39ff0f26
+    view: |-
+      {
+        "position": {
+          "x": 900,
+          "y": 330
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: efcd02d5-485e-4e9a-8e4e-9aa94d5d9136
+    type: title
+    task:
+      id: efcd02d5-485e-4e9a-8e4e-9aa94d5d9136
+      version: -1
+      name: Common TCP Ports
+      description: ""
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "19"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -480,
+          "y": 500
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "10":
+    id: "10"
+    taskid: dac20b6b-feb8-4f9e-8582-1a0dea1e5432
+    type: regular
+    task:
+      id: dac20b6b-feb8-4f9e-8582-1a0dea1e5432
+      version: -1
+      name: Manually update security group rules
+      description: |-
+        1. Log in to the Azure Portal.
+        2. Select 'All services'.
+        3. Select 'Network security groups', under NETWORKING.
+        4. Select the Network security group you need to modify.
+        5. Select 'Inbound security rules' under Settings.
+        6. Select the rule you need to modify, and edit it to allow specific IP addresses OR set the 'Action' to 'Deny' OR 'Delete' the rule based on your requirement.
+        7. 'Save' your changes.
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 380,
+          "y": 1130
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "11":
+    id: "11"
+    taskid: dd3c9091-2e89-4ba2-85cc-20f0dd1971e9
+    type: title
+    task:
+      id: dd3c9091-2e89-4ba2-85cc-20f0dd1971e9
+      version: -1
+      name: ICMP Rules
+      description: ""
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "25"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -40,
+          "y": 500
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "12":
+    id: "12"
+    taskid: 6eba9d9a-da40-4348-8f0a-1269d34d1a67
+    type: title
+    task:
+      id: 6eba9d9a-da40-4348-8f0a-1269d34d1a67
+      version: -1
+      name: Overly Permissive
+      description: ""
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "26"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 380,
+          "y": 500
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "15":
+    id: "15"
+    taskid: 4a94bec7-faed-4e09-80ba-e5ca9e4f64cd
+    type: condition
+    task:
+      id: 4a94bec7-faed-4e09-80ba-e5ca9e4f64cd
+      version: -1
+      name: Is Azure Network Security Groups integration enabled?
+      description: Returns 'yes' if integration brand is available. Otherwise returns
+        'no'
+      scriptName: IsIntegrationAvailable
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "5"
+    scriptarguments:
+      brandname:
+        simple: Azure Network Security Groups
+    results:
+    - brandInstances
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 630,
+          "y": 160
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "16":
+    id: "16"
+    taskid: 9b7d05a0-47c0-4d32-8036-47b22bbc15c3
+    type: title
+    task:
+      id: 9b7d05a0-47c0-4d32-8036-47b22bbc15c3
+      version: -1
+      name: Common UDP Ports
+      description: ""
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "19"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -920,
+          "y": 500
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "19":
+    id: "19"
+    taskid: 8946063e-95ee-4518-85eb-62892dcb3530
+    type: regular
+    task:
+      id: 8946063e-95ee-4518-85eb-62892dcb3530
+      version: -1
+      name: Find the offending TCP/UDP rule name
+      description: Find the offending TCP/UDP security group rule.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "20"
+    scriptarguments:
+      append:
+        simple: "false"
+      key:
+        simple: ruleName
+      stringify:
+        simple: "true"
+      value:
+        complex:
+          root: incident.labels
+          accessor: resource
+          transformers:
+          - operator: ParseJSON
+          - operator: getField
+            args:
+              field:
+                value:
+                  simple: data
+          - operator: getField
+            args:
+              field:
+                value:
+                  simple: securityRules
+          - operator: WhereFieldEquals
+            args:
+              equalTo:
+                value:
+                  simple: inputs.portNumber
+                iscontext: true
+              field:
+                value:
+                  simple: destinationPortRange
+              getField:
+                value:
+                  simple: name
+              stringify: {}
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -480,
+          "y": 640
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "20":
+    id: "20"
+    taskid: c3849fe9-0955-4fdb-807d-40d2c386cf9b
+    type: condition
+    task:
+      id: c3849fe9-0955-4fdb-807d-40d2c386cf9b
+      version: -1
+      name: Check rule name
+      description: Verify the security group rule name is open globally.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "10"
+      "yes":
+      - "1"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ${ruleName}
+            iscontext: true
+      - - operator: inList
+          left:
+            value:
+              complex:
+                root: incident.labels
+                accessor: resource
+                transformers:
+                - operator: ParseJSON
+                - operator: getField
+                  args:
+                    field:
+                      value:
+                        simple: data
+                - operator: getField
+                  args:
+                    field:
+                      value:
+                        simple: securityRules
+                - operator: WhereFieldEquals
+                  args:
+                    equalTo:
+                      value:
+                        simple: ${ruleName}
+                    field:
+                      value:
+                        simple: name
+                    getField:
+                      value:
+                        simple: sourceAddressPrefix
+                    stringify: {}
+            iscontext: true
+          right:
+            value:
+              simple: 0.0.0.0/0, ::/0, *
+    view: |-
+      {
+        "position": {
+          "x": -40,
+          "y": 880
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "21":
+    id: "21"
+    taskid: 575c93c9-da15-4c1d-8e13-80b6c9a21203
+    type: title
+    task:
+      id: 575c93c9-da15-4c1d-8e13-80b6c9a21203
+      version: -1
+      name: SSH (22)
+      description: ""
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "22"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1260,
+          "y": 500
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "22":
+    id: "22"
+    taskid: d57f2f44-b1db-4f03-85d9-d341d27ff5a0
+    type: regular
+    task:
+      id: d57f2f44-b1db-4f03-85d9-d341d27ff5a0
+      version: -1
+      name: Find the offending SSH rule name
+      description: Sets a value into the context with the given context key.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "20"
+    scriptarguments:
+      append:
+        simple: "false"
+      key:
+        simple: ruleName
+      stringify:
+        simple: "true"
+      value:
+        complex:
+          root: incident.labels
+          accessor: resource
+          transformers:
+          - operator: ParseJSON
+          - operator: getField
+            args:
+              field:
+                value:
+                  simple: data
+          - operator: getField
+            args:
+              field:
+                value:
+                  simple: securityRules
+          - operator: WhereFieldEquals
+            args:
+              equalTo:
+                value:
+                  simple: "22"
+                iscontext: true
+              field:
+                value:
+                  simple: destinationPortRange
+              getField:
+                value:
+                  simple: name
+              stringify: {}
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1260,
+          "y": 640
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "25":
+    id: "25"
+    taskid: 4dc0879d-8912-40a3-8347-fb994f4e680e
+    type: regular
+    task:
+      id: 4dc0879d-8912-40a3-8347-fb994f4e680e
+      version: -1
+      name: Find the offending ICMP rule name
+      description: Find the offending ICMP security group rule.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "20"
+    scriptarguments:
+      append:
+        simple: "false"
+      key:
+        simple: ruleName
+      stringify:
+        simple: "true"
+      value:
+        complex:
+          root: incident.labels
+          accessor: resource
+          transformers:
+          - operator: ParseJSON
+          - operator: getField
+            args:
+              field:
+                value:
+                  simple: data
+          - operator: getField
+            args:
+              field:
+                value:
+                  simple: securityRules
+          - operator: WhereFieldEquals
+            args:
+              equalTo:
+                value:
+                  simple: Icmp
+              field:
+                value:
+                  simple: protocol
+              getField:
+                value:
+                  simple: name
+              stringify: {}
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -40,
+          "y": 640
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "26":
+    id: "26"
+    taskid: 2f030b38-e2f0-4637-8ce1-d76719ff0e4b
+    type: regular
+    task:
+      id: 2f030b38-e2f0-4637-8ce1-d76719ff0e4b
+      version: -1
+      name: Find the offending rule name
+      description: Find the offending overly permissive security group rule.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "20"
+    scriptarguments:
+      append:
+        simple: "false"
+      key:
+        simple: ruleName
+      stringify:
+        simple: "true"
+      value:
+        complex:
+          root: incident.labels
+          accessor: resource
+          transformers:
+          - operator: ParseJSON
+          - operator: getField
+            args:
+              field:
+                value:
+                  simple: data
+          - operator: getField
+            args:
+              field:
+                value:
+                  simple: securityRules
+          - operator: WhereFieldEquals
+            args:
+              equalTo:
+                value:
+                  simple: '*'
+              field:
+                value:
+                  simple: protocol
+              getField:
+                value:
+                  simple: name
+              stringify: {}
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 380,
+          "y": 640
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {
+      "15_3_#default#": 0.1,
+      "15_5_yes": 0.55,
+      "20_10_#default#": 0.49,
+      "20_1_yes": 0.46,
+      "5_11_ICMP": 0.8,
+      "5_12_overlyPermissive": 0.72,
+      "5_16_commonUDPPorts": 0.9,
+      "5_21_SSH": 0.63,
+      "5_7_commonTCPPorts": 0.87
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1365,
+        "width": 2560,
+        "x": -920,
+        "y": 0
+      }
+    }
+  }
+inputs:
+- key: policyId
+  value: {}
+  required: true
+  description: Prisma Cloud policy Id.
+  playbookInputQuery:
+- key: portNumber
+  value: {}
+  required: false
+  description: Port number.
+  playbookInputQuery:
+outputs:
+- contextPath: incident.resourcename
+  description: Security group name.
+  type: string
+tests:
+- No Test

@@ -2743,8 +2743,11 @@ def test_search_device_command(requests_mock):
     result = outputs[0].to_context()
 
     context = result.get('EntryContext')
-    assert context['CrowdStrike.Device(val.ID == obj.ID)'] == device_context
-    assert context['Endpoint(val.ID && val.ID == obj.ID)'] == [endpoint_context]
+    for key, value in context.items():
+        if 'Device' in key:
+            assert context[key] == device_context
+        if 'Endpoint' in key:
+            assert context[key] == [endpoint_context]
 
 
 def test_get_endpint_command(requests_mock, mocker):

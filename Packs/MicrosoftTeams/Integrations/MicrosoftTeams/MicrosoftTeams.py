@@ -43,6 +43,10 @@ MESSAGE_TYPES: dict = {
     'status_changed': 'incidentStatusChanged'
 }
 
+if '@' in BOT_ID:
+    BOT_ID, tenant_id, service_url = BOT_ID.split('@')
+    set_integration_context({'tenant_id': tenant_id, 'service_url': service_url})
+
 ''' HELPER FUNCTIONS '''
 
 
@@ -1303,8 +1307,9 @@ def channel_mirror_loop():
     """
     while True:
         found_channel_to_mirror: bool = False
-        integration_context = get_integration_context()
+        integration_context = {}
         try:
+            integration_context = get_integration_context()
             teams: list = json.loads(integration_context.get('teams', '[]'))
             for team in teams:
                 mirrored_channels = team.get('mirrored_channels', [])
@@ -1755,6 +1760,7 @@ def main():
 
     ''' EXECUTION '''
     try:
+        support_multithreading()
         handle_proxy()
         command: str = demisto.command()
         LOG(f'Command being called is {command}')

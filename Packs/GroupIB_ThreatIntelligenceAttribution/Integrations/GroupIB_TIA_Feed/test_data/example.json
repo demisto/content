@@ -1,0 +1,684 @@
+{
+    "compromised/mule": {
+        "account": "3765123456411567",
+        "cnc": {
+            "cnc": "http://some.ru",
+            "domain": "worus.space",
+            "ipv4": {
+                "asn": null,
+                "city": null,
+                "countryCode": null,
+                "countryName": null,
+                "ip": "11.11.11.11",
+                "provider": null,
+                "region": null
+            },
+            "ipv6": null,
+            "url": "http://some.ru"
+        },
+        "dateAdd": "2020-11-11T16:09:00+00:00",
+        "dateIncident": null,
+        "evaluation": {
+            "admiraltyCode": "A2",
+            "credibility": 80,
+            "reliability": 100,
+            "severity": "red",
+            "tlp": "amber",
+            "ttl": 30
+        },
+        "id": "50a3b4abbfca5dcbec9c8b3a110598f61ba93r33",
+        "info": null,
+        "isFavourite": false,
+        "isHidden": false,
+        "malware": {
+            "id": "5a2b741f8593f88178623848573abc899f9157d4",
+            "name": "Anubis"
+        },
+        "oldId": "392993084",
+        "organization": {
+            "bic": null,
+            "bicRu": null,
+            "bsb": null,
+            "iban": null,
+            "name": "SOME BANK",
+            "swift": null
+        },
+        "person": {
+            "address": null,
+            "birthday": null,
+            "city": null,
+            "countryCode": null,
+            "email": null,
+            "name": null,
+            "passport": null,
+            "phone": null,
+            "state": null,
+            "taxNumber": null,
+            "zip": null
+        },
+        "portalLink": "https://bt.group-ib.com/cd/mules?searchValue=id:50a3b4abbfca5dcbec9c8b3a110598f61ba90a99",
+        "seqUpdate": 1614413286419,
+        "sourceType": "Botnet",
+        "threatActor": {
+            "country": null,
+            "id": "d7ff75c35f93dce6f5410bba9a6c206bdff66555",
+            "isAPT": false,
+            "name": "FRK48"
+        },
+        "type": "Person"
+    },
+    "compromised/imei": {
+        "client": {
+            "ipv4": {
+                "asn": "AS22222 Some Company",
+                "city": null,
+                "countryCode": "NL",
+                "countryName": "Netherlands",
+                "ip": "11.11.11.11",
+                "provider": "Some Company",
+                "region": null
+            }
+        },
+        "cnc": {
+            "cnc": "http://some.ru",
+            "domain": "some.ru",
+            "ipv4": {
+                "asn": "AS16276 OVH SAS",
+                "city": null,
+                "countryCode": "FR",
+                "countryName": "France",
+                "ip": "11.11.11.11",
+                "provider": "OVH SAS",
+                "region": null
+            },
+            "ipv6": null,
+            "url": "http://some.ru"
+        },
+        "dateCompromised": null,
+        "dateDetected": "2018-01-11T01:18:43+00:00",
+        "device": {
+            "iccid": ",~",
+            "imei": "359223056231009",
+            "imsi": ",~",
+            "model": "Nexus S/2.3.7 ($$$Flexnet v.5.5)",
+            "os": null
+        },
+        "evaluation": {
+            "admiraltyCode": "A2",
+            "credibility": 80,
+            "reliability": 100,
+            "severity": "red",
+            "tlp": "red",
+            "ttl": 30
+        },
+        "id": "0c1426048474df19ada9d0089ef8b3efce906556",
+        "isFavourite": false,
+        "isHidden": false,
+        "malware": {
+            "id": "8790a290230b3b4c059c2516a6adace1eac16066",
+            "name": "FlexNet"
+        },
+        "oldId": "396766002",
+        "operator": {
+            "countryCode": null,
+            "name": null,
+            "number": ",~"
+        },
+        "portalLink": "https://bt.group-ib.com/cd/imei?searchValue=id:0c1426048474df19ada9d0089ef8b3efce906556",
+        "seqUpdate": 1614889064899,
+        "sourceType": "Botnet",
+        "threatActor": {
+            "country": null,
+            "id": "d7ff75c35f93dce6f5410bba9a6c206bdff66555",
+            "isAPT": false,
+            "name": "FRK48"
+        }
+    },
+    "attacks/ddos": {
+        "cnc": {
+            "cnc": "isc.org",
+            "domain": "isc.org",
+            "ipv4": {
+                "asn": "AS1280 Internet Systems Consortium, Inc.",
+                "city": "Redwood City",
+                "countryCode": "US",
+                "countryName": "United States",
+                "ip": "11.11.11.11",
+                "provider": "Internet Systems Consortium",
+                "region": "California"
+            },
+            "ipv6": null,
+            "url": null
+        },
+        "dateBegin": "2020-10-16T02:58:53+00:00",
+        "dateEnd": "2020-10-16T02:58:55+00:00",
+        "dateReg": "202-10-16",
+        "evaluation": {
+            "admiraltyCode": "A2",
+            "credibility": 90,
+            "reliability": 90,
+            "severity": "red",
+            "tlp": "green",
+            "ttl": 30
+        },
+        "id": "26a05baa4025edff367b058b13c6b43e820538a5",
+        "isFavourite": false,
+        "isHidden": false,
+        "malware": null,
+        "messageLink": null,
+        "oldId": "394657345",
+        "portalLink": "https://bt.group-ib.com/attacks/ddos?searchValue=id:26a05baa4025edff367b058b13c6b43e820538a5",
+        "protocol": "udp",
+        "seqUpdate": 1614476823510,
+        "target": {
+            "ipv4": {
+                "asn": "AS1298 Comcast Cable Communications",
+                "city": "Some city",
+                "countryCode": "US",
+                "countryName": "United States",
+                "ip": "11.11.11.11",
+                "provider": "Comcast Cable",
+                "region": "Washington"
+            },
+            "url": null,
+            "category": null,
+            "domainsCount": 0,
+            "port": 55843,
+            "domain": null
+        },
+        "threatActor": null,
+        "type": "DNS Reflection"
+    },
+    "attacks/deface": {
+        "contacts": [],
+        "date": "2021-01-12T02:22:18+00:00",
+        "evaluation": {
+            "admiraltyCode": "B2",
+            "credibility": 80,
+            "reliability": 80,
+            "severity": "orange",
+            "tlp": "amber",
+            "ttl": 30
+        },
+        "id": "6009637a1135cd001ef46e21",
+        "portalLink": "https://bt.group-ib.com/attacks/deface?searchValue=id:6009637a1135cd001ef46e21",
+        "seqUpdate": 26326167,
+        "source": "www.some.org",
+        "targetDomain": "sadas.sadd.ee",
+        "targetDomainProvider": null,
+        "targetIp": {
+            "asn": null,
+            "city": "",
+            "countryCode": null,
+            "countryName": "Indonesia",
+            "ip": "11.11.11.11",
+            "provider": null,
+            "region": null
+        },
+        "threatActor": {
+            "country": null,
+            "id": "d7ff75c35f93dce6f5410bba9a6c206bdff66555",
+            "isAPT": false,
+            "name": "FRK48"
+        },
+        "url": "sadas.sadd.ee"
+    },
+    "attacks/phishing": {
+        "dateBlocked": null,
+        "dateDetected": "2021-01-14T11:21:34+00:00",
+        "evaluation": {
+            "admiraltyCode": "A2",
+            "credibility": 80,
+            "reliability": 90,
+            "severity": "red",
+            "tlp": "amber",
+            "ttl": 30
+        },
+        "history": [
+            {
+                "date": "2021-01-13T11:20:50+00:00",
+                "field": "Detected",
+                "reason": "In response",
+                "reporter": "Group-IB Intelligence",
+                "value": "In response"
+            },
+            {
+                "date": "2021-01-14T11:20:50+00:00",
+                "field": "Status has been changed",
+                "reason": ",-",
+                "reporter": "Group-IB Intelligence",
+                "value": "In response"
+            }
+        ],
+        "id": "fce7f92d0b64946cf890842d083953649b259952",
+        "ipv4": {
+            "asn": null,
+            "city": "Some city",
+            "countryCode": "CA",
+            "countryName": "Canada",
+            "ip": "11.11.11.11",
+            "provider": "Some provider",
+            "region": "NA"
+        },
+        "isFavourite": false,
+        "isHidden": false,
+        "oldId": "396798526",
+        "phishingDomain": {
+            "domain": "some.ru",
+            "local": "some.ru",
+            "dateRegistered": "2013-11-15 13:41:30",
+            "title": "",
+            "registrar": "Some"
+        },
+        "portalLink": "https://bt.group-ib.com/attacks/phishing?searchValue=id:fce7f92d0b64946cf890842d083953649b259952",
+        "seqUpdate": 1614925293641,
+        "status": "In response",
+        "targetBrand": "Some brand",
+        "targetCategory": "Finance > Banking",
+        "targetCountryName": null,
+        "targetDomain": "some.ru",
+        "type": "Phishing",
+        "url": "https://some.ru"
+    },
+    "attacks/phishing_kit": {
+        "dateDetected": "2021-01-14T12:10:41+00:00",
+        "dateFirstSeen": "2021-01-14T13:10:41+00:00",
+        "dateLastSeen": "2021-01-14T14:12:17+00:00",
+        "downloadedFrom": [
+            {
+                "date": "2021-01-21 10:10:41",
+                "url": "https://some.ru",
+                "domain": "some.ru",
+                "fileName": "show.zip"
+            },
+            {
+                "date": "2021-01-21 10:10:41",
+                "url": "https://some.ru",
+                "domain": "some.ru",
+                "fileName": "show.zip"
+            },
+            {
+                "date": "2021-01-21 10:10:41",
+                "url": "https://some.ru",
+                "domain": "some.ru",
+                "fileName": "show.zip"
+            }
+        ],
+        "emails": [],
+        "evaluation": {
+            "admiraltyCode": "B2",
+            "credibility": 70,
+            "reliability": 80,
+            "severity": "orange",
+            "tlp": "amber",
+            "ttl": 30
+        },
+        "hash": "8d7ea805fe20d6d77f57e2f0cadd17b1",
+        "id": "044f3f2cb599228c1882884eb77eb073f68a25f2",
+        "isFavourite": false,
+        "isHidden": false,
+        "oldId": "396793696",
+        "path": "https://tap.group-ib.com/api/api/v2/web/attacks/phishing_kit/044f3f2cb599228c1882884eb77eb073f68a25f2/file/95b61a1df152012abb79c3951ed98680e0bd917bbcf1d440e76b66a120292c76",
+        "portalLink": "https://bt.group-ib.com/attacks/phishing_kit?searchValue=id:044f3f2cb599228c1882884eb77eb073f68a25f2",
+        "seqUpdate": 1614921031175,
+        "targetBrand": [],
+        "tsFirstSeen": null,
+        "tsLastSeen": null,
+        "variables": null
+    },
+    "apt/threat": {
+        "contacts": [],
+        "countries": [],
+        "createdAt": "2021-01-15T16:53:20+03:00",
+        "cveList": [],
+        "dateFirstSeen": "2021-01-15",
+        "dateLastSeen": "2021-01-15",
+        "datePublished": "2021-01-15",
+        "description": "sdasdsa",
+        "displayOptions": {
+            "isFavourite": false,
+            "isHidden": false
+        },
+        "evaluation": {
+            "admiraltyCode": "B1",
+            "credibility": 100,
+            "reliability": 80,
+            "severity": "orange",
+            "tlp": "amber",
+            "ttl": null
+        },
+        "expertise": [],
+        "files": [
+            {
+                "hash": "612312f6cf9d2e6c978898117b7b5b85035b3d5e67c4ee266879868c9eb24dd3",
+                "mime": "image/png",
+                "name": "612312f6cf9d2e6c978898117b7b5b85035b3d5e67c4ee266879868c9eb24dd3",
+                "size": 209254
+            }
+        ],
+        "forumsAccounts": [],
+        "id": "1b09d389d016121afbffe481a14b30ea995876e4",
+        "indicatorMalwareRelationships": [],
+        "indicatorRelationships": [
+            {
+                "sourceId": "9f3a2a244570a38e772a35d7c9171eed92bec6f7",
+                "targetId": "12cad1ca535a92a2ed306c0edf3025e7d9776693"
+            }
+        ],
+        "indicatorToolRelationships": [],
+        "indicators": [
+            {
+                "description": null,
+                "id": "42a9929807fd954918f9bb603135754be7a6e99c",
+                "langs": ["en"],
+                "malwareList": [],
+                "params": {
+                    "hashes": {
+                        "md4": "",
+                        "md5": "5d43baf1c9e9e3a939e5defd8f8fbd8d",
+                        "md6": "",
+                        "ripemd160": "",
+                        "sha1": "d5ff73c043f3bb75dd749636307500b60a436550",
+                        "sha224": "",
+                        "sha256": "867c8b49d29ae1f6e4a7cd31b6fe7e278753a1ba03d4be338ed11fd1efc7dd36",
+                        "sha384": "",
+                        "sha512": "",
+                        "whirlpool": ""
+                    },
+                    "name": "5d43baf1c9e9e3a939e5defd8f8fbd8d",
+                    "size": null
+                },
+                "seqUpdate": 16107188498634,
+                "techSeqUpdate": null,
+                "title": null,
+                "type": "file"
+            },
+            {
+                "description": null,
+                "id": "12cad1ca535a92a2ed306c0edf3025e7d9776693",
+                "langs": ["en"],
+                "malwareList": [],
+                "params": {
+                    "domain": "some.ru",
+                    "ipv4": ["11.11.11.11", "11.11.11.11"],
+                    "ipv6": [],
+                    "ssl": [],
+                    "url": "https://some.ru"
+                },
+                "seqUpdate": 16107188498908,
+                "techSeqUpdate": null,
+                "title": null,
+                "type": "network"
+            }
+        ],
+        "indicatorsIds": [
+            "9f3a2a244570a38e772a35d7c9171eed92bec6f7",
+            "8b96c56cbc980c1e3362060ffa953e65281fb4df",
+            "42a9929807fd954918f9bb603135754be7a6e99c",
+            "12cad1ca535a92a2ed306c0edf3025e7d9776693"
+        ],
+        "isTailored": false,
+        "labels": [],
+        "langs": ["en", "ru"],
+        "malwareList": [],
+        "mitreMatrix": [
+            {
+                "attackPatternId": "attack-pattern--45242287-2964-4a3e-9373-159fad4d8195",
+                "attackTactic": "establish-&-maintain-infrastructure",
+                "attackType": "pre_attack_tactics",
+                "id": "PRE-T1105",
+                "params": {"data": ""}
+            },
+            {
+                "attackPatternId": "attack-pattern--0a5231ec-41af-4a35-83d0-6bdf11f28c65",
+                "attackTactic": "execution",
+                "attackType": "enterprise_tactics",
+                "id": null,
+                "params": {"data": ""}
+            },
+            {
+                "attackPatternId": "attack-pattern--62b8c999-dcc0-4755-bd69-09442d9359f5",
+                "attackTactic": "execution",
+                "attackType": "enterprise_tactics",
+                "id": null,
+                "params": {"data": ""}
+            }
+        ],
+        "oldId": "4c01c2d4-5ebb-44d8-9e91-be89231b0eb3",
+        "regions": [],
+        "relatedThreatActors": [],
+        "reportNumber": "CP-2501-1653",
+        "sectors": ["financial-services", "finance"],
+        "seqUpdate": 16107218765545,
+        "shortDescription": null,
+        "shortTitle": null,
+        "sources": [],
+        "targetedCompany": [],
+        "targetedPartnersAndClients": [],
+        "techSeqUpdate": null,
+        "threatActor": {
+            "country": "KP",
+            "id": "5e9f20fdcf5876b5772b3d09b432f4080711ac5f",
+            "isAPT": true,
+            "name": "Lazarus"
+        },
+        "title": "Lazarus launches new attack with cryptocurrency trading platforms",
+        "toolList": [],
+        "type": "threat",
+        "updatedAt": "2021-01-15T16:53:20+03:00"
+    },
+    "suspicious_ip/tor_node": {
+        "dateFirstSeen": "2020-09-03T14:15:25+00:00",
+        "dateLastSeen": "2021-01-20T22:07:33+00:00",
+        "evaluation": {
+            "admiraltyCode": "A1",
+            "credibility": 90,
+            "reliability": 90,
+            "severity": "green",
+            "tlp": "green",
+            "ttl": 30
+        },
+        "id": "11.11.11.11",
+        "ipv4": {
+            "asn": null,
+            "city": null,
+            "countryCode": null,
+            "countryName": null,
+            "ip": "11.11.11.11",
+            "provider": null,
+            "region": null
+        },
+        "nodes": [],
+        "portalLink": "https://bt.group-ib.com/suspicious/tor?searchValue=id:11.11.11.11",
+        "seqUpdate": 16110967720000,
+        "source": "check.torproject.org"
+    },
+    "suspicious_ip/open_proxy": {
+        "anonymous": "High anonymous / Elite proxy",
+        "dateDetected": "2021-01-21T11:01:02+00:00",
+        "dateFirstSeen": "2020-03-19T23:01:01+00:00",
+        "evaluation": {
+            "admiraltyCode": "C3",
+            "credibility": 50,
+            "reliability": 50,
+            "severity": "green",
+            "tlp": "white",
+            "ttl": 15
+        },
+        "id": "cc6a2856da2806b03839f81aa214f22dbcfd7369",
+        "ipv4": {
+            "asn": null,
+            "city": null,
+            "countryCode": "CZ",
+            "countryName": "Czech Republic",
+            "ip": "11.11.11.11",
+            "provider": "DataCamp s.r.o.",
+            "region": null
+        },
+        "isFavourite": false,
+        "isHidden": false,
+        "oldId": "241549215",
+        "port": 80,
+        "portalLink": "https://bt.group-ib.com/suspicious/proxies?searchValue=id:cc6a2856da2806b03839f81aa214f22dbcfd7369",
+        "seqUpdate": 1614925979879,
+        "source": "free-proxy-list.net",
+        "type": "http"
+    },
+    "suspicious_ip/socks_proxy": {
+        "dateDetected": "2021-01-19T07:41:11+00:00",
+        "dateFirstSeen": "2021-01-19T07:41:11+00:00",
+        "dateLastSeen": "2021-01-21T08:35:46+00:00",
+        "evaluation": {
+            "admiraltyCode": "A1",
+            "credibility": 100,
+            "reliability": 90,
+            "severity": "green",
+            "tlp": "amber",
+            "ttl": 2
+        },
+        "id": "02e385600dfc5bf9b3b3656df8e0e20f5fc5c86e",
+        "ipv4": {
+            "asn": "AS60999 Libatech SAL",
+            "city": null,
+            "countryCode": "LB",
+            "countryName": "Lebanon",
+            "ip": "11.11.11.11",
+            "provider": "Libatech SAL",
+            "region": null
+        },
+        "isFavourite": false,
+        "isHidden": false,
+        "oldId": "395880626",
+        "portalLink": "https://bt.group-ib.com/suspicious/socks?searchValue=id:02e385600dfc5bf9b3b3656df8e0e20f5fc5c86e",
+        "seqUpdate": 1614926061941,
+        "source": "some.ru"
+    },
+    "malware/cnc": {
+        "cnc": "https://some.ru",
+        "dateDetected": "2021-01-21T10:35:21+00:00",
+        "dateLastSeen": "2021-01-21T10:35:21+00:00",
+        "domain": "some.ru",
+        "file": [],
+        "id": "aeed277396e27e375d030a91533aa232444d0089",
+        "ipv4": [
+            {
+                "asn": "AS3356 Level 3 Communications, Inc.",
+                "city": null,
+                "countryCode": "US",
+                "countryName": "United States",
+                "ip": "11.11.11.11",
+                "provider": "Alibaba.com Singapore E-Commerce Private Limited",
+                "region": null
+            }
+        ],
+        "ipv6": [],
+        "isFavourite": false,
+        "isHidden": false,
+        "malwareList": [
+            {"id": "e99c294ffe7b79655d6ef1f32add638d8a2d4b24", "name": "JS Sniffer - Poter"}
+        ],
+        "oldId": "211146923",
+        "platform": null,
+        "seqUpdate": 1614925981037,
+        "ssl": [],
+        "threatActor": null,
+        "url": "https://some.ru"
+    },
+    "osi/vulnerability": {
+        "affectedSoftware": [
+            {
+                "name": "fiberhome hg6245d firmware",
+                "operator": "le",
+                "version": "rp2613"
+            }
+        ],
+        "bulletinFamily": "NVD",
+        "cpe": ["cpe:/o:fiberhome:hg6245d_firmware:rp2613"],
+        "cpeTable": [
+            {
+                "type": "os",
+                "vendor": "fiberhome",
+                "product": "hg6245d_firmware",
+                "version": "rp2613",
+                "string": "cpe:/o:fiberhome:hg6245d_firmware:rp2613",
+                "string23": "cpe:2.3:o:fiberhome:hg6245d_firmware:rp2613:*:*:*:*:*:*:*",
+                "part": "o",
+                "update": "",
+                "edition": "",
+                "language": "",
+                "swEdition": "",
+                "targetHw": "",
+                "other": "",
+                "prefix": ""
+            }
+        ],
+        "cveList": null,
+        "cvss": {
+            "score": 7.5,
+            "vector": "AV:N/AC:L/Au:N/C:P/I:P/A:P"
+        },
+        "dateLastSeen": "2021-02-11T14:35:24+03:00",
+        "dateModified": "2021-02-11T00:45:00+03:00",
+        "datePublished": "2021-02-10T19:15:00+03:00",
+        "description": "An issue was discovered on FiberHome HG6245D devices through RP2613. The web daemon contains the hardcoded awnfibre / fibre@dm!n credentials for an ISP.",
+        "displayOptions": {
+            "isFavourite": false,
+            "isHidden": false
+        },
+        "evaluation": {
+            "admiraltyCode": "A1",
+            "credibility": 100,
+            "reliability": 100,
+            "severity": "green",
+            "tlp": "green",
+            "ttl": 30
+        },
+        "exploitCount": 0,
+        "exploitList": [],
+        "extCvss": {
+            "base": 9.8,
+            "environmental": 0,
+            "exploitability": 3.9,
+            "impact": 5.9,
+            "mImpact": 0,
+            "overall": 9.8,
+            "temporal": 0,
+            "vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H"
+        },
+        "extDescription": "A vulnerability was found in FiberHome HG6245D up to RP2613 and classified as critical. This issue affects some unknown functionality of the component Web Daemon. There is no information about possible countermeasures known. It may be suggested to replace the affected object with an alternative product.",
+        "href": "https://web.nvd.nist.gov/view/vuln/detail?vulnId=CVE-2021-27152",
+        "id": "CVE-2021-27152",
+        "lastseen": "2021-02-11T14:35:24 03:00",
+        "portalLink": "https://bt.group-ib.com/osi/vulnerabilities?searchValue=id:CVE-2021-27152",
+        "provider": "some.ru",
+        "references": [
+            "https://pierrekim.github.io/blog/2021-01-12-fiberhome-ont-0day-vulnerabilities.html#httpd-hardcoded-credentials"
+        ],
+        "reporter": "some@gmail.ru",
+        "seqUpdate": 16130451156953,
+        "softwareMixed": [
+            {
+                "arch": [],
+                "hardware": "",
+                "hardwareVendor": "",
+                "hardwareVersion": "",
+                "os": "hg6245d_firmware",
+                "osVendor": "fiberhome",
+                "osVersion": "rp2613",
+                "rel": [],
+                "softwareFileName": "",
+                "softwareName": [],
+                "softwareType": [],
+                "softwareVersion": [],
+                "softwareVersionString": "",
+                "vendor": "fiberhome",
+                "versionOperator": ""
+            }
+        ],
+        "threats": [],
+        "threatsList": [],
+        "timeLineData": [],
+        "title": "CVE-2021-27152",
+        "type": "cve"
+    }
+}

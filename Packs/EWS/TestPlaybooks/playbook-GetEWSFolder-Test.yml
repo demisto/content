@@ -1,18 +1,14 @@
-elasticcommonfields: {}
 id: Get EWS Folder Test
 version: -1
 name: Get EWS Folder Test
-fromversion: 5.0.0
-description: ""
 starttaskid: "0"
+fromversion: 5.0.0
 tasks:
   "0":
     id: "0"
     taskid: 867ca0a0-3d08-4e63-8db2-d1b24c15829e
     type: start
     task:
-      description: ""
-      elasticcommonfields: {}
       id: 867ca0a0-3d08-4e63-8db2-d1b24c15829e
       version: -1
       name: ""
@@ -39,7 +35,6 @@ tasks:
     taskid: 5a0634ec-4c1a-4ab0-8566-95f2591c3d85
     type: regular
     task:
-      elasticcommonfields: {}
       id: 5a0634ec-4c1a-4ab0-8566-95f2591c3d85
       version: -1
       name: Clear Context
@@ -76,7 +71,6 @@ tasks:
     taskid: 73b5c24a-7f91-4833-81f8-f66551884000
     type: condition
     task:
-      elasticcommonfields: {}
       id: 73b5c24a-7f91-4833-81f8-f66551884000
       version: -1
       name: Check List Exists
@@ -109,8 +103,6 @@ tasks:
     taskid: 2b181bb0-5b23-4284-815e-b4f126fe0fb6
     type: title
     task:
-      description: ""
-      elasticcommonfields: {}
       id: 2b181bb0-5b23-4284-815e-b4f126fe0fb6
       version: -1
       name: Done
@@ -135,8 +127,6 @@ tasks:
     taskid: 047ae1a6-7c04-4ba6-87fa-31c85a339cf2
     type: playbook
     task:
-      description: ""
-      elasticcommonfields: {}
       id: 047ae1a6-7c04-4ba6-87fa-31c85a339cf2
       version: -1
       name: Get Mails By Folder Paths
@@ -149,7 +139,7 @@ tasks:
       - "3"
     scriptarguments:
       foldersPathsGlobal:
-        simple: inbox,inbox\TESTATTACH
+        simple: inbox
       limit:
         simple: "10"
       listName:
@@ -174,15 +164,14 @@ tasks:
     quietmode: 0
   "6":
     id: "6"
-    taskid: 0a17e8ec-ed8d-4397-87c5-957dc7e34d80
+    taskid: 2f9df044-a688-407c-8e4b-c78a4badaf06
     type: regular
     task:
-      elasticcommonfields: {}
-      id: 0a17e8ec-ed8d-4397-87c5-957dc7e34d80
+      id: 2f9df044-a688-407c-8e4b-c78a4badaf06
       version: -1
-      name: Load Word Tokenizer Docker
-      description: Tokenize the words in a input text.
-      scriptName: WordTokenizerNLP
+      name: Load Preprocessing Docker
+      description: Pre-process text data for the machine learning text classifier.
+      scriptName: DBotPreProcessTextData
       type: regular
       iscommand: false
       brand: ""
@@ -190,22 +179,21 @@ tasks:
       '#none#':
       - "7"
     scriptarguments:
-      cleanHtml:
-        simple: "no"
-      encoding: {}
-      hashWordWithSeed: {}
-      isValueJson: {}
-      removeLineBreaks: {}
-      removeNonAlphaWords: {}
-      removeNonEnglishWords: {}
-      removePunctuation: {}
-      removeStopWords: {}
-      replaceEmails: {}
-      replaceNumbers: {}
-      replaceUrls: {}
-      useLemmatization: {}
-      value:
-        simple: hi
+      cleanHTML: {}
+      dedupThreshold: {}
+      hashSeed: {}
+      input:
+        simple: test
+      inputType:
+        simple: string
+      language: {}
+      outputFormat: {}
+      outputOriginalTextFields: {}
+      preProcessType: {}
+      removeShortTextThreshold: {}
+      textFields: {}
+      tokenizationMethod: {}
+      whitelistFields: {}
     continueonerror: true
     separatecontext: false
     view: |-
@@ -225,7 +213,6 @@ tasks:
     taskid: 92e71c31-631e-4837-814b-9973cafb2a70
     type: regular
     task:
-      elasticcommonfields: {}
       id: 92e71c31-631e-4837-814b-9973cafb2a70
       version: -1
       name: Wait for Docker
@@ -253,6 +240,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+system: true
 view: |-
   {
     "linkLabelsPosition": {},

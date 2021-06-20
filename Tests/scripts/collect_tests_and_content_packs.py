@@ -37,6 +37,9 @@ class TestConf(object):
     def get_skipped_tests(self):
         return list(self._conf['skipped_tests'].keys())
 
+    def get_private_tests(self):
+        return self._conf['private_tests']
+
     def get_tests(self):
         return self._conf.get('tests', {})
 
@@ -127,11 +130,11 @@ _FAILED = False
 ID_SET = {}
 CONF: Union[TestConf, dict] = {}
 
-if os.path.isfile('./Tests/id_set.json'):
-    with open('./Tests/id_set.json', 'r') as conf_file:
+if os.path.isfile('./artifacts/id_set.json'):
+    with open('./artifacts/id_set.json', 'r') as conf_file:
         ID_SET = json.load(conf_file)
 
-if os.path.isfile('./Tests/conf.json'):
+if os.path.isfile('./artifacts/conf.json'):
     with open('./Tests/conf.json', 'r') as conf_file:
         CONF = TestConf(json.load(conf_file))
 
@@ -230,9 +233,9 @@ def collect_tests_and_content_packs(
 
         if detected_usage and test_playbook_id not in test_ids and test_playbook_id not in skipped_tests:
             caught_missing_test = True
-            logging.error("The playbook {} does not appear in the conf.json file,"
-                          " which means no test with it will run. please update the conf.json file accordingly"
-                          .format(test_playbook_name))
+            logging.error(f'The playbook "{test_playbook_name}" does not appear in the conf.json file,'
+                          " which means no test with it will run. please update the conf.json file accordingly."
+                          )
 
     ids_with_no_tests = update_missing_sets(catched_intergrations, catched_playbooks, catched_scripts,
                                             integration_ids, playbook_ids, script_ids)
@@ -248,10 +251,12 @@ def collect_tests_and_content_packs(
             test_playbook_pack = test_playbook_object.get('pack')
             if test_playbook_pack:
                 logging.info(
-                    f'Found test playbook {test_playbook_id} in pack {test_playbook_pack} - adding to packs to install')
+                    f'Found test playbook "{test_playbook_id}" in pack "{test_playbook_pack}"'
+                    f' - adding to packs to install')
                 packs_to_install.add(test_playbook_pack)
             else:
-                logging.warning(f'Found test playbook {test_playbook_id} without pack - not adding to packs to install')
+                logging.warning(f'Found test playbook "{test_playbook_id}" without pack'
+                                f' - not adding to packs to install')
 
     return test_ids, ids_with_no_tests, caught_missing_test, packs_to_install
 
@@ -305,8 +310,7 @@ def id_set__get_integration_file_path(id_set, integration_id):
     for integration in id_set.get('integrations', []):
         if integration_id in integration.keys():
             return integration[integration_id]['file_path']
-        else:
-            logging.critical(f'Could not find integration "{integration}" in the id_set')
+    logging.critical(f'Could not find integration "{integration_id}" in the id_set')
 
 
 def check_if_fetch_incidents_is_tested(missing_ids, integration_ids, id_set, conf, tests_set):
@@ -341,11 +345,11 @@ def find_tests_and_content_packs_for_modified_files(modified_files, conf=deepcop
     playbook_names = set([])
     integration_ids = set([])
 
-    tests_set, catched_scripts, catched_playbooks, packs_to_install = collect_changed_ids(
+    tests_set, caught_scripts, caught_playbooks, packs_to_install = collect_changed_ids(
         integration_ids, playbook_names, script_names, modified_files, id_set)
 
     test_ids, missing_ids, caught_missing_test, test_packs_to_install = collect_tests_and_content_packs(
-        script_names, playbook_names, integration_ids, catched_scripts, catched_playbooks, tests_set, id_set, conf)
+        script_names, playbook_names, integration_ids, caught_scripts, caught_playbooks, tests_set, id_set, conf)
 
     packs_to_install.update(test_packs_to_install)
 
@@ -856,7 +860,7 @@ def is_test_runnable(test_id, id_set, conf, server_version):
     2. Test playbook / integration is not skipped.
     3. Test fromversion is earlier or equal to server_version
     4. Test toversion is greater or equal to server_version
-    4. If test has integrations, then all integrations
+    5. If test has integrations, then all integrations
         a. fromversion is earlier or equal to server_version
         b. toversion is after or equal to server_version
     """
@@ -1036,19 +1040,40 @@ def remove_tests_for_non_supported_packs(tests: set, id_set: dict) -> set:
     return tests
 
 
-def filter_tests(tests: set, id_set: json) -> set:
+def remove_private_tests(tests_without_private_packs):
+    """Remove all tests that test private integrations from the test list.
+
+    Args:
+        tests_without_private_packs: The list of tests to remove the private packs' tests from.
     """
-    Filter tests out from the test set if they are a.Ignored b.Non XSOAR or non-supported packs c. tests of
-    deprecated packs.
+    private_tests = CONF.get_private_tests()
+    for private_test in private_tests:
+        if private_test in tests_without_private_packs:
+            tests_without_private_packs.remove(private_test)
+
+
+def filter_tests(tests: set, id_set: json, is_nightly=False) -> set:
+    """
+    Filter tests out from the test set if they are:
+    a. Ignored
+    b. Non-XSOAR or non-supported packs
+    c. tests of deprecated packs.
+    d. tests of private packs (optional)
     Args:
         tests (set): Set of tests collected so far.
         id_set (dict): The ID set.
+        remove_private_packs (bool): Whether to remove private packs
     Returns:
         (set): Set of tests without ignored, non supported and deprecated-packs tests.
     """
     tests_with_no_dummy_strings = {test for test in tests if 'no test' not in test.lower()}
     tests_without_ignored = remove_ignored_tests(tests_with_no_dummy_strings, id_set)
     tests_without_non_supported = remove_tests_for_non_supported_packs(tests_without_ignored, id_set)
+
+    if is_nightly:
+        # Removing private packs' tests from nightly, since they aren't runnable in nightly
+        # due to the fact they aren't in stored in the content repository.
+        remove_private_tests(tests_without_non_supported)
 
     return tests_without_non_supported
 
@@ -1073,7 +1098,7 @@ def filter_installed_packs(packs_to_install: set) -> set:
         else:
             packs_that_should_be_installed.add(pack)
     if packs_that_should_not_be_installed:
-        logging.debug('The following packs are should not be installed and therefore not collected: \n{} '.format(
+        logging.debug('The following packs should not be installed and therefore not collected: \n{} '.format(
             '\n'.join(packs_that_should_not_be_installed)))
 
     return packs_that_should_be_installed
@@ -1265,6 +1290,16 @@ def get_from_version_and_to_version_bounderies(all_modified_files_paths: set,
     return min_from_version.vstring, max_to_version.vstring
 
 
+def is_release_branch():
+    """
+    Checks for the current build's branch
+    Returns:
+        True if the branch name under the 'CI_COMMIT_BRANCH' env variable is a release branch, else False.
+    """
+    branch_name = os.getenv('CI_COMMIT_BRANCH', '')
+    return re.match(r'[0-9]{2}\.[0-9]{1,2}\.[0-9]', branch_name)
+
+
 def create_filter_envs_file(from_version: str, to_version: str, documentation_changes_only: bool = False):
     """
     Create a file containing all the envs we need to run for the CI
@@ -1289,8 +1324,15 @@ def create_filter_envs_file(from_version: str, to_version: str, documentation_ch
             'Server 5.0': False,
             'Server 6.0': False,
         }
+    # Releases are only relevant for non marketplace server versions, therefore - there is no need to create marketplace
+    # server in release branches.
+    if is_release_branch():
+        marketplace_server_keys = {key for key in envs_to_test.keys() if key not in {'Server 5.5', 'Server 5.0'}}
+        for key in marketplace_server_keys:
+            envs_to_test[key] = False
+
     logging.info("Creating filter_envs.json with the following envs: {}".format(envs_to_test))
-    with open("./Tests/filter_envs.json", "w") as filter_envs_file:
+    with open("./artifacts/filter_envs.json", "w") as filter_envs_file:
         json.dump(envs_to_test, filter_envs_file)
 
 
@@ -1316,7 +1358,7 @@ def create_test_file(is_nightly, skip_save=False, path_to_pack=''):
     """Create a file containing all the tests we need to run for the CI"""
     if is_nightly:
         packs_to_install = filter_installed_packs(set(os.listdir(PACKS_DIR)))
-        tests = filter_tests(set(CONF.get_test_playbook_ids()), id_set=deepcopy(ID_SET))
+        tests = filter_tests(set(CONF.get_test_playbook_ids()), id_set=deepcopy(ID_SET), is_nightly=True)
         logging.info("Nightly - collected all tests that appear in conf.json and all packs from content repo that "
                      "should be tested")
     else:
@@ -1348,11 +1390,11 @@ def create_test_file(is_nightly, skip_save=False, path_to_pack=''):
 
     if not skip_save:
         logging.info("Creating filter_file.txt")
-        with open("./Tests/filter_file.txt", "w") as filter_file:
+        with open("./artifacts/filter_file.txt", "w") as filter_file:
             filter_file.write(tests_string)
         # content_packs_to_install.txt is not used in nightly build
         logging.info("Creating content_packs_to_install.txt")
-        with open("./Tests/content_packs_to_install.txt", "w") as content_packs_to_install:
+        with open("./artifacts/content_packs_to_install.txt", "w") as content_packs_to_install:
             content_packs_to_install.write(packs_to_install_string)
 
     if is_nightly:

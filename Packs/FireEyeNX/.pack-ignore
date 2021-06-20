@@ -13,53 +13,59 @@ ignore=IF100
 [file:incidentfield-FireEye_NX_Event_Victim_IP.json]
 ignore=IF100
 
-[incidentfield-FireEye_NX_Alert_Victim_MAC_Address.json]
+[file:incidentfield-FireEye_NX_Alert_Victim_MAC_Address.json]
 ignore=IF100
 
-[incidentfield-FireEye_NX_Alert_Action.json]
+[file:incidentfield-FireEye_NX_Alert_Action.json]
 ignore=IF100
 
-[incidentfield-FireEye_NX_Alert_Target_MAC_Address.json]
+[file:incidentfield-FireEye_NX_Alert_Target_MAC_Address.json]
 ignore=IF100
 
-[incidentfield-FireEye_NX_Event_ID.json]
+[file:incidentfield-FireEye_NX_Event_ID.json]
 ignore=IF100
 
-[incidentfield-FireEye_NX_Alert_Target_IP.json]
+[file:incidentfield-FireEye_NX_Alert_Target_IP.json]
 ignore=IF100
 
-[incidentfield-FireEye_NX_Event_Victim_Port.json]
+[file:incidentfield-FireEye_NX_Event_Victim_Port.json]
 ignore=IF100
 
-[incidentfield-FireEye_NX_Alert_URL.json]
+[file:incidentfield-FireEye_NX_Alert_URL.json]
 ignore=IF100
 
-[incidentfield-FireEye_NX_Event_CVE_ID.json]
+[file:incidentfield-FireEye_NX_Event_CVE_ID.json]
 ignore=IF100
 
-[incidentfield-FireEye_NX_Alert_UUID.json]
+[file:incidentfield-FireEye_NX_Alert_UUID.json]
 ignore=IF100
 
-[incidentfield-FireEye_NX_Alert_Type.json]
+[file:incidentfield-FireEye_NX_Alert_Type.json]
 ignore=IF100
 
-[incidentfield-FireEye_NX_Event_Attacker_IP.json]
+[file:incidentfield-FireEye_NX_Event_Attacker_IP.json]
 ignore=IF100
 
-[incidentfield-FireEye_NX_Alert_Target_Port.json]
+[file:incidentfield-FireEye_NX_Alert_Target_Port.json]
 ignore=IF100
 
-[incidentfield-FireEye_NX_Event_Destination_MAC_Address.json]
+[file:incidentfield-FireEye_NX_Event_Destination_MAC_Address.json]
 ignore=IF100
 
-[incidentfield-FireEye_NX_Alert_ID.json]
+[file:incidentfield-FireEye_NX_Alert_ID.json]
 ignore=IF100
 
-[incidentfield-FireEye_NX_Event_Rule.json]
+[file:incidentfield-FireEye_NX_Event_Rule.json]
 ignore=IF100
 
-[incidentfield-FireEye_NX_Alert_Malware_Name.json]
+[file:incidentfield-FireEye_NX_Alert_Malware_Name.json]
 ignore=IF100
 
-[incidentfield-FireEye_NX_Alert_Victim_IP.json]
+[file:incidentfield-FireEye_NX_Alert_Victim_IP.json]
 ignore=IF100
+
+[file:README.md]
+ignore=RM104
+
+[file:classifier-mapper-incoming-FireEye_NX.json]
+ignore=BA101

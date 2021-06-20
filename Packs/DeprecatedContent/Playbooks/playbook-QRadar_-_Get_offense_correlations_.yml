@@ -2,7 +2,7 @@ id: 'QRadar - Get offense correlations '
 version: -1
 name: QRadar - Get offense correlations
 fromversion: 5.0.0
-description: Deprecated. DEPRECATED - Use the `QRadar - Get offense correlations v2` instead.\"\nRun on a QRadar offense to get more information\n\n* Get all correlations relevant to the offense\n* Get all logs relevant to the correlations (not done by default, set "GetCorrelationLogs\" to \"True\")\n\nInputs-\n* GetCorrelationLogs (default - False)\n* MaxLogsCount (default - 20)
+description: Deprecated. Use the `QRadar - Get offense correlations v2` instead.\"\nRun on a QRadar offense to get more information\n\n* Get all correlations relevant to the offense\n* Get all logs relevant to the correlations (not done by default, set "GetCorrelationLogs\" to \"True\")\n\nInputs-\n* GetCorrelationLogs (default - False)\n* MaxLogsCount (default - 20)
 hidden: true
 starttaskid: '0'
 tasks:
@@ -265,3 +265,4 @@ outputs:
   description: The log's protocol name
 tests:
 - no tests
+deprecated: true

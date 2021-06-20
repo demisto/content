@@ -570,11 +570,13 @@ def create_file_report(file_hash: str, reports, file_info, format_: str = 'xml',
                     if '-response' in dns_obj:
                         dns_response.append(dns_obj['-response'])
             if 'url' in report["network"]:
+                url = ''
                 if '@host' in report["network"]["url"]:
                     url = report["network"]["url"]["@host"]
                 if '@uri' in report["network"]["url"]:
                     url += report["network"]["url"]["@uri"]
-                feed_related_indicators.append({'value': url, 'type': 'URL'})
+                if url:
+                    feed_related_indicators.append({'value': url, 'type': 'URL'})
 
         if 'evidence' in report and report["evidence"]:
             if 'file' in report["evidence"]:
