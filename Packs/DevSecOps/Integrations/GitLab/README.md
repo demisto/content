@@ -1145,7 +1145,7 @@ Get details of jobs.
 
 ### gitlab-artifact-get
 ***
-Get details of pipeline schedules.
+Get artifact from given artifact path corresponding to job ID given.
 
 
 #### Base Command

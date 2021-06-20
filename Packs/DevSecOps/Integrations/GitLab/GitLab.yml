@@ -585,7 +585,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Get artifcat from given artifact path corresponding to job ID given.
+    description: Get artifact from given artifact path corresponding to job ID given.
     execution: false
     name: gitlab-artifact-get
     outputs:
