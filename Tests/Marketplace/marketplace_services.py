@@ -100,6 +100,8 @@ class Pack(object):
         self._keywords = None  # initialized in enhance_pack_attributes function
         self._dependencies = None  # initialized in enhance_pack_attributes function
         self._pack_statistics_handler = None  # initialized in enhance_pack_attributes function
+        self._is_transformer = False  # a flag that specifies if pack contains a transformer script
+        self._is_filter = False  # a flag that specifies if pack contains a filter script
 
     @property
     def name(self):
@@ -1466,12 +1468,18 @@ class Pack(object):
                     self._server_min_version = get_updated_server_version(self._server_min_version, content_item,
                                                                           self._pack_name)
 
+                    content_item_tags = content_item.get('tags', [])
+
                     if current_directory == PackFolders.SCRIPTS.value:
                         folder_collected_items.append({
                             'name': content_item.get('name', ""),
                             'description': content_item.get('comment', ""),
-                            'tags': content_item.get('tags', [])
+                            'tags': content_item_tags
                         })
+
+                        self._is_transformer = True if 'transformer' in content_item_tags else False
+                        self._is_filter = True if 'filter' in content_item_tags else False
+
                     elif current_directory == PackFolders.PLAYBOOKS.value:
                         self.is_feed_pack(content_item, 'Playbook')
                         folder_collected_items.append({
@@ -1596,6 +1604,8 @@ class Pack(object):
         tags |= self._get_tags_from_landing_page(landing_page_sections)
         tags |= {PackTags.TIM} if self._is_feed else set()
         tags |= {PackTags.USE_CASE} if self._use_cases else set()
+        tags |= {PackTags.TRANSFORMER} if self._is_transformer else set()
+        tags |= {PackTags.FILTER} if self._is_filter else set()
 
         if self._create_date:
             days_since_creation = (datetime.utcnow() - datetime.strptime(self._create_date, Metadata.DATE_FORMAT)).days
