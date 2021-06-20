@@ -28,7 +28,7 @@ To use a self-configured Azure application, you need to add a new Azure App Regi
     * offline_access - Delegated 
       
       And one of the following:
-      * Incident.Read.All	- Application
+      * Incident.Read.All - Application
       * AdvancedHunting.Read.All - Application
     
 
