@@ -11,12 +11,32 @@ class FireEyeClient(BaseClient):
     def __init__(self, base_url: str, username: str, password: str, verify: bool, proxy: bool):
         super().__init__(base_url=base_url, auth=(username, password), verify=verify, proxy=proxy)
         self._headers = {
-            'X-FeApi-Token': self._generate_token(),
+            'X-FeApi-Token': self._get_token(),
             'Accept': 'application/json',
         }
 
     @logger
-    def _generate_token(self) -> str:
+    def _get_token(self) -> str:
+        """
+        Obtains token from integration context if available and still valid
+        (15 minutes according to the API, we gave 10 minutes).
+        After expiration, new token are generated and stored in the integration context.
+        Returns:
+            str: token that will be added to authorization header.
+        """
+        integration_context = get_integration_context()
+        token = integration_context.get('token', '')
+        valid_until = integration_context.get('valid_until')
+
+        now = datetime.now()
+        now_timestamp = datetime.timestamp(now)
+        # if there is a key and valid_until, and the current time is smaller than the valid until
+        # return the current token
+        if token and valid_until:
+            if now_timestamp < valid_until:
+                return token
+
+        # else generate a token and update the integration context accordingly
         resp = self._http_request(method='POST', url_suffix='auth/login', resp_type='response')
         if resp.status_code != 200:
             raise DemistoException(
@@ -24,7 +44,13 @@ class FireEyeClient(BaseClient):
         if 'X-FeApi-Token' not in resp.headers:
             raise DemistoException(
                 f'Token request failed. API token is missing. message: {str(resp)}')
-        return resp.headers['X-FeApi-Token']
+        token = resp.headers['X-FeApi-Token']
+        integration_context.update({'token': token})
+        time_buffer = 10  # minutes by which to lengthen the validity period
+        integration_context.update({'valid_until': datetime.timestamp(now + timedelta(minutes=time_buffer))})
+        set_integration_context(integration_context)
+
+        return token
 
     @logger
     def get_alerts_request(self, request_params: Dict[str, Any]) -> Dict[str, str]:
