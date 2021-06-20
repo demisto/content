@@ -71,5 +71,5 @@ script:
   subtype: python3
   type: python
 tests:
-- No tests (auto formatted)
+- GoogleMapsTest
 fromversion: 5.5.0
