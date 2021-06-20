@@ -410,13 +410,13 @@ def get_dbot_level(threat_level_id: str) -> int:
     return 0
 
 
-def get_files_events():
+def get_files_events(pymisp):
     files = argToList(demisto.args().get('file'), ',')
     for file_hash in files:
-        check_file(file_hash)
+        check_file(pymisp, file_hash)
 
 
-def check_file(file_hash):
+def check_file(pymisp, file_hash):
     """
     gets a file_hash and entities dict, returns MISP events
 
@@ -431,7 +431,9 @@ def check_file(file_hash):
         return_error('Invalid hash length, enter file hash of format MD5, SHA-1 or SHA-256')
 
     # misp_response will remain the raw output of misp
-    misp_response = MISP.search(value=file_hash)
+    misp_response = pymisp.search(value=file_hash, controller='attributes', include_context=True,
+                                  include_correlations=True, include_event_tags=True, enforce_warninglist= True)
+    print(misp_response)
     if misp_response:
         dbot_list = list()
         file_list = list()
@@ -600,24 +602,19 @@ def get_new_event(args):
     return event
 
 
-def create_event(pymisp: ExpandedPyMISP, demisto_args: dict, ret_only_event_id: bool = False,
-                 data_keys_to_save: list = []) -> Union[int, None]:
+def create_event(pymisp: ExpandedPyMISP, demisto_args: dict, data_keys_to_save: list = []):
     """Creating event in MISP with the given attribute
 
     Args:
         pymisp
         demisto_args
-        ret_only_event_id (bool): returning event ID if set to True
         data_keys_to_save
 
     Returns:
-        int: event_id
     """
     new_event = get_new_event(demisto_args)
     new_event = pymisp.add_event(new_event, True)
     event_id = get_valid_event_id(new_event.id)
-    if ret_only_event_id:
-        return event_id
 
     add_attribute(event_id=event_id, internal=True, pymisp=pymisp, data_keys_to_save=data_keys_to_save,
                   new_event=new_event, demisto_args=demisto_args)
@@ -1496,7 +1493,7 @@ def main():
             return_results(
                 add_events_from_feed(demisto_args=args, pymisp=pymisp, use_ssl=verify, proxies=proxies))  # checked V
         elif command == 'file':
-            get_files_events()
+            get_files_events(pymisp)
         elif command == 'url':
             get_urls_events()
         elif command == 'ip':
