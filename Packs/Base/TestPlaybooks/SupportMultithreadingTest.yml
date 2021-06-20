@@ -10,7 +10,7 @@ script: |
   if argToBoolean(demisto.args().get('use_support_multithreading')):
       support_multithreading()
 
-  pool_size = 20
+  pool_size = 10
   def worker(item):
       demisto.info(f'======1 ITEM IS : {item}')
       time.sleep(0.1)
@@ -20,7 +20,7 @@ script: |
 
 
   with Pool(pool_size) as pool:
-      pool.map(worker, [1, 2, 3, 4, 5])
+      pool.map(worker, range(10))
 
 
   print('done')
