@@ -50,7 +50,7 @@ class Client(BaseClient):
         """
 
         params = {"expand": expand, "overrides": overrides}
-        return self._http_request(method="GET", url_suffix="/computers", params=params)["computers"]
+        return self._http_request(method="GET", url_suffix="/computers", params=params).get("computers")
 
     def create_computer(self, expand: list, overrides: bool, **computer_properties) -> Dict[str, Any]:
         """
@@ -175,7 +175,7 @@ class Client(BaseClient):
         """
 
         return self._http_request(method="GET", url_suffix=f"/computers/{computer_id}/firewall/assignments",
-                                  params={"overrides": overrides})["assignedRuleIDs"]
+                                  params={"overrides": overrides}).get("assignedRuleIDs")
 
     def add_firewall_rule_ids_to_computer(self, computer_id: int, rule_ids: List[int], overrides: bool) -> List[int]:
         """
@@ -207,7 +207,7 @@ class Client(BaseClient):
         """
 
         return self._http_request(method="PUT", url_suffix=f"/computers/{computer_id}/firewall/assignments",
-                                  params={"overrides": overrides}, json_data={"rule_ids": rule_ids})["assignedRuleIDs"]
+                                  params={"overrides": overrides}, json_data={"rule_ids": rule_ids}).get("assignedRuleIDs")
 
     def remove_firewall_rule_id_from_computer(self, computer_id: int, firewall_rule_id: int):
         """
@@ -229,7 +229,7 @@ class Client(BaseClient):
             List[Dict[str, Any]]: All existing computer groups.
         """
 
-        return self._http_request(method="GET", url_suffix="/computergroups")["computerGroups"]
+        return self._http_request(method="GET", url_suffix="/computergroups").get("computerGroups")
 
     def create_computer_group(self, **computer_group_properties) -> Dict[str, Any]:
         """
@@ -290,7 +290,7 @@ class Client(BaseClient):
             List[Dict[str, Any]]: All firewall rules.
         """
 
-        return self._http_request(method="GET", url_suffix="/firewallrules")["firewallRules"]
+        return self._http_request(method="GET", url_suffix="/firewallrules").get("firewallRules")
 
     def create_firewall_rule(self, **firewall_rule_properties) -> Dict[str, Any]:
         """
@@ -706,7 +706,7 @@ def create_computer_command(client: Client, expand: List[str], overrides: bool, 
                                       policy_id=policy_id, asset_importance_id=asset_importance_id,
                                       relay_list_id=relay_list_id)
 
-    markdown = tableToMarkdown(f"Details for the new computer {response['hostName']}", response, removeNull=True,
+    markdown = tableToMarkdown(f"Details for the new computer {response.get('hostName')}", response, removeNull=True,
                                headers=COMPUTER_TABLE_HEADERS, headerTransform=pascalToSpace)
 
     return CommandResults(outputs_prefix="TrendMicro.Computers", outputs_key_field="ID", outputs=response,
@@ -729,7 +729,7 @@ def get_computer_command(client: Client, computer_id: int, expand: List[str], ov
 
     response = client.get_computer(computer_id=computer_id, expand=expand, overrides=overrides)
 
-    markdown = tableToMarkdown(f"Details for the computer {response['hostName']}", response, removeNull=True,
+    markdown = tableToMarkdown(f"Details for the computer {response,get('hostName')}", response, removeNull=True,
                                headers=COMPUTER_TABLE_HEADERS, headerTransform=pascalToSpace)
 
     return CommandResults(outputs_prefix="TrendMicro.Computers", outputs_key_field="ID", outputs=response,
@@ -765,7 +765,7 @@ def modify_computer_command(client: Client, computer_id: int, expand: List[str],
                                       policy_id=policy_id, asset_importance_id=asset_importance_id,
                                       relay_list_id=relay_list_id)
 
-    markdown = tableToMarkdown(f"Details for the computer {response['hostName']}", response, removeNull=True,
+    markdown = tableToMarkdown(f"Details for the computer {response.get('hostName')}", response, removeNull=True,
                                headers=COMPUTER_TABLE_HEADERS, headerTransform=pascalToSpace)
 
     return CommandResults(outputs_prefix="TrendMicro.Computers", outputs_key_field="TrendMicro", outputs=response,
@@ -1598,7 +1598,7 @@ def list_default_policy_settings_command(client: Client) -> CommandResults:
         CommandResults: Command results with raw response, outputs and readable outputs.
     """
 
-    response = {k: v["value"] for k, v in client.list_default_policy_settings().items()}
+    response = {k: v.get("value") for k, v in client.list_default_policy_settings().items()}
     markdown = tableToMarkdown("The Default Policy Settings", response, removeNull=True, headerTransform=pascalToSpace)
     outputs = [{"name": k, "value": v} for k, v in response.items()]
 
@@ -1756,7 +1756,7 @@ def main():
     use_ssl = not params.get("insecure", False)
     use_proxy = params.get("proxy", False)
 
-    client = Client(params["server_url"], params["api_secret"], use_ssl, use_proxy)
+    client = Client(params.get("server_url"), params("api_secret"), use_ssl, use_proxy)
 
     commands: Dict[str, Callable] = {"trendmicro-list-computers": list_computers_command,
                                      "trendmicro-create-computer": create_computer_command,
@@ -1803,7 +1803,7 @@ def main():
         command = demisto.command()
 
         if command in commands:
-            command_function = commands[command]
+            command_function = commands.get(command)
             return_results(command_function(client, **convert_args(command_function, demisto.args())))
         else:
             raise NotImplementedError(f"The command {command} does not exist on TrendMicro!")
@@ -1812,7 +1812,7 @@ def main():
         error_message = f"{INVALID_URL_ERROR}\nError:\n{e}"
     except HTTPError as e:
         demisto.error(traceback.format_exc())
-        error_message = f"Error in API call [{e.response.status_code}]\n{e.response.json()['message']}"
+        error_message = f"Error in API call [{e.response.status_code}]\n{e.response.json().get('message')}"
     except Exception as e:
         demisto.error(traceback.format_exc())
         error_message = f"Failed to execute {demisto.command()} command.\nError:\n{e}"
