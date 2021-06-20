@@ -31,6 +31,7 @@ CHANNEL_TAG_EXPRESSION = '<#(.*?)>'
 URL_EXPRESSION = r'<(https?://.+?)(?:\|.+)?>'
 GUID_REGEX = r'(\{){0,1}[0-9a-fA-F]{8}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{12}(\}){0,1}'
 ENTITLEMENT_REGEX = r'{}@(({})|(?:[\d_]+))_*(\|\S+)?\b'.format(GUID_REGEX, GUID_REGEX)
+COMMAND_REGEX = r"command.*?(?=;)"
 MESSAGE_FOOTER = '\n**From Slack**'
 MIRROR_TYPE = 'mirrorEntry'
 INCIDENT_OPENED = 'incidentOpened'
@@ -597,6 +598,9 @@ async def process(client: SocketModeClient, req: SocketModeRequest):
         message_bot_id = data.get('bot_id', '')
         thread = event.get('thread_ts', None)
         message = data.get('message', {})
+        # Check if slash command received. If so, ignore for now.
+        if data.get('command', None):
+            return
         actions = data.get('actions', [])
         if actions:
             channel = data.get('channel', {}).get('id', '')
