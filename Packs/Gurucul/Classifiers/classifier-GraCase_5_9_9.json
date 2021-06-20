@@ -17,130 +17,90 @@
                 "Gra Case Id": {
                     "complex": {
                         "accessor": "",
-                        "filters": [
-
-                        ],
+                        "filters": [],
                         "root": "caseId",
-                        "transformers": [
-
-                        ]
+                        "transformers": []
                     },
                     "simple": ""
                 },
                 "Gra Entity": {
                     "complex": {
                         "accessor": "",
-                        "filters": [
-
-                        ],
+                        "filters": [],
                         "root": "entity",
-                        "transformers": [
-
-                        ]
+                        "transformers": []
                     },
                     "simple": ""
                 },
                 "Gra Entity Id": {
                     "complex": {
                         "accessor": "",
-                        "filters": [
-
-                        ],
+                        "filters": [],
                         "root": "entityId",
-                        "transformers": [
-
-                        ]
+                        "transformers": []
                     },
                     "simple": ""
                 },
                 "Gra Entity Type Id": {
                     "complex": {
                         "accessor": "",
-                        "filters": [
-
-                        ],
+                        "filters": [],
                         "root": "entityTypeId",
-                        "transformers": [
-
-                        ]
+                        "transformers": []
                     },
                     "simple": ""
                 },
                 "Gra Open Date": {
                     "complex": {
                         "accessor": "",
-                        "filters": [
-
-                        ],
+                        "filters": [],
                         "root": "openDate",
-                        "transformers": [
-
-                        ]
+                        "transformers": []
                     },
                     "simple": ""
                 },
                 "Gra Owner Id": {
                     "complex": {
                         "accessor": "",
-                        "filters": [
-
-                        ],
+                        "filters": [],
                         "root": "ownerId",
-                        "transformers": [
-
-                        ]
+                        "transformers": []
                     },
                     "simple": ""
                 },
                 "Gra Owner Name": {
                     "complex": {
                         "accessor": "",
-                        "filters": [
-
-                        ],
+                        "filters": [],
                         "root": "ownerName",
-                        "transformers": [
-
-                        ]
+                        "transformers": []
                     },
                     "simple": ""
                 },
                 "Gra Owner Type": {
                     "complex": {
                         "accessor": "",
-                        "filters": [
-
-                        ],
+                        "filters": [],
                         "root": "ownerType",
-                        "transformers": [
-
-                        ]
+                        "transformers": []
                     },
                     "simple": ""
                 },
                 "Gra Risk Date": {
                     "complex": {
                         "accessor": "",
-                        "filters": [
-
-                        ],
+                        "filters": [],
                         "root": "riskDate",
-                        "transformers": [
-
-                        ]
+                        "transformers": []
                     },
                     "simple": ""
                 },
                 "name": {
                     "complex": {
                         "accessor": "",
-                        "filters": [
-
-                        ],
+                        "filters": [],
                         "root": "entity",
-                        "transformers": [
-
-                        ]
+                        "transformers": []
                     },
                     "simple": ""
                 }
@@ -150,13 +110,9 @@
     "transformer": {
         "complex": {
             "accessor": "",
-            "filters": [
-
-            ],
+            "filters": [],
             "root": "incidentType",
-            "transformers": [
-
-            ]
+            "transformers": []
         },
         "simple": ""
     },

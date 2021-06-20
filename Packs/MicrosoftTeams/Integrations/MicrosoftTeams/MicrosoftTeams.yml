@@ -354,5 +354,5 @@ script:
   type: python
   resetContext: true
 tests:
-- No test
+- Microsoft Teams - Test
 fromversion: 5.0.0
