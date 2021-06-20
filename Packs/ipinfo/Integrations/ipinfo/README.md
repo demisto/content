@@ -1,5 +1,13 @@
 Use the ipinfo.io API to get data about an IP address
-## Configure ipinfo on Cortex XSOAR
+
+## IPinfo v2 is now available
+It's recommended to use `IPinfo v2`, rather than `IPinfo`:
+- IPinfo v2 allows setting source reliability.
+- IPinfo v2 enriches data with IP-hostname relationships.
+- On IPinfo v2, the `ip-field` command has been removed: all outputs are available by running `ip`.
+
+
+## Configure IPinfo on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
 2. Search for ipinfo.
@@ -102,4 +110,3 @@ There is no context output for this command.
 
 #### Human Readable Output
 Miami
-

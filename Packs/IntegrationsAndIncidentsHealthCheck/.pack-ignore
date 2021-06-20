@@ -64,3 +64,27 @@ ignore=BA108,BA109
 
 [file:IncidentsCheck_NumberofIncidentsNoOwner.yml]
 ignore=BA108,BA109
+
+[file:incidentfield-CreatedDateFailedIncidents.json]
+ignore=IF100
+
+[file:incidentfield-NumberofFailedIncidents.json]
+ignore=IF100
+
+[file:incidentfield-PlaybookNamesWithFailedTasks.json]
+ignore=IF100
+
+[file:incidentfield-PlaybookTasksErrors.json]
+ignore=IF100
+
+[file:incidentfield-PlaybooksFailedCommands.json]
+ignore=IF100
+
+[file:incidentfield-PlaybooksWithFailedTasks.json]
+ignore=IF100
+
+[file:incidentfield-UnassignedIncidents.json]
+ignore=IF100
+
+[file:incidentfield-failedincidentscreateddate.json]
+ignore=IF100

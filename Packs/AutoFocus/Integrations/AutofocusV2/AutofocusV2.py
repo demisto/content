@@ -1677,7 +1677,8 @@ def create_relationships_list(entity_a, entity_a_type, tags, reliability):
                                                     entity_a=entity_a,
                                                     entity_a_type=entity_a_type,
                                                     entity_b=entity_b,
-                                                    entity_b_type=relation_by_type.get('entity_b_type'),
+                                                    entity_b_type=FeedIndicatorType.indicator_type_by_server_version(
+                                                        relation_by_type.get('entity_b_type')),
                                                     source_reliability=reliability,
                                                     brand=VENDOR_NAME))
 

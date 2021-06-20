@@ -7,7 +7,7 @@ Creates a public key (.cer file), a private key (.pfx) file, and a Base64 encode
 | --- | --- |
 | Script Type | powershell |
 | Tags | basescript |
-| Demisto Version | 5.5.0 |
+| Cortex XSOAR Version | 5.5.0 |
 
 ## Inputs
 ---

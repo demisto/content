@@ -15,7 +15,7 @@ This integration does not support SAML protocol for authentication.
 3. Manage quarantined messages and folder.
 
 
-## Configure Proofpoint Protection Server on Demisto
+## Configure Proofpoint Protection Server on Cortex XSOAR
 ---
 
 1. Navigate to __Settings__ > __Integrations__ > __Servers & Services__.
@@ -32,7 +32,7 @@ This integration does not support SAML protocol for authentication.
 
 ## Commands
 ---
-You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.
+You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 1. proofpoint-download-email
 2. proofpoint-quarantine-messages

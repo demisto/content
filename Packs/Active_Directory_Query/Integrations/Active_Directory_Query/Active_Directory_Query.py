@@ -9,6 +9,7 @@ import traceback
 import os
 from ldap3.utils.log import (set_library_log_detail_level, get_library_log_detail_level,
                              set_library_log_hide_sensitive_data, EXTENDED)
+from ldap3.utils.conv import escape_filter_chars
 
 # global connection
 conn: Optional[Connection] = None
@@ -454,26 +455,32 @@ def search_users(default_base_dn, page_size):
 
     # query by user DN
     if args.get('dn'):
-        query = "(&(objectClass=User)(objectCategory=person)(distinguishedName={}))".format(args['dn'])
+        dn = escape_filter_chars(args['dn'])
+        query = "(&(objectClass=User)(objectCategory=person)(distinguishedName={}))".format(dn)
 
     # query by name
     if args.get('name'):
-        query = "(&(objectClass=User)(objectCategory=person)(cn={}))".format(args['name'])
+        name = escape_filter_chars(args['name'])
+        query = "(&(objectClass=User)(objectCategory=person)(cn={}))".format(name)
 
     # query by email
     if args.get('email'):
-        query = "(&(objectClass=User)(objectCategory=person)(mail={}))".format(args['email'])
+        email = escape_filter_chars(args['email'])
+        query = "(&(objectClass=User)(objectCategory=person)(mail={}))".format(email)
 
     # query by sAMAccountName
     if args.get('username'):
-        query = "(&(objectClass=User)(objectCategory=person)(sAMAccountName={}))".format(args['username'])
+        username = escape_filter_chars(args['username'])
+        query = "(&(objectClass=User)(objectCategory=person)(sAMAccountName={}))".format(username)
 
     # query by custom object attribute
     if args.get('custom-field-type'):
         if not args.get('custom-field-data'):
             raise Exception('Please specify "custom-field-data" as well when quering by "custom-field-type"')
+        field_type = escape_filter_chars(args['custom-field-type'])
+        field_data = escape_filter_chars(args['custom-field-data'])
         query = "(&(objectClass=User)(objectCategory=person)({}={}))".format(
-            args['custom-field-type'], args['custom-field-data'])
+            field_type, field_data)
 
     if args.get('attributes'):
         custom_attributes = args['attributes'].split(",")

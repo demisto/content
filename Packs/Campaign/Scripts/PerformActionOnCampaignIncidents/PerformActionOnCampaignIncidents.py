@@ -77,12 +77,19 @@ def perform_link_and_close(ids, action):
     return COMMAND_SUCCESS.format(action='linked & closed', ids=','.join(ids))
 
 
+def perform_unlink_and_reopen(ids, action):
+    perform_link_unlink(ids, 'unlink')
+    perform_reopen(ids, 'reopen')
+    return COMMAND_SUCCESS.format(action='unlinked & reopen', ids=','.join(ids))
+
+
 ACTIONS_MAPPER = {
     'link': perform_link_unlink,
     'unlink': perform_link_unlink,
     'close': perform_close,
     'reopen': perform_reopen,
-    'link & close': perform_link_and_close
+    'link & close': perform_link_and_close,
+    'unlink & reopen': perform_unlink_and_reopen
 }
 
 

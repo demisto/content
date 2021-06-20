@@ -4,7 +4,7 @@ commonfields:
   version: -1
 configuration:
 - additionalinfo: The query to run to update its EDL. To view expected results, you
-    can run the following command from the Demisto CLI `!findIndicators query=<your
+    can run the following command from the Cortex XSOAR CLI `!findIndicators query=<your
     query>`
   display: Indicator Query
   name: indicators_query

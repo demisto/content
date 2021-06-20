@@ -1,7 +1,7 @@
 <!-- HTML_DOC -->
 <p>Secure, store and tightly control access to tokens, passwords, certificates, encryption keys for protecting secrets and other sensitive data using HashiCorp Vault. This integration fetches credentials. For more information, see <a href="https://xsoar.pan.dev/docs/reference/articles/managing-credentials">Managing Credentials</a>.</p>
 <p>This integration was integrated and tested with version 0.11.5 of HashiCorp Vault.</p>
-<h2>Configure HashiCorp Vault on Demisto</h2>
+<h2>Configure HashiCorp Vault on Cortex XSOAR</h2>
 <ol>
 <li>Navigate to <strong>Settings</strong> &gt; <strong>Integrations</strong> &gt; <strong>Servers &amp; Services</strong>.</li>
 <li>Search for HashiCorp Vault.</li>
@@ -15,7 +15,7 @@
 <li><strong>Trust any certificate (not secure)</strong></li>
 <li><strong>Use system proxy settings</strong></li>
 <li>
-<strong>Fetches credentials</strong> - If set, the integration will fetch credentials from Vault to Demisto.</li>
+<strong>Fetches credentials</strong> - If set, the integration will fetch credentials from Vault to Cortex XSOAR.</li>
 <li><strong>CSV list of secrets engine types to fetch secrets from</strong></li>
 </ul>
 </li>
@@ -23,7 +23,7 @@
 </ol>
 <h2>Commands</h2>
 <hr>
-<p>You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
+<p>You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
 <ol>
 <li><a href="#h_1647383491061545843063404">List all secrets engines: hashicorp-list-secrets-engines</a></li>
 <li><a href="#h_7807319543131545843069087">List secrets for a KV V2 engine: hashicorp-list-secrets</a></li>

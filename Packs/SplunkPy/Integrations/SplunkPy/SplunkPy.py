@@ -1391,6 +1391,8 @@ def rawToDict(raw):
             key_val_arr = raw.split(",")
             for key_val in key_val_arr:
                 single_key_val = key_val.split(":", 1)
+                if len(single_key_val) <= 1:
+                    single_key_val = key_val.split("=", 1)
                 if len(single_key_val) > 1:
                     val = single_key_val[1]
                     key = single_key_val[0].strip()
