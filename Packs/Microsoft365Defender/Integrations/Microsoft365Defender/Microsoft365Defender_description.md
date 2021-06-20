@@ -19,7 +19,7 @@ In order to use the Cortex XSOAR application, use the default application ID.
 
 #### Self-Deployed Azure App
 
-To use a self-configured Azure application, you need to add a new Azure App Registration in the Azure Portal, with mobile and desktop flows enabled.
+To use a self-configured Azure application, you need to add a new Azure App Registration in the Azure Portal. For more details, follow [Self Deployed Application - Device Code Flow](https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#device-code-flow).
 
 #### Required Permissions
 * microsoft-365-defender-incidents-list:
