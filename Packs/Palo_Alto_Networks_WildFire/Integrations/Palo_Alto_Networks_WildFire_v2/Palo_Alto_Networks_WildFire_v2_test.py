@@ -171,8 +171,8 @@ def test_report_chunked_response(mocker):
                        {'Status': 'Success',
                         'SHA256': '8decc8571946d4cd70a024949e033a2a2a54377fe9f1c1b944c20f9ee11a9e51'},
                    'DBotScore': [
-                       {'Indicator': '8decc8571946d4cd70a024949e033a2a2a54377fe9f1c1b944c20f9ee11a9e51', 'Type': 'hash',
-                        'Vendor': 'WildFire', 'Score': 1},
-                       {'Indicator': '8decc8571946d4cd70a024949e033a2a2a54377fe9f1c1b944c20f9ee11a9e51', 'Type': 'file',
-                        'Vendor': 'WildFire', 'Score': 1}]}}
+                       {'Indicator': '8decc8571946d4cd70a024949e033a2a2a54377fe9f1c1b944c20f9ee11a9e51',
+                        'Type': 'hash', 'Vendor': 'WildFire', 'Score': 1},
+                       {'Indicator': '8decc8571946d4cd70a024949e033a2a2a54377fe9f1c1b944c20f9ee11a9e51',
+                        'Type': 'file', 'Vendor': 'WildFire', 'Score': 1}]}}
     assert demisto.results.call_args[0][0] == result
