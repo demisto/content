@@ -82,7 +82,7 @@ script:
     description: Run a CrowdStrike API query.
     execution: false
     name: cs-api-request
-  dockerimage: demisto/python3:3.9.4.18682
+  dockerimage: demisto/python3:3.9.5.21272
   feed: false
   isfetch: false
   longRunning: false
