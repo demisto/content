@@ -727,9 +727,9 @@ def fetch_incidents(client: Client, max_results: int, last_run: dict, first_fetc
         incident_created_time_ms = int(incident_created_time.timestamp()) if incident_created_time else '0'
 
         # to prevent duplicates, adding incidents with creation_time > last fetched incident
-        # if last_fetch:
-        #     if incident_created_time_ms <= last_fetch:
-        #         continue
+        if last_fetch:
+            if incident_created_time_ms <= last_fetch:
+                continue
 
         alert_id = alert.get('unique_id', '')
         alert_name = alert.get('process_name', '')
