@@ -36,8 +36,15 @@ create-instances:
     - !reference [.download-demisto-conf]
     - !reference [.create-id-set]
     - section_start "Create Release Notes and Common Server Documentation"
-    - python3 Utils/release_notes_generator.py $CONTENT_VERSION $CI_COMMIT_SHA $CI_BUILD_ID --output $ARTIFACTS_FOLDER/packs-release-notes.md --github-token $GITHUB_TOKEN
-    - cp content-descriptor.json $ARTIFACTS_FOLDER
+    - |
+      if [[ $CI_COMMIT_BRANCH == master ]] || [[ $CI_COMMIT_BRANCH == 21\.* ]] || [[ $CI_COMMIT_BRANCH == 22\.* ]]; then
+        echo "Creating Release Notes and Saving Content Descriptor"
+        python3 Utils/release_notes_generator.py $CONTENT_VERSION $GIT_SHA1 $CI_BUILD_ID --output $ARTIFACTS_FOLDER/packs-release-notes.md --github-token $GITHUB_TOKEN
+        cp content-descriptor.json $ARTIFACTS_FOLDER
+      else
+        echo "Skipping creation of content descriptor and release notes because not on master or release branch"
+        echo "CI_COMMIT_BRANCH=$CI_COMMIT_BRANCH"
+      fi
     - ./Documentation/commonServerDocs.sh
     - section_end "Create Release Notes and Common Server Documentation"
     - section_start "Create Content Artifacts and Update Conf"
@@ -73,7 +80,7 @@ create-instances:
     - section_end "Prepare Content Packs for Testing"
     - section_start "Zip Marketplace Packs"
     - |
-      if [[ $CI_COMMIT_BRANCH != master ]] && [[ $CI_COMMIT_BRANCH != 20\.* ]] && [[ $CI_COMMIT_BRANCH != 21\.* ]]; then
+      if [[ $CI_COMMIT_BRANCH != master ]] && [[ $CI_COMMIT_BRANCH != 21\.* ]] && [[ $CI_COMMIT_BRANCH != 22\.* ]]; then
         echo "Skipping packs download to artifact on branch that is not master or a release branch"
         echo "CI_COMMIT_BRANCH=$CI_COMMIT_BRANCH"
       else
