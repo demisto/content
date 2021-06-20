@@ -154,6 +154,8 @@ def test_report_chunked_response(mocker):
     mocker.patch.object(demisto, "args",
                         return_value={'hash': '8decc8571946d4cd70a024949e033a2a2a54377fe9f1c1b944c20f9ee11a9e51',
                                       'format': 'xml'})
+    mocker.patch.object(demisto, "getParam",
+                        return_value={"server": "https://wildfire.paloaltonetworks.com/publicapi"})
     wildfire_get_report_command()
     result = {'Type': 1,
               'Contents': [{'version': '2.0', 'platform': '100', 'software': 'PDF Static Analyzer',
