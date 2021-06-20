@@ -1,0 +1,190 @@
+{
+    "id": "FireEye NX Alert - Incoming Mapper v2",
+    "name": "FireEye NX Alert - Incoming Mapper v2",
+    "type": "mapping-incoming",
+    "description": "Maps FireEye NX alerts.",
+    "version": -1,
+    "mapping": {
+        "FireEye NX Alert": {
+            "dontMapEventToLabels": true,
+            "internalMapping": {
+                "Alert Acknowledgement": {
+                    "complex": null,
+                    "simple": "ack"
+                },
+                "Alert Action": {
+                    "complex": null,
+                    "simple": "action"
+                },
+                "Alert ID": {
+                    "complex": null,
+                    "simple": "id"
+                },
+                "Alert Malicious": {
+                    "complex": null,
+                    "simple": "malicious"
+                },
+                "Alert Name": {
+                    "complex": null,
+                    "simple": "name"
+                },
+                "Alert URL": {
+                    "complex": null,
+                    "simple": "alertUrl"
+                },
+                "Appliance ID": {
+                    "complex": null,
+                    "simple": "applianceId"
+                },
+                "FireEye C2 Address": {
+                    "complex": null,
+                    "simple": "explanation.cncServices.cncService.address"
+                },
+                "FireEye C2 Channel": {
+                    "complex": null,
+                    "simple": "explanation.cncServices.cncService.channel"
+                },
+                "FireEye C2 Host": {
+                    "complex": null,
+                    "simple": "explanation.cncServices.cncService.host"
+                },
+                "FireEye C2 Port": {
+                    "complex": null,
+                    "simple": "explanation.cncServices.cncService.port"
+                },
+                "FireEye C2 Protocol": {
+                    "complex": null,
+                    "simple": "explanation.cncServices.cncService.protocol"
+                },
+                "Destination IP": {
+                    "complex": null,
+                    "simple": "dst.ip"
+                },
+                "Destination MAC Address": {
+                    "complex": null,
+                    "simple": "dst.mac"
+                },
+                "Destination Port": {
+                    "complex": null,
+                    "simple": "dst.port"
+                },
+                "FireEye Malware Info": {
+                    "complex": null,
+                    "simple": "explanation.malwareDetected.malware"
+                },
+                "FireEye Infection ID": {
+                    "complex": null,
+                    "simple": "rootInfection"
+                },
+                "Sensor Name": {
+                    "complex": null,
+                    "simple": "sensor"
+                },
+                "Source IP": {
+                    "complex": null,
+                    "simple": "src.ip"
+                },
+                "Source MAC Address": {
+                    "complex": null,
+                    "simple": "src.mac"
+                },
+                "Source Port": {
+                    "complex": null,
+                    "simple": "src.port"
+                },
+                "UUID": {
+                    "complex": null,
+                    "simple": "uuid"
+                },
+                "Vendor Product": {
+                    "complex": null,
+                    "simple": "product"
+                },
+                "occurred": {
+                    "complex": null,
+                    "simple": "occurred"
+                },
+                "severity": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "severity",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "limit": {
+                                        "isContext": false,
+                                        "value": null
+                                    },
+                                    "replaceWith": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "1"
+                                        }
+                                    },
+                                    "toReplace": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "MINR"
+                                        }
+                                    }
+                                },
+                                "operator": "replace"
+                            },
+                            {
+                                "args": {
+                                    "limit": {
+                                        "isContext": false,
+                                        "value": null
+                                    },
+                                    "replaceWith": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "4"
+                                        }
+                                    },
+                                    "toReplace": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "CRIT"
+                                        }
+                                    }
+                                },
+                                "operator": "replace"
+                            },
+                            {
+                                "args": {
+                                    "limit": {
+                                        "isContext": false,
+                                        "value": null
+                                    },
+                                    "replaceWith": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "3"
+                                        }
+                                    },
+                                    "toReplace": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "MAJR"
+                                        }
+                                    }
+                                },
+                                "operator": "replace"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                }
+            }
+        }
+    },
+    "fromVersion": "6.0.0"
+}
