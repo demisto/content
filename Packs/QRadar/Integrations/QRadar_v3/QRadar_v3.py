@@ -1314,6 +1314,7 @@ def poll_offense_events_with_retry(client: Client, search_id: str, offense_id: i
                 time.sleep(FAILURE_SLEEP)
     return []
 
+
 def enrich_offense_with_events(client: Client, offense: Dict, fetch_mode: str, events_columns: str, events_limit: int,
                                max_retries: int = MAX_FETCH_EVENT_RETIRES):
     """
