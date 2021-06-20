@@ -37,8 +37,9 @@ class FireEyeClient(BaseClient):
 
     @logger
     def alert_acknowledge_request(self, uuid: str) -> Dict[str, str]:
-        # data here is redundant, but without it we are getting an error.
-        # "Bad Request" with Invalid input. code:ALRTCONF001
+        # json_data here is redundant as we are not sending any meaningful data,
+        # but without it the API call to FireEye fails and we are getting an error. hence sending it with a dummy value.
+        # the error we get when not sending json_data is: "Bad Request" with Invalid input. code:ALRTCONF001
         return self._http_request(method='POST', url_suffix=f'alerts/alert/{uuid}',
                                   params={'schema_compatibility': True}, json_data={"annotation": "<test>"},
                                   resp_type='resp')
