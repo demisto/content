@@ -1,6 +1,6 @@
 import pytest
 
-from FireEyeApiModule import *
+from FireEyeApiModule import to_fe_datetime_converter, alert_severity_to_dbot_score
 
 
 def test_to_fe_datetime_converter():
