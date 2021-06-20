@@ -3,23 +3,19 @@ from FeedRSS import *
 from requests.models import Response
 
 FEED_DATA = ([{'title': 'Test Article, with comma',
-             'title_detail': {'type': 'text/plain', 'language': None, 'base': '', 'value': 'Threat Actors Use Google Docs to Host Phishing Attacks'},
-             'links': [{'rel': 'alternate', 'type': 'text/html', 'href': 'https://threatpost.com/google-docs-host-attack/166998/'}],
+             'title_detail': {'type': 'text/plain', 'language': None, 'base': '', 'value': 'Test Article, with comma'},
+             'links': [{'rel': 'alternate', 'type': 'text/html', 'href': 'https://test-article.com/'}],
              'link': 'https://test-article.com/',
-             'comments': 'https://threatpost.com/google-docs-host-attack/166998/#comments',
-             'authors': [{'name': 'Elizabeth Montalbano'}],
-             'author': 'Elizabeth Montalbano',
-             'author_detail': {'name': 'Elizabeth Montalbano'},
+             'authors': [{'name': 'Name'}],
+             'author': 'Name',
+             'author_detail': {'name': 'Name'},
              'published': 'Thu, 17 Jun 2021 13:00:14 +0000',
-             'tags': [{'term': 'Hacks', 'scheme': None, 'label': None}, {'term': 'Web Security', 'scheme': None, 'label': None}, {'term': 'full', 'scheme': None, 'label': None}, {'term': 'large', 'scheme': None, 'label': None}, {'term': 'medium', 'scheme': None, 'label': None}, {'term': 'thumbnail', 'scheme': None, 'label': None}],
              'id': 'https://kasperskycontenthub.com/threatpost-global/?p=166998',
              'guidislink': False,
-             'summary': 'Exploit in the widely used document service leveraged to send malicious links that appear legitimate but actually steal victims credentials.',
-             'summary_detail': {'type': 'text/html', 'language': None, 'base': '', 'value': 'Exploit in the widely used document service leveraged to send malicious links that appear legitimate but actually steal victims credentials.'},
-             'wfw_commentrss': 'https://threatpost.com/google-docs-host-attack/166998/feed/',
-             'slash_comments': '1',
-             'media_content': [{'url': 'https://media.threatpost.com/wp-content/uploads/sites/103/2021/06/17063701/Google_Docs.jpg', 'width': '800', 'height': '506'}, {'url': 'https://media.threatpost.com/wp-content/uploads/sites/103/2021/06/17063701/Google_Docs.jpg', 'width': '800', 'height': '506'}, {'url': 'https://media.threatpost.com/wp-content/uploads/sites/103/2021/06/17063701/Google_Docs-300x190.jpg', 'width': '300', 'height': '190'}, {'url': 'https://media.threatpost.com/wp-content/uploads/sites/103/2021/06/17063701/Google_Docs-150x150.jpg', 'width': '150', 'height': '150'}],
-             'media_keywords': 'thumbnail'}])
+             'summary': 'test summary.',
+             'summary_detail': {'type': 'text/html', 'language': None, 'base': '', 'value': 'test summary.'},
+             'wfw_commentrss': 'https://test.com/feed/',
+             'slash_comments': '1'}])
 
 # def test_get_url_content():
 
