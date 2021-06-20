@@ -16,4 +16,4 @@
 !cb-edr-alert-update alert_ids=9f67733c-0632-4c55-bae0-985d9440c207 status=Unresolved
 !cb-edr-binary-summary md5=9532bd6c36a788d329668ac0d30ce822
 !cb-edr-binary-download md5=e3a2ad05e24105b35e986cf9cb38ec47
-!endpoint id=15 ip=172.31.35.147 hostname=WIN-SOSSKVTTQAB using="VMware Carbon Black EDR_instance_1"
+!endpoint id=15 ip=x.x.x.x hostname=WIN-SOSSKVTTQAB using="VMware Carbon Black EDR_instance_1"
