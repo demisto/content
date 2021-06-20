@@ -21,6 +21,9 @@ class FireEyeClient(BaseClient):
         if resp.status_code != 200:
             raise DemistoException(
                 f'Token request failed with status code {resp.status_code}. message: {str(resp)}')
+        if 'X-FeApi-Token' not in resp.headers:
+            raise DemistoException(
+                f'Token request failed. API token is missing. message: {str(resp)}')
         return resp.headers['X-FeApi-Token']
 
     @logger
