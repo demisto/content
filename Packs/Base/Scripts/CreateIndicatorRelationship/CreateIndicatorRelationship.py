@@ -65,7 +65,7 @@ def remove_existing_entity_b_indicators(entity_b_list: list, entity_b_query: str
     for indicator in result_indicators_by_query:
         if indicator.get('entity_b') in entity_b_list_to_remove:
             entity_b_list_to_remove.remove(indicator.get('entity_b'))
-    return entity_b_list
+    return entity_b_list_to_remove
 
 
 def create_relation_command_using_query(args: dict) -> List[EntityRelationship]:
