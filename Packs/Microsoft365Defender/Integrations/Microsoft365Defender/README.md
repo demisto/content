@@ -2,6 +2,27 @@ Microsoft 365 Defender is a unified pre- and post-breach enterprise defense suit
 prevention, investigation, and response across endpoints, identities, email, and applications to provide integrated
 protection against sophisticated attacks.
 
+## Authentication
+For more details about the authentication used in this integration, see <a href="https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication">Microsoft Integrations - Authentication</a>.
+
+#### Required Permissions
+* microsoft-365-defender-incidents-list:
+    * offline_access - Delegated 
+      
+      And one of the following:
+      * Incident.Read.All	- Application
+      * AdvancedHunting.Read.All - Application
+    
+
+* microsoft-365-defender-incident-update:
+   * offline_access - Delegated
+   * Incident.ReadWrite.All - Application
+
+
+* microsoft-365-defender-advanced-hunting:
+    * offline_access - Delegated   
+    * AdvancedHunting.Read.All - Application
+
 ## Configure Microsoft365Defender on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
