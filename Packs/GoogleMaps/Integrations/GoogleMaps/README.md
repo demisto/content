@@ -2,7 +2,7 @@ Use the Google Maps API. This integration was integrated and tested with version
 ## Configure GoogleMaps on Cortex XSOAR
 
 ### Note
-In order to use the embedded Google Maps view, please make sure a Google Maps Geocoding API key is set in XSOAR.
+In order to use the embedded Google Maps view, make sure a Google Maps Geocoding API key is set in Cortex XSOAR.
 
 ---
 
@@ -13,7 +13,7 @@ In order to use the embedded Google Maps view, please make sure a Google Maps Ge
     | **Parameter** | **Description** | **Required** |
        | --- | --- | --- |
    | Google Maps API Key | The API key to use for the connection. | True |
-   | Raise error an empty result | Whether to consider empty results as an error | False |
+   | Raise error an empty result | Whether to consider empty results as an error. | False |
    | Base URL |  | True |
    | Trust any certificate (not secure) |  | False |
    | Use system proxy settings |  | False |
@@ -40,11 +40,11 @@ Returns the coordinates of the given physical address. Only the first result is 
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| GoogleMaps.SearchAddress | String | The address provided as input. For example, a postal address, a business name or an area | 
+| GoogleMaps.SearchAddress | String | The address provided as input. For example, a postal address, a business name, or an area. | 
 | GoogleMaps.Address | String | Address of the geocoded location. | 
 | GoogleMaps.lat | Number | Latitude of the geocoded location. | 
-| GoogleMaps.lng | Number | Longitude of the geocoded location | 
-| GoogleMaps.Country | String | Country of the geocoded location | 
+| GoogleMaps.lng | Number | Longitude of the geocoded location. | 
+| GoogleMaps.Country | String | Country of the geocoded location. | 
 
 
 #### Command Example
