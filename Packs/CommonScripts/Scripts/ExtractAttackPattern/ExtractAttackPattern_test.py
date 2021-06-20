@@ -1,4 +1,4 @@
-from stix2 import TAXIICollectionSource
+from CommonServerPython import *
 
 
 ATTACK_PATTERN_OBJ = [{"name": "Two-Factor Authentication Interception"}]
@@ -15,8 +15,10 @@ def test_fetch_indicators(mocker):
     Validate that name extracted successfully from the ID.
     """
     from ExtractAttackPattern import is_valid_attack_pattern
-    mocker.patch.object(TAXIICollectionSource, "__init__", return_value=None)
-    mocker.patch.object(TAXIICollectionSource, 'query', return_value=ATTACK_PATTERN_OBJ)
+    mocker.patch.object(demisto, 'executeCommand', return_value=[{'Contents': [
+        {'id': 'T1530', 'value': 'Data from Cloud Storage Object'},
+        {'id': 'T1602', 'value': 'Data from Configuration Repository'}
+    ]}])
 
-    indicators = is_valid_attack_pattern('T1111')
-    assert indicators == 'Two-Factor Authentication Interception'
+    indicators = is_valid_attack_pattern(['T1530', 'T1602'])
+    assert indicators == ['Data from Cloud Storage Object', 'Data from Configuration Repository']

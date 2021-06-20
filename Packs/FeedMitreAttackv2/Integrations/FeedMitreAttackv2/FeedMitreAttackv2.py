@@ -424,7 +424,7 @@ def attack_pattern_reputation_command(client, args):
             )
 
             command_results.append(CommandResults(
-                outputs_prefix='MITREATTACK',
+                outputs_prefix='MITREATTACK.AttackPattern',
                 readable_output=md,
                 outputs_key_field='name',
                 indicator=attack_context,
@@ -432,6 +432,38 @@ def attack_pattern_reputation_command(client, args):
             break
 
     return command_results
+
+
+def get_mitre_value_from_id(client, args):
+    attack_ids = argToList(args.get('attack_ids', []))
+
+    attack_values = []
+    for attack_id in attack_ids:
+        for collection in client.collections:
+            collection_id = f"stix/collections/{collection.id}/"
+            collection_url = urljoin(client.base_url, collection_id)
+            collection_data = Collection(collection_url, verify=False)
+
+            tc_source = TAXIICollectionSource(collection_data)
+            attack_pattern_name = tc_source.query([
+                Filter("external_references.external_id", "=", attack_id),
+                Filter("type", "=", "attack-pattern")
+            ])[0]['name']
+            if attack_pattern_name:
+                attack_values.append({'id': attack_id, 'value': attack_pattern_name})
+                break
+    if attack_values:
+        return CommandResults(
+            outputs=attack_values,
+            outputs_key_field='id',
+            outputs_prefix='MITREATTACK',
+            readable_output=tableToMarkdown('MITRE ATTACK Attack Patterns values:', attack_values)
+        )
+
+    return CommandResults(
+            readable_output=tableToMarkdown(f'MITRE ATTACK Attack Patterns values: '
+                                            f'No Attack Patterns found for {attack_ids}.')
+        )
 
 
 def main():
@@ -452,6 +484,9 @@ def main():
 
         if demisto.command() == 'mitre-get-indicators':
             get_indicators_command(client, args)
+
+        if demisto.command() == 'mitre-get-attack-pattern-value':
+            return_results(get_mitre_value_from_id(client, args))
 
         elif demisto.command() == 'attack-pattern':
             return_results(attack_pattern_reputation_command(client, args))

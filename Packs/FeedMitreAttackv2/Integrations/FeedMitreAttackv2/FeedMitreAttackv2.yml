@@ -44,7 +44,6 @@ configuration:
   required: false
   type: 15
 - defaultvalue: indicatorType
-  display: ''
   name: feedExpirationPolicy
   options:
   - never
@@ -54,7 +53,6 @@ configuration:
   required: false
   type: 17
 - defaultvalue: '20160'
-  display: ''
   name: feedExpirationInterval
   required: false
   type: 1
@@ -128,12 +126,17 @@ script:
     description: Shows the feed names and IDs from TAXII.
     execution: false
     name: mitre-show-feeds
-  - name: attack-pattern
-    arguments:
-    - name: attack_pattern
-      required: true
-      default: true
+  - arguments:
+    - default: true
       description: Indicator to look up.
+      isArray: false
+      name: attack_pattern
+      required: true
+      secret: false
+    deprecated: false
+    description: Lookup reputation in the indicators.
+    execution: false
+    name: attack-pattern
     outputs:
     - contextPath: MITRE.ATT&CK.value
       description: The indicator value.
@@ -141,7 +144,24 @@ script:
     - contextPath: MITRE.ATT&CK.indicatorid
       description: Indicator ID.
       type: number
-    description: Lookup reputation in the indicators.
+  - arguments:
+    - default: false
+      description: The Attack Pattrens IDs list
+      isArray: true
+      name: attack_ids
+      required: true
+      secret: false
+    deprecated: false
+    description: Get Attack Pattern value from Attack Pattern ID.
+    execution: false
+    name: mitre-get-attack-pattern-value
+    outputs:
+    - contextPath: MITREATTACK.id
+      description: MITRE ATTACK Attack Patteren ID.
+      type: String
+    - contextPath: MITREATTACK.value
+      description: MITRE ATTACK Attack Patteren value.
+      type: String
   dockerimage: demisto/taxii2:1.0.0.19258
   feed: true
   isfetch: false
