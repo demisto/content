@@ -52,15 +52,13 @@ def main():
             continue
         if os.path.isfile("./Tests/is_build_passed_{}.txt".format(env["Role"].replace(' ', ''))) and \
                 os.path.isfile("./Tests/is_post_update_passed_{}.txt".format(env["Role"].replace(' ', ''))):
-            if os.path.isfile("./Tests/is_post_update_passed_{}.txt".format(env["Role"].replace(' ', ''))):
-                logging.info("============the file post-update_passed was created")
             logging.info(f'Destroying instance with role - {env.get("Role", "Unknown role")} and IP - '
                          f'{env["InstanceDNS"]}')
             rminstance = aws_functions.destroy_instance(env["Region"], env["InstanceID"])
             if aws_functions.isError(rminstance):
                 logging.error(rminstance['Message'])
         else:
-            logging.warning(f'Tests, Post-Update Tests for some integration failed on {env.get("Role", "Unknown role")}'
+            logging.warning(f'Tests for some integration failed on {env.get("Role", "Unknown role")}'
                             f', keeping instance alive')
 
 

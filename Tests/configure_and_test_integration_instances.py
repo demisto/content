@@ -828,8 +828,9 @@ def report_tests_status(preupdate_fails, postupdate_fails, preupdate_success, po
                          f'This indicates that your updates introduced breaking changes to the integration.')
     else:
         # creating this file to indicates that this instance passed post update tests
-        with open("./Tests/is_post_update_passed_{}.txt".format(build.ami_env.replace(' ', '')), 'a'):
-            pass
+        if build:
+            with open("./Tests/is_post_update_passed_{}.txt".format(build.ami_env.replace(' ', '')), 'a'):
+                pass
 
     return testing_status
 
@@ -997,6 +998,7 @@ def nightly_install_packs(build, install_method=install_all_content_packs, pack_
 
 
 def install_nightly_pack(build):
+    logging.info("installing nightly packs")
     nightly_install_packs(build, install_method=install_all_content_packs_for_nightly,
                           service_account=build.service_account)
     create_nightly_test_pack()
@@ -1140,15 +1142,11 @@ def instance_testing(build: Build,
         instance_name = instance.get('name', '')
         # If there is a failure, __test_integration_instance will print it
         if integration_of_instance not in build.unmockable_integrations and use_mock:
-            logging.info("========= will use mock test")
             success = test_integration_with_mock(build, instance, pre_update)
         else:
-            logging.info("=========== will not use mock")
             testing_client = build.servers[0].reconnect_client()
             success, _ = __test_integration_instance(testing_client, instance)
-        logging.info("============= after if, should get success result")
         if not success:
-            logging.info(f"=========== not success will add {instance_name} of {integration_of_instance} to failure")
             failed_tests.add((instance_name, integration_of_instance))
             failed_instances.append(instance)
         else:
@@ -1159,8 +1157,6 @@ def instance_testing(build: Build,
         logging.info("some post-update tests failed, sleeping for 15 seconds, then running the failed tests again")
         sleep(15)
         tmp, failed_tests = instance_testing(build, failed_instances, pre_update=False, first_call=False)
-        if failed_tests:
-            logging.info('============= some tests still failed post update')
 
     return successful_tests, failed_tests
 
@@ -1178,18 +1174,14 @@ def test_integration_with_mock(build: Build, instance: dict, pre_update: bool):
         The result of running the 'test-module' command for the given integration.
         If a record was executed - will return the result of the 'test--module' with the record mode only.
     """
-    logging.info("======== now in mock func")
     testing_client = build.servers[0].reconnect_client()
     integration_of_instance = instance.get('brand', '')
     logging.debug(f'Integration "{integration_of_instance}" is mockable, running test-module with mitmproxy')
     has_mock_file = build.proxy.has_mock_file(integration_of_instance)
     success = False
     if has_mock_file:
-        logging.info("============== it has mock file")
         with run_with_mock(build.proxy, integration_of_instance) as result_holder:
-            logging.info("=========== will try now")
             success, _ = __test_integration_instance(testing_client, instance)
-            logging.info("============= got success")
             result_holder[RESULT] = success
             if not success:
                 logging.warning(f'Running test-module for "{integration_of_instance}" has failed in playback mode')
