@@ -6,14 +6,18 @@ Use rakyll/hey to test a web application with a load of requests.
 | **Argument Name** | **Description** |
 | --- | --- |
 | url | URL to query. |
-| n | Number of requests to run. Default is 200. |
-| t | Timeout for each request in seconds. Default is 20, use 0 for infinite. |
-| c | Number of workers to run concurrently. |
-| z | Duration of application to send requests. |
-| m | HTTP method. |
+| requests_number | Number of requests to run. Default is 200. |
+| timeout | Timeout for each request in seconds. Default is 20, use 0 for infinite. |
+| concurrency | Number of workers to run concurrently. |
+| duration | Duration of application to send requests \(in seconds\). |
+| method | HTTP method. |
+| headers | Custom HTTP header. Comma separated list of "key=value". e.g. Type=IP,Size=100. |
 | disable_compression | Disable compression. |
-| output_type | Output type of the result. |
-| results_map | Additional information to add to the result. Semicolon separated list of "key=value". e.g. Type=IP;Size=100. |
+| results_map | Additional information to add to the result. Comma separated list of "key=value". e.g. Content-Type=text/plain,Accept=\*/\*. |
+| body | HTTP request body. |
+| proxy | HTTP Proxy address as host:port. |
+| enable_http2 | Enable HTTP/2. |
+| disable_redirects | Disable following of HTTP redirects. |
 
 ## Outputs
 ---
@@ -27,4 +31,4 @@ Use rakyll/hey to test a web application with a load of requests.
 | Hey.FastestTime | The fastest time it took for a request to finish. | number |
 | Hey.SuccessfulResponses | The number of responses that returned with 200 status code. | number |
 | Hey.AverageTime | The average time it took for a request to finish. | number |
-| Hey.Result | The full result in text format when output_type is set to "human_readable" | number |
+| Hey.Result | The full result in text format when output is set to "human_readable" | number |

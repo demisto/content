@@ -34,10 +34,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: 7d36e09a-5adf-4496-8ff7-feee66e04ce0
+    taskid: 6cc970ca-146a-4229-89d2-9eabf36a951f
     type: regular
     task:
-      id: 7d36e09a-5adf-4496-8ff7-feee66e04ce0
+      id: 6cc970ca-146a-4229-89d2-9eabf36a951f
       version: -1
       name: Hey edl IP
       scriptName: Hey
@@ -50,15 +50,21 @@ tasks:
     scriptarguments:
       c:
         simple: ${inputs.c}
+      concurrency:
+        simple: ${inputs.c}
       disable_compression:
         simple: "true"
       "n":
         simple: ${inputs.n}
       o:
         simple: csv
+      requests_number:
+        simple: ${inputs.n}
       results_map:
         simple: Type=IP
       t:
+        simple: ${inputs.t}
+      timeout:
         simple: ${inputs.t}
       url:
         complex:
@@ -89,10 +95,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: bd64cdc0-09f8-420f-8311-814dcf6ab5e4
+    taskid: 865e8aa5-0259-453c-86a8-c3d8137a4c7e
     type: regular
     task:
-      id: bd64cdc0-09f8-420f-8311-814dcf6ab5e4
+      id: 865e8aa5-0259-453c-86a8-c3d8137a4c7e
       version: -1
       name: Hey edl URL
       scriptName: Hey
@@ -105,15 +111,21 @@ tasks:
     scriptarguments:
       c:
         simple: ${inputs.c}
+      concurrency:
+        simple: ${inputs.c}
       disable_compression:
         simple: "true"
       "n":
         simple: ${inputs.n}
       o:
         simple: csv
+      requests_number:
+        simple: ${inputs.n}
       results_map:
         simple: Type=URL
       t:
+        simple: ${inputs.t}
+      timeout:
         simple: ${inputs.t}
       url:
         complex:
@@ -144,10 +156,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: ac3241b9-e9be-4c81-8e2b-930297606c4f
+    taskid: 87d0d1be-5083-4910-8ae0-b0c481d2914c
     type: regular
     task:
-      id: ac3241b9-e9be-4c81-8e2b-930297606c4f
+      id: 87d0d1be-5083-4910-8ae0-b0c481d2914c
       version: -1
       name: Hey edl Domain
       scriptName: Hey
@@ -160,15 +172,21 @@ tasks:
     scriptarguments:
       c:
         simple: ${inputs.c}
+      concurrency:
+        simple: ${inputs.c}
       disable_compression:
         simple: "true"
       "n":
         simple: ${inputs.n}
       o:
         simple: csv
+      requests_number:
+        simple: ${inputs.n}
       results_map:
         simple: Type=Domain
       t:
+        simple: ${inputs.t}
+      timeout:
         simple: ${inputs.t}
       url:
         complex:

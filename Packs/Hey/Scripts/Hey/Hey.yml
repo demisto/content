@@ -12,15 +12,15 @@ args:
 - name: url
   required: true
   description: URL to query.
-- name: "n"
+- name: requests_number
   description: Number of requests to run. Default is 200.
-- name: t
+- name: timeout
   description: Timeout for each request in seconds. Default is 20, use 0 for infinite.
-- name: c
+- name: concurrency
   description: Number of workers to run concurrently.
-- name: z
-  description: Duration of application to send requests.
-- name: m
+- name: duration
+  description: Duration of application to send requests (in seconds).
+- name: method
   auto: PREDEFINED
   predefined:
   - GET
@@ -30,6 +30,9 @@ args:
   - HEAD
   - OPTIONS
   description: HTTP method.
+- name: headers
+  description: Custom HTTP header. Comma separated list
+    of "key=value". e.g. Type=IP,Size=100.
 - name: disable_compression
   defaultValue: "true"
   auto: PREDEFINED
@@ -37,16 +40,25 @@ args:
   - "true"
   - "false"
   description: Disable compression.
-- defaultValue: "human_readable"
-  name: output_type
+- name: results_map
+  description: Additional information to add to the result. Comma separated list
+    of "key=value". e.g. Content-Type=text/plain,Accept=*/*.
+- name: body
+  description: HTTP request body.
+- name: proxy
+  description: HTTP Proxy address as host:port.
+- name: enable_http2
   auto: PREDEFINED
   predefined:
-  - "human_readable"
-  - "csv"
-  description: Output type of the result.
-- name: results_map
-  description: Additional information to add to the result. Semicolon separated list
-    of "key=value". e.g. Type=IP;Size=100.
+  - "true"
+  - "false"
+  description: Enable HTTP/2.
+- name: disable_redirects
+  auto: PREDEFINED
+  predefined:
+  - "true"
+  - "false"
+  description: Disable following of HTTP redirects.
 outputs:
 - contextPath: Hey.Timeout
   description: Timeout for each request.
@@ -75,7 +87,7 @@ outputs:
 scripttarget: 0
 subtype: python3
 runonce: false
-dockerimage: demisto/rakyll-hey:1.0.0.20326
+dockerimage: demisto/rakyll-hey:1.0.0.21598
 runas: DBotWeakRole
 tests:
 - No test
