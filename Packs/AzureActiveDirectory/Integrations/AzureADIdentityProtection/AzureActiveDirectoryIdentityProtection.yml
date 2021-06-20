@@ -1,0 +1,125 @@
+category: IT Services
+commonfields:
+  id: Azure Active Directory Identity Protection
+  version: -1
+configuration:
+- display: Application ID
+  hidden: false
+  name: app_id
+  required: true
+  type: 0
+- display: Subscription ID
+  hidden: false
+  name: subscription_id
+  required: true
+  type: 0
+- display: Resource Group Name
+  hidden: false
+  name: resource_group_name
+  required: true
+  type: 0
+- additionalinfo: Azure AD endpoint associated with a national cloud.
+  defaultvalue: https://login.microsoftonline.com
+  display: Azure AD endpoint
+  hidden: false
+  name: azure_ad_endpoint
+  options:
+  - https://login.microsoftonline.com
+  - https://login.microsoftonline.us
+  - https://login.microsoftonline.de
+  - https://login.chinacloudapi.cn
+  required: false
+  type: 15
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+description: Get information from Azure Active Directory Identity Protection service.
+display: Azure Active Directory Identity Protection (Beta)
+name: Azure Active Directory Identity Protection
+script:
+  commands:
+  - deprecated: false
+    description: Tests the connectivity to Azure.
+    execution: false
+    name: azure-ad-auth-test
+  - deprecated: false
+    description: Run this command to start the authorization process and follow the
+      instructions in the command results.
+    execution: false
+    name: azure-ad-auth-start
+  - deprecated: false
+    description: Run this command to complete the authorization process. Should be
+      used after running the azure-ad-auth-start command.
+    execution: false
+    name: azure-ad-auth-complete
+  - deprecated: false
+    description: Run this command if for some reason you need to rerun the authentication
+      process.
+    execution: false
+    name: azure-ad-auth-reset
+  - arguments:
+    - default: false
+      description: Unique ID of the risk detection.
+      isArray: false
+      name: id
+      required: false
+      secret: false
+    - default: false
+      description: Unique ID of the user.
+      isArray: false
+      name: user_id
+      required: false
+      secret: false
+    - default: false
+      description: The user principal name (UPN) of the user.
+      isArray: false
+      name: user_name
+      required: false
+      secret: false
+    - default: false
+      description: Country of the activity.
+      isArray: false
+      name: country
+      required: false
+      secret: false
+    - default: false
+      description: A custom query following Microsoft's syntax. Using this overrides
+        all other arguments.
+      isArray: false
+      name: filter_expression
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '50'
+      description: Number of results to provide
+      isArray: false
+      name: limit
+      required: true
+      secret: false
+    - default: false
+      description: A link that specifies a starting point to use for subsequent calls.
+        Using this argument overrides all other arguments.
+      isArray: false
+      name: next_link
+      required: false
+      secret: false
+    deprecated: false
+    description: Retrieve the properties of a collection of riskDetection objects.
+    execution: false
+    name: azure-ad-identity-protection-list-risks
+  dockerimage: demisto/crypto:1.0.0.14297
+  feed: false
+  isfetch: false
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+fromversion: 5.0.0
+beta: true
