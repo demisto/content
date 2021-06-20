@@ -809,7 +809,6 @@ def main() -> None:
                                          'cb-edr-quarantine-device': quarantine_device_command,
                                          'cb-edr-unquarantine-device': unquarantine_device_command,
                                          'cb-edr-sensor-installer-download': sensor_installer_download_command,
-                                         'fetch-incidents': fetch_incidents,
                                          'endpoint': endpoint_command
                                          }
 

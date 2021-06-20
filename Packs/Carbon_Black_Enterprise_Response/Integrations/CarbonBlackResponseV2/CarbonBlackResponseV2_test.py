@@ -277,7 +277,7 @@ def test_fetch_incidents_first_fetch(mocker):
         When
             mock the Client's http_request.
         Then
-            validate fetch incidents command using the Client gets all relevant incidents
+            validate fetch incidents command using the Client gets all 3 relevant incidents
     """
     from CarbonBlackResponseV2 import fetch_incidents, Client
     alerts = util_load_json('test_data/commands_test_data.json').get('fetch_incident_data')
@@ -297,7 +297,7 @@ def test_fetch_incidents(mocker):
         When
             mock the Client's http_request, and there are incident prior to last fetch
         Then
-            validate fetch incidents command using the Client only returns new incidents
+            validate fetch incidents command using the Client only returns 1 new incidents
     """
     from CarbonBlackResponseV2 import fetch_incidents, Client
     last_run = {'last_fetch': dateparser.parse('2021-03-12T14:13:20+00:00').timestamp()}
