@@ -137,7 +137,7 @@ def test_report_chunked_response(mocker):
         'Connection': 'keep-alive',
         'x-envoy-upstream-service-time': '258'
     }
-    get_sample_response._content = b'<?xml version="1.0" encoding="UTF-8"?><wildfire><version>2.0</version><file_info>'\
+    get_sample_response._content = b'<?xml version="1.0" encoding="UTF-8"?><wildfire><version>2.0</version><file_info>' \
                                    b'<file_signer>None</file_signer><malware>no</malware><sha1></sha1><filetype>PDF' \
                                    b'</filetype><sha256>' \
                                    b'8decc8571946d4cd70a024949e033a2a2a54377fe9f1c1b944c20f9ee11a9e51</sha256><md5>' \
@@ -154,8 +154,7 @@ def test_report_chunked_response(mocker):
     mocker.patch.object(demisto, "args",
                         return_value={'hash': '8decc8571946d4cd70a024949e033a2a2a54377fe9f1c1b944c20f9ee11a9e51',
                                       'format': 'xml'})
-    mocker.patch.object(demisto, "getParam",
-                        return_value={"server": "https://wildfire.paloaltonetworks.com/publicapi"})
+    mocker.patch("Palo_Alto_Networks_WildFire_v2.URL", "https://wildfire.paloaltonetworks.com/publicapi")
     wildfire_get_report_command()
     result = {'Type': 1,
               'Contents': [{'version': '2.0', 'platform': '100', 'software': 'PDF Static Analyzer',
@@ -169,8 +168,8 @@ def test_report_chunked_response(mocker):
               'ReadableContentsFormat': 'markdown',
               'EntryContext':
                   {'WildFire.Report(val.SHA256 === obj.SHA256)':
-                   {'Status': 'Success',
-                    'SHA256': '8decc8571946d4cd70a024949e033a2a2a54377fe9f1c1b944c20f9ee11a9e51'},
+                       {'Status': 'Success',
+                        'SHA256': '8decc8571946d4cd70a024949e033a2a2a54377fe9f1c1b944c20f9ee11a9e51'},
                    'DBotScore': [
                        {'Indicator': '8decc8571946d4cd70a024949e033a2a2a54377fe9f1c1b944c20f9ee11a9e51', 'Type': 'hash',
                         'Vendor': 'WildFire', 'Score': 1},
