@@ -192,8 +192,8 @@ def detect_type(indicator):
         # we use TLDExtract class to fetch all existing domain suffixes from the bellow mentioned file:
         # https://raw.githubusercontent.com/publicsuffix/list/master/public_suffix_list.dat
         # the suffix_list_urls=None is used to not make http calls using the extraction - avoiding SSL errors
-        if tldextract.TLDExtract(cache_file='https://raw.githubusercontent.com/publicsuffix'
-                                            '/list/master/public_suffix_list.dat',
+        if tldextract.TLDExtract(cache_dir='https://raw.githubusercontent.com/publicsuffix'
+                                           '/list/master/public_suffix_list.dat',
                                  suffix_list_urls=None).__call__(indicator).suffix:
             if '*' in indicator:
                 return FeedIndicatorType.DomainGlob
