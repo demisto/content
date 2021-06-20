@@ -589,6 +589,12 @@ script:
       name: process_id
       required: true
       secret: false
+    - default: false
+      description: The maximum amount of segments to be returned. Default is 50.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
     deprecated: false
     description: Gets segment data for a given process.
     execution: false

@@ -562,17 +562,18 @@ def process_events_list_command(client: Client, process_id: str, segment_id: str
                           readable_output=process, raw_response=res)
 
 
-def process_segments_get_command(client: Client, process_id: str) -> CommandResults:
+def process_segments_get_command(client: Client, process_id: str, limit: str = '50') -> CommandResults:
     url = f'/v1/process/{process_id}/segment'
     res = client.http_request(url=url, method='GET')
     if not res:
         return CommandResults(
             readable_output=f'Could not find segment data for process id {process_id}.')
-
+    res = res.get('process', {}).get('segments')
+    res = res[:arg_to_number(limit, 'limit')] if limit else res
     # Human readable is depending on request therefore is not prettified.
-    return CommandResults(outputs=res.get('process'), outputs_prefix='CarbonBlackEDR.ProcessSegments',
+    return CommandResults(outputs=res, outputs_prefix='CarbonBlackEDR.ProcessSegments',
                           outputs_key_field='unique_id',
-                          readable_output=res.get('process', {}).get('segments'))
+                          readable_output=res)
 
 
 def process_get_command(client: Client, process_id: str, segment_id: str,
