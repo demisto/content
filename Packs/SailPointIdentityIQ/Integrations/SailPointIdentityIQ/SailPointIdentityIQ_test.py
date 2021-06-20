@@ -164,22 +164,22 @@ def verify_alert(alert):
 
 
 def test_get_headers_all_none():
-    headers = SailPointIdentityIQ.get_headers(None, None, None, None)
+    headers = SailPointIdentityIQ.get_headers(None, None, None, None, False)
     assert headers is None
 
 
 def test_get_headers_base_url_none():
-    headers = SailPointIdentityIQ.get_headers(None, 'test', 'test', 'client_credentials')
+    headers = SailPointIdentityIQ.get_headers(None, 'test', 'test', 'client_credentials', False)
     assert headers is None
 
 
 def test_get_headers_client_id_none():
-    headers = SailPointIdentityIQ.get_headers(MOCK_IDENTITYIQ_BASE_URL, None, 'test', 'client_credentials')
+    headers = SailPointIdentityIQ.get_headers(MOCK_IDENTITYIQ_BASE_URL, None, 'test', 'client_credentials', False)
     assert headers is None
 
 
 def test_get_headers_client_secret_none():
-    headers = SailPointIdentityIQ.get_headers(MOCK_IDENTITYIQ_BASE_URL, 'test', None, 'client_credentials')
+    headers = SailPointIdentityIQ.get_headers(MOCK_IDENTITYIQ_BASE_URL, 'test', None, 'client_credentials', False)
     assert headers is None
 
 
