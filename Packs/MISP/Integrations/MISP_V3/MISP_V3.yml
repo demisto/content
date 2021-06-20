@@ -178,6 +178,16 @@ script:
       name: limit
       required: false
       secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Whether to return only the values that are not on the warninglists.
+      isArray: false
+      name: enforceWarninglist
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
     deprecated: false
     description: Search for events in MISP.
     execution: false
@@ -1788,6 +1798,16 @@ script:
       description: Limit the number of results returned, depending on the scope (for example 10 attributes or 10 full events).
       isArray: false
       name: limit
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Whether to return only the values that are not on the warninglists.
+      isArray: false
+      name: enforceWarninglist
+      predefined:
+      - 'true'
+      - 'false'
       required: false
       secret: false
     deprecated: false

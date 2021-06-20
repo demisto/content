@@ -432,7 +432,7 @@ def check_file(pymisp, file_hash):
 
     # misp_response will remain the raw output of misp
     misp_response = pymisp.search(value=file_hash, controller='attributes', include_context=True,
-                                  include_correlations=True, include_event_tags=True, enforce_warninglist= True)
+                                  include_correlations=True, include_event_tags=True, enforce_warninglist=True)
     print(misp_response)
     if misp_response:
         dbot_list = list()
@@ -964,7 +964,8 @@ def prepare_args_to_search():
         'include_sightings',
         'include_correlations',
         'limit',
-        'page'
+        'page',
+        'enforceWarninglist',
     ]
     d_args = demisto.args()
 
@@ -994,6 +995,9 @@ def prepare_args_to_search():
         args['include_sightings'] = 1 if d_args.get('include_sightings') in ('true', '1', 1) else 0
     if 'include_correlations' in args:
         args['include_correlations'] = 1 if d_args.get('include_correlations') in ('true', '1', 1) else 0
+    # search function 'enforceWarninglist' parameter gets 0 or 1 instead of bool.
+    if 'enforceWarninglist' in args:
+        args['enforceWarninglist'] = 1 if d_args.get('enforceWarninglist') in ('true', '1', 1) else 0
 
     print(args)
     demisto.debug(f"args for request search command are {args}")
