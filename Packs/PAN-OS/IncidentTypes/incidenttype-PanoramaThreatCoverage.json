@@ -12,6 +12,7 @@
 	"locked": false,
 	"name": "PanoramaThreatCoverage",
 	"playbookId": "NetOps Panorama coverage by CVE",
+	"layout": "Panorama Threat Coverage Layout",
 	"preProcessingScript": "",
 	"readonly": false,
 	"reputationCalc": 0,
