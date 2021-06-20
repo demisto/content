@@ -20,9 +20,9 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: EMM for apple devices (Mac, iPhone, Apple TV, iPad). Can be used to control
-  various configurations via different policies, Install/Uninstall applications, lock
-  devices, smart groups searches and more.
+description: Enterprise Mobility Management (EMM) for Apple devices (Mac, iPhone, Apple TV, iPad). Can be used to control
+  various configurations via different policies, install and uninstall applications, lock
+  devices, smart groups searches, and more.
 display: JAMF v2
 name: jamf v2
 script:
@@ -30,7 +30,7 @@ script:
   - arguments:
     - default: false
       defaultValue: '50'
-      description: The number of results to be returned on each page (default is 50).
+      description: The maximum number of results to be returned on each page. 
         The maximum size is 200.
       isArray: false
       name: limit
@@ -38,14 +38,14 @@ script:
       secret: false
     - default: false
       defaultValue: '0'
-      description: Number of requested page.
+      description: The number of the requested page.
       isArray: false
       name: page
       required: false
       secret: false
     deprecated: false
-    description: This command will return a list of all computers with their associated
-      IDs . By default, will return the first 50 computers to the context (ID + name).
+    description: Returns a list of all computers with their associated
+      IDs. By default, returns the first 50 computers to the context (ID + name).
     execution: false
     name: jamf-get-computers
     outputs:
@@ -59,31 +59,30 @@ script:
       description: The number of computers returned in this specific search.
       type: Number
     - contextPath: JAMF.Computer.Paging.page_size
-      description: The number of computers to be returned on each page.
+      description: The number of computers returned on each page.
       type: Number
     - contextPath: JAMF.Computer.Paging.current_page
-      description: Number of requested page.
+      description: The number of the requested page.
       type: Number
   - arguments:
     - default: false
       defaultValue: '50'
-      description: 'The number of results to be returned on each page (default is
-        50). The maximum size is 200. '
+      description: The maximum number of results to be returned on each page. The maximum size is 200.
       isArray: false
       name: limit
       required: false
       secret: false
     - default: false
       defaultValue: '0'
-      description: Number of requested page.
+      description: The number of the requested page.
       isArray: false
       name: page
       required: false
       secret: false
     deprecated: false
-    description: 'This command will return the “basic” subset for all of the computers.
-      The “basic” subset will provide some basic information: mac address, model,
-      udid, name, department, building, serial number, username, id.'
+    description: 'Returns the “basic” subset for all of the computers.
+      The “basic” subset includes: MAC address, model,
+      UDID, name, department, building, serial number, username, ID.'
     execution: false
     name: jamf-get-computers-basic-subset
     outputs:
@@ -94,7 +93,7 @@ script:
       description: The computer name.
       type: String
     - contextPath: JAMF.Computer.managed
-      description: If the computer is managed.
+      description: Whether the computer is managed.
       type: Boolean
     - contextPath: JAMF.Computer.username
       description: The computer username.
@@ -109,32 +108,32 @@ script:
       description: The computer building.
       type: String
     - contextPath: JAMF.Computer.mac_address
-      description: The computer mac address.
+      description: The computer MAC address.
       type: String
     - contextPath: JAMF.Computer.udid
-      description: The computer udid.
+      description: The computer UDID.
       type: String
     - contextPath: JAMF.Computer.serial_number
       description: The computer serial number.
       type: String
     - contextPath: JAMF.Computer.report_date_utc
-      description: The computer report date in UTC.
+      description: The computer report date in UTC format.
       type: Date
     - contextPath: JAMF.Computer.report_date_epoch
-      description: The computer repoer date in epoch.
+      description: The computer report date in epoch format.
       type: Number
   - arguments:
     - default: false
       description: |-
         The computer ID.
-        To get the computer ID, please run `jamf-get-computers` to get all computers names and ID's.
+        To get the computer ID, run the `jamf-get-computers` command to get all computers names and IDs.
       isArray: false
       name: id
       required: true
       secret: false
     deprecated: false
-    description: 'This command will return  the "general" subset of a specific computer,
-      e.g: name, mac address, ip, serial number, udid etc.'
+    description: 'Returns the "general" subset of a specific computer,
+      e.g.: name, MAC address, IP, serial number, UDID, etc.'
     execution: false
     name: jamf-get-computer-by-id
     outputs:
@@ -148,28 +147,28 @@ script:
       description: The computer network adapter type.
       type: String
     - contextPath: JAMF.Computer.mac_address
-      description: The computer mac address.
+      description: The computer MAC address.
       type: Date
     - contextPath: JAMF.Computer.alt_network_adapter_type
       description: The computer alt network adapter type.
       type: String
     - contextPath: JAMF.Computer.alt_mac_address
-      description: The computer alt mac address.
+      description: The computer alt MAC address.
       type: String
     - contextPath: JAMF.Computer.ip_address
       description: The computer IP address.
       type: String
     - contextPath: JAMF.Computer.last_reported_ip
-      description: The computer last reported IP.
+      description: The computer last reported IP address.
       type: String
     - contextPath: JAMF.Computer.serial_number
       description: The computer serial number.
       type: String
     - contextPath: JAMF.Computer.udid
-      description: The computer udid.
+      description: The computer UDID.
       type: String
     - contextPath: JAMF.Computer.jamf_version
-      description: The computer jamf version.
+      description: The computer Jamf version.
       type: String
     - contextPath: JAMF.Computer.platform
       description: The computer platform.
@@ -184,70 +183,70 @@ script:
       description: The computer asset tag.
       type: String
     - contextPath: JAMF.Computer.remote_management.managed
-      description: The computer remote managment.
+      description: Whether the computer is remotely managed.
       type: Boolean
     - contextPath: JAMF.Computer.remote_management.management_username
-      description: The computer remote managment username.
+      description: The computer remote management username.
       type: String
     - contextPath: JAMF.Computer.supervised
-      description: The computer supervised.
+      description: Whether the computer is supervised.
       type: Boolean
     - contextPath: JAMF.Computer.mdm_capable
-      description: The computer mdm capable.
+      description: Whether the computer is enabled for mobile device management (MDM).
       type: Boolean
     - contextPath: JAMF.Computer.mdm_capable_users
-      description: The computer mdm capable users.
+      description: The computer has MDM capable users.
       type: Boolean
     - contextPath: JAMF.Computer.report_date
       description: The computer report date.
       type: Date
     - contextPath: JAMF.Computer.report_date_epoch
-      description: The computer repoer date in epoch.
+      description: The computer report date in epoch format.
       type: Date
     - contextPath: JAMF.Computer.report_date_utc
-      description: The computer report date in UTC.
+      description: The computer report date in UTC format.
       type: Date
     - contextPath: JAMF.Computer.last_contact_time
       description: The computer last contact time.
       type: Date
     - contextPath: JAMF.Computer.last_contact_time_epoch
-      description: The computer last contact time in epoch.
+      description: The computer last contact time in epoch format.
       type: Date
     - contextPath: JAMF.Computer.last_contact_time_utc
-      description: The computer last contact time in UTC.
+      description: The computer last contact time in UTC format.
       type: Date
     - contextPath: JAMF.Computer.initial_entry_date
       description: The computer initial entry date.
       type: Date
     - contextPath: JAMF.Computer.initial_entry_date_epoch
-      description: The computer initial entry date in epoch.
+      description: The computer initial entry date in epoch format.
       type: Date
     - contextPath: JAMF.Computer.initial_entry_date_utc
-      description: The computer initial entry date in UTC.
+      description: The computer initial entry date in UTC format.
       type: Date
     - contextPath: JAMF.Computer.last_cloud_backup_date_epoch
-      description: The computer last cloud backup date in epoch.
+      description: The computer last cloud backup date in epoch format.
       type: Number
     - contextPath: JAMF.Computer.last_cloud_backup_date_utc
-      description: The computer last cloud backup date in UTC.
+      description: The computer last cloud backup date in UTC format.
       type: String
     - contextPath: JAMF.Computer.last_enrolled_date_epoch
-      description: The computer last enrolled date in epoch.
+      description: The computer last enrolled date in epoch format.
       type: Date
     - contextPath: JAMF.Computer.last_enrolled_date_utc
-      description: The computer last enrolled date in UTC.
+      description: The computer last enrolled date in UTC format.
       type: Date
     - contextPath: JAMF.Computer.mdm_profile_expiration_epoch
-      description: The computer mdm profile expiration in epoch.
+      description: The computer MDM profile expiration in epoch format.
       type: Number
     - contextPath: JAMF.Computer.mdm_profile_expiration_utc
-      description: The computer mdm profile expiration in UTC.
+      description: The computer MDM profile expiration in UTC format.
       type: String
     - contextPath: JAMF.Computer.distribution_point
       description: The computer distribution point.
       type: String
     - contextPath: JAMF.Computer.sus
-      description: The computer sus.
+      description: The computer software updated service (SUS).
       type: String
     - contextPath: JAMF.Computer.netboot_server
       description: The computer netbbot server.
@@ -259,12 +258,12 @@ script:
       description: The computer site name.
       type: String
     - contextPath: JAMF.Computer.itunes_store_account_is_active
-      description: The computer itunes store accont
+      description: The computer iTunes store account.
       type: Boolean
   - arguments:
     - default: false
       defaultValue: '50'
-      description: The number of results to be returned on each page (default is 50).
+      description: The maximum number of results to be returned on each page.
         The maximum size is 200.
       isArray: false
       name: limit
@@ -272,22 +271,22 @@ script:
       secret: false
     - default: false
       defaultValue: '0'
-      description: Number of requested page.
+      description: The number of the requested page.
       isArray: false
       name: page
       required: false
       secret: false
     - default: false
       description: 'Match computers by specific characteristics (supports wildcards)
-        like: name, udid, serial_number, mac_address, username, realname, email. e.g:
+        such as: name, UDID, serial_number, mac_address, username, realname, email. e.g.:
         “match=john*”, “match=C52F72FACB9T”.'
       isArray: false
       name: match
       required: true
       secret: false
     deprecated: false
-    description: This command will match computers by specific characteristics and
-      returns general data on each one of the computers.
+    description: Matches computers by specific characteristics and
+      returns general data on each of the computers.
     execution: false
     name: jamf-get-computer-by-match
     outputs:
@@ -298,16 +297,16 @@ script:
       description: The computer name.
       type: String
     - contextPath: JAMF.Computer.udid
-      description: The computer udid.
+      description: The computer UDID.
       type: String
     - contextPath: JAMF.Computer.serial_number
       description: The computer serial number.
       type: String
     - contextPath: JAMF.Computer.mac_address
-      description: The computer mac address.
+      description: The computer MAC address.
       type: String
     - contextPath: JAMF.Computer.alt_mac_address
-      description: The computer alt mac address.
+      description: The computer alt MAC address.
       type: String
     - contextPath: JAMF.Computer.asset_tag
       description: The computer asset tag.
@@ -331,10 +330,10 @@ script:
       description: The computer email address.
       type: String
     - contextPath: JAMF.Computer.room
-      description: The computer room .
+      description: The computer room.
       type: String
     - contextPath: JAMF.Computer.position
-      description: The computer position .
+      description: The computer position.
       type: String
     - contextPath: JAMF.Computer.building
       description: The computer building.
@@ -355,13 +354,13 @@ script:
       description: The number of computers to be returned on each page.
       type: Number
     - contextPath: JAMF.Computer.Paging.current_page
-      description: Number of requested page.
+      description: The number of the requested page.
       type: Number
   - arguments:
     - auto: PREDEFINED
       default: false
-      description: 'In order to identify which computer is requested, one of these
-        identifiers should be selected: id, name, udid, serial_number, mac_address.'
+      description: 'The identifier used to determine which computer is requested. 
+        Possible values: "id", "name", "udid", "serialnumber", and "macaddress".'
       isArray: false
       name: identifier
       predefined:
@@ -373,9 +372,9 @@ script:
       required: true
       secret: false
     - default: false
-      description: The value of the “identifier”. For example, if we choose the “id”
-        identifier, a value of a computer id should be passed. If we choose “mac_address”
-        as the identifier, a value of a computer’s mac address should be passed, etc.
+      description: The value of the "identifier". For example, if you choose the "id"
+        identifier, a computer ID should be passed. If you choose "macaddress"
+        as the identifier, a computer’s MAC address should be passed, etc.
       isArray: false
       name: identifier_value
       required: true
@@ -396,25 +395,25 @@ script:
       description: The computer network adapter type.
       type: String
     - contextPath: JAMF.ComputerSubset.general.mac_address
-      description: The computer mac address.
+      description: The computer MAC address.
       type: Date
     - contextPath: JAMF.ComputerSubset.general.alt_network_adapter_type
       description: The computer alt network adapter type.
       type: String
     - contextPath: JAMF.ComputerSubset.general.alt_mac_address
-      description: The computer alt mac address.
+      description: The computer alt MAC address.
       type: String
     - contextPath: JAMF.ComputerSubset.general.ip_address
       description: The computer IP address.
       type: String
     - contextPath: JAMF.ComputerSubset.general.last_reported_ip
-      description: The computer last reported IP.
+      description: The computer last reported IP address.
       type: String
     - contextPath: JAMF.ComputerSubset.general.serial_number
       description: The computer serial number.
       type: String
     - contextPath: JAMF.ComputerSubset.general.udid
-      description: The computer udid.
+      description: The computer UDID.
       type: String
     - contextPath: JAMF.ComputerSubset.general.jamf_version
       description: The computer Jamf version.
@@ -432,79 +431,79 @@ script:
       description: The computer asset tag.
       type: String
     - contextPath: JAMF.ComputerSubset.general.remote_management.managed
-      description: If the computer is managed.
+      description: Whether the computer is remotely managed.
       type: Boolean
     - contextPath: JAMF.ComputerSubset.general.remote_management.management_username
       description: The computer managment username.
       type: String
     - contextPath: JAMF.ComputerSubset.general.supervised
-      description: If the computer is supervised.
+      description: Whether the computer is supervised.
       type: Boolean
     - contextPath: JAMF.ComputerSubset.general.mdm_capable
-      description: If the computer is mdm capable.
+      description: Whether the computer is MDM capable.
       type: Boolean
     - contextPath: JAMF.Computer.general.mdm_capable_users
-      description: The computer mdm capable users.
+      description: Whether the computer has MDM capable users.
       type: Boolean
     - contextPath: JAMF.Computer.general.management_status.enrolled_via_dep
-      description: Whether the computer was enrolled via DEP or not
+      description: Whether the computer was enrolled via DEP.
       type: Boolean
     - contextPath: JAMF.Computer.general.management_status.user_approved_enrollment
-      description: Whether the enrollment is user-approved or not
+      description: Whether the enrollment is user-approved.
       type: Boolean
     - contextPath: JAMF.Computer.general.management_status.user_approved_mdm
-      description: Whether the MDM is user-approved or not
+      description: Whether the MDM is user-approved.
       type: Boolean
     - contextPath: JAMF.ComputerSubset.general.report_date
       description: The computer report date.
       type: Date
     - contextPath: JAMF.ComputerSubset.general.report_date_epoch
-      description: The computer repoer date in epoch.
+      description: The computer report date in epoch format.
       type: Date
     - contextPath: JAMF.ComputerSubset.general.report_date_utc
-      description: The computer report date in UTC.
+      description: The computer report date in UTC format.
       type: Date
     - contextPath: JAMF.ComputerSubset.general.last_contact_time
       description: The computer last contact time.
       type: Date
     - contextPath: JAMF.ComputerSubset.general.last_contact_time_epoch
-      description: The computer last contact time in epoch.
+      description: The computer last contact time in epoch format.
       type: Date
     - contextPath: JAMF.ComputerSubset.general.last_contact_time_utc
-      description: The computer last contact time in UTC.
+      description: The computer last contact time in UTC format.
       type: Date
     - contextPath: JAMF.ComputerSubset.general.initial_entry_date
       description: The computer initial entry date.
       type: Date
     - contextPath: JAMF.ComputerSubset.general.initial_entry_date_epoch
-      description: The computer initial entry date in epoch.
+      description: The computer initial entry date in epoch format.
       type: Date
     - contextPath: JAMF.ComputerSubset.general.initial_entry_date_utc
-      description: The computer initial entry date in UTC.
+      description: The computer initial entry date in UTC format.
       type: Date
     - contextPath: JAMF.ComputerSubset.general.last_cloud_backup_date_epoch
-      description: The computer last cloud backup date in epoch.
+      description: The computer last cloud backup date in epoch format.
       type: Number
     - contextPath: JAMF.ComputerSubset.general.last_cloud_backup_date_utc
-      description: The computer last cloud backup date in UTC.
+      description: The computer last cloud backup date in UTC format.
       type: String
     - contextPath: JAMF.ComputerSubset.general.last_enrolled_date_epoch
-      description: The computer last enrolled date in epoch.
+      description: The computer last enrolled date in epoch format.
       type: Date
     - contextPath: JAMF.ComputerSubset.general.last_enrolled_date_utc
-      description: The computer last enrolled date in UTC.
+      description: The computer last enrolled date in UTC format.
       type: Date
     - contextPath: JAMF.ComputerSubset.general.mdm_profile_expiration_epoch
-      description: The computer mdm profile expiration in epoch.
+      description: The computer MDM profile expiration in epoch format.
       type: Number
     - contextPath: JAMF.ComputerSubset.general.mdm_profile_expiration_utc
-      description: The computer mdm profile expiration in UTC.
+      description: The computer MDM profile expiration in UTC format.
       type: String
     - contextPath: JAMF.ComputerSubset.general.distribution_point
-      description: The computer distribution point.
+      description: The computer distribution point format.
       type: String
     - contextPath: JAMF.ComputerSubset.general.sus
-      description: The computer sus.
+      description: The computer SUS.
       type: String
     - contextPath: JAMF.ComputerSubset.general.netboot_server
       description: The computer netbbot server.
@@ -516,13 +515,13 @@ script:
       description: The computer site name.
       type: String
     - contextPath: JAMF.ComputerSubset.general.itunes_store_account_is_active
-      description: The computer itunes store accont
+      description: The computer iTunes store account.
       type: Boolean
   - arguments:
     - auto: PREDEFINED
       default: false
-      description: 'In order to identify which computer is requested, one of these
-        identifiers should be selected: id, name, udid, serial_number, mac_address.'
+      description: 'The identifier used to determine which computer is requested. 
+        Possible values: "id", "name", "udid", "serialnumber", and "macaddress".'
       isArray: false
       name: identifier
       predefined:
@@ -534,9 +533,9 @@ script:
       required: true
       secret: false
     - default: false
-      description: The value of the “identifier”. For example, if we choose the “id”
-        identifier, a value of a computer id should be passed. If we choose “mac_address”
-        as the identifier, a value of a computer’s mac address should be passed, etc.
+      description: The value of the "identifier". For example, if you choose the "id"
+        identifier, a computer ID should be passed. If you choose "macaddress"
+        as the identifier, a computer’s MAC address should be passed, etc.
       isArray: false
       name: identifier_value
       required: true
@@ -583,8 +582,8 @@ script:
   - arguments:
     - auto: PREDEFINED
       default: false
-      description: 'In order to identify which computer is requested, one of these
-        identifiers should be selected: id, name, udid, serial_number, mac_address.'
+      description: 'The identifier used to determine which computer is requested. 
+        Possible values: "id", "name", "udid", "serialnumber", and "macaddress".'
       isArray: false
       name: identifier
       predefined:
@@ -596,9 +595,9 @@ script:
       required: true
       secret: false
     - default: false
-      description: The value of the “identifier”. For example, if we choose the “id”
-        identifier, a value of a computer id should be passed. If we choose “mac_address”
-        as the identifier, a value of a computer’s mac address should be passed, etc.
+      description: The value of the "identifier". For example, if you choose the "id"
+        identifier, a computer ID should be passed. If you choose "macaddress"
+        as the identifier, a computer’s MAC address should be passed, etc.
       isArray: false
       name: identifier_value
       required: true
@@ -616,13 +615,13 @@ script:
       description: If the computer is leased.
       type: Boolean
     - contextPath: JAMF.ComputerSubset.purchasing.po_number
-      description: The computer po number.
+      description: The computer PO number.
       type: String
     - contextPath: JAMF.ComputerSubset.purchasing.vendor
       description: The computer vendor.
       type: String
     - contextPath: JAMF.ComputerSubset.purchasing.applecare_id
-      description: The computer applecare ID.
+      description: The computer AppleCare ID.
       type: String
     - contextPath: JAMF.ComputerSubset.purchasing.purchase_price
       description: The computer purchase price.
@@ -631,31 +630,31 @@ script:
       description: The computer purchase account.
       type: String
     - contextPath: JAMF.ComputerSubset.purchasing.po_date
-      description: The computer po date.
+      description: The computer PO date.
       type: String
     - contextPath: JAMF.ComputerSubset.purchasing.po_date_epoch
-      description: The computer po date in epoch
+      description: The computer PO date in epoch format.
       type: Number
     - contextPath: JAMF.ComputerSubset.purchasing.po_date_utc
-      description: The computer po date in UTC.
+      description: The computer PO date in UTC format.
       type: String
     - contextPath: JAMF.ComputerSubset.purchasing.warranty_expires
-      description: The computer warranty expires date.
+      description: The computer warranty expiration date.
       type: String
     - contextPath: JAMF.ComputerSubset.purchasing.warranty_expires_epoch
-      description: The computer warranty expires date in epoch.
+      description: The computer warranty expiration date in epoch format.
       type: Number
     - contextPath: JAMF.ComputerSubset.purchasing.warranty_expires_utc
-      description: The computer warranty expires date in UTC.
+      description: The computer warranty expiration date in UTC format.
       type: String
     - contextPath: JAMF.ComputerSubset.purchasing.lease_expires
-      description: The computer warranty lease expires date.
+      description: The computer warranty lease expiration date.
       type: String
     - contextPath: JAMF.ComputerSubset.purchasing.lease_expires_epoch
-      description: The computer warranty lease expires date in epoch.
+      description: The computer warranty lease expiration date in epoch time.
       type: Number
     - contextPath: JAMF.ComputerSubset.purchasing.lease_expires_utc
-      description: The computer warranty lease expires date in UTC.
+      description: The computer warranty lease expiration date in UTC format.
       type: String
     - contextPath: JAMF.ComputerSubset.purchasing.life_expectancy
       description: The computer life expectancy.
@@ -664,10 +663,10 @@ script:
       description: The computer purchasing contact.
       type: String
     - contextPath: JAMF.ComputerSubset.purchasing.os_applecare_id
-      description: The computer OS applecare ID.
+      description: The computer operating system AppleCare ID.
       type: String
     - contextPath: JAMF.ComputerSubset.purchasing.os_maintenance_expires
-      description: The computer OS maintenance expires.
+      description: The computer operating system maintenance expiration date.
       type: String
     - contextPath: JAMF.ComputerSubset.id
       description: The computer ID.
@@ -675,8 +674,8 @@ script:
   - arguments:
     - auto: PREDEFINED
       default: false
-      description: 'In order to identify which computer is requested, one of these
-        identifiers should be selected: id, name, udid, serial_number, mac_address.'
+      description: 'The identifier used to determine which computer is requested. 
+        Possible values: "id", "name", "udid", "serialnumber", and "macaddress".'
       isArray: false
       name: identifier
       predefined:
@@ -688,9 +687,9 @@ script:
       required: true
       secret: false
     - default: false
-      description: The value of the “identifier”. For example, if we choose the “id”
-        identifier, a value of a computer id should be passed. If we choose “mac_address”
-        as the identifier, a value of a computer’s mac address should be passed, etc.
+      description: The value of the "identifier". For example, if you choose the "id"
+        identifier, a computer ID should be passed. If you choose "macaddress"
+        as the identifier, a computer’s MAC address should be passed, etc.
       isArray: false
       name: identifier_value
       required: true
@@ -705,13 +704,13 @@ script:
       description: The computer peripherals.
       type: Number
     - contextPath: JAMF.ComputerSubset.id
-      description: The computer id
+      description: The computer ID.
       type: Number
   - arguments:
     - auto: PREDEFINED
       default: false
-      description: 'In order to identify which computer is requested, one of these
-        identifiers should be selected: id, name, udid, serial_number, mac_address.'
+      description: 'The identifier used to determine which computer is requested. 
+        Possible values: "id", "name", "udid", "serialnumber", and "macaddress".'
       isArray: false
       name: identifier
       predefined:
@@ -723,9 +722,9 @@ script:
       required: true
       secret: false
     - default: false
-      description: The value of the “identifier”. For example, if we choose the “id”
-        identifier, a value of a computer id should be passed. If we choose “mac_address”
-        as the identifier, a value of a computer’s mac address should be passed, etc.
+      description: The value of the "identifier". For example, if you choose the "id"
+        identifier, a computer ID should be passed. If you choose "macaddress"
+        as the identifier, a computer’s MAC address should be passed, etc.
       isArray: false
       name: identifier_value
       required: true
@@ -746,16 +745,16 @@ script:
       description: The computer model ID.
       type: String
     - contextPath: JAMF.ComputerSubset.hardware.os_name
-      description: The computer OS name.
+      description: The computer operating system name.
       type: String
     - contextPath: JAMF.ComputerSubset.hardware.os_version
-      description: The computer OS version.
+      description: The computer operating system version.
       type: String
     - contextPath: JAMF.ComputerSubset.hardware.os_build
-      description: The computer OS build.
+      description: The computer operating system build.
       type: String
     - contextPath: JAMF.ComputerSubset.hardware.master_password_set
-      description: If the master password is set for the computer.
+      description: Whether the master password is set for the computer.
       type: Boolean
     - contextPath: JAMF.ComputerSubset.hardware.active_directory_status
       description: The computer active directory status.
@@ -773,7 +772,7 @@ script:
       description: The computer processor speed.
       type: Number
     - contextPath: JAMF.ComputerSubset.hardware.processor_speed_mhz
-      description: The computer processor speed in mhz.
+      description: The computer processor speed in MHz.
       type: Number
     - contextPath: JAMF.ComputerSubset.hardware.number_processors
       description: The number of processors in the computer.
@@ -782,10 +781,10 @@ script:
       description: The number of cores in the computer.
       type: Number
     - contextPath: JAMF.ComputerSubset.hardware.total_ram
-      description: The number of RAM in the computer.
+      description: The amount of RAM in the computer.
       type: Number
     - contextPath: JAMF.ComputerSubset.hardware.total_ram_mb
-      description: The number of RAM in the computer in MB.
+      description: The amount of RAM in the computer in MB.
       type: Number
     - contextPath: JAMF.ComputerSubset.hardware.boot_rom
       description: The computer boot ROM.
@@ -794,7 +793,7 @@ script:
       description: The computer bus speed.
       type: Number
     - contextPath: JAMF.ComputerSubset.hardware.bus_speed_mhz
-      description: The computer bus speed in mhz.
+      description: The computer bus speed in MHz.
       type: Number
     - contextPath: JAMF.ComputerSubset.hardware.battery_capacity
       description: The computer battery capacity.
@@ -806,25 +805,25 @@ script:
       description: The computer cache size in KB.
       type: Number
     - contextPath: JAMF.ComputerSubset.hardware.available_ram_slots
-      description: The computer available RAM slots.
+      description: The number of available RAM slots.
       type: Number
     - contextPath: JAMF.ComputerSubset.hardware.optical_drive
       description: The computer optical drive.
       type: String
     - contextPath: JAMF.ComputerSubset.hardware.nic_speed
-      description: The computer nic speed.
+      description: The computer NIC speed.
       type: String
     - contextPath: JAMF.ComputerSubset.hardware.smc_version
-      description: The compute smc version.
+      description: The compute SMC version.
       type: String
     - contextPath: JAMF.ComputerSubset.hardware.ble_capable
-      description: If the computer is ble capable.
+      description: Whether the computer is BLE capable.
       type: Boolean
     - contextPath: JAMF.ComputerSubset.hardware.supports_ios_app_installs
-      description: If the computer supports ios app installs.
+      description: If the computer supports iOS app installations.
       type: Boolean
     - contextPath: JAMF.ComputerSubset.hardware.sip_status
-      description: The computer sip status.
+      description: The computer SIP status.
       type: String
     - contextPath: JAMF.ComputerSubset.hardware.gatekeeper_status
       description: The computer gatekeeper status.
@@ -875,10 +874,10 @@ script:
       description: The computer storage partition capacity in MB.
       type: Number
     - contextPath: JAMF.ComputerSubset.hardware.storage.partitions.percentage_full
-      description: The computer storage partition full percentage.
+      description: The percentage of the storage partition that is full.
       type: Number
     - contextPath: JAMF.ComputerSubset.hardware.storage.partitions.available_mb
-      description: The computer storage partition available in MB.
+      description: The amount of computer storage partition available in MB.
       type: Number
     - contextPath: JAMF.ComputerSubset.hardware.storage.partitions.filevault_status
       description: The computer storage partition filevault status.
@@ -893,25 +892,25 @@ script:
       description: The computer storage partition second filevault percent.
       type: Number
     - contextPath: JAMF.ComputerSubset.hardware.storage.partitions.boot_drive_available_mb
-      description: The computer storage partition boot drive available in MB.
+      description: The available space on the computer storage partition boot drive in MB.
       type: Number
     - contextPath: JAMF.ComputerSubset.hardware.storage.partitions.lvgUUID
-      description: The computer storage partition lvg UUID.
+      description: The computer storage partition logical volume group (lvg) UUID.
       type: String
     - contextPath: JAMF.ComputerSubset.hardware.storage.partitions.lvUUID
-      description: The computer storage partition lv UUID.
+      description: The computer storage partition logical volume (lv) UUID.
       type: String
     - contextPath: JAMF.ComputerSubset.hardware.storage.partitions.pvUUID
-      description: The computer storage partition pv UUID.
+      description: The computer storage partition physical volume (pv) UUID.
       type: String
     - contextPath: JAMF.ComputerSubset.id
-      description: The computer id
+      description: The computer ID.
       type: Number
   - arguments:
     - auto: PREDEFINED
       default: false
-      description: 'In order to identify which computer is requested, one of these
-        identifiers should be selected: id, name, udid, serial_number, mac_address.'
+      description: 'The identifier used to determine which computer is requested. 
+        Possible values: "id", "name", "udid", "serialnumber", and "macaddress".'
       isArray: false
       name: identifier
       predefined:
@@ -923,9 +922,9 @@ script:
       required: true
       secret: false
     - default: false
-      description: The value of the “identifier”. For example, if we choose the “id”
-        identifier, a value of a computer id should be passed. If we choose “mac_address”
-        as the identifier, a value of a computer’s mac address should be passed, etc.
+      description: The value of the "identifier". For example, if you choose the "id"
+        identifier, a computer ID should be passed. If you choose "macaddress"
+        as the identifier, a computer’s MAC address should be passed, etc.
       isArray: false
       name: identifier_value
       required: true
@@ -943,10 +942,10 @@ script:
       description: The certificat identity.
       type: Boolean
     - contextPath: JAMF.ComputerSubset.certificates.expires_utc
-      description: The certificat expires date in UTC.
+      description: The certificat expiration date in UTC format.
       type: Date
     - contextPath: JAMF.ComputerSubset.certificates.expires_epoch
-      description: The certificat expires date in epoch.
+      description: The certificat expiration date in epoch format.
       type: Number
     - contextPath: JAMF.ComputerSubset.certificates.name
       description: The certificat name.
@@ -957,8 +956,8 @@ script:
   - arguments:
     - auto: PREDEFINED
       default: false
-      description: 'In order to identify which computer is requested, one of these
-        identifiers should be selected: id, name, udid, serial_number, mac_address.'
+      description: 'The identifier used to determine which computer is requested. 
+        Possible values: "id", "name", "udid", "serialnumber", and "macaddress".'
       isArray: false
       name: identifier
       predefined:
@@ -970,9 +969,9 @@ script:
       required: true
       secret: false
     - default: false
-      description: The value of the “identifier”. For example, if we choose the “id”
-        identifier, a value of a computer id should be passed. If we choose “mac_address”
-        as the identifier, a value of a computer’s mac address should be passed, etc.
+      description: The value of the "identifier". For example, if you choose the "id"
+        identifier, a computer ID should be passed. If you choose "macaddress"
+        as the identifier, a computer’s MAC address should be passed, etc.
       isArray: false
       name: identifier_value
       required: true
@@ -993,13 +992,13 @@ script:
       description: The computer external boot level.
       type: String
     - contextPath: JAMF.ComputerSubset.id
-      description: The computer id
+      description: The computer ID.
       type: Number
   - arguments:
     - auto: PREDEFINED
       default: false
-      description: 'In order to identify which computer is requested, one of these
-        identifiers should be selected: id, name, udid, serial_number, mac_address.'
+      description: 'The identifier used to determine which computer is requested. 
+        Possible values: "id", "name", "udid", "serialnumber", and "macaddress".'
       isArray: false
       name: identifier
       predefined:
@@ -1011,9 +1010,9 @@ script:
       required: true
       secret: false
     - default: false
-      description: The value of the “identifier”. For example, if we choose the “id”
-        identifier, a value of a computer id should be passed. If we choose “mac_address”
-        as the identifier, a value of a computer’s mac address should be passed, etc.
+      description: The value of the "identifier". For example, if you choose the "id"
+        identifier, a computer ID should be passed. If you choose "macaddress"
+        as the identifier, a computer’s MAC address should be passed, etc.
       isArray: false
       name: identifier_value
       required: true
@@ -1025,32 +1024,32 @@ script:
     name: jamf-get-computer-software-subset
     outputs:
     - contextPath: JAMF.ComputerSubset.software.unix_executables
-      description: The computer software's unix executables.
+      description: The computer software's Unix executables.
       type: String
     - contextPath: JAMF.ComputerSubset.software.licensed_software.name
       description: The computer software's licensed software name.
       type: String
     - contextPath: JAMF.ComputerSubset.software.installed_by_casper.package
-      description: The computer software which was installed by Jamf PRO.
+      description: The computer software that was installed by Jamf PRO.
       type: String
     - contextPath: JAMF.ComputerSubset.software.installed_by_installer_swu.package
-      description: The computer software which was installed either by installer,app
-        or Software Update.
+      description: The computer software that was installed either by an installer, an app
+        or a software update.
       type: String
     - contextPath: JAMF.ComputerSubset.software.cached_by_casper.package
-      description: The computer software which was cached by Jamf PRO.
+      description: The computer software that was cached by Jamf PRO.
       type: String
     - contextPath: JAMF.ComputerSubset.software.available_software_updates.name
-      description: The computer available software updates name.
+      description: The name of the available software updates.
       type: String
     - contextPath: JAMF.ComputerSubset.software.available_updates.name
-      description: The computer available update name.
+      description: The name of the available updates.
       type: String
     - contextPath: JAMF.ComputerSubset.software.available_updates.package_name
-      description: The computer available update package name.
+      description: The name of the available update package.
       type: String
     - contextPath: JAMF.ComputerSubset.software.available_updates.version
-      description: The computer available update version.
+      description: The version of the available update.
       type: String
     - contextPath: JAMF.ComputerSubset.software.running_services.name
       description: The computer running service name.
@@ -1086,13 +1085,13 @@ script:
       description: The computer plugin version.
       type: String
     - contextPath: JAMF.ComputerSubset.id
-      description: The computer id
+      description: The computer ID.
       type: Number
   - arguments:
     - auto: PREDEFINED
       default: false
-      description: 'In order to identify which computer is requested, one of these
-        identifiers should be selected: id, name, udid, serial_number, mac_address.'
+      description: 'The identifier used to determine which computer is requested. 
+        Possible values: "id", "name", "udid", "serialnumber", and "macaddress".'
       isArray: false
       name: identifier
       predefined:
@@ -1104,9 +1103,9 @@ script:
       required: true
       secret: false
     - default: false
-      description: The value of the “identifier”. For example, if we choose the “id”
-        identifier, a value of a computer id should be passed. If we choose “mac_address”
-        as the identifier, a value of a computer’s mac address should be passed, etc.
+      description: The value of the "identifier". For example, if you choose the "id"
+        identifier, a computer ID should be passed. If you choose "macaddress"
+        as the identifier, a computer’s MAC address should be passed, etc.
       isArray: false
       name: identifier_value
       required: true
@@ -1133,13 +1132,13 @@ script:
       description: The computer extension attributes value.
       type: String
     - contextPath: JAMF.ComputerSubset.id
-      description: The computer id
+      description: The computer ID.
       type: Number
   - arguments:
     - auto: PREDEFINED
       default: false
-      description: 'In order to identify which computer is requested, one of these
-        identifiers should be selected: id, name, udid, serial_number, mac_address.'
+      description: 'The identifier used to determine which computer is requested. 
+        Possible values: "id", "name", "udid", "serialnumber", and "macaddress".'
       isArray: false
       name: identifier
       predefined:
@@ -1151,9 +1150,9 @@ script:
       required: true
       secret: false
     - default: false
-      description: The value of the “identifier”. For example, if we choose the “id”
-        identifier, a value of a computer id should be passed. If we choose “mac_address”
-        as the identifier, a value of a computer’s mac address should be passed, etc.
+      description: The value of the "identifier". For example, if you choose the "id"
+        identifier, a computer ID should be passed. If you choose "macaddress"
+        as the identifier, a computer’s MAC address should be passed, etc.
       isArray: false
       name: identifier_value
       required: true
@@ -1183,7 +1182,7 @@ script:
       description: The computer local account name size.
       type: String
     - contextPath: JAMF.ComputerSubset.groups_accounts.local_accounts.home_size_mb
-      description: The computer local account mb.
+      description: The computer local account size in MB.
       type: Number
     - contextPath: JAMF.ComputerSubset.groups_accounts.local_accounts.administrator
       description: Whether the computer is the local account administrator.
@@ -1192,10 +1191,10 @@ script:
       description: Whether the computer filevault is enabled.
       type: Boolean
     - contextPath: JAMF.ComputerSubset.groups_accounts.user_inventories.disable_automatic_login
-      description: Whether 'Automatic Login' is disabled or not.
+      description: Whether automatic login is disabled.
       type: Boolean
     - contextPath: JAMF.ComputerSubset.groups_accounts.user_inventories.user.username
-      description: The computer user inventories.user.username
+      description: The computer user inventories user's username.
       type: String
     - contextPath: JAMF.ComputerSubset.groups_accounts.user_inventories.user.password_history_depth
       description: Number of unique passcodes before reuse.
@@ -1210,16 +1209,16 @@ script:
       description: Smallest number of non-alphanumeric characters allowed.
       type: String
     - contextPath: JAMF.ComputerSubset.groups_accounts.user_inventories.user.password_require_alphanumeric
-      description: Passcode must contain at least one letter and one number.
+      description: Passcode rule (must contain at least one letter and one number).
       type: String
     - contextPath: JAMF.ComputerSubset.id
-      description: The computer id
+      description: The computer ID.
       type: Number
   - arguments:
     - auto: PREDEFINED
       default: false
-      description: 'In order to identify which computer is requested, one of these
-        identifiers should be selected: id, name, udid, serial_number, mac_address.'
+      description: 'The identifier used to determine which computer is requested. 
+        Possible values: "id", "name", "udid", "serialnumber", and "macaddress".'
       isArray: false
       name: identifier
       predefined:
@@ -1231,30 +1230,30 @@ script:
       required: true
       secret: false
     - default: false
-      description: The value of the “identifier”. For example, if we choose the “id”
-        identifier, a value of a computer id should be passed. If we choose “mac_address”
-        as the identifier, a value of a computer’s mac address should be passed, etc.
+      description: The value of the "identifier". For example, if you choose the "id"
+        identifier, a computer ID should be passed. If you choose "macaddress"
+        as the identifier, a computer’s MAC address should be passed, etc.
       isArray: false
       name: identifier_value
       required: true
       secret: false
     deprecated: false
-    description: Returns the iphones subset for a specific computer according to the
+    description: Returns the iPhones subset for a specific computer according to the
       given arguments.
     execution: false
     name: jamf-get-computer-iphones-subset
     outputs:
     - contextPath: JAMF.ComputerSubset.iphones
-      description: The commputer related iphones.
+      description: The commputer related iPhones.
       type: String
     - contextPath: JAMF.ComputerSubset.id
-      description: The computer id
+      description: The computer ID.
       type: Number
   - arguments:
     - auto: PREDEFINED
       default: false
-      description: 'In order to identify which computer is requested, one of these
-        identifiers should be selected: id, name, udid, serial_number, mac_address.'
+      description: 'The identifier used to determine which computer is requested. 
+        Possible values: "id", "name", "udid", "serialnumber", and "macaddress".'
       isArray: false
       name: identifier
       predefined:
@@ -1266,9 +1265,9 @@ script:
       required: true
       secret: false
     - default: false
-      description: The value of the “identifier”. For example, if we choose the “id”
-        identifier, a value of a computer id should be passed. If we choose “mac_address”
-        as the identifier, a value of a computer’s mac address should be passed, etc.
+      description: The value of the "identifier". For example, if you choose the "id"
+        identifier, a computer ID should be passed. If you choose "macaddress"
+        as the identifier, a computer’s MAC address should be passed, etc.
       isArray: false
       name: identifier_value
       required: true
@@ -1292,60 +1291,60 @@ script:
       description: If the configuration profile is removable.
       type: Boolean
     - contextPath: JAMF.ComputerSubset.id
-      description: The computer id
+      description: The computer ID.
       type: Number
   - arguments:
     - default: false
-      description: A 6 digits value. This will be the passcode which will be used
-        to unlock the computer after being locked.
+      description: A 6-digit passcode to be used
+        to unlock the computer after it was locked.
       isArray: false
       name: passcode
       required: true
       secret: true
     - default: false
-      description: The computer ID which you like to lock.
+      description: The ID of the computer that you want to lock.
       isArray: false
       name: id
       required: true
       secret: false
     - default: false
-      description: A message to display on the lock screen.
+      description: A message to display on the locked screen.
       isArray: false
       name: lock_message
       required: false
       secret: false
     deprecated: false
-    description: 'Will send the "DeviceLock" command to a computer. This command logs
+    description: 'Sends the "DeviceLock" command to a computer. This command logs
       the user out of the computer, restarts the computer, and then locks the computer.
       Optional: Displays a message on the computer when it locks.'
     execution: false
     name: jamf-computer-lock
     outputs:
     - contextPath: JAMF.ComputerCommand.name
-      description: The command name
+      description: The command name.
       type: String
     - contextPath: JAMF.ComputerCommand.command_uuid
-      description: The command udid.
+      description: The command UDID.
       type: String
     - contextPath: JAMF.ComputerCommand.computer_id
       description: The computer ID.
       type: String
   - arguments:
     - default: false
-      description: A 6 digits value. This will be the passcode which will lock the
+      description: A 6-digit passcode that locks the
         computer after being erased.
       isArray: false
       name: passcode
       required: true
       secret: true
     - default: false
-      description: The computer ID which you like to erase.
+      description: The ID of the computer that you want to erase.
       isArray: false
       name: id
       required: true
       secret: false
     deprecated: false
-    description: Will send the “EraseDevice'' command to a computer. Permanently erases
+    description: Sends the “EraseDevice'' command to a computer. Permanently erases
       all the data on the computer and sets a passcode when required by the computer
       hardware type.
     execution: false
@@ -1355,7 +1354,7 @@ script:
       description: The command name.
       type: String
     - contextPath: JAMF.ComputerCommand.command_uuid
-      description: The command udid.
+      description: The command UDID.
       type: String
     - contextPath: JAMF.ComputerCommand.computer_id
       description: The computer ID.
@@ -1363,21 +1362,20 @@ script:
   - arguments:
     - default: false
       defaultValue: '50'
-      description: Maximum number of users to retrieve (maximal value is 200).
+      description: Maximum number of users to retrieve. The maximal value is 200.
       isArray: false
       name: limit
       required: false
       secret: false
     - default: false
       defaultValue: '0'
-      description: Number of requested page.
+      description: The number of the requested page.
       isArray: false
       name: page
       required: false
       secret: false
     deprecated: false
-    description: Return a list of users with their IDs and names. By default, will
-      return the first 50 users to the context (ID + name).
+    description: Returns a list of users with their IDs and names. By default, returns the first 50 users to the context (ID + name).
     execution: false
     name: jamf-get-users
     outputs:
@@ -1394,19 +1392,19 @@ script:
       description: The number of users to be returned on each page.
       type: Number
     - contextPath: JAMF.User.Paging.current_page
-      description: Number of requested page.
+      description: The number of requested page.
       type: Number
   - arguments:
     - default: false
       description: |-
         The user ID.
-        To get the user ID, please run `jamf-get-users` to get all users names and ID's.
+        To get the user ID, run the `jamf-get-users` command to get all user names and IDs.
       isArray: false
       name: id
       required: true
       secret: false
     deprecated: false
-    description: Return a specific user with general data about the user according
+    description: Returns a specific user with general data about the user according
       to the given ID.
     execution: false
     name: jamf-get-user-by-id
@@ -1433,13 +1431,13 @@ script:
       description: The user position.
       type: String
     - contextPath: JAMF.User.managed_apple_id
-      description: The user managed apple ID.
+      description: The user managed Apple ID.
       type: String
     - contextPath: JAMF.User.enable_custom_photo_url
-      description: If the user custom photo URl is enabled.
+      description: Whether the user custom photo URL is enabled.
       type: Boolean
     - contextPath: JAMF.User.custom_photo_url
-      description: The user custom photo url.
+      description: The user custom photo URL.
       type: String
     - contextPath: JAMF.User.ldap_server.id
       description: The user LDAP server ID.
@@ -1469,31 +1467,31 @@ script:
       description: The user total VPP code acount.
       type: Number
     - contextPath: JAMF.User.links.vpp_assignments.id
-      description: The vpp assignment ID which is linked to the user.
+      description: The VPP assignment ID that is linked to the user.
       type: Number
     - contextPath: JAMF.User.links.vpp_assignments.name
-      description: The vpp assignment name which is linked to the user.
+      description: The VPP assignment name that is linked to the user.
       type: String
     - contextPath: JAMF.User.links.computers.id
-      description: The computer ID which is linked to the user.
+      description: The computer ID that is linked to the user.
       type: Number
     - contextPath: JAMF.User.links.computers.name
-      description: The computer name which is linked to the user.
+      description: The computer name that is linked to the user.
       type: String
     - contextPath: JAMF.User.links.peripherals.id
-      description: The peripherals ID which is linked to the user.
+      description: The peripherals ID that is linked to the user.
       type: Number
     - contextPath: JAMF.User.links.peripherals.name
-      description: The peripherals name which is linked to the user.
+      description: The peripherals name that is linked to the user.
       type: String
     - contextPath: JAMF.User.links.mobile_devices.id
-      description: The mobile device ID which is linked to the user.
+      description: The mobile device ID that is linked to the user.
       type: String
     - contextPath: JAMF.User.links.mobile_devices.name
-      description: The mobile device name which is linked to the user.
+      description: The mobile device name that is linked to the user.
       type: String
     - contextPath: JAMF.User.user_groups.size
-      description: The user groups size.
+      description: The user group size.
       type: Number
     - contextPath: JAMF.User.user_groups.user_group.id
       description: The user group ID.
@@ -1502,7 +1500,7 @@ script:
       description: The user group name.
       type: String
     - contextPath: JAMF.User.user_groups.user_group.is_smart
-      description: If the user group is smart.
+      description: Whether the user group is smart.
       type: Boolean
   - arguments:
     - default: false
@@ -1512,7 +1510,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Return a specific user with general data about the user according
+    description: Returns a specific user with general data about the user according
       to the given name.
     execution: false
     name: jamf-get-user-by-name
@@ -1539,13 +1537,13 @@ script:
       description: The user position.
       type: String
     - contextPath: JAMF.User.managed_apple_id
-      description: The user managed apple ID.
+      description: The user managed Apple ID.
       type: String
     - contextPath: JAMF.User.enable_custom_photo_url
-      description: If the user custom photo URl is enabled.
+      description: Whether the user custom photo URL is enabled.
       type: Boolean
     - contextPath: JAMF.User.custom_photo_url
-      description: The user custom photo url.
+      description: The user custom photo URL.
       type: String
     - contextPath: JAMF.User.ldap_server.id
       description: The user LDAP server ID.
@@ -1575,28 +1573,28 @@ script:
       description: The user total VPP code acount.
       type: Number
     - contextPath: JAMF.User.links.vpp_assignments.id
-      description: The vpp assignment ID which is linked to the user.
+      description: The VPP assignment ID that is linked to the user.
       type: Number
     - contextPath: JAMF.User.links.vpp_assignments.name
-      description: The vpp assignment name which is linked to the user.
+      description: The VPP assignment name that is linked to the user.
       type: String
     - contextPath: JAMF.User.links.computers.id
-      description: The computer ID which is linked to the user.
+      description: The computer ID that is linked to the user.
       type: Number
     - contextPath: JAMF.User.links.computers.name
-      description: The computer name which is linked to the user.
+      description: The computer name that is linked to the user.
       type: String
     - contextPath: JAMF.User.links.peripherals.id
-      description: The peripherals ID which is linked to the user.
+      description: The peripherals ID that is linked to the user.
       type: Number
     - contextPath: JAMF.User.links.peripherals.name
-      description: The peripherals name which is linked to the user.
+      description: The peripherals name that is linked to the user.
       type: String
     - contextPath: JAMF.User.links.mobile_devices.id
-      description: The mobile device ID which is linked to the user.
+      description: The mobile device ID that is linked to the user.
       type: String
     - contextPath: JAMF.User.links.mobile_devices.name
-      description: The mobile device name which is linked to the user.
+      description: The mobile device name that is linked to the user.
       type: String
     - contextPath: JAMF.User.user_groups.size
       description: The user groups size.
@@ -1608,7 +1606,7 @@ script:
       description: The user group name.
       type: String
     - contextPath: JAMF.User.user_groups.user_group.is_smart
-      description: If the user group is smart.
+      description: Whether the user group is smart.
       type: Boolean
   - arguments:
     - default: false
@@ -1618,7 +1616,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Return a specific user with general data about the user according
+    description: Returns a specific user with general data about the user according
       to the given email.
     execution: false
     name: jamf-get-user-by-email
@@ -1645,13 +1643,13 @@ script:
       description: The user position.
       type: String
     - contextPath: JAMF.User.managed_apple_id
-      description: The user managed apple ID.
+      description: The user managed Apple ID.
       type: String
     - contextPath: JAMF.User.enable_custom_photo_url
-      description: If the user custom photo URl is enabled.
+      description: Whether the user custom photo URL is enabled.
       type: Boolean
     - contextPath: JAMF.User.custom_photo_url
-      description: The user custom photo url.
+      description: The user custom photo URL.
       type: String
     - contextPath: JAMF.User.ldap_server.id
       description: The user LDAP server ID.
@@ -1681,28 +1679,28 @@ script:
       description: The user total VPP code acount.
       type: Number
     - contextPath: JAMF.User.links.vpp_assignments.id
-      description: The vpp assignment ID which is linked to the user.
+      description: The VPP assignment ID that is linked to the user.
       type: Number
     - contextPath: JAMF.User.links.vpp_assignments.name
-      description: The vpp assignment name which is linked to the user.
+      description: The VPP assignment name that is linked to the user.
       type: String
     - contextPath: JAMF.User.links.computers.id
-      description: The computer ID which is linked to the user.
+      description: The computer ID that is linked to the user.
       type: Number
     - contextPath: JAMF.User.links.computers.name
-      description: The computer name which is linked to the user.
+      description: The computer name that is linked to the user.
       type: String
     - contextPath: JAMF.User.links.peripherals.id
-      description: The peripherals ID which is linked to the user.
+      description: The peripherals ID that is linked to the user.
       type: Number
     - contextPath: JAMF.User.links.peripherals.name
-      description: The peripherals name which is linked to the user.
+      description: The peripherals name that is linked to the user.
       type: String
     - contextPath: JAMF.User.links.mobile_devices.id
-      description: The mobile device ID which is linked to the user.
+      description: The mobile device ID that is linked to the user.
       type: String
     - contextPath: JAMF.User.links.mobile_devices.name
-      description: The mobile device name which is linked to the user.
+      description: The mobile device name that is linked to the user.
       type: String
     - contextPath: JAMF.User.user_groups.size
       description: The user groups size.
@@ -1719,7 +1717,7 @@ script:
   - arguments:
     - default: false
       defaultValue: '50'
-      description: Maximum number of devices to retrieve (maximal value is 200).
+      description: Maximum number of devices to retrieve. Maximal value is 200.
       isArray: false
       name: limit
       required: false
@@ -1732,8 +1730,8 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: This command will return a list of devices with some basic data on
-      each one of them.  By default, will return the first 50 devices to the context
+    description: Returns a list of devices with  basic data on
+      each. By default, returns the first 50 devices to the context
       (ID + name).
     execution: false
     name: jamf-get-mobile-devices
@@ -1748,7 +1746,7 @@ script:
       description: The mobile device name.
       type: String
     - contextPath: JAMF.MobileDevice.udid
-      description: The mobile device udid.
+      description: The mobile device UDID.
       type: String
     - contextPath: JAMF.MobileDevice.serial_number
       description: The mobile device serial number.
@@ -1757,13 +1755,13 @@ script:
       description: The mobile device phone number.
       type: String
     - contextPath: JAMF.MobileDevice.wifi_mac_address
-      description: The mobile device WIFI mac address.
+      description: The mobile device WIFI MAC address.
       type: String
     - contextPath: JAMF.MobileDevice.managed
-      description: If the mobile device is managed.
+      description: Whether the mobile device is managed.
       type: Boolean
     - contextPath: JAMF.MobileDevice.supervised
-      description: If the mobile device is supervised.
+      description: Whether the mobile device is supervised.
       type: Boolean
     - contextPath: JAMF.MobileDevice.model
       description: The mobile device model.
@@ -1787,20 +1785,20 @@ script:
       description: The number of mobile devices to be returned on each page.
       type: Number
     - contextPath: JAMF.MobileDevice.Paging.current_page
-      description: Number of requested page.
+      description: The number of the requested page.
       type: Number
   - arguments:
     - default: false
       description: |-
         Gets the “general” subset of a specific device.
-        To get the mobile device ID, please run `jamf-get-mobile-devices` to get all mobile devices names and ID's.
+        To get the mobile device ID, run the `jamf-get-mobile-devices` command to get all mobile devices names and IDs.
       isArray: false
       name: id
       required: true
       secret: false
     deprecated: false
-    description: 'This command will return  the "general" subset of a specific mobile
-      device, e.g: name, mac address, ip, serial number, udid etc.'
+    description: 'Returns the "general" subset of a specific mobile
+      device, e.g.: name, MAC address, IP, serial number, UDID. etc.'
     execution: false
     name: jamf-get-mobile-device-by-id
     outputs:
@@ -1820,49 +1818,49 @@ script:
       description: The mobile device asset ID.
       type: String
     - contextPath: JAMF.MobileDevice.last_inventory_update
-      description: The mobile device last inventory update.
+      description: The date of the mobile device last inventory update.
       type: String
     - contextPath: JAMF.MobileDevice.last_inventory_update_epoch
-      description: The mobile device last inventory update in epoch.
+      description: The date of the mobile device last inventory update in epoch format.
       type: Date
     - contextPath: JAMF.MobileDevice.last_inventory_update_utc
-      description: The mobile device last inventory update in UTC.
+      description: The date of the mobile device last inventory update in UTC format.
       type: Date
     - contextPath: JAMF.MobileDevice.capacity
       description: The mobile device capacity.
       type: Number
     - contextPath: JAMF.MobileDevice.capacity_mb
-      description: The mobile device capacity MB.
+      description: The mobile device capacity in MB.
       type: Number
     - contextPath: JAMF.MobileDevice.available
-      description: The mobile device available.
+      description: The mobile device available storage.
       type: Number
     - contextPath: JAMF.MobileDevice.available_mb
-      description: The mobile device available MB.
+      description: The mobile device available storage in MB.
       type: Number
     - contextPath: JAMF.MobileDevice.percentage_used
-      description: The mobile device available percentage used.
+      description: The percentage of memory used.
       type: Number
     - contextPath: JAMF.MobileDevice.os_type
-      description: The mobile device OS type.
+      description: The mobile device operating system type.
       type: String
     - contextPath: JAMF.MobileDevice.os_version
-      description: The mobile device OS version.
+      description: The mobile device operating system version.
       type: String
     - contextPath: JAMF.MobileDevice.os_build
-      description: The mobile device OS build.
+      description: The mobile device operating system build.
       type: String
     - contextPath: JAMF.MobileDevice.serial_number
       description: The mobile device serial number.
       type: String
     - contextPath: JAMF.MobileDevice.udid
-      description: The mobile device udid.
+      description: The mobile device UDID.
       type: String
     - contextPath: JAMF.MobileDevice.initial_entry_date_epoch
-      description: The mobile device  initial entry date in epoch.
+      description: The mobile device  initial entry date in epoch format.
       type: Date
     - contextPath: JAMF.MobileDevice.initial_entry_date_utc
-      description: The mobile device  initial entry date in UTC.
+      description: The mobile device  initial entry date in UTC format.
       type: Date
     - contextPath: JAMF.MobileDevice.phone_number
       description: The mobile device phone number.
@@ -1871,10 +1869,10 @@ script:
       description: The mobile device IP address.
       type: String
     - contextPath: JAMF.MobileDevice.wifi_mac_address
-      description: The mobile device WIFI mac address.
+      description: The mobile device WIFI MAC address.
       type: String
     - contextPath: JAMF.MobileDevice.bluetooth_mac_address
-      description: The mobile device bluetooth mac address.
+      description: The mobile device bluetooth MAC address.
       type: String
     - contextPath: JAMF.MobileDevice.modem_firmware
       description: The mobile device modem fireware.
@@ -1904,79 +1902,79 @@ script:
       description: The mobile device last enrollment in epoch.
       type: Number
     - contextPath: JAMF.MobileDevice.last_enrollment_utc
-      description: The mobile device last enrollment in UTC.
+      description: The mobile device last enrollment in UTC format.
       type: String
     - contextPath: JAMF.MobileDevice.mdm_profile_expiration_epoch
-      description: The mobile device mdm profile expiration in epoch.
+      description: The mobile device MDM profile expiration in epoch format.
       type: Number
     - contextPath: JAMF.MobileDevice.mdm_profile_expiration_utc
-      description: The mobile device mdm profile expiration in UTC.
+      description: The mobile device MDM profile expiration in UTC format.
       type: String
     - contextPath: JAMF.MobileDevice.managed
-      description: If the mobile device is managed.
+      description: Whether the mobile device is managed.
       type: Boolean
     - contextPath: JAMF.MobileDevice.supervised
-      description: If the mobile device is supervised.
+      description: Whether the mobile device is supervised.
       type: Boolean
     - contextPath: JAMF.MobileDevice.exchange_activesync_device_identifier
       description: The mobile device exchange active sync device ID.
       type: String
     - contextPath: JAMF.MobileDevice.shared
-      description: The mobile device shared.
+      description: Whether the device is shared.
       type: String
     - contextPath: JAMF.MobileDevice.diagnostic_submission
-      description: The mobile device diagnostic submission,
+      description: The mobile device diagnostic submission.
       type: String
     - contextPath: JAMF.MobileDevice.app_analytics
       description: The mobile device app analytics.
       type: String
     - contextPath: JAMF.MobileDevice.tethered
-      description: The mobile device tethered.
+      description: The mobile device tethered status.
       type: String
     - contextPath: JAMF.MobileDevice.battery_level
       description: The mobile device battery level.
       type: Number
     - contextPath: JAMF.MobileDevice.ble_capable
-      description: The mobile device ble capable.
+      description: Whether the mobile device is BLE capable.
       type: Boolean
     - contextPath: JAMF.MobileDevice.device_locator_service_enabled
-      description: If the mobile device locator service is enabled.
+      description: Whether the mobile device locator service is enabled.
       type: Boolean
     - contextPath: JAMF.MobileDevice.do_not_disturb_enabled
-      description: If the mobile device do not disturb is enabled.
+      description: Whether the mobile device do not disturb is enabled.
       type: Boolean
     - contextPath: JAMF.MobileDevice.cloud_backup_enabled
-      description: If the mobile device cloud backup is enabled.
+      description: Whether the mobile device cloud backup is enabled.
       type: Boolean
     - contextPath: JAMF.MobileDevice.last_cloud_backup_date_epoch
-      description: The mobie device last cloud update backup date in epoch.
+      description: The mobile device last cloud update backup date in epoch format.
       type: Date
     - contextPath: JAMF.MobileDevice.last_cloud_backup_date_utc
-      description: The mobie device last cloud update backup date in UTC.
+      description: The mobile device last cloud update backup date in UTC format.
       type: Date
     - contextPath: JAMF.MobileDevice.location_services_enabled
-      description: If the mobile device location services is enabled.
+      description: Whether the mobile device location services is enabled.
       type: Boolean
     - contextPath: JAMF.MobileDevice.itunes_store_account_is_active
-      description: If the mobile device itunes store accouns is enabled.
+      description: Whether the mobile device iTunes store account is enabled.
       type: Boolean
     - contextPath: JAMF.MobileDevice.last_backup_time_epoch
-      description: The mobile device last backup time in epoch.
+      description: The mobile device last backup time in epoch format.
       type: Number
     - contextPath: JAMF.MobileDevice.last_backup_time_utc
-      description: The mobile device last backup time in UTC.
+      description: The mobile device last backup time in UTC format.
       type: String
     - contextPath: JAMF.MobileDevice.site.id
-      description: Tyhe mobile device site ID.
+      description: The mobile device site ID.
       type: Number
     - contextPath: JAMF.MobileDevice.site.name
       description: The mobile device site name.
       type: String
   - arguments:
     - default: false
-      description: 'Match devices by specific characteristics (supports wildcards)
-        like: name, udid, serial_number, mac_address, username, email. e.g: “match=john*”,
-        “match=C52F72FACB9T”.'
+      description: 'The specific characteristics by which to match devices 
+        such as: name, udid, serial_number, mac_address, username, email. e.g: “match=john*”,
+        “match=C52F72FACB9T”. (Supports wildcards)'
       isArray: false
       name: match
       predefined:
@@ -1985,21 +1983,21 @@ script:
       secret: false
     - default: false
       defaultValue: '50'
-      description: Maximum number of devices to retrieve (maximal value is 200).
+      description: Maximum number of devices to retrieve. (Maximal value is 200).
       isArray: false
       name: limit
       required: false
       secret: false
     - default: false
       defaultValue: '0'
-      description: Number of requested page.
+      description: The number of the requested page.
       isArray: false
       name: page
       required: false
       secret: false
     deprecated: false
-    description: This command will match mobile devices by specific characteristics
-      and returns general data on each one of the mobile device.
+    description: Matches mobile devices by specific characteristics
+      and returns general data on each one of the mobile devices.
     execution: false
     name: jamf-get-mobile-device-by-match
     outputs:
@@ -2010,16 +2008,16 @@ script:
       description: The mobile device name.
       type: String
     - contextPath: JAMF.MobileDevice.udid
-      description: The mobile device udid.
+      description: The mobile device UDID.
       type: String
     - contextPath: JAMF.MobileDevice.serial_number
       description: The mobile device serial number.
       type: String
     - contextPath: JAMF.MobileDevice.mac_address
-      description: The mobile device mac address.
+      description: The mobile device MAC address.
       type: String
     - contextPath: JAMF.MobileDevice.wifi_mac_address
-      description: The mobile device WIFI mac address.
+      description: The mobile device WIFI MAC address.
       type: String
     - contextPath: JAMF.MobileDevice.username
       description: The mobile device username.
@@ -2058,13 +2056,13 @@ script:
       description: The number of mobile devices to be returned on each page.
       type: Number
     - contextPath: JAMF.MobileDevice.Paging.current_page
-      description: Number of requested page.
+      description: The number of the requested page.
       type: Number
   - arguments:
     - auto: PREDEFINED
       default: false
-      description: 'In order to identify which device is requested, one of these identifiers
-        should be selected: id, name, udid, serial_number, mac_address.'
+      description: 'The identifier used to determine which computer is requested. 
+        Possible values: "id", "name", "udid", "serialnumber", and "macaddress".'
       isArray: false
       name: identifier
       predefined:
@@ -2076,10 +2074,9 @@ script:
       required: true
       secret: false
     - default: false
-      description: The value of the “identifier”. For example, if we choose the “id”
-        identifier, a value of a mobile device’s id should be passed. If we choose
-        the “mac_address” identifier, a value of a mobile device’s mac address should
-        be passed, etc.
+      description: The value of the "identifier". For example, if you choose the "id"
+        identifier, a computer ID should be passed. If you choose "macaddress"
+        as the identifier, a computer’s MAC address should be passed, etc.
       isArray: false
       name: identifier_value
       required: true
@@ -2109,49 +2106,49 @@ script:
       description: The mobile device asset ID.
       type: String
     - contextPath: JAMF.MobileDeviceSubset.general.last_inventory_update
-      description: The mobile device last inventory update.
+      description: The date of the mobile device last inventory update.
       type: String
     - contextPath: JAMF.MobileDeviceSubset.general.last_inventory_update_epoch
-      description: The mobile device last inventory update in epoch.
+      description: The date of the mobile device last inventory update in epoch format.
       type: Date
     - contextPath: JAMF.MobileDeviceSubset.general.last_inventory_update_utc
-      description: The mobile device last inventory update in UTC.
+      description: The date of the mobile device last inventory update in UTC format.
       type: Date
     - contextPath: JAMF.MobileDeviceSubset.general.capacity
       description: The mobile device capacity.
       type: Number
     - contextPath: JAMF.MobileDeviceSubset.general.capacity_mb
-      description: The mobile device capacity MB.
+      description: The mobile device capacity in MB.
       type: Number
     - contextPath: JAMF.MobileDeviceSubset.general.available
-      description: The mobile device available.
+      description: The available memory in the mobile device.
       type: Number
     - contextPath: JAMF.MobileDeviceSubset.general.available_mb
-      description: The mobile device available MB.
+      description: The available memory in the mobile device in MB.
       type: Number
     - contextPath: JAMF.MobileDeviceSubset.general.percentage_used
-      description: The mobile device available percentage used.
+      description: The percentage of memory used in the mobile device.
       type: Number
     - contextPath: JAMF.MobileDeviceSubset.general.os_type
-      description: The mobile device OS type.
+      description: The mobile device operating system type.
       type: String
     - contextPath: JAMF.MobileDeviceSubset.general.os_version
-      description: The mobile device OS version.
+      description: The mobile device operating system version.
       type: String
     - contextPath: JAMF.MobileDeviceSubset.general.os_build
-      description: The mobile device OS build.
+      description: The mobile device operating system build.
       type: String
     - contextPath: JAMF.MobileDeviceSubset.general.serial_number
       description: The mobile device serial number.
       type: String
     - contextPath: JAMF.MobileDeviceSubset.general.udid
-      description: The mobile device udid.
+      description: The mobile device UDID.
       type: String
     - contextPath: JAMF.MobileDeviceSubset.general.initial_entry_date_epoch
-      description: The mobile device  initial entry date in epoch.
+      description: The mobile device initial entry date in epoch format.
       type: Date
     - contextPath: JAMF.MobileDeviceSubset.general.initial_entry_date_utc
-      description: The mobile device  initial entry date in UTC.
+      description: The mobile device initial entry date in UTC format.
       type: Date
     - contextPath: JAMF.MobileDeviceSubset.general.phone_number
       description: The mobile device phone number.
@@ -2160,10 +2157,10 @@ script:
       description: The mobile device IP address.
       type: String
     - contextPath: JAMF.MobileDeviceSubset.general.wifi_mac_address
-      description: The mobile device WIFI mac address.
+      description: The mobile device WIFI MAC address.
       type: String
     - contextPath: JAMF.MobileDeviceSubset.general.bluetooth_mac_address
-      description: The mobile device bluetooth mac address.
+      description: The mobile device bluetooth MAC address.
       type: String
     - contextPath: JAMF.MobileDeviceSubset.general.modem_firmware
       description: The mobile device modem fireware.
@@ -2190,73 +2187,73 @@ script:
       description: The mobile device enrollment method.
       type: String
     - contextPath: JAMF.MobileDeviceSubset.general.last_enrollment_epoch
-      description: The mobile device last enrollment in epoch.
+      description: The mobile device last enrollment in epoch format.
       type: Number
     - contextPath: JAMF.MobileDeviceSubset.general.last_enrollment_utc
-      description: The mobile device last enrollment in UTC.
+      description: The mobile device last enrollment in UTC format.
       type: String
     - contextPath: JAMF.MobileDeviceSubset.general.mdm_profile_expiration_epoch
-      description: The mobile device mdm profile expiration in epoch.
+      description: The mobile device MDM profile expiration in epoch format.
       type: Number
     - contextPath: JAMF.MobileDeviceSubset.general.mdm_profile_expiration_utc
-      description: The mobile device mdm profile expiration in UTC.
+      description: The mobile device MDM profile expiration in UTC format.
       type: String
     - contextPath: JAMF.MobileDeviceSubset.general.managed
-      description: If the mobile device is managed.
+      description: Whether the mobile device is managed.
       type: Boolean
     - contextPath: JAMF.MobileDeviceSubset.general.supervised
-      description: If the mobile device is supervised.
+      description: Whether the mobile device is supervised.
       type: Boolean
     - contextPath: JAMF.MobileDeviceSubset.general.exchange_activesync_device_identifier
       description: The mobile device exchange active sync device ID.
       type: String
     - contextPath: JAMF.MobileDeviceSubset.general.shared
-      description: The mobile device shared.
+      description: Whether the device is shared.
       type: String
     - contextPath: JAMF.MobileDeviceSubset.general.diagnostic_submission
-      description: The mobile device diagnostic submission,
+      description: The mobile device diagnostic submission.
       type: String
     - contextPath: JAMF.MobileDeviceSubset.general.app_analytics
       description: The mobile device app analytics.
       type: String
     - contextPath: JAMF.MobileDeviceSubset.general.tethered
-      description: The mobile device tethered.
+      description: The mobile device tethered status.
       type: String
     - contextPath: JAMF.MobileDeviceSubset.general.battery_level
       description: The mobile device battery level.
       type: Number
     - contextPath: JAMF.MobileDeviceSubset.general.ble_capable
-      description: The mobile device ble capable.
+      description: Whether the mobile device is BLE capable.
       type: Boolean
     - contextPath: JAMF.MobileDeviceSubset.general.device_locator_service_enabled
-      description: If the mobile device locator service is enabled.
+      description: Whether the mobile device locator service is enabled.
       type: Boolean
     - contextPath: JAMF.MobileDeviceSubset.general.do_not_disturb_enabled
-      description: If the mobile device do not disturb is enabled.
+      description: Whether the mobile device do not disturb is enabled.
       type: Boolean
     - contextPath: JAMF.MobileDeviceSubset.general.cloud_backup_enabled
-      description: If the mobile device cloud backup is enabled.
+      description: Whether the mobile device cloud backup is enabled.
       type: Boolean
     - contextPath: JAMF.MobileDeviceSubset.general.last_cloud_backup_date_epoch
-      description: The mobie device last cloud update backup date in epoch.
+      description: The mobie device last cloud update backup date in epoch format.
       type: Date
     - contextPath: JAMF.MobileDeviceSubset.general.last_cloud_backup_date_utc
-      description: The mobie device last cloud update backup date in UTC.
+      description: The mobie device last cloud update backup date in UTC format.
       type: Date
     - contextPath: JAMF.MobileDeviceSubset.general.location_services_enabled
-      description: If the mobile device location services is enabled.
+      description: Whether the mobile device location services is enabled.
       type: Boolean
     - contextPath: JAMF.MobileDeviceSubset.general.itunes_store_account_is_active
-      description: If the mobile device itunes store accouns is enabled.
+      description: Whether the mobile device iTunes store account is enabled.
       type: Boolean
     - contextPath: JAMF.MobileDeviceSubset.general.last_backup_time_epoch
-      description: The mobile device last backup time in epoch.
+      description: The mobile device last backup time in epoch format.
       type: Number
     - contextPath: JAMF.MobileDeviceSubset.general.last_backup_time_utc
-      description: The mobile device last backup time in UTC.
+      description: The mobile device last backup time in UTC format.
       type: String
     - contextPath: JAMF.MobileDeviceSubset.general.site.id
-      description: Tyhe mobile device site ID.
+      description: The mobile device site ID.
       type: Number
     - contextPath: JAMF.MobileDeviceSubset.general.site.name
       description: The mobile device site name.
@@ -2264,8 +2261,8 @@ script:
   - arguments:
     - auto: PREDEFINED
       default: false
-      description: 'In order to identify which device is requested, one of these identifiers
-        should be selected: id, name, udid, serial_number, mac_address.'
+      description: 'The identifier used to determine which computer is requested. 
+        Possible values: "id", "name", "udid", "serialnumber", and "macaddress".'
       isArray: false
       name: identifier
       predefined:
@@ -2277,10 +2274,9 @@ script:
       required: true
       secret: false
     - default: false
-      description: The value of the “identifier”. For example, if we choose the “id”
-        identifier, a value of a mobile device’s id should be passed. If we choose
-        the “mac_address” identifier, a value of a mobile device’s mac address should
-        be passed, etc.
+      description: The value of the "identifier". For example, if you choose the "id"
+        identifier, a computer ID should be passed. If you choose "macaddress"
+        as the identifier, a computer’s MAC address should be passed, etc.
       isArray: false
       name: identifier_value
       required: true
@@ -2327,8 +2323,8 @@ script:
   - arguments:
     - auto: PREDEFINED
       default: false
-      description: 'In order to identify which device is requested, one of these identifiers
-        should be selected: id, name, udid, serial_number, mac_address.'
+      description: 'The identifier used to determine which computer is requested. 
+        Possible values: "id", "name", "udid", "serialnumber", and "macaddress".'
       isArray: false
       name: identifier
       predefined:
@@ -2340,10 +2336,9 @@ script:
       required: true
       secret: false
     - default: false
-      description: The value of the “identifier”. For example, if we choose the “id”
-        identifier, a value of a mobile device’s id should be passed. If we choose
-        the “mac_address” identifier, a value of a mobile device’s mac address should
-        be passed, etc.
+      description: The value of the "identifier". For example, if you choose the "id"
+        identifier, a computer ID should be passed. If you choose "macaddress"
+        as the identifier, a computer’s MAC address should be passed, etc.
       isArray: false
       name: identifier_value
       required: true
@@ -2358,19 +2353,19 @@ script:
       description: The mobile device ID.
       type: String
     - contextPath: JAMF.MobileDeviceSubset.purchasing.is_purchased
-      description: If the mobile device is purchased.
+      description: Whether the mobile device is purchased.
       type: Boolean
     - contextPath: JAMF.MobileDeviceSubset.purchasing.is_leased
-      description: If the mobile device is leased.
+      description: Whether the mobile device is leased.
       type: Boolean
     - contextPath: JAMF.MobileDeviceSubset.purchasing.po_number
-      description: The mobile device po number.
+      description: The mobile device PO number.
       type: String
     - contextPath: JAMF.MobileDeviceSubset.purchasing.vendor
       description: The mobile device vendor.
       type: String
     - contextPath: JAMF.MobileDeviceSubset.purchasing.applecare_id
-      description: The mobile device applecare ID.
+      description: The mobile device AppleCare ID.
       type: String
     - contextPath: JAMF.MobileDeviceSubset.purchasing.purchase_price
       description: The mobile device purchase price.
@@ -2379,31 +2374,31 @@ script:
       description: The mobile device purchase account.
       type: String
     - contextPath: JAMF.MobileDeviceSubset.purchasing.po_date
-      description: The mobile device purchase po date.
+      description: The mobile device purchase PO date.
       type: String
     - contextPath: JAMF.MobileDeviceSubset.purchasing.po_date_epoch
-      description: The mobile device purchase po date in epoch.
+      description: The mobile device purchase PO date in epoch format.
       type: Number
     - contextPath: JAMF.MobileDeviceSubset.purchasing.po_date_utc
-      description: The mobile device purchase po date in UTC.
+      description: The mobile device purchase PO date in UTC format.
       type: String
     - contextPath: JAMF.MobileDeviceSubset.purchasing.warranty_expires
-      description: The mobile device warranty expires date.
+      description: The mobile device warranty expiration date.
       type: String
     - contextPath: JAMF.MobileDeviceSubset.purchasing.warranty_expires_epoch
-      description: The mobile device warranty expires date in epoch.
+      description: The mobile device warranty expiration date in epoch format.
       type: Number
     - contextPath: JAMF.MobileDeviceSubset.purchasing.warranty_expires_utc
-      description: The mobile device warranty expires date in UTC.
+      description: The mobile device warranty expiration date in UTC format.
       type: String
     - contextPath: JAMF.MobileDeviceSubset.purchasing.lease_expires
-      description: The mobile device lease expires date.
+      description: The mobile device lease expiration date.
       type: String
     - contextPath: JAMF.MobileDeviceSubset.purchasing.lease_expires_epoch
-      description: The mobile device lease expires date in epoch.
+      description: The mobile device lease expiration date in epoch format.
       type: Number
     - contextPath: JAMF.MobileDeviceSubset.purchasing.lease_expires_utc
-      description: The mobile device lease expires date in UTC.
+      description: The mobile device lease expiration date in UTC format.
       type: String
     - contextPath: JAMF.MobileDeviceSubset.purchasing.life_expectancy
       description: The mobile device life expectancy.
@@ -2414,8 +2409,8 @@ script:
   - arguments:
     - auto: PREDEFINED
       default: false
-      description: 'In order to identify which device is requested, one of these identifiers
-        should be selected: id, name, udid, serial_number, mac_address.'
+      description: 'The identifier used to determine which computer is requested. 
+        Possible values: "id", "name", "udid", "serialnumber", and "macaddress".'
       isArray: false
       name: identifier
       predefined:
@@ -2427,10 +2422,9 @@ script:
       required: true
       secret: false
     - default: false
-      description: The value of the “identifier”. For example, if we choose the “id”
-        identifier, a value of a mobile device’s id should be passed. If we choose
-        the “mac_address” identifier, a value of a mobile device’s mac address should
-        be passed, etc.
+      description: The value of the "identifier". For example, if you choose the "id"
+        identifier, a computer ID should be passed. If you choose "macaddress"
+        as the identifier, a computer’s MAC address should be passed, etc.
       isArray: false
       name: identifier_value
       required: true
@@ -2459,8 +2453,8 @@ script:
   - arguments:
     - auto: PREDEFINED
       default: false
-      description: 'In order to identify which device is requested, one of these identifiers
-        should be selected: id, name, udid, serial_number, mac_address.'
+      description: 'The identifier used to determine which computer is requested. 
+        Possible values: "id", "name", "udid", "serialnumber", and "macaddress".'
       isArray: false
       name: identifier
       predefined:
@@ -2472,10 +2466,9 @@ script:
       required: true
       secret: false
     - default: false
-      description: The value of the “identifier”. For example, if we choose the “id”
-        identifier, a value of a mobile device’s id should be passed. If we choose
-        the “mac_address” identifier, a value of a mobile device’s mac address should
-        be passed, etc.
+      description: The value of the "identifier". For example, if you choose the "id"
+        identifier, a computer ID should be passed. If you choose "macaddress"
+        as the identifier, a computer’s MAC address should be passed, etc.
       isArray: false
       name: identifier_value
       required: true
@@ -2499,13 +2492,13 @@ script:
       description: If the mobile device is file level encryption capable.
       type: Boolean
     - contextPath: JAMF.MobileDeviceSubset.security.passcode_present
-      description: If the mobile device has passcode present.
+      description: Whether the mobile device has a passcode present.
       type: Boolean
     - contextPath: JAMF.MobileDeviceSubset.security.passcode_compliant
-      description: If the mobile device has passcode compliant.
+      description: Whether the mobile device is passcode compliant.
       type: Boolean
     - contextPath: JAMF.MobileDeviceSubset.security.passcode_compliant_with_profile
-      description: If the mobile device has passcode compliant with profile.
+      description: Whether the mobile device is passcode compliant with profile.
       type: Boolean
     - contextPath: JAMF.MobileDeviceSubset.security.passcode_lock_grace_period_enforced
       description: The mobile device passcode lock grace period enforced.
@@ -2514,7 +2507,7 @@ script:
       description: The mobile device hardware encryption.
       type: Number
     - contextPath: JAMF.MobileDeviceSubset.security.activation_lock_enabled
-      description: If the mobile device has activation lock enabled.
+      description: Whether the mobile device has activation lock enabled.
       type: Boolean
     - contextPath: JAMF.MobileDeviceSubset.security.jailbreak_detected
       description: The mobile device security jailbreak detected.
@@ -2523,13 +2516,13 @@ script:
       description: The mobile device lost mode.
       type: String
     - contextPath: JAMF.MobileDeviceSubset.security.lost_mode_enforced
-      description: If the mobile device has lost mode enforced.
+      description: Whether the mobile device has lost mode enforced.
       type: Boolean
     - contextPath: JAMF.MobileDeviceSubset.security.lost_mode_enable_issued_epoch
-      description: Themobile device lost mode enable issued date in epoch.
+      description: The mobile device lost mode enable issued date in epoch.
       type: Date
     - contextPath: JAMF.MobileDeviceSubset.security.lost_mode_enable_issued_utc
-      description: Themobile device lost mode enable issued date in UTC.
+      description: The mobile device lost mode enable issued date in UTC format.
       type: Date
     - contextPath: JAMF.MobileDeviceSubset.security.lost_mode_message
       description: The mobile device lost mode message.
@@ -2541,10 +2534,10 @@ script:
       description: The mobile device lost mode footnote.
       type: String
     - contextPath: JAMF.MobileDeviceSubset.security.lost_location_epoch
-      description: The mobile device lost location date in epoch.
+      description: The mobile device lost location date in epoch format.
       type: Date
     - contextPath: JAMF.MobileDeviceSubset.security.lost_location_utc
-      description: The mobile device lost location date in UTC.
+      description: The mobile device lost location date in UTC format.
       type: Date
     - contextPath: JAMF.MobileDeviceSubset.security.lost_location_latitude
       description: The mobile device security lost location latitude.
@@ -2570,8 +2563,8 @@ script:
   - arguments:
     - auto: PREDEFINED
       default: false
-      description: 'In order to identify which device is requested, one of these identifiers
-        should be selected: id, name, udid, serial_number, mac_address.'
+      description: 'The identifier used to determine which computer is requested. 
+        Possible values: "id", "name", "udid", "serialnumber", and "macaddress".'
       isArray: false
       name: identifier
       predefined:
@@ -2583,10 +2576,9 @@ script:
       required: true
       secret: false
     - default: false
-      description: The value of the “identifier”. For example, if we choose the “id”
-        identifier, a value of a mobile device’s id should be passed. If we choose
-        the “mac_address” identifier, a value of a mobile device’s mac address should
-        be passed, etc.
+      description: The value of the "identifier". For example, if you choose the "id"
+        identifier, a computer ID should be passed. If you choose "macaddress"
+        as the identifier, a computer’s MAC address should be passed, etc.
       isArray: false
       name: identifier_value
       required: true
@@ -2610,13 +2602,13 @@ script:
       description: The mobile device voice roaming enabled.
       type: String
     - contextPath: JAMF.MobileDeviceSubset.network.imei
-      description: The mobile device network imei.
+      description: The mobile device network IMEI.
       type: String
     - contextPath: JAMF.MobileDeviceSubset.network.iccid
-      description: The mobile device network iccid.
+      description: The mobile device network ICCID.
       type: String
     - contextPath: JAMF.MobileDeviceSubset.network.meid
-      description: The mobile device network meid.
+      description: The mobile device network MEID.
       type: String
     - contextPath: JAMF.MobileDeviceSubset.network.current_carrier_network
       description: The mobile device current carrier network.
@@ -2628,19 +2620,19 @@ script:
       description: The mobile device current mobile country code.
       type: String
     - contextPath: JAMF.MobileDeviceSubset.network.current_mobile_network_code
-      description: The mobile device current mobile network codeץ
+      description: The mobile device current mobile network code.
       type: String
     - contextPath: JAMF.MobileDeviceSubset.network.home_mobile_country_code
-      description: The mobile device home mobile country codeץ
+      description: The mobile device home mobile country code.
       type: String
     - contextPath: JAMF.MobileDeviceSubset.network.home_mobile_network_code
-      description: The mobile device home mobile network codeץ
+      description: The mobile device home mobile network code.
       type: String
     - contextPath: JAMF.MobileDeviceSubset.network.data_roaming_enabled
-      description: If the the mobile device has data roaming enabled.
+      description: Whether the the mobile device has data roaming enabled.
       type: Boolean
     - contextPath: JAMF.MobileDeviceSubset.network.roaming
-      description: The mobile device network roaming.
+      description: Whether the mobile device has network roaming.
       type: Boolean
     - contextPath: JAMF.MobileDeviceSubset.network.phone_number
       description: The mobile device network phone number.
@@ -2648,8 +2640,8 @@ script:
   - arguments:
     - auto: PREDEFINED
       default: false
-      description: 'In order to identify which device is requested, one of these identifiers
-        should be selected: id, name, udid, serial_number, mac_address.'
+      description: 'The identifier used to determine which computer is requested. 
+        Possible values: "id", "name", "udid", "serialnumber", and "macaddress".'
       isArray: false
       name: identifier
       predefined:
@@ -2661,10 +2653,9 @@ script:
       required: true
       secret: false
     - default: false
-      description: The value of the “identifier”. For example, if we choose the “id”
-        identifier, a value of a mobile device’s id should be passed. If we choose
-        the “mac_address” identifier, a value of a mobile device’s mac address should
-        be passed, etc.
+      description: The value of the "identifier". For example, if you choose the "id"
+        identifier, a computer ID should be passed. If you choose "macaddress"
+        as the identifier, a computer’s MAC address should be passed, etc.
       isArray: false
       name: identifier_value
       required: true
@@ -2685,13 +2676,13 @@ script:
       description: The mobile device certificate common name.
       type: String
     - contextPath: JAMF.MobileDeviceSubset.certificates.certificate.identity
-      description: Whether this is an identity certificate or not.
+      description: Whether this is an identity certificate.
       type: Boolean
   - arguments:
     - auto: PREDEFINED
       default: false
-      description: 'In order to identify which device is requested, one of these identifiers
-        should be selected: id, name, udid, serial_number, mac_address.'
+      description: 'The identifier used to determine which computer is requested. 
+        Possible values: "id", "name", "udid", "serialnumber", and "macaddress".'
       isArray: false
       name: identifier
       predefined:
@@ -2703,10 +2694,9 @@ script:
       required: true
       secret: false
     - default: false
-      description: The value of the “identifier”. For example, if we choose the “id”
-        identifier, a value of a mobile device’s id should be passed. If we choose
-        the “mac_address” identifier, a value of a mobile device’s mac address should
-        be passed, etc.
+      description: The value of the "identifier". For example, if you choose the "id"
+        identifier, a computer ID should be passed. If you choose "macaddress"
+        as the identifier, a computer’s MAC address should be passed, etc.
       isArray: false
       name: identifier_value
       required: true
@@ -2730,10 +2720,10 @@ script:
       description: The mobile device provisioning profiles expiration date.
       type: String
     - contextPath: JAMF.MobileDeviceSubset.provisioning_profiles.mobile_device_provisioning_profile.expiration_date_epoch
-      description: The mobile device provisioning profiles expiration date in epoch.
+      description: The mobile device provisioning profiles expiration date in epoch format.
       type: Number
     - contextPath: JAMF.MobileDeviceSubset.provisioning_profiles.mobile_device_provisioning_profile.expiration_date_utc
-      description: The mobile device provisioning profiles expiration date in UTC.
+      description: The mobile device provisioning profiles expiration date in UTC format.
       type: String
     - contextPath: JAMF.MobileDeviceSubset.provisioning_profiles.mobile_device_provisioning_profile.uuid
       description: The mobile device provisioning profiles UUID.
@@ -2741,8 +2731,8 @@ script:
   - arguments:
     - auto: PREDEFINED
       default: false
-      description: 'In order to identify which device is requested, one of these identifiers
-        should be selected: id, name, udid, serial_number, mac_address.'
+      description: 'The identifier used to determine which computer is requested. 
+        Possible values: "id", "name", "udid", "serialnumber", and "macaddress".'
       isArray: false
       name: identifier
       predefined:
@@ -2754,10 +2744,9 @@ script:
       required: true
       secret: false
     - default: false
-      description: The value of the “identifier”. For example, if we choose the “id”
-        identifier, a value of a mobile device’s id should be passed. If we choose
-        the “mac_address” identifier, a value of a mobile device’s mac address should
-        be passed, etc.
+      description: The value of the "identifier". For example, if you choose the "id"
+        identifier, a computer ID should be passed. If you choose "macaddress"
+        as the identifier, a computer’s MAC address should be passed, etc.
       isArray: false
       name: identifier_value
       required: true
@@ -2772,25 +2761,25 @@ script:
       description: The mobile device ID.
       type: String
     - contextPath: JAMF.MobileDeviceSubset.configuration_profiles.size
-      description: The mobile device configuratio profiles size.
+      description: The mobile device configuration profiles size.
       type: Number
     - contextPath: JAMF.MobileDeviceSubset.configuration_profiles.configuration_profile.display_name
-      description: The mobile device configuratio profiles display name.
+      description: The mobile device configuration profiles display name.
       type: String
     - contextPath: JAMF.MobileDeviceSubset.configuration_profiles.configuration_profile.version
       description: The mobile device configuration profiles version.
       type: String
     - contextPath: JAMF.MobileDeviceSubset.configuration_profiles.configuration_profile.identifier
-      description: The mobile device configuratio profiles identifier.
+      description: The mobile device configuration profiles identifier.
       type: Number
     - contextPath: JAMF.MobileDeviceSubset.configuration_profiles.configuration_profile.uuid
-      description: The mobile device configuratio profiles UUID.
+      description: The mobile device configuration profiles UUID.
       type: String
   - arguments:
     - auto: PREDEFINED
       default: false
-      description: 'In order to identify which device is requested, one of these identifiers
-        should be selected: id, name, udid, serial_number, mac_address.'
+      description: 'The identifier used to determine which computer is requested. 
+        Possible values: "id", "name", "udid", "serialnumber", and "macaddress".'
       isArray: false
       name: identifier
       predefined:
@@ -2802,10 +2791,9 @@ script:
       required: true
       secret: false
     - default: false
-      description: The value of the “identifier”. For example, if we choose the “id”
-        identifier, a value of a mobile device’s id should be passed. If we choose
-        the “mac_address” identifier, a value of a mobile device’s mac address should
-        be passed, etc.
+      description: The value of the "identifier". For example, if you choose the "id"
+        identifier, a computer ID should be passed. If you choose "macaddress"
+        as the identifier, a computer’s MAC address should be passed, etc.
       isArray: false
       name: identifier_value
       required: true
@@ -2828,8 +2816,8 @@ script:
   - arguments:
     - auto: PREDEFINED
       default: false
-      description: 'In order to identify which device is requested, one of these identifiers
-        should be selected: id, name, udid, serial_number, mac_address.'
+      description: 'The identifier used to determine which computer is requested. 
+        Possible values: "id", "name", "udid", "serialnumber", and "macaddress".'
       isArray: false
       name: identifier
       predefined:
@@ -2841,10 +2829,9 @@ script:
       required: true
       secret: false
     - default: false
-      description: The value of the “identifier”. For example, if we choose the “id”
-        identifier, a value of a mobile device’s id should be passed. If we choose
-        the “mac_address” identifier, a value of a mobile device’s mac address should
-        be passed, etc.
+      description: The value of the "identifier". For example, if you choose the "id"
+        identifier, a computer ID should be passed. If you choose "macaddress"
+        as the identifier, a computer’s MAC address should be passed, etc.
       isArray: false
       name: identifier_value
       required: true
@@ -2875,13 +2862,13 @@ script:
       type: String
   - arguments:
     - default: false
-      description: The application’s name (supports wildcards)
+      description: The application’s name (supports wildcards).
       isArray: false
       name: application
       required: true
       secret: false
     - default: false
-      description: The application’s version (supports wildcards) - applicable only
+      description: The application’s version (supports wildcards). Applicable only
         when “application” parameter value is set.
       isArray: false
       name: version
@@ -2889,21 +2876,20 @@ script:
       secret: false
     - default: false
       defaultValue: '50'
-      description: Maximum number of devices to retrieve (maximal value is 200).
+      description: Maximum number of devices to retrieve. (Maximal value is 200).
       isArray: false
       name: limit
       required: false
       secret: false
     - default: false
       defaultValue: '0'
-      description: Number of requested page.
+      description: The number of the requested page.
       isArray: false
       name: page
       required: false
       secret: false
     deprecated: false
-    description: Will return a list of computers with basic information on each of
-      them.
+    description: Returns a list of computers with basic information on each.
     execution: false
     name: jamf-get-computers-by-application
     outputs:
@@ -2914,16 +2900,16 @@ script:
       description: The computer name.
       type: String
     - contextPath: JAMF.ComputersByApp.Computer.udid
-      description: The computer udid.
+      description: The computer UDID.
       type: String
     - contextPath: JAMF.ComputersByApp.Computer.serial_number
       description: The computer serial number.
       type: String
     - contextPath: JAMF.ComputersByApp.Computer.mac_address
-      description: The computer mac address.
+      description: The computer MAC address.
       type: String
     - contextPath: JAMF.ComputersByApp.Application
-      description: The appliction the user serched for.
+      description: The application the user serched for.
       type: String
     - contextPath: JAMF.ComputersByApp.Paging.total_results
       description: The number of computers returned in this specific search.
@@ -2932,25 +2918,25 @@ script:
       description: The number of computers to be returned on each page.
       type: Number
     - contextPath: JAMF.ComputersByApp.Paging.current_page
-      description: Number of requested page.
+      description: The number of the requested page.
       type: Number
   - arguments:
     - default: false
-      description: The mobile device’s ID
+      description: The mobile device’s ID.
       isArray: false
       name: id
       required: true
       secret: false
     - default: false
-      description: A message that will be displayed on the device’s lock screen.
+      description: A message that is displayed on the device’s lock screen.
       isArray: false
       name: lost_mode_message
       required: false
       secret: false
     deprecated: false
-    description: Will enable “lost mode” on a specific device. Lost Mode is a feature
+    description: Enables “lost mode” on a specific device. Lost Mode is a feature
       that allows you to lock a mobile device and track the device's location. The
-      device will report the GPS coordinates of the point where the device receives
+      device reports the GPS coordinates of the point where the device received
       the command. This feature adds additional protection to mobile devices and their
       data in the event that a device is lost or stolen.
     execution: false
@@ -2963,7 +2949,7 @@ script:
       description: The mobile device command status.
       type: String
     - contextPath: JAMF.MobileDeviceCommands.management_id
-      description: The mobile device command managment ID.
+      description: The mobile device command management ID.
       type: String
     - contextPath: JAMF.MobileDeviceCommands.id
       description: The mobile device command ID.
@@ -2978,7 +2964,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'False'
-      description: Retain cellular data plans (iOS 11 or later)
+      description: Whether to retain cellular data plans (iOS 11 or later).
       isArray: false
       name: preserve_data_plan
       predefined:
@@ -2989,7 +2975,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'False'
-      description: Clear Activation Lock on the device
+      description: Whether to clear activation lock on the device.
       isArray: false
       name: clear_activation_code
       predefined:
@@ -3042,7 +3028,7 @@ script:
       description: The endpoint's hostname.
       type: String
     - contextPath: Endpoint.OS
-      description: The endpoint's operation system.
+      description: The endpoint's operating system.
       type: String
     - contextPath: Endpoint.IPAddress
       description: The endpoint's IP address.
