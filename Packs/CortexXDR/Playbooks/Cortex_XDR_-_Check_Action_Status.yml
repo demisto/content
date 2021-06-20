@@ -1,7 +1,10 @@
 id: Cortex XDR - Check Action Status
 version: -1
+contentitemexportablefields:
+  contentitemfields: {}
 name: Cortex XDR - Check Action Status
-description: Checks the action status of an action ID. \nEnter the action ID of the action whose status you want to know.
+description: Checks the action status of an action ID. \nEnter the action ID of the
+  action whose status you want to know.
 starttaskid: "0"
 tasks:
   "0":
@@ -33,10 +36,10 @@ tasks:
     quietmode: 0
   "2":
     id: "2"
-    taskid: 4b1b699b-2112-4d74-897e-d558dc990050
+    taskid: a3d064d5-11eb-403b-8eff-610618c0688b
     type: playbook
     task:
-      id: 4b1b699b-2112-4d74-897e-d558dc990050
+      id: a3d064d5-11eb-403b-8eff-610618c0688b
       version: -1
       name: GenericPolling
       description: |-
@@ -66,7 +69,8 @@ tasks:
       PollingCommandName:
         simple: xdr-action-status-get
       Timeout:
-        simple: "10"
+        complex:
+          root: inputs.timeout
       dt:
         simple: PaloAltoNetworksXDR.GetActionStatus(val.status != "CANCELLED" && val.status
           != "ABORTED" && val.status != "EXPIRED" && val.status != "COMPLETED_PARTIAL"
@@ -218,6 +222,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+system: true
 view: |-
   {
     "linkLabelsPosition": {},
@@ -236,6 +241,13 @@ inputs:
   required: false
   description: Action ID of the specific request.
   playbookInputQuery:
+- key: timeout
+  value:
+    simple: "10"
+  required: false
+  description: Amount of time to poll before declaring a timeout and resuming the
+    playbook (in minutes).
+  playbookInputQuery:
 outputs:
 - contextPath: PaloAltoNetworksXDR.GetActionStatus
   description: Gets Action Status command results.
@@ -248,7 +260,6 @@ outputs:
 - contextPath: PaloAltoNetworksXDR.GetActionStatus.action_id
   description: The action ID that was the input.
   type: number
-fromversion: 5.0.0
 tests:
-- Test XDR Playbook
-- Cortex XDR - IOC - Test
+- No tests (auto formatted)
+fromversion: 5.0.0
