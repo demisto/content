@@ -1,5 +1,5 @@
 VMware Carbon Black EDR (formerly known as Carbon Black Response)
-This integration was integrated and tested with version xx of VMware Carbon Black EDR
+This integration was integrated and tested with version 6.2 of VMware Carbon Black EDR
 ## Configure VMware Carbon Black EDR on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
