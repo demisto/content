@@ -1,5 +1,5 @@
 {
-    "description": "Maps CarbonBlack EDR alerts.",
+    "description": "Maps Carbon Black EDR's alert fields",
     "feed": false,
     "id": "Carbon Black EDR Mapper",
     "mapping": {
@@ -7,9 +7,9 @@
             "dontMapEventToLabels": true,
             "internalMapping": {
                 "Carbon Black EDR Segment ID": {
-					"complex": null,
-					"simple": "segment_id"
-				},
+                    "complex": null,
+                    "simple": "segment_id"
+                },
                 "Device External IP": {
                     "complex": null,
                     "simple": "interface_ip"
@@ -21,6 +21,10 @@
                 "Device Name": {
                     "complex": null,
                     "simple": "hostname"
+                },
+                "Event Descriptions": {
+                    "complex": null,
+                    "simple": "description"
                 },
                 "Event Type": {
                     "complex": null,

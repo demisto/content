@@ -1,28 +1,20 @@
 {
-    "id": "Carbon Black EDR",
-    "version": -1,
-    "vcShouldIgnore": false,
-    "locked": false,
-    "name": "Carbon Black EDR",
-    "prevName": "Carbon Black EDR",
-    "color": "#F8C89A",
-    "hours": 0,
-    "days": 0,
-    "weeks": 0,
-    "hoursR": 0,
-    "daysR": 0,
-    "weeksR": 0,
-    "system": false,
-    "readonly": false,
-    "default": false,
-    "autorun": false,
-    "disabled": false,
-    "reputationCalc": 0,
-    "onChangeRepAlg": 0,
-    "detached": false,
-    "extractSettings": {
-        "mode": "Specific",
-        "fieldCliNameToExtractSettings": {}
+    "defaultIncidentType": "Carbon Black EDR",
+    "description": "Classifies Carbon Black EDR's alerts",
+    "feed": false,
+    "id": "Carbon Black EDR Classifier",
+    "keyTypeMap": {
+        "Carbon Black Process Blocking": "Carbon Black EDR"
     },
-    "fromVersion": "5.5.0"
+    "name": "Carbon Black EDR Classifier",
+    "propagationLabels": [
+        "all"
+    ],
+    "transformer": {
+        "complex": null,
+        "simple": "description"
+    },
+    "type": "classification",
+    "version": -1,
+    "fromVersion": "6.0.0"
 }

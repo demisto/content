@@ -386,11 +386,10 @@ def get_watchlist_list_command(client: Client, id: str = None, limit: str = None
 
 
 def binary_ban_command(client: Client, md5: str, text: str, last_ban_time: str = None, ban_count: str = None,
-                       last_ban_host: str = None,
-                       enabled: bool = None) -> CommandResults:
+                       last_ban_host: str = None) -> CommandResults:
     body = assign_params(md5hash=md5,
                          text=text, last_ban_time=last_ban_time, ban_count=ban_count,
-                         last_ban_host=last_ban_host, enabled=enabled)
+                         last_ban_host=last_ban_host)
     try:
         client.http_request(url='/v1/banning/blacklist', method='POST', json_data=body)
     except DemistoException as e:
@@ -728,9 +727,9 @@ def fetch_incidents(client: Client, max_results: int, last_run: dict, first_fetc
         incident_created_time_ms = int(incident_created_time.timestamp()) if incident_created_time else '0'
 
         # to prevent duplicates, adding incidents with creation_time > last fetched incident
-        if last_fetch:
-            if incident_created_time_ms <= last_fetch:
-                continue
+        # if last_fetch:
+        #     if incident_created_time_ms <= last_fetch:
+        #         continue
 
         alert_id = alert.get('unique_id', '')
         alert_name = alert.get('process_name', '')
@@ -756,11 +755,12 @@ def fetch_incidents(client: Client, max_results: int, last_run: dict, first_fetc
     return next_run, incidents
 
 
-def test_module(client: Client, isFetched: bool) -> str:
+def test_module(client: Client, params) -> str:
     try:
         client.get_processes(limit='5', allow_empty=True)
-        if isFetched:
-            client.get_alerts(allow_empty_params=False, limit='5')
+        if params['isFetch']:
+            client.get_alerts(status=params.get('alert_status', None), feedname=params.get('alert_feed_name', None),
+                              query=params.get('alert_query', None), allow_empty_params=False, limit='5')
         return 'ok'
     except DemistoException as e:
         if 'Forbidden' in str(e) or 'UNAUTHORIZED' in str(e):
@@ -813,7 +813,7 @@ def main() -> None:
                                          }
 
         if command == 'test-module':
-            result = test_module(client, params.get('isFetch'))
+            result = test_module(client, params)
             return_results(result)
 
         elif command == 'fetch-incidents':
