@@ -53,7 +53,6 @@ args:
   required: false
   description: Longitude (e.g. `34.774131`)
 - name: address
-  default: true
   required: false
   description: Address (e.g., `1600 Pennsylvania ave, DC`)
 scripttarget: 0
