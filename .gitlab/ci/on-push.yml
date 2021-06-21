@@ -41,7 +41,7 @@ create-instances:
         echo "Creating Release Notes"
         python3 Utils/release_notes_generator.py $CONTENT_VERSION $GIT_SHA1 $CI_BUILD_ID --output $ARTIFACTS_FOLDER/packs-release-notes.md --github-token $GITHUB_TOKEN
       else
-        echo "Skipping creation release notes because not on master or release branch"
+        echo "Skipping creation of release notes because we are not on master or a release branch"
         echo "CI_COMMIT_BRANCH=$CI_COMMIT_BRANCH"
       fi
     - cp content-descriptor.json $ARTIFACTS_FOLDER
