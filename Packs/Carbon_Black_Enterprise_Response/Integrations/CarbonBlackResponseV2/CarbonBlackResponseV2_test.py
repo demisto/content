@@ -96,7 +96,7 @@ def test_parse_field(field, sep, index_after_split, chars_to_remove, expected):
             - running Endpoints command
 
         Then:
-            - validate only the ip returns
+            - validate only the ip section returns
         """
     from CarbonBlackResponseV2 import _parse_field
     res = _parse_field(field, sep, index_after_split, chars_to_remove)
