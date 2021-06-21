@@ -69,7 +69,8 @@ else
   {
     "branch": "${_branch}",
     "parameters": {
-      "demisto_sdk_nightly": "true"
+      "demisto_sdk_nightly": "true",
+      "sdk_ref": ${_sdk_ref}"
     }
   }
   EOF
