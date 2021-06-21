@@ -1387,8 +1387,7 @@ def list_team_members_command():
         }
         members.append(context_data)
     if members:
-        human_readable = tableToMarkdown(f'Team Member of team {team_slug} in organization {org}', t=members,
-                                         removeNull=True)
+        human_readable = tableToMarkdown(f'Team Member of team {team_slug} in organization {org}', t=members, removeNull=True)
     else:
         human_readable = f'There is no team members under team {team_slug} in organization {org}'
 
@@ -1577,8 +1576,7 @@ def get_github_get_check_run():
 
     check_run_result = []
 
-    check_runs = list_check_runs(owner_name=owner_name, repository_name=repository_name, run_id=run_id,
-                                 commit_id=commit_id)
+    check_runs = list_check_runs(owner_name=owner_name, repository_name=repository_name, run_id=run_id, commit_id=commit_id)
 
     for check_run in check_runs:
         check_run_id = check_run.get('id', '')
@@ -1638,10 +1636,9 @@ def get_issue_events_command():
     args = demisto.args()
     issue_number = args.get('issue_number')
     res = http_request(method='GET', url_suffix=f'{ISSUE_SUFFIX}/{issue_number}/events')
-    return_results(CommandResults(outputs_prefix='GitHub.IssueEvent', outputs_key_field='id',
+    return_results(CommandResults(outputs_prefix='GitHub.IssueEvent', outputs_key_field='id', outputs=res,
                                   readable_output=tableToMarkdown(f'GitHub Issue Events For Issue {issue_number}',
                                                                   res)))
-    demisto.results(res)
 
 
 def fetch_incidents_command():
