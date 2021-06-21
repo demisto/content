@@ -1807,11 +1807,11 @@ def main():
     try:
         command = demisto.command()
 
-        if command in commands:
-            command_function = commands.get(command)
-            return_results(command_function(client, **convert_args(command_function, demisto.args())))
-        else:
+        command_function = commands.get(command)
+        if not command_function:
             raise NotImplementedError(f"The command {command} does not exist on TrendMicro!")
+        else:
+            return_results(command_function(client, **convert_args(command_function, demisto.args())))
     except (ConnectionError, InvalidURL, InvalidSchema) as e:
         demisto.error(traceback.format_exc())
         error_message = f"{INVALID_URL_ERROR}\nError:\n{e}"
