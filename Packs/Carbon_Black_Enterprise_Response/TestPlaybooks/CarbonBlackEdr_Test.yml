@@ -3,7 +3,7 @@ version: -1
 vcShouldKeepItemLegacyProdMachine: false
 name: Carbon Black Edr - Test
 starttaskid: "0"
-fromversion: 5.5.0
+fromversion: 6.0.0
 tasks:
   "0":
     id: "0"
