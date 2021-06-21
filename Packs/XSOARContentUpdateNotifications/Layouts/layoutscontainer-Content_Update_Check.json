@@ -186,7 +186,7 @@
     },
     "group": "incident",
     "id": "da4741da-88f0-4919-8049-93f21ae85c5c",
-    "name": "Content Update Check",
+    "name": "Content Update Check Layout",
     "system": false,
     "version": -1,
     "fromVersion": "6.0.0",
