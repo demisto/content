@@ -347,7 +347,7 @@ tasks:
       results_map:
         simple: ${inputs.results_map}
       t:
-        simple: "2"
+        simple: "3"
       url:
         complex:
           root: inputs.url
@@ -396,7 +396,7 @@ tasks:
       results_map:
         simple: ${inputs.results_map}
       t:
-        simple: "2"
+        simple: "3"
       url:
         complex:
           root: inputs.url
