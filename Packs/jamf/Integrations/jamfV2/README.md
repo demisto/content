@@ -1,4 +1,4 @@
-EMM for apple devices (Mac, iPhone, Apple TV, iPad). Can be used to control various configurations via different policies, Install/Uninstall applications, lock devices, smart groups searches and more.
+Enterprise Mobility Management (EMM) for Apple devices (Mac, iPhone, Apple TV, iPad). Can be used to control various configurations via different policies, install and uninstall applications, lock devices, smart groups searches, and more.
 This integration was integrated and tested with version 10.28.0 of jamf v2
 JAMF classic API: https://www.jamf.com/developers/apis/classic/reference/#/
 
@@ -53,7 +53,7 @@ You can execute these commands from the Cortex XSOAR CLI, as part of an automati
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### jamf-get-computers
 ***
-This command will return a list of all computers with their associated IDs . By default, will return the first 50 computers to the context (ID + name).
+Returns a list of all computers with their associated IDs. By default, returns the first 50 computers to the context (ID + name).
 This command is a replacement for ``jamf-get-computers`` in jamf v1 integration.
 
 #### Base Command
@@ -67,8 +67,8 @@ Jamf Pro Server Objects → Computers → Read
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| limit | The number of results to be returned on each page (default is 50). The maximum size is 200. Default is 50. | Optional | 
-| page | Number of requested page. Default is 0. | Optional | 
+| limit | The maximum number of results to be returned on each page. The maximum size is 200. Default is 50. | Optional | 
+| page | The number of the requested page. Default is 0. | Optional | 
 
 
 #### Context Output
@@ -78,9 +78,8 @@ Jamf Pro Server Objects → Computers → Read
 | JAMF.Computer.id | Number | The computer ID. | 
 | JAMF.Computer.name | String | The computer name. | 
 | JAMF.Computer.Paging.total_results | Number | The number of computers returned in this specific search. | 
-| JAMF.Computer.Paging.page_size | Number | The number of computers to be returned on each page. | 
-| JAMF.Computer.Paging.current_page | Number | Number of requested page. | 
-
+| JAMF.Computer.Paging.page_size | Number | The number of computers returned on each page. | 
+| JAMF.Computer.Paging.current_page | Number | The number of the requested page. | 
 
 
 #### Command Example
@@ -102,6 +101,13 @@ Jamf Pro Server Objects → Computers → Read
             {
                 "id": 3,
                 "name": "Computer 124"
+            },
+            {
+                "Paging": {
+                    "current_page": 0,
+                    "page_size": 3,
+                    "total_results": 137
+                }
             }
         ]
     }
@@ -110,20 +116,20 @@ Jamf Pro Server Objects → Computers → Read
 
 #### Human Readable Output
 
->### Jamf get computers result 
-> Total results:137
->Results per page: 3
->Page: 0
+>### Paging for get computers
+>|Current Page|Page Size|Total Results|
+>|---|---|---|
+>| 0 | 3 | 137 |
+
+>### Jamf get computers result
 >|ID|Name|
 >|---|---|
 >| 1 | Computer 95 |
 >| 2 | Computer 104 |
 >| 3 | Computer 124 |
-
-
 ### jamf-get-computers-basic-subset
 ***
-This command will return the “basic” subset for all of the computers. The “basic” subset will provide some basic information: mac address, model, udid, name, department, building, serial number, username, id.
+Returns the “basic” subset for all of the computers. The “basic” subset includes: MAC address, model, UDID, name, department, building, serial number, username, ID.
 
 
 #### Base Command
@@ -137,8 +143,8 @@ Jamf Pro Server Objects → Computers → Read
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| limit | The number of results to be returned on each page (default is 50). The maximum size is 200. . Default is 50. | Optional | 
-| page | Number of requested page. Default is 0. | Optional | 
+| limit | The maximum number of results to be returned on each page. The maximum size is 200. Default is 50. | Optional | 
+| page | The number of the requested page. Default is 0. | Optional | 
 
 
 #### Context Output
@@ -147,16 +153,16 @@ Jamf Pro Server Objects → Computers → Read
 | --- | --- | --- |
 | JAMF.Computer.id | Number | The computer ID. | 
 | JAMF.Computer.name | String | The computer name. | 
-| JAMF.Computer.managed | Boolean | If the computer is managed. | 
+| JAMF.Computer.managed | Boolean | Whether the computer is managed. | 
 | JAMF.Computer.username | String | The computer username. | 
 | JAMF.Computer.model | String | The computer model. | 
 | JAMF.Computer.department | String | The computer department. | 
 | JAMF.Computer.building | String | The computer building. | 
-| JAMF.Computer.mac_address | String | The computer mac address. | 
-| JAMF.Computer.udid | String | The computer udid. | 
+| JAMF.Computer.mac_address | String | The computer MAC address. | 
+| JAMF.Computer.udid | String | The computer UDID. | 
 | JAMF.Computer.serial_number | String | The computer serial number. | 
-| JAMF.Computer.report_date_utc | Date | The computer report date in UTC. | 
-| JAMF.Computer.report_date_epoch | Number | The computer report date in epoch. | 
+| JAMF.Computer.report_date_utc | Date | The computer report date in UTC format. | 
+| JAMF.Computer.report_date_epoch | Number | The computer report date in epoch format. | 
 
 
 #### Command Example
@@ -208,6 +214,13 @@ Jamf Pro Server Objects → Computers → Read
                 "serial_number": "",
                 "udid": "10BA9E1B-8992-4664-A34F-423154CB9B0E",
                 "username": ""
+            },
+            {
+                "Paging": {
+                    "current_page": 0,
+                    "page_size": 3,
+                    "total_results": 137
+                }
             }
         ]
     }
@@ -216,10 +229,12 @@ Jamf Pro Server Objects → Computers → Read
 
 #### Human Readable Output
 
+>### Paging for get computers
+>|Current Page|Page Size|Total Results|
+>|---|---|---|
+>| 0 | 3 | 137 |
+
 >### Jamf get computers result 
-> Total results:137
->Results per page: 3
->Page: 0
 >|ID|Mac Address|Name|Serial Number|UDID|Username|
 >|---|---|---|---|---|---|
 >| 1 | 18:5B:35:CA:12:56 | Computer 95 | BA40F81C60A2 | CA40F812-60A3-11E4-90B8-12DF261F2C7E | user91 |
@@ -229,7 +244,7 @@ Jamf Pro Server Objects → Computers → Read
 
 ### jamf-get-computer-by-id
 ***
-This command will return  the "general" subset of a specific computer, e.g: name, mac address, ip, serial number, udid etc.
+Returns the "general" subset of a specific computer, e.g.: name, MAC address, IP, serial number, UDID, etc.
 
 
 #### Base Command
@@ -243,7 +258,7 @@ Jamf Pro Server Objects → Computers → Read
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| id | The computer ID. | Required | 
+| id | The computer ID.<br/>To get the computer ID, run the `jamf-get-computers` command to get all computers names and IDs. | Required | 
 
 
 #### Context Output
@@ -253,44 +268,44 @@ Jamf Pro Server Objects → Computers → Read
 | JAMF.Computer.id | Number | The computer ID. | 
 | JAMF.Computer.name | String | The computer name. | 
 | JAMF.Computer.network_adapter_type | String | The computer network adapter type. | 
-| JAMF.Computer.mac_address | Date | The computer mac address. | 
+| JAMF.Computer.mac_address | Date | The computer MAC address. | 
 | JAMF.Computer.alt_network_adapter_type | String | The computer alt network adapter type. | 
-| JAMF.Computer.alt_mac_address | String | The computer alt mac address. | 
+| JAMF.Computer.alt_mac_address | String | The computer alt MAC address. | 
 | JAMF.Computer.ip_address | String | The computer IP address. | 
-| JAMF.Computer.last_reported_ip | String | The computer last reported IP. | 
+| JAMF.Computer.last_reported_ip | String | The computer last reported IP address. | 
 | JAMF.Computer.serial_number | String | The computer serial number. | 
-| JAMF.Computer.udid | String | The computer udid. | 
-| JAMF.Computer.jamf_version | String | The computer jamf version. | 
+| JAMF.Computer.udid | String | The computer UDID. | 
+| JAMF.Computer.jamf_version | String | The computer Jamf version. | 
 | JAMF.Computer.platform | String | The computer platform. | 
 | JAMF.Computer.barcode_1 | String | The computer barcode_1. | 
 | JAMF.Computer.barcode_2 | String | The computer barcode_2. | 
 | JAMF.Computer.asset_tag | String | The computer asset tag. | 
-| JAMF.Computer.remote_management.managed | Boolean | The computer remote managment. | 
-| JAMF.Computer.remote_management.management_username | String | The computer remote managment username. | 
-| JAMF.Computer.supervised | Boolean | The computer supervised. | 
-| JAMF.Computer.mdm_capable | Boolean | The computer mdm capable. | 
-| JAMF.Computer.mdm_capable_users | Boolean | The computer mdm capable users. | 
+| JAMF.Computer.remote_management.managed | Boolean | Whether the computer is remotely managed. | 
+| JAMF.Computer.remote_management.management_username | String | The computer remote management username. | 
+| JAMF.Computer.supervised | Boolean | Whether the computer is supervised. | 
+| JAMF.Computer.mdm_capable | Boolean | Whether the computer is enabled for mobile device management \(MDM\). | 
+| JAMF.Computer.mdm_capable_users | Boolean | The computer has MDM capable users. | 
 | JAMF.Computer.report_date | Date | The computer report date. | 
-| JAMF.Computer.report_date_epoch | Date | The computer repoer date in epoch. | 
-| JAMF.Computer.report_date_utc | Date | The computer report date in UTC. | 
+| JAMF.Computer.report_date_epoch | Date | The computer report date in epoch format. | 
+| JAMF.Computer.report_date_utc | Date | The computer report date in UTC format. | 
 | JAMF.Computer.last_contact_time | Date | The computer last contact time. | 
-| JAMF.Computer.last_contact_time_epoch | Date | The computer last contact time in epoch. | 
-| JAMF.Computer.last_contact_time_utc | Date | The computer last contact time in UTC. | 
+| JAMF.Computer.last_contact_time_epoch | Date | The computer last contact time in epoch format. | 
+| JAMF.Computer.last_contact_time_utc | Date | The computer last contact time in UTC format. | 
 | JAMF.Computer.initial_entry_date | Date | The computer initial entry date. | 
-| JAMF.Computer.initial_entry_date_epoch | Date | The computer initial entry date in epoch. | 
-| JAMF.Computer.initial_entry_date_utc | Date | The computer initial entry date in UTC. | 
-| JAMF.Computer.last_cloud_backup_date_epoch | Number | The computer last cloud backup date in epoch. | 
-| JAMF.Computer.last_cloud_backup_date_utc | String | The computer last cloud backup date in UTC. | 
-| JAMF.Computer.last_enrolled_date_epoch | Date | The computer last enrolled date in epoch. | 
-| JAMF.Computer.last_enrolled_date_utc | Date | The computer last enrolled date in UTC. | 
-| JAMF.Computer.mdm_profile_expiration_epoch | Number | The computer mdm profile expiration in epoch. | 
-| JAMF.Computer.mdm_profile_expiration_utc | String | The computer mdm profile expiration in UTC. | 
+| JAMF.Computer.initial_entry_date_epoch | Date | The computer initial entry date in epoch format. | 
+| JAMF.Computer.initial_entry_date_utc | Date | The computer initial entry date in UTC format. | 
+| JAMF.Computer.last_cloud_backup_date_epoch | Number | The computer last cloud backup date in epoch format. | 
+| JAMF.Computer.last_cloud_backup_date_utc | String | The computer last cloud backup date in UTC format. | 
+| JAMF.Computer.last_enrolled_date_epoch | Date | The computer last enrolled date in epoch format. | 
+| JAMF.Computer.last_enrolled_date_utc | Date | The computer last enrolled date in UTC format. | 
+| JAMF.Computer.mdm_profile_expiration_epoch | Number | The computer MDM profile expiration in epoch format. | 
+| JAMF.Computer.mdm_profile_expiration_utc | String | The computer MDM profile expiration in UTC format. | 
 | JAMF.Computer.distribution_point | String | The computer distribution point. | 
-| JAMF.Computer.sus | String | The computer sus. | 
+| JAMF.Computer.sus | String | The computer software updated service \(SUS\). | 
 | JAMF.Computer.netboot_server | String | The computer netbbot server. | 
 | JAMF.Computer.site.id | Number | The computer site ID. | 
 | JAMF.Computer.site.name | String | The computer site name. | 
-| JAMF.Computer.itunes_store_account_is_active | Boolean | The computer itunes store accont | 
+| JAMF.Computer.itunes_store_account_is_active | Boolean | The computer iTunes store account. | 
 
 
 #### Command Example
@@ -354,7 +369,7 @@ Jamf Pro Server Objects → Computers → Read
 
 #### Human Readable Output
 
->### Jamf get computers result for 1
+>### Jamf get computers result for computer ID: 1
 >|ID|IP Address|Jamf Version|MAC Address|Name|Platform|Serial Number|UDID|
 >|---|---|---|---|---|---|---|---|
 >| 1 | 123.243.192.21 | 9.6.29507.c | 18:5B:35:CA:12:56 | Computer 95 | Mac | BA40F81C60A2 | CA40F812-60A3-11E4-90B8-12DF261F2C7E |
@@ -362,8 +377,7 @@ Jamf Pro Server Objects → Computers → Read
 
 ### jamf-get-computer-by-match
 ***
-This command will match computers by specific characteristics and returns general data on each one of the computers.
-This command is a replacement for ``jamf-get-computers-match`` in jamf v1 integration.
+Matches computers by specific characteristics and returns general data on each of the computers.
 
 
 #### Base Command
@@ -377,9 +391,9 @@ Jamf Pro Server Objects → Computers → Read
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| limit | The number of results to be returned on each page (default is 50). The maximum size is 200. Default is 50. | Optional | 
-| page | Number of requested page. Default is 0. | Optional | 
-| match | Match computers by specific characteristics (supports wildcards) like: name, udid, serial_number, mac_address, username, realname, email. e.g: “match=john*”, “match=C52F72FACB9T”. | Required | 
+| limit | The maximum number of results to be returned on each page. The maximum size is 200. Default is 50. | Optional | 
+| page | The number of the requested page. Default is 0. | Optional | 
+| match | Match computers by specific characteristics (supports wildcards) such as: name, UDID, serial_number, mac_address, username, realname, email. e.g.: “match=john*”, “match=C52F72FACB9T”. | Required | 
 
 
 #### Context Output
@@ -388,10 +402,10 @@ Jamf Pro Server Objects → Computers → Read
 | --- | --- | --- |
 | JAMF.Computer.id | Number | The computer ID. | 
 | JAMF.Computer.name | String | The computer name. | 
-| JAMF.Computer.udid | String | The computer udid. | 
+| JAMF.Computer.udid | String | The computer UDID. | 
 | JAMF.Computer.serial_number | String | The computer serial number. | 
-| JAMF.Computer.mac_address | String | The computer mac address. | 
-| JAMF.Computer.alt_mac_address | String | The computer alt mac address. | 
+| JAMF.Computer.mac_address | String | The computer MAC address. | 
+| JAMF.Computer.alt_mac_address | String | The computer alt MAC address. | 
 | JAMF.Computer.asset_tag | String | The computer asset tag. | 
 | JAMF.Computer.bar_code_1 | String | The computer barcode 1. | 
 | JAMF.Computer.bar_code_2 | String | The computer barcode 2. | 
@@ -399,15 +413,16 @@ Jamf Pro Server Objects → Computers → Read
 | JAMF.Computer.realname | String | The computer real name. | 
 | JAMF.Computer.email | String | The computer email address. | 
 | JAMF.Computer.email_address | String | The computer email address. | 
-| JAMF.Computer.room | String | The computer room . | 
-| JAMF.Computer.position | String | The computer position . | 
+| JAMF.Computer.room | String | The computer room. | 
+| JAMF.Computer.position | String | The computer position. | 
 | JAMF.Computer.building | String | The computer building. | 
 | JAMF.Computer.building_name | String | The computer building name. | 
 | JAMF.Computer.department | String | The computer department. | 
 | JAMF.Computer.department_name | String | The computer department name. | 
 | JAMF.Computer.Paging.total_results | Number | The number of computers returned in this specific search. | 
 | JAMF.Computer.Paging.page_size | Number | The number of computers to be returned on each page. | 
-| JAMF.Computer.Paging.current_page | Number | Number of requested page. | 
+| JAMF.Computer.Paging.current_page | Number | The number of the requested page. | 
+
 
 #### Command Example
 ```!jamf-get-computer-by-match match="Computer 9*" limit=3```
@@ -479,6 +494,13 @@ Jamf Pro Server Objects → Computers → Read
                 "serial_number": "CA40F73660A3",
                 "udid": "CA40F72C-60A3-11E4-90B8-12DF261F2C7E",
                 "username": "user72"
+            },
+            {
+                "Paging": {
+                    "current_page": 0,
+                    "page_size": 3,
+                    "total_results": 10
+                }
             }
         ]
     }
@@ -487,10 +509,12 @@ Jamf Pro Server Objects → Computers → Read
 
 #### Human Readable Output
 
+>### Paging for get computers
+>|Current Page|Page Size|Total Results|
+>|---|---|---|
+>| 0 | 3 | 10 |
+
 >### Jamf get computers result 
-> Total results:10
->Results per page: 3
->Page: 0
 >|ID|Mac Address|Name|Serial Number|UDID|Username|
 >|---|---|---|---|---|---|
 >| 1 | 18:5B:35:CA:12:56 | Computer 95 | BA40F81C60A2 | CA40F812-60A3-11E4-90B8-12DF261F2C7E | user91 |
@@ -514,8 +538,8 @@ Jamf Pro Server Objects → Computers → Read
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| identifier | In order to identify which computer is requested, one of these identifiers should be selected: id, name, udid, serial_number, mac_address. Possible values are: id, name, udid, serialnumber, macaddress. | Required | 
-| identifier_value | The value of the “identifier”. For example, if we choose the “id” identifier, a value of a computer id should be passed. If we choose “mac_address” as the identifier, a value of a computer’s mac address should be passed, etc. | Required | 
+| identifier | The identifier used to determine which computer is requested. Possible values: "id", "name", "udid", "serialnumber", and "macaddress". Possible values are: id, name, udid, serialnumber, macaddress. | Required | 
+| identifier_value | The value of the "identifier". For example, if you choose the "id" identifier, a computer ID should be passed. If you choose "macaddress" as the identifier, a computer’s MAC address should be passed, etc. | Required | 
 
 
 #### Context Output
@@ -525,47 +549,47 @@ Jamf Pro Server Objects → Computers → Read
 | JAMF.ComputerSubset.general.id | Number | The computer ID. | 
 | JAMF.ComputerSubset.general.name | String | The computer name. | 
 | JAMF.ComputerSubset.general.network_adapter_type | String | The computer network adapter type. | 
-| JAMF.ComputerSubset.general.mac_address | Date | The computer mac address. | 
+| JAMF.ComputerSubset.general.mac_address | Date | The computer MAC address. | 
 | JAMF.ComputerSubset.general.alt_network_adapter_type | String | The computer alt network adapter type. | 
-| JAMF.ComputerSubset.general.alt_mac_address | String | The computer alt mac address. | 
+| JAMF.ComputerSubset.general.alt_mac_address | String | The computer alt MAC address. | 
 | JAMF.ComputerSubset.general.ip_address | String | The computer IP address. | 
-| JAMF.ComputerSubset.general.last_reported_ip | String | The computer last reported IP. | 
+| JAMF.ComputerSubset.general.last_reported_ip | String | The computer last reported IP address. | 
 | JAMF.ComputerSubset.general.serial_number | String | The computer serial number. | 
-| JAMF.ComputerSubset.general.udid | String | The computer udid. | 
+| JAMF.ComputerSubset.general.udid | String | The computer UDID. | 
 | JAMF.ComputerSubset.general.jamf_version | String | The computer Jamf version. | 
 | JAMF.ComputerSubset.general.platform | String | The computer platform. | 
 | JAMF.ComputerSubset.general.barcode_1 | String | The computer barcode 1. | 
 | JAMF.ComputerSubset.general.barcode_2 | String | The computer barcode 2. | 
 | JAMF.ComputerSubset.general.asset_tag | String | The computer asset tag. | 
-| JAMF.ComputerSubset.general.remote_management.managed | Boolean | If the computer is managed. | 
+| JAMF.ComputerSubset.general.remote_management.managed | Boolean | Whether the computer is remotely managed. | 
 | JAMF.ComputerSubset.general.remote_management.management_username | String | The computer managment username. | 
-| JAMF.ComputerSubset.general.supervised | Boolean | If the computer is supervised. | 
-| JAMF.ComputerSubset.general.mdm_capable | Boolean | If the computer is mdm capable. | 
-| JAMF.Computer.general.mdm_capable_users | Boolean | The computer mdm capable users. | 
-| JAMF.Computer.general.management_status.enrolled_via_dep | Boolean | Whether the computer was enrolled via DEP or not | 
-| JAMF.Computer.general.management_status.user_approved_enrollment | Boolean | Whether the enrollment is user-approved or not | 
-| JAMF.Computer.general.management_status.user_approved_mdm | Boolean | Whether the MDM is user-approved or not | 
+| JAMF.ComputerSubset.general.supervised | Boolean | Whether the computer is supervised. | 
+| JAMF.ComputerSubset.general.mdm_capable | Boolean | Whether the computer is MDM capable. | 
+| JAMF.Computer.general.mdm_capable_users | Boolean | Whether the computer has MDM capable users. | 
+| JAMF.Computer.general.management_status.enrolled_via_dep | Boolean | Whether the computer was enrolled via DEP. | 
+| JAMF.Computer.general.management_status.user_approved_enrollment | Boolean | Whether the enrollment is user-approved. | 
+| JAMF.Computer.general.management_status.user_approved_mdm | Boolean | Whether the MDM is user-approved. | 
 | JAMF.ComputerSubset.general.report_date | Date | The computer report date. | 
-| JAMF.ComputerSubset.general.report_date_epoch | Date | The computer repoer date in epoch. | 
-| JAMF.ComputerSubset.general.report_date_utc | Date | The computer report date in UTC. | 
+| JAMF.ComputerSubset.general.report_date_epoch | Date | The computer report date in epoch format. | 
+| JAMF.ComputerSubset.general.report_date_utc | Date | The computer report date in UTC format. | 
 | JAMF.ComputerSubset.general.last_contact_time | Date | The computer last contact time. | 
-| JAMF.ComputerSubset.general.last_contact_time_epoch | Date | The computer last contact time in epoch. | 
-| JAMF.ComputerSubset.general.last_contact_time_utc | Date | The computer last contact time in UTC. | 
+| JAMF.ComputerSubset.general.last_contact_time_epoch | Date | The computer last contact time in epoch format. | 
+| JAMF.ComputerSubset.general.last_contact_time_utc | Date | The computer last contact time in UTC format. | 
 | JAMF.ComputerSubset.general.initial_entry_date | Date | The computer initial entry date. | 
-| JAMF.ComputerSubset.general.initial_entry_date_epoch | Date | The computer initial entry date in epoch. | 
-| JAMF.ComputerSubset.general.initial_entry_date_utc | Date | The computer initial entry date in UTC. | 
-| JAMF.ComputerSubset.general.last_cloud_backup_date_epoch | Number | The computer last cloud backup date in epoch. | 
-| JAMF.ComputerSubset.general.last_cloud_backup_date_utc | String | The computer last cloud backup date in UTC. | 
-| JAMF.ComputerSubset.general.last_enrolled_date_epoch | Date | The computer last enrolled date in epoch. | 
-| JAMF.ComputerSubset.general.last_enrolled_date_utc | Date | The computer last enrolled date in UTC. | 
-| JAMF.ComputerSubset.general.mdm_profile_expiration_epoch | Number | The computer mdm profile expiration in epoch. | 
-| JAMF.ComputerSubset.general.mdm_profile_expiration_utc | String | The computer mdm profile expiration in UTC. | 
-| JAMF.ComputerSubset.general.distribution_point | String | The computer distribution point. | 
-| JAMF.ComputerSubset.general.sus | String | The computer sus. | 
+| JAMF.ComputerSubset.general.initial_entry_date_epoch | Date | The computer initial entry date in epoch format. | 
+| JAMF.ComputerSubset.general.initial_entry_date_utc | Date | The computer initial entry date in UTC format. | 
+| JAMF.ComputerSubset.general.last_cloud_backup_date_epoch | Number | The computer last cloud backup date in epoch format. | 
+| JAMF.ComputerSubset.general.last_cloud_backup_date_utc | String | The computer last cloud backup date in UTC format. | 
+| JAMF.ComputerSubset.general.last_enrolled_date_epoch | Date | The computer last enrolled date in epoch format. | 
+| JAMF.ComputerSubset.general.last_enrolled_date_utc | Date | The computer last enrolled date in UTC format. | 
+| JAMF.ComputerSubset.general.mdm_profile_expiration_epoch | Number | The computer MDM profile expiration in epoch format. | 
+| JAMF.ComputerSubset.general.mdm_profile_expiration_utc | String | The computer MDM profile expiration in UTC format. | 
+| JAMF.ComputerSubset.general.distribution_point | String | The computer distribution point format. | 
+| JAMF.ComputerSubset.general.sus | String | The computer SUS. | 
 | JAMF.ComputerSubset.general.netboot_server | String | The computer netbbot server. | 
 | JAMF.ComputerSubset.general.site.id | Number | The computer site ID. | 
 | JAMF.ComputerSubset.general.site.name | String | The computer site name. | 
-| JAMF.ComputerSubset.general.itunes_store_account_is_active | Boolean | The computer itunes store accont | 
+| JAMF.ComputerSubset.general.itunes_store_account_is_active | Boolean | The computer iTunes store account. | 
 
 
 #### Command Example
@@ -656,8 +680,8 @@ Jamf Pro Server Objects → Computers → Read
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| identifier | In order to identify which computer is requested, one of these identifiers should be selected: id, name, udid, serial_number, mac_address. Possible values are: id, name, udid, serialnumber, macaddress. | Required | 
-| identifier_value | The value of the “identifier”. For example, if we choose the “id” identifier, a value of a computer id should be passed. If we choose “mac_address” as the identifier, a value of a computer’s mac address should be passed, etc. | Required | 
+| identifier | The identifier used to determine which computer is requested. Possible values: "id", "name", "udid", "serialnumber", and "macaddress". Possible values are: id, name, udid, serialnumber, macaddress. | Required | 
+| identifier_value | The value of the "identifier". For example, if you choose the "id" identifier, a computer ID should be passed. If you choose "macaddress" as the identifier, a computer’s MAC address should be passed, etc. | Required | 
 
 
 #### Context Output
@@ -729,8 +753,8 @@ Jamf Pro Server Objects → Computers → Read
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| identifier | In order to identify which computer is requested, one of these identifiers should be selected: id, name, udid, serial_number, mac_address. Possible values are: id, name, udid, serialnumber, macaddress. | Required | 
-| identifier_value | The value of the “identifier”. For example, if we choose the “id” identifier, a value of a computer id should be passed. If we choose “mac_address” as the identifier, a value of a computer’s mac address should be passed, etc. | Required | 
+| identifier | The identifier used to determine which computer is requested. Possible values: "id", "name", "udid", "serialnumber", and "macaddress". Possible values are: id, name, udid, serialnumber, macaddress. | Required | 
+| identifier_value | The value of the "identifier". For example, if you choose the "id" identifier, a computer ID should be passed. If you choose "macaddress" as the identifier, a computer’s MAC address should be passed, etc. | Required | 
 
 
 #### Context Output
@@ -739,24 +763,24 @@ Jamf Pro Server Objects → Computers → Read
 | --- | --- | --- |
 | JAMF.ComputerSubset.purchasing.is_purchased | Boolean | If the computer is purchased. | 
 | JAMF.ComputerSubset.purchasing.is_leased | Boolean | If the computer is leased. | 
-| JAMF.ComputerSubset.purchasing.po_number | String | The computer po number. | 
+| JAMF.ComputerSubset.purchasing.po_number | String | The computer PO number. | 
 | JAMF.ComputerSubset.purchasing.vendor | String | The computer vendor. | 
-| JAMF.ComputerSubset.purchasing.applecare_id | String | The computer applecare ID. | 
+| JAMF.ComputerSubset.purchasing.applecare_id | String | The computer AppleCare ID. | 
 | JAMF.ComputerSubset.purchasing.purchase_price | String | The computer purchase price. | 
 | JAMF.ComputerSubset.purchasing.purchasing_account | String | The computer purchase account. | 
-| JAMF.ComputerSubset.purchasing.po_date | String | The computer po date. | 
-| JAMF.ComputerSubset.purchasing.po_date_epoch | Number | The computer po date in epoch | 
-| JAMF.ComputerSubset.purchasing.po_date_utc | String | The computer po date in UTC. | 
-| JAMF.ComputerSubset.purchasing.warranty_expires | String | The computer warranty expires date. | 
-| JAMF.ComputerSubset.purchasing.warranty_expires_epoch | Number | The computer warranty expires date in epoch. | 
-| JAMF.ComputerSubset.purchasing.warranty_expires_utc | String | The computer warranty expires date in UTC. | 
-| JAMF.ComputerSubset.purchasing.lease_expires | String | The computer warranty lease expires date. | 
-| JAMF.ComputerSubset.purchasing.lease_expires_epoch | Number | The computer warranty lease expires date in epoch. | 
-| JAMF.ComputerSubset.purchasing.lease_expires_utc | String | The computer warranty lease expires date in UTC. | 
+| JAMF.ComputerSubset.purchasing.po_date | String | The computer PO date. | 
+| JAMF.ComputerSubset.purchasing.po_date_epoch | Number | The computer PO date in epoch format. | 
+| JAMF.ComputerSubset.purchasing.po_date_utc | String | The computer PO date in UTC format. | 
+| JAMF.ComputerSubset.purchasing.warranty_expires | String | The computer warranty expiration date. | 
+| JAMF.ComputerSubset.purchasing.warranty_expires_epoch | Number | The computer warranty expiration date in epoch format. | 
+| JAMF.ComputerSubset.purchasing.warranty_expires_utc | String | The computer warranty expiration date in UTC format. | 
+| JAMF.ComputerSubset.purchasing.lease_expires | String | The computer warranty lease expiration date. | 
+| JAMF.ComputerSubset.purchasing.lease_expires_epoch | Number | The computer warranty lease expiration date in epoch time. | 
+| JAMF.ComputerSubset.purchasing.lease_expires_utc | String | The computer warranty lease expiration date in UTC format. | 
 | JAMF.ComputerSubset.purchasing.life_expectancy | Number | The computer life expectancy. | 
 | JAMF.ComputerSubset.purchasing.purchasing_contact | String | The computer purchasing contact. | 
-| JAMF.ComputerSubset.purchasing.os_applecare_id | String | The computer OS applecare ID. | 
-| JAMF.ComputerSubset.purchasing.os_maintenance_expires | String | The computer OS maintenance expires. | 
+| JAMF.ComputerSubset.purchasing.os_applecare_id | String | The computer operating system AppleCare ID. | 
+| JAMF.ComputerSubset.purchasing.os_maintenance_expires | String | The computer operating system maintenance expiration date. | 
 | JAMF.ComputerSubset.id | Number | The computer ID. | 
 
 
@@ -823,8 +847,8 @@ Jamf Pro Server Objects → Computers → Read
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| identifier | In order to identify which computer is requested, one of these identifiers should be selected: id, name, udid, serial_number, mac_address. Possible values are: id, name, udid, serialnumber, macaddress. | Required | 
-| identifier_value | The value of the “identifier”. For example, if we choose the “id” identifier, a value of a computer id should be passed. If we choose “mac_address” as the identifier, a value of a computer’s mac address should be passed, etc. | Required | 
+| identifier | The identifier used to determine which computer is requested. Possible values: "id", "name", "udid", "serialnumber", and "macaddress". Possible values are: id, name, udid, serialnumber, macaddress. | Required | 
+| identifier_value | The value of the "identifier". For example, if you choose the "id" identifier, a computer ID should be passed. If you choose "macaddress" as the identifier, a computer’s MAC address should be passed, etc. | Required | 
 
 
 #### Context Output
@@ -832,7 +856,7 @@ Jamf Pro Server Objects → Computers → Read
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | JAMF.ComputerSubset.peripherals | Number | The computer peripherals. | 
-| JAMF.ComputerSubset.id | Number | The computer id | 
+| JAMF.ComputerSubset.id | Number | The computer ID. | 
 
 
 #### Command Example
@@ -874,8 +898,8 @@ Jamf Pro Server Objects → Computers → Read
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| identifier | In order to identify which computer is requested, one of these identifiers should be selected: id, name, udid, serial_number, mac_address. Possible values are: id, name, udid, serialnumber, macaddress. | Required | 
-| identifier_value | The value of the “identifier”. For example, if we choose the “id” identifier, a value of a computer id should be passed. If we choose “mac_address” as the identifier, a value of a computer’s mac address should be passed, etc. | Required | 
+| identifier | The identifier used to determine which computer is requested. Possible values: "id", "name", "udid", "serialnumber", and "macaddress". Possible values are: id, name, udid, serialnumber, macaddress. | Required | 
+| identifier_value | The value of the "identifier". For example, if you choose the "id" identifier, a computer ID should be passed. If you choose "macaddress" as the identifier, a computer’s MAC address should be passed, etc. | Required | 
 
 
 #### Context Output
@@ -885,33 +909,33 @@ Jamf Pro Server Objects → Computers → Read
 | JAMF.ComputerSubset.hardware.make | String | The computer maker. | 
 | JAMF.ComputerSubset.hardware.model | String | The computer model. | 
 | JAMF.ComputerSubset.hardware.model_identifier | String | The computer model ID. | 
-| JAMF.ComputerSubset.hardware.os_name | String | The computer OS name. | 
-| JAMF.ComputerSubset.hardware.os_version | String | The computer OS version. | 
-| JAMF.ComputerSubset.hardware.os_build | String | The computer OS build. | 
-| JAMF.ComputerSubset.hardware.master_password_set | Boolean | If the master password is set for the computer. | 
+| JAMF.ComputerSubset.hardware.os_name | String | The computer operating system name. | 
+| JAMF.ComputerSubset.hardware.os_version | String | The computer operating system version. | 
+| JAMF.ComputerSubset.hardware.os_build | String | The computer operating system build. | 
+| JAMF.ComputerSubset.hardware.master_password_set | Boolean | Whether the master password is set for the computer. | 
 | JAMF.ComputerSubset.hardware.active_directory_status | String | The computer active directory status. | 
 | JAMF.ComputerSubset.hardware.service_pack | String | The computer service pack. | 
 | JAMF.ComputerSubset.hardware.processor_type | String | The computer processor type. | 
 | JAMF.ComputerSubset.hardware.processor_architecture | String | The computer processor architecture. | 
 | JAMF.ComputerSubset.hardware.processor_speed | Number | The computer processor speed. | 
-| JAMF.ComputerSubset.hardware.processor_speed_mhz | Number | The computer processor speed in mhz. | 
+| JAMF.ComputerSubset.hardware.processor_speed_mhz | Number | The computer processor speed in MHz. | 
 | JAMF.ComputerSubset.hardware.number_processors | Number | The number of processors in the computer. | 
 | JAMF.ComputerSubset.hardware.number_cores | Number | The number of cores in the computer. | 
-| JAMF.ComputerSubset.hardware.total_ram | Number | The number of RAM in the computer. | 
-| JAMF.ComputerSubset.hardware.total_ram_mb | Number | The number of RAM in the computer in MB. | 
+| JAMF.ComputerSubset.hardware.total_ram | Number | The amount of RAM in the computer. | 
+| JAMF.ComputerSubset.hardware.total_ram_mb | Number | The amount of RAM in the computer in MB. | 
 | JAMF.ComputerSubset.hardware.boot_rom | String | The computer boot ROM. | 
 | JAMF.ComputerSubset.hardware.bus_speed | Number | The computer bus speed. | 
-| JAMF.ComputerSubset.hardware.bus_speed_mhz | Number | The computer bus speed in mhz. | 
+| JAMF.ComputerSubset.hardware.bus_speed_mhz | Number | The computer bus speed in MHz. | 
 | JAMF.ComputerSubset.hardware.battery_capacity | Number | The computer battery capacity. | 
 | JAMF.ComputerSubset.hardware.cache_size | Number | The computer cache size. | 
 | JAMF.ComputerSubset.hardware.cache_size_kb | Number | The computer cache size in KB. | 
-| JAMF.ComputerSubset.hardware.available_ram_slots | Number | The computer available RAM slots. | 
+| JAMF.ComputerSubset.hardware.available_ram_slots | Number | The number of available RAM slots. | 
 | JAMF.ComputerSubset.hardware.optical_drive | String | The computer optical drive. | 
-| JAMF.ComputerSubset.hardware.nic_speed | String | The computer nic speed. | 
-| JAMF.ComputerSubset.hardware.smc_version | String | The compute smc version. | 
-| JAMF.ComputerSubset.hardware.ble_capable | Boolean | If the computer is ble capable. | 
-| JAMF.ComputerSubset.hardware.supports_ios_app_installs | Boolean | If the computer supports ios app installs. | 
-| JAMF.ComputerSubset.hardware.sip_status | String | The computer sip status. | 
+| JAMF.ComputerSubset.hardware.nic_speed | String | The computer NIC speed. | 
+| JAMF.ComputerSubset.hardware.smc_version | String | The compute SMC version. | 
+| JAMF.ComputerSubset.hardware.ble_capable | Boolean | Whether the computer is BLE capable. | 
+| JAMF.ComputerSubset.hardware.supports_ios_app_installs | Boolean | If the computer supports iOS app installations. | 
+| JAMF.ComputerSubset.hardware.sip_status | String | The computer SIP status. | 
 | JAMF.ComputerSubset.hardware.gatekeeper_status | String | The computer gatekeeper status. | 
 | JAMF.ComputerSubset.hardware.xprotect_version | String | The computer xprotect version. | 
 | JAMF.ComputerSubset.hardware.institutional_recovery_key | String | The computer institutional recovery key. | 
@@ -928,17 +952,17 @@ Jamf Pro Server Objects → Computers → Read
 | JAMF.ComputerSubset.hardware.storage.partitions.size | Number | The computer storage partition size. | 
 | JAMF.ComputerSubset.hardware.storage.partitions.type | String | The computer storage partition type. | 
 | JAMF.ComputerSubset.hardware.storage.partitions.partition_capacity_mb | Number | The computer storage partition capacity in MB. | 
-| JAMF.ComputerSubset.hardware.storage.partitions.percentage_full | Number | The computer storage partition full percentage. | 
-| JAMF.ComputerSubset.hardware.storage.partitions.available_mb | Number | The computer storage partition available in MB. | 
+| JAMF.ComputerSubset.hardware.storage.partitions.percentage_full | Number | The percentage of the storage partition that is full. | 
+| JAMF.ComputerSubset.hardware.storage.partitions.available_mb | Number | The amount of computer storage partition available in MB. | 
 | JAMF.ComputerSubset.hardware.storage.partitions.filevault_status | String | The computer storage partition filevault status. | 
 | JAMF.ComputerSubset.hardware.storage.partitions.filevault_percent | Number | The computer storage partition filevault percent. | 
 | JAMF.ComputerSubset.hardware.storage.partitions.filevault2_status | String | The computer storage partition second filevault status. | 
 | JAMF.ComputerSubset.hardware.storage.partitions.filevault2_percent | Number | The computer storage partition second filevault percent. | 
-| JAMF.ComputerSubset.hardware.storage.partitions.boot_drive_available_mb | Number | The computer storage partition boot drive available in MB. | 
-| JAMF.ComputerSubset.hardware.storage.partitions.lvgUUID | String | The computer storage partition lvg UUID. | 
-| JAMF.ComputerSubset.hardware.storage.partitions.lvUUID | String | The computer storage partition lv UUID. | 
-| JAMF.ComputerSubset.hardware.storage.partitions.pvUUID | String | The computer storage partition pv UUID. | 
-| JAMF.ComputerSubset.id | Number | The computer id | 
+| JAMF.ComputerSubset.hardware.storage.partitions.boot_drive_available_mb | Number | The available space on the computer storage partition boot drive in MB. | 
+| JAMF.ComputerSubset.hardware.storage.partitions.lvgUUID | String | The computer storage partition logical volume group \(lvg\) UUID. | 
+| JAMF.ComputerSubset.hardware.storage.partitions.lvUUID | String | The computer storage partition logical volume \(lv\) UUID. | 
+| JAMF.ComputerSubset.hardware.storage.partitions.pvUUID | String | The computer storage partition physical volume \(pv\) UUID. | 
+| JAMF.ComputerSubset.id | Number | The computer ID. | 
 
 
 #### Command Example
@@ -1112,8 +1136,8 @@ Jamf Pro Server Objects → Computers → Read
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| identifier | In order to identify which computer is requested, one of these identifiers should be selected: id, name, udid, serial_number, mac_address. Possible values are: id, name, udid, serialnumber, macaddress. | Required | 
-| identifier_value | The value of the “identifier”. For example, if we choose the “id” identifier, a value of a computer id should be passed. If we choose “mac_address” as the identifier, a value of a computer’s mac address should be passed, etc. | Required | 
+| identifier | The identifier used to determine which computer is requested. Possible values: "id", "name", "udid", "serialnumber", and "macaddress". Possible values are: id, name, udid, serialnumber, macaddress. | Required | 
+| identifier_value | The value of the "identifier". For example, if you choose the "id" identifier, a computer ID should be passed. If you choose "macaddress" as the identifier, a computer’s MAC address should be passed, etc. | Required | 
 
 
 #### Context Output
@@ -1122,8 +1146,8 @@ Jamf Pro Server Objects → Computers → Read
 | --- | --- | --- |
 | JAMF.ComputerSubset.certificates.common_name | String | The certificat common name. | 
 | JAMF.ComputerSubset.certificates.identity | Boolean | The certificat identity. | 
-| JAMF.ComputerSubset.certificates.expires_utc | Date | The certificat expires date in UTC. | 
-| JAMF.ComputerSubset.certificates.expires_epoch | Number | The certificat expires date in epoch. | 
+| JAMF.ComputerSubset.certificates.expires_utc | Date | The certificat expiration date in UTC format. | 
+| JAMF.ComputerSubset.certificates.expires_epoch | Number | The certificat expiration date in epoch format. | 
 | JAMF.ComputerSubset.certificates.name | String | The certificat name. | 
 | JAMF.ComputerSubset.id | Number | The computer ID. | 
 
@@ -1201,8 +1225,8 @@ Jamf Pro Server Objects → Computers → Read
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| identifier | In order to identify which computer is requested, one of these identifiers should be selected: id, name, udid, serial_number, mac_address. Possible values are: id, name, udid, serialnumber, macaddress. | Required | 
-| identifier_value | The value of the “identifier”. For example, if we choose the “id” identifier, a value of a computer id should be passed. If we choose “mac_address” as the identifier, a value of a computer’s mac address should be passed, etc. | Required | 
+| identifier | The identifier used to determine which computer is requested. Possible values: "id", "name", "udid", "serialnumber", and "macaddress". Possible values are: id, name, udid, serialnumber, macaddress. | Required | 
+| identifier_value | The value of the "identifier". For example, if you choose the "id" identifier, a computer ID should be passed. If you choose "macaddress" as the identifier, a computer’s MAC address should be passed, etc. | Required | 
 
 
 #### Context Output
@@ -1212,7 +1236,7 @@ Jamf Pro Server Objects → Computers → Read
 | JAMF.ComputerSubset.security.activation_lock | Boolean | The computer activation lock. | 
 | JAMF.ComputerSubset.security.secure_boot_level | String | The computer secure boot level. | 
 | JAMF.ComputerSubset.security.external_boot_level | String | The computer external boot level. | 
-| JAMF.ComputerSubset.id | Number | The computer id | 
+| JAMF.ComputerSubset.id | Number | The computer ID. | 
 
 
 #### Command Example
@@ -1260,23 +1284,23 @@ Jamf Pro Server Objects → Computers → Read
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| identifier | In order to identify which computer is requested, one of these identifiers should be selected: id, name, udid, serial_number, mac_address. Possible values are: id, name, udid, serialnumber, macaddress. | Required | 
-| identifier_value | The value of the “identifier”. For example, if we choose the “id” identifier, a value of a computer id should be passed. If we choose “mac_address” as the identifier, a value of a computer’s mac address should be passed, etc. | Required | 
+| identifier | The identifier used to determine which computer is requested. Possible values: "id", "name", "udid", "serialnumber", and "macaddress". Possible values are: id, name, udid, serialnumber, macaddress. | Required | 
+| identifier_value | The value of the "identifier". For example, if you choose the "id" identifier, a computer ID should be passed. If you choose "macaddress" as the identifier, a computer’s MAC address should be passed, etc. | Required | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| JAMF.ComputerSubset.software.unix_executables | String | The computer software's unix executables. | 
+| JAMF.ComputerSubset.software.unix_executables | String | The computer software's Unix executables. | 
 | JAMF.ComputerSubset.software.licensed_software.name | String | The computer software's licensed software name. | 
-| JAMF.ComputerSubset.software.installed_by_casper.package | String | The computer software which was installed by Jamf PRO. | 
-| JAMF.ComputerSubset.software.installed_by_installer_swu.package | String | The computer software which was installed either by installer,app or Software Update. | 
-| JAMF.ComputerSubset.software.cached_by_casper.package | String | The computer software which was cached by Jamf PRO. | 
-| JAMF.ComputerSubset.software.available_software_updates.name | String | The computer available software updates name. | 
-| JAMF.ComputerSubset.software.available_updates.name | String | The computer available update name. | 
-| JAMF.ComputerSubset.software.available_updates.package_name | String | The computer available update package name. | 
-| JAMF.ComputerSubset.software.available_updates.version | String | The computer available update version. | 
+| JAMF.ComputerSubset.software.installed_by_casper.package | String | The computer software that was installed by Jamf PRO. | 
+| JAMF.ComputerSubset.software.installed_by_installer_swu.package | String | The computer software that was installed either by an installer, an app or a software update. | 
+| JAMF.ComputerSubset.software.cached_by_casper.package | String | The computer software that was cached by Jamf PRO. | 
+| JAMF.ComputerSubset.software.available_software_updates.name | String | The name of the available software updates. | 
+| JAMF.ComputerSubset.software.available_updates.name | String | The name of the available updates. | 
+| JAMF.ComputerSubset.software.available_updates.package_name | String | The name of the available update package. | 
+| JAMF.ComputerSubset.software.available_updates.version | String | The version of the available update. | 
 | JAMF.ComputerSubset.software.running_services.name | String | The computer running service name. | 
 | JAMF.ComputerSubset.software.applications.name | String | The computer application name. | 
 | JAMF.ComputerSubset.software.applications.path | String | The computer application path. | 
@@ -1288,7 +1312,7 @@ Jamf Pro Server Objects → Computers → Read
 | JAMF.ComputerSubset.software.plugins.name | String | The computer plugin name. | 
 | JAMF.ComputerSubset.software.plugins.path | String | The computer plugin path. | 
 | JAMF.ComputerSubset.software.plugins.version | String | The computer plugin version. | 
-| JAMF.ComputerSubset.id | Number | The computer id | 
+| JAMF.ComputerSubset.id | Number | The computer ID. | 
 
 
 #### Command Example
@@ -1549,8 +1573,8 @@ Jamf Pro Server Objects → Computers → Read
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| identifier | In order to identify which computer is requested, one of these identifiers should be selected: id, name, udid, serial_number, mac_address. Possible values are: id, name, udid, serialnumber, macaddress. | Required | 
-| identifier_value | The value of the “identifier”. For example, if we choose the “id” identifier, a value of a computer id should be passed. If we choose “mac_address” as the identifier, a value of a computer’s mac address should be passed, etc. | Required | 
+| identifier | The identifier used to determine which computer is requested. Possible values: "id", "name", "udid", "serialnumber", and "macaddress". Possible values are: id, name, udid, serialnumber, macaddress. | Required | 
+| identifier_value | The value of the "identifier". For example, if you choose the "id" identifier, a computer ID should be passed. If you choose "macaddress" as the identifier, a computer’s MAC address should be passed, etc. | Required | 
 
 
 #### Context Output
@@ -1562,7 +1586,7 @@ Jamf Pro Server Objects → Computers → Read
 | JAMF.ComputerSubset.extension_attributes.type | String | The computer extension attributes type. | 
 | JAMF.ComputerSubset.extension_attributes.multi_value | Boolean | The computer extension attributes multi value. | 
 | JAMF.ComputerSubset.extension_attributes.value | String | The computer extension attributes value. | 
-| JAMF.ComputerSubset.id | Number | The computer id | 
+| JAMF.ComputerSubset.id | Number | The computer ID. | 
 
 
 #### Command Example
@@ -1662,8 +1686,8 @@ Jamf Pro Server Objects → Computers → Read
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| identifier | In order to identify which computer is requested, one of these identifiers should be selected: id, name, udid, serial_number, mac_address. Possible values are: id, name, udid, serialnumber, macaddress. | Required | 
-| identifier_value | The value of the “identifier”. For example, if we choose the “id” identifier, a value of a computer id should be passed. If we choose “mac_address” as the identifier, a value of a computer’s mac address should be passed, etc. | Required | 
+| identifier | The identifier used to determine which computer is requested. Possible values: "id", "name", "udid", "serialnumber", and "macaddress". Possible values are: id, name, udid, serialnumber, macaddress. | Required | 
+| identifier_value | The value of the "identifier". For example, if you choose the "id" identifier, a computer ID should be passed. If you choose "macaddress" as the identifier, a computer’s MAC address should be passed, etc. | Required | 
 
 
 #### Context Output
@@ -1676,17 +1700,17 @@ Jamf Pro Server Objects → Computers → Read
 | JAMF.ComputerSubset.groups_accounts.local_accounts.uid | String | The computer local account UID. | 
 | JAMF.ComputerSubset.groups_accounts.local_accounts.home | String | The computer local account home. | 
 | JAMF.ComputerSubset.groups_accounts.local_accounts.home_size | String | The computer local account name size. | 
-| JAMF.ComputerSubset.groups_accounts.local_accounts.home_size_mb | Number | The computer local account mb. | 
+| JAMF.ComputerSubset.groups_accounts.local_accounts.home_size_mb | Number | The computer local account size in MB. | 
 | JAMF.ComputerSubset.groups_accounts.local_accounts.administrator | Boolean | Whether the computer is the local account administrator. | 
 | JAMF.ComputerSubset.groups_accounts.local_accounts.filevault_enabled | Boolean | Whether the computer filevault is enabled. | 
-| JAMF.ComputerSubset.groups_accounts.user_inventories.disable_automatic_login | Boolean | Whether 'Automatic Login' is disabled or not. | 
-| JAMF.ComputerSubset.groups_accounts.user_inventories.user.username | String | The computer user inventories.user.username | 
+| JAMF.ComputerSubset.groups_accounts.user_inventories.disable_automatic_login | Boolean | Whether automatic login is disabled. | 
+| JAMF.ComputerSubset.groups_accounts.user_inventories.user.username | String | The computer user inventories user's username. | 
 | JAMF.ComputerSubset.groups_accounts.user_inventories.user.password_history_depth | String | Number of unique passcodes before reuse. | 
 | JAMF.ComputerSubset.groups_accounts.user_inventories.user.password_min_length | String | Smallest number of passcode characters allowed. | 
 | JAMF.ComputerSubset.groups_accounts.user_inventories.user.password_max_age | String | Number of days until the passcode must be changed. | 
 | JAMF.ComputerSubset.groups_accounts.user_inventories.user.password_min_complex_characters | String | Smallest number of non-alphanumeric characters allowed. | 
-| JAMF.ComputerSubset.groups_accounts.user_inventories.user.password_require_alphanumeric | String | Passcode must contain at least one letter and one number. | 
-| JAMF.ComputerSubset.id | Number | The computer id | 
+| JAMF.ComputerSubset.groups_accounts.user_inventories.user.password_require_alphanumeric | String | Passcode rule \(must contain at least one letter and one number\). | 
+| JAMF.ComputerSubset.id | Number | The computer ID. | 
 
 
 #### Command Example
@@ -1795,7 +1819,7 @@ Jamf Pro Server Objects → Computers → Read
 
 ### jamf-get-computer-iphones-subset
 ***
-Returns the iphones subset for a specific computer according to the given arguments.
+Returns the iPhones subset for a specific computer according to the given arguments.
 
 
 #### Base Command
@@ -1809,16 +1833,16 @@ Jamf Pro Server Objects → Computers → Read
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| identifier | In order to identify which computer is requested, one of these identifiers should be selected: id, name, udid, serial_number, mac_address. Possible values are: id, name, udid, serialnumber, macaddress. | Required | 
-| identifier_value | The value of the “identifier”. For example, if we choose the “id” identifier, a value of a computer id should be passed. If we choose “mac_address” as the identifier, a value of a computer’s mac address should be passed, etc. | Required | 
+| identifier | The identifier used to determine which computer is requested. Possible values: "id", "name", "udid", "serialnumber", and "macaddress". Possible values are: id, name, udid, serialnumber, macaddress. | Required | 
+| identifier_value | The value of the "identifier". For example, if you choose the "id" identifier, a computer ID should be passed. If you choose "macaddress" as the identifier, a computer’s MAC address should be passed, etc. | Required | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| JAMF.ComputerSubset.iphones | String | The commputer related iphones. | 
-| JAMF.ComputerSubset.id | Number | The computer id | 
+| JAMF.ComputerSubset.iphones | String | The commputer related iPhones. | 
+| JAMF.ComputerSubset.id | Number | The computer ID. | 
 
 
 #### Command Example
@@ -1860,8 +1884,8 @@ Jamf Pro Server Objects → Computers → Read
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| identifier | In order to identify which computer is requested, one of these identifiers should be selected: id, name, udid, serial_number, mac_address. Possible values are: id, name, udid, serialnumber, macaddress. | Required | 
-| identifier_value | The value of the “identifier”. For example, if we choose the “id” identifier, a value of a computer id should be passed. If we choose “mac_address” as the identifier, a value of a computer’s mac address should be passed, etc. | Required | 
+| identifier | The identifier used to determine which computer is requested. Possible values: "id", "name", "udid", "serialnumber", and "macaddress". Possible values are: id, name, udid, serialnumber, macaddress. | Required | 
+| identifier_value | The value of the "identifier". For example, if you choose the "id" identifier, a computer ID should be passed. If you choose "macaddress" as the identifier, a computer’s MAC address should be passed, etc. | Required | 
 
 
 #### Context Output
@@ -1872,7 +1896,7 @@ Jamf Pro Server Objects → Computers → Read
 | JAMF.ComputerSubset.configuration_profiles.name | String | The configuration profile name. | 
 | JAMF.ComputerSubset.configuration_profiles.uuid | String | The configuration profile UUID. | 
 | JAMF.ComputerSubset.configuration_profiles.is_removable | Boolean | If the configuration profile is removable. | 
-| JAMF.ComputerSubset.id | Number | The computer id | 
+| JAMF.ComputerSubset.id | Number | The computer ID. | 
 
 
 #### Command Example
@@ -1923,7 +1947,7 @@ Jamf Pro Server Objects → Computers → Read
 
 ### jamf-computer-lock
 ***
-Will send the "DeviceLock" command to a computer. This command logs the user out of the computer, restarts the computer, and then locks the computer. Optional: Displays a message on the computer when it locks.
+Sends the "DeviceLock" command to a computer. This command logs the user out of the computer, restarts the computer, and then locks the computer. Optional: Displays a message on the computer when it locks.
 
 
 #### Base Command
@@ -1940,17 +1964,17 @@ Jamf Pro Server Objects → Computers → Create
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| passcode | A 6 digits value. This will be the passcode which will be used to unlock the computer after being locked. | Required | 
-| id | The computer ID which you like to lock. | Required | 
-| lock_message | A message to display on the lock screen. | Optional | 
+| passcode | A 6-digit passcode to be used to unlock the computer after it was locked. | Required | 
+| id | The ID of the computer that you want to lock. | Required | 
+| lock_message | A message to display on the locked screen. | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| JAMF.ComputerCommand.name | String | The command name | 
-| JAMF.ComputerCommand.command_uuid | String | The command udid. | 
+| JAMF.ComputerCommand.name | String | The command name. | 
+| JAMF.ComputerCommand.command_uuid | String | The command UDID. | 
 | JAMF.ComputerCommand.computer_id | String | The computer ID. | 
 
 
@@ -1961,8 +1985,8 @@ Jamf Pro Server Objects → Computers → Create
 ```json
 {
     "JAMF": {
-        "ComputeCommands": {
-            "command_uuid": "f0b062ab-0fee-46af-8e81-f0a92c1e6564",
+        "ComputerCommand": {
+            "command_uuid": "2f410832-c87e-4b4c-aab7-8edaa22b2e08",
             "computer_id": "138",
             "name": "DeviceLock"
         }
@@ -1975,12 +1999,12 @@ Jamf Pro Server Objects → Computers → Create
 >### Computer 138 locked successfully
 >|Command UUID|Computer ID|Name|
 >|---|---|---|
->| f0b062ab-0fee-46af-8e81-f0a92c1e6564 | 138 | DeviceLock |
+>| 2f410832-c87e-4b4c-aab7-8edaa22b2e08 | 138 | DeviceLock |
 
 
 ### jamf-computer-erase
 ***
-Will send the “EraseDevice'' command to a computer. Permanently erases all the data on the computer and sets a passcode when required by the computer hardware type.
+Sends the “EraseDevice'' command to a computer. Permanently erases all the data on the computer and sets a passcode when required by the computer hardware type.
 
 
 #### Base Command
@@ -1996,8 +2020,8 @@ Jamf Pro Server Objects → Computers → Create
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| passcode | A 6 digits value. This will be the passcode which will lock the computer after being erased. | Required | 
-| id | The computer ID which you like to erase. | Required | 
+| passcode | A 6-digit passcode that locks the computer after being erased. | Required | 
+| id | The ID of the computer that you want to erase. | Required | 
 
 
 #### Context Output
@@ -2005,7 +2029,7 @@ Jamf Pro Server Objects → Computers → Create
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | JAMF.ComputerCommand.name | String | The command name. | 
-| JAMF.ComputerCommand.command_uuid | String | The command udid. | 
+| JAMF.ComputerCommand.command_uuid | String | The command UDID. | 
 | JAMF.ComputerCommand.computer_id | String | The computer ID. | 
 
 
@@ -2016,8 +2040,8 @@ Jamf Pro Server Objects → Computers → Create
 ```json
 {
     "JAMF": {
-        "ComputerCommands": {
-            "command_uuid": "ce0ad6a2-f4b7-452b-bc3e-f02ca5543981",
+        "ComputerCommand": {
+            "command_uuid": "91cfac41-7826-4d73-b8b7-9ab34848f2f2",
             "computer_id": "138",
             "name": "EraseDevice"
         }
@@ -2030,12 +2054,12 @@ Jamf Pro Server Objects → Computers → Create
 >### Computer 138 erased successfully
 >|Command UUID|Computer ID|Name|
 >|---|---|---|
->| ce0ad6a2-f4b7-452b-bc3e-f02ca5543981 | 138 | EraseDevice |
+>| 91cfac41-7826-4d73-b8b7-9ab34848f2f2 | 138 | EraseDevice |
 
 
 ### jamf-get-users
 ***
-Return a list of users with their IDs and names. By default, will return the first 50 users to the context (ID + name).
+Returns a list of users with their IDs and names. By default, returns the first 50 users to the context (ID + name).
 
 
 #### Base Command
@@ -2049,8 +2073,8 @@ Jamf Pro Server Objects → Users → Read
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| limit | Maximum number of users to retrieve (maximal value is 200). Default is 50. | Optional | 
-| page | Number of requested page. Default is 0. | Optional | 
+| limit | Maximum number of users to retrieve. The maximal value is 200. Default is 50. | Optional | 
+| page | The number of the requested page. Default is 0. | Optional | 
 
 
 #### Context Output
@@ -2061,7 +2085,7 @@ Jamf Pro Server Objects → Users → Read
 | JAMF.User.name | String | The user name. | 
 | JAMF.User.Paging.total_results | Number | The number of users returned in this specific search. | 
 | JAMF.User.Paging.page_size | Number | The number of users to be returned on each page. | 
-| JAMF.User.Paging.current_page | Number | Number of requested page. | 
+| JAMF.User.Paging.current_page | Number | The number of requested page. | 
 
 
 #### Command Example
@@ -2083,6 +2107,13 @@ Jamf Pro Server Objects → Users → Read
             {
                 "id": 76,
                 "name": "dummy00001"
+            },
+            {
+                "Paging": {
+                    "current_page": 0,
+                    "page_size": 3,
+                    "total_results": 98
+                }
             }
         ]
     }
@@ -2090,6 +2121,11 @@ Jamf Pro Server Objects → Users → Read
 ```
 
 #### Human Readable Output
+
+>### Paging for get users
+>|Current Page|Page Size|Total Results|
+>|---|---|---|
+>| 0 | 3 | 98 |
 
 >### Jamf get users result 
 > Total results:98
@@ -2104,7 +2140,7 @@ Jamf Pro Server Objects → Users → Read
 
 ### jamf-get-user-by-id
 ***
-Return a specific user with general data about the user according to the given ID.
+Returns a specific user with general data about the user according to the given ID.
 
 
 #### Base Command
@@ -2120,7 +2156,7 @@ Jamf Pro Server Settings → Apple Education Support → Read (in order to view 
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| id | The user ID. | Required | 
+| id | The user ID.<br/>To get the user ID, run the `jamf-get-users` command to get all user names and IDs. | Required | 
 
 
 #### Context Output
@@ -2134,9 +2170,9 @@ Jamf Pro Server Settings → Apple Education Support → Read (in order to view 
 | JAMF.User.email_address | String | The user email address. | 
 | JAMF.User.phone_number | String | The user phone number. | 
 | JAMF.User.position | String | The user position. | 
-| JAMF.User.managed_apple_id | String | The user managed apple ID. | 
-| JAMF.User.enable_custom_photo_url | Boolean | If the user custom photo URl is enabled. | 
-| JAMF.User.custom_photo_url | String | The user custom photo url. | 
+| JAMF.User.managed_apple_id | String | The user managed Apple ID. | 
+| JAMF.User.enable_custom_photo_url | Boolean | Whether the user custom photo URL is enabled. | 
+| JAMF.User.custom_photo_url | String | The user custom photo URL. | 
 | JAMF.User.ldap_server.id | Number | The user LDAP server ID. | 
 | JAMF.User.ldap_server.name | String | The user LDAP server name. | 
 | JAMF.User.extension_attributes.id | Number | The user extension attributes ID. | 
@@ -2146,18 +2182,18 @@ Jamf Pro Server Settings → Apple Education Support → Read (in order to view 
 | JAMF.User.sites.id | Number | The user's site ID. | 
 | JAMF.User.sites.name | String | The user's site name. | 
 | JAMF.User.links.total_vpp_code_count | Number | The user total VPP code acount. | 
-| JAMF.User.links.vpp_assignments.id | Number | The vpp assignment ID which is linked to the user. | 
-| JAMF.User.links.vpp_assignments.name | String | The vpp assignment name which is linked to the user. | 
-| JAMF.User.links.computers.id | Number | The computer ID which is linked to the user. | 
-| JAMF.User.links.computers.name | String | The computer name which is linked to the user. | 
-| JAMF.User.links.peripherals.id | Number | The peripherals ID which is linked to the user. | 
-| JAMF.User.links.peripherals.name | String | The peripherals name which is linked to the user. | 
-| JAMF.User.links.mobile_devices.id | String | The mobile device ID which is linked to the user. | 
-| JAMF.User.links.mobile_devices.name | String | The mobile device name which is linked to the user. | 
-| JAMF.User.user_groups.size | Number | The user groups size. | 
+| JAMF.User.links.vpp_assignments.id | Number | The VPP assignment ID that is linked to the user. | 
+| JAMF.User.links.vpp_assignments.name | String | The VPP assignment name that is linked to the user. | 
+| JAMF.User.links.computers.id | Number | The computer ID that is linked to the user. | 
+| JAMF.User.links.computers.name | String | The computer name that is linked to the user. | 
+| JAMF.User.links.peripherals.id | Number | The peripherals ID that is linked to the user. | 
+| JAMF.User.links.peripherals.name | String | The peripherals name that is linked to the user. | 
+| JAMF.User.links.mobile_devices.id | String | The mobile device ID that is linked to the user. | 
+| JAMF.User.links.mobile_devices.name | String | The mobile device name that is linked to the user. | 
+| JAMF.User.user_groups.size | Number | The user group size. | 
 | JAMF.User.user_groups.user_group.id | Number | The user group ID. | 
 | JAMF.User.user_groups.user_group.name | String | The user group name. | 
-| JAMF.User.user_groups.user_group.is_smart | Boolean | If the user group is smart. | 
+| JAMF.User.user_groups.user_group.is_smart | Boolean | Whether the user group is smart. | 
 
 
 #### Command Example
@@ -2248,7 +2284,7 @@ Jamf Pro Server Settings → Apple Education Support → Read (in order to view 
 
 ### jamf-get-user-by-name
 ***
-Return a specific user with general data about the user according to the given name.
+Returns a specific user with general data about the user according to the given name.
 
 
 #### Base Command
@@ -2278,9 +2314,9 @@ Jamf Pro Server Settings → Apple Education Support → Read (in order to view 
 | JAMF.User.email_address | String | The user email address. | 
 | JAMF.User.phone_number | String | The user phone number. | 
 | JAMF.User.position | String | The user position. | 
-| JAMF.User.managed_apple_id | String | The user managed apple ID. | 
-| JAMF.User.enable_custom_photo_url | Boolean | If the user custom photo URl is enabled. | 
-| JAMF.User.custom_photo_url | String | The user custom photo url. | 
+| JAMF.User.managed_apple_id | String | The user managed Apple ID. | 
+| JAMF.User.enable_custom_photo_url | Boolean | Whether the user custom photo URL is enabled. | 
+| JAMF.User.custom_photo_url | String | The user custom photo URL. | 
 | JAMF.User.ldap_server.id | Number | The user LDAP server ID. | 
 | JAMF.User.ldap_server.name | String | The user LDAP server name. | 
 | JAMF.User.extension_attributes.id | Number | The user extension attributes ID. | 
@@ -2290,18 +2326,18 @@ Jamf Pro Server Settings → Apple Education Support → Read (in order to view 
 | JAMF.User.sites.site.id | Number | The user's site ID. | 
 | JAMF.User.sites.site.name | String | The user's site name. | 
 | JAMF.User.links.total_vpp_code_count | Number | The user total VPP code acount. | 
-| JAMF.User.links.vpp_assignments.id | Number | The vpp assignment ID which is linked to the user. | 
-| JAMF.User.links.vpp_assignments.name | String | The vpp assignment name which is linked to the user. | 
-| JAMF.User.links.computers.id | Number | The computer ID which is linked to the user. | 
-| JAMF.User.links.computers.name | String | The computer name which is linked to the user. | 
-| JAMF.User.links.peripherals.id | Number | The peripherals ID which is linked to the user. | 
-| JAMF.User.links.peripherals.name | String | The peripherals name which is linked to the user. | 
-| JAMF.User.links.mobile_devices.id | String | The mobile device ID which is linked to the user. | 
-| JAMF.User.links.mobile_devices.name | String | The mobile device name which is linked to the user. | 
+| JAMF.User.links.vpp_assignments.id | Number | The VPP assignment ID that is linked to the user. | 
+| JAMF.User.links.vpp_assignments.name | String | The VPP assignment name that is linked to the user. | 
+| JAMF.User.links.computers.id | Number | The computer ID that is linked to the user. | 
+| JAMF.User.links.computers.name | String | The computer name that is linked to the user. | 
+| JAMF.User.links.peripherals.id | Number | The peripherals ID that is linked to the user. | 
+| JAMF.User.links.peripherals.name | String | The peripherals name that is linked to the user. | 
+| JAMF.User.links.mobile_devices.id | String | The mobile device ID that is linked to the user. | 
+| JAMF.User.links.mobile_devices.name | String | The mobile device name that is linked to the user. | 
 | JAMF.User.user_groups.size | Number | The user groups size. | 
 | JAMF.User.user_groups.user_group.id | Number | The user group ID. | 
 | JAMF.User.user_groups.user_group.name | String | The user group name. | 
-| JAMF.User.user_groups.user_group.is_smart | Boolean | If the user group is smart. | 
+| JAMF.User.user_groups.user_group.is_smart | Boolean | Whether the user group is smart. | 
 
 
 #### Command Example
@@ -2393,7 +2429,7 @@ Jamf Pro Server Settings → Apple Education Support → Read (in order to view 
 
 ### jamf-get-user-by-email
 ***
-Return a specific user with general data about the user according to the given email.
+Returns a specific user with general data about the user according to the given email.
 
 
 #### Base Command
@@ -2423,9 +2459,9 @@ Jamf Pro Server Settings → Apple Education Support → Read (in order to view 
 | JAMF.User.email_address | String | The user email address. | 
 | JAMF.User.phone_number | String | The user phone number. | 
 | JAMF.User.position | String | The user position. | 
-| JAMF.User.managed_apple_id | String | The user managed apple ID. | 
-| JAMF.User.enable_custom_photo_url | Boolean | If the user custom photo URl is enabled. | 
-| JAMF.User.custom_photo_url | String | The user custom photo url. | 
+| JAMF.User.managed_apple_id | String | The user managed Apple ID. | 
+| JAMF.User.enable_custom_photo_url | Boolean | Whether the user custom photo URL is enabled. | 
+| JAMF.User.custom_photo_url | String | The user custom photo URL. | 
 | JAMF.User.ldap_server.id | Number | The user LDAP server ID. | 
 | JAMF.User.ldap_server.name | String | The user LDAP server name. | 
 | JAMF.User.extension_attributes.id | Number | The user extension attributes ID. | 
@@ -2435,14 +2471,14 @@ Jamf Pro Server Settings → Apple Education Support → Read (in order to view 
 | JAMF.User.sites.site.id | Number | The user's site ID. | 
 | JAMF.User.sites.site.name | String | The user's site name. | 
 | JAMF.User.links.total_vpp_code_count | Number | The user total VPP code acount. | 
-| JAMF.User.links.vpp_assignments.id | Number | The vpp assignment ID which is linked to the user. | 
-| JAMF.User.links.vpp_assignments.name | String | The vpp assignment name which is linked to the user. | 
-| JAMF.User.links.computers.id | Number | The computer ID which is linked to the user. | 
-| JAMF.User.links.computers.name | String | The computer name which is linked to the user. | 
-| JAMF.User.links.peripherals.id | Number | The peripherals ID which is linked to the user. | 
-| JAMF.User.links.peripherals.name | String | The peripherals name which is linked to the user. | 
-| JAMF.User.links.mobile_devices.id | String | The mobile device ID which is linked to the user. | 
-| JAMF.User.links.mobile_devices.name | String | The mobile device name which is linked to the user. | 
+| JAMF.User.links.vpp_assignments.id | Number | The VPP assignment ID that is linked to the user. | 
+| JAMF.User.links.vpp_assignments.name | String | The VPP assignment name that is linked to the user. | 
+| JAMF.User.links.computers.id | Number | The computer ID that is linked to the user. | 
+| JAMF.User.links.computers.name | String | The computer name that is linked to the user. | 
+| JAMF.User.links.peripherals.id | Number | The peripherals ID that is linked to the user. | 
+| JAMF.User.links.peripherals.name | String | The peripherals name that is linked to the user. | 
+| JAMF.User.links.mobile_devices.id | String | The mobile device ID that is linked to the user. | 
+| JAMF.User.links.mobile_devices.name | String | The mobile device name that is linked to the user. | 
 | JAMF.User.user_groups.size | Number | The user groups size. | 
 | JAMF.User.user_groups.user_group.id | Number | The user group ID. | 
 | JAMF.User.user_groups.user_group.name | String | The user group name. | 
@@ -2533,7 +2569,7 @@ Jamf Pro Server Settings → Apple Education Support → Read (in order to view 
 
 ### jamf-get-mobile-devices
 ***
-This command will return a list of devices with some basic data on each one of them.  By default, will return the first 50 devices to the context (ID + name).
+Returns a list of devices with  basic data on each. By default, returns the first 50 devices to the context (ID + name).
 
 
 #### Base Command
@@ -2547,7 +2583,7 @@ Jamf Pro Server Objects → Mobile Devices → Read
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| limit | Maximum number of devices to retrieve (maximal value is 200). Default is 50. | Optional | 
+| limit | Maximum number of devices to retrieve. Maximal value is 200. Default is 50. | Optional | 
 | page | Number of requested page. Default is 0. | Optional | 
 
 
@@ -2558,12 +2594,12 @@ Jamf Pro Server Objects → Mobile Devices → Read
 | JAMF.MobileDevice.id | Number | The mobile device ID. | 
 | JAMF.MobileDevice.name | String | The mobile device name. | 
 | JAMF.MobileDevice.device_name | String | The mobile device name. | 
-| JAMF.MobileDevice.udid | String | The mobile device udid. | 
+| JAMF.MobileDevice.udid | String | The mobile device UDID. | 
 | JAMF.MobileDevice.serial_number | String | The mobile device serial number. | 
 | JAMF.MobileDevice.phone_number | String | The mobile device phone number. | 
-| JAMF.MobileDevice.wifi_mac_address | String | The mobile device WIFI mac address. | 
-| JAMF.MobileDevice.managed | Boolean | If the mobile device is managed. | 
-| JAMF.MobileDevice.supervised | Boolean | If the mobile device is supervised. | 
+| JAMF.MobileDevice.wifi_mac_address | String | The mobile device WIFI MAC address. | 
+| JAMF.MobileDevice.managed | Boolean | Whether the mobile device is managed. | 
+| JAMF.MobileDevice.supervised | Boolean | Whether the mobile device is supervised. | 
 | JAMF.MobileDevice.model | String | The mobile device model. | 
 | JAMF.MobileDevice.model_identifier | String | The mobile device model ID. | 
 | JAMF.MobileDevice.modelDisplay | String | The mobile device model display. | 
@@ -2571,7 +2607,8 @@ Jamf Pro Server Objects → Mobile Devices → Read
 | JAMF.MobileDevice.username | String | The mobile device username. | 
 | JAMF.MobileDevice.Paging.total_results | Number | The number of mobile devices returned in this specific search. | 
 | JAMF.MobileDevice.Paging.page_size | Number | The number of mobile devices to be returned on each page. | 
-| JAMF.MobileDevice.Paging.current_page | Number | Number of requested page. | 
+| JAMF.MobileDevice.Paging.current_page | Number | The number of the requested page. | 
+
 
 #### Command Example
 ```!jamf-get-mobile-devices limit=3```
@@ -2628,6 +2665,13 @@ Jamf Pro Server Objects → Mobile Devices → Read
                 "udid": "ca44f33660a311e490b812df261f2c7e",
                 "username": "user60",
                 "wifi_mac_address": "1C:E6:2B:A5:62:51"
+            },
+            {
+                "Paging": {
+                    "current_page": 0,
+                    "page_size": 3,
+                    "total_results": 114
+                }
             }
         ]
     }
@@ -2636,10 +2680,12 @@ Jamf Pro Server Objects → Mobile Devices → Read
 
 #### Human Readable Output
 
+>### Paging for get mobile devices
+>|Current Page|Page Size|Total Results|
+>|---|---|---|
+>| 0 | 3 | 114 |
+
 >### Jamf get mobile devices result 
-> Total results:114
->Results per page: 3
->Page: 0
 >|ID|Name|Serial Number|UDID|
 >|---|---|---|---|
 >| 1 | Device 71 | CA44F4D060A3 | ca44f4c660a311e490b812df261f2c7e |
@@ -2649,7 +2695,7 @@ Jamf Pro Server Objects → Mobile Devices → Read
 
 ### jamf-get-mobile-device-by-id
 ***
-This command will return  the "general" subset of a specific mobile device, e.g: name, mac address, ip, serial number, udid etc.
+Returns the "general" subset of a specific mobile device, e.g.: name, MAC address, IP, serial number, UDID. etc.
 
 
 #### Base Command
@@ -2692,7 +2738,7 @@ Jamf Pro Server Objects → Mobile Devices → Read
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| id | Gets the “general” subset of a specific device. | Required | 
+| id | Gets the “general” subset of a specific device.<br/>To get the mobile device ID, run the `jamf-get-mobile-devices` command to get all mobile devices names and IDs. | Required | 
 
 
 #### Context Output
@@ -2704,25 +2750,25 @@ Jamf Pro Server Objects → Mobile Devices → Read
 | JAMF.MobileDevice.device_name | String | The mobile device name. | 
 | JAMF.MobileDevice.name | String | The mobile device name. | 
 | JAMF.MobileDevice.asset_tag | String | The mobile device asset ID. | 
-| JAMF.MobileDevice.last_inventory_update | String | The mobile device last inventory update. | 
-| JAMF.MobileDevice.last_inventory_update_epoch | Date | The mobile device last inventory update in epoch. | 
-| JAMF.MobileDevice.last_inventory_update_utc | Date | The mobile device last inventory update in UTC. | 
+| JAMF.MobileDevice.last_inventory_update | String | The date of the mobile device last inventory update. | 
+| JAMF.MobileDevice.last_inventory_update_epoch | Date | The date of the mobile device last inventory update in epoch format. | 
+| JAMF.MobileDevice.last_inventory_update_utc | Date | The date of the mobile device last inventory update in UTC format. | 
 | JAMF.MobileDevice.capacity | Number | The mobile device capacity. | 
-| JAMF.MobileDevice.capacity_mb | Number | The mobile device capacity MB. | 
-| JAMF.MobileDevice.available | Number | The mobile device available. | 
-| JAMF.MobileDevice.available_mb | Number | The mobile device available MB. | 
-| JAMF.MobileDevice.percentage_used | Number | The mobile device available percentage used. | 
-| JAMF.MobileDevice.os_type | String | The mobile device OS type. | 
-| JAMF.MobileDevice.os_version | String | The mobile device OS version. | 
-| JAMF.MobileDevice.os_build | String | The mobile device OS build. | 
+| JAMF.MobileDevice.capacity_mb | Number | The mobile device capacity in MB. | 
+| JAMF.MobileDevice.available | Number | The mobile device available storage. | 
+| JAMF.MobileDevice.available_mb | Number | The mobile device available storage in MB. | 
+| JAMF.MobileDevice.percentage_used | Number | The percentage of memory used. | 
+| JAMF.MobileDevice.os_type | String | The mobile device operating system type. | 
+| JAMF.MobileDevice.os_version | String | The mobile device operating system version. | 
+| JAMF.MobileDevice.os_build | String | The mobile device operating system build. | 
 | JAMF.MobileDevice.serial_number | String | The mobile device serial number. | 
-| JAMF.MobileDevice.udid | String | The mobile device udid. | 
-| JAMF.MobileDevice.initial_entry_date_epoch | Date | The mobile device  initial entry date in epoch. | 
-| JAMF.MobileDevice.initial_entry_date_utc | Date | The mobile device  initial entry date in UTC. | 
+| JAMF.MobileDevice.udid | String | The mobile device UDID. | 
+| JAMF.MobileDevice.initial_entry_date_epoch | Date | The mobile device  initial entry date in epoch format. | 
+| JAMF.MobileDevice.initial_entry_date_utc | Date | The mobile device  initial entry date in UTC format. | 
 | JAMF.MobileDevice.phone_number | String | The mobile device phone number. | 
 | JAMF.MobileDevice.ip_address | String | The mobile device IP address. | 
-| JAMF.MobileDevice.wifi_mac_address | String | The mobile device WIFI mac address. | 
-| JAMF.MobileDevice.bluetooth_mac_address | String | The mobile device bluetooth mac address. | 
+| JAMF.MobileDevice.wifi_mac_address | String | The mobile device WIFI MAC address. | 
+| JAMF.MobileDevice.bluetooth_mac_address | String | The mobile device bluetooth MAC address. | 
 | JAMF.MobileDevice.modem_firmware | String | The mobile device modem fireware. | 
 | JAMF.MobileDevice.model | String | The mobile device model. | 
 | JAMF.MobileDevice.model_identifier | String | The mobile device model ID. | 
@@ -2732,28 +2778,28 @@ Jamf Pro Server Objects → Mobile Devices → Read
 | JAMF.MobileDevice.device_ownership_level | String | The mobile device ownership level. | 
 | JAMF.MobileDevice.enrollment_method | String | The mobile device enrollment method. | 
 | JAMF.MobileDevice.last_enrollment_epoch | Number | The mobile device last enrollment in epoch. | 
-| JAMF.MobileDevice.last_enrollment_utc | String | The mobile device last enrollment in UTC. | 
-| JAMF.MobileDevice.mdm_profile_expiration_epoch | Number | The mobile device mdm profile expiration in epoch. | 
-| JAMF.MobileDevice.mdm_profile_expiration_utc | String | The mobile device mdm profile expiration in UTC. | 
-| JAMF.MobileDevice.managed | Boolean | If the mobile device is managed. | 
-| JAMF.MobileDevice.supervised | Boolean | If the mobile device is supervised. | 
+| JAMF.MobileDevice.last_enrollment_utc | String | The mobile device last enrollment in UTC format. | 
+| JAMF.MobileDevice.mdm_profile_expiration_epoch | Number | The mobile device MDM profile expiration in epoch format. | 
+| JAMF.MobileDevice.mdm_profile_expiration_utc | String | The mobile device MDM profile expiration in UTC format. | 
+| JAMF.MobileDevice.managed | Boolean | Whether the mobile device is managed. | 
+| JAMF.MobileDevice.supervised | Boolean | Whether the mobile device is supervised. | 
 | JAMF.MobileDevice.exchange_activesync_device_identifier | String | The mobile device exchange active sync device ID. | 
-| JAMF.MobileDevice.shared | String | The mobile device shared. | 
-| JAMF.MobileDevice.diagnostic_submission | String | The mobile device diagnostic submission, | 
+| JAMF.MobileDevice.shared | String | Whether the device is shared. | 
+| JAMF.MobileDevice.diagnostic_submission | String | The mobile device diagnostic submission. | 
 | JAMF.MobileDevice.app_analytics | String | The mobile device app analytics. | 
-| JAMF.MobileDevice.tethered | String | The mobile device tethered. | 
+| JAMF.MobileDevice.tethered | String | The mobile device tethered status. | 
 | JAMF.MobileDevice.battery_level | Number | The mobile device battery level. | 
-| JAMF.MobileDevice.ble_capable | Boolean | The mobile device ble capable. | 
-| JAMF.MobileDevice.device_locator_service_enabled | Boolean | If the mobile device locator service is enabled. | 
-| JAMF.MobileDevice.do_not_disturb_enabled | Boolean | If the mobile device do not disturb is enabled. | 
-| JAMF.MobileDevice.cloud_backup_enabled | Boolean | If the mobile device cloud backup is enabled. | 
-| JAMF.MobileDevice.last_cloud_backup_date_epoch | Date | The mobie device last cloud update backup date in epoch. | 
-| JAMF.MobileDevice.last_cloud_backup_date_utc | Date | The mobie device last cloud update backup date in UTC. | 
-| JAMF.MobileDevice.location_services_enabled | Boolean | If the mobile device location services is enabled. | 
-| JAMF.MobileDevice.itunes_store_account_is_active | Boolean | If the mobile device itunes store accouns is enabled. | 
-| JAMF.MobileDevice.last_backup_time_epoch | Number | The mobile device last backup time in epoch. | 
-| JAMF.MobileDevice.last_backup_time_utc | String | The mobile device last backup time in UTC. | 
-| JAMF.MobileDevice.site.id | Number | Tyhe mobile device site ID. | 
+| JAMF.MobileDevice.ble_capable | Boolean | Whether the mobile device is BLE capable. | 
+| JAMF.MobileDevice.device_locator_service_enabled | Boolean | Whether the mobile device locator service is enabled. | 
+| JAMF.MobileDevice.do_not_disturb_enabled | Boolean | Whether the mobile device do not disturb is enabled. | 
+| JAMF.MobileDevice.cloud_backup_enabled | Boolean | Whether the mobile device cloud backup is enabled. | 
+| JAMF.MobileDevice.last_cloud_backup_date_epoch | Date | The mobile device last cloud update backup date in epoch format. | 
+| JAMF.MobileDevice.last_cloud_backup_date_utc | Date | The mobile device last cloud update backup date in UTC format. | 
+| JAMF.MobileDevice.location_services_enabled | Boolean | Whether the mobile device location services is enabled. | 
+| JAMF.MobileDevice.itunes_store_account_is_active | Boolean | Whether the mobile device iTunes store account is enabled. | 
+| JAMF.MobileDevice.last_backup_time_epoch | Number | The mobile device last backup time in epoch format. | 
+| JAMF.MobileDevice.last_backup_time_utc | String | The mobile device last backup time in UTC format. | 
+| JAMF.MobileDevice.site.id | Number | The mobile device site ID. | 
 | JAMF.MobileDevice.site.name | String | The mobile device site name. | 
 
 
@@ -2807,7 +2853,7 @@ Jamf Pro Server Objects → Mobile Devices → Read
             "model_identifier": "iPhone11,6",
             "model_number": "NT6J2LL",
             "modem_firmware": "3.03.05",
-            "name": "\u05d6\u05d4\u05d1\u05d9\u05ea\u2019s iPhone",
+            "name": "test iPhone",
             "os_build": "18E212",
             "os_type": "iOS",
             "os_version": "14.5.1",
@@ -2833,12 +2879,12 @@ Jamf Pro Server Objects → Mobile Devices → Read
 >### Jamf get mobile devices result on mobile ID:114
 >|Bluetooth MAC address|ID|IP address|Managed|Model|Model Number|Name|Serial Number|Supervised|UDID|WIFI MAC address|
 >|---|---|---|---|---|---|---|---|---|---|---|
->| F8:E9:4E:8C:34:F5 | 114 | 123.243.192.22 | false | iPhone XS Max | NT6J2LL | זהבית’s iPhone | F2LXX5ZKKPHG | false | 00008020-001C285E3EE1002E | F8:E9:4E:96:21:FB |
+>| F8:E9:4E:8C:34:F5 | 114 | 123.243.192.22 | false | iPhone XS Max | NT6J2LL | test iPhone | F2LXX5ZKKPHG | false | 00008020-001C285E3EE1002E | F8:E9:4E:96:21:FB |
 
 
 ### jamf-get-mobile-device-by-match
 ***
-This command will match mobile devices by specific characteristics and returns general data on each one of the mobile device.
+Matches mobile devices by specific characteristics and returns general data on each one of the mobile devices.
 
 
 #### Base Command
@@ -2852,9 +2898,9 @@ Jamf Pro Server Objects → Mobile Devices → Read
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| match | Match devices by specific characteristics (supports wildcards) like: name, udid, serial_number, mac_address, username, email. e.g: “match=john*”, “match=C52F72FACB9T”. Possible values are: . | Required | 
-| limit | Maximum number of devices to retrieve (maximal value is 200). Default is 50. | Optional | 
-| page | Number of requested page. Default is 0. | Optional | 
+| match | The specific characteristics by which to match devices such as: name, udid, serial_number, mac_address, username, email. e.g: “match=john*”, “match=C52F72FACB9T”. (Supports wildcards). Possible values are: . | Required | 
+| limit | Maximum number of devices to retrieve. (Maximal value is 200). Default is 50. | Optional | 
+| page | The number of the requested page. Default is 0. | Optional | 
 
 
 #### Context Output
@@ -2863,10 +2909,10 @@ Jamf Pro Server Objects → Mobile Devices → Read
 | --- | --- | --- |
 | JAMF.MobileDevice.id | Number | The mobile device ID. | 
 | JAMF.MobileDevice.name | String | The mobile device name. | 
-| JAMF.MobileDevice.udid | String | The mobile device udid. | 
+| JAMF.MobileDevice.udid | String | The mobile device UDID. | 
 | JAMF.MobileDevice.serial_number | String | The mobile device serial number. | 
-| JAMF.MobileDevice.mac_address | String | The mobile device mac address. | 
-| JAMF.MobileDevice.wifi_mac_address | String | The mobile device WIFI mac address. | 
+| JAMF.MobileDevice.mac_address | String | The mobile device MAC address. | 
+| JAMF.MobileDevice.wifi_mac_address | String | The mobile device WIFI MAC address. | 
 | JAMF.MobileDevice.username | String | The mobile device username. | 
 | JAMF.MobileDevice.realname | String | The mobile device real name. | 
 | JAMF.MobileDevice.email | String | The mobile device user email address. | 
@@ -2879,7 +2925,7 @@ Jamf Pro Server Objects → Mobile Devices → Read
 | JAMF.MobileDevice.department_name | String | The mobile device department name. | 
 | JAMF.MobileDevice.Paging.total_results | Number | The number of mobile devices returned in this specific search. | 
 | JAMF.MobileDevice.Paging.page_size | Number | The number of mobile devices to be returned on each page. | 
-| JAMF.MobileDevice.Paging.current_page | Number | Number of requested page. | 
+| JAMF.MobileDevice.Paging.current_page | Number | The number of the requested page. | 
 
 
 #### Command Example
@@ -2890,6 +2936,11 @@ Jamf Pro Server Objects → Mobile Devices → Read
 {
     "JAMF": {
         "MobileDevice": {
+            "Paging": {
+                "current_page": 0,
+                "page_size": 50,
+                "total_results": 1
+            },
             "building": "",
             "building_name": "",
             "department": "",
@@ -2913,10 +2964,12 @@ Jamf Pro Server Objects → Mobile Devices → Read
 
 #### Human Readable Output
 
+>### Paging for get mobile devices
+>|Current Page|Page Size|Total Results|
+>|---|---|---|
+>| 0 | 50 | 1 |
+
 >### Jamf get mobile devices result 
-> Total results:1
->Results per page: 50
->Page: 0
 >|ID|Name|Serial Number|UDID|
 >|---|---|---|---|
 >| 1 | Device 71 | CA44F4D060A3 | ca44f4c660a311e490b812df261f2c7e |
@@ -2938,8 +2991,8 @@ Jamf Pro Server Objects → Mobile Devices → Read
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| identifier | In order to identify which device is requested, one of these identifiers should be selected: id, name, udid, serial_number, mac_address. Possible values are: id, name, udid, serialnumber, macaddress. | Required | 
-| identifier_value | The value of the “identifier”. For example, if we choose the “id” identifier, a value of a mobile device’s id should be passed. If we choose the “mac_address” identifier, a value of a mobile device’s mac address should be passed, etc. | Required | 
+| identifier | The identifier used to determine which computer is requested. Possible values: "id", "name", "udid", "serialnumber", and "macaddress". Possible values are: id, name, udid, serialnumber, macaddress. | Required | 
+| identifier_value | The value of the "identifier". For example, if you choose the "id" identifier, a computer ID should be passed. If you choose "macaddress" as the identifier, a computer’s MAC address should be passed, etc. | Required | 
 
 
 #### Context Output
@@ -2952,25 +3005,25 @@ Jamf Pro Server Objects → Mobile Devices → Read
 | JAMF.MobileDeviceSubset.general.device_name | String | The mobile device name. | 
 | JAMF.MobileDeviceSubset.general.name | String | The mobile device name. | 
 | JAMF.MobileDeviceSubset.general.asset_tag | String | The mobile device asset ID. | 
-| JAMF.MobileDeviceSubset.general.last_inventory_update | String | The mobile device last inventory update. | 
-| JAMF.MobileDeviceSubset.general.last_inventory_update_epoch | Date | The mobile device last inventory update in epoch. | 
-| JAMF.MobileDeviceSubset.general.last_inventory_update_utc | Date | The mobile device last inventory update in UTC. | 
+| JAMF.MobileDeviceSubset.general.last_inventory_update | String | The date of the mobile device last inventory update. | 
+| JAMF.MobileDeviceSubset.general.last_inventory_update_epoch | Date | The date of the mobile device last inventory update in epoch format. | 
+| JAMF.MobileDeviceSubset.general.last_inventory_update_utc | Date | The date of the mobile device last inventory update in UTC format. | 
 | JAMF.MobileDeviceSubset.general.capacity | Number | The mobile device capacity. | 
-| JAMF.MobileDeviceSubset.general.capacity_mb | Number | The mobile device capacity MB. | 
-| JAMF.MobileDeviceSubset.general.available | Number | The mobile device available. | 
-| JAMF.MobileDeviceSubset.general.available_mb | Number | The mobile device available MB. | 
-| JAMF.MobileDeviceSubset.general.percentage_used | Number | The mobile device available percentage used. | 
-| JAMF.MobileDeviceSubset.general.os_type | String | The mobile device OS type. | 
-| JAMF.MobileDeviceSubset.general.os_version | String | The mobile device OS version. | 
-| JAMF.MobileDeviceSubset.general.os_build | String | The mobile device OS build. | 
+| JAMF.MobileDeviceSubset.general.capacity_mb | Number | The mobile device capacity in MB. | 
+| JAMF.MobileDeviceSubset.general.available | Number | The available memory in the mobile device. | 
+| JAMF.MobileDeviceSubset.general.available_mb | Number | The available memory in the mobile device in MB. | 
+| JAMF.MobileDeviceSubset.general.percentage_used | Number | The percentage of memory used in the mobile device. | 
+| JAMF.MobileDeviceSubset.general.os_type | String | The mobile device operating system type. | 
+| JAMF.MobileDeviceSubset.general.os_version | String | The mobile device operating system version. | 
+| JAMF.MobileDeviceSubset.general.os_build | String | The mobile device operating system build. | 
 | JAMF.MobileDeviceSubset.general.serial_number | String | The mobile device serial number. | 
-| JAMF.MobileDeviceSubset.general.udid | String | The mobile device udid. | 
-| JAMF.MobileDeviceSubset.general.initial_entry_date_epoch | Date | The mobile device  initial entry date in epoch. | 
-| JAMF.MobileDeviceSubset.general.initial_entry_date_utc | Date | The mobile device  initial entry date in UTC. | 
+| JAMF.MobileDeviceSubset.general.udid | String | The mobile device UDID. | 
+| JAMF.MobileDeviceSubset.general.initial_entry_date_epoch | Date | The mobile device initial entry date in epoch format. | 
+| JAMF.MobileDeviceSubset.general.initial_entry_date_utc | Date | The mobile device initial entry date in UTC format. | 
 | JAMF.MobileDeviceSubset.general.phone_number | String | The mobile device phone number. | 
 | JAMF.MobileDeviceSubset.general.ip_address | String | The mobile device IP address. | 
-| JAMF.MobileDeviceSubset.general.wifi_mac_address | String | The mobile device WIFI mac address. | 
-| JAMF.MobileDeviceSubset.general.bluetooth_mac_address | String | The mobile device bluetooth mac address. | 
+| JAMF.MobileDeviceSubset.general.wifi_mac_address | String | The mobile device WIFI MAC address. | 
+| JAMF.MobileDeviceSubset.general.bluetooth_mac_address | String | The mobile device bluetooth MAC address. | 
 | JAMF.MobileDeviceSubset.general.modem_firmware | String | The mobile device modem fireware. | 
 | JAMF.MobileDeviceSubset.general.model | String | The mobile device model. | 
 | JAMF.MobileDeviceSubset.general.model_identifier | String | The mobile device model ID. | 
@@ -2979,29 +3032,29 @@ Jamf Pro Server Objects → Mobile Devices → Read
 | JAMF.MobileDeviceSubset.general.model_display | String | The mobile device model display. | 
 | JAMF.MobileDeviceSubset.general.device_ownership_level | String | The mobile device ownership level. | 
 | JAMF.MobileDeviceSubset.general.enrollment_method | String | The mobile device enrollment method. | 
-| JAMF.MobileDeviceSubset.general.last_enrollment_epoch | Number | The mobile device last enrollment in epoch. | 
-| JAMF.MobileDeviceSubset.general.last_enrollment_utc | String | The mobile device last enrollment in UTC. | 
-| JAMF.MobileDeviceSubset.general.mdm_profile_expiration_epoch | Number | The mobile device mdm profile expiration in epoch. | 
-| JAMF.MobileDeviceSubset.general.mdm_profile_expiration_utc | String | The mobile device mdm profile expiration in UTC. | 
-| JAMF.MobileDeviceSubset.general.managed | Boolean | If the mobile device is managed. | 
-| JAMF.MobileDeviceSubset.general.supervised | Boolean | If the mobile device is supervised. | 
+| JAMF.MobileDeviceSubset.general.last_enrollment_epoch | Number | The mobile device last enrollment in epoch format. | 
+| JAMF.MobileDeviceSubset.general.last_enrollment_utc | String | The mobile device last enrollment in UTC format. | 
+| JAMF.MobileDeviceSubset.general.mdm_profile_expiration_epoch | Number | The mobile device MDM profile expiration in epoch format. | 
+| JAMF.MobileDeviceSubset.general.mdm_profile_expiration_utc | String | The mobile device MDM profile expiration in UTC format. | 
+| JAMF.MobileDeviceSubset.general.managed | Boolean | Whether the mobile device is managed. | 
+| JAMF.MobileDeviceSubset.general.supervised | Boolean | Whether the mobile device is supervised. | 
 | JAMF.MobileDeviceSubset.general.exchange_activesync_device_identifier | String | The mobile device exchange active sync device ID. | 
-| JAMF.MobileDeviceSubset.general.shared | String | The mobile device shared. | 
-| JAMF.MobileDeviceSubset.general.diagnostic_submission | String | The mobile device diagnostic submission, | 
+| JAMF.MobileDeviceSubset.general.shared | String | Whether the device is shared. | 
+| JAMF.MobileDeviceSubset.general.diagnostic_submission | String | The mobile device diagnostic submission. | 
 | JAMF.MobileDeviceSubset.general.app_analytics | String | The mobile device app analytics. | 
-| JAMF.MobileDeviceSubset.general.tethered | String | The mobile device tethered. | 
+| JAMF.MobileDeviceSubset.general.tethered | String | The mobile device tethered status. | 
 | JAMF.MobileDeviceSubset.general.battery_level | Number | The mobile device battery level. | 
-| JAMF.MobileDeviceSubset.general.ble_capable | Boolean | The mobile device ble capable. | 
-| JAMF.MobileDeviceSubset.general.device_locator_service_enabled | Boolean | If the mobile device locator service is enabled. | 
-| JAMF.MobileDeviceSubset.general.do_not_disturb_enabled | Boolean | If the mobile device do not disturb is enabled. | 
-| JAMF.MobileDeviceSubset.general.cloud_backup_enabled | Boolean | If the mobile device cloud backup is enabled. | 
-| JAMF.MobileDeviceSubset.general.last_cloud_backup_date_epoch | Date | The mobie device last cloud update backup date in epoch. | 
-| JAMF.MobileDeviceSubset.general.last_cloud_backup_date_utc | Date | The mobie device last cloud update backup date in UTC. | 
-| JAMF.MobileDeviceSubset.general.location_services_enabled | Boolean | If the mobile device location services is enabled. | 
-| JAMF.MobileDeviceSubset.general.itunes_store_account_is_active | Boolean | If the mobile device itunes store accouns is enabled. | 
-| JAMF.MobileDeviceSubset.general.last_backup_time_epoch | Number | The mobile device last backup time in epoch. | 
-| JAMF.MobileDeviceSubset.general.last_backup_time_utc | String | The mobile device last backup time in UTC. | 
-| JAMF.MobileDeviceSubset.general.site.id | Number | Tyhe mobile device site ID. | 
+| JAMF.MobileDeviceSubset.general.ble_capable | Boolean | Whether the mobile device is BLE capable. | 
+| JAMF.MobileDeviceSubset.general.device_locator_service_enabled | Boolean | Whether the mobile device locator service is enabled. | 
+| JAMF.MobileDeviceSubset.general.do_not_disturb_enabled | Boolean | Whether the mobile device do not disturb is enabled. | 
+| JAMF.MobileDeviceSubset.general.cloud_backup_enabled | Boolean | Whether the mobile device cloud backup is enabled. | 
+| JAMF.MobileDeviceSubset.general.last_cloud_backup_date_epoch | Date | The mobie device last cloud update backup date in epoch format. | 
+| JAMF.MobileDeviceSubset.general.last_cloud_backup_date_utc | Date | The mobie device last cloud update backup date in UTC format. | 
+| JAMF.MobileDeviceSubset.general.location_services_enabled | Boolean | Whether the mobile device location services is enabled. | 
+| JAMF.MobileDeviceSubset.general.itunes_store_account_is_active | Boolean | Whether the mobile device iTunes store account is enabled. | 
+| JAMF.MobileDeviceSubset.general.last_backup_time_epoch | Number | The mobile device last backup time in epoch format. | 
+| JAMF.MobileDeviceSubset.general.last_backup_time_utc | String | The mobile device last backup time in UTC format. | 
+| JAMF.MobileDeviceSubset.general.site.id | Number | The mobile device site ID. | 
 | JAMF.MobileDeviceSubset.general.site.name | String | The mobile device site name. | 
 
 
@@ -3105,8 +3158,8 @@ Jamf Pro Server Objects → Mobile Devices → Read
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| identifier | In order to identify which device is requested, one of these identifiers should be selected: id, name, udid, serial_number, mac_address. Possible values are: id, name, udid, serialnumber, macaddress. | Required | 
-| identifier_value | The value of the “identifier”. For example, if we choose the “id” identifier, a value of a mobile device’s id should be passed. If we choose the “mac_address” identifier, a value of a mobile device’s mac address should be passed, etc. | Required | 
+| identifier | The identifier used to determine which computer is requested. Possible values: "id", "name", "udid", "serialnumber", and "macaddress". Possible values are: id, name, udid, serialnumber, macaddress. | Required | 
+| identifier_value | The value of the "identifier". For example, if you choose the "id" identifier, a computer ID should be passed. If you choose "macaddress" as the identifier, a computer’s MAC address should be passed, etc. | Required | 
 
 
 #### Context Output
@@ -3178,8 +3231,8 @@ Jamf Pro Server Objects → Mobile Devices → Read
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| identifier | In order to identify which device is requested, one of these identifiers should be selected: id, name, udid, serial_number, mac_address. Possible values are: id, name, udid, serialnumber, macaddress. | Required | 
-| identifier_value | The value of the “identifier”. For example, if we choose the “id” identifier, a value of a mobile device’s id should be passed. If we choose the “mac_address” identifier, a value of a mobile device’s mac address should be passed, etc. | Required | 
+| identifier | The identifier used to determine which computer is requested. Possible values: "id", "name", "udid", "serialnumber", and "macaddress". Possible values are: id, name, udid, serialnumber, macaddress. | Required | 
+| identifier_value | The value of the "identifier". For example, if you choose the "id" identifier, a computer ID should be passed. If you choose "macaddress" as the identifier, a computer’s MAC address should be passed, etc. | Required | 
 
 
 #### Context Output
@@ -3187,22 +3240,22 @@ Jamf Pro Server Objects → Mobile Devices → Read
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | JAMF.MobileDeviceSubset.id | String | The mobile device ID. | 
-| JAMF.MobileDeviceSubset.purchasing.is_purchased | Boolean | If the mobile device is purchased. | 
-| JAMF.MobileDeviceSubset.purchasing.is_leased | Boolean | If the mobile device is leased. | 
-| JAMF.MobileDeviceSubset.purchasing.po_number | String | The mobile device po number. | 
+| JAMF.MobileDeviceSubset.purchasing.is_purchased | Boolean | Whether the mobile device is purchased. | 
+| JAMF.MobileDeviceSubset.purchasing.is_leased | Boolean | Whether the mobile device is leased. | 
+| JAMF.MobileDeviceSubset.purchasing.po_number | String | The mobile device PO number. | 
 | JAMF.MobileDeviceSubset.purchasing.vendor | String | The mobile device vendor. | 
-| JAMF.MobileDeviceSubset.purchasing.applecare_id | String | The mobile device applecare ID. | 
+| JAMF.MobileDeviceSubset.purchasing.applecare_id | String | The mobile device AppleCare ID. | 
 | JAMF.MobileDeviceSubset.purchasing.purchase_price | String | The mobile device purchase price. | 
 | JAMF.MobileDeviceSubset.purchasing.purchasing_account | String | The mobile device purchase account. | 
-| JAMF.MobileDeviceSubset.purchasing.po_date | String | The mobile device purchase po date. | 
-| JAMF.MobileDeviceSubset.purchasing.po_date_epoch | Number | The mobile device purchase po date in epoch. | 
-| JAMF.MobileDeviceSubset.purchasing.po_date_utc | String | The mobile device purchase po date in UTC. | 
-| JAMF.MobileDeviceSubset.purchasing.warranty_expires | String | The mobile device warranty expires date. | 
-| JAMF.MobileDeviceSubset.purchasing.warranty_expires_epoch | Number | The mobile device warranty expires date in epoch. | 
-| JAMF.MobileDeviceSubset.purchasing.warranty_expires_utc | String | The mobile device warranty expires date in UTC. | 
-| JAMF.MobileDeviceSubset.purchasing.lease_expires | String | The mobile device lease expires date. | 
-| JAMF.MobileDeviceSubset.purchasing.lease_expires_epoch | Number | The mobile device lease expires date in epoch. | 
-| JAMF.MobileDeviceSubset.purchasing.lease_expires_utc | String | The mobile device lease expires date in UTC. | 
+| JAMF.MobileDeviceSubset.purchasing.po_date | String | The mobile device purchase PO date. | 
+| JAMF.MobileDeviceSubset.purchasing.po_date_epoch | Number | The mobile device purchase PO date in epoch format. | 
+| JAMF.MobileDeviceSubset.purchasing.po_date_utc | String | The mobile device purchase PO date in UTC format. | 
+| JAMF.MobileDeviceSubset.purchasing.warranty_expires | String | The mobile device warranty expiration date. | 
+| JAMF.MobileDeviceSubset.purchasing.warranty_expires_epoch | Number | The mobile device warranty expiration date in epoch format. | 
+| JAMF.MobileDeviceSubset.purchasing.warranty_expires_utc | String | The mobile device warranty expiration date in UTC format. | 
+| JAMF.MobileDeviceSubset.purchasing.lease_expires | String | The mobile device lease expiration date. | 
+| JAMF.MobileDeviceSubset.purchasing.lease_expires_epoch | Number | The mobile device lease expiration date in epoch format. | 
+| JAMF.MobileDeviceSubset.purchasing.lease_expires_utc | String | The mobile device lease expiration date in UTC format. | 
 | JAMF.MobileDeviceSubset.purchasing.life_expectancy | Number | The mobile device life expectancy. | 
 | JAMF.MobileDeviceSubset.purchasing.purchasing_contact | String | The mobile device purchasing contact. | 
 
@@ -3268,8 +3321,8 @@ Jamf Pro Server Objects → Mobile Devices → Read
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| identifier | In order to identify which device is requested, one of these identifiers should be selected: id, name, udid, serial_number, mac_address. Possible values are: id, name, udid, serialnumber, macaddress. | Required | 
-| identifier_value | The value of the “identifier”. For example, if we choose the “id” identifier, a value of a mobile device’s id should be passed. If we choose the “mac_address” identifier, a value of a mobile device’s mac address should be passed, etc. | Required | 
+| identifier | The identifier used to determine which computer is requested. Possible values: "id", "name", "udid", "serialnumber", and "macaddress". Possible values are: id, name, udid, serialnumber, macaddress. | Required | 
+| identifier_value | The value of the "identifier". For example, if you choose the "id" identifier, a computer ID should be passed. If you choose "macaddress" as the identifier, a computer’s MAC address should be passed, etc. | Required | 
 
 
 #### Context Output
@@ -3351,8 +3404,8 @@ Jamf Pro Server Objects → Mobile Devices → Read
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| identifier | In order to identify which device is requested, one of these identifiers should be selected: id, name, udid, serial_number, mac_address. Possible values are: id, name, udid, serialnumber, macaddress. | Required | 
-| identifier_value | The value of the “identifier”. For example, if we choose the “id” identifier, a value of a mobile device’s id should be passed. If we choose the “mac_address” identifier, a value of a mobile device’s mac address should be passed, etc. | Required | 
+| identifier | The identifier used to determine which computer is requested. Possible values: "id", "name", "udid", "serialnumber", and "macaddress". Possible values are: id, name, udid, serialnumber, macaddress. | Required | 
+| identifier_value | The value of the "identifier". For example, if you choose the "id" identifier, a computer ID should be passed. If you choose "macaddress" as the identifier, a computer’s MAC address should be passed, etc. | Required | 
 
 
 #### Context Output
@@ -3363,22 +3416,22 @@ Jamf Pro Server Objects → Mobile Devices → Read
 | JAMF.MobileDeviceSubset.security.data_protection | Boolean | If the mobile device has data protection. | 
 | JAMF.MobileDeviceSubset.security.block_level_encryption_capable | Boolean | If the mobile device is block level encryption capable. | 
 | JAMF.MobileDeviceSubset.security.file_level_encryption_capable | Boolean | If the mobile device is file level encryption capable. | 
-| JAMF.MobileDeviceSubset.security.passcode_present | Boolean | If the mobile device has passcode present. | 
-| JAMF.MobileDeviceSubset.security.passcode_compliant | Boolean | If the mobile device has passcode compliant. | 
-| JAMF.MobileDeviceSubset.security.passcode_compliant_with_profile | Boolean | If the mobile device has passcode compliant with profile. | 
+| JAMF.MobileDeviceSubset.security.passcode_present | Boolean | Whether the mobile device has a passcode present. | 
+| JAMF.MobileDeviceSubset.security.passcode_compliant | Boolean | Whether the mobile device is passcode compliant. | 
+| JAMF.MobileDeviceSubset.security.passcode_compliant_with_profile | Boolean | Whether the mobile device is passcode compliant with profile. | 
 | JAMF.MobileDeviceSubset.security.passcode_lock_grace_period_enforced | String | The mobile device passcode lock grace period enforced. | 
 | JAMF.MobileDeviceSubset.security.hardware_encryption | Number | The mobile device hardware encryption. | 
-| JAMF.MobileDeviceSubset.security.activation_lock_enabled | Boolean | If the mobile device has activation lock enabled. | 
+| JAMF.MobileDeviceSubset.security.activation_lock_enabled | Boolean | Whether the mobile device has activation lock enabled. | 
 | JAMF.MobileDeviceSubset.security.jailbreak_detected | String | The mobile device security jailbreak detected. | 
 | JAMF.MobileDeviceSubset.security.lost_mode_enabled | String | The mobile device lost mode. | 
-| JAMF.MobileDeviceSubset.security.lost_mode_enforced | Boolean | If the mobile device has lost mode enforced. | 
-| JAMF.MobileDeviceSubset.security.lost_mode_enable_issued_epoch | Date | Themobile device lost mode enable issued date in epoch. | 
-| JAMF.MobileDeviceSubset.security.lost_mode_enable_issued_utc | Date | Themobile device lost mode enable issued date in UTC. | 
+| JAMF.MobileDeviceSubset.security.lost_mode_enforced | Boolean | Whether the mobile device has lost mode enforced. | 
+| JAMF.MobileDeviceSubset.security.lost_mode_enable_issued_epoch | Date | The mobile device lost mode enable issued date in epoch. | 
+| JAMF.MobileDeviceSubset.security.lost_mode_enable_issued_utc | Date | The mobile device lost mode enable issued date in UTC format. | 
 | JAMF.MobileDeviceSubset.security.lost_mode_message | String | The mobile device lost mode message. | 
 | JAMF.MobileDeviceSubset.security.lost_mode_phone | String | The mobile device lost mode phone. | 
 | JAMF.MobileDeviceSubset.security.lost_mode_footnote | String | The mobile device lost mode footnote. | 
-| JAMF.MobileDeviceSubset.security.lost_location_epoch | Date | The mobile device lost location date in epoch. | 
-| JAMF.MobileDeviceSubset.security.lost_location_utc | Date | The mobile device lost location date in UTC. | 
+| JAMF.MobileDeviceSubset.security.lost_location_epoch | Date | The mobile device lost location date in epoch format. | 
+| JAMF.MobileDeviceSubset.security.lost_location_utc | Date | The mobile device lost location date in UTC format. | 
 | JAMF.MobileDeviceSubset.security.lost_location_latitude | Number | The mobile device security lost location latitude. | 
 | JAMF.MobileDeviceSubset.security.lost_location_longitude | Number | The mobile device security lost location longitude. | 
 | JAMF.MobileDeviceSubset.security.lost_location_altitude | Number | The mobile device security lost location altitude. | 
@@ -3407,12 +3460,12 @@ Jamf Pro Server Objects → Mobile Devices → Read
                     "jailbreak_detected": "Unknown",
                     "lost_location_altitude": -1,
                     "lost_location_course": -1,
-                    "lost_location_epoch": 1622974030003,
+                    "lost_location_epoch": 1624265477602,
                     "lost_location_horizontal_accuracy": -1,
                     "lost_location_latitude": 0,
                     "lost_location_longitude": 0,
                     "lost_location_speed": -1,
-                    "lost_location_utc": "2021-06-06T10:07:10.003+0000",
+                    "lost_location_utc": "2021-06-21T08:51:17.602+0000",
                     "lost_location_vertical_accuracy": -1,
                     "lost_mode_enable_issued_epoch": 1620740433498,
                     "lost_mode_enable_issued_utc": "2021-05-11T13:40:33.498+0000",
@@ -3456,8 +3509,8 @@ Jamf Pro Server Objects → Mobile Devices → Read
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| identifier | In order to identify which device is requested, one of these identifiers should be selected: id, name, udid, serial_number, mac_address. Possible values are: id, name, udid, serialnumber, macaddress. | Required | 
-| identifier_value | The value of the “identifier”. For example, if we choose the “id” identifier, a value of a mobile device’s id should be passed. If we choose the “mac_address” identifier, a value of a mobile device’s mac address should be passed, etc. | Required | 
+| identifier | The identifier used to determine which computer is requested. Possible values: "id", "name", "udid", "serialnumber", and "macaddress". Possible values are: id, name, udid, serialnumber, macaddress. | Required | 
+| identifier_value | The value of the "identifier". For example, if you choose the "id" identifier, a computer ID should be passed. If you choose "macaddress" as the identifier, a computer’s MAC address should be passed, etc. | Required | 
 
 
 #### Context Output
@@ -3468,17 +3521,17 @@ Jamf Pro Server Objects → Mobile Devices → Read
 | JAMF.MobileDeviceSubset.network.home_carrier_network | String | The mobile device home carrier network. | 
 | JAMF.MobileDeviceSubset.network.cellular_technology | String | The mobile device cellular technology. | 
 | JAMF.MobileDeviceSubset.network.voice_roaming_enabled | String | The mobile device voice roaming enabled. | 
-| JAMF.MobileDeviceSubset.network.imei | String | The mobile device network imei. | 
-| JAMF.MobileDeviceSubset.network.iccid | String | The mobile device network iccid. | 
-| JAMF.MobileDeviceSubset.network.meid | String | The mobile device network meid. | 
+| JAMF.MobileDeviceSubset.network.imei | String | The mobile device network IMEI. | 
+| JAMF.MobileDeviceSubset.network.iccid | String | The mobile device network ICCID. | 
+| JAMF.MobileDeviceSubset.network.meid | String | The mobile device network MEID. | 
 | JAMF.MobileDeviceSubset.network.current_carrier_network | String | The mobile device current carrier network. | 
 | JAMF.MobileDeviceSubset.network.carrier_settings_version | String | The mobile device network carrier settings version. | 
 | JAMF.MobileDeviceSubset.network.current_mobile_country_code | String | The mobile device current mobile country code. | 
-| JAMF.MobileDeviceSubset.network.current_mobile_network_code | String | The mobile device current mobile network codeץ | 
-| JAMF.MobileDeviceSubset.network.home_mobile_country_code | String | The mobile device home mobile country codeץ | 
-| JAMF.MobileDeviceSubset.network.home_mobile_network_code | String | The mobile device home mobile network codeץ | 
-| JAMF.MobileDeviceSubset.network.data_roaming_enabled | Boolean | If the the mobile device has data roaming enabled. | 
-| JAMF.MobileDeviceSubset.network.roaming | Boolean | The mobile device network roaming. | 
+| JAMF.MobileDeviceSubset.network.current_mobile_network_code | String | The mobile device current mobile network code. | 
+| JAMF.MobileDeviceSubset.network.home_mobile_country_code | String | The mobile device home mobile country code. | 
+| JAMF.MobileDeviceSubset.network.home_mobile_network_code | String | The mobile device home mobile network code. | 
+| JAMF.MobileDeviceSubset.network.data_roaming_enabled | Boolean | Whether the the mobile device has data roaming enabled. | 
+| JAMF.MobileDeviceSubset.network.roaming | Boolean | Whether the mobile device has network roaming. | 
 | JAMF.MobileDeviceSubset.network.phone_number | String | The mobile device network phone number. | 
 
 
@@ -3539,8 +3592,8 @@ Jamf Pro Server Objects → Mobile Devices → Read
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| identifier | In order to identify which device is requested, one of these identifiers should be selected: id, name, udid, serial_number, mac_address. Possible values are: id, name, udid, serialnumber, macaddress. | Required | 
-| identifier_value | The value of the “identifier”. For example, if we choose the “id” identifier, a value of a mobile device’s id should be passed. If we choose the “mac_address” identifier, a value of a mobile device’s mac address should be passed, etc. | Required | 
+| identifier | The identifier used to determine which computer is requested. Possible values: "id", "name", "udid", "serialnumber", and "macaddress". Possible values are: id, name, udid, serialnumber, macaddress. | Required | 
+| identifier_value | The value of the "identifier". For example, if you choose the "id" identifier, a computer ID should be passed. If you choose "macaddress" as the identifier, a computer’s MAC address should be passed, etc. | Required | 
 
 
 #### Context Output
@@ -3550,7 +3603,7 @@ Jamf Pro Server Objects → Mobile Devices → Read
 | JAMF.MobileDeviceSubset.id | String | The mobile device ID. | 
 | JAMF.MobileDeviceSubset.certificates.size | String | The mobile device certificates size. | 
 | JAMF.MobileDeviceSubset.certificates.certificate.common_name | String | The mobile device certificate common name. | 
-| JAMF.MobileDeviceSubset.certificates.certificate.identity | Boolean | Whether this is an identity certificate or not. | 
+| JAMF.MobileDeviceSubset.certificates.certificate.identity | Boolean | Whether this is an identity certificate. | 
 
 
 #### Command Example
@@ -3608,8 +3661,8 @@ Jamf Pro Server Objects → Mobile Devices → Read
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| identifier | In order to identify which device is requested, one of these identifiers should be selected: id, name, udid, serial_number, mac_address. Possible values are: id, name, udid, serialnumber, macaddress. | Required | 
-| identifier_value | The value of the “identifier”. For example, if we choose the “id” identifier, a value of a mobile device’s id should be passed. If we choose the “mac_address” identifier, a value of a mobile device’s mac address should be passed, etc. | Required | 
+| identifier | The identifier used to determine which computer is requested. Possible values: "id", "name", "udid", "serialnumber", and "macaddress". Possible values are: id, name, udid, serialnumber, macaddress. | Required | 
+| identifier_value | The value of the "identifier". For example, if you choose the "id" identifier, a computer ID should be passed. If you choose "macaddress" as the identifier, a computer’s MAC address should be passed, etc. | Required | 
 
 
 #### Context Output
@@ -3620,8 +3673,8 @@ Jamf Pro Server Objects → Mobile Devices → Read
 | JAMF.MobileDeviceSubset.provisioning_profiles.size | Number | The mobile device provisioning profiles size. | 
 | JAMF.MobileDeviceSubset.provisioning_profiles.mobile_device_provisioning_profile.display_name | String | The mobile device provisioning profiles display name. | 
 | JAMF.MobileDeviceSubset.provisioning_profiles.mobile_device_provisioning_profile.expiration_date | String | The mobile device provisioning profiles expiration date. | 
-| JAMF.MobileDeviceSubset.provisioning_profiles.mobile_device_provisioning_profile.expiration_date_epoch | Number | The mobile device provisioning profiles expiration date in epoch. | 
-| JAMF.MobileDeviceSubset.provisioning_profiles.mobile_device_provisioning_profile.expiration_date_utc | String | The mobile device provisioning profiles expiration date in UTC. | 
+| JAMF.MobileDeviceSubset.provisioning_profiles.mobile_device_provisioning_profile.expiration_date_epoch | Number | The mobile device provisioning profiles expiration date in epoch format. | 
+| JAMF.MobileDeviceSubset.provisioning_profiles.mobile_device_provisioning_profile.expiration_date_utc | String | The mobile device provisioning profiles expiration date in UTC format. | 
 | JAMF.MobileDeviceSubset.provisioning_profiles.mobile_device_provisioning_profile.uuid | String | The mobile device provisioning profiles UUID. | 
 
 
@@ -3664,8 +3717,8 @@ Jamf Pro Server Objects → Mobile Devices → Read
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| identifier | In order to identify which device is requested, one of these identifiers should be selected: id, name, udid, serial_number, mac_address. Possible values are: id, name, udid, serialnumber, macaddress. | Required | 
-| identifier_value | The value of the “identifier”. For example, if we choose the “id” identifier, a value of a mobile device’s id should be passed. If we choose the “mac_address” identifier, a value of a mobile device’s mac address should be passed, etc. | Required | 
+| identifier | The identifier used to determine which computer is requested. Possible values: "id", "name", "udid", "serialnumber", and "macaddress". Possible values are: id, name, udid, serialnumber, macaddress. | Required | 
+| identifier_value | The value of the "identifier". For example, if you choose the "id" identifier, a computer ID should be passed. If you choose "macaddress" as the identifier, a computer’s MAC address should be passed, etc. | Required | 
 
 
 #### Context Output
@@ -3673,11 +3726,11 @@ Jamf Pro Server Objects → Mobile Devices → Read
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | JAMF.MobileDeviceSubset.id | String | The mobile device ID. | 
-| JAMF.MobileDeviceSubset.configuration_profiles.size | Number | The mobile device configuratio profiles size. | 
-| JAMF.MobileDeviceSubset.configuration_profiles.configuration_profile.display_name | String | The mobile device configuratio profiles display name. | 
+| JAMF.MobileDeviceSubset.configuration_profiles.size | Number | The mobile device configuration profiles size. | 
+| JAMF.MobileDeviceSubset.configuration_profiles.configuration_profile.display_name | String | The mobile device configuration profiles display name. | 
 | JAMF.MobileDeviceSubset.configuration_profiles.configuration_profile.version | String | The mobile device configuration profiles version. | 
-| JAMF.MobileDeviceSubset.configuration_profiles.configuration_profile.identifier | Number | The mobile device configuratio profiles identifier. | 
-| JAMF.MobileDeviceSubset.configuration_profiles.configuration_profile.uuid | String | The mobile device configuratio profiles UUID. | 
+| JAMF.MobileDeviceSubset.configuration_profiles.configuration_profile.identifier | Number | The mobile device configuration profiles identifier. | 
+| JAMF.MobileDeviceSubset.configuration_profiles.configuration_profile.uuid | String | The mobile device configuration profiles UUID. | 
 
 
 #### Command Example
@@ -3728,8 +3781,8 @@ Jamf Pro Server Objects → Mobile Devices → Read
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| identifier | In order to identify which device is requested, one of these identifiers should be selected: id, name, udid, serial_number, mac_address. Possible values are: id, name, udid, serialnumber, macaddress. | Required | 
-| identifier_value | The value of the “identifier”. For example, if we choose the “id” identifier, a value of a mobile device’s id should be passed. If we choose the “mac_address” identifier, a value of a mobile device’s mac address should be passed, etc. | Required | 
+| identifier | The identifier used to determine which computer is requested. Possible values: "id", "name", "udid", "serialnumber", and "macaddress". Possible values are: id, name, udid, serialnumber, macaddress. | Required | 
+| identifier_value | The value of the "identifier". For example, if you choose the "id" identifier, a computer ID should be passed. If you choose "macaddress" as the identifier, a computer’s MAC address should be passed, etc. | Required | 
 
 
 #### Context Output
@@ -3782,8 +3835,8 @@ Jamf Pro Server Objects → Mobile Devices → Read
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| identifier | In order to identify which device is requested, one of these identifiers should be selected: id, name, udid, serial_number, mac_address. Possible values are: id, name, udid, serialnumber, macaddress. | Required | 
-| identifier_value | The value of the “identifier”. For example, if we choose the “id” identifier, a value of a mobile device’s id should be passed. If we choose the “mac_address” identifier, a value of a mobile device’s mac address should be passed, etc. | Required | 
+| identifier | The identifier used to determine which computer is requested. Possible values: "id", "name", "udid", "serialnumber", and "macaddress". Possible values are: id, name, udid, serialnumber, macaddress. | Required | 
+| identifier_value | The value of the "identifier". For example, if you choose the "id" identifier, a computer ID should be passed. If you choose "macaddress" as the identifier, a computer’s MAC address should be passed, etc. | Required | 
 
 
 #### Context Output
@@ -3897,7 +3950,7 @@ Jamf Pro Server Objects → Mobile Devices → Read
 
 ### jamf-get-computers-by-application
 ***
-Will return a list of computers with basic information on each of them.
+Returns a list of computers with basic information on each.
 
 
 #### Base Command
@@ -3912,9 +3965,9 @@ Jamf Pro Server Objects → Advanced Computer Searches → Read
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | application | The application’s name (supports wildcards). | Required | 
-| version | The application’s version (supports wildcards) - applicable only when “application” parameter value is set. | Optional | 
-| limit | Maximum number of devices to retrieve (maximal value is 200). Default is 50. | Optional | 
-| page | Number of requested page. Default is 0. | Optional | 
+| version | The application’s version (supports wildcards). Applicable only when “application” parameter value is set. | Optional | 
+| limit | Maximum number of devices to retrieve. (Maximal value is 200). Default is 50. | Optional | 
+| page | The number of the requested page. Default is 0. | Optional | 
 
 
 #### Context Output
@@ -3923,13 +3976,14 @@ Jamf Pro Server Objects → Advanced Computer Searches → Read
 | --- | --- | --- |
 | JAMF.ComputersByApp.Computer.id | Number | The computer ID. | 
 | JAMF.ComputersByApp.Computer.name | String | The computer name. | 
-| JAMF.ComputersByApp.Computer.udid | String | The computer udid. | 
+| JAMF.ComputersByApp.Computer.udid | String | The computer UDID. | 
 | JAMF.ComputersByApp.Computer.serial_number | String | The computer serial number. | 
-| JAMF.ComputersByApp.Computer.mac_address | String | The computer mac address. | 
-| JAMF.ComputersByApp.Application | String | The appliction the user serched for. | 
+| JAMF.ComputersByApp.Computer.mac_address | String | The computer MAC address. | 
+| JAMF.ComputersByApp.Application | String | The application the user serched for. | 
 | JAMF.ComputersByApp.Paging.total_results | Number | The number of computers returned in this specific search. | 
 | JAMF.ComputersByApp.Paging.page_size | Number | The number of computers to be returned on each page. | 
-| JAMF.ComputersByApp.Paging.current_page | Number | Number of requested page. | 
+| JAMF.ComputersByApp.Paging.current_page | Number | The number of the requested page. | 
+
 
 #### Command Example
 ```!jamf-get-computers-by-application application=safar* limit=3```
@@ -3939,6 +3993,11 @@ Jamf Pro Server Objects → Advanced Computer Searches → Read
 {
     "JAMF": {
         "ComputersByApp": {
+            "Paging": {
+                "current_page": 0,
+                "page_size": 3,
+                "total_results": 96
+            },
             "application": "safar*",
             "computers": [
                 {
@@ -3970,6 +4029,11 @@ Jamf Pro Server Objects → Advanced Computer Searches → Read
 
 #### Human Readable Output
 
+>### Paging for get mobile devices
+>|Current Page|Page Size|Total Results|
+>|---|---|---|
+>| 0 | 3 | 96 |
+
 >### Jamf computers by application result
 >|Sum of computers|version|
 >|---|---|
@@ -3980,7 +4044,7 @@ Jamf Pro Server Objects → Advanced Computer Searches → Read
 
 ### jamf-mobile-device-lost-mode
 ***
-Will enable “lost mode” on a specific device. Lost Mode is a feature that allows you to lock a mobile device and track the device's location. The device will report the GPS coordinates of the point where the device receives the command. This feature adds additional protection to mobile devices and their data in the event that a device is lost or stolen.
+Enables “lost mode” on a specific device. Lost Mode is a feature that allows you to lock a mobile device and track the device's location. The device reports the GPS coordinates of the point where the device received the command. This feature adds additional protection to mobile devices and their data in the event that a device is lost or stolen.
 
 
 #### Base Command
@@ -3997,7 +4061,7 @@ Jamf Pro Server Objects → Mobile Devices → Create
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | id | The mobile device’s ID. | Required | 
-| lost_mode_message | A message that will be displayed on the device’s lock screen. | Optional | 
+| lost_mode_message | A message that is displayed on the device’s lock screen. | Optional | 
 
 
 #### Context Output
@@ -4006,7 +4070,7 @@ Jamf Pro Server Objects → Mobile Devices → Create
 | --- | --- | --- |
 | JAMF.MobileDeviceCommands.name | String | The mobile device command name. | 
 | JAMF.MobileDeviceCommands.status | String | The mobile device command status. | 
-| JAMF.MobileDeviceCommands.management_id | String | The mobile device command managment ID. | 
+| JAMF.MobileDeviceCommands.management_id | String | The mobile device command management ID. | 
 | JAMF.MobileDeviceCommands.id | String | The mobile device command ID. | 
 
 
@@ -4036,8 +4100,8 @@ Jamf Pro Server Objects → Mobile Devices → Create
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | id | The device’s ID. | Required | 
-| preserve_data_plan | Retain cellular data plans (iOS 11 or later). Possible values are: True, False. Default is False. | Optional | 
-| clear_activation_code | Clear Activation Lock on the device. Possible values are: True, False. Default is False. | Optional | 
+| preserve_data_plan | Whether to retain cellular data plans (iOS 11 or later). Possible values are: True, False. Default is False. | Optional | 
+| clear_activation_code | Whether to clear activation lock on the device. Possible values are: True, False. Default is False. | Optional | 
 
 
 #### Context Output
@@ -4079,7 +4143,7 @@ Returns information about an endpoint.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | Endpoint.Hostname | String | The endpoint's hostname. | 
-| Endpoint.OS | String | The endpoint's operation system. | 
+| Endpoint.OS | String | The endpoint's operating system. | 
 | Endpoint.IPAddress | String | The endpoint's IP address. | 
 | Endpoint.ID | String | The endpoint's ID. | 
 | Endpoint.Status | String | The endpoint's status. | 
