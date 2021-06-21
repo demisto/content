@@ -23,7 +23,9 @@ Slack V3 utilizes "Socket Mode" to enable the integration to communicate directl
  
  These permissions are available for both "Bot Events" and "Events on behalf of users". In order to use mirroring and handle bot questions, we recommend enabling these event scopes for both bot and user events.
  
- In order to utilize the full functionality of the Slack integration, we recommend the following OAuth scopes for both the Bot token and the User token:
+ ### OAuth Scopes
+ 
+ In order to utilize the full functionality of the Slack integration, we recommend the following OAuth scopes for the Bot token:
 
 | OAuth Scope | Description |
 | --- | --- |
@@ -39,4 +41,23 @@ Slack V3 utilizes "Socket Mode" to enable the integration to communicate directl
 | `mpim:read` | View basic information about group direct messages that the bot has been added to |
 | `users:read` | View people in a workspace |
 
-The App token requires the `connections:write` scope in order to open the socket connection and is required for the Events and Questions functionality.
+For the User token, we recommend the following scopes:
+
+| OAuth Scope | Description |
+| --- | --- |
+| `channels:history` | View messages and other content in public channels that the app has been added to |
+| `channels:write` | Manage a user’s public channels and create new ones on a user’s behalf |
+| `groups:history` | View messages and other content in private channels that the bot has been added to |
+| `groups:write` | Manage a user’s private channels and create new ones on a user’s behalf |
+| `im:history` | View messages and other content in direct messages that the bot has been added to |
+| `im:write` | Start direct messages with people on a user’s behalf |
+| `mpim:history` | View messages and other content in group direct messages that the bot has been added to |
+| `mpim:write` | Start group direct messages with people on a user’s behalf |
+| `users:read` | View people in a workspace |
+
+The App token requires the `connections:write` scope in order to open the socket connection and is required for the Events and Questions functionality. It's important to note that when configuring Socket Mode, this scope will automatically be created for you.
+
+## Backwards Compatibility with Slack V2
+Slack V3 currently contains improvements to enhance the stability of the integration as well as the circumvention of OProxy. This version is intended to provide customers with more granular control over the Slack integration by enabling the Bring-Your-Own-App model and customizable scope based authentication.
+
+All commands are fully compatible with Slack V2 playbooks as their inputs and outputs have remained the same. As a customer, you should notice no significant change in the behavior of the Slack integration with your existing playbooks.
