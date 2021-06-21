@@ -1479,7 +1479,7 @@ def long_running_execution_command(client: Client, params: Dict):
             if not incidents and not new_highest_id:
                 continue
 
-            incident_batch_for_sample = incidents if incidents else ctx.get('samples', [])
+            incident_batch_for_sample = incidents[:2] if incidents else ctx.get('samples', [])
             set_integration_context({LAST_FETCH_KEY: new_highest_id, 'samples': incident_batch_for_sample,
                                      'last_mirror_update': ctx.get('last_mirror_update')})
 

@@ -1029,7 +1029,7 @@ def fetch_incidents_long_running_events(
         print_debug_msg("Enriched offenses successfully.")
     new_incidents_samples = create_incidents(enriched_offenses, incident_type)
     incidents_batch_for_sample = (
-        new_incidents_samples if new_incidents_samples else last_run.get("samples", [])
+        new_incidents_samples[:2] if new_incidents_samples else last_run.get("samples", [])
     )
 
     context = {LAST_FETCH_KEY: offense_id, "samples": incidents_batch_for_sample}
