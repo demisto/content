@@ -1,8 +1,11 @@
-from GitHub import main, BASE_URL, list_branch_pull_requests
-import demistomock as demisto
 import json
+
 import pytest
+
+import demistomock as demisto
 from CommonServerPython import CommandResults
+from GitHub import main, BASE_URL, list_branch_pull_requests
+
 MOCK_PARAMS = {
     'user': 'test',
     'repository': 'hello-world',
