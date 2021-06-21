@@ -520,8 +520,8 @@ script:
       secret: false
     - default: false
       defaultValue: '1 week'
-      description: "Specifies the start time of the search. This filter is optional. \
-        \Syntax: end_time=YYYY-MM-DDTHH:mm:ss.sss-OH:om or '1 day/month/year'"
+      description: "Specifies the start time of the search. This filter is optional.\
+        \ Syntax: end_time=YYYY-MM-DDTHH:mm:ss.sss-OH:om or '1 day/month/year'"
       isArray: false
       name: start_time
       required: false
