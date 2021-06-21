@@ -974,7 +974,7 @@ tasks:
       id: af8d4071-f14c-4cc4-8463-4a6de49556b9
       iscommand: true
       name: Send Slack Notification
-      script: SlackV2|||send-notification
+      script: '|||send-notification'
       type: regular
       version: -1
     taskid: af8d4071-f14c-4cc4-8463-4a6de49556b9
