@@ -36,15 +36,9 @@ create-instances:
     - !reference [.download-demisto-conf]
     - !reference [.create-id-set]
     - section_start "Create Release Notes and Common Server Documentation"
-    - |
-      if [[ $CI_COMMIT_BRANCH == master ]] || [[ $CI_COMMIT_BRANCH == 21\.* ]] || [[ $CI_COMMIT_BRANCH == 22\.* ]]; then
-        echo "Creating Release Notes and Saving Content Descriptor"
-        python3 Utils/release_notes_generator.py $CONTENT_VERSION $GIT_SHA1 $CI_BUILD_ID --output $ARTIFACTS_FOLDER/packs-release-notes.md --github-token $GITHUB_TOKEN
-        cp content-descriptor.json $ARTIFACTS_FOLDER
-      else
-        echo "Skipping creation of content descriptor and release notes because not on master or release branch"
-        echo "CI_COMMIT_BRANCH=$CI_COMMIT_BRANCH"
-      fi
+    - echo "Creating Release Notes and Content Descriptor"
+    - python3 Utils/release_notes_generator.py $CONTENT_VERSION $GIT_SHA1 $CI_BUILD_ID --output $ARTIFACTS_FOLDER/packs-release-notes.md --github-token $GITHUB_TOKEN
+    - cp content-descriptor.json $ARTIFACTS_FOLDER
     - ./Documentation/commonServerDocs.sh
     - section_end "Create Release Notes and Common Server Documentation"
     - section_start "Create Content Artifacts and Update Conf"
