@@ -214,3 +214,28 @@ def test_remove_existing_entity_b_indicators_with_args(mocker):
     entity_b_list = remove_existing_entity_b_indicators(entity_b_list=['2.2.2.2', '3.3.3.3'])
 
     assert expected_entity_b_list == entity_b_list
+
+
+def test_remove_existing_entity_b_indicators_reference_test(mocker):
+    """
+    Test that the entity b argument given to the remove_existing_entity_b_indicators function isnt changed after the
+    function, check that if some entity b where removed from the create_indicators list, it does not effect the original
+    entity_b list to create relationships.
+    Given:
+    - entity_b given list.
+
+    When:
+    - Calling the remove_existing_entity_b_indicators
+
+    Then:
+    - check that the list of given entity_b argument is equal to itself after the function run.
+    """
+
+    from CreateIndicatorRelationship import remove_existing_entity_b_indicators
+    actual_entity_b_list = ['2.2.2.2', '3.3.3.3']
+    expected_entity_b_list = actual_entity_b_list[:]
+    find_indicators_by_query = [{'entity_b': '1.1.1.1', 'entity_b_type': 'IP'},
+                                {'entity_b': '2.2.2.2', 'entity_b_type': 'IP'}]
+    mocker.patch('CreateIndicatorRelationship.find_indicators_by_query', return_value=find_indicators_by_query)
+    remove_existing_entity_b_indicators(entity_b_list=actual_entity_b_list)
+    assert actual_entity_b_list == expected_entity_b_list
