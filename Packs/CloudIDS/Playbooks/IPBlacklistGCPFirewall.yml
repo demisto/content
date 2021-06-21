@@ -361,7 +361,7 @@ tasks:
     task:
       id: 49934a26-f7ac-4798-8779-2850008b3085
       version: -1
-      name: GCP Firewall Name Not Founnd
+      name: GCP Firewall Name Not Found
       type: title
       iscommand: false
       brand: ""
