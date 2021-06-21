@@ -1,5 +1,6 @@
 # CloudIDS
-Google Cloud IDS, a next-generation advanced intrusion detection service that provides threat detection for intrusions, malware, spyware and command-and-control attacks.
+Google Cloud IDS, a next-generation advanced intrusion detection service that provides threat detection for intrusions, malware, spyware, and command-and-control attacks.
+
 
 
 ## What does this packs do?
@@ -16,5 +17,4 @@ Google Cloud IDS, a next-generation advanced intrusion detection service that pr
 ## Dependencies
 ### Packs
 * [GoogleCloudCompute](../GoogleCloudCompute).
-
 
