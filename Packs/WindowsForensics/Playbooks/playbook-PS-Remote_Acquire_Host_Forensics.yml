@@ -1,0 +1,522 @@
+id: PS-Remote Acquire Host Forensics
+version: -1
+name: PS-Remote Acquire Host Forensics
+description: This playbook allows the user to gather multiple forensic data from a
+  Windows endpoint including network traffic, MFT (Master File Table), and registry
+  export by using the PS Remote automation which enables connecting to a Windows host
+  without the need to install any 3rd-party tools using just native Windows management
+  tools.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 98d812ea-ec8b-476b-8fc6-766548b81b23
+    type: start
+    task:
+      id: 98d812ea-ec8b-476b-8fc6-766548b81b23
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "4"
+      - "6"
+      - "7"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 550,
+          "y": -170
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: b420f60c-eb1b-4ac3-8b35-93972d1ec7b7
+    type: playbook
+    task:
+      id: b420f60c-eb1b-4ac3-8b35-93972d1ec7b7
+      version: -1
+      name: PS-Remote Get Registry
+      description: This playbook leverages the Windows built-in PowerShell and WinRM
+        capabilities to connect to a Windows host to acquire and export the registry
+        as forensic evidence for further analysis. The capture can be for the entire
+        registry or for a specific hive or path.
+      playbookName: PS-Remote Get Registry
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      FilePath:
+        complex:
+          root: inputs.Host
+          transformers:
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: c:\
+              suffix:
+                value:
+                  simple: .reg
+      Host:
+        simple: ${inputs.Host}
+      RegistryPath:
+        simple: all
+      ZipRegistry:
+        simple: "true"
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 1470,
+          "y": 210
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: c213b294-78c2-4142-863f-52ac5a92aeb0
+    type: condition
+    task:
+      id: c213b294-78c2-4142-863f-52ac5a92aeb0
+      version: -1
+      name: Get network traffic?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "5"
+      "yes":
+      - "8"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: inputs.GetNetworkTraffic
+            iscontext: true
+          right:
+            value:
+              simple: "true"
+    view: |-
+      {
+        "position": {
+          "x": -430,
+          "y": -30
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: 71c237ba-e4b9-40be-84b1-cbf2c2a75bd2
+    type: title
+    task:
+      id: 71c237ba-e4b9-40be-84b1-cbf2c2a75bd2
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 550,
+          "y": 860
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: b6d8c34c-e60c-4ffd-891d-239a745d2809
+    type: condition
+    task:
+      id: b6d8c34c-e60c-4ffd-891d-239a745d2809
+      version: -1
+      name: Get MFT?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "5"
+      "yes":
+      - "9"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: inputs.GetMft
+            iscontext: true
+          right:
+            value:
+              simple: "true"
+    view: |-
+      {
+        "position": {
+          "x": 550,
+          "y": -20
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: d2ce1a98-31b0-4613-8505-ffec66b377d6
+    type: condition
+    task:
+      id: d2ce1a98-31b0-4613-8505-ffec66b377d6
+      version: -1
+      name: Get registry?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "5"
+      "yes":
+      - "3"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: inputs.GetRegistry
+            iscontext: true
+          right:
+            value:
+              simple: "true"
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": -30
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: 99ace9d4-ba58-4fb1-81bd-0f5cb3a8369c
+    type: playbook
+    task:
+      id: 99ace9d4-ba58-4fb1-81bd-0f5cb3a8369c
+      version: -1
+      name: PS-Remote Get Network Traffic
+      description: This playbook leverages the Windows built-in PowerShell and WinRM
+        capabilities to connect to a Windows host and then use the Netsh tool to create
+        an ETL file which is the equivalent of a Wireshark PCAP file by using the PowerShell Remoting
+        integration. After receiving the resultant ETL, XSOAR will convert
+        the ETL to a PCAP file to be parsed and enriched later.
+      playbookName: PS-Remote Get Network Traffic
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      ETlTimeToRecord:
+        simple: "60"
+      EtlFilter: {}
+      EtlPath:
+        complex:
+          root: inputs.Host
+          transformers:
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: c:\
+              suffix:
+                value:
+                  simple: .etl
+      EtlSizeLimit: {}
+      Host:
+        simple: ${inputs.Host}
+      ZipEtl:
+        simple: "true"
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": -530,
+          "y": 210
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "9":
+    id: "9"
+    taskid: 617d2a7e-00a3-419d-85cc-c4b356293c66
+    type: playbook
+    task:
+      id: 617d2a7e-00a3-419d-85cc-c4b356293c66
+      version: -1
+      name: PS-Remote Get MFT
+      description: This playbook leverages the Windows built-in PowerShell and WinRM
+        capabilities to connect to a Windows host to acquire and export the MFT (Master
+        File Table) as forensic evidence for further analysis.
+      playbookName: PS-Remote Get MFT
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+      - "11"
+    scriptarguments:
+      FilePath:
+        complex:
+          root: inputs.Host
+          transformers:
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: c:\
+              suffix:
+                value:
+                  simple: .mft
+      Host:
+        simple: ${inputs.Host}
+      VolumeForMft:
+        simple: c
+      ZipMft:
+        simple: "true"
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 340,
+          "y": 210
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "10":
+    id: "10"
+    taskid: fc934299-715b-4167-8f19-9ab015b24659
+    type: regular
+    task:
+      id: fc934299-715b-4167-8f19-9ab015b24659
+      version: -1
+      name: Set PCAP details
+      description: Set a value in the context under the key you entered. If no value is
+        entered, the script does nothing.
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: PcapDetails
+      stringify: {}
+      value:
+        simple: ${PcapDetails}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -530,
+          "y": 380
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "11":
+    id: "11"
+    taskid: 5029298e-3a5c-4fdb-8d43-6f75624a4dc9
+    type: regular
+    task:
+      id: 5029298e-3a5c-4fdb-8d43-6f75624a4dc9
+      version: -1
+      name: Set MFT details
+      description: Set a value in the context under the key you entered. If no value is
+        entered, the script does nothing.
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: MftDetails
+      stringify: {}
+      value:
+        complex:
+          root: MftDetails
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 170,
+          "y": 380
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "12":
+    id: "12"
+    taskid: 7c028be0-a979-46e4-8cc5-e2a3ba93528f
+    type: regular
+    task:
+      id: 7c028be0-a979-46e4-8cc5-e2a3ba93528f
+      version: -1
+      name: Set registry file details
+      description: Set a value in the context under the key you entered. If no value is
+        entered, the script does nothing.
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: RegistryDetails
+      stringify: {}
+      value:
+        simple: ${RegistryDetails}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1470,
+          "y": 380
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1095,
+        "width": 2380,
+        "x": -530,
+        "y": -170
+      }
+    }
+  }
+inputs:
+- key: GetNetworkTraffic
+  value:
+    simple: "true"
+  required: false
+  description: This input specifies whether to capture network traffic on the host.
+  playbookInputQuery:
+- key: GetMft
+  value:
+    simple: "true"
+  required: false
+  description: This input specifies whether to acquire the MFT for the host.
+  playbookInputQuery:
+- key: GetRegistry
+  value:
+    simple: "true"
+  required: false
+  description: This input specifies whether to export the registry on the host.
+  playbookInputQuery:
+- key: Host
+  value: {}
+  required: false
+  description: A single hostname or IP address for which to export the registry file. For example, testpc01.
+  playbookInputQuery:
+outputs:
+- contextPath: PcapDetails
+  description: PCAP file details.
+  type: string
+- contextPath: RegistryDetails
+  description: Registry file details.
+  type: string
+- contextPath: MftDetails
+  description: MFT file details.
+  type: string
+tests:
+- No tests (auto formatted)
+fromversion: 6.0.0

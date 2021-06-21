@@ -257,3 +257,18 @@ ignore=IF100
 
 [file:incidentfield-eventaction.json]
 ignore=IF100
+
+[file:incidentfield-Alert_Acknowledgement.json]
+ignore=IF100
+
+[file:incidentfield-Alert_Action.json]
+ignore=IF100
+
+[file:incidentfield-Alert_Attack_Time.json]
+ignore=IF100
+
+[file:incidentfield-Alert_Malicious.json]
+ignore=IF100
+
+[file:incidentfield-Alert_URL.json]
+ignore=IF100
