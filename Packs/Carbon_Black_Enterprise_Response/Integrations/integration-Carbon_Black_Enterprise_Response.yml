@@ -54,8 +54,7 @@ script:
     /// Base Functions
 
 
-    function sendRequest(path, method, requestParams, headers, ignoredStatusCodes)
-    {
+    function sendRequest(path, method, requestParams, headers, ignoredStatusCodes) {
         let baseUrl = params.serverurl + '/api';
 
         if (!headers) {
@@ -86,17 +85,14 @@ script:
 
         //logInfo("Request:\n" + JSON.stringify({path: path + querystring, req: request}));
 
-        let result = http(baseUrl + path + querystring, request, params.insecure,
-    params.proxy);
+        let result = http(baseUrl + path + querystring, request, params.insecure, params.proxy);
 
-        if (!ignoredStatusCodes || ignoredStatusCodes.indexOf(result.StatusCode) ===
-    -1) {
+        if (!ignoredStatusCodes || ignoredStatusCodes.indexOf(result.StatusCode) === -1) {
             if (result.StatusCode < 200 || result.StatusCode >= 300) {
                 if (result.StatusCode === 404) {
                     throw 'Cannot find the requested resource (Status Code: 404)';
                 }
-                throw `Request Failed.\nStatus code: ${result.StatusCode}.\nMessage:
-    ${JSON.stringify(result.Body)}`;
+                throw `Request Failed.\nStatus code: ${result.StatusCode}.\nMessage: ${JSON.stringify(result.Body)}`;
             }
         }
 
@@ -196,20 +192,16 @@ script:
     function fetchIncidents() {
         let lastRun = getLastRun();
 
-        let fetchAlertsSeverityThreshold = (args['fetchAlertsSeverityThreshold'])
-    ? args['fetchAlertsSeverityThreshold'] : 0;
-        let defaultRunTime = (new Date().getTime()) - (24 * 60 * 60 * 1000); // Decrease
-    one day if it's the first run, to get some alerts.
+        let fetchAlertsSeverityThreshold = (args['fetchAlertsSeverityThreshold']) ? args['fetchAlertsSeverityThreshold'] : 0;
+        let defaultRunTime = (new Date().getTime()) - (24 * 60 * 60 * 1000); // Decrease one day if it's the first run, to get some alerts.
         let defaultRunTimeStr = unixToString(defaultRunTime);
         let lastRunStr = (lastRun.time) ? unixToString(lastRun.time + 1000) : defaultRunTimeStr;
-        let result = getAlertsRequest(`alert_severity:[${fetchAlertsSeverityThreshold}
-    TO *] and created_time:[${lastRunStr} TO *]`, params.rows);
+        let result = getAlertsRequest(`alert_severity:[${fetchAlertsSeverityThreshold} TO *] and created_time:[${lastRunStr} TO *]`, params.rows);
 
         let latestTime = 0;
         let incidents = result.map(curAlert => {
             let createdTime = stringToUnix(curAlert['created_time']);
-            latestTime = Math.max(latestTime, createdTime);  // Save latest time from
-    current fetch to query
+            latestTime = Math.max(latestTime, createdTime);  // Save latest time from current fetch to query
             return {
                 name: curAlert['description'] + ' : ' + curAlert['created_time'],
                 occurred: curAlert['created_time'],
@@ -280,8 +272,7 @@ script:
         ];
         let headers = changeNames.map(cn => cn.to);
         let translatedData = mapObjFunction(changeNames)(alerts);
-        let humanReadable = tableToMarkdown(title, translatedData, headers, undefined,
-    dotToSpace);
+        let humanReadable = tableToMarkdown(title, translatedData, headers, undefined, dotToSpace);
         let context = {
             'CbResponse.Alerts(val.CbAlertID==obj.CbAlertID)': createContext(translatedData)
         };
@@ -410,8 +401,7 @@ script:
         if (args.md5) {
             query += ' AND md5:' + args.md5;
         }
-        let processes = getProcessesRequest(query, args.rows, args.start, args.sort,
-    args.facets);
+        let processes = getProcessesRequest(query, args.rows, args.start, args.sort, args.facets);
         let title = 'CB Response - Get Processes';
         let processDataMap = processData;
         let fileDataMap = processDataForFileContext;
@@ -420,8 +410,7 @@ script:
         let processTranslatedData = mapObjFunction(processDataMap)(processes);
         let fileTranslatedData = mapObjFunction(fileDataMap)(processes);
         let endpointTranslatedData = mapObjFunction(endpointDataMap)(processes);
-        let humanReadable = tableToMarkdown(title, processTranslatedData, headers,
-    undefined, dotToSpace);
+        let humanReadable = tableToMarkdown(title, processTranslatedData, headers, undefined, dotToSpace);
         let context = {
             'Process(val.CbID==obj.CbID)': createContext(processTranslatedData),
             'File(val.MD5==obj.MD5)': createContext(fileTranslatedData),
@@ -488,8 +477,7 @@ script:
             processTranslatedData = mapObjFunction(dataMap)(result);
             context = processTranslatedData;
         }
-        let humanReadable = tableToMarkdown(title, processTranslatedData, headers,
-    undefined, dotToSpace);
+        let humanReadable = tableToMarkdown(title, processTranslatedData, headers, undefined, dotToSpace);
         entries.push({
             Type: entryTypes.note,
             Contents: result.process,
@@ -507,8 +495,7 @@ script:
 
 
     function getProcessEventsRequest(processId, segmentId) {
-        let response = sendRequest(`/v1/process/${processId}/${segmentId}/event`,
-    'GET');
+        let response = sendRequest(`/v1/process/${processId}/${segmentId}/event`, 'GET');
         try {
             return JSON.parse(response.Body);
         } catch (err) {
@@ -526,8 +513,7 @@ script:
         let dataMap = processData;
         let headers = dataMap.map(cn => cn.to);
         let translatedData = mapObjFunction(dataMap)(result.process);
-        let humanReadable = tableToMarkdown(title, translatedData, headers, undefined,
-    dotToSpace);
+        let humanReadable = tableToMarkdown(title, translatedData, headers, undefined, dotToSpace);
         let contextData = translatedData;
         entries.push({
             Type: entryTypes.note,
@@ -552,8 +538,7 @@ script:
             translatedData = mapObjFunction(crossProcDataMap)(result.process.crossproc_complete);
           }
         }
-        humanReadable = tableToMarkdown(title, translatedData, headers, undefined,
-    dotToSpace);
+        humanReadable = tableToMarkdown(title, translatedData, headers, undefined, dotToSpace);
         contextData['CrossProc'] = translatedData;
         entries.push({
             Type: entryTypes.note,
@@ -572,8 +557,7 @@ script:
         headers = modulesDataMap.map(cn => cn.to);
         let modulesResult = dq(result, 'process.modload_complete(val.MD5==obj.MD5)');
         translatedData = mapObjFunction(modulesDataMap)(modulesResult);
-        humanReadable = tableToMarkdown(title, translatedData, headers, undefined,
-    dotToSpace);
+        humanReadable = tableToMarkdown(title, translatedData, headers, undefined, dotToSpace);
         contextData['Modules'] = translatedData;
         entries.push({
             Type: entryTypes.note,
@@ -595,8 +579,7 @@ script:
             translatedData = mapObjFunction(registryDataMap)(result.process.regmod_complete);
           }
         }
-        humanReadable = tableToMarkdown(title, translatedData, headers, undefined,
-    dotToSpace);
+        humanReadable = tableToMarkdown(title, translatedData, headers, undefined, dotToSpace);
         contextData['Registry'] = translatedData;
         entries.push({
             Type: entryTypes.note,
@@ -619,8 +602,7 @@ script:
             }));
           }
         }
-        humanReadable = tableToMarkdown(title, translatedData, headers, undefined,
-    dotToSpace);
+        humanReadable = tableToMarkdown(title, translatedData, headers, undefined, dotToSpace);
         contextData['Binaries'] = translatedData.map(binary => ({
             'MD5': binary.MD5,
             'DigSig.Publisher': binary['Publisher'],
@@ -648,8 +630,7 @@ script:
         {to: 'Timestamp', from: 'timestamp'},
         {
             to: 'Extension',
-            from: '.=(val.original_filename.indexOf(".")>=0 ? val.original_filename.split(".")[1]
-    : "")'
+            from: '.=(val.original_filename.indexOf(".")>=0 ? val.original_filename.split(".")[1] : "")'
         },
         {to: 'Hostname', from: "endpoint"},
         {to: 'Path', from: 'observed_filename'},
@@ -733,12 +714,10 @@ script:
         for (let i = 0; i < translatedData.length; i++) {
             let data = translatedData[i];
             if (data['Hostname']) {
-                translatedData[i]['Hostname'] = data['Hostname'].join().replace(/\|/gi,"
-    ");
+                translatedData[i]['Hostname'] = data['Hostname'].join().replace(/\|/gi," ");
             }
         }
-        let humanReadable = tableToMarkdown(title, translatedData, headers, undefined,
-    dotToSpace);
+        let humanReadable = tableToMarkdown(title, translatedData, headers, undefined, dotToSpace);
         let context = {
             'File(val.MD5==obj.MD5)': createContext(translatedData)
         };
@@ -778,8 +757,7 @@ script:
             let dataMap = binaryData;
             let headers = dataMap.map(cn => cn.to);
             let translatedData = mapObjFunction(dataMap)(result);
-            let humanReadable = tableToMarkdown(title, translatedData, headers, undefined,
-    dotToSpace);
+            let humanReadable = tableToMarkdown(title, translatedData, headers, undefined, dotToSpace);
             let context = {
                 'File(val.MD5==obj.MD5)': createContext(translatedData)
             };
@@ -831,8 +809,7 @@ script:
             let dataMap = binaryData;
             let headers = dataMap.map(cn => cn.to);
             let translatedData = mapObjFunction(dataMap)(result);
-            let humanReadable = tableToMarkdown(title, translatedData, headers, undefined,
-    dotToSpace);
+            let humanReadable = tableToMarkdown(title, translatedData, headers, undefined, dotToSpace);
             let context = {
                 'File(val.MD5==obj.MD5)': createContext(translatedData)
             };
@@ -906,8 +883,7 @@ script:
         ];
         let headers = dataMap.map(cn => cn.to);
         let translatedData = mapObjFunction(dataMap)(result);
-        let humanReadable = tableToMarkdown(title, translatedData, headers, undefined,
-    dotToSpace);
+        let humanReadable = tableToMarkdown(title, translatedData, headers, undefined, dotToSpace);
         let context = {
             'CbResponse.Sensors(val.CbSensorID==obj.CbSensorID)': createContext(translatedData)
         };
@@ -930,8 +906,7 @@ script:
         ];
         headers = dataMap.map(cn => cn.to);
         translatedData = mapObjFunction(dataMap)(result);
-        humanReadable = tableToMarkdown(title, translatedData, headers, undefined,
-    dotToSpace);
+        humanReadable = tableToMarkdown(title, translatedData, headers, undefined, dotToSpace);
         context = {
             'Endpoint': createContext(translatedData)
         };
@@ -984,8 +959,7 @@ script:
         ];
         let headers = dataMap.map(cn => cn.to);
         let translatedData = mapObjFunction(dataMap)(result);
-        let humanReadable = tableToMarkdown(title, translatedData, headers, undefined,
-    dotToSpace);
+        let humanReadable = tableToMarkdown(title, translatedData, headers, undefined, dotToSpace);
         let context = {
             'CbResponse.BlockedHashes(val.MD5==obj.MD5)': createContext(translatedData)
         };
@@ -1001,8 +975,7 @@ script:
     }
 
 
-    function blockHashRequest(md5, text, enabled, lastBanTime, banCount, lastBanHost)
-    {
+    function blockHashRequest(md5, text, enabled, lastBanTime, banCount, lastBanHost) {
         let queryParams = {};
         if (md5) {
             queryParams.md5hash = md5;
@@ -1129,8 +1102,7 @@ script:
         let dataMap = watchlistData;
         let headers = dataMap.map(cn => cn.to);
         let translatedData = mapObjFunction(dataMap)(result);
-        let humanReadable = tableToMarkdown(title, translatedData, headers, undefined,
-    dotToSpace);
+        let humanReadable = tableToMarkdown(title, translatedData, headers, undefined, dotToSpace);
         let context = {
             'CbResponse.Watchlists(val.CbWatchlistID==obj.CbWatchlistID)': createContext(translatedData)
         };
@@ -1174,8 +1146,7 @@ script:
         let dataMap = [{to: 'CbWatchlistID', from: 'id'}];
         let headers = dataMap.map(cn => cn.to);
         let translatedData = mapObjFunction(dataMap)(result);
-        let humanReadable = tableToMarkdown(title, translatedData, headers, undefined,
-    dotToSpace);
+        let humanReadable = tableToMarkdown(title, translatedData, headers, undefined, dotToSpace);
         let context = {
             'CbResponse.Watchlists(val.CbWatchlistID==obj.CbWatchlistID)': createContext(translatedData)
         };
@@ -1224,8 +1195,7 @@ script:
         let dataMap = watchlistData;
         let headers = dataMap.map(cn => cn.to);
         let translatedData = mapObjFunction(dataMap)(watchlistObject);
-        let humanReadable = tableToMarkdown(title, translatedData, headers, undefined,
-    dotToSpace);
+        let humanReadable = tableToMarkdown(title, translatedData, headers, undefined, dotToSpace);
         let context = {
             'CbResponse.Watchlists(val.CbWatchlistID==obj.CbWatchlistID)': createContext(translatedData)
         };
@@ -1372,15 +1342,13 @@ script:
       description: Alert report name (watchlist_id) to filter by
     - name: query
       default: true
-      description: Query string. Accepts the same data as the search box on the Binary
-        Search page. See https://github.com/carbonblack/cbapi/blob/master/client_apis/docs/query_overview.pdf
+      description: Query string. Accepts the same data as the search box on the Binary Search page. See https://github.com/carbonblack/cbapi/blob/master/client_apis/docs/query_overview.pdf
     - name: rows
       description: Return this many rows, 10 by default.
     - name: start
       description: Start at this row, 0 by default.
     - name: sort
-      description: Sort rows by this field and order. server_added_timestamp desc
-        by default.
+      description: Sort rows by this field and order. server_added_timestamp desc by default.
     - name: facet
       description: Return facet results. 'false' by default, set to 'true' for facets.
     outputs:
@@ -1434,15 +1402,13 @@ script:
       description: Filter binary by hostname
     - name: query
       default: true
-      description: Query string. Accepts the same data as the search box on the Binary
-        Search page. See https://github.com/carbonblack/cbapi/blob/master/client_apis/docs/query_overview.pdf
+      description: Query string. Accepts the same data as the search box on the Binary Search page. See https://github.com/carbonblack/cbapi/blob/master/client_apis/docs/query_overview.pdf
     - name: rows
       description: Return this many rows, 10 by default.
     - name: start
       description: Start at this row, 0 by default.
     - name: sort
-      description: Sort rows by this field and order. server_added_timestamp desc
-        by default.
+      description: Sort rows by this field and order. server_added_timestamp desc by default.
     - name: facet
       description: Return facet results. 'false' by default, set to 'true' for facets.
     outputs:
@@ -1592,8 +1558,7 @@ script:
   - name: cb-get-hash-blacklist
     arguments:
     - name: filter
-      description: 'OPTIONAL filters blacklist by fields. Example: filter="md5hash
-        == put_your_hash_here"'
+      description: 'OPTIONAL filters blacklist by fields. Example: filter="md5hash == put_your_hash_here"'
     outputs:
     - contextPath: CbResponse.BlockedHashes.MD5
       description: Blocked MD5
@@ -1613,8 +1578,7 @@ script:
       description: Last block hostname
     - contextPath: CbResponse.BlockedHashes.LastBlock.CbSensorID
       description: Last block sensor ID
-    description: Returns a list of blacklisted hashes, with each list entry describing
-      one blacklisted hash
+    description: Returns a list of blacklisted hashes, with each list entry describing one blacklisted hash
   - name: cb-get-process
     arguments:
     - name: pid
@@ -1634,8 +1598,7 @@ script:
     - contextPath: Process.Siblings.MD5
       description: The sibling Process MD5
     - contextPath: Process.CbSegmentID
-      description: Cb 'segment' where this process instance is stored. Required to
-        fetch further info on a process.
+      description: Cb 'segment' where this process instance is stored. Required to fetch further info on a process.
     - contextPath: Process.Parent.MD5
       description: The parent Process MD5
     - contextPath: Process.Children.CommandLine
@@ -1643,14 +1606,11 @@ script:
     - contextPath: Process.Hostname
       description: Process Hostname
     - contextPath: Process.Parent.CbSegmentID
-      description: The parent Cb 'segment' where this process instance is stored.
-        Required to fetch further info on a process.
+      description: The parent Cb 'segment' where this process instance is stored. Required to fetch further info on a process.
     - contextPath: Process.CbID
-      description: Cb unique ID for this process instance - required (together with
-        CbSegmentID) to fetch further info on a process.
+      description: Cb unique ID for this process instance - required (together with CbSegmentID) to fetch further info on a process.
     - contextPath: Process.Siblings.CbSegmentID
-      description: The sibling Cb 'segment' where this process instance is stored.
-        Required to fetch further info on a process.
+      description: The sibling Cb 'segment' where this process instance is stored. Required to fetch further info on a process.
     - contextPath: Process.Children.Name
       description: The children Process Name
     - contextPath: Process.Parent.Name
@@ -1664,11 +1624,9 @@ script:
     - contextPath: Process.PID
       description: Process PID
     - contextPath: Process.Children.CbSegmentID
-      description: The children Cb 'segment' where this process instance is stored.
-        Required to fetch further info on a process.
+      description: The children Cb 'segment' where this process instance is stored. Required to fetch further info on a process.
     - contextPath: Process.Children.CbID
-      description: The children Cb unique ID for this process instance - required
-        (together with CbSegmentID) to fetch further info on a process.
+      description: The children Cb unique ID for this process instance - required (together with CbSegmentID) to fetch further info on a process.
     - contextPath: Process.Path
       description: Process Path
     - contextPath: Process.Parent.PID
@@ -1680,8 +1638,7 @@ script:
     - contextPath: Process.Children.PID
       description: The children Process PID
     - contextPath: Process.Parent.CbID
-      description: The parent Cb unique ID for this process instance - required (together
-        with CbSegmentID) to fetch further info on a process.
+      description: The parent Cb unique ID for this process instance - required (together with CbSegmentID) to fetch further info on a process.
     - contextPath: Process.CommandLine
       description: Process CommandLine
     - contextPath: Process.Siblings.CommandLine
@@ -1697,8 +1654,7 @@ script:
     - contextPath: Process.Children.MD5
       description: The children Process MD5
     - contextPath: Process.Siblings.CbID
-      description: The sibling Cb unique ID for this process instance - required (together
-        with CbSegmentID) to fetch further info on a process.
+      description: The sibling Cb unique ID for this process instance - required (together with CbSegmentID) to fetch further info on a process.
     - contextPath: Process.Siblings.Path
       description: The sibling Process Path
     - contextPath: Process.Siblings.PID
@@ -1706,8 +1662,7 @@ script:
     - contextPath: Process.StartTime
       description: Start time of the process.
       type: date
-    description: Gets basic process information for segment (segment_id) of process
-      (process_id)
+    description: Gets basic process information for segment (segment_id) of process (process_id)
   - name: cb-get-processes
     arguments:
     - name: name
@@ -1724,15 +1679,13 @@ script:
       description: Filter processes by md5 hash
     - name: query
       default: true
-      description: Query string. Accepts the same data as the search box on the Binary
-        Search page. See https://github.com/carbonblack/cbapi/blob/master/client_apis/docs/query_overview.pdf
+      description: Query string. Accepts the same data as the search box on the Binary Search page. See https://github.com/carbonblack/cbapi/blob/master/client_apis/docs/query_overview.pdf
     - name: rows
       description: Return this many rows, 10 by default.
     - name: start
       description: Start at this row, 0 by default.
     - name: sort
-      description: Sort rows by this field and order. server_added_timestamp desc
-        by default.
+      description: Sort rows by this field and order. server_added_timestamp desc by default.
     - name: facet
       description: Return facet results. 'false' by default, set to 'true' for facets.
     outputs:
@@ -1749,11 +1702,9 @@ script:
     - contextPath: Process.PID
       description: Process PID
     - contextPath: Process.CbID
-      description: Cb unique ID for this process instance - required (together with
-        CbSegmentID) to fetch further info on a process.
+      description: Cb unique ID for this process instance - required (together with CbSegmentID) to fetch further info on a process.
     - contextPath: Process.CbSegmentId
-      description: Cb "segment" where this process instance is stored. Required to
-        fetch further info on a process.
+      description: Cb "segment" where this process instance is stored. Required to fetch further info on a process.
     - contextPath: Process.Parent.PID
       description: Process Parent PID
     - contextPath: Process.Parent.Name
@@ -1801,8 +1752,7 @@ script:
       description: the internal CB process id; this is the id field in search results
     - name: segid
       required: true
-      description: the process segment id; this is the segment_id field in search
-        results.
+      description: the process segment id; this is the segment_id field in search results.
     outputs:
     - contextPath: Process.CrossProc.OtherProcessMD5
       description: Other process MD5
@@ -1817,8 +1767,7 @@ script:
     - contextPath: Process.Path
       description: Process Path
     - contextPath: Process.CbID
-      description: Cb unique ID for this process instance - required (together with
-        CbSegmentID) to fetch further info on a process.
+      description: Cb unique ID for this process instance - required (together with CbSegmentID) to fetch further info on a process.
     - contextPath: Process.Parent.Name
       description: The parent Process Name
     - contextPath: Process.Hostname
@@ -1830,8 +1779,7 @@ script:
     - contextPath: Process.CrossProc.OtherProcessCbID
       description: Other process CbID
     - contextPath: Process.CbSegmentID
-      description: Cb 'segment' where this process instance is stored. Required to
-        fetch further info on a process.
+      description: Cb 'segment' where this process instance is stored. Required to fetch further info on a process.
     - contextPath: Process.Name
       description: Process Name
     - contextPath: Process.CrossProc.Time
@@ -1852,8 +1800,7 @@ script:
       description: Registry time
     - contextPath: Process.Modules.Time
       description: Module time
-    description: Retrieve all process events for a given process segmented by segment
-      ID
+    description: Retrieve all process events for a given process segmented by segment ID
   - name: cb-quarantine-device
     arguments:
     - name: sensor
@@ -1878,8 +1825,7 @@ script:
     - name: hostname
       description: returns the sensor registration(s) with matching hostname
     - name: groupid
-      description: returns the sensor registration(s) in the specified sensor group
-        id
+      description: returns the sensor registration(s) in the specified sensor group id
     outputs:
     - contextPath: CbResponse.Sensors.Status
       description: Sensor Status
@@ -2004,8 +1950,7 @@ script:
     - name: name
       description: name of this watchlist
     - name: indexType
-      description: the type of watchlist. Valid values are 'modules' and 'events'
-        for binary and process watchlists, respectively
+      description: the type of watchlist. Valid values are 'modules' and 'events' for binary and process watchlists, respectively
     description: Modify a watchlist in Carbon black Response.
   - name: cb-alert-update
     arguments:
@@ -2020,8 +1965,7 @@ script:
       - Unresolved
       - In Progress
       - False Positive
-      description: 'Updated alert''s status: Resolved,Unresolved,In Progress or False
-        Positive'
+      description: 'Updated alert''s status: Resolved,Unresolved,In Progress or False Positive'
     - name: setIgnored
       auto: PREDEFINED
       predefined:
@@ -2081,8 +2025,7 @@ script:
     - contextPath: File.Description
       description: The binary description.
     - contextPath: File.DigSig.Result
-      description: The Carbon Black decision after checking this binary's digital
-        signature.
+      description: The Carbon Black decision after checking this binary's digital signature.
     - contextPath: File.LastSeen
       description: LThe lst time the binary was seen.
     - contextPath: File.Path
@@ -2107,8 +2050,7 @@ script:
       description: The file version.
     - contextPath: File.Signature.Description
       description: The description of the signature.
-    description: Retrieve a binary from CarbonBlack based on hash. Returns a .zip
-      file containing the requested file and it's metadata.
+    description: Retrieve a binary from CarbonBlack based on hash. Returns a .zip file containing the requested file and it's metadata.
   isfetch: true
   runonce: false
   dockerimage: demisto/python:2.7.18.8715
