@@ -212,7 +212,6 @@ def build_fetch_kwargs(dem_params, occured_start_time, now, search_offset):
 
     extensive_log('occurred_start_time_fieldname: {}'.format(occurred_start_time_fieldname))
     extensive_log('occured_start_time: {}'.format(occured_start_time))
-    extensive_log('index_start_time: {}'.format(index_start_time))
 
     kwargs_oneshot = {
         occurred_start_time_fieldname: occured_start_time,
