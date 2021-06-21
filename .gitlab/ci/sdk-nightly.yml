@@ -142,6 +142,9 @@ demisto-sdk-nightly:run-commands-against-instance:
 
 
 demisto-sdk-nightly:trigger-slack-notify:
+  extends:
+    - .trigger-slack-notification
+    - .sdk-nightly-schedule-rule-always
   variables:
     PIPELINE_TO_QUERY: $CI_PIPELINE_ID
     WORKFLOW: 'Demisto SDK Nightly'
@@ -149,6 +152,3 @@ demisto-sdk-nightly:trigger-slack-notify:
     # Passes the environment variable from the parent pipeline to the child which can be useful for cases
     # when triggering pipeline with alternate env variable value passed in the API call
     SLACK_CHANNEL: $SLACK_CHANNEL
-  extends:
-    - .trigger-slack-notification
-    - .sdk-nightly-schedule-rule-always
