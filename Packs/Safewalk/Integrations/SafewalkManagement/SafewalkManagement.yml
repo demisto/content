@@ -118,6 +118,55 @@ configuration:
 script:
   commands:
   - name: safewalk-get-transactionlog
+    outputs:
+    - contextPath: Safewalk.management.transactionlist.count
+      description: ''
+      type: Number
+    - contextPath: Safewalk.management.transactionlist.next
+      description: ''
+      type: String
+    - contextPath: Safewalk.management.transactionlist.previous
+      description: ''
+      type: Unknown
+    - contextPath: Safewalk.management.transactionlist.results.reason_detail
+      description: ''
+      type: Unknown
+    - contextPath: Safewalk.management.transactionlist.results.is_locked
+      description: ''
+      type: Boolean
+    - contextPath: Safewalk.management.transactionlist.results.id
+      description: ''
+      type: Number
+    - contextPath: Safewalk.management.transactionlist.results.type
+      description: ''
+      type: String
+    - contextPath: Safewalk.management.transactionlist.results.timestamp
+      description: ''
+      type: Date
+    - contextPath: Safewalk.management.transactionlist.results.user
+      description: ''
+      type: String
+    - contextPath: Safewalk.management.transactionlist.results.username
+      description: ''
+      type: String
+    - contextPath: Safewalk.management.transactionlist.results.serial_number
+      description: ''
+      type: Unknown
+    - contextPath: Safewalk.management.transactionlist.results.code
+      description: ''
+      type: String
+    - contextPath: Safewalk.management.transactionlist.results.transaction_id
+      description: ''
+      type: String
+    - contextPath: Safewalk.management.transactionlist.results.result
+      description: ''
+      type: String
+    - contextPath: Safewalk.management.transactionlist.results.reason
+      description: ''
+      type: Unknown
+    - contextPath: Safewalk.management.transactionlist.results.caller
+      description: ''
+      type: String
     arguments:
     - name: page
       description: Pages to be displayed.
@@ -127,6 +176,34 @@ script:
       description: locked
     description: Display transaction log.
   - name: safewalk-get-users
+    outputs:
+    - contextPath: Safewalk.management.userlist.count
+      description: ''
+      type: Number
+    - contextPath: Safewalk.management.userlist.next
+      description: ''
+      type: Unknown
+    - contextPath: Safewalk.management.userlist.previous
+      description: ''
+      type: Unknown
+    - contextPath: Safewalk.management.userlist.results.username
+      description: ''
+      type: String
+    - contextPath: Safewalk.management.userlist.results.first_name
+      description: ''
+      type: String
+    - contextPath: Safewalk.management.userlist.results.last_name
+      description: ''
+      type: String
+    - contextPath: Safewalk.management.userlist.results.mobile
+      description: ''
+      type: String
+    - contextPath: Safewalk.management.userlist.results.email
+      description: ''
+      type: String
+    - contextPath: Safewalk.management.userlist.results.is_locked
+      description: ''
+      type: Boolean
     arguments:
     - name: page
       description: page
@@ -136,6 +213,34 @@ script:
       description: locked
     description: Search local users.
   - name: safewalk-get-ldap-users
+    outputs:
+    - contextPath: Safewalk.management.ldapusers.count
+      description: ''
+      type: Number
+    - contextPath: Safewalk.management.ldapusers.next
+      description: ''
+      type: Unknown
+    - contextPath: Safewalk.management.ldapusers.previous
+      description: ''
+      type: Unknown
+    - contextPath: Safewalk.management.ldapusers.results.username
+      description: ''
+      type: String
+    - contextPath: Safewalk.management.ldapusers.results.first_name
+      description: ''
+      type: String
+    - contextPath: Safewalk.management.ldapusers.results.last_name
+      description: ''
+      type: String
+    - contextPath: Safewalk.management.ldapusers.results.mobile
+      description: ''
+      type: String
+    - contextPath: Safewalk.management.ldapusers.results.email
+      description: ''
+      type: String
+    - contextPath: Safewalk.management.ldapusers.results.is_locked
+      description: ''
+      type: Boolean
     arguments:
     - name: page
       description: page
@@ -147,9 +252,137 @@ script:
       description: ldap
     description: Search LDAP users
   - name: safewalk-get-ldaps
+    outputs:
+    - contextPath: Safewalk.management.ldaps..id
+      description: ''
+      type: Number
+    - contextPath: Safewalk.management.ldaps..is_active
+      description: ''
+      type: Boolean
+    - contextPath: Safewalk.management.ldaps..ldap_type
+      description: ''
+      type: String
+    - contextPath: Safewalk.management.ldaps..name
+      description: ''
+      type: String
+    - contextPath: Safewalk.management.ldaps..domain
+      description: ''
+      type: String
+    - contextPath: Safewalk.management.ldaps..server
+      description: ''
+      type: String
+    - contextPath: Safewalk.management.ldaps..port
+      description: ''
+      type: Number
+    - contextPath: Safewalk.management.ldaps..secondary_server
+      description: ''
+      type: String
+    - contextPath: Safewalk.management.ldaps..secondary_port
+      description: ''
+      type: Unknown
+    - contextPath: Safewalk.management.ldaps..bind_dn
+      description: ''
+      type: String
+    - contextPath: Safewalk.management.ldaps..bind_password
+      description: ''
+      type: String
+    - contextPath: Safewalk.management.ldaps..root_dn
+      description: ''
+      type: String
+    - contextPath: Safewalk.management.ldaps..user_search
+      description: ''
+      type: String
+    - contextPath: Safewalk.management.ldaps..search_filter
+      description: ''
+      type: String
+    - contextPath: Safewalk.management.ldaps..map_uid_attr
+      description: ''
+      type: String
+    - contextPath: Safewalk.management.ldaps..map_secondary_uid_attr
+      description: ''
+      type: String
+    - contextPath: Safewalk.management.ldaps..map_first_name_attr
+      description: ''
+      type: String
+    - contextPath: Safewalk.management.ldaps..map_last_name_attr
+      description: ''
+      type: String
+    - contextPath: Safewalk.management.ldaps..map_email_attr
+      description: ''
+      type: String
+    - contextPath: Safewalk.management.ldaps..map_mobile_attr
+      description: ''
+      type: String
+    - contextPath: Safewalk.management.ldaps..map_user_status_attr
+      description: ''
+      type: String
+    - contextPath: Safewalk.management.ldaps..map_pwd_last_set_attr
+      description: ''
+      type: String
+    - contextPath: Safewalk.management.ldaps..map_maximum_password_age
+      description: ''
+      type: String
+    - contextPath: Safewalk.management.ldaps..map_swisscom_mobile_id_sn_attr
+      description: ''
+      type: String
+    - contextPath: Safewalk.management.ldaps..map_immutableid_attr
+      description: ''
+      type: String
+    - contextPath: Safewalk.management.ldaps..priority
+      description: ''
+      type: Number
     arguments: []
     description: Get LDAP configuration.
   - name: safewalk-get-user-personalinformation
+    outputs:
+    - contextPath: Safewalk.management.userpersonalinformation.username
+      description: ''
+      type: String
+    - contextPath: Safewalk.management.userpersonalinformation.first_name
+      description: ''
+      type: String
+    - contextPath: Safewalk.management.userpersonalinformation.last_name
+      description: ''
+      type: String
+    - contextPath: Safewalk.management.userpersonalinformation.dn
+      description: ''
+      type: Unknown
+    - contextPath: Safewalk.management.userpersonalinformation.db_mobile_phone
+      description: ''
+      type: String
+    - contextPath: Safewalk.management.userpersonalinformation.db_email
+      description: ''
+      type: String
+    - contextPath: Safewalk.management.userpersonalinformation.ldap_mobile_phone
+      description: ''
+      type: Unknown
+    - contextPath: Safewalk.management.userpersonalinformation.ldap_email
+      description: ''
+      type: Unknown
+    - contextPath: Safewalk.management.userpersonalinformation.user_storage
+      description: ''
+      type: String
+    - contextPath: Safewalk.management.userpersonalinformation.is_locked
+      description: ''
+      type: Boolean
+    - contextPath: Safewalk.management.userpersonalinformation.has_password_expired
+      description: ''
+      type: Unknown
+    - contextPath: Safewalk.management.userpersonalinformation.is_required_to_change_password
+      description: ''
+      type: Unknown
+    - contextPath: Safewalk.management.userpersonalinformation.user_disabled
+      description: ''
+      type: Unknown
+    - contextPath: Safewalk.management.userpersonalinformation.user_lockout
+      description: ''
+      type: Unknown
+    - contextPath: Safewalk.management.userpersonalinformation.password_expiration_date
+      description: ''
+      type: Unknown
+    - contextPath: Safewalk.management.userpersonalinformation.last_authentication_attempt
+      description: ''
+      type: Date
     arguments:
     - name: username
       description: Username
@@ -164,6 +397,16 @@ script:
       description: mobile_phone
     description: Set user personal information.
   - name: safewalk-get-user-accessattempts
+    outputs:
+    - contextPath: Safewalk.management.accessattempts.failures_since_start
+      description: ''
+      type: Number
+    - contextPath: Safewalk.management.accessattempts.attempt_time
+      description: ''
+      type: Date
+    - contextPath: Safewalk.management.accessattempts.is_locked
+      description: ''
+      type: Boolean
     arguments:
     - name: username
       description: Username
@@ -192,6 +435,28 @@ script:
       description: params
     description: Update user token.
   - name: safewalk-get-user-tokens
+    outputs:
+    - contextPath: Safewalk.management.usertokens..serial_number
+      description: ''
+      type: Date
+    - contextPath: Safewalk.management.usertokens..type
+      description: ''
+      type: String
+    - contextPath: Safewalk.management.usertokens..confirmed
+      description: ''
+      type: Boolean
+    - contextPath: Safewalk.management.usertokens..password_required
+      description: ''
+      type: Unknown
+    - contextPath: Safewalk.management.usertokens..physical_token
+      description: ''
+      type: Unknown
+    - contextPath: Safewalk.management.usertokens..status
+      description: ''
+      type: String
+    - contextPath: Safewalk.management.usertokens..status_change_date
+      description: ''
+      type: Unknown
     arguments:
     - name: username
       description: Username
@@ -220,6 +485,31 @@ script:
       description: Username
     description: Get user settings.
   - name: safewalk-get-user-group
+    outputs:
+    - contextPath: Safewalk.management.usergroup.default_group.name
+      description: ''
+      type: String
+    - contextPath: Safewalk.management.usergroup.default_group.is_member
+      description: ''
+      type: Boolean
+    - contextPath: Safewalk.management.usergroup.default_group.dn
+      description: ''
+      type: Unknown
+    - contextPath: Safewalk.management.usergroup.default_group.priority
+      description: ''
+      type: Number
+    - contextPath: Safewalk.management.usergroup.groups.name
+      description: ''
+      type: String
+    - contextPath: Safewalk.management.usergroup.groups.is_member
+      description: ''
+      type: Boolean
+    - contextPath: Safewalk.management.usergroup.groups.dn
+      description: ''
+      type: String
+    - contextPath: Safewalk.management.usergroup.groups.priority
+      description: ''
+      type: Number
     arguments:
     - name: username
       description: Username
@@ -239,6 +529,25 @@ script:
       description: old-group-name
     description: Remove user group.
   - name: safewalk-get-user-registrationcode
+    outputs:
+    - contextPath: Safewalk.management.registrationcode.expiration
+      description: ''
+      type: Date
+    - contextPath: Safewalk.management.registrationcode.attempts_left
+      description: ''
+      type: Number
+    - contextPath: Safewalk.management.registrationcode.sent_by
+      description: ''
+      type: Unknown
+    - contextPath: Safewalk.management.registrationcode.sent_on
+      description: ''
+      type: Unknown
+    - contextPath: Safewalk.management.registrationcode.token
+      description: ''
+      type: String
+    - contextPath: Safewalk.management.registrationcode.purpose
+      description: ''
+      type: String
     arguments:
     - name: username
       description: Username
