@@ -13,7 +13,7 @@
     "hours": 0,
     "hoursR": 0,
     "id": "Content Update Check",
-    "layout": "da4741da-88f0-4919-8049-93f21ae85c5c",
+    "layout": "Content Update Check Layout",
     "locked": false,
     "name": "Content Update Check",
     "onChangeRepAlg": 0,
