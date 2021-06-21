@@ -5,6 +5,7 @@ import SplunkPy as splunk
 import demistomock as demisto
 from CommonServerPython import *
 from datetime import timedelta, datetime
+from freezegun import freeze_time
 
 RETURN_ERROR_TARGET = 'SplunkPy.return_error'
 SPLUNK_TIME_FORMAT = "%Y-%m-%dT%H:%M:%S"
@@ -459,7 +460,7 @@ def test_fetch_notables(mocker):
     mocker.patch.object(demisto, 'incidents')
     mocker.patch.object(demisto, 'setLastRun')
     mock_last_run = {'time': '2018-10-24T14:13:20'}
-    mock_params = {'fetchQuery': "something"}
+    mock_params = {'fetchQuery': "something", 'enabled_enrichments': []}
     mocker.patch('demistomock.getLastRun', return_value=mock_last_run)
     mocker.patch('demistomock.params', return_value=mock_params)
     service = mocker.patch('splunklib.client.connect', return_value=None)
@@ -1022,10 +1023,11 @@ def test_build_search_human_readable(mocker):
 
 
 def test_fetch_incidents(mocker):
+    splunk.ENABLED_ENRICHMENTS = []
     mocker.patch.object(demisto, 'incidents')
     mocker.patch.object(demisto, 'setLastRun')
     mock_last_run = {'time': '2018-10-24T14:13:20'}
-    mock_params = {'fetchQuery': "something"}
+    mock_params = {'fetchQuery': "something", 'enabled_enrichments': []}
     mocker.patch('demistomock.getLastRun', return_value=mock_last_run)
     mocker.patch('demistomock.params', return_value=mock_params)
     service = mocker.patch('splunklib.client.connect', return_value=None)
@@ -1042,27 +1044,38 @@ def test_remove_old_incident_ids():
     """
     Given:
     - An array containing an ID of an incident that occurred less than an hour ago,
-    and one that occurred more than an hour ago
+    one that occurred more than an hour ago, and one that occurred over 2 hours ago.
     When:
-    - Running "remove_old_incident_ids" to remove the IDs of older incidents
+    - Running "remove_old_incident_ids" wtih a look_behind of 1 hour
+    - Running "remove_old_incident_ids" wtih a look_behind of 2 hours
     Then:
-    - The ID of the incident that occurred less than an hour ago remained.
-    - The ID of the incident that occurred more than an hour ago was removed.
+    - When running with look_behind of 30 mins, only the ID of the incident that occurred less than an hour ago remained.
+    - When running with look_behind of 1 hour, only the ID of the incident that occurred more than 2 hours ago was removed.
     """
     from SplunkPy import remove_old_incident_ids
     cur_time = int(time.time())
-    incident_ids = {
+
+    incident_ids_one_hour = {
         "incident_under_one_hour_old": cur_time - 300,
-        "incident_over_one_hour_old": cur_time - 200000
+        "incident_over_one_hour_old": cur_time - 4200,
+        "incident_over_two_hours_old": cur_time - 7800
     }
 
-    assert "incident_under_one_hour_old" in incident_ids
-    assert "incident_over_one_hour_old" in incident_ids
+    assert "incident_under_one_hour_old" in incident_ids_one_hour
+    assert "incident_over_one_hour_old" in incident_ids_one_hour
+    assert "incident_over_two_hours_old" in incident_ids_one_hour
 
-    new_incident_ids = remove_old_incident_ids(incident_ids, cur_time)
+    new_incident_ids_one_hour_look_behind = remove_old_incident_ids(incident_ids_one_hour, cur_time, 30)
 
-    assert "incident_under_one_hour_old" in new_incident_ids
-    assert "incident_over_one_hour_old" not in new_incident_ids
+    assert "incident_under_one_hour_old" in new_incident_ids_one_hour_look_behind
+    assert "incident_over_one_hour_old" not in new_incident_ids_one_hour_look_behind
+    assert "incident_over_two_hours_old" not in new_incident_ids_one_hour_look_behind
+
+    new_incident_ids_one_hour_look_behind = remove_old_incident_ids(incident_ids_one_hour, cur_time, 60)
+
+    assert "incident_under_one_hour_old" in new_incident_ids_one_hour_look_behind
+    assert "incident_over_one_hour_old" in new_incident_ids_one_hour_look_behind
+    assert "incident_over_two_hours_old" not in new_incident_ids_one_hour_look_behind
 
 
 occurred_time = str(int(time.time()) - 300)
@@ -1091,38 +1104,6 @@ def test_create_incident_custom_id_creates_different_ids():
     first_incident_custom_id = create_incident_custom_id(first_incident)
     second_incident_custom_id = create_incident_custom_id(second_incident)
     assert first_incident_custom_id != second_incident_custom_id
-
-
-test_get_next_start_time_over_20_minutes = (21, False, '2020-08-04T05:46:16')
-test_get_next_start_time_under_20_minutes = (17, False, '2020-08-04T05:45:16')
-test_get_next_start_time_under_20_minutes_and_incidents_found = (21, True, '2020-08-04T05:44:16')
-
-get_next_start_time_test_data = [
-    test_get_next_start_time_over_20_minutes,
-    test_get_next_start_time_under_20_minutes,
-    test_get_next_start_time_under_20_minutes_and_incidents_found
-]
-
-
-@pytest.mark.parametrize('same_start_time_count, were_new_incidents_found, expected', get_next_start_time_test_data)
-def test_get_next_start_time_over_20_minutes(same_start_time_count, were_new_incidents_found, expected):
-    """
-    Given:
-    - Over 20 minutes have passed since the last incident was found, no incidents were found on this fetch
-    - Less than 20 minutes have passed since the last incident was found, no incidents were found on this fetch
-    - Over 20 minutes have passed since the last incident was found, some incidents were found on this fetch
-    When:
-    - Using "get_next_start_time" to calculate the start time of the next fetch.
-    Then:
-    - The next start time will be one minute later than the current start time.
-    - The next start time will be the same as the current start time.
-    - The next start time will be one minute earlier than the time supplied to the function,
-    which is the time of the latest incident found.
-    """
-    from SplunkPy import get_next_start_time
-    last_run = '2020-08-04T05:45:16.000-07:00'
-    next_run = get_next_start_time(last_run, same_start_time_count, were_new_incidents_found)
-    assert next_run == expected
 
 
 incidents_with_minutes_difference = (
@@ -1288,10 +1269,11 @@ def test_fetch_incidents_pre_indexing_scenario(mocker):
     - The next fetch will start from a time that will allow getting the earlier incident as well,
     even though it was indexed later.
     """
+    splunk.ENABLED_ENRICHMENTS = []
     mocker.patch.object(demisto, 'incidents')
     mocker.patch.object(demisto, 'setLastRun')
     mock_last_run = {'time': '2018-10-24T14:13:20'}
-    mock_params = {'fetchQuery': "something"}
+    mock_params = {'fetchQuery': "something", 'enabled_enrichments': []}
     mocker.patch('demistomock.getLastRun', return_value=mock_last_run)
     mocker.patch('demistomock.params', return_value=mock_params)
     service = mocker.patch('splunklib.client.connect', return_value=None)
@@ -1301,7 +1283,7 @@ def test_fetch_incidents_pre_indexing_scenario(mocker):
     next_run_timestamp = datetime.strptime(next_run["time"], SPLUNK_TIME_FORMAT)
     earlier_incident_time = response_with_late_incident[0]["_time"].split('.')[0]
     earlier_incident_time = datetime.strptime(earlier_incident_time, SPLUNK_TIME_FORMAT)
-    assert earlier_incident_time > next_run_timestamp
+    assert earlier_incident_time >= next_run_timestamp
 
 
 def test_fetch_incidents_deduping(mocker):
@@ -1313,10 +1295,11 @@ def test_fetch_incidents_deduping(mocker):
     Then:
     - The incident is not returned again, thus it was effectively deduped.
     """
+    splunk.ENABLED_ENRICHMENTS = []
     mocker.patch.object(demisto, 'incidents')
     mocker.patch.object(demisto, 'setLastRun')
     mock_last_run = {'time': '2018-10-24T14:13:20'}
-    mock_params = {'fetchQuery': "something"}
+    mock_params = {'fetchQuery': "something", 'enabled_enrichments': []}
     mocker.patch('demistomock.getLastRun', return_value=mock_last_run)
     mocker.patch('demistomock.params', return_value=mock_params)
     service = mocker.patch('splunklib.client.connect', return_value=None)
@@ -1332,30 +1315,8 @@ def test_fetch_incidents_deduping(mocker):
     assert len(incidents) == 0
 
 
-def test_fetch_incidents_next_fetch_start_update_count(mocker):
-    """
-    Given:
-    - A new incident is found when "Fetch Incidents" runs.
-    When:
-    - The next run's "last run" values are set.
-    Then:
-    - The "fetch_start_update_count" is equal to zero, since an incident was found.
-    """
-    mocker.patch.object(demisto, 'incidents')
-    mocker.patch.object(demisto, 'setLastRun')
-    mock_last_run = {'time': '2018-10-24T14:13:20'}
-    mock_params = {'fetchQuery': "something"}
-    mocker.patch('demistomock.getLastRun', return_value=mock_last_run)
-    mocker.patch('demistomock.params', return_value=mock_params)
-    service = mocker.patch('splunklib.client.connect', return_value=None)
-    mocker.patch('splunklib.results.ResultsReader', return_value=response_with_late_incident)
-    splunk.fetch_notables(service)
-    next_run = demisto.setLastRun.call_args[0][0]
-    incidents = demisto.incidents.call_args[0][0]
-    assert len(incidents) == 1
-    assert next_run["fetch_start_update_count"] == 0
-
-
+@pytest.mark.commands
+@freeze_time(time.ctime(1576009202))
 def test_fetch_incidents_time_relapse(mocker):
     """
     Given:
@@ -1365,12 +1326,12 @@ def test_fetch_incidents_time_relapse(mocker):
     Then:
     - No incidents are returned.
     - The next run's start time will be the same as the current run's start time.
-    - The "fetch_start_update_count" was increased by one.
     """
+    splunk.ENABLED_ENRICHMENTS = []
     mocker.patch.object(demisto, 'incidents')
     mocker.patch.object(demisto, 'setLastRun')
     mock_last_run = {'time': '2018-10-24T14:13:20'}
-    mock_params = {'fetchQuery': "something"}
+    mock_params = {'fetchQuery': "something", 'enabled_enrichments': []}
     mocker.patch('demistomock.getLastRun', return_value=mock_last_run)
     mocker.patch('demistomock.params', return_value=mock_params)
     service = mocker.patch('splunklib.client.connect', return_value=None)
@@ -1379,8 +1340,7 @@ def test_fetch_incidents_time_relapse(mocker):
     next_run = demisto.setLastRun.call_args[0][0]
     incidents = demisto.incidents.call_args[0][0]
     assert len(incidents) == 0
-    assert next_run["time"] == '2018-10-24T14:13:20'
-    assert next_run["fetch_start_update_count"] == 1
+    assert next_run["time"] == '2019-12-10T22:20:02'
 
 
 def test_fetch_incidents_incident_next_run_calculation(mocker):
@@ -1390,16 +1350,16 @@ def test_fetch_incidents_incident_next_run_calculation(mocker):
     When:
     - The next run's "last run" values are set.
     Then:
-    - The next run's start time will be the the occurrence time of the new incident, minus one minute.
+    - The next run's start time will be the the occurrence time of the new incident.
     """
     from SplunkPy import occurred_to_datetime
 
     from datetime import timedelta
-
+    splunk.ENABLED_ENRICHMENTS = []
     mocker.patch.object(demisto, 'incidents')
     mocker.patch.object(demisto, 'setLastRun')
     mock_last_run = {'time': '2018-10-24T14:13:20'}
-    mock_params = {'fetchQuery': "something"}
+    mock_params = {'fetchQuery': "something", 'enabled_enrichments': []}
     mocker.patch('demistomock.getLastRun', return_value=mock_last_run)
     mocker.patch('demistomock.params', return_value=mock_params)
     service = mocker.patch('splunklib.client.connect', return_value=None)
@@ -1411,4 +1371,4 @@ def test_fetch_incidents_incident_next_run_calculation(mocker):
     found_incident_time = occurred_to_datetime(incident_found['occurred'])
     next_run_time = datetime.strptime(next_run["time"], SPLUNK_TIME_FORMAT)
 
-    assert next_run_time == found_incident_time - timedelta(minutes=1)
+    assert next_run_time == found_incident_time
