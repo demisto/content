@@ -1,6 +1,4 @@
 import copy
-import io
-import json
 from datetime import datetime, timezone
 
 import pytest
@@ -10,11 +8,6 @@ from ArcherV2 import Client, extract_from_xml, generate_field_contents, get_erro
     fetch_incidents, get_fetch_time, parser, OCCURRED_FORMAT, search_records_by_report_command
 
 BASE_URL = 'https://test.com/'
-
-
-def util_load_json(path):
-    with io.open(path, mode='r', encoding='utf-8') as f:
-        return json.loads(f.read())
 
 
 GET_TOKEN_SOAP = '<?xml version="1.0" encoding="utf-8"?>' + \
@@ -58,8 +51,8 @@ GET_LEVELS_BY_APP = {
     'level': 123, 'mapping': {'1': {
         'Type': 7, 'Name': 'External Links', 'FieldId': "1", 'IsRequired': False, 'RelatedValuesListId': None},
         '2': {
-            'Type': 1, 'Name': 'Device Name', 'FieldId': "2",
-            'IsRequired': True, 'RelatedValuesListId': 8}
+        'Type': 1, 'Name': 'Device Name', 'FieldId': "2",
+        'IsRequired': True, 'RelatedValuesListId': 8}
     }}
 
 GET_FIElD_DEFINITION_RES = {
