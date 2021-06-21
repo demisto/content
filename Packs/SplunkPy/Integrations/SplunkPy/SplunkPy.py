@@ -146,13 +146,13 @@ def extensive_log(message):
         demisto.info(message)
 
 
-def remove_old_incident_ids(last_run_fetched_ids, current_epoch_time, index_look_behind, occurred_look_behind):
+def remove_old_incident_ids(last_run_fetched_ids, current_epoch_time, occurred_look_behind):
     new_last_run_fetched_ids = {}
-    for inc_id, time in last_run_fetched_ids.items():
-        max_look_behind_in_seconds = max(index_look_behind * 60, occurred_look_behind * 60)
+    for inc_id, addition_time in last_run_fetched_ids.items():
+        max_look_behind_in_seconds = occurred_look_behind * 60
         deletion_threshold_in_seconds = max_look_behind_in_seconds * 2
-        if current_epoch_time - time < deletion_threshold_in_seconds:
-            new_last_run_fetched_ids[inc_id] = time
+        if current_epoch_time - addition_time < deletion_threshold_in_seconds:
+            new_last_run_fetched_ids[inc_id] = addition_time
 
     return new_last_run_fetched_ids
 
@@ -183,7 +183,7 @@ def enforce_look_behind_time(last_run, now, look_behind_time):
     return last_run
 
 
-def get_fetch_start_times(dem_params, service, last_run, index_time_look_behind, occurence_time_look_behind):
+def get_fetch_start_times(dem_params, service, last_run, occurence_time_look_behind):
     current_time_for_fetch = datetime.utcnow()
     if demisto.get(dem_params, 'timezone'):
         timezone = dem_params['timezone']
@@ -201,28 +201,20 @@ def get_fetch_start_times(dem_params, service, last_run, index_time_look_behind,
         last_run = start_time_for_fetch.strftime(SPLUNK_TIME_FORMAT)
         extensive_log('SplunkPy last run is None. Last run time is: {}'.format(last_run))
 
-    index_start_time = enforce_look_behind_time(last_run, now, index_time_look_behind)
     occured_start_time = enforce_look_behind_time(last_run, now, occurence_time_look_behind)
 
-    return index_start_time, occured_start_time, now
+    return occured_start_time, now
 
 
-def build_fetch_kwargs(dem_params, index_start_time, occured_start_time, now, search_offset):
-
-    index_start_time_fieldname = dem_params.get("earliest_index_time_fieldname", "index_earliest")
-    index_end_time_fieldname = dem_params.get("latest_index_time_fieldname", "index_latest")
-
+def build_fetch_kwargs(dem_params, occured_start_time, now, search_offset):
     occurred_start_time_fieldname = dem_params.get("earliest_occurrence_time_fieldname", "earliest_time")
     occurred_end_time_fieldname = dem_params.get("latest_occurrence_time_fieldname", "latest_time")
 
     extensive_log('occurred_start_time_fieldname: {}'.format(occurred_start_time_fieldname))
-    extensive_log('index_start_time_fieldname: {}'.format(index_start_time_fieldname))
     extensive_log('occured_start_time: {}'.format(occured_start_time))
     extensive_log('index_start_time: {}'.format(index_start_time))
 
     kwargs_oneshot = {
-        index_start_time_fieldname: index_start_time,
-        index_end_time_fieldname: now,
         occurred_start_time_fieldname: occured_start_time,
         occurred_end_time_fieldname: now,
         "count": FETCH_LIMIT,
@@ -255,16 +247,13 @@ def fetch_notables(service, cache_object=None, enrich_notables=False):
     search_offset = last_run_data.get('offset', 0)
 
     dem_params = demisto.params()
-    index_look_behind = int(dem_params['index_look_behind']) if 'index_look_behind' in dem_params else 15
     occurred_look_behind = int(dem_params['occurrence_look_behind']) if 'occurrence_look_behind' in dem_params else 15
-    extensive_log('Index look behind is: {}, occurrence look behind is: {}'.format(index_look_behind,
-                                                                                   occurred_look_behind))
+    extensive_log('occurrence look behind is: {}'.format(occurred_look_behind))
 
-    index_start_time, occured_start_time, now = get_fetch_start_times(dem_params, service, last_run_time,
-                                                                      index_look_behind, occurred_look_behind)
+    occured_start_time, now = get_fetch_start_times(dem_params, service, last_run_time, occurred_look_behind)
     extensive_log('SplunkPy last run time: {}, now: {}'.format(last_run_time, now))
 
-    kwargs_oneshot = build_fetch_kwargs(dem_params, index_start_time, occured_start_time, now, search_offset)
+    kwargs_oneshot = build_fetch_kwargs(dem_params, occured_start_time, now, search_offset)
     fetch_query = build_fetch_query(dem_params)
 
     oneshotsearch_results = service.jobs.oneshot(fetch_query, **kwargs_oneshot)  # type: ignore
@@ -294,8 +283,7 @@ def fetch_notables(service, cache_object=None, enrich_notables=False):
     for incident_id in incident_ids_to_add:
         last_run_fetched_ids[incident_id] = current_epoch_time
     extensive_log('Size of last_run_fetched_ids after adding new IDs: {}'.format(len(last_run_fetched_ids)))
-    last_run_fetched_ids = remove_old_incident_ids(last_run_fetched_ids, current_epoch_time, index_look_behind,
-                                                   occurred_look_behind)
+    last_run_fetched_ids = remove_old_incident_ids(last_run_fetched_ids, current_epoch_time, occurred_look_behind)
     extensive_log('Size of last_run_fetched_ids after removing old IDs: {}'.format(len(last_run_fetched_ids)))
     extensive_log('SplunkPy - incidents fetched on last run = {}'.format(last_run_fetched_ids))
 

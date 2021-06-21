@@ -197,11 +197,6 @@ configuration:
   additionalinfo: The fetch time range will be at least of the size specified here.
     This will support events that have a gap between their occurrence time and their
     index time in Splunk.
-- display: Fetch backwards window for the incidents' index time
-  name: index_look_behind
-  defaultvalue: "15"
-  type: 0
-  required: false
 - display: Unique ID fields
   name: unique_id_fields
   type: 0
