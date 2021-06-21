@@ -20,10 +20,10 @@ UNKNOWN_SEVERITY = 0
 
 # Types
 AUTHENTICATION_TYPE = 'Authentication'
-AUTHENTICITY_TYPE = 'Authenticity'
-INTEGRITY_TYPE = 'Integrity'
-PRIVACY_TYPE = 'Privacy'
-SEQUENCE_TYPE = 'Sequence'
+AUTHENTICITY_TYPE = 'UBIRCH Authenticity'
+INTEGRITY_TYPE = 'UBIRCH Integrity'
+PRIVACY_TYPE = 'UBIRCH Privacy'
+SEQUENCE_TYPE = 'UBIRCH Sequence'
 
 # Fields
 SEVERITY_FIELD = "severity"

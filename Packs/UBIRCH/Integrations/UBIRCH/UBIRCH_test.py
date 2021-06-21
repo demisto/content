@@ -88,7 +88,7 @@ def test_create_incidents() -> None:
 INCIDENT_RESPONSE = [{
     'name': "Invalid verification: signature verification failed. No public key or integrity is "
             "compromised.",
-    'type': "Authenticity",
+    'type': "UBIRCH Authenticity",
     'labels': [
         {'type': "requestId", 'value': "ec15d266-5822-4fa5-ba82-64f1653d46a4"},
         {'type': "hwDeviceId", 'value': "ba70ad8b-a564-4e58-9a3b-224ac0f0153f"}

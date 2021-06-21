@@ -1,10 +1,10 @@
 {
-    "id": "Sequence",
+    "id": "UBIRCH Sequence",
     "version": -1,
     "vcShouldIgnore": false,
     "locked": false,
-    "name": "Sequence",
-    "prevName": "Sequence",
+    "name": "UBIRCH Sequence",
+    "prevName": "UBIRCH Sequence",
     "color": "#5C6BC0",
     "sla": 240,
     "hours": 0,
