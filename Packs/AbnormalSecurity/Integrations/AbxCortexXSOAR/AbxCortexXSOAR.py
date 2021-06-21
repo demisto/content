@@ -262,6 +262,7 @@ def main():
     headers['Authorization'] = f'Bearer {params["api_key"]}'
     headers['Soar-Integration-Origin'] = "Cortex XSOAR"
 
+
     command = demisto.command()
     demisto.debug(f'Command being called is {command}')
 
