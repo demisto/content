@@ -67,7 +67,6 @@ def __get_integration_config(client, integration_name, logging_module=logging):
 
 # __test_integration_instance
 def __test_integration_instance(client, module_instance, logging_module=logging):
-    logging.info("========== in test integration instance")
     connection_retries = 3
     response_code = 0
     integration_of_instance = module_instance.get('brand', '')

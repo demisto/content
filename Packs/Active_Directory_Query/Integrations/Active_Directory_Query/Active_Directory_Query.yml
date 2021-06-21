@@ -7,11 +7,6 @@ category: Data Enrichment & Threat Intelligence
 description: Active Directory Query integration enables you to access and manage Active
   Directory objects (users, contacts, and computers).
 configuration:
-- display: Test
-  name: test
-  defaultvalue: ""
-  type: 0
-  required: true
 - display: Server IP address (e.g., 192.168.0.1)
   name: server_ip
   defaultvalue: ""
