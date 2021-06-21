@@ -5,9 +5,9 @@ contentitemexportablefields:
 name: Xpanse Incident Handling - Generic
 description: |-
   A generic playbook for handling Xpanse issues.
-  The logic behind this playbook is working with an internal exclusions list which will help the analyst to get a decision or, if configured, close incidents automatically.
+  The logic behind this playbook is to work with an internal exclusions list which will help the analyst to get to a decision or, if configured, close incidents automatically.
   The phases of this playbook are:
-    1) Check if assets (IP, Domain or Certificate) associated to the issue are excluded in the exclusions list and optionally, close the incident automatically.
+    1) Check if assets (IP, Domain or Certificate) associated with the issue are excluded in the exclusions list and optionally, close the incident automatically.
     2) Optionally, enrich indicators and calculate the severity of the issue, using sub-playbooks.
     3) Optionally, allow the analyst to add associated assets (IP, Domain or Certificate) to the exclusions list.
     4) Tag associated assets.
@@ -50,9 +50,9 @@ tasks:
       version: -1
       name: Expanse Load-Create List
       description: |
-        Subplaybook to support Expanse Handle Incident playbook.
-        Load a list to be used in Expanse playbook.
-        Create the list if it does not exist.
+        Sub-playbook to support the Expanse Handle Incident playbook.
+        Loads a list to be used in the Expanse playbook.
+        Creates the list if it does not exist.
       playbookName: Expanse Load-Create List
       type: playbook
       iscommand: false
@@ -91,7 +91,7 @@ tasks:
       id: ea00bef8-9002-4b98-8781-e69ccff3c9da
       version: -1
       name: Check if IP is excluded
-      description: Check if IP and service are permitted.
+      description: Check if the combination of IP, Port, and IssueTypeID is excluded.
       type: condition
       iscommand: false
       brand: ""
@@ -126,13 +126,13 @@ tasks:
     quietmode: 0
   "4":
     id: "4"
-    taskid: d566c3b1-e41a-4581-835e-78bed9e051e4
+    task]id: d566c3b1-e41a-4581-835e-78bed9e051e4
     type: collection
     task:
       id: d566c3b1-e41a-4581-835e-78bed9e051e4
       version: -1
       name: Check if IP values should be excluded
-      description: Prints text to war room (Markdown supported)
+      description: ""
       type: collection
       iscommand: false
       brand: ""
@@ -171,7 +171,7 @@ tasks:
         label: ""
         labelarg:
           simple: |-
-            Please take a look at these IP values:
+            Take a look at these IP values:
             ${XpanseValues_IP}
 
             Do you want to add them to the exclusion list "${inputs.ExclusionsList}"?
@@ -202,7 +202,7 @@ tasks:
       id: 8eafaadc-2dc2-4509-8ee6-b7c9c0fb09cc
       version: -1
       name: Check Analyst's Answer - Exclude IP
-      description: Check Analyst's Answer - Exclude IP.
+      description: Check analyst's answer - exclude IP.
       type: condition
       iscommand: false
       brand: ""
@@ -243,7 +243,7 @@ tasks:
       id: 16e8382b-a6f7-4e9e-8a48-d2f0582fe243
       version: -1
       name: Add the new key to list
-      description: Adds/Replaces a key in key/value store backed by an XSOAR list.
+      description: Adds/Replaces a key in the key/value store backed by a Cortex XSOAR list.
       scriptName: AddKeyToList
       type: regular
       iscommand: false
@@ -462,7 +462,7 @@ tasks:
       id: c5b28218-f4f4-426f-820c-3c4998956103
       version: -1
       name: Update Xpanse's issue "Progress" to "Investigating"
-      description: Update a property of an Expanse issue.
+      description: Update a property of an Xpanse issue.
       script: '|||expanse-update-issue'
       type: regular
       iscommand: true
@@ -582,7 +582,7 @@ tasks:
       id: c74b2501-8a59-4d79-865c-477da00d9d3e
       version: -1
       name: Update Xpanse issue
-      description: Prints text to war room (Markdown supported)
+      description: ""
       type: collection
       iscommand: false
       brand: ""
@@ -620,7 +620,7 @@ tasks:
       - id: "0"
         label: ""
         labelarg:
-          simple: 'Please provide a "Progress" status for Xpanse issue:'
+          simple: 'Provide a "Progress" status for Xpanse issue:'
         required: true
         gridcolumns: []
         defaultrows: []
@@ -640,7 +640,7 @@ tasks:
       - id: "1"
         label: ""
         labelarg:
-          simple: Please add a comment to the issue
+          simple: Add a comment to the issue
         required: false
         gridcolumns: []
         defaultrows: []
@@ -652,7 +652,7 @@ tasks:
         tooltip: ""
         readonly: false
       title: Update status in Xpanse
-      description: Please go over the incident and choose the appropriate status.
+      description: Review the incident and choose the appropriate status.
       sender: ""
       expired: false
       totalanswers: 0
@@ -701,8 +701,8 @@ tasks:
     task:
       id: 9080641f-1b30-46b2-8f23-ddb3b99745e6
       version: -1
-      name: Update Expanse Comment
-      description: Update a property of an Expanse issue.
+      name: Update Xpanse Comment
+      description: Update a property of an Xpanse issue.
       script: '|||expanse-update-issue'
       type: regular
       iscommand: true
@@ -737,8 +737,8 @@ tasks:
     task:
       id: a8fef264-7505-497a-84e4-ce1415bb45c4
       version: -1
-      name: Set Expanse issue "Progress" Value
-      description: Update a property of an Expanse issue.
+      name: Set Xpanse issue "Progress" Value
+      description: Update a property of an Xpanse issue.
       script: '|||expanse-update-issue'
       type: regular
       iscommand: true
@@ -889,8 +889,8 @@ tasks:
       - id: "1"
         label: ""
         labelarg:
-          simple: 'If you want to assign more tags, please add them below (if more
-            than one, please add a comma separated list):'
+          simple: 'If you want to assign more tags, add them below. (If more
+            than one, create a comma-separated list):'
         required: false
         gridcolumns: []
         defaultrows: []
@@ -957,7 +957,7 @@ tasks:
             Display Name -  ${incident.expanseasset.displayname}
             Type: ${incident.expanseasset.assettype}
 
-            No tags assigned for this issue yet (please note that new tags which have been assigned on associated assets can be seen on the issue only after 24-48 hours).
+            No tags assigned for this issue yet. (Note that new tags which have been assigned on associated assets can be seen on the issue only after 24-48 hours).
 
             Common Tags (only relevant when "CommonTags" playbook input was provided) :
             Pick one or more tags if you want them to be assigned to the asset as well:
@@ -983,7 +983,7 @@ tasks:
         label: ""
         labelarg:
           simple: 'If you want to assign other tags to this asset, please add them
-            below (if more than one, please add a comma separated list):'
+            below. (If more than one, create a comma-separated list):'
         required: false
         gridcolumns: []
         defaultrows: []
@@ -1016,7 +1016,7 @@ tasks:
     task:
       id: 28dca17a-af73-4329-84f2-f51485117dd2
       version: -1
-      name: Expanse Issue Tagging
+      name: Xxpanse Issue Tagging
       type: title
       iscommand: false
       brand: ""
@@ -1138,7 +1138,7 @@ tasks:
       id: b5fe89f5-88ee-4c8e-81eb-ed3e28945e13
       version: -1
       name: Create Tags
-      description: Create a new tag in Expanse.
+      description: Create a new tag in Xpanse.
       script: '|||expanse-create-tag'
       type: regular
       iscommand: true
@@ -1249,7 +1249,7 @@ tasks:
       id: bbd9ec79-2b2c-478c-8dd9-3b76e15904f9
       version: -1
       name: Set "ExpanseAdditionalTagNames" (New - Common)
-      description: Set a value in context under the key you entered.
+      description: Set a value in the context under the key you entered.
       scriptName: Set
       type: regular
       iscommand: false
@@ -1285,7 +1285,7 @@ tasks:
       version: -1
       name: Refresh Issue Assets
       description: |
-        Script to refresh tags and attribution reasons of assets inside Expanse Issue. The script should be used inside the Expanse Issue incident context.
+        Script to refresh tags and attribution reasons of assets inside the Xpanse issue. The script should be used inside the Xpanse issue incident context.
       scriptName: ExpanseRefreshIssueAssets
       type: regular
       iscommand: false
@@ -1314,7 +1314,7 @@ tasks:
       id: baf81be2-c66f-48d6-80d4-1e612be1a212
       version: -1
       name: Set "XpanseValues_IP"
-      description: Set a value in context under the key you entered.
+      description: Set a value in the context under the key you entered.
       scriptName: Set
       type: regular
       iscommand: false
@@ -1348,7 +1348,7 @@ tasks:
       id: 39758fe0-8381-4d1b-8c3a-21532c179597
       version: -1
       name: Set "XpanseValues_Domain"
-      description: Set a value in context under the key you entered.
+      description: Set a value in the context under the key you entered.
       scriptName: Set
       type: regular
       iscommand: false
@@ -1410,7 +1410,7 @@ tasks:
       id: c344c3f7-1938-44c8-81df-bfbf1457754c
       version: -1
       name: Exclude IP as well?
-      description: Prints text to war room (Markdown supported)
+      description: ""
       type: collection
       iscommand: false
       brand: ""
@@ -1481,7 +1481,7 @@ tasks:
       id: b8e8752d-652b-4033-85ca-d1510b1e0b5b
       version: -1
       name: Check if IP also excluded
-      description: Check if IP also excluded.
+      description: Check if IP is also excluded.
       type: condition
       iscommand: false
       brand: ""
@@ -1521,8 +1521,8 @@ tasks:
     task:
       id: 594588b2-264e-4204-800c-37695f5292e6
       version: -1
-      name: Check Analyst's answer - Excluding IP
-      description: Check Analyst's answer - Excluding IP.
+      name: Check Analyst's answer - Exclude IP
+      description: Check analyst's answer - exclude IP.
       type: condition
       iscommand: false
       brand: ""
@@ -1563,7 +1563,7 @@ tasks:
       id: 9f2f4f2d-e3b7-4044-83be-d2417e52e556
       version: -1
       name: Add the new key to list
-      description: Adds/Replaces a key in key/value store backed by an XSOAR list.
+      description: Adds/Replaces a key in the key/value store backed by a Cortex XSOAR list.
       scriptName: AddKeyToList
       type: regular
       iscommand: false
@@ -1601,7 +1601,7 @@ tasks:
       id: 5a2d01dd-8144-463e-8733-f308f005475c
       version: -1
       name: Exclude Domain as well?
-      description: Prints text to war room (Markdown supported)
+      description: ""
       type: collection
       iscommand: false
       brand: ""
@@ -1671,8 +1671,8 @@ tasks:
     task:
       id: f6619685-1fd6-4667-88bd-01ed6a1930cc
       version: -1
-      name: Check Analyst's answer - Excluding domain
-      description: Check Analyst's answer - Excluding domain.
+      name: Check Analyst's answer - Exclude domain
+      description: Check analyst's answer - exclude domain.
       type: condition
       iscommand: false
       brand: ""
@@ -1750,8 +1750,8 @@ tasks:
     task:
       id: bec52d6d-f628-4b0b-86e5-2784b1c26e64
       version: -1
-      name: Check if domain exist
-      description: Check if Expanse Domain exist.
+      name: Check if domain exists
+      description: Check if Xpanse domain exists.
       type: condition
       iscommand: false
       brand: ""
@@ -1789,7 +1789,7 @@ tasks:
       id: e85796c3-f8f9-45a9-840d-5a3c6b70c4f8
       version: -1
       name: Check if domain values should be excluded
-      description: Prints text to war room (Markdown supported)
+      description: ""
       type: collection
       iscommand: false
       brand: ""
@@ -1859,7 +1859,7 @@ tasks:
       id: f76a0a5f-1d19-41d3-8452-19d49c4b9f58
       version: -1
       name: Check Analyst's Answer - Exclude Domain
-      description: Check Analyst's Answer - Exclude Domain.
+      description: Check analyst's answer - exclude domain.
       type: condition
       iscommand: false
       brand: ""
@@ -1937,8 +1937,8 @@ tasks:
     task:
       id: 0b6c0aa1-4478-4048-85a4-aa5645373e86
       version: -1
-      name: Check if domain Exist
-      description: Check if Expanse Domain Exist.
+      name: Check if domain Exists
+      description: Check if Xpanse domain exists.
       type: condition
       iscommand: false
       brand: ""
@@ -2235,8 +2235,8 @@ tasks:
     task:
       id: 080bfa9b-05bd-4793-841a-79d7a804f8d4
       version: -1
-      name: Assign tags to Issue (cloud)
-      description: Assign tags to an Expanse asset.
+      name: Assign tags to issue's assets (cloud)
+      description: Assign tags to an Xpanse asset.
       script: '|||expanse-assign-tags-to-asset'
       type: regular
       iscommand: true
@@ -2279,9 +2279,9 @@ tasks:
     task:
       id: 11d99b57-2d20-40d4-8045-ad80dfedffd5
       version: -1
-      name: Extract and Enrich Expanse Indicators
+      name: Extract and Enrich Epanse Indicators
       description: |2-
-          Subplaybook for Handle Expanse Incident playbooks.
+          Sub-playbook for Handle Expanse Incident playbooks.
           Extract and Enrich Indicators (CIDRs, IPs, Certificates, Domains and DomainGlobs) from Expanse Incidents.
           Enrichment is performed via enrichIndicators command and generic playbooks.
           Returns the enriched indicators.
@@ -2357,7 +2357,7 @@ tasks:
       id: 74d07baa-2ecb-46b6-8acd-c88dcfe5235e
       version: -1
       name: Fetch Xpanse Issue's comments
-      description: Retrieve issue comments (subset of updates)
+      description: Retrieve issue comments (subset of updates).
       script: '|||expanse-get-issue-comments'
       type: regular
       iscommand: true
@@ -2549,8 +2549,8 @@ tasks:
     task:
       id: f727cde3-8f9b-469d-83d4-941b223411c5
       version: -1
-      name: Assign tags to Issue (not cloud)
-      description: Assign tags to an Expanse asset.
+      name: Assign tags to issue's assets (not cloud)
+      description: Assign tags to an Xpanse asset.
       script: '|||expanse-assign-tags-to-asset'
       type: regular
       iscommand: true
@@ -2635,7 +2635,7 @@ tasks:
       id: 8b60919f-b071-49b4-83fc-3994aca3d282
       version: -1
       name: Fetch certificate details
-      description: Retrieve Expanse certificates by MD5 hash or search parameters.
+      description: Retrieve Xpanse certificates by MD5 hash or search parameters.
       script: '|||expanse-get-certificate'
       type: regular
       iscommand: true
@@ -2809,7 +2809,7 @@ tasks:
       id: 44addda2-bb6f-4187-8560-0fc96d0fdf7f
       version: -1
       name: Check Analyst's Answer - Exclude Certificate
-      description: Check Analyst's Answer - Exclude Domain.
+      description: Check analyst's answer - exclude certificate.
       type: condition
       iscommand: false
       brand: ""
@@ -2850,7 +2850,7 @@ tasks:
       id: e60b4209-a90e-469d-832d-a78b9f2f6d03
       version: -1
       name: Add the new key to list
-      description: Adds/Replaces a key in key/value store backed by an XSOAR list.
+      description: Adds/Replaces a key in the key/value store backed by a Cortex XSOAR list.
       scriptName: AddKeyToList
       type: regular
       iscommand: false
@@ -2888,7 +2888,7 @@ tasks:
       id: eac03e3f-86ee-4a07-82da-030f60cad0c4
       version: -1
       name: Check if Certificate is excluded
-      description: Check if IP and service are permitted.
+      description: Check if the certificate is excluded.
       type: condition
       iscommand: false
       brand: ""
@@ -2996,7 +2996,7 @@ tasks:
       id: cfc4a22e-13b2-49f8-8690-9843be26faa7
       version: -1
       name: Check if IP or Domain are excluded
-      description: Check if IP and service are permitted.
+      description: Check if the combination of IP/Domain, Port, and IssueTypeID is excluded.
       type: condition
       iscommand: false
       brand: ""
@@ -3172,7 +3172,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -410,
+          "x": -410,]
           "y": 2945
         }
       }
@@ -3269,7 +3269,7 @@ tasks:
       version: -1
       name: Refresh Issue Assets
       description: |
-        Script to refresh tags and attribution reasons of assets inside Expanse Issue. The script should be used inside the Expanse Issue incident context.
+        Script to refresh tags and attribution reasons of assets inside Xpanse issue. The script should be used inside the Xpanse issue incident context.
       scriptName: ExpanseRefreshIssueAssets
       type: regular
       iscommand: false
@@ -3298,7 +3298,7 @@ tasks:
       id: e9f2879a-a36d-482c-8f93-b9bab2174815
       version: -1
       name: Create Tags
-      description: Create a new tag in Expanse.
+      description: Create a new tag in Xpanse.
       script: '|||expanse-create-tag'
       type: regular
       iscommand: true
@@ -3373,8 +3373,8 @@ tasks:
     task:
       id: fd0dd16c-387e-4cc4-8d34-2675aa43adf2
       version: -1
-      name: Assign tags to Issue (not cloud)
-      description: Assign tags to an Expanse asset.
+      name: Assign tags to issue's assets (not cloud)
+      description: Assign tags to an Xpanse asset.
       script: '|||expanse-assign-tags-to-asset'
       type: regular
       iscommand: true
@@ -3412,8 +3412,8 @@ tasks:
     task:
       id: 2efd4a27-f99b-4ef4-848e-8b9379897381
       version: -1
-      name: Assign tags to Issue (cloud)
-      description: Assign tags to an Expanse asset.
+      name: Assign tags to issue's assets (cloud)
+      description: Assign tags to an Xpanse asset.
       script: '|||expanse-assign-tags-to-asset'
       type: regular
       iscommand: true
@@ -3453,7 +3453,7 @@ tasks:
       version: -1
       name: Refresh Issue Assets
       description: |
-        Script to refresh tags and attribution reasons of assets inside Expanse Issue. The script should be used inside the Expanse Issue incident context.
+        Script to refresh tags and attribution reasons of assets inside the Xpanse issue. The script should be used inside the Xpanse issue incident context.
       scriptName: ExpanseRefreshIssueAssets
       type: regular
       iscommand: false
@@ -3520,7 +3520,7 @@ tasks:
       id: ec3ed863-e897-4ee9-8e77-c455954bce8c
       version: -1
       name: Update Xpanse Comment
-      description: Update a property of an Xpanse issue.
+      description: ""
       script: '|||expanse-update-issue'
       type: regular
       iscommand: true
@@ -3568,8 +3568,8 @@ inputs:
   value:
     simple: XpanseExclusionsList
   required: true
-  description: "The name of an internal XSOAR list which includes all whitelisted\
-    \ IP values or Domain values.  If no list currently exist, the playbook will create\
+  description: "The name of an internal XSOAR list which includes all\
+    \ IP values or Domain values on the allowed list.  If no list currently exist, the playbook will create\
     \ it for you with the givan name.\nThe structure of this list should be:\n\n{\n\
     \ \"Addresses\":[\n    {\n      \"ip\": \"x.x.x.x\",\n      \"issueTypeID\": \"\
     issueTypeIDHere\",\n      \"port\": 123,\n      \"protocol\": \"UDP\"\n    },\n\
@@ -3600,21 +3600,21 @@ inputs:
     simple: "True"
   required: false
   description: Whether to extract and enrich indicators automatically using the "Entity
-    Enrichment - Generic V3" playbook or not.
+    Enrichment - Generic V3" playbook.
   playbookInputQuery:
 - key: CalculateSeverity
   value:
     simple: "True"
   required: false
   description: Whether to calculate the severity of the incident automatically using
-    the "Calculate Severity - Standard" playbook or not.
+    the "Calculate Severity - Standard" playbook.
   playbookInputQuery:
 - key: CommonTags
   value: {}
   required: false
   description: |-
-    Common tags which your organization uses.
-    Should be a comma separated list (lower case letters), for example:
+    A comma-separated list of common tags (lower case letters) which your organization uses.
+    For example:
     tag1, tag2, tag3 ...
   playbookInputQuery:
 - key: CloseWhenExcluded
