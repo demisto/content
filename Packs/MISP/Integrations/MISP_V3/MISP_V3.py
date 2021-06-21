@@ -410,8 +410,8 @@ def get_dbot_level(threat_level_id: str) -> int:
     return 0
 
 
-def get_files_events(pymisp):
-    files = argToList(demisto.args().get('file'), ',')
+def get_files_events(demisto_args, pymisp):
+    files = argToList(demisto_args.get('file'), ',')
     for file_hash in files:
         check_file(pymisp, file_hash)
 
@@ -432,7 +432,8 @@ def check_file(pymisp, file_hash):
 
     # misp_response will remain the raw output of misp
     misp_response = pymisp.search(value=file_hash, controller='attributes', include_context=True,
-                                  include_correlations=True, include_event_tags=True, enforce_warninglist=True)
+                                  include_correlations=True, include_event_tags=True, enforce_warninglist=True,
+                                  type_attribute='file')
     print(misp_response)
     if misp_response:
         dbot_list = list()
@@ -500,13 +501,37 @@ def check_file(pymisp, file_hash):
     ))
 
 
-def get_ips_events():
-    ips = argToList(demisto.args().get('ip'), ',')
+def parse_response_reputation_command(response):
+    attributes_list = response.get('Attribute')
+    if not attributes_list:
+        return None
+    related_events = {}
+    for attribute in attributes_list:
+        current_event = attribute.get('Event', {})
+        if current_event:
+            current_event_id = current_event.get('id')
+            threat_level_id = current_event.get('threat_level_id')
+            organization_obj = current_event.get('Orgc')
+            organization_name = organization_obj.get('name')
+
+            related_events[current_event_id] = \
+                {
+                    'threat_level_id': threat_level_id,
+                    'orgc_name': f"MISP.{organization_name}"
+                }
+
+            event_tag_list = current_event.get('Tags')
+        attribute_tag_list = attribute.get('Tags')
+        #  todo add the score function after we get to decisions
+
+
+def get_ips_events(demisto_args, pymisp):
+    ips = argToList(demisto_args.get('ip'), ',')
     for ip in ips:
-        check_ip(ip)
+        check_ip(pymisp, ip)
 
 
-def check_ip(ip):
+def check_ip(pymisp, ip):
     """
     Gets a IP and returning its reputation (if exists)
     ip (str): IP to check
@@ -514,8 +539,11 @@ def check_ip(ip):
     if not is_ip_valid(ip):
         return_error("IP isn't valid")
 
-    misp_response = MISP.search(value=ip)
+    misp_response = pymisp.search(value=ip, controller='attributes', include_context=True,
+                                  include_correlations=True, include_event_tags=True, enforce_warninglist=True,
+                                  type_attribute='ip')
 
+    print(misp_response)
     if misp_response:
         dbot_list = list()
         ip_list = list()
@@ -754,15 +782,16 @@ def download_file(pymisp: ExpandedPyMISP, demisto_args: dict):
             return fileResult(filename, file_buffer)
 
 
-def get_urls_events():
-    urls = argToList(demisto.args().get('url'), ',')
+def get_urls_events(demisto_args, pymisp):
+    urls = argToList(demisto_args.get('url'), ',')
     demisto.results(urls)
     for url in urls:
-        check_url(url)
+        check_url(pymisp, url)
 
 
-def check_url(url):
-    response = MISP.search(value=url, type_attribute='url')
+def check_url(pymisp, url):
+    response = pymisp.search(value=url, type_attribute='url', controller='attributes', include_context=True,
+                             include_correlations=True, include_event_tags=True, enforce_warninglist=True)
 
     if response:
         dbot_list = list()
@@ -820,6 +849,34 @@ def check_url(url):
         outputs=outputs,
         raw_response=response,
     ))
+
+
+def get_domains_events(demisto_args, pymisp):
+    domains = argToList(demisto_args.get('domain'), ',')
+    demisto.results(domains)
+    for domain in domains:
+        check_domain(pymisp, domain)
+
+
+def check_domain(pymisp, domain):
+    response = pymisp.search(value=domain, type_attribute='domain', controller='attributes', include_context=True,
+                             include_correlations=True, include_event_tags=True, enforce_warninglist=True)
+
+    parse_response_reputation_command(response)
+
+
+def get_emails_events(demisto_args, pymisp):
+    emails = argToList(demisto_args.get('email'), ',')
+    demisto.results(emails)
+    for email in emails:
+        check_email(pymisp, email)
+
+
+def check_email(pymisp, email):
+    response = pymisp.search(value=email, type_attribute='email', controller='attributes', include_context=True,
+                             include_correlations=True, include_event_tags=True, enforce_warninglist=True)
+
+    parse_response_reputation_command(response)
 
 
 def build_misp_complex_filter(demisto_query: str) -> str:
@@ -1497,11 +1554,13 @@ def main():
             return_results(
                 add_events_from_feed(demisto_args=args, pymisp=pymisp, use_ssl=verify, proxies=proxies))  # checked V
         elif command == 'file':
-            get_files_events(pymisp)
+            return_results(get_files_events(demisto_args=args, pymisp=pymisp))
         elif command == 'url':
-            get_urls_events()
+            return_results(get_urls_events(demisto_args=args, pymisp=pymisp))
         elif command == 'ip':
-            get_ips_events()
+            return_results(get_ips_events(demisto_args=args, pymisp=pymisp))
+        elif command == 'domain':
+            return_results(get_domains_events(demisto_args=args, pymisp=pymisp))
         #  Object commands
         elif command == 'misp-add-email-object':
             return_results(add_email_object(demisto_args=args, pymisp=pymisp))  # checked V

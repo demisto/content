@@ -381,6 +381,28 @@ script:
       type: String
   - arguments:
     - default: true
+      description: domain to check
+      isArray: true
+      name: domain
+      required: false
+      secret: false
+    deprecated: false
+    description: Checks if the domain is in MISP events.
+    execution: false
+    name: domain
+  - arguments:
+    - default: true
+      description: email to check
+      isArray: true
+      name: email
+      required: false
+      secret: false
+    deprecated: false
+    description: Checks if the email is in MISP events.
+    execution: false
+    name: email
+  - arguments:
+    - default: true
       description: Hash of the file to query. Supports MD5, SHA-1, and SHA-256. You
         can pass CSV values to retrieve multiple responses.
       isArray: true
