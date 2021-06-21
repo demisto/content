@@ -32,11 +32,11 @@ class FireEyeClient(BaseClient):
             )
             # Handle error responses gracefully
             if res.status_code != 200:
-                err_msg = 'Error in API call [{}] - {}'.format(res.status_code, res.reason)
+                err_msg = f'Error in API call {res.status_code} - {res.reason}'
                 try:
                     # Try to parse json error response
                     error_entry = res.json()
-                    err_msg += '\n{}'.format(json.dumps(error_entry))
+                    err_msg += f'\n{json.dumps(error_entry)}'
                     if 'Server Error. code:AUTH004' in err_msg and retries:
                         # implement 1 retry to re create a token
                         self._headers['X-FeApi-Token'] = self._generate_token()
@@ -44,7 +44,7 @@ class FireEyeClient(BaseClient):
                     else:
                         raise DemistoException(err_msg, res=res)
                 except ValueError:
-                    err_msg += '\n{}'.format(res.text)
+                    err_msg += f'\n{res.text}'
                     raise DemistoException(err_msg, res=res)
 
             resp_type = resp_type.lower()
@@ -56,9 +56,8 @@ class FireEyeClient(BaseClient):
                 if resp_type == 'content':
                     return res.content
                 return res
-            except ValueError as exception:
-                raise DemistoException('Failed to parse json object from response: {}'
-                                       .format(res.content), exception)
+            except ValueError:
+                raise DemistoException(f'Failed to parse json object from response: {res.content}')
         except requests.exceptions.ConnectTimeout as exception:
             err_msg = 'Connection Timeout Error - potential reasons might be that the Server URL parameter' \
                       ' is incorrect or that the Server is not accessible from your host.'
@@ -78,17 +77,9 @@ class FireEyeClient(BaseClient):
             # Get originating Exception in Exception chain
             error_class = str(exception.__class__)
             err_type = '<' + error_class[error_class.find('\'') + 1: error_class.rfind('\'')] + '>'
-            err_msg = 'Verify that the server URL parameter' \
-                      ' is correct and that you have access to the server from your host.' \
-                      '\nError Type: {}\nError Number: [{}]\nMessage: {}\n' \
-                .format(err_type, exception.errno, exception.strerror)
-            raise DemistoException(err_msg, exception)
-        except requests.exceptions.RetryError as exception:
-            try:
-                reason = 'Reason: {}'.format(exception.args[0].reason.args[0])
-            except Exception:
-                reason = ''
-            err_msg = 'Max Retries Error- Request attempts with {} retries failed. \n{}'.format(retries, reason)
+            err_msg = f'Verify that the server URL parameter' \
+                      f' is correct and that you have access to the server from your host.' \
+                      f'\nError Type: {err_type}\nError Number: [{exception.errno}]\nMessage: {exception.strerror}\n'
             raise DemistoException(err_msg, exception)
 
     @logger
@@ -117,6 +108,7 @@ class FireEyeClient(BaseClient):
 
         return token
 
+    @logger
     def _generate_token(self) -> str:
         resp = self._http_request(method='POST', url_suffix='auth/login', resp_type='response')
         if resp.status_code != 200:
