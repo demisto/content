@@ -1,8 +1,8 @@
 {
     "name": "Pentera",
-    "description": "An Integration with Pentera by Pcysys",
+    "description": "Automate remediation actions based on Pentera, the Automated Security Validation Platform, proactively exposing high-risk vulnerabilities.",
     "support": "partner",
-    "currentVersion": "1.0.4",
+    "currentVersion": "1.1.0",
     "author": "Pentera",
     "url": "",
     "email": "support@pentera.io",
@@ -11,8 +11,6 @@
     "tags": [],
     "useCases": [],
     "keywords": [],
-    "githubUser": [
-        "TalPcysys"
-    ],
     "certification": "certified"
+    "authorImage": "content/Packs/Pcysys/Integrations/Pcysys/Pcysys_image.png"
 }
