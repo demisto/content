@@ -16,8 +16,8 @@ class FireEyeClient(BaseClient):
         }
 
     @logger
-    def http_request(self, method, url_suffix='', json_data=None, params=None, data=None, timeout=10, resp_type='json',
-                     retries=1):
+    def http_request(self, method: str, url_suffix : str = '', json_data: dict = None, params: dict = None,
+                     timeout: int = 10, resp_type: str = 'json', retries: int = 1):
         try:
             address = urljoin(self._base_url, url_suffix)
             res = self._session.request(
@@ -26,7 +26,6 @@ class FireEyeClient(BaseClient):
                 headers=self._headers,
                 verify=self._verify,
                 params=params,
-                data=data,
                 json=json_data,
                 timeout=timeout
             )
@@ -40,7 +39,7 @@ class FireEyeClient(BaseClient):
                     if 'Server Error. code:AUTH004' in err_msg and retries:
                         # implement 1 retry to re create a token
                         self._headers['X-FeApi-Token'] = self._generate_token()
-                        self.http_request(method, url_suffix, json_data, params, data, timeout, resp_type, retries - 1)
+                        self.http_request(method, url_suffix, json_data, params, timeout, resp_type, retries - 1)
                     else:
                         raise DemistoException(err_msg, res=res)
                 except ValueError:
@@ -57,7 +56,7 @@ class FireEyeClient(BaseClient):
                     return res.content
                 return res
             except ValueError:
-                raise DemistoException(f'Failed to parse json object from response: {res.content}')
+                raise DemistoException('Failed to parse json object from response.')
         except requests.exceptions.ConnectTimeout as exception:
             err_msg = 'Connection Timeout Error - potential reasons might be that the Server URL parameter' \
                       ' is incorrect or that the Server is not accessible from your host.'
