@@ -43,14 +43,14 @@ Searches and retrieves FireEye EX alerts based on several filters.
 | src_ip | The source IPv4 address related to the malware alert. | Optional | 
 | file_name | The name of the malware file. | Optional | 
 | file_type | The malware file type. | Optional | 
-| info_level | Specifies the level of information to be returned. The default is concise. Possible values are: concise, normal, extended. Default is concise. | Optional | 
+| info_level | Specifies the level of information to be returned. Possible values are: concise, normal, extended. Default is concise. | Optional | 
 | malware_name | The name of the malware object. | Optional | 
 | malware_type | The type of the malware object. Possible values are: domain_match, malware_callback, malware_object, web_infection, infection_match, riskware-infection, riskware-callback, riskware-object. | Optional | 
 | md5 | Searches for alerts that include a specific MD5 hash. | Optional | 
 | recipient_email | The email address of the malware object receiver. | Optional | 
 | sender_email | The email address of the malware object sender. | Optional | 
 | url | Searches for a specific alert URL. | Optional | 
-| limit | Maximum number of alerts to return. Default is 20. Default is 20. | Optional | 
+| limit | Maximum number of alerts to return. Default is 20. | Optional | 
 
 
 #### Context Output
@@ -461,7 +461,7 @@ Searches and retrieves quarantined emails.
 | from | The sender email. | Optional | 
 | subject | The email subject. Must be URL encoded. | Optional | 
 | appliance_id | The appliance ID. | Optional | 
-| limit | Number of emails to return. Default is 20. Default is 20. | Optional | 
+| limit | Number of emails to return. Default is 20. | Optional | 
 
 
 #### Context Output
@@ -637,9 +637,9 @@ Returns reports on selected alerts.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | report_type | The report type. Possible values are: empsEmailAVReport, empsEmailActivity, empsEmailExecutiveSummary, empsEmailHourlyStat, mpsCallBackServer, mpsExecutiveSummary, mpsInfectedHostsTrend, mpsMalwareActivity, mpsWebAVReport, alertDetailsReport. | Required | 
-| start_time | Specifies the start time of the search. This filter is optional. Default is last week. Syntax: end_time=YYYY-MM-DDTHH:mm:ss.sss-OH:om or '1 day/month/year'. Default is 1 week. | Optional | 
+| start_time | Specifies the start time of the search. This filter is optional. Syntax: end_time=YYYY-MM-DDTHH:mm:ss.sss-OH:om or '1 day/month/year'. Default is 1 week. | Optional | 
 | end_time | Specifies the end time of the search. Default is now. Syntax: end_time=YYYY-MM-DDTHH:mm:ss.sss-OH:om or '1 day/month/year'. | Optional | 
-| limit | Default is 100. This option is required only for IPS TopN reports. The limit option sets the maximum number (N) of items covered by each report. Default is 100. | Optional | 
+| limit | This option is required only for IPS TopN reports. The limit option sets the maximum number (N) of items covered by each report. Default is 100. | Optional | 
 | interface | This option is required only for IPS reports. The interface option sets ihe internet interface to one of the values. Possible values are: A, B, AB. | Optional | 
 | alert_id | Alert ID. This argument is only relevant when retrieving a report of type alertDetailsReport. | Optional | 
 | infection_id | Infection ID. This argument is only relevant when retrieving a report of type alertDetailsReport with conjunction to the infection_type argument. | Optional | 

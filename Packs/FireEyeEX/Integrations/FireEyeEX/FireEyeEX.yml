@@ -179,7 +179,7 @@ script:
       secret: false
     - default: false
       defaultValue: '20'
-      description: Maximum number of alerts to return. Default is 20.
+      description: Maximum number of alerts to return.
       isArray: false
       name: limit
       required: false
@@ -246,7 +246,7 @@ script:
       secret: false
     - default: false
       defaultValue: '30'
-      description: Timeout to retrieve the alert details. Default is 30 seconds.
+      description: Timeout to retrieve the alert details.
       isArray: false
       name: timeout
     deprecated: false
@@ -311,7 +311,7 @@ script:
       secret: false
     - default: false
       defaultValue: '120'
-      description: Timeout to retrieve the artifacts. Default is 120 seconds.
+      description: Timeout to retrieve the artifacts.
       isArray: false
       name: timeout
       required: false
@@ -401,7 +401,7 @@ script:
       secret: false
     - default: false
       defaultValue: '20'
-      description: Number of emails to return. Default is 20.
+      description: Number of emails to return.
       isArray: false
       name: limit
       required: false
@@ -468,7 +468,7 @@ script:
       secret: false
     - default: false
       defaultValue: '120'
-      description: Timeout to retrieve the emails. Default is 120 seconds.
+      description: Timeout to retrieve the emails.
       isArray: false
       name: timeout
       required: false
@@ -520,9 +520,8 @@ script:
       secret: false
     - default: false
       defaultValue: '1 week'
-      description: "Specifies the start time of the search. This filter is optional.\
-        \ Default is last week. Syntax: end_time=YYYY-MM-DDTHH:mm:ss.sss-OH:om or\
-        \ '1 day/month/year'"
+      description: "Specifies the start time of the search. This filter is optional. \
+        \Syntax: end_time=YYYY-MM-DDTHH:mm:ss.sss-OH:om or '1 day/month/year'"
       isArray: false
       name: start_time
       required: false
@@ -536,7 +535,7 @@ script:
       secret: false
     - default: false
       defaultValue: '100'
-      description: Default is 100. This option is required only for IPS TopN reports.
+      description: This option is required only for IPS TopN reports.
         The limit option sets the maximum number (N) of items covered by each report.
       isArray: false
       name: limit
@@ -583,7 +582,7 @@ script:
       secret: false
     - default: false
       defaultValue: '120'
-      description: Timeout to retrieve the reports. Default is 120 seconds.
+      description: Timeout to retrieve the reports.
       isArray: false
       name: timeout
       required: false
