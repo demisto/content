@@ -1,4 +1,6 @@
-![image](https://github.com/maunicmer/Safewalk_pack/blob/master/safewalk_logo.png)
+<p align="center">
+  <img  src="https://github.com/xsoar-altipeak/content/blob/master/Packs/Safewalk/safewalk_logo.png">
+</p>
 # Safewalk - Access Management anywhere with everything
 
 **Safewalk** is a complete strong authentication platform that helps prevent takeover and online fraud by securing the access to all your cloud and on-premises applications and data.
@@ -16,7 +18,9 @@ Safewalk comes with a rich functionality for all contexts of user access managem
 - Facilitate user access management
 - Choose the best licensing model for your needs (perpetual, subscription, pay per use)
 
-![image](https://github.com/maunicmer/Safewalk_pack/blob/master/safewalk_arch.png)
+<p align="center">
+  <img  src="https://github.com/xsoar-altipeak/content/blob/master/Packs/Safewalk/safewalk_arch.png">
+</p>
 
 ## Integrations
 
