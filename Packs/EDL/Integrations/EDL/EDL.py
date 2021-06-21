@@ -184,8 +184,7 @@ def find_indicators_to_limit_loop(indicator_query: str, limit: int, total_fetche
         (tuple): The iocs and the last page
     """
     iocs: List[dict] = []
-    filter_fields = "name,type"  # based on func ToIoC https://github.com/demisto/server/blob/master/domain/insight.go
-    search_indicators = IndicatorsSearcher(page=next_page, filter_fields=filter_fields)
+    search_indicators = IndicatorsSearcher(page=next_page)
     if last_found_len is None:
         last_found_len = PAGE_SIZE
     if not last_found_len:
