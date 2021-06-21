@@ -1407,4 +1407,4 @@ defaultmapperin: QRadar-mapper
 defaultclassifier: QRadar
 fromversion: 6.0.0
 tests:
-- No tests (auto formatted)
+- test_Qradar_v2
