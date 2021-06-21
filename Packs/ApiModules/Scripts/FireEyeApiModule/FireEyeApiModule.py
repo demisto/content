@@ -16,6 +16,82 @@ class FireEyeClient(BaseClient):
         }
 
     @logger
+    def http_request(self, method, url_suffix='', json_data=None, params=None, data=None, timeout=10, resp_type='json',
+                     retries=1):
+        try:
+            address = urljoin(self._base_url, url_suffix)
+            res = self._session.request(
+                method,
+                address,
+                headers=self._headers,
+                verify=self._verify,
+                params=params,
+                data=data,
+                json=json_data,
+                timeout=timeout
+            )
+            # Handle error responses gracefully
+            if res.status_code != 200:
+                err_msg = 'Error in API call [{}] - {}'.format(res.status_code, res.reason)
+                try:
+                    # Try to parse json error response
+                    error_entry = res.json()
+                    err_msg += '\n{}'.format(json.dumps(error_entry))
+                    if 'Server Error. code:AUTH004' in err_msg and retries:
+                        # implement 1 retry to re create a token
+                        self._headers['X-FeApi-Token'] = self._generate_token()
+                        self.http_request(method, url_suffix, json_data, params, data, timeout, resp_type, retries - 1)
+                    else:
+                        raise DemistoException(err_msg, res=res)
+                except ValueError:
+                    err_msg += '\n{}'.format(res.text)
+                    raise DemistoException(err_msg, res=res)
+
+            resp_type = resp_type.lower()
+            try:
+                if resp_type == 'json':
+                    return res.json()
+                if resp_type == 'text':
+                    return res.text
+                if resp_type == 'content':
+                    return res.content
+                return res
+            except ValueError as exception:
+                raise DemistoException('Failed to parse json object from response: {}'
+                                       .format(res.content), exception)
+        except requests.exceptions.ConnectTimeout as exception:
+            err_msg = 'Connection Timeout Error - potential reasons might be that the Server URL parameter' \
+                      ' is incorrect or that the Server is not accessible from your host.'
+            raise DemistoException(err_msg, exception)
+        except requests.exceptions.SSLError as exception:
+            # in case the "Trust any certificate" is already checked
+            if not self._verify:
+                raise
+            err_msg = 'SSL Certificate Verification Failed - try selecting \'Trust any certificate\' checkbox in' \
+                      ' the integration configuration.'
+            raise DemistoException(err_msg, exception)
+        except requests.exceptions.ProxyError as exception:
+            err_msg = 'Proxy Error - if the \'Use system proxy\' checkbox in the integration configuration is' \
+                      ' selected, try clearing the checkbox.'
+            raise DemistoException(err_msg, exception)
+        except requests.exceptions.ConnectionError as exception:
+            # Get originating Exception in Exception chain
+            error_class = str(exception.__class__)
+            err_type = '<' + error_class[error_class.find('\'') + 1: error_class.rfind('\'')] + '>'
+            err_msg = 'Verify that the server URL parameter' \
+                      ' is correct and that you have access to the server from your host.' \
+                      '\nError Type: {}\nError Number: [{}]\nMessage: {}\n' \
+                .format(err_type, exception.errno, exception.strerror)
+            raise DemistoException(err_msg, exception)
+        except requests.exceptions.RetryError as exception:
+            try:
+                reason = 'Reason: {}'.format(exception.args[0].reason.args[0])
+            except Exception:
+                reason = ''
+            err_msg = 'Max Retries Error- Request attempts with {} retries failed. \n{}'.format(retries, reason)
+            raise DemistoException(err_msg, exception)
+
+    @logger
     def _get_token(self) -> str:
         """
         Obtains token from integration context if available and still valid
@@ -37,6 +113,11 @@ class FireEyeClient(BaseClient):
                 return token
 
         # else generate a token and update the integration context accordingly
+        token = self._generate_token()
+
+        return token
+
+    def _generate_token(self) -> str:
         resp = self._http_request(method='POST', url_suffix='auth/login', resp_type='response')
         if resp.status_code != 200:
             raise DemistoException(
@@ -45,52 +126,54 @@ class FireEyeClient(BaseClient):
             raise DemistoException(
                 f'Token request failed. API token is missing. message: {str(resp)}')
         token = resp.headers['X-FeApi-Token']
+
+        integration_context = get_integration_context()
         integration_context.update({'token': token})
         time_buffer = 10  # minutes by which to lengthen the validity period
-        integration_context.update({'valid_until': datetime.timestamp(now + timedelta(minutes=time_buffer))})
+        integration_context.update({'valid_until': datetime.timestamp(datetime.now() + timedelta(seconds=time_buffer))})
         set_integration_context(integration_context)
 
         return token
 
     @logger
     def get_alerts_request(self, request_params: Dict[str, Any]) -> Dict[str, str]:
-        return self._http_request(method='GET', url_suffix='alerts', params=request_params, resp_type='json')
+        return self.http_request(method='GET', url_suffix='alerts', params=request_params, resp_type='json')
 
     @logger
     def get_alert_details_request(self, alert_id: str, timeout: int) -> Dict[str, str]:
-        return self._http_request(method='GET', url_suffix=f'alerts/alert/{alert_id}', resp_type='json',
-                                  timeout=timeout)
+        return self.http_request(method='GET', url_suffix=f'alerts/alert/{alert_id}', resp_type='json',
+                                 timeout=timeout)
 
     @logger
     def alert_acknowledge_request(self, uuid: str) -> Dict[str, str]:
         # json_data here is redundant as we are not sending any meaningful data,
         # but without it the API call to FireEye fails and we are getting an error. hence sending it with a dummy value.
         # the error we get when not sending json_data is: "Bad Request" with Invalid input. code:ALRTCONF001
-        return self._http_request(method='POST', url_suffix=f'alerts/alert/{uuid}',
-                                  params={'schema_compatibility': True}, json_data={"annotation": "<test>"},
-                                  resp_type='resp')
+        return self.http_request(method='POST', url_suffix=f'alerts/alert/{uuid}',
+                                 params={'schema_compatibility': True}, json_data={"annotation": "<test>"},
+                                 resp_type='resp')
 
     @logger
     def get_artifacts_by_uuid_request(self, uuid: str, timeout: int) -> Dict[str, str]:
         self._headers.pop('Accept')  # returns a file, hence this header is disruptive
-        return self._http_request(method='GET', url_suffix=f'artifacts/{uuid}', resp_type='content',
-                                  timeout=timeout)
+        return self.http_request(method='GET', url_suffix=f'artifacts/{uuid}', resp_type='content',
+                                 timeout=timeout)
 
     @logger
     def get_artifacts_metadata_by_uuid_request(self, uuid: str) -> Dict[str, str]:
-        return self._http_request(method='GET', url_suffix=f'artifacts/{uuid}/meta', resp_type='json')
+        return self.http_request(method='GET', url_suffix=f'artifacts/{uuid}/meta', resp_type='json')
 
     @logger
     def get_events_request(self, duration: str, end_time: str, mvx_correlated_only: bool) -> Dict[str, str]:
-        return self._http_request(method='GET',
-                                  url_suffix='events',
-                                  params={
-                                      'event_type': 'Ips Event',
-                                      'duration': duration,
-                                      'end_time': end_time,
-                                      'mvx_correlated_only': mvx_correlated_only
-                                  },
-                                  resp_type='json')
+        return self.http_request(method='GET',
+                                 url_suffix='events',
+                                 params={
+                                     'event_type': 'Ips Event',
+                                     'duration': duration,
+                                     'end_time': end_time,
+                                     'mvx_correlated_only': mvx_correlated_only
+                                 },
+                                 resp_type='json')
 
     @logger
     def get_quarantined_emails_request(self, start_time: str, end_time: str, from_: str, subject: str,
@@ -107,32 +190,32 @@ class FireEyeClient(BaseClient):
         if appliance_id:
             params['appliance_id'] = appliance_id
 
-        return self._http_request(method='GET', url_suffix='emailmgmt/quarantine', params=params, resp_type='json')
+        return self.http_request(method='GET', url_suffix='emailmgmt/quarantine', params=params, resp_type='json')
 
     @logger
     def release_quarantined_emails_request(self, queue_ids: list, sensor_name: str):
-        return self._http_request(method='POST',
-                                  url_suffix='emailmgmt/quarantine/release',
-                                  params={'sensorName': sensor_name},
-                                  json_data={"queue_ids": queue_ids},
-                                  resp_type='resp')
+        return self.http_request(method='POST',
+                                 url_suffix='emailmgmt/quarantine/release',
+                                 params={'sensorName': sensor_name},
+                                 json_data={"queue_ids": queue_ids},
+                                 resp_type='resp')
 
     @logger
     def delete_quarantined_emails_request(self, queue_ids: list, sensor_name: str = ''):
-        return self._http_request(method='POST',
-                                  url_suffix='emailmgmt/quarantine/delete',
-                                  params={'sensorName': sensor_name},
-                                  json_data={"queue_ids": queue_ids},
-                                  resp_type='resp')
+        return self.http_request(method='POST',
+                                 url_suffix='emailmgmt/quarantine/delete',
+                                 params={'sensorName': sensor_name},
+                                 json_data={"queue_ids": queue_ids},
+                                 resp_type='resp')
 
     @logger
     def download_quarantined_emails_request(self, queue_id: str, timeout: str, sensor_name: str = ''):
         self._headers.pop('Accept')  # returns a file, hence this header is disruptive
-        return self._http_request(method='GET',
-                                  url_suffix=f'emailmgmt/quarantine/{queue_id}',
-                                  params={'sensorName': sensor_name},
-                                  resp_type='content',
-                                  timeout=timeout)
+        return self.http_request(method='GET',
+                                 url_suffix=f'emailmgmt/quarantine/{queue_id}',
+                                 params={'sensorName': sensor_name},
+                                 resp_type='content',
+                                 timeout=timeout)
 
     @logger
     def get_reports_request(self, report_type: str, start_time: str, end_time: str, limit: str, interface: str,
@@ -153,65 +236,65 @@ class FireEyeClient(BaseClient):
         if infection_id:
             params['infection_id'] = infection_id
 
-        return self._http_request(method='GET',
-                                  url_suffix='reports/report',
-                                  params=params,
-                                  resp_type='content',
-                                  timeout=timeout)
+        return self.http_request(method='GET',
+                                 url_suffix='reports/report',
+                                 params=params,
+                                 resp_type='content',
+                                 timeout=timeout)
 
     @logger
     def list_allowedlist_request(self, type_: str) -> Dict[str, str]:
-        return self._http_request(method='GET', url_suffix=f'devicemgmt/emlconfig/policy/allowed_lists/{type_}',
-                                  resp_type='json')
+        return self.http_request(method='GET', url_suffix=f'devicemgmt/emlconfig/policy/allowed_lists/{type_}',
+                                 resp_type='json')
 
     @logger
     def create_allowedlist_request(self, type_: str, entry_value: str, matches: int) -> Dict[str, str]:
-        return self._http_request(method='POST',
-                                  url_suffix=f'devicemgmt/emlconfig/policy/allowed_lists/{type_}',
-                                  params={'operation': 'create'},
-                                  json_data={"name": entry_value, "matches": matches},
-                                  resp_type='resp')
+        return self.http_request(method='POST',
+                                 url_suffix=f'devicemgmt/emlconfig/policy/allowed_lists/{type_}',
+                                 params={'operation': 'create'},
+                                 json_data={"name": entry_value, "matches": matches},
+                                 resp_type='resp')
 
     @logger
     def update_allowedlist_request(self, type_: str, entry_value: str, matches: int) -> Dict[str, str]:
-        return self._http_request(method='POST',
-                                  url_suffix=f'devicemgmt/emlconfig/policy/allowed_lists/{type_}/{entry_value}',
-                                  json_data={"matches": matches},
-                                  resp_type='resp')
+        return self.http_request(method='POST',
+                                 url_suffix=f'devicemgmt/emlconfig/policy/allowed_lists/{type_}/{entry_value}',
+                                 json_data={"matches": matches},
+                                 resp_type='resp')
 
     @logger
     def delete_allowedlist_request(self, type_: str, entry_value: str) -> Dict[str, str]:
-        return self._http_request(method='POST',
-                                  url_suffix=f'devicemgmt/emlconfig/policy/allowed_lists/{type_}/{entry_value}',
-                                  params={'operation': 'delete'},
-                                  resp_type='resp')
+        return self.http_request(method='POST',
+                                 url_suffix=f'devicemgmt/emlconfig/policy/allowed_lists/{type_}/{entry_value}',
+                                 params={'operation': 'delete'},
+                                 resp_type='resp')
 
     @logger
     def list_blockedlist_request(self, type_: str) -> Dict[str, str]:
-        return self._http_request(method='GET', url_suffix=f'devicemgmt/emlconfig/policy/blocked_lists/{type_}',
-                                  resp_type='json')
+        return self.http_request(method='GET', url_suffix=f'devicemgmt/emlconfig/policy/blocked_lists/{type_}',
+                                 resp_type='json')
 
     @logger
     def create_blockedlist_request(self, type_: str, entry_value: str, matches: int) -> Dict[str, str]:
-        return self._http_request(method='POST',
-                                  url_suffix=f'devicemgmt/emlconfig/policy/blocked_lists/{type_}',
-                                  params={'operation': 'create'},
-                                  json_data={'name': entry_value, 'matches': matches},
-                                  resp_type='resp')
+        return self.http_request(method='POST',
+                                 url_suffix=f'devicemgmt/emlconfig/policy/blocked_lists/{type_}',
+                                 params={'operation': 'create'},
+                                 json_data={'name': entry_value, 'matches': matches},
+                                 resp_type='resp')
 
     @logger
     def update_blockedlist_request(self, type_: str, entry_value: str, matches: int) -> Dict[str, str]:
-        return self._http_request(method='POST',
-                                  url_suffix=f'devicemgmt/emlconfig/policy/blocked_lists/{type_}/{entry_value}',
-                                  json_data={"matches": matches},
-                                  resp_type='resp')
+        return self.http_request(method='POST',
+                                 url_suffix=f'devicemgmt/emlconfig/policy/blocked_lists/{type_}/{entry_value}',
+                                 json_data={"matches": matches},
+                                 resp_type='resp')
 
     @logger
     def delete_blockedlist_request(self, type_: str, entry_value: str) -> Dict[str, str]:
-        return self._http_request(method='POST',
-                                  url_suffix=f'devicemgmt/emlconfig/policy/blocked_lists/{type_}/{entry_value}',
-                                  params={'operation': 'delete'},
-                                  resp_type='resp')
+        return self.http_request(method='POST',
+                                 url_suffix=f'devicemgmt/emlconfig/policy/blocked_lists/{type_}/{entry_value}',
+                                 params={'operation': 'delete'},
+                                 resp_type='resp')
 
 
 def to_fe_datetime_converter(time_given: str = 'now') -> str:
