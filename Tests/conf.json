@@ -1895,7 +1895,7 @@
         },
         {
             "integrations": "VMware Carbon Black EDR",
-            "playbookID": "CarbonBlackEdr_Test"
+            "playbookID": "Carbon Black Edr - Test"
         },
         {
             "integrations": "Cisco Umbrella Investigate",
@@ -3391,9 +3391,6 @@
             "fromversion": "5.5.0",
             "is_mockable": false
         },
-        {
-            "playbookID": "Carbon Black Edr - Test"
-        }
     ],
     "skipped_tests": {
         "Github IAM - Test Playbook": "Issue 32383",
