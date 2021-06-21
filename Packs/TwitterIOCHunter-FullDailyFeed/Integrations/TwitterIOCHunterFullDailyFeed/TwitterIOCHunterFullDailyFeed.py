@@ -12,11 +12,11 @@ def test_module(client):
 
 def find_type_and_value(indicatordata):
     if len(indicatordata.get('sha256')) > 0:
-        return 'File SHA-256', indicatordata.get('sha256')
+        return 'File', indicatordata.get('sha256')
     elif len(indicatordata.get('md5')) > 0:
-        return 'File MD5', indicatordata.get('md5')
+        return 'File', indicatordata.get('md5')
     elif len(indicatordata.get('sha1')) > 0:
-        return 'File SHA-1', indicatordata.get('sha1')
+        return 'File', indicatordata.get('sha1')
     elif len(indicatordata.get('mail')) > 0:
         return 'Email', indicatordata.get('mail')
     elif len(indicatordata.get('ip')) > 0:
