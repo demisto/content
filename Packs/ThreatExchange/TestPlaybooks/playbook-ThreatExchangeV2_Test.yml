@@ -161,8 +161,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 1245
+          "x": 40,
+          "y": 1250
         }
       }
     note: false
@@ -462,10 +462,10 @@ tasks:
     quietmode: 0
   "30":
     id: "30"
-    taskid: 08e6239c-d324-44e9-84e7-8d8254aca3b0
+    taskid: 57495906-71a5-4eb9-843e-797193b1531b
     type: condition
     task:
-      id: 08e6239c-d324-44e9-84e7-8d8254aca3b0
+      id: 57495906-71a5-4eb9-843e-797193b1531b
       version: -1
       name: Verify Members
       type: condition
@@ -481,17 +481,7 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: ThreatExchange.Member.id
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: ThreatExchange.Member.email
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: ThreatExchange.Member.name
+              simple: ThreatExchange.Member
             iscontext: true
     view: |-
       {
@@ -819,8 +809,8 @@ view: |-
     "paper": {
       "dimensions": {
         "height": 3710,
-        "width": 380,
-        "x": 50,
+        "width": 390,
+        "x": 40,
         "y": 50
       }
     }
