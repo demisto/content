@@ -16,7 +16,7 @@ class FireEyeClient(BaseClient):
         }
 
     @logger
-    def http_request(self, method: str, url_suffix : str = '', json_data: dict = None, params: dict = None,
+    def http_request(self, method: str, url_suffix: str = '', json_data: dict = None, params: dict = None,
                      timeout: int = 10, resp_type: str = 'json', retries: int = 1):
         try:
             address = urljoin(self._base_url, url_suffix)
