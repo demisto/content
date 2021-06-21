@@ -1,4 +1,4 @@
-This pack enables you to remotely manage Apple devices (Mac, iPhone, Apple TV, iPad). It can be used to control
+This pack enables you to interact with Jamf Pro which is the product that allows you to manage Apple devices (Mac, iPhone, Apple TV, iPad). It can be used to control
   various configurations via different policies, install and uninstall applications, lock
   devices, smart groups searches, and more.
 
