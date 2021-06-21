@@ -799,8 +799,8 @@ tasks:
       description: This playbook checks for content updates.
       id: ffb3feaa-6347-4d8d-8cd9-65dba4152d51
       iscommand: false
-      name: 46dd34e6-feaa-41fe-84bf-fcf8b62a69b7
-      playbookId: 46dd34e6-feaa-41fe-84bf-fcf8b62a69b7
+      name: Check For Content Installation
+      playbookId: Check For Content Installation
       type: playbook
       version: -1
     taskid: ffb3feaa-6347-4d8d-8cd9-65dba4152d51
