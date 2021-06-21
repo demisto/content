@@ -68,22 +68,29 @@ script:
   - name: lookout-get-violations
     arguments:
     - name: start_time
+      description: Start time
     - name: end_time
+      description: End time
     description: Get all violations for the given time interval.
   - name: lookout-get-events
     arguments:
     - name: start_time
+      description: Start time
     - name: end_time
+      description: End time
     description: Get all user activity events for the given time interval.
   - name: lookout-get-anomalies
     arguments:
     - name: start_time
+      description: Start time
     - name: end_time
+      description: End time
     description: Get all anomalous events for the given time interval.
   - name: lookout-get-information
     arguments:
     - name: entity_id
       required: true
+      description: Entity id
     - name: entity_type
       required: true
       auto: PREDEFINED
@@ -93,6 +100,8 @@ script:
       - Device
       - Location
       - User
+      description: Entity type - one of application, content, device, location or
+        user.
       defaultValue: User
     - name: result_type
       required: true
@@ -103,40 +112,51 @@ script:
       - Device
       - Location
       - User
+      description: Result type
       defaultValue: Content
     - name: start_time
+      description: Start time
     - name: end_time
+      description: End time
     outputs:
     - contextPath: CipherCloud.Info.userRiskRating
       description: 'User risk rating: High, Medium, Low'
       type: string
     - contextPath: CipherCloud.Info.Location
+      description: 'Location info'
       type: string
     - contextPath: CipherCloud.Info.User
+      description: 'User info'
       type: string
     - contextPath: CipherCloud.Info.Application
+      description: 'Application info'
       type: string
     - contextPath: CipherCloud.Info.Device
+      description: 'Device info'
       type: string
     - contextPath: CipherCloud.Info.Content
+      description: 'Content info'
       type: string
     description: Get information about user or content.
   - name: lookout-profile-user
     arguments:
     - name: email
       required: true
+      description: Email
     - name: risk_rating
       auto: PREDEFINED
       predefined:
       - Low
       - Medium
       - High
+      description: Risk rating - Low, Medium, or High.
     - name: action
       auto: PREDEFINED
       predefined:
       - Get
       - Update
       - Delete
+      description: Action - Get, Update, Or Delete
       defaultValue: Get
     outputs:
     - contextPath: CipherCloud.UserProfile.userEmail
@@ -154,8 +174,10 @@ script:
       description: Descriptive message
       type: string
     description: Update user profile for realtime enforcements.
-  dockerimage: demisto/python3:3.8.2.6981
+  dockerimage: demisto/python3:3.9.5.21272
   isfetch: true
   runonce: false
   subtype: python3
-sourcemoduleid: CCHelloWorld
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)

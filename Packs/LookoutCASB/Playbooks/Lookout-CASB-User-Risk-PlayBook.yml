@@ -1,5 +1,5 @@
-id: c71eea31-db04-4556-8027-c626d2361cec
-version: 2
+id: Lookout-CASB-User-Risk-PlayBook
+version: -1
 name: Lookout-CASB-User-Risk-PlayBook
 starttaskid: "0"
 tasks:
@@ -13,6 +13,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -77,6 +78,7 @@ tasks:
       id: 088bd2ef-5b55-4362-8720-fef43fbbcd6b
       version: -1
       name: Is High risk?
+      description: Check for risk
       type: condition
       iscommand: false
       brand: ""
@@ -182,6 +184,7 @@ tasks:
       id: 7167535a-71bd-41c4-8dfd-d4db0bf6d731
       version: -1
       name: Is Violation?
+      description: Check is there is a violation.
       type: condition
       iscommand: false
       brand: ""
@@ -228,4 +231,7 @@ view: |-
   }
 inputs: []
 outputs: []
-sourceplaybookid: 11fab473-6486-49b8-82bc-e37c82e8b729
+tests:
+- No tests (auto formatted)
+fromversion: 6.0.0
+description: Playbook for user risk update based on violations.
