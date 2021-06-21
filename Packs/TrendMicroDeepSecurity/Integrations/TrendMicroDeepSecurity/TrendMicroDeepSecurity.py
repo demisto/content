@@ -1756,7 +1756,7 @@ def main():
     use_ssl = not params.get("insecure", False)
     use_proxy = params.get("proxy", False)
 
-    client = Client(params.get("server_url"), params("api_secret"), use_ssl, use_proxy)
+    client = Client(params.get("server_url"), params.get("api_secret"), use_ssl, use_proxy)
 
     commands: Dict[str, Callable] = {"trendmicro-list-computers": list_computers_command,
                                      "trendmicro-create-computer": create_computer_command,
