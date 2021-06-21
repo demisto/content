@@ -22,9 +22,14 @@ class Client(BaseClient):
         self.feed_tags = feed_tags
         self.tlp_color = tlp_color
         self.content_max_size = content_max_size*1000
-        feed_content = self._http_request(method='GET', resp_type='response')
-        self.feed_data = feedparser.parse(feed_content.text)
-        self.parsed_indicators = self.create_indicators_from_response()
+        feed_content = self.feed_content()
+        feed_text = feed_content.text
+        self.feed_data = feedparser.parse(feed_text)
+        self.parsed_indicators = []
+        # = self.create_indicators_from_response()
+
+    def feed_content(self):
+        return self._http_request(method='GET', resp_type='response')
 
     def create_indicators_from_response(self) -> list:
         parsed_indicators: list = []
@@ -58,7 +63,7 @@ class Client(BaseClient):
 
                 parsed_indicators.append(indicator_obj)
 
-        return parsed_indicators
+        self.parsed_indicators = parsed_indicators
 
     def get_url_content(self, link):
         response_url = self._http_request(method='GET', full_url=link, resp_type='str')
@@ -109,7 +114,7 @@ def main():
                         feed_tags=argToList(params.get('feedTags')),
                         tlp_color=params.get('tlp_color'),
                         content_max_size=int(params.get('max_size', '45')))  # TODO: consult Bar id we want to cut the string with the max 45 size as demisto is handle or should we let the user configure it
-
+        client.create_indicators_from_response()
         if demisto.command() == 'test-module':
             # if the client was created successfully and there is data in feed the test is successful.
             return_results("ok")
