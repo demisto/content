@@ -5,10 +5,10 @@ if [ "$#" -lt "1" ]; then
   echo "Usage:
   $0 -ct <token>
   -ct, --ci-token             The ci token.
-  [-b, --branch]              The branch name. Default is the current branch.
+  [-b, --branch]              The content repo branch name. Default is the current branch.
   [-g, --gitlab]              Flag to pass if triggering a build in GitLab
   [-ch, --slack-channel]      A slack channel to send notifications to. Default is dmst-bucket-upload.
-  [-sr, --sdk-ref]            Branch in the demisto-sdk repo to checkout. Useful for testing large changes
+  [-sr, --sdk-ref]            The demisto-sdk repo branch to run this build with.
   "
   exit 1
 fi
