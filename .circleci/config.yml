@@ -1189,8 +1189,8 @@ jobs:
             echo "export DEMISTO_BASE_URL=\"https://localhost:$(cat $ENV_RESULTS_PATH | jq -r '.[0].TunnelPort')\"" >> $BASH_ENV
             echo "Server URL: $DEMISTO_BASE_URL"
       - run:
-          name: Install SDK Master
-          command: pip3 install git+https://github.com/demisto/demisto-sdk.git
+          name: Install SDK
+          command: pip3 install git+https://github.com/demisto/demisto-sdk.git@"${SDK_REF}"
       - *wait_until_server_ready
       - run:
           name: Unlock HelloWorld integration and playbook
