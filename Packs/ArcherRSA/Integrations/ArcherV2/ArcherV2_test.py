@@ -9,7 +9,6 @@ from ArcherV2 import Client, extract_from_xml, generate_field_contents, get_erro
 
 BASE_URL = 'https://test.com/'
 
-
 GET_TOKEN_SOAP = '<?xml version="1.0" encoding="utf-8"?>' + \
                  '<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/"' \
                  ' xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"' \
@@ -51,8 +50,8 @@ GET_LEVELS_BY_APP = {
     'level': 123, 'mapping': {'1': {
         'Type': 7, 'Name': 'External Links', 'FieldId': "1", 'IsRequired': False, 'RelatedValuesListId': None},
         '2': {
-        'Type': 1, 'Name': 'Device Name', 'FieldId': "2",
-        'IsRequired': True, 'RelatedValuesListId': 8}
+            'Type': 1, 'Name': 'Device Name', 'FieldId': "2",
+            'IsRequired': True, 'RelatedValuesListId': 8}
     }}
 
 GET_FIElD_DEFINITION_RES = {
@@ -235,17 +234,19 @@ SEARCH_RECORDS_BY_REPORT_RES = \
 MOCK_READABLE_SEARCH_RECORDS_BY_REPORT = "### Search records by report results\n|Id|Policy Name|Policy " \
                                          "Statement|\n|---|---|---|\n| 1720 | 00.0 Introduction | Information |\n"
 
-MOCK_RESULTS_SEARCH_RECORDS_BY_REPORT = {'Records': {'@count': '18', 'Metadata': {'FieldDefinitions': {
-    'FieldDefinition': [{'@id': '1580', '@name': 'Policy Name', '@alias': 'Policy_Name'},
-                        {'@id': '1583', '@name': 'Policy Statement', '@alias': 'Policy_Statement'}]}},
-                                                     'LevelCounts': {'LevelCount': {'@id': '3', '@count': '18'}},
-                                                     'Record': {'@contentId': '1720', '@levelId': '3',
-                                                                '@moduleId': '65',
-                                                                '@parentId': '0',
-                                                                'Field': [{'@id': '1580', '@type': '1',
-                                                                           '#text': '00.0 Introduction'},
-                                                                          {'@id': '1583', '@type': '1',
-                                                                           '#text': "Information"}]}}}
+MOCK_RESULTS_SEARCH_RECORDS_BY_REPORT = {
+    'Records': {'@count': '18', 'Metadata': {'FieldDefinitions': {
+        'FieldDefinition': [{'@id': '1580', '@name': 'Policy Name', '@alias': 'Policy_Name'},
+                            {'@id': '1583', '@name': 'Policy Statement', '@alias': 'Policy_Statement'}]}},
+                'LevelCounts': {'LevelCount': {'@id': '3', '@count': '18'}},
+                'Record': {'@contentId': '1720', '@levelId': '3',
+                           '@moduleId': '65',
+                           '@parentId': '0',
+                           'Field': [{'@id': '1580', '@type': '1',
+                                      '#text': '00.0 Introduction'},
+                                     {'@id': '1583', '@type': '1',
+                                      '#text': "Information"}]}}
+}
 
 GET_LEVEL_RES_2 = [
     {
