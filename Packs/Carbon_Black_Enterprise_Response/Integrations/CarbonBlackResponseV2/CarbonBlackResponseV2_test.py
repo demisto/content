@@ -293,7 +293,7 @@ def test_fetch_incidents_first_fetch(mocker):
 def test_fetch_incidents(mocker):
     """
         Given
-            fetch incidents command running for a second time.
+            fetch incidents command running for a second time (some incidents already been fetched).
         When
             mock the Client's http_request, and there are incident prior to last fetch
         Then
