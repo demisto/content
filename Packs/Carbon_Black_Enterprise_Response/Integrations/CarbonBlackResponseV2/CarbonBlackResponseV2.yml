@@ -7,7 +7,8 @@ configuration:
   name: url
   required: true
   type: 0
-- display: Credentials
+- display: API Key (leave empty. Fill in the API key in the password field.)
+  displaypassword: API Key
   name: credentials
   required: true
   type: 9
