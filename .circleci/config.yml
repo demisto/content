@@ -525,7 +525,7 @@ references:
           demisto-sdk upload -i Packs/HelloWorld/Integrations/ --insecure
           demisto-sdk upload -i Packs/HelloWorld/TestPlaybooks/playbook-HelloWorld-Test.yml --insecure
           demisto-sdk upload -i Packs/HelloWorld/Layouts/layoutscontainer-Hello_World_Test_Layout.json --insecure
-          demisto-sdk upload -i Packs/HelloWorld/IncidentFields/incidentfield-Hello_World_Incident_Test.json --insecure
+          demisto-sdk upload -i Packs/HelloWorld/IncidentFields/incidentfield-Hello_World_IncidentField_Test.json --insecure
           demisto-sdk upload -i Packs/HelloWorld/IncidentTypes/incidenttype-Hello_World_Alert_Test.json --insecure
           demisto-sdk upload -i Packs/HelloWorld/Classifiers/classifier-mapper-incoming-HelloWorldTest.json --insecure
 
@@ -1204,7 +1204,7 @@ jobs:
           command: |
             demisto-sdk download -o Packs/HelloWorld/ -i HelloWorld --insecure -f
             demisto-sdk download -o Packs/HelloWorld/ -i HelloWorld-Test --insecure -f
-            demisto-sdk download -o Packs/HelloWorld/ -i "Hello World Incident Test" --insecure -f
+            demisto-sdk download -o Packs/HelloWorld/ -i "Hello World IncidentField Test" --insecure -f
             demisto-sdk download -o Packs/HelloWorld/ -i "Hello World Alert Test" --insecure -f
             demisto-sdk download -o Packs/HelloWorld/ -i "Hello World Test - Incoming Mapper" --insecure -f
       - run:
@@ -1304,40 +1304,12 @@ workflows:
           - << pipeline.parameters.instance_tests >>
     jobs:
       - Setup Environment
-      - Create Instances:
-          filters:
-            branches:
-              ignore: /pull\/[0-9]+/
       - Run Unit Testing And Lint:
           requires:
             - Setup Environment
       - Run Validations:
           requires:
             - Setup Environment
-      - Server 5_0:
-          filters:
-            branches:
-              ignore: /pull\/[0-9]+/
-          requires:
-            - Create Instances
-      - Server 5_5:
-          filters:
-            branches:
-              ignore: /pull\/[0-9]+/
-          requires:
-            - Create Instances
-      - Server 6_0:
-          filters:
-            branches:
-              ignore: /pull\/[0-9]+/
-          requires:
-            - Create Instances
-      - Server Master:
-          filters:
-            branches:
-              ignore: /pull\/[0-9]+/
-          requires:
-            - Create Instances
 
   force_pack_upload:
     when: << pipeline.parameters.force_pack_upload >>

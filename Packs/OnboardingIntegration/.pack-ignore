@@ -6,3 +6,6 @@ ignore=PA125
 
 [file:README.md]
 ignore=RM104
+
+[file:classifier-mapper-incoming-OnboardingIntegration.json]
+ignore=BA101

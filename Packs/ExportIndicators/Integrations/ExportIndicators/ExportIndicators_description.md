@@ -16,8 +16,8 @@ In a web browser, go to **http://*cortex-xsoar-server-address*:*listen_port***.
 To access the Export Indicators service by instance name, make sure ***Instance execute external*** is enabled. 
 
 1. In Cortex XSOAR, go to **Settings > About > Troubleshooting**.
-2. In the **Server Configuration** section, verify that the ***instance.execute.external*** key is set to *true*. If this key does not exist, click **+ Add Server Configuration** and add the *instance.execute.external* and set the value to *true*. See [this documentation](https://xsoar.pan.dev/docs/integrations/long-running#invoking-http-integrations-via-cortex-xsoar-servers-route-handling) for further information.
-3. In a web browser, go to **https://*<cortex-xsoar-server-address>*/instance/execute/*<instance_name>*** .
+2. In the **Server Configuration** section, verify that the `instance.execute.external.<instance_name>` key is set to `true`. If this key does not exist, click **+ Add Server Configuration** and add the `instance.execute.external.<instance_name>` and set the value to `true`. See [this documentation](https://xsoar.pan.dev/docs/reference/articles/long-running-invoke) for further information.
+3. In a web browser, go to `https://<cortex-xsoar_address>/instance/execute/<instance_name>/`.
 
 ### Modify Request Parameters Through the URL
 Use the following arguments in the URL to change the request:

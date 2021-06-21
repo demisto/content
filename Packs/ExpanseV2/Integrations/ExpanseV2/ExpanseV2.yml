@@ -2495,6 +2495,7 @@ script:
       - 'IpRange'
       - 'Certificate'
       - 'Domain'
+      - 'CloudResource'
     - default: false
       description: ID of the asset to assign the poc to.
       isArray: false
@@ -2534,6 +2535,7 @@ script:
       - 'IpRange'
       - 'Certificate'
       - 'Domain'
+      - 'CloudResource'
     - default: false
       description: ID of the asset to unassign the pocs from.
       isArray: false
@@ -2774,6 +2776,7 @@ script:
       - 'IpRange'
       - 'Certificate'
       - 'Domain'
+      - 'CloudResource'
     - default: false
       description: ID of the asset to assign the tags to.
       isArray: false
@@ -2811,6 +2814,7 @@ script:
       - 'IpRange'
       - 'Certificate'
       - 'Domain'
+      - 'CloudResource'
     - default: false
       description: ID of the asset to unassign the tags from.
       isArray: false
@@ -5187,6 +5191,108 @@ script:
     - contextPath: Expanse.CloudResource.vpc.name
       description: Any associated VPC names.
       type: String
+  - name: expanse-get-cloud-resource
+    description: Retrieve a specified cloud resource from Expanse.
+    deprecated: false
+    execution: false
+    arguments:
+      - default: false
+        description: The ID of the cloud resource.
+        isArray: false
+        name: id
+        required: true
+        secret: false
+    outputs:
+      - contextPath: DBotScore.Score
+        description: The actual score.
+        type: Number
+      - contextPath: DBotScore.Vendor
+        description: The vendor used to calculate the score.
+        type: String
+      - contextPath: DBotScore.Indicator
+        description: The indicator that was tested.
+        type: String
+      - contextPath: DBotScore.Type
+        description: The indicator type.
+        type: String
+      - contextPath: Expanse.CloudResource.accountIntegration.id
+        description: The ID of the cloud resource account integration.
+        type: String
+      - contextPath: Expanse.CloudResource.accountIntegration.name
+        description: The name of the cloud resource account integration.
+        type: String
+      - contextPath: Expanse.CloudResource.annotations.note
+        description: Note metadata on the cloud resource.
+        type: String
+      - contextPath: Expanse.CloudResource.businessUnits.id
+        description: The internal ID of the business unit that the cloud resource belongs to.
+        type: String
+      - contextPath: Expanse.CloudResource.businessUnits.name
+        description: The name of the business unit that the cloud resource belongs to.
+        type: String
+      - contextPath: Expanse.CloudResource.businessUnits.tenantId
+        description: The internal tenant ID of the business unit that the cloud resource belongs to.
+        type: String
+      - contextPath: Expanse.CloudResource.dateAdded
+        description: The date that the cloud resource was added.
+        type: Date
+      - contextPath: Expanse.CloudResource.details
+        description: Details about the cloud resource.
+        type: String
+      - contextPath: Expanse.CloudResource.domain
+        description: Domain name associated with the cloud resource.
+        type: String
+      - contextPath: Expanse.CloudResource.firstObserved
+        description: The date that the cloud resource was first observed.
+        type: Date
+      - contextPath: Expanse.CloudResource.id
+        description: The internal ID for the cloud resource.
+        type: String
+      - contextPath: Expanse.CloudResource.instanceId
+        description: The instance ID of the cloud resource.
+        type: String
+      - contextPath: Expanse.CloudResource.ips
+        description: IPs associated with the cloud resource.
+        type: String
+      - contextPath: Expanse.CloudResource.lastObserved
+        description: The date that the cloud resource was most recently observed.
+        type: Date
+      - contextPath: Expanse.CloudResource.name
+        description: The friendly name of the cloud resource.
+        type: String
+      - contextPath: Expanse.CloudResource.provider.id
+        description: The ID of the provider where the cloud resource is hosted.
+        type: String
+      - contextPath: Expanse.CloudResource.provider.name
+        description: The name of the provider where the cloud resource is hosted.
+        type: String
+      - contextPath: Expanse.CloudResource.region
+        description: The region where the cloud resouce is hosted.
+        type: String
+      - contextPath: Expanse.CloudResource.serviceStatus
+        description: Whether the cloud resource has any known associated services.
+        type: String
+      - contextPath: Expanse.CloudResource.sourceDetails
+        description: The integration source of the cloud resource.
+        type: String
+      - contextPath: Expanse.CloudResource.tenant.id
+        description: The internal tenant ID of the cloud resource.
+        type: String
+      - contextPath: Expanse.CloudResource.tenant.name
+        description: The tenant name of the cloud resouce
+        type: String
+      - contextPath: Expanse.CloudResource.tenant.tenantId
+        description: The internal tenant ID of the cloud resource.
+        type: String
+      - contextPath: Expanse.CloudResource.type
+        description: The type of cloud resource.
+        type: String
+      - contextPath: Expanse.CloudResource.vpc.id
+        description: Any associated VPC ID.
+        type: String
+      - contextPath: Expanse.CloudResource.vpc.name
+        description: Any associated VPC names.
+        type: String
   - name: expanse-get-risky-flows
     description: Retrieve risky flows detected by Expanse Behavior.
     deprecated: false

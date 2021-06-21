@@ -4178,6 +4178,126 @@ Retrieve Cloud Resource assets from Expanse.
 >|---|---|---|---|---|---|---|---|
 >| NETWORK_LB | Google |  | 0220f936-3fd3-33e4-9e00-fd6a54e9bb7a | 1.179.133.116 | 2656988220364570480 | us-central1 | Prisma Cloud: Prisma Demo |
 
+### expanse-get-cloud-resource
+***
+Retrieve a specified cloud resource from Expanse.
+
+
+#### Base Command
+
+`expanse-get-cloud-resource`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| id | The ID of the cloud resource. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| DBotScore.Score | Number | The actual score. | 
+| DBotScore.Vendor | String | The vendor used to calculate the score. | 
+| DBotScore.Indicator | String | The indicator that was tested. | 
+| DBotScore.Type | String | The indicator type. | 
+| Expanse.CloudResource.accountIntegration.id | String | The ID of the cloud resource account integration. | 
+| Expanse.CloudResource.accountIntegration.name | String | The name of the cloud resource account integration. | 
+| Expanse.CloudResource.annotations.note | String | Note metadata on the cloud resource. | 
+| Expanse.CloudResource.businessUnits.id | String | The internal ID of the business unit that the cloud resource belongs to. | 
+| Expanse.CloudResource.businessUnits.name | String | The name of the business unit that the cloud resource belongs to. | 
+| Expanse.CloudResource.businessUnits.tenantId | String | The internal tenant ID of the business unit that the cloud resource belongs to. | 
+| Expanse.CloudResource.dateAdded | Date | The date that the cloud resource was added. | 
+| Expanse.CloudResource.details | String | Details about the cloud resource. | 
+| Expanse.CloudResource.domain | String | Domain name associated with the cloud resource. | 
+| Expanse.CloudResource.firstObserved | Date | The date that the cloud resource was first observed. | 
+| Expanse.CloudResource.id | String | The internal ID for the cloud resource. | 
+| Expanse.CloudResource.instanceId | String | The instance ID of the cloud resource. | 
+| Expanse.CloudResource.ips | String | IPs associated with the cloud resource. | 
+| Expanse.CloudResource.lastObserved | Date | The date that the cloud resource was most recently observed. | 
+| Expanse.CloudResource.name | String | The friendly name of the cloud resource. | 
+| Expanse.CloudResource.provider.id | String | The ID of the provider where the cloud resource is hosted. | 
+| Expanse.CloudResource.provider.name | String | The name of the provider where the cloud resource is hosted. | 
+| Expanse.CloudResource.region | String | The region where the cloud resouce is hosted. | 
+| Expanse.CloudResource.serviceStatus | String | Whether the cloud resource has any known associated services. | 
+| Expanse.CloudResource.sourceDetails | String | The integration source of the cloud resource. | 
+| Expanse.CloudResource.tenant.id | String | The internal tenant ID of the cloud resource. | 
+| Expanse.CloudResource.tenant.name | String | The tenant name of the cloud resouce | 
+| Expanse.CloudResource.tenant.tenantId | String | The internal tenant ID of the cloud resource. | 
+| Expanse.CloudResource.type | String | The type of cloud resource. | 
+| Expanse.CloudResource.vpc.id | String | Any associated VPC ID. | 
+| Expanse.CloudResource.vpc.name | String | Any associated VPC names. | 
+
+
+#### Command Example
+``` 
+{
+    "DBotScore": {
+        "Vendor": "ExpanseV2", 
+        "Indicator": "1.179.133.116", 
+        "Score": 0, 
+        "Type": "ip"
+    }, 
+    "Expanse": {
+        "CloudResource": {
+            "domain": null, 
+            "dateAdded": "2021-05-17T04:02:24.351Z", 
+            "name": "gke-prisma-cloud-demo-2-default-pool-e7eb62e3-vkc5", 
+            "instanceId": "2656988220364570480", 
+            "sourceDetails": [
+                "Prisma Cloud: Prisma Demo"
+            ], 
+            "region": "us-central1", 
+            "firstObserved": "2021-05-16T08:28:27.035Z", 
+            "provider": {
+                "id": "Google", 
+                "name": "Google"
+            }, 
+            "id": "0194af18-4d32-36d9-8dba-527509ae8e1c", 
+            "ips": [
+                "1.179.133.116"
+            ], 
+            "businessUnits": [
+                {
+                    "tenantId": "04b5140e-bbe2-3e9c-9318-a39a3b547ed5", 
+                    "id": "04b5140e-bbe2-3e9c-9318-a39a3b547ed5", 
+                    "name": "VanDelay Industries"
+                }
+            ], 
+            "lastObserved": "2021-05-17T08:28:26.711Z", 
+            "details": null, 
+            "vpc": {
+                "id": "https://www.googleapis.com/compute/v1/projects/demo/global/networks/default", 
+                "name": "default"
+            }, 
+            "accountIntegration": {
+                "id": "e2154dbf-1e7e-4e25-9b88-0c43c98c9551", 
+                "name": "Prisma Demo"
+            }, 
+            "serviceStatus": [
+                "NO_ACTIVE_SERVICE"
+            ], 
+            "type": "GCE", 
+            "annotations": {
+                "note": "", 
+                "tags": [], 
+                "contacts": []
+            }, 
+            "tenant": {
+                "tenantId": "04b5140e-bbe2-3e9c-9318-a39a3b547ed5", 
+                "id": "04b5140e-bbe2-3e9c-9318-a39a3b547ed5", 
+                "name": "VanDelay Industries"
+            }
+        }
+    }
+}
+```
+
+#### Human Readable Output
+>|Asset Type|Cloud Provider|Domain|ID|IP|Instance ID|Region|Source|
+>|---|---|---|---|---|---|---|---|
+>| NETWORK_LB | Google |  | 0220f936-3fd3-33e4-9e00-fd6a54e9bb7a | 1.179.133.116 | 2656988220364570480 | us-central1 | Prisma Cloud: Prisma Demo |
+
 ### expanse-get-risky-flows
 ***
 Retrieve risky flows detected by Expanse Behavior.
