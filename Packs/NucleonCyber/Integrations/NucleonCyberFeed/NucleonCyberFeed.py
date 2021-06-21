@@ -290,9 +290,7 @@ class Client(BaseClient):
             result.append(
                 {
                     'value': data.get("ip"),
-                    # 'value': "40.22.22.22",
                     "exp": data.get("exp"),
-                    # "exp":1677535200000,
                     'type': "IP",
                     'segment': self.fix_segment(data.get("attackDetails").get("segment")),
                     'targetCountry': data.get("attackDetails").get("targetCountry"),
@@ -355,7 +353,7 @@ def fetch_indicators(client: Client, tlp_color: Optional[str] = None, feed_tags:
     #     iterator = iterator[:limit]
 
     # extract values from iterator
-
+    tags_ = []
     for item in iterator:
         value_ = item.get('value')
         type_ = item.get('type')
@@ -372,6 +370,18 @@ def fetch_indicators(client: Client, tlp_color: Optional[str] = None, feed_tags:
         automated_ = item.get('automated')
         bruteForce_ = item.get('bruteForce')
         sourceCountry_ = item.get('sourceCountry')
+        tags_name = {
+            'nucleon_botnet': bot_,
+            'nucleon_darknet': darknet_,
+            'nucleon_cnc': cnc_,
+            'nucleon_proxy': proxy_,
+            'nucleon_automated': automated_,
+            'nucleon_bruteForce': bruteForce_,
+            'nucleon_governments': governments_,
+        }
+        for tag_name, tag_value in tags_name.items():
+            if (isinstance(tag_value, str) and tag_value == 'true') or (isinstance(tag_value, bool) and tag_value is True):
+                tags_.append(tag_name)
 
         # exp = item.get('exp')
         # exp_= timestamp_to_datestring(exp_ms)
@@ -422,18 +432,20 @@ def fetch_indicators(client: Client, tlp_color: Optional[str] = None, feed_tags:
             'sourceCountry': sourceCountry_,
             # 'exp':exp_,
 
-
-
             # The name of the service supplying this feed.
             'service': 'NucleonCyberFeed',
             # A dictionary that maps values to existing indicator fields defined in Cortex XSOAR.
             # One can use this section in order to map custom indicator fields previously defined
             # in Cortex XSOAR to their values.
+
+
             'fields': {
                 'osversion': osVersion_,
                 'os': os_,
                 'port': port_,
                 'nucleonsegment': segment_,
+                'targetCountry': targetCountry_,
+                'tags': tags_,
                 #    'expiration':exp_,
             },
             # A dictionary of the raw data returned from the feed source about the indicator.
