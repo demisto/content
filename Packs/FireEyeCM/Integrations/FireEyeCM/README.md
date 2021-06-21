@@ -302,7 +302,7 @@ Downloads malware artifacts data for the specified UUID as a zip file.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | uuid | The universally unique identifier (UUID) for the alert. | Required | 
-| timeout | Timeout to retrieve the artifacts. Default is 120. | Optional | 
+| timeout | Timeout to retrieve the artifacts. Default is 120 seconds. | Optional | 
 
 
 #### Context Output
@@ -463,7 +463,7 @@ Searches and retrieves quarantined emails.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| start_time | Specifies the start time of the search. This filter is optional. Default is last day. Syntax: end_time=YYYY-MM-DDTHH:mm:ss.sss-OH:om or '1 day/month/year'. Default is 1 day. | Optional | 
+| start_time | Specifies the start time of the search. This filter is optional. Syntax: end_time=YYYY-MM-DDTHH:mm:ss.sss-OH:om or '1 day/month/year'. Default is 1 day. | Optional | 
 | end_time | Specifies the end time of the search. Default is now. Syntax: end_time=YYYY-MM-DDTHH:mm:ss.sss-OH:om or '1 day/month/year'. | Optional | 
 | from | The sender email. | Optional | 
 | subject | The email subject. Must be URL encoded. | Optional | 
@@ -668,7 +668,7 @@ Returns reports on selected alerts.
 | alert_id | Alert ID. This argument is only relevant when retrieving a report of type alertDetailsReport. | Optional | 
 | infection_id | Infection ID. This argument is only relevant when retrieving a report of type alertDetailsReport with conjunction to the infection_type argument. | Optional | 
 | infection_type | Infection type. Possible values: "malware-object", "malware-callback", "infection-match", "domain-match", "web-infection". This argument is only relevant when retrieving a report of type alertDetailsReport with conjunction to the infection_id argument. Possible values are: malware-object, malware-callback, infection-match, domain-match, web-infection. | Optional | 
-| timeout | Timeout to retrieve the reports. Default is 120. | Optional | 
+| timeout | Timeout to retrieve the reports. Default is 120 seconds. | Optional | 
 
 
 #### Context Output
