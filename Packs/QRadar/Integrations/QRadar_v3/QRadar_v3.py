@@ -15,7 +15,7 @@ from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-impor
 urllib3.disable_warnings()  # pylint: disable=no-member
 
 ''' ADVANCED GLOBAL PARAMETERS '''
-SAMPLE_SIZE = 2 # number of samples to store in integration context
+SAMPLE_SIZE = 2  # number of samples to store in integration context
 EVENTS_INTERVAL_SECS = 15  # interval between events polling
 EVENTS_FAILURE_LIMIT = 3  # amount of consecutive failures events fetch will tolerate
 FAILURE_SLEEP = 15  # sleep between consecutive failures events fetch
