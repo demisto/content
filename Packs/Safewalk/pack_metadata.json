@@ -1,11 +1,11 @@
 {
-    "name": "Safewalk",
+    "name": "Altipeak",
     "description": "Integration with Safewalk identity management and report service",
-    "support": "xsoar",
+    "support": "xsoar-altipeak",
     "currentVersion": "1.0.0",
-    "author": "Cortex XSOAR",
-    "url": "https://www.paloaltonetworks.com/cortex",
-    "email": "",
+    "author": "Altipeak",
+    "url": "https://www.altipeaksecurity.com",
+    "email": "support@altipeak.com",
     "categories": [
         "Authentication"
     ],
