@@ -71,13 +71,11 @@ The following lists the changes in this version according to the commands from t
    - *File.VirusTotal*
 
    Instead, you can use the following output paths that return concrete indicator reputations.
-   - *VirusTotal.Domain*
-   - *VirusTotal.IP*
-- Added output paths: For each command, outputs will appear under the following output paths:
    - *VirusTotal.IP*
    - *VirusTotal.Domain*
    - *VirusTotal.File*
    - *VirusTotal.URL*
+   
 - The following commands will no longer analyze the file/url sent to it, but will get the information stored in VirusTotal.
    - *VirusTotal.Domain*
    - *VirusTotal.IP*
