@@ -1,4 +1,5 @@
 MOCK_MAIL_NO_LABELS = {
+
     u'internalDate': u'1572251535000',
     u'historyId': u'249781',
     u'payload': {
