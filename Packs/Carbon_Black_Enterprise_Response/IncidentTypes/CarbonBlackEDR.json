@@ -1,8 +1,6 @@
 {
     "id": "Carbon Black EDR",
     "version": -1,
-    "vcShouldIgnore": false,
-    "locked": false,
     "name": "Carbon Black EDR",
     "prevName": "Carbon Black EDR",
     "color": "#F8C89A",
