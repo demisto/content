@@ -279,6 +279,7 @@ def list_allowedlist(client: Client, args: Dict[str, Any]) -> CommandResults:
     limit = int(args.get('limit', '20'))
 
     raw_response = client.fe_client.list_allowedlist_request(type_)
+    allowed_list = []
     if not raw_response:
         md_ = f'No allowed lists with the given type {type_} were found.'
     else:
@@ -369,6 +370,7 @@ def list_blockedlist(client: Client, args: Dict[str, Any]) -> CommandResults:
     limit = int(args.get('limit', '20'))
 
     raw_response = client.fe_client.list_blockedlist_request(type_)
+    blocked_list = []
     if not raw_response:
         md_ = f'No blocked lists with the given type {type_} were found.'
     else:
