@@ -1550,11 +1550,6 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: CarbonBlackEDR.BinarySearch.total_results
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
               simple: CarbonBlackEDR.BinarySearch.Results.original_filename
             iscontext: true
       - - operator: isNotEmpty
