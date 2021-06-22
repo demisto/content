@@ -1,0 +1,23 @@
+{
+    "id": "UBIRCH Privacy",
+    "version": -1,
+    "vcShouldIgnore": false,
+    "locked": false,
+    "name": "UBIRCH Privacy",
+    "prevName": "UBIRCH Privacy",
+    "color": "#3F51B5",
+    "sla": 240,
+    "hours": 0,
+    "days": 3,
+    "weeks": 1,
+    "hoursR": 0,
+    "daysR": 0,
+    "weeksR": 0,
+    "system": false,
+    "readonly": false,
+    "default": false,
+    "autorun": false,
+    "disabled": false,
+    "reputationCalc": 0,
+    "fromVersion": "5.5.0"
+}

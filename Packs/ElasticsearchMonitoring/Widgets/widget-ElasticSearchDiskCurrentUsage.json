@@ -1,5 +1,5 @@
 {
-    "id": "es-disk-current-usage",
+    "id": "es-disk-current",
     "version": -1,
     "fromVersion": "6.1.0",
     "modified": "2021-01-10T13:24:20.812147Z",

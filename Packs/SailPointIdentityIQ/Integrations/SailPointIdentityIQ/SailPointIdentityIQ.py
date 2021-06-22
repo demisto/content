@@ -1,15 +1,16 @@
-from CommonServerPython import *
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 
 ''' IMPORTS '''
 
 import base64
+import datetime as dt
 import json
 import traceback
 
+import dateparser
 import requests
 import urllib3
-import datetime as dt
-import dateparser
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -80,7 +81,7 @@ class Client(BaseClient):
 ''' HELPER/UTILITY FUNCTIONS '''
 
 
-def get_headers(base_url: str, client_id: str, client_secret: str, grant_type: str):
+def get_headers(base_url: str, client_id: str, client_secret: str, grant_type: str, verify: bool):
     """
     Create header with OAuth 2.0 authentication information.
 
@@ -112,7 +113,7 @@ def get_headers(base_url: str, client_id: str, client_secret: str, grant_type: s
         'Authorization': 'Basic %s' % base64.b64encode(auth_cred.encode()).decode()
     }
     oauth_response = requests.request("POST", url=f'{base_url}{IIQ_OAUTH_EXT}', data=iiq_oauth_body,
-                                      headers=iiq_oauth_headers)
+                                      headers=iiq_oauth_headers, verify=verify)
     if oauth_response is not None and 200 <= oauth_response.status_code < 300:
         return {
             'Authorization': 'Bearer %s' % oauth_response.json().get('access_token', None),
@@ -676,12 +677,12 @@ def main():
 
     # Other configs
     verify_certificate = not demisto.params().get('insecure', False)
-    proxy = demisto.params().get('proxy', False)
+    proxy = handle_proxy()
     request_timeout = 10
 
     demisto.debug(f'Command being called is {demisto.command()}')
     try:
-        headers = get_headers(base_url, client_id, client_secret, grant_type)
+        headers = get_headers(base_url, client_id, client_secret, grant_type, verify_certificate)
         client = Client(
             base_url=base_url,
             verify=verify_certificate,
