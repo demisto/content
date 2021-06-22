@@ -23,8 +23,8 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: Trend Micro Apex central automation to manage agents and User-Defined Suspicious Objects
-display: Trend Micro Apex
+description: Trend Micro Apex One central automation to manage agents and User-Defined Suspicious Objects
+display: Trend Micro Apex One
 name: Trend Micro Apex
 script:
   commands:
