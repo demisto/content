@@ -1,22 +1,10 @@
 FireEye Central Management (CM Series) is the FireEye threat intelligence hub. It services the FireEye ecosystem, ensuring that FireEye products share the latest intelligence and correlate across attack vectors to detect and prevent cyber attacks
 This integration was integrated and tested with version 9.0.2 of FireEye Central Management
 
-## Configure FireEye Central Management on Cortex XSOAR
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for FireEye Central Management.
-3. Click **Add instance** to create and configure a new integration instance.
-    | **Parameter** | **Required** |
-    | --- | --- |
-    | Your server URL | True |
-    | Username | True |
-    | Fetch incidents | False |
-    | Max incidents to fetch | False |
-    | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days, 3 months, 1 year) | False |
-    | Incident type | False |
-    | Info level for fetched alerts | False |
-    | Trust any certificate (not secure) | False |
-    | Use system proxy settings | False |
-4. Click **Test** to validate the URLs, token, and connection.
+## API Key management
+This integration generates an API Key from the username and password given to be authenticated with FireEye.
+The API Key is valid for 15 minutes.
+The integration manages the storage of this key, and its re generation when the key expires.
 
 ## Fetch FireEye EX Alert Emails
 To fetch a FireEye EX alert email, you will need the UUID.
@@ -26,8 +14,8 @@ To fetch a FireEye EX alert email, you will need the UUID.
    ***!fireeye-cm-get-artifacts-by-uuid uuid=243a2555-a915-47a1-a947-e71049f4971c***
 3. Download the email.
 
-## Access the FireEye NX Alert URL
-To display a proper link in the FireEye NX Alert URL field of the FireEye NX Alert layout, you need to configure the hostname in the appliance settings of the FireEye application.
+## Access the FireEye Alert URL
+To display a proper link in the FireEye NX Alert URL field of the FireEye NX or EX Alert layout, you need to configure the hostname in the appliance settings of the FireEye application.
 1. Log in to your FireEye application.
 2. Navigate to **Appliance Settings > Network > Hostname**.
 3. In the Hostname field, enter your URL/server/ip address.

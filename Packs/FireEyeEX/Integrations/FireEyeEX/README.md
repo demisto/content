@@ -1,5 +1,25 @@
 FireEye Email Security (EX) series protects against breaches caused by advanced email attacks.
 This integration was integrated and tested with version 9.0.2.929543 of FireEye Email Security.
+
+## API Key management
+This integration generates an API Key from the username and password given to be authenticated with FireEye.
+The API Key is valid for 15 minutes.
+The integration manages the storage of this key, and its re generation when the key expires.
+
+## Fetch FireEye EX Alert Emails
+To fetch a FireEye EX alert email, you will need the UUID.
+1. Run the ***fireeye-ex-get-alert-details** command with the alert ID. For example,
+   ***!fireeye-ex-get-alert-details alert_id=542***
+2. Locate the UUID in the context data and run the ***fireeye-ex-get-artifacts-by-uuid*** command with the UUID. For example: 
+   ***!fireeye-ex-get-artifacts-by-uuid uuid=243a2555-a915-47a1-a947-e71049f4971c***
+3. Download the email.
+
+## Access the FireEye Alert URL
+To display a proper link in the FireEye NX Alert URL field of the FireEye EX Alert layout, you need to configure the hostname in the appliance settings of the FireEye application.
+1. Log in to your FireEye application.
+2. Navigate to **Appliance Settings > Network > Hostname**.
+3. In the Hostname field, enter your URL/server/ip address.
+
 ## Configure FireEye Email Security on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
@@ -19,6 +39,7 @@ This integration was integrated and tested with version 9.0.2.929543 of FireEye 
     | Use system proxy settings | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
+
 ## Commands
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
