@@ -717,13 +717,13 @@ def fetch_incidents(client: Client, max_results: int, last_run: dict, first_fetc
     alerts = []
     if status:
         for current_status in argToList(status):
-            res = client.get_alerts(status=current_status, feedname=feedname, limit=max_results)
+            res = client.get_alerts(status=current_status, feedname=feedname)
             alerts += res.get('results', {})
     else:
-        res = client.get_alerts(feedname=feedname, query=query, limit=max_results)
+        res = client.get_alerts(feedname=feedname, query=query)
         alerts += res.get('results', {})
 
-    for alert in alerts:
+    for alert in alerts[:max_results]:
         incident_created_time = dateparser.parse(alert.get('created_time'))
         incident_created_time_ms = int(incident_created_time.timestamp()) if incident_created_time else '0'
 
