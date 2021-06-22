@@ -1,4 +1,4 @@
-category: Utilities
+category: Data Enrichment & Threat Intelligence
 commonfields:
   id: Abnormal Security Client API
   version: -1
