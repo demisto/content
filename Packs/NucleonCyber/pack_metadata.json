@@ -5,13 +5,12 @@
     "currentVersion": "1.0.0",
     "author": "NucleonCyber",
     "url": "",
-    "email": "",
+    "email": "support@nucleon.sh",
     "categories": [
         "Data Enrichment & Threat Intelligence"
     ],
     "tags": [
-        "Threat Intelligence",
-        "Cyber Security"
+        "Threat Intelligence"
     ],
     "useCases": [],
     "keywords": [],

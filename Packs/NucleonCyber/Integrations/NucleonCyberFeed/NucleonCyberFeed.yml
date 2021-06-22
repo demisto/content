@@ -17,25 +17,25 @@ configuration:
 #   type: 0
 - defaultvalue: "username"
   display: User Name
-  additionalinfo:  The given username to use for NucleonCyber API connection
+  additionalinfo: The given username to use for NucleonCyber API connection
   name: username
   required: true
   type: 0
 - defaultvalue: "password"
   display: Password
-  additionalinfo:  The given password to use for NucleonCyber API connection
+  additionalinfo: The given password to use for NucleonCyber API connection
   name: password
   required: true
   type: 0
 - defaultvalue: "usrn"
   display: Usrn
-  additionalinfo:  The given usrn to use for NucleonCyber API connection
+  additionalinfo: The given usrn to use for NucleonCyber API connection
   name: usrn
   required: true
   type: 0
 - defaultvalue: "clientID"
   display: ClientID
-  additionalinfo:  The given clientID to use for NucleonCyber API connection
+  additionalinfo: The given clientID to use for NucleonCyber API connection
   name: clientid
   required: true
   type: 0
@@ -115,7 +115,11 @@ configuration:
   name: feedTags
   required: false
   type: 0
-- additionalinfo: Incremental feeds pull only new or modified indicators that have been sent from the integration. The determination if the indicator is new or modified happens on the 3rd-party vendor's side, so only indicators that are new or modified are sent to Cortex XSOAR. Therefore, all indicators coming from these feeds are labeled new or modified.
+- additionalinfo: Incremental feeds pull only new or modified indicators that have
+    been sent from the integration. The determination if the indicator is new or modified
+    happens on the 3rd-party vendor's side, so only indicators that are new or modified
+    are sent to Cortex XSOAR. Therefore, all indicators coming from these feeds are
+    labeled new or modified.
   defaultvalue: 'true'
   display: Incremental feed
   hidden: true
@@ -177,7 +181,7 @@ script:
     - contextPath: NucleonCyber.Indicators.hash
       description: hashes.
       type: String
-  dockerimage: demisto/python3:3.9.2.17957
+  dockerimage: demisto/python3:3.9.5.21272
   feed: true
   isfetch: false
   longRunning: false
@@ -187,6 +191,6 @@ script:
   subtype: python3
   type: python
 fromversion: 5.5.0
-description: This is the NucleonCyber Feed  integration 
+description: This is the NucleonCyber Feed  integration
 tests:
 - No tests (auto formatted)

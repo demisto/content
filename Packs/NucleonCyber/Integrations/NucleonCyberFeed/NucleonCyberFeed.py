@@ -455,8 +455,8 @@ def fetch_indicators(client: Client, tlp_color: Optional[str] = None, feed_tags:
         # if feed_tags:
         #     indicator_obj['fields']['tags'] = feed_tags
 
-        # if tlp_color:
-        #     indicator_obj['fields']['trafficlightprotocol'] = tlp_color
+        if tlp_color:
+            indicator_obj['fields']['trafficlightprotocol'] = tlp_color
 
         indicators.append(indicator_obj)
 
