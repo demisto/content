@@ -2279,7 +2279,7 @@ tasks:
     task:
       id: 11d99b57-2d20-40d4-8045-ad80dfedffd5
       version: -1
-      name: Extract and Enrich Epanse Indicators
+      name: Extract and Enrich Xpanse Indicators
       description: |2-
           Sub-playbook for Handle Expanse Incident playbooks.
           Extract and Enrich Indicators (CIDRs, IPs, Certificates, Domains and DomainGlobs) from Expanse Incidents.

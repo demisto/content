@@ -2193,7 +2193,7 @@ tasks:
       name: Print Target IP suggestions
       description: Convert an array to a nice table display. Usually, from the context.
       tags:
-      ExpanseSuggestion
+      - ExpanseSuggestion
       scriptName: ToTable
       type: regular
       iscommand: false
@@ -2248,7 +2248,7 @@ tasks:
       name: Print Target Devices suggestions
       description: Convert an array to a nice table display. Usually, from the context.
       tags:
-      ExpanseSuggestion
+      - ExpanseSuggestion
       scriptName: ToTable
       type: regular
       iscommand: false
@@ -7121,6 +7121,8 @@ tasks:
     scriptarguments:
       ListName:
         simple: ${inputs.OrganizationUnitsToOwnerName}
+      ListValues:
+        simple: '{}'
     separatecontext: true
     loop:
       iscommand: false
@@ -7158,6 +7160,8 @@ tasks:
     scriptarguments:
       ListName:
         simple: ${inputs.FirewallTagListName}
+      ListValues:
+        simple: '{}'
     separatecontext: true
     loop:
       iscommand: false
