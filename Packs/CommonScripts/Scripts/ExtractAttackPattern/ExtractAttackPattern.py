@@ -24,8 +24,6 @@ def is_valid_attack_pattern(items):
     except Exception:
         return False
 
-    return False
-
 
 def main():
     attack_list = argToList(demisto.args().get('input'))
