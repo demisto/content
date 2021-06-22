@@ -19,10 +19,5 @@
     "reputationCalc": 0,
     "onChangeRepAlg": 0,
     "layout": "Carbon Black EDR Incidents",
-    "detached": false,
-    "extractSettings": {
-        "mode": "Specific",
-        "fieldCliNameToExtractSettings": {}
-    },
     "fromVersion": "5.5.0"
 }
