@@ -1,5 +1,5 @@
 Use the Cofense Intelligence integration to check the reputation of URLs, IP addresses, file hashes, and email addresses.
-This integration was integrated and tested with version 02 of CofenseIntelligenceV2
+This integration was integrated and tested with version 02 of Cofense Intelligence
 
 
 Search for threats associated with an indicator.

@@ -67,7 +67,7 @@ class Client(BaseClient):
 
 
 def remove_false_vendors_detections_from_threat(threats):
-    """remove false vendor detections from report
+    """remove from report vendor detections fields that are equal to false as they are not relevant
         Args:
             - threats (Array): threats reports from cofense raw response
     """
@@ -290,11 +290,12 @@ def search_url_command(client: Client, args: Dict[str, Any], params) -> List[Com
     """
 
     urls = argToList(args.get('url'))
+    days_back = args.get('days_back') if args.get('days_back') else params.get('days_back')
     if not urls:
-        raise ValueError('url not specified')
+        raise ValueError('URL not specified')
     results_list = []
     for url in urls:
-        result = client.threat_search_call(url=url, days_back=params.get('days_back'))
+        result = client.threat_search_call(url=url, days_back=days_back)
         threats = result.get('data', {}).get('threats', [])
         remove_false_vendors_detections_from_threat(threats)
         outputs = {'Data': url, 'Threats': threats}
@@ -330,6 +331,7 @@ def check_ip_command(client: Client, args: Dict[str, Any], params) -> List[Comma
     """
 
     ips = argToList(args.get('ip'))
+    days_back = args.get('days_back') if args.get('days_back') else params.get('days_back')
     if not ips:
         raise ValueError('IP not specified')
     results_list = []
@@ -339,10 +341,10 @@ def check_ip_command(client: Client, args: Dict[str, Any], params) -> List[Comma
             socket.inet_aton(ip)
 
         except socket.error:
-            raise ValueError('Invalid IP')
+            raise ValueError(f'Invalid IP: {ip}')
 
         # Call the Client function and get the raw response
-        result = client.threat_search_call(ip=ip, days_back=params.get('days_back'))
+        result = client.threat_search_call(ip=ip, days_back=days_back)
         threats = result.get('data', {}).get('threats', [])
         remove_false_vendors_detections_from_threat(threats)
         outputs = {'Data': ip, 'Threats': threats}
@@ -381,15 +383,16 @@ def check_email_command(client: Client, args: Dict[str, Any], params) -> List[Co
     """
 
     emails = argToList(args.get('email'))
+    days_back = args.get('days_back') if args.get('days_back') else params.get('days_back')
     if not emails:
         raise ValueError('Email not specified')
     results_list = []
     for email in emails:
         if not re.fullmatch(EMAIL_REGEX, email):
-            raise ValueError('Invalid email')
+            raise ValueError(f'Invalid email address: {email}')
 
         # Call the Client function and get the raw response
-        result = client.threat_search_call(email=email, days_back=params.get('days_back'))
+        result = client.threat_search_call(email=email, days_back=days_back)
         threats = result.get('data', {}).get('threats', [])
         remove_false_vendors_detections_from_threat(threats)
         outputs = {'Data': email, 'Threats': threats}
@@ -425,12 +428,13 @@ def check_md5_command(client: Client, args: Dict[str, Any], params) -> List[Comm
              CommandResults: results of the file command including outputs, raw response, readable output
     """
     files = argToList(args.get('file', None))
+    days_back = args.get('days_back') if args.get('days_back') else params.get('days_back')
     if not files:
-        raise ValueError('file not specified')
+        raise ValueError('File not specified')
     results_list = []
     for file in files:
         # Call the Client function and get the raw response
-        result = client.threat_search_call(file=file, days_back=params.get('days_back'))
+        result = client.threat_search_call(file=file, days_back=days_back)
         threats = result.get('data', {}).get('threats', [])
         remove_false_vendors_detections_from_threat(threats)
         outputs = {'Data': file, 'Threats': threats}
@@ -474,8 +478,9 @@ def extracted_string(client: Client, args: Dict[str, Any], params) -> CommandRes
     if not limit:
         limit = 10
 
+    days_back = args.get('days_back') if args.get('days_back') else params.get('days_back')
     # Call the Client function and get the raw response
-    result = client.threat_search_call(string=string, days_back=params.get('days_back'))
+    result = client.threat_search_call(string=string, days_back=days_back)
     threats = result.get('data', {}).get('threats', [])
     md_data = []
     count_threats = 0
