@@ -25,6 +25,7 @@ CONTENT_PACK = 'Intel471 Feed/2.0.1'
 INTEGRATION = 'Intel471 Actors Feed'
 USER_AGENT = f'XSOAR/{DEMISTO_VERSION["version"]}.{DEMISTO_VERSION["buildNumber"]} - {CONTENT_PACK} - {INTEGRATION}'
 
+
 def _create_url(**kwargs):
     """
     This function gets parameters and adding the relevant to a url string
