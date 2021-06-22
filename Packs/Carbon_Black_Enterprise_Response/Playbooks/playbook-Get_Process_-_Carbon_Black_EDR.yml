@@ -180,5 +180,5 @@ tests:
 - Carbon Black Response Test
 - Carbon Black Edr - Test
 - CBFindIP - Test
-fromversion: 5.5.0
+fromversion: 6.0.0
 description: Test Playbook for Carbon Black EDR
