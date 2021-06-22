@@ -600,23 +600,23 @@ script:
     execution: false
     name: cb-edr-process-segments-get
     outputs:
-    - contextPath: CarbonBlackEDR.ProcessSegments.segments.last_server_update
+    - contextPath: CarbonBlackEDR.ProcessSegments.last_server_update
       description: The last date/time when the server pushed events into this segment.
       type: Date
-    - contextPath: CarbonBlackEDR.ProcessSegments.segments.event_counts.filemod
+    - contextPath: CarbonBlackEDR.ProcessSegments.event_counts.filemod
       description: The number of events for filemod event type stored in this segment.
       type: Number
-    - contextPath: CarbonBlackEDR.ProcessSegments.segments.event_counts.netconn
+    - contextPath: CarbonBlackEDR.ProcessSegments.event_counts.netconn
       description: The number of events for netconn event type stored in this segment.
       type: Number
-    - contextPath: CarbonBlackEDR.ProcessSegments.segments.event_counts.crossproc
+    - contextPath: CarbonBlackEDR.ProcessSegments.event_counts.crossproc
       description: The number of events for crossproc event type stored in this segment.
       type: Number
-    - contextPath: CarbonBlackEDR.ProcessSegments.segments.unique_id
+    - contextPath: CarbonBlackEDR.ProcessSegments.unique_id
       description: The full process ID + segment number associated with this event
         segment.
       type: String
-    - contextPath: CarbonBlackEDR.ProcessSegments.segments.last_update
+    - contextPath: CarbonBlackEDR.ProcessSegments.last_update
       description: The last event (represented in sensor date/time) stored in this
         segment.
       type: Date

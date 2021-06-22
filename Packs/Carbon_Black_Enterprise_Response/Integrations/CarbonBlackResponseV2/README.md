@@ -694,12 +694,12 @@ Gets segment data for a given process.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CarbonBlackEDR.ProcessSegments.segments.last_server_update | Date | The last date/time when the server pushed events into this segment. | 
-| CarbonBlackEDR.ProcessSegments.segments.event_counts.filemod | Number | The number of events for filemod event type stored in this segment. | 
-| CarbonBlackEDR.ProcessSegments.segments.event_counts.netconn | Number | The number of events for netconn event type stored in this segment. | 
-| CarbonBlackEDR.ProcessSegments.segments.event_counts.crossproc | Number | The number of events for crossproc event type stored in this segment. | 
-| CarbonBlackEDR.ProcessSegments.segments.unique_id | String | The full process ID \+ segment number associated with this event segment. | 
-| CarbonBlackEDR.ProcessSegments.segments.last_update | Date | The last event \(represented in sensor date/time\) stored in this segment. | 
+| CarbonBlackEDR.ProcessSegments.last_server_update | Date | The last date/time when the server pushed events into this segment. | 
+| CarbonBlackEDR.ProcessSegments.event_counts.filemod | Number | The number of events for filemod event type stored in this segment. | 
+| CarbonBlackEDR.ProcessSegments.event_counts.netconn | Number | The number of events for netconn event type stored in this segment. | 
+| CarbonBlackEDR.ProcessSegments.event_counts.crossproc | Number | The number of events for crossproc event type stored in this segment. | 
+| CarbonBlackEDR.ProcessSegments.unique_id | String | The full process ID \+ segment number associated with this event segment. | 
+| CarbonBlackEDR.ProcessSegments.last_update | Date | The last event \(represented in sensor date/time\) stored in this segment. | 
 
 
 #### Command Example

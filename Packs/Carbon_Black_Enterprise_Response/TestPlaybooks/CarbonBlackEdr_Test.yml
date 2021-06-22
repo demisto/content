@@ -1,9 +1,9 @@
 id: Carbon Black Edr - Test
 version: -1
-vcShouldKeepItemLegacyProdMachine: false
+contentitemexportablefields:
+  contentitemfields: {}
 name: Carbon Black Edr - Test
 starttaskid: "0"
-fromversion: 6.0.0
 tasks:
   "0":
     id: "0"
@@ -15,6 +15,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -31,8 +32,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "1":
     id: "1"
     taskid: 1dd27bd2-45e8-40a5-88c1-1e442ee6f184
@@ -64,8 +63,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "2":
     id: "2"
     taskid: fcb50dda-d341-4565-8b9a-ea14d0487a91
@@ -99,14 +96,12 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: 6815179f-cf36-4eed-8d1f-39732c2bd238
+    taskid: 1c2adc99-e611-4936-8533-47e370006f01
     type: condition
     task:
-      id: 6815179f-cf36-4eed-8d1f-39732c2bd238
+      id: 1c2adc99-e611-4936-8533-47e370006f01
       version: -1
       name: Verify Outputs
       type: condition
@@ -122,27 +117,27 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: CarbonBlackEDR.Process.Results.process_md5
+              simple: CarbonBlackEDR.ProcessSearch.Results.process_md5
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: CarbonBlackEDR.Process.Results.sensor_id
+              simple: CarbonBlackEDR.ProcessSearch.Results.sensor_id
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: CarbonBlackEDR.Process.Results.process_name
+              simple: CarbonBlackEDR.ProcessSearch.Results.process_name
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: CarbonBlackEDR.Process.Results.segment_id
+              simple: CarbonBlackEDR.ProcessSearch.Results.segment_id
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: CarbonBlackEDR.Process.Results.path
+              simple: CarbonBlackEDR.ProcessSearch.Results.path
             iscontext: true
     view: |-
       {
@@ -156,14 +151,12 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: 3fc56dbf-7315-4f0b-875e-6ed189f1b7b3
+    taskid: d2f4e919-5b16-47bc-8266-1d494f4c18fe
     type: regular
     task:
-      id: 3fc56dbf-7315-4f0b-875e-6ed189f1b7b3
+      id: d2f4e919-5b16-47bc-8266-1d494f4c18fe
       version: -1
       name: cb-edr-process-get
       script: '|||cb-edr-process-get'
@@ -177,9 +170,9 @@ tasks:
       get_related:
         simple: "True"
       process_id:
-        simple: ${CarbonBlackEDR.Process.Results.id}
+        simple: ${CarbonBlackEDR.ProcessSearch.Results.id}
       segment_id:
-        simple: ${CarbonBlackEDR.Process.Results.segment_id}
+        simple: ${CarbonBlackEDR.ProcessSearch.Results.segment_id}
     separatecontext: false
     view: |-
       {
@@ -193,8 +186,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "5":
     id: "5"
     taskid: 7e89f366-362a-443d-84b9-7f99f73248aa
@@ -265,14 +256,12 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: e78a5c36-5efa-436b-8ae3-6a257eb665b1
+    taskid: f0d020ed-d4d4-4212-8bea-b13b964a4169
     type: regular
     task:
-      id: e78a5c36-5efa-436b-8ae3-6a257eb665b1
+      id: f0d020ed-d4d4-4212-8bea-b13b964a4169
       version: -1
       name: cb-edr-process-segments-get
       script: '|||cb-edr-process-segments-get'
@@ -283,6 +272,8 @@ tasks:
       '#none#':
       - "7"
     scriptarguments:
+      limit:
+        simple: "3"
       process_id:
         simple: ${CarbonBlackEDR.Process.process.id}
     separatecontext: false
@@ -298,14 +289,12 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    taskid: 860dcec6-de04-4209-8415-1a4cdf6d5ea2
+    taskid: 0dc0988b-ea9d-44b3-89e9-44330c3a378c
     type: condition
     task:
-      id: 860dcec6-de04-4209-8415-1a4cdf6d5ea2
+      id: 0dc0988b-ea9d-44b3-89e9-44330c3a378c
       version: -1
       name: Verify Outputs
       type: condition
@@ -321,32 +310,12 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: CarbonBlackEDR.ProcessSegments.segments.last_server_update
+              simple: CarbonBlackEDR.ProcessSegments.unique_id
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: CarbonBlackEDR.ProcessSegments.segments.event_counts.filemod
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: CarbonBlackEDR.ProcessSegments.segments.event_counts.netconn
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: CarbonBlackEDR.ProcessSegments.segments.event_counts.crossproc
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: CarbonBlackEDR.ProcessSegments.segments.unique_id
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: CarbonBlackEDR.ProcessSegments.segments.last_update
+              simple: CarbonBlackEDR.ProcessSegments.event_counts.filemod
             iscontext: true
     view: |-
       {
@@ -360,8 +329,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "9":
     id: "9"
     taskid: 5defa9fc-fa80-4691-8e0f-c344cb60281e
@@ -395,8 +362,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "10":
     id: "10"
     taskid: 6c0fec92-20d0-4385-8a5c-0f5f5150ef69
@@ -502,8 +467,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "11":
     id: "11"
     taskid: 89f479ea-0991-410b-809e-c2193f9cda4f
@@ -552,8 +515,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "12":
     id: "12"
     taskid: c986608d-5f33-4510-8ad9-24e3a905f558
@@ -602,8 +563,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "13":
     id: "13"
     taskid: 3adc86af-ee0a-46f5-84b8-ff39ad2e94a8
@@ -635,8 +594,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "14":
     id: "14"
     taskid: 6ff073d6-e495-4080-8daa-b0cc62377160
@@ -687,8 +644,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "15":
     id: "15"
     taskid: 2e3e8ed2-d86c-42c5-84a9-2ef0630a6314
@@ -728,8 +683,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "16":
     id: "16"
     taskid: c8f2b31a-bd82-4456-8e39-b3324b91ee26
@@ -765,8 +718,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "17":
     id: "17"
     taskid: ae9c04bb-16c1-4d7b-82c7-6e179ae15be6
@@ -802,8 +753,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "18":
     id: "18"
     taskid: 6a3849a8-c6e7-4b10-8921-e6a72d61b029
@@ -832,8 +781,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "19":
     id: "19"
     taskid: dd79b577-0d32-41c3-8ac6-4f26e885195d
@@ -884,8 +831,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "21":
     id: "21"
     taskid: 77fabb71-eec1-43b2-878b-e5a805a4dc66
@@ -918,8 +863,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "22":
     id: "22"
     taskid: cd4423b8-041e-49c3-8a35-7be1bdcadb5c
@@ -985,8 +928,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "23":
     id: "23"
     taskid: 212fd434-8bce-42c2-81f1-d0908d685ed7
@@ -1028,8 +969,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "24":
     id: "24"
     taskid: cf5d39ef-7d5a-4704-8bf5-2855cab6af5d
@@ -1061,8 +1000,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "25":
     id: "25"
     taskid: 76aa598b-b9c6-4e7a-862f-7ab07ee71e29
@@ -1293,8 +1230,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "26":
     id: "26"
     taskid: 3d3b628e-9991-4107-8bfb-89afd3021a68
@@ -1334,8 +1269,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "27":
     id: "27"
     taskid: ee0ed20a-8e33-4cf8-82b3-ef7ba48f4862
@@ -1486,8 +1419,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "29":
     id: "29"
     taskid: 48e84e78-6689-425a-80b8-a111abdfd62b
@@ -1522,14 +1453,12 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "30":
     id: "30"
-    taskid: 8c75c2b0-82d0-4b05-823d-22caf5353dc9
+    taskid: e5943572-a2db-42f3-85a0-f20ddf15a48c
     type: condition
     task:
-      id: 8c75c2b0-82d0-4b05-823d-22caf5353dc9
+      id: e5943572-a2db-42f3-85a0-f20ddf15a48c
       version: -1
       name: Verify Outputs
       type: condition
@@ -1542,11 +1471,6 @@ tasks:
     conditions:
     - label: "yes"
       condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: CarbonBlackEDR.BinarySearch.terms
-            iscontext: true
       - - operator: isNotEmpty
           left:
             value:
@@ -1614,8 +1538,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "31":
     id: "31"
     taskid: 4fcdfe74-c69b-4c33-8a32-a8e4092da4c1
@@ -1655,8 +1577,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "32":
     id: "32"
     taskid: b7cfa2ce-331a-4a13-8dcf-36679d175078
@@ -1702,8 +1622,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "33":
     id: "33"
     taskid: 492385d3-233c-457f-8afa-6f63bd79f0bf
@@ -1715,6 +1633,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {
@@ -1728,8 +1647,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "34":
     id: "34"
     taskid: da5f0cec-1910-4cdc-8bbf-948f43d04a76
@@ -1771,8 +1688,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
+system: true
 view: |-
   {
     "linkLabelsPosition": {},
@@ -1787,3 +1703,5 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 6.0.0
+description: Tests Carbon Black EDR selected use cases and commands
