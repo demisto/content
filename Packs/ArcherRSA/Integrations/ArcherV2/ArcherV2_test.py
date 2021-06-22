@@ -5,7 +5,7 @@ import pytest
 from CommonServerPython import DemistoException
 import demistomock as demisto
 from ArcherV2 import Client, extract_from_xml, generate_field_contents, get_errors_from_res, generate_field_value, \
-    fetch_incidents, get_fetch_time, parser, OCCURRED_FORMAT
+    fetch_incidents, get_fetch_time, parser, OCCURRED_FORMAT, search_records_by_report_command
 
 BASE_URL = 'https://test.com/'
 
@@ -50,8 +50,8 @@ GET_LEVELS_BY_APP = {
     'level': 123, 'mapping': {'1': {
         'Type': 7, 'Name': 'External Links', 'FieldId': "1", 'IsRequired': False, 'RelatedValuesListId': None},
         '2': {
-        'Type': 1, 'Name': 'Device Name', 'FieldId': "2",
-        'IsRequired': True, 'RelatedValuesListId': 8}
+            'Type': 1, 'Name': 'Device Name', 'FieldId': "2",
+            'IsRequired': True, 'RelatedValuesListId': 8}
     }}
 
 GET_FIElD_DEFINITION_RES = {
@@ -211,6 +211,65 @@ GET_RESPONSE_NOT_SUCCESSFUL_JSON = {"IsSuccessful": False, "RequestedObject": No
                                                             "ResourcedMessage": None}]}
 
 GET_RESPONSE_SUCCESSFUL_JSON = {"IsSuccessful": True, "RequestedObject": {'SessionToken': 'session-id'}}
+
+SEARCH_RECORDS_BY_REPORT_RES = \
+    '<Records count="18">' + \
+    '<Metadata>' + \
+    '    <FieldDefinitions>' + \
+    '       <FieldDefinition id="1580" name="Policy Name" alias="Policy_Name"/>' + \
+    '        <FieldDefinition id="1583" name="Policy Statement"' + \
+    '                         alias="Policy_Statement"/>' + \
+    '    </FieldDefinitions>' + \
+    '</Metadata>' + \
+    '<LevelCounts>' + \
+    '    <LevelCount id="3" count="18"/>' + \
+    '</LevelCounts>' + \
+    '<Record contentId="1720" levelId="3" moduleId="65" parentId="0">' + \
+    '    <Field id="1580" type="1">00.0 Introduction</Field>' + \
+    '    <Field id="1583" type="1">Information' + \
+    '    </Field>' + \
+    '</Record>' + \
+    '</Records>'
+
+MOCK_READABLE_SEARCH_RECORDS_BY_REPORT = "### Search records by report results\n|Id|Policy Name|Policy " \
+                                         "Statement|\n|---|---|---|\n| 1720 | 00.0 Introduction | Information |\n"
+
+MOCK_RESULTS_SEARCH_RECORDS_BY_REPORT = {
+    'Records': {'@count': '18', 'Metadata': {'FieldDefinitions': {
+        'FieldDefinition': [{'@id': '1580', '@name': 'Policy Name', '@alias': 'Policy_Name'},
+                            {'@id': '1583', '@name': 'Policy Statement', '@alias': 'Policy_Statement'}]}},
+                'LevelCounts': {'LevelCount': {'@id': '3', '@count': '18'}},
+                'Record': {'@contentId': '1720', '@levelId': '3',
+                           '@moduleId': '65',
+                           '@parentId': '0',
+                           'Field': [{'@id': '1580', '@type': '1',
+                                      '#text': '00.0 Introduction'},
+                                     {'@id': '1583', '@type': '1',
+                                      '#text': "Information"}]}}
+}
+
+GET_LEVEL_RES_2 = [
+    {
+        "RequestedObject": {
+            "Type": 1,
+            "Id": 1580,
+            "LevelId": 3,
+            "Name": "Policy Name",
+            "Alias": "Policy_Name"
+        },
+        "IsSuccessful": True
+    },
+    {
+        "RequestedObject": {
+            "Type": 1,
+            "Id": 1583,
+            "LevelId": 3,
+            "Name": "Policy Statement",
+            "Alias": "Policy_Statement"
+        },
+        "IsSuccessful": True
+    }
+]
 
 
 class TestArcherV2:
@@ -641,3 +700,24 @@ class TestArcherV2:
         incidents, second_next_fetch = fetch_incidents(client, params, first_next_fetch_dt, field_time_id)
         assert first_next_fetch == datetime(2021, 2, 25, 8, 45, 55, 977000, tzinfo=timezone.utc)
         assert not incidents
+
+    def test_search_records_by_report_command(self, mocker):
+        """
+            Given:
+                - search_records_by_report_command command args
+            When:
+                - run search_records_by_report_command
+            Then:
+                - Verify response outputs
+                - verify response readable output
+        """
+
+        mock_args = {'reportGuid': 'id'}
+        client = Client(BASE_URL, '', '', '', '')
+        mocker.patch.object(client, 'do_soap_request',
+                            return_value=[SEARCH_RECORDS_BY_REPORT_RES, SEARCH_RECORDS_BY_REPORT_RES])
+        mocker.patch.object(client, 'do_request', return_value=GET_LEVEL_RES_2)
+        mocker.patch.object(demisto, 'results')
+        search_records_by_report_command(client, mock_args)
+        assert demisto.results.call_args_list[0][0][0]['HumanReadable'] == MOCK_READABLE_SEARCH_RECORDS_BY_REPORT
+        assert demisto.results.call_args_list[0][0][0]['Contents'] == MOCK_RESULTS_SEARCH_RECORDS_BY_REPORT
