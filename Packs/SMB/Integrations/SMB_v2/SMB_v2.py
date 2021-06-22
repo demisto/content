@@ -1,5 +1,5 @@
 import uuid
-
+import traceback
 from CommonServerPython import *
 import demistomock as demisto
 
@@ -47,7 +47,9 @@ class SMBClient:
             username=user or self._user,
             password=password or self._password,
             port=port or self._port,
-            encrypt=encrypt or self._encrypt)
+            encrypt=encrypt or self._encrypt,
+            auth_protocol='ntlm',
+        )
 
 
 def test_module(client: SMBClient):
@@ -186,11 +188,15 @@ def main():
         try:
             client_guid = uuid.UUID(client_guid)
         except ValueError:
-            demisto.info(f'Failed to convert {client_guid} to a valid UUID string. Using a random generated UUID instead')
+            demisto.info(
+                f'Failed to convert {client_guid} to a valid UUID string. Using a random generated UUID instead')
             client_guid = None
 
-    smbclient.ClientConfig(username=user, password=password, require_secure_negotiate=verify, domain_controller=dc,
-                           client_guid=client_guid)
+    # Temporary workaround to an issue in the smbprotocol package.
+    # Git issue: https://github.com/jborean93/smbprotocol/issues/109
+    config = smbclient.ClientConfig(username=user, password=password, require_secure_negotiate=verify,
+                                    client_guid=client_guid)
+    config.domain_controller = dc
 
     client = SMBClient(hostname=hostname,
                        user=user,
@@ -216,6 +222,7 @@ def main():
         elif demisto.command() == 'smb-directory-remove':
             return_results(smb_rmdir(client, demisto.args()))
     except Exception as e:
+        demisto.error(traceback.format_exc())
         return_error(f'Failed to execute {demisto.command()} command. Error: {str(e)}')
     finally:
         smbclient.reset_connection_cache()

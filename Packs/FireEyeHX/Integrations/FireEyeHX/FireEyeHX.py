@@ -1068,7 +1068,7 @@ def containment_request(agent_id):
         api_version = int(VERSION[-1])
     except Exception as exc:
         raise ValueError('Invalid version was set: {} - {}'.format(VERSION, str(exc)))
-    if api_version > 3:
+    if api_version >= 3:
         http_request(
             'POST',
             url,

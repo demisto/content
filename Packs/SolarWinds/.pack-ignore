@@ -79,3 +79,9 @@ ignore=IF100
 
 [file:incidentfield-SolarWinds-Event-Type.json]
 ignore=IF100
+
+[file:classifier-mapper-incoming-SolarWinds_Alert.json]
+ignore=BA101
+
+[file:classifier-mapper-incoming-SolarWinds_Event.json]
+ignore=BA101
