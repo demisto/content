@@ -1195,8 +1195,8 @@ jobs:
       - run:
           name: Install SDK
           command: |
-          echo "Installing SDK from $SDK_REF"
-          pip3 install git+https://github.com/demisto/demisto-sdk.git@"$SDK_REF"
+            echo "Installing SDK from $SDK_REF"
+            pip3 install git+https://github.com/demisto/demisto-sdk.git@"$SDK_REF"
       - *wait_until_server_ready
       - run:
           name: Unlock HelloWorld integration and playbook
