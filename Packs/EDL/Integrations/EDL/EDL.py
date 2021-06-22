@@ -186,7 +186,7 @@ def find_indicators_to_limit(
 def find_indicators_to_limit_loop(indicator_query: str, limit: int, total_fetched: int = 0,
                                   next_page: int = 0, last_found_len: int = None,
                                   use_legacy_query: bool = False,
-):
+                                  ):
     """
     Finds indicators using while loop with demisto.searchIndicators, and returns result and last page
 
