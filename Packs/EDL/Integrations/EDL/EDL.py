@@ -91,19 +91,24 @@ def list_to_str(inp_list: list, delimiter: str = ',', map_func: Callable = str) 
     return str_res
 
 
-def refresh_edl_context(request_args: RequestArguments, save_integration_context: bool = False) -> str:
+def refresh_edl_context(
+        request_args: RequestArguments,
+        save_integration_context: bool = False,
+        use_legacy_query: bool = False,
+) -> str:
     """
     Refresh the cache values and format using an indicator_query to call demisto.searchIndicators
 
     Parameters:
         request_args: Request arguments
         save_integration_context: Flag to save the result to integration context instead of LOCAL_CACHE
+        use_legacy_query (bool): Whether to use filter fields in the indicators search
 
     Returns: List(IoCs in output format)
     """
     now = datetime.now()
     # poll indicators into edl from demisto
-    iocs = find_indicators_to_limit(request_args.query, request_args.limit, request_args.offset)
+    iocs = find_indicators_to_limit(request_args.query, request_args.limit, request_args.offset, use_legacy_query)
     out_dict, actual_indicator_amount = create_values_for_returned_dict(iocs, request_args)
 
     while actual_indicator_amount < request_args.limit:
@@ -112,7 +117,7 @@ def refresh_edl_context(request_args: RequestArguments, save_integration_context
         new_limit = request_args.limit - actual_indicator_amount
 
         # poll additional indicators into list from demisto
-        new_iocs = find_indicators_to_limit(request_args.query, new_limit, new_offset)
+        new_iocs = find_indicators_to_limit(request_args.query, new_limit, new_offset, use_legacy_query)
 
         # in case no additional indicators exist - exit
         if len(new_iocs) == 0:
@@ -134,7 +139,12 @@ def refresh_edl_context(request_args: RequestArguments, save_integration_context
     return out_dict[EDL_VALUES_KEY]
 
 
-def find_indicators_to_limit(indicator_query: str, limit: int, offset: int = 0) -> list:
+def find_indicators_to_limit(
+        indicator_query: str,
+        limit: int,
+        offset: int = 0,
+        use_legacy_query: bool = False,
+) -> list:
     """
     Finds indicators using demisto.searchIndicators
 
@@ -143,6 +153,7 @@ def find_indicators_to_limit(indicator_query: str, limit: int, offset: int = 0) 
             the EDL (Cortex XSOAR indicator query syntax)
         limit (int): The maximum number of indicators to include in the EDL
         offset (int): The starting index from which to fetch incidents
+        use_legacy_query (bool): Whether to use filter fields in the indicators search
 
     Returns:
         list: The IoCs list up until the amount set by 'limit'
@@ -158,7 +169,12 @@ def find_indicators_to_limit(indicator_query: str, limit: int, offset: int = 0) 
         offset_in_page = 0
 
     # the second returned variable is the next page - it is implemented for a future use of repolling
-    iocs, _ = find_indicators_to_limit_loop(indicator_query, limit, next_page=next_page)
+    iocs, _ = find_indicators_to_limit_loop(
+        indicator_query,
+        limit,
+        next_page=next_page,
+        use_legacy_query=use_legacy_query,
+    )
 
     # if offset in page is bigger than the amount of results returned return empty list
     if len(iocs) <= offset_in_page:
@@ -168,7 +184,9 @@ def find_indicators_to_limit(indicator_query: str, limit: int, offset: int = 0) 
 
 
 def find_indicators_to_limit_loop(indicator_query: str, limit: int, total_fetched: int = 0,
-                                  next_page: int = 0, last_found_len: int = None):
+                                  next_page: int = 0, last_found_len: int = None,
+                                  use_legacy_query: bool = False,
+):
     """
     Finds indicators using while loop with demisto.searchIndicators, and returns result and last page
 
@@ -179,13 +197,19 @@ def find_indicators_to_limit_loop(indicator_query: str, limit: int, total_fetche
         total_fetched (int): The amount of indicators already fetched
         next_page (int): The page we are up to in the loop
         last_found_len (int): The amount of indicators found in the last fetch
+        use_legacy_query (bool): Whether to use filter fields in the indicators search
 
     Returns:
         (tuple): The iocs and the last page
     """
     iocs: List[dict] = []
-    filter_fields = "name,type"  # based on func ToIoC https://github.com/demisto/server/blob/master/domain/insight.go
-    search_indicators = IndicatorsSearcher(page=next_page, filter_fields=filter_fields)
+    indicators_searcher_args = {
+        'page': next_page,
+    }
+    if not use_legacy_query:
+        # based on func ToIoC https://github.com/demisto/server/blob/master/domain/insight.go
+        indicators_searcher_args['filter_fields'] = 'name,type'
+    search_indicators = IndicatorsSearcher(**indicators_searcher_args)
     if last_found_len is None:
         last_found_len = PAGE_SIZE
     if not last_found_len:
@@ -339,7 +363,9 @@ def create_values_for_returned_dict(iocs: list, request_args: RequestArguments) 
 def get_edl_ioc_values(on_demand: bool,
                        request_args: RequestArguments,
                        edl_cache: dict = None,
-                       cache_refresh_rate: str = None) -> str:
+                       cache_refresh_rate: str = None,
+                       use_legacy_query: bool = False,
+                       ) -> str:
     """
     Get the ioc list to return in the edl
 
@@ -348,6 +374,7 @@ def get_edl_ioc_values(on_demand: bool,
         request_args: the request arguments
         edl_cache: The integration context OR EDL_LOCAL_CACHE
         cache_refresh_rate: The cache_refresh_rate configuration value
+        use_legacy_query (bool): Whether to use filter fields in the indicators search
 
     Returns:
         string representation of the iocs
@@ -375,11 +402,11 @@ def get_edl_ioc_values(on_demand: bool,
             cache_time, _ = parse_date_range(cache_refresh_rate, to_timestamp=True)
             if last_run <= cache_time or request_args.is_request_change(edl_cache) or \
                     request_args.query != last_query:
-                values_str = refresh_edl_context(request_args)
+                values_str = refresh_edl_context(request_args, use_legacy_query=use_legacy_query)
             else:
                 values_str = get_ioc_values_str_from_cache(edl_cache, request_args=request_args)
         else:
-            values_str = refresh_edl_context(request_args)
+            values_str = refresh_edl_context(request_args, use_legacy_query=use_legacy_query)
     return values_str
 
 
@@ -469,11 +496,13 @@ def route_edl_values() -> Response:
 
     request_args = get_request_args(request.args, params)
     on_demand = params.get('on_demand')
+    use_legacy_query = params.get('use_legacy_query', False) or False
     created = datetime.now(timezone.utc)
     values = get_edl_ioc_values(
         on_demand=on_demand,
         request_args=request_args,
         cache_refresh_rate=cache_refresh_rate,
+        use_legacy_query=use_legacy_query,
     )
     query_time = (datetime.now(timezone.utc) - created).total_seconds()
     edl_size = 0
@@ -572,6 +601,7 @@ def update_edl_command(args: Dict, params: Dict):
     if not on_demand:
         raise DemistoException(
             '"Update EDL On Demand" is off. If you want to update the EDL manually please toggle it on.')
+    use_legacy_query = params.get('use_legacy_query', False) or False
     limit = try_parse_integer(args.get('edl_size', params.get('edl_size')), EDL_LIMIT_ERR_MSG)
     print_indicators = args.get('print_indicators')
     query = args.get('query', '')
@@ -580,7 +610,7 @@ def update_edl_command(args: Dict, params: Dict):
     drop_invalids = args.get('drop_invalids', '').lower() == 'true'
     offset = try_parse_integer(args.get('offset', 0), EDL_OFFSET_ERR_MSG)
     request_args = RequestArguments(query, limit, offset, url_port_stripping, drop_invalids, collapse_ips)
-    indicators = refresh_edl_context(request_args, save_integration_context=True)
+    indicators = refresh_edl_context(request_args, save_integration_context=True, use_legacy_query=use_legacy_query)
     hr = tableToMarkdown('EDL was updated successfully with the following values', indicators,
                          ['Indicators']) if print_indicators == 'true' else 'EDL was updated successfully'
     return hr, {}, indicators
