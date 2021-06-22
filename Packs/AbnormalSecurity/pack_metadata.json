@@ -1,13 +1,13 @@
 {
     "name": "Abnormal Security",
-    "description": "Abnormal Security stuff",
+    "description": "Abnormal Security detects and protects against the whole spectrum of email attacks",
     "support": "partner",
     "currentVersion": "1.0.0",
     "author": "Integrations Platform Team",
     "url": "",
     "email": "support@abnormalsecurity.com",
-    "categories": [],
-    "tags": [],
+    "categories": ["Data Enrichment & Threat Intelligence"],
+    "tags": ["Email"],
     "useCases": [],
     "keywords": [],
     "githubUser": [
