@@ -174,20 +174,19 @@ def ip_threats_analysis(threats: List, ip: str, threshold: str, dbot_score_obj):
     for threat in threats:
         severity_level = 0
         for block in threat.get('blockSet'):
-            if block.get('data') == ip and block.get('ipDetail'):
-                ip_indicator.asn = block.get('ipDetail').get('asn')
-                ip_indicator.geo_latitude = block.get("ipDetail").get("latitude")
-                ip_indicator.geo_longitude = block.get("ipDetail").get("longitude")
-                ip_indicator.geo_country = block.get("ipDetail").get("countryIsoCode")
-
             if block.get('impact'):
                 threat_score = SEVERITY_SCORE.get(block.get('impact'), 0)
                 adjusted_score = 3 if threshold_score <= threat_score else threat_score
                 if block.get('ipDetail') and block.get('ipDetail').get('ip') == ip:
+                    ip_indicator.asn = block.get('ipDetail').get('asn')
+                    ip_indicator.geo_latitude = block.get("ipDetail").get("latitude")
+                    ip_indicator.geo_longitude = block.get("ipDetail").get("longitude")
+                    ip_indicator.geo_country = block.get("ipDetail").get("countryIsoCode")
                     ip_indicator.malware_family = block.get('malwareFamily', {}).get('familyName')
                     severity_level = adjusted_score
                     dbot_score = severity_level
                     indicator_found = True
+                    # if the searched ip is found - will take its severity
                     break
             severity_level = max(severity_level, adjusted_score)
         threat_md_row = create_threat_md_row(threat, severity_level)
