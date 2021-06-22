@@ -1,8 +1,9 @@
-id: Expanse Check ServiceNow CMDB
+id: ServiceNow CMDB Search
 version: -1
-name: Expanse Check ServiceNow CMDB
+vcShouldKeepItemLegacyProdMachine: false
+name: ServiceNow CMDB Search
 description: |
-  Subplaybook for Finding Expanse IPs in ServiceNow CMDB.
+  Subplaybook for finding CI records in ServiceNow CMDB.
 starttaskid: "0"
 tasks:
   "0":
@@ -13,156 +14,17 @@ tasks:
       id: bb15edd2-89c7-4b4c-856f-5841c36c40d7
       version: -1
       name: ""
-      description: ''
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
-      - "1"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 50
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "1":
-    id: "1"
-    taskid: 93fe3230-caa9-4faf-875f-5f97e731a3e1
-    type: condition
-    task:
-      id: 93fe3230-caa9-4faf-875f-5f97e731a3e1
-      version: -1
-      description: ''
-      name: Is ServiceNow CMDB Enabled?
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "7"
-      "yes":
-      - "2"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isExists
-          left:
-            value:
-              complex:
-                root: modules
-                filters:
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: modules.brand
-                      iscontext: true
-                    right:
-                      value:
-                        simple: ServiceNow CMDB
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: modules.state
-                      iscontext: true
-                    right:
-                      value:
-                        simple: active
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 230
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "2":
-    id: "2"
-    taskid: e0b3c1b6-80fe-4f33-8f95-aa9bfdbeb968
-    type: condition
-    task:
-      id: e0b3c1b6-80fe-4f33-8f95-aa9bfdbeb968
-      version: -1
-      name: Is Asset On-Prem?
-      description: Check if a given value exists in the context. Will return 'no'
-        for empty empty arrays. To be used mostly with DQ and selectors.
-      scriptName: Exists
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "no":
-      - "7"
-      "yes":
-      - "3"
-    scriptarguments:
-      value:
-        complex:
-          root: incident
-          filters:
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: incident.expanseprovider
-                iscontext: true
-              right:
-                value:
-                  simple: On Prem
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 450
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "3":
-    id: "3"
-    taskid: 5c3cc067-c2c5-4f5e-8431-dda66fdbb0e4
-    type: condition
-    task:
-      id: 5c3cc067-c2c5-4f5e-8431-dda66fdbb0e4
-      version: -1
-      name: IP Address Exists
-      description: Check if a given value exists in the context. Will return 'no'
-        for empty empty arrays. To be used mostly with DQ and selectors.
-      scriptName: Exists
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "no":
-      - "7"
-      "yes":
       - "4"
-    scriptarguments:
-      value:
-        complex:
-          root: incident.labels
-          accessor: ip
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 450,
-          "y": 680
+          "y": 730
         }
       }
     note: false
@@ -172,14 +34,14 @@ tasks:
     quietmode: 0
   "4":
     id: "4"
-    taskid: fd14c144-d53b-4c4f-865a-e6b609f04aec
+    taskid: fb0a9388-cd69-4455-8592-59f584f2c612
     type: regular
     task:
-      id: fd14c144-d53b-4c4f-865a-e6b609f04aec
+      id: fb0a9388-cd69-4455-8592-59f584f2c612
       version: -1
-      name: Get Network Adaptor CMDB record
+      name: Search for CMDB record
       description: Query records for a CMDB class.
-      script: "|||servicenow-cmdb-records-list"
+      script: ServiceNow CMDB|||servicenow-cmdb-records-list
       type: regular
       iscommand: true
       brand: ServiceNow CMDB
@@ -188,11 +50,11 @@ tasks:
       - "8"
     scriptarguments:
       class:
-        simple: cmdb_ci_network_adapter
+        simple: ${inputs.SearchCIClass}
       limit: {}
       offset: {}
       query:
-        simple: ip_address =${incident.labels.ip}
+        simple: ${inputs.SearchQueryField}${inputs.SearchQueryOperator}${inputs.SearchQueryValue}
     separatecontext: false
     view: |-
       {
@@ -208,14 +70,14 @@ tasks:
     quietmode: 0
   "5":
     id: "5"
-    taskid: 8105cca9-5366-4023-8c5e-3bb8ce963472
+    taskid: 8defe12e-fe93-4785-8eb4-1b73e2ae8e8d
     type: regular
     task:
-      id: 8105cca9-5366-4023-8c5e-3bb8ce963472
+      id: 8defe12e-fe93-4785-8eb4-1b73e2ae8e8d
       version: -1
-      name: servicenow-cmdb-record-get-by-id
+      name: Get record by ID
       description: Query attributes and relationship information for a specific record.
-      script: "|||servicenow-cmdb-record-get-by-id"
+      script: ServiceNow CMDB|||servicenow-cmdb-record-get-by-id
       type: regular
       iscommand: true
       brand: ServiceNow CMDB
@@ -224,7 +86,7 @@ tasks:
       - "6"
     scriptarguments:
       class:
-        simple: cmdb_ci_network_adapter
+        simple: ${inputs.SearchCIClass}
       fields: {}
       relation_limit: {}
       relation_offset: {}
@@ -247,14 +109,14 @@ tasks:
     quietmode: 0
   "6":
     id: "6"
-    taskid: 9eceafd6-03c1-48e1-87c6-06c836a32fa2
+    taskid: dac4dbfd-2c9a-4706-8b26-6e2f8af87e83
     type: regular
     task:
-      id: 9eceafd6-03c1-48e1-87c6-06c836a32fa2
+      id: dac4dbfd-2c9a-4706-8b26-6e2f8af87e83
       version: -1
-      name: Get CMDB class type and record using the network adaptor
+      name: Fetch related CMDB CI by ID
       description: Query attributes and relationship information for a specific record.
-      script: "|||servicenow-cmdb-record-get-by-id"
+      script: ServiceNow CMDB|||servicenow-cmdb-record-get-by-id
       type: regular
       iscommand: true
       brand: ServiceNow CMDB
@@ -293,7 +155,6 @@ tasks:
       version: -1
       name: Playbook End
       type: title
-      description: ''
       iscommand: false
       brand: ""
     separatecontext: false
@@ -311,12 +172,12 @@ tasks:
     quietmode: 0
   "8":
     id: "8"
-    taskid: 574270ca-cb34-49c2-8c0d-b373a9ab01ce
+    taskid: 5f998f2e-3e91-43fd-8ec7-d55424794f81
     type: condition
     task:
-      id: 574270ca-cb34-49c2-8c0d-b373a9ab01ce
+      id: 5f998f2e-3e91-43fd-8ec7-d55424794f81
       version: -1
-      name: Network Adaptor exist?
+      name: Do records exist?
       description: Check if a given value exists in the context. Will return 'no'
         for empty empty arrays. To be used mostly with DQ and selectors.
       scriptName: Exists
@@ -353,7 +214,6 @@ tasks:
       version: -1
       name: Add asset in CMDB?
       type: condition
-      description: ''
       iscommand: false
       brand: ""
     nexttasks:
@@ -421,10 +281,10 @@ tasks:
     quietmode: 0
   "13":
     id: "13"
-    taskid: 4cab2d04-6806-4a30-8a01-7243c120bb51
+    taskid: 5c305611-1fa0-49b7-8908-b84eebeffe11
     type: regular
     task:
-      id: 4cab2d04-6806-4a30-8a01-7243c120bb51
+      id: 5c305611-1fa0-49b7-8908-b84eebeffe11
       version: -1
       name: Save CMDB information in Evidence
       description: Convert an array to a nice table display. Usually, from the context.
@@ -465,18 +325,38 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1935,
+        "height": 1255,
         "width": 1300,
         "x": 440,
-        "y": 50
+        "y": 730
       }
     }
   }
-inputs: []
+inputs:
+- key: SearchCIClass
+  value:
+    simple: cmdb_ci_network_adapter
+  required: false
+  description: The CMDB CI class to perform the search on (Defaults to cmdb_ci_network_adapter).
+  playbookInputQuery: null
+- key: SearchQueryField
+  value:
+    simple: ip_address
+  required: false
+  description: The CI field used to perform the query (Defaults to ip_address).
+  playbookInputQuery: null
+- key: SearchQueryOperator
+  value:
+    simple: =
+  required: false
+  description: The operator used to perform the query (Defaults to =).
+  playbookInputQuery: null
+- key: SearchQueryValue
+  value: {}
+  required: true
+  description: The value used to perform the query.
+  playbookInputQuery: null
 outputs:
 - contextPath: ServiceNowCMDB.Record
   description: Discovered CI records
   type: unknown
-tests:
-- No tests
-fromversion: 6.0.0
