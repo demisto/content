@@ -23,9 +23,7 @@ MAPPING = {
 DEMISTO_VERSION = demisto.demistoVersion()
 CONTENT_PACK = 'Intel471 Feed/2.0.1'
 INTEGRATION = 'Intel471 Actors Feed'
-USER_AGENT = 'XSOAR/' + DEMISTO_VERSION['version'] + '.' + DEMISTO_VERSION['buildNumber'] \
-    + ' - ' + CONTENT_PACK + ' - ' + INTEGRATION
-
+USER_AGENT = f'XSOAR/{DEMISTO_VERSION["version"]}.{DEMISTO_VERSION["buildNumber"]} - {CONTENT_PACK} - {INTEGRATION}'
 
 def _create_url(**kwargs):
     """
@@ -58,7 +56,6 @@ def custom_build_iterator(client: Client, feed: Dict, limit: int = 0, **kwargs) 
     result: List[Dict] = []
     should_continue = True
     total_count = 0
-    request_headers = {'user-agent': USER_AGENT}
 
     while should_continue:
         r = requests.get(
@@ -66,7 +63,7 @@ def custom_build_iterator(client: Client, feed: Dict, limit: int = 0, **kwargs) 
             verify=client.verify,
             auth=client.auth,
             cert=client.cert,
-            headers=request_headers,
+            headers=client.headers,
             params=params,
             **kwargs
         )
@@ -167,6 +164,7 @@ def custom_handle_indicator(client: Client, item: Dict, feed_config: Dict, servi
 
 def main():
     params = {k: v for k, v in demisto.params().items() if v is not None}
+    params['headers'] = {'user-agent': USER_AGENT}
     url = _create_url(**params)
     params['url'] = url
     params['indicator_type'] = 'STIX Threat Actor'
