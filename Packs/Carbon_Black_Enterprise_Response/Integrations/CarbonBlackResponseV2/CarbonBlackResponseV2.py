@@ -718,10 +718,10 @@ def fetch_incidents(client: Client, max_results: int, last_run: dict, first_fetc
     if status:
         for current_status in argToList(status):
             res = client.get_alerts(status=current_status, feedname=feedname)
-            alerts += res.get('results', {})
+            alerts += res.get('results', [])
     else:
         res = client.get_alerts(feedname=feedname, query=query)
-        alerts += res.get('results', {})
+        alerts += res.get('results', [])
 
     for alert in alerts[:max_results]:
         incident_created_time = dateparser.parse(alert.get('created_time'))
