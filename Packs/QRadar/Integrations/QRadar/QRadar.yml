@@ -53,7 +53,7 @@ configuration:
   name: enrich_size
   required: false
   type: 0
-description: Deprecated. Use IBM QRadar v2 or IBM QRadar v2 instead. Fetch offenses as incidents and search QRadar
+description: Deprecated. Use IBM QRadar v2 or IBM QRadar v3 instead.
 display: IBM QRadar (Deprecated)
 name: QRadar
 script:
