@@ -64,7 +64,7 @@ def reset_last_run():
 
 def get_indicators(client: OpenCTIApiClient, indicator_types: List[str], score: List[str] = None,
                    limit: Optional[int] = 500, last_run_id: Optional[str] = None,
-                   tlp_color: Optional[str] = None, tags: list[str] = None) -> Tuple[str, list]:
+                   tlp_color: Optional[str] = None, tags: List[str] = None) -> Tuple[str, list]:
     """ Retrieving indicators from the API
 
     Args:

@@ -49,7 +49,7 @@ def reset_last_run():
 
 
 def get_indicators(client, indicator_type: List[str], limit: int, last_run_id: Optional[str] = None,
-                   tlp_color: Optional[str] = None, tags: list[str] = None) -> Tuple[str, list]:
+                   tlp_color: Optional[str] = None, tags: List[str] = None) -> Tuple[str, list]:
     """ Retrieving indicators from the API
 
     Args:
