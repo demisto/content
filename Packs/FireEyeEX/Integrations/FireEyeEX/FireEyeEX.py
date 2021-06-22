@@ -276,18 +276,21 @@ def get_reports(client: Client, args: Dict[str, Any]):
 @logger
 def list_allowedlist(client: Client, args: Dict[str, Any]) -> CommandResults:
     type_ = args.get('type', '')
+    limit = int(args.get('limit', '20'))
 
     raw_response = client.fe_client.list_allowedlist_request(type_)
     if not raw_response:
         md_ = f'No allowed lists with the given type {type_} were found.'
     else:
-        md_ = tableToMarkdown(name=f'{INTEGRATION_NAME} Allowed lists:', t=raw_response, removeNull=True)
+        allowed_list = raw_response[:limit]
+        md_ = tableToMarkdown(name=f'{INTEGRATION_NAME} Allowed lists. showing {limit} of {len(raw_response)}:',
+                              t=allowed_list, removeNull=True)
 
     return CommandResults(
         readable_output=md_,
         outputs_prefix=f'{INTEGRATION_CONTEXT_NAME}.Allowedlists',
         outputs_key_field='name',
-        outputs=raw_response,
+        outputs=allowed_list,
         raw_response=raw_response
     )
 
@@ -363,18 +366,21 @@ def delete_allowedlist(client: Client, args: Dict[str, Any]) -> CommandResults:
 @logger
 def list_blockedlist(client: Client, args: Dict[str, Any]) -> CommandResults:
     type_ = args.get('type', '')
+    limit = int(args.get('limit', '20'))
 
     raw_response = client.fe_client.list_blockedlist_request(type_)
     if not raw_response:
         md_ = f'No blocked lists with the given type {type_} were found.'
     else:
-        md_ = tableToMarkdown(name=f'{INTEGRATION_NAME} Blocked lists:', t=raw_response, removeNull=True)
+        blocked_list = raw_response[:limit]
+        md_ = tableToMarkdown(name=f'{INTEGRATION_NAME} Blocked lists. showing {limit} of {len(raw_response)}:',
+                              t=blocked_list, removeNull=True)
 
     return CommandResults(
         readable_output=md_,
         outputs_prefix=f'{INTEGRATION_CONTEXT_NAME}.Blockedlists',
         outputs_key_field='name',
-        outputs=raw_response,
+        outputs=blocked_list,
         raw_response=raw_response
     )
 

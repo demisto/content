@@ -625,6 +625,13 @@ script:
       name: type
       required: true
       secret: false
+    - default: false
+      defaultValue: '20'
+      description: Number of entries to return.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
     deprecated: false
     description: Lists the allowed sender domain by type.
     execution: false
@@ -773,6 +780,13 @@ script:
       isArray: false
       name: type
       required: true
+      secret: false
+    - default: false
+      defaultValue: '20'
+      description: Number of entries to return.
+      isArray: false
+      name: limit
+      required: false
       secret: false
     deprecated: false
     description: Lists the blocked sender domain by type.

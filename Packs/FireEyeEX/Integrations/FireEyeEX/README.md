@@ -693,6 +693,7 @@ Lists the allowed sender domain by type.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | type | The type of objects to retrieve. Possible values are: sender_email_address, sender_domain, sender_ip_address, recipient_email_address, url, md5sum. | Required | 
+| limit | Number of entries to return. Default is 20. | Optional |
 
 
 #### Context Output
@@ -822,6 +823,7 @@ Lists the blocked sender domain by type.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | type | The type of objects to retrieve. Possible values are: sender_email_address, sender_domain, sender_ip_address, recipient_email_address, url, md5sum. | Required | 
+| limit | Number of entries to return. Default is 20. | Optional |
 
 
 #### Context Output

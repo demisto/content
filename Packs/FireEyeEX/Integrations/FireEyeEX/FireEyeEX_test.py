@@ -296,6 +296,26 @@ def test_list_blockedlist(mocker):
     assert command_results.outputs == BLOCKEDLIST
 
 
+def test_list_blockedlist_with_limit(mocker):
+    """Unit test
+    Given
+    - list_blockedlist_request command
+    - command args with a limit
+    - command raw response
+    When
+    - mock the Client's token generation.
+    - mock the Client's list_blockedlist_request response.
+    Then
+    - Validate The entry context is limited
+    """
+    mocker.patch.object(FireEyeClient, '_get_token', return_value='token')
+    client = Client(base_url="https://fireeye.ex.com/", username='user', password='pass', verify=False, proxy=False)
+    mocker.patch.object(FireEyeClient, 'list_blockedlist_request',
+                        return_value=util_load_json('test_data/list_blockedlist.json'))
+    command_results = list_blockedlist(client=client, args={'type': 'url', 'limit': '1'})
+    assert command_results.outputs == BLOCKEDLIST[:1]
+
+
 def test_list_blockedlist_no_entries(mocker):
     """Unit test
     Given
