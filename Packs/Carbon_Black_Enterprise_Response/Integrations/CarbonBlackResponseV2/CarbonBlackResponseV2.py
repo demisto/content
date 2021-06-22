@@ -761,7 +761,7 @@ def test_module(client: Client, params) -> str:
         client.get_processes(limit='5', allow_empty=True)
         if params['isFetch']:
             client.get_alerts(status=params.get('alert_status', None), feedname=params.get('alert_feed_name', None),
-                              query=params.get('alert_query', None), allow_empty_params=False, limit='5')
+                              query=params.get('alert_query', None), allow_empty_params=False, limit='3')
         return 'ok'
     except DemistoException as e:
         if 'Forbidden' in str(e) or 'UNAUTHORIZED' in str(e):
