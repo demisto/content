@@ -480,6 +480,331 @@ script:
       description: token_serialnumber
     description: Send user virtual token.
   - name: safewalk-get-user-settings
+    outputs:
+    - contextPath: Safewalk.management.usersettings.backuptoken_attempts
+      description: ''
+      type: Number
+    - contextPath: Safewalk.management.usersettings.backuptoken_timeout
+      description: ''
+      type: Number
+    - contextPath: Safewalk.management.usersettings.backuptoken_gateways
+      description: ''
+      type: Unknown
+    - contextPath: Safewalk.management.usersettings.backup_password_required
+      description: ''
+      type: Boolean
+    - contextPath: Safewalk.management.usersettings.inherited_backuptoken_attempts.value
+      description: ''
+      type: Number
+    - contextPath: Safewalk.management.usersettings.inherited_backuptoken_attempts.level
+      description: ''
+      type: String
+    - contextPath: Safewalk.management.usersettings.inherited_backuptoken_timeout.value
+      description: ''
+      type: Number
+    - contextPath: Safewalk.management.usersettings.inherited_backuptoken_timeout.level
+      description: ''
+      type: String
+    - contextPath: Safewalk.management.usersettings.inherited_backuptoken_gateways.level
+      description: ''
+      type: String
+    - contextPath: Safewalk.management.usersettings.inherited_backup_password_required.value
+      description: ''
+      type: Boolean
+    - contextPath: Safewalk.management.usersettings.inherited_backup_password_required.level
+      description: ''
+      type: String
+    - contextPath: Safewalk.management.usersettings.registration_token_attempts
+      description: ''
+      type: Unknown
+    - contextPath: Safewalk.management.usersettings.registration_token_timeout
+      description: ''
+      type: Unknown
+    - contextPath: Safewalk.management.usersettings.registration_token_gateways
+      description: ''
+      type: Unknown
+    - contextPath: Safewalk.management.usersettings.inherited_registration_token_attempts.value
+      description: ''
+      type: Number
+    - contextPath: Safewalk.management.usersettings.inherited_registration_token_attempts.level
+      description: ''
+      type: String
+    - contextPath: Safewalk.management.usersettings.inherited_registration_token_timeout.value
+      description: ''
+      type: Number
+    - contextPath: Safewalk.management.usersettings.inherited_registration_token_timeout.level
+      description: ''
+      type: String
+    - contextPath: Safewalk.management.usersettings.inherited_registration_token_gateways.level
+      description: ''
+      type: String
+    - contextPath: Safewalk.management.usersettings.gaia_ttw_level
+      description: ''
+      type: Unknown
+    - contextPath: Safewalk.management.usersettings.inherited_gaia_ttw_level.value
+      description: ''
+      type: String
+    - contextPath: Safewalk.management.usersettings.inherited_gaia_ttw_level.level
+      description: ''
+      type: String
+    - contextPath: Safewalk.management.usersettings.sesami_mobile_password_required
+      description: ''
+      type: Unknown
+    - contextPath: Safewalk.management.usersettings.sesami_slim_password_required
+      description: ''
+      type: Unknown
+    - contextPath: Safewalk.management.usersettings.hotp_password_required
+      description: ''
+      type: Unknown
+    - contextPath: Safewalk.management.usersettings.hotp_flex_password_required
+      description: ''
+      type: Unknown
+    - contextPath: Safewalk.management.usersettings.hotp_flex_pin_password_required
+      description: ''
+      type: Unknown
+    - contextPath: Safewalk.management.usersettings.totp_password_required
+      description: ''
+      type: Unknown
+    - contextPath: Safewalk.management.usersettings.totp_flex_password_required
+      description: ''
+      type: Unknown
+    - contextPath: Safewalk.management.usersettings.totp_flex_pin_password_required
+      description: ''
+      type: Unknown
+    - contextPath: Safewalk.management.usersettings.totp_mobile_password_required
+      description: ''
+      type: Unknown
+    - contextPath: Safewalk.management.usersettings.inherited_sesami_mobile_password_required.value
+      description: ''
+      type: Boolean
+    - contextPath: Safewalk.management.usersettings.inherited_sesami_mobile_password_required.level
+      description: ''
+      type: String
+    - contextPath: Safewalk.management.usersettings.inherited_sesami_slim_password_required.value
+      description: ''
+      type: Boolean
+    - contextPath: Safewalk.management.usersettings.inherited_sesami_slim_password_required.level
+      description: ''
+      type: String
+    - contextPath: Safewalk.management.usersettings.inherited_hotp_password_required.value
+      description: ''
+      type: Boolean
+    - contextPath: Safewalk.management.usersettings.inherited_hotp_password_required.level
+      description: ''
+      type: String
+    - contextPath: Safewalk.management.usersettings.inherited_hotp_flex_password_required.value
+      description: ''
+      type: Boolean
+    - contextPath: Safewalk.management.usersettings.inherited_hotp_flex_password_required.level
+      description: ''
+      type: String
+    - contextPath: Safewalk.management.usersettings.inherited_hotp_flex_pin_password_required.value
+      description: ''
+      type: Boolean
+    - contextPath: Safewalk.management.usersettings.inherited_hotp_flex_pin_password_required.level
+      description: ''
+      type: String
+    - contextPath: Safewalk.management.usersettings.inherited_totp_password_required.value
+      description: ''
+      type: Boolean
+    - contextPath: Safewalk.management.usersettings.inherited_totp_password_required.level
+      description: ''
+      type: String
+    - contextPath: Safewalk.management.usersettings.inherited_totp_flex_password_required.value
+      description: ''
+      type: Boolean
+    - contextPath: Safewalk.management.usersettings.inherited_totp_flex_password_required.level
+      description: ''
+      type: String
+    - contextPath: Safewalk.management.usersettings.inherited_totp_flex_pin_password_required.value
+      description: ''
+      type: Boolean
+    - contextPath: Safewalk.management.usersettings.inherited_totp_flex_pin_password_required.level
+      description: ''
+      type: String
+    - contextPath: Safewalk.management.usersettings.inherited_totp_mobile_password_required.value
+      description: ''
+      type: Boolean
+    - contextPath: Safewalk.management.usersettings.inherited_totp_mobile_password_required.level
+      description: ''
+      type: String
+    - contextPath: Safewalk.management.usersettings.allow_password
+      description: ''
+      type: Boolean
+    - contextPath: Safewalk.management.usersettings.allow_password_for_registration
+      description: ''
+      type: Boolean
+    - contextPath: Safewalk.management.usersettings.allow_access_when_pwd_expired
+      description: ''
+      type: Boolean
+    - contextPath: Safewalk.management.usersettings.allow_password_reset_when_forgot_pwd
+      description: ''
+      type: Unknown
+    - contextPath: Safewalk.management.usersettings.min_otp_length
+      description: ''
+      type: Unknown
+    - contextPath: Safewalk.management.usersettings.max_otp_length
+      description: ''
+      type: Unknown
+    - contextPath: Safewalk.management.usersettings.inherited_allow_password.value
+      description: ''
+      type: Boolean
+    - contextPath: Safewalk.management.usersettings.inherited_allow_password.level
+      description: ''
+      type: String
+    - contextPath: Safewalk.management.usersettings.inherited_allow_password_for_registration.value
+      description: ''
+      type: Boolean
+    - contextPath: Safewalk.management.usersettings.inherited_allow_password_for_registration.level
+      description: ''
+      type: String
+    - contextPath: Safewalk.management.usersettings.inherited_allow_access_when_pwd_expired.value
+      description: ''
+      type: Boolean
+    - contextPath: Safewalk.management.usersettings.inherited_allow_access_when_pwd_expired.level
+      description: ''
+      type: String
+    - contextPath: Safewalk.management.usersettings.inherited_allow_password_reset_when_forgot_pwd.value
+      description: ''
+      type: Boolean
+    - contextPath: Safewalk.management.usersettings.inherited_allow_password_reset_when_forgot_pwd.level
+      description: ''
+      type: String
+    - contextPath: Safewalk.management.usersettings.inherited_min_otp_length.value
+      description: ''
+      type: Number
+    - contextPath: Safewalk.management.usersettings.inherited_min_otp_length.level
+      description: ''
+      type: String
+    - contextPath: Safewalk.management.usersettings.inherited_max_otp_length.value
+      description: ''
+      type: Number
+    - contextPath: Safewalk.management.usersettings.inherited_max_otp_length.level
+      description: ''
+      type: String
+    - contextPath: Safewalk.management.usersettings.max_allowed_failures
+      description: ''
+      type: Unknown
+    - contextPath: Safewalk.management.usersettings.inherited_max_allowed_failures.value
+      description: ''
+      type: Number
+    - contextPath: Safewalk.management.usersettings.inherited_max_allowed_failures.level
+      description: ''
+      type: String
+    - contextPath: Safewalk.management.usersettings.totp_accept_tolerance
+      description: ''
+      type: Unknown
+    - contextPath: Safewalk.management.usersettings.totp_resend_tolerance
+      description: ''
+      type: Unknown
+    - contextPath: Safewalk.management.usersettings.totp_resend_timeout
+      description: ''
+      type: Unknown
+    - contextPath: Safewalk.management.usersettings.inherited_totp_accept_tolerance.value
+      description: ''
+      type: Number
+    - contextPath: Safewalk.management.usersettings.inherited_totp_accept_tolerance.level
+      description: ''
+      type: String
+    - contextPath: Safewalk.management.usersettings.inherited_totp_resend_tolerance.value
+      description: ''
+      type: Number
+    - contextPath: Safewalk.management.usersettings.inherited_totp_resend_tolerance.level
+      description: ''
+      type: String
+    - contextPath: Safewalk.management.usersettings.inherited_totp_resend_timeout.value
+      description: ''
+      type: Number
+    - contextPath: Safewalk.management.usersettings.inherited_totp_resend_timeout.level
+      description: ''
+      type: String
+    - contextPath: Safewalk.management.usersettings.hotp_accept_tolerance
+      description: ''
+      type: Unknown
+    - contextPath: Safewalk.management.usersettings.hotp_resend_tolerance
+      description: ''
+      type: Unknown
+    - contextPath: Safewalk.management.usersettings.hotp_resend_timeout
+      description: ''
+      type: Unknown
+    - contextPath: Safewalk.management.usersettings.inherited_hotp_accept_tolerance.value
+      description: ''
+      type: Number
+    - contextPath: Safewalk.management.usersettings.inherited_hotp_accept_tolerance.level
+      description: ''
+      type: String
+    - contextPath: Safewalk.management.usersettings.inherited_hotp_resend_tolerance.value
+      description: ''
+      type: Number
+    - contextPath: Safewalk.management.usersettings.inherited_hotp_resend_tolerance.level
+      description: ''
+      type: String
+    - contextPath: Safewalk.management.usersettings.inherited_hotp_resend_timeout.value
+      description: ''
+      type: Number
+    - contextPath: Safewalk.management.usersettings.inherited_hotp_resend_timeout.level
+      description: ''
+      type: String
+    - contextPath: Safewalk.management.usersettings.virtual_device_gateways
+      description: ''
+      type: Unknown
+    - contextPath: Safewalk.management.usersettings.virtual_device_accept_tolerance
+      description: ''
+      type: Number
+    - contextPath: Safewalk.management.usersettings.inherited_virtual_device_gateways.level
+      description: ''
+      type: String
+    - contextPath: Safewalk.management.usersettings.inherited_virtual_device_accept_tolerance.value
+      description: ''
+      type: Number
+    - contextPath: Safewalk.management.usersettings.inherited_virtual_device_accept_tolerance.level
+      description: ''
+      type: String
+    - contextPath: Safewalk.management.usersettings.dos_tmp_lockdown_max_fail_authentications
+      description: ''
+      type: Unknown
+    - contextPath: Safewalk.management.usersettings.dos_tmp_lockdown_time_interval_in_seconds
+      description: ''
+      type: Unknown
+    - contextPath: Safewalk.management.usersettings.dos_tmp_lockdown_time_in_seconds
+      description: ''
+      type: Unknown
+    - contextPath: Safewalk.management.usersettings.inherited_dos_tmp_lockdown_max_fail_authentications.value
+      description: ''
+      type: Number
+    - contextPath: Safewalk.management.usersettings.inherited_dos_tmp_lockdown_max_fail_authentications.level
+      description: ''
+      type: String
+    - contextPath: Safewalk.management.usersettings.inherited_dos_tmp_lockdown_time_interval_in_seconds.value
+      description: ''
+      type: Number
+    - contextPath: Safewalk.management.usersettings.inherited_dos_tmp_lockdown_time_interval_in_seconds.level
+      description: ''
+      type: String
+    - contextPath: Safewalk.management.usersettings.inherited_dos_tmp_lockdown_time_in_seconds.value
+      description: ''
+      type: Number
+    - contextPath: Safewalk.management.usersettings.inherited_dos_tmp_lockdown_time_in_seconds.level
+      description: ''
+      type: String
+    - contextPath: Safewalk.management.usersettings.user_storage
+      description: ''
+      type: Unknown
+    - contextPath: Safewalk.management.usersettings.multiple_step_auth_timeout
+      description: ''
+      type: Unknown
+    - contextPath: Safewalk.management.usersettings.inherited_user_storage.value
+      description: ''
+      type: String
+    - contextPath: Safewalk.management.usersettings.inherited_user_storage.level
+      description: ''
+      type: String
+    - contextPath: Safewalk.management.usersettings.inherited_multiple_step_auth_timeout.value
+      description: ''
+      type: Number
+    - contextPath: Safewalk.management.usersettings.inherited_multiple_step_auth_timeout.level
+      description: ''
+      type: String
     arguments:
     - name: username
       description: Username
