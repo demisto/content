@@ -1,6 +1,8 @@
 Use the Cofense Intelligence integration to check the reputation of URLs, IP addresses, file hashes, and email addresses.
 This integration was integrated and tested with version 2 of Cofense Intelligence
 
+Some changes have been made that might affect your existing content. For more information, see [Breaking Changes](#Breaking-changes-from-previous-versions-of-this-integration).
+
 Search for threats associated with an indicator.
 The verdict (Unknown, Benign, Suspicious, Malicious) of each threat is determined by the impact (None, Minor, Moderate, Major) of its associated web locations as detected in cofense,  along with a threshold value that is being set by the user (when configuring the instance):
 
@@ -30,7 +32,7 @@ Threshold = Major (Default value)
     | File Threshold | Threshold for file related threats' severity. | False |
     | URL Threshold | Threshold for URL related threats' severity. | False |
     | Email Threshold | Threshold for email related threats' severity. | False |
-    | Time limit for collecting data | Limit the number of days from which we should start returning data. 90 days limit is recomended by Cofense. |  |
+    | Time limit for collecting data | Limit the number of days from which we should start returning data. 90 days limit is recommended by Cofense. |  |
     | Trust any certificate (not secure) |  | False |
     | Use system proxy settings |  | False |
 
@@ -52,7 +54,7 @@ Checks the reputation of an IP address.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | ip | IP address to check. | Required | 
-| days_back | Limit the number of days from wich we should start returning data. 90 days limit is recomended by Cofense. | Optional | 
+| days_back | Limit the number of days from which we should start returning data. 90 days limit is recommended by Cofense. | Optional | 
 
 
 #### Context Output
@@ -124,14 +126,14 @@ Checks the reputation of an IP address.
 
 
 #### Command Example
-```!ip ip=45.116.166.177 using=CofenseIntelligenceV2_instance```
+```!ip ip=8.8.8.8 using=CofenseIntelligenceV2_instance```
 
 #### Context Example
 ```json
 {
     "CofenseIntelligence": {
         "IP": {
-            "Data": "45.116.166.177",
+            "Data": "8.8.8.8",
             "Threats": [
                 {
                     "apiReportURL": "https://www.threathq.com/apiv1/t3/malware/125002/html",
@@ -139,8 +141,8 @@ Checks the reputation of an IP address.
                         {
                             "blockType": "IPv4 Address",
                             "confidence": 0,
-                            "data": "45.116.166.177",
-                            "data_1": "45.116.166.177",
+                            "data": "8.8.8.8",
+                            "data_1": "8.8.8.8",
                             "impact": "Minor",
                             "ipDetail": {
                                 "asn": 23456,
@@ -148,7 +150,7 @@ Checks the reputation of an IP address.
                                 "continentName": "Asia",
                                 "countryIsoCode": "IN",
                                 "countryName": "India",
-                                "ip": "45.116.166.177",
+                                "ip": "8.8.8.8",
                                 "isp": "Seema Infotech",
                                 "latitude": 20,
                                 "longitude": 77,
@@ -180,7 +182,7 @@ Checks the reputation of an IP address.
                     "domainSet": [],
                     "executableSet": [
                     ],
-                    "executiveSummary": "Finance-themed campaign delivers FormGrabber.",
+                    "executiveSummary": "summary",
                     "extractedStringSet": [],
                     "feeds": [
                     ],
@@ -197,25 +199,25 @@ Checks the reputation of an IP address.
                     ],
                     "naicsCodes": [],
                     "relatedSearchTags": [],
-                    "reportURL": "https://www.threathq.com/api/l/activethreatreport/125002/html",
+                    "reportURL": "link",
                     "senderEmailSet": [],
                     "senderIpSet": [],
                     "senderNameSet": [],
                     "spamUrlSet": [],
                     "subjectSet": [
                         {
-                            "subject": "RE: price request: 3131-50SG0BK00T1",
+                            "subject": "subject",
                             "totalCount": 1
                         }
                     ],
-                    "threatDetailURL": "https://www.threathq.com/p42/search/default?m=125002",
+                    "threatDetailURL": "",
                     "threatType": "MALWARE"
                 }
             ]
         }
     },
     "DBotScore": {
-        "Indicator": "45.116.166.177",
+        "Indicator": "8.8.8.8",
         "Reliability": "B - Usually reliable",
         "Score": 2,
         "Type": "ip",
@@ -223,7 +225,7 @@ Checks the reputation of an IP address.
     },
     "IP": {
         "ASN": 23456,
-        "Address": "45.116.166.177",
+        "Address": "8.8.8.8",
         "Geo": {
             "Country": "IN",
             "Location": "20.0:77.0"
@@ -235,7 +237,7 @@ Checks the reputation of an IP address.
 
 #### Human Readable Output
 
->### Cofense IP Reputation for IP 45.116.166.177
+>### Cofense IP Reputation for IP 8.8.8.8
 >|Threat ID|Threat Types|Verdict|Executive Summary|Campaign|Last Published|ASN|Country|Threat Report|
 >|---|---|---|---|---|---|---|---|---|
 >| 125002 | type | Suspicious | summary |  Campaign | 2021-03-22 15:56:10 | ASN |country | link
@@ -255,7 +257,7 @@ Searches for extracted strings identified within malware campaigns.
 | --- | --- | --- |
 | str | String to search. | Required | 
 | limit | Maximum number of strings to search. Default is 10. | Optional | 
-| days_back | Limit the number of days from wich we should start returning data. 90 days limit is recomended by Cofense. | Optional | 
+| days_back | Limit the number of days from which we should start returning data. 90 days limit is recommended by Cofense. | Optional | 
 
 
 #### Context Output
@@ -321,255 +323,17 @@ Searches for extracted strings identified within malware campaigns.
 
 
 #### Command Example
-```!cofense-search str=border using=CofenseIntelligenceV2_instance_1_copy```
+```!cofense-search str=border using=CofenseIntelligenceV2_instance```
 
 #### Context Example
 ```json
 {
     "CofenseIntelligence": {
         "Threats": {
-            "apiReportURL": "https://www.threathq.com/apiv1/t3/malware/178991/html",
+            "apiReportURL": "url",
             "blockSet": [
-                {
-                    "blockType": "URL",
-                    "confidence": 0,
-                    "data": "https://infornegative-dh-gov-hk-8358a9.ingress-baronn.easywp.com/dh/ref/in/gov/",
-                    "data_1": {
-                        "domain": "easywp.com",
-                        "host": "infornegative-dh-gov-hk-8358a9.ingress-baronn.easywp.com",
-                        "path": "/dh/ref/in/gov/",
-                        "protocol": "https",
-                        "url": "https://infornegative-dh-gov-hk-8358a9.ingress-baronn.easywp.com/dh/ref/in/gov/"
-                    },
-                    "impact": "Major",
-                    "infrastructureTypeSubclass": {
-                        "description": "Additional phishing URLs not found in the original email"
-                    },
-                    "malwareFamily": {
-                        "description": "An instance of credential phishing",
-                        "familyName": "Credential Phishing"
-                    },
-                    "role": "Credential Phishing",
-                    "roleDescription": "Credential Phishing"
-                },
-                {
-                    "blockType": "URL",
-                    "confidence": 0,
-                    "data": "https://infornegative-dh-gov-hk-8358a9.ingress-baronn.easywp.com/dh/ref/in/gov/a696f8bfc1c1110/submit.php",
-                    "data_1": {
-                        "domain": "easywp.com",
-                        "host": "infornegative-dh-gov-hk-8358a9.ingress-baronn.easywp.com",
-                        "path": "/dh/ref/in/gov/a696f8bfc1c1110/submit.php",
-                        "protocol": "https",
-                        "url": "https://infornegative-dh-gov-hk-8358a9.ingress-baronn.easywp.com/dh/ref/in/gov/a696f8bfc1c1110/submit.php"
-                    },
-                    "impact": "Major",
-                    "infrastructureTypeSubclass": {
-                        "description": "Threat Actor controlled host or email address to which harvested credentials are exfiltrated."
-                    },
-                    "malwareFamily": {
-                        "description": "An instance of credential phishing",
-                        "familyName": "Credential Phishing"
-                    },
-                    "role": "Credential Phishing",
-                    "roleDescription": "Credential Phishing"
-                },
-                {
-                    "blockType": "Domain Name",
-                    "confidence": 0,
-                    "data": "wp1.inform-kuwaitost.pw72n.spectrum.myjino.ru",
-                    "data_1": "wp1.inform-kuwaitost.pw72n.spectrum.myjino.ru",
-                    "impact": "Major",
-                    "malwareFamily": {
-                        "description": "An instance of credential phishing",
-                        "familyName": "Credential Phishing"
-                    },
-                    "role": "Credential Phishing",
-                    "roleDescription": "Credential Phishing"
-                },
-                {
-                    "blockType": "URL",
-                    "confidence": 0,
-                    "data": "http://wp1.inform-kuwaitost.pw72n.spectrum.myjino.ru/desk/naghoz/asd/",
-                    "data_1": {
-                        "domain": "inform-kuwaitost.pw72n.spectrum.myjino.ru",
-                        "host": "wp1.inform-kuwaitost.pw72n.spectrum.myjino.ru",
-                        "path": "/desk/naghoz/asd/",
-                        "protocol": "http",
-                        "url": "http://wp1.inform-kuwaitost.pw72n.spectrum.myjino.ru/desk/naghoz/asd/"
-                    },
-                    "impact": "Major",
-                    "infrastructureTypeSubclass": {
-                        "description": "Additional phishing URLs not found in the original email"
-                    },
-                    "malwareFamily": {
-                        "description": "An instance of credential phishing",
-                        "familyName": "Credential Phishing"
-                    },
-                    "role": "Credential Phishing",
-                    "roleDescription": "Credential Phishing"
-                },
-                {
-                    "blockType": "URL",
-                    "confidence": 0,
-                    "data": "https://cdfs-info-kw.blogspot.com/",
-                    "data_1": {
-                        "domain": "cdfs-info-kw.blogspot.com",
-                        "host": "cdfs-info-kw.blogspot.com",
-                        "path": "/",
-                        "protocol": "https",
-                        "url": "https://cdfs-info-kw.blogspot.com/"
-                    },
-                    "impact": "Major",
-                    "malwareFamily": {
-                        "description": "An instance of credential phishing",
-                        "familyName": "Credential Phishing"
-                    },
-                    "role": "Credential Phishing",
-                    "roleDescription": "Credential Phishing"
-                },
-                {
-                    "blockType": "Domain Name",
-                    "confidence": 0,
-                    "data": "infornegative-dh-gov-hk-8358a9.ingress-baronn.easywp.com",
-                    "data_1": "infornegative-dh-gov-hk-8358a9.ingress-baronn.easywp.com",
-                    "impact": "Major",
-                    "malwareFamily": {
-                        "description": "An instance of credential phishing",
-                        "familyName": "Credential Phishing"
-                    },
-                    "role": "Credential Phishing",
-                    "roleDescription": "Credential Phishing"
-                },
-                {
-                    "blockType": "URL",
-                    "confidence": 0,
-                    "data": "https://bom.to/1UaQKCOLHTnAl",
-                    "data_1": {
-                        "domain": "bom.to",
-                        "host": "bom.to",
-                        "path": "/1UaQKCOLHTnAl",
-                        "protocol": "https",
-                        "url": "https://bom.to/1UaQKCOLHTnAl"
-                    },
-                    "impact": "Major",
-                    "malwareFamily": {
-                        "description": "An instance of credential phishing",
-                        "familyName": "Credential Phishing"
-                    },
-                    "role": "Credential Phishing",
-                    "roleDescription": "Credential Phishing"
-                },
-                {
-                    "blockType": "URL",
-                    "confidence": 0,
-                    "data": "https://dgahaeb.r.af.d.sendibt2.com/tr/cl/",
-                    "data_1": {
-                        "domain": "sendibt2.com",
-                        "host": "dgahaeb.r.af.d.sendibt2.com",
-                        "path": "/tr/cl/",
-                        "protocol": "https",
-                        "url": "https://dgahaeb.r.af.d.sendibt2.com/tr/cl/"
-                    },
-                    "impact": "Major",
-                    "infrastructureTypeSubclass": {
-                        "description": "URL embedded in the email or attached file."
-                    },
-                    "malwareFamily": {
-                        "description": "An instance of credential phishing",
-                        "familyName": "Credential Phishing"
-                    },
-                    "role": "Credential Phishing",
-                    "roleDescription": "Credential Phishing"
-                },
-                {
-                    "blockType": "URL",
-                    "confidence": 0,
-                    "data": "https://infornegative-dh-gov-hk-8358a9.ingress-baronn.easywp.com/dh/ref/in/gov/a696f8bfc1c1110/details.php",
-                    "data_1": {
-                        "domain": "easywp.com",
-                        "host": "infornegative-dh-gov-hk-8358a9.ingress-baronn.easywp.com",
-                        "path": "/dh/ref/in/gov/a696f8bfc1c1110/details.php",
-                        "protocol": "https",
-                        "url": "https://infornegative-dh-gov-hk-8358a9.ingress-baronn.easywp.com/dh/ref/in/gov/a696f8bfc1c1110/details.php"
-                    },
-                    "impact": "Major",
-                    "infrastructureTypeSubclass": {
-                        "description": "Threat Actor controlled host or email address to which harvested credentials are exfiltrated."
-                    },
-                    "malwareFamily": {
-                        "description": "An instance of credential phishing",
-                        "familyName": "Credential Phishing"
-                    },
-                    "role": "Credential Phishing",
-                    "roleDescription": "Credential Phishing"
-                },
-                {
-                    "blockType": "URL",
-                    "confidence": 0,
-                    "data": "https://tinyurl.com/2msy6au5",
-                    "data_1": {
-                        "domain": "tinyurl.com",
-                        "host": "tinyurl.com",
-                        "path": "/2msy6au5",
-                        "protocol": "https",
-                        "url": "https://tinyurl.com/2msy6au5"
-                    },
-                    "impact": "Major",
-                    "infrastructureTypeSubclass": {
-                        "description": "URL embedded in the email or attached file."
-                    },
-                    "malwareFamily": {
-                        "description": "An instance of credential phishing",
-                        "familyName": "Credential Phishing"
-                    },
-                    "role": "Credential Phishing",
-                    "roleDescription": "Credential Phishing"
-                },
-                {
-                    "blockType": "URL",
-                    "confidence": 0,
-                    "data": "http://wp1.inform-kuwaitost.pw72n.spectrum.myjino.ru/desk/naghoz/asd/send1.php",
-                    "data_1": {
-                        "domain": "inform-kuwaitost.pw72n.spectrum.myjino.ru",
-                        "host": "wp1.inform-kuwaitost.pw72n.spectrum.myjino.ru",
-                        "path": "/desk/naghoz/asd/send1.php",
-                        "protocol": "http",
-                        "url": "http://wp1.inform-kuwaitost.pw72n.spectrum.myjino.ru/desk/naghoz/asd/send1.php"
-                    },
-                    "impact": "Major",
-                    "infrastructureTypeSubclass": {
-                        "description": "Threat Actor controlled host or email address to which harvested credentials are exfiltrated."
-                    },
-                    "malwareFamily": {
-                        "description": "An instance of credential phishing",
-                        "familyName": "Credential Phishing"
-                    },
-                    "role": "Credential Phishing",
-                    "roleDescription": "Credential Phishing"
-                },
-                {
-                    "blockType": "Domain Name",
-                    "confidence": 0,
-                    "data": "cdfs-info-kw.blogspot.com",
-                    "data_1": "cdfs-info-kw.blogspot.com",
-                    "impact": "Major",
-                    "malwareFamily": {
-                        "description": "An instance of credential phishing",
-                        "familyName": "Credential Phishing"
-                    },
-                    "role": "Credential Phishing",
-                    "roleDescription": "Credential Phishing"
-                }
             ],
             "campaignBrandSet": [
-                {
-                    "brand": {
-                        "id": 12968,
-                        "text": "Hong Kong Department of Health"
-                    },
-                    "totalCount": 3
-                }
             ],
             "campaignLanguageSet": [
                 {
@@ -589,10 +353,10 @@ Searches for extracted strings identified within malware campaigns.
                 }
             ],
             "executableSet": [],
-            "executiveSummary": "Hong Kong Department of Health-spoofing emails deliver Credential Phishing via embedded links.",
+            "executiveSummary": "summary",
             "extractedStringSet": [
                 {
-                    "data": "<tbody style=\"-webkit-font-smoothing: antialiased\">\r\n<tr style=\"-webkit-font-smoothing: antialiased\">\r\n<td style=\"BORDER-TOP: medium none; BORDER-RIGHT: medium none; BORDER-COLLAPSE: collapse; BORDER-BOTTOM: medium none; COLOR: rgb(255,255,255); PADDING-BOTTOM: 10px; PADDING-TOP: 10px; PADDING-LEFT: 25px; BORDER-LEFT: medium none; PADDING-RIGHT: 25px; border-radius: 3px; -webkit-font-smoothing: antialiased\" bgcolor=\"#004d3a\" valign=\"middle\" align=\"center\">\r\n\t<a title=\"https://cfspart.impots.gouv.fr\" \r\n\t\tstyle=\"BORDER-TOP: 0px; FONT-FAMILY: Arial, sans-serif; BORDER-RIGHT: 0px; VERTICAL-ALIGN: baseline; BORDER-BOTTOM: 0px; COLOR: rgb(255,255,255); PADDING-BOTTOM: 0px; PADDING-TOP: 0px; PADDING-LEFT: 0px; BORDER-LEFT: 0px; MARGIN: 0px; LINE-HEIGHT: 16px; PADDING-RIGHT: 0px; -webkit-font-smoothing: antialiased; font-stretch: inherit; text-decoration-line: none; background-clip: initial; background-size: initial; background-origin: initial\" \r\n\t\thref=\"https://dgahaeb.r.af.d.sendibt2.com/tr/cl/\" \r\n\t\trel=\"noreferrer noopener\" \r\n\t\ttarget=\"_blank\" \r\n\t\tdata-cke-saved-href=\"https://tinyurl.com/2msy6au5\" \r\n\t\tdata-linkindex=\"0\" \r\n\t\tdata-auth=\"NotApplicable\">\r\n\t<strong style=\"-webkit-font-smoothing: antialiased\">\r\n\t<font style=\"-webkit-font-smoothing: antialiased\" size=\"3\">My personal space</font>\r\n</strong>\r\n</a>\r\n</td>\r\n</tr>\r\n</tbody>",
+                    "data": "border",
                     "malwareFamily": {
                         "description": "An instance of credential phishing",
                         "familyName": "Credential Phishing"
@@ -623,28 +387,13 @@ Searches for extracted strings identified within malware campaigns.
             ],
             "naicsCodes": [],
             "relatedSearchTags": [],
-            "reportURL": "https://www.threathq.com/api/l/activethreatreport/178991/html",
+            "reportURL": "link",
             "senderEmailSet": [
-                {
-                    "senderEmail": "dzfp@szmc.goldentec.com",
-                    "totalCount": 3
-                }
             ],
             "senderIpSet": [],
             "senderNameSet": [
-                {
-                    "name": "dh.gov.hk",
-                    "totalCount": 3
-                }
             ],
-            "spamUrlSet": [],
-            "subjectSet": [
-                {
-                    "subject": "Electronic Refund Form",
-                    "totalCount": 3
-                }
-            ],
-            "threatDetailURL": "https://www.threathq.com/p42/search/default?m=178991",
+            "threatDetailURL": "link",
             "threatType": "MALWARE"
         }
     }
@@ -657,7 +406,7 @@ Searches for extracted strings identified within malware campaigns.
 >
 >|Threat ID|Threat Types|Executive Summary|Campaign|Last Published|Threat Report|
 >|---|---|---|---|---|---|
->| 178991 | An instance of credential phishing | Hong Kong Department of Health-spoofing emails deliver Credential Phishing via embedded links. | Refund - Credential Phishing | 2021-04-15 14:53:11 | [https://www.threathq.com/api/l/activethreatreport/178991/html](https://www.threathq.com/api/l/activethreatreport/178991/html) |
+>| 178991 | summary | Refund - Credential Phishing | 2021-04-15 14:53:11 | Link |
 
 
 ### file
@@ -672,8 +421,8 @@ Checks the reputation of a file hash.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| file | A file MD5 hash to check. | Required | 
-| days_back | Limit the number of days from wich we should start returning data. 90 days limit is recomended by Cofense. | Optional | 
+| file | A file hash to check. | Required | 
+| days_back | Limit the number of days from which we should start returning data. 90 days limit is recommended by Cofense. | Optional | 
 
 
 #### Context Output
@@ -745,7 +494,7 @@ Checks the reputation of a file hash.
 
 
 #### Command Example
-```!file file=9798ba6199168e6d2cf205760ea683d1 using=CofenseIntelligenceV2_instance_1_copy```
+```!file file=9798ba6199168e6d2cf205760ea683d1 using=CofenseIntelligenceV2_instance```
 
 #### Context Example
 ```json
@@ -760,8 +509,8 @@ Checks the reputation of a file hash.
                         {
                             "blockType": "Email",
                             "confidence": 0,
-                            "data": "info@sankapatrol.com",
-                            "data_1": "info@sankapatrol.com",
+                            "data": "email@email.com",
+                            "data_1": "email@email.com",
                             "impact": "Major",
                             "malwareFamily": {
                                 "description": "Agent Tesla collects sensitive information, such as saved credentials for web, ftp, email, and instant messaging clients. Additionally, Tesla gathers data about the victim's PC and captures keystrokes.",
@@ -770,51 +519,7 @@ Checks the reputation of a file hash.
                             "role": "C2",
                             "roleDescription": "Command and control location used by malware"
                         },
-                        {
-                            "blockType": "URL",
-                            "confidence": 0,
-                            "data": "http://zytrox.tk/modex/bobbyx.exe",
-                            "data_1": {
-                                "domain": "zytrox.tk",
-                                "host": "zytrox.tk",
-                                "path": "/modex/bobbyx.exe",
-                                "protocol": "http",
-                                "url": "http://zytrox.tk/modex/bobbyx.exe"
-                            },
-                            "deliveryMechanism": {
-                                "description": "Microsoft Office exploit taking advantage of flaw in Microsoft Equation Editor allowing for arbitrary code execution",
-                                "mechanismName": "CVE-2017-11882"
-                            },
-                            "impact": "Major",
-                            "role": "Payload",
-                            "roleDescription": "Location from which a payload is obtained"
-                        },
-                        {
-                            "blockType": "IPv4 Address",
-                            "confidence": 0,
-                            "data": "45.84.196.197",
-                            "data_1": "45.84.196.197",
-                            "deliveryMechanism": {
-                                "description": "Microsoft Office exploit taking advantage of flaw in Microsoft Equation Editor allowing for arbitrary code execution",
-                                "mechanismName": "CVE-2017-11882"
-                            },
-                            "impact": "Minor",
-                            "role": "Payload",
-                            "roleDescription": "Location from which a payload is obtained"
-                        },
-                        {
-                            "blockType": "Domain Name",
-                            "confidence": 0,
-                            "data": "zytrox.tk",
-                            "data_1": "zytrox.tk",
-                            "deliveryMechanism": {
-                                "description": "Microsoft Office exploit taking advantage of flaw in Microsoft Equation Editor allowing for arbitrary code execution",
-                                "mechanismName": "CVE-2017-11882"
-                            },
-                            "impact": "Moderate",
-                            "role": "Payload",
-                            "roleDescription": "Location from which a payload is obtained"
-                        }
+
                     ],
                     "campaignBrandSet": [
                         {
@@ -842,41 +547,9 @@ Checks the reputation of a file hash.
                         }
                     ],
                     "domainSet": [],
-                    "executableSet": [
-                        {
-                            "dateEntered": 1616096828270,
-                            "fileName": "bobbyx.exe",
-                            "fileNameExtension": "exe",
-                            "malwareFamily": {
-                                "description": "Agent Tesla collects sensitive information, such as saved credentials for web, ftp, email, and instant messaging clients. Additionally, Tesla gathers data about the victim's PC and captures keystrokes.",
-                                "familyName": "Agent Tesla"
-                            },
-                            "md5Hex": "9798ba6199168e6d2cf205760ea683d1",
-                            "severityLevel": "Major",
-                            "type": "Download",
-                            "vendorDetections": []
-                        },
-                        {
-                            "dateEntered": 1615989305686,
-                            "deliveryMechanism": {
-                                "description": "Microsoft Office exploit taking advantage of flaw in Microsoft Equation Editor allowing for arbitrary code execution",
-                                "mechanismName": "CVE-2017-11882"
-                            },
-                            "fileName": "Purchase order.doc",
-                            "fileNameExtension": "doc",
-                            "md5Hex": "eb8dd4479c7e56f370965efd1f5bfe42",
-                            "severityLevel": "Major",
-                            "sha1Hex": "80c64b74ec6491f1bacd7ce452af9a981708516d",
-                            "sha224Hex": "3c61eeb7eadb596c7f329e119cd7ad3b6f1c9ecfa7325469cd11b43b",
-                            "sha256Hex": "958b88da50d90cea5d54285d31cde79ef7841df6604aa8cfd0a52c87e714aa93",
-                            "sha384Hex": "56e2a7b7141078ebf97c75ab0929dda4de8e816edc8a5f3e9ccfaf8d30375b89898dcf729a65c6c838b4ed8e4606a248",
-                            "sha512Hex": "310719a3af341572024e2fcf387708337da51e6e9c3164e0c42a84abec0f3c518ee8ccc15563fc838323a29cd122bb938b574224d797fe7136ebaa5ffb577f7a",
-                            "ssdeep": "3072:zkV0AvFTnx1//kUWwyJi7eLbkrMrN6EetrKYWZ6gq6AVKlG5hEBYRPek02e:zkmKFvkeeLbyA6EeNXvgGVKlchEBgPKP",
-                            "type": "Attachment",
-                            "vendorDetections": []
-                        }
+                    "executableSet":[ 
                     ],
-                    "executiveSummary": "Order-themed email delivering Agent Tesla keylogger via CVE-2017-11882.",
+                    "executiveSummary": "summary",
                     "extractedStringSet": [],
                     "feeds": [
                         {
@@ -902,7 +575,7 @@ Checks the reputation of a file hash.
                     ],
                     "naicsCodes": [],
                     "relatedSearchTags": [],
-                    "reportURL": "https://www.threathq.com/api/l/activethreatreport/158959/html",
+                    "reportURL": "link",
                     "senderEmailSet": [],
                     "senderIpSet": [],
                     "senderNameSet": [],
@@ -913,7 +586,7 @@ Checks the reputation of a file hash.
                             "totalCount": 1
                         }
                     ],
-                    "threatDetailURL": "https://www.threathq.com/p42/search/default?m=158959",
+                    "threatDetailURL": "url",
                     "threatType": "MALWARE"
                 }
             ]
@@ -944,7 +617,7 @@ Checks the reputation of a file hash.
 >### Cofense file Reputation for file 9798ba6199168e6d2cf205760ea683d1
 >|Threat ID|Threat Types|Verdict|Executive Summary|Campaign|Last Published|Threat Report|
 >|---|---|---|---|---|---|---|
->| 158959 | Agent Tesla collects sensitive information, such as saved credentials for web, ftp, email, and instant messaging clients. Additionally, Tesla gathers data about the victim's PC and captures keystrokes. | Malicious | Order-themed email delivering Agent Tesla keylogger via CVE-2017-11882. | Order - CVE-2017-11882, Agent Tesla Keylogger | 2021-03-18 19:47:48 | [https://www.threathq.com/api/l/activethreatreport/158959/html](https://www.threathq.com/api/l/activethreatreport/158959/html) |
+>| 158959 |type | Malicious |  summary | campaign name | 2021-03-18 19:47:48 | Link |
 
 
 ### email
@@ -960,7 +633,7 @@ Checks the reputation of an email address.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | email | Sender email address to check. | Required | 
-| days_back | Limit the number of days from wich we should start returning data. 90 days limit is recomended by Cofense. | Optional | 
+| days_back | Limit the number of days from wich we should start returning data. 90 days limit is recommended by Cofense. | Optional | 
 
 
 #### Context Output
@@ -1032,75 +705,29 @@ Checks the reputation of an email address.
 
 
 #### Command Example
-```!email email=info@sankapatrol.com using=CofenseIntelligenceV2_instance_1_copy```
+```!email email=email@email.com using=CofenseIntelligenceV2_instance_1_copy```
 
 #### Context Example
 ```json
 {
     "CofenseIntelligence": {
         "Email": {
-            "Data": "info@sankapatrol.com",
+            "Data": "email@email.com",
             "Threats": [
                 {
-                    "apiReportURL": "https://www.threathq.com/apiv1/t3/malware/158959/html",
+                    "apiReportURL": "report",
                     "blockSet": [
                         {
                             "blockType": "Email",
                             "confidence": 0,
-                            "data": "info@sankapatrol.com",
-                            "data_1": "info@sankapatrol.com",
+                            "data": "email@email.com",
+                            "data_1": "email@email.com",
                             "impact": "Major",
                             "malwareFamily": {
-                                "description": "Agent Tesla collects sensitive information, such as saved credentials for web, ftp, email, and instant messaging clients. Additionally, Tesla gathers data about the victim's PC and captures keystrokes.",
                                 "familyName": "Agent Tesla"
                             },
                             "role": "C2",
                             "roleDescription": "Command and control location used by malware"
-                        },
-                        {
-                            "blockType": "URL",
-                            "confidence": 0,
-                            "data": "http://zytrox.tk/modex/bobbyx.exe",
-                            "data_1": {
-                                "domain": "zytrox.tk",
-                                "host": "zytrox.tk",
-                                "path": "/modex/bobbyx.exe",
-                                "protocol": "http",
-                                "url": "http://zytrox.tk/modex/bobbyx.exe"
-                            },
-                            "deliveryMechanism": {
-                                "description": "Microsoft Office exploit taking advantage of flaw in Microsoft Equation Editor allowing for arbitrary code execution",
-                                "mechanismName": "CVE-2017-11882"
-                            },
-                            "impact": "Major",
-                            "role": "Payload",
-                            "roleDescription": "Location from which a payload is obtained"
-                        },
-                        {
-                            "blockType": "IPv4 Address",
-                            "confidence": 0,
-                            "data": "45.84.196.197",
-                            "data_1": "45.84.196.197",
-                            "deliveryMechanism": {
-                                "description": "Microsoft Office exploit taking advantage of flaw in Microsoft Equation Editor allowing for arbitrary code execution",
-                                "mechanismName": "CVE-2017-11882"
-                            },
-                            "impact": "Minor",
-                            "role": "Payload",
-                            "roleDescription": "Location from which a payload is obtained"
-                        },
-                        {
-                            "blockType": "Domain Name",
-                            "confidence": 0,
-                            "data": "zytrox.tk",
-                            "data_1": "zytrox.tk",
-                            "deliveryMechanism": {
-                                "description": "Microsoft Office exploit taking advantage of flaw in Microsoft Equation Editor allowing for arbitrary code execution",
-                                "mechanismName": "CVE-2017-11882"
-                            },
-                            "impact": "Moderate",
-                            "role": "Payload",
-                            "roleDescription": "Location from which a payload is obtained"
                         }
                     ],
                     "campaignBrandSet": [
@@ -1122,60 +749,12 @@ Checks the reputation of an email address.
                             }
                         }
                     ],
-                    "deliveryMechanisms": [
-                        {
-                            "description": "Microsoft Office exploit taking advantage of flaw in Microsoft Equation Editor allowing for arbitrary code execution",
-                            "mechanismName": "CVE-2017-11882"
-                        }
-                    ],
                     "domainSet": [],
-                    "executableSet": [
-                        {
-                            "dateEntered": 1616096828270,
-                            "fileName": "bobbyx.exe",
-                            "fileNameExtension": "exe",
-                            "malwareFamily": {
-                                "description": "Agent Tesla collects sensitive information, such as saved credentials for web, ftp, email, and instant messaging clients. Additionally, Tesla gathers data about the victim's PC and captures keystrokes.",
-                                "familyName": "Agent Tesla"
-                            },
-                            "md5Hex": "9798ba6199168e6d2cf205760ea683d1",
-                            "severityLevel": "Major",
-                            "type": "Download",
-                            "vendorDetections": []
-                        },
-                        {
-                            "dateEntered": 1615989305686,
-                            "deliveryMechanism": {
-                                "description": "Microsoft Office exploit taking advantage of flaw in Microsoft Equation Editor allowing for arbitrary code execution",
-                                "mechanismName": "CVE-2017-11882"
-                            },
-                            "fileName": "Purchase order.doc",
-                            "fileNameExtension": "doc",
-                            "md5Hex": "eb8dd4479c7e56f370965efd1f5bfe42",
-                            "severityLevel": "Major",
-                            "sha1Hex": "80c64b74ec6491f1bacd7ce452af9a981708516d",
-                            "sha224Hex": "3c61eeb7eadb596c7f329e119cd7ad3b6f1c9ecfa7325469cd11b43b",
-                            "sha256Hex": "958b88da50d90cea5d54285d31cde79ef7841df6604aa8cfd0a52c87e714aa93",
-                            "sha384Hex": "56e2a7b7141078ebf97c75ab0929dda4de8e816edc8a5f3e9ccfaf8d30375b89898dcf729a65c6c838b4ed8e4606a248",
-                            "sha512Hex": "310719a3af341572024e2fcf387708337da51e6e9c3164e0c42a84abec0f3c518ee8ccc15563fc838323a29cd122bb938b574224d797fe7136ebaa5ffb577f7a",
-                            "ssdeep": "3072:zkV0AvFTnx1//kUWwyJi7eLbkrMrN6EetrKYWZ6gq6AVKlG5hEBYRPek02e:zkmKFvkeeLbyA6EeNXvgGVKlchEBgPKP",
-                            "type": "Attachment",
-                            "vendorDetections": []
-                        }
-                    ],
-                    "executiveSummary": "Order-themed email delivering Agent Tesla keylogger via CVE-2017-11882.",
+                    "executableSet": [],
+                        
+                    "executiveSummary": "summary",
                     "extractedStringSet": [],
-                    "feeds": [
-                        {
-                            "displayName": "Cofense",
-                            "id": 23,
-                            "permissions": {
-                                "OWNER": false,
-                                "READ": true,
-                                "WRITE": false
-                            }
-                        }
-                    ],
+ 
                     "firstPublished": 1616096866503,
                     "hasReport": true,
                     "id": 158959,
@@ -1183,13 +762,12 @@ Checks the reputation of an email address.
                     "lastPublished": 1616096868262,
                     "malwareFamilySet": [
                         {
-                            "description": "Agent Tesla collects sensitive information, such as saved credentials for web, ftp, email, and instant messaging clients. Additionally, Tesla gathers data about the victim's PC and captures keystrokes.",
                             "familyName": "Agent Tesla"
                         }
                     ],
                     "naicsCodes": [],
                     "relatedSearchTags": [],
-                    "reportURL": "https://www.threathq.com/api/l/activethreatreport/158959/html",
+                    "reportURL": "report",
                     "senderEmailSet": [],
                     "senderIpSet": [],
                     "senderNameSet": [],
@@ -1200,21 +778,21 @@ Checks the reputation of an email address.
                             "totalCount": 1
                         }
                     ],
-                    "threatDetailURL": "https://www.threathq.com/p42/search/default?m=158959",
+                    "threatDetailURL": "url",
                     "threatType": "MALWARE"
                 }
             ]
         }
     },
     "DBotScore": {
-        "Indicator": "info@sankapatrol.com",
+        "Indicator": "email@email.com",
         "Reliability": "B - Usually reliable",
         "Score": 3,
         "Type": "email",
         "Vendor": "CofenseIntelligenceV2"
     },
     "Email": {
-        "Address": "info@sankapatrol.com",
+        "Address": "email@email.com",
         "Domain": "sankapatrol.com"
     }
 }
@@ -1222,10 +800,10 @@ Checks the reputation of an email address.
 
 #### Human Readable Output
 
->### Cofense email Reputation for email info@sankapatrol.com
+>### Cofense email Reputation for email email@email.com
 >|Threat ID|Threat Types|Verdict|Executive Summary|Campaign|Last Published|Threat Report|
 >|---|---|---|---|---|---|---|
->| 158959 | Agent Tesla collects sensitive information, such as saved credentials for web, ftp, email, and instant messaging clients. Additionally, Tesla gathers data about the victim's PC and captures keystrokes. | Malicious | Order-themed email delivering Agent Tesla keylogger via CVE-2017-11882. | Order - CVE-2017-11882, Agent Tesla Keylogger | 2021-03-18 19:47:48 | [https://www.threathq.com/api/l/activethreatreport/158959/html](https://www.threathq.com/api/l/activethreatreport/158959/html) |
+>| 158959 | Type | Malicious | Summary | Campaign name | 2021-03-18 19:47:48 | link |
 
 
 ### url
@@ -1241,7 +819,7 @@ Checks the reputation of a URL.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | url | URL to check. | Required | 
-| days_back | Limit the number of days from wich we should start returning data. 90 days limit is recomended by Cofense. | Optional | 
+| days_back | Limit the number of days from which we should start returning data. 90 days limit is url by Cofense. | Optional | 
 
 
 #### Context Output
@@ -1313,26 +891,26 @@ Checks the reputation of a URL.
 
 
 #### Command Example
-```!url url=http://www.radissonhotelsusa.com/cp5/ using=CofenseIntelligenceV2_instance_1_copy```
+```!url url=url using=CofenseIntelligenceV2_instance```
 
 #### Context Example
 ```json
 {
     "CofenseIntelligence": {
         "URL": {
-            "Data": "http://www.radissonhotelsusa.com/cp5/",
+            "Data": "url",
             "Threats": [
                 {
-                    "apiReportURL": "https://www.threathq.com/apiv1/t3/malware/125002/html",
+                    "apiReportURL": "report",
                     "blockSet": [
                         {
                             "blockType": "Domain Name",
                             "confidence": 0,
-                            "data": "www.glcpunix.com",
-                            "data_1": "www.glcpunix.com",
+                            "data": "url",
+                            "data_1": "url",
                             "impact": "Moderate",
                             "malwareFamily": {
-                                "description": "FormGrabber is a browser focused keylogger coded in ASM/C. It can record keystrokes, form input, clipboard contents, take screenshots, and recover stored credentials from many different applications.",
+                                "description": "description",
                                 "familyName": "FormGrabber"
                             },
                             "role": "C2",
@@ -1342,677 +920,13 @@ Checks the reputation of a URL.
                             "blockType": "URL",
                             "confidence": 0,
                             "data": "http://www.itool.group/cp5/",
-                            "data_1": {
-                                "domain": "itool.group",
-                                "host": "www.itool.group",
-                                "path": "/cp5/",
-                                "protocol": "http",
-                                "url": "http://www.itool.group/cp5/"
-                            },
                             "impact": "Major",
                             "malwareFamily": {
-                                "description": "FormGrabber is a browser focused keylogger coded in ASM/C. It can record keystrokes, form input, clipboard contents, take screenshots, and recover stored credentials from many different applications.",
                                 "familyName": "FormGrabber"
                             },
                             "role": "C2",
                             "roleDescription": "Command and control location used by malware"
                         },
-                        {
-                            "blockType": "IPv4 Address",
-                            "confidence": 0,
-                            "data": "184.28.50.50",
-                            "data_1": "184.28.50.50",
-                            "impact": "Minor",
-                            "ipDetail": {
-                                "asn": 20940,
-                                "asnOrganization": "Akamai International B.V.",
-                                "continentCode": "NA",
-                                "continentName": "North America",
-                                "countryIsoCode": "US",
-                                "countryName": "United States",
-                                "ip": "184.28.50.50",
-                                "isp": "Akamai Technologies",
-                                "latitude": 41.396,
-                                "longitude": -71.6631,
-                                "lookupOn": 1616428612889,
-                                "metroCode": 521,
-                                "organization": "Akamai Technologies",
-                                "postalCode": "02813",
-                                "subdivisionIsoCode": "RI",
-                                "subdivisionName": "Rhode Island",
-                                "timeZone": "America/New_York"
-                            },
-                            "malwareFamily": {
-                                "description": "FormGrabber is a browser focused keylogger coded in ASM/C. It can record keystrokes, form input, clipboard contents, take screenshots, and recover stored credentials from many different applications.",
-                                "familyName": "FormGrabber"
-                            },
-                            "role": "C2",
-                            "roleDescription": "Command and control location used by malware"
-                        },
-                        {
-                            "blockType": "Domain Name",
-                            "confidence": 0,
-                            "data": "www.mwakossolutions.com",
-                            "data_1": "www.mwakossolutions.com",
-                            "impact": "Moderate",
-                            "malwareFamily": {
-                                "description": "FormGrabber is a browser focused keylogger coded in ASM/C. It can record keystrokes, form input, clipboard contents, take screenshots, and recover stored credentials from many different applications.",
-                                "familyName": "FormGrabber"
-                            },
-                            "role": "C2",
-                            "roleDescription": "Command and control location used by malware"
-                        },
-                        {
-                            "blockType": "IPv4 Address",
-                            "confidence": 0,
-                            "data": "184.28.50.40",
-                            "data_1": "184.28.50.40",
-                            "impact": "Minor",
-                            "ipDetail": {
-                                "asn": 20940,
-                                "asnOrganization": "Akamai International B.V.",
-                                "continentCode": "NA",
-                                "continentName": "North America",
-                                "countryIsoCode": "US",
-                                "countryName": "United States",
-                                "ip": "184.28.50.40",
-                                "isp": "Akamai Technologies",
-                                "latitude": 41.396,
-                                "longitude": -71.6631,
-                                "lookupOn": 1616428611405,
-                                "metroCode": 521,
-                                "organization": "Akamai Technologies",
-                                "postalCode": "02813",
-                                "subdivisionIsoCode": "RI",
-                                "subdivisionName": "Rhode Island",
-                                "timeZone": "America/New_York"
-                            },
-                            "malwareFamily": {
-                                "description": "FormGrabber is a browser focused keylogger coded in ASM/C. It can record keystrokes, form input, clipboard contents, take screenshots, and recover stored credentials from many different applications.",
-                                "familyName": "FormGrabber"
-                            },
-                            "role": "C2",
-                            "roleDescription": "Command and control location used by malware"
-                        },
-                        {
-                            "blockType": "URL",
-                            "confidence": 0,
-                            "data": "http://www.radissonhotelsusa.com/cp5/",
-                            "data_1": {
-                                "domain": "radissonhotelsusa.com",
-                                "host": "www.radissonhotelsusa.com",
-                                "path": "/cp5/",
-                                "protocol": "http",
-                                "url": "http://www.radissonhotelsusa.com/cp5/"
-                            },
-                            "impact": "Major",
-                            "malwareFamily": {
-                                "description": "FormGrabber is a browser focused keylogger coded in ASM/C. It can record keystrokes, form input, clipboard contents, take screenshots, and recover stored credentials from many different applications.",
-                                "familyName": "FormGrabber"
-                            },
-                            "role": "C2",
-                            "roleDescription": "Command and control location used by malware"
-                        },
-                        {
-                            "blockType": "Domain Name",
-                            "confidence": 0,
-                            "data": "www.lzbnwy.com",
-                            "data_1": "www.lzbnwy.com",
-                            "impact": "Moderate",
-                            "malwareFamily": {
-                                "description": "FormGrabber is a browser focused keylogger coded in ASM/C. It can record keystrokes, form input, clipboard contents, take screenshots, and recover stored credentials from many different applications.",
-                                "familyName": "FormGrabber"
-                            },
-                            "role": "C2",
-                            "roleDescription": "Command and control location used by malware"
-                        },
-                        {
-                            "blockType": "IPv4 Address",
-                            "confidence": 0,
-                            "data": "45.116.166.177",
-                            "data_1": "45.116.166.177",
-                            "impact": "Minor",
-                            "ipDetail": {
-                                "asn": 23456,
-                                "continentCode": "AS",
-                                "continentName": "Asia",
-                                "countryIsoCode": "IN",
-                                "countryName": "India",
-                                "ip": "45.116.166.177",
-                                "isp": "Seema Infotech",
-                                "latitude": 20,
-                                "longitude": 77,
-                                "lookupOn": 1616428612903,
-                                "organization": "Seema Infotech",
-                                "timeZone": "Asia/Kolkata"
-                            },
-                            "malwareFamily": {
-                                "description": "FormGrabber is a browser focused keylogger coded in ASM/C. It can record keystrokes, form input, clipboard contents, take screenshots, and recover stored credentials from many different applications.",
-                                "familyName": "FormGrabber"
-                            },
-                            "role": "C2",
-                            "roleDescription": "Command and control location used by malware"
-                        },
-                        {
-                            "blockType": "Domain Name",
-                            "confidence": 0,
-                            "data": "www.wateryourlandscape.com",
-                            "data_1": "www.wateryourlandscape.com",
-                            "impact": "Moderate",
-                            "malwareFamily": {
-                                "description": "FormGrabber is a browser focused keylogger coded in ASM/C. It can record keystrokes, form input, clipboard contents, take screenshots, and recover stored credentials from many different applications.",
-                                "familyName": "FormGrabber"
-                            },
-                            "role": "C2",
-                            "roleDescription": "Command and control location used by malware"
-                        },
-                        {
-                            "blockType": "URL",
-                            "confidence": 0,
-                            "data": "http://www.wateryourlandscape.com/cp5/",
-                            "data_1": {
-                                "domain": "wateryourlandscape.com",
-                                "host": "www.wateryourlandscape.com",
-                                "path": "/cp5/",
-                                "protocol": "http",
-                                "url": "http://www.wateryourlandscape.com/cp5/"
-                            },
-                            "impact": "Major",
-                            "malwareFamily": {
-                                "description": "FormGrabber is a browser focused keylogger coded in ASM/C. It can record keystrokes, form input, clipboard contents, take screenshots, and recover stored credentials from many different applications.",
-                                "familyName": "FormGrabber"
-                            },
-                            "role": "C2",
-                            "roleDescription": "Command and control location used by malware"
-                        },
-                        {
-                            "blockType": "Domain Name",
-                            "confidence": 0,
-                            "data": "www.bifa510.com",
-                            "data_1": "www.bifa510.com",
-                            "impact": "Moderate",
-                            "malwareFamily": {
-                                "description": "FormGrabber is a browser focused keylogger coded in ASM/C. It can record keystrokes, form input, clipboard contents, take screenshots, and recover stored credentials from many different applications.",
-                                "familyName": "FormGrabber"
-                            },
-                            "role": "C2",
-                            "roleDescription": "Command and control location used by malware"
-                        },
-                        {
-                            "blockType": "IPv4 Address",
-                            "confidence": 37,
-                            "data": "37.97.254.27",
-                            "data_1": "37.97.254.27",
-                            "impact": "Minor",
-                            "ipDetail": {
-                                "asn": 20857,
-                                "asnOrganization": "Transip B.V.",
-                                "continentCode": "EU",
-                                "continentName": "Europe",
-                                "countryIsoCode": "NL",
-                                "countryName": "Netherlands",
-                                "ip": "37.97.254.27",
-                                "isp": "Transip B.V.",
-                                "latitude": 52.3824,
-                                "longitude": 4.8995,
-                                "lookupOn": 1616428612334,
-                                "organization": "Transip B.V.",
-                                "timeZone": "Europe/Amsterdam"
-                            },
-                            "malwareFamily": {
-                                "description": "FormGrabber is a browser focused keylogger coded in ASM/C. It can record keystrokes, form input, clipboard contents, take screenshots, and recover stored credentials from many different applications.",
-                                "familyName": "FormGrabber"
-                            },
-                            "role": "C2",
-                            "roleDescription": "Command and control location used by malware"
-                        },
-                        {
-                            "blockType": "IPv4 Address",
-                            "confidence": 0,
-                            "data": "154.214.155.96",
-                            "data_1": "154.214.155.96",
-                            "impact": "Minor",
-                            "ipDetail": {
-                                "asn": 35916,
-                                "asnOrganization": "MULTACOM CORPORATION",
-                                "continentCode": "NA",
-                                "continentName": "North America",
-                                "countryIsoCode": "US",
-                                "countryName": "United States",
-                                "ip": "154.214.155.96",
-                                "isp": "Multacom Corporation",
-                                "latitude": 34.0544,
-                                "longitude": -118.244,
-                                "lookupOn": 1616428610664,
-                                "metroCode": 803,
-                                "organization": "Multacom Corporation",
-                                "postalCode": "90009",
-                                "subdivisionIsoCode": "CA",
-                                "subdivisionName": "California",
-                                "timeZone": "America/Los_Angeles"
-                            },
-                            "malwareFamily": {
-                                "description": "FormGrabber is a browser focused keylogger coded in ASM/C. It can record keystrokes, form input, clipboard contents, take screenshots, and recover stored credentials from many different applications.",
-                                "familyName": "FormGrabber"
-                            },
-                            "role": "C2",
-                            "roleDescription": "Command and control location used by malware"
-                        },
-                        {
-                            "blockType": "Domain Name",
-                            "confidence": 0,
-                            "data": "www.osrs-remastered.com",
-                            "data_1": "www.osrs-remastered.com",
-                            "impact": "Moderate",
-                            "malwareFamily": {
-                                "description": "FormGrabber is a browser focused keylogger coded in ASM/C. It can record keystrokes, form input, clipboard contents, take screenshots, and recover stored credentials from many different applications.",
-                                "familyName": "FormGrabber"
-                            },
-                            "role": "C2",
-                            "roleDescription": "Command and control location used by malware"
-                        },
-                        {
-                            "blockType": "Domain Name",
-                            "confidence": 0,
-                            "data": "www.best20hookups.com",
-                            "data_1": "www.best20hookups.com",
-                            "impact": "Moderate",
-                            "malwareFamily": {
-                                "description": "FormGrabber is a browser focused keylogger coded in ASM/C. It can record keystrokes, form input, clipboard contents, take screenshots, and recover stored credentials from many different applications.",
-                                "familyName": "FormGrabber"
-                            },
-                            "role": "C2",
-                            "roleDescription": "Command and control location used by malware"
-                        },
-                        {
-                            "blockType": "Domain Name",
-                            "confidence": 0,
-                            "data": "www.carscompetition.com",
-                            "data_1": "www.carscompetition.com",
-                            "impact": "Moderate",
-                            "malwareFamily": {
-                                "description": "FormGrabber is a browser focused keylogger coded in ASM/C. It can record keystrokes, form input, clipboard contents, take screenshots, and recover stored credentials from many different applications.",
-                                "familyName": "FormGrabber"
-                            },
-                            "role": "C2",
-                            "roleDescription": "Command and control location used by malware"
-                        },
-                        {
-                            "blockType": "Domain Name",
-                            "confidence": 0,
-                            "data": "www.dopeneeds.com",
-                            "data_1": "www.dopeneeds.com",
-                            "impact": "Moderate",
-                            "malwareFamily": {
-                                "description": "FormGrabber is a browser focused keylogger coded in ASM/C. It can record keystrokes, form input, clipboard contents, take screenshots, and recover stored credentials from many different applications.",
-                                "familyName": "FormGrabber"
-                            },
-                            "role": "C2",
-                            "roleDescription": "Command and control location used by malware"
-                        },
-                        {
-                            "blockType": "URL",
-                            "confidence": 0,
-                            "data": "http://www.bifa510.com/cp5/",
-                            "data_1": {
-                                "domain": "bifa510.com",
-                                "host": "www.bifa510.com",
-                                "path": "/cp5/",
-                                "protocol": "http",
-                                "url": "http://www.bifa510.com/cp5/"
-                            },
-                            "impact": "Major",
-                            "malwareFamily": {
-                                "description": "FormGrabber is a browser focused keylogger coded in ASM/C. It can record keystrokes, form input, clipboard contents, take screenshots, and recover stored credentials from many different applications.",
-                                "familyName": "FormGrabber"
-                            },
-                            "role": "C2",
-                            "roleDescription": "Command and control location used by malware"
-                        },
-                        {
-                            "blockType": "IPv4 Address",
-                            "confidence": 0,
-                            "data": "156.252.78.39",
-                            "data_1": "156.252.78.39",
-                            "impact": "Minor",
-                            "ipDetail": {
-                                "asn": 37353,
-                                "asnOrganization": "MacroLAN",
-                                "continentCode": "AF",
-                                "continentName": "Africa",
-                                "countryIsoCode": "ZA",
-                                "countryName": "South Africa",
-                                "ip": "156.252.78.39",
-                                "isp": "MacroLAN",
-                                "latitude": -26.2309,
-                                "longitude": 28.0583,
-                                "lookupOn": 1616428610272,
-                                "organization": "MacroLAN",
-                                "postalCode": "2000",
-                                "subdivisionIsoCode": "GT",
-                                "subdivisionName": "Gauteng",
-                                "timeZone": "Africa/Johannesburg"
-                            },
-                            "malwareFamily": {
-                                "description": "FormGrabber is a browser focused keylogger coded in ASM/C. It can record keystrokes, form input, clipboard contents, take screenshots, and recover stored credentials from many different applications.",
-                                "familyName": "FormGrabber"
-                            },
-                            "role": "C2",
-                            "roleDescription": "Command and control location used by malware"
-                        },
-                        {
-                            "blockType": "URL",
-                            "confidence": 0,
-                            "data": "http://www.gdhymc.com/cp5/",
-                            "data_1": {
-                                "domain": "gdhymc.com",
-                                "host": "www.gdhymc.com",
-                                "path": "/cp5/",
-                                "protocol": "http",
-                                "url": "http://www.gdhymc.com/cp5/"
-                            },
-                            "impact": "Major",
-                            "malwareFamily": {
-                                "description": "FormGrabber is a browser focused keylogger coded in ASM/C. It can record keystrokes, form input, clipboard contents, take screenshots, and recover stored credentials from many different applications.",
-                                "familyName": "FormGrabber"
-                            },
-                            "role": "C2",
-                            "roleDescription": "Command and control location used by malware"
-                        },
-                        {
-                            "blockType": "URL",
-                            "confidence": 0,
-                            "data": "http://www.dopeneeds.com/cp5/",
-                            "data_1": {
-                                "domain": "dopeneeds.com",
-                                "host": "www.dopeneeds.com",
-                                "path": "/cp5/",
-                                "protocol": "http",
-                                "url": "http://www.dopeneeds.com/cp5/"
-                            },
-                            "impact": "Major",
-                            "malwareFamily": {
-                                "description": "FormGrabber is a browser focused keylogger coded in ASM/C. It can record keystrokes, form input, clipboard contents, take screenshots, and recover stored credentials from many different applications.",
-                                "familyName": "FormGrabber"
-                            },
-                            "role": "C2",
-                            "roleDescription": "Command and control location used by malware"
-                        },
-                        {
-                            "blockType": "Domain Name",
-                            "confidence": 0,
-                            "data": "www.radissonhotelsusa.com",
-                            "data_1": "www.radissonhotelsusa.com",
-                            "impact": "Moderate",
-                            "malwareFamily": {
-                                "description": "FormGrabber is a browser focused keylogger coded in ASM/C. It can record keystrokes, form input, clipboard contents, take screenshots, and recover stored credentials from many different applications.",
-                                "familyName": "FormGrabber"
-                            },
-                            "role": "C2",
-                            "roleDescription": "Command and control location used by malware"
-                        },
-                        {
-                            "blockType": "Domain Name",
-                            "confidence": 0,
-                            "data": "www.itool.group",
-                            "data_1": "www.itool.group",
-                            "impact": "Moderate",
-                            "malwareFamily": {
-                                "description": "FormGrabber is a browser focused keylogger coded in ASM/C. It can record keystrokes, form input, clipboard contents, take screenshots, and recover stored credentials from many different applications.",
-                                "familyName": "FormGrabber"
-                            },
-                            "role": "C2",
-                            "roleDescription": "Command and control location used by malware"
-                        },
-                        {
-                            "blockType": "URL",
-                            "confidence": 0,
-                            "data": "http://www.lzbnwy.com/cp5/",
-                            "data_1": {
-                                "domain": "lzbnwy.com",
-                                "host": "www.lzbnwy.com",
-                                "path": "/cp5/",
-                                "protocol": "http",
-                                "url": "http://www.lzbnwy.com/cp5/"
-                            },
-                            "impact": "Major",
-                            "malwareFamily": {
-                                "description": "FormGrabber is a browser focused keylogger coded in ASM/C. It can record keystrokes, form input, clipboard contents, take screenshots, and recover stored credentials from many different applications.",
-                                "familyName": "FormGrabber"
-                            },
-                            "role": "C2",
-                            "roleDescription": "Command and control location used by malware"
-                        },
-                        {
-                            "blockType": "IPv4 Address",
-                            "confidence": 0,
-                            "data": "111.230.19.237",
-                            "data_1": "111.230.19.237",
-                            "impact": "Minor",
-                            "ipDetail": {
-                                "continentCode": "AS",
-                                "continentName": "Asia",
-                                "countryIsoCode": "CN",
-                                "countryName": "China",
-                                "ip": "111.230.19.237",
-                                "isp": "Beijing Faster Internet Technology Co.,Ltd",
-                                "latitude": 39.9289,
-                                "longitude": 116.3883,
-                                "lookupOn": 1616428610295,
-                                "organization": "Tencent cloud computing",
-                                "subdivisionIsoCode": "11",
-                                "subdivisionName": "Beijing",
-                                "timeZone": "Asia/Shanghai"
-                            },
-                            "malwareFamily": {
-                                "description": "FormGrabber is a browser focused keylogger coded in ASM/C. It can record keystrokes, form input, clipboard contents, take screenshots, and recover stored credentials from many different applications.",
-                                "familyName": "FormGrabber"
-                            },
-                            "role": "C2",
-                            "roleDescription": "Command and control location used by malware"
-                        },
-                        {
-                            "blockType": "IPv4 Address",
-                            "confidence": 0,
-                            "data": "50.62.144.5",
-                            "data_1": "50.62.144.5",
-                            "impact": "Minor",
-                            "ipDetail": {
-                                "asn": 26496,
-                                "asnOrganization": "GoDaddy.com, LLC",
-                                "continentCode": "NA",
-                                "continentName": "North America",
-                                "countryIsoCode": "US",
-                                "countryName": "United States",
-                                "ip": "50.62.144.5",
-                                "isp": "GoDaddy.com, LLC",
-                                "latitude": 33.6119,
-                                "longitude": -111.8906,
-                                "lookupOn": 1616428612877,
-                                "metroCode": 753,
-                                "organization": "GoDaddy.com, LLC",
-                                "postalCode": "85260",
-                                "subdivisionIsoCode": "AZ",
-                                "subdivisionName": "Arizona",
-                                "timeZone": "America/Phoenix"
-                            },
-                            "malwareFamily": {
-                                "description": "FormGrabber is a browser focused keylogger coded in ASM/C. It can record keystrokes, form input, clipboard contents, take screenshots, and recover stored credentials from many different applications.",
-                                "familyName": "FormGrabber"
-                            },
-                            "role": "C2",
-                            "roleDescription": "Command and control location used by malware"
-                        },
-                        {
-                            "blockType": "Domain Name",
-                            "confidence": 0,
-                            "data": "www.theautocareshop.com",
-                            "data_1": "www.theautocareshop.com",
-                            "impact": "Moderate",
-                            "malwareFamily": {
-                                "description": "FormGrabber is a browser focused keylogger coded in ASM/C. It can record keystrokes, form input, clipboard contents, take screenshots, and recover stored credentials from many different applications.",
-                                "familyName": "FormGrabber"
-                            },
-                            "role": "C2",
-                            "roleDescription": "Command and control location used by malware"
-                        },
-                        {
-                            "blockType": "Domain Name",
-                            "confidence": 0,
-                            "data": "www.gdhymc.com",
-                            "data_1": "www.gdhymc.com",
-                            "impact": "Moderate",
-                            "malwareFamily": {
-                                "description": "FormGrabber is a browser focused keylogger coded in ASM/C. It can record keystrokes, form input, clipboard contents, take screenshots, and recover stored credentials from many different applications.",
-                                "familyName": "FormGrabber"
-                            },
-                            "role": "C2",
-                            "roleDescription": "Command and control location used by malware"
-                        },
-                        {
-                            "blockType": "URL",
-                            "confidence": 0,
-                            "data": "http://www.carscompetition.com/cp5/",
-                            "data_1": {
-                                "domain": "carscompetition.com",
-                                "host": "www.carscompetition.com",
-                                "path": "/cp5/",
-                                "protocol": "http",
-                                "url": "http://www.carscompetition.com/cp5/"
-                            },
-                            "impact": "Major",
-                            "malwareFamily": {
-                                "description": "FormGrabber is a browser focused keylogger coded in ASM/C. It can record keystrokes, form input, clipboard contents, take screenshots, and recover stored credentials from many different applications.",
-                                "familyName": "FormGrabber"
-                            },
-                            "role": "C2",
-                            "roleDescription": "Command and control location used by malware"
-                        },
-                        {
-                            "blockType": "Domain Name",
-                            "confidence": 0,
-                            "data": "www.sensualblogs.com",
-                            "data_1": "www.sensualblogs.com",
-                            "impact": "Moderate",
-                            "malwareFamily": {
-                                "description": "FormGrabber is a browser focused keylogger coded in ASM/C. It can record keystrokes, form input, clipboard contents, take screenshots, and recover stored credentials from many different applications.",
-                                "familyName": "FormGrabber"
-                            },
-                            "role": "C2",
-                            "roleDescription": "Command and control location used by malware"
-                        },
-                        {
-                            "blockType": "URL",
-                            "confidence": 0,
-                            "data": "http://www.sensualblogs.com/cp5/",
-                            "data_1": {
-                                "domain": "sensualblogs.com",
-                                "host": "www.sensualblogs.com",
-                                "path": "/cp5/",
-                                "protocol": "http",
-                                "url": "http://www.sensualblogs.com/cp5/"
-                            },
-                            "impact": "Major",
-                            "malwareFamily": {
-                                "description": "FormGrabber is a browser focused keylogger coded in ASM/C. It can record keystrokes, form input, clipboard contents, take screenshots, and recover stored credentials from many different applications.",
-                                "familyName": "FormGrabber"
-                            },
-                            "role": "C2",
-                            "roleDescription": "Command and control location used by malware"
-                        },
-                        {
-                            "blockType": "IPv4 Address",
-                            "confidence": 0,
-                            "data": "107.160.176.77",
-                            "data_1": "107.160.176.77",
-                            "impact": "Minor",
-                            "ipDetail": {
-                                "asn": 40676,
-                                "asnOrganization": "Psychz Networks",
-                                "continentCode": "NA",
-                                "continentName": "North America",
-                                "countryIsoCode": "US",
-                                "countryName": "United States",
-                                "ip": "107.160.176.77",
-                                "isp": "Psychz Networks",
-                                "latitude": 34.0584,
-                                "longitude": -118.278,
-                                "lookupOn": 1616428610396,
-                                "metroCode": 803,
-                                "organization": "Psychz Networks",
-                                "postalCode": "90017",
-                                "subdivisionIsoCode": "CA",
-                                "subdivisionName": "California",
-                                "timeZone": "America/Los_Angeles"
-                            },
-                            "malwareFamily": {
-                                "description": "FormGrabber is a browser focused keylogger coded in ASM/C. It can record keystrokes, form input, clipboard contents, take screenshots, and recover stored credentials from many different applications.",
-                                "familyName": "FormGrabber"
-                            },
-                            "role": "C2",
-                            "roleDescription": "Command and control location used by malware"
-                        },
-                        {
-                            "blockType": "Domain Name",
-                            "confidence": 0,
-                            "data": "www.sailacc.com",
-                            "data_1": "www.sailacc.com",
-                            "impact": "Moderate",
-                            "malwareFamily": {
-                                "description": "FormGrabber is a browser focused keylogger coded in ASM/C. It can record keystrokes, form input, clipboard contents, take screenshots, and recover stored credentials from many different applications.",
-                                "familyName": "FormGrabber"
-                            },
-                            "role": "C2",
-                            "roleDescription": "Command and control location used by malware"
-                        },
-                        {
-                            "blockType": "IPv4 Address",
-                            "confidence": 0,
-                            "data": "168.206.166.225",
-                            "data_1": "168.206.166.225",
-                            "impact": "Minor",
-                            "ipDetail": {
-                                "continentCode": "AF",
-                                "continentName": "Africa",
-                                "countryIsoCode": "ZA",
-                                "countryName": "South Africa",
-                                "ip": "168.206.166.225",
-                                "isp": "The Atomic Energy Board",
-                                "latitude": -25.7069,
-                                "longitude": 28.2294,
-                                "lookupOn": 1616428612318,
-                                "organization": "The Atomic Energy Board",
-                                "postalCode": "0002",
-                                "subdivisionIsoCode": "GT",
-                                "subdivisionName": "Gauteng",
-                                "timeZone": "Africa/Johannesburg"
-                            },
-                            "malwareFamily": {
-                                "description": "FormGrabber is a browser focused keylogger coded in ASM/C. It can record keystrokes, form input, clipboard contents, take screenshots, and recover stored credentials from many different applications.",
-                                "familyName": "FormGrabber"
-                            },
-                            "role": "C2",
-                            "roleDescription": "Command and control location used by malware"
-                        },
-                        {
-                            "blockType": "URL",
-                            "confidence": 0,
-                            "data": "http://www.mwakossolutions.com/cp5/",
-                            "data_1": {
-                                "domain": "mwakossolutions.com",
-                                "host": "www.mwakossolutions.com",
-                                "path": "/cp5/",
-                                "protocol": "http",
-                                "url": "http://www.mwakossolutions.com/cp5/"
-                            },
-                            "impact": "Major",
-                            "malwareFamily": {
-                                "description": "FormGrabber is a browser focused keylogger coded in ASM/C. It can record keystrokes, form input, clipboard contents, take screenshots, and recover stored credentials from many different applications.",
-                                "familyName": "FormGrabber"
-                            },
-                            "role": "C2",
-                            "roleDescription": "Command and control location used by malware"
-                        }
                     ],
                     "campaignBrandSet": [
                         {
@@ -2036,40 +950,10 @@ Checks the reputation of a URL.
                     "deliveryMechanisms": [],
                     "domainSet": [],
                     "executableSet": [
-                        {
-                            "dateEntered": 1611039423839,
-                            "fileName": "3131_50SG0BK00T1,pdf.exe",
-                            "fileNameExtension": "exe",
-                            "malwareFamily": {
-                                "description": "FormGrabber is a browser focused keylogger coded in ASM/C. It can record keystrokes, form input, clipboard contents, take screenshots, and recover stored credentials from many different applications.",
-                                "familyName": "FormGrabber"
-                            },
-                            "md5Hex": "2b71bd4f414944163720bffe66296f21",
-                            "severityLevel": "Major",
-                            "sha1Hex": "7c86106022e7b4150d0ba2709f4df368c4b8bc15",
-                            "sha224Hex": "e2223dc35e93aaf29dc37299670b00e2af13fb0398e687528870810e",
-                            "sha256Hex": "9bf3bb9e44490d5836c31036a78c59c92a51d8f6bfb33363d8c617d27967ff3f",
-                            "sha384Hex": "9fd54ac13cc39942eb7529f60d9fef1eddbe2a39943327ecc1fadbdfd12eb694f550908c3bea6e37bd341b701b6f1e70",
-                            "sha512Hex": "8eeb0bbcefd0109a82c806d7740a8fe4b6f811a352d20772362302ba2ed615351a0bb3df18f1cd8d5ae28cc1ff7e3bd19333d546b4e4e0faf194ee068b905a7b",
-                            "ssdeep": "24576:053q3J/CelpgYUGw58+JgG3Sr2BqPMl7rnJ4wYbS:Ia30eTgYUnCk3G2rJ4wYbS",
-                            "type": "Attachment",
-                            "vendorDetections": []
-                        }
+                        
                     ],
                     "executiveSummary": "Finance-themed campaign delivers FormGrabber.",
                     "extractedStringSet": [],
-                    "feeds": [
-                        {
-                            "displayName": "Cofense",
-                            "id": 23,
-                            "permissions": {
-                                "OWNER": false,
-                                "READ": true,
-                                "WRITE": false
-                            }
-                        }
-                    ],
-                    "firstPublished": 1616428569154,
                     "hasReport": true,
                     "id": 125002,
                     "label": "Finance - FormGrabber",
@@ -2082,32 +966,26 @@ Checks the reputation of a URL.
                     ],
                     "naicsCodes": [],
                     "relatedSearchTags": [],
-                    "reportURL": "https://www.threathq.com/api/l/activethreatreport/125002/html",
+                    "reportURL": "url",
                     "senderEmailSet": [],
                     "senderIpSet": [],
                     "senderNameSet": [],
                     "spamUrlSet": [],
-                    "subjectSet": [
-                        {
-                            "subject": "RE: price request: 3131-50SG0BK00T1",
-                            "totalCount": 1
-                        }
-                    ],
-                    "threatDetailURL": "https://www.threathq.com/p42/search/default?m=125002",
+                    "threatDetailURL": "url",
                     "threatType": "MALWARE"
                 }
             ]
         }
     },
     "DBotScore": {
-        "Indicator": "http://www.radissonhotelsusa.com/cp5/",
+        "Indicator": "url",
         "Reliability": "B - Usually reliable",
         "Score": 3,
         "Type": "url",
         "Vendor": "CofenseIntelligenceV2"
     },
     "URL": {
-        "Data": "http://www.radissonhotelsusa.com/cp5/",
+        "Data": "url",
         "Malicious": {
             "Description": null,
             "Vendor": "CofenseIntelligenceV2"
@@ -2118,8 +996,41 @@ Checks the reputation of a URL.
 
 #### Human Readable Output
 
->### Cofense URL Reputation for url http://www.radissonhotelsusa.com/cp5/
+>### Cofense URL Reputation for url url
 >|Threat ID|Threat Types|Verdict|Executive Summary|Campaign|Last Published|Threat Report|
 >|---|---|---|---|---|---|---|
->| 125002 | FormGrabber is a browser focused keylogger coded in ASM/C. It can record keystrokes, form input, clipboard contents, take screenshots, and recover stored credentials from many different applications. | Malicious | Finance-themed campaign delivers FormGrabber. | Finance - FormGrabber | 2021-03-22 15:56:10 | [https://www.threathq.com/api/l/activethreatreport/125002/html](https://www.threathq.com/api/l/activethreatreport/125002/html) |
+>| 125002 | threat type | Malicious | summary | 2021-03-22 15:56:10 |Link |
 
+## Breaking changes from previous versions of this integration
+The following sections list the changes in this version.
+### Outputs
+The following outputs were removed in this version:
+In the *url* command:
+* *Cofense.URL.Data* - this output was replaced by *CofenseIntelligence.URL.Data*.
+* *Cofense.URL.Malicious.Vendor* - this output was replaced by *CofenseIntelligence.URL.Malicious.Vendor*.
+* *Cofense.URL.Malicious.Description* - this output was replaced by *CofenseIntelligence.URL.Malicious.Description*.
+* *Cofense.URL.Cofense.ThreatIDs* - this output was replaced by *CofenseIntelligence.URL.Cofense.ThreatIDs*.
+In the *file* command:
+* *Cofense.File.MD5* - this output was replaced by *CofenseIntelligence.File.MD5*.
+* *Cofense.File.Malicious.Vendor* - this output was replaced by *CofenseIntelligence.File.Malicious.Vendor*.
+* *Cofense.File.Malicious.Description* - this output was replaced by *CofenseIntelligence.File.Malicious.Description*.
+* *Cofense.File.ThreatIDs* - this output was replaced by *CofenseIntelligence.File.ThreatIDs*.
+In the *ip* command:
+* *Cofense.IP.Data* - this output was replaced by *CofenseIntelligence.IP.Data*.
+* *Cofense.IP.Malicious.Vendor* - this output was replaced by *CofenseIntelligence.IP.Malicious.Vendor*.
+* *Cofense.IP.Malicious.Description* - this output was replaced by *CofenseIntelligence.IP.Malicious.Description*.
+* *Cofense.IP.Cofense.ThreatIDs* - this output was replaced by *CofenseIntelligence.IP.Cofense.ThreatIDs*.
+In the *email* command:
+* *Account.Email.Address*
+* *Account.Email.Malicious.Vendor*
+* *Account.Email.Malicious.Description*
+* *Cofense.Email.Data* - this output was replaced by *CofenseIntelligence.Email.Data*.
+* *Cofense.Email.Malicious.Vendor* - this output was replaced by *CofenseIntelligence.Email.Malicious.Vendor*.
+* *Cofense.Email.Malicious.Description* - this output was replaced by *CofenseIntelligence.Email.Malicious.Description*.
+* *Cofense.Email.Cofense.ThreatIDs* - this output was replaced by *CofenseIntelligence.Email.Cofense.ThreatIDs*.
+In the *cofense-search* command:
+* *Cofense.NumOfThreats* - this output was replaced by *CofenseIntelligence.NumOfThreats*.
+* *Cofense.String* - this output was replaced by *CofenseIntelligence.String*.
+
+## Additional Considerations for this Version
+* Added an option to Limit the number of days from which we should start returning data. 90 days limit is recommended by Cofense.
