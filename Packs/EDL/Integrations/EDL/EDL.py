@@ -7,7 +7,7 @@ import re
 from base64 import b64decode
 from flask import Flask, Response, request
 from netaddr import IPAddress, IPSet
-from typing import Callable, Any, Dict, cast, Tuple
+from typing import Callable, Any, Dict, cast, Tuple, Union
 from math import ceil
 import urllib3
 import dateparser
@@ -203,7 +203,7 @@ def find_indicators_to_limit_loop(indicator_query: str, limit: int, total_fetche
         (tuple): The iocs and the last page
     """
     iocs: List[dict] = []
-    indicators_searcher_args = {
+    indicators_searcher_args: Dict[str, Union[int, str]] = {
         'page': next_page,
     }
     if not use_legacy_query:
