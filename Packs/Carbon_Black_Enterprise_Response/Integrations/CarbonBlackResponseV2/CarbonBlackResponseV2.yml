@@ -1,6 +1,6 @@
 category: Endpoint
 commonfields:
-  id: VMware Carbon Black EDR
+  id: VMware Carbon Black EDR v2
   version: -1
 configuration:
 - display: Server URL
@@ -61,7 +61,7 @@ configuration:
   type: 8
 description: VMware Carbon Black EDR (formerly known as Carbon Black Response)
 display: VMware Carbon Black EDR v2
-name: VMware Carbon Black EDR
+name: VMware Carbon Black EDR v2
 script:
   commands:
   - arguments:
@@ -2079,4 +2079,4 @@ script:
   type: python
 tests:
 - Carbon Black Edr - Test
-fromversion: 6.0.0
+fromversion: 5.5.0

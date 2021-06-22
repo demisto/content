@@ -1703,5 +1703,5 @@ view: |-
   }
 inputs: []
 outputs: []
-fromversion: 6.0.0
+fromversion: 5.5.0
 description: Tests Carbon Black EDR selected use cases and commands

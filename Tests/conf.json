@@ -1894,7 +1894,7 @@
             "fromversion": "5.0.0"
         },
         {
-            "integrations": "VMware Carbon Black EDR",
+            "integrations": "VMware Carbon Black EDR v2",
             "playbookID": "Carbon Black Edr - Test"
         },
         {

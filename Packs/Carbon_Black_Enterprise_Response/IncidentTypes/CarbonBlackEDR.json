@@ -20,7 +20,7 @@
     "disabled": false,
     "reputationCalc": 0,
     "onChangeRepAlg": 0,
-    "layout": "94affdcc-6f5a-445a-8581-165094c19f35",
+    "layout": "Carbon Black EDR Incidents",
     "detached": false,
     "extractSettings": {
         "mode": "Specific",
