@@ -1,14 +1,7 @@
-from unittest import mock
-
 import pytest
 from FeedRSS import *
 from requests.models import Response
 from test_data.test_variables import HTML_CONTENT, FEED_DATA, TEST_DATA_MAX_SIZE
-
-
-def util_open_file(path: str):
-    with open(path, mode='r') as f:
-        return f.read()
 
 
 def mock_client(mocker, dict_to_parse: dict, content_max_size: int = 45) -> Client:

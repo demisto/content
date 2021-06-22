@@ -21,7 +21,7 @@ class Client(BaseClient):
         super().__init__(base_url=server_url, proxy=proxy, verify=use_ssl)
         self.feed_tags = feed_tags
         self.tlp_color = tlp_color
-        self.content_max_size = content_max_size*1000
+        self.content_max_size = content_max_size * 1000
         feed_content = self.feed_content()
         feed_text = feed_content.text
         self.feed_data = feedparser.parse(feed_text)
@@ -31,7 +31,7 @@ class Client(BaseClient):
     def feed_content(self):
         return self._http_request(method='GET', resp_type='response')
 
-    def create_indicators_from_response(self) -> list:
+    def create_indicators_from_response(self):
         parsed_indicators: list = []
 
         for indicator in reversed(self.feed_data.entries):

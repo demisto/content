@@ -1,0 +1,1 @@
+An RSS (Really Simple Syndication) feed is an online file that contains details about every piece of content a site has published
