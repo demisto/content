@@ -461,6 +461,7 @@ Manage an Abnormal Case.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | caseId | A string representing the case. | Required | 
+| action | Action to perform on threat. | Required | 
 
 
 #### Context Output
@@ -468,7 +469,7 @@ Manage an Abnormal Case.
 There is no context output for this command.
 
 #### Command Example
-```!abxcortexxsoar-manage-an-abnormal-case caseId=12345 action=unremediate```
+```!abxcortexxsoar-manage-an-abnormal-case caseId=12345 action=action_required```
 
 #### Context Example
 ```json

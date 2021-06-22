@@ -297,6 +297,10 @@ script:
       isArray: false
       name: caseId
       required: true
+    - description: Action to perform on case
+      isArray: false
+      name: action
+      required: true
     - description: Returns test data if set to `True`
       isArray: false
       name: mock-data
