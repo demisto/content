@@ -6,7 +6,8 @@ from AbxCortexXSOAR import Client, check_the_status_of_an_action_requested_on_a_
     check_the_status_of_an_action_requested_on_a_threat_command, \
     get_a_list_of_abnormal_cases_identified_by_abnormal_security_command, get_a_list_of_threats_command, \
     get_details_of_an_abnormal_case_command, manage_a_threat_identified_by_abnormal_security_command, \
-    manage_an_abnormal_case_command, submit_an_inquiry_to_request_a_report_on_misjudgement_by_abnormal_security_command
+    manage_an_abnormal_case_command, submit_an_inquiry_to_request_a_report_on_misjudgement_by_abnormal_security_command, \
+    get_the_latest_threat_intel_feed_command
 from CommonServerPython import DemistoException
 
 from test_data.fixtures \
@@ -183,4 +184,16 @@ def test_submit_an_inquiry_to_request_a_report_on_misjudgement_by_abnormal_secur
     """
     client = mock_client(mocker, "Thank you for your feedback! We have sent your inquiry to our support staff.")
     results = submit_an_inquiry_to_request_a_report_on_misjudgement_by_abnormal_security_command(client, {})
+    assert results.outputs_prefix == 'AbxCortexXSOAR'
+
+
+def test_get_the_latest_threat_intel_feed_command(mocker):
+    """
+        When:
+            - Retrieve intel feed
+        Then
+            - Assert output prefix data is as expected
+    """
+    client = mock_client(mocker, util_load_json('test_data/test_get_threat_intel_feed.json'))
+    results = get_the_latest_threat_intel_feed_command(client, {})
     assert results.outputs_prefix == 'AbxCortexXSOAR'

@@ -55,13 +55,13 @@ class Client(BaseClient):
 
         return response
 
-    # def get_the_latest_threat_intel_feed_request(self, mock_data):
-    #
-    #     headers = self._headers
-    #
-    #     response = self._http_request('get', 'threat-intel', headers=headers)
-    #
-    #     return response
+    def get_the_latest_threat_intel_feed_request(self, mock_data):
+
+        headers = self._headers
+
+        response = self._http_request('get', 'threat-intel', headers=headers)
+
+        return response
 
     def manage_a_threat_identified_by_abnormal_security_request(self, threatId, mock_data, action):
         headers = self._headers
@@ -186,18 +186,18 @@ def get_details_of_an_abnormal_case_command(client, args):
     return command_results
 
 
-# def get_the_latest_threat_intel_feed_command(client, args):
-#     mock_data = str(args.get('mock_data', ''))
-#
-#     response = client.get_the_latest_threat_intel_feed_request(mock_data)
-#     command_results = CommandResults(
-#         outputs_prefix='AbxCortexXSOAR',
-#         outputs_key_field='',
-#         outputs=response,
-#         raw_response=response
-#     )
-#
-#     return command_results
+def get_the_latest_threat_intel_feed_command(client, args):
+    mock_data = str(args.get('mock_data', ''))
+
+    response = client.get_the_latest_threat_intel_feed_request(mock_data)
+    command_results = CommandResults(
+        outputs_prefix='AbxCortexXSOAR',
+        outputs_key_field='',
+        outputs=response,
+        raw_response=response
+    )
+
+    return command_results
 
 
 def manage_a_threat_identified_by_abnormal_security_command(client, args):
@@ -259,9 +259,11 @@ def main():
     verify_certificate = not params.get('insecure', False)
     proxy = params.get('proxy', False)
     headers = {}
+    mock_data = str(args.get('mock-data', ''))
+    if mock_data.lower() == "true":
+        headers['Mock-Data'] = "True"
     headers['Authorization'] = f'Bearer {params["api_key"]}'
     headers['Soar-Integration-Origin'] = "Cortex XSOAR"
-
 
     command = demisto.command()
     demisto.debug(f'Command being called is {command}')
@@ -283,7 +285,7 @@ def main():
                 get_details_of_a_threat_command,
             'abxcortexxsoar-get-details-of-an-abnormal-case':
                 get_details_of_an_abnormal_case_command,
-            # 'abxcortexxsoar-get-the-latest-threat-intel-feed': get_the_latest_threat_intel_feed_command,
+            'abxcortexxsoar-get-the-latest-threat-intel-feed': get_the_latest_threat_intel_feed_command,
             'abxcortexxsoar-manage-a-threat-identified-by-abnormal-security':
                 manage_a_threat_identified_by_abnormal_security_command,
             'abxcortexxsoar-manage-an-abnormal-case':

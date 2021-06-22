@@ -14,7 +14,7 @@
             "indicator_types": [
                 "malicious-activity"
             ],
-            "pattern": "[url:value = 'http://paypa1.banking.com']",
+            "pattern": "[url:value = '']",
             "pattern_type": "stix",
             "valid_from": "2015-06-29T09:10:15.915Z"
         },

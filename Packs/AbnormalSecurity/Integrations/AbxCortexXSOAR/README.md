@@ -31,7 +31,6 @@ Check the status of an action requested on a case.
 | --- | --- | --- |
 | caseId | A string representing the case. | Required | 
 | actionId | A UUID representing the action id for a case. | Required | 
-| mock-data | Returns test data if set to `True`. | Optional | 
 
 
 #### Context Output
@@ -79,7 +78,6 @@ Check the status of an action requested on a threat.
 | --- | --- | --- |
 | threatId | A UUID representing the threat. | Required | 
 | actionId | A UUID representing the action id for a threat. | Required | 
-| mock-data | Returns test data if set to `True`. | Optional | 
 
 
 #### Context Output
@@ -128,7 +126,6 @@ Get a list of Abnormal cases identified by Abnormal Security
 | filter | Value must be of the format `filter={FILTER KEY} gte YYYY-MM-DDTHH:MM:SSZ lte YYYY-MM-DDTHH:MM:SSZ`. A `{FILTER KEY}` must be specified, and currently the only key that is supported for `/cases` is `lastModifiedTime`. At least 1 of `gte`/`lte` must be specified, with a datetime string following the `YYYY-MM-DDTHH:MM:SSZ` format. | Optional | 
 | pageSize | Number of cases that on in each page. Each page of data will have at most pageSize threats. Has no effect if filter is not specified. | Optional | 
 | pageNumber | 1-indexed page number to get a particular page of cases. Has no effect if filter is not specified. | Optional | 
-| mock-data | Returns test data if set to `True`. | Optional | 
 
 
 #### Context Output
@@ -185,7 +182,6 @@ Get a list of threats
 | filter | Value must be of the format `filter={FILTER KEY} gte YYYY-MM-DDTHH:MM:SSZ lte YYYY-MM-DDTHH:MM:SSZ`. A `{FILTER KEY}` must be specified, and currently the only keys that are supported for `/threats` are `receivedTime` and `lastModifiedTime`. At least 1 of `gte`/`lte` must be specified, with a datetime string following the `YYYY-MM-DDTHH:MM:SSZ format`. | Optional | 
 | pageSize | Number of threats that on in each page. Each page of data will have at most pageSize threats. Has no effect if filter is not specified. | Optional | 
 | pageNumber | 1-indexed page number to get a particular page of threats. Has no effect if filter is not specified. | Optional | 
-| mock-data | Returns test data if set to `True`. | Optional | 
 | source | Filters threats based on the source of detection. | Optional | 
 
 
@@ -239,7 +235,6 @@ Get details of a threat
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | threatId | A UUID representing the threat. | Required | 
-| mock-data | Returns test data if set to `True`. | Optional | 
 
 
 #### Context Output
@@ -349,7 +344,6 @@ Get details of an Abnormal case
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | caseId | A string representing the case. | Required | 
-| mock-data | Returns test data if set to `True`. | Optional | 
 
 
 #### Context Output
@@ -390,6 +384,29 @@ Get details of an Abnormal case
 >| FirstName LastName | 1234 | 2020-06-09T17:42:59Z | Potential Account Takeover | 184712ab-6d8b-47b3-89d3-a314efef79e2 |
 
 
+### abxcortexxsoar-get-the-latest-threat-intel-feed
+***
+Get the latest threat intel feed.
+
+
+#### Base Command
+
+`abxcortexxsoar-get-the-latest-threat-intel-feed`
+#### Input
+
+There are no input arguments for this command.
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Command Example
+``` ```
+
+#### Human Readable Output
+
+
+
 ### abxcortexxsoar-manage-a-threat-identified-by-abnormal-security
 ***
 Manage a Threat identified by Abnormal Security
@@ -404,7 +421,6 @@ Manage a Threat identified by Abnormal Security
 | --- | --- | --- |
 | threatId | A UUID representing the threat. | Required | 
 | action | Action to perform on threat. | Required | 
-| mock-data | Returns test data if set to `True`. | Optional | 
 
 
 #### Context Output
@@ -445,7 +461,6 @@ Manage an Abnormal Case.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | caseId | A string representing the case. | Required | 
-| mock-data | Returns test data if set to `True`. | Optional | 
 
 
 #### Context Output
@@ -483,18 +498,16 @@ Submit an Inquiry to request a report on misjudgement by Abnormal Security
 `abxcortexxsoar-submit-an-inquiry-to-request-a-report-on-misjudgement-by-abnormal-security`
 #### Input
 
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| mock-data | Returns test data if set to `True`. | Optional | 
-
+There are no input arguments for this command.
 
 #### Context Output
 
 There is no context output for this command.
 
 #### Command Example
-``` ```
+```!abxcortexxsoar-submit-an-inquiry-to-request-a-report-on-misjudgement-by-abnormal-security```
 
 #### Human Readable Output
+```Thank you for your feedback! We have sent your inquiry to our support staff.```
 
 

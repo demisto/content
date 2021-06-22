@@ -6,3 +6,4 @@
 !abxcortexxsoar-get-details-of-an-abnormal-case caseId=12345
 !abxcortexxsoar-manage-a-threat-identified-by-abnormal-security threatId=xwvutsrq-9pon-mlkj-i876-54321hgfedcba action=remediate
 !abxcortexxsoar-manage-an-abnormal-case caseId=12345 action=unremediate
+!abxcortexxsoar-get-the-latest-threat-intel-feed
