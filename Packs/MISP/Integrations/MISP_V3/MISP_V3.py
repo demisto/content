@@ -432,8 +432,7 @@ def check_file(pymisp, file_hash):
 
     # misp_response will remain the raw output of misp
     misp_response = pymisp.search(value=file_hash, controller='attributes', include_context=True,
-                                  include_correlations=True, include_event_tags=True, enforce_warninglist=True,
-                                  type_attribute='file')
+                                  include_correlations=True, include_event_tags=True, enforce_warninglist=True)
     print(misp_response)
     if misp_response:
         dbot_list = list()
@@ -523,6 +522,7 @@ def parse_response_reputation_command(response):
             event_tag_list = current_event.get('Tags')
         attribute_tag_list = attribute.get('Tags')
         #  todo add the score function after we get to decisions
+    return related_events
 
 
 def get_ips_events(demisto_args, pymisp):
@@ -540,10 +540,10 @@ def check_ip(pymisp, ip):
         return_error("IP isn't valid")
 
     misp_response = pymisp.search(value=ip, controller='attributes', include_context=True,
-                                  include_correlations=True, include_event_tags=True, enforce_warninglist=True,
-                                  type_attribute='ip')
-
+                                  include_correlations=True, include_event_tags=True, enforce_warninglist=True)
     print(misp_response)
+    print(parse_response_reputation_command(misp_response))
+
     if misp_response:
         dbot_list = list()
         ip_list = list()
@@ -879,7 +879,7 @@ def check_email(pymisp, email):
     parse_response_reputation_command(response)
 
 
-def build_misp_complex_filter(demisto_query: str) -> str:
+def build_misp_complex_filter(pymisp, demisto_query: str) -> str:
     """
     Args:
         demisto_query: complex query contains saved words: 'AND:', 'OR:' and 'NOT:'
@@ -921,7 +921,7 @@ def build_misp_complex_filter(demisto_query: str) -> str:
         is_complex_search = True
 
     if is_complex_search:
-        misp_complex_query = MISP.build_complex_query(**misp_query_params)
+        misp_complex_query = pymisp.build_complex_query(**misp_query_params)
         return misp_complex_query
 
     return demisto_query
@@ -1224,13 +1224,16 @@ def search_events(pymisp, data_keys_to_save) -> CommandResults:
     Execute a MIPS search using the 'event' controller.
     """
     args = prepare_args_to_search()
+    # build MISP complex filter
+    if 'tags' in args:
+        args['tags'] = build_misp_complex_filter(pymisp, args['tags'])
     # Set the controller to events to search for events by the given args
     args['controller'] = 'events'
     response = pymisp.search(**args)
 
     if response:
         response_for_context = build_events_search_response(copy.deepcopy(response), data_keys_to_save)
-
+        # todo check the outputs to readable
         md = f'## MISP search-events returned {len(response_for_context)} events.\n'
 
         # if events were returned, display one to the war-room to visualize the result:
