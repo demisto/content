@@ -140,12 +140,42 @@ script:
     execution: false
     name: attack-pattern
     outputs:
-    - contextPath: MITRE.ATT&CK.value
-      description: The indicator value.
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
       type: string
-    - contextPath: MITRE.ATT&CK.indicatorid
-      description: Indicator ID.
+    - contextPath: DBotScore.Score
+      description: The actual score.
       type: number
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: string
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: string
+    - contextPath: AttackPattern.STIXID
+      description: The STIX ID of the Attack Pattern.
+      type: string
+    - contextPath: AttackPattern.KillChainPhases
+      description: The kill chain phases of the Attack Pattern.
+      type: string
+    - contextPath: AttackPattern.FirstSeenBySource
+      description: The first seen by source of the Attack Pattern.
+      type: string
+    - contextPath: AttackPattern.Description
+      description: The description of the Attack Pattern.
+      type: string
+    - contextPath: AttackPattern.OperatingSystemRefs
+      description: The operating system refs of the Attack Pattern.
+      type: string
+    - contextPath: AttackPattern.Publications
+      description: The publications of the Attack Pattern.
+      type: string
+    - contextPath: AttackPattern.MITREID
+      description: The MITRE ID of the Attack Pattern.
+      type: string
+    - contextPath: AttackPattern.Tags
+      description: The tags of the Attack Pattern.
+      type: string
   - arguments:
     - default: false
       description: The Attack Pattrens IDs list
