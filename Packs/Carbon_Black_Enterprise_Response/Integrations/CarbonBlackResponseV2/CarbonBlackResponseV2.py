@@ -777,7 +777,8 @@ def main() -> None:
     try:
         params = demisto.params()
         base_url = urljoin(params['url'], '/api')
-        api_token = params.get('credentials', {}).get('password')
+        if not params.get('credentials') or not (api_token := params.get('credentials', {}).get('password')):
+            raise DemistoException('Missing API Key. Fill in a valid key in the integration configuration.')
         verify_certificate = not params.get('insecure', False)
         proxy = params.get('proxy', False)
         command = demisto.command()
