@@ -14,8 +14,11 @@ from numpy import dot
 from numpy.linalg import norm
 from email.utils import parseaddr
 import tldextract
+import pytz
+
 
 no_fetch_extract = tldextract.TLDExtract(suffix_list_urls=None)
+utc = pytz.UTC
 
 SELF_IN_CONTEXT = False
 EMAIL_BODY_FIELD = 'emailbody'
@@ -150,9 +153,12 @@ def create_context_for_campaign_details(campaign_found=False, incidents_df=None,
 
         incident_df.rename({FROM_DOMAIN_FIELD: 'emailfromdomain'}, axis=1, inplace=True)
         incidents_context = incident_df.fillna(1).to_dict(orient='records')
+        datetimes: pd.DataFrame = incidents_df['created_dt'].dropna()
+        min_datetime = min(datetimes).isoformat()
         return {
             'isCampaignFound': campaign_found,
             'involvedIncidentsCount': len(incidents_df) if incidents_df is not None else 0,
+            'firstIncidentDate': min_datetime,
             INCIDENTS_CONTEXT_TD: incidents_context
         }
 
