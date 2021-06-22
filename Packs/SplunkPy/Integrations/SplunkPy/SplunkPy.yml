@@ -20,7 +20,7 @@ configuration:
     | eval rule_title=if(isnull(rule_title),rule_name,rule_title) | `get_urgency`
     | `risk_correlation` | eval rule_description=if(isnull(rule_description),source,rule_description)
     | eval security_domain=if(isnull(security_domain),source,security_domain)
-  display: Fetch notable events ES query
+  display: Fetch events query
   name: fetchQuery
   required: false
   type: 0
