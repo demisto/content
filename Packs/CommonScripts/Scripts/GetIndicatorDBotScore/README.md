@@ -7,7 +7,7 @@ Add into the incident's context the system internal DBot score for the input ind
 | --- | --- |
 | Script Type | python2 |
 | Tags | DBot, Enrichment |
-| Demisto Version | 5.0.0 |
+| Cortex XSOAR Version | 5.0.0 |
 
 ## Used In
 ---

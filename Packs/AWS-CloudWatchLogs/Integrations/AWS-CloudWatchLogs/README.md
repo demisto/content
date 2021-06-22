@@ -1,7 +1,7 @@
 <!-- HTML_DOC -->
 <p>Use the AWS CloudWatch Logs integration to monitor, store, and access your log files from AWS Elastic Compute Cloud (Amazon EC2) instances, AWS CloudTrail, AWS Route 53, and other sources. You can then retrieve the associated log data from CloudWatch Logs.<br>For more information see the <a href="https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/WhatIsCloudWatchLogs.html" rel="nofollow">CloudWatch documentation</a>.</p>
 <p>For detailed instructions about setting up authentication, see: <a href="https://xsoar.pan.dev/docs/reference/articles/aws-integrations---authentication">AWS Integrations - Authentication</a>.</p>
-<h2>Configure the AWS Cloud Watch Logs Integration on Demisto</h2>
+<h2>Configure the AWS Cloud Watch Logs Integration on Cortex XSOAR</h2>
 <ol>
 <li>Navigate to <strong>Settings</strong> &gt; <strong>Integrations</strong> &gt; <strong>Servers &amp; Services</strong>.</li>
 <li>Search for AWS - CloudWatchLogs.</li>
@@ -22,7 +22,7 @@
 <li>Click <strong>Test</strong> to validate the URLs, token, and connection.</li>
 </ol>
 <h2>Commands</h2>
-<p>You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.<br>After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
+<p>You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.<br>After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
 <ol>
 <li><a href="#h_97524814141539170450412">Create a log group: aws-logs-create-log-group</a></li>
 <li><a href="#h_5057555411231539170456210">Create a log stream: aws-logs-create-log-stream</a></li>

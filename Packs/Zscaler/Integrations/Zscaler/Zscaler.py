@@ -11,6 +11,8 @@ import random
 requests.packages.urllib3.disable_warnings()
 
 ''' GLOBAL VARS '''
+ADD = 'ADD_TO_LIST'
+REMOVE = 'REMOVE_FROM_LIST'
 CLOUD_NAME = demisto.params()['cloud']
 USERNAME = demisto.params()['credentials']['identifier']
 PASSWORD = demisto.params()['credentials']['password']
@@ -22,7 +24,7 @@ DEFAULT_HEADERS = {
     'content-type': 'application/json'
 }
 EXCEEDED_RATE_LIMIT_STATUS_CODE = 429
-MAX_SECONDS_TO_WAIT = 30
+MAX_SECONDS_TO_WAIT = 100
 SESSION_ID_KEY = 'session_id'
 ERROR_CODES_DICT = {
     400: 'Invalid or bad request',
@@ -92,6 +94,9 @@ def http_request(method, url_suffix, data=None, headers=None, num_of_seconds_to_
                                     num_of_seconds_to_wait=num_of_seconds_to_wait + 3)
             elif res.status_code in (401, 403):
                 raise AuthorizationError(res.content)
+            elif res.status_code == 400 and method == 'PUT' and '/urlCategories/' in url_suffix:
+                raise Exception('Bad request, This could be due to reaching your organizations quota.'
+                                ' For more info about your quota usage, run the command zscaler-url-quota.')
             else:
                 raise Exception('Your request failed with the following error: ' + ERROR_CODES_DICT[res.status_code])
     except Exception as e:
@@ -504,25 +509,19 @@ def lookup_request(ioc, multiple=True):
 
 
 def category_add_url(category_id, url):
-    categories = get_categories()
-    found_category = False
-    for category in categories:
-        if category['id'] == category_id:
-            category_data = category
-            found_category = True
-            break
-    if found_category:
+    category_data = get_category_by_id(category_id)
+    if category_data:  # check if the category exists
         url_list = argToList(url)
         all_urls = url_list[:]
         all_urls.extend(list(map(lambda x: x.strip(), category_data['urls'])))
         category_data['urls'] = all_urls
-        category_ioc_update(category_data)
+        add_or_remove_urls_from_category(ADD, url_list, category_data)  # add the urls to the category
         context = {
             'ID': category_id,
-            'CustomCategory': category_data['customCategory'],
-            'URL': category_data['urls']
+            'CustomCategory': category_data.get('customCategory'),
+            'URL': category_data.get('urls')
         }
-        if 'description' in category_data and category_data['description']:  # Custom might not have description
+        if category_data.get('description'):  # Custom might not have description
             context['Description'] = category_data['description']
         ec = {
             'Zscaler.Category(val.ID && val.ID === obj.ID)': context
@@ -533,7 +532,7 @@ def category_add_url(category_id, url):
         hr = 'Added the following URL addresses to category {}:\n{}'.format(category_id, urls)
         entry = {
             'Type': entryTypes['note'],
-            'Contents': ec,
+            'Contents': category_data,
             'ContentsFormat': formats['json'],
             'ReadableContentsFormat': formats['markdown'],
             'HumanReadable': hr,
@@ -586,26 +585,20 @@ def category_add_ip(category_id, ip):
 
 
 def category_remove_url(category_id, url):
-    categories = get_categories()
-    found_category = False
-    for category in categories:
-        if category['id'] == category_id:
-            category_data = category
-            found_category = True
-            break
-    if found_category:
+    category_data = get_category_by_id(category_id)  # check if the category exists
+    if category_data:
         url_list = argToList(url)
         updated_urls = [url for url in category_data['urls'] if url not in url_list]  # noqa
         if updated_urls == category_data['urls']:
             return return_error('Could not find given URL in the category.')
+        add_or_remove_urls_from_category(REMOVE, url_list, category_data)  # remove the urls from list
         category_data['urls'] = updated_urls
-        response = category_ioc_update(category_data)
         context = {
             'ID': category_id,
-            'CustomCategory': category_data['customCategory'],
-            'URL': category_data['urls']
+            'CustomCategory': category_data.get('customCategory'),
+            'URL': category_data.get('urls')
         }
-        if 'description' in category_data and category_data['description']:  # Custom might not have description
+        if category_data.get('description'):  # Custom might not have description
             context['Description'] = category_data['description']
         ec = {
             'Zscaler.Category(val.ID && val.ID === obj.ID)': context
@@ -616,7 +609,7 @@ def category_remove_url(category_id, url):
         hr = 'Removed the following URL addresses to category {}:\n{}'.format(category_id, urls)
         entry = {
             'Type': entryTypes['note'],
-            'Contents': response,
+            'Contents': category_data,
             'ContentsFormat': formats['json'],
             'ReadableContentsFormat': formats['markdown'],
             'HumanReadable': hr,
@@ -685,6 +678,33 @@ def category_ioc_update(category_data):
     return response
 
 
+def add_or_remove_urls_from_category(action, urls, category_data):
+    """
+    Add or remove urls from a category.
+    Args:
+        str action: The action requested, can be 'ADD_TO_LIST' for adding or 'REMOVE_FROM'_LIST for removing.
+        List[Any] urls: the list of urls to add or remove from the category
+        Dict[str: Any] category_data: the data of the category as returned from the API
+
+    Returns:
+        The response as returned from the API
+
+    """
+
+    cmd_url = '/urlCategories/' + category_data.get('id') + '?action=' + action
+    data = {
+        'customCategory': category_data.get('customCategory'),
+        'urls': urls,
+        'id': category_data.get('id')
+    }
+    if 'description' in category_data:
+        data['description'] = category_data['description']
+    if 'configuredName' in category_data:
+        data['configuredName'] = category_data['configuredName']
+    json_data = json.dumps(data)
+    http_request('PUT', cmd_url, json_data)  # if the request is successful, it returns an empty response
+
+
 def url_quota_command():
     cmd_url = '/urlCategories/urlQuota'
     response = http_request('GET', cmd_url).json()
@@ -715,7 +735,7 @@ def get_categories_command(args):
             'ID': raw_category['id'],
             'CustomCategory': raw_category['customCategory']
         }
-        if 'urls' in raw_category:
+        if raw_category.get('urls'):
             category['URL'] = raw_category['urls']
         if 'description' in raw_category:
             category['Description'] = raw_category['description']
@@ -850,6 +870,14 @@ def activate_command():
 def test_module():
     http_request('GET', '/status', None, DEFAULT_HEADERS)
     return 'ok'
+
+
+def get_category_by_id(category_id):
+    categories = get_categories()
+    for category in categories:
+        if category['id'] == category_id:
+            return category
+    return None
 
 
 ''' EXECUTION CODE '''

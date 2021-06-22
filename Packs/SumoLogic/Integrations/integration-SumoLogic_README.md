@@ -1,7 +1,7 @@
 <!-- HTML_DOC -->
 <div class="cl-preview-section">
 <p>Use the SumoLogic integration to search for and return SumoLogic records.</p>
-<h2>Configure SumoLogic on Demisto</h2>
+<h2>Configure SumoLogic on Cortex XSOAR</h2>
 <ol>
 <li>Navigate to<span> </span><strong>Settings</strong><span> </span>&gt;<span> </span><strong>Integrations</strong><span> </span>&gt;<span> </span><strong>Servers &amp; Services</strong>.</li>
 <li>Search for SumoLogic_copy.</li>
@@ -30,7 +30,7 @@
 <li>Click<span> </span><strong>Test</strong><span> </span>to validate the URLs, token, and connection.</li>
 </ol>
 <h2>Commands</h2>
-<p>You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
+<p>You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
 <ol>
 <li><a href="#h_13217748-cde2-4873-9928-dbcf2992e581" target="_self">Search for SumoLogic records: search</a></li>
 </ol>

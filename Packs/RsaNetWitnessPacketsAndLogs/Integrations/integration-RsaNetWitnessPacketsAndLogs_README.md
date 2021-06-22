@@ -1,7 +1,7 @@
 <!-- HTML_DOC -->
 <h2>Overview</h2>
 <p>Use the RSA NetWitness Logs and Packets integration to collect and analyze network data.</p>
-<p>This API enables additional low-level functionality for managing various system components accessible on Demisto. Each command has several options that analyze and query NetWitness P&amp;L packets, sessions, and logs. You can use the results as tasks in playbooks for automated analysis, or view them in the War Room.</p>
+<p>This API enables additional low-level functionality for managing various system components accessible on Cortex XSOAR. Each command has several options that analyze and query NetWitness P&amp;L packets, sessions, and logs. You can use the results as tasks in playbooks for automated analysis, or view them in the War Room.</p>
 <p>This integration was integrated and tested with NetWitness v11.1.0.0.</p>
 <hr>
 <h2>Use Cases</h2>
@@ -22,7 +22,7 @@
 </li>
 </ul>
 <hr>
-<h2>Configure RSA NetWitness Logs and Packets on Demisto</h2>
+<h2>Configure RSA NetWitness Logs and Packets on Cortex XSOAR</h2>
 <ol>
 <li>Navigate to <strong>Settings </strong>&gt; <strong>Integrations </strong>&gt; <strong>Servers &amp; Services.</strong>
 </li>
@@ -48,7 +48,7 @@
 </ol>
 <hr>
 <h2>Commands</h2>
-<p>You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
+<p>You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
 <ol>
 <li><a href="#h_43812108861529412371473">Search pattern matches: netwitness-msearch</a></li>
 <li><a href="#h_481137833691529412381792">Search: netwitness-search</a></li>

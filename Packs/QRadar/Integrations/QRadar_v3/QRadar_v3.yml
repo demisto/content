@@ -38,6 +38,12 @@ configuration:
   required: true
   type: 15
 - defaultvalue: '20'
+  display: Maximum number of events per incident.
+  name: events_limit
+  required: false
+  type: 0
+  additionalinfo: The maximal amount of events to pull per incident.
+- defaultvalue: '20'
   display: Number of offenses to pull per API call (max 50)
   name: offenses_per_fetch
   required: false

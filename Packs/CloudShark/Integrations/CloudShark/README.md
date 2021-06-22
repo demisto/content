@@ -12,15 +12,15 @@ tools in an elegant, responsive browser-based interface.
 <li>Collect meta-information about a capture file</li>
 <li>Manage and organize capture files in CS Enterprise</li>
 </ul>
-<h2>To set up CS Enterprise to work with Demisto</h2>
+<h2>To set up CS Enterprise to work with Cortex XSOAR</h2>
 You will need the following before setting up the CS Enterprise integration on
-Demisto:
+Cortex XSOAR:
 <ul>
 <li><b>CS Enterprise URL</b> The URL of your CS Enterprise instance</li>
 <li><b><a href="https://support.cloudshark.io/api/">API Token</a>:</b> An API Token from
 CloudShark with upload, info, download, and delete permissions enabled on it</li>
 </ul>
-<h2> Configure the CS Enterprise Integration on Demisto</h2>
+<h2> Configure the CS Enterprise Integration on Cortex XSOAR</h2>
 <ol type="1">
   <li>Go to <b>Settings > Integrations > Servers & Services</b></li>
   <li>Search for CloudShark</li>
@@ -35,7 +35,7 @@ CloudShark with upload, info, download, and delete permissions enabled on it</li
 </ol>
 <h2>Commands</h2>
 <p>
-  You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.
+  You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
   After you successfully execute a command, a DBot message appears in the War Room with the command details.
 </p>
 <ol>

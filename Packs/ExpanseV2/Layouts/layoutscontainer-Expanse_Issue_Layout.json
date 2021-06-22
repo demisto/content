@@ -573,7 +573,16 @@
                                 "index": 5,
                                 "sectionItemType": "field",
                                 "startCol": 2
-                            }
+                            },
+                            {
+								"endCol": 4,
+								"fieldId": "expansecloudmanagementstatus",
+								"height": 22,
+								"id": "6d19edf0-b291-11eb-b6ff-bb31a24682cb",
+								"index": 7,
+								"sectionItemType": "field",
+								"startCol": 2
+							}
                         ],
                         "maxH": null,
                         "maxW": 2,

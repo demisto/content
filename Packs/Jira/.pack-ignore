@@ -1,2 +1,14 @@
 [file:JiraV2.yml]
 ignore=IN126
+
+[file:README.md]
+ignore=RM106
+
+[file:ScriptJiraChangeTransition.yml]
+ignore=BA110
+
+[file:ScriptJiraListTransition.yml]
+ignore=BA110
+
+[file:classifier-mapper-outgoing-Jira.json]
+ignore=BA101

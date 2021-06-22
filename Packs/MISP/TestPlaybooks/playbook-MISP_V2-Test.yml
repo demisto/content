@@ -1144,7 +1144,7 @@ tasks:
     conditions:
     - label: "yes"
       condition:
-      - - operator: isEqualNumber
+      - - operator: greaterThanOrEqual
           left:
             value:
               complex:
@@ -1247,7 +1247,7 @@ tasks:
     conditions:
     - label: "yes"
       condition:
-      - - operator: isEqualNumber
+      - - operator: greaterThanOrEqual
           left:
             value:
               complex:
