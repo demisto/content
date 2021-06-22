@@ -65,7 +65,10 @@ class Client(BaseClient):
 
         self.parsed_indicators = parsed_indicators
 
-    def get_url_content(self, link):
+    def get_url_content(self, link: str):
+        """Returns the link content only from the relevant tags (listed on HTML_TAGS). For better performance - if the
+         extracted content is bigger than "content_max_size" we cut him"""
+
         response_url = self._http_request(method='GET', full_url=link, resp_type='str')
         report_content = 'This is a dumped content of the article. Use the link under Publications field to read ' \
                          'the full article. \n\n'
@@ -74,13 +77,6 @@ class Client(BaseClient):
             if tag.name in HTML_TAGS:
                 for string in tag.stripped_strings:
                     report_content += ' ' + string
-            #     if tag.name in nested_tags:
-            #        for string in tag.stripped_strings:
-            #            report_content += ' ' + string
-            #         nested_text = [li.text.strip() for li in tag.find_all('li')] # no need when using stripped_strings
-            #         report_content += ''.join(nested_text) # no need when using stripped_strings
-            #     else:
-            #         report_content += ' ' + tag.text.strip()
         if len(report_content.encode('utf-8')) > self.content_max_size:  # Ensure report_content does not exceed the
             # indicator size limit (~50KB)
             report_content = report_content.encode('utf-8')[:self.content_max_size].decode('utf-8')
@@ -113,7 +109,7 @@ def main():
                         proxy=params.get('proxy'),
                         feed_tags=argToList(params.get('feedTags')),
                         tlp_color=params.get('tlp_color'),
-                        content_max_size=int(params.get('max_size', '45')))  # TODO: consult Bar id we want to cut the string with the max 45 size as demisto is handle or should we let the user configure it
+                        content_max_size=int(params.get('max_size', '45')))
         client.create_indicators_from_response()
         if demisto.command() == 'test-module':
             # if the client was created successfully and there is data in feed the test is successful.
