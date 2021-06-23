@@ -28,8 +28,8 @@ TOKEN = demisto.params().get('token')
 
 def get_server_url():
     url = demisto.params()['server']
-    url = re.sub('/[\/]+$/', '', url)
-    url = re.sub('\/$', '', url)
+    url = re.sub('/[\/]+$/', '', url)  # guardrails-disable-line
+    url = re.sub('\/$', '', url)  # guardrails-disable-line
     return url
 
 
