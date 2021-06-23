@@ -14,7 +14,7 @@ urllib3.disable_warnings()
 class Client(BaseClient):
     def __init__(self, company_id: str, base_url: str, verify_certificate: str, proxy: str):
         self.company_id = company_id
-        super(Client, self).__init__(base_url, verify_certificate, proxy)
+        super().__init__(base_url, verify_certificate, proxy)
 
     def get_jwt_token(self, api_key: str, scopes: list) -> Dict[str, Any]:
         jwt_key = self._http_request(
