@@ -89,7 +89,6 @@ def get_incident_command(client: Client, args: Dict[str, Any]) -> CommandResults
 
     incident_id = args.get("incident_id", None)
     company_id = args.get("company_id", None)
-    if not incident_id:
         raise ValueError("incident_id not specified")
 
     incident = client.get_incident(incident_id, company_id)
