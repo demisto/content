@@ -481,7 +481,7 @@ script:
   - arguments:
     - default: false
       defaultValue: '1 day'
-      description: "Specifies the start time of the search. This filter is optional. Default is last day. Syntax: end_time=YYYY-MM-DDTHH:mm:ss.sss-OH:om or '1 day/month/year'."
+      description: "Specifies the start time of the search. This filter is optional. Default is last day. Syntax: start_time=YYYY-MM-DDTHH:mm:ss.sss-OH:om or '1 day/month/year'."
       isArray: false
       name: start_time
       required: false
