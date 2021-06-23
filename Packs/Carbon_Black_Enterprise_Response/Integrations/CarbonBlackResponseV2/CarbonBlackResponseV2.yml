@@ -1325,7 +1325,7 @@ script:
       type: String
     - contextPath: CarbonBlackEDR.BinaryBan.last_block_hostname
       description: The last hostname to block this hash.
-      type: Unknown
+      type: String
   - arguments:
     - default: false
       description: Alert unique identifier
