@@ -189,7 +189,7 @@ configuration:
   name: extensive_logs
   type: 8
   required: false
-- display: Fetch backwards window for the incidents' occurrence time
+- display: Fetch backwards window for the events' occurrence time
   name: occurrence_look_behind
   defaultvalue: "15"
   type: 0

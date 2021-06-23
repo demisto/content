@@ -88,10 +88,7 @@ TIME_IS_MISSING = 'time_is_missing'
 
 
 # =========== Regular Fetch Mechanism ===========
-
-
-
-def occurred_to_datetime(incident_ocurred_time):
+def splunk_time_to_datetime(incident_ocurred_time):
     incident_time_without_timezone = incident_ocurred_time.split('.')[0]
     incident_time_datetime = datetime.strptime(incident_time_without_timezone, SPLUNK_TIME_FORMAT)
     return incident_time_datetime
@@ -100,17 +97,16 @@ def occurred_to_datetime(incident_ocurred_time):
 def get_latest_incident_time(incidents):
     def get_incident_time_datetime(incident):
         incident_time = incident["occurred"]
-        incident_time_datetime = occurred_to_datetime(incident_time)
+        incident_time_datetime = splunk_time_to_datetime(incident_time)
         return incident_time_datetime
 
     latest_incident = max(incidents, key=get_incident_time_datetime)
-    latest_incident_time = latest_incident["occurred"]
-    return latest_incident_time
+    return latest_incident["occurred"]
 
 
 def get_next_start_time(latests_incident_fetched_time, now, were_new_incidents_found=True):
     if were_new_incidents_found:
-        latest_incident_datetime = occurred_to_datetime(latests_incident_fetched_time)
+        latest_incident_datetime = splunk_time_to_datetime(latests_incident_fetched_time)
         next_run_without_miliseconds_and_tz = latest_incident_datetime.strftime(SPLUNK_TIME_FORMAT)
         next_run = next_run_without_miliseconds_and_tz
         return next_run
@@ -147,6 +143,18 @@ def extensive_log(message):
 
 
 def remove_old_incident_ids(last_run_fetched_ids, current_epoch_time, occurred_look_behind):
+    """Remove all the IDs of all the incidents that were found more than twice the look behind time frame,
+    to stop our IDs dict from becoming too large.
+
+    Args:
+        last_run_fetched_ids (list): All the event IDs that weren't out of date in the last run + all the new event IDs
+        from newly fetched events in this run.
+        current_epoch_time (str): The current time in epoch.
+        occurred_look_behind (int): The max look behind time (parameter, as defined by the user).
+
+    Returns:
+        new_last_run_fetched_ids (list): The updated list of IDs, without old IDs.
+    """
     new_last_run_fetched_ids = {}
     for inc_id, addition_time in last_run_fetched_ids.items():
         max_look_behind_in_seconds = occurred_look_behind * 60
@@ -157,14 +165,14 @@ def remove_old_incident_ids(last_run_fetched_ids, current_epoch_time, occurred_l
     return new_last_run_fetched_ids
 
 
-def enforce_look_behind_time(last_run, now, look_behind_time):
+def enforce_look_behind_time(last_run_time, now, look_behind_time):
     """ Verifies that the start time of the fetch is at X minutes before
     the end time, X being the number of minutes specified in the look_behind parameter.
-    The reason this is needed is eo ensure that events that have a significant difference
+    The reason this is needed is to ensure that events that have a significant difference
     between their index time and occurrence time in Splunk are still fetched and are not missed.
 
     Args:
-        last_run (str): The current start time of the fetch.
+        last_run_time (str): The current start time of the fetch.
         now (str): The current end time of the fetch.
         look_behind_time (int): The minimal difference (in minutes) that should be enforced between
                                 the start time and end time.
@@ -173,14 +181,14 @@ def enforce_look_behind_time(last_run, now, look_behind_time):
         last_run (str): The new start time for the fetch.
 
     """
-    last_run_datetime = datetime.strptime(last_run, SPLUNK_TIME_FORMAT)
+    last_run_datetime = datetime.strptime(last_run_time, SPLUNK_TIME_FORMAT)
     now_datetime = datetime.strptime(now, SPLUNK_TIME_FORMAT)
     if now_datetime - last_run_datetime < timedelta(minutes=look_behind_time):
         time_before_given_look_behind_datetime = now_datetime - timedelta(minutes=look_behind_time)
         time_before_given_look_behind = datetime.strftime(time_before_given_look_behind_datetime, SPLUNK_TIME_FORMAT)
         return time_before_given_look_behind
 
-    return last_run
+    return last_run_time
 
 
 def get_fetch_start_times(dem_params, service, last_run, occurence_time_look_behind):
@@ -303,7 +311,6 @@ def fetch_notables(service, cache_object=None, enrich_notables=False):
     if len(incidents) == 0:
         next_run = get_next_start_time(last_run_time, now, False)
         extensive_log('SplunkPy - Next run time with no incidents found: {}'.format(next_run))
-        demisto.setLastRun({})
         new_last_run = {
             'time': next_run,
             'offset': 0,

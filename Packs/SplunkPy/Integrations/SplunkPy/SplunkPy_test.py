@@ -1277,6 +1277,7 @@ def test_fetch_incidents_pre_indexing_scenario(mocker):
     mocker.patch('demistomock.getLastRun', return_value=mock_last_run)
     mocker.patch('demistomock.params', return_value=mock_params)
     service = mocker.patch('splunklib.client.connect', return_value=None)
+
     mocker.patch('splunklib.results.ResultsReader', return_value=response_with_late_incident)
     splunk.fetch_notables(service)
     next_run = demisto.setLastRun.call_args[0][0]
@@ -1352,7 +1353,7 @@ def test_fetch_incidents_incident_next_run_calculation(mocker):
     Then:
     - The next run's start time will be the the occurrence time of the new incident.
     """
-    from SplunkPy import occurred_to_datetime
+    from SplunkPy import splunk_time_to_datetime
 
     from datetime import timedelta
     splunk.ENABLED_ENRICHMENTS = []
@@ -1368,7 +1369,7 @@ def test_fetch_incidents_incident_next_run_calculation(mocker):
     next_run = demisto.setLastRun.call_args[0][0]
     incidents = demisto.incidents.call_args[0][0]
     incident_found = incidents[0]
-    found_incident_time = occurred_to_datetime(incident_found['occurred'])
+    found_incident_time = splunk_time_to_datetime(incident_found['occurred'])
     next_run_time = datetime.strptime(next_run["time"], SPLUNK_TIME_FORMAT)
 
     assert next_run_time == found_incident_time
