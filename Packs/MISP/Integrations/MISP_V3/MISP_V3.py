@@ -433,7 +433,16 @@ def check_file(pymisp, file_hash, malicious_tag_ids, suspicious_tag_ids):
     # misp_response will remain the raw output of misp
     misp_response = pymisp.search(value=file_hash, controller='attributes', include_context=True,
                                   include_correlations=True, include_event_tags=True, enforce_warninglist=True)
-    print(misp_response)
+    #print(misp_response)
+    #print("here:")
+    #parse_response_reputation_command(misp_response, malicious_tag_ids, suspicious_tag_ids)
+
+    # handling the generic object output
+    obj = pymisp.search(controller='objects')
+    print(obj)
+
+
+
     if misp_response:
         dbot_list = list()
         file_list = list()
@@ -500,30 +509,73 @@ def check_file(pymisp, file_hash, malicious_tag_ids, suspicious_tag_ids):
     ))
 
 
+def limit_galaxy_output(attribute_dict):
+    # limit galaxy output
+    output = []
+    if attribute_dict.get('Galaxy'):
+        output = [
+            {
+                'name': galaxy.get('name'),
+                'type': galaxy.get('type'),
+                'description': galaxy.get('description')
+            } for galaxy in attribute_dict['Galaxy']
+        ]
+    return output
+
+
+def limit_tag_output(attribute_dict):
+    # limit tag output
+    output = []
+    if attribute_dict.get('Tag'):
+        output = [
+            {
+                'Name': tag.get('name'),
+                'is_galaxy': tag.get('is_galaxy', False)
+            } for tag in attribute_dict['Tag']
+        ]
+    return output
+
+
 def parse_response_reputation_command(response, malicious_tag_ids, suspicious_tag_ids):
     attributes_list = response.get('Attribute')
     if not attributes_list:
         return None
+    first_attribute = attributes_list[0]
+    event_tag_list = first_attribute.get('Event', {}).get('Tag', [])
+    attribute_tag_list = first_attribute.get('Tag', [])
+
+    related_events = get_full_related_event_objects(attributes_list)
+    for event in first_attribute.get('RelatedAttribute', []):
+        if event.get('Event'):
+            event['Event'] = related_events[event.get('event_id')]
+
+    first_attribute['Galaxy'] = limit_galaxy_output(first_attribute)
+    first_attribute['Event']['Tag'] = limit_tag_output(first_attribute.get('Event'))
+    first_attribute['Tag'] = limit_tag_output(first_attribute)
+    first_attribute = replace_keys(first_attribute)  # this is the outputs (Attribute)
+
+    #  todo add the score function after we get to decisions . this is the Dbot score output
+    # get_score_by_tags(attribute_tags=attribute_tag_list, event_tags=event_tag_list,
+    #                   malicious_tag_ids=malicious_tag_ids,
+    #                   suspicious_tag_ids=suspicious_tag_ids)
+
+    print(first_attribute)
+    return first_attribute
+
+
+def get_full_related_event_objects(attributes_list):
     related_events = {}
+    if len(attributes_list) == 1:
+        return related_events
+    attributes_list = attributes_list[1:]  # len(attributes_list) > 1
     for attribute in attributes_list:
-        current_event = attribute.get('Event', {})
-        event_tag_list = []
-        if current_event:
-            current_event_id = current_event.get('id')
-            organization_obj = current_event.get('Orgc')
-            organization_name = organization_obj.get('name')
-
-            related_events[current_event_id] = \
-                {
-                    'orgc_name': f"MISP.{organization_name}"
-                }
-
-            event_tag_list = current_event.get('Tags')
-        attribute_tag_list = attribute.get('Tags')
-        get_score_by_tags(attribute_tags=attribute_tag_list, event_tags=event_tag_list,
-                          malicious_tag_ids=malicious_tag_ids,
-                          suspicious_tag_ids=suspicious_tag_ids)
-        #  todo add the score function after we get to decisions
+        event = attribute.get('Event')
+        if event:
+            if event.get('Tag'):
+                event['Tag'] = limit_tag_output(event)
+            if event.get('Galaxy'):
+                event['Galaxy'] = limit_galaxy_output(event)
+            related_events[event.get('id')] = event
     return related_events
 
 
@@ -1327,10 +1379,11 @@ def add_sighting(pymisp: ExpandedPyMISP, demisto_args: dict):
     return CommandResults(readable_output=human_readable)
 
 
-def test(pymisp: ExpandedPyMISP):
+def test(pymisp: ExpandedPyMISP, malicious_tag_ids, suspicious_tag_ids):
     """
     Test module.
     """
+    check_tag_duplication_ids(malicious_tag_ids, suspicious_tag_ids)
     response = pymisp._prepare_request('GET', 'servers/getPyMISPVersion.json')
     if pymisp._check_json_response(response):
         return 'ok'
@@ -1526,6 +1579,23 @@ def add_ip_object(pymisp: ExpandedPyMISP, demisto_args: dict = {}):
         return_error(f'None of required arguments presents. command {demisto.command()} requires one of {args}')
 
 
+def check_tag_duplication_ids(malicious_tag_ids, suspicious_tag_ids):
+    common_ids = set(malicious_tag_ids) & set(suspicious_tag_ids)
+    if common_ids:
+        raise DemistoException(
+            f"Malicious tag ids list and Suspicious tag ids list have the following ids in common {common_ids}. "
+            f"Please define each id in one list only.")
+
+
+def is_tag_list_valid(tag_ids):
+    """checks if all the tag ids are valid"""
+    for tag in tag_ids:
+        try:
+            tag = int(tag)
+        except ValueError:
+            raise DemistoException(f"Tag id has to be an integer, please change the following: {tag}.")
+
+
 def main():
     params = demisto.params()
     verify = not params.get('insecure')
@@ -1536,7 +1606,6 @@ def main():
 
     malicious_tag_ids = argToList(params.get('malicious_tag_ids'))
     suspicious_tag_ids = argToList(params.get('suspicious_tag_ids'))
-
     pymisp = ExpandedPyMISP(url=misp_url, key=misp_api_key, ssl=verify, proxies=proxies)  # type: ExpandedPyMISP
 
     data_keys_to_save = argToList(params.get('context_select', []))
@@ -1555,9 +1624,13 @@ def main():
     demisto.debug(f'MISP V3: command is {command}')
 
     try:
+        is_tag_list_valid(malicious_tag_ids)
+        is_tag_list_valid(suspicious_tag_ids)
+
         args = demisto.args()
         if command == 'test-module':
-            return_results(test(pymisp=pymisp))  # checked V
+            return_results(test(pymisp=pymisp, malicious_tag_ids=malicious_tag_ids,
+                                suspicious_tag_ids=suspicious_tag_ids))  # checked V
         elif command == 'misp-download-sample':
             return_results(download_file(demisto_args=args, pymisp=pymisp))  # checked V
         elif command == 'misp-create-event':
