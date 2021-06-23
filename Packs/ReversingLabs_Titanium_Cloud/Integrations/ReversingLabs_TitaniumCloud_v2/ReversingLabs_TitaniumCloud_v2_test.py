@@ -1,6 +1,6 @@
 import json
-from ReversingLabs_TitaniumCloud_v2.ReversingLabs_TitaniumCloud_v2 import file_reputation_output, av_scanners_output, \
-    file_analysis_output, rha1_analytics_output, uri_statistics_output, url_report_output
+from ReversingLabs_TitaniumCloud_v2 import file_reputation_output, av_scanners_output, file_analysis_output, \
+    rha1_analytics_output, uri_statistics_output, url_report_output
 
 
 test_hash = "21841b32c6165b27dddbd4d6eb3a672defe54271"
