@@ -183,7 +183,8 @@ script:
       required: true
       secret: false
     - default: false
-      description: A link that specifies a starting point to use for subsequent calls. Using this argument overrides all other arguments.
+      description: A link that specifies a starting point to use for subsequent calls.
+        Using this argument overrides all other arguments.
       isArray: false
       name: next_link
       required: false
@@ -197,7 +198,37 @@ script:
     deprecated: false
     description: Retrieve the properties of a collection of riskDetection objects.
     execution: false
-    name: azure-ad-identity-protection-list-risky-users
+    name: azure-ad-identity-protection-risky-user-list
+  - deprecated: false
+    execution: false
+    name: get_integration_context
+  - arguments:
+      - default: true
+        isArray: false
+        name: risky_user_id
+        required: true
+        secret: false
+    deprecated: false
+    execution: false
+    name: azure-ad-identity-protection-risky-user-history-list
+  - arguments:
+      - default: true
+        isArray: false
+        name: risky_user_id
+        required: true
+        secret: false
+    deprecated: false
+    execution: false
+    name: azure-ad-identity-protection-risky-user-confirm-compromised
+  - arguments:
+      - default: true
+        isArray: false
+        name: risky_user_id
+        required: true
+        secret: false
+    deprecated: false
+    execution: false
+    name: azure-ad-identity-protection-risky-user-dismiss
   dockerimage: demisto/crypto:1.0.0.14297
   feed: false
   isfetch: false

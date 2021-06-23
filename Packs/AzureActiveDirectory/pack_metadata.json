@@ -1,6 +1,6 @@
 {
-    "name": "Azure Active Directory",
-    "description": "Use Microsoft's Azure Active Directory",
+    "name": "Azure Active Directory Identity Protection",
+    "description": "Use Microsoft Graph to query information from Azure Active Directory",
     "support": "xsoar",
     "currentVersion": "1.0.0",
     "author": "Cortex XSOAR",

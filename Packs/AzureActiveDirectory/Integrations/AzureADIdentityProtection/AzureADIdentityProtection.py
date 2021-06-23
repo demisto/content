@@ -54,7 +54,7 @@ class AzureADClient:
             raw_response = self.http_request(method='GET', full_url=next_link)
 
         else:
-            params = {'$top': limit}
+            params: Dict[str, Any] = {'$top': limit}
 
             if filter_expression is None:
                 filter_expression = ' and '.join([f'{key} eq \'{value}\'' for key, value in {
@@ -203,6 +203,8 @@ def main() -> None:
             azure_ad_endpoint=params.get('azure_ad_endpoint',
                                          'https://login.microsoftonline.com') or 'https://login.microsoftonline.com'
         )
+
+        # auth commands
         if command == 'test-module':
             return_results('The test module is not functional, run the azure-ad-auth-start command instead.')
         elif command == 'azure-ad-auth-start':
@@ -214,10 +216,21 @@ def main() -> None:
         elif command == 'azure-ad-reset':
             return_results(reset_auth())
 
+        # actual commands
         elif command == 'azure-ad-identity-protection-list-risks':
             return_results(azure_ad_identity_protection_risk_detection_list_command(client, **args))
-        elif command == 'azure-ad-identity-protection-list-risky-users':
+        elif command == 'azure-ad-identity-protection-risky-user-list':
             return_results(azure_ad_identity_protection_risky_users_list_command(client, **args))
+        elif command == 'azure-ad-identity-protection-risky-user-history-list':
+            pass
+        elif command == 'azure-ad-identity-protection-risky-user-confirm-compromised':
+            pass
+        elif command == 'azure-ad-identity-protection-risky-user-dismiss':
+            pass
+
+        # debug commands - todo delete
+        elif command == 'get_integration_context':
+            return_results(get_integration_context())
 
         else:
             raise NotImplementedError(f'Command "{command}" is not implemented.')
