@@ -1815,14 +1815,15 @@ def main():
     except (ConnectionError, InvalidURL, InvalidSchema) as e:
         demisto.error(traceback.format_exc())
         error_message = f"{INVALID_URL_ERROR}\nError:\n{e}"
+        return_error(error_message)
     except HTTPError as e:
         demisto.error(traceback.format_exc())
         error_message = f"Error in API call [{e.response.status_code}]\n{e.response.json().get('message')}"
+        return_error(error_message)
     except Exception as e:
         demisto.error(traceback.format_exc())
         error_message = f"Failed to execute {demisto.command()} command.\nError:\n{e}"
-
-    return_error(error_message)
+        return_error(error_message)
 
 
 if __name__ in ("__main__", "__builtin__", "builtins"):
