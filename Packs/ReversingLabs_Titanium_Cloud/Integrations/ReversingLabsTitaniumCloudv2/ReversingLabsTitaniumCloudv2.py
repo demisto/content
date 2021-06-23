@@ -1,4 +1,3 @@
-import sys
 import demistomock as demisto
 from CommonServerPython import *
 from ReversingLabs.SDK.ticloud import FileReputation, AVScanners, FileAnalysis, RHA1FunctionalSimilarity, \
@@ -78,7 +77,8 @@ def file_reputation_output(response_json, hash_value):
     **Classification reason**: {reason}
     **First seen**: {malware_presence.get("first_seen")}
     **Last seen**: {malware_presence.get("last_seen")}
-    **AV scanner hits / total number of scanners**: {malware_presence.get("scanner_match")} / {malware_presence.get("scanner_count")}
+    **AV scanner hits / total number of scanners**: {malware_presence.get("scanner_match")} / {malware_presence.get(
+        "scanner_count")}
     **AV scanner hit percentage**: {malware_presence.get("scanner_percent")}%
     **MD5 hash**: {md5}
     **SHA-1 hash**: {sha1}
@@ -153,7 +153,8 @@ def av_scanners_output(response_json, hash_value):
     sha1 = sample.get("sha1")
     sha256 = sample.get("sha256")
 
-    markdown = f"""## ReversingLabs AV Scan results for hash {hash_value}\n **First scanned on**: {sample.get("first_scanned_on")}
+    markdown = f"""## ReversingLabs AV Scan results for hash {hash_value}\n **First scanned on**: {sample.get(
+        "first_scanned_on")}
     **First seen on**: {sample.get("first_seen_on")}
     **Last scanned on**: {sample.get("last_scanned_on")}
     **Last seen on**: {sample.get("last_seen_on")}
@@ -340,7 +341,8 @@ def rha1_analytics_output(response_json, hash_value):
     classification = sample_metadata.get("classification")
     threat_name = sample_metadata.get("threat_name")
 
-    markdown = f"""## ReversingLabs RHA1 Analytics results for hash {sha1}\n ### Sample counters\n **KNOWN**: {sample_counters.get("known")}
+    markdown = f"""## ReversingLabs RHA1 Analytics results for hash {sha1}\n ### Sample counters\n **KNOWN**: {
+    sample_counters.get("known")}
     **MALICIOUS**:  {sample_counters.get("malicious")}
     **SUSPICIOUS**: {sample_counters.get("suspicious")}
     **TOTAL**:    {sample_counters.get("total")}\n ### Sample metadata\n **Classification**: {classification}
@@ -420,7 +422,8 @@ def uri_statistics_output(response_json, uri):
         "email": f"**Email**: {uri}"
     }
 
-    markdown = f"""## ReversingLabs URI Statistics results for URI {uri}\n ### Sample counters\n **KNOWN**: {counters.get("known")}
+    markdown = f"""## ReversingLabs URI Statistics results for URI {uri}\n ### Sample counters\n **KNOWN**: {
+    counters.get("known")}
     **MALICIOUS**: {counters.get("malicious")}
     **SUSPICIOUS**: {counters.get("suspicious")}
     **SHA-1 hash**: {uri_state.get("sha1")}
@@ -636,15 +639,18 @@ def url_report_output(response_json, url):
     third_party_statistics = third_party.get("statistics")
     third_party_sources = third_party.get("sources")
 
-    markdown = f"""## ReversingLabs URL Threat Intelligence report for URL {url}\n **Requested URL**: {report_base.get("requested_url")}
+    markdown = f"""## ReversingLabs URL Threat Intelligence report for URL {url}\n **Requested URL**: {report_base.get(
+        "requested_url")}
     **Classification**: {classification}
     **First analysis**: {analysis.get("first_analysis")}
-    **Analysis count**: {analysis.get("analysis_count")}\n ### Last analysis\n **Analysis ID**: {last_analysis.get("analysis_id")}
+    **Analysis count**: {analysis.get("analysis_count")}\n ### Last analysis\n **Analysis ID**: {last_analysis.get(
+        "analysis_id")}
     **Analysis time**: {last_analysis.get("analysis_time")}
     **Final URL**: {last_analysis.get("final_url")}
     **Availability status**: {last_analysis.get("availability_status")}
     **Domain**: {last_analysis.get("domain")}
-    **Serving IP Address**: {last_analysis.get("serving_ip_address")}\n ### Statistics\n **KNOWN**: {statistics.get("known")}
+    **Serving IP Address**: {last_analysis.get("serving_ip_address")}\n ### Statistics\n **KNOWN**: {statistics.get(
+        "known")}
     **SUSPICIOUS**: {statistics.get("suspicious")}
     **MALICIOUS**: {statistics.get("malicious")}
     **UNKNOWN**: {statistics.get("unknown")}

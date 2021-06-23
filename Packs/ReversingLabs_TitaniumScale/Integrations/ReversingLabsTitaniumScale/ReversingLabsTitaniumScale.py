@@ -80,7 +80,7 @@ def upload_file(tiscale):
     try:
         command_result = parse_upload_report_and_return_results(response_json)
     except Exception:
-        return_error(f"An error has occurred while parsing the report")
+        return_error("An error has occurred while parsing the report")
 
     file_result = fileResult('Full report in JSON', json.dumps(response_json, indent=4),
                              file_type=EntryType.ENTRY_INFO_FILE)
@@ -121,6 +121,8 @@ def parse_report_and_return_results(title, response_json):
 
                 name = scan_result.get("name")
                 result = scan_result.get("result")
+
+                desc = ""
                 if result:
                     desc = f"\n **{name}:** {result}"
                     md += desc
@@ -159,11 +161,11 @@ def parse_report_and_return_results(title, response_json):
                 return command_result
 
             else:
-                return_error(f"Scan result does not contain classifications")
+                return_error("Scan result does not contain classifications")
         else:
-            return_error(f"Report does not contain scan results")
+            return_error("Report does not contain scan results")
     else:
-        return_error(f"Response does not contain report")
+        return_error("Response does not contain report")
 
 
 def get_report(tiscale):
@@ -183,7 +185,7 @@ def get_report(tiscale):
         command_result = parse_report_and_return_results(title='## ReversingLabs TitaniumScale get results\n',
                                                          response_json=response_json)
     except Exception:
-        return_error(f"An error has occurred while parsing the report")
+        return_error("An error has occurred while parsing the report")
 
     file_result = fileResult('Full report in JSON', json.dumps(response_json, indent=4),
                              file_type=EntryType.ENTRY_INFO_FILE)
@@ -208,7 +210,7 @@ def upload_file_and_get_results(tiscale):
             title='## ReversingLabs TitaniumScale upload sample and get results\n',
             response_json=response_json)
     except Exception:
-        return_error(f"An error has occurred while parsing the report")
+        return_error("An error has occurred while parsing the report")
 
     file_result = fileResult('Full report in JSON', json.dumps(response_json, indent=4),
                              file_type=EntryType.ENTRY_INFO_FILE)
