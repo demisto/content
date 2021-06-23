@@ -133,6 +133,7 @@ script:
       - Report
     - description: Your Email Address
       name: email
+      required: true
     description: Classify incident by ID.
     name: ironscales-classify-incident
     outputs:
