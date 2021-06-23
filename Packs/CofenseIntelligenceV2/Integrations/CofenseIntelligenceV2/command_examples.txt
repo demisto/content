@@ -1,5 +1,5 @@
-!ip ip=45.116.166.177 using=CofenseIntelligenceV2_instance_1_copy
-!email email=info@sankapatrol.com using=CofenseIntelligenceV2_instance_1_copy
-!file file=9798ba6199168e6d2cf205760ea683d1 using=CofenseIntelligenceV2_instance_1_copy
-!cofense-search str=border using=CofenseIntelligenceV2_instance_1_copy
-!url url=http://www.radissonhotelsusa.com/cp5/ using=CofenseIntelligenceV2_instance_1_copy
+!ip ip=1.1.1.1 using=CofenseIntelligenceV2_instance
+!email email=info@email.com using=CofenseIntelligenceV2_instance
+!file file=hash using=CofenseIntelligenceV2_instance
+!cofense-search str=border using=CofenseIntelligenceV2_instance
+!url url=http://www.someurl.com/cp5/ using=CofenseIntelligenceV2_instance
