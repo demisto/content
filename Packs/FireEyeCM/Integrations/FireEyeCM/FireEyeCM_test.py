@@ -355,7 +355,7 @@ def test_fetch_incidents_last_alert_ids(mocker):
         'last_alert_ids': '["35267", "35268", "35269", "35272", "35273", "35274",'
                           ' "35275", "35276", "35277", "35278", "35279"]'
     }
-    last_run, incidents = fetch_incidents(client=client,
+    next_run, incidents = fetch_incidents(client=client,
                                           last_run=last_run,
                                           first_fetch='1 year',
                                           max_fetch=50,
@@ -363,4 +363,4 @@ def test_fetch_incidents_last_alert_ids(mocker):
 
     assert len(incidents) == 0
     # trim miliseconds to avoid glitches such as 2021-05-19T10:21:52.121+00:00 != 2021-05-19T10:21:52.123+00:00
-    assert last_run.get('time')[:-9] == to_fe_datetime_converter('now')[:-9]
+    assert next_run.get('time')[:-9] == last_run.get('time')[:-9]
