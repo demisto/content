@@ -32,6 +32,7 @@ class Client:
     It inherits from BaseClient defined in CommonServer Python.
     Most calls use _http_request() that handles proxy, SSL verification, etc.
     """
+
     def __init__(self, credentials: dict, use_oauth: bool = False, client_id: str = '', client_secret: str = '',
                  url: str = '', verify: bool = False, proxy: bool = False):
         """
