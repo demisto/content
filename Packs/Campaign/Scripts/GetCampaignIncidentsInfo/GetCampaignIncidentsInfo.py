@@ -2,7 +2,7 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 import copy
 
-HEADER_SORTED = ['id', 'name', 'emailfrom', 'recipients', 'severity', 'status', 'created']
+DEFAULT_HEADERS = ['id', 'name', 'emailfrom', 'recipients', 'severity', 'status', 'created']
 KEYS_FETCHED_BY_QUERY = ['status', 'severity']
 NO_CAMPAIGN_INCIDENTS_MSG = 'There is no Campaign Incidents in the Context'
 LINKABLE_ID_FORMAT = '[{incident_id}](#/Details/{incident_id})'
@@ -95,10 +95,9 @@ def get_incidents_info_md(incidents, fields_to_display=None):
 
     if incidents:
         if not fields_to_display:
-            headers = HEADER_SORTED
+            headers = DEFAULT_HEADERS
         else:
-            headers = [header for header in HEADER_SORTED if fields_to_display]
-            headers += list(set(fields_to_display) - set(HEADER_SORTED))
+            headers = fields_to_display
 
         converted_incidents = [convert_incident_to_hr(incident) for incident in incidents]
 
