@@ -468,7 +468,7 @@ def test_fetch_incidents_last_alert_ids(mocker):
     client = Client(base_url="https://fireeye.cm.com/", username='user', password='pass', verify=False, proxy=False)
     mocker.patch.object(FireEyeClient, 'get_alerts_request', return_value=util_load_json('test_data/alerts.json'))
     last_run = {
-        'time': "whatever",
+        'time': "2021-02-14 17:01:14 +0000",
         'last_alert_ids': '["1", "2", "3", "4", "5"]'
     }
     last_run, incidents = fetch_incidents(client=client,

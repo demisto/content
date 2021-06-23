@@ -351,7 +351,7 @@ def test_fetch_incidents_last_alert_ids(mocker):
     client = Client(base_url="https://fireeye.cm.com/", username='user', password='pass', verify=False, proxy=False)
     mocker.patch.object(FireEyeClient, 'get_alerts_request', return_value=util_load_json('test_data/alerts.json'))
     last_run = {
-        'time': "whatever",
+        'time': "2021-05-18 12:02:54 +0000",
         'last_alert_ids': '["35267", "35268", "35269", "35272", "35273", "35274",'
                           ' "35275", "35276", "35277", "35278", "35279"]'
     }
@@ -364,22 +364,3 @@ def test_fetch_incidents_last_alert_ids(mocker):
     assert len(incidents) == 0
     # trim miliseconds to avoid glitches such as 2021-05-19T10:21:52.121+00:00 != 2021-05-19T10:21:52.123+00:00
     assert last_run.get('time')[:-9] == to_fe_datetime_converter('now')[:-9]
-
-
-@pytest.mark.parametrize('severity_str, dbot_score', [
-    ('minr', 1),
-    ('majr', 2),
-    ('crit', 3),
-    ('kookoo', 0)
-])
-def test_alert_severity_to_dbot_score(severity_str: str, dbot_score: int):
-    """Unit test
-    Given
-    - alert_severity_to_dbot_score command
-    - severity string
-    When
-    - running alert_severity_to_dbot_score
-    Then
-    - Validate that the dbot score is as expected
-    """
-    assert alert_severity_to_dbot_score(severity_str) == dbot_score
