@@ -57,8 +57,8 @@ def convert_incident_to_hr(incident):
         :type key: ``str``
         :param key: the key in dict
 
-        :rtype: ``None``
-        :return None
+        :rtype: ``dict``
+        :return Converted incident
     """
     converted_incident = copy.deepcopy(incident)
 
