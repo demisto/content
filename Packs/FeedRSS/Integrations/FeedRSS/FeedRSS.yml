@@ -1,4 +1,4 @@
-category: Messaging
+category: Data Enrichment & Threat Intelligence
 commonfields:
   id: RSS Feed
   version: -1
@@ -9,7 +9,8 @@ configuration:
   required: true
   type: 0
 - display: Article content max size
-  description: Default is 45KB. If you increase the limit substantialy, it may slow performance. You need to specify only a number, for example 50.
+  description: The maximum size of article content in KB.
+  additionalinfo: Default is 45KB. If you increase the limit substantialy, it may slow performance. You need to specify only a number. e.g, example 50.
   name: max_size
   defaultvalue: '45'
   required: false
@@ -96,7 +97,7 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: RSS Feed reader that can ingest new items as STIX reports.
+description: RSS Feed reader that can ingest new items as Reports indicators.
 display: RSS Feed
 name: RSS Feed
 script:

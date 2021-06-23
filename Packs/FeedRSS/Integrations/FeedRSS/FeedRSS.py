@@ -67,7 +67,7 @@ class Client(BaseClient):
 
     def get_url_content(self, link: str):
         """Returns the link content only from the relevant tags (listed on HTML_TAGS). For better performance - if the
-         extracted content is bigger than "content_max_size" we cut him"""
+         extracted content is bigger than "content_max_size" we trim him"""
 
         response_url = self._http_request(method='GET', full_url=link, resp_type='str')
         report_content = 'This is a dumped content of the article. Use the link under Publications field to read ' \
@@ -111,17 +111,16 @@ def main():
                         tlp_color=params.get('tlp_color'),
                         content_max_size=int(params.get('max_size', '45')))
         client.create_indicators_from_response()
-        if demisto.command() == 'test-module':
+        if command == 'test-module':
             # if the client was created successfully and there is data in feed the test is successful.
             return_results("ok")
-        elif demisto.command() == 'rss-get-indicators':
+        elif command == 'rss-get-indicators':
             return_results(get_indicators(client, demisto.args()))
-        elif demisto.command() == 'fetch-indicators':
+        elif command == 'fetch-indicators':
             for iter_ in batch(client.parsed_indicators, batch_size=2000):
                 demisto.createIndicators(iter_)
         else:
             raise NotImplementedError(f'Command {command} is not implemented.')
-            # Log exceptions and return errors
 
     except ValueError:
         raise DemistoException("Article content max size must be a number, for example 50.")
