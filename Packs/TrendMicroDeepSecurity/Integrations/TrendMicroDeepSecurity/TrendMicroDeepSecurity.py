@@ -2,10 +2,11 @@ import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
 
-from requests.exceptions import ConnectionError, InvalidURL, InvalidSchema, HTTPError
 import traceback
 from typing import Any, Dict, List, get_type_hints, get_origin, get_args, Callable, Type, no_type_check
+
 import urllib3
+from requests.exceptions import ConnectionError, InvalidURL, InvalidSchema, HTTPError
 
 # disable insecure warnings
 urllib3.disable_warnings()
@@ -50,7 +51,7 @@ class Client(BaseClient):
         """
 
         params = {"expand": expand, "overrides": overrides}
-        return self._http_request(method="GET", url_suffix="/computers", params=params).get("computers")
+        return self._http_request(method="GET", url_suffix="/computers", params=params).get("computers", [])
 
     def create_computer(self, expand: list, overrides: bool, **computer_properties) -> Dict[str, Any]:
         """
@@ -175,7 +176,7 @@ class Client(BaseClient):
         """
 
         return self._http_request(method="GET", url_suffix=f"/computers/{computer_id}/firewall/assignments",
-                                  params={"overrides": overrides}).get("assignedRuleIDs")
+                                  params={"overrides": overrides}).get("assignedRuleIDs", [])
 
     def add_firewall_rule_ids_to_computer(self, computer_id: int, rule_ids: List[int], overrides: bool) -> List[int]:
         """
@@ -191,7 +192,8 @@ class Client(BaseClient):
         """
 
         return self._http_request(method="POST", url_suffix=f"/computers/{computer_id}/firewall/assignments",
-                                  params={"overrides": overrides}, json_data={"rule_ids": rule_ids})["assignedRuleIDs"]
+                                  params={"overrides": overrides},
+                                  json_data={"rule_ids": rule_ids}).get("assignedRuleIDs", [])
 
     def set_firewall_rule_ids_to_computer(self, computer_id: int, rule_ids: List[int], overrides: bool) -> List[int]:
         """
@@ -207,7 +209,8 @@ class Client(BaseClient):
         """
 
         return self._http_request(method="PUT", url_suffix=f"/computers/{computer_id}/firewall/assignments",
-                                  params={"overrides": overrides}, json_data={"rule_ids": rule_ids}).get("assignedRuleIDs")
+                                  params={"overrides": overrides},
+                                  json_data={"rule_ids": rule_ids}).get("assignedRuleIDs", [])
 
     def remove_firewall_rule_id_from_computer(self, computer_id: int, firewall_rule_id: int):
         """
@@ -229,7 +232,7 @@ class Client(BaseClient):
             List[Dict[str, Any]]: All existing computer groups.
         """
 
-        return self._http_request(method="GET", url_suffix="/computergroups").get("computerGroups")
+        return self._http_request(method="GET", url_suffix="/computergroups").get("computerGroups", [])
 
     def create_computer_group(self, **computer_group_properties) -> Dict[str, Any]:
         """
@@ -290,7 +293,7 @@ class Client(BaseClient):
             List[Dict[str, Any]]: All firewall rules.
         """
 
-        return self._http_request(method="GET", url_suffix="/firewallrules").get("firewallRules")
+        return self._http_request(method="GET", url_suffix="/firewallrules").get("firewallRules", [])
 
     def create_firewall_rule(self, **firewall_rule_properties) -> Dict[str, Any]:
         """
@@ -367,7 +370,8 @@ class Client(BaseClient):
         search_criteria = [{"fieldName": field_name, f"{field_type}Test": operation, f"{field_type}Value": value}]
         body = {"max_items": max_items, "search_criteria": search_criteria, "sort_by_object_id": sort_by_object_id}
 
-        return self._http_request(method="POST", url_suffix=f"/{resource.lower()}/search", json_data=body)[resource]
+        return self._http_request(method="POST", url_suffix=f"/{resource.lower()}/search",
+                                  json_data=body).get(resource, [])
 
     def get_policy(self, policy_id: int, overrides: bool) -> Dict[str, Any]:
         """
@@ -520,7 +524,8 @@ class Client(BaseClient):
             List[Dict[str, Any]]: All policies.
         """
 
-        return self._http_request(method="GET", url_suffix="/policies", params={"overrides": overrides})["policies"]
+        return self._http_request(method="GET", url_suffix="/policies",
+                                  params={"overrides": overrides}).get("policies", [])
 
     def create_policy(self, overrides: bool, **policy_properties) -> Dict[str, Any]:
         """
@@ -706,8 +711,8 @@ def create_computer_command(client: Client, expand: List[str], overrides: bool, 
                                       policy_id=policy_id, asset_importance_id=asset_importance_id,
                                       relay_list_id=relay_list_id)
 
-    markdown = tableToMarkdown(f"Details for the new computer {response.get('hostName')}", response, removeNull=True,
-                               headers=COMPUTER_TABLE_HEADERS, headerTransform=pascalToSpace)
+    markdown = tableToMarkdown(f"Details for the new computer {response.get('hostName', '')}", response,
+                               removeNull=True, headers=COMPUTER_TABLE_HEADERS, headerTransform=pascalToSpace)
 
     return CommandResults(outputs_prefix="TrendMicro.Computers", outputs_key_field="ID", outputs=response,
                           readable_output=markdown, raw_response=response)
@@ -729,7 +734,7 @@ def get_computer_command(client: Client, computer_id: int, expand: List[str], ov
 
     response = client.get_computer(computer_id=computer_id, expand=expand, overrides=overrides)
 
-    markdown = tableToMarkdown(f"Details for the computer {response,get('hostName')}", response, removeNull=True,
+    markdown = tableToMarkdown(f"Details for the computer {response.get('hostName', '')}", response, removeNull=True,
                                headers=COMPUTER_TABLE_HEADERS, headerTransform=pascalToSpace)
 
     return CommandResults(outputs_prefix="TrendMicro.Computers", outputs_key_field="ID", outputs=response,
@@ -765,7 +770,7 @@ def modify_computer_command(client: Client, computer_id: int, expand: List[str],
                                       policy_id=policy_id, asset_importance_id=asset_importance_id,
                                       relay_list_id=relay_list_id)
 
-    markdown = tableToMarkdown(f"Details for the computer {response.get('hostName')}", response, removeNull=True,
+    markdown = tableToMarkdown(f"Details for the computer {response.get('hostName', '')}", response, removeNull=True,
                                headers=COMPUTER_TABLE_HEADERS, headerTransform=pascalToSpace)
 
     return CommandResults(outputs_prefix="TrendMicro.Computers", outputs_key_field="TrendMicro", outputs=response,
@@ -1802,11 +1807,11 @@ def main():
     try:
         command = demisto.command()
 
-        if command in commands:
-            command_function = commands.get(command)
-            return_results(command_function(client, **convert_args(command_function, demisto.args())))
-        else:
+        command_function = commands.get(command)
+        if not command_function:
             raise NotImplementedError(f"The command {command} does not exist on TrendMicro!")
+        else:
+            return_results(command_function(client, **convert_args(command_function, demisto.args())))
     except (ConnectionError, InvalidURL, InvalidSchema) as e:
         demisto.error(traceback.format_exc())
         error_message = f"{INVALID_URL_ERROR}\nError:\n{e}"
