@@ -31,6 +31,7 @@ SANITY_TESTS = {
     'Sanity Test - Playbook with Unmockable Integration',
 }
 
+
 class TestConf(object):
     __test__ = False  # required because otherwise pytest will try to run it as it has Test prefix
 
