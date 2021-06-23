@@ -125,6 +125,7 @@ script:
     - auto: PREDEFINED
       description: Current incident classification
       name: prev_classification
+      required: true
       predefined:
       - Attack
       - Spam
