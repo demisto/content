@@ -47,12 +47,8 @@ name: Ironscales
 script:
   commands:
   - arguments:
-    - auto: PREDEFINED
-      description: Incident ID.
+    - description: Incident ID.
       name: incident_id
-      predefined:
-      - ""
-      - ""
       required: true
     - description: Company id - Optional.
       name: company_id
