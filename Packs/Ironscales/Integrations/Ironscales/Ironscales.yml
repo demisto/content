@@ -50,7 +50,7 @@ script:
     - description: Incident ID.
       name: incident_id
       required: true
-    - description: Company id - Optional.
+    - description: Company Id - If empty, the Company Id from the instance configuration is used.
       name: company_id
     description: Get incident data by ID.
     name: ironscales-get-incident
