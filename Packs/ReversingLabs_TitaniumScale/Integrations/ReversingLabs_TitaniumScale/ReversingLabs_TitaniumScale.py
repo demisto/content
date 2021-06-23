@@ -121,6 +121,8 @@ def parse_report_and_return_results(title, response_json):
 
                 name = scan_result.get("name")
                 result = scan_result.get("result")
+
+                desc = ""
                 if result:
                     desc = f"\n **{name}:** {result}"
                     md += desc
