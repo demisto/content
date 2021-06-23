@@ -1,794 +1,435 @@
-<p>
-  Send messages and notifications to your Slack Team.
-  This integration was integrated and tested with version 4.0.1 of Slack, and is available from Cortex XSOAR version 5.0.
-</p>
-<h2>Use Cases</h2>
-<ul>
-<li>Mirror Cortex XSOAR investigations War Room to Slack channels and vice-versa.</li>
-<li>Send notifications, message and files from Cortex XSOAR to Slack.</li>
-<li>Get notifications in Slack about events in Cortex XSOAR.</li>
-<li>Manage Cortex XSOAR incidents via direct messages to the Cortex XSOAR bot.</li>
-<li>Manage Slack channels (create, edit, invite, kick, close).</li>
-</ul><h2>Detailed Description</h2>
-<ul>
-<li>To allow us access to Slack, the Cortex XSOAR app has to be added to the relevant workspace. Do so by clicking on the following <a href="https://oproxy.demisto.ninja/slack">link</a>.</li>
-<li> After adding the Cortex XSOAR app, you will get an Access Token and Bot Token, which should be inserted in the integration instance configuration's corresponding fields.</li>
-</ul>
-<h2>Configure SlackV2 on Cortex XSOAR</h2>
-<ol>
-  <li>Navigate to&nbsp;<strong>Settings</strong>&nbsp;&gt;&nbsp;<strong>Integrations</strong>
-  &nbsp;&gt;&nbsp;<strong>Servers &amp; Services</strong>.</li>
-  <li>Search for SlackV2.</li>
-  <li>
-    Click&nbsp;<strong>Add instance</strong>&nbsp;to create and configure a new integration instance.
-    <ul>
-      <li><strong>Name</strong>: a textual name for the integration instance.</li>
-      <li><strong>Slack API access token</strong>: A token received by adding the application (Starts with xoxp).</li>
-      <li><strong>Slack API bot token</strong>: A token received by adding the application (Starts with xoxb).</li>
-      <li><strong>Dedicated Slack channel to receive notifications</strong></li>
-      <li><strong>Send notifications about incidents to the dedicated channel</strong></li>
-      <li><strong>Minimum incident severity to send messages to slack by</strong></li>
-      <li><strong>Type of incidents created in Slack</strong></li>
-      <li><strong>Allow external users to create incidents via DM</strong></li>
-      <li><strong>Use system proxy settings</strong></li>
-      <li><strong>Trust any certificate (not secure)</strong></li>
-      <li><strong>Bot display name in Slack (Cortex XSOAR by default)</strong></li>
-      <li><strong>Bot icon in Slack - Image URL (Demisto icon by default)</strong></li>
-      <li><strong>Maximum time to wait for a rate limited call in seconds - 60 by default</strong></li>
-      <li><strong>Number of objects to return in each paginated call - 200 by default</strong></li>
-      <li><strong>Proxy URL to use in Slack API calls</strong></li>
-    </ul>
-  </li>
-</ol>
-<ol start="4">
-  <li>
-    Click&nbsp;<strong>Test</strong>&nbsp;to validate the new instance.
-  </li>
-</ol>
-<h2>Commands</h2>
-<p>
-  You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
-  After you successfully execute a command, a DBot message appears in the War Room with the command details.
-</p>
-<ol>
-  <li>mirror-investigation: mirror-investigation</li>
-  <li>send-notification: send-notification</li>
-  <li>close-channel: close-channel</li>
-  <li>slack-send-file: slack-send-file</li>
-  <li>slack-set-channel-topic: slack-set-channel-topic</li>
-  <li>slack-create-channel: slack-create-channel</li>
-  <li>slack-invite-to-channel: slack-invite-to-channel</li>
-  <li>slack-kick-from-channel: slack-kick-from-channel</li>
-  <li>slack-rename-channel: slack-rename-channel</li>
-  <li>slack-get-user-details: slack-get-user-details</li>
-</ol>
-<h3>1. mirror-investigation</h3>
-<!-- <hr> -->
-<p>Mirrors the investigation between Slack and the Cortex XSOAR War Room.</p>
-<h5>Base Command</h5>
-<p>
-  <code>mirror-investigation</code>
-</p>
-<h5>Input</h5>
-<table style="width:750px" border="2" cellpadding="6">
-  <thead>
-    <tr>
-      <th>
-        <strong>Argument Name</strong>
-      </th>
-      <th>
-        <strong>Description</strong>
-      </th>
-      <th>
-        <strong>Required</strong>
-      </th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>type</td>
-      <td>The mirroring type. Can be "all", which mirrors everything, "chat", which mirrors only chats (not commands), or "none", which stops all mirroring.</td>
-      <td>Optional</td>
-    </tr>
-    <tr>
-      <td>autoclose</td>
-      <td>Whether the channel is auto-closed when an investigation is closed. Can be "true" or "false". Default is "true".</td>
-      <td>Optional</td>
-    </tr>
-    <tr>
-      <td>direction</td>
-      <td>The mirroring direction. Can be "FromDemisto", "ToDemisto", or "Both". Default value is "Both".</td>
-      <td>Optional</td>
-    </tr>
-    <tr>
-      <td>mirrorTo</td>
-      <td>The channel type. Can be "channel" or "group". The default value is "group".</td>
-      <td>Optional</td>
-    </tr>
-    <tr>
-      <td>channelName</td>
-      <td>The name of the channel. The default is "incident-<incidentID>".</td>
-      <td>Optional</td>
-    </tr>
-    <tr>
-      <td>channelTopic</td>
-      <td>The topic of the channel.</td>
-      <td>Optional</td>
-    </tr>
-    <tr>
-      <td>kickAdmin</td>
-      <td>Whether to remove the Slack administrator (channel creator) from the mirrored channel.</td>
-      <td>Optional</td>
-    </tr>
-  </tbody>
-</table>
+Send messages and notifications to your Slack team.
+This integration was integrated and tested with Slack.
+## Configure SlackV3 on Cortex XSOAR
 
-<p>&nbsp;</p>
-<h5>Context Output</h5>
-There are no context output for this command.
-<p>&nbsp;</p>
-<h5>Command Example</h5>
-<p>
-  <code>!mirror-investigation type=all autoclose=true direction=Both channelName=my-mirror channelTopic=my-incident</code>
-</p>
+Slack V3 utilizes "Socket Mode" to enable the integration to communicate directly with Slack for mirroring. This will require a dedicated Slack app to be created for the XSOAR integration.
 
-<h5>Human Readable Output</h5>
-<p>
-Investigation mirrored successfully, channel: my-mirror
-</p>
 
-<h3>2. send-notification</h3>
-<!-- <hr> -->
-<p>Sends a message to a user, group, or channel.</p>
-<h5>Base Command</h5>
-<p>
-  <code>send-notification</code>
-</p>
-<h5>Input</h5>
-<table style="width:750px" border="2" cellpadding="6">
-  <thead>
-    <tr>
-      <th>
-        <strong>Argument Name</strong>
-      </th>
-      <th>
-        <strong>Description</strong>
-      </th>
-      <th>
-        <strong>Required</strong>
-      </th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>message</td>
-      <td>The message content. When mentioning another slack user, make sure to do so in the following format: <@user_name>.</td>
-      <td>Optional</td>
-    </tr>
-    <tr>
-      <td>to</td>
-      <td>The user to whom to send the message. Can be either the username or email address.</td>
-      <td>Optional</td>
-    </tr>
-    <tr>
-      <td>channel</td>
-      <td>The name of the Slack channel to which to send the message.</td>
-      <td>Optional</td>
-    </tr>
-    <tr>
-      <td>entry</td>
-      <td>An entry ID to send as a link.</td>
-      <td>Optional</td>
-    </tr>
-    <tr>
-      <td>ignoreAddURL</td>
-      <td>Whether to include a URL to the relevant component in Cortex XSOAR. Can be "true" or "false". Default value is "false".</td>
-      <td>Optional</td>
-    </tr>
-    <tr>
-      <td>threadID</td>
-      <td>The ID of the thread to which to reply - can be retrieved from a previous send-notification command.</td>
-      <td>Optional</td>
-    </tr>
-    <tr>
-      <td>blocks</td>
-      <td>A JSON string of Slack blocks to send in the message.</td>
-      <td>Optional</td>
-    </tr>
-  </tbody>
-</table>
+1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
+2. Search for SlackV3.
+3. Click **Add instance** to create and configure a new integration instance.
 
-<p>&nbsp;</p>
-<h5>Context Output</h5>
-<table style="width:750px" border="2" cellpadding="6">
-  <thead>
-    <tr>
-      <th>
-        <strong>Path</strong>
-      </th>
-      <th>
-        <strong>Type</strong>
-      </th>
-      <th>
-        <strong>Description</strong>
-      </th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Slack.Thread.ID</td>
-      <td>String</td>
-      <td>b'The Slack thread ID.'</td>
-    </tr>
-  </tbody>
-</table>
+    | **Parameter** | **Description** | **Required** |
+    | --- | --- | --- |
+    | `access_token` | Slack API access token | False |
+    | `bot_token` | Slack API bot token | False |
+    | `app_token` | Slack API app token | False |
+    | `incidentNotificationChannel` | Dedicated Slack channel to receive notifications | False |
+    | `notify_incidents` | Send notifications about incidents to the dedicated channel | False |
+    | `min_severity` | Minimum incident severity to send messages to slack by | False |
+    | `incidentType` | Type of incidents created in Slack | False |
+    | `allow_incidents` | Allow external users to create incidents via DM | False |
+    | `proxy` | Use system proxy settings | False |
+    | `unsecure` | Trust any certificate (not secure) | False |
+    | `longRunning` | Long running instance. Required for investigation mirroring and direct messages. | False |
+    | `bot_name` | Bot display name in Slack (Cortex XSOAR by default) | False |
+    | `bot_icon` | Bot icon in Slack - Image URL (Cortex XSOAR icon by default) | False |
+    | `max_limit_time` | Maximum time to wait for a rate limiting call in seconds | False |
+    | `paginated_count` | Number of objects to return in each paginated call | False |
+    | `proxy_url` | Proxy URL to use in Slack API calls | False |
+    | `filtered_tags` | Comma separated list of tags To filter the messages sent from XSOAR. Only supported in Demisto V6.1 and above. | False |
 
-<p>&nbsp;</p>
-<h5>Command Example</h5>
-<p>
-  <code>!send-notification channel=general message="I love Cortex XSOAR"</code>
-</p>
-<h5>Context Example</h5>
-<pre>
+4. Click **Test** to validate the URLs, token, and connection.
+
+### Creating a Custom App
+In order to create a custom app, first navigate to the following [link](https://api.slack.com/apps/) and click "Create New App".
+Next click "From Scratch" and enter an *App Name*, select the workspace your app will reside and lastly click "Create App". 
+ 
+Afterwards, click "Socket Mode" found on the left-hand side of the menu. Then click "Enable Socket Mode". This will create an app level token with the required scope for connecting. A *Token Name* is required, lastly, click "Generate".
+
+You will be given a token starting with `xapp`. Please copy this token and apply it to the `app_token` parameter.
+
+### Defining Events
+For Slack V3 to be able to mirror incidents, we must enable the Events feature. To do so, please navigate to "Event Subscriptions" found under the Features menu. Enable Events by clicking the toggle switch.
+
+Enabling the Events API will present various events which the app may subscribe to. Currently, Slack V3 only requires the following scopes:
+
+| **Event Name** | **What it's used for** |
+| --- | --- |
+| `message.channel` | Allows the App to receive messages which were posted in a channel. Used for Mirror In |
+| `message.mpim` | Allows the App to receive messages which were posted to a group. Used for Mirror In |
+| `message.groups` | Allows the App to receive messages which were posted to a private channel. Used for Mirror In |
+| `message.im` | Allows the App to receive Direct Messages |
+
+These permissions are available for both "Bot Events" and "Events on behalf of users". In order to use mirroring and handle bot questions, we recommend enabling these event scopes for both bot and user events.
+
+### OAuth Scopes
+
+In order to utilize the full functionality of the Slack integration, we recommend the following OAuth scopes for the Bot token:
+
+| **OAuth Scope** | **Description** |
+| --- | --- |
+| `channels:history` | View messages and other content in public channels that the app has been added to |
+| `channels:read` | View basic information about public channels in a workspace |
+| `chat:write` | Send messages as the bot |
+| `files:write` | Upload, edit, and delete files as the bot |
+| `groups:history` | View messages and other content in private channels that the bot has been added to |
+| `groups:read` | View basic information about private channels that the bot has been added to |
+| `im:history` | View messages and other content in direct messages that the bot has been added to |
+| `im:read` | View basic information about direct messages that the bot has been added to |
+| `mpim:history` | View messages and other content in group direct messages that the bot has been added to |
+| `mpim:read` | View basic information about group direct messages that the bot has been added to |
+| `users:read` | View people in a workspace |
+
+For the User token, we recommend the following scopes:
+
+| **OAuth Scope** | **Description** |
+| --- | --- |
+| `channels:history` | View messages and other content in public channels that the app has been added to |
+| `channels:write` | Manage a user’s public channels and create new ones on a user’s behalf |
+| `groups:history` | View messages and other content in private channels that the bot has been added to |
+| `groups:write` | Manage a user’s private channels and create new ones on a user’s behalf |
+| `im:history` | View messages and other content in direct messages that the bot has been added to |
+| `im:write` | Start direct messages with people on a user’s behalf |
+| `mpim:history` | View messages and other content in group direct messages that the bot has been added to |
+| `mpim:write` | Start group direct messages with people on a user’s behalf |
+| `users:read` | View people in a workspace |
+
+The App token requires the `connections:write` scope in order to open the socket connection and is required for the Events and Questions functionality. It's important to note that when configuring Socket Mode, this scope will automatically be created for you.
+
+## Backwards Compatibility with Slack V2
+Slack V3 currently contains improvements to enhance the stability of the integration as well as the circumvention of OProxy. This version is intended to provide customers with more granular control over the Slack integration by enabling the Bring-Your-Own-App model and customizable scope based authentication.
+
+All commands are fully compatible with Slack V2 playbooks as their inputs and outputs have remained the same. As a customer, you should notice no significant change in the behavior of the Slack integration with your existing playbooks.
+
+## Commands
+You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+After you successfully execute a command, a DBot message appears in the War Room with the command details.
+### mirror-investigation
+***
+Mirrors the investigation between Slack and the Demisto War Room.
+
+
+#### Base Command
+
+`mirror-investigation`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| type | The mirroring type. Can be "all", which mirrors everything, "chat", which mirrors only chats (not commands), or "none", which stops all mirroring. Possible values are: all, chat, none. Default is all. | Optional | 
+| autoclose | Whether the channel is auto-closed when an investigation is closed. Can be "true" or "false". Default is "true". Possible values are: true, false. Default is true. | Optional | 
+| direction | The mirroring direction. Can be "FromDemisto", "ToDemisto", or "Both". Default value is "Both". Possible values are: Both, FromDemisto, ToDemisto. Default is both. | Optional | 
+| mirrorTo | The channel type. Can be "channel" or "group". The default value is "group". Possible values are: channel, group. Default is group. | Optional | 
+| channelName | The name of the channel. The default is "incident-&lt;incidentID&gt;". | Optional | 
+| channelTopic | The topic of the channel. | Optional | 
+| kickAdmin | Whether to remove the Slack administrator (channel creator) from the mirrored channel. Possible values are: true, false. Default is false. | Optional | 
+
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Command Example
+```
+!mirror-investigation direction="FromDemisto" channelName="example" using-brand="SlackV3"
+```
+
+#### Human Readable Output
+>Investigation mirrored successfully, channel:example
+
+
+### send-notification
+***
+Sends a message to a user, group, or channel.
+
+
+#### Base Command
+
+`send-notification`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| message | The message content. When mentioning another slack user, make sure to do so in the following format: &lt;@user_name&gt;. | Optional | 
+| to | The user to whom to send the message. Can be either the username or email address. | Optional | 
+| channel | The name of the Slack channel to which to send the message. | Optional | 
+| entry | An entry ID to send as a link. | Optional | 
+| ignoreAddURL | Whether to include a URL to the relevant component in Demisto. Can be "true" or "false". Default value is "false". Possible values are: true, false. Default is false. | Optional | 
+| threadID | The ID of the thread to which to reply - can be retrieved from a previous send-notification command. | Optional | 
+| blocks | A JSON string of Slack blocks to send in the message. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Slack.Thread.ID | String | The Slack thread ID. | 
+
+
+#### Command Example
+```!send-notification channel="example" using-brand="SlackV3"```
+
+#### Context Example
+```json
 {
-    "Slack.Thread": {
-        "ID": "1567407432.000500"
+    "Slack": {
+        "Thread": {
+            "ID": "1624272821.000700"
+        }
     }
 }
-</pre>
-<h5>Human Readable Output</h5>
-<p>
-<p>
-Message sent to Slack successfully.
-Thread ID is: 1567407432.000500
-</p>
-</p>
+```
 
-<h3>3. close-channel</h3>
-<!-- <hr> -->
-<p>Archives a Slack channel.</p>
-<h5>Base Command</h5>
-<p>
-  <code>close-channel</code>
-</p>
-<h5>Input</h5>
-<table style="width:750px" border="2" cellpadding="6">
-  <thead>
-    <tr>
-      <th>
-        <strong>Argument Name</strong>
-      </th>
-      <th>
-        <strong>Description</strong>
-      </th>
-      <th>
-        <strong>Required</strong>
-      </th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>channel</td>
-      <td>The name of the channel to archive. If not provided, the mirrored investigation channel is archived (if the channel exists).</td>
-      <td>Optional</td>
-    </tr>
-  </tbody>
-</table>
+#### Human Readable Output
 
-<p>&nbsp;</p>
-<h5>Context Output</h5>
-There are no context output for this command.
-<p>&nbsp;</p>
-<h5>Command Example</h5>
-<p>
-  <code>!close-channel</code>
-</p>
+>Message sent to Slack successfully.
+>Thread ID is: 1624272821.000700
 
-<h5>Human Readable Output</h5>
-<p>
-Channel successfully archived.
-</p>
+### close-channel
+***
+Archives a Slack channel.
 
-<h3>4. slack-send-file</h3>
-<!-- <hr> -->
-<p>Sends a file to a user, channel, or group. If not specified, the file is sent to the mirrored investigation channel (if the channel exists).</p>
-<h5>Base Command</h5>
-<p>
-  <code>slack-send-file</code>
-</p>
-<h5>Input</h5>
-<table style="width:750px" border="2" cellpadding="6">
-  <thead>
-    <tr>
-      <th>
-        <strong>Argument Name</strong>
-      </th>
-      <th>
-        <strong>Description</strong>
-      </th>
-      <th>
-        <strong>Required</strong>
-      </th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>file</td>
-      <td>The ID of the file entry to send.</td>
-      <td>Required</td>
-    </tr>
-    <tr>
-      <td>to</td>
-      <td>The user to whom to send the file. Can be the username or the email address.</td>
-      <td>Optional</td>
-    </tr>
-    <tr>
-      <td>group</td>
-      <td>The name of the Slack group (private channel) to which to send the file.</td>
-      <td>Optional</td>
-    </tr>
-    <tr>
-      <td>channel</td>
-      <td>The name of the Slack channel to which to send the file.</td>
-      <td>Optional</td>
-    </tr>
-    <tr>
-      <td>threadID</td>
-      <td>The ID of the thread to which to reply - can be retrieved from a previous send-notification command.</td>
-      <td>Optional</td>
-    </tr>
-    <tr>
-      <td>comment</td>
-      <td>A comment to add to the file.</td>
-      <td>Optional</td>
-    </tr>
-  </tbody>
-</table>
 
-<p>&nbsp;</p>
-<h5>Context Output</h5>
-There are no context output for this command.
-<p>&nbsp;</p>
-<h5>Command Example</h5>
-<p>
-  <code>!slack-send-file file=1@2 channel=general</code>
-</p>
+#### Base Command
 
-<h5>Human Readable Output</h5>
-<p>
-File sent to Slack successfully.
-</p>
+`close-channel`
+#### Input
 
-<h3>5. slack-set-channel-topic</h3>
-<!-- <hr> -->
-<p>Sets the topic for a channel.</p>
-<h5>Base Command</h5>
-<p>
-  <code>slack-set-channel-topic</code>
-</p>
-<h5>Input</h5>
-<table style="width:750px" border="2" cellpadding="6">
-  <thead>
-    <tr>
-      <th>
-        <strong>Argument Name</strong>
-      </th>
-      <th>
-        <strong>Description</strong>
-      </th>
-      <th>
-        <strong>Required</strong>
-      </th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>channel</td>
-      <td>The channel name. If not specified, the topic of the mirrored investigation channel is set (if the channel exists).</td>
-      <td>Optional</td>
-    </tr>
-    <tr>
-      <td>topic</td>
-      <td>The topic for the channel.</td>
-      <td>Required</td>
-    </tr>
-  </tbody>
-</table>
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| channel | The name of the channel to archive. If not provided, the mirrored investigation channel is archived (if the channel exists). | Optional | 
 
-<p>&nbsp;</p>
-<h5>Context Output</h5>
-There are no context output for this command.
-<p>&nbsp;</p>
-<h5>Command Example</h5>
-<p>
-  <code>!slack-set-channel-topic channel=general topic="Cortex XSOAR rocks"</code>
-</p>
 
-<h5>Human Readable Output</h5>
-<p>
-<p>
-Topic successfully set.
-</p>
-</p>
+#### Context Output
 
-<h3>6. slack-create-channel</h3>
-<!-- <hr> -->
-<p>Creates a channel in Slack.</p>
-<h5>Base Command</h5>
-<p>
-  <code>slack-create-channel</code>
-</p>
-<h5>Input</h5>
-<table style="width:750px" border="2" cellpadding="6">
-  <thead>
-    <tr>
-      <th>
-        <strong>Argument Name</strong>
-      </th>
-      <th>
-        <strong>Description</strong>
-      </th>
-      <th>
-        <strong>Required</strong>
-      </th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>type</td>
-      <td>The channel type. Can be "private" or "public".</td>
-      <td>Optional</td>
-    </tr>
-    <tr>
-      <td>name</td>
-      <td>The name of the channel.</td>
-      <td>Required</td>
-    </tr>
-    <tr>
-      <td>users</td>
-      <td>A CSV list of user names or email addresses to invite to the channel. For example: "user1, user2...".</td>
-      <td>Optional</td>
-    </tr>
-  </tbody>
-</table>
+There is no context output for this command.
 
-<p>&nbsp;</p>
-<h5>Context Output</h5>
-There are no context output for this command.
-<p>&nbsp;</p>
-<h5>Command Example</h5>
-<p>
-  <code>!slack-create-channel name=my-channel topic=cool-topic type=private users=demisto_integration</code>
-</p>
+#### Command Example
+```
+!close-channel channel=new-slack-channel
+```
 
-<h5>Human Readable Output</h5>
-<p>
-Successfully created the channel my-channel.
-</p>
+#### Human Readable Output
+>Channel successfully archived.
 
-<h3>7. slack-invite-to-channel</h3>
-<!-- <hr> -->
-<p>Invites users to join a channel.</p>
-<h5>Base Command</h5>
-<p>
-  <code>slack-invite-to-channel</code>
-</p>
-<h5>Input</h5>
-<table style="width:750px" border="2" cellpadding="6">
-  <thead>
-    <tr>
-      <th>
-        <strong>Argument Name</strong>
-      </th>
-      <th>
-        <strong>Description</strong>
-      </th>
-      <th>
-        <strong>Required</strong>
-      </th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>users</td>
-      <td>A CSV list of usernames or email addresses to invite to join the channel. For example: "user1, user2...".</td>
-      <td>Required</td>
-    </tr>
-    <tr>
-      <td>channel</td>
-      <td>The name of the channel to which to invite the users. If the name of the channel is not specified, the name of the mirrored investigation channel is used (if the channel exists).</td>
-      <td>Optional</td>
-    </tr>
-  </tbody>
-</table>
 
-<p>&nbsp;</p>
-<h5>Context Output</h5>
-There are no context output for this command.
-<p>&nbsp;</p>
-<h5>Command Example</h5>
-<p>
-  <code>!slack-invite-to-channel channel=my-channel users=cool-user</code>
-</p>
+### slack-send-file
+***
+Sends a file to a user, channel, or group. If not specified, the file is sent to the mirrored investigation channel (if the channel exists).
 
-<h5>Human Readable Output</h5>
-<p>
-Successfully invited users to the channel.
-</p>
 
-<h3>8. slack-kick-from-channel</h3>
-<!-- <hr> -->
-<p>Removes users from the specified channel.</p>
-<h5>Base Command</h5>
-<p>
-  <code>slack-kick-from-channel</code>
-</p>
-<h5>Input</h5>
-<table style="width:750px" border="2" cellpadding="6">
-  <thead>
-    <tr>
-      <th>
-        <strong>Argument Name</strong>
-      </th>
-      <th>
-        <strong>Description</strong>
-      </th>
-      <th>
-        <strong>Required</strong>
-      </th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>users</td>
-      <td>A CSV list of usernames or email addresses to remove from the a channel. For example: "user1, user2..."</td>
-      <td>Required</td>
-    </tr>
-    <tr>
-      <td>channel</td>
-      <td>The name of the channel from which to remove the users. If the name of the channel is not specified, the mirrored investigation channel is used (if the channel exists).</td>
-      <td>Optional</td>
-    </tr>
-  </tbody>
-</table>
+#### Base Command
 
-<p>&nbsp;</p>
-<h5>Context Output</h5>
-There are no context output for this command.
-<p>&nbsp;</p>
-<h5>Command Example</h5>
-<p>
-  <code>!slack-kick-from-channel channel=my-channel users=cool-user</code>
-</p>
+`slack-send-file`
+#### Input
 
-<h5>Human Readable Output</h5>
-<p>
-Successfully kicked users from the channel.
-</p>
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| file | The ID of the file entry to send. | Required | 
+| to | The user to whom to send the file. Can be the username or the email address. | Optional | 
+| group | The name of the Slack group (private channel) to which to send the file. | Optional | 
+| channel | The name of the Slack channel to which to send the file. | Optional | 
+| threadID | The ID of the thread to which to reply - can be retrieved from a previous send-notification command. | Optional | 
+| comment | A comment to add to the file. | Optional | 
 
-<h3>9. slack-rename-channel</h3>
-<!-- <hr> -->
-<p>Renames a channel in Slack.</p>
-<h5>Base Command</h5>
-<p>
-  <code>slack-rename-channel</code>
-</p>
-<h5>Input</h5>
-<table style="width:750px" border="2" cellpadding="6">
-  <thead>
-    <tr>
-      <th>
-        <strong>Argument Name</strong>
-      </th>
-      <th>
-        <strong>Description</strong>
-      </th>
-      <th>
-        <strong>Required</strong>
-      </th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>name</td>
-      <td>The new name of the channel.</td>
-      <td>Required</td>
-    </tr>
-    <tr>
-      <td>channel</td>
-      <td>The current name of the channel. If the name of the channel is not specified, the mirrored investigation channel is used (if the channel exists).</td>
-      <td>Optional</td>
-    </tr>
-  </tbody>
-</table>
 
-<p>&nbsp;</p>
-<h5>Context Output</h5>
-There are no context output for this command.
-<p>&nbsp;</p>
-<h5>Command Example</h5>
-<p>
-  <code>!slack-rename-channel channel=my-channel name=your-channel</code>
-</p>
+#### Context Output
 
-<h5>Human Readable Output</h5>
-<p>
-Channel renamed successfully.
-</p>
+There is no context output for this command.
 
-<h3>10. slack-get-user-details</h3>
-<!-- <hr> -->
-<p>Get details about a specified user.</p>
-<h5>Base Command</h5>
-<p>
-  <code>slack-get-user-details</code>
-</p>
-<h5>Input</h5>
-<table style="width:750px" border="2" cellpadding="6">
-  <thead>
-    <tr>
-      <th>
-        <strong>Argument Name</strong>
-      </th>
-      <th>
-        <strong>Description</strong>
-      </th>
-      <th>
-        <strong>Required</strong>
-      </th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>user</td>
-      <td>The Slack user (username or email).</td>
-      <td>Required</td>
-    </tr>
-  </tbody>
-</table>
+#### Command Example
+```
+!slack-send-file file=87@129 channel=testing-docs comment="Look at this gif!"
+```
 
-<p>&nbsp;</p>
-<h5>Context Output</h5>
-<table style="width:750px" border="2" cellpadding="6">
-  <thead>
-    <tr>
-      <th>
-        <strong>Path</strong>
-      </th>
-      <th>
-        <strong>Type</strong>
-      </th>
-      <th>
-        <strong>Description</strong>
-      </th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Slack.User.ID</td>
-      <td>String</td>
-      <td>b'The ID of the user.'</td>
-    </tr>
-    <tr>
-      <td>Slack.User.Username</td>
-      <td>String</td>
-      <td>b'The username of the user.'</td>
-    </tr>
-    <tr>
-      <td>Slack.User.Name</td>
-      <td>String</td>
-      <td>b'The actual name of the user.'</td>
-    </tr>
-    <tr>
-      <td>Slack.User.DisplayName</td>
-      <td>String</td>
-      <td>b'The display name of the user.'</td>
-    </tr>
-    <tr>
-      <td>Slack.User.Email</td>
-      <td>String</td>
-      <td>b'The email address of the user.'</td>
-    </tr>
-  </tbody>
-</table>
+#### Human Readable Output
+>File sent to Slack successfully.
 
-<p>&nbsp;</p>
-<h5>Command Example</h5>
-<p>
-  <code>!slack-get-user-details user="cool_user"</code>
-</p>
-<h5>Context Example</h5>
-<pre>
+
+### slack-set-channel-topic
+***
+Sets the topic for a channel.
+
+
+#### Base Command
+
+`slack-set-channel-topic`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| channel | The channel name. If not specified, the topic of the mirrored investigation channel is set (if the channel exists). | Optional | 
+| topic | The topic for the channel. | Required | 
+
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Command Example
+```
+!slack-set-channel-topic topic="Testing topic for documentation" channel=testing-docs
+```
+
+#### Human Readable Output
+>Topic successfully set.
+
+
+### slack-create-channel
+***
+Creates a channel in Slack.
+
+
+#### Base Command
+
+`slack-create-channel`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| type | The channel type. Can be "private" or "public". Possible values are: private, public. Default is private. | Optional | 
+| name | The name of the channel. | Required | 
+| users | A CSV list of user names or email addresses to invite to the channel. For example: "user1, user2...". | Optional | 
+
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Command Example
+```
+!slack-create-channel type="private" name="testing-docs"
+```
+
+#### Human Readable Output
+>Successfully created the channel testing-docs
+
+
+### slack-invite-to-channel
+***
+Invites users to join a channel.
+
+
+#### Base Command
+
+`slack-invite-to-channel`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| users | A CSV list of usernames or email addresses to invite to join the channel. For example: "user1, user2...". | Required | 
+| channel | The name of the channel to which to invite the users. If the name of the channel is not specified, the name of the mirrored investigation channel is used (if the channel exists). | Optional | 
+
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Command Example
+```
+!slack-invite-to-channel users="Sir Testing McTesterface" channel=new-slack-channel
+```
+
+#### Human Readable Output
+>Successfully invited users to the channel.
+
+
+
+### slack-kick-from-channel
+***
+Removes users from the specified channel.
+
+
+#### Base Command
+
+`slack-kick-from-channel`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| users | A CSV list of usernames or email addresses to remove from the a channel. For example: "user1, user2...". | Required | 
+| channel | The name of the channel from which to remove the users. If the name of the channel is not specified, the mirrored investigation channel is used (if the channel exists). | Optional | 
+
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Command Example
+```
+!slack-kick-from-channel users="Sir Testing McTesterface" channel=new-slack-channel
+```
+
+#### Human Readable Output
+>Successfully kicked users from the channel.
+
+
+### slack-rename-channel
+***
+Renames a channel in Slack.
+
+
+#### Base Command
+
+`slack-rename-channel`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| name | The new name of the channel. | Required | 
+| channel | The current name of the channel. If the name of the channel is not specified, the mirrored investigation channel is used (if the channel exists). | Optional | 
+
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Command Example
+```
+!slack-rename-channel name="new-slack-channel" channel="testing-docs"
+```
+
+#### Human Readable Output
+>Channel renamed successfully.
+
+
+### slack-get-user-details
+***
+Get details about a specified user.
+
+
+#### Base Command
+
+`slack-get-user-details`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| user | The Slack user (username or email). | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Slack.User.ID | String | The ID of the user. | 
+| Slack.User.Username | String | The username of the user. | 
+| Slack.User.Name | String | The actual name of the user. | 
+| Slack.User.DisplayName | String | The display name of the user. | 
+| Slack.User.Email | String | The email address of the user. | 
+
+
+#### Command Example
+```!slack-get-user-details user="cortex_xsoar" using-brand="SlackV3"```
+
+#### Context Example
+```json
 {
-    "Slack.User": {
-        "ID": "UXXXXXXXX",
-        "Name": "Cool User",
-        "Username": "cool_user",
-        "Email": "cool_user@coolorg.com"
+    "Slack": {
+        "User": {
+            "ID": "U0XXXXXXXX",
+            "Name": "cortex_xsoar",
+            "Username": "demisto_integration"
+        }
     }
 }
-</pre>
-<h5>Human Readable Output</h5>
-<p>
-<h3>Details for Slack user: cool_user</h3>
-<table style="width:750px" border="2" cellpadding="6">
-  <thead>
-    <tr>
-      <th><strong>ID</strong></th>
-      <th><strong>Username</strong></th>
-      <th><strong>Name</strong></th>
-      <th><strong>Email</strong></th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>UXXXXXXXX</td>
-      <td>cool_user</td>
-      <td>Cool User</td>
-      <td>cool_user@coolorg.com</td>
-    </tr>
-  </tbody>
-</table>
+```
 
-</p>
-<h2>Additional Information</h2>
-<h3>Change the name of the Cortex XSOAR App</h3>
-<p>You can change the name and icon of the Cortex XSOAR app in direct messages using the integration configuration settings (parameters). In order to change the name of the application itself, do the following:</p>
-<ul>
-<li>Go to the app in the **Apps** section in Slack<img alt="" src="https://github.com/demisto/content/raw/09eaa5901b0967706af2e83dfad567321e72ead8/Packs/Slack/doc_files/slack-apps.png"/></li>
-<li> In the app, go to **About > Settings**: <img alt="" src="https://github.com/demisto/content/raw/09eaa5901b0967706af2e83dfad567321e72ead8/Packs/Slack/doc_files/slack-app-about.png"/></li>
-<li>Scroll down and click the pencil icon to change the name. <img alt="" src="https://github.com/demisto/content/raw/09eaa5901b0967706af2e83dfad567321e72ead8/Packs/Slack/doc_files/slack-app-name.png"/></li>
-</ul>
-<h3>Direct messages</h3>
-<p>You can send direct messages to the Cortex XSOAR app on Slack using the following commands:</p>
-<p><strong>list incidents [page x]</strong> - lists the current incidents in Cortex XSOAR. Requires user permissions in Cortex XSOAR.</p>
-<p><strong>list my incidents [page x]</strong> - lists the current incidents assigned to you in Cortex XSOAR. Requires user permissions in Cortex XSOAR.</p>
-<p><strong>list my tasks [page x]</strong> - lists the current tasks assigned to you in Cortex XSOAR. Requires user permissions in Cortex XSOAR.</p>
-<p><strong>list closed incidents</strong> - lists the closed incidents in Cortex XSOAR. Requires user permissions in Cortex XSOAR.</p>
-<p><strong>new incident [details]</strong> - creates a new incident in Cortex XSOAR. Requires user permissions in Cortex XSOAR, or that the `Allow external users to create incidents via DM` parameter is enabled.</p>
-<p><strong>mirror [incident-id]</strong> - mirrors an incident in Cortex XSOAR to a Slack channel. Requires user permissions in Cortex XSOAR for the specified incident.</p>
+#### Human Readable Output
 
-<h3>Notifications</h3>
-<p>The integration sends notifications as they are configured in the notification settings (User Preferences in Cortex XSOAR), and to the dedicated channel configured for incident notifications (according to the integration configuration).
-If a dedicated channel for incident notifications is configured, the following notifications will be sent there:</p>
-<ul>
-<li>Incident opened</li>
-<li>Incident updated</li>
-<li>Investigation closed</li>
-<li>Investigation deleted</li>
-<li>Incident SLA changed</li>
-<li>Task completed</li>
-</ul>
-<h3>Blocks and interactive components</h3>
-<span>The integration supports sending "blocks" to Slack. Blocks are a series of components that can be combined to create visually rich and compellingly interactive messages. In the integration, they can be sent as an array of JSON. More information about that <a href="https://api.slack.com/reference/block-kit/blocks">here.</a> You can experiment with and build your own blocks <a href="https://api.slack.com/tools/block-kit-builder">here.</a>
-The integration also allows some level of interactivity. When a user interacts with an element in a Slack message, Slack sends a request with the relevant information. 
-This request is processed and stored by a dedicated endpoint outside of Cortex XSOAR in the address: <code>https://oproxy.demisto.ninja</code>
-The integration allows polling this endpoint for user interactions that contain entitlement strings, which are used to perform actions in Cortex XSOAR by external users. See the <a href="https://github.com/demisto/content/tree/master/Packs/Slack/Scripts/SlackAsk">SlackAsk</a> script for an example.
-This means that in order to enable interactivity using the integration, connection to this endpoint has to be enabled.</span>
-The following information is sent to the dedicated endpoint in the request:
-<h5>Headers</h5>
-<ul>
-<li>Current Cortex XSOAR content version</li>
-<li>Current Cortex XSOAR server version</li>
-<li>The name of the integration</li>
-<li>Team name in Slack - for identification</li>
-<li>Team ID in Slack - for identification</li>
-<li>Cortex XSOAR license ID - for identification</li>
-</ul>
-<h5>Body</h5>
-<ul>
-<li>Entitlement - the unique entitlement string to allow interaction with Cortex XSOAR.</li>
-</ul>
-<h4>Important! The interactions work only with the Cortex XSOAR Integration bot - the only application that's allowed to send requests to the dedicated endpoint(for security reasons). They will not work with another application.</h4>
-<h2>Known Limitations</h2>
-<ul>
-  <li>Due to limitations of the `aiohttp` library, only http proxies are supported.</li>
-  <li>Channels are created by the Slack user who authorized the application. Thus, this user will be in every channel that the integration creates. You cannot kick this user, but they can leave.</li>
-  <li>The integration can only manage channels that the application is a member of. Otherwise those channels will not be found.</li>
-  <li>Currently, the integration does not support working without verifying SSL certificates. The parameter applies only to the endpoint for interactive responses.</li>
-</ul>
-<h2>Troubleshooting</h2>
-<p>If messages are not mirrored in Cortex XSOAR, or direct messages are not handled properly, check the integration status on the integration page:</p>
-<img alt="" src="https://github.com/demisto/content/raw/09eaa5901b0967706af2e83dfad567321e72ead8/Packs/Slack/doc_files/slack-health.png"/>
-<br>
-<span>If you're having further issues, contact us at <a href="mailto:support@demisto.com">support@demisto.com</a> and attach the server logs.</span>
+>### Details for Slack user: cortex_xsoar
+>|ID|Username|Name|
+>|---|---|---|
+>| U0XXXXXXXX | demisto_integration | cortex_xsoar |
+
