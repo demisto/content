@@ -410,13 +410,13 @@ def get_dbot_level(threat_level_id: str) -> int:
     return 0
 
 
-def get_files_events(demisto_args, pymisp):
+def get_files_events(demisto_args, pymisp, malicious_tag_ids, suspicious_tag_ids):
     files = argToList(demisto_args.get('file'), ',')
     for file_hash in files:
-        check_file(pymisp, file_hash)
+        check_file(pymisp, file_hash, malicious_tag_ids, suspicious_tag_ids)
 
 
-def check_file(pymisp, file_hash):
+def check_file(pymisp, file_hash, malicious_tag_ids, suspicious_tag_ids):
     """
     gets a file_hash and entities dict, returns MISP events
 
@@ -500,38 +500,57 @@ def check_file(pymisp, file_hash):
     ))
 
 
-def parse_response_reputation_command(response):
+def parse_response_reputation_command(response, malicious_tag_ids, suspicious_tag_ids):
     attributes_list = response.get('Attribute')
     if not attributes_list:
         return None
     related_events = {}
     for attribute in attributes_list:
         current_event = attribute.get('Event', {})
+        event_tag_list = []
         if current_event:
             current_event_id = current_event.get('id')
-            threat_level_id = current_event.get('threat_level_id')
             organization_obj = current_event.get('Orgc')
             organization_name = organization_obj.get('name')
 
             related_events[current_event_id] = \
                 {
-                    'threat_level_id': threat_level_id,
                     'orgc_name': f"MISP.{organization_name}"
                 }
 
             event_tag_list = current_event.get('Tags')
         attribute_tag_list = attribute.get('Tags')
+        get_score_by_tags(attribute_tags=attribute_tag_list, event_tags=event_tag_list,
+                          malicious_tag_ids=malicious_tag_ids,
+                          suspicious_tag_ids=suspicious_tag_ids)
         #  todo add the score function after we get to decisions
     return related_events
 
 
-def get_ips_events(demisto_args, pymisp):
+def get_score_by_tags(attribute_tags, event_tags, malicious_tag_ids, suspicious_tag_ids):
+    is_attribute_tag_malicious = any(tag.get('id') in malicious_tag_ids for tag in attribute_tags)
+    if is_attribute_tag_malicious:
+        return "SCORE WHEN ATTRIBUTE TAG IS malicious"
+    is_attribute_tag_suspicious = any(tag.get('id') in suspicious_tag_ids for tag in attribute_tags)
+    if is_attribute_tag_suspicious:
+        return "SCORE WHEN ATTRIBUTE TAG IS suspicious"
+    is_event_tag_suspicious = any(tag.get('id') in malicious_tag_ids for tag in event_tags)
+    if is_event_tag_suspicious:
+        return "SCORE WHEN EVENT TAG IS malicious"
+    is_event_tag_malicious = any(tag.get('id') in suspicious_tag_ids for tag in event_tags)
+    if is_event_tag_malicious:
+        return "SCORE WHEN EVENT TAG IS malicious"
+    # here if there is no match for configured tags
+    # search score for 4 default tags ? or go for UNKNOWN
+
+
+def get_ips_events(demisto_args, pymisp, malicious_tag_ids, suspicious_tag_ids):
     ips = argToList(demisto_args.get('ip'), ',')
     for ip in ips:
-        check_ip(pymisp, ip)
+        check_ip(pymisp, ip, malicious_tag_ids, suspicious_tag_ids)
 
 
-def check_ip(pymisp, ip):
+def check_ip(pymisp, ip, malicious_tag_ids, suspicious_tag_ids):
     """
     Gets a IP and returning its reputation (if exists)
     ip (str): IP to check
@@ -782,14 +801,14 @@ def download_file(pymisp: ExpandedPyMISP, demisto_args: dict):
             return fileResult(filename, file_buffer)
 
 
-def get_urls_events(demisto_args, pymisp):
+def get_urls_events(demisto_args, pymisp, malicious_tag_ids, suspicious_tag_ids):
     urls = argToList(demisto_args.get('url'), ',')
     demisto.results(urls)
     for url in urls:
-        check_url(pymisp, url)
+        check_url(pymisp, url, malicious_tag_ids, suspicious_tag_ids)
 
 
-def check_url(pymisp, url):
+def check_url(pymisp, url, malicious_tag_ids, suspicious_tag_ids):
     response = pymisp.search(value=url, type_attribute='url', controller='attributes', include_context=True,
                              include_correlations=True, include_event_tags=True, enforce_warninglist=True)
 
@@ -851,32 +870,32 @@ def check_url(pymisp, url):
     ))
 
 
-def get_domains_events(demisto_args, pymisp):
+def get_domains_events(demisto_args, pymisp, malicious_tag_ids, suspicious_tag_ids):
     domains = argToList(demisto_args.get('domain'), ',')
     demisto.results(domains)
     for domain in domains:
-        check_domain(pymisp, domain)
+        check_domain(pymisp, domain, malicious_tag_ids, suspicious_tag_ids)
 
 
-def check_domain(pymisp, domain):
+def check_domain(pymisp, domain, malicious_tag_ids, suspicious_tag_ids):
     response = pymisp.search(value=domain, type_attribute='domain', controller='attributes', include_context=True,
                              include_correlations=True, include_event_tags=True, enforce_warninglist=True)
 
-    parse_response_reputation_command(response)
+    parse_response_reputation_command(response, malicious_tag_ids, suspicious_tag_ids)
 
 
-def get_emails_events(demisto_args, pymisp):
+def get_emails_events(demisto_args, pymisp, malicious_tag_ids, suspicious_tag_ids):
     emails = argToList(demisto_args.get('email'), ',')
     demisto.results(emails)
     for email in emails:
-        check_email(pymisp, email)
+        check_email(pymisp, email, malicious_tag_ids, suspicious_tag_ids)
 
 
-def check_email(pymisp, email):
+def check_email(pymisp, email, malicious_tag_ids, suspicious_tag_ids):
     response = pymisp.search(value=email, type_attribute='email', controller='attributes', include_context=True,
                              include_correlations=True, include_event_tags=True, enforce_warninglist=True)
 
-    parse_response_reputation_command(response)
+    parse_response_reputation_command(response, malicious_tag_ids, suspicious_tag_ids)
 
 
 def build_misp_complex_filter(pymisp, demisto_query: str) -> str:
@@ -1230,6 +1249,7 @@ def search_events(pymisp, data_keys_to_save) -> CommandResults:
     # Set the controller to events to search for events by the given args
     args['controller'] = 'events'
     response = pymisp.search(**args)
+    print(response)
 
     if response:
         response_for_context = build_events_search_response(copy.deepcopy(response), data_keys_to_save)
@@ -1514,6 +1534,9 @@ def main():
     misp_api_key = params.get('api_key')
     misp_url = params.get('url')
 
+    malicious_tag_ids = argToList(params.get('malicious_tag_ids'))
+    suspicious_tag_ids = argToList(params.get('suspicious_tag_ids'))
+
     pymisp = ExpandedPyMISP(url=misp_url, key=misp_api_key, ssl=verify, proxies=proxies)  # type: ExpandedPyMISP
 
     data_keys_to_save = argToList(params.get('context_select', []))
@@ -1557,13 +1580,20 @@ def main():
             return_results(
                 add_events_from_feed(demisto_args=args, pymisp=pymisp, use_ssl=verify, proxies=proxies))  # checked V
         elif command == 'file':
-            return_results(get_files_events(demisto_args=args, pymisp=pymisp))
+            return_results(get_files_events(demisto_args=args, pymisp=pymisp, malicious_tag_ids=malicious_tag_ids,
+                                            suspicious_tag_ids=suspicious_tag_ids))
         elif command == 'url':
-            return_results(get_urls_events(demisto_args=args, pymisp=pymisp))
+            return_results(get_urls_events(demisto_args=args, pymisp=pymisp, malicious_tag_ids=malicious_tag_ids,
+                                           suspicious_tag_ids=suspicious_tag_ids))
         elif command == 'ip':
-            return_results(get_ips_events(demisto_args=args, pymisp=pymisp))
+            return_results(get_ips_events(demisto_args=args, pymisp=pymisp, malicious_tag_ids=malicious_tag_ids,
+                                          suspicious_tag_ids=suspicious_tag_ids))
         elif command == 'domain':
-            return_results(get_domains_events(demisto_args=args, pymisp=pymisp))
+            return_results(get_domains_events(demisto_args=args, pymisp=pymisp, malicious_tag_ids=malicious_tag_ids,
+                                              suspicious_tag_ids=suspicious_tag_ids))
+        elif command == 'email':
+            return_results(get_emails_events(demisto_args=args, pymisp=pymisp, malicious_tag_ids=malicious_tag_ids,
+                                             suspicious_tag_ids=suspicious_tag_ids))
         #  Object commands
         elif command == 'misp-add-email-object':
             return_results(add_email_object(demisto_args=args, pymisp=pymisp))  # checked V

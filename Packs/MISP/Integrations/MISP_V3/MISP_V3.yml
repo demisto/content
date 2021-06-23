@@ -53,6 +53,18 @@ configuration:
   name: attributes_limit
   required: false
   type: 0
+- additionalinfo: Comma seperated list of malicious tag ids
+  display: Malicious tag ids
+  hidden: false
+  name: malicious_tag_ids
+  required: false
+  type: 12
+- additionalinfo: Comma seperated list of suspicios tag ids
+  display: Suspicious tag ids
+  hidden: false
+  name: suspicious_tag_ids
+  required: false
+  type: 12
 defaultMapperIn: 'null'
 defaultMapperOut: 'null'
 defaultclassifier: 'null'
@@ -128,6 +140,7 @@ script:
       required: false
       secret: false
     - auto: PREDEFINED
+      default: false
       description: Whether to return only the attributes set with the "to_ids" flag.
       isArray: false
       name: to_ids
@@ -167,13 +180,15 @@ script:
       required: false
       secret: false
     - default: false
-      description: If a limit is set, sets the page to be returned. page 3, limit 100 will return records 201->300).
+      description: If a limit is set, sets the page to be returned. page 3, limit
+        100 will return records 201->300).
       isArray: false
       name: page
       required: false
       secret: false
     - default: false
-      description: Limit the number of results returned, depending on the scope (for example 10 attributes or 10 full events).
+      description: Limit the number of results returned, depending on the scope (for
+        example 10 attributes or 10 full events).
       isArray: false
       name: limit
       required: false
@@ -1779,7 +1794,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: Events with the date set to a date before the one specified. This filter will use the date of the event.
+      description: Events with the date set to a date before the one specified. This
+        filter will use the date of the event.
       isArray: false
       name: to
       required: false
@@ -1811,13 +1827,15 @@ script:
       required: false
       secret: false
     - default: false
-      description: If a limit is set, sets the page to be returned. page 3, limit 100 will return records 201->300).
+      description: If a limit is set, sets the page to be returned. page 3, limit
+        100 will return records 201->300).
       isArray: false
       name: page
       required: false
       secret: false
     - default: false
-      description: Limit the number of results returned, depending on the scope (for example 10 attributes or 10 full events).
+      description: Limit the number of results returned, depending on the scope (for
+        example 10 attributes or 10 full events).
       isArray: false
       name: limit
       required: false
