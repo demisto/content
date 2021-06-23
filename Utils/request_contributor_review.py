@@ -221,12 +221,12 @@ def check_reviewers(reviewers: set, pr_author: str, version: str, modified_files
     # Meaning at least one of the reviewers was already tagged. Will
     if untagged_reviewers != reviewers:
         notified_contributors = True
-    if reviewers:
+    if untagged_reviewers:
         if pr_author != 'xsoar-bot' or version != '1.0.0':
             pack_files = {file for file in modified_files if file.startswith(PACKS_FOLDER)
                           and Path(file).parts[1] == pack}
             tag_user_on_pr(
-                reviewers=reviewers,
+                reviewers=untagged_reviewers,
                 pr_number=pr_number,
                 pack=pack,
                 pack_files=pack_files,
