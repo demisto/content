@@ -6,10 +6,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 8634b7df-839b-4b61-8b96-42be0ccbafdc
+    taskid: 7b09fcc4-37cc-44d0-83bf-7e2568434e4f
     type: start
     task:
-      id: 8634b7df-839b-4b61-8b96-42be0ccbafdc
+      id: 7b09fcc4-37cc-44d0-83bf-7e2568434e4f
       version: -1
       name: ""
       iscommand: false
@@ -33,10 +33,10 @@ tasks:
     quietmode: 0
   "2":
     id: "2"
-    taskid: 098f7124-7f78-4761-84fd-0fc9166d6cc1
+    taskid: fa54a0a0-fbb2-4ee5-80bb-40f186f09f26
     type: regular
     task:
-      id: 098f7124-7f78-4761-84fd-0fc9166d6cc1
+      id: fa54a0a0-fbb2-4ee5-80bb-40f186f09f26
       version: -1
       name: ip
       description: Checks the reputation of the given IP address.
@@ -65,10 +65,10 @@ tasks:
     quietmode: 0
   "3":
     id: "3"
-    taskid: bf883bc5-6a2d-400c-85eb-d6167d996c96
+    taskid: c0ed707d-a268-43b4-878d-bab83bcf6bfc
     type: condition
     task:
-      id: bf883bc5-6a2d-400c-85eb-d6167d996c96
+      id: c0ed707d-a268-43b4-878d-bab83bcf6bfc
       version: -1
       name: Verify IP is malicious
       type: condition
@@ -108,10 +108,10 @@ tasks:
     quietmode: 0
   "9":
     id: "9"
-    taskid: 00b66032-2c08-4340-8c6b-b588b2b4a06d
+    taskid: 35874d9f-1825-4556-80b0-5e4e0e91a00d
     type: regular
     task:
-      id: 00b66032-2c08-4340-8c6b-b588b2b4a06d
+      id: 35874d9f-1825-4556-80b0-5e4e0e91a00d
       version: -1
       name: file
       description: Checks the file reputation of the given hash.
@@ -140,10 +140,10 @@ tasks:
     quietmode: 0
   "12":
     id: "12"
-    taskid: 7493698f-9648-42d0-8e8b-685bb7ca7420
+    taskid: fa41856a-bd0e-4d10-8002-c89aa8e16bec
     type: regular
     task:
-      id: 7493698f-9648-42d0-8e8b-685bb7ca7420
+      id: fa41856a-bd0e-4d10-8002-c89aa8e16bec
       version: -1
       name: url
       description: Checks URL Reputation
@@ -156,13 +156,13 @@ tasks:
       - "13"
     scriptarguments:
       url:
-        simple: ${ExtractedIndicators.URL}
+        simple: https://www.test.com/
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 1245
+          "x": 40,
+          "y": 1250
         }
       }
     note: false
@@ -172,12 +172,12 @@ tasks:
     quietmode: 0
   "13":
     id: "13"
-    taskid: 9279e5d6-ea9c-4345-8a1c-c077eb8fd674
+    taskid: 8825f20e-9197-4250-8148-8da0309a3283
     type: condition
     task:
-      id: 9279e5d6-ea9c-4345-8a1c-c077eb8fd674
+      id: 8825f20e-9197-4250-8148-8da0309a3283
       version: -1
-      name: Verify url is malicious
+      name: Verify url is not malicious
       type: condition
       iscommand: false
       brand: ""
@@ -188,7 +188,7 @@ tasks:
     conditions:
     - label: "yes"
       condition:
-      - - operator: isNotEmpty
+      - - operator: isEmpty
           left:
             value:
               simple: URL.Malicious
@@ -200,7 +200,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: "3"
+              simple: "0"
     view: |-
       {
         "position": {
@@ -215,10 +215,10 @@ tasks:
     quietmode: 0
   "20":
     id: "20"
-    taskid: ec4394d5-e182-4619-81c1-6b278c370d9d
+    taskid: b74fd254-0d48-4fc2-8be0-a446fced0bf2
     type: regular
     task:
-      id: ec4394d5-e182-4619-81c1-6b278c370d9d
+      id: b74fd254-0d48-4fc2-8be0-a446fced0bf2
       version: -1
       name: domain
       description: Checks domain reputation
@@ -247,10 +247,10 @@ tasks:
     quietmode: 0
   "22":
     id: "22"
-    taskid: 23c2f06c-56e4-41dd-862d-fd95c33ffbc0
+    taskid: 55d5c4b4-c583-4c0c-8893-bbb6884b27e4
     type: regular
     task:
-      id: 23c2f06c-56e4-41dd-862d-fd95c33ffbc0
+      id: 55d5c4b4-c583-4c0c-8893-bbb6884b27e4
       version: -1
       name: extractIndicators
       description: Extract all indicators according to server indicators configuration
@@ -287,10 +287,10 @@ tasks:
     quietmode: 0
   "24":
     id: "24"
-    taskid: 0db40454-cc8d-49ea-8d85-b328b32cde31
+    taskid: 1dc7ee9f-a60a-4aea-80ed-633fa4fef815
     type: condition
     task:
-      id: 0db40454-cc8d-49ea-8d85-b328b32cde31
+      id: 1dc7ee9f-a60a-4aea-80ed-633fa4fef815
       version: -1
       name: Verify File is not malicious
       type: condition
@@ -330,10 +330,10 @@ tasks:
     quietmode: 0
   "25":
     id: "25"
-    taskid: ac2082d4-8d94-4b70-85d8-48278701343e
+    taskid: cb354835-b74d-4376-84c7-cdff9bf88d0c
     type: regular
     task:
-      id: ac2082d4-8d94-4b70-85d8-48278701343e
+      id: cb354835-b74d-4376-84c7-cdff9bf88d0c
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -362,10 +362,10 @@ tasks:
     quietmode: 0
   "26":
     id: "26"
-    taskid: 7eb0b175-deed-4ed0-85fd-d378d4647b21
+    taskid: e61fe764-67dc-4a1f-834a-e929fad1b236
     type: condition
     task:
-      id: 7eb0b175-deed-4ed0-85fd-d378d4647b21
+      id: e61fe764-67dc-4a1f-834a-e929fad1b236
       version: -1
       name: Verify Domain is not malicious
       type: condition
@@ -405,10 +405,10 @@ tasks:
     quietmode: 0
   "27":
     id: "27"
-    taskid: 7685c317-3ef5-4255-8c85-950273964f24
+    taskid: 8ffd01ff-487f-4044-84c1-990835a6f40e
     type: title
     task:
-      id: 7685c317-3ef5-4255-8c85-950273964f24
+      id: 8ffd01ff-487f-4044-84c1-990835a6f40e
       version: -1
       name: Done
       type: title
@@ -430,10 +430,10 @@ tasks:
     quietmode: 0
   "29":
     id: "29"
-    taskid: 96deeb64-63cf-4053-8a6a-a444ce515ffd
+    taskid: 3c1ad1f4-43e9-4a61-8357-cb9d8e9319bf
     type: regular
     task:
-      id: 96deeb64-63cf-4053-8a6a-a444ce515ffd
+      id: 3c1ad1f4-43e9-4a61-8357-cb9d8e9319bf
       version: -1
       name: ThreatExchange-Members
       description: Returns a list of current members of the ThreatExchange, alphabetized
@@ -462,10 +462,10 @@ tasks:
     quietmode: 0
   "30":
     id: "30"
-    taskid: 5b5aa00e-7a9c-4f54-88d2-c94dbab0f3f8
+    taskid: 57495906-71a5-4eb9-843e-797193b1531b
     type: condition
     task:
-      id: 5b5aa00e-7a9c-4f54-88d2-c94dbab0f3f8
+      id: 57495906-71a5-4eb9-843e-797193b1531b
       version: -1
       name: Verify Members
       type: condition
@@ -497,10 +497,10 @@ tasks:
     quietmode: 0
   "31":
     id: "31"
-    taskid: 1918ca34-a147-4363-8666-33e7e482deb3
+    taskid: d975630e-ea43-43cb-8dbc-1027ed6e3e3b
     type: regular
     task:
-      id: 1918ca34-a147-4363-8666-33e7e482deb3
+      id: d975630e-ea43-43cb-8dbc-1027ed6e3e3b
       version: -1
       name: ThreatExchange-Query
       description: Searches for subjective opinions on indicators of compromise stored
@@ -536,10 +536,10 @@ tasks:
     quietmode: 0
   "32":
     id: "32"
-    taskid: 2aa804ec-005e-4e3a-8457-a9eeda961d6e
+    taskid: 95bed69d-6834-4bfa-8b4d-3dbfde251728
     type: condition
     task:
-      id: 2aa804ec-005e-4e3a-8457-a9eeda961d6e
+      id: 95bed69d-6834-4bfa-8b4d-3dbfde251728
       version: -1
       name: Verify Query
       type: condition
@@ -586,10 +586,10 @@ tasks:
     quietmode: 0
   "33":
     id: "33"
-    taskid: 1e3f4487-dfce-4833-8b44-0eb3c91216eb
+    taskid: faeb7cd4-b6ca-4787-8a92-acf7fe6d2a4d
     type: regular
     task:
-      id: 1e3f4487-dfce-4833-8b44-0eb3c91216eb
+      id: faeb7cd4-b6ca-4787-8a92-acf7fe6d2a4d
       version: -1
       name: ThreatExchange-tags-search
       description: |-
@@ -620,10 +620,10 @@ tasks:
     quietmode: 0
   "34":
     id: "34"
-    taskid: 8ae979ef-0967-46d6-8041-893c16f02d6a
+    taskid: a277f108-c6eb-46e2-80b4-1125f80e46fd
     type: condition
     task:
-      id: 8ae979ef-0967-46d6-8041-893c16f02d6a
+      id: a277f108-c6eb-46e2-80b4-1125f80e46fd
       version: -1
       name: Verify Tags Search
       type: condition
@@ -663,10 +663,10 @@ tasks:
     quietmode: 0
   "35":
     id: "35"
-    taskid: aa4e6e5e-20b1-4de9-8df6-8cd53ed44755
+    taskid: 3b3f8ec6-57b1-4ff3-8981-277051f07df1
     type: regular
     task:
-      id: aa4e6e5e-20b1-4de9-8df6-8cd53ed44755
+      id: 3b3f8ec6-57b1-4ff3-8981-277051f07df1
       version: -1
       name: ThreatExchange-tagged-objects-list
       description: Gets a list of tagged objects for a specific ThreatTag.
@@ -695,10 +695,10 @@ tasks:
     quietmode: 0
   "36":
     id: "36"
-    taskid: 7cc7b7c9-6c77-4a8b-8d42-b6afab572893
+    taskid: c154df71-4e66-47dc-8b6b-9ef3ee60c2b3
     type: condition
     task:
-      id: 7cc7b7c9-6c77-4a8b-8d42-b6afab572893
+      id: c154df71-4e66-47dc-8b6b-9ef3ee60c2b3
       version: -1
       name: Verify Tagged Objects List
       type: condition
@@ -735,10 +735,10 @@ tasks:
     quietmode: 0
   "37":
     id: "37"
-    taskid: 7263d723-6c73-4366-86a0-49ce6fcc0724
+    taskid: afef0fbb-583e-4b5a-8c45-44a7ec542fe8
     type: regular
     task:
-      id: 7263d723-6c73-4366-86a0-49ce6fcc0724
+      id: afef0fbb-583e-4b5a-8c45-44a7ec542fe8
       version: -1
       name: ThreatExchange-object-get-by-id
       description: Gets ThreatExchange object by ID
@@ -767,10 +767,10 @@ tasks:
     quietmode: 0
   "38":
     id: "38"
-    taskid: 1d1438da-e1c2-48d8-8ffc-c1cdbcbd17bd
+    taskid: 3ad46974-b240-4c07-8b46-0ec938a83e45
     type: condition
     task:
-      id: 1d1438da-e1c2-48d8-8ffc-c1cdbcbd17bd
+      id: 3ad46974-b240-4c07-8b46-0ec938a83e45
       version: -1
       name: Verify Object Get By ID
       type: condition
@@ -809,8 +809,8 @@ view: |-
     "paper": {
       "dimensions": {
         "height": 3710,
-        "width": 380,
-        "x": 50,
+        "width": 390,
+        "x": 40,
         "y": 50
       }
     }
