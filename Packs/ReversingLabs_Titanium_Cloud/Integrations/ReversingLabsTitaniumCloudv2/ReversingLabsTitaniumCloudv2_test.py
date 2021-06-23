@@ -1,5 +1,5 @@
 import json
-from ReversingLabs_TitaniumCloud_v2 import file_reputation_output, av_scanners_output, file_analysis_output, \
+from ReversingLabsTitaniumCloudv2 import file_reputation_output, av_scanners_output, file_analysis_output, \
     rha1_analytics_output, uri_statistics_output, url_report_output
 
 

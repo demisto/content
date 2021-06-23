@@ -190,7 +190,7 @@ def delete_sample(a1000):
         return_error(str(e))
 
     res = response_json.get('results')
-    markdown = f'''## ReversingLabs A1000 delete sample\n **Message:** {res.get('message')}    
+    markdown = f'''## ReversingLabs A1000 delete sample\n **Message:** {res.get('message')}
     **MD5:** {demisto.get(res, 'detail.md5')}
     **SHA1:** {demisto.get(res, 'detail.sha1')}
     **SHA256:** {demisto.get(res, 'detail.sha256')}'''
@@ -301,7 +301,8 @@ def download_extracted_files(a1000):
 
     filename = hash_value + '.zip'
     command_results = CommandResults(
-        readable_output=f"## ReversingLabs A1000 download extraced files \n Extracted files are available for download under the name {filename}"
+        readable_output=f"## ReversingLabs A1000 download extraced files \n Extracted files are available for download "
+                        f"under the name {filename}"
     )
 
     file_result = fileResult(filename, response.content, file_type=EntryType.FILE)
@@ -321,7 +322,8 @@ def download_sample(a1000):
         return_error(str(e))
 
     command_results = CommandResults(
-        readable_output=f"## ReversingLabs A1000 download sample \n Requested sample is available for download under the name {hash_value}"
+        readable_output=f"## ReversingLabs A1000 download sample \n Requested sample is available for download under "
+                        f"the name {hash_value}"
     )
 
     file_result = fileResult(hash_value, response.content, file_type=EntryType.FILE)
