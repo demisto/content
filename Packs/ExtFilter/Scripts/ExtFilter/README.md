@@ -314,6 +314,10 @@ Available operators
 * `regex: matches caseless`
 * `regex: doesn't match`
 * `regex: doesn't match caseless`
+* `in`
+* `in caseless`
+* `not in`
+* `not in caseless`
 * `in list`
 * `in caseless list`
 * `not in list`
@@ -3293,6 +3297,238 @@ The matching is peformed case-insensitively and between `string` data types. It 
         "Host": "www.paloaltonetworks.com"
       }
     ]
+
+</details>
+
+
+----
+### Operator: `in`
+<details><summary>
+Returns a set of a element which matches a element of the values given.
+</summary><p/>
+
+> **Filter Format**: `list`
+
+#### Example 1
+##### Input
+    banana
+
+##### Filter
+> **Operator**: in
+
+> **Path**: 
+
+> **Filter**:
+
+    [
+      "apple",
+      "melon",
+      "banana"
+    ]
+
+##### Output
+    banana
+
+
+#### Example 2
+##### Input
+    [
+      "apple",
+      "orange",
+      "banana"
+    ]
+
+##### Filter
+> **Operator**: in
+
+> **Path**: 
+
+> **Filter**:
+
+    [
+      "apple",
+      "melon",
+      "banana"
+    ]
+
+##### Output
+    [
+      "apple",
+      "banana"
+    ]
+
+</details>
+
+
+----
+### Operator: `in caseless`
+<details><summary>
+Returns a set of a element which matches a element of the values given.
+The matching is peformed case-insensitively for `string` elements.
+</summary><p/>
+
+> **Filter Format**: `list`
+
+#### Example 1
+##### Input
+    Banana
+
+##### Filter
+> **Operator**: in caseless
+
+> **Path**: 
+
+> **Filter**:
+
+    [
+      "apple",
+      "melon",
+      "banana"
+    ]
+
+##### Output
+    Banana
+
+
+#### Example 2
+##### Input
+    [
+      "Apple",
+      "Orange",
+      "Banana"
+    ]
+
+##### Filter
+> **Operator**: in caseless
+
+> **Path**: 
+
+> **Filter**:
+
+    [
+      "apple",
+      "melon",
+      "banana"
+    ]
+
+##### Output
+    [
+      "Apple",
+      "Banana"
+    ]
+
+</details>
+
+
+----
+### Operator: `not in`
+<details><summary>
+Returns a set of a element which doesn't match any element of the values given.
+</summary><p/>
+
+> **Filter Format**: `list`
+
+#### Example 1
+##### Input
+    banana
+
+##### Filter
+> **Operator**: not in
+
+> **Path**: 
+
+> **Filter**:
+
+    [
+      "apple",
+      "melon",
+      "banana"
+    ]
+
+##### Output
+    null
+
+
+#### Example 2
+##### Input
+    [
+      "apple",
+      "orange",
+      "banana"
+    ]
+
+##### Filter
+> **Operator**: not in
+
+> **Path**: 
+
+> **Filter**:
+
+    [
+      "apple",
+      "melon",
+      "banana"
+    ]
+
+##### Output
+    orange
+
+</details>
+
+
+----
+### Operator: `not in caseless`
+<details><summary>
+Returns a set of a element which doesn't match any element of the values given.
+The matching is peformed case-insensitively for `string` elements.
+</summary><p/>
+
+> **Filter Format**: `list`
+
+#### Example 1
+##### Input
+    Banana
+
+##### Filter
+> **Operator**: not in caseless
+
+> **Path**: 
+
+> **Filter**:
+
+    [
+      "apple",
+      "melon",
+      "banana"
+    ]
+
+##### Output
+    null
+
+
+#### Example 2
+##### Input
+    [
+      "Apple",
+      "Orange",
+      "Banana"
+    ]
+
+##### Filter
+> **Operator**: not in caseless
+
+> **Path**: 
+
+> **Filter**:
+
+    [
+      "apple",
+      "melon",
+      "banana"
+    ]
+
+##### Output
+    Orange
 
 </details>
 

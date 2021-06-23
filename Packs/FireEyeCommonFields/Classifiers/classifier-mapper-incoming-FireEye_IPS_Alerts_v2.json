@@ -1,0 +1,75 @@
+{
+    "id": "FireEye NX IPS Alert - Incoming Mapper v2",
+    "name": "FireEye NX IPS Alert - Incoming Mapper v2",
+    "type": "mapping-incoming",
+    "version": -1,
+    "fromVersion": "6.0.0",
+    "description": "Maps FireEye NX IPS alerts.",
+    "mapping": {
+        "FireEye NX IPS Event": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "Attack Mode": {
+                    "complex": null,
+                    "simple": "attackMode"
+                },
+                "CVE": {
+                    "complex": null,
+                    "simple": "cveId"
+                },
+                "Destination IP": {
+                    "complex": null,
+                    "simple": "dstIp"
+                },
+                "Destination MAC Address": {
+                    "complex": null,
+                    "simple": "dstMac"
+                },
+                "Destination Port": {
+                    "complex": null,
+                    "simple": "dstPort"
+                },
+                "Event ID": {
+                    "complex": null,
+                    "simple": "eventId"
+                },
+                "FireEye Match Count": {
+                    "complex": null,
+                    "simple": "signatureMatchCnt"
+                },
+                "FireEye Signature": {
+                    "complex": null,
+                    "simple": "ruleName"
+                },
+                "FireEye Signature ID": {
+                    "complex": null,
+                    "simple": "signatureIden"
+                },
+                "FireEye Signature Revision": {
+                    "complex": null,
+                    "simple": "signatureRev"
+                },
+                "Source IP": {
+                    "complex": null,
+                    "simple": "srcIp"
+                },
+                "Source MAC Address": {
+                    "complex": null,
+                    "simple": "srcMac"
+                },
+                "Source Port": {
+                    "complex": null,
+                    "simple": "srcPort"
+                },
+                "occurred": {
+                    "complex": null,
+                    "simple": "occurred"
+                },
+                "severity": {
+                    "complex": null,
+                    "simple": "severity"
+                }
+            }
+        }
+    }
+}

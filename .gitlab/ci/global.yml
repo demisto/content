@@ -116,6 +116,7 @@
     paths:
       - /builds/xsoar/content/unit-tests
       - /builds/xsoar/content/artifacts/*
+    when: always
   extends:
     - .default-job-settings
   script:
@@ -148,9 +149,9 @@
         mkdir ./unit-tests
         if [ -n "$SHOULD_LINT_ALL" ]; then
           echo -e  "----------\nLinting all because:\n${SHOULD_LINT_ALL}\n----------"
-          demisto-sdk lint -p 8 -a -q --test-xml ./unit-tests --log-path $ARTIFACTS_FOLDER --failure-report $ARTIFACTS_FOLDER
+          demisto-sdk lint -p 8 -a -q --test-xml ./unit-tests --log-path $ARTIFACTS_FOLDER --failure-report $ARTIFACTS_FOLDER --coverage-report $ARTIFACTS_FOLDER/coverage_report
         else
-          demisto-sdk lint -p 8 -g -v --test-xml ./unit-tests --log-path $ARTIFACTS_FOLDER --failure-report $ARTIFACTS_FOLDER
+          demisto-sdk lint -p 8 -g -v --test-xml ./unit-tests --log-path $ARTIFACTS_FOLDER --failure-report $ARTIFACTS_FOLDER --coverage-report $ARTIFACTS_FOLDER/coverage_report
         fi
       fi
     - section_end "Run Unit Testing and Lint"
@@ -164,6 +165,7 @@
     expire_in: 30 days
     paths:
       - /builds/xsoar/content/artifacts/*
+    when: always
   script:
     - section_start "Look For Secrets"
     - demisto-sdk secrets --post-commit --ignore-entropy

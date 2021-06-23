@@ -123,7 +123,7 @@ class Client(BaseClient):
         hdr = {
             "Content-Type": "application/json",
             "Accept": "application/json",
-            "User-Agent": "Expanse_XSOAR/1.6.0",
+            "User-Agent": "Expanse_XSOAR/1.7.0",
         }
         super().__init__(base_url, verify=verify, proxy=proxy, headers=hdr, **kwargs)
 
