@@ -4,7 +4,7 @@ This integration was integrated and tested with version 9.0.2 of FireEye Central
 ## API Key management
 This integration generates an API Key from the username and password given to be authenticated with FireEye.
 The API Key is valid for 15 minutes.
-The integration manages the storage of this key, and its re generation when the key expires.
+The integration manages the storage of this key, and its re-generation when the key expires.
 
 ## Fetch FireEye EX Alert Emails
 To fetch a FireEye EX alert email, you will need the UUID.
@@ -451,7 +451,7 @@ Searches and retrieves quarantined emails.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| start_time | Specifies the start time of the search. This filter is optional. Syntax: end_time=YYYY-MM-DDTHH:mm:ss.sss-OH:om or '1 day/month/year'. Default is 1 day. | Optional | 
+| start_time | Specifies the start time of the search. This filter is optional. Syntax: start_time=YYYY-MM-DDTHH:mm:ss.sss-OH:om or '1 day/month/year'. Default is 1 day. | Optional | 
 | end_time | Specifies the end time of the search. Default is now. Syntax: end_time=YYYY-MM-DDTHH:mm:ss.sss-OH:om or '1 day/month/year'. | Optional | 
 | from | The sender email. | Optional | 
 | subject | The email subject. Must be URL encoded. | Optional | 
