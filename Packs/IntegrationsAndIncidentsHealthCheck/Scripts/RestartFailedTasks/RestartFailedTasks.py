@@ -33,13 +33,13 @@ def restart_tasks(failed_tasks, sleep_time, group_size):
 
         task_id, incident_id, playbook_name, task_name = task['Task ID'], task['Incident ID'], task['Playbook Name'],\
                                                          task['Task Name']
-        demisto.executeCommand("taskReopen", {'id': task_id, 'incident_id': incident_id})
-
+        res1 = demisto.executeCommand("taskReopen", {'id': task_id, 'incident_id': incident_id})
+        print(res1)
         demisto.info(f'Restarting task with id: {task_id} and incident id: {incident_id}')
 
-        body = {'invId': incident_id, 'inTaskID': task_id, 'version': -1}
-        demisto.executeCommand("demisto-api-post", {"uri": "inv-playbook/task/execute", "body": json.dumps(body)})
-
+        body = {'invId': incident_id, 'inTaskID': task_id}
+        res2 = demisto.executeCommand("demisto-api-post", {"uri": "inv-playbook/task/execute", "body": json.dumps(body)})
+        print(res2)
         restarted_tasks.append({'IncidentID': incident_id, 'TaskID': task_id, 'PlaybookName': playbook_name,
                                 'TaskName': task_name})
         restarted_tasks_count += 1
@@ -64,14 +64,11 @@ def main():
     # try:
     # Get Context for Failed Tasks
     failed_tasks = check_context()
-    print(failed_tasks)
-    print('!!!!!!!!')
     # Remove Excluded Playbooks And Limit
     failed_tasks = remove_exclusion(failed_tasks, playbook_exclusion)[:incident_limit]
 
     # Restart the tasks, make sure the number of incidents does not exceed the limit
     restarted_tasks_count, restarted_tasks = restart_tasks(failed_tasks, sleep_time, group_size)
-    print(restarted_tasks)
     human_readable = tableToMarkdown("Tasks Restarted", restarted_tasks,
                                      headers=['IncidentID', 'PlaybookName', 'TaskName', 'TaskID'],
                                      headerTransform=pascalToSpace)
