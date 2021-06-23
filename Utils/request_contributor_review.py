@@ -27,6 +27,7 @@ def check_if_user_exists(github_user, github_token=None, verify_ssl=True):
     headers = {'Authorization': 'Bearer ' + github_token} if github_token else {}
 
     response = requests.get(user_endpoint, headers=headers, verify=verify_ssl)
+    print(f'response for user {github_user}: {response}, verify = {verify_ssl}')
 
     if response.status_code not in [200, 201]:
         print(f"Failed in pulling user {github_user} data:\n{response.text}")
@@ -125,8 +126,10 @@ def check_pack_and_request_review(pr_number, github_token=None, verify_ssl=True,
     pr_author = get_pr_author(pr_number=pr_number, github_token=github_token, verify_ssl=verify_ssl)
 
     for pack in modified_packs:
+        print(f'pack is : {pack}')
         tagged_packs_reviewers = get_pr_tagged_reviewers(pr_number=pr_number, github_token=github_token,
                                                          verify_ssl=verify_ssl, pack=pack)
+        print(f'tagged pack reviewers: {tagged_packs_reviewers}')
         reviewers = set()
         pack_metadata_path = os.path.join(PACKS_FULL_PATH, pack, PACK_METADATA)
 
@@ -138,10 +141,12 @@ def check_pack_and_request_review(pr_number, github_token=None, verify_ssl=True,
             pack_metadata = json.load(pack_metadata_file)
 
         # Notify contributors if this is not new pack
+        print(f'metadata: {pack_metadata_file}')
         if pack_metadata.get('support') != XSOAR_SUPPORT and pack_metadata.get('currentVersion') != '1.0.0':
             notified_by_email = False
             # Notify contributors by emailing them on dev email:
             if reviewers_emails := pack_metadata.get(PACK_METADATA_DEV_EMAIL_FIELD):
+                print('shouldnt get here 1')
                 reviewers_emails = reviewers_emails.split(',') if isinstance(reviewers_emails,
                                                                              str) else reviewers_emails
                 notified_by_email = send_email_to_reviewers(
@@ -156,6 +161,7 @@ def check_pack_and_request_review(pr_number, github_token=None, verify_ssl=True,
             if pack_reviewers := pack_metadata.get(PACK_METADATA_GITHUB_USER_FIELD):
                 pack_reviewers = pack_reviewers if isinstance(pack_reviewers, list) else pack_reviewers.split(",")
                 github_users = [u.lower() for u in pack_reviewers]
+                print(f'github users: {github_users}')
 
                 for github_user in github_users:
                     user_exists = check_if_user_exists(github_user=github_user, github_token=github_token,
@@ -165,6 +171,7 @@ def check_pack_and_request_review(pr_number, github_token=None, verify_ssl=True,
                         reviewers.add(github_user)
                         print(f"Found {github_user} default reviewer of pack {pack}")
 
+                print(f'final reviewers list: {reviewers}')
                 notified_by_github = check_reviewers(reviewers=reviewers, pr_author=pr_author,
                                                      version=pack_metadata.get('currentVersion'),
                                                      modified_files=modified_files, pack=pack, pr_number=pr_number,
