@@ -117,6 +117,7 @@ script:
     - auto: PREDEFINED
       description: Classification
       name: classification
+      required: true
       predefined:
       - Attack
       - Spam
