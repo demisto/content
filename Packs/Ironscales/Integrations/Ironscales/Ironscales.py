@@ -175,8 +175,6 @@ def test_module(client: Client, api_key, scopes) -> str:
 
 
 def fetch_incidents(client: Client, last_run: Dict[str, Any], first_fetch: set, api_key: str, scopes: list) -> List:
-    # headers = client.get_jwt_token(api_key, scopes)
-    # client.headers = headers
     last_run = last_run.get("data", None)
     if last_run is None:
         last_run = first_fetch
