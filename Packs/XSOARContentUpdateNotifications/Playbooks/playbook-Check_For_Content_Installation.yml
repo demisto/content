@@ -343,6 +343,7 @@ tasks:
     conditions:
     - condition:
       - - left:
+            iscontext: false
             value:
               simple: All
           operator: in
@@ -367,6 +368,7 @@ tasks:
       id: 346fcf6b-c798-411a-86b1-959e4e18ac19
       iscommand: false
       name: Are we checking for all updates?
+      description: Checks for all updates
       type: condition
       version: -1
     taskid: 346fcf6b-c798-411a-86b1-959e4e18ac19

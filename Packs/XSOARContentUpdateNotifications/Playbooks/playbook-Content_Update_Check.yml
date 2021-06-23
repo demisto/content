@@ -1025,6 +1025,7 @@ tasks:
     conditions:
     - condition:
       - - left:
+            iscontext: false
             value:
               simple: All
           operator: in
