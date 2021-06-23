@@ -114,7 +114,7 @@
             }
         }
     },
-    "name": "Ironscales-Mapper",
+    "name": "Ironscales - Incoming Mapper",
     "type": "mapping-incoming",
     "version": -1,
     "fromVersion": "6.0.0"
