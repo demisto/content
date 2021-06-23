@@ -243,7 +243,7 @@ def main():
                 return_results(get_incident_command(client, demisto.args()))
 
             elif demisto.command() == "ironscales-classify-incident":
-                classify_incident_command(client, demisto.args())
+                return_results(classify_incident_command(client, demisto.args()))
 
             elif demisto.command() == "ironscales-get-open-incidents":
                 return_results(get_open_incidents_command(client, demisto.args()))
