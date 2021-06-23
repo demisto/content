@@ -7,7 +7,7 @@ Executes a test for all integration instances available and returns a detailed t
 | --- | --- |
 | Script Type | javascript |
 | Tags | - |
-| Demisto Version | 4.0.0+ |
+| Cortex XSOAR Version | 4.0.0+ |
 
 ## Inputs
 ---

@@ -15,7 +15,7 @@ def validate_params(aws_default_region, aws_role_arn, aws_role_session_name, aws
         raise DemistoException('You must provide Access Key id and Secret key id to configure the instance with '
                                'credentials.')
     if bool(aws_role_arn) != bool(aws_role_session_name):
-        raise DemistoException('When using role ARN you must provide role session name.')
+        raise DemistoException('Role session name is required when using role ARN.')
 
 
 class AWSClient:
@@ -33,6 +33,8 @@ class AWSClient:
 
         proxies = handle_proxy(proxy_param_name='proxy', checkbox_default_value=False)
         (read_timeout, connect_timeout) = AWSClient.get_timeout(timeout)
+        if int(retries) > 10:
+            retries = 10
         self.config = Config(
             connect_timeout=connect_timeout,
             read_timeout=read_timeout,
@@ -42,11 +44,26 @@ class AWSClient:
             proxies=proxies
         )
 
-    """HELPER FUNCTIONS"""
+    def update_config(self):
+        command_config = {}
+        retries = demisto.getArg('retries')  # Supports retries and timeout parameters on the command execution level
+        if retries is not None:
+            command_config['retries'] = dict(max_attempts=int(retries))
+        timeout = demisto.getArg('timeout')
+        if timeout is not None:
+            (read_timeout, connect_timeout) = AWSClient.get_timeout(timeout)
+            command_config['read_timeout'] = read_timeout
+            command_config['connect_timeout'] = connect_timeout
+        if retries or timeout:
+            demisto.debug('Merging client config settings: {}'.format(command_config))
+            self.config = self.config.merge(Config(**command_config))
 
     def aws_session(self, service, region=None, role_arn=None, role_session_name=None, role_session_duration=None,
                     role_policy=None):
         kwargs = {}
+
+        self.update_config()
+
         if role_arn and role_session_name is not None:
             kwargs.update({
                 'RoleArn': role_arn,
@@ -128,7 +145,8 @@ class AWSClient:
             timeout_vals = timeout.split(',')
             read_timeout = int(timeout_vals[0])
         except ValueError:
-            "You can specify just the read timeout (for example 60) or also the connect timeout followed after a " \
-                "comma (for example 60,10). If a connect timeout is not specified, a default of 10 second will be used."
+            raise DemistoException("You can specify just the read timeout (for example 60) or also the connect "
+                                   "timeout followed after a comma (for example 60,10). If a connect timeout is not "
+                                   "specified, a default of 10 second will be used.")
         connect_timeout = 10 if len(timeout_vals) == 1 else int(timeout_vals[1])
         return read_timeout, connect_timeout

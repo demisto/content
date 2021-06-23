@@ -1,5 +1,7 @@
-from AzureSentinel import Client, list_incidents_command, list_incident_relations_command, incident_add_comment_command
 import pytest
+
+from AzureSentinel import Client, list_incidents_command, list_incident_relations_command, incident_add_comment_command, \
+    get_update_incident_request_data
 
 
 def mock_client(self_deployed):
@@ -136,3 +138,38 @@ def test_incident_add_comment_command(args, client, mocker):
     assert context['Message'] == 'test_message'
     assert context['AuthorEmail'] == 'test@demisto.com'
     assert context['IncidentID'] == 'inc_id'
+
+
+MOCKED_UPDATE_INCIDENT = {
+    'id': '1',
+    'name': '8a44b7bb-c8ae-0000-0000-000000000', 'etag': '"0000000-0000-0000-0000-00000000"',
+    'type': 'Microsoft.SecurityInsights/Incidents',
+    'properties': {'title': 'dummy title',
+                   'description': 'i am a sample description',
+                   'severity': 'Informational', 'status': 'New',
+                   'owner': {'objectId': None, 'email': 'alice@example.com',
+                             'assignedTo': None,
+                             'userPrincipalName': None},
+                   'labels': [{'labelName': 'label_start', 'labelType': 'User'}],
+                   'lastModifiedTimeUtc': '2021-05-24T14:57:40.4174809Z',
+                   'createdTimeUtc': '2020-01-15T09:29:00.0000000Z', 'incidentNumber': 2,
+                   'additionalData': {'alertsCount': 1, 'bookmarksCount': 0, 'commentsCount': 1,
+                                      'alertProductNames': ['Azure Sentinel'], 'tactics': []},
+                   'relatedAnalyticRuleIds': [],
+                   'incidentUrl': 'https://example.com',
+                   'providerName': 'Azure Sentinel', 'providerIncidentId': '2'}}
+
+
+@pytest.mark.parametrize('args,client', [  # disable-secrets-detection
+    ({'labels': ['label_after_1', 'label_after_2'],
+      'assignee_email': 'bob@example.com'},
+     mock_client(self_deployed=False))])
+def test_update_incident(args, client, mocker):
+    mocker.patch.object(client, 'http_request', return_value=MOCKED_UPDATE_INCIDENT)
+
+    incident_data = get_update_incident_request_data(client, args)
+    properties = incident_data['properties']
+
+    assert properties['labels'] == [{'labelName': 'label_after_1', 'labelType': 'User'},
+                                    {'labelName': 'label_after_2', 'labelType': 'User'}]
+    assert properties['owner']['email'] == 'bob@example.com'

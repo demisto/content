@@ -1,0 +1,19 @@
+{
+    "success": true,
+    "allowed_repos": [
+        {
+            "repo": "default",
+            "address": "127.0.0.1:5504/default"
+        },
+        {
+            "repo": "_logpoint",
+            "address": "127.0.0.1:5504/_logpoint"
+        }
+    ],
+    "logpoint": [
+        {
+            "name": "LogPoint",
+            "ip": "127.0.0.1"
+        }
+    ]
+}

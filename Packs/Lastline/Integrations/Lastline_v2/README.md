@@ -1,7 +1,7 @@
 Use the Lastline v2 integration to provide threat analysts and incident response teams with the advanced malware isolation and inspection environment needed to safely execute advanced malware samples, and understand their behavior.
 
 
-## Configure Lastline v2 on Demisto
+## Configure Lastline v2 on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
 2. Search for Lastline v2.

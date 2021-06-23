@@ -348,6 +348,215 @@ def test_get_users_command(requests_mock):
     assert response.outputs == mock_response['users']
 
 
+def test_get_users_preference_command(requests_mock):
+    """Tests lp-get-users-preference command function.
+
+        Configures requests_mock instance to generate the appropriate
+        /getalloweddata API response, loaded from a json file. Checks
+        the output of the command function with the expected output.
+        """
+    from LogPoint_SIEM_Integration import Client, get_users_preference_command
+    mock_response = util_load_json('test_data/sample_get_users_preference_response.json')
+    requests_mock.post(
+        'https://test.com/getalloweddata',
+        json=mock_response)
+    client = Client(
+        base_url='https://test.com',
+        verify=False,
+        proxy=False,
+        username='username',
+        apikey='apikey',
+        headers={
+            'Content-Type': 'application/x-www-form-urlencoded'
+        }
+    )
+    response = get_users_preference_command(client)
+    assert response.outputs_prefix == 'LogPoint.User.Preference'
+    del mock_response['success']
+    assert response.outputs == mock_response
+
+
+def test_get_logpoints_command(requests_mock):
+    """Tests lp-get-logpoints command function.
+
+        Configures requests_mock instance to generate the appropriate
+        /getalloweddata API response, loaded from a json file. Checks
+        the output of the command function with the expected output.
+        """
+    from LogPoint_SIEM_Integration import Client, get_logpoints_command
+    mock_response = util_load_json('test_data/sample_get_logpoints_response.json')
+    requests_mock.post(
+        'https://test.com/getalloweddata',
+        json=mock_response)
+    client = Client(
+        base_url='https://test.com',
+        verify=False,
+        proxy=False,
+        username='username',
+        apikey='apikey',
+        headers={
+            'Content-Type': 'application/x-www-form-urlencoded'
+        }
+    )
+    response = get_logpoints_command(client)
+    assert response.outputs_prefix == 'LogPoint.LogPoints'
+    assert response.outputs == mock_response['allowed_loginspects']
+    assert response.outputs_key_field == 'ip'
+
+
+def test_get_repos_command(requests_mock):
+    """Tests lp-get-repos command function.
+
+        Configures requests_mock instance to generate the appropriate
+        /getalloweddata API response, loaded from a json file. Checks
+        the output of the command function with the expected output.
+        """
+    from LogPoint_SIEM_Integration import Client, get_repos_command
+    mock_response = util_load_json('test_data/sample_get_repos_response.json')
+    requests_mock.post(
+        'https://test.com/getalloweddata',
+        json=mock_response)
+    client = Client(
+        base_url='https://test.com',
+        verify=False,
+        proxy=False,
+        username='username',
+        apikey='apikey',
+        headers={
+            'Content-Type': 'application/x-www-form-urlencoded'
+        }
+    )
+    response = get_repos_command(client)
+    assert response.outputs_prefix == 'LogPoint.Repos'
+    assert response.outputs == mock_response['allowed_repos']
+    assert response.outputs_key_field == 'repo'
+
+
+def test_get_devices_command(requests_mock):
+    """Tests lp-get-repos command function.
+
+        Configures requests_mock instance to generate the appropriate
+        /getalloweddata API response, loaded from a json file. Checks
+        the output of the command function with the expected output.
+        """
+    from LogPoint_SIEM_Integration import Client, get_devices_command
+    mock_response = util_load_json('test_data/sample_get_devices_response.json')
+    allowed_devices = mock_response['allowed_devices']
+    device_list = []
+    for device in allowed_devices:
+        for key, value in device.items():
+            device_list.append({
+                'name': value,
+                'address': key,
+            })
+    requests_mock.post(
+        'https://test.com/getalloweddata',
+        json=mock_response)
+    client = Client(
+        base_url='https://test.com',
+        verify=False,
+        proxy=False,
+        username='username',
+        apikey='apikey',
+        headers={
+            'Content-Type': 'application/x-www-form-urlencoded'
+        }
+    )
+    response = get_devices_command(client)
+    assert response.outputs_prefix == 'LogPoint.Devices'
+    assert response.outputs == device_list
+
+
+def test_get_livesearches_command(requests_mock):
+    """Tests lp-get-repos command function.
+
+        Configures requests_mock instance to generate the appropriate
+        /getalloweddata API response, loaded from a json file. Checks
+        the output of the command function with the expected output.
+        """
+    from LogPoint_SIEM_Integration import Client, get_livesearches_command
+    mock_response = util_load_json('test_data/sample_get_livesearches_response.json')
+    requests_mock.post(
+        'https://test.com/getalloweddata',
+        json=mock_response)
+    client = Client(
+        base_url='https://test.com',
+        verify=False,
+        proxy=False,
+        username='username',
+        apikey='apikey',
+        headers={
+            'Content-Type': 'application/x-www-form-urlencoded'
+        }
+    )
+    response = get_livesearches_command(client)
+    assert response.outputs_prefix == 'LogPoint.LiveSearches'
+    assert response.outputs == mock_response['livesearches']
+
+
+def test_get_searchid_command(requests_mock):
+    """Tests lp-get-repos command function.
+
+        Configures requests_mock instance to generate the appropriate
+        /getalloweddata API response, loaded from a json file. Checks
+        the output of the command function with the expected output.
+        """
+    from LogPoint_SIEM_Integration import Client, get_searchid_command
+    mock_response = util_load_json('test_data/sample_get_searchid_response.json')
+    requests_mock.post(
+        'https://test.com/getsearchlogs',
+        json=mock_response)
+    client = Client(
+        base_url='https://test.com',
+        verify=False,
+        proxy=False,
+        username='username',
+        apikey='apikey',
+        headers={
+            'Content-Type': 'application/x-www-form-urlencoded'
+        }
+    )
+    args = {
+        "query": '| chart count() by col_type',
+        "time_range": 'Last 30 minutes',
+        "limit": 10,
+        "repos": []
+    }
+    response = get_searchid_command(client, args)
+    assert response.outputs_prefix == 'LogPoint.search_id'
+    assert response.outputs == mock_response['search_id']
+
+
+def test_search_logs_command(requests_mock):
+    """Tests lp-get-repos command function.
+
+        Configures requests_mock instance to generate the appropriate
+        /getalloweddata API response, loaded from a json file. Checks
+        the output of the command function with the expected output.
+        """
+    from LogPoint_SIEM_Integration import Client, search_logs_command
+    mock_response = util_load_json('test_data/sample_search_logs_response.json')
+    requests_mock.post(
+        'https://test.com/getsearchlogs',
+        json=mock_response)
+    client = Client(
+        base_url='https://test.com',
+        verify=False,
+        proxy=False,
+        username='username',
+        apikey='apikey',
+        headers={
+            'Content-Type': 'application/x-www-form-urlencoded'
+        }
+    )
+    args = {
+        "search_id": mock_response.get('search_id')
+    }
+    response = search_logs_command(client, args)
+    assert response.outputs_prefix == 'LogPoint.SearchLogs'
+    assert response.outputs == mock_response['rows']
+
+
 def test_fetch_incidents(requests_mock):
     """Tests fetch-incidents command function.
     """

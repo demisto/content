@@ -1,0 +1,274 @@
+id: 'Crowdstrike Falcon - Isolate Endpoint'
+version: -1
+name: 'Crowdstrike Falcon - Isolate Endpoint'
+description: This playbook will auto isolate endpoints by the device ID that was provided
+  in the playbook.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 196d9fe6-0849-4949-80f4-b5fae30a5602
+    type: start
+    task:
+      id: 196d9fe6-0849-4949-80f4-b5fae30a5602
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 40
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: 2fc5acfc-b289-46c6-8ba5-d7c3f1c82f47
+    type: condition
+    task:
+      id: 2fc5acfc-b289-46c6-8ba5-d7c3f1c82f47
+      version: -1
+      name: Is Crowdstrike Falcon  enabled?
+      description: Returns 'yes' if the integration brand is available. Otherwise returns
+        'no'.
+      scriptName: IsIntegrationAvailable
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "2"
+      "yes":
+      - "3"
+    scriptarguments:
+      brandname:
+        simple: CrowdstrikeFalcon
+    results:
+    - brandInstances
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 210
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: 2d65723d-5bc8-4982-818d-eef2ffcb40c0
+    type: title
+    task:
+      id: 2d65723d-5bc8-4982-818d-eef2ffcb40c0
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1760
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: abc1a40e-2ae6-4928-8530-f9baf3ce7760
+    type: condition
+    task:
+      id: abc1a40e-2ae6-4928-8530-f9baf3ce7760
+      version: -1
+      name: Is there Device ID?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.Device_id
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 810,
+          "y": 490
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: 515fe16c-e6ae-4d1d-81fe-ba0381cc1751
+    type: regular
+    task:
+      id: 515fe16c-e6ae-4d1d-81fe-ba0381cc1751
+      version: -1
+      name: Get device info
+      description: Searches for a device that matches the query.
+      script: '|||cs-falcon-search-device'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      filter: {}
+      hostname: {}
+      ids:
+        simple: ${inputs.Device_id}
+      platform_name: {}
+      site_name: {}
+      status: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 990,
+          "y": 690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: c315fcda-4663-4738-86c4-bf95a872d727
+    type: condition
+    task:
+      id: c315fcda-4663-4738-86c4-bf95a872d727
+      version: -1
+      name: Is the device ready for isolation?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: CrowdStrike.Device.Status
+            iscontext: true
+          right:
+            value:
+              simple: normal
+    view: |-
+      {
+        "position": {
+          "x": 990,
+          "y": 890
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: fba9ba7d-fd1b-4f96-81a9-63dc3520a1b0
+    type: regular
+    task:
+      id: fba9ba7d-fd1b-4f96-81a9-63dc3520a1b0
+      version: -1
+      name: Isolate endpoint
+      description: Contains containment for a specified host. When contained, a host
+        can only communicate with the CrowdStrike cloud and any IPs specified in your
+        containment policy.
+      script: '|||cs-falcon-contain-host'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      ids:
+        simple: ${inputs.Device_id}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 990,
+          "y": 1230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {
+      "1_2_no": 0.85,
+      "3_2_#default#": 0.2,
+      "3_4_yes": 0.51,
+      "5_2_#default#": 0.38,
+      "5_6_yes": 0.72
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1785,
+        "width": 920,
+        "x": 450,
+        "y": 40
+      }
+    }
+  }
+inputs:
+- key: Device_id
+  value: {}
+  required: false
+  description: The device ID to isolate.
+  playbookInputQuery:
+outputs: []
+tests:
+- Test - CrowdStrike Falcon
+fromversion: 5.5.0

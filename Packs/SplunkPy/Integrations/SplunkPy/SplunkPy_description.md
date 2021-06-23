@@ -53,15 +53,15 @@ To setup the mirroring follow these instructions:
 3. Enable **Fetches incidents**.
 4. You can go to the *Fetch notable events ES enrichment query* parameter and select the query to fetch the notables from Splunk. Make sure to provide a query which uses the \`notable\` macro, See the default query as an example.
 4. In the *Incident Mirroring Direction* integration parameter, select in which direction the incidents should be mirrored:
-    - Incoming - Any changes in Splunk notables will be reflected in XSOAR incidents.
-    - Outgoing - Any changes in XSOAR incidents (notable's status, urgency, comments, and owner) will be reflected in Splunk notables.
+    - Incoming - Any changes in Splunk notables (notable's status, status_label, urgency, comments, and owner) will be reflected in XSOAR incidents.
+    - Outgoing - Any changes in XSOAR incidents (notable's status (not status_label), urgency, comments, and owner) will be reflected in Splunk notables.
     - Incoming And Outgoing - Changes in XSOAR incidents and Splunk notables will be reflected in both directions.
     - None - Turns off incident mirroring.
 5. Optional: Check the *Close Mirrored XSOAR Incident* integration parameter to close the Cortex XSOAR incident when the corresponding notable is closed on Splunk side.
 6. Optional: Check the *Close Mirrored Splunk Notable Event* integration parameter to close the Splunk notable when the corresponding Cortex XSOAR incident is closed.
 7. Fill in the **timezone** integration parameter with the timezone the Splunk Server is using.
 Newly fetched incidents will be mirrored in the chosen direction.
-Note: This will not effect existing incidents. 
+Note: This will not effect existing incidents.
 
 ### Existing users
 **NOTE: The enrichment and mirroring mechanisms use a new default fetch query.** 

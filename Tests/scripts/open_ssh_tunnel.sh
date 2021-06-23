@@ -1,5 +1,5 @@
 # Generating the ips and ports with the following form: <instance-ip> <tunnel-port>
-IPS_AND_PORTS=$(cat $ARTIFACTS_FOLDER/env_results.json | jq ".[] | select(.Role==\"$INSTANCE_ROLE\")" | jq -r '[.InstanceDNS, .TunnelPort] | @tsv' | sed "s/\"//g")
+IPS_AND_PORTS=$(cat $ENV_RESULTS_PATH | jq ".[] | select(.Role==\"$INSTANCE_ROLE\")" | jq -r '[.InstanceDNS, .TunnelPort] | @tsv' | sed "s/\"//g")
 # Handling the ip & port pairs line by line
 echo $IPS_AND_PORTS | grep -o -E "[0-9\.]+ [0-9]{4}" | while read IP_AND_PORT;
 do

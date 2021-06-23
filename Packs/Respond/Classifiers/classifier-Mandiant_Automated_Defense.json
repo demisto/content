@@ -1,0 +1,22 @@
+{
+    "description": "",
+    "feed": false,
+    "id": "mandiant-automated-defense-classifier",
+    "keyTypeMap": {
+        "Closed": "Mandiant Automated Defense Incident",
+        "Open": "Mandiant Automated Defense Incident"
+    },
+    "name": "Mandiant Automated Defense Classifier",
+    "transformer": {
+        "complex": {
+            "accessor": "",
+            "filters": [],
+            "root": "status",
+            "transformers": []
+        },
+        "simple": ""
+    },
+    "type": "classification",
+    "version": -1,
+    "fromVersion": "6.0.0"
+}

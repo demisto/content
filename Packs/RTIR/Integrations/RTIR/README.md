@@ -14,7 +14,7 @@
 <li>This integration does not support the lifecycle <code>countermeasures</code>.</li>
 <li>Custom fields cannot be created through this integration, but custom fields created on RTIR can be filled when creating a new ticket.</li>
 </ul>
-<h2>Configure RTIR on Demisto</h2>
+<h2>Configure RTIR on Cortex XSOAR</h2>
 <ol>
 <li>Navigate to <strong>Settings</strong> &gt; <strong>Integrations</strong> &gt; <strong>Servers &amp; Services</strong>.</li>
 <li>Search for RTIR.</li>
@@ -48,7 +48,7 @@
 <li>Ticket attachments.</li>
 </ul>
 <h2>Commands</h2>
-<p>You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
+<p>You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
 <ol>
 <li><a href="#h_223841975661532264365113">Create a new ticket: rtir-create-ticket</a></li>
 <li><a href="#h_8934498871321532264376929">Search for tickets: rtir-search-ticket</a></li>
@@ -804,7 +804,7 @@
 </tr>
 <tr>
 <td style="width: 316px;">File.EntryID</td>
-<td style="width: 405px;">Demisto entry ID of the attachment.</td>
+<td style="width: 405px;">Cortex XSOAR entry ID of the attachment.</td>
 </tr>
 </tbody>
 </table>

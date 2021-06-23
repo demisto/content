@@ -1,11 +1,12 @@
 
 <!-- HTML_DOC -->
 <p>
+    Deprecated. Use IBM QRadar v2 or IBM QRadar v3 instead.
     This integration was integrated and tested with <strong>QRadar v7.3.1</strong> and <strong>API versions - 8.0, 8.1, and 9.0</strong>.
     The <strong>QRadar</strong> integration is deprecated from <strong>QRadar v7.3.2 Patch 2</strong>. If you're using a later version of QRadar, make sure you use the <strong>QRadar v2</strong> integration.
 </p>
 
-<p>Use the QRadar integration to query offenses and create Demisto incidents from the offenses.</p>
+<p>Use the QRadar integration to query offenses and create Cortex XSOAR incidents from the offenses.</p>
 <p>For more information about filter syntax, see the <a href="https://www.ibm.com/support/knowledgecenter/SSKMKU/com.ibm.qradar.doc_cloud/c_rest_api_filtering.html" target="_blank" rel="noopener">IBM support documentation</a>.</p>
 <h2>QRadar Playbook</h2>
 <p>After you configure the QRadar integration, you can use the <em>QRadar - Get offense correlations</em> playbook. This playbook identifies and extracts additional information about QRadar offenses.</p>
@@ -14,14 +15,14 @@
 <li>Retrieve logs relevant to the correlations. Make sure that in the <strong><em>Should query for the correlations' log</em></strong> task you set the <code>inputs.GetCorrelationLogs</code> parameter to <code>True</code>). The maximum log count is 20.</li>
 </ul>
 <h2>Troubleshooting Performance Issues</h2>
-<p>In some cases, you might encounter performance issues when running QRadar AQL queries from Demisto. This issue is caused by QRadar API limitations. We recommend that you test the QRadar API performance by running several cURL scripts.</p>
+<p>In some cases, you might encounter performance issues when running QRadar AQL queries from Cortex XSOAR. This issue is caused by QRadar API limitations. We recommend that you test the QRadar API performance by running several cURL scripts.</p>
 <h5>1. Creating a search</h5>
 <p>Run the following command to use the QRadar API to create a new search.<br> Save the QUERY ID that is attached to the response for the next step.</p>
 <pre>curl -H "SEC: &lt;API KEY&gt;" -X POST &lt;QRADAR INSTANCE&gt;/api/ariel/searches?query_expression=&lt;QUERY IN URL SAFE ENCODING&gt;</pre>
 <h5>2. Check if the search status is Complete or Executing</h5>
 <p>Use the following command to use the QRadar API to check the query status (EXECUTE, COMPLETED, or ERROR).</p>
 <pre>curl -H "SEC: &lt;API KEY&gt;" -X GET &lt;QRADAR INSTANCE&gt;/api/ariel/searches?&lt;QUERY ID&gt;</pre>
-<h2>Configure QRadar on Demisto</h2>
+<h2>Configure QRadar on Cortex XSOAR</h2>
 <ol>
 <li>Navigate to <strong>Settings</strong> &gt; <strong>Integrations</strong> &gt; <strong>Servers &amp; Services</strong>.</li>
 <li>Search for QRadar.</li>
@@ -50,7 +51,7 @@
 <li>Full Incident Enrichment - Clear this checkbox to disable QRadar offense enrichment performed in fetch-incidents. This might help if you encounter a timeout while fetching new incidents.</li>
 </ul>
 <h2>Commands</h2>
-<p>You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
+<p>You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
 <ol>
 <li><a href="#h_63925473610281540896013759">Get offenses: qradar-offenses</a></li>
 <li><a href="#h_79018805312601540896231220">Get an offense by offense ID: qradar-offense-by-id</a></li>

@@ -1,4 +1,4 @@
-Checks if a list exists in the Demisto lists.
+Checks if a list exists in the Cortex XSOAR lists.
 
 ## Script Data
 ---

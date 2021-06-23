@@ -3,7 +3,7 @@
 <p>WhatIsMyBrowser parses user agent strings and gives insight into known user agents. For example, if the user agent string is malicious, WhatIsMyBrowser will indicate that the user agent is known to be malicious.</p>
 </div>
 <div class="cl-preview-section">
-<h2 id="configure-whatsmybrowser-on-demisto">Configure WhatIsMyBrowser on Demisto</h2>
+<h2 id="configure-whatsmybrowser-on-demisto">Configure WhatIsMyBrowser on Cortex XSOAR</h2>
 </div>
 <div class="cl-preview-section">
 <ol>
@@ -29,7 +29,7 @@
 <h2 id="commands">Commands</h2>
 </div>
 <div class="cl-preview-section">
-<p>You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
+<p>You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
 </div>
 <div class="cl-preview-section">
 <ol>

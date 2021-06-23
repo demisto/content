@@ -9,7 +9,7 @@
 <h2>Prerequisites</h2>
 <p>The account you use must be the account Service Manager used, for example, 50004: Production base; 50005: Sandbox base.</p>
 <hr>
-<h2>Configure EasyVista on Demisto</h2>
+<h2>Configure EasyVista on Cortex XSOAR</h2>
 <ol>
 <li>Navigate to <strong>Settings</strong> &gt; <strong>Integrations</strong> &gt; <strong>Servers &amp; Services</strong>.</li>
 <li>Search for EasyVista.</li>
