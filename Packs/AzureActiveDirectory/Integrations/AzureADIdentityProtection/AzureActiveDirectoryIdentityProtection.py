@@ -29,7 +29,7 @@ class AzureADClient:
             auth_id=app_id,
             token_retrieval_url='https://login.microsoftonline.com/organizations/oauth2/v2.0/token',
             grant_type=DEVICE_CODE,
-            base_url=f'https://graph.microsoft.com/beta',
+            base_url='https://graph.microsoft.com/beta',
             verify=verify,
             proxy=proxy,
             resource=f'https://graph.microsoft.com/beta/{resource_group_name}',
@@ -47,7 +47,7 @@ class AzureADClient:
                                                          filter_expression: Optional[str] = None,
                                                          next_link: Optional[str] = None,
                                                          user_id: Optional[str] = None,
-                                                         user_name: Optional[str] = None,
+                                                         user_principal_name: Optional[str] = None,
                                                          country: Optional[str] = None) -> CommandResults:
         if next_link:
             next_link = next_link.replace('%20', ' ')  # OData syntax can't handle '%' character
@@ -59,7 +59,7 @@ class AzureADClient:
             if filter_expression is None:
                 filter_expression = ' and '.join([f'{key} eq \'{value}\'' for key, value in {
                     'userId': user_id,
-                    'userPrincipalName': user_name,
+                    'userPrincipalName': user_principal_name,
                     'location/countryOrRegion': country
                 }.items() if value is not None])
 
@@ -86,9 +86,85 @@ class AzureADClient:
                               readable_output=readable_output,
                               raw_response=raw_response)
 
+    def query_list(self,
+                   url_suffix: str,
+                   filter_arguments: Dict[str, Optional[Any]],
+                   human_readable_header: str,
+                   headers: List[str],
+                   limit: int = LIMIT_DEFAULT,
+                   filter_expression: Optional[str] = None,
+                   next_link: Optional[str] = None):
+        if next_link:
+            next_link = next_link.replace('%20', ' ')  # OData syntax can't handle '%' character
+            raw_response = self.http_request(method='GET', full_url=next_link)
+
+        else:
+            params: Dict[str, Optional[Any]] = {'$top': limit}
+
+            if filter_expression is None:
+                filter_expression = ' and '.join([f'{key} eq \'{value}\''
+                                                  for key, value in filter_arguments.items()
+                                                  if value is not None])
+
+            params['$filter'] = filter_expression
+            remove_nulls_from_dictionary(params)
+            raw_response = self.http_request(method='GET', url_suffix=url_suffix, params=params)
+
+        values = raw_response.get('value', [])
+        readable_output = tableToMarkdown(f'{human_readable_header.title()} ({len(values)} results)',
+                                          values,
+                                          headers=headers,
+                                          headerTransform=pascalToSpace)
+        outputs = {'values': values}
+
+        # removing whitespaces so they aren't mistakenly considered as argument separators in CLI
+        next_link = raw_response.get('nextLink', '').replace(' ', '%20')
+        if next_link:
+            next_link_key = f'{OUTPUTS_PREFIX}.NextLink(val.Description == "{NEXT_LINK_DESCRIPTION}")'
+            next_link_value = {'Description': NEXT_LINK_DESCRIPTION, 'URL': next_link}
+            outputs[next_link_key] = next_link_value
+
+        return CommandResults(outputs_prefix=OUTPUTS_PREFIX,
+                              outputs=outputs,
+                              readable_output=readable_output,
+                              raw_response=raw_response)
+
+    def azure_ad_identity_protection_risky_users_list(self,
+                                                      limit: int = LIMIT_DEFAULT,
+                                                      filter_expression: Optional[str] = None,
+                                                      next_link: Optional[str] = None,
+                                                      updated_time: Optional[str] = None,
+                                                      risk_level: Optional[str] = None,
+                                                      risk_state: Optional[str] = None,
+                                                      risk_detail: Optional[str] = None,
+                                                      user_principal_name: Optional[str] = None) -> CommandResults:
+
+        headers = ['id', 'requestId', 'correlationId', 'riskEventType', 'riskState', 'riskLevel', 'riskDetail',
+                   'source', 'detectionTimingType', 'activity', 'tokenIssuerType', 'ipAddress', 'location',
+                   'activityDateTime', 'detectedDateTime', 'lastUpdatedDateTime', 'userId', 'userDisplayName',
+                   'userPrincipalName', 'additionalInfo']
+
+        filter_arguments = {'riskLastUpdatedDateTime': updated_time,
+                            'riskLevel': risk_level,
+                            'riskState': risk_state,
+                            'riskDetail': risk_detail,
+                            'userPrincipalName': user_principal_name
+                            }
+        return self.query_list(headers=headers,
+                               limit=limit,
+                               filter_expression=filter_expression,
+                               next_link=next_link,
+                               human_readable_header='Risky Users',
+                               url_suffix='RiskyUsers',
+                               filter_arguments=filter_arguments)
+
 
 def azure_ad_identity_protection_risk_detection_list_command(client: AzureADClient, **kwargs):
     return client.azure_ad_identity_protection_risk_detection_list(**kwargs)
+
+
+def azure_ad_identity_protection_risky_users_list_command(client: AzureADClient, **kwargs):
+    return client.azure_ad_identity_protection_risky_users_list(**kwargs)
 
 
 def start_auth(client: AzureADClient) -> CommandResults:
@@ -140,6 +216,9 @@ def main() -> None:
 
         elif command == 'azure-ad-identity-protection-list-risks':
             return_results(azure_ad_identity_protection_risk_detection_list_command(client, **args))
+        elif command == 'azure-ad-identity-protection-list-risky-users':
+            return_results(azure_ad_identity_protection_risky_users_list_command(client, **args))
+
         else:
             raise NotImplementedError(f'Command "{command}" is not implemented.')
     except Exception as e:

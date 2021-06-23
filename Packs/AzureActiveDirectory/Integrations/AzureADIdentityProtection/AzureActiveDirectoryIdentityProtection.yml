@@ -78,7 +78,7 @@ script:
     - default: false
       description: The user principal name (UPN) of the user.
       isArray: false
-      name: user_name
+      name: user_principal_name
       required: false
       secret: false
     - default: false
@@ -112,6 +112,92 @@ script:
     description: Retrieve the properties of a collection of riskDetection objects.
     execution: false
     name: azure-ad-identity-protection-list-risks
+  - arguments:
+    - default: false
+      description: The date and time that the risky user was last updated
+      isArray: false
+      name: updated_time
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Level of the detected risky user
+      isArray: false
+      name: risk_level
+      predefined:
+      - low
+      - medium
+      - high
+      - hidden
+      - none
+      - unknownFeatureValue
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: State of the user's risk
+      isArray: false
+      name: risk_state
+      predefined:
+      - none
+      - confirmedSafe
+      - remediated
+      - dismissed
+      - atRisk
+      - confirmedCompromised
+      - unknownFutureValue
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Details of the detected risk
+      isArray: false
+      name: risk_detail
+      predefined:
+      - none
+      - adminGeneratedTemporaryPassword
+      - userPerformedSecuredPasswordChange
+      - userPerformedSecuredPasswordReset
+      - adminConfirmedSigninSafe
+      - aiConfirmedSigninSafe
+      - userPassedMFADrivenByRiskBasedPolicy
+      - adminDismissedAllRiskForUser
+      - adminConfirmedSigninCompromised
+      - hidden
+      - adminConfirmedUserCompromised
+      - unknownFutureValue
+      required: false
+      secret: false
+    - default: false
+      description: A custom query following Microsoft's syntax. Using this overrides
+        all other arguments.
+      isArray: false
+      name: filter_expression
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '50'
+      description: Number of results to provide
+      isArray: false
+      name: limit
+      required: true
+      secret: false
+    - default: false
+      description: A link that specifies a starting point to use for subsequent calls. Using this argument overrides all other arguments.
+      isArray: false
+      name: next_link
+      required: false
+      secret: false
+    - default: false
+      description: Risky user principal name.
+      isArray: false
+      name: user_name
+      required: false
+      secret: false
+    deprecated: false
+    description: Retrieve the properties of a collection of riskDetection objects.
+    execution: false
+    name: azure-ad-identity-protection-list-risky-users
   dockerimage: demisto/crypto:1.0.0.14297
   feed: false
   isfetch: false
