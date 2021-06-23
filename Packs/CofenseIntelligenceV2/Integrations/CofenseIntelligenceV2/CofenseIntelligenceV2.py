@@ -19,8 +19,7 @@ OUTPUT_PREFIX = 'CofenseIntelligence'
 RELIABILITY = 'integration_reliability'
 
 SEVERITY_SCORE = {'None': 0, 'Minor': 2, 'Moderate': 2, 'Major': 3}
-DBOT_SCORE = {0: 'Unknown', 1: 'Good', 2: 'Suspicious', 3: 'Bad'}
-DBOT_TO_VERDICT = {'Unknown': 'Unknown', 'Good': 'Benign', 'Suspicious': 'Suspicious', 'Bad': 'Malicious'}
+DBOT_TO_VERDICT = {0: 'Unknown', 1: 'Benign', 2: 'Suspicious', 3: 'Malicious'}
 
 EMAIL_REGEX = r'[^@]+@[^@]+\.[^@]+'
 
@@ -104,7 +103,7 @@ def create_threat_md_row(threat: Dict, severity_level: int = None):
                   "Threat Report": f"[{threat.get('reportURL', '')}]({threat.get('reportURL', '')})"}
 
     if severity_level:
-        threat_row["Verdict"] = DBOT_TO_VERDICT.get(str(DBOT_SCORE.get(severity_level)))
+        threat_row["Verdict"] = DBOT_TO_VERDICT.get(severity_level)
 
     return threat_row
 

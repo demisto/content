@@ -1005,21 +1005,25 @@ Checks the reputation of a URL.
 The following sections list the changes in this version.
 ### Outputs
 The following outputs were removed in this version:
+
 In the *url* command:
 * *Cofense.URL.Data* - this output was replaced by *CofenseIntelligence.URL.Data*.
 * *Cofense.URL.Malicious.Vendor* - this output was replaced by *CofenseIntelligence.URL.Malicious.Vendor*.
 * *Cofense.URL.Malicious.Description* - this output was replaced by *CofenseIntelligence.URL.Malicious.Description*.
 * *Cofense.URL.Cofense.ThreatIDs* - this output was replaced by *CofenseIntelligence.URL.Cofense.ThreatIDs*.
+
 In the *file* command:
 * *Cofense.File.MD5* - this output was replaced by *CofenseIntelligence.File.MD5*.
 * *Cofense.File.Malicious.Vendor* - this output was replaced by *CofenseIntelligence.File.Malicious.Vendor*.
 * *Cofense.File.Malicious.Description* - this output was replaced by *CofenseIntelligence.File.Malicious.Description*.
 * *Cofense.File.ThreatIDs* - this output was replaced by *CofenseIntelligence.File.ThreatIDs*.
+
 In the *ip* command:
 * *Cofense.IP.Data* - this output was replaced by *CofenseIntelligence.IP.Data*.
 * *Cofense.IP.Malicious.Vendor* - this output was replaced by *CofenseIntelligence.IP.Malicious.Vendor*.
 * *Cofense.IP.Malicious.Description* - this output was replaced by *CofenseIntelligence.IP.Malicious.Description*.
 * *Cofense.IP.Cofense.ThreatIDs* - this output was replaced by *CofenseIntelligence.IP.Cofense.ThreatIDs*.
+
 In the *email* command:
 * *Account.Email.Address*
 * *Account.Email.Malicious.Vendor*
@@ -1028,6 +1032,7 @@ In the *email* command:
 * *Cofense.Email.Malicious.Vendor* - this output was replaced by *CofenseIntelligence.Email.Malicious.Vendor*.
 * *Cofense.Email.Malicious.Description* - this output was replaced by *CofenseIntelligence.Email.Malicious.Description*.
 * *Cofense.Email.Cofense.ThreatIDs* - this output was replaced by *CofenseIntelligence.Email.Cofense.ThreatIDs*.
+
 In the *cofense-search* command:
 * *Cofense.NumOfThreats* - this output was replaced by *CofenseIntelligence.NumOfThreats*.
 * *Cofense.String* - this output was replaced by *CofenseIntelligence.String*.
