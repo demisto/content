@@ -65,7 +65,8 @@ script:
       description: "The time interval to search. This filter is used with either the\
         \ start_time or end_time filter. If duration, start time, and end time are\
         \ not specified, the system defaults to duration=12_hours, end_time=current_time.\
-        \ If only the duration is specified, the end_time defaults to the current_time."
+        \ If only the duration is specified, the end_time defaults to the current_time.\
+        \ Possible values: '1_hour', '2_hours',' 6_hours', '12_hours', '24_hours', and '48_hours'."
       auto: PREDEFINED
       predefined:
       - '1_hour'
@@ -121,8 +122,7 @@ script:
       secret: false
     - default: false
       defaultValue: 'concise'
-      description: Specifies the level of information to be returned. The default
-        is concise.
+      description: 'The level of information to be returned. Possible values: "concise", "normal", and "extended".'
       auto: PREDEFINED
       predefined:
       - 'concise'
@@ -139,7 +139,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: The type of the malware object.
+      description: "The type of the malware object. Possible values: 'domain_match', 'malware_callback', 'malware_object', 'web_infection', 'infection_match', 'riskware-infection', 'riskware-callback', and 'riskware-object'."
       predefined:
       - 'domain_match'
       - 'malware_callback'
@@ -217,13 +217,13 @@ script:
       description: The severity of the alert.
       type: String
     - contextPath: FireEyeEX.Alerts.sensor
-      description: The sensor name which the alert associated with.
+      description: The sensor name that the alert is associated with.
       type: String
     - contextPath: FireEyeEX.Alerts.applianceId
       description: The appliance ID of the alert.
       type: String
     - contextPath: FireEyeEX.Alerts.sensorIp
-      description: The sensor IP which the alert associated with.
+      description: The sensor IP that the alert is associated with.
       type: String
     - contextPath: FireEyeEX.Alerts.ack
       description: A flag indicating whether an acknowledgment is received.
@@ -235,7 +235,7 @@ script:
       description: The destination of the alert.
       type: Unknown
     - contextPath: FireEyeEX.Alerts.explanation
-      description: The explanation data of the alert.
+      description: Description of the alert.
       type: Unknown
   - arguments:
     - default: false
@@ -282,13 +282,13 @@ script:
       description: The severity of the alert.
       type: String
     - contextPath: FireEyeEX.Alerts.sensor
-      description: The sensor name which the alert associated with.
+      description: The sensor name that the alert is associated with.
       type: String
     - contextPath: FireEyeEX.Alerts.applianceId
       description: The appliance ID of the alert.
       type: String
     - contextPath: FireEyeEX.Alerts.sensorIp
-      description: The sensor IP which the alert associated with.
+      description: The sensor IP that the alert is associated with.
       type: String
     - contextPath: FireEyeEX.Alerts.ack
       description: A flag indicating whether an acknowledgment is received.
@@ -368,7 +368,7 @@ script:
     - default: false
       defaultValue: '1 day'
       description: "Specifies the start time of the search. This filter is optional.\
-        \ Default is last day. Syntax: end_time=YYYY-MM-DDTHH:mm:ss.sss-OH:om or '1\
+        \ Default is last day. Syntax: start_time=YYYY-MM-DDTHH:mm:ss.sss-OH:om or '1\
         \ day/month/year'."
       isArray: false
       name: start_time
@@ -401,7 +401,7 @@ script:
       secret: false
     - default: false
       defaultValue: '20'
-      description: Number of emails to return.
+      description: The number of emails to return.
       isArray: false
       name: limit
       required: false
@@ -415,7 +415,7 @@ script:
       description: The appliance ID associated with the quarantined email.
       type: string
     - contextPath: FireEyeEX.QuarantinedEmail.completed_at
-      description: The time the email has been quarantined.
+      description: The time the email was quarantined.
       type: string
     - contextPath: FireEyeEX.QuarantinedEmail.email_uuid
       description: The quarantined email UUID.
@@ -424,13 +424,13 @@ script:
       description: The quarantined email sender.
       type: string
     - contextPath: FireEyeEX.QuarantinedEmail.message_id
-      description: The quarantined email message id.
+      description: The quarantined email message ID.
       type: string
     - contextPath: FireEyeEX.QuarantinedEmail.quarantine_path
       description: The quarantined email path.
       type: string
     - contextPath: FireEyeEX.QuarantinedEmail.The quarantined email queue id.
-      description: The quarantined email queue id.
+      description: The quarantined email queue ID.
       type: string
     - contextPath: FireEyeEX.QuarantinedEmail.subject
       description: The quarantined email subject.
@@ -501,7 +501,7 @@ script:
       type: String
   - arguments:
     - default: false
-      description: The report type.
+      description: "The report type. Possible values: 'empsEmailAVReport', 'empsEmailActivity', 'empsEmailExecutiveSummary', 'empsEmailHourlyStat', 'mpsCallBackServer', 'mpsExecutiveSummary', 'mpsInfectedHostsTrend', 'mpsMalwareActivity', 'mpsWebAVReport', and 'alertDetailsReport'."
       auto: PREDEFINED
       predefined:
       - 'empsEmailAVReport'
@@ -521,7 +521,7 @@ script:
     - default: false
       defaultValue: '1 week'
       description: "Specifies the start time of the search. This filter is optional.\
-        \ Syntax: end_time=YYYY-MM-DDTHH:mm:ss.sss-OH:om or '1 day/month/year'"
+        \ Syntax: start_time=YYYY-MM-DDTHH:mm:ss.sss-OH:om or '1 day/month/year'"
       isArray: false
       name: start_time
       required: false
@@ -535,8 +535,8 @@ script:
       secret: false
     - default: false
       defaultValue: '100'
-      description: This option is required only for IPS TopN reports.
-        The limit option sets the maximum number (N) of items covered by each report.
+      description:  Sets the maximum number (N) of items covered by each report.
+        This option is required only for IPS TopN reports.
       isArray: false
       name: limit
       required: false
@@ -547,8 +547,7 @@ script:
       - 'A'
       - 'B'
       - 'AB'
-      description: This option is required only for IPS reports. The interface option
-        sets ihe internet interface to one of the values.
+      description: "Sets ihe internet interface. Possible values: 'A', 'B', and 'AB'." This option is required only for IPS reports.
       isArray: false
       name: interface
       required: false
@@ -562,14 +561,15 @@ script:
       secret: false
     - default: false
       description: Infection ID. This argument is only relevant when retrieving a
-        report of type alertDetailsReport with conjunction to the infection_type argument.
+        report of type alertDetailsReport in conjunction with the infection_type argument.
       isArray: false
       name: infection_id
       required: false
       secret: false
     - default: false
-      description: Infection Type. This argument is only relevant when retrieving
-        a report of type alertDetailsReport with conjunction to the infection_id argument.
+      description: "Infection Type. This argument is only relevant when retrieving
+        a report of type alertDetailsReport in conjunction with the infection_id argument.
+        Possible values: 'malware-object', 'malware-callback', 'infection-match', 'domain-match', and 'web-infection'."
       auto: PREDEFINED
       predefined:
       - 'malware-object'
@@ -612,7 +612,7 @@ script:
       type: string
   - arguments:
     - default: false
-      description: The type of objects to retrieve.
+      description: "The type of objects to retrieve. Possible values: 'sender_email_address', 'sender_domain', 'sender_ip', 'recipient_email_address', 'url', and 'md5sum'."
       auto: PREDEFINED
       predefined:
       - 'sender_email_address'
@@ -627,7 +627,7 @@ script:
       secret: false
     - default: false
       defaultValue: '20'
-      description: Number of entries to return.
+      description: The number of entries to return.
       isArray: false
       name: limit
       required: false
@@ -644,12 +644,12 @@ script:
       description: The time the domain name was added to the list.
       type: string
     - contextPath: FireEyeEX.matches
-      description: The Number of matches for the domain name against the incoming
+      description: The number of matches for the domain name when compared against the incoming
         emails.
       type: string
   - arguments:
     - default: false
-      description: The type of the entry.
+      description: "The type of the entry. Possible values: 'sender_email_address', 'sender_domain', 'sender_ip', 'recipient_email_address', 'url', and 'md5sum'."
       auto: PREDEFINED
       predefined:
       - 'sender_email_address'
@@ -670,7 +670,7 @@ script:
       secret: false
     - default: false
       defaultValue: '0'
-      description: The number of matches for the entry value against the incoming emails.
+      description: The number of matches for the entry value when compared against the incoming emails.
       isArray: false
       name: matches
       required: false
@@ -687,11 +687,11 @@ script:
       description: The time the domain name was added to the list.
       type: string
     - contextPath: FireEyeEX.matches
-      description: The Number of matches for the domain name against the incoming emails.
+      description: The number of matches for the domain name when compared against the incoming emails.
       type: string
   - arguments:
     - default: false
-      description: The type of the entry.
+      description: "The type of the entry. Possible values: 'sender_email_address', 'sender_domain', 'sender_ip', 'recipient_email_address', 'url', and 'md5sum'."
       auto: PREDEFINED
       predefined:
       - 'sender_email_address'
@@ -712,13 +712,13 @@ script:
       secret: false
     - default: false
       defaultValue: '0'
-      description: The number of matches for the entry value against the incoming emails.
+      description: The number of matches for the entry value when compared against the incoming emails.
       isArray: false
       name: matches
       required: false
       secret: false
     deprecated: false
-    description: Updates allowed sender domain.
+    description: Updates the allowed sender domain.
     execution: false
     name: fireeye-ex-update-allowedlist
     outputs:
@@ -729,11 +729,11 @@ script:
       description: The time the domain name was added to the list.
       type: string
     - contextPath: FireEyeEX.matches
-      description: The Number of matches for the domain name against the incoming emails.
+      description: The number of matches for the domain name when compared against the incoming emails.
       type: string
   - arguments:
     - default: false
-      description: The type of entry.
+      description: "The type of entry. Possible values: 'sender_email_address', 'sender_domain', 'sender_ip', 'recipient_email_address', 'url', and 'md5sum'."
       auto: PREDEFINED
       predefined:
       - 'sender_email_address'
@@ -753,7 +753,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Deletes allowed sender domain.
+    description: Deletes the allowed sender domain.
     execution: false
     name: fireeye-ex-delete-allowedlist
     outputs:
@@ -764,11 +764,11 @@ script:
       description: The time the domain name was added to the list.
       type: string
     - contextPath: FireEyeEX.matches
-      description: The Number of matches for the domain name against the incoming emails.
+      description: The number of matches for the domain name when compared against the incoming emails.
       type: string
   - arguments:
     - default: false
-      description: The type of the entry.
+      description: "The type of the entry. Possible values: 'sender_email_address', 'sender_domain', 'sender_ip', 'recipient_email_address', 'url', and 'md5sum'."
       auto: PREDEFINED
       predefined:
       - 'sender_email_address'
@@ -783,7 +783,7 @@ script:
       secret: false
     - default: false
       defaultValue: '20'
-      description: Number of entries to return.
+      description: The number of entries to return.
       isArray: false
       name: limit
       required: false
@@ -800,12 +800,12 @@ script:
       description: The time the domain name was added to the list.
       type: string
     - contextPath: FireEyeEX.matches
-      description: The Number of matches for the domain name against the incoming
+      description: The number of matches for the domain name when compared against the incoming
         emails.
       type: string
   - arguments:
     - default: false
-      description: The type of the entry.
+      description: "The type of the entry. Possible values: 'sender_email_address', 'sender_domain', 'sender_ip', 'recipient_email_address', 'url', and 'md5sum'."
       auto: PREDEFINED
       predefined:
       - 'sender_email_address'
@@ -826,13 +826,13 @@ script:
       secret: false
     - default: false
       defaultValue: '0'
-      description: The number of matches for the entry value against the incoming emails.
+      description: The number of matches for the entry value when compared against the incoming emails.
       isArray: false
       name: matches
       required: false
       secret: false
     deprecated: false
-    description: Creates blocked sender domain.
+    description: Creates the blocked sender domain.
     execution: false
     name: fireeye-ex-create-blockedlist
     outputs:
@@ -843,12 +843,12 @@ script:
       description: The time the domain name was added to the list.
       type: string
     - contextPath: FireEyeEX.matches
-      description: The Number of matches for the domain name against the incoming
+      description: The nhumber of matches for the domain name when compared against the incoming
         emails.
       type: string
   - arguments:
     - default: false
-      description: The type of the entry.
+      description: "The type of the entry. Possible values: 'sender_email_address', 'sender_domain', 'sender_ip', 'recipient_email_address', 'url', and 'md5sum'."
       auto: PREDEFINED
       predefined:
       - 'sender_email_address'
@@ -869,13 +869,13 @@ script:
       secret: false
     - default: false
       defaultValue: '0'
-      description: The number of matches for the entry value against the incoming emails.
+      description: The number of matches for the entry value when compared against the incoming emails.
       isArray: false
       name: matches
       required: false
       secret: false
     deprecated: false
-    description: Updates blocked sender domain.
+    description: Updates the blocked sender domain.
     execution: false
     name: fireeye-ex-update-blockedlist
     outputs:
@@ -886,11 +886,11 @@ script:
       description: The time the domain name was added to the list.
       type: string
     - contextPath: FireEyeEX.matches
-      description: The Number of matches for the domain name against the incoming emails.
+      description: The number of matches for the domain name when compared against the incoming emails.
       type: string
   - arguments:
     - default: false
-      description: The type of the entry.
+      description: "The type of the entry. Possible values: 'sender_email_address', 'sender_domain', 'sender_ip', 'recipient_email_address', 'url', and 'md5sum'."
       auto: PREDEFINED
       predefined:
       - 'sender_email_address'
@@ -910,7 +910,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Deletes blocked sender domain.
+    description: Deletes the blocked sender domain.
     execution: false
     name: fireeye-ex-delete-blockedlist
     outputs:
@@ -921,7 +921,7 @@ script:
       description: The time the domain name was added to the list.
       type: string
     - contextPath: FireEyeEX.matches
-      description: The Number of matches for the domain name against the incoming emails.
+      description: The number of matches for the domain name when compared against the incoming emails.
       type: string
   isfetch: true
   runonce: false
