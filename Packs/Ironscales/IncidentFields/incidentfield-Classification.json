@@ -1,5 +1,9 @@
 {
-    "associatedToAll": true,
+    "associatedToAll": false,
+    "associatedTypes": [
+        "Ironscales"
+    ],
+
     "caseInsensitive": true,
     "cliName": "classification",
     "closeForm": false,
