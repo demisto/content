@@ -54,9 +54,6 @@ def convert_incident_to_hr(incident):
         :type incident: ``dict``
         :param incident: the incident to get the value from
 
-        :type key: ``str``
-        :param key: the key in dict
-
         :rtype: ``dict``
         :return Converted incident
     """
