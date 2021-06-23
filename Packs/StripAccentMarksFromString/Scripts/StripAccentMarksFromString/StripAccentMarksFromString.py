@@ -6,7 +6,7 @@ from CommonServerPython import *  # noqa: F401
 string = demisto.args()["value"]
 normalized = unicodedata.normalize('NFKD', string)
 res = ""
-for caracter in normalized:
-    if not unicodedata.combining(caracter):
-        res += caracter
+for character in normalized:
+    if not unicodedata.combining(character):
+        res += character
 demisto.results(res)
