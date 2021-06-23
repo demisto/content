@@ -8,7 +8,7 @@ configuration:
   name: server_url
   required: true
   type: 0
-- display: Article content max size
+- display: Article content max size in KB
   description: The maximum size of article content in KB.
   additionalinfo: Default is 45KB. If you increase the limit substantialy, it may slow performance. You need to specify only a number. e.g, example 50.
   name: max_size

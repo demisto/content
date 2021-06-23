@@ -22,14 +22,17 @@ class Client(BaseClient):
         self.feed_tags = feed_tags
         self.tlp_color = tlp_color
         self.content_max_size = content_max_size * 1000
-        feed_content = self.feed_content()
-        feed_text = feed_content.text
-        self.feed_data = feedparser.parse(feed_text)
         self.parsed_indicators = []
-        # = self.create_indicators_from_response()
+        self.feed_data = []
 
-    def feed_content(self):
-        return self._http_request(method='GET', resp_type='response')
+
+    @staticmethod
+    def check_if_url_is_feed(feed_url):
+        res = super()._http_request(method='GET', full_url=feed_url, resp_type='response')
+        if 'html' in res.headers['content-type']:
+            return None
+        else:
+            return res
 
     def create_indicators_from_response(self):
         parsed_indicators: list = []
@@ -82,6 +85,11 @@ class Client(BaseClient):
             report_content = report_content.encode('utf-8')[:self.content_max_size].decode('utf-8')
         return report_content
 
+    def fetch_indicators(self):
+        feed_content_response = self._http_request(method='GET', resp_type='response')
+        self.feed_data = feedparser.parse(feed_content_response.text)
+        self.parsed_indicators = []
+
 
 def get_indicators(client: Client, args: dict) -> CommandResults:
     limit = int(args.get('limit', 10))
@@ -100,11 +108,11 @@ def get_indicators(client: Client, args: dict) -> CommandResults:
 
 def main():
     params = demisto.params()
-
+    server_url = params.get('server_url')
     command = demisto.command()
     demisto.info(f'Command being called is {command}')
     try:
-        client = Client(server_url=params.get('server_url'),
+        client = Client(server_url=server_url,
                         use_ssl=not params.get('insecure', False),
                         proxy=params.get('proxy'),
                         feed_tags=argToList(params.get('feedTags')),
@@ -112,8 +120,10 @@ def main():
                         content_max_size=int(params.get('max_size', '45')))
         client.create_indicators_from_response()
         if command == 'test-module':
-            # if the client was created successfully and there is data in feed the test is successful.
-            return_results("ok")
+            if Client.check_if_url_is_feed():
+                return_results("ok")
+            else:
+                raise DemistoException(f'{server_url} is not rss feed url. Try look for a url containing \'feed\' prefix or suffix.')
         elif command == 'rss-get-indicators':
             return_results(get_indicators(client, demisto.args()))
         elif command == 'fetch-indicators':
