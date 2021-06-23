@@ -1815,10 +1815,10 @@ tasks:
     quietmode: 0
   "60":
     id: "60"
-    taskid: 5280387b-b7cd-442c-8727-b405d171a5d4
+    taskid: 4fa6975a-164f-41b6-89e8-14e3bec96f31
     type: playbook
     task:
-      id: 5280387b-b7cd-442c-8727-b405d171a5d4
+      id: 4fa6975a-164f-41b6-89e8-14e3bec96f31
       version: -1
       name: ServiceNow CMDB Search
       description: |
@@ -1835,8 +1835,6 @@ tasks:
         simple: cmdb_ci_network_adapter
       SearchQueryField:
         simple: ip_address
-      SearchQueryOperator:
-        simple: "="
       SearchQueryValue:
         simple: ${inputs.IP}
     separatecontext: true

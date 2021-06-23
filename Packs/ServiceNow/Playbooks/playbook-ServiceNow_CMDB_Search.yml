@@ -1,6 +1,5 @@
 id: ServiceNow CMDB Search
 version: -1
-vcShouldKeepItemLegacyProdMachine: false
 name: ServiceNow CMDB Search
 description: |
   Subplaybook for finding CI records in ServiceNow CMDB.
@@ -8,14 +7,15 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: bb15edd2-89c7-4b4c-856f-5841c36c40d7
+    taskid: 95a33aa0-456c-4999-8d67-99c7e5559368
     type: start
     task:
-      id: bb15edd2-89c7-4b4c-856f-5841c36c40d7
+      id: 95a33aa0-456c-4999-8d67-99c7e5559368
       version: -1
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "4"
@@ -34,10 +34,10 @@ tasks:
     quietmode: 0
   "4":
     id: "4"
-    taskid: fb0a9388-cd69-4455-8592-59f584f2c612
+    taskid: d36ad1f6-c15d-47b5-878b-ee4a128b7ec1
     type: regular
     task:
-      id: fb0a9388-cd69-4455-8592-59f584f2c612
+      id: d36ad1f6-c15d-47b5-878b-ee4a128b7ec1
       version: -1
       name: Search for CMDB record
       description: Query records for a CMDB class.
@@ -54,7 +54,7 @@ tasks:
       limit: {}
       offset: {}
       query:
-        simple: ${inputs.SearchQueryField}${inputs.SearchQueryOperator}${inputs.SearchQueryValue}
+        simple: ${inputs.SearchQueryField}=${inputs.SearchQueryValue}
     separatecontext: false
     view: |-
       {
@@ -70,10 +70,10 @@ tasks:
     quietmode: 0
   "5":
     id: "5"
-    taskid: 8defe12e-fe93-4785-8eb4-1b73e2ae8e8d
+    taskid: 3f33ff9e-9141-4a55-8cd4-c4be43ec194d
     type: regular
     task:
-      id: 8defe12e-fe93-4785-8eb4-1b73e2ae8e8d
+      id: 3f33ff9e-9141-4a55-8cd4-c4be43ec194d
       version: -1
       name: Get record by ID
       description: Query attributes and relationship information for a specific record.
@@ -109,10 +109,10 @@ tasks:
     quietmode: 0
   "6":
     id: "6"
-    taskid: dac4dbfd-2c9a-4706-8b26-6e2f8af87e83
+    taskid: 0653b01d-3c11-4ba0-8ff1-ed3ae6f5da2e
     type: regular
     task:
-      id: dac4dbfd-2c9a-4706-8b26-6e2f8af87e83
+      id: 0653b01d-3c11-4ba0-8ff1-ed3ae6f5da2e
       version: -1
       name: Fetch related CMDB CI by ID
       description: Query attributes and relationship information for a specific record.
@@ -148,15 +148,16 @@ tasks:
     quietmode: 0
   "7":
     id: "7"
-    taskid: 3c0553a0-e377-4f03-8bc8-843a8cc6a70d
+    taskid: cde6d170-9365-4889-86f2-e6e3400626d0
     type: title
     task:
-      id: 3c0553a0-e377-4f03-8bc8-843a8cc6a70d
+      id: cde6d170-9365-4889-86f2-e6e3400626d0
       version: -1
       name: Playbook End
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {
@@ -172,10 +173,10 @@ tasks:
     quietmode: 0
   "8":
     id: "8"
-    taskid: 5f998f2e-3e91-43fd-8ec7-d55424794f81
+    taskid: df8740ef-6092-4ace-84b4-8d0713b7e334
     type: condition
     task:
-      id: 5f998f2e-3e91-43fd-8ec7-d55424794f81
+      id: df8740ef-6092-4ace-84b4-8d0713b7e334
       version: -1
       name: Do records exist?
       description: Check if a given value exists in the context. Will return 'no'
@@ -207,14 +208,15 @@ tasks:
     quietmode: 0
   "9":
     id: "9"
-    taskid: 8422c9d1-4362-4814-87b0-7d9fef8f0fec
+    taskid: 163630a4-45e6-40c9-84a5-2b9d9f4fe3a6
     type: condition
     task:
-      id: 8422c9d1-4362-4814-87b0-7d9fef8f0fec
+      id: 163630a4-45e6-40c9-84a5-2b9d9f4fe3a6
       version: -1
       name: Add asset in CMDB?
       type: condition
       iscommand: false
+      description: ""
       brand: ""
     nexttasks:
       "No":
@@ -235,13 +237,13 @@ tasks:
     message:
       to:
         simple: Analyst
-      subject: null
+      subject:
       body:
         simple: Do you want to add this asset in the CMDB?
       methods: []
       format: ""
-      bcc: null
-      cc: null
+      bcc:
+      cc:
       timings:
         retriescount: 2
         retriesinterval: 360
@@ -253,10 +255,10 @@ tasks:
     quietmode: 0
   "10":
     id: "10"
-    taskid: 55efc89e-56f9-43f6-86fb-6ab4b2ec952f
+    taskid: f66dc3c1-9989-4920-8abc-ffc7ad432413
     type: regular
     task:
-      id: 55efc89e-56f9-43f6-86fb-6ab4b2ec952f
+      id: f66dc3c1-9989-4920-8abc-ffc7ad432413
       version: -1
       name: Manually add asset in CMDB
       description: The asset is not in your CMDB, please manually add asset in ServiceNow
@@ -281,10 +283,10 @@ tasks:
     quietmode: 0
   "13":
     id: "13"
-    taskid: 5c305611-1fa0-49b7-8908-b84eebeffe11
+    taskid: 76fe59cd-cf7c-44a1-8f8b-7d4751fee3b2
     type: regular
     task:
-      id: 5c305611-1fa0-49b7-8908-b84eebeffe11
+      id: 76fe59cd-cf7c-44a1-8f8b-7d4751fee3b2
       version: -1
       name: Save CMDB information in Evidence
       description: Convert an array to a nice table display. Usually, from the context.
@@ -338,25 +340,28 @@ inputs:
     simple: cmdb_ci_network_adapter
   required: false
   description: The CMDB CI class to perform the search on (Defaults to cmdb_ci_network_adapter).
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: SearchQueryField
   value:
     simple: ip_address
   required: false
   description: The CI field used to perform the query (Defaults to ip_address).
-  playbookInputQuery: null
-- key: SearchQueryOperator
-  value:
-    simple: =
-  required: false
-  description: The operator used to perform the query (Defaults to =).
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: SearchQueryValue
   value: {}
   required: true
   description: The value used to perform the query.
-  playbookInputQuery: null
+  playbookInputQuery:
 outputs:
 - contextPath: ServiceNowCMDB.Record
   description: Discovered CI records
   type: unknown
+tests:
+- Create ServiceNow Ticket and State Polling Test
+- servicenow_test_v2
+- ServiceNow_OAuth_Test
+- ServiceNow_CMDB_Test
+- Create ServiceNow Ticket and Mirror Test
+- ServiceNow_CMDB_OAuth_Test
+- ServiceNow IAM - Test Playbook
+fromversion: 6.0.0

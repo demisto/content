@@ -23,7 +23,6 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 | --- | --- | --- | --- |
 | SearchCIClass | The CMDB CI class to perform the search on. | cmdb_ci_network_adapter | Optional |
 | SearchQueryField | The CI field used to perform the query. | ip_address | Optional |
-| SearchQueryOperator | The operator used to perform the query. | `=` | Optional |
 | SearchQueryValue | The value used to perform the query. |  | Required |
 
 ## Playbook Outputs
