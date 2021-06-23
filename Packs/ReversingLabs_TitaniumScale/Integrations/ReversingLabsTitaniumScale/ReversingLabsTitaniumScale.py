@@ -224,6 +224,8 @@ def main():
         token=TOKEN,
         verify=VERIFY_CERT,
         user_agent=USER_AGENT,
+        wait_time_seconds=2,
+        retries=30
     )
     if demisto.command() == 'test-module':
         test()
