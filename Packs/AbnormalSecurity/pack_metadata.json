@@ -8,8 +8,8 @@
     "email": "support@abnormalsecurity.com",
     "categories": ["Data Enrichment & Threat Intelligence"],
     "tags": ["Email"],
-    "useCases": [],
-    "keywords": [],
+    "useCases": ["Phishing"],
+    "keywords": ["email", "phishing"],
     "githubUser": [
         "dschuan"
     ]

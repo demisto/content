@@ -243,7 +243,7 @@ Get details of a threat
 | --- | --- | --- |
 | AbxCortexXSOAR.ThreatDetails.threatId | String | An id which maps to a threat campaign. A threat campaign might be received by multiple users. | 
 | AbxCortexXSOAR.ThreatDetails.messages.threatId | String | An id which maps to a threat campaign. A threat campaign might be received by multiple users. | 
-| AbxCortexXSOAR.ThreatDetails.messages.abxMessageId | Unknown | A unique identifier for an individual message within a threat \(i.e email campaign\). | 
+| AbxCortexXSOAR.ThreatDetails.messages.abxMessageId | Number | A unique identifier for an individual message within a threat \(i.e email campaign\). | 
 | AbxCortexXSOAR.ThreatDetails.messages.abxPortalUrl | String | The URL at which the specific message details are viewable in Abnormal Security's Portal web interface. | 
 | AbxCortexXSOAR.ThreatDetails.messages.subject | String | The email subject. | 
 | AbxCortexXSOAR.ThreatDetails.messages.fromAddress | String | The email address of the sender. | 
@@ -401,7 +401,7 @@ There are no input arguments for this command.
 There is no context output for this command.
 
 #### Command Example
-``` ```
+```!abxcortexxsoar-get-the-latest-threat-intel-feed ```
 
 #### Human Readable Output
 
@@ -461,7 +461,7 @@ Manage an Abnormal Case.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | caseId | A string representing the case. | Required | 
-| action | Action to perform on threat. | Required | 
+| action | Action to perform on case. | Required | 
 
 
 #### Context Output

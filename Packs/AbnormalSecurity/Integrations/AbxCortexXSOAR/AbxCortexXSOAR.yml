@@ -82,7 +82,7 @@ script:
       isArray: false
       name: filter
       required: false
-    - description: Number of cases that on in each page. Each page of data will have
+    - description: Number of cases that are on each page. Each page of data will have
         at most pageSize threats. Has no effect if filter is not specified.
       isArray: false
       name: pageSize
@@ -107,11 +107,11 @@ script:
       type: String
     - contextPath: AbxCortexXSOAR.inline_response_200_1.pageNumber
       description: The current page number. Will not be be in the response if no filter
-        query  meter is passed in via the request.
+        query meter is passed in via the request.
       type: Number
     - contextPath: AbxCortexXSOAR.inline_response_200_1.nextPageNumber
-      description: The next page number. Wil not be includedin the response if there
-        are no more pages of data or if  no filter query  meter is passed in via the
+      description: The next page number. Will not be included in the response if there
+        are no more pages of data or if no filter query meter is passed in via the
         request
       type: Number
   - arguments:
@@ -153,8 +153,8 @@ script:
         query  meter is passed in via the request.
       type: Number
     - contextPath: AbxCortexXSOAR.inline_response_200.nextPageNumber
-      description: The next page number. Wil not be includedin the response if there
-        are no more pages of data or if  no filter query  meter is passed in via the
+      description: The next page number. Will not be included in the response if there
+        are no more pages of data or if no filter query meter is passed in via the
         request
       type: Number
   - arguments:
@@ -180,7 +180,7 @@ script:
     - contextPath: AbxCortexXSOAR.ThreatDetails.messages.abxMessageId
       description: A unique identifier for an individual message within a threat (i.e
         email campaign).
-      type: Unknown
+      type: Number
     - contextPath: AbxCortexXSOAR.ThreatDetails.messages.abxPortalUrl
       description: The URL at which the specific message details are viewable in Abnormal
         Security's Portal web interface.
