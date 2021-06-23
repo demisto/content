@@ -120,8 +120,7 @@ def create_incident_custom_id(incident):
     fields_to_add = ['_cd', 'index', '_time', '_indextime', '_raw']
     fields_supplied_by_user = demisto.params().get('unique_id_fields', '')
     fields_supplied_by_user = '' if not fields_supplied_by_user else fields_supplied_by_user
-    fields_supplied_by_user = fields_supplied_by_user.split(',')
-    fields_to_add.extend(fields_supplied_by_user)
+    fields_to_add.extend(fields_supplied_by_user.split(','))
 
     incident_custom_id = '___'
     for field_name in fields_to_add:
