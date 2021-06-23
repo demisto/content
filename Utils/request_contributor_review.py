@@ -216,7 +216,7 @@ def check_reviewers(reviewers: set, pr_author: str, version: str, modified_files
     for tagged_reviewer in reviewers.difference(untagged_reviewers):
         print(f'User {tagged_reviewer} was already tagged. Skipping re-tagging.')
     notified_contributors = False
-    # Meaning at least one of the reviewers was already tagged. Will
+    # Meaning at least one of the reviewers was already tagged.
     if untagged_reviewers != reviewers:
         notified_contributors = True
     if untagged_reviewers:
