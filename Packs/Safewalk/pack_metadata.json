@@ -1,7 +1,7 @@
 {
     "name": "Altipeak",
     "description": "Integration with Safewalk identity management and report service",
-    "support": "xsoar-altipeak",
+    "support": "partner",
     "currentVersion": "1.0.0",
     "author": "Altipeak",
     "url": "https://www.altipeaksecurity.com",
