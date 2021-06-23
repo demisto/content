@@ -6,7 +6,7 @@ contentitemexportablefields:
     propagationLabels:
     - all
     toServerVersion: ""
-id: c1c57bfe-caea-4c58-8549-a42b5e92d621
+id: Ironscales-Classify-Incident-Playbook
 inputs: []
 name: Ironscales-Classify-Incident-Playbook
 outputs: []
