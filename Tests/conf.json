@@ -1500,6 +1500,11 @@
             "fromversion": "5.5.0"
         },
         {
+            "integrations": "GoogleMaps",
+            "playbookID": "GoogleMapsTest",
+            "fromversion": "6.0.0"
+        },
+        {
             "playbookID": "VerifyHumanReadableFormat"
         },
         {
