@@ -190,7 +190,7 @@ def delete_sample(a1000):
         return_error(str(e))
 
     res = response_json.get('results')
-    markdown = f'''## ReversingLabs A1000 delete sample\n **Message:** {res.get('message')}    
+    markdown = f'''## ReversingLabs A1000 delete sample\n **Message:** {res.get('message')}
     **MD5:** {demisto.get(res, 'detail.md5')}
     **SHA1:** {demisto.get(res, 'detail.sha1')}
     **SHA256:** {demisto.get(res, 'detail.sha256')}'''
