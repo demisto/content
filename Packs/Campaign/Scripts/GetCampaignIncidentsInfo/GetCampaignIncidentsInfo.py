@@ -20,7 +20,7 @@ DEFAULT_CUSTOM_FIELDS = {
 }
 
 
-def update_incident_with_required_keys(incidents, required_keys):
+def update_incident_with_required_keys(incidents: List, required_keys: List):
     """
         Update the given incident dict (from context) with values retrieved by GetIncidentsByQuery command
 
@@ -79,7 +79,7 @@ def get_campaign_incidents_from_context():
     return demisto.get(demisto.context(), 'EmailCampaign.incidents')
 
 
-def get_incidents_info_md(incidents, fields_to_display=None):
+def get_incidents_info_md(incidents: List, fields_to_display: List = None):
     """
         Get the campaign incidents relevant info in MD table
 
