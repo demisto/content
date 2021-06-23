@@ -4,7 +4,7 @@ This integration was integrated and tested with version 9.0.2.929543 of FireEye 
 ## API Key management
 This integration generates an API Key from the username and password given to be authenticated with FireEye.
 The API Key is valid for 15 minutes.
-The integration manages the storage of this key, and its re generation when the key expires.
+The integration manages the storage of this key, and its re-generation when the key expires.
 
 ## Fetch FireEye EX Alert Emails
 To fetch a FireEye EX alert email, you will need the UUID.
@@ -17,7 +17,7 @@ To fetch a FireEye EX alert email, you will need the UUID.
 ## Access the FireEye Alert URL
 To display a proper link in the FireEye NX Alert URL field of the FireEye EX Alert layout, you need to configure the hostname in the appliance settings of the FireEye application.
 1. Log in to your FireEye application.
-2. Navigate to **Appliance Settings > Network > Hostname**.
+2. Navigate to **Appliance Settings** > **Network** > **Hostname**.
 3. In the Hostname field, enter your URL/server/ip address.
 
 ## Configure FireEye Email Security on Cortex XSOAR
@@ -64,7 +64,7 @@ Searches and retrieves FireEye EX alerts based on several filters.
 | src_ip | The source IPv4 address related to the malware alert. | Optional | 
 | file_name | The name of the malware file. | Optional | 
 | file_type | The malware file type. | Optional | 
-| info_level | Specifies the level of information to be returned. Possible values are: concise, normal, extended. Default is concise. | Optional | 
+| info_level | The level of information to be returned. Possible values are: concise, normal, extended. Default is concise. | Optional | 
 | malware_name | The name of the malware object. | Optional | 
 | malware_type | The type of the malware object. Possible values are: domain_match, malware_callback, malware_object, web_infection, infection_match, riskware-infection, riskware-callback, riskware-object. | Optional | 
 | md5 | Searches for alerts that include a specific MD5 hash. | Optional | 
@@ -87,9 +87,9 @@ Searches and retrieves FireEye EX alerts based on several filters.
 | FireEyeEX.Alerts.vlan | String | The virtual LAN \(VLAN\) of the alert. | 
 | FireEyeEX.Alerts.malicious | String | A flag indicating whether the alert is malicious. | 
 | FireEyeEX.Alerts.severity | String | The severity of the alert. | 
-| FireEyeEX.Alerts.sensor | String | The sensor name which the alert associated with. | 
+| FireEyeEX.Alerts.sensor | String | The sensor name that the alert is associated with. | 
 | FireEyeEX.Alerts.applianceId | String | The appliance ID of the alert. | 
-| FireEyeEX.Alerts.sensorIp | String | The sensor IP which the alert associated with. | 
+| FireEyeEX.Alerts.sensorIp | String | The sensor IP that the alert is associated with. | 
 | FireEyeEX.Alerts.ack | String | A flag indicating whether an acknowledgment is received. | 
 | FireEyeEX.Alerts.src | Unknown | The source of the alert. | 
 | FireEyeEX.Alerts.dst | Unknown | The destination of the alert. | 
@@ -297,9 +297,9 @@ Searches and retrieves the details of a single alert.
 | FireEyeEX.Alerts.vlan | String | The virtual LAN \(VLAN\) of the alert. | 
 | FireEyeEX.Alerts.malicious | String | A flag indicating whether the alert is malicious. | 
 | FireEyeEX.Alerts.severity | String | The severity of the alert. | 
-| FireEyeEX.Alerts.sensor | String | The sensor name which the alert associated with. | 
+| FireEyeEX.Alerts.sensor | String | The sensor name that the alert is associated with. | 
 | FireEyeEX.Alerts.applianceId | String | The appliance ID of the alert. | 
-| FireEyeEX.Alerts.sensorIp | String | The sensor IP which the alert associated with. | 
+| FireEyeEX.Alerts.sensorIp | String | The sensor IP that the alert is associated with. | 
 | FireEyeEX.Alerts.ack | String | A flag indicating whether an acknowledgment is received. | 
 | FireEyeEX.Alerts.src | Unknown | The source of the alert. | 
 | FireEyeEX.Alerts.dst | Unknown | The destination of the alert. | 
@@ -477,12 +477,12 @@ Searches and retrieves quarantined emails.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| start_time | Specifies the start time of the search. This filter is optional. Default is last day. Syntax: end_time=YYYY-MM-DDTHH:mm:ss.sss-OH:om or '1 day/month/year'. Default is 1 day. | Optional | 
+| start_time | Specifies the start time of the search. This filter is optional. Default is last day. Syntax: start_time=YYYY-MM-DDTHH:mm:ss.sss-OH:om or '1 day/month/year'. Default is 1 day. | Optional | 
 | end_time | Specifies the end time of the search. Default is now. Syntax: end_time=YYYY-MM-DDTHH:mm:ss.sss-OH:om or '1 day/month/year'. | Optional | 
 | from | The sender email. | Optional | 
 | subject | The email subject. Must be URL encoded. | Optional | 
 | appliance_id | The appliance ID. | Optional | 
-| limit | Number of emails to return. Default is 20. | Optional | 
+| limit | The number of emails to return. Default is 20. | Optional | 
 
 
 #### Context Output
@@ -490,12 +490,12 @@ Searches and retrieves quarantined emails.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | FireEyeEX.QuarantinedEmail.appliance_id | string | The appliance ID associated with the quarantined email. | 
-| FireEyeEX.QuarantinedEmail.completed_at | string | The time the email has been quarantined. | 
+| FireEyeEX.QuarantinedEmail.completed_at | string | The time the email was quarantined. | 
 | FireEyeEX.QuarantinedEmail.email_uuid | string | The quarantined email UUID. | 
 | FireEyeEX.QuarantinedEmail.from | string | The quarantined email sender. | 
-| FireEyeEX.QuarantinedEmail.message_id | string | The quarantined email message id. | 
+| FireEyeEX.QuarantinedEmail.message_id | string | The quarantined email message ID. | 
 | FireEyeEX.QuarantinedEmail.quarantine_path | string | The quarantined email path. | 
-| FireEyeEX.QuarantinedEmail.The quarantined email queue id. | string | The quarantined email queue id. | 
+| FireEyeEX.QuarantinedEmail.The quarantined email queue id. | string | The quarantined email queue ID. | 
 | FireEyeEX.QuarantinedEmail.subject | string | The quarantined email subject. | 
 
 
@@ -658,13 +658,13 @@ Returns reports on selected alerts.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | report_type | The report type. Possible values are: empsEmailAVReport, empsEmailActivity, empsEmailExecutiveSummary, empsEmailHourlyStat, mpsCallBackServer, mpsExecutiveSummary, mpsInfectedHostsTrend, mpsMalwareActivity, mpsWebAVReport, alertDetailsReport. | Required | 
-| start_time | Specifies the start time of the search. This filter is optional. Syntax: end_time=YYYY-MM-DDTHH:mm:ss.sss-OH:om or '1 day/month/year'. Default is 1 week. | Optional | 
+| start_time | Specifies the start time of the search. This filter is optional. Syntax: start_time=YYYY-MM-DDTHH:mm:ss.sss-OH:om or '1 day/month/year'. Default is 1 week. | Optional | 
 | end_time | Specifies the end time of the search. Default is now. Syntax: end_time=YYYY-MM-DDTHH:mm:ss.sss-OH:om or '1 day/month/year'. | Optional | 
-| limit | This option is required only for IPS TopN reports. The limit option sets the maximum number (N) of items covered by each report. Default is 100. | Optional | 
-| interface | This option is required only for IPS reports. The interface option sets ihe internet interface to one of the values. Possible values are: A, B, AB. | Optional | 
+| limit | Sets the maximum number (N) of items covered by each report. This option is required only for IPS TopN reports. Default is 100. | Optional | 
+| interface | Sets ihe internet interface. Possible values are: A, B, AB. This option is required only for IPS reports. | Optional | 
 | alert_id | Alert ID. This argument is only relevant when retrieving a report of type alertDetailsReport. | Optional | 
-| infection_id | Infection ID. This argument is only relevant when retrieving a report of type alertDetailsReport with conjunction to the infection_type argument. | Optional | 
-| infection_type | Infection Type. This argument is only relevant when retrieving a report of type alertDetailsReport with conjunction to the infection_id argument. Possible values are: malware-object, malware-callback, infection-match, domain-match, web-infection. | Optional | 
+| infection_id | Infection ID. This argument is only relevant when retrieving a report of type alertDetailsReport in conjunction with the infection_type argument. | Optional | 
+| infection_type | Infection Type. This argument is only relevant when retrieving a report of type alertDetailsReport in conjunction with the infection_id argument. Possible values are: malware-object, malware-callback, infection-match, domain-match, web-infection. | Optional | 
 | timeout | Timeout to retrieve the reports. Default is 120 seconds. | Optional | 
 
 
@@ -714,7 +714,7 @@ Lists the allowed sender domain by type.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | type | The type of objects to retrieve. Possible values are: sender_email_address, sender_domain, sender_ip_address, recipient_email_address, url, md5sum. | Required | 
-| limit | Number of entries to return. Default is 20. | Optional |
+| limit | The number of entries to return. Default is 20. | Optional |
 
 
 #### Context Output
@@ -723,7 +723,7 @@ Lists the allowed sender domain by type.
 | --- | --- | --- |
 | FireEyeEX.name | string | The allowed domain name. | 
 | FireEyeEX.created-at | string | The time the domain name was added to the list. | 
-| FireEyeEX.matches | string | The Number of matches for the domain name against the incoming emails. | 
+| FireEyeEX.matches | string | The number of matches for the domain name when compared against the incoming emails. | 
 
 
 #### Command Example
@@ -747,7 +747,7 @@ Creates allowed sender domain.
 | --- | --- | --- |
 | type | The type of objects to retrieve. Possible values are: sender_email_address, sender_domain, sender_ip_address, recipient_email_address, url, md5sum. | Required | 
 | entry_value | The entry value we want to create. | Required | 
-| matches | The number of matches for the domain name against the incoming emails. | Required | 
+| matches | The number of matches for the domain name when compared against the incoming emails. | Required | 
 
 
 #### Context Output
@@ -756,7 +756,7 @@ Creates allowed sender domain.
 | --- | --- | --- |
 | FireEyeEX.name | string | The allowed domain name. | 
 | FireEyeEX.created-at | string | The time the domain name was added to the list. | 
-| FireEyeEX.matches | string | The Number of matches for the domain name against the incoming emails. | 
+| FireEyeEX.matches | string | The number of matches for the domain name against the incoming emails. | 
 
 
 #### Command Example
@@ -780,7 +780,7 @@ Updates allowed sender domain.
 | --- | --- | --- |
 | type | The type of objects to retrieve. Possible values are: sender_email_address, sender_domain, sender_ip_address, recipient_email_address, url, md5sum. | Required | 
 | entry_value | The entry value we want to update. | Required | 
-| matches | The number of matches for the domain name against the incoming emails. | Required | 
+| matches | The number of matches for the domain name when compared against the incoming emails. | Required | 
 
 
 #### Context Output
@@ -789,7 +789,7 @@ Updates allowed sender domain.
 | --- | --- | --- |
 | FireEyeEX.name | string | The allowed domain name. | 
 | FireEyeEX.created-at | string | The time the domain name was added to the list. | 
-| FireEyeEX.matches | string | The Number of matches for the domain name against the incoming emails. | 
+| FireEyeEX.matches | string | The number of matches for the domain name when compared against the incoming emails. | 
 
 
 #### Command Example
@@ -821,7 +821,7 @@ Deletes allowed sender domain.
 | --- | --- | --- |
 | FireEyeEX.name | string | The allowed domain name. | 
 | FireEyeEX.created-at | string | The time the domain name was added to the list. | 
-| FireEyeEX.matches | string | The Number of matches for the domain name against the incoming emails. | 
+| FireEyeEX.matches | string | The number of matches for the domain name when compared against the incoming emails. | 
 
 
 #### Command Example
@@ -844,7 +844,7 @@ Lists the blocked sender domain by type.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | type | The type of objects to retrieve. Possible values are: sender_email_address, sender_domain, sender_ip_address, recipient_email_address, url, md5sum. | Required | 
-| limit | Number of entries to return. Default is 20. | Optional |
+| limit | The number of entries to return. Default is 20. | Optional |
 
 
 #### Context Output
@@ -853,7 +853,7 @@ Lists the blocked sender domain by type.
 | --- | --- | --- |
 | FireEyeEX.name | string | The allowed domain name. | 
 | FireEyeEX.created-at | string | The time the domain name was added to the list. | 
-| FireEyeEX.matches | string | The Number of matches for the domain name against the incoming emails. | 
+| FireEyeEX.matches | string | The number of matches for the domain name when compared against the incoming emails. | 
 
 
 #### Command Example
@@ -877,7 +877,7 @@ Creates blocked sender domain.
 | --- | --- | --- |
 | type | The type of objects to retrieve. Possible values are: sender_email_address, sender_domain, sender_ip_address, recipient_email_address, url, md5sum. | Required | 
 | entry_value | The entry value we want to create. | Required | 
-| matches | The number of matches for the domain name against the incoming emails. | Required | 
+| matches | The number of matches for the domain name when compared against the incoming emails. | Required | 
 
 
 #### Context Output
@@ -886,7 +886,7 @@ Creates blocked sender domain.
 | --- | --- | --- |
 | FireEyeEX.name | string | The allowed domain name. | 
 | FireEyeEX.created-at | string | The time the domain name was added to the list. | 
-| FireEyeEX.matches | string | The Number of matches for the domain name against the incoming emails. | 
+| FireEyeEX.matches | string | The number of matches for the domain name when compared against the incoming emails. | 
 
 
 #### Command Example
@@ -910,7 +910,7 @@ Updates blocked sender domain.
 | --- | --- | --- |
 | type | The type of objects to retrieve. Possible values are: sender_email_address, sender_domain, sender_ip_address, recipient_email_address, url, md5sum. | Required | 
 | entry_value | The entry value we want to update. | Required | 
-| matches | The number of matches for the domain name against the incoming emails. | Required | 
+| matches | The number of matches for the domain name when compared against the incoming emails. | Required | 
 
 
 #### Context Output
@@ -919,7 +919,7 @@ Updates blocked sender domain.
 | --- | --- | --- |
 | FireEyeEX.name | string | The allowed domain name. | 
 | FireEyeEX.created-at | string | The time the domain name was added to the list. | 
-| FireEyeEX.matches | string | The Number of matches for the domain name against the incoming emails. | 
+| FireEyeEX.matches | string | The number of matches for the domain name when compared against the incoming emails. | 
 
 
 #### Command Example
@@ -951,7 +951,7 @@ Deletes blocked sender domain.
 | --- | --- | --- |
 | FireEyeEX.name | string | The allowed domain name. | 
 | FireEyeEX.created-at | string | The time the domain name was added to the list. | 
-| FireEyeEX.matches | string | The Number of matches for the domain name against the incoming emails. | 
+| FireEyeEX.matches | string | The number of matches for the domain name when compared against the incoming emails. | 
 
 
 #### Command Example
