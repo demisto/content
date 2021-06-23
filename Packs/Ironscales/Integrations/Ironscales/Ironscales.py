@@ -19,7 +19,7 @@ class Client(BaseClient):
     def get_jwt_token(self, api_key: str, scopes: list) -> Dict[str, Any]:
         jwt_key = self._http_request(
             method="POST",
-            url_suffix=f"/get-token/",
+            url_suffix="/get-token/",
             json_data={"key": api_key, "scopes": scopes},
         )
         return {"Authorization": f'JWT {jwt_key["jwt"]}'}
