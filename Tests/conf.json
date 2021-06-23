@@ -60,7 +60,8 @@
         {
             "integrations": "FireEye Central Management",
             "playbookID": "FireEye Central Management - Test",
-            "fromversion": "5.5.0"
+            "fromversion": "5.5.0",
+            "timeout": 500
         },
         {
             "integrations": "FireEyeNX",
