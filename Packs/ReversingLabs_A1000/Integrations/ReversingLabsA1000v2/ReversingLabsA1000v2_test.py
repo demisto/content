@@ -1,5 +1,5 @@
 import json
-from ReversingLabs_A1000_v2 import a1000_report_output, list_extracted_files_output, get_classification_output
+from ReversingLabsA1000v2 import a1000_report_output, list_extracted_files_output, get_classification_output
 
 
 def test_a1000_report_output():
