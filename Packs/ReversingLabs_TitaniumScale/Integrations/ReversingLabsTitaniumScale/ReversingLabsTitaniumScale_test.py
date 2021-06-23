@@ -1,5 +1,5 @@
 import json
-from ReversingLabs_TitaniumScale import parse_report_and_return_results, parse_upload_report_and_return_results
+from ReversingLabsTitaniumScale import parse_report_and_return_results, parse_upload_report_and_return_results
 
 
 def test_parse_report_and_return_results():
