@@ -128,9 +128,9 @@ def classify_incident_command(client: Client, args: Dict[str, Any]) -> str:
     )
 
     if classify:
-        demisto.results("Classification Succeeded!")
+       return "Classification Succeeded!"
     else:
-        demisto.results("Classification Failed!")
+        return "Classification Failed!"
 
 
 def get_open_incidents_command(client: Client, args: Dict[str, Any]) -> CommandResults:
