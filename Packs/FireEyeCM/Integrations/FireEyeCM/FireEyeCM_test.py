@@ -345,7 +345,7 @@ def test_fetch_incidents_last_alert_ids(mocker):
     - mock the Client's get_alerts_request.
     Then
     - Validate that no incidents will be returned.
-    - Validate that the last_run is "now"
+    - Validate that the last_run is at the latest incident fetched
     """
     mocker.patch.object(FireEyeClient, '_get_token', return_value='token')
     client = Client(base_url="https://fireeye.cm.com/", username='user', password='pass', verify=False, proxy=False)
