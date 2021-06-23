@@ -50,6 +50,16 @@
   - chmod +x ./Tests/Marketplace/*
   - section_end "Granting execute permissions on files"
 
+.get_contribution_pack: &get_contribution_pack
+  - section_start "getting contrib packs" --collapsed
+  - |
+    if [[ -n "${CONTRIB_BRANCH}" ]]; then
+      REPO=$(echo $CONTRIB_BRANCH | cut -d ":" -f 1)
+      BRANCH=$(echo $CONTRIB_BRANCH | cut -d ":" -f 2)
+      python3 ./Utils/update_contribution_pack_in_base_branch.py -p $PULL_REQUEST_NUMBER -b $BRANCH -c $REPO -t $GITHUB_TOKEN
+    fi
+  - section_end "getting contrib packs"
+
 .install_venv: &install_venv
   - section_start "Installing Virtualenv" --collapsed
   - |
@@ -85,6 +95,7 @@
     - mkdir -p $ARTIFACTS_FOLDER/logs
     - section_end "Creating new clean logs folder"
     - *install_venv
+    - *get_contribution_pack
     - *install_ssh_keys
     - section_start "Build Parameters"
     - set | grep -E "^NIGHTLY=|^INSTANCE_TESTS=|^SERVER_BRANCH_NAME=|^ARTIFACT_BUILD_NUM=|^DEMISTO_SDK_NIGHTLY=|^TIME_TO_LIVE=|^CONTRIB_BRANCH=|^FORCE_PACK_UPLOAD=|^PACKS_TO_UPLOAD=|^BUCKET_UPLOAD=|^GCS_MARKET_BUCKET=|^SLACK_CHANNEL=|^TERM=|^FORCE_COLOR="
