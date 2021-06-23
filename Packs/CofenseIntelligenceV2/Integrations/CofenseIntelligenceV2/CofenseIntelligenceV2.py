@@ -393,7 +393,7 @@ def check_email_command(client: Client, args: Dict[str, Any], params) -> List[Co
         result = client.threat_search_call(email=email, days_back=days_back)
         threats = result.get('data', {}).get('threats', [])
         remove_false_vendors_detections_from_threat(threats)
-        outputs = {'Data': email, 'Threats': threats}
+        outputs = {f'{OUTPUT_PREFIX}.Email.Data': email, f'{OUTPUT_PREFIX}.Email.Threats': threats,'Account.Email.Address': email, 'Account.Domain': email.split('@')[1]}
         md_data, dbot_score = threats_analysis(threats, indicator=email, threshold=params.get('email_threshold'))
 
         dbot_score_obj = Common.DBotScore(indicator=email, indicator_type=DBotScoreType.EMAIL,
@@ -402,7 +402,6 @@ def check_email_command(client: Client, args: Dict[str, Any], params) -> List[Co
 
         email_indicator = Common.EMAIL(address=email, dbot_score=dbot_score_obj, domain=email.split('@')[1])
         command_results = CommandResults(
-            outputs_prefix=f'{OUTPUT_PREFIX}.Email',
             outputs=outputs,
             outputs_key_field='Data',
             raw_response=result,
@@ -410,6 +409,7 @@ def check_email_command(client: Client, args: Dict[str, Any], params) -> List[Co
                                             headers=['Threat ID', 'Threat Types', 'Verdict', 'Executive Summary',
                                                      'Campaign', 'Last Published', 'Threat Report']),
             indicator=email_indicator,
+
         )
         results_list.append(command_results)
     return results_list

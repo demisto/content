@@ -123,6 +123,11 @@ Checks the reputation of an IP address.
 | CofenseIntelligence.IP.Threats.malwareFamilySet.familyName | String | Family name of malware | 
 | CofenseIntelligence.IP.Threats.malwareFamilySet.description | String | Set of malware family | 
 | CofenseIntelligence.IP.Threats.threatType | String | This will only have one value for malware | 
+| IP.MalwareFamily | unknown | The Associated malware family |
+| IP.ASN | unknown | Autonomous System name for the IP. | 
+| IP.GEO.Location | unknown | Location in format latitude, longitude. | 
+| IP.GEO.Country | unknown | Country of the IP. | 
+| IP.Address | string | IP address. |
 
 
 #### Command Example
@@ -491,7 +496,12 @@ Checks the reputation of a file hash.
 | CofenseIntelligence.File.Threats.malwareFamilySet.familyName | String | Family name of malware | 
 | CofenseIntelligence.File.Threats.malwareFamilySet.description | String | Set of malware family | 
 | CofenseIntelligence.File.Threats.threatType | String | This will only have one value for malware | 
-
+| File.Extension | String | The Extension of the file |
+| File.MD5 | String | File MD5 hash |
+| File.Malicious.Description | String | For malicious files, the reason that the vendor made the decision. |
+| File.Malicious.Vendor | String | For malicious files, the vendor that made the decision. |
+| File.MalwareFamily | String | The associated malware family |
+| File.Name | String | The file name |
 
 #### Command Example
 ```!file file=9798ba6199168e6d2cf205760ea683d1 using=CofenseIntelligenceV2_instance```
@@ -633,7 +643,7 @@ Checks the reputation of an email address.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | email | Sender email address to check. | Required | 
-| days_back | Limit the number of days from wich we should start returning data. 90 days limit is recommended by Cofense. | Optional | 
+| days_back | Limit the number of days from which we should start returning data. 90 days limit is recommended by Cofense. | Optional | 
 
 
 #### Context Output
@@ -702,7 +712,8 @@ Checks the reputation of an email address.
 | CofenseIntelligence.Email.Threats.malwareFamilySet.familyName | String | Family name of malware | 
 | CofenseIntelligence.Email.Threats.malwareFamilySet.description | String | Set of malware family | 
 | CofenseIntelligence.Email.Threats.threatType | String | This will only have one value for malware | 
-
+| Account.Email.Address | String | The email address of the account |
+| Account.Domain | String | The Domain of the account |
 
 #### Command Example
 ```!email email=email@email.com using=CofenseIntelligenceV2_instance_1_copy```
@@ -888,6 +899,9 @@ Checks the reputation of a URL.
 | CofenseIntelligence.URL.Threats.malwareFamilySet.familyName | String | Family name of malware | 
 | CofenseIntelligence.URL.Threats.malwareFamilySet.description | String | Set of malware family | 
 | CofenseIntelligence.URL.Threats.threatType | String | This will only have one value for malware | 
+| URL.Malicious.Description | String | For malicious URLs, the reason that the vendor made the decision. |
+| URL.Malicious.Vendor | String | For malicious URLs, the vendor that made the decision. |
+| URL.Data | String | The URL |
 
 
 #### Command Example
@@ -1025,9 +1039,8 @@ In the *ip* command:
 * *Cofense.IP.Cofense.ThreatIDs* - this output was replaced by *CofenseIntelligence.IP.Cofense.ThreatIDs*.
 
 In the *email* command:
-* *Account.Email.Address*
-* *Account.Email.Malicious.Vendor*
-* *Account.Email.Malicious.Description*
+* *Account.Email.Malicious.Vendor* - this output was replaced by *CofenseIntelligence.Email.Malicious.Vendor*.
+* *Account.Email.Malicious.Description* - this output was replaced by *CofenseIntelligence.Email.Malicious.Description*.
 * *Cofense.Email.Data* - this output was replaced by *CofenseIntelligence.Email.Data*.
 * *Cofense.Email.Malicious.Vendor* - this output was replaced by *CofenseIntelligence.Email.Malicious.Vendor*.
 * *Cofense.Email.Malicious.Description* - this output was replaced by *CofenseIntelligence.Email.Malicious.Description*.

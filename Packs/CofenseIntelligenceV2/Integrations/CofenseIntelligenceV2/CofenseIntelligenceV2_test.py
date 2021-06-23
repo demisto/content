@@ -121,9 +121,7 @@ def test_check_email_command(mocker):
     return_value = test_data.get('email_search_response')
     mocker.patch.object(client, 'threat_search_call', return_value=return_value)
     response = check_email_command(client, mock_args, mock_params)
-    mock_output = test_data.get('mock_output')
     mock_readable_outputs = test_data.get('mock_readable')
-    assert mock_output == str(response[0].outputs)
     assert mock_readable_outputs == response[0].readable_output
 
 

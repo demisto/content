@@ -104,6 +104,16 @@ script:
           description: Limit the number of days from wich we should start returning data. 90 days limit is recomended by Cofense.
       description: Checks the reputation of an IP address.
       outputs:
+        - contextPath: IP.ASN
+          description: Autonomous System name for the IP.
+        - contextPath: IP.GEO.Location
+          description: Location in format latitude, longitude.
+        - contextPath: IP.GEO.Country
+          description: Country of the IP.
+        - contextPath: IP.Address
+          description: IP address.
+        - contextPath: IP.MalwareFamily
+          description: The Associated malware family
         - contextPath: DBotScore.Indicator
           description: The indicator that was tested.
           type: string
@@ -492,6 +502,18 @@ script:
           required: false
           description: Limit the number of days from wich we should start returning data. 90 days limit is recomended by Cofense.
       outputs:
+        - contextPath: File.Extension
+          description: The Extension of the file
+        - contextPath: File.MD5
+          description: File MD5 hash
+        - contextPath: File.Malicious.Description
+          description: For malicious files, the reason that the vendor made the decision.
+        - contextPath: File.Malicious.Vendor
+          description: For malicious files, the vendor that made the decision.
+        - contextPath: File.MalwareFamily
+          description: The associated malware family
+        - contextPath: File.Name
+          description: The file name
         - contextPath: DBotScore.Indicator
           description: The indicator that was tested.
           type: string
@@ -711,6 +733,12 @@ script:
       - contextPath: DBotScore.Reliability
         description: The actual score.
         type: string
+      - contextPath: Account.Email.Address
+        description: The email address of the account
+        type: string
+      - contextPath: Account.Domain
+        description: The Domain of the account
+        type: string
       - contextPath: CofenseIntelligence.Email.Data
         description: 'The Email address'
         type: String
@@ -913,6 +941,15 @@ script:
           type: number
         - contextPath: DBotScore.Reliability
           description: The actual score.
+          type: string
+        - contextPath: URL.Data
+          description: the URL
+          type: string
+        - contextPath: URL.Malicious.Description
+          description: For malicious files, the reason that the vendor made the decision.
+          type: string
+        - contextPath: URL.Malicious.Vendor
+          description: For malicious files, the vendor that made the decision.
           type: string
         - contextPath: CofenseIntelligence.URL.Data
           description: 'The URL'
