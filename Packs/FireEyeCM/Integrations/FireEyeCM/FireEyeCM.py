@@ -338,7 +338,8 @@ def fetch_incidents(client: Client, last_run: dict, first_fetch: str, max_fetch:
     demisto.info(f'{INTEGRATION_NAME} executing fetch with: {str(next_run.get("time"))}')
     raw_response = client.fe_client.get_alerts_request(request_params={
         'start_time': to_fe_datetime_converter(next_run['time']),  # type: ignore
-        'info_level': info_level
+        'info_level': info_level,
+        'duration': '48_hours'
     })
     all_alerts = raw_response.get('alert')
 
