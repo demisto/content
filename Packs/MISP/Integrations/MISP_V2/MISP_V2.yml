@@ -135,6 +135,16 @@ script:
       - 'false'
       required: false
       secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Whether to return only the values that are not on the warninglists.
+      isArray: false
+      name: enforceWarninglist
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
     deprecated: false
     description: Search for events in MISP.
     execution: false
@@ -1985,6 +1995,16 @@ script:
       description: Whether to return only the attributes set with the "to_ids" flag.
       isArray: false
       name: to_ids
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Whether to return only the attributes that are not on the warninglists.
+      isArray: false
+      name: enforceWarninglist
       predefined:
       - 'true'
       - 'false'
