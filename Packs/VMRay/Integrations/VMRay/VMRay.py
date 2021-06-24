@@ -315,7 +315,7 @@ def upload_sample(file_id, params):
     suffix = 'sample/submit'
     file_obj = demisto.getFilePath(file_id)
     # Ignoring non ASCII
-    file_name = file_obj['name'].encode('ascii', 'ignore')
+    file_name = file_obj['name'].encode('ascii', 'ignore').replace('\\', '')
     file_path = file_obj['path']
     with open(file_path, 'rb') as f:
         files = {'sample_file': (file_name, f)}
