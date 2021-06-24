@@ -245,3 +245,5 @@ inputs:
 outputs: []
 fromversion: 6.2.0
 description: Extract indicators from report
+tests:
+ -  No tests

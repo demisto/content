@@ -119,6 +119,7 @@ tasks:
       id: bf4e648c-904b-4a63-819e-17f74264e5a9
       version: -1
       name: Is CVE
+      description: ''
       type: condition
       iscommand: false
       brand: ""
@@ -156,6 +157,7 @@ tasks:
       id: a4d84ca4-3066-4337-8b29-0ed8157a41e2
       version: -1
       name: Is IP
+      description: ''
       type: condition
       iscommand: false
       brand: ""
@@ -266,6 +268,7 @@ tasks:
       id: c6ddb4b8-6212-4cb3-8d45-1ed73e6aa5f5
       version: -1
       name: Is Email
+      description: ''
       type: condition
       iscommand: false
       brand: ""
@@ -347,6 +350,7 @@ tasks:
       id: e3d19e7a-f779-4cec-8e46-8ff79d50ca43
       version: -1
       name: Is Domain
+      description: ''
       type: condition
       iscommand: false
       brand: ""
@@ -428,6 +432,7 @@ tasks:
       id: a89c9310-e5e6-4327-8a15-1af48c51c7d4
       version: -1
       name: Is URL
+      description: ''
       type: condition
       iscommand: false
       brand: ""
@@ -722,3 +727,5 @@ inputs:
 outputs: []
 fromversion: 6.2.0
 description: Extract and enrich indicators
+tests:
+ -  No tests

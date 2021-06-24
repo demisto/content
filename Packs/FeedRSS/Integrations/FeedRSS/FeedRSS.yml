@@ -4,13 +4,11 @@ commonfields:
   version: -1
 configuration:
 - display: Feed URL
-  description: The RSS URL
   additionalinfo: RSS URL should be a url with 'feed' as suffix or prefix.
   name: server_url
   required: true
   type: 0
 - display: Article content max size in KB
-  description: The maximum size of article content in KB.
   additionalinfo: Default is 45KB. If you increase the limit substantialy, it may slow performance. You need to specify only a number. e.g, example 50.
   name: max_size
   defaultvalue: '45'

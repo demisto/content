@@ -23,7 +23,7 @@ class Client(BaseClient):
         self.tlp_color = tlp_color
         self.content_max_size = content_max_size * 1000
         self.parsed_indicators = []
-        self.feed_data = []
+        self.feed_data = None
         self.feed_response = self.request_feed_url()
 
     def request_feed_url(self):
@@ -31,6 +31,8 @@ class Client(BaseClient):
 
     def create_indicators_from_response(self):
         parsed_indicators: list = []
+        if not self.feed_data:
+            raise DemistoException(f"Could not parse feed data {self._base_url}")
 
         for indicator in reversed(self.feed_data.entries):
             publications = []
