@@ -13,6 +13,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "4"
@@ -29,8 +30,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "2":
     id: "2"
     taskid: 1d9ea673-b690-4c61-84a9-88bbf8d80a98
@@ -38,11 +37,12 @@ tasks:
     task:
       id: 1d9ea673-b690-4c61-84a9-88bbf8d80a98
       version: -1
-      name: Extract and create relationship
+      name: Extract and Create Relationships
       playbookName: Extract and Create Relationships
       type: playbook
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "3"
@@ -70,8 +70,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "3":
     id: "3"
     taskid: 60ead64b-99c4-4533-844e-2707f291babc
@@ -108,8 +106,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "4":
     id: "4"
     taskid: 66d8db03-d387-49e9-8eef-e0ef62f0a2b4
@@ -146,8 +142,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "5":
     id: "5"
     taskid: 3208ea82-1aa4-4d61-8d47-50eaf185354c
@@ -184,8 +178,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "6":
     id: "6"
     taskid: fc4676ba-8352-42e5-8adb-2d1a4358d225
@@ -197,6 +189,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {
@@ -210,8 +203,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {},
@@ -232,7 +223,7 @@ inputs:
   playbookInputQuery:
     query: type:Report -tags:processed -tags:in_process
     queryEntity: indicators
-    results: null
+    results:
     daterange:
       fromdate: 0001-01-01T00:00:00Z
       todate: 0001-01-01T00:00:00Z
@@ -240,8 +231,8 @@ inputs:
         by: ""
         byto: ""
         byfrom: ""
-        tovalue: null
-        fromvalue: null
+        tovalue:
+        fromvalue:
         field: ""
       fromdatelicenseval: 0001-01-01T00:00:00Z
     runFromLastJobTime: false
@@ -250,7 +241,7 @@ inputs:
     simple: processed
   required: false
   description: ""
-  playbookInputQuery: null
+  playbookInputQuery:
 outputs: []
 fromversion: 6.2.0
 description: Extract indicators from report
