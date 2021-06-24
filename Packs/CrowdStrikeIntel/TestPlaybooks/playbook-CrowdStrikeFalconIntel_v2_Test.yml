@@ -13,7 +13,6 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "7"
@@ -30,6 +29,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "1":
     id: "1"
     taskid: 97dd3820-7ebc-4d7e-85a6-96f108e5e698
@@ -48,24 +49,8 @@ tasks:
       '#none#':
       - "2"
     scriptarguments:
-      actors: {}
-      created_date: {}
-      description: {}
       limit:
         simple: "1"
-      max_last_modified_date: {}
-      motivations: {}
-      name: {}
-      offset: {}
-      q: {}
-      query: {}
-      slug: {}
-      sort: {}
-      sub_type: {}
-      tags: {}
-      target_countries: {}
-      target_industries: {}
-      type: {}
     separatecontext: false
     view: |-
       {
@@ -79,6 +64,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "2":
     id: "2"
     taskid: db4d6881-d3d3-4a48-8916-c649604df58d
@@ -137,6 +124,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "3":
     id: "3"
     taskid: 2af6ed70-8105-45fe-8c7b-a2a3c7a2fb8f
@@ -154,23 +143,8 @@ tasks:
       '#none#':
       - "4"
     scriptarguments:
-      created_date: {}
-      description: {}
       limit:
         simple: "1"
-      max_last_activity_date: {}
-      max_last_modified_date: {}
-      min_last_activity_date: {}
-      motivations: {}
-      name: {}
-      offset: {}
-      origins: {}
-      q: {}
-      query: {}
-      slug: {}
-      sort: {}
-      tagret_industries: {}
-      target_countries: {}
     separatecontext: false
     view: |-
       {
@@ -184,6 +158,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "4":
     id: "4"
     taskid: a75c1484-dfaa-443c-8cde-4956276f23a7
@@ -242,6 +218,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "5":
     id: "5"
     taskid: 331b608f-0c4e-4eea-8f9b-c808aac49ffd
@@ -259,16 +237,8 @@ tasks:
       '#none#':
       - "6"
     scriptarguments:
-      id: {}
-      indicator: {}
-      last_updated: {}
       limit:
         simple: "1"
-      malicious_confidence: {}
-      offset: {}
-      query: {}
-      sort: {}
-      type: {}
     separatecontext: false
     view: |-
       {
@@ -282,6 +252,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "6":
     id: "6"
     taskid: 8dbd1ec1-db5f-4c7f-8245-89e739069917
@@ -339,6 +311,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "7":
     id: "7"
     taskid: 29bdb3c7-045c-4cca-8218-7d981a9b3f2b
@@ -358,10 +332,6 @@ tasks:
     scriptarguments:
       all:
         simple: "yes"
-      index: {}
-      key: {}
-      keysToKeep: {}
-      subplaybook: {}
     separatecontext: false
     view: |-
       {
@@ -375,6 +345,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "8":
     id: "8"
     taskid: 88f361c8-18a9-448a-81b8-f2bc93ef6cf4
@@ -394,10 +366,6 @@ tasks:
     scriptarguments:
       all:
         simple: "yes"
-      index: {}
-      key: {}
-      keysToKeep: {}
-      subplaybook: {}
     separatecontext: false
     view: |-
       {
@@ -411,12 +379,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    taskid: cb771458-88da-4759-861c-3765fafe833a
+    taskid: 41cc3066-0fb7-4408-8f54-f747b7b47668
     type: regular
     task:
-      id: cb771458-88da-4759-861c-3765fafe833a
+      id: 41cc3066-0fb7-4408-8f54-f747b7b47668
       version: -1
       name: Get IP
       description: Search known indicators based on the given parameters.
@@ -428,15 +398,12 @@ tasks:
       '#none#':
       - "11"
     scriptarguments:
-      id: {}
-      indicator: {}
-      last_updated: {}
       limit:
         simple: "1"
-      malicious_confidence: {}
-      offset: {}
-      query: {}
-      sort: {}
+      retry-count:
+        simple: "3"
+      retry-interval:
+        simple: "60"
       type:
         simple: ip_address
     separatecontext: false
@@ -452,6 +419,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "11":
     id: "11"
     taskid: 1e7ff036-a4d7-4d61-8022-f0b862f9d80d
@@ -469,10 +438,8 @@ tasks:
       '#none#':
       - "12"
     scriptarguments:
-      append: {}
       key:
         simple: IP_Address
-      stringify: {}
       value:
         complex:
           root: IP
@@ -490,6 +457,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "12":
     id: "12"
     taskid: 713b0f5e-d096-4efd-82c2-dc879f32c304
@@ -507,14 +476,10 @@ tasks:
       '#none#':
       - "13"
     scriptarguments:
-      all: {}
-      index: {}
       key:
         complex:
           root: FalconIntel
           accessor: Indicator
-      keysToKeep: {}
-      subplaybook: {}
     separatecontext: false
     view: |-
       {
@@ -528,6 +493,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "13":
     id: "13"
     taskid: d81712a1-180c-40ff-83b7-79a7637c009a
@@ -560,6 +527,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "14":
     id: "14"
     taskid: dc49e6ca-ee1e-4fd3-8069-4c68fffaaae7
@@ -611,6 +580,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "15":
     id: "15"
     taskid: 6fca9b10-2100-48e2-8aed-f212c9595c28
@@ -622,7 +593,6 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ''
     separatecontext: false
     view: |-
       {
@@ -636,6 +606,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "16":
     id: "16"
     taskid: 5bac1f2a-6418-4841-8934-a3b23f48efe1
@@ -653,12 +625,8 @@ tasks:
       '#none#':
       - "17"
     scriptarguments:
-      all: {}
-      index: {}
       key:
         simple: IP
-      keysToKeep: {}
-      subplaybook: {}
     separatecontext: false
     view: |-
       {
@@ -672,6 +640,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "17":
     id: "17"
     taskid: 75272814-a734-491b-8e61-057947d45091
@@ -689,14 +659,8 @@ tasks:
       '#none#':
       - "18"
     scriptarguments:
-      fullResponse: {}
       ip:
         simple: 185.203.116.58,2.2.2.2
-      long: {}
-      retries: {}
-      sampleSize: {}
-      threshold: {}
-      wait: {}
     separatecontext: false
     view: |-
       {
@@ -710,6 +674,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "18":
     id: "18"
     taskid: 7a63140b-febc-4c98-86d3-c63dbbac6607
@@ -756,6 +722,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "19":
     id: "19"
     taskid: ef17f2ee-0623-4f96-872e-88d4d3d45b80
@@ -773,14 +741,8 @@ tasks:
       '#none#':
       - "22"
     scriptarguments:
-      long: {}
-      retries: {}
-      sampleSize: {}
-      submitWait: {}
-      threshold: {}
       url:
         simple: https://withifceale.top/treusparq.php,http://www.demisto.com
-      wait: {}
     separatecontext: false
     view: |-
       {
@@ -794,6 +756,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "20":
     id: "20"
     taskid: 087b357e-111e-4a9a-8670-ec3db792e342
@@ -811,12 +775,8 @@ tasks:
       '#none#':
       - "19"
     scriptarguments:
-      all: {}
-      index: {}
       key:
         simple: URL
-      keysToKeep: {}
-      subplaybook: {}
     separatecontext: false
     view: |-
       {
@@ -830,6 +790,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "21":
     id: "21"
     taskid: 2d5869c7-c958-4bf5-84bf-54724436efbd
@@ -868,6 +830,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "22":
     id: "22"
     taskid: 6634fa66-85ef-4f7e-82c0-8b7b353b043a
@@ -909,6 +873,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "23":
     id: "23"
     taskid: d94e8dd5-d6ea-41ed-862c-ff8c6d57e594
@@ -926,12 +892,8 @@ tasks:
       '#none#':
       - "24"
     scriptarguments:
-      all: {}
-      index: {}
       key:
         simple: Domain
-      keysToKeep: {}
-      subplaybook: {}
     separatecontext: false
     view: |-
       {
@@ -945,6 +907,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "24":
     id: "24"
     taskid: 31c2b2d4-71a1-479c-8203-bc323f4bda28
@@ -964,12 +928,6 @@ tasks:
     scriptarguments:
       domain:
         simple: tw.com,xeemoquo.top
-      fullResponse: {}
-      long: {}
-      retries: {}
-      sampleSize: {}
-      threshold: {}
-      wait: {}
     separatecontext: false
     view: |-
       {
@@ -983,6 +941,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "25":
     id: "25"
     taskid: ff921a50-d02f-4d4d-82f3-4988e075f030
@@ -1024,6 +984,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "26":
     id: "26"
     taskid: c324804a-bfbd-43a0-8550-d21db91bae8c
@@ -1062,6 +1024,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "27":
     id: "27"
     taskid: 3349f8b2-7041-4c4a-8677-1b1aabe36c9a
@@ -1081,10 +1045,6 @@ tasks:
     scriptarguments:
       file:
         simple: 369c8fc6532ba547d7ef5985bb5e880a,c87172df108b5a15e693285c8b58f01c271e1e768e7e41b9da2f8b22cd784638
-      long: {}
-      retries: {}
-      threshold: {}
-      wait: {}
     separatecontext: false
     view: |-
       {
@@ -1098,6 +1058,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "28":
     id: "28"
     taskid: fd2694b2-d3c5-43f7-862b-ecd22561079a
@@ -1115,12 +1077,8 @@ tasks:
       '#none#':
       - "27"
     scriptarguments:
-      all: {}
-      index: {}
       key:
         simple: File
-      keysToKeep: {}
-      subplaybook: {}
     separatecontext: false
     view: |-
       {
@@ -1134,6 +1092,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "29":
     id: "29"
     taskid: 0cfdc214-d781-4a4e-8d66-a01ddbb81707
@@ -1180,6 +1140,9 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+system: true
 view: |-
   {
     "linkLabelsPosition": {},
