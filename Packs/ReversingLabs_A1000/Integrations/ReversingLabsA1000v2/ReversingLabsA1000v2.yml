@@ -31,7 +31,7 @@ configuration:
   - F - Reliability cannot be judged
   required: false
   type: 15
-description: ReversingLabs A1000 Malware Analysis Platform
+description: ReversingLabs A1000 advanced Malware Analysis Platform.
 display: ReversingLabs A1000 v2
 name: ReversingLabs A1000 v2
 script:
