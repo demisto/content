@@ -221,7 +221,7 @@ references:
         git config diff.renameLimit 6000
 
         if [ -n "${DEMISTO_SDK_NIGHTLY}" ]; then
-          pip3 install git+https://github.com/demisto/demisto-sdk@eli/covert_pytest_warninngs_to_errors
+          pip3 install git+https://github.com/demisto/demisto-sdk@eli/convert_pytest_warninngs_to_errors
         fi
 
         echo "========== Build Parameters =========="
