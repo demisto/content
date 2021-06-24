@@ -252,3 +252,5 @@ inputs:
   description: ""
   playbookInputQuery: null
 outputs: []
+fromversion: 6.2.0
+description: Extract indicators from report

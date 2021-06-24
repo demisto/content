@@ -73,6 +73,7 @@ FEED_DATA = [({'bozo': False,
                 'source': 'test.com',
                 'title': 'Test Article, with comma'
             }],
-            'description': 'test description',
+            'rawcontent': 'test description',
             'tags': [],
+            'description': 'this is summary'
         }}])]

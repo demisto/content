@@ -24,13 +24,10 @@ class Client(BaseClient):
         self.content_max_size = content_max_size * 1000
         self.parsed_indicators = []
         self.feed_data = []
+        self.feed_response = self.request_feed_url()
 
-    def check_if_url_is_feed(self):
-        res = self._http_request(method='GET', resp_type='response')
-        if 'html' in res.headers['content-type']:
-            return None
-        else:
-            return res
+    def request_feed_url(self):
+        return self._http_request(method='GET', resp_type='response')
 
     def create_indicators_from_response(self):
         parsed_indicators: list = []
@@ -84,8 +81,8 @@ class Client(BaseClient):
             report_content = report_content.encode('utf-8')[:self.content_max_size].decode('utf-8')
         return report_content
 
-    def fetch_indicators(self, response):
-        self.feed_data = feedparser.parse(response.text)
+    def fetch_indicators(self):
+        self.feed_data = feedparser.parse(self.feed_response.text)
         self.parsed_indicators = self.create_indicators_from_response()
 
 
@@ -116,20 +113,20 @@ def main():
                         feed_tags=argToList(params.get('feedTags')),
                         tlp_color=params.get('tlp_color'),
                         content_max_size=int(params.get('max_size', '45')))
-        response = client.check_if_url_is_feed()
+
         if command == 'test-module':
-            if response:
-                return_results("ok")
-            else:
+            if 'html' in client.feed_response.headers['content-type']:
                 raise DemistoException(f'{server_url} is not rss feed url. Try look for a url containing \'feed\' '
                                        f'prefix or suffix.')
+            else:
+                return_results("ok")
 
         elif command == 'rss-get-indicators':
-            client.fetch_indicators(response)
+            client.fetch_indicators()
             return_results(get_indicators(client, demisto.args()))
 
         elif command == 'fetch-indicators':
-            client.fetch_indicators(response)
+            client.fetch_indicators()
             for iter_ in batch(client.parsed_indicators, batch_size=2000):
                 demisto.createIndicators(iter_)
         else:

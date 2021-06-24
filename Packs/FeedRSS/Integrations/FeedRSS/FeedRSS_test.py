@@ -9,7 +9,7 @@ def mock_client(mocker, dict_to_parse: dict, content_max_size: int = 45) -> Clie
     feed_content_res = Response()
     type(feed_content_res).text = mocker.PropertyMock(return_value='text_to_parse')
 
-    mocker.patch.object(Client, 'feed_content', return_value=feed_content_res)
+    mocker.patch.object(Client, 'request_feed_url', return_value=feed_content_res)
     mocker.patch.object(feedparser, 'parse', return_value=feedparser.util.FeedParserDict(dict_to_parse))
 
     client = Client(server_url='test.com',
@@ -38,7 +38,7 @@ def test_parsed_indicators_from_response(mocker, parse_response, expected_output
 
     mocker.patch.object(Client, 'get_url_content', return_value='test description')
 
-    client.create_indicators_from_response()
+    client.fetch_indicators()
     assert client.parsed_indicators == expected_output
 
 
