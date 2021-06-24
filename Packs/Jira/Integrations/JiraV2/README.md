@@ -217,6 +217,9 @@ Creates a new issue in Jira.
 | reporter_id | The account ID of the reporter. Use the jira-get-id-by-attribute command to get the user's account ID. | Optional | 
 | parentIssueKey | The parent issue key (if you're creating a sub-task). | Optional | 
 | parentIssueId | The parent issue ID (if you're creating a sub-task). | Optional | 
+| environment | A text field for describing the environment in which the issue occurred (for example - environment="IE9 on Windows 7"). | Optional | 
+| security | The security level name of the issue, (for example - security="Anyone"). | Optional | 
+| components | The components names of the issue, (for example - components="component1,component2"). | Optional | 
 
 
 #### Context Output
@@ -373,6 +376,9 @@ Modifies an issue in Jira.
 | assignee_id | The account ID of the assignee. Use the jira-get-id-by-attribute command to get the user's account ID. | Optional | 
 | status | The issue status. | Optional | 
 | transition | The issue transition. | Optional | 
+| environment | A text field for describing the environment in which the issue occurred (for example - environment="IE9 on Windows 7"). | Optional | 
+| security | The security level name of the issue, (for example - security="Anyone"). | Optional | 
+| components | The components names of the issue, (for example - components="component1,component2"). | Optional | 
 
 
 #### Context Output
