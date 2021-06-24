@@ -530,6 +530,25 @@ script:
     - contextPath: GitLab.Pipeline.web_url
       description: Web URL of the pipeline.
       type: String
+    - contextPath: GitLab.Pipeline.user.name
+      description: Name of user who triggered pipeline.
+      type: String
+    - contextPath: GitLab.Pipeline.user.username
+      description: Username who triggered pipeline.
+      type: String
+    - contextPath: GitLab.Pipeline.user.id
+      description: ID of user who triggered pipeline.
+      type: Number
+    - contextPath: GitLab.Pipeline.user.state
+      description: State of user who triggered pipeline.
+      type: String
+    - contextPath: GitLab.Pipeline.user.avatar_url
+      description: Avatar URL of user who trigerred pipeline.
+      type: String
+    - contextPath: GitLab.Pipeline.user.web_url
+      description: Web URL of the user who triggered pipeline.
+      type: String
+
   - arguments:
     - default: false
       description: Project ID to retrieve jobs details from.

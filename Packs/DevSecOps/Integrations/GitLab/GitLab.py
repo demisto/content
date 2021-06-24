@@ -7,7 +7,7 @@ JOB_FIELDS_TO_EXTRACT = {'created_at', 'started_at', 'finished_at', 'duration', 
 PIPELINE_SCHEDULE_FIELDS_TO_EXTRACT = {'id', 'description', 'ref', 'next_run_at', 'active', 'created_at', 'updated_at',
                                        'last_pipeline'}
 PIPELINE_FIELDS_TO_EXTRACT = {'id', 'project_id', 'status', 'ref', 'sha', 'created_at', 'updated_at', 'started_at',
-                              'finished_at', 'duration', 'web_url'}
+                              'finished_at', 'duration', 'web_url', 'user'}
 
 
 class Client(BaseClient):

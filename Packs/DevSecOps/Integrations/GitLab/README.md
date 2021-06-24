@@ -916,8 +916,6 @@ Get details of pipeline schedules.
 | --- | --- | --- |
 | project_id | Project ID to retrieve pipeline schedules from. | Required | 
 | pipeline_schedule_id | ID of specific pipeline schedule to retrieve its details. | Optional |
-| ref | Ref name of the pipelines, e.g 'master'. | Optional |
-| status | Retrieve pipelines whom status matches the given status. Possible values are: waiting_for_resource, preparing, pending, running, success, failed, canceled, skipped, manual, scheduled. | Optional |
 
 #### Context Output
 
@@ -993,6 +991,9 @@ Get details of pipelines.
 | --- | --- | --- |
 | project_id | Project ID to retrieve pipelines from. | Required | 
 | pipeline_id | ID of specific pipeline to retrieve its details. | Optional | 
+| ref | Ref name of the pipelines, e.g 'master'. | Optional |
+| status | Retrieve pipelines whom status matches the given status. Possible values are: waiting_for_resource, preparing, pending, running, success, failed, canceled, skipped, manual, scheduled. | Optional |
+
 
 
 #### Context Output
@@ -1010,6 +1011,12 @@ Get details of pipelines.
 | GitLab.Pipeline.finished_at | Date | Time when pipeline was finished. | 
 | GitLab.Pipeline.duration | Number | Duration of the pipeline. | 
 | GitLab.Pipeline.web_url | String | Web URL of the pipeline. | 
+| GitLab.Pipeline.user.name | String | Name of user who triggered pipeline. | 
+| GitLab.Pipeline.user.username | String | Username who triggered pipeline. | 
+| GitLab.Pipeline.user.id | String | ID of user who triggered pipeline. | 
+| GitLab.Pipeline.user.state | String | State of user who triggered pipeline. | 
+| GitLab.Pipeline.user.avatar_url | String | Avatar URL of user who trigerred pipeline. | 
+| GitLab.Pipeline.user.web_url | String | Web URL of the user who triggered pipeline. | 
 
 
 #### Command Example
