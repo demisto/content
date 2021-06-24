@@ -801,45 +801,48 @@ def move_client_to_group_command(token):
         })
 
 
-'''COMMANDS SWITCH'''
+def main():
+    current_command = demisto.command()
+    try:
+        '''
+        Before EVERY command the following tow lines are performed (do_auth and get_token_from_response)
+        '''
+        resp = do_auth(server=demisto.getParam('server'), crads=demisto.getParam(
+            'authentication'), insecure=demisto.getParam('insecure'), domain=demisto.getParam('domain'))
+        token = get_token_from_response(resp)
+        if current_command == 'test-module':
+            # This is the call made when pressing the integration test button.
+            if token:
+                demisto.results('ok')
+        if current_command == 'sep-system-info':
+            system_info_command(token)
+        if current_command == 'sep-client-content':
+            client_content_command(token)
+        if current_command == 'sep-endpoints-info':
+            endpoints_info_command(token)
+        if current_command == 'sep-groups-info':
+            groups_info_command(token)
+        if current_command == 'sep-command-status':
+            command_status(token)
+        if current_command == 'sep-list-policies':
+            list_policies_command(token)
+        if current_command == 'sep-assign-policy':
+            assign_policie_command(token)
+        if current_command == 'sep-list-locations':
+            list_locations_command(token)
+        if current_command == 'sep-endpoint-quarantine':
+            endpoint_quarantine_command(token)
+        if current_command == 'sep-scan-endpoint':
+            scan_endpoint_command(token)
+        if current_command == 'sep-update-endpoint-content':
+            update_endpoint_content_command(token)
+        if current_command == 'sep-move-client-to-group':
+            move_client_to_group_command(token)
+        if current_command == 'sep-identify-old-clients':
+            old_clients_command(token)
+    except Exception as ex:
+        return_error('Cannot perform the command: {}. Error: {}'.format(current_command, ex), ex)
 
-current_command = demisto.command()
-try:
-    '''
-    Before EVERY command the following tow lines are performed (do_auth and get_token_from_response)
-    '''
-    resp = do_auth(server=demisto.getParam('server'), crads=demisto.getParam(
-        'authentication'), insecure=demisto.getParam('insecure'), domain=demisto.getParam('domain'))
-    token = get_token_from_response(resp)
-    if current_command == 'test-module':
-        # This is the call made when pressing the integration test button.
-        if token:
-            demisto.results('ok')
-    if current_command == 'sep-system-info':
-        system_info_command(token)
-    if current_command == 'sep-client-content':
-        client_content_command(token)
-    if current_command == 'sep-endpoints-info':
-        endpoints_info_command(token)
-    if current_command == 'sep-groups-info':
-        groups_info_command(token)
-    if current_command == 'sep-command-status':
-        command_status(token)
-    if current_command == 'sep-list-policies':
-        list_policies_command(token)
-    if current_command == 'sep-assign-policy':
-        assign_policie_command(token)
-    if current_command == 'sep-list-locations':
-        list_locations_command(token)
-    if current_command == 'sep-endpoint-quarantine':
-        endpoint_quarantine_command(token)
-    if current_command == 'sep-scan-endpoint':
-        scan_endpoint_command(token)
-    if current_command == 'sep-update-endpoint-content':
-        update_endpoint_content_command(token)
-    if current_command == 'sep-move-client-to-group':
-        move_client_to_group_command(token)
-    if current_command == 'sep-identify-old-clients':
-        old_clients_command(token)
-except Exception as ex:
-    return_error('Cannot perform the command: {}. Error: {}'.format(current_command, ex), ex)
+
+if __name__ in ('__main__', '__builtin__', 'builtins'):
+    main()
