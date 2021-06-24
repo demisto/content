@@ -2979,7 +2979,7 @@ def test_list_rules_command(client):
     with open("./TestData/list_rules_ec.json", "r") as f:
         dummy_ec = json.load(f)
 
-    with open("./TestData/list_rules_hr.md", "r") as f:
+    with open("./TestData/list_rules_hr.txt", "r") as f:
         dummy_hr = f.read()
 
     mock_response = (
