@@ -18,6 +18,7 @@ REHIRED_EMPLOYEE_FIELD = 'rehiredemployee'
 HIRE_DATE_FIELD = 'hiredate'
 AD_ACCOUNT_STATUS_FIELD = 'adaccountstatus'
 OLD_USER_DATA_FIELD = 'olduserdata'
+OLD_USER_EMAIL_FIELD = 'oldemail'
 SOURCE_PRIORITY_FIELD = 'sourcepriority'
 USER_PROFILE_INC_FIELD = 'UserProfile'
 USER_PROFILE_INDICATOR = 'User Profile'
@@ -370,6 +371,8 @@ def get_event_details(entry, workday_user, demisto_user, days_before_hire_to_syn
                                                            employee_id_to_user_profile)
         if old_user_data:
             workday_user[OLD_USER_DATA_FIELD] = old_user_data
+            workday_user[OLD_USER_EMAIL_FIELD] = old_user_data.get(EMAIL_ADDRESS_FIELD)
+
 
     else:
         demisto.debug(f'Could not detect changes in report for user with email address {user_email} - skipping.')
