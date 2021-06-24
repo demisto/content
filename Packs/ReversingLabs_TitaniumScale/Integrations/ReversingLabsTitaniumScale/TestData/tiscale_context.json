@@ -74,7 +74,7 @@
                 }
             }
         ],
-        "DBotScore": [
+        "DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor && val.Type == obj.Type)": [
             {
                 "Indicator": "848899ad7d2afabfb64806cc9ef8d7d1a3f77641",
                 "Type": "file",
