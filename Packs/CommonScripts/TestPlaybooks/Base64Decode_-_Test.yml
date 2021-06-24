@@ -87,7 +87,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: T�st
+              simple: T\x80st
     view: |-
       {
         "position": {

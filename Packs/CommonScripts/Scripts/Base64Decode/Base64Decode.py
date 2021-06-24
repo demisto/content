@@ -2,12 +2,11 @@ import demistomock as demisto
 from CommonServerPython import *
 
 import base64
-# trigger test
 
 
 def decode(value):
     decoded_bytes = base64.urlsafe_b64decode(str(value))
-    res = str(decoded_bytes)
+    res = decoded_bytes.encode(errors='ignore')
 
     outputs = {
         "Base64":
