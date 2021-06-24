@@ -13,16 +13,15 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
-      - "1"
+      - "19"
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 440,
-          "y": -560
+          "y": -700
         }
       }
     note: false
@@ -30,12 +29,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: 598f6ea4-7c09-45d3-8a79-c9c9951c9610
+    taskid: 6cba394d-45e0-4348-8aa2-07b5983a2333
     type: regular
     task:
-      id: 598f6ea4-7c09-45d3-8a79-c9c9951c9610
+      id: 6cba394d-45e0-4348-8aa2-07b5983a2333
       version: -1
       name: Extract indicators from report description
       description: commands.local.cmd.extract.indicators
@@ -52,7 +53,7 @@ tasks:
       - "12"
     scriptarguments:
       text:
-        simple: ${inputs.description}
+        simple: ${inputs.content}
     reputationcalc: 2
     separatecontext: false
     view: |-
@@ -67,6 +68,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "2":
     id: "2"
     taskid: 058b165c-26c1-4246-8504-6d96aeae8ce1
@@ -111,6 +114,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "3":
     id: "3"
     taskid: bf4e648c-904b-4a63-819e-17f74264e5a9
@@ -148,6 +153,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "4":
     id: "4"
     taskid: a4d84ca4-3066-4337-8b29-0ed8157a41e2
@@ -185,6 +192,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "5":
     id: "5"
     taskid: 2d997bc9-f41b-49d0-8c17-a634584edc06
@@ -229,6 +238,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "6":
     id: "6"
     taskid: 0b1fea4b-1e9c-4187-814a-fcd342572faa
@@ -258,6 +269,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "7":
     id: "7"
     taskid: c6ddb4b8-6212-4cb3-8d45-1ed73e6aa5f5
@@ -295,6 +308,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "8":
     id: "8"
     taskid: c2839c76-c904-42c6-8108-6d9b83d9f39f
@@ -339,6 +354,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "10":
     id: "10"
     taskid: e3d19e7a-f779-4cec-8e46-8ff79d50ca43
@@ -376,6 +393,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "11":
     id: "11"
     taskid: 4e0b511e-5de1-427c-807e-990dc9c6121c
@@ -420,6 +439,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "12":
     id: "12"
     taskid: a89c9310-e5e6-4327-8a15-1af48c51c7d4
@@ -457,6 +478,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "13":
     id: "13"
     taskid: 38a869e6-d70a-4325-804b-55cbb51c8f4e
@@ -501,6 +524,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "14":
     id: "14"
     taskid: 51fa53e7-b2e3-4119-816d-b1110b8cb3ef
@@ -533,6 +558,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "15":
     id: "15"
     taskid: 43cb67df-6a91-47cd-8bfd-37539d256df6
@@ -565,6 +592,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "16":
     id: "16"
     taskid: 9a4447ca-ec93-4303-84c5-52901dbc540a
@@ -597,6 +626,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "17":
     id: "17"
     taskid: c0bdc46a-6705-4d19-84fc-abcd8800ad4d
@@ -629,6 +660,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "18":
     id: "18"
     taskid: 46295125-4d05-48ea-82ef-a4e1afb0744d
@@ -661,33 +694,66 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "19":
+    id: "19"
+    taskid: ed05b058-a59a-4b25-8202-e5496a421344
+    type: regular
+    task:
+      id: ed05b058-a59a-4b25-8202-e5496a421344
+      version: -1
+      name: Delete context subplaybook
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      all:
+        simple: "yes"
+      subplaybook:
+        simple: "yes"
+    reputationcalc: 2
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 440,
+          "y": -580
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1905,
+        "height": 2045,
         "width": 2200,
         "x": -490,
-        "y": -560
+        "y": -700
       }
     }
   }
 inputs:
-- key: description
+- key: content
   value: {}
   required: false
   description: ""
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: report_name
   value: {}
   required: false
   description: ""
-  playbookInputQuery:
+  playbookInputQuery: null
 outputs: []
-fromversion: 6.2.0
-description: Get a report as an input, extract indicators from the report description,
-  run enrichIndicators script and create relationships between the extracted indicators
-  and the report
-tests:
-- No tests (auto formatted)

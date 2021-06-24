@@ -25,10 +25,8 @@ class Client(BaseClient):
         self.parsed_indicators = []
         self.feed_data = []
 
-
-    @staticmethod
-    def check_if_url_is_feed(feed_url):
-        res = super()._http_request(method='GET', full_url=feed_url, resp_type='response')
+    def check_if_url_is_feed(self):
+        res = self._http_request(method='GET', resp_type='response')
         if 'html' in res.headers['content-type']:
             return None
         else:
@@ -56,8 +54,9 @@ class Client(BaseClient):
                         # relationship includes that as a list of titles.
                         "rawJSON": {'value': indicator, 'type': 'Report', "firstseenbysource": published_iso},
                         "fields": {
+                            'rawcontent': text,
                             'publications': publications,
-                            'description': text,
+                            'description': indicator.get('summary'),
                             'tags': self.feed_tags,
                         }
                     }
@@ -66,7 +65,7 @@ class Client(BaseClient):
 
                 parsed_indicators.append(indicator_obj)
 
-        self.parsed_indicators = parsed_indicators
+        return parsed_indicators
 
     def get_url_content(self, link: str):
         """Returns the link content only from the relevant tags (listed on HTML_TAGS). For better performance - if the
@@ -85,10 +84,9 @@ class Client(BaseClient):
             report_content = report_content.encode('utf-8')[:self.content_max_size].decode('utf-8')
         return report_content
 
-    def fetch_indicators(self):
-        feed_content_response = self._http_request(method='GET', resp_type='response')
-        self.feed_data = feedparser.parse(feed_content_response.text)
-        self.parsed_indicators = []
+    def fetch_indicators(self, response):
+        self.feed_data = feedparser.parse(response.text)
+        self.parsed_indicators = self.create_indicators_from_response()
 
 
 def get_indicators(client: Client, args: dict) -> CommandResults:
@@ -118,15 +116,20 @@ def main():
                         feed_tags=argToList(params.get('feedTags')),
                         tlp_color=params.get('tlp_color'),
                         content_max_size=int(params.get('max_size', '45')))
-        client.create_indicators_from_response()
+        response = client.check_if_url_is_feed()
         if command == 'test-module':
-            if Client.check_if_url_is_feed():
+            if response:
                 return_results("ok")
             else:
-                raise DemistoException(f'{server_url} is not rss feed url. Try look for a url containing \'feed\' prefix or suffix.')
+                raise DemistoException(f'{server_url} is not rss feed url. Try look for a url containing \'feed\' '
+                                       f'prefix or suffix.')
+
         elif command == 'rss-get-indicators':
+            client.fetch_indicators(response)
             return_results(get_indicators(client, demisto.args()))
+
         elif command == 'fetch-indicators':
+            client.fetch_indicators(response)
             for iter_ in batch(client.parsed_indicators, batch_size=2000):
                 demisto.createIndicators(iter_)
         else:

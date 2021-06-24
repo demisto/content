@@ -1,6 +1,5 @@
-id: 69e94029-944d-4652-86f5-652b2404a0f6
-version: 26
-vcShouldKeepItemLegacyProdMachine: false
+id: RSS Create Indicators From Report
+version: -1
 name: RSS Create Indicators From Report
 starttaskid: "0"
 tasks:
@@ -34,10 +33,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: 489c7e3e-57c5-43e3-8da4-714030e0b498
+    taskid: 1d9ea673-b690-4c61-84a9-88bbf8d80a98
     type: playbook
     task:
-      id: 489c7e3e-57c5-43e3-8da4-714030e0b498
+      id: 1d9ea673-b690-4c61-84a9-88bbf8d80a98
       version: -1
       name: Extract and create relationship
       playbookName: Extract and Create Relationships
@@ -48,8 +47,8 @@ tasks:
       '#none#':
       - "3"
     scriptarguments:
-      description:
-        simple: ${playbookQuery.CustomFields.description}
+      content:
+        simple: ${playbookQuery.CustomFields.rawcontent}
       report_name:
         simple: ${playbookQuery.value}
     separatecontext: true
@@ -231,7 +230,7 @@ inputs:
   required: false
   description: ""
   playbookInputQuery:
-    query: type:Report -tags:processed -tags:in_process tags:test
+    query: sourceInstances:"RSS Feed_instance_krebsonsecurity" tags:tal12
     queryEntity: indicators
     results: null
     daterange:
@@ -245,7 +244,7 @@ inputs:
         fromvalue: null
         field: ""
       fromdatelicenseval: 0001-01-01T00:00:00Z
-    runFromLastJobTime: true
+    runFromLastJobTime: false
 - key: tag
   value:
     simple: processed

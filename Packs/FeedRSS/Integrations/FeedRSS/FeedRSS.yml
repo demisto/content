@@ -5,6 +5,7 @@ commonfields:
 configuration:
 - display: Feed URL
   description: The RSS URL
+  additionalinfo: RSS URL should be a url with 'feed' as suffix or prefix.
   name: server_url
   required: true
   type: 0
@@ -97,7 +98,7 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: RSS Feed reader that can ingest new items as Reports indicators.
+description: RSS Feed reader can ingest new items as Report indicators.
 display: RSS Feed
 name: RSS Feed
 script:
