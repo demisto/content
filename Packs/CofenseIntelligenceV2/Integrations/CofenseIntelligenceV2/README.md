@@ -901,7 +901,7 @@ Checks the reputation of a URL.
 | CofenseIntelligence.URL.Threats.threatType | String | This will only have one value for malware | 
 | URL.Malicious.Description | String | For malicious URLs, the reason that the vendor made the decision. |
 | URL.Malicious.Vendor | String | For malicious URLs, the vendor that made the decision. |
-| URL.Data | String | The URL |
+| URL.Data | String | The URL. |
 
 
 #### Command Example
