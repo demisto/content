@@ -230,7 +230,7 @@ inputs:
   required: false
   description: ""
   playbookInputQuery:
-    query: sourceInstances:"RSS Feed_instance_krebsonsecurity" tags:tal12
+    query: type:Report -tags:processed -tags:in_process
     queryEntity: indicators
     results: null
     daterange:
