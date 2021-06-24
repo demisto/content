@@ -190,7 +190,7 @@ def enforce_look_behind_time(last_run_time, now, look_behind_time):
     return last_run_time
 
 
-def get_fetch_start_times(dem_params, service, last_run, occurence_time_look_behind):
+def get_fetch_start_times(dem_params, service, last_run_time, occurence_time_look_behind):
     current_time_for_fetch = datetime.utcnow()
     if demisto.get(dem_params, 'timezone'):
         timezone = dem_params['timezone']
@@ -202,13 +202,13 @@ def get_fetch_start_times(dem_params, service, last_run, occurence_time_look_beh
         current_time_in_splunk = datetime.strptime(now, SPLUNK_TIME_FORMAT)
         current_time_for_fetch = current_time_in_splunk
 
-    if len(last_run) == 0:
+    if not last_run_time:
         fetch_time_in_minutes = parse_time_to_minutes()
         start_time_for_fetch = current_time_for_fetch - timedelta(minutes=fetch_time_in_minutes)
-        last_run = start_time_for_fetch.strftime(SPLUNK_TIME_FORMAT)
-        extensive_log('SplunkPy last run is None. Last run time is: {}'.format(last_run))
+        last_run_time = start_time_for_fetch.strftime(SPLUNK_TIME_FORMAT)
+        extensive_log('SplunkPy last run is None. Last run time is: {}'.format(last_run_time))
 
-    occured_start_time = enforce_look_behind_time(last_run, now, occurence_time_look_behind)
+    occured_start_time = enforce_look_behind_time(last_run_time, now, occurence_time_look_behind)
 
     return occured_start_time, now
 
