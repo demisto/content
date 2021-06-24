@@ -433,15 +433,13 @@ def check_file(pymisp, file_hash, malicious_tag_ids, suspicious_tag_ids):
     # misp_response will remain the raw output of misp
     misp_response = pymisp.search(value=file_hash, controller='attributes', include_context=True,
                                   include_correlations=True, include_event_tags=True, enforce_warninglist=True)
-    #print(misp_response)
-    #print("here:")
-    #parse_response_reputation_command(misp_response, malicious_tag_ids, suspicious_tag_ids)
+    print(misp_response)
+    # print("here:")
+    # parse_response_reputation_command(misp_response, malicious_tag_ids, suspicious_tag_ids)
 
     # handling the generic object output
-    obj = pymisp.search(controller='objects')
+    obj = pymisp.search(controller='objects', uuid='11132')
     print(obj)
-
-
 
     if misp_response:
         dbot_list = list()
@@ -1126,8 +1124,9 @@ def prepare_args_to_search():
     # search function 'enforceWarninglist' parameter gets 0 or 1 instead of bool.
     if 'enforceWarninglist' in args:
         args['enforceWarninglist'] = 1 if d_args.get('enforceWarninglist') in ('true', '1', 1) else 0
+    if 'limit' not in args:
+        args['limit'] = '50'
 
-    print(args)
     demisto.debug(f"args for request search command are {args}")
     return args
 
@@ -1188,23 +1187,77 @@ def build_attributes_search_response(response_object: Union[dict, requests.Respo
     return attributes
 
 
-def search_attributes(pymisp) -> CommandResults:
+def build_attributes_search_response_only_values(response_object: Union[dict, requests.Response]) -> list:
+    """returns list of attributes' values that match the search query"""
+    if isinstance(response_object, str):
+        response_object = json.loads(json.dumps(response_object))
+    attributes = response_object.get('Attribute')
+    return [attribute.get('value') for attribute in attributes]
+
+
+def pagination_args_validation(page, limit):
+    try:
+        page = int(page)
+        limit = int(limit)
+    except ValueError:
+        raise ValueError("page and limit should be numbers")
+    return page, limit
+
+
+def handle_pagination(pymisp, args):
+    page = args.get('page')
+    limit = args.get('limit')
+    page, limit = pagination_args_validation(page, limit)
+    args_without_paging = {key: value for key, value in args.items() if key not in ['page', 'limit']}
+    response = pymisp.search(**args_without_paging)
+    number_of_matched_attributes = len(response.get('Attribute'))
+    next_page_number = page + 1
+    last_page_number = number_of_matched_attributes // limit
+    next_page_number = next_page_number if next_page_number <= last_page_number else page
+    return number_of_matched_attributes, next_page_number, last_page_number
+
+
+def search_attributes(pymisp: ExpandedPyMISP, demisto_args: dict) -> CommandResults:
     """
     Execute a MIPS search using the 'attributes' controller.
     """
     args = prepare_args_to_search()
     # Set the controller to attributes to search for attributes and not events
     args['controller'] = 'attributes'
+    print(args)
     response = pymisp.search(**args)
-
+    return_only_values = argToBoolean(demisto_args.get('compact', False))
+    page = demisto_args.get('page')
     if response:
-        response_for_context = build_attributes_search_response(copy.deepcopy(response))
+        if page:
+            number_of_matched_attributes, next_page_number, last_page_number = handle_pagination(pymisp, args)
+            response_for_context = build_attributes_search_response(copy.deepcopy(response))
+            limit = demisto_args.get('limit', 50)
+            md = tableToMarkdown(f"MISP search-attributes returned {limit} attributes", response_for_context)
+            md += f"Current page number: {page}\n Next page number: {next_page_number}\n " \
+                  f"Total matched attributes: {number_of_matched_attributes}\n Last page number: {last_page_number}\n" \
+                  f"Page size: {limit}"
 
-        md = f'## MISP search-attributes returned {len(response_for_context)} attributes.\n'
+            return CommandResults(
+                raw_response=response,
+                readable_output=md,
+                outputs=response_for_context,
+                outputs_prefix="MISP.Attribute",
+                outputs_key_field="ID"
+            )
 
-        # if attributes were returned, display one to the war-room to visualize the result:
-        if len(response_for_context) > 0:
-            md += tableToMarkdown(f'Attribute ID: {response_for_context[0].get("ID")}', response_for_context[0])
+        if return_only_values:
+            response_for_context = build_attributes_search_response_only_values(response)
+            md = f'## MISP search-attributes returned {len(response_for_context)} attributes.\n'
+            md += tableToMarkdown("First 15 values", response_for_context[:15], ["Value"])
+
+        else:
+            response_for_context = build_attributes_search_response(copy.deepcopy(response))
+            md = f'## MISP search-attributes returned {len(response_for_context)} attributes.\n'
+
+            # # if attributes were returned, display one to the war-room to visualize the result:
+            # if len(response_for_context) > 0:
+            #     md += tableToMarkdown(f'Attribute ID: {response_for_context[0].get("ID")}', response_for_context[0])
 
         return CommandResults(
             raw_response=response,
@@ -1642,7 +1695,7 @@ def main():
         elif command == 'misp-search-events':
             return_results(search_events(pymisp, data_keys_to_save))  # checked
         elif command == 'misp-search-attributes':
-            return_results(search_attributes(pymisp))  # checked V
+            return_results(search_attributes(pymisp, args))  # checked V
         elif command == 'misp-delete-event':
             return_results(delete_event(demisto_args=args, pymisp=pymisp))  # checked
         elif command == 'misp-add-sighting':

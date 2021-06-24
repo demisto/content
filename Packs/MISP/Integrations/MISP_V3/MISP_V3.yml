@@ -143,6 +143,7 @@ script:
       default: false
       description: Whether to return only the attributes set with the "to_ids" flag.
       isArray: false
+      defaultValue: 'true'
       name: to_ids
       predefined:
       - 'true'
@@ -187,8 +188,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: Limit the number of results returned, depending on the scope (for
-        example 10 attributes or 10 full events).
+      description: Limit the number of events returned. Default is 50 events.
       isArray: false
       name: limit
       required: false
@@ -1748,6 +1748,7 @@ script:
       default: false
       description: Whether to return only the attributes set with the "to_ids" flag.
       isArray: false
+      defaultValue: 'true'
       name: to_ids
       predefined:
       - 'true'
@@ -1834,8 +1835,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: Limit the number of results returned, depending on the scope (for
-        example 10 attributes or 10 full events).
+      description: Limit the number of attributes returned. Default is 50.
       isArray: false
       name: limit
       required: false
@@ -1845,6 +1845,16 @@ script:
       description: Whether to return only the values that are not on the warninglists.
       isArray: false
       name: enforceWarninglist
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Whether return only the attribute's values that match the search query.
+      isArray: false
+      name: compact
       predefined:
       - 'true'
       - 'false'
