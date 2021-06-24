@@ -332,8 +332,8 @@ def __create_incident_with_playbook(client: DefaultApi,
     incident_search_responses = []
 
     found_incidents = 0
-    # poll the incidents queue for a max time of 300 seconds
-    timeout = time.time() + 300
+    # poll the incidents queue for a max time of 420 seconds
+    timeout = time.time() + 420
     while found_incidents < 1:
         try:
             incidents = client.search_incidents(filter=search_filter)
