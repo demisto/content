@@ -155,6 +155,10 @@ class MOCK_SENDER(object):
         pass
 
 
+class MOCK_READER(object):
+    pass
+
+
 def test_time_range():
     time_from = time.time() - 60
     time_to = time.time()
@@ -240,9 +244,12 @@ def test_run_query(mock_query_results, mock_args_results):
 @patch('Devo_v2.concurrent.futures.ThreadPoolExecutor.submit')
 @patch('Devo_v2.demisto.args')
 @patch('Devo_v2.ds.Reader.query')
-@patch('Devo_v2.ds.Reader._get_types')
-def test_multi_query(mock_query_types, mock_query_results, mock_args_results, mock_submit_results, mock_wait_results):
+@patch('Devo_v2.ds.Reader')
+@patch('Devo_v2.get_types')
+def test_multi_query(mock_query_types, mock_query_reader, mock_query_results, mock_args_results,
+                     mock_submit_results, mock_wait_results):
     mock_query_types.return_value = MOCK_KEYS
+    mock_query_reader.return_value = MOCK_READER
     mock_query_results.return_value = copy.deepcopy(MOCK_QUERY_RESULTS)
     mock_args_results.return_value = MOCK_MULTI_ARGS
     mock_submit_results.return_value = None
