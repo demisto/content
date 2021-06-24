@@ -3697,7 +3697,6 @@
         "MISP V2": "Cleanup process isn't performed as expected.",
         "Azure Network Security Groups": "Has a command that sends parameters in the path",
         "GitHub": "Cannot use proxy",
-        "VMware Carbon Black EDR v2": "Proxy issue"
     },
     "parallel_integrations": [
         "AWS - EC2",
