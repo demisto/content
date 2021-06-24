@@ -1332,7 +1332,7 @@ def redactemail(email):
     return newemail
 
 
-ip = re.compile(r"\b(?:(?:25[0-5]|2[0-4]\d|[01]?\d\d?)\.){3}(?:25[0-5]|2[0-4]\d|[01]?\d\d?)\b")
+ip = re.compile(r"\b(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\b")
 
 redactDictBASIC = {"http": "hxxp", "meow": "hxxp", "HTTP": "hxxp"}
 
