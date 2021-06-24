@@ -253,82 +253,82 @@ script:
     description: Search LDAP users
   - name: safewalk-get-ldaps
     outputs:
-    - contextPath: Safewalk.management.ldaps..id
+    - contextPath: Safewalk.management.ldaps.id
       description: ''
       type: Number
-    - contextPath: Safewalk.management.ldaps..is_active
+    - contextPath: Safewalk.management.ldaps.is_active
       description: ''
       type: Boolean
-    - contextPath: Safewalk.management.ldaps..ldap_type
+    - contextPath: Safewalk.management.ldaps.ldap_type
       description: ''
       type: String
-    - contextPath: Safewalk.management.ldaps..name
+    - contextPath: Safewalk.management.ldaps.name
       description: ''
       type: String
-    - contextPath: Safewalk.management.ldaps..domain
+    - contextPath: Safewalk.management.ldaps.domain
       description: ''
       type: String
-    - contextPath: Safewalk.management.ldaps..server
+    - contextPath: Safewalk.management.ldaps.server
       description: ''
       type: String
-    - contextPath: Safewalk.management.ldaps..port
+    - contextPath: Safewalk.management.ldaps.port
       description: ''
       type: Number
-    - contextPath: Safewalk.management.ldaps..secondary_server
+    - contextPath: Safewalk.management.ldaps.secondary_server
       description: ''
       type: String
-    - contextPath: Safewalk.management.ldaps..secondary_port
+    - contextPath: Safewalk.management.ldaps.secondary_port
       description: ''
       type: Unknown
-    - contextPath: Safewalk.management.ldaps..bind_dn
+    - contextPath: Safewalk.management.ldaps.bind_dn
       description: ''
       type: String
-    - contextPath: Safewalk.management.ldaps..bind_password
+    - contextPath: Safewalk.management.ldaps.bind_password
       description: ''
       type: String
-    - contextPath: Safewalk.management.ldaps..root_dn
+    - contextPath: Safewalk.management.ldaps.root_dn
       description: ''
       type: String
-    - contextPath: Safewalk.management.ldaps..user_search
+    - contextPath: Safewalk.management.ldaps.user_search
       description: ''
       type: String
-    - contextPath: Safewalk.management.ldaps..search_filter
+    - contextPath: Safewalk.management.ldaps.search_filter
       description: ''
       type: String
-    - contextPath: Safewalk.management.ldaps..map_uid_attr
+    - contextPath: Safewalk.management.ldaps.map_uid_attr
       description: ''
       type: String
-    - contextPath: Safewalk.management.ldaps..map_secondary_uid_attr
+    - contextPath: Safewalk.management.ldaps.map_secondary_uid_attr
       description: ''
       type: String
-    - contextPath: Safewalk.management.ldaps..map_first_name_attr
+    - contextPath: Safewalk.management.ldaps.map_first_name_attr
       description: ''
       type: String
-    - contextPath: Safewalk.management.ldaps..map_last_name_attr
+    - contextPath: Safewalk.management.ldaps.map_last_name_attr
       description: ''
       type: String
-    - contextPath: Safewalk.management.ldaps..map_email_attr
+    - contextPath: Safewalk.management.ldaps.map_email_attr
       description: ''
       type: String
-    - contextPath: Safewalk.management.ldaps..map_mobile_attr
+    - contextPath: Safewalk.management.ldaps.map_mobile_attr
       description: ''
       type: String
-    - contextPath: Safewalk.management.ldaps..map_user_status_attr
+    - contextPath: Safewalk.management.ldaps.map_user_status_attr
       description: ''
       type: String
-    - contextPath: Safewalk.management.ldaps..map_pwd_last_set_attr
+    - contextPath: Safewalk.management.ldaps.map_pwd_last_set_attr
       description: ''
       type: String
-    - contextPath: Safewalk.management.ldaps..map_maximum_password_age
+    - contextPath: Safewalk.management.ldaps.map_maximum_password_age
       description: ''
       type: String
-    - contextPath: Safewalk.management.ldaps..map_swisscom_mobile_id_sn_attr
+    - contextPath: Safewalk.management.ldaps.map_swisscom_mobile_id_sn_attr
       description: ''
       type: String
-    - contextPath: Safewalk.management.ldaps..map_immutableid_attr
+    - contextPath: Safewalk.management.ldaps.map_immutableid_attr
       description: ''
       type: String
-    - contextPath: Safewalk.management.ldaps..priority
+    - contextPath: Safewalk.management.ldaps.priority
       description: ''
       type: Number
     arguments: []
@@ -436,25 +436,25 @@ script:
     description: Update user token.
   - name: safewalk-get-user-tokens
     outputs:
-    - contextPath: Safewalk.management.usertokens..serial_number
+    - contextPath: Safewalk.management.usertokens.serial_number
       description: ''
       type: Date
-    - contextPath: Safewalk.management.usertokens..type
+    - contextPath: Safewalk.management.usertokens.type
       description: ''
       type: String
-    - contextPath: Safewalk.management.usertokens..confirmed
+    - contextPath: Safewalk.management.usertokens.confirmed
       description: ''
       type: Boolean
-    - contextPath: Safewalk.management.usertokens..password_required
+    - contextPath: Safewalk.management.usertokens.password_required
       description: ''
       type: Unknown
-    - contextPath: Safewalk.management.usertokens..physical_token
+    - contextPath: Safewalk.management.usertokens.physical_token
       description: ''
       type: Unknown
-    - contextPath: Safewalk.management.usertokens..status
+    - contextPath: Safewalk.management.usertokens.status
       description: ''
       type: String
-    - contextPath: Safewalk.management.usertokens..status_change_date
+    - contextPath: Safewalk.management.usertokens.status_change_date
       description: ''
       type: Unknown
     arguments:
