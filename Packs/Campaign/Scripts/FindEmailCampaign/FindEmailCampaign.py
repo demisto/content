@@ -359,12 +359,11 @@ def create_email_summary_hr(incidents_df, fields_to_display):
     clean_email_subject = incidents_df.iloc[0][PREPROCESSED_EMAIL_SUBJECT]
     email_summary = 'Subject: ' + clean_email_subject.replace('\n', '')
     clean_email_body = incidents_df.iloc[0][PREPROCESSED_EMAIL_BODY]
-    email_summary += '\n' + summarize_email_body(clean_email_body, clean_email_subject)
+    email_summary += '\nBody: ' + summarize_email_body(clean_email_body, clean_email_subject)
     for word in KEYWORDS:
         for cased_word in [word.lower(), word.title(), word.upper()]:
             email_summary = re.sub(r'(?<!\w)({})(?!\w)'.format(cased_word), '**{}**'.format(cased_word), email_summary)
-    hr_email_summary += '\n\n' + '### Current Incident\'s Email Snippets'
-    hr_email_summary += '\n ##### ' + email_summary
+    hr_email_summary += '\n' + email_summary
     context = add_context_key(
         create_context_for_campaign_details(
             campaign_found=True,
@@ -402,7 +401,8 @@ def return_campaign_details_entry(incidents_df, fields_to_display):
 
     vertical_hr_campaign_details = horizontal_to_vertical_md_table(hr_campaign_details)
     demisto.executeCommand('setIncident',
-                           {'emailcampaignsummary': f"{vertical_hr_campaign_details}\n{hr_email_summary}"})
+                           {'emailcampaignsummary': f"{vertical_hr_campaign_details}",
+                            "emailcampaignsnippets": hr_email_summary})
     return return_outputs_custom(hr, context, tag='campaign_details')
 
 
@@ -513,7 +513,7 @@ def draw_canvas(incidents, indicators):
         if not is_error(res):
             res[-1]['Tags'] = ['canvas']
         try:
-            demisto.executeCommand('setIncident', {'emailcampaigncanvas': res[-1].get('HumanReadable')})
+            demisto.executeCommand('setIncident', {'emailcampaigncanvas': res[-1].get('HumanReadable','').strip("#")})
         except Exception:
             pass
         demisto.results(res)
