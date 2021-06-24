@@ -221,7 +221,7 @@ references:
         git config diff.renameLimit 6000
 
         if [ -n "${DEMISTO_SDK_NIGHTLY}" ]; then
-          pip3 install git+https://github.com/demisto/demisto-sdk@master
+          pip3 install git+https://github.com/demisto/demisto-sdk@eli/covert_pytest_warninngs_to_errors
         fi
 
         echo "========== Build Parameters =========="
@@ -397,9 +397,9 @@ references:
         mkdir ./unit-tests
         if [ -n "$SHOULD_LINT_ALL" ]; then
           echo -e  "----------\nLinting all because:\n${SHOULD_LINT_ALL}\n----------"
-          demisto-sdk lint -p 8 -a -q --test-xml ./unit-tests --log-path ./artifacts --failure-report ./artifacts --coverage-report $ARTIFACTS_FOLDER/coverage_report
+          demisto-sdk lint -p 8 -a -q --test-xml ./unit-tests --log-path ./artifacts --failure-report ./artifacts --coverage-report $ARTIFACTS_FOLDER/coverage_report --no-pwsh-test --no-pwsh-analyze --no-pylint --no-vulture --no-mypy --no-flake8 --no-bandit --no-xsoar-linter
         else
-          demisto-sdk lint -p 8 -g -v --test-xml ./unit-tests --log-path ./artifacts --failure-report ./artifacts --coverage-report $ARTIFACTS_FOLDER/coverage_report
+          demisto-sdk lint -p 8 -g -v --test-xml ./unit-tests --log-path ./artifacts --failure-report ./artifacts --coverage-report $ARTIFACTS_FOLDER/coverage_report --no-pwsh-test --no-pwsh-analyze --no-pylint --no-vulture --no-mypy --no-flake8 --no-bandit --no-xsoar-linter
         fi
 
   infrastructure_testing: &infrastructure_testing
@@ -1151,13 +1151,7 @@ jobs:
       - setup_remote_docker
       - *restore_cache
       - *prepare_environment
-      - *secrets
-      - *update_tests_step
-      - *create_id_set
-      - *merge_public_and_private_id_sets
-      - *validate_files_and_yaml
       - *run_unit_testing_and_lint
-      - *infrastructure_testing
       - *build_content_descriptor
       - *common_server_documentation
       - *collect_test_list_and_content_packs
