@@ -525,7 +525,7 @@ script:
       description: Time when pipeline was finished.
       type: Date
     - contextPath: GitLab.Pipeline.duration
-      description: Duration of the pipeline.
+      description: Duration of the pipeline in seconds.
       type: Number
     - contextPath: GitLab.Pipeline.web_url
       description: Web URL of the pipeline.
@@ -577,7 +577,7 @@ script:
       description: Time job was finished.
       type: Date
     - contextPath: GitLab.Job.duration
-      description: Duration of the job.
+      description: Duration of the job in seconds.
       type: Number
     - contextPath: GitLab.Job.id
       description: ID of the job.
