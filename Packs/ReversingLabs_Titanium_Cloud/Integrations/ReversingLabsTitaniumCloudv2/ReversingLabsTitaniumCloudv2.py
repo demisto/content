@@ -431,24 +431,44 @@ def uri_statistics_output(response_json, uri):
     {uri_types.get(uri_type)}"""
 
     if uri_type == "domain":
-        indicator = Common.Domain(
+        indicator: Common.Domain = Common.Domain(
             domain=uri,
-            dbot_score=None
+            dbot_score=Common.DBotScore(
+                indicator=uri,
+                indicator_type=DBotScoreType.DOMAIN,
+                integration_name='ReversingLabs TitaniumCloud v2',
+                score=0,
+            )
         )
     elif uri_type == "url":
-        indicator = Common.URL(
+        indicator: Common.URL = Common.URL(
             url=uri,
-            dbot_score=None
+            dbot_score=Common.DBotScore(
+                indicator=uri,
+                indicator_type=DBotScoreType.URL,
+                integration_name='ReversingLabs TitaniumCloud v2',
+                score=0,
+            )
         )
     elif uri_type == "ipv4":
-        indicator = Common.IP(
+        indicator: Common.IP = Common.IP(
             ip=uri,
-            dbot_score=None
+            dbot_score=Common.DBotScore(
+                indicator=uri,
+                indicator_type=DBotScoreType.IP,
+                integration_name='ReversingLabs TitaniumCloud v2',
+                score=0,
+            )
         )
     elif uri_type == "email":
-        indicator = Common.EMAIL(
+        indicator: Common.EMAIL = Common.EMAIL(
             address=uri,
-            dbot_score=None
+            dbot_score=Common.DBotScore(
+                indicator=uri,
+                indicator_type=DBotScoreType.EMAIL,
+                integration_name='ReversingLabs TitaniumCloud v2',
+                score=0,
+            )
         )
     else:
         return_error("This integration does not currently support this URI type")
