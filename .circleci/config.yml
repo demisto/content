@@ -537,8 +537,6 @@ references:
   sdk_nightly_jobs: &sdk_nightly_jobs
     - Demisto SDK Nightly:
         context: sdk_nightly_env
-    - Demisto SDK Nightly - Run against Cortex XSOAR:
-        context: sdk_nightly_env
 
   instance_tests_jobs: &instance_tests_jobs
     - Create Instances:
