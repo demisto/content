@@ -44,7 +44,8 @@ class Client(BaseClient):
     def projects_approve_access_request(self, id_, user_id, access_level):
         params = assign_params(access_level=access_level)
         headers = self._headers
-        response = self._http_request('put', f'projects/{id_}/access_requests/{user_id}/approve', params=params, headers=headers)
+        response = self._http_request('put', f'projects/{id_}/access_requests/{user_id}/approve', params=params,
+                                      headers=headers)
         return response
 
     def projects_deny_access_request(self, id_, user_id):
@@ -93,11 +94,13 @@ class Client(BaseClient):
         response = self._http_request('get', final_suffix, headers=headers)
         return response
 
-    def get_pipeline_request(self, project_id: str, pipeline_id: Optional[str]):
+    def get_pipeline_request(self, project_id: str, pipeline_id: Optional[str], ref: Optional[str],
+                             status: Optional[str]):
         headers = self._headers
         base_suffix = f'projects/{project_id}/pipelines'
         final_suffix = f'{base_suffix}/{pipeline_id}' if pipeline_id else base_suffix
-        response = self._http_request('get', final_suffix, headers=headers)
+        response = self._http_request('get', final_suffix, headers=headers,
+                                      params=assign_params(ref=ref, status=status))
         return response
 
     def get_pipeline_job_request(self, project_id: str, pipeline_id: str):
@@ -315,7 +318,9 @@ def gitlab_pipelines_list_command(client: Client, args: Dict[str, Any]) -> Comma
     """
     project_id = args.get('project_id', '')
     pipeline_id = args.get('pipeline_id')
-    response = client.get_pipeline_request(project_id, pipeline_id)
+    ref = args.get('ref')
+    status = args.get('status')
+    response = client.get_pipeline_request(project_id, pipeline_id, ref, status)
     response = response if isinstance(response, list) else [response]
     outputs = [{k: v for k, v in output.items() if k in PIPELINE_FIELDS_TO_EXTRACT} for output in response]
 

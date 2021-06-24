@@ -915,8 +915,9 @@ Get details of pipeline schedules.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | project_id | Project ID to retrieve pipeline schedules from. | Required | 
-| pipeline_schedule_id | ID of specific pipeline schedule to retrieve its details. | Optional | 
-
+| pipeline_schedule_id | ID of specific pipeline schedule to retrieve its details. | Optional |
+| ref | Ref name of the pipelines, e.g 'master'. | Optional |
+| status | Retrieve pipelines whom status matches the given status. Possible values are: waiting_for_resource, preparing, pending, running, success, failed, canceled, skipped, manual, scheduled. | Optional |
 
 #### Context Output
 

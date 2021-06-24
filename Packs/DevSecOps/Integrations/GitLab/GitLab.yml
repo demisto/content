@@ -467,6 +467,31 @@ script:
       name: pipeline_id
       required: false
       secret: false
+    - default: false
+      description: Ref name of the pipelines, e.g 'master'.
+      isArray: false
+      name: ref
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Retrieve pipelines whom status matches the given status.
+      isArray: false
+      name: status
+      predefined:
+        - 'created'
+        - 'waiting_for_resource'
+        - 'preparing'
+        - 'pending'
+        - 'running'
+        - 'success'
+        - 'failed'
+        - 'canceled'
+        - 'skipped'
+        - 'manual'
+        - 'scheduled'
+      required: false
+      secret: false
     deprecated: false
     description: Get details of pipelines.
     execution: false
