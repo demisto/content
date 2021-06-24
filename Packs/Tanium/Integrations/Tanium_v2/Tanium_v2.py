@@ -17,11 +17,13 @@ DEFAULT_COMPLETION_PERCENTAGE = "95"
 
 
 class Client(BaseClient):
-    def __init__(self, base_url, username, password, domain, **kwargs):
+    def __init__(self, base_url, username, password, domain, api_token=None, **kwargs):
         self.username = username
         self.password = password
         self.domain = domain
         self.session = ''
+        self.api_token = api_token
+        self.check_authentication()
         super(Client, self).__init__(base_url, **kwargs)
 
     def do_request(self, method, url_suffix, data=None):
@@ -29,7 +31,19 @@ class Client(BaseClient):
             self.update_session()
 
         res = self._http_request(method, url_suffix, headers={'session': self.session}, json_data=data,
-                                 resp_type='response', ok_codes=[200, 400, 403, 404])
+                                 resp_type='response', ok_codes=[200, 400, 401, 403, 404])
+
+        if res.status_code == 401:
+            if self.api_token:
+                err_msg = 'Unauthorized Error: please verify that the given API token is valid and that the IP of the ' \
+                          'client is listed in the api_token_trusted_ip_address_list global setting.\n'
+            else:
+                err_msg = ''
+            try:
+                err_msg += str(res.json())
+            except ValueError:
+                err_msg += str(res)
+            return_error(err_msg)
 
         if res.status_code == 403:
             self.update_session()
@@ -43,19 +57,38 @@ class Client(BaseClient):
         return res.json()
 
     def update_session(self):
-        body = {
-            'username': self.username,
-            'domain': self.domain,
-            'password': self.password
-        }
+        if self.api_token:
+            self.session = self.api_token
+        elif self.username and self.password:
+            body = {
+                'username': self.username,
+                'domain': self.domain,
+                'password': self.password
+            }
 
-        res = self._http_request('GET', 'session/login', json_data=body, ok_codes=[200])
+            res = self._http_request('GET', 'session/login', json_data=body, ok_codes=[200])
 
-        self.session = res.get('data').get('session')
+            self.session = res.get('data').get('session')
+        else:  # no API token and no credentials were provided, raise an error:
+            return_error('Please provide either an API Token or Username & Password.')
+
         return self.session
 
     def login(self):
         return self.update_session()
+
+    def check_authentication(self):
+        """
+        Check that the authentication process is valid, i.e. user provided either API token to use OAuth 2.0
+        authentication or user provided Username & Password for basic authentication, but not both credentials and
+        API token.
+        """
+        if self.username and self.password and self.api_token:
+            return_error('Please clear either the Credentials or the API Token fields.\n'
+                         'If you wish to use basic authentication please provide username and password, '
+                         'and leave the API Token field empty.\n'
+                         'If you wish to use OAuth 2 authentication, please provide an API Token and leave the '
+                         'Credentials and Password fields empty.')
 
     def parse_sensor_parameters(self, parameters):
         sensors = parameters.split(';')
@@ -529,7 +562,7 @@ class Client(BaseClient):
 
 
 def test_module(client, data_args):
-    if client.login():
+    if client.do_request('GET', 'system_status'):
         return demisto.results('ok')
     raise ValueError('Test Tanium integration failed - please check your username and password')
 
@@ -1035,11 +1068,12 @@ def main():
     base_url = server + '/api/v2/'
     # Should we use SSL
     use_ssl = not params.get('insecure', False)
+    api_token = params.get('api_token')
 
     # Remove proxy if not set to true in params
     handle_proxy()
     command = demisto.command()
-    client = Client(base_url, username, password, domain, verify=use_ssl)
+    client = Client(base_url, username, password, domain, api_token=api_token, verify=use_ssl)
     demisto.info(f'Command being called is {command}')
 
     commands = {
