@@ -687,62 +687,62 @@ script:
     - contextPath: Logrhythm.Search.Results.TaskID
       description: Task ID
       type: String
-    - contextPath: Logrhythm.Search.Results.Results.originEntityId
+    - contextPath: Logrhythm.Search.Results.Items.originEntityId
       description: Entity ID
       type: Number
-    - contextPath: Logrhythm.Search.Results.Results.impactedIp
+    - contextPath: Logrhythm.Search.Results.Items.impactedIp
       description: Impacted IP
       type: String
-    - contextPath: Logrhythm.Search.Results.Results.classificationTypeName
+    - contextPath: Logrhythm.Search.Results.Items.classificationTypeName
       description: Classification Name
       type: String
-    - contextPath: Logrhythm.Search.Results.Results.logSourceName
+    - contextPath: Logrhythm.Search.Results.Items.logSourceName
       description: Log Source Name
       type: String
-    - contextPath: Logrhythm.Search.Results.Results.entityName
+    - contextPath: Logrhythm.Search.Results.Items.entityName
       description: Entity Name
       type: String
-    - contextPath: Logrhythm.Search.Results.Results.normalDate
+    - contextPath: Logrhythm.Search.Results.Items.normalDate
       description: Date
       type: Date
-    - contextPath: Logrhythm.Search.Results.Results.vendorMessageId
+    - contextPath: Logrhythm.Search.Results.Items.vendorMessageId
       description: Vendor Log message
       type: String
-    - contextPath: Logrhythm.Search.Results.Results.priority
+    - contextPath: Logrhythm.Search.Results.Items.priority
       description: Log priority
       type: Number
-    - contextPath: Logrhythm.Search.Results.Results.sequenceNumber
+    - contextPath: Logrhythm.Search.Results.Items.sequenceNumber
       description: Seq number
       type: String
-    - contextPath: Logrhythm.Search.Results.Results.originHostId
+    - contextPath: Logrhythm.Search.Results.Items.originHostId
       description: Origin Host ID
       type: Number
-    - contextPath: Logrhythm.Search.Results.Results.mpeRuleId
+    - contextPath: Logrhythm.Search.Results.Items.mpeRuleId
       description: Log Rhythm rule ID
       type: Number
-    - contextPath: Logrhythm.Search.Results.Results.originIp
+    - contextPath: Logrhythm.Search.Results.Items.originIp
       description: Origin IP
       type: String
-    - contextPath: Logrhythm.Search.Results.Results.mpeRuleName
+    - contextPath: Logrhythm.Search.Results.Items.mpeRuleName
       description: Log Rhythm rule name
       type: String
-    - contextPath: Logrhythm.Search.Results.Results.logSourceHostId
+    - contextPath: Logrhythm.Search.Results.Items.logSourceHostId
       description: Log Source host ID
       type: Number
-    - contextPath: Logrhythm.Search.Results.Results.originHost
+    - contextPath: Logrhythm.Search.Results.Items.originHost
       description: Origin Host
       type: String
-    - contextPath: Logrhythm.Search.Results.Results.logDate
+    - contextPath: Logrhythm.Search.Results.Items.logDate
       description: Log Date
       type: Date
-    - contextPath: Logrhythm.Search.Results.Results.classificationName
+    - contextPath: Logrhythm.Search.Results.Items.classificationName
       description: Log classification name
       type: String
   - arguments:
-    - name: case-id
+    - name: case_id
       required: true
     description: Execute evidence query for a specific case-id
-    name: lr-case-query
+    name: lr-get-case-evidence
     outputs:
     - contextPath: Logrhythm.Search.Evidence.status
       description: Status
@@ -773,11 +773,11 @@ script:
       type: String
   - arguments:
     - description: Number of dates to search
-      name: number-of-date
+      name: numbe_of_date
       required: true
     - auto: PREDEFINED
       description: Log source type
-      name: source-type
+      name: source_type
       predefined:
       - API_-_AWS_CloudTrail
       - API_-_AWS_CloudWatch_Alarm
@@ -1737,7 +1737,7 @@ script:
       - VLS_-_Syslog_-_Infoblox_-_DNS_RPZ
       - VLS_-_Syslog_-_Infoblox_-_Threat_Protection
     - description: Impacted host name
-      name: host-name
+      name: host_name
     - description: Username
       name: username
     - description: Email Subject
@@ -1751,21 +1751,21 @@ script:
     - description: URL
       name: url
     - description: Process name
-      name: process-name
+      name: process_name
     - description: Log object
       name: object
     - description: IP Address
-      name: ipaddress
+      name: ip_address
     - description: Max log message to query
-      name: max-massage
+      name: max_massage
       defaultValue: "10"
     - description: Max log message to query
-      name: query-timeout
+      name: query_timeout
       defaultValue: "60"
     description: Execute search query to Log Rhythm log database
     name: lr-execute-search-query
     outputs:
-    - contextPath: Logrhythm.Search.Tasks.taskID
+    - contextPath: Logrhythm.Search.Tasks.TaskID
       description: Task ID
       type: String
   isfetch: false

@@ -1,17 +1,18 @@
-import demistomock as demisto  # noqa: F401
-from CommonServerPython import *  # noqa: F401
+import demistomock as demisto
+from CommonServerPython import *
+from CommonServerUserPython import *
 
 ''' IMPORTS '''
 
 import json
+import requests
 import random
 import string
 from datetime import datetime, timedelta
 
-import requests
-
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
+
 
 ''' GLOBALS/PARAMS '''
 
@@ -1163,7 +1164,7 @@ def fix_date_values(item):
 
     for key in date_keys:
         if item.get(key):
-            item[key] = datetime.fromtimestamp(item.get(key) / 1000.0). \
+            item[key] = datetime.fromtimestamp(item.get(key) / 1000.0).\
                 strftime('%Y-%m-%d %H:%M:%S')
 
 
@@ -1225,6 +1226,7 @@ def http_request(method, url_suffix, data=None, headers=HEADERS):
         return_error(
             'Error in API call to {}, status code: {}, reason: {}'.format(BASE_URL + '/' + url_suffix, res.status_code,
                                                                           res.json()['message']))
+
     return res.json()
 
 
@@ -1307,7 +1309,7 @@ def generate_query_value(valueType, value):
             "value": value,
             "matchType": 2
         }
-    return (val)
+    return val
 
 
 def generate_query_item(filterType, valueType, value):
@@ -1324,7 +1326,7 @@ def generate_query_item(filterType, valueType, value):
         ]
     }
 
-    return (query)
+    return query
 
 
 ''' COMMANDS + REQUESTS FUNCTIONS '''
@@ -1462,7 +1464,7 @@ def execute_query(data_args):
                 "Channel": str(root.find(xml_ns + 'Channel').text),  # type: ignore
                 "Computer": str(root.find(xml_ns + 'Computer').text),  # type: ignore
                 "EventData": str(root.find(xml_ns + 'EventData').text)  # type: ignore
-                    .replace('\\r\\n', '\n').replace('\\t', '\t')
+                .replace('\\r\\n', '\n').replace('\\t', '\t')
             }
             logs_response.append(log_item)
         except Exception:
@@ -1589,11 +1591,12 @@ def fetch_incidents():
 
     # Get list of cases
     if ENTITY_ID:
-        cases = http_request('GET', 'lr-case-api/cases?entityNumber=' + str(ENTITY_ID), headers=headers)
+        cases = http_request('GET', f'lr-case-api/cases?entityNumber={str(ENTITY_ID)}', headers=headers)
     else:
         cases = http_request('GET', 'lr-case-api/cases', headers=headers)
     # Set Last Run to the last case dateCreated field
-    if cases != []:
+
+    if cases:
         demisto.setLastRun({
             'start_time': cases[len(cases) - 1]['dateCreated']
         })
@@ -1611,14 +1614,14 @@ def fetch_incidents():
     demisto.incidents(incidents)
 
 
-def lr_case_query(data_args):
-    case_id = data_args.get('case-id')
-    case = http_request('GET', 'lr-case-api/cases/' + case_id + '/evidence')
+def lr_get_case_evidence(data_args):
+    case_id = data_args.get('case_id')
+    case = http_request('GET', f'lr-case-api/cases/{case_id}/evidence')
 
     result = CommandResults(
         outputs_prefix='Logrhythm.Evidence',
         outputs=case,
-        readable_output=tableToMarkdown('Evidences for case ' + case_id, case),
+        readable_output=tableToMarkdown('Evidences for case ' + case_id, case, headerTransform=string_to_table_header),
         raw_response=case,
         outputs_key_field='number'
     )
@@ -1627,20 +1630,20 @@ def lr_case_query(data_args):
 
 def lr_execute_search_query(data_args):
     number_of_date = data_args.get('number-of-date')
-    source_entity = data_args.get('source-entity')
-    source_type = data_args.get('source-type')
-    host_name = data_args.get('host-name')
+    source_entity = data_args.get('source_entity')
+    source_type = data_args.get('source_type')
+    host_name = data_args.get('host_name')
     username = data_args.get('username')
     subject = data_args.get('subject')
     sender = data_args.get('sender')
     recipient = data_args.get('recipient')
     hash = data_args.get('hash')
     url = data_args.get('URL')
-    process_name = data_args.get('process-name')
+    process_name = data_args.get('process_name')
     object = data_args.get('object')
-    ipaddress = data_args.get('ipaddress')
-    max_message = data_args.get('max-massage')
-    query_timeout = data_args.get('query-timeout')
+    ipaddress = data_args.get('ip_address')
+    max_message = data_args.get('max_massage')
+    query_timeout = data_args.get('query_timeout')
 
     # Create filter query
     query = []
@@ -1714,7 +1717,7 @@ def lr_execute_search_query(data_args):
     task_id = search_task["TaskId"]
 
     results = CommandResults(
-        outputs={"taskID": task_id},
+        outputs={"TaskID": task_id},
         outputs_prefix="Logrhythm.Search.Tasks",
         outputs_key_field='taskID',
         raw_response=search_task
@@ -1744,13 +1747,12 @@ def lr_get_query_result(data_args):
     headers = HEADERS
     headers['Content-Type'] = 'application/json'
 
-    ## Execute query to get result
     search_result = http_request('POST', 'lr-search-api/actions/search-result', queryresult, headers)
 
-    ctx = {
+    context = {
         "TaskID": task_id,
         "TaskStatus": search_result["TaskStatus"],
-        "Results": search_result["Items"]
+        "Items": search_result["Items"]
     }
 
     if search_result["TaskStatus"] == "Completed: No Results":
@@ -1762,16 +1764,16 @@ def lr_get_query_result(data_args):
     elif search_result["TaskStatus"] == "Search Failed":
         message = "#### The search is timed out, please try again or modify your search"
 
-    elif search_result["Items"] != []:
+    elif search_result["Items"]:
         for log in search_result["Items"]:
             log.pop('logMessage', None)
-        message = tableToMarkdown("Your search result", search_result["Items"])
+        message = tableToMarkdown(f"Search results for task {task_id}", search_result["Items"])
     else:
         message = "#### Please try again later"
 
     results = CommandResults(
         readable_output=message,
-        outputs=ctx,
+        outputs=context,
         outputs_key_field='TaskID',
         outputs_prefix="Logrhythm.Search.Results",
         raw_response=search_result
@@ -1814,8 +1816,8 @@ def main():
             lr_execute_search_query(demisto.args())
         elif demisto.command() == 'lr-get-query-result':
             lr_get_query_result(demisto.args())
-        elif demisto.command() == 'lr-case-query':
-            lr_case_query(demisto.args())
+        elif demisto.command() == 'lr-get-case-evidence':
+            lr_get_case_evidence(demisto.args())
     except Exception as e:
         return_error('error has occurred: {}'.format(str(e)))
 
