@@ -331,8 +331,8 @@ def fetch_notables(service, cache_object=None, enrich_notables=False):
             'offset': search_offset + FETCH_LIMIT,
             'found_incidents_ids': last_run_fetched_ids
         }
-
-    demisto.setLastRun(new_last_run)
+    last_run_data.update(new_last_run)
+    demisto.setLastRun(last_run_data)
 
 
 def fetch_incidents(service):
