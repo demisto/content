@@ -53,6 +53,3 @@ ignore=IF100
 
 [file:incidentfield-Chronicle_Events.json]
 ignore=IF100
-
-[file:list_rules_hr.md]
-ignore=ST100
