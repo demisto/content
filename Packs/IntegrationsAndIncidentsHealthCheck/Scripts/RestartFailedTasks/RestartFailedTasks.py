@@ -9,7 +9,7 @@ def check_context():
     failed_tasks = (demisto.executeCommand("getContext", {"id": incident_id})[0].get('Contents', {}).
                     get('context', {})).get('GetFailedTasks')
     if not failed_tasks:
-        return_error("Couldn't find failed tasks in the context under the key GetFailedTasks."
+        raise DemistoException("Couldn't find failed tasks in the context under the key GetFailedTasks."
                      " Please run !GetFailedTasks and try again.")
     return failed_tasks
 
@@ -29,17 +29,19 @@ def remove_exclusion(failed_tasks, playbook_exclusion):
 def restart_tasks(failed_tasks, sleep_time, group_size):
     restarted_tasks_count = 0
     restarted_tasks = []
+    is_xsoar_version_6_2 = is_demisto_version_ge('6.2')
     for task in failed_tasks:
 
         task_id, incident_id, playbook_name, task_name = task['Task ID'], task['Incident ID'], task['Playbook Name'],\
                                                          task['Task Name']
-        res1 = demisto.executeCommand("taskReopen", {'id': task_id, 'incident_id': incident_id})
-        print(res1)
+        demisto.executeCommand("taskReopen", {'id': task_id, 'incident_id': incident_id})
         demisto.info(f'Restarting task with id: {task_id} and incident id: {incident_id}')
-
         body = {'invId': incident_id, 'inTaskID': task_id}
-        res2 = demisto.executeCommand("demisto-api-post", {"uri": "inv-playbook/task/execute", "body": json.dumps(body)})
-        print(res2)
+
+        if is_xsoar_version_6_2:
+            body = {'taskinfo': body}
+
+        demisto.executeCommand("demisto-api-post", {"uri": "inv-playbook/task/execute", "body": json.dumps(body)})
         restarted_tasks.append({'IncidentID': incident_id, 'TaskID': task_id, 'PlaybookName': playbook_name,
                                 'TaskName': task_name})
         restarted_tasks_count += 1
@@ -53,29 +55,31 @@ def restart_tasks(failed_tasks, sleep_time, group_size):
 
 
 def main():
-    print('!!!!!!!!')
 
     args = demisto.args()
+
     # Get Arguments
     playbook_exclusion = argToList(args.get('playbook_exclusion'))
     sleep_time = int(args.get('sleep_time'))
     incident_limit = int(args.get('incident_limit'))
     group_size = int(args.get('group_size'))
-    # try:
-    # Get Context for Failed Tasks
-    failed_tasks = check_context()
-    # Remove Excluded Playbooks And Limit
-    failed_tasks = remove_exclusion(failed_tasks, playbook_exclusion)[:incident_limit]
+    try:
+        # Get Context for Failed Tasks
+        failed_tasks = check_context()
+        # Remove Excluded Playbooks And Limit
+        failed_tasks = remove_exclusion(failed_tasks, playbook_exclusion)[:incident_limit]
 
-    # Restart the tasks, make sure the number of incidents does not exceed the limit
-    restarted_tasks_count, restarted_tasks = restart_tasks(failed_tasks, sleep_time, group_size)
-    human_readable = tableToMarkdown("Tasks Restarted", restarted_tasks,
-                                     headers=['IncidentID', 'PlaybookName', 'TaskName', 'TaskID'],
-                                     headerTransform=pascalToSpace)
+        # Restart the tasks, make sure the number of incidents does not exceed the limit
+        restarted_tasks_count, restarted_tasks = restart_tasks(failed_tasks, sleep_time, group_size)
+        human_readable = tableToMarkdown("Tasks Restarted", restarted_tasks,
+                                         headers=['IncidentID', 'PlaybookName', 'TaskName', 'TaskID'],
+                                         headerTransform=pascalToSpace)
 
-    return_results(CommandResults(readable_output=human_readable,
-                                  outputs_prefix='RestartedTasks',
-                                  outputs={"Total": restarted_tasks_count, "Task": restarted_tasks}))
+        return_results(CommandResults(readable_output=human_readable,
+                                      outputs_prefix='RestartedTasks',
+                                      outputs={"Total": restarted_tasks_count, "Task": restarted_tasks}))
+    except DemistoException as e:
+        return_error(f'Failed while trying to restart failed tasks. command. Error: {e}', error=traceback.format_exc())
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
