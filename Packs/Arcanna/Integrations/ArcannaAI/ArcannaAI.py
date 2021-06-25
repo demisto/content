@@ -24,7 +24,7 @@ class Client:
     """ Implements Arcanna API
     """
 
-    def __init__(self, verify=True, proxy=False, api_key=None, base_url=None, default_job_id=-1):
+    def __init__(self, api_key, base_url, verify=True, proxy=False,  default_job_id=-1):
         self.base_url = base_url
         self.verify = verify
         self.proxy = proxy
