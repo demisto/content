@@ -105,12 +105,12 @@ def get_jobs(client: Client) -> CommandResults:
 
     headers = ["job_id", "title", "data_type", "status"]
 
-    readable_output = tableToMarkdown(name="arcanna_jobs", headers=headers, t=result)
+    readable_output = tableToMarkdown(name="Arcanna Jobs", headers=headers, t=result)
 
     return CommandResults(
         readable_output=readable_output,
-        outputs_prefix='arcanna_jobs',
-        outputs_key_field='',
+        outputs_prefix='Arcanna.Jobs',
+        outputs_key_field='job_id',
         outputs=result
     )
 
