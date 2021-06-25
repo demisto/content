@@ -22,6 +22,7 @@ def util_load_json(path):
     with io.open(path, mode='r', encoding='utf-8') as f:
         return json.loads(f.read())
 
+
 @pytest.fixture(autouse=True)
 def init_tests(mocker):
     mocker.patch.object(demisto, 'params', return_value={
@@ -32,7 +33,7 @@ def init_tests(mocker):
         'timeout': '100',
         'first_run_time_range': '2',
         'fetch_limit': '250',
-        'proxy': False 
+        'proxy': False
     })
 
     mocker.patch.dict(os.environ, {
@@ -41,6 +42,7 @@ def init_tests(mocker):
         'http_proxy': '',
         'https_proxy': ''
     })
+
 
 def test_find_covs(mocker):
     '''
@@ -51,34 +53,35 @@ def test_find_covs(mocker):
     <a href="/index/2016-001-AA">Capsule Corp</a><p>
     <a href="/index/2016-001-AB">Acme Inc.</a><p>
     <a href="/index/2016-001-AC">Acme Inc.</a><p>
-    
     </body><html>'''
     r = requests.Response()
     r.status_code = 200
     type(r).text = mocker.PropertyMock(return_value=text)
     mocker.patch.object(requests, 'get', return_value=r)
 
-    from Covalence import find_covs
-    assert find_covs('Capsule Corp') == ['2016-001-AA']    
-    assert find_covs('Acme Inc.') == ['2016-001-AB', '2016-001-AC']    
+    from CovalenceForSecurityProviders import find_covs
+    assert find_covs('Capsule Corp') == ['2016-001-AA']
+    assert find_covs('Acme Inc.') == ['2016-001-AB', '2016-001-AC']
+
 
 def test_build_host():
     '''
     Making sure the Covalence url is correctly built
     '''
-    from Covalence import build_host
+    from CovalenceForSecurityProviders import build_host
 
     host = build_host('foo.bar')
     assert host == 'https://foo.bar/CovalenceWebUI/services'
+
 
 def test_send_request_direct_dict(mocker):
     '''
     Making sure dict is returned for dict responses
     Direct mode
     '''
-    import Covalence
-    #direct mode, no need to find cov from org_name
-    mocker.patch.object(Covalence, 'login', return_value=requests.Session())
+    import CovalenceForSecurityProviders
+    # direct mode, no need to find cov from org_name
+    mocker.patch.object(CovalenceForSecurityProviders, 'login', return_value=requests.Session())
 
     mock_get_sensor = util_load_json('test_data/get_sensor.json')
     r = requests.Response()
@@ -86,17 +89,18 @@ def test_send_request_direct_dict(mocker):
     r._content = json.dumps(mock_get_sensor).encode('utf-8')
     mocker.patch.object(requests.Session, 'send', return_value=r)
 
-    resp = Covalence.send_request('GET', '/rest/v1/sensors/sensor_id', target_org=None)
+    resp = CovalenceForSecurityProviders.send_request('GET', '/rest/v1/sensors/sensor_id', target_org=None)
     assert resp == [mock_get_sensor]
+
 
 def test_send_request_direct_list(mocker):
     '''
     Making sure list is returned for list responses
     Direct mode
     '''
-    import Covalence
-    #direct mode, no need to find cov from org_name
-    mocker.patch.object(Covalence, 'login', return_value=requests.Session())
+    import CovalenceForSecurityProviders
+    # direct mode, no need to find cov from org_name
+    mocker.patch.object(CovalenceForSecurityProviders, 'login', return_value=requests.Session())
 
     mock_list_sensor = util_load_json('test_data/list_sensor.json')
     r = requests.Response()
@@ -104,8 +108,9 @@ def test_send_request_direct_list(mocker):
     r._content = json.dumps(mock_list_sensor).encode('utf-8')
     mocker.patch.object(requests.Session, 'send', return_value=r)
 
-    resp = Covalence.send_request('GET', '/rest/v1/sensors', target_org=None)
+    resp = CovalenceForSecurityProviders.send_request('GET', '/rest/v1/sensors', target_org=None)
     assert resp == mock_list_sensor
+
 
 def test_send_request_broker_dict(mocker):
     '''
@@ -115,21 +120,22 @@ def test_send_request_broker_dict(mocker):
     '''
     mocker.patch.object(demisto, 'params', return_value={'broker': True})
 
-    import Covalence
-    mocker.patch.object(Covalence, 'find_covs', return_value=['2016-001-AB', '2016-001-AC'])
-    mocker.patch.object(Covalence, 'login', return_value=requests.Session())
+    import CovalenceForSecurityProviders
+    mocker.patch.object(CovalenceForSecurityProviders, 'find_covs', return_value=['2016-001-AB', '2016-001-AC'])
+    mocker.patch.object(CovalenceForSecurityProviders, 'login', return_value=requests.Session())
 
     mock_get_sensor = util_load_json('test_data/get_sensor.json')
     r = requests.Response()
     r.status_code = 200
     r._content = json.dumps(mock_get_sensor).encode('utf-8')
     mocker.patch.object(requests.Session, 'send', return_value=r)
-    l = []
-    l.append(mock_get_sensor)
-    l.append(mock_get_sensor)
+    sensor_list = []
+    sensor_list.append(mock_get_sensor)
+    sensor_list.append(mock_get_sensor)
 
-    resp = Covalence.send_request('GET', '/rest/v1/sensors/sensor_id', target_org='Acme Inc.')
-    assert resp == l
+    resp = CovalenceForSecurityProviders.send_request('GET', '/rest/v1/sensors/sensor_id', target_org='Acme Inc.')
+    assert resp == sensor_list
+
 
 def test_send_request_broker_list(mocker):
     '''
@@ -139,33 +145,34 @@ def test_send_request_broker_list(mocker):
     '''
     mocker.patch.object(demisto, 'params', return_value={'broker': True})
 
-    import Covalence
-    mocker.patch.object(Covalence, 'find_covs', return_value=['2016-001-AB', '2016-001-AC'])
-    mocker.patch.object(Covalence, 'login', return_value=requests.Session())
+    import CovalenceForSecurityProviders
+    mocker.patch.object(CovalenceForSecurityProviders, 'find_covs', return_value=['2016-001-AB', '2016-001-AC'])
+    mocker.patch.object(CovalenceForSecurityProviders, 'login', return_value=requests.Session())
 
     mock_list_sensor = util_load_json('test_data/list_sensor.json')
     r = requests.Response()
     r.status_code = 200
     r._content = json.dumps(mock_list_sensor).encode('utf-8')
     mocker.patch.object(requests.Session, 'send', return_value=r)
-    l = []
-    l = l + mock_list_sensor
-    l = l + mock_list_sensor
+    sensor_list = []
+    sensor_list = sensor_list + mock_list_sensor
+    sensor_list = sensor_list + mock_list_sensor
 
-    resp = Covalence.send_request('GET', '/rest/v1/sensors/sensor_id', target_org='Acme Inc.')
-    assert resp == l
+    resp = CovalenceForSecurityProviders.send_request('GET', '/rest/v1/sensors/sensor_id', target_org='Acme Inc.')
+    assert resp == sensor_list
+
 
 def test_list_alerts(mocker):
     mock_list_alerts = util_load_json('test_data/list_alerts.json')
 
-    import Covalence
+    import CovalenceForSecurityProviders
     mocker.patch.object(demisto, 'args', return_value={
         'target_org': None,
         'details': 'false'
     })
-    mocker.patch.object(Covalence, 'send_request', return_value=mock_list_alerts)
+    mocker.patch.object(CovalenceForSecurityProviders, 'send_request', return_value=mock_list_alerts)
 
-    r = Covalence.list_alerts()
+    r = CovalenceForSecurityProviders.list_alerts()
 
     assert len(r[0].keys()) == 8
     assert 'acknowledgedStatus' in r[0]
@@ -176,17 +183,18 @@ def test_list_alerts(mocker):
     assert 'title' in r[0]
     assert 'type' in r[0]
 
+
 def test_list_alerts_details(mocker):
     mock_list_alerts = util_load_json('test_data/list_alerts.json')
 
-    import Covalence
+    import CovalenceForSecurityProviders
     mocker.patch.object(demisto, 'args', return_value={
         'target_org': None,
         'details': 'true'
     })
-    mocker.patch.object(Covalence, 'send_request', return_value=mock_list_alerts)
+    mocker.patch.object(CovalenceForSecurityProviders, 'send_request', return_value=mock_list_alerts)
 
-    r = Covalence.list_alerts()
+    r = CovalenceForSecurityProviders.list_alerts()
 
     assert len(r[0].keys()) == 48
     assert 'id' in r[0]
@@ -238,36 +246,38 @@ def test_list_alerts_details(mocker):
     assert 'sourceIpAttributes' in r[0]
     assert 'destIpAttributes' in r[0]
 
+
 def test_list_sensors(mocker):
     mock_list_sensor = util_load_json('test_data/list_sensor.json')
 
-    import Covalence
+    import CovalenceForSecurityProviders
     mocker.patch.object(demisto, 'args', return_value={
         'target_org': None,
         'details': 'false'
     })
-    mocker.patch.object(Covalence, 'send_request', return_value=mock_list_sensor)
+    mocker.patch.object(CovalenceForSecurityProviders, 'send_request', return_value=mock_list_sensor)
 
-    r = Covalence.list_sensors()
+    r = CovalenceForSecurityProviders.list_sensors()
 
     assert len(r[0].keys()) == 3
     assert 'isAuthorized' in r[0]
     assert 'isNetflowGenerator' in r[0]
     assert 'name' in r[0]
 
+
 def test_list_sensors_details(mocker):
     mock_list_sensor = util_load_json('test_data/list_sensor.json')
 
-    import Covalence
+    import CovalenceForSecurityProviders
     mocker.patch.object(demisto, 'args', return_value={
         'target_org': None,
         'details': 'true'
     })
-    mocker.patch.object(Covalence, 'send_request', return_value=mock_list_sensor)
+    mocker.patch.object(CovalenceForSecurityProviders, 'send_request', return_value=mock_list_sensor)
 
-    r = Covalence.list_sensors()
+    r = CovalenceForSecurityProviders.list_sensors()
 
-    assert len(r[0].keys()) == 7 
+    assert len(r[0].keys()) == 7
     assert 'id' in r[0]
     assert 'name' in r[0]
     assert 'isAuthorized' in r[0]
@@ -276,21 +286,22 @@ def test_list_sensors_details(mocker):
     assert 'bytesIn' in r[0]
     assert 'bytesOut' in r[0]
     assert 'lastActive' not in r[0]
+
 
 def test_get_sensor(mocker):
     mock_get_sensor = [util_load_json('test_data/get_sensor.json')]
 
-    import Covalence
+    import CovalenceForSecurityProviders
     mocker.patch.object(demisto, 'args', return_value={
         'target_org': None,
         'sensor_id': 'id'
     })
-    mocker.patch.object(Covalence, 'send_request', return_value=mock_get_sensor)
+    mocker.patch.object(CovalenceForSecurityProviders, 'send_request', return_value=mock_get_sensor)
 
-    r = Covalence.get_sensor()
+    r = CovalenceForSecurityProviders.get_sensor()
 
     assert isinstance(r, list)
-    assert len(r[0].keys()) == 7 
+    assert len(r[0].keys()) == 7
     assert 'id' in r[0]
     assert 'name' in r[0]
     assert 'isAuthorized' in r[0]
@@ -300,17 +311,18 @@ def test_get_sensor(mocker):
     assert 'bytesOut' in r[0]
     assert 'lastActive' not in r[0]
 
+
 def test_connections_summary_by_ip(mocker):
     mock_connections_summary_by_ip = util_load_json('test_data/connections_summary_by_ip.json')
 
-    import Covalence
+    import CovalenceForSecurityProviders
     mocker.patch.object(demisto, 'args', return_value={
         'target_org': None,
         'details': 'false'
     })
-    mocker.patch.object(Covalence, 'send_request', return_value=mock_connections_summary_by_ip)
+    mocker.patch.object(CovalenceForSecurityProviders, 'send_request', return_value=mock_connections_summary_by_ip)
 
-    r = Covalence.connections_summary_by_ip()
+    r = CovalenceForSecurityProviders.connections_summary_by_ip()
 
     assert len(r[0].keys()) == 9
     assert 'averageDuration' in r[0]
@@ -322,17 +334,18 @@ def test_connections_summary_by_ip(mocker):
     assert 'sourceDomainName' in r[0]
     assert 'sourceIpAddress' in r[0]
 
+
 def test_connections_summary_by_ip_details(mocker):
     mock_connections_summary_by_ip = util_load_json('test_data/connections_summary_by_ip.json')
 
-    import Covalence
+    import CovalenceForSecurityProviders
     mocker.patch.object(demisto, 'args', return_value={
         'target_org': None,
         'details': 'true'
     })
-    mocker.patch.object(Covalence, 'send_request', return_value=mock_connections_summary_by_ip)
+    mocker.patch.object(CovalenceForSecurityProviders, 'send_request', return_value=mock_connections_summary_by_ip)
 
-    r = Covalence.connections_summary_by_ip()
+    r = CovalenceForSecurityProviders.connections_summary_by_ip()
 
     assert len(r[0].keys()) == 24
     assert 'id' in r[0]
@@ -360,17 +373,18 @@ def test_connections_summary_by_ip_details(mocker):
     assert 'dstDomainName' in r[0]
     assert 'clientServerRelationship' in r[0]
 
+
 def test_connections_summary_by_port(mocker):
     mock_connections_summary_by_port = util_load_json('test_data/connections_summary_by_port.json')
 
-    import Covalence
+    import CovalenceForSecurityProviders
     mocker.patch.object(demisto, 'args', return_value={
         'target_org': None,
         'details': 'false'
     })
-    mocker.patch.object(Covalence, 'send_request', return_value=mock_connections_summary_by_port)
+    mocker.patch.object(CovalenceForSecurityProviders, 'send_request', return_value=mock_connections_summary_by_port)
 
-    r = Covalence.connections_summary_by_port()
+    r = CovalenceForSecurityProviders.connections_summary_by_port()
 
     assert len(r[0].keys()) == 8
     assert 'averageDuration' in r[0]
@@ -382,17 +396,18 @@ def test_connections_summary_by_port(mocker):
     assert 'sourceDomainName' in r[0]
     assert 'sourceIpAddress' in r[0]
 
+
 def test_connections_summary_by_port_details(mocker):
     mock_connections_summary_by_port = util_load_json('test_data/connections_summary_by_port.json')
 
-    import Covalence
+    import CovalenceForSecurityProviders
     mocker.patch.object(demisto, 'args', return_value={
         'target_org': None,
         'details': 'true'
     })
-    mocker.patch.object(Covalence, 'send_request', return_value=mock_connections_summary_by_port)
+    mocker.patch.object(CovalenceForSecurityProviders, 'send_request', return_value=mock_connections_summary_by_port)
 
-    r = Covalence.connections_summary_by_port()
+    r = CovalenceForSecurityProviders.connections_summary_by_port()
 
     assert len(r[0].keys()) == 25
     assert 'id' in r[0]
@@ -421,17 +436,18 @@ def test_connections_summary_by_port_details(mocker):
     assert 'startTime' in r[0]
     assert 'endTime' in r[0]
 
+
 def test_list_dns_resolutions(mocker):
     mock_list_dns_resolutions = util_load_json('test_data/list_dns_resolutions.json')
 
-    import Covalence
+    import CovalenceForSecurityProviders
     mocker.patch.object(demisto, 'args', return_value={
         'target_org': None,
         'details': 'false'
     })
-    mocker.patch.object(Covalence, 'send_request', return_value=mock_list_dns_resolutions)
+    mocker.patch.object(CovalenceForSecurityProviders, 'send_request', return_value=mock_list_dns_resolutions)
 
-    r = Covalence.list_dns_resolutions()
+    r = CovalenceForSecurityProviders.list_dns_resolutions()
 
     assert len(r[0].keys()) == 4
     assert 'domainName' in r[0]
@@ -439,17 +455,18 @@ def test_list_dns_resolutions(mocker):
     assert 'requestTime' in r[0]
     assert 'resolvedIp' in r[0]
 
+
 def test_list_dns_resolutions_details(mocker):
     mock_list_dns_resolutions = util_load_json('test_data/list_dns_resolutions.json')
 
-    import Covalence
+    import CovalenceForSecurityProviders
     mocker.patch.object(demisto, 'args', return_value={
         'target_org': None,
         'details': 'true'
     })
-    mocker.patch.object(Covalence, 'send_request', return_value=mock_list_dns_resolutions)
+    mocker.patch.object(CovalenceForSecurityProviders, 'send_request', return_value=mock_list_dns_resolutions)
 
-    r = Covalence.list_dns_resolutions()
+    r = CovalenceForSecurityProviders.list_dns_resolutions()
 
     assert len(r[0].keys()) == 9
     assert 'id' in r[0]
@@ -462,33 +479,35 @@ def test_list_dns_resolutions_details(mocker):
     assert 'byteCount' in r[0]
     assert 'pktCount' in r[0]
 
+
 def test_list_internal_networks(mocker):
     mock_list_internal_networks = util_load_json('test_data/list_internal_networks.json')
 
-    import Covalence
+    import CovalenceForSecurityProviders
     mocker.patch.object(demisto, 'args', return_value={
         'target_org': None,
         'details': 'true'
     })
-    mocker.patch.object(Covalence, 'send_request', return_value=mock_list_internal_networks)
+    mocker.patch.object(CovalenceForSecurityProviders, 'send_request', return_value=mock_list_internal_networks)
 
-    r = Covalence.list_internal_networks()
+    r = CovalenceForSecurityProviders.list_internal_networks()
 
     assert len(r[0].keys()) == 2
     assert 'notes' in r[0]
     assert 'cidr' in r[0]
 
+
 def test_list_endpoint_agents(mocker):
     mock_list_endpoint_agents = util_load_json('test_data/list_endpoint_agents.json')
 
-    import Covalence
+    import CovalenceForSecurityProviders
     mocker.patch.object(demisto, 'args', return_value={
         'target_org': None,
         'details': 'false'
     })
-    mocker.patch.object(Covalence, 'send_request', return_value=mock_list_endpoint_agents)
+    mocker.patch.object(CovalenceForSecurityProviders, 'send_request', return_value=mock_list_endpoint_agents)
 
-    r = Covalence.list_endpoint_agents()
+    r = CovalenceForSecurityProviders.list_endpoint_agents()
 
     assert len(r[0].keys()) == 7
     assert 'hardwareVendor' in r[0]
@@ -499,17 +518,18 @@ def test_list_endpoint_agents(mocker):
     assert 'operatingSystem' in r[0]
     assert 'serialNumber' in r[0]
 
+
 def test_list_endpoint_agents_details(mocker):
     mock_list_endpoint_agents = util_load_json('test_data/list_endpoint_agents.json')
 
-    import Covalence
+    import CovalenceForSecurityProviders
     mocker.patch.object(demisto, 'args', return_value={
         'target_org': None,
         'details': 'true'
     })
-    mocker.patch.object(Covalence, 'send_request', return_value=mock_list_endpoint_agents)
+    mocker.patch.object(CovalenceForSecurityProviders, 'send_request', return_value=mock_list_endpoint_agents)
 
-    r = Covalence.list_endpoint_agents()
+    r = CovalenceForSecurityProviders.list_endpoint_agents()
 
     assert len(r[0].keys()) == 25
     assert 'agentUuid' in r[0]
@@ -538,17 +558,18 @@ def test_list_endpoint_agents_details(mocker):
     assert 'deviceIdentifier' in r[0]
     assert 'cpuArchitectureEnum' in r[0]
 
+
 def test_search_endpoint_process(mocker):
     mock_search_endpoint_process = util_load_json('test_data/search_endpoint_process.json')
 
-    import Covalence
+    import CovalenceForSecurityProviders
     mocker.patch.object(demisto, 'args', return_value={
         'target_org': None,
         'details': 'false'
     })
-    mocker.patch.object(Covalence, 'send_request', return_value=mock_search_endpoint_process)
+    mocker.patch.object(CovalenceForSecurityProviders, 'send_request', return_value=mock_search_endpoint_process)
 
-    r = Covalence.search_endpoint_process()
+    r = CovalenceForSecurityProviders.search_endpoint_process()
 
     assert len(r[0].keys()) == 5
     assert 'commandLine' in r[0]
@@ -557,17 +578,18 @@ def test_search_endpoint_process(mocker):
     assert 'processPath' in r[0]
     assert 'username' in r[0]
 
+
 def test_search_endpoint_process_details(mocker):
     mock_search_endpoint_process = util_load_json('test_data/search_endpoint_process.json')
 
-    import Covalence
+    import CovalenceForSecurityProviders
     mocker.patch.object(demisto, 'args', return_value={
         'target_org': None,
         'details': 'true'
     })
-    mocker.patch.object(Covalence, 'send_request', return_value=mock_search_endpoint_process)
+    mocker.patch.object(CovalenceForSecurityProviders, 'send_request', return_value=mock_search_endpoint_process)
 
-    r = Covalence.search_endpoint_process()
+    r = CovalenceForSecurityProviders.search_endpoint_process()
 
     assert len(r[0].keys()) == 13
     assert 'id' in r[0]
@@ -584,17 +606,18 @@ def test_search_endpoint_process_details(mocker):
     assert 'seenCount' in r[0]
     assert 'activeCount' in r[0]
 
+
 def test_search_endpoint_installed_software(mocker):
     mock_search_endpoint_installed_software = util_load_json('test_data/search_endpoint_installed_software.json')
 
-    import Covalence
+    import CovalenceForSecurityProviders
     mocker.patch.object(demisto, 'args', return_value={
         'target_org': None,
         'details': 'false'
     })
-    mocker.patch.object(Covalence, 'send_request', return_value=mock_search_endpoint_installed_software)
+    mocker.patch.object(CovalenceForSecurityProviders, 'send_request', return_value=mock_search_endpoint_installed_software)
 
-    r = Covalence.search_endpoint_installed_software()
+    r = CovalenceForSecurityProviders.search_endpoint_installed_software()
 
     assert len(r[0].keys()) == 5
     assert 'installTimestamp' in r[0]
@@ -603,17 +626,18 @@ def test_search_endpoint_installed_software(mocker):
     assert 'vendor' in r[0]
     assert 'version' in r[0]
 
+
 def test_search_endpoint_installed_software_details(mocker):
     mock_search_endpoint_installed_software = util_load_json('test_data/search_endpoint_installed_software.json')
 
-    import Covalence
+    import CovalenceForSecurityProviders
     mocker.patch.object(demisto, 'args', return_value={
         'target_org': None,
         'details': 'true'
     })
-    mocker.patch.object(Covalence, 'send_request', return_value=mock_search_endpoint_installed_software)
+    mocker.patch.object(CovalenceForSecurityProviders, 'send_request', return_value=mock_search_endpoint_installed_software)
 
-    r = Covalence.search_endpoint_installed_software()
+    r = CovalenceForSecurityProviders.search_endpoint_installed_software()
 
     assert len(r[0].keys()) == 16
     assert 'arch' in r[0]
@@ -633,6 +657,7 @@ def test_search_endpoint_installed_software_details(mocker):
     assert 'agentUuid' in r[0]
     assert 'softwareNotifyAction' in r[0]
 
+
 def test_list_org(mocker):
     mocker.patch.object(demisto, 'params', return_value={'broker': True})
     text = '''<html>
@@ -640,17 +665,15 @@ def test_list_org(mocker):
     <a href="/index/2016-001-AA">Capsule Corp</a><p>
     <a href="/index/2016-001-AB">Acme Inc.</a><p>
     <a href="/index/2016-001-AC">Acme Inc.</a><p>
-    
     </body><html>'''
     r = requests.Response()
     r.status_code = 200
     type(r).text = mocker.PropertyMock(return_value=text)
     mocker.patch.object(requests, 'get', return_value=r)
 
-    import Covalence
-    org_names = Covalence.list_org()
+    import CovalenceForSecurityProviders
+    org_names = CovalenceForSecurityProviders.list_org()
 
     assert len(org_names) == 2
     assert {'org_name': 'Capsule Corp'} in org_names
     assert {'org_name': 'Acme Inc.'} in org_names
-

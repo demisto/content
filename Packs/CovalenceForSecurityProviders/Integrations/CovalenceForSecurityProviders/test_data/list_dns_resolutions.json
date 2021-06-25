@@ -2,7 +2,7 @@
   {
     "id": "0c7de6b902df7d6263645d0ac1b0fbe6b9bb50dd",
     "domainName": "foo.bar",
-    "resolvedIp": "2964:ce77:f6b5:92c0:2720:0abe:83fa:5635",
+    "resolvedIp": "0000:0000:0000:0000:0000:0000:0000:0001",
     "requestOriginIp": "1.1.1.1",
     "nameserverIp": "2.2.2.2",
     "nodeLabel": "Label",

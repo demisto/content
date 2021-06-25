@@ -5,9 +5,11 @@ import io
 import os
 import demistomock as demisto
 
+
 def util_load_json(path):
     with io.open(path, mode='r', encoding='utf-8') as f:
         return json.loads(f.read())
+
 
 @pytest.fixture(autouse=True)
 def init_tests(mocker):
@@ -24,10 +26,11 @@ def init_tests(mocker):
         'https_proxy': ''
     })
 
+
 def test_get_aros(mocker):
     mock_get_aros = util_load_json('test_data/get_aros.json')
 
-    Fes_portal = importlib.import_module('FES-Portal')
+    Fes_portal = importlib.import_module('CovalenceManagedSecurity')
     mocker.patch.object(demisto, 'args', return_value={
         'details': 'false'
     })
@@ -44,10 +47,11 @@ def test_get_aros(mocker):
     assert 'status' in r[0]
     assert 'type' in r[0]
 
+
 def test_get_aros_details(mocker):
     mock_get_aros = util_load_json('test_data/get_aros.json')
 
-    Fes_portal = importlib.import_module('FES-Portal')
+    Fes_portal = importlib.import_module('CovalenceManagedSecurity')
     mocker.patch.object(demisto, 'args', return_value={
         'details': 'true'
     })
@@ -84,11 +88,11 @@ def test_get_aros_details(mocker):
 def test_list_org(mocker):
     mock_list_org = util_load_json('test_data/get_org.json')
 
-    Fes_portal = importlib.import_module('FES-Portal')
-    mock_p = Fes_portal.Portal(bearer='gan ceann')
-    mocker.patch.object(Fes_portal, 'Portal', return_value=mock_p)
+    import CovalenceManagedSecurity
+    mock_p = CovalenceManagedSecurity.Portal(bearer='gan ceann')
+    mocker.patch.object(CovalenceManagedSecurity, 'Portal', return_value=mock_p)
     mocker.patch.object(mock_p, 'get_organizations', return_value=mock_list_org)
 
-    r = Fes_portal.list_organizations()
+    r = CovalenceManagedSecurity.list_organizations()
 
-    assert r == mock_list_org 
+    assert r == mock_list_org

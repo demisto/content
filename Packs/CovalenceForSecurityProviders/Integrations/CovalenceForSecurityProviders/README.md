@@ -1,5 +1,5 @@
 Fetch alerts as incidents and leverage Covalence API
-This integration was integrated and tested with version xx of Covalence
+This integration was integrated and tested with version 3.0 of Covalence
 ## Configure Covalence on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
@@ -67,9 +67,9 @@ Lists Covalence alerts
 | Covalence.Alert..destGeoX | Number | Dest Geo X | 
 | Covalence.Alert..destGeoY | Number | Dest Geo Y | 
 | Covalence.Alert..destIp | String | Dest Ip | 
-| Covalence.Alert..destIpAttributes.k | String | K | 
-| Covalence.Alert..destIpAttributes.t | Number | T | 
-| Covalence.Alert..destIpAttributes.v | String | V | 
+| Covalence.Alert..destIpAttributes.k | String | Key | 
+| Covalence.Alert..destIpAttributes.t | Number | Type | 
+| Covalence.Alert..destIpAttributes.v | String | Value | 
 | Covalence.Alert..destMajesticMillionRanking | Number | Dest Majestic Million Ranking | 
 | Covalence.Alert..destMajesticMillionTopLevelDomainRanking | Number | Dest Majestic Million Top Level Domain Ranking | 
 | Covalence.Alert..destPort | String | Dest Port | 
@@ -95,9 +95,9 @@ Lists Covalence alerts
 | Covalence.Alert..sourceGeoX | Number | Source Geo X | 
 | Covalence.Alert..sourceGeoY | Number | Source Geo Y | 
 | Covalence.Alert..sourceIp | String | Source Ip | 
-| Covalence.Alert..sourceIpAttributes.k | String | K | 
-| Covalence.Alert..sourceIpAttributes.t | Number | T | 
-| Covalence.Alert..sourceIpAttributes.v | String | V | 
+| Covalence.Alert..sourceIpAttributes.k | String | Key | 
+| Covalence.Alert..sourceIpAttributes.t | Number | Type | 
+| Covalence.Alert..sourceIpAttributes.v | String | Value | 
 | Covalence.Alert..sourceMajesticMillionRanking | Number | Source Majestic Million Ranking | 
 | Covalence.Alert..sourceMajesticMillionTopLevelDomainRanking | Number | Source Majestic Million Top Level Domain Ranking | 
 | Covalence.Alert..sourcePort | String | Source Port | 

@@ -4,6 +4,7 @@ import traceback
 import json
 from datetime import datetime, timedelta
 from requests import HTTPError
+from CommonServerPython import *
 import demistomock as demisto
 
 DATE_FORMAT = '%Y-%m-%d %H:%M:%S'
@@ -17,6 +18,7 @@ if not demisto.params().get('proxy', False):
     del os.environ['http_proxy']
     del os.environ['https_proxy']
 
+
 class Portal():
     def __init__(self, user=None, bearer=None, portal_url="https://services.fieldeffect.net/v1", provider=None, verbose=False):
         self.auth = None
@@ -28,7 +30,7 @@ class Portal():
             # Headless login for those cursed with a GUI
         elif bearer:
             self.scheme = self.AuthScheme.BEARER
-            self.auth = {"token": bearer, "expires": datetime.now() + timedelta(days=10*365), "refresh": None}
+            self.auth = {"token": bearer, "expires": datetime.now() + timedelta(days=10 * 365), "refresh": None}
             self.provider_id = self.get_provider_id()
         else:
             self.scheme = self.AuthScheme.FES
@@ -43,13 +45,6 @@ class Portal():
         if not skip_refresh:
             self.refresh_auth()
         return '{} {}'.format(self.scheme, self.auth["token"])
-
-    def refresh_auth(self):
-        if datetime.now() > self.auth["expires"] - timedelta(minutes=10):
-            r = self.post('refresh_auth_token', json={"refresh_token": self.auth["refresh"]})
-            self.auth["token"] = r.json()['auth_token']
-            self.auth["expires"] = datetime.now() + timedelta(seconds=int(r.json()['seconds_to_expiry']))
-            self.auth["refresh"] = r.json()["refresh_token"]
 
     def try_saved_token(self, token):
         # Return True if this token works, also save this token as the token
@@ -78,7 +73,8 @@ class Portal():
     def post(self, uri, query=None, json=None, data=None, headers=None, files=None, **kwargs):
         return self._request(uri, method='POST', query=query, json=json, data=data, files=files, headers=headers, **kwargs)
 
-    def _request(self, uri, method='GET', query=None, json=None, data=None, files=None, headers=None, remove_subdomain=False, **kwargs):
+    def _request(self, uri, method='GET', query=None, json=None, data=None, files=None, headers=None,
+                 remove_subdomain=False, **kwargs):
         all_headers = {
             'Content-Type': 'application/json'
         } if json is not None else {}
@@ -159,20 +155,23 @@ class Portal():
             aros.extend(r["items"])
         return aros
 
+
 ''' Commands '''
+
+
 def portal_check():
     '''
     Poking to the portal to make sure it's up
     '''
     try:
-        p = Portal(bearer=API_KEY)
+        Portal(bearer=API_KEY)
         return True
-    except:
+    except Exception:
         demisto.log(traceback.format_exc())
         return False
 
-def fetch_incidents(last_run, first_run_time_range):
 
+def fetch_incidents(last_run, first_run_time_range):
     last_fetch = last_run.get('last_fetch', None)
     last_aro_id = last_run.get('last_aro_id', None)
     aro_time_max = datetime.utcnow()
@@ -190,11 +189,10 @@ def fetch_incidents(last_run, first_run_time_range):
 
     incidents = []
 
-
     latest_created_time = aro_time_min
-    #aros is ordered by most recent ARO
-    #it's required to traverse aros in chronological order (so last element first)
-    #to avoid duplicating incidents
+    # aros is ordered by most recent ARO
+    # it's required to traverse aros in chronological order (so last element first)
+    # to avoid duplicating incidents
     for a in reversed(aros):
         if a['ID'] != last_aro_id:
             created_time = dateparser.parse(a['creation_time'])
@@ -244,7 +242,7 @@ def fetch_incidents(last_run, first_run_time_range):
                         incident['details'] += '\n\nMitigation Steps\n'
                         for step in a['steps']:
                             incident['details'] += f'''- {step['label']}\n'''
-                         
+
             incidents.append(incident)
 
             if created_time > latest_created_time:
@@ -255,6 +253,7 @@ def fetch_incidents(last_run, first_run_time_range):
                 'last_aro_id': last_aro_id}
 
     return next_run, incidents
+
 
 def get_aros():
     p = Portal(bearer=API_KEY)
@@ -271,14 +270,14 @@ def get_aros():
             if 'org' in query:
                 org = p.find_organizations(query['org'])
                 if not org:
-                    raise ValueError(f'Unknown organization named {query["org"]}') 
+                    raise ValueError(f'Unknown organization named {query["org"]}')
                 del query['org']
                 query['organization_id'] = org[0]['ID']
         aros = p.get_aros(query=query)
     else:
         aros = p.get_aros()
 
-    details = demisto.args().get('details', 'false')
+    details = argToBoolean(demisto.args().get('details', 'false'))
     keys = ['title',
             'organization',
             'resolution',
@@ -286,9 +285,9 @@ def get_aros():
             'status',
             'type']
 
-    if details != 'true':
+    if not details:
         filtered_r = []
-        #returning only data in keys
+        # returning only data in keys
         for aro in aros:
             a = {k: aro[k] for k in keys}
             filtered_r.append(a)
@@ -296,14 +295,15 @@ def get_aros():
     else:
         return aros
 
+
 def list_organizations():
     p = Portal(bearer=API_KEY)
 
     return p.get_organizations()
-    
-''' EXECUTION '''
+
+
 def main():
-    LOG(f'{demisto.command()} is called')
+    demisto.info(f'{demisto.command()} is called')
     try:
         if demisto.command() == 'test-module':
             if portal_check():
@@ -324,7 +324,8 @@ def main():
             results = CommandResults(
                 outputs_prefix='FESPortal.ARO',
                 outputs_key_field='ID',
-                outputs=r
+                outputs=r,
+                readable_output=tableToMarkdown('AROs', r, removeNull=True)
             )
             return_results(results)
         elif demisto.command() == 'cov-mgsec-list-org':
@@ -332,18 +333,17 @@ def main():
             results = CommandResults(
                 outputs_prefix='FESPortal.Org',
                 outputs_key_field='ID',
-                outputs=r
+                outputs=r,
+                readable_output=tableToMarkdown('Organzations', r, removeNull=True)
             )
             return_results(results)
         else:
             msg = f'Unknown command {demisto.command()}'
-            LOG(msg)
-            LOG.print_log()
+            demisto.error(msg)
     except Exception as e:
-        LOG(traceback.format_exc())
-        LOG.print_log()
+        demisto.error(traceback.format_exc())
         return_error(f'Failed to execute {demisto.command()} command. Error: {str(e)}. {traceback.format_exc()}')
+
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()
-

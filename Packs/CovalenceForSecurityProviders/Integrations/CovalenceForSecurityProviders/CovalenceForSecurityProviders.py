@@ -5,6 +5,7 @@ import traceback
 import dateparser
 from datetime import datetime, timedelta
 from bs4 import BeautifulSoup
+from CommonServerPython import *
 import demistomock as demisto
 
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%S'
@@ -23,6 +24,7 @@ if not demisto.params().get('proxy', False):
     del os.environ['http_proxy']
     del os.environ['https_proxy']
 
+
 def find_covs(client_name):
 
     url = f'https://{HOST}/index'
@@ -38,6 +40,7 @@ def find_covs(client_name):
 
     return covs
 
+
 def build_host(host):
     host = host.rstrip('/')
     if not host.startswith('https:') and not host.startswith('http:'):
@@ -48,6 +51,7 @@ def build_host(host):
         host += '/services'
 
     return host
+
 
 def login(host=HOST, cov_id=None, username=USERNAME, password=PASSWORD, verify_ssl=VERIFY_SSL):
 
@@ -63,7 +67,7 @@ def login(host=HOST, cov_id=None, username=USERNAME, password=PASSWORD, verify_s
     host = build_host(host)
 
     if not verify_ssl:
-        # Disable the warnings if we're not verifying ssl
+        #  Disable the warnings if we're not verifying ssl
         import urllib3
         urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
@@ -71,16 +75,17 @@ def login(host=HOST, cov_id=None, username=USERNAME, password=PASSWORD, verify_s
     if BROKER and cov_id:
         url = f'https://{HOST}/index/{cov_id}'
         r = s.get(url, verify=verify_ssl)
-    p = { 'username' : username, 'password': password }
+    p = {'username': username, 'password': password}
     r = s.post(host + '/rest/login', data=p, verify=verify_ssl)
 
     if 200 != r.status_code:
         raise Exception("Failed to login to %s - %d" % (host, r.status_code))
 
     if not s.cookies:
-         raise Exception("Failed to retrieve cookie")
+        raise Exception("Failed to retrieve cookie")
 
     return s
+
 
 def send_request(method, api_endpoint, target_org=None, host=HOST, headers=None, params=None, data=None, json=None):
     cov_ids = []
@@ -107,18 +112,18 @@ def send_request(method, api_endpoint, target_org=None, host=HOST, headers=None,
 
         try:
             resp = s.send(prepped,
-                stream=None,
-                verify=VERIFY_SSL,
-                proxies=PROXY,
-                cert=None,
-                timeout=TIMEOUT
-            )
+                          stream=None,
+                          verify=VERIFY_SSL,
+                          proxies=PROXY,
+                          cert=None,
+                          timeout=TIMEOUT
+                          )
             resp.raise_for_status()
-        except Exception as e:
+        except Exception:
             return_error('Error in API call [%d] - %s' % (resp.status_code, resp.reason))
         else:
-            #when having several covs
-            #merging each response from each covs into one
+            # when having several covs
+            # merging each response from each covs into one
             if isinstance(resp.json(), dict):
                 result.append(resp.json())
             elif isinstance(resp.json(), list):
@@ -127,7 +132,7 @@ def send_request(method, api_endpoint, target_org=None, host=HOST, headers=None,
                 result.append(resp.json())
     return result
 
-''' Request/Response methods '''
+
 def fetch_incidents(last_run, first_run_time_range):
     target_orgs = []
     if BROKER:
@@ -175,13 +180,13 @@ def fetch_incidents(last_run, first_run_time_range):
                     'rawJSON': json.dumps(a)
                 }
                 if a.get('severity', None):
-                    # XSOAR mapping
-                    # Unknown: 0
-                    # Informational: 0.5
-                    # Low: 1
-                    # Medium: 2
-                    # High: 3
-                    # Critical: 4
+                    #  XSOAR mapping
+                    #  Unknown: 0
+                    #  Informational: 0.5
+                    #  Low: 1
+                    #  Medium: 2
+                    #  High: 3
+                    #  Critical: 4
                     severity_from_portal = a['severity']
                     if severity_from_portal == 'Informational':
                         incident['severity'] = 0.5
@@ -213,6 +218,7 @@ def fetch_incidents(last_run, first_run_time_range):
             next_run['last_alert_id'] = last_alert_id
 
     return next_run, incidents
+
 
 def list_alerts(target_org=None, max_count=None, initial_index=None, alert_type=None,
                 alert_time_min=None, alert_time_max=None, advanced_filter=None, details=None):
@@ -246,10 +252,10 @@ def list_alerts(target_org=None, max_count=None, initial_index=None, alert_type=
     if advanced_filter:
         params['advancedFilter'] = advanced_filter
 
-    r =  send_request('GET', '/rest/v1/alerts', target_org=target_org, params=params)
+    r = send_request('GET', '/rest/v1/alerts', target_org=target_org, params=params)
 
     if details is None:
-        details = demisto.args().get('details', 'false')
+        details = argToBoolean(demisto.args().get('details', 'false'))
     keys = ['acknowledgedStatus',
             'analystDescription',
             'analystTitle',
@@ -259,9 +265,9 @@ def list_alerts(target_org=None, max_count=None, initial_index=None, alert_type=
             'title',
             'type']
 
-    if details != 'true':
+    if not details:
         filtered_r = []
-        #returning only data in keys
+        # returning only data in keys
         for doc in r:
             s = {k: doc[k] for k in keys}
             filtered_r.append(s)
@@ -269,34 +275,35 @@ def list_alerts(target_org=None, max_count=None, initial_index=None, alert_type=
     else:
         return r
 
+
 def get_health():
     if BROKER:
-        #must do health check on all cov
+        # must do health check on all cov
         health_check_resp = []
         orgs = list_org()
         for org in orgs:
             health_check_resp.append(
                 send_request('GET', '/rest/v1/health', target_org=org['org_name'])
             )
-        #"logical and" accross all health checks
+        # "logical and" accross all health checks
         return all(health_check_resp)
     else:
         return send_request('GET', '/rest/v1/health')
+
 
 def list_sensors():
     target_org = demisto.args().get('target_org', None)
 
     r = send_request('GET', '/rest/v1/sensors', target_org=target_org)
 
-    details = demisto.args().get('details', 'false')
+    details = argToBoolean(demisto.args().get('details', 'false'))
     keys = ['isAuthorized',
             'isNetflowGenerator',
-           # 'lastActive',
             'name']
 
-    if details != 'true':
+    if not details:
         filtered_r = []
-        #returning only data in keys
+        # returning only data in keys
         for doc in r:
             s = {k: doc[k] for k in keys}
             filtered_r.append(s)
@@ -306,6 +313,7 @@ def list_sensors():
             del s['lastActive']
         return r
 
+
 def get_sensor():
     target_org = demisto.args().get('target_org', None)
     sensor_id = demisto.args().get('sensor_id')
@@ -314,6 +322,7 @@ def get_sensor():
     for sensor in r:
         del sensor['lastActive']
     return r
+
 
 def connections_summary_by_ip():
     target_org = demisto.args().get('target_org', None)
@@ -346,7 +355,7 @@ def connections_summary_by_ip():
 
     r = send_request('GET', '/rest/v1/connections/ipsummary', target_org=target_org, params=params)
 
-    details = demisto.args().get('details', 'false')
+    details = argToBoolean(demisto.args().get('details', 'false'))
     keys = ['averageDuration',
             'bytesIn',
             'bytesOut',
@@ -357,15 +366,16 @@ def connections_summary_by_ip():
             'sourceDomainName',
             'sourceIpAddress']
 
-    if details != 'true':
+    if not details:
         filtered_r = []
-        #returning only data in keys
+        # returning only data in keys
         for doc in r:
             s = {k: doc[k] for k in keys}
             filtered_r.append(s)
         return filtered_r
     else:
         return r
+
 
 def connections_summary_by_port():
     target_org = demisto.args().get('target_org', None)
@@ -398,7 +408,7 @@ def connections_summary_by_port():
 
     r = send_request('GET', '/rest/v1/connections/portsummary', target_org=target_org, params=params)
 
-    details = demisto.args().get('details', 'false')
+    details = argToBoolean(demisto.args().get('details', 'false'))
     keys = ['averageDuration',
             'bytesIn',
             'bytesOut',
@@ -408,15 +418,16 @@ def connections_summary_by_port():
             'sourceDomainName',
             'sourceIpAddress']
 
-    if details != 'true':
+    if not details:
         filtered_r = []
-        #returning only data in keys
+        # returning only data in keys
         for doc in r:
             s = {k: doc[k] for k in keys}
             filtered_r.append(s)
         return filtered_r
     else:
         return r
+
 
 def list_dns_resolutions():
     target_org = demisto.args().get('target_org', None)
@@ -452,15 +463,15 @@ def list_dns_resolutions():
 
     r = send_request('GET', '/rest/v1/dns/resolutions', target_org=target_org, params=params)
 
-    details = demisto.args().get('details', 'false')
+    details = argToBoolean(demisto.args().get('details', 'false'))
     keys = ['domainName',
             'requestOriginIp',
             'requestTime',
             'resolvedIp']
 
-    if details != 'true':
+    if not details:
         filtered_r = []
-        #returning only data in keys
+        # returning only data in keys
         for doc in r:
             s = {k: doc[k] for k in keys}
             filtered_r.append(s)
@@ -468,9 +479,11 @@ def list_dns_resolutions():
     else:
         return r
 
+
 def list_internal_networks():
     target_org = demisto.args().get('target_org', None)
     return send_request('GET', '/rest/v1/internal_networks', target_org=target_org)
+
 
 def set_internal_networks():
     if BROKER:
@@ -489,6 +502,7 @@ def set_internal_networks():
 
     return send_request('PUT', '/rest/v1/internal_networks', target_org=target_org, json=networks)
 
+
 def list_endpoint_agents():
     target_org = demisto.args().get('target_org', None)
     advanced_filter = demisto.args().get('advanced_filter', None)
@@ -499,7 +513,7 @@ def list_endpoint_agents():
 
     r = send_request('GET', '/rest/v2/endpoint/agent/agents', target_org=target_org, params=params)
 
-    details = demisto.args().get('details', 'false')
+    details = argToBoolean(demisto.args().get('details', 'false'))
     keys = ['hardwareVendor',
             'hostName',
             'ipAddress',
@@ -508,15 +522,16 @@ def list_endpoint_agents():
             'operatingSystem',
             'serialNumber']
 
-    if details != 'true':
+    if not details:
         filtered_r = []
-        #returning only data in keys
+        # returning only data in keys
         for doc in r:
             s = {k: doc[k] for k in keys}
             filtered_r.append(s)
         return filtered_r
     else:
         return r
+
 
 def find_endpoint_by_user():
     target_org = demisto.args().get('target_org', None)
@@ -526,6 +541,7 @@ def find_endpoint_by_user():
     params['advancedFilter'] = f'lastSessionUser={user}'
     return send_request('GET', '/rest/v2/endpoint/agent/agents', target_org=target_org, params=params)
 
+
 def find_endpoint_by_uuid():
     target_org = demisto.args().get('target_org', None)
     uuid = demisto.args().get('uuid', None)
@@ -533,6 +549,7 @@ def find_endpoint_by_uuid():
     params = {}
     params['advancedFilter'] = f'agentUuid={uuid}'
     return send_request('GET', '/rest/v2/endpoint/agent/agents', target_org=target_org, params=params)
+
 
 def search_endpoint_process():
     target_org = demisto.args().get('target_org', None)
@@ -547,22 +564,23 @@ def search_endpoint_process():
 
     r = send_request('GET', '/rest/v2/endpoint/process/search', target_org=target_org, params=params)
 
-    details = demisto.args().get('details', 'false')
+    details = argToBoolean(demisto.args().get('details', 'false'))
     keys = ['commandLine',
             'firstSeenTime',
             'lastSeenTime',
             'processPath',
             'username']
 
-    if details != 'true':
+    if not details:
         filtered_r = []
-        #returning only data in keys
+        # returning only data in keys
         for doc in r:
             s = {k: doc[k] for k in keys}
             filtered_r.append(s)
         return filtered_r
     else:
         return r
+
 
 def search_endpoint_installed_software():
     target_org = demisto.args().get('target_org', None)
@@ -580,22 +598,23 @@ def search_endpoint_installed_software():
 
     r = send_request('GET', '/rest/v2/endpoint/software/search', target_org=target_org, params=params)
 
-    details = demisto.args().get('details', 'false')
+    details = argToBoolean(demisto.args().get('details', 'false'))
     keys = ['installTimestamp',
             'name',
             'uninstallTimestamp',
             'vendor',
             'version']
 
-    if details != 'true':
+    if not details:
         filtered_r = []
-        #returning only data in keys
+        # returning only data in keys
         for doc in r:
             s = {k: doc[k] for k in keys}
             filtered_r.append(s)
         return filtered_r
     else:
         return r
+
 
 def list_org():
     BROKER = demisto.params().get('broker')
@@ -611,14 +630,13 @@ def list_org():
         org_name = link.contents[0]
         if org_name:
             if org_name not in [i['org_name'] for i in org_names]:
-               org_names.append({'org_name': org_name})
+                org_names.append({'org_name': org_name})
 
     return org_names
- 
-''' EXECUTION '''
+
 
 def main():
-    LOG(f'{demisto.command()} is called')
+    demisto.info(f'{demisto.command()} is called')
     try:
         if demisto.command() == 'test-module':
             if get_health():
@@ -639,7 +657,8 @@ def main():
             results = CommandResults(
                 outputs_prefix='Covalence.Alert',
                 outputs_key_field='id',
-                outputs=r
+                outputs=r,
+                readable_output=tableToMarkdown('Alerts', r, removeNull=True)
             )
             return_results(results)
 
@@ -648,7 +667,8 @@ def main():
             results = CommandResults(
                 outputs_prefix='Covalence.Sensors',
                 outputs_key_field='id',
-                outputs=r
+                outputs=r,
+                readable_output=tableToMarkdown('Sensors', r, removeNull=True)
             )
             return_results(results)
 
@@ -657,7 +677,8 @@ def main():
             results = CommandResults(
                 outputs_prefix='Covalence.Sensor',
                 outputs_key_field='id',
-                outputs=r
+                outputs=r,
+                readable_output=tableToMarkdown('Sensor', r, removeNull=True)
             )
             return_results(results)
 
@@ -666,7 +687,8 @@ def main():
             results = CommandResults(
                 outputs_prefix='Covalence.Connections',
                 outputs_key_field='id',
-                outputs=r
+                outputs=r,
+                readable_output=tableToMarkdown('Connections', r, removeNull=True)
             )
             return_results(results)
 
@@ -675,7 +697,8 @@ def main():
             results = CommandResults(
                 outputs_prefix='Covalence.Connections',
                 outputs_key_field='id',
-                outputs=r
+                outputs=r,
+                readable_output=tableToMarkdown('Connections', r, removeNull=True)
             )
             return_results(results)
 
@@ -684,7 +707,8 @@ def main():
             results = CommandResults(
                 outputs_prefix='Covalence.DNSResolutions',
                 outputs_key_field='id',
-                outputs=r
+                outputs=r,
+                readable_output=tableToMarkdown('DNS Resolutions', r, removeNull=True)
             )
             return_results(results)
 
@@ -693,7 +717,8 @@ def main():
             results = CommandResults(
                 outputs_prefix='Covalence.InternalNetworks',
                 outputs_key_field='cidr',
-                outputs=r
+                outputs=r,
+                readable_output=tableToMarkdown('Internal Networks', r, removeNull=True)
             )
             return_results(results)
 
@@ -704,20 +729,21 @@ def main():
                 results = CommandResults(
                     outputs_prefix='Covalence.InternalNetworks',
                     outputs_key_field='cidr',
-                    outputs=r
+                    outputs=r,
+                    readable_output=tableToMarkdown('Internal Networks', r, removeNull=True)
                 )
                 return_results(results)
             else:
-                msg = f'Failed to set internal networks'
-                LOG(msg)
-                LOG.print_log() 
+                msg = 'Failed to set internal networks'
+                demisto.error(msg)
 
         elif demisto.command() == 'cov-secpr-list-endpoint-agents':
             r = list_endpoint_agents()
             results = CommandResults(
                 outputs_prefix='Covalence.EndpointAgents',
                 outputs_key_field='agentUuid',
-                outputs=r
+                outputs=r,
+                readable_output=tabletomarkdown('Endpoint Agents', r, removenull=true)
             )
             return_results(results)
 
@@ -726,7 +752,8 @@ def main():
             results = CommandResults(
                 outputs_prefix='Covalence.EndpointAgents',
                 outputs_key_field='agentUuid',
-                outputs=r
+                outputs=r,
+                readable_output=tabletomarkdown('Endpoint Agents', r, removenull=true)
             )
             return_results(results)
 
@@ -735,7 +762,8 @@ def main():
             results = CommandResults(
                 outputs_prefix='Covalence.EndpointAgents',
                 outputs_key_field='agentUuid',
-                outputs=r
+                outputs=r,
+                readable_output=tabletomarkdown('Endpoint Agents', r, removenull=true)
             )
             return_results(results)
 
@@ -744,7 +772,8 @@ def main():
             results = CommandResults(
                 outputs_prefix='Covalence.EndpointProcess',
                 outputs_key_field='id',
-                outputs=r
+                outputs=r,
+                readable_output=tabletomarkdown('Endpoint Process', r, removenull=true)
             )
             return_results(results)
 
@@ -753,7 +782,8 @@ def main():
             results = CommandResults(
                 outputs_prefix='Covalence.EndpointSoftware',
                 outputs_key_field='id',
-                outputs=r
+                outputs=r,
+                readable_output=tabletomarkdown('Endpoint Software', r, removenull=true)
             )
             return_results(results)
 
@@ -762,18 +792,18 @@ def main():
             results = CommandResults(
                 outputs_prefix='Covalence.EndpointSoftware',
                 outputs_key_field='id',
-                outputs=r
+                outputs=r,
+                readable_output=tabletomarkdown('Endpoint Software', r, removenull=true)
             )
             return_results(results)
 
         else:
             msg = f'Unknown command {demisto.command()}'
-            LOG(msg)
-            LOG.print_log()
+            demisto.error(msg)
     except Exception as e:
-        LOG(traceback.format_exc())
-        LOG.print_log()
+        demisto.error(traceback.format_exc())
         return_error(f'Failed to execute {demisto.command()} command. Error: {str(e)}\n{traceback.format_exc()}')
+
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()
