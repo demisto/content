@@ -177,15 +177,6 @@ def main() -> None:
     # the Client constructor
     verify_certificate = not demisto.params().get('insecure', False)
 
-    # How much time before the first fetch to retrieve incidents
-    first_fetch_time = arg_to_datetime(
-        arg=demisto.params().get('first_fetch', '3 days'),
-        arg_name='First fetch time',
-        required=True
-    )
-    first_fetch_timestamp = int(first_fetch_time.timestamp()) if first_fetch_time else None
-    # Using assert as a type guard (since first_fetch_time is always an int when required=True)
-    assert isinstance(first_fetch_timestamp, int)
 
     proxy = demisto.params().get('proxy', False)
 
