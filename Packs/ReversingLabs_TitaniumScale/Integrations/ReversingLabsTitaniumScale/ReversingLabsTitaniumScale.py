@@ -238,7 +238,7 @@ def main():
         verify=VERIFY_CERT,
         user_agent=USER_AGENT,
         wait_time_seconds=wait_time_seconds,
-        retries=int(num_of_retries)
+        retries=num_of_retries
     )
 
     if demisto.command() == 'test-module':
