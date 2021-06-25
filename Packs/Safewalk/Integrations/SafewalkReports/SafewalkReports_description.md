@@ -1,7 +1,13 @@
-## BaseIntegration Help
+## Create an API token.
 
-Markdown file for integration configuration  help snippet. In this file add:
-- Brief information about how to retrieve the API key of your product
-- Other useful information on how to configure your integration in XSOAR
+The following steps generates an API token key to be able to comunicate with your Safewalk server
 
-Since this is a Markdown file, we encourage you to use MD formatting for sections, sub-sections, lists, etc.
+To create an API token, follow these steps:
+
+- Login in to your Safewalk server usign a SSH client.
+
+- Locate your safewalk-server installation directory and execute (replacing --username with the desired username):
+
+/home/safewalk/safewalk-server-venv/bin/django-admin.py create_system_user --username _xsoar --admin-api --settings gaia_server.settings
+
+- Use this API key in your XSOAR server for Safewalk integration configruation.
