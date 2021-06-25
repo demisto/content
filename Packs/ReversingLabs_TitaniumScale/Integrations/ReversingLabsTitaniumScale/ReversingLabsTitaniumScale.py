@@ -221,14 +221,26 @@ def upload_file_and_get_results(tiscale):
 
 
 def main():
+    try:
+        wait_time_seconds = int(WAIT_TIME_SECONDS)
+    except:
+        return_error("Integration parameter <Wait between retries> has to be of type integer.")
+
+    try:
+        num_of_retries = int(NUM_OF_RETRIES)
+    except:
+        return_error("Integration parameter <Number of retries> has to be of type integer.")
+
+
     tiscale = TitaniumScale(
         host=HOST,
         token=TOKEN,
         verify=VERIFY_CERT,
         user_agent=USER_AGENT,
-        wait_time_seconds=int(WAIT_TIME_SECONDS),
-        retries=int(NUM_OF_RETRIES)
+        wait_time_seconds=wait_time_seconds,
+        retries=int(num_of_retries)
     )
+
     if demisto.command() == 'test-module':
         test()
     elif demisto.command() == 'reversinglabs-titaniumscale-upload-sample-and-get-results':
