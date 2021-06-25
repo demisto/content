@@ -11,6 +11,8 @@ HOST = demisto.params().get('host')
 TOKEN = demisto.params().get('token')
 VERIFY_CERT = demisto.params().get('verify')
 RELIABILITY = demisto.params().get('reliability', 'C - Fairly reliable')
+WAIT_TIME_SECONDS = demisto.params().get('wait_time_seconds')
+NUM_OF_RETRIES = demisto.params().get('num_of_retries')
 
 
 def classification_to_score(classification):
@@ -219,14 +221,26 @@ def upload_file_and_get_results(tiscale):
 
 
 def main():
+    try:
+        wait_time_seconds = int(WAIT_TIME_SECONDS)
+    except:
+        return_error("Integration parameter <Wait between retries> has to be of type integer.")
+
+    try:
+        num_of_retries = int(NUM_OF_RETRIES)
+    except:
+        return_error("Integration parameter <Number of retries> has to be of type integer.")
+
+
     tiscale = TitaniumScale(
         host=HOST,
         token=TOKEN,
         verify=VERIFY_CERT,
         user_agent=USER_AGENT,
-        wait_time_seconds=2,
-        retries=30
+        wait_time_seconds=wait_time_seconds,
+        retries=num_of_retries
     )
+
     if demisto.command() == 'test-module':
         test()
     elif demisto.command() == 'reversinglabs-titaniumscale-upload-sample-and-get-results':

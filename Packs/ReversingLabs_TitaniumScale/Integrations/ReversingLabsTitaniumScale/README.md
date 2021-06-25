@@ -14,7 +14,7 @@ analysis.
 * * *
 ## Prerequisites
 
-You need to obtain the following ReversingLabs A1000 platform information.
+You need to obtain the following:
 
 *   TitaniumScale instance
 *   TitaniumScale API Token
@@ -31,7 +31,8 @@ You need to obtain the following ReversingLabs A1000 platform information.
     | API Token | True |  
     | Verify host certificates | True (default: False) |
     | Reliability  |  True (default: C - Fairly reliable)
-
+    |Wait time between report fetching retries (seconds)| True (default: 2)|
+    |Number of report fetching retries| True (default: 30)|
 4. Click **Test** to validate connection.
 
 ## Commands
