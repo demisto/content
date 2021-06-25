@@ -1,4 +1,5 @@
 import pytest
+from hypothesis import HealthCheck, given, settings, strategies
 
 import demistomock as demisto
 from VerifyIPv6Indicator import is_valid_ipv6_address, main
@@ -35,3 +36,20 @@ def test_main(mocker):
     mocker.patch.object(demisto, 'results')
     main()
     demisto.results.assert_called_with('')
+
+
+@settings(suppress_health_check=[HealthCheck.function_scoped_fixture])
+@given(strategies.ip_addresses(v=6))
+def test_valid_ip_address(mocker, ipv6):
+    """
+    Given:
+        - IPv6 address
+    When:
+        - Running the script
+    Then:
+        - Ensure the IPv6 address is returned in an array
+    """
+    mocker.patch.object(demisto, 'args', return_value={'input': str(ipv6)})
+    mocker.patch.object(demisto, 'results')
+    main()
+    demisto.results.assert_called_with([str(ipv6)])
