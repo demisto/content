@@ -527,6 +527,47 @@
                 }
             }
         },
+        "GIB Data Breach": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "GIB Email": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "email",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "GIB ID": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "id",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "GIB Leak Name": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "leakName",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "GIB Password": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "password",
+                        "transformers": []
+                    },
+                    "simple": ""
+                }
+            }
+        },
         "GIB OSI Git Leak": {
             "dontMapEventToLabels": true,
             "internalMapping": {
