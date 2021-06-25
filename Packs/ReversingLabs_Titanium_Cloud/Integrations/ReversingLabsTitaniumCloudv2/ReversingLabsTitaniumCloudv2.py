@@ -431,7 +431,7 @@ def uri_statistics_output(response_json, uri):
     **URI type**: {uri_type}
     {uri_types.get(uri_type)}"""
 
-    indicator: Union[Common.Domain, Common.URL, Common.IP, Common.EMAIL] = None
+    indicator: Union[Common.Domain, Common.URL, Common.IP, Common.EMAIL, None] = None
 
     if uri_type == "domain":
         indicator = Common.Domain(
