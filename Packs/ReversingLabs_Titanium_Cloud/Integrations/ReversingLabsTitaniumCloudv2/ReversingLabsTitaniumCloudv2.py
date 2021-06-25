@@ -1,4 +1,5 @@
 import demistomock as demisto
+from typing import Union, Any
 from CommonServerPython import *
 from ReversingLabs.SDK.ticloud import FileReputation, AVScanners, FileAnalysis, RHA1FunctionalSimilarity, \
     RHA1Analytics, URIStatistics, URIIndex, AdvancedSearch, ExpressionSearch, FileDownload, FileUpload, \
@@ -430,8 +431,10 @@ def uri_statistics_output(response_json, uri):
     **URI type**: {uri_type}
     {uri_types.get(uri_type)}"""
 
+    indicator: Union[Common.Domain, Common.URL, Common.IP, Common.EMAIL, Any] = None
+
     if uri_type == "domain":
-        indicator: Common.Domain = Common.Domain(
+        indicator = Common.Domain(
             domain=uri,
             dbot_score=Common.DBotScore(
                 indicator=uri,
@@ -441,7 +444,7 @@ def uri_statistics_output(response_json, uri):
             )
         )
     elif uri_type == "url":
-        indicator: Common.URL = Common.URL(
+        indicator = Common.URL(
             url=uri,
             dbot_score=Common.DBotScore(
                 indicator=uri,
@@ -451,7 +454,7 @@ def uri_statistics_output(response_json, uri):
             )
         )
     elif uri_type == "ipv4":
-        indicator: Common.IP = Common.IP(
+        indicator = Common.IP(
             ip=uri,
             dbot_score=Common.DBotScore(
                 indicator=uri,
@@ -461,7 +464,7 @@ def uri_statistics_output(response_json, uri):
             )
         )
     elif uri_type == "email":
-        indicator: Common.EMAIL = Common.EMAIL(
+        indicator = Common.EMAIL(
             address=uri,
             dbot_score=Common.DBotScore(
                 indicator=uri,
