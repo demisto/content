@@ -37,7 +37,7 @@ script:
   - deprecated: false
     description: Get jobs list
     execution: false
-    name: get_jobs
+    name: arcanna_get_jobs
     outputs:
     - contextPath: arcanna_jobs
       description: Arcanna jobs displayed as table Markdown
@@ -70,7 +70,7 @@ script:
     deprecated: false
     description: Sends a raw event to Arcanna
     execution: false
-    name: send_event
+    name: arcanna_send_event
     outputs:
     - contextPath: arcanna.event_id
       description: arcanna_event_id
@@ -96,7 +96,7 @@ script:
       description: Arcanna generated unique event id
     deprecated: false
     execution: false
-    name: get_event_status
+    name: arcanna_get_event_status
     description: Retrieves Arcanna Inference result
     outputs:
     - contextPath: arcanna.event_status
@@ -117,7 +117,7 @@ script:
   - deprecated: false
     description: Retrieves Arcanna Default Job id
     execution: false
-    name: get_default_job_id
+    name: arcanna_get_default_job_id
     outputs:
     - contextPath: arcanna.default_job_id
       description: 'Retrieves Arcanna Default Job id '
@@ -132,7 +132,7 @@ script:
     deprecated: false
     description: Sets Arcanna Default Job id
     execution: false
-    name: set_default_job_id
+    name: arcanna_set_default_job_id
   dockerimage: demisto/python3:3.9.5.21272
   feed: false
   isfetch: false
