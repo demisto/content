@@ -1,5 +1,5 @@
+from typing import Union
 import demistomock as demisto
-from typing import Union, Any
 from CommonServerPython import *
 from ReversingLabs.SDK.ticloud import FileReputation, AVScanners, FileAnalysis, RHA1FunctionalSimilarity, \
     RHA1Analytics, URIStatistics, URIIndex, AdvancedSearch, ExpressionSearch, FileDownload, FileUpload, \
@@ -431,7 +431,7 @@ def uri_statistics_output(response_json, uri):
     **URI type**: {uri_type}
     {uri_types.get(uri_type)}"""
 
-    indicator: Union[Common.Domain, Common.URL, Common.IP, Common.EMAIL, Any] = None
+    indicator: Union[Common.Domain, Common.URL, Common.IP, Common.EMAIL] = None
 
     if uri_type == "domain":
         indicator = Common.Domain(
