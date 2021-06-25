@@ -11,12 +11,6 @@ from typing import Any, Dict
 # Disable insecure warnings
 urllib3.disable_warnings()
 
-''' CONSTANTS '''
-
-DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
-MAX_INCIDENTS_TO_FETCH = 50
-SEVERITES = ['Low', 'Medium', 'High', 'Critical']
-
 ''' CLIENT CLASS '''
 
 
@@ -100,7 +94,6 @@ def test_module(client: Client) -> str:
 
 
 def get_jobs(client: Client) -> CommandResults:
-    demisto.info('Running get_jobs command')
     result = client.list_jobs()
 
     headers = ["job_id", "title", "data_type", "status"]
@@ -116,7 +109,6 @@ def get_jobs(client: Client) -> CommandResults:
 
 
 def post_event(client: Client, args: Dict[str, Any]) -> CommandResults:
-    demisto.info('Running send_event command')
 
     raw_payload = args.get("event_json")
     title = args.get("title")
@@ -134,7 +126,6 @@ def post_event(client: Client, args: Dict[str, Any]) -> CommandResults:
 
 
 def get_event_status(client: Client, args: Dict[str, Any]) -> CommandResults:
-    demisto.info('Running get_event_status command')
     job_id = args.get("job_id")
     event_id = args.get("event_id")
     response = client.get_event_status(job_id, event_id)
@@ -149,7 +140,6 @@ def get_event_status(client: Client, args: Dict[str, Any]) -> CommandResults:
 
 
 def get_default_job_id(client: Client) -> CommandResults:
-    demisto.info('Running get_default_job_id command')
     response = client.get_default_job_id()
     readable_output = f'## {response}'
 
