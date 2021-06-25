@@ -215,19 +215,19 @@ def main() -> None:
             # This is the call made when pressing the integration Test button.
             result_test = test_module(client)
             return_results(result_test)
-        elif demisto.command() == "get_jobs":
+        elif demisto.command() == "arcanna_get_jobs":
             result_get_jobs = get_jobs(client)
             return_results(result_get_jobs)
-        elif demisto.command() == "send_event":
+        elif demisto.command() == "arcanna_send_event":
             result_send_event = post_event(client, demisto.args())
             return_results(result_send_event)
-        elif demisto.command() == "get_event_status":
+        elif demisto.command() == "arcanna_get_event_status":
             result_get_event = get_event_status(client, demisto.args())
             return_results(result_get_event)
-        elif demisto.command() == "get_default_job_id":
+        elif demisto.command() == "arcanna_get_default_job_id":
             result_get_default_id = get_default_job_id(client)
             return_results(result_get_default_id)
-        elif demisto.command() == "set_default_job_id":
+        elif demisto.command() == "arcanna_set_default_job_id":
             result_set_default_id = set_default_job_id(client, demisto.args())
             return_results(result_set_default_id)
 
