@@ -223,14 +223,13 @@ def upload_file_and_get_results(tiscale):
 def main():
     try:
         wait_time_seconds = int(WAIT_TIME_SECONDS)
-    except:
+    except ValueError:
         return_error("Integration parameter <Wait between retries> has to be of type integer.")
 
     try:
         num_of_retries = int(NUM_OF_RETRIES)
-    except:
+    except ValueError:
         return_error("Integration parameter <Number of retries> has to be of type integer.")
-
 
     tiscale = TitaniumScale(
         host=HOST,
