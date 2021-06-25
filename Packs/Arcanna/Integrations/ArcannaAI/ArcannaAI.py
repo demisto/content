@@ -50,7 +50,7 @@ class Client:
         url_suffix = 'api/v1/jobs'
         raw_response = requests.get(url=self.base_url + url_suffix, headers=self.get_headers(), verify=self.verify)
         if raw_response.status_code != 200:
-            raise Exception("Error HttpCode. Forbidden")
+            raise Exception(f"Error in API call [{raw_response.status_code}]. Reason: {raw_response.reason}")
         return json.loads(raw_response.text)
 
     def send_raw_event(self, job_id=None, severity=None, title=None, raw_body=None):
