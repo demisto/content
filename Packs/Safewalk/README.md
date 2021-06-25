@@ -18,7 +18,7 @@ Safewalk comes with a rich functionality for all contexts of user access managem
 - Facilitate user access management
 - Choose the best licensing model for your needs (perpetual, subscription, pay per use)
 
-![image](https://raw.githubusercontent.com/demisto/content/d7cb292e651ef385c6c668a9e9f45bee70d0baa1/Packs/Safewalk/safewalk_arch.png)
+
 
 ## Integrations
 
