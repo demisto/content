@@ -11,6 +11,8 @@ HOST = demisto.params().get('host')
 TOKEN = demisto.params().get('token')
 VERIFY_CERT = demisto.params().get('verify')
 RELIABILITY = demisto.params().get('reliability', 'C - Fairly reliable')
+WAIT_TIME_SECONDS = demisto.params().get('wait_time_seconds')
+NUM_OF_RETRIES = demisto.params().get('num_of_retries')
 
 
 def classification_to_score(classification):
@@ -224,8 +226,8 @@ def main():
         token=TOKEN,
         verify=VERIFY_CERT,
         user_agent=USER_AGENT,
-        wait_time_seconds=2,
-        retries=30
+        wait_time_seconds=int(WAIT_TIME_SECONDS),
+        retries=int(NUM_OF_RETRIES)
     )
     if demisto.command() == 'test-module':
         test()

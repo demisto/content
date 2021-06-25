@@ -30,6 +30,18 @@ configuration:
   - F - Reliability cannot be judged
   required: false
   type: 15
+- defaultvalue: '2'
+  display: Wait between retries (seconds)
+  hidden: false
+  name: wait_time_seconds
+  required: false
+  type: 0
+- defaultvalue: '30'
+  display: Number of retries
+  hidden: false
+  name: num_of_retries
+  required: false
+  type: 0
 description: ReversingLabs advanced file decomposition appliance.
 detaileddescription: TitaniumScale provides real-time and deep inspection of files.
 display: ReversingLabs TitaniumScale
