@@ -1,8 +1,8 @@
 args:
-- description: ' Define the thresholds'
+- description: Define the thresholds.
   name: Thresholds
-comment: 'Returns inputs and outputs larger than 1 MB from all Cortex XSOAR investigations
-  in the last 1 / 2 months '
+comment: Returns inputs and outputs larger than 1 MB from all Cortex XSOAR investigations
+  in the last 1 / 2 months.
 commonfields:
   id: HealthCheckGetLargestInputsAndOuputsInIncidents
   version: -1

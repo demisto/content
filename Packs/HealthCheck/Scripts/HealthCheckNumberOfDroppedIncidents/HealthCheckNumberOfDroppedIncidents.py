@@ -69,5 +69,5 @@ else:
                      'ContentsFormat': formats['text'],
                      'HumanReadable': stats[0]["Contents"]["response"]['total'],
                      'ReadableContentsFormat': formats['text'],
-                     'EntryContext': {'numberOfDroppedIncidents': stats[0]["Contents"]["response"]['total']}
+                     'EntryContext': {'NumberOfDroppedIncidents': stats[0]["Contents"]["response"]['total']}
                      })

@@ -6,17 +6,17 @@ args:
   predefined:
   - "False"
   - "True"
-- description: ' Define the thresholds'
+- description: Define the thresholds
   name: Thresholds
 comment: Number of dropped incidents
 commonfields:
-  id: HealthChecknumberOfDroppedIncidents
+  id: HealthCheckNumberOfDroppedIncidents
   version: -1
 dockerimage: demisto/python3:3.9.5.21272
 enabled: true
-name: HealthChecknumberOfDroppedIncidents
+name: HealthCheckNumberOfDroppedIncidents
 outputs:
-- contextPath: numberOfDroppedIncidents
+- contextPath: NumberOfDroppedIncidents
   description: Number of dropped incidents
 runas: DBotWeakRole
 runonce: false

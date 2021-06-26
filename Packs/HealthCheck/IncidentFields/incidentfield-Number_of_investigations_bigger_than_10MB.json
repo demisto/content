@@ -13,7 +13,7 @@
     "id": "incident_numberofinvestigationsbiggerthan10mb",
     "isReadOnly": false,
     "locked": false,
-    "name": "Number of  investigations bigger than 10MB",
+    "name": "Number of investigations bigger than 10MB",
     "neverSetAsRequired": false,
     "ownerOnly": false,
     "required": false,

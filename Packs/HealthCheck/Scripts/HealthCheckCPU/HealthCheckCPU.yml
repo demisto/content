@@ -6,7 +6,7 @@ args:
   predefined:
   - "True"
   - "False"
-comment: 'Present or parse CPU usage stats '
+comment: Present or parse CPU usage stats.
 commonfields:
   id: HealthCheckCPU
   version: -1
