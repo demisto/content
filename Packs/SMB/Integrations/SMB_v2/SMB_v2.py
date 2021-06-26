@@ -29,7 +29,7 @@ def _parse_value(self, value):
     if value is None:
         datetime_value = datetime.today()
     elif isinstance(value, types.LambdaType):
-        datetime_value = value
+        datetime_value = value  # type: ignore[assignment]
     elif isinstance(value, bytes):
         format = self._get_struct_format(8)
         struct_string = "%s%s"\
