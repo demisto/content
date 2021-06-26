@@ -38,7 +38,7 @@ tasks:
     task:
       id: 2529d9b0-ff39-482c-8b5b-a5b1b426fe86
       version: -1
-      name: Whitelist IPs on GCP (Firewall)
+      name: Blacklist IPs on GCP (Firewall)
       type: title
       iscommand: false
       brand: ""
@@ -483,7 +483,7 @@ inputs:
 - key: IP
   value: {}
   required: true
-  description: IP addresses to whitelist in GCP Firewall
+  description: IP addresses to blacklist in GCP Firewall
   playbookInputQuery:
 - key: GCPFirewallName
   value:
@@ -493,9 +493,9 @@ inputs:
   playbookInputQuery:
 - key: IndicatorTagName
   value:
-    simple: GCP_IP_Whitelist
+    simple: GCP_IP_Blacklist
   required: true
-  description: Name of the Indicator Tag to apply to any IPs whitelisted by this playbook.
+  description: Name of the Indicator Tag to apply to any IPs blacklisted by this playbook.
   playbookInputQuery:
 outputs: []
 tests:
