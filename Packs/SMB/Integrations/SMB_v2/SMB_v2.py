@@ -20,22 +20,34 @@ from datetime import (
     datetime,
     timedelta,
 )
+import types
+import struct
 
 
-ORIGINAL_PARSE_VALUE = DateTimeField._parse_value
-
-
+# A monkeypatch to issue: https://github.com/jborean93/smbprotocol/issues/114
 def _parse_value(self, value):
-    if isinstance(value, int):
+    if value is None:
+        datetime_value = datetime.today()
+    elif isinstance(value, types.LambdaType):
+        datetime_value = value
+    elif isinstance(value, bytes):
+        format = self._get_struct_format(8)
+        struct_string = "%s%s"\
+                        % ("<" if self.little_endian else ">", format)
+        int_value = struct.unpack(struct_string, value)[0]
+        return self._parse_value(int_value)  # just parse the value again
+    elif isinstance(value, int):
         time_microseconds = (value - self.EPOCH_FILETIME) // 10
-        # try/catch when datetime throws overflow for bad data from SMBv2 header response.
         try:
             datetime_value = datetime(1970, 1, 1) + \
-                             timedelta(microseconds=time_microseconds)
+                timedelta(microseconds=time_microseconds)
         except OverflowError:
             datetime_value = datetime.today()
+    elif isinstance(value, datetime):
+        datetime_value = value
     else:
-        datetime_value = ORIGINAL_PARSE_VALUE(self, value)
+        raise TypeError("Cannot parse value for field %s of type %s to a "
+                        "datetime" % (self.name, type(value).__name__))
     return datetime_value
 
 
