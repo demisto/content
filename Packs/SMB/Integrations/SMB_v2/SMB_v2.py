@@ -12,8 +12,34 @@ from smbclient import (
     scandir,
     remove,
     mkdir,
-    rmdir
+    rmdir,
 )
+
+from smbprotocol.structure import DateTimeField
+from datetime import (
+    datetime,
+    timedelta,
+)
+
+
+ORIGINAL_PARSE_VALUE = DateTimeField._parse_value
+
+
+def _parse_value(self, value):
+    if isinstance(value, int):
+        time_microseconds = (value - self.EPOCH_FILETIME) // 10
+        # try/catch when datetime throws overflow for bad data from SMBv2 header response.
+        try:
+            datetime_value = datetime(1970, 1, 1) + \
+                             timedelta(microseconds=time_microseconds)
+        except OverflowError:
+            datetime_value = datetime.today()
+    else:
+        datetime_value = ORIGINAL_PARSE_VALUE(self, value)
+    return datetime_value
+
+
+DateTimeField._parse_value = _parse_value
 
 
 def get_file_name(path):
