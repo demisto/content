@@ -21,3 +21,4 @@ args:
   required: true
 scripttarget: 0
 runonce: false
+dockerimage: demisto/python:2.7.18.20958
