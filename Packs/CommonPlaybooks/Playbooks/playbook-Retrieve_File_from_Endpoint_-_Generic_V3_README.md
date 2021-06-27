@@ -1,13 +1,13 @@
 'This playbook retrieves a file sample from an endpoint using the following playbooks:'
-- Get File Sample From Path - Generic v3.
+- Get File Sample From Path - Generic v2.
 - Get File Sample By Hash - Generic v3.
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
-* Get File Sample From Path - Generic V3
 * Get File Sample By Hash - Generic v3
+* Get File Sample From Path - Generic V3
 
 ### Integrations
 This playbook does not use any integrations.
@@ -27,7 +27,6 @@ This playbook does not use any commands.
 | SHA256 | The SHA256 hash value for the file to retrieve. |  | Optional |
 | Hostname | Hostname of the machine on which the file is located. |  | Optional |
 | Path | The path of the file to retrieve.<br/>For example:<br/>C:\\users\\folder\\file.txt |  | Optional |
-| Use PowerShell Remoting | By providing the value yes to this input the file will be retrieved VIA PowerShell Remoting pack.  | no | Optional |
 | Agent_ID | The ID of the agent in the relevant integration \(such as EDR\). |  | Optional |
 
 ## Playbook Outputs
