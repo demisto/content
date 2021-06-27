@@ -117,10 +117,15 @@ class Client:
         mitre_id_list: Set[str] = set()
         mitre_relationships_list = []
         id_to_name: Dict = {}
+        mitre_id_to_mitre_name = {}
         counter = 0
 
         # For each collection
         for collection in self.collections:
+
+            # fetch only enterprise objects
+            if collection.id != '95ecc380-afe9-11e4-9b6c-751b66dd541e':
+                continue
 
             # Stop when we have reached the limit defined
             if 0 < limit <= counter:
@@ -162,11 +167,29 @@ class Client:
                                 continue
                             id_to_name[mitre_item_json.get('id')] = value
                             indicator_obj = self.create_indicator(item_type, value, mitre_item_json)
+                            add_obj_to_mitre_id_to_mitre_name(mitre_id_to_mitre_name, mitre_item_json)
                             indicators.append(indicator_obj)
                             counter += 1
                         mitre_id_list.add(mitre_item_json.get('id'))
 
-        return indicators, mitre_relationships_list, id_to_name
+        return indicators, mitre_relationships_list, id_to_name, mitre_id_to_mitre_name
+
+
+def add_obj_to_mitre_id_to_mitre_name(mitre_id_to_mitre_name, mitre_item_json):
+    mitre_id = [external.get('external_id') for external in mitre_item_json.get('external_references', [])
+                if external.get('source_name', '') == 'mitre-attack']
+    mitre_id_to_mitre_name[mitre_id[0]] = mitre_item_json.get('name')
+
+
+def add_technique_prefix_to_sub_technique(indicators, id_to_name, mitre_id_to_mitre_name):
+    for indicator in indicators:
+        if len(indicator['fields']['mitreid']) > 5:  # Txxxx.xxx is sub technique
+            parent_mitre_id = indicator['fields']['mitreid'][:5]
+            value = indicator['value']
+            technique = mitre_id_to_mitre_name[parent_mitre_id]
+            new_value = f'{technique}: {value}'
+            indicator['value'] = new_value
+            id_to_name[indicator['fields']['stixid']] = new_value
 
 
 def get_item_type(mitre_type, is_up_to_6_2):
@@ -326,7 +349,9 @@ def test_module(client):
 
 def fetch_indicators(client, create_relationships):
     is_up_to_6_2 = is_demisto_version_ge('6.2.0')
-    indicators, mitre_relationships_list, id_to_name = client.build_iterator(create_relationships, is_up_to_6_2)
+    indicators, mitre_relationships_list, id_to_name, mitre_id_to_mitre_name = client.build_iterator(
+        create_relationships, is_up_to_6_2)
+    add_technique_prefix_to_sub_technique(indicators, id_to_name, mitre_id_to_mitre_name)
     relationships = create_relationship_list(mitre_relationships_list, id_to_name)
 
     if create_relationships and mitre_relationships_list:
