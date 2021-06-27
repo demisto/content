@@ -349,26 +349,6 @@ def build_context(response: Union[dict, requests.Response], data_keys_to_save=[]
     return events  # type: ignore
 
 
-def get_misp_threat_level(threat_level_id: str) -> str:  # type: ignore
-    """Gets MISP's thread level and returning it in Demisto's format
-
-    Args:
-        threat_level_id: str of thread level in MISP
-
-    Returns:
-        str: Threat-level in Demisto
-    """
-    if threat_level_id == '1':
-        return 'HIGH'
-    if threat_level_id == '2':
-        return 'MEDIUM'
-    if threat_level_id == '3':
-        return 'LOW'
-    if threat_level_id == '4':
-        return 'UNDEFINED'
-    return_error('Invalid MISP Threat Level with threat_level_id: ' + threat_level_id)
-
-
 def get_dbot_level(threat_level_id: str) -> int:
     """
     MISP to DBOT:
@@ -1502,7 +1482,8 @@ def test(pymisp: ExpandedPyMISP, malicious_tag_ids, suspicious_tag_ids):
     """
     Test module.
     """
-    check_tag_duplication_ids(malicious_tag_ids, suspicious_tag_ids)
+    is_tag_list_valid(malicious_tag_ids)
+    is_tag_list_valid(suspicious_tag_ids)
     response = pymisp._prepare_request('GET', 'servers/getPyMISPVersion.json')
     if pymisp._check_json_response(response):
         return 'ok'
@@ -1698,12 +1679,11 @@ def add_ip_object(pymisp: ExpandedPyMISP, demisto_args: dict = {}):
         return_error(f'None of required arguments presents. command {demisto.command()} requires one of {args}')
 
 
-def check_tag_duplication_ids(malicious_tag_ids, suspicious_tag_ids):
+def handle_tag_duplication_ids(malicious_tag_ids, suspicious_tag_ids):
     common_ids = set(malicious_tag_ids) & set(suspicious_tag_ids)
-    if common_ids:
-        raise DemistoException(
-            f"Malicious tag ids list and Suspicious tag ids list have the following ids in common {common_ids}. "
-            f"Please define each id in one list only.")
+    for duplicate_id in common_ids:
+        suspicious_tag_ids.remove(duplicate_id)
+    return malicious_tag_ids, suspicious_tag_ids
 
 
 def is_tag_list_valid(tag_ids):
@@ -1732,8 +1712,7 @@ def main():
     demisto.debug(f'MISP V3: command is {command}')
 
     try:
-        is_tag_list_valid(malicious_tag_ids)
-        is_tag_list_valid(suspicious_tag_ids)
+        malicious_tag_ids, suspicious_tag_ids = handle_tag_duplication_ids(malicious_tag_ids, suspicious_tag_ids)
 
         args = demisto.args()
         if command == 'test-module':
