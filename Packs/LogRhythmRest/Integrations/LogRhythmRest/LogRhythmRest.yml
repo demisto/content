@@ -773,8 +773,8 @@ script:
       description: Evidence type
       type: String
   - arguments:
-    - description: Number of dates to search
-      name: numbe_of_date
+    - description: Number of days to search
+      name: number_of_days
       required: true
     - auto: PREDEFINED
       description: Log source type
@@ -1766,7 +1766,7 @@ script:
     description: Execute search query to Log Rhythm log database
     name: lr-execute-search-query
     outputs:
-    - contextPath: Logrhythm.Search.Tasks.TaskID
+    - contextPath: Logrhythm.Search.Task.TaskID
       description: Task ID
       type: String
   isfetch: false

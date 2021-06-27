@@ -1629,7 +1629,7 @@ def lr_get_case_evidence(data_args):
 
 
 def lr_execute_search_query(data_args):
-    number_of_date = data_args.get('number-of-date')
+    number_of_date = data_args.get('number_of_date')
     source_entity = data_args.get('source_entity')
     source_type = data_args.get('source_type')
     host_name = data_args.get('host_name')
@@ -1718,7 +1718,7 @@ def lr_execute_search_query(data_args):
 
     results = CommandResults(
         outputs={"TaskID": task_id},
-        outputs_prefix="Logrhythm.Search.Tasks",
+        outputs_prefix="Logrhythm.Search.Task",
         outputs_key_field='taskID',
         raw_response=search_task
     )
