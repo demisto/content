@@ -71,7 +71,7 @@ tasks:
       version: -1
       name: Get File Sample By Hash - Generic v3
       description: |-
-        'This playbook returns a file sample correlating to a hash in the War Room using the following sub-playbooks:'
+        'This playbook returns a file sample from a specified path and host that you input in the following playbooks::'
         - Get binary file by MD5 hash from Carbon Black telemetry data - VMware Carbon Black EDR v2.
         - Get the threat (file) attached to a specific SHA256 hash - Cylance Protect v2.
       playbookName: Get File Sample By Hash - Generic v3
@@ -115,8 +115,7 @@ tasks:
       version: -1
       name: Get File Sample From Path - Generic V3
       description: |
-        This playbook returns a file sample correlating to a path into the War Room using the following sub-playbooks:
-        inputs:
+        This playbook returns a file sample from a specified path and host that you input in the following playbooks:
         1) PS Remote Get File Sample From Path.
         2) Get File Sample From Path - VMware Carbon Black EDR (Live Response API).
       playbookName: Get File Sample From Path - Generic V3
