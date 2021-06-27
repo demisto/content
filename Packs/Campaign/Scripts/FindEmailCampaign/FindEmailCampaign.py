@@ -514,7 +514,7 @@ def draw_canvas(incidents, indicators):
         if not is_error(res):
             res[-1]['Tags'] = ['canvas']
         try:
-            demisto.executeCommand('setIncident', {'emailcampaigncanvas': res[-1].get('HumanReadable','').strip("#")})
+            demisto.executeCommand('setIncident', {'emailcampaigncanvas': res[-1].get('HumanReadable', '').strip("#")})
         except Exception:
             pass
         demisto.results(res)
