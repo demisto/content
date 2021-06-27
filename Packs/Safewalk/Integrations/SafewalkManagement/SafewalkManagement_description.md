@@ -1,10 +1,10 @@
 ## Create an API token.
 
-The following steps generates an API token key to be able to comunicate with your Safewalk server
+An API token is required for communicating with your Safewalk server.
 
 To create an API token, follow these steps:
 
-- Login in to your Safewalk server usign a SSH client.
+- Log in to your Safewalk server using an SSH client.
 
 - Locate your safewalk-server installation directory and execute (replacing --username with the desired username):
 
