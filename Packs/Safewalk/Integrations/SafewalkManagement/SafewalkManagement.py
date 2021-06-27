@@ -1127,9 +1127,8 @@ def update_user_group(client, args):
 
     result_raw = client.get_user_group(username)
 
-    result_json = json.loads(result)
     old_group_name = None
-    for group in result_json.get("groups"):
+    for group in result_raw.get("groups"):
         if bool(group.get("is_member")):
             old_group_name = group.get("name")
 

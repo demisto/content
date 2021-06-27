@@ -526,8 +526,7 @@ def main():
         if command == 'fetch-incidents':
             last_run = demisto.getLastRun()
             context = demisto.getIntegrationContext()
-            incidents, next_run = fetch_incidents(client, last_run, first_fetch_str, fetch_limit, fetch_query_filter,
-                                                  auto_generate_query_filter, context)
+            incidents, next_run = fetch_incidents(client, last_run, first_fetch_str, fetch_limit, fetch_query_filter)
             demisto.incidents(incidents)
             demisto.setLastRun(next_run)
 
