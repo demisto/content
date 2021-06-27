@@ -1,6 +1,5 @@
 id: Logrhythm - Search query
 version: -1
-vcShouldKeepItemLegacyProdMachine: false
 name: Logrhythm - Search query
 description: 'This playbook used generic polling to gets query result using the command:
   lr-execute-search-query'
@@ -16,6 +15,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "5"
@@ -32,8 +32,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "5":
     id: "5"
     taskid: d5af053b-a802-4c47-84f7-e7f551bdec72
@@ -121,8 +119,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "6":
     id: "6"
     taskid: 4e4d26f7-8bb3-4062-8012-6a1eba98aa64
@@ -179,8 +175,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "7":
     id: "7"
     taskid: 82c34a2f-02b5-47c6-8e4e-09448f1a743f
@@ -213,8 +207,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {},
@@ -233,74 +225,74 @@ inputs:
     simple: "7"
   required: true
   description: Number of days to search.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: source_type
   value: {}
   required: false
   description: Log source type.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: host_name
   value: {}
   required: false
   description: Impacted host name.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: username
   value: {}
   required: false
   description: Username.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: subject
   value: {}
   required: false
   description: Email Subject.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: sender
   value: {}
   required: false
   description: Email Sender.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: recipient
   value: {}
   required: false
   description: Email Recipient.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: hash
   value: {}
   required: false
   description: Hash.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: URL
   value: {}
   required: false
   description: URL.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: process_name
   value: {}
   required: false
   description: Process name.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: object
   value: {}
   required: false
   description: Log object.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: ip_address
   value: {}
   required: false
   description: IP Address.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: max_massage
   value:
     simple: "10"
   required: false
   description: Max log message to query.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: query_timeout
   value:
     simple: "60"
   required: false
   description: Execute search query to Log Rhythm log database.
-  playbookInputQuery: null
+  playbookInputQuery:
 outputs:
 - contextPath: Logrhythm.Search.Results.TaskStatus
   description: Task Status
@@ -359,3 +351,6 @@ outputs:
 - contextPath: Logrhythm.Search.Results.Items.classificationName
   description: Log classification name
   type: string
+tests:
+- LogRhythm REST test
+fromversion: 5.0.0

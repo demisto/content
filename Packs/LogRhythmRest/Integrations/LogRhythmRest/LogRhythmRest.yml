@@ -741,6 +741,7 @@ script:
       type: String
   - arguments:
     - name: case_id
+      description: The case ID.
       required: true
     description: Execute evidence query for a specific case-id
     name: lr-get-case-evidence
