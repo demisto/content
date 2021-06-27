@@ -181,8 +181,6 @@ script:
       description: userinformation
     description: safewalk-get-least-active-users
   - name: safewalk-get-licenses-inventory
-    arguments: []
-    name: safewalk-get-licenses-inventory
     outputs:
     - contextPath: Safewalk.reports.licensesinventory.total
       description: 'licenses inventory total'
