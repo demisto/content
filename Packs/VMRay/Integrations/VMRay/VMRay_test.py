@@ -44,7 +44,7 @@ def test_encoding_file_name(mocker):
     mocker.patch.object(demisto, 'params', return_value={"api_key": "123456", "server": "https://cloud.vmray.com/",
                                                          'shareable': False, 'reanalyze': False})
     file_name = '\\test\\encode\\file\\name'
-    expected_output = b'testencodefilename'
+    expected_output = 'testencodefilename'
     from VMRay import encode_file_name
 
     assert encode_file_name(file_name) == expected_output

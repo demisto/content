@@ -311,7 +311,7 @@ def encode_file_name(file_name):
 
     Returns: encoded file name
     """
-    return file_name.encode('ascii', 'ignore').replace(b'\\', b'')
+    return file_name.encode('ascii', 'ignore').replace('\\', '')
 
 
 def upload_sample(file_id, params):
