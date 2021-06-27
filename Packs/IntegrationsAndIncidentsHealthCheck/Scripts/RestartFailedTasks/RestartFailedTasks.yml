@@ -58,10 +58,6 @@ system: false
 timeout: 1.2µs
 type: python
 dockerimage: demisto/python3:3.9.5.21272
-important:
-- related: ''
-runas: DBotWeakRole
-runonce: false
 tests:
 - No tests (auto formatted)
 dependson:
