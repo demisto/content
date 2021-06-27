@@ -1,6 +1,7 @@
 # type: ignore
 import base64
 import logging
+import math
 import warnings
 import zipfile
 from io import BytesIO
@@ -32,7 +33,7 @@ requests.packages.urllib3.disable_warnings()
 warnings.warn = warn
 
 ''' GLOBALS/PARAMS '''
-MAX_ATTRIBUTES = 1000
+
 MISP_PATH = 'MISP.Event(obj.ID === val.ID)'
 MISP_ATTRIBUTE_PATH = 'MISP.Attribute(obj.ID === val.ID)'
 
@@ -129,10 +130,16 @@ DISTRIBUTION_NUMBERS = {
     'All_communities': 3
 }
 
-SIGHTING_MAP = {
+SIGHTING_TO_TYPE_MAP = {
     'sighting': 0,
     'false_positive': 1,
     'expiration': 2
+}
+
+SIGHTING_FROM_TYPE_MAP = {
+    '0': 'sighting',
+    '1': 'false_positive',
+    '2': 'expiration'
 }
 
 ''' HELPER FUNCTIONS '''
@@ -249,32 +256,6 @@ def remove_unselected_context_keys(context_data, data_keys_to_save=[]):
                 del attribute[key]
 
 
-def limit_attributes_count(event: dict) -> dict:
-    """
-    Gets a MISP's event and limiting the amount of attributes to MAX_ATTRIBUTES
-
-    Args:
-       event (dict): MISP's event
-    Returns:
-        dict: context output
-    """
-    if event:
-        attributes_list = event.get('Attribute')
-        num_of_attributes = len(attributes_list)
-        should_limit_attributes_amount = attributes_list and num_of_attributes > MAX_ATTRIBUTES
-        if should_limit_attributes_amount:
-            event_id = event.get('id', '')
-            event_uuid = event.get('uuid')
-            demisto.info(f'Limiting amount of attributes in event to {MAX_ATTRIBUTES} '
-                         f'to keep context from being overwhelmed. '
-                         f'This limit can be changed in the integration configuration. '
-                         f'Event ID: {event_id}, Event UUID: {event_uuid}, Attributes in event: {num_of_attributes}')
-            sorted_attributes = sorted(attributes_list, key=lambda at: int(at.get('timestamp', 0)))
-            event['Attribute'] = sorted_attributes[num_of_attributes - MAX_ATTRIBUTES:]
-            return event
-    return event
-
-
 def arrange_context_according_to_user_selection(context_data, data_keys_to_save=[]):
     if not data_keys_to_save:
         return
@@ -329,7 +310,6 @@ def build_context(response: Union[dict, requests.Response], data_keys_to_save=[]
     # Remove 'Event' keyword
     events = [event.get('Event') for event in response]  # type: ignore
     for i in range(0, len(events)):
-        events[i] = limit_attributes_count(events[i])
 
         # Filter object from keys in event_args
         events[i] = {
@@ -1073,7 +1053,7 @@ def search(pymisp, post_to_warroom: bool = True) -> Tuple[dict, Any]:
         return {}, {}
 
 
-def prepare_args_to_search():
+def prepare_args_to_search(pymisp):
     search_args = [
         'value',
         'type',
@@ -1126,12 +1106,16 @@ def prepare_args_to_search():
         args['enforceWarninglist'] = 1 if d_args.get('enforceWarninglist') in ('true', '1', 1) else 0
     if 'limit' not in args:
         args['limit'] = '50'
+    # build MISP complex filter
+    if 'tags' in args:
+        args['tags'] = build_misp_complex_filter(pymisp, args['tags'])
 
     demisto.debug(f"args for request search command are {args}")
     return args
 
 
-def build_attributes_search_response(response_object: Union[dict, requests.Response]) -> dict:
+def build_attributes_search_response(response_object: Union[dict, requests.Response],
+                                     include_correlations=False) -> dict:
     """
     Convert the response of attribute search returned from MIPS to the context output format.
     """
@@ -1157,8 +1141,13 @@ def build_attributes_search_response(response_object: Union[dict, requests.Respo
         'Object',
         'Galaxy',  # field wasn't tested as we don't see it in our responses. Was added by customer's request.
         'Tag',
-        'decay_score'
+        'decay_score',
+        'Sighting',
     ]
+    if include_correlations:
+        # only if user want to get back the related attributes
+        attribute_fields.append('RelatedAttribute')
+
     if isinstance(response_object, str):
         response_object = json.loads(json.dumps(response_object))
     attributes = response_object.get('Attribute')
@@ -1183,6 +1172,12 @@ def build_attributes_search_response(response_object: Union[dict, requests.Respo
                  } for tag in attributes[i].get('Tag')
             ]
 
+        if attributes[i].get('Sighting'):
+            attributes[i]['Sighting'] = [
+                {'type': sighting.get('type')
+                 } for sighting in attributes[i].get('Sighting')
+            ]
+
     attributes = replace_keys(attributes)
     return attributes
 
@@ -1204,75 +1199,112 @@ def pagination_args_validation(page, limit):
     return page, limit
 
 
-def handle_pagination(pymisp, args):
+def handle_pagination(pymisp, args, object_to_search_for='Attribute'):
     page = args.get('page')
     limit = args.get('limit')
     page, limit = pagination_args_validation(page, limit)
     args_without_paging = {key: value for key, value in args.items() if key not in ['page', 'limit']}
     response = pymisp.search(**args_without_paging)
-    number_of_matched_attributes = len(response.get('Attribute'))
+    if type(response) == list:
+        number_of_matched_attributes = len(response)
+    else:
+        number_of_matched_attributes = len(response.get(object_to_search_for))
+    limit = min(limit, number_of_matched_attributes)
     next_page_number = page + 1
     last_page_number = number_of_matched_attributes // limit
     next_page_number = next_page_number if next_page_number <= last_page_number else page
     return number_of_matched_attributes, next_page_number, last_page_number
 
 
+def attribute_response_to_markdown_table(response: dict):
+    attribute_highlights = []
+    for attribute in response:
+        event = attribute.get('Event', {})
+        attribute_tags = [tag.get('Name') for tag in attribute.get('Tag')] if attribute.get(
+            'Tag') else None
+        attribute_sightings = [SIGHTING_FROM_TYPE_MAP[sighting.get('Type')] for sighting in
+                               attribute.get('Sighting')] if attribute.get('Sighting') else None
+        attribute_highlights.append({
+            'Attribute ID': attribute.get('ID'),
+            'Event ID': attribute.get('EventID'),
+            'Attribute Category': attribute.get('Category'),
+            'Attribute Type': attribute.get('Type'),
+            'Attribute Comment': attribute.get('Comment'),
+            'Attribute Value': attribute.get('Value'),
+            'Attribute Tags': attribute_tags,
+            'Attribute Sightings': attribute_sightings,
+            'To IDs': attribute.get('ToIDs'),
+            'Timestamp': convert_timestamp(attribute.get('Timestamp')),
+            'Event Info': event.get('Info'),
+            'Event Organisation ID': event.get('OrganisationID'),
+            'Event Distribution': event.get('Distribution'),
+            'Event UUID': event.get('UUID')
+        })
+    return attribute_highlights
+
+
 def search_attributes(pymisp: ExpandedPyMISP, demisto_args: dict) -> CommandResults:
     """
     Execute a MIPS search using the 'attributes' controller.
     """
-    args = prepare_args_to_search()
+    args = prepare_args_to_search(pymisp)
     # Set the controller to attributes to search for attributes and not events
     args['controller'] = 'attributes'
     print(args)
     response = pymisp.search(**args)
-    return_only_values = argToBoolean(demisto_args.get('compact', False))
+    return_only_values = argToBoolean(demisto_args.get('compact', True))
+    include_correlations = argToBoolean(demisto_args.get('include_correlations', False))
     page = demisto_args.get('page')
+    limit = demisto_args.get('limit', 50)
     if response:
+        paging_outputs = {}
         if page:
             number_of_matched_attributes, next_page_number, last_page_number = handle_pagination(pymisp, args)
-            response_for_context = build_attributes_search_response(copy.deepcopy(response))
-            limit = demisto_args.get('limit', 50)
-            md = tableToMarkdown(f"MISP search-attributes returned {limit} attributes", response_for_context)
+            response_for_context = build_attributes_search_response(copy.deepcopy(response), include_correlations)
+            attribute_highlights = attribute_response_to_markdown_table(response_for_context)
+            md = tableToMarkdown(f"MISP search-attributes returned {len(response_for_context)} attributes",
+                                 attribute_highlights, removeNull=True)
             md += f"Current page number: {page}\n Next page number: {next_page_number}\n " \
                   f"Total matched attributes: {number_of_matched_attributes}\n Last page number: {last_page_number}\n" \
                   f"Page size: {limit}"
 
-            return CommandResults(
-                raw_response=response,
-                readable_output=md,
-                outputs=response_for_context,
-                outputs_prefix="MISP.Attribute",
-                outputs_key_field="ID"
-            )
+            paging_outputs = {
+                'Current_page_number': page,
+                'Next_page_number': next_page_number,
+                'Last_page_number': last_page_number,
+                'Total_matched_attributes': number_of_matched_attributes,
+                'Page_size': limit
+            }
 
-        if return_only_values:
+        elif return_only_values:
             response_for_context = build_attributes_search_response_only_values(response)
-            md = f'## MISP search-attributes returned {len(response_for_context)} attributes.\n'
-            md += tableToMarkdown("First 15 values", response_for_context[:15], ["Value"])
+            number_of_results = len(response_for_context)
+            md = tableToMarkdown(f"MISP search-attributes returned {number_of_results} attributes",
+                                 response_for_context[:number_of_results],
+                                 ["Value"])
 
         else:
-            response_for_context = build_attributes_search_response(copy.deepcopy(response))
-            md = f'## MISP search-attributes returned {len(response_for_context)} attributes.\n'
-
-            # # if attributes were returned, display one to the war-room to visualize the result:
-            # if len(response_for_context) > 0:
-            #     md += tableToMarkdown(f'Attribute ID: {response_for_context[0].get("ID")}', response_for_context[0])
+            response_for_context = build_attributes_search_response(copy.deepcopy(response), include_correlations)
+            attribute_highlights = attribute_response_to_markdown_table(response_for_context)
+            md = tableToMarkdown(f"MISP search-attributes returned {len(response_for_context)} attributes",
+                                 attribute_highlights, removeNull=True)
 
         return CommandResults(
             raw_response=response,
             readable_output=md,
-            outputs=response_for_context,
-            outputs_prefix="MISP.Attribute",
+            outputs={"Attribute": response_for_context, "Paging": paging_outputs},
+            outputs_prefix="MISP.Search_attributes",
             outputs_key_field="ID"
         )
     else:
         return CommandResults(readable_output=f"No attributes found in MISP for the given filters: {args}")
 
 
-def build_events_search_response(response_object: Union[dict, requests.Response], data_keys_to_save) -> dict:
+def build_events_search_response(response_object: Union[dict, requests.Response]) -> dict:
     """
     Convert the response of event search returned from MIPS to the context output format.
+    please note: attributes are excluded from search-events output as the information is too big. User can use the
+    command search-attributes in order to get the information about the attributes.
     """
     event_fields = [
         'id',
@@ -1284,6 +1316,7 @@ def build_events_search_response(response_object: Union[dict, requests.Response]
         'published',
         'uuid',
         'analysis',
+        'attribute_count'
         'timestamp',
         'distribution',
         'proposal_email_lock',
@@ -1294,8 +1327,6 @@ def build_events_search_response(response_object: Union[dict, requests.Response]
         'event_creator_email',
         'Org',
         'Orgc',
-        'Attribute',
-        'ShadowAttribute',
         'RelatedEvent',
         'Galaxy',
         'Tag',
@@ -1303,10 +1334,8 @@ def build_events_search_response(response_object: Union[dict, requests.Response]
     ]
     if isinstance(response_object, str):
         response_object = json.loads(json.dumps(response_object))
-
     events = [event.get('Event') for event in response_object]
     for i in range(0, len(events)):
-        events[i] = limit_attributes_count(events[i])
         # Filter object from keys in event_args
         events[i] = {key: events[i].get(key) for key in event_fields if key in events[i]}
         # Remove 'Event' keyword from 'RelatedEvent'
@@ -1334,42 +1363,80 @@ def build_events_search_response(response_object: Union[dict, requests.Response]
                  'is_galaxy': tag.get('is_galaxy')
                  } for tag in events[i].get('Tag')
             ]
-        # Build attributes
-        events[i]['Attribute'] = build_attributes_search_response(events[i])
 
+        # Build Object
+        if events[i].get('Object'):
+            events[i]['Object'] = [
+                {
+                    'name': event_object.get('name'),
+                    'uuid': event_object.get('uuid'),
+                    'description': event_object.get('description'),
+                    'id': event_object.get('id')
+                } for event_object in events[i]['Object']
+            ]
     events = replace_keys(events)  # type: ignore
-    arrange_context_according_to_user_selection(events, data_keys_to_save)  # type: ignore
-
     return events  # type: ignore
 
 
-def search_events(pymisp, data_keys_to_save) -> CommandResults:
+def event_response_to_markdown_table(response: dict):
+    event_highlights = []
+    for event in response:
+        event_tags = [tag.get('Name') for tag in event.get('Tag')] if event.get('Tag') else None
+        event_galaxies = [galaxy.get('Name') for galaxy in event.get('Galaxy')] if event.get('Galaxy') else None
+        event_objects = [event_object.get('ID') for event_object in event.get('Object')] if event.get(
+            'Object') else None
+        event_highlights.append({
+            'Event ID': event.get('ID'),
+            'Event Tags': event_tags,
+            'Event Galaxies': event_galaxies,
+            'Event Objects': event_objects,
+            'Publish Timestamp': convert_timestamp(event.get('PublishTimestamp')),
+            'Event Info': event.get('Info'),
+            'Event Org ID': event.get('OrganisationID'),
+            'Event Orgc ID': event.get('OwnerOrganisation.ID'),
+            'Event Distribution': event.get('Distribution'),
+            'Event UUID': event.get('UUID'),
+
+        })
+    return event_highlights
+
+
+def search_events(demisto_args, pymisp) -> CommandResults:
     """
     Execute a MIPS search using the 'event' controller.
     """
-    args = prepare_args_to_search()
-    # build MISP complex filter
-    if 'tags' in args:
-        args['tags'] = build_misp_complex_filter(pymisp, args['tags'])
+    args = prepare_args_to_search(pymisp)
     # Set the controller to events to search for events by the given args
     args['controller'] = 'events'
     response = pymisp.search(**args)
-    print(response)
+    page = demisto_args.get('page')
+    limit = demisto_args.get('limit', 50)
 
     if response:
-        response_for_context = build_events_search_response(copy.deepcopy(response), data_keys_to_save)
-        # todo check the outputs to readable
-        md = f'## MISP search-events returned {len(response_for_context)} events.\n'
+        paging_outputs = {}
+        response_for_context = build_events_search_response(copy.deepcopy(response))
+        event_highlights = event_response_to_markdown_table(response_for_context)
+        md = tableToMarkdown(f"MISP search-events returned {len(response_for_context)} events",
+                             event_highlights, removeNull=True)
+        if page:
+            number_of_matched_attributes, next_page_number, last_page_number = handle_pagination(pymisp, args)
+            md += f"Current page number: {page}\n Next page number: {next_page_number}\n " \
+                  f"Total matched attributes: {number_of_matched_attributes}\n Last page number: {last_page_number}\n" \
+                  f"Page size: {limit}"
 
-        # if events were returned, display one to the war-room to visualize the result:
-        if len(response_for_context) > 0:
-            md += tableToMarkdown(f'Event ID: {response_for_context[0].get("ID")}', response_for_context[0])
+            paging_outputs = {
+                'Current_page_number': page,
+                'Next_page_number': next_page_number,
+                'Last_page_number': last_page_number,
+                'Total_matched_attributes': number_of_matched_attributes,
+                'Page_size': limit
+            }
 
         return CommandResults(
             raw_response=response,
             readable_output=md,
-            outputs=response_for_context,
-            outputs_prefix="MISP.Event",
+            outputs={"Event": response_for_context, "Paging": paging_outputs},
+            outputs_prefix="MISP.Search_events",
             outputs_key_field="ID"
         )
     else:
@@ -1414,7 +1481,7 @@ def add_sighting(pymisp: ExpandedPyMISP, demisto_args: dict):
     """
     attribute_id = demisto_args.get('id')
     attribute_uuid = demisto_args.get('uuid')
-    attribute_type = demisto_args['type']  # mandatory arg
+    sighting_type = demisto_args['type']  # mandatory arg
     att_id = attribute_id or attribute_uuid
     if not att_id:
         return_error('ID or UUID not specified')
@@ -1422,13 +1489,13 @@ def add_sighting(pymisp: ExpandedPyMISP, demisto_args: dict):
     sighting_args = {
         'id': attribute_id,
         'uuid': attribute_uuid,
-        'type': SIGHTING_MAP[attribute_type]
+        'type': SIGHTING_TO_TYPE_MAP[sighting_type]
     }
     sigh_obj = MISPSighting()
     sigh_obj.from_dict(**sighting_args)
     pymisp.add_sighting(sigh_obj, att_id)
 
-    human_readable = f'Sighting \'{attribute_type}\' has been successfully added to attribute {att_id}'
+    human_readable = f'Sighting \'{sighting_type}\' has been successfully added to attribute {att_id}'
     return CommandResults(readable_output=human_readable)
 
 
@@ -1661,17 +1728,6 @@ def main():
     suspicious_tag_ids = argToList(params.get('suspicious_tag_ids'))
     pymisp = ExpandedPyMISP(url=misp_url, key=misp_api_key, ssl=verify, proxies=proxies)  # type: ExpandedPyMISP
 
-    data_keys_to_save = argToList(params.get('context_select', []))
-
-    MAX_ATTRIBUTES = params.get('attributes_limit', 1000)
-    try:
-        MAX_ATTRIBUTES = int(MAX_ATTRIBUTES)
-    except ValueError:
-        return_error("Maximum attributes in event must be a positive and a valid number")
-
-    if MAX_ATTRIBUTES < 1:
-        return_error("Maximum attributes in event must be a positive number")
-
     command = demisto.command()
 
     demisto.debug(f'MISP V3: command is {command}')
@@ -1687,13 +1743,14 @@ def main():
         elif command == 'misp-download-sample':
             return_results(download_file(demisto_args=args, pymisp=pymisp))  # checked V
         elif command == 'misp-create-event':
-            return_results(create_event(demisto_args=args, pymisp=pymisp, data_keys_to_save=data_keys_to_save))
+            return_results(create_event(demisto_args=args, pymisp=pymisp))
             # checked V
         elif command == 'misp-add-attribute':
             return_results(
-                add_attribute(demisto_args=args, pymisp=pymisp, data_keys_to_save=data_keys_to_save))  # checked V
+                add_attribute(demisto_args=args, pymisp=pymisp))  # checked V
         elif command == 'misp-search-events':
-            return_results(search_events(pymisp, data_keys_to_save))  # checked
+            return_results(
+                search_events(demisto_args=args, pymisp=pymisp))  # checked
         elif command == 'misp-search-attributes':
             return_results(search_attributes(pymisp, args))  # checked V
         elif command == 'misp-delete-event':
@@ -1701,7 +1758,7 @@ def main():
         elif command == 'misp-add-sighting':
             return_results(add_sighting(demisto_args=args, pymisp=pymisp))  # checked V
         elif command == 'misp-add-tag':
-            return_results(add_tag(demisto_args=args, pymisp=pymisp, data_keys_to_save=data_keys_to_save))  # checked V
+            return_results(add_tag(demisto_args=args, pymisp=pymisp))  # checked V
         elif command == 'misp-add-events-from-feed':
             return_results(
                 add_events_from_feed(demisto_args=args, pymisp=pymisp, use_ssl=verify, proxies=proxies))  # checked V
