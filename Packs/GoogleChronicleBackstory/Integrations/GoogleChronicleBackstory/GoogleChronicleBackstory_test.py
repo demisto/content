@@ -40,7 +40,9 @@ ARGS = {
 
 @pytest.fixture
 def client():
-    return mock.Mock()
+    mocked_client = mock.Mock()
+    mocked_client.region = "General"
+    return mocked_client
 
 
 def return_error(error):
@@ -2085,7 +2087,7 @@ def test_list_detections_command(client):
     with open("./TestData/list_detections_ec.json", "r") as f:
         dummy_ec = json.load(f)
 
-    with open("TestData/list_detections_hr.md", "r") as f:
+    with open("./TestData/list_detections_hr.md", "r") as f:
         dummy_hr = f.read()
 
     mock_response = (
@@ -2403,6 +2405,32 @@ def validate_detections_case_3_iteration_2(incidents):
     assert len(incidents) == 2
 
 
+@mock.patch('GoogleChronicleBackstory.get_detections')
+@mock.patch('demistomock.error')
+def test_no_duplicate_rule_id_on_detection_to_pull_exception(mock_error, mock_build, client):
+    """
+    Demo test for get_max_fetch_detections
+    """
+    from GoogleChronicleBackstory import get_max_fetch_detections
+
+    mock_build.side_effect = ValueError('123')
+    z = ['123', '456']
+    mock_error.return_value = {}
+    for o in range(5):
+        x, y, z, w = get_max_fetch_detections(client, '12', '23', 5,
+                                              [{'id': '123',
+                                                'detection': [{'ruleVersion': '3423', 'ruleName': 'SampleRule'}]},
+                                               {'id': '1234',
+                                                'detection': [{'ruleVersion': '342', 'ruleName': 'SampleRule'}]},
+                                               {'id': '12345',
+                                                'detection': [{'ruleVersion': '34', 'ruleName': 'SampleRule'}]}],
+                                              {'rule_id': '456',
+                                               'next_page_token': 'foorbar'},
+                                              z, '', {})
+
+    assert z == ['123', '456']
+
+
 def test_fetch_incident_detection_case_3(client, mocker):
     """
     1Id return 2, with no NT
@@ -2449,6 +2477,145 @@ def test_fetch_incident_detection_case_3(client, mocker):
     mocker.patch.object(demisto, 'incidents', new=validate_detections_case_3_iteration_2)
     fetch_incidents(client, param)
     assert client.http_client.request.called
+
+
+@mock.patch('GoogleChronicleBackstory.get_detections')
+def test_detection_to_pull_is_empty_when_2nd_rule_returns_data_with_no_next_token(mock_build, client):
+    """
+    case - rule_1 has 5 records, rule_2 has 2 records
+    max_fetch - 3
+    Assumption : On 1st call we pulled rule_1 - 3 indicators with detection_to_pull(next_token, rule_id)
+    On 2nd call we have next_token and rule_id for rule_1 that contains 2 records. This will pull 2 records
+    for rule_1 and 2 records for rule_2 and complete the fetch-incident cycle since we don't have any rule to process
+    test_detection_to_pull_is_empty
+    """
+    from GoogleChronicleBackstory import get_max_fetch_detections, get_detections
+    import io
+
+    with io.open("TestData/fetch_detection_size_2.json", mode='r', encoding='utf-8') as f:
+        get_detection_json_size_2 = json.loads(f.read())
+
+    mock_build.return_value = ('p', get_detection_json_size_2)
+    z = ['456']
+
+    x, y, z, w = get_max_fetch_detections(client, 'st_dummy', 'et_dummy', 3,
+                                          [],
+                                          {'rule_id': '123',
+                                           'next_page_token': 'foorbar'},
+                                          z, '', {})
+
+    assert len(x) == 4
+    assert y == {}
+    assert z == []
+    # Making sure that get_detections called 2 times.
+    assert get_detections.call_count == 2
+
+
+@mock.patch('GoogleChronicleBackstory.validate_response')
+def test_when_detection_to_pull_is_not_empty_and_return_empty_result(mock_validate_response, client):
+    """
+    - case when detection_to_pull is not empty and api return empty response with 200 status
+      then logic should pop next rule and set detection_to_pull empty
+    - Issue reported - 27/04/2021, cfd-992
+    - Debug Log of customer shows 11 HTTP streams (one stream per one rule id)
+      simultaneously (within the same minute) which then gives a 429 error if more are attempted.
+
+    """
+    from GoogleChronicleBackstory import get_max_fetch_detections, validate_response
+
+    mock_validate_response.return_value = {}
+    z = ['rule_2', 'rule_3']
+    x, y, z, w = get_max_fetch_detections(client, 'st_dummy', 'et_dummy', 5,
+                                          [],
+                                          {'rule_id': 'rule_1',
+                                           'next_page_token': 'foorbar'},
+                                          z, '', {})
+
+    assert z == []
+    assert y == {}
+    assert len(x) == 0
+    # Making sure that validate_response called 3 times.
+    assert validate_response.call_count == 3
+
+
+@mock.patch('demistomock.error')
+def test_429_or_500_error_with_max_attempts_60(mock_error, client):
+    """
+    case :   rule_1 - 429 error 30 times, return 3 records
+             rule_2 - 500 error 60 times
+             rule_3 - 500 error 1 times, return 3 records
+    """
+    from GoogleChronicleBackstory import get_max_fetch_detections
+    mock_error.return_value = {}
+    mock_response_with_429_error = (Response(dict(status=429)),
+                                    '{"error": {}}')
+
+    mock_response_with_500_error = (Response(dict(status=500)),
+                                    '{"error": {}}')
+
+    with open("TestData/fetch_detection_size_3.json") as f:
+        get_detection_json_size_3 = f.read()
+
+    mock_response_size_3 = (
+        Response(dict(status=200)),
+        get_detection_json_size_3
+    )
+    client.http_client.request.side_effect = [mock_response_with_429_error] * 30 + [mock_response_size_3] + [
+        mock_response_with_500_error] * 61 + [mock_response_size_3]
+    pending_rule_or_version_id = ['rule_2', 'rule_3']
+    detection_to_pull = {'rule_id': 'rule_1', 'next_page_token': 'foorbar'}
+    simple_backoff_rules = {}
+    for i in range(93):
+        detection_incidents, detection_to_pull, pending_rule_or_version_id, simple_backoff_rules = get_max_fetch_detections(
+            client,
+            'st_dummy',
+            'et_dummy', 5,
+            [],
+            detection_to_pull,
+            pending_rule_or_version_id,
+            '', simple_backoff_rules)
+
+    assert client.http_client.request.call_count == 93
+
+
+@mock.patch('demistomock.error')
+def test_400_and_404_error(mock_error, client):
+    """
+    case : rule_1 ok, rule_2 throw 400, rule_3 ok, rule_5 throw 404, rule_5 ok
+    """
+    from GoogleChronicleBackstory import get_max_fetch_detections
+
+    mock_error.return_value = {}
+    mock_response_with_400_error = (Response(dict(status=400)),
+                                    '{"error": {}}')
+
+    mock_response_with_404_error = (Response(dict(status=404)),
+                                    '{"error": {}}')
+
+    with open("TestData/fetch_detection_size_3.json") as f:
+        get_detection_json_size_3 = f.read()
+
+    mock_response_size_3 = (
+        Response(dict(status=200)),
+        get_detection_json_size_3
+    )
+    client.http_client.request.side_effect = [mock_response_size_3, mock_response_with_400_error,
+                                              mock_response_size_3, mock_response_with_404_error,
+                                              mock_response_size_3]
+
+    pending_rule_or_version_id = ['rule_2', 'rule_3', 'rule_4', 'rule_5']
+    detection_to_pull = {'rule_id': 'rule_1', 'next_page_token': 'foorbar'}
+
+    simple_backoff_rules = {}
+    for i in range(5):
+        detection_incidents, detection_to_pull, pending_rule_or_version_id, simple_backoff_rules = get_max_fetch_detections(
+            client,
+            'st_dummy',
+            'et_dummy', 15,
+            [],
+            detection_to_pull,
+            pending_rule_or_version_id,
+            '', simple_backoff_rules)
 
 
 def validate_detections_case_4_iteration_1_and_2(incidents):
@@ -2512,6 +2679,7 @@ def test_fetch_incident_detection_case_4(client, mocker):
     fetch_incidents(client, param)
     mock_last_run = {
         'start_time': '2020-11-20T12:00:00Z',
+        'rule_first_fetched_time': '2020-11-20T12:00:01Z',
         'detection_to_process': [{'id': '123', 'detection': [{'ruleVersion': '3423', 'ruleName': 'SampleRule'}]},
                                  {'id': '1234', 'detection': [{'ruleVersion': '342', 'ruleName': 'SampleRule'}]},
                                  {'id': '12345', 'detection': [{'ruleVersion': '34', 'ruleName': 'SampleRule'}]}],
@@ -2525,6 +2693,7 @@ def test_fetch_incident_detection_case_4(client, mocker):
     mocker.patch.object(demisto, 'incidents', new=validate_detections_case_4_iteration_3)
     mock_last_run_2 = {
         'start_time': '2020-11-20T12:00:00Z',
+        'rule_first_fetched_time': '2020-11-20T12:00:01Z',
         'detection_to_process': [],
         'detection_to_pull': {},
         'pending_rule_or_version_id_with_alert_state': {'rule_id': ['789'], 'alert_state': ''}
@@ -2793,3 +2962,122 @@ def test_gcb_list_user_alert_when_no_alert_found(mocker, client):
     assert not ec
     assert not events
     assert client.http_client.request.called
+
+
+def test_list_rules_command(client):
+    """
+    When valid response comes in gcb-list-rules command it should respond with result.
+    """
+    from GoogleChronicleBackstory import gcb_list_rules_command
+
+    args = {'page_size': '2',
+            'page_token': 'foobar_page_token'}
+
+    with open("./TestData/list_rules_response.json", "r") as f:
+        dummy_response = f.read()
+
+    with open("./TestData/list_rules_ec.json", "r") as f:
+        dummy_ec = json.load(f)
+
+    with open("./TestData/list_rules_hr.txt", "r") as f:
+        dummy_hr = f.read()
+
+    mock_response = (
+        Response(dict(status=200)),
+        dummy_response
+    )
+
+    client.http_client.request.return_value = mock_response
+
+    hr, ec, json_data = gcb_list_rules_command(client, args)
+
+    assert ec == dummy_ec
+    assert hr == dummy_hr
+
+    # Test command when no rules found
+    client.http_client.request.return_value = (
+        Response(dict(status=200)),
+        '{}'
+    )
+
+    hr, ec, json_data = gcb_list_rules_command(client, args)
+    assert ec == {}
+    assert hr == 'No Rules Found'
+
+
+def test_get_rules():
+    """
+    Internal method used in gcb-list-rules command.
+    """
+    from GoogleChronicleBackstory import get_rules
+
+    with pytest.raises(ValueError) as e:
+        get_rules(client, args={'page_size': 'dummy'})
+
+    assert str(e.value) == 'Page size must be a non-zero numeric value'
+
+    with pytest.raises(ValueError) as e:
+        get_rules(client, args={'page_size': '100000'})
+
+    assert str(e.value) == 'Page size should be in the range from 1 to 1000.'
+
+    with pytest.raises(ValueError) as e:
+        get_rules(client, args={'page_size': '-5'})
+
+    assert str(e.value) == 'Page size must be a non-zero numeric value'
+
+    with pytest.raises(ValueError) as e:
+        get_rules(client, args={'page_size': '0'})
+
+    assert str(e.value) == 'Page size must be a non-zero numeric value'
+
+    with pytest.raises(ValueError) as e:
+        get_rules(client, args={'live_rule': 'dummy'})
+
+    assert str(e.value) == 'Live rule should be true or false.'
+
+
+def test_gcb_list_rules_live_rule_argument_true(client):
+    """
+     Test gcb_list_rules command when live_rule argument is true.
+    """
+    from GoogleChronicleBackstory import gcb_list_rules_command
+
+    with open("./TestData/list_rules_live_rule_true.json", "r") as f:
+        response_true = f.read()
+
+    with open("./TestData/list_rules_live_rule_true_ec.json", "r") as f:
+        dummy_ec = json.load(f)
+    mock_response = (
+        Response(dict(status=200)),
+        response_true
+    )
+
+    client.http_client.request.return_value = mock_response
+
+    hr, ec, json_data = gcb_list_rules_command(client, args={'live_rule': 'true'})
+
+    assert ec == dummy_ec
+
+
+def test_gcb_list_rules_live_rule_argument_false(client):
+    """
+     Test gcb_list_rules command when live_rule argument is false.
+    """
+    from GoogleChronicleBackstory import gcb_list_rules_command
+
+    with open("./TestData/list_rules_live_rule_false.json", "r") as f:
+        response_false = f.read()
+
+    with open("./TestData/list_rules_live_rule_false_ec.json", "r") as f:
+        dummy_ec = json.load(f)
+    mock_response = (
+        Response(dict(status=200)),
+        response_false
+    )
+
+    client.http_client.request.return_value = mock_response
+
+    hr, ec, json_data = gcb_list_rules_command(client, args={'live_rule': 'false'})
+
+    assert ec == dummy_ec
