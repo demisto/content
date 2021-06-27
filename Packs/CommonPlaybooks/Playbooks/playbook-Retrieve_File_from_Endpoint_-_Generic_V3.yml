@@ -71,7 +71,7 @@ tasks:
       version: -1
       name: Get File Sample By Hash - Generic v3
       description: |-
-        'This playbook returns a file sample from a specified path and host that you input in the following playbooks::'
+        'This playbook returns a file sample from a specified path and host that you input in the following playbooks:'
         - Get binary file by MD5 hash from Carbon Black telemetry data - VMware Carbon Black EDR v2.
         - Get the threat (file) attached to a specific SHA256 hash - Cylance Protect v2.
       playbookName: Get File Sample By Hash - Generic v3
