@@ -830,14 +830,6 @@
             "timeout": 2400
         },
         {
-            "integrations": "QRadar",
-            "playbookID": "test playbook - QRadarCorrelations",
-            "timeout": 2000,
-            "fromversion": "5.0.0",
-            "toversion": "5.9.9",
-            "is_mockable": false
-        },
-        {
             "integrations": "QRadar_v2",
             "playbookID": "test playbook - QRadarCorrelations For V2",
             "timeout": 2600,
