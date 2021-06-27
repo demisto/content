@@ -148,6 +148,15 @@ server_master:
     INSTANCE_ROLE: "Server Master"
 
 
+fan-in-nightly:
+  stage: fan-in
+  rules:
+    - if: '$NIGHTLY'
+      when: always
+  script:
+    - echo "fan in"
+
+
 slack-notify-nightly-build:
   extends:
     - .trigger-slack-notification
@@ -157,7 +166,7 @@ slack-notify-nightly-build:
   variables:
     PIPELINE_TO_QUERY: $CI_PIPELINE_ID
     WORKFLOW: 'Content Nightly'
-    JOB_NAME: 'server_master'
+    JOB_NAME: 'fan-in-nightly'
     # Passes the environment variable from the parent pipeline to the child which can be useful for cases
     # when triggering pipeline with alternate env variable value passed in the API call
     SLACK_CHANNEL: $SLACK_CHANNEL
