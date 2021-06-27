@@ -5,12 +5,17 @@ from CommonServerPython import *  # noqa: F401
 
 
 def check_context():
-    incident_id = demisto.incidents()[0]['id']
-    failed_tasks = (demisto.executeCommand("getContext", {"id": incident_id})[0].get('Contents', {}).
-                    get('context', {})).get('GetFailedTasks')
+    incidents = demisto.incidents()
+    if not incidents:
+        raise DemistoException("No incidents were found. Make sure you are running this task from an existing incident.")
+    incident_id = incidents[0]['id']
+    failed_tasks = (demisto.executeCommand("getContext", {"id": incident_id}))
     if not failed_tasks:
-        raise DemistoException("Couldn't find failed tasks in the context under the key GetFailedTasks."
-                     " Please run !GetFailedTasks and try again.")
+        raise DemistoException("Error while retrieving context data.")
+    failed_tasks = failed_tasks[0].get('Contents', {}).get('context', {}).get('GetFailedTasks')
+    if not failed_tasks:
+        raise DemistoException("Couldn't find failed tasks in the context under the key GetFailedTasks. Please run "
+                               "!GetFailedTasks and try again.")
     return failed_tasks
 
 # If the failed task is from a playbook that has a string match from the playbook_exclusions, remove it from the list.
@@ -35,7 +40,7 @@ def restart_tasks(failed_tasks, sleep_time, group_size):
         task_id, incident_id, playbook_name, task_name = task['Task ID'], task['Incident ID'], task['Playbook Name'],\
                                                          task['Task Name']
         demisto.executeCommand("taskReopen", {'id': task_id, 'incident_id': incident_id})
-        demisto.info(f'Restarting task with id: {task_id} and incident id: {incident_id}')
+        # demisto.info(f'Restarting task with id: {task_id} and incident id: {incident_id}')
         body = {'invId': incident_id, 'inTaskID': task_id}
 
         if is_xsoar_version_6_2:
@@ -63,7 +68,10 @@ def main():
     sleep_time = int(args.get('sleep_time'))
     incident_limit = int(args.get('incident_limit'))
     group_size = int(args.get('group_size'))
+
     try:
+        if group_size == 0:
+            raise DemistoException('The group size argument should be 1 or higher')
         # Get Context for Failed Tasks
         failed_tasks = check_context()
         # Remove Excluded Playbooks And Limit
@@ -79,7 +87,7 @@ def main():
                                       outputs_prefix='RestartedTasks',
                                       outputs={"Total": restarted_tasks_count, "Task": restarted_tasks}))
     except DemistoException as e:
-        return_error(f'Failed while trying to restart failed tasks. command. Error: {e}', error=traceback.format_exc())
+        return_error(f'Failed while trying to restart failed tasks. Error: {e}', error=traceback.format_exc())
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
