@@ -1044,16 +1044,22 @@ script:
     arguments:
     - name: username
       description: Username
+      required: true
     - name: password
       description: Password
+      required: true
     - name: firstname
       description: First Name
+      required: true
     - name: lastname
       description: Last Name
+      required: true
     - name: mobilephone
       description: Mobile Phone
+      required: true
     - name: email
       description: email
+      required: true
     description: Create user
   - name: safewalk-delete-user
     arguments:

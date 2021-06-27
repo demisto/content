@@ -256,7 +256,7 @@ def get_transactionlog(client, args):
 
     result = client.get_transactionlog(page, search, locked)
 
-    readable_output = f'## {result}'
+    readable_output = tableToMarkdown('Transaction log', result)
 
     command_results = CommandResults(
         readable_output=readable_output,
