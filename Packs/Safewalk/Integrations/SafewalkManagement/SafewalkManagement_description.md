@@ -1,6 +1,6 @@
 ## Create an API token.
 
-The following steps generates an API token key to be able to comunicate with your Safewalk server
+An API token is required for communicating with your Safewalk server.
 
 To create an API token, follow these steps:
 
