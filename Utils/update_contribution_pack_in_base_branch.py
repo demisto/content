@@ -3,6 +3,7 @@ import argparse
 import os
 import shutil
 import sys
+from subprocess import Popen
 from typing import List
 
 import requests
@@ -38,7 +39,8 @@ def main():
         string_dir_names = f'Packs/{" Packs/".join(packs_dir_names)}'
 
         try:
-            run_command(f'git fetch https://{token}@github.com/{repo}/content.git :{repo}/{branch}', is_silenced=True)
+            with open('/dev/null', 'w') as dev_null:
+                Popen(f'git fetch https://{token}@github.com/{repo}/content.git :{repo}/{branch}'.split(), stdout=dev_null)
         except SystemExit:
             pass
         command = f'git checkout {repo}/{branch} {string_dir_names}'
