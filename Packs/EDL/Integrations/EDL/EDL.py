@@ -102,7 +102,8 @@ def refresh_edl_context(
     Parameters:
         request_args: Request arguments
         save_integration_context: Flag to save the result to integration context instead of LOCAL_CACHE
-        use_legacy_query (bool): Whether to use filter fields in the indicators search
+        use_legacy_query (bool): Whether to use filter fields in the indicators search.
+                                 When set to True will not filter fields.
 
     Returns: List(IoCs in output format)
     """
@@ -153,7 +154,8 @@ def find_indicators_to_limit(
             the EDL (Cortex XSOAR indicator query syntax)
         limit (int): The maximum number of indicators to include in the EDL
         offset (int): The starting index from which to fetch incidents
-        use_legacy_query (bool): Whether to use filter fields in the indicators search
+        use_legacy_query (bool): Whether to use filter fields in the indicators search.
+                                 When set to True will not filter fields.
 
     Returns:
         list: The IoCs list up until the amount set by 'limit'
@@ -197,7 +199,8 @@ def find_indicators_to_limit_loop(indicator_query: str, limit: int, total_fetche
         total_fetched (int): The amount of indicators already fetched
         next_page (int): The page we are up to in the loop
         last_found_len (int): The amount of indicators found in the last fetch
-        use_legacy_query (bool): Whether to use filter fields in the indicators search
+        use_legacy_query (bool): Whether to use filter fields in the indicators search.
+                                 When set to True will not filter fields.
 
     Returns:
         (tuple): The iocs and the last page
@@ -370,7 +373,8 @@ def get_edl_ioc_values(on_demand: bool,
         request_args: the request arguments
         edl_cache: The integration context OR EDL_LOCAL_CACHE
         cache_refresh_rate: The cache_refresh_rate configuration value
-        use_legacy_query (bool): Whether to use filter fields in the indicators search
+        use_legacy_query (bool): Whether to use filter fields in the indicators search.
+                                 When set to True will not filter fields.
 
     Returns:
         string representation of the iocs
