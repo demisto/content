@@ -7,7 +7,7 @@ Use this Script to re-run failed tasks. Run in the same incident after running `
 | --- | --- |
 | Script Type | python3 |
 | Tags |  |
-| Demisto Version | 6.0.0 |
+| XSOAR Version | 6.0.0 |
 
 ## Dependencies
 ---
