@@ -1,6 +1,6 @@
 This playbook returns a file sample correlating to a path into the War Room using the following sub-playbooks:
 inputs:
-1) Get File Sample From Path - Powershell Remoting.
+1) PS Remote Get File Sample From Path.
 2) Get File Sample From Path - VMware Carbon Black EDR (Live Response API).
 
 
@@ -8,8 +8,8 @@ inputs:
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
-* PS Remote Get File Sample From Path
 * Get File Sample From Path - VMware Carbon Black EDR - Live Response API
+* PS Remote Get File Sample From Path
 
 ### Integrations
 This playbook does not use any integrations.
@@ -28,7 +28,6 @@ This playbook does not use any commands.
 | Hostname | Hostname of the machine on which the file is located. |  | Optional |
 | Path | The path of the file to retrieve.<br/>For example:<br/>C:\\users\\folder\\file.txt<br/> |  | Optional |
 | Agent_ID | The ID of the agent, or of the endpoint, in the relevant integration \(such as EDR\). |  | Optional |
-| Use PowerShell Remoting | By providing the value yes to this input the file will be retrieved VIA PowerShell Remoting pack.  |  | Optional |
 
 ## Playbook Outputs
 ---

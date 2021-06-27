@@ -6,7 +6,7 @@ name: Get File Sample From Path - Generic V3
 description: |
   This playbook returns a file sample correlating to a path into the War Room using the following sub-playbooks:
   inputs:
-  1) Get File Sample From Path - Powershell Remoting.
+  1) PS Remote Get File Sample From Path.
   2) Get File Sample From Path - VMware Carbon Black EDR (Live Response API).
 starttaskid: "0"
 tasks:
@@ -23,59 +23,14 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "1"
+      - "11"
+      - "14"
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 265,
           "y": 50
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "1":
-    id: "1"
-    taskid: bcf5fa99-0b89-4225-8b0c-bc3adb41deee
-    type: condition
-    task:
-      id: bcf5fa99-0b89-4225-8b0c-bc3adb41deee
-      version: -1
-      name: Use Powershell Remoting?
-      description: Yes, if we want to use the D2 agent to get the file.
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "11"
-      "yes":
-      - "13"
-    scriptarguments:
-      left:
-        simple: ${inputs.UseD2}
-      right:
-        simple: "True"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              simple: inputs.Use PowerShell Remoting
-            iscontext: true
-          right:
-            value:
-              simple: "yes"
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 195
         }
       }
     note: false
@@ -100,7 +55,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 690
+          "y": 515
         }
       }
     note: false
@@ -127,8 +82,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 370
+          "x": 50,
+          "y": 195
         }
       }
     note: false
@@ -138,10 +93,10 @@ tasks:
     quietmode: 0
   "12":
     id: "12"
-    taskid: 45e73b31-dfa3-4702-8a9c-d332740c1277
+    taskid: 6d73fcbe-5c0f-4dec-8fa4-9f0c1dd70a8d
     type: playbook
     task:
-      id: 45e73b31-dfa3-4702-8a9c-d332740c1277
+      id: 6d73fcbe-5c0f-4dec-8fa4-9f0c1dd70a8d
       version: -1
       name: Get File Sample From Path - VMware Carbon Black EDR - Live Response API
       description: |-
@@ -164,8 +119,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 510
+          "x": 50,
+          "y": 340
         }
       }
     note: false
@@ -175,17 +130,19 @@ tasks:
     quietmode: 0
   "13":
     id: "13"
-    taskid: 095cc7bc-5698-451a-8e62-3fef2f8ff610
+    taskid: 9c4ed95f-7e7e-4dcc-8c09-29a421593849
     type: playbook
     task:
-      id: 095cc7bc-5698-451a-8e62-3fef2f8ff610
+      id: 9c4ed95f-7e7e-4dcc-8c09-29a421593849
       version: -1
       name: PS Remote Get File Sample From Path
+      description: This playbook leverages the Windows built-in PowerShell and WinRM
+        capabilities to connect to a Windows host to acquire a file as forensic evidence
+        for further analysis.
       playbookName: PS Remote Get File Sample From Path
       type: playbook
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "8"
@@ -207,8 +164,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 20,
-          "y": 370
+          "x": 480,
+          "y": 340
         }
       }
     note: false
@@ -216,17 +173,42 @@ tasks:
     ignoreworker: false
     skipunavailable: true
     quietmode: 0
+  "14":
+    id: "14"
+    taskid: 4ae1d82e-3106-42b4-848e-67f64641dd08
+    type: title
+    task:
+      id: 4ae1d82e-3106-42b4-848e-67f64641dd08
+      version: -1
+      name: Use Powershell Remoting
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "13"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
 view: |-
   {
-    "linkLabelsPosition": {
-      "1_11_#default#": 0.44,
-      "1_13_yes": 0.59
-    },
+    "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 705,
-        "width": 840,
-        "x": 20,
+        "height": 530,
+        "width": 810,
+        "x": 50,
         "y": 50
       }
     }
@@ -250,12 +232,6 @@ inputs:
   required: false
   description: The ID of the agent, or of the endpoint, in the relevant integration
     (such as EDR).
-  playbookInputQuery:
-- key: Use PowerShell Remoting
-  value: {}
-  required: false
-  description: 'By providing the value yes to this input the file will be retrieved
-    VIA PowerShell Remoting pack. '
   playbookInputQuery:
 outputs:
 - contextPath: File.Size
