@@ -302,7 +302,7 @@ def test_module():
     )
 
 
-def encode_file_name(file_name: str):
+def encode_file_name(file_name):
     """
     encodes the file name - i.e ignoring non ASCII chars and removing backslashes
 
