@@ -267,5 +267,5 @@ outputs:
   description: File SSDeep.
   type: string
 tests:
-- No
+- No tests.
 fromversion: 6.0.0
