@@ -3377,6 +3377,12 @@
             "playbookID": "ProofpointTAP-Test"
         },
         {
+            "integrations": "QualysV2",
+            "playbookID": "QualysVulnerabilityManagement-Test",
+            "fromversion": "5.5.0",
+            "timeout": 3000
+        },
+        {
             "integrations": "ThreatExchange v2",
             "playbookID": "ThreatExchangeV2-test",
             "fromversion": "5.5.0"
