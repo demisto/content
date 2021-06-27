@@ -16,6 +16,7 @@ from sklearn.manifold import TSNE
 import hdbscan
 from datetime import datetime
 from typing import Type, Tuple
+import math
 
 GENERAL_MESSAGE_RESULTS = "#### - We succeeded to group **%s incidents into %s groups**.\n #### - The grouping was based on " \
                           "the **%s** field(s).\n #### - Each group name is based on the majority value of the **%s** field in " \
@@ -847,7 +848,8 @@ def calculate_range(data):
     min_size = min(all_data_size)
     min_range = max(30, min_size)
     max_range = min_range + max(300, max_size - min_size)
-    return [min_range, max_range], [min(all_x), max(all_x)], [min(all_y), max(all_y)]
+    return [min_range, max_range], [int(math.ceil(min(all_x))), int(math.ceil(max(all_x)))], \
+           [int(math.ceil(min(all_y))), int(math.ceil(max(all_y)))]
 
 
 def main():
