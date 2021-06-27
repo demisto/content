@@ -5,7 +5,7 @@ contentitemexportablefields:
 name: Retrieve File from Endpoint - Generic V3
 description: |-
   'This playbook retrieves a file sample from an endpoint using the following playbooks:'
-  - Get File Sample From Path - Generic v3.
+  - Get File Sample From Path - Generic v2.
   - Get File Sample By Hash - Generic v3.
 starttaskid: "0"
 tasks:
@@ -108,17 +108,21 @@ tasks:
     quietmode: 0
   "5":
     id: "5"
-    taskid: 69f50831-4beb-4fc2-8cee-e11dd8ecba6b
+    taskid: c5571a25-f1e3-4bd1-84eb-b72477be826b
     type: playbook
     task:
-      id: 69f50831-4beb-4fc2-8cee-e11dd8ecba6b
+      id: c5571a25-f1e3-4bd1-84eb-b72477be826b
       version: -1
       name: Get File Sample From Path - Generic V3
+      description: |
+        This playbook returns a file sample correlating to a path into the War Room using the following sub-playbooks:
+        inputs:
+        1) PS Remote Get File Sample From Path.
+        2) Get File Sample From Path - VMware Carbon Black EDR (Live Response API).
       playbookName: Get File Sample From Path - Generic V3
       type: playbook
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "3"
@@ -129,8 +133,6 @@ tasks:
         simple: ${inputs.Hostname}
       Path:
         simple: ${inputs.Path}
-      Use PowerShell Remoting:
-        simple: ${inputs.Use PowerShell Remoting}
     separatecontext: true
     loop:
       iscommand: false
@@ -184,13 +186,6 @@ inputs:
     The path of the file to retrieve.
     For example:
     C:\users\folder\file.txt
-  playbookInputQuery:
-- key: Use PowerShell Remoting
-  value:
-    simple: "no"
-  required: false
-  description: 'By providing the value yes to this input the file will be retrieved
-    VIA PowerShell Remoting pack. '
   playbookInputQuery:
 - key: Agent_ID
   value: {}
