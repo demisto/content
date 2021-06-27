@@ -1,4 +1,4 @@
-Run in the same incident that `GetFailedTasks` to be able to restart all (or a some) of the failed tasks
+Use this Script to re-run failed tasks. Run in the same incident after running `GetFailedTasks` for restarting all of the failed tasks or some of them.
 
 ## Script Data
 ---
