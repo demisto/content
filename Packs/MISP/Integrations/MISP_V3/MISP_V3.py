@@ -1,7 +1,6 @@
 # type: ignore
 import base64
 import logging
-import math
 import warnings
 import zipfile
 from io import BytesIO
@@ -1092,7 +1091,7 @@ def prepare_args_to_search(pymisp):
     if 'to' in args:
         args['to_date'] = args.pop('to')
     if 'event_id' in args:
-        args['eventid'] = args.pop('event_id')
+        args['eventid'] = argToList(args.pop('event_id'))
     if 'last' in args:
         args['publish_timestamp'] = args.pop('last')
     if 'include_decay_score' in args:

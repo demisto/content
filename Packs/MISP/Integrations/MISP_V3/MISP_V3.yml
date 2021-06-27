@@ -75,8 +75,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: The events ids to be returned by the search.
-      isArray: false
+      description: A comma-separated list of event ids to be returned by the search.
+      isArray: true
       name: event_id
       required: false
       secret: false
@@ -1696,8 +1696,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: Rerutn the attributes that are part of the given event id.
-      isArray: false
+      description: A comma-separated list of event ids, rerutn the attributes that are part of the given event ids.
+      isArray: true
       name: event_id
       required: false
       secret: false
