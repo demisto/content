@@ -286,6 +286,7 @@ def upload_index_to_storage(index_folder_path: str, extract_destination_path: st
     logging.debug(f'commit hash is: {commit}')
     index_json_path = os.path.join(index_folder_path, f'{GCPConfig.INDEX_NAME}.json')
     logging.info(f'index json path: {index_json_path}')
+    logging.info(f'Private packs are: {private_packs}')
     with open(index_json_path, "w+") as index_file:
         index = {
             'revision': build_number,
@@ -465,9 +466,11 @@ def add_private_content_to_index(private_index_path: str, extract_destination_pa
         logging.info("get_private_packs")
         private_packs = get_private_packs(private_index_path, pack_names,
                                           extract_destination_path)
+        logging.info(f'After getting private packs: {private_packs}')
 
         logging.info("get_updated_private_packs")
         updated_private_packs = get_updated_private_packs(private_packs, index_folder_path)
+        logging.info(f'After getting updated private packs: {updated_private_packs}')
 
         logging.info("add_private_packs_to_index")
         add_private_packs_to_index(index_folder_path, private_index_path)
