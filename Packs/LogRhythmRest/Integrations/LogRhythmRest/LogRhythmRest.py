@@ -498,7 +498,7 @@ SOURCE_TYPE_MAP = {
     "LogRhythm_User_Activity_Monitor_(Solaris)": 1000061,
     "LogRhythm_User_Activity_Monitor_(Windows)": 1000059,
     "MS_Event_Log_for_XP/2000/2003_-_Application": 31,
-    "MS_Event_Log_for_XP/2000/2003_-_Application_-_Español": 1000571,
+    "MS_Event_Log_for_XP/2000/2003_-_Application_-_Espanol": 1000571,
     "MS_Event_Log_for_XP/2000/2003_-_BioPassword": 151,
     "MS_Event_Log_for_XP/2000/2003_-_DFS": 1000112,
     "MS_Event_Log_for_XP/2000/2003_-_Directory_Service": 32,
@@ -1714,7 +1714,7 @@ def lr_execute_search_query(data_args):
     headers['Content-Type'] = 'application/json'
 
     search_task = http_request('POST', 'lr-search-api/actions/search-task', json.dumps(querybody), headers)
-    task_id = search_task["TaskId"]
+    task_id = search_task.get('TaskId')
 
     results = CommandResults(
         outputs={"TaskID": task_id},

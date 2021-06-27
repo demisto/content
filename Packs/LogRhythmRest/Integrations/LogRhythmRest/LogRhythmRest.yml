@@ -1082,7 +1082,7 @@ script:
       - LogRhythm_User_Activity_Monitor_(Solaris)
       - LogRhythm_User_Activity_Monitor_(Windows)
       - MS_Event_Log_for_XP/2000/2003_-_Application
-      - MS_Event_Log_for_XP/2000/2003_-_Application_-_Espa√±ol
+      - MS_Event_Log_for_XP/2000/2003_-_Application_-_Espanol
       - MS_Event_Log_for_XP/2000/2003_-_BioPassword
       - MS_Event_Log_for_XP/2000/2003_-_DFS
       - MS_Event_Log_for_XP/2000/2003_-_Directory_Service
