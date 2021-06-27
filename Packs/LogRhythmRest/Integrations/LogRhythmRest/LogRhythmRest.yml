@@ -1154,13 +1154,12 @@ script:
       - MS_Windows_Event_Logging_:_Espaniol_-_Application
       - MS_Windows_Event_Logging_:_Espaniol_-_Security
       - MS_Windows_Event_Logging_:_Espaniol_-_System
-      - MS_Windows_Event_Logging_:_Français_-_System
-      - MS_Windows_Event_Logging_:_Français_-_Security
+      - MS_Windows_Event_Logging_:_Francais_-_System
+      - MS_Windows_Event_Logging_:_Francais_-_Security
       - MS_Windows_Event_Logging_XML_-_ADFS
       - MS_Windows_Event_Logging_XML_-_Application
       - MS_Windows_Event_Logging_XML_-_Forwarded_Events
       - MS_Windows_Event_Logging_XML_-_Generic
-      - MS_Windows_Event_Logging_XML_‚Äì_LRTracer
       - MS_Windows_Event_Logging_XML_-_Microsoft-Windows-NTLM/Operational
       - MS_Windows_Event_Logging_XML_-_Security
       - MS_Windows_Event_Logging_XML_-_Sysmon
