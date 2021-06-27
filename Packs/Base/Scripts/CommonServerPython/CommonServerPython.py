@@ -7608,10 +7608,10 @@ class TableOrListWidget(BaseWidget):
 
 class IndicatorsSearcher:
     """Used in order to search indicators by the paging or serachAfter param
-    :type page: ``int``
+    :type page: ``Optional[int]``
     :param page: the number of page from which we start search indicators from.
 
-    :type filter_fields: ``str``
+    :type filter_fields: ``Optional[str]``
     :param filter_fields: comma separated fields to filter (e.g. "value,type")
 
     :return: No data returned
@@ -7660,7 +7660,7 @@ class IndicatorsSearcher:
                 value=value,
                 searchAfter=self._search_after_param,
                 populateFields=self._filter_fields if self._can_use_filter_fields else None,
-                page=self._page if not self._search_after_param else None
+                page=self._page if not self._can_use_search_after else None
             )
             res = demisto.searchIndicators(**search_iocs_params)
             self._search_after_param = res[self._search_after_title]

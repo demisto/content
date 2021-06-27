@@ -334,7 +334,7 @@ class TestHelperFunctions:
                                                                  last_found_len=IOC_RES_LEN)
             assert nxt_pg == 1  # assert entered into loop
 
-    @pytest.mark.create_values_for_returned_dict
+    @pytest.mark.format_indicators
     def test_create_values_for_returned_dict_1(self):
         """Test XSOAR CSV out"""
         from ExportIndicators import create_values_for_returned_dict, FORMAT_XSOAR_CSV, RequestArguments, CTX_VALUES_KEY
@@ -349,7 +349,7 @@ class TestHelperFunctions:
                 for csv_line in csv_out.split('\n'):
                     assert csv_line in expected_csv_out
 
-    @pytest.mark.create_values_for_returned_dict
+    @pytest.mark.format_indicators
     def test_create_values_for_returned_dict_2(self):
         """Test XSOAR JSON out"""
         from ExportIndicators import create_values_for_returned_dict, FORMAT_XSOAR_JSON, CTX_VALUES_KEY, RequestArguments
@@ -360,7 +360,7 @@ class TestHelperFunctions:
             json_out = json.loads(returned_dict.get(CTX_VALUES_KEY))
             assert json_out == iocs_json
 
-    @pytest.mark.create_values_for_returned_dict
+    @pytest.mark.format_indicators
     def test_create_values_for_returned_dict_3(self):
         """Test XSOAR JSON_SEQ out"""
         from ExportIndicators import create_values_for_returned_dict, FORMAT_XSOAR_JSON_SEQ, CTX_VALUES_KEY, RequestArguments
@@ -372,7 +372,7 @@ class TestHelperFunctions:
             for seq_line in json_seq_out.split('\n'):
                 assert json.loads(seq_line) in iocs_json
 
-    @pytest.mark.create_values_for_returned_dict
+    @pytest.mark.format_indicators
     def test_create_values_for_returned_dict_4(self):
         """Test TEXT out"""
         from ExportIndicators import create_values_for_returned_dict, FORMAT_TEXT, CTX_VALUES_KEY, RequestArguments

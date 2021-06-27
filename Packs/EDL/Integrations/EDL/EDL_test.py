@@ -10,7 +10,7 @@ IOC_RES_LEN = 38
 
 
 class TestHelperFunctions:
-    def test_get_edl_ioc_values_1(self, mocker):
+    def test_get_edl_ioc_values_1(self):
         """Test on_demand"""
         from EDL import get_edl_ioc_values, RequestArguments
         with open('EDL_test/TestHelperFunctions/iocs_cache_values_text.json', 'r') as iocs_text_values_f:
@@ -35,7 +35,7 @@ class TestHelperFunctions:
             mocker.patch.object(edl, 'refresh_edl_context', return_value=iocs_text_dict)
             mocker.patch.object(demisto, 'getLastRun', return_value={'last_run': 1578383898000})
             request_args = edl.RequestArguments(query='', limit=50, offset=0)
-            ioc_list = edl.get_edl_ioc_values(
+            ioc_list = edl.get_edl(
                 on_demand=False,
                 request_args=request_args,
                 edl_cache=iocs_text_dict,
@@ -54,7 +54,7 @@ class TestHelperFunctions:
             mocker.patch.object(demisto, 'getIntegrationContext', return_value=iocs_text_dict)
             request_args = edl.RequestArguments(query='', limit=50, offset=0)
             mocker.patch.object(demisto, 'getLastRun', return_value={'last_run': 1578383898000})
-            ioc_list = edl.get_edl_ioc_values(
+            ioc_list = edl.get_edl(
                 on_demand=False,
                 request_args=request_args,
                 edl_cache=iocs_text_dict,
@@ -117,7 +117,7 @@ class TestHelperFunctions:
             iocs_json = json.loads(iocs_json_f.read())
             mocker.patch.object(edl, 'find_indicators_to_limit', return_value=iocs_json)
             request_args = edl.RequestArguments(query='', limit=38, url_port_stripping=True)
-            edl_vals = edl.refresh_edl_context(request_args)
+            edl_vals = edl.create_new_edl(request_args)
             for ioc in iocs_json:
                 ip = ioc.get('value')
                 stripped_ip = edl._PORT_REMOVAL.sub(edl._URL_WITHOUT_PORT, ip)
@@ -156,7 +156,7 @@ class TestHelperFunctions:
             iocs_dict = {'iocs': json.loads(iocs_json_f.read())}
             limit = 50
             mocker.patch.object(demisto, 'searchIndicators', return_value=iocs_dict)
-            edl_vals, nxt_pg = edl.find_indicators_to_limit_loop(indicator_query='', limit=limit)
+            edl_vals, nxt_pg = edl.find_indicators_to_limit(indicator_query='', limit=limit)
             assert nxt_pg == 1  # assert entered into loop
 
     def test_find_indicators_to_limit_loop_2(self, mocker):
@@ -167,8 +167,8 @@ class TestHelperFunctions:
             limit = 30
             mocker.patch.object(demisto, 'searchIndicators', return_value=iocs_dict)
             edl.PAGE_SIZE = IOC_RES_LEN
-            edl_vals, nxt_pg = edl.find_indicators_to_limit_loop(indicator_query='', limit=limit,
-                                                                 last_found_len=IOC_RES_LEN)
+            edl_vals, nxt_pg = edl.find_indicators_to_limit(indicator_query='', limit=limit,
+                                                            last_found_len=IOC_RES_LEN)
             assert nxt_pg == 1  # assert entered into loop
 
     def test_create_values_for_returned_dict(self):

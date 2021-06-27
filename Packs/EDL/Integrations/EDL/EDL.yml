@@ -65,9 +65,21 @@ configuration:
   type: 8
 - additionalinfo: If selected, any URL entry that is not compliant with PAN-OS EDL
     URL format is dropped instead of being rewritten.
-  display: PAN-OS URL Format Drop Invalid Entries
+  display: PAN-OS URL Drop Invalid Entries
   hidden: false
   name: drop_invalids
+  required: false
+  type: 8
+- additionalinfo: If selected, add to empty EDL the character "#" to invalidate the EDL.
+  display: Invalidate Empty EDL
+  hidden: false
+  name: invalidate_empty_edl
+  required: false
+  type: 8
+- additionalinfo: If not selected, will create a duplicate entry of glob indicator, i.e. indicator starting with *. prefix, without the wild card. e.g. *.xsoar.com indicator will add xsoar.com to the EDL.
+  display: Don't Duplicate Glob Indicators
+  hidden: false
+  name: dont_duplicate_glob
   required: false
   type: 8
 - defaultvalue: Don't Collapse
@@ -124,16 +136,6 @@ script:
       name: edl_size
       required: false
       secret: false
-    - default: false
-      defaultValue: 'false'
-      description: Whether to print stored indicators or not.
-      isArray: false
-      name: print_indicators
-      predefined:
-      - 'true'
-      - 'false'
-      required: true
-      secret: false
     - auto: PREDEFINED
       default: false
       defaultValue: false
@@ -144,6 +146,41 @@ script:
       predefined:
       - 'False'
       - 'True'
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: false
+      description: If set to True, a URL that includes a port number will be reformatted
+        to remove the port. For example, 'www.example.com:9999/path' would become 'www.example.com/path'.
+      isArray: false
+      name: url_port_stripping
+      predefined:
+        - 'False'
+        - 'True'
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: false
+      description: If set to True, add to empty EDL the character "#" to invalidate the EDL.
+      isArray: false
+      name: invalidate_empty_edl
+      predefined:
+        - 'False'
+        - 'True'
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: false
+      description: If set to False, will create a duplicate of glob indicator (indicator starting with *.)
+        without the wild card (e.g. *.xsoar.com will also add xsoar.com to the EDL).
+      isArray: false
+      name: dont_duplicate_glob
+      predefined:
+        - 'False'
+        - 'True'
       required: false
       secret: false
     - auto: PREDEFINED
