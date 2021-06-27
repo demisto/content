@@ -1591,7 +1591,7 @@ def fetch_incidents():
 
     # Get list of cases
     if ENTITY_ID:
-        cases = http_request('GET', f'lr-case-api/cases?entityNumber={str(ENTITY_ID)}', headers=headers)
+        cases = http_request('GET', 'lr-case-api/cases?entityNumber=' + str(ENTITY_ID), headers=headers)
     else:
         cases = http_request('GET', 'lr-case-api/cases', headers=headers)
     # Set Last Run to the last case dateCreated field
@@ -1616,7 +1616,7 @@ def fetch_incidents():
 
 def lr_get_case_evidence(data_args):
     case_id = data_args.get('case_id')
-    case = http_request('GET', f'lr-case-api/cases/{case_id}/evidence')
+    case = http_request('GET', 'lr-case-api/cases/' + case_id + '/evidence')
 
     result = CommandResults(
         outputs_prefix='Logrhythm.Evidence',
@@ -1767,7 +1767,7 @@ def lr_get_query_result(data_args):
     elif search_result["Items"]:
         for log in search_result["Items"]:
             log.pop('logMessage', None)
-        message = tableToMarkdown(f"Search results for task {task_id}", search_result["Items"])
+        message = tableToMarkdown("Search results for task " + task_id, search_result["Items"], headerTransform=string_to_table_header)
     else:
         message = "#### Please try again later"
 

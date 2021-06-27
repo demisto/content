@@ -680,6 +680,7 @@ script:
     arguments:
       - name: task_id
         description: Task ID from lr-execute-search-query command output.
+        required: true
     outputs:
     - contextPath: Logrhythm.Search.Results.TaskStatus
       description: Task Status
