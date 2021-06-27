@@ -19,42 +19,42 @@ HELLOWORLD_SEVERITIES = ['Low', 'Medium', 'High', 'Critical']
 class Client(BaseClient):
 
     def get_associated_users(self, devicetype):
-        return self._http_request(
+        return json.loads(self._http_request(
             method='GET',
             url_suffix='/reports/associated_users/?device_type=%s' % (devicetype),
             resp_type='text'
-        )
+        ))
 
     def get_authentication_methods_distribution(self):
-        return self._http_request(
+        return json.loads(self._http_request(
             method='GET',
             url_suffix='/reports/device_auth_distribution/',
             resp_type='text'
-        )
+        ))
 
     def get_authentication_rate_per_device(self):
-        return self._http_request(
+        return json.loads(self._http_request(
             method='GET',
             url_suffix='/reports/device_auth_rate/',
             resp_type='text'
-        )
+        ))
 
     def get_least_active_users(self, sincedate=None, userinformation=False):
         if sincedate is None:
             sincedate = (datetime.now() - timedelta(days=30)).strftime("%Y-%m-%d")
 
-        return self._http_request(
+        return json.loads(self._http_request(
             method='GET',
             url_suffix='/reports/inactive_users/?since_date=%s&user_information=%s' % (sincedate, str(userinformation)),
             resp_type='text'
-        )
+        ))
 
     def get_licenses_inventory(self):
-        return self._http_request(
+        return json.loads(self._http_request(
             method='GET',
             url_suffix='/reports/device_inventory/',
             resp_type='text'
-        )
+        ))
 
     def get_licenses_usage(self, begindate=None, enddate=None):
         if begindate is None:
@@ -63,32 +63,32 @@ class Client(BaseClient):
         if enddate is None:
             enddate = (datetime.now() - timedelta(days=30)).strftime("%Y-%m-%d")
 
-        return self._http_request(
+        return json.loads(self._http_request(
             method='GET',
             url_suffix='/reports/licensesusage/?begin_date=%s&end_date=%s' % (begindate, enddate),
             resp_type='text'
-        )
+        ))
 
     def get_most_active_users(self, days=10, limit=30, userinformation=False):
-        return self._http_request(
+        return json.loads(self._http_request(
             method='GET',
             url_suffix='/reports/top_users/?days=%s&limit=%s&user_information=%s' % (str(days), str(limit), str(userinformation)),
             resp_type='text'
-        )
+        ))
 
     def get_physical_tokens_inventory(self):
-        return self._http_request(
+        return json.loads(self._http_request(
             method='GET',
             url_suffix='/reports/physical_tokens_inventory/',
             resp_type='text'
-        )
+        ))
 
     def get_registered_devices_distribution(self):
-        return self._http_request(
+        return json.loads(self._http_request(
             method='GET',
             url_suffix='/reports/device_inventory/?fields=associated_and_registered',
             resp_type='text'
-        )
+        ))
 
     def get_registration(self, begindate=None, enddate=None, userinformation=False):
         if begindate is None:
@@ -97,19 +97,19 @@ class Client(BaseClient):
         if enddate is None:
             enddate = (datetime.now() - timedelta(days=30)).strftime("%Y-%m-%d")
 
-        return self._http_request(
+        return json.loads(self._http_request(
             method='GET',
             url_suffix='/reports/registrations/?begin_date=%s&end_date=%s&user_information=%s' % (
                 begindate, enddate, str(userinformation)),
             resp_type='text'
-        )
+        ))
 
     def get_users_associations_indicators(self):
-        return self._http_request(
+        return json.loads(self._http_request(
             method='GET',
             url_suffix='/reports/users/',
             resp_type='text'
-        )
+        ))
 
     def list_incidents(self, page, search, locked, query_filter=None) -> Dict[str, Any]:
         if page is None:
@@ -127,25 +127,31 @@ class Client(BaseClient):
         if query_filter is not None and search != '':
             p_query_filter = '&q=%s' % query_filter
 
-        return self._http_request(
+        return json.loads(self._http_request(
             method='GET',
             url_suffix='/transactionlog/?page=%s%s%s%s' % (page, p_search, p_locked, p_query_filter),
             resp_type='text'
-        )
+        ))
 
 
 def get_associated_users(client, args):
 
     devicetype = args.get('devicetype')
-    result = client.get_associated_users(devicetype)
-    readable_output = f'## {result}'
+    result_raw = client.get_associated_users(devicetype)
+    result = remove_empty_elements(result_raw)
 
+    readable_output = tableToMarkdown(
+        'Get Associated Users Results',
+        result,
+        headers=list(result.keys()),
+        headerTransform=string_to_table_header,
+    )
     command_results = CommandResults(
         readable_output=readable_output,
         outputs_prefix='GetAssociatedUsers.Result',
         outputs_key_field='',
         outputs=result,
-        raw_response=result
+        raw_response=result_raw
     )
 
     return command_results
@@ -153,32 +159,44 @@ def get_associated_users(client, args):
 
 def get_authentication_methods_distribution(client, args):
 
-    result = client.get_authentication_methods_distribution()
+    result_raw = client.get_authentication_methods_distribution()
 
-    readable_output = f'## {result}'
+    result = remove_empty_elements(result_raw)
 
+    readable_output = tableToMarkdown(
+        'Get Authentication Methods Distribution Results',
+        result,
+        headers=list(result.keys()),
+        headerTransform=string_to_table_header,
+    )
     command_results = CommandResults(
         readable_output=readable_output,
         outputs_prefix='GetAuthenticationMethodsDistribution.Result',
         outputs_key_field='',
         outputs=result,
-        raw_response=result
+        raw_response=result_raw
     )
 
     return command_results
 
 
 def get_authentication_rate_per_device(client, args):
-    result = client.get_authentication_rate_per_device()
+    result_raw = client.get_authentication_rate_per_device()
 
-    readable_output = f'## {result}'
+    result = remove_empty_elements(result_raw)
 
+    readable_output = tableToMarkdown(
+        'Get Authentication Rate Per Device Results',
+        result,
+        headers=list(result.keys()),
+        headerTransform=string_to_table_header,
+    )
     command_results = CommandResults(
         readable_output=readable_output,
         outputs_prefix='GetAuthenticationRatePerDevice.Result',
         outputs_key_field='',
         outputs=result,
-        raw_response=result
+        raw_response=result_raw
     )
 
     return command_results
@@ -188,16 +206,22 @@ def get_least_active_users(client, args):
     sincedate = args.get('sincedate')
     userinformation = args.get('userinformation')
 
-    result = client.get_least_active_users(sincedate, userinformation)
+    result_raw = client.get_least_active_users(sincedate, userinformation)
 
-    readable_output = f'## {result}'
+    result = remove_empty_elements(result_raw)
 
+    readable_output = tableToMarkdown(
+        'Get Least Active Users Results',
+        result,
+        headers=list(result.keys()),
+        headerTransform=string_to_table_header,
+    )
     command_results = CommandResults(
         readable_output=readable_output,
         outputs_prefix='GetLeastActiveUsers.Result',
         outputs_key_field='',
         outputs=result,
-        raw_response=result
+        raw_response=result_raw
     )
 
     return command_results
@@ -205,16 +229,22 @@ def get_least_active_users(client, args):
 
 def get_licenses_inventory(client, args):
 
-    result = client.get_licenses_inventory()
+    result_raw = client.get_licenses_inventory()
 
-    readable_output = f'## {result}'
+    result = remove_empty_elements(result_raw)
 
+    readable_output = tableToMarkdown(
+        'Get Licenses Inventory Results',
+        result,
+        headers=list(result.keys()),
+        headerTransform=string_to_table_header,
+    )
     command_results = CommandResults(
         readable_output=readable_output,
         outputs_prefix='GetLicensesInventory.Result',
         outputs_key_field='',
         outputs=result,
-        raw_response=result
+        raw_response=result_raw
     )
 
     return command_results
@@ -224,16 +254,22 @@ def get_licenses_usage(client, args):
     begindate = args.get('begindate')
     enddate = args.get('enddate')
 
-    result = client.get_licenses_usage(begindate, enddate)
+    result_raw = client.get_licenses_usage(begindate, enddate)
 
-    readable_output = f'## {result}'
+    result = remove_empty_elements(result_raw)
 
+    readable_output = tableToMarkdown(
+        'Get Licenses Usage Results',
+        result,
+        headers=list(result.keys()),
+        headerTransform=string_to_table_header,
+    )
     command_results = CommandResults(
         readable_output=readable_output,
         outputs_prefix='GetLicensesUsage.Result',
         outputs_key_field='',
         outputs=result,
-        raw_response=result
+        raw_response=result_raw
     )
 
     return command_results
@@ -244,16 +280,22 @@ def get_most_active_users(client, args):
     limit = args.get('limit')
     userinformation = args.get('userinformation')
 
-    result = client.get_most_active_users(days, limit, userinformation)
+    result_raw = client.get_most_active_users(days, limit, userinformation)
 
-    readable_output = f'## {result}'
+    result = remove_empty_elements(result_raw)
 
+    readable_output = tableToMarkdown(
+        'Get Most Active Users Results',
+        result,
+        headers=list(result.keys()),
+        headerTransform=string_to_table_header,
+    )
     command_results = CommandResults(
         readable_output=readable_output,
         outputs_prefix='GetMostActiveUsers.Result',
         outputs_key_field='',
         outputs=result,
-        raw_response=result
+        raw_response=result_raw
     )
 
     return command_results
@@ -261,16 +303,22 @@ def get_most_active_users(client, args):
 
 def get_physical_tokens_inventory(client, args):
 
-    result = client.get_physical_tokens_inventory()
+    result_raw = client.get_physical_tokens_inventory()
 
-    readable_output = f'## {result}'
+    result = remove_empty_elements(result_raw)
 
+    readable_output = tableToMarkdown(
+        'Get Physical Tokens Inventory Results',
+        result,
+        headers=list(result.keys()),
+        headerTransform=string_to_table_header,
+    )
     command_results = CommandResults(
         readable_output=readable_output,
         outputs_prefix='GetPhysicalTokensInventory.Result',
         outputs_key_field='',
         outputs=result,
-        raw_response=result
+        raw_response=result_raw
     )
 
     return command_results
@@ -278,16 +326,22 @@ def get_physical_tokens_inventory(client, args):
 
 def get_registered_devices_distribution(client, args):
 
-    result = client.get_registered_devices_distribution()
+    result_raw = client.get_registered_devices_distribution()
 
-    readable_output = f'## {result}'
+    result = remove_empty_elements(result_raw)
 
+    readable_output = tableToMarkdown(
+        'Get Registered Devices Distribution Results',
+        result,
+        headers=list(result.keys()),
+        headerTransform=string_to_table_header,
+    )
     command_results = CommandResults(
         readable_output=readable_output,
         outputs_prefix='GetRegisteredDevicesDistribution.Result',
         outputs_key_field='',
         outputs=result,
-        raw_response=result
+        raw_response=result_raw
     )
 
     return command_results
@@ -298,16 +352,22 @@ def get_registration(client, args):
     enddate = args.get('enddate')
     userinformation = args.get('userinformation')
 
-    result = client.get_registration(begindate, enddate, userinformation)
+    result_raw = client.get_registration(begindate, enddate, userinformation)
 
-    readable_output = f'## {result}'
+    result = remove_empty_elements(result_raw)
 
+    readable_output = tableToMarkdown(
+        'Get Registration Results',
+        result,
+        headers=list(result.keys()),
+        headerTransform=string_to_table_header,
+    )
     command_results = CommandResults(
         readable_output=readable_output,
         outputs_prefix='GetRegistration.Result',
         outputs_key_field='',
         outputs=result,
-        raw_response=result
+        raw_response=result_raw
     )
 
     return command_results
@@ -315,16 +375,22 @@ def get_registration(client, args):
 
 def get_users_associations_indicators(client, args):
 
-    result = client.get_users_associations_indicators()
+    result_raw = client.get_users_associations_indicators()
 
-    readable_output = f'## {result}'
+    result = remove_empty_elements(result_raw)
 
+    readable_output = tableToMarkdown(
+        'Get Users Associations Indicators Results',
+        result,
+        headers=list(result.keys()),
+        headerTransform=string_to_table_header,
+    )
     command_results = CommandResults(
         readable_output=readable_output,
         outputs_prefix='GetUsersAssociationsIndicators.Result',
         outputs_key_field='',
         outputs=result,
-        raw_response=result
+        raw_response=result_raw
     )
 
     return command_results
