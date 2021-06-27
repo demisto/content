@@ -285,6 +285,7 @@ def upload_index_to_storage(index_folder_path: str, extract_destination_path: st
 
     logging.debug(f'commit hash is: {commit}')
     index_json_path = os.path.join(index_folder_path, f'{GCPConfig.INDEX_NAME}.json')
+    logging.info(f'index json path: {index_json_path}')
     with open(index_json_path, "w+") as index_file:
         index = {
             'revision': build_number,
@@ -299,6 +300,7 @@ def upload_index_to_storage(index_folder_path: str, extract_destination_path: st
     index_zip_path = shutil.make_archive(base_name=index_folder_path, format="zip",
                                          root_dir=extract_destination_path, base_dir=index_zip_name)
     try:
+        logging.info(f'index zip path: {index_zip_path}')
         index_blob.reload()
         current_index_generation = index_blob.generation
         index_blob.cache_control = "no-cache,max-age=0"  # disabling caching for index blob
@@ -306,6 +308,7 @@ def upload_index_to_storage(index_folder_path: str, extract_destination_path: st
         if is_private or current_index_generation == index_generation:
             # we upload both index.json and the index.zip to allow usage of index.json without having to unzip
             index_blob.upload_from_filename(index_zip_path)
+            logging.info(f'testing')
             logging.success(f"Finished uploading {GCPConfig.INDEX_NAME}.zip to storage.")
         else:
             logging.critical(f"Failed in uploading {GCPConfig.INDEX_NAME}, mismatch in index file generation.")
