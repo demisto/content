@@ -9,8 +9,8 @@ def test_module():
         get_public_key()
         get_private_key()
     except Exception:
-        raise DemistoException('You can either enter public and/or private key in the instance configuration or run the '
-                               '"encryption-create-keys" to create the keys for the instance.')
+        raise DemistoException('You can either enter public and/or private key in the instance configuration or run the'
+                               ' "encryption-create-keys" to create the keys for the instance.')
 
     return 'ok'
 
@@ -39,7 +39,8 @@ def get_public_key() -> rsa.PublicKey:
 
 
 def get_private_key() -> rsa.PrivateKey:
-    """Gets the private key from the instance configuration. If none was provided it takes it from the integration context.
+    """Gets the private key from the instance configuration. If none was provided it takes it from the
+    integration context.
 
     Returns:
         rsa.PrivateKey. The private key to be used with the integration.
@@ -80,17 +81,26 @@ def create_keys(params, args):
 
     if any([params_public_key, params_private_key]):
         raise DemistoException(
-            'Public key or Private key are provided in the instance configuration. Skipping new keys creation.')
-
-    override_keys = argToBoolean(args.get('override_keys', False))
-    if get_public_key() and not override_keys:
-        raise DemistoException(
-            'Keys have already been generated. You can use the "override_keys=true" argument in order to '
-            'override the current generated keys.'
+            'Public key or Private key are provided in the instance configuration. Skipping new keys creation.'
         )
 
+    override_keys = argToBoolean(args.get('override_keys', False))
+    if not override_keys:
+        try:
+            get_public_key()
+            get_private_key()
+        except DemistoException:
+            # That means that no public key has been generated.
+            pass
+        else:
+            raise DemistoException(
+                'Keys have already been generated. You can use the "override_keys=true" argument in order to '
+                'override the current generated keys.'
+            )
+
     try:
-        public_key, private_key = rsa.key.newkeys(512)
+        nbits = arg_to_number(args.get('nbits', 512))
+        public_key, private_key = rsa.key.newkeys(nbits=nbits)
 
         integration_context = {
             'public_key': public_key.save_pkcs1().decode('utf-8'),
@@ -172,7 +182,7 @@ def encrypt_file(args) -> None:
             'text_to_encrypt': file_content,
         })
 
-        demisto.results(fileResult(file_name, base64_encrypted_content))
+        demisto.results(fileResult(f'{file_name}-xsoar-encrypted', base64_encrypted_content))
     except Exception as e:
         raise DemistoException(f'Could not encrypt file.\n{e}')
 
@@ -198,7 +208,7 @@ def decrypt_file(args) -> None:
             'base64_to_decrypt': file_content,
         })
 
-        demisto.results(fileResult(file_name, decrypted_content))
+        demisto.results(fileResult(f'{file_name}-decrypted', decrypted_content))
     except Exception as e:
         raise DemistoException(f'Could not decrypt file.\n{e}')
 
@@ -208,10 +218,10 @@ def main() -> None:
     args = demisto.args()
 
     commands = {
-        'encryption-encrypt-text': encrypt_text,
-        'encryption-decrypt-text': decrypt_text,
-        'encryption-encrypt-file': encrypt_file,
-        'encryption-decrypt-file': decrypt_file,
+        'encryption-tools-encrypt-text': encrypt_text,
+        'encryption-tools-decrypt-text': decrypt_text,
+        'encryption-tools-encrypt-file': encrypt_file,
+        'encryption-tools-decrypt-file': decrypt_file,
     }
 
     command = demisto.command()
@@ -221,7 +231,7 @@ def main() -> None:
         if command == 'test-module':
             test_module()
 
-        if command == 'encryption-create-keys':
+        if command == 'encryption-tools-create-keys':
             create_keys(params, args)
 
         elif command in commands:

@@ -1,6 +1,6 @@
 category: Utilities
 commonfields:
-  id: Encryption
+  id: EncryptionTools
   version: -1
 configuration:
 - display: Public Key
@@ -11,12 +11,19 @@ configuration:
   name: private_key
   required: false
   type: 4
-description: Encryption - Decryption integration.
-display: Encryption
-name: Encryption
+description: Encryption Tools - Encrypt and Decrypt text and files.
+display: Encryption Tools
+name: EncryptionTools
 script:
   commands:
   - arguments:
+    - default: false
+      description: The number of bits required to store (n = p * q). Default is 512.
+      defaultvalue: 512
+      isArray: false
+      name: nbits
+      required: true
+      secret: false
     - auto: PREDEFINED
       default: false
       defaultValue: 'false'
@@ -26,14 +33,14 @@ script:
       required: false
       secret: false
       predefined:
-        - 'true'
-        - 'false'
+      - 'true'
+      - 'false'
     deprecated: false
     description: Create new RSA keys.
     execution: false
-    name: encryption-create-keys
+    name: encryption-tools-create-keys
   - arguments:
-    - default: false
+    - default: true
       description: The text to encrypt.
       isArray: false
       name: text_to_encrypt
@@ -42,9 +49,9 @@ script:
     deprecated: false
     description: Encrypt text.
     execution: false
-    name: encryption-encrypt-text
+    name: encryption-tools-encrypt-text
   - arguments:
-    - default: false
+    - default: true
       description: The base64 text to decrypt.
       isArray: false
       name: base64_to_decrypt
@@ -53,32 +60,44 @@ script:
     deprecated: false
     description: Decrypt text.
     execution: false
-    name: encryption-decrypt-text
+    name: encryption-tools-decrypt-text
   - arguments:
-    - default: false
+    - default: true
       description: The entry ID of the file to encrypt.
       isArray: false
       name: entry_id
       required: true
       secret: false
+    - default: false
+      description: The name of the output encrypted file. If not provided, the "encrypted" suffix will be added.
+      isArray: false
+      name: output_file_name
+      required: false
+      secret: false
     deprecated: false
     description: Encrypt file.
     execution: false
-    name: encryption-encrypt-file
+    name: encryption-tools-encrypt-file
   - arguments:
-    - default: false
+    - default: true
       description: The entry ID of the file to decrypt.
       isArray: false
       name: entry_id
       required: true
       secret: false
+    - default: false
+      description: The name of the output decrypted file. If not provided, the "decrypted" suffix will be added.
+      isArray: false
+      name: output_file_name
+      required: false
+      secret: false
     deprecated: false
     description: Decrypt file.
     execution: false
-    name: encryption-decrypt-file
-  dockerimage: demisto/btfl-soup:1.0.1.18288
+    name: encryption-tools-decrypt-file
+  dockerimage: demisto/btfl-soup:1.0.1.20928
   feed: false
-  isfetch: true
+  isfetch: false
   longRunning: false
   longRunningPort: false
   runonce: false
@@ -86,3 +105,5 @@ script:
   subtype: python3
   type: python
 fromversion: 6.0.0
+tests:
+- playbook-test-encryption-decryption
