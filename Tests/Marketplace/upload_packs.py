@@ -305,9 +305,8 @@ def upload_index_to_storage(index_folder_path: str, extract_destination_path: st
 
         if is_private or current_index_generation == index_generation:
             # we upload both index.json and the index.zip to allow usage of index.json without having to unzip
-            if storage_bucket:
-                index_blob.upload_from_filename(index_zip_path)
-                logging.success(f"Finished uploading {GCPConfig.INDEX_NAME}.zip to storage.")
+            index_blob.upload_from_filename(index_zip_path)
+            logging.success(f"Finished uploading {GCPConfig.INDEX_NAME}.zip to storage.")
         else:
             logging.critical(f"Failed in uploading {GCPConfig.INDEX_NAME}, mismatch in index file generation.")
             logging.critical(f"Downloaded index generation: {index_generation}")
