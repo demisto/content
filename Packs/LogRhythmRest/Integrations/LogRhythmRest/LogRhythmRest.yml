@@ -1082,7 +1082,7 @@ script:
       - LogRhythm_User_Activity_Monitor_(Solaris)
       - LogRhythm_User_Activity_Monitor_(Windows)
       - MS_Event_Log_for_XP/2000/2003_-_Application
-      - MS_Event_Log_for_XP/2000/2003_-_Application_-_Espanol
+      - MS_Event_Log_for_XP/2000/2003_-_Application_-_Espaniol
       - MS_Event_Log_for_XP/2000/2003_-_BioPassword
       - MS_Event_Log_for_XP/2000/2003_-_DFS
       - MS_Event_Log_for_XP/2000/2003_-_Directory_Service
@@ -1097,10 +1097,10 @@ script:
       - MS_Event_Log_for_XP/2000/2003_-_SafeWord_2008
       - MS_Event_Log_for_XP/2000/2003_-_SCE
       - MS_Event_Log_for_XP/2000/2003_-_Security
-      - MS_Event_Log_for_XP/2000/2003_-_Security_-_Espa√±ol
+      - MS_Event_Log_for_XP/2000/2003_-_Security_-_Espaniol
       - MS_Event_Log_for_XP/2000/2003_-_SMS_2003
       - MS_Event_Log_for_XP/2000/2003_-_System
-      - MS_Event_Log_for_XP/2000/2003_-_System_-_Espa√±ol
+      - MS_Event_Log_for_XP/2000/2003_-_System_-_Espaniol
       - MS_Event_Log_for_XP/2000/2003_-_Virtual_Server
       - MS_Windows_Event_Logging_-_ADFS_Admin
       - MS_Windows_Event_Logging_-_Application
@@ -1151,9 +1151,9 @@ script:
       - MS_Windows_Event_Logging_-_TS_Session_Broker_Client
       - MS_Windows_Event_Logging_-_VisualSVN
       - MS_Windows_Event_Logging_:_Deutsch_-_Security
-      - MS_Windows_Event_Logging_:_Español_-_Application
-      - MS_Windows_Event_Logging_:_Español_-_Security
-      - MS_Windows_Event_Logging_:_Español_-_System
+      - MS_Windows_Event_Logging_:_Espaniol_-_Application
+      - MS_Windows_Event_Logging_:_Espaniol_-_Security
+      - MS_Windows_Event_Logging_:_Espaniol_-_System
       - MS_Windows_Event_Logging_:_Français_-_System
       - MS_Windows_Event_Logging_:_Français_-_Security
       - MS_Windows_Event_Logging_XML_-_ADFS
