@@ -998,7 +998,6 @@ def nightly_install_packs(build, install_method=install_all_content_packs, pack_
 
 
 def install_nightly_pack(build):
-    logging.info("installing nightly packs")
     nightly_install_packs(build, install_method=install_all_content_packs_for_nightly,
                           service_account=build.service_account)
     create_nightly_test_pack()
