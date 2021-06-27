@@ -528,26 +528,30 @@ def get_private_packs(private_index_path: str, pack_names: set = set(),
     :param extract_destination_path: Path to where the files should be extracted to.
     :return: List of dicts containing pack metadata information.
     """
+    logging.info(f'getting all private packs. private_index_path: {private_index_path}')
     try:
         metadata_files = glob.glob(f"{private_index_path}/**/metadata.json")
     except Exception:
-        logging.exception(f'Could not find metadata files in {private_index_path}.')
+        logging.info(f'Could not find metadata files in {private_index_path}.')
         return []
 
     if not metadata_files:
         logging.warning(f'No metadata files found in [{private_index_path}]')
 
     private_packs = []
+    logging.info(f'all metadata files found: {metadata_files}')
     for metadata_file_path in metadata_files:
         try:
             with open(metadata_file_path, "r") as metadata_file:
                 metadata = json.load(metadata_file)
             pack_id = metadata.get('id')
             is_changed_private_pack = pack_id in pack_names
+            logging.info(f'pack_id: {pack_id}, \n\n pack_names: {pack_names}')
             if is_changed_private_pack:  # Should take metadata from artifacts.
                 with open(os.path.join(extract_destination_path, pack_id, "pack_metadata.json"),
                           "r") as metadata_file:
                     metadata = json.load(metadata_file)
+            logging.info(f'metadata of changed private pack: {metadata}')
             if metadata:
                 private_packs.append({
                     'id': metadata.get('id') if not is_changed_private_pack else metadata.get('name'),
