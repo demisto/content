@@ -7,6 +7,7 @@ Use this Script to re-run failed tasks. Run in the same incident after running `
 | --- | --- |
 | Script Type | python3 |
 | Tags |  |
+| Demisto Version | 6.0.0 |
 
 ## Dependencies
 ---
@@ -18,14 +19,18 @@ This script uses the following commands and scripts.
 
 | **Argument Name** | **Description** |
 | --- | --- |
-| PlaybookExclusion | Comma Separated list of failed tasks to exclude from restart based on playbook string match |
-| SleepTime | Sleep between restarting batch task \(seconds\) |
-| IncidentLimit | Limit of number of incidents to restart tasks on |
-| GroupSize | Integer of how many tasks you want to be restarted at a time \(grouping\) before a sleep period \(as to not overwhelm the system\) |
+| playbook_exclusion | Comma Separated list of failed tasks to exclude from restart based on playbook string match |
+| sleep_time | Sleep between restarting batch task \(seconds\) |
+| incident_limit | Limit of number of incidents to restart tasks on |
+| group_size | Integer of how many tasks you want to be restarted at a time \(grouping\) before a sleep period \(as to not overwhelm the system\) |
 
 ## Outputs
 ---
 
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
-| None |  | Unknown |
+| RestartedTasks.Total | The total amount of tasks that were reopened | Number |
+| RestartedTasks.Task.TaskID | The ID of the task | String |
+| RestartedTasks.Task.IncidentID | The ID of the incident of the task | String |
+| RestartedTasks.Task.PlaybookName | The name of the playbook of the task | String |
+| RestartedTasks.Task.TaskName | The name of the task | String |

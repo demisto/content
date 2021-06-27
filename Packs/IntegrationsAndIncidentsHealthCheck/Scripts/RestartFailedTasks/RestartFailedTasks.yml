@@ -29,8 +29,7 @@ args:
   name: group_size
   required: false
   secret: false
-comment: Run in the same incident that `GetFailedTasks` to be able to restart all
-  (or a some) of the failed tasks
+comment: Use this Script to re-run failed tasks. Run in the same incident after running `GetFailedTasks` for restarting all of the failed tasks or some of them.
 commonfields:
   id: RestartFailedTasks
   version: -1
