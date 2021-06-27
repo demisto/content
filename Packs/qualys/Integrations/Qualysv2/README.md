@@ -2018,11 +2018,11 @@ download a list of vulnerabilities from Qualys’ KnowledgeBase
                             "VENDOR": "sap"
                         }
                     },
-                    "SOLUTION": "Customers are advised to follow the <A HREF=\"https://blogs.sap.com/2016/03/08/sap-security-patch-day-march-2016/\" TARGET=\"_blank\">SAP Security Patch Day - March 2016</A> for remediation instructions.\n<P>Patch:<BR>\nFollowing are links for downloading patches to fix the vulnerabilities:\n<P> <A HREF=\"https://erpscan.io/press-center/blog/sap-security-notes-march-2016-review/\" TARGET=\"_blank\">SAP Security Notes March 2016 - Review</A>",
+                    "SOLUTION": "some solution",
                     "TITLE": "SAP NetWeaver AS JAVA Directory Traversal Vulnerability",
                     "VENDOR_REFERENCE_LIST": {
                         "VENDOR_REFERENCE": {
-                            "ID": "SAP Security Patch Day - March 2016",
+                            "ID": "someid",
                             "URL": "https://blogs.sap.com/2016/03/08/sap-security-patch-day-march-2016/"
                         }
                     },
@@ -2054,11 +2054,11 @@ download a list of vulnerabilities from Qualys’ KnowledgeBase
                             "VENDOR": "sap"
                         }
                     },
-                    "SOLUTION": "Customers are advised to follow the <A HREF=\"https://service.sap.com/sap/support/notes/2296909\" TARGET=\"_blank\">SAP Security Note 2296909</A> for remediation instructions.\n<P>Patch:<BR>\nFollowing are links for downloading patches to fix the vulnerabilities:\n<P> <A HREF=\"https://service.sap.com/sap/support/notes/2296909\" TARGET=\"_blank\">SAP Security Note 2296909</A>",
+                    "SOLUTION": "somesolution2",
                     "TITLE": "SAP NetWeaver AS JAVA 7.5 XML External Entity Vulnerability",
                     "VENDOR_REFERENCE_LIST": {
                         "VENDOR_REFERENCE": {
-                            "ID": "SAP Security Note 2296909",
+                            "ID": "someid2",
                             "URL": "https://service.sap.com/sap/support/notes/2296909"
                         }
                     },
