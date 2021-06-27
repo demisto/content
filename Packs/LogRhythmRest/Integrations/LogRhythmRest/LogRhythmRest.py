@@ -578,7 +578,7 @@ SOURCE_TYPE_MAP = {
     "MS_Windows_Event_Logging_XML_-_Application": 1000562,
     "MS_Windows_Event_Logging_XML_-_Forwarded_Events": 1000746,
     "MS_Windows_Event_Logging_XML_-_Generic": 1000738,
-    "MS_Windows_Event_Logging_XML_–_LRTracer": 1000784,
+    "MS_Windows_Event_Logging_XML_-_LRTracer": 1000784,
     "MS_Windows_Event_Logging_XML_-_Microsoft-Windows-NTLM/Operational": 1000781,
     "MS_Windows_Event_Logging_XML_-_Security": 1000639,
     "MS_Windows_Event_Logging_XML_-_Sysmon": 1000862,
@@ -1215,7 +1215,7 @@ def http_request(method, url_suffix, data=None, headers=HEADERS):
         return_error(e)
 
     # Handle error responses gracefully
-    if 'application/json' not in res.headers.get('Content-Type'):
+    if 'application/json' not in res.headers.get('Content-Type', []):
         return_error('invalid url or port: ' + BASE_URL)
 
     if res.status_code == 404:
@@ -1303,15 +1303,14 @@ def update_persons_keys(persons):
 
 def generate_query_value(valueType, value):
     if valueType == 2:
-        val = int(value)
+        return int(value)
     elif valueType == 5:
-        val = str(value)
+        return str(value)
     else:
-        val = {
+        return {
             "value": value,
             "matchType": 2
         }
-    return val
 
 
 def generate_query_item(filterType, valueType, value):
@@ -1769,7 +1768,8 @@ def lr_get_query_result(data_args):
     elif search_result["Items"]:
         for log in search_result["Items"]:
             log.pop('logMessage', None)
-        message = tableToMarkdown("Search results for task " + task_id, search_result["Items"], headerTransform=string_to_table_header)
+        message = tableToMarkdown("Search results for task " + task_id, search_result["Items"],
+                                  headerTransform=string_to_table_header)
     else:
         message = "#### Please try again later"
 
