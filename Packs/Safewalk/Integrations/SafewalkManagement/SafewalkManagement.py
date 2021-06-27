@@ -105,7 +105,8 @@ class Client(BaseClient):
             resp_type='text'
         ))
 
-    # Get "params" to generalize all token types. Said argument must be a dictionary or json with the data corresponding to the token to be registered
+    # Get "params" to generalize all token types.
+    # Said argument must be a dictionary or json with the data corresponding to the token to be registered
     def create_user_token(self, username, post_params) -> Dict[str, Any]:
         return json.loads(self._http_request(
             method='POST',
@@ -157,7 +158,8 @@ class Client(BaseClient):
             resp_type='text'
         ))
 
-    # Get "params" to generalize all configuration items. This argument must be a dictionary or json with the items that you want to modify
+    # Get "params" to generalize all configuration items.
+    # This argument must be a dictionary or json with the items that you want to modify
     def set_user_settings(self, username, post_params) -> Dict[str, Any]:
         return json.loads(self._http_request(
             method='PATCH',
@@ -791,13 +793,13 @@ def set_user_backuptoken_settings(client, args):
 
     params = {}
 
-    if backup_password_required != None:
+    if not backup_password_required:
         params['backup_password_required'] = backup_password_required
 
-    if backuptoken_attempts != None:
+    if not backuptoken_attempts:
         params['backuptoken_attempts'] = backuptoken_attempts
 
-    if backuptoken_timeout != None:
+    if not backuptoken_timeout:
         params['backuptoken_timeout'] = backuptoken_timeout
 
     result_raw = client.set_user_settings(username, params)
@@ -827,7 +829,7 @@ def set_user_general_settings(client, args):
 
     params = {}
 
-    if user_storage != None:
+    if not user_storage:
         params['user_storage'] = user_storage
 
     result_raw = client.set_user_settings(username, params)
@@ -862,22 +864,22 @@ def set_user_hotpauthentication_settings(client, args):
 
     params = {}
 
-    if hotp_accept_tolerance != None:
+    if not hotp_accept_tolerance:
         params['hotp_accept_tolerance'] = hotp_accept_tolerance
 
-    if hotp_resend_tolerance != None:
+    if not hotp_resend_tolerance:
         params['hotp_resend_tolerance'] = hotp_resend_tolerance
 
-    if hotp_resend_timeout != None:
+    if not hotp_resend_timeout:
         params['hotp_resend_timeout'] = hotp_resend_timeout
 
-    if hotp_password_required != None:
+    if not hotp_password_required:
         params['hotp_password_required'] = hotp_password_required
 
-    if hotp_flex_password_required != None:
+    if not hotp_flex_password_required:
         params['hotp_flex_password_required'] = hotp_flex_password_required
 
-    if hotp_flex_pin_password_required != None:
+    if not hotp_flex_pin_password_required:
         params['hotp_flex_pin_password_required'] = hotp_flex_pin_password_required
 
     result_raw = client.set_user_settings(username, params)
@@ -909,13 +911,13 @@ def set_user_sesamiauthentication_settings(client, args):
 
     params = {}
 
-    if sesami_mobile_password_required != None:
+    if not sesami_mobile_password_required:
         params['sesami_mobile_password_required'] = sesami_mobile_password_required
 
-    if sesami_slim_password_required != None:
+    if not sesami_slim_password_required:
         params['sesami_slim_password_required'] = sesami_slim_password_required
 
-    if gaia_ttw_level != None:
+    if not gaia_ttw_level:
         params['gaia_ttw_level'] = gaia_ttw_level
 
     result_raw = client.set_user_settings(username, params)
@@ -951,25 +953,25 @@ def set_user_totpauthentication_settings(client, args):
 
     params = {}
 
-    if totp_accept_tolerance != None:
+    if not totp_accept_tolerance:
         params['totp_accept_tolerance'] = totp_accept_tolerance
 
-    if totp_resend_tolerance != None:
+    if not totp_resend_tolerance:
         params['totp_resend_tolerance'] = totp_resend_tolerance
 
-    if totp_resend_timeout != None:
+    if not totp_resend_timeout:
         params['totp_resend_timeout'] = totp_resend_timeout
 
-    if totp_password_required != None:
+    if not totp_password_required:
         params['totp_password_required'] = totp_password_required
 
-    if totp_flex_password_required != None:
+    if not totp_flex_password_required:
         params['totp_flex_password_required'] = totp_flex_password_required
 
-    if totp_flex_pin_password_required != None:
+    if not totp_flex_pin_password_required:
         params['totp_flex_pin_password_required'] = totp_flex_pin_password_required
 
-    if totp_mobile_password_required != None:
+    if not totp_mobile_password_required:
         params['totp_mobile_password_required'] = totp_mobile_password_required
 
     result_raw = client.set_user_settings(username, params)
@@ -1009,37 +1011,37 @@ def set_user_userauthentication_settings(client, args):
 
     params = {}
 
-    if multiple_step_auth_timeout != None:
+    if not multiple_step_auth_timeout:
         params['multiple_step_auth_timeout'] = multiple_step_auth_timeout
 
-    if allow_password != None:
+    if not allow_password:
         params['allow_password'] = allow_password
 
-    if allow_password_for_registration != None:
+    if not allow_password_for_registration:
         params['allow_password_for_registration'] = allow_password_for_registration
 
-    if max_allowed_failures != None:
+    if not max_allowed_failures:
         params['max_allowed_failures'] = max_allowed_failures
 
-    if allow_access_when_pwd_expired != None:
+    if not allow_access_when_pwd_expired:
         params['allow_access_when_pwd_expired'] = allow_access_when_pwd_expired
 
-    if allow_password_reset_when_forgot_pwd != None:
+    if not allow_password_reset_when_forgot_pwd:
         params['allow_password_reset_when_forgot_pwd'] = allow_password_reset_when_forgot_pwd
 
-    if min_otp_length != None:
+    if not min_otp_length:
         params['min_otp_length'] = min_otp_length
 
-    if max_otp_length != None:
+    if not max_otp_length:
         params['max_otp_length'] = max_otp_length
 
-    if dos_tmp_lockdown_max_fail_authentications != None:
+    if not dos_tmp_lockdown_max_fail_authentications:
         params['dos_tmp_lockdown_max_fail_authentications'] = dos_tmp_lockdown_max_fail_authentications
 
-    if dos_tmp_lockdown_time_interval_in_seconds != None:
+    if not dos_tmp_lockdown_time_interval_in_seconds:
         params['dos_tmp_lockdown_time_interval_in_seconds'] = dos_tmp_lockdown_time_interval_in_seconds
 
-    if dos_tmp_lockdown_time_in_seconds != None:
+    if not dos_tmp_lockdown_time_in_seconds:
         params['dos_tmp_lockdown_time_in_seconds'] = dos_tmp_lockdown_time_in_seconds
 
     result_raw = client.set_user_settings(username, params)
@@ -1070,10 +1072,10 @@ def set_user_virtualauthentication_settings(client, args):
 
     params = {}
 
-    if virtual_device_accept_tolerance != None:
+    if not virtual_device_accept_tolerance:
         params['virtual_device_accept_tolerance'] = virtual_device_accept_tolerance
 
-    if virtual_device_gateways != None:
+    if not virtual_device_gateways:
         params['virtual_device_gateways'] = virtual_device_gateways
 
     result_raw = client.set_user_settings(username, params)
@@ -1332,6 +1334,7 @@ def create_user(client, args):
     )
 
     return command_results
+
 
 def delete_user(client, args):
     username = args.get('username')

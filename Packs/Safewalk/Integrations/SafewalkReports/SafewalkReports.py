@@ -9,11 +9,9 @@ from CommonServerPython import *
 urllib3.disable_warnings()
 
 
-
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 MAX_INCIDENTS_TO_FETCH = 50
 HELLOWORLD_SEVERITIES = ['Low', 'Medium', 'High', 'Critical']
-
 
 
 class Client(BaseClient):
@@ -525,7 +523,6 @@ def main():
 
         if command == 'fetch-incidents':
             last_run = demisto.getLastRun()
-            context = demisto.getIntegrationContext()
             incidents, next_run = fetch_incidents(client, last_run, first_fetch_str, fetch_limit, fetch_query_filter)
             demisto.incidents(incidents)
             demisto.setLastRun(next_run)

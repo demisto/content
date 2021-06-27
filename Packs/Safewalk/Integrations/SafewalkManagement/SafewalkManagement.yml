@@ -416,24 +416,6 @@ script:
     - name: username
       description: Username
     description: Delete user access attempts
-  - name: safewalk-create-user-token
-    arguments:
-    - name: username
-      description: Username
-    - name: params
-      description: params
-    description: Create user token
-  - name: safewalk-update-user-token
-    arguments:
-    - name: username
-      description: Username
-    - name: token_devicetype
-      description: token_devicetype
-    - name: token_serialnumber
-      description: token_serialnumber
-    - name: params
-      description: params
-    description: Update user token.
   - name: safewalk-get-user-tokens
     outputs:
     - contextPath: Safewalk.management.usertokens.serial_number
