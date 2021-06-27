@@ -123,10 +123,10 @@ Checks the reputation of an IP address.
 | CofenseIntelligence.IP.Threats.malwareFamilySet.familyName | String | Family name of malware | 
 | CofenseIntelligence.IP.Threats.malwareFamilySet.description | String | Set of malware family | 
 | CofenseIntelligence.IP.Threats.threatType | String | This will only have one value for malware | 
-| IP.MalwareFamily | unknown | The Associated malware family |
-| IP.ASN | unknown | Autonomous System name for the IP. | 
-| IP.GEO.Location | unknown | Location in format latitude, longitude. | 
-| IP.GEO.Country | unknown | Country of the IP. | 
+| IP.MalwareFamily | unknown | The malware family associated with the IP. |
+| IP.ASN | unknown | The Autonomous System name for the IP address. | 
+| IP.GEO.Location | unknown | The geolocation where the IP address is located, in the format- latitude:longitude. | 
+| IP.GEO.Country | unknown | The country in which the IP address is located. | 
 | IP.Address | string | IP address. |
 
 
@@ -496,12 +496,12 @@ Checks the reputation of a file hash.
 | CofenseIntelligence.File.Threats.malwareFamilySet.familyName | String | Family name of malware | 
 | CofenseIntelligence.File.Threats.malwareFamilySet.description | String | Set of malware family | 
 | CofenseIntelligence.File.Threats.threatType | String | This will only have one value for malware | 
-| File.Extension | String | The Extension of the file |
-| File.MD5 | String | File MD5 hash |
-| File.Malicious.Description | String | For malicious files, the reason that the vendor made the decision. |
-| File.Malicious.Vendor | String | For malicious files, the vendor that made the decision. |
-| File.MalwareFamily | String | The associated malware family |
-| File.Name | String | The file name |
+| File.Extension | String | The file  Extension. |
+| File.MD5 | String | The MD5 hash of the file |
+| File.Malicious.Description | String | A description explaining why the file was determined to be malicious. |
+| File.Malicious.Vendor | String | The vendor that reported the file as malicious. |
+| File.MalwareFamily | String | The malware family associated with the file. |
+| File.Name | String | The full file name |
 
 #### Command Example
 ```!file file=9798ba6199168e6d2cf205760ea683d1 using=CofenseIntelligenceV2_instance```
@@ -712,8 +712,6 @@ Checks the reputation of an email address.
 | CofenseIntelligence.Email.Threats.malwareFamilySet.familyName | String | Family name of malware | 
 | CofenseIntelligence.Email.Threats.malwareFamilySet.description | String | Set of malware family | 
 | CofenseIntelligence.Email.Threats.threatType | String | This will only have one value for malware | 
-| Account.Email.Address | String | The email address of the account |
-| Account.Domain | String | The Domain of the account |
 
 #### Command Example
 ```!email email=email@email.com using=CofenseIntelligenceV2_instance_1_copy```
@@ -900,7 +898,7 @@ Checks the reputation of a URL.
 | CofenseIntelligence.URL.Threats.malwareFamilySet.description | String | Set of malware family | 
 | CofenseIntelligence.URL.Threats.threatType | String | This will only have one value for malware | 
 | URL.Malicious.Description | String | For malicious URLs, the reason that the vendor made the decision. |
-| URL.Malicious.Vendor | String | For malicious URLs, the vendor that made the decision. |
+| URL.Malicious.Vendor | String | The vendor reporting the URL as malicious. |
 | URL.Data | String | The URL |
 
 
@@ -1039,8 +1037,8 @@ In the *ip* command:
 * *Cofense.IP.Cofense.ThreatIDs* - this output was replaced by *CofenseIntelligence.IP.Cofense.ThreatIDs*.
 
 In the *email* command:
-* *Account.Email.Malicious.Vendor* - this output was replaced by *CofenseIntelligence.Email.Malicious.Vendor*.
-* *Account.Email.Malicious.Description* - this output was replaced by *CofenseIntelligence.Email.Malicious.Description*.
+* *Account.Email.Malicious.Vendor*
+* *Account.Email.Malicious.Description*
 * *Cofense.Email.Data* - this output was replaced by *CofenseIntelligence.Email.Data*.
 * *Cofense.Email.Malicious.Vendor* - this output was replaced by *CofenseIntelligence.Email.Malicious.Vendor*.
 * *Cofense.Email.Malicious.Description* - this output was replaced by *CofenseIntelligence.Email.Malicious.Description*.

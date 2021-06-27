@@ -105,15 +105,15 @@ script:
       description: Checks the reputation of an IP address.
       outputs:
         - contextPath: IP.ASN
-          description: Autonomous System name for the IP.
+          description: The autonomous system name for the IP address.
         - contextPath: IP.GEO.Location
-          description: Location in format latitude, longitude.
+          description: The geolocation where the IP address is located, in the format- latitude:longitude.
         - contextPath: IP.GEO.Country
-          description: Country of the IP.
+          description: The country in which the IP address is located.
         - contextPath: IP.Address
           description: IP address.
         - contextPath: IP.MalwareFamily
-          description: The Associated malware family
+          description: The malware family associated with the IP.
         - contextPath: DBotScore.Indicator
           description: The indicator that was tested.
           type: string
@@ -503,17 +503,17 @@ script:
           description: Limit the number of days from wich we should start returning data. 90 days limit is recomended by Cofense.
       outputs:
         - contextPath: File.Extension
-          description: The Extension of the file
+          description: The file extension.
         - contextPath: File.MD5
-          description: File MD5 hash
+          description: The MD5 hash of the file.
         - contextPath: File.Malicious.Description
-          description: For malicious files, the reason that the vendor made the decision.
+          description: A description explaining why the file was determined to be malicious.
         - contextPath: File.Malicious.Vendor
-          description: For malicious files, the vendor that made the decision.
+          description: The vendor that reported the file as malicious.
         - contextPath: File.MalwareFamily
-          description: The associated malware family
+          description: The malware family associated with the file.
         - contextPath: File.Name
-          description: The file name
+          description: The full file name.
         - contextPath: DBotScore.Indicator
           description: The indicator that was tested.
           type: string
@@ -733,12 +733,6 @@ script:
       - contextPath: DBotScore.Reliability
         description: The actual score.
         type: string
-      - contextPath: Account.Email.Address
-        description: The email address of the account
-        type: string
-      - contextPath: Account.Domain
-        description: The Domain of the account
-        type: string
       - contextPath: CofenseIntelligence.Email.Data
         description: 'The Email address'
         type: String
@@ -946,10 +940,10 @@ script:
           description: the URL
           type: string
         - contextPath: URL.Malicious.Description
-          description: For malicious files, the reason that the vendor made the decision.
+          description: A description of the malicious URL.
           type: string
         - contextPath: URL.Malicious.Vendor
-          description: For malicious files, the vendor that made the decision.
+          description: The vendor reporting the URL as malicious.
           type: string
         - contextPath: CofenseIntelligence.URL.Data
           description: 'The URL'
