@@ -1773,191 +1773,176 @@ script:
     execution: false
     name: misp-search-attributes
     outputs:
-    - contextPath: MISP.Search_attributes.Attribute.Distribution
+    - contextPath: MISP.Attribute.Distribution
       description: Attribute distribution.
       type: number
-    - contextPath: MISP.Search_attributes.Attribute.last_seen
+    - contextPath: MISP.Attribute.last_seen
       description: Attribute last_seen timestamp.
       type: number
-    - contextPath: MISP.Search_attributes.Attribute.first_seen
+    - contextPath: MISP.Attribute.first_seen
       description: Attribute first_seen timestamp.
       type: number
-    - contextPath: MISP.Search_attributes.Attribute.Value
+    - contextPath: MISP.Attribute.Value
       description: Attribute value.
       type: string
-    - contextPath: MISP.Search_attributes.Attribute.EventID
+    - contextPath: MISP.Attribute.EventID
       description: Attribute event ID.
       type: number
-    - contextPath: MISP.Search_attributes.Attribute.Timestamp
+    - contextPath: MISP.Attribute.Timestamp
       description: Attribute timestamp.
       type: number
-    - contextPath: MISP.Search_attributes.Attribute.Deleted
+    - contextPath: MISP.Attribute.Deleted
       description: Is the attribute deleted.
       type: boolean
-    - contextPath: MISP.Search_attributes.Attribute.DisableCorrelation
+    - contextPath: MISP.Attribute.DisableCorrelation
       description: Is attribute correlation disabled.
       type: boolean
-    - contextPath: MISP.Search_attributes.Attribute.Type
+    - contextPath: MISP.Attribute.Type
       description: Attribute type.
       type: string
-    - contextPath: MISP.Search_attributes.Attribute.ID
+    - contextPath: MISP.Attribute.ID
       description: Attribute ID.
       type: number
-    - contextPath: MISP.Search_attributes.Attribute.UUID
+    - contextPath: MISP.Attribute.UUID
       description: Attribute UUID.
       type: string
-    - contextPath: MISP.Search_attributes.Attribute.ShadowAttribute
+    - contextPath: MISP.Attribute.ShadowAttribute
       description: Attribute shadow attribute.
       type: Unknown
-    - contextPath: MISP.Search_attributes.Attribute.ToIDs
+    - contextPath: MISP.Attribute.ToIDs
       description: Is the Intrusion Detection System flag set.
       type: boolean
-    - contextPath: MISP.Search_attributes.Attribute.Category
+    - contextPath: MISP.Attribute.Category
       description: Attribute category.
       type: string
-    - contextPath: MISP.Search_attributes.Attribute.SharingGroupID
+    - contextPath: MISP.Attribute.SharingGroupID
       description: Attribute sharing group ID.
       type: number
-    - contextPath: MISP.Search_attributes.Attribute.Comment
+    - contextPath: MISP.Attribute.Comment
       description: Attribute comment.
       type: string
-    - contextPath: MISP.Search_attributes.Attribute.Event.ID
+    - contextPath: MISP.Attribute.Event.ID
       description: MISP event ID.
       type: number
-    - contextPath: MISP.Search_attributes.Attribute.Event.Distribution
+    - contextPath: MISP.Attribute.Event.Distribution
       description: MISP event distribution.
       type: number
-    - contextPath: MISP.Search_attributes.Attribute.Event.ThreatLevelID
+    - contextPath: MISP.Attribute.Event.ThreatLevelID
       description: Threat level of the MISP event (1 High, 2 Medium, 3 Low, 4 Undefined).
       type: number
-    - contextPath: MISP.Search_attributes.Attribute.Event.PublishTimestamp
+    - contextPath: MISP.Attribute.Event.PublishTimestamp
       description: Timestamp of the publish time (if published).
       type: number
-    - contextPath: MISP.Search_attributes.Attribute.Event.EventCreatorEmail
+    - contextPath: MISP.Attribute.Event.EventCreatorEmail
       description: Email address of the event creator.
       type: string
-    - contextPath: MISP.Search_attributes.Attribute.Event.Date
+    - contextPath: MISP.Attribute.Event.Date
       description: Event creation date.
       type: date
-    - contextPath: MISP.Search_attributes.Attribute.Event.Locked
+    - contextPath: MISP.Attribute.Event.Locked
       description: Is the event locked.
       type: boolean
-    - contextPath: MISP.Search_attributes.Attribute.Event.OwnerOrganisation.ID
+    - contextPath: MISP.Attribute.Event.OwnerOrganisation.ID
       description: Owner organization ID.
       type: number
-    - contextPath: MISP.Search_attributes.Attribute.Event.OwnerOrganisation.Name
+    - contextPath: MISP.Attribute.Event.OwnerOrganisation.Name
       description: Owner organization name.
       type: string
-    - contextPath: MISP.Search_attributes.Attribute.Event.OwnerOrganisation.UUID
+    - contextPath: MISP.Attribute.Event.OwnerOrganisation.UUID
       description: Owner organization UUID.
       type: string
-    - contextPath: MISP.Search_attributes.Attribute.Event.RelatedEvent.ID
+    - contextPath: MISP.Attribute.Event.RelatedEvent.ID
       description: Event IDs of related events (can be a list).
       type: number
-    - contextPath: MISP.Search_attributes.Attribute.Event.ProposalEmailLock
+    - contextPath: MISP.Attribute.Event.ProposalEmailLock
       description: If email lock proposed.
       type: boolean
-    - contextPath: MISP.Search_attributes.Attribute.Event.Timestamp
+    - contextPath: MISP.Attribute.Event.Timestamp
       description: Timestamp of the event.
       type: number
-    - contextPath: MISP.Search_attributes.Attribute.Event.Galaxy.Description
+    - contextPath: MISP.Attribute.Event.Galaxy.Description
       description: Event's galaxy description.
       type: string
-    - contextPath: MISP.Search_attributes.Attribute.Event.Galaxy.Name
+    - contextPath: MISP.Attribute.Event.Galaxy.Name
       description: Galaxy name.
       type: string
-    - contextPath: MISP.Search_attributes.Attribute.Event.Galaxy.Type
+    - contextPath: MISP.Attribute.Event.Galaxy.Type
       description: Galaxy type.
       type: number
-    - contextPath: MISP.Search_attributes.Attribute.Event.Published
+    - contextPath: MISP.Attribute.Event.Published
       description: Is the event published.
       type: boolean
-    - contextPath: MISP.Search_attributes.Attribute.Event.DisableCorrelation
+    - contextPath: MISP.Attribute.Event.DisableCorrelation
       description: Is correlation disabled.
       type: boolean
-    - contextPath: MISP.Search_attributes.Attribute.Event.UUID
+    - contextPath: MISP.Attribute.Event.UUID
       description: Event UUID.
       type: string
-    - contextPath: MISP.Search_attributes.Attribute.Event.ShadowAttribute
+    - contextPath: MISP.Attribute.Event.ShadowAttribute
       description: Event shadow attributes.
       type: Unknown
-    - contextPath: MISP.Search_attributes.Attribute.Event.Analysis
+    - contextPath: MISP.Attribute.Event.Analysis
       description: Event analysis (0 Initial, 1 Ongoing, 2 Completed).
       type: number
     - contextPath: MISP.Attribute.Event.SharingGroupID
       description: Event sharing group ID.
       type: number
-    - contextPath: MISP.Search_attributes.Attribute.Event.Tag.Name
+    - contextPath: MISP.Attribute.Event.Tag.Name
       description: All tag names in the event.
       type: string
-    - contextPath: MISP.Search_attributes.Attribute.Event.Tag.is_galaxy
+    - contextPath: MISP.Attribute.Event.Tag.is_galaxy
       description: Is the tag is a galaxy.
       type: Boolean
-    - contextPath: MISP.Search_attributes.Attribute.Object.MetaCategory
+    - contextPath: MISP.Attribute.Object.MetaCategory
       description: Object meta category.
       type: String
-    - contextPath: MISP.Search_attributes.Attribute.Object.Distribution
+    - contextPath: MISP.Attribute.Object.Distribution
       description: Distribution of object.
       type: Number
-    - contextPath: MISP.Search_attributes.Attribute.Object.Name
+    - contextPath: MISP.Attribute.Object.Name
       description: Name of the object.
       type: String
-    - contextPath: MISP.Search_attributes.Attribute.Object.TemplateVersion
+    - contextPath: MISP.Attribute.Object.TemplateVersion
       description: Template version of object.
       type: Number
-    - contextPath: MISP.Search_attributes.Attribute.Object.EventID
+    - contextPath: MISP.Attribute.Object.EventID
       description: ID of the event which the object first created.
       type: Number
-    - contextPath: MISP.Search_attributes.Attribute.Object.TemplateUUID
+    - contextPath: MISP.Attribute.Object.TemplateUUID
       description: UUID of the template.
       type: String
-    - contextPath: MISP.Search_attributes.Attribute.Object.Timestamp
+    - contextPath: MISP.Attribute.Object.Timestamp
       description: Timestamp of object creation.
       type: String
-    - contextPath: MISP.Search_attributes.Attribute.Object.Deleted
+    - contextPath: MISP.Attribute.Object.Deleted
       description: Is the object deleted.
       type: Boolean
-    - contextPath: MISP.Search_attributes.Attribute.Object.ID
+    - contextPath: MISP.Attribute.Object.ID
       description: ID of the object.
       type: Number
-    - contextPath: MISP.Search_attributes.Attribute.Object.UUID
+    - contextPath: MISP.Attribute.Object.UUID
       description: UUID of the object.
       type: String
-    - contextPath: MISP.Search_attributes.Attribute.Object.Description
+    - contextPath: MISP.Attribute.Object.Description
       description: Description of the object.
       type: String
-    - contextPath: MISP.Search_attributes.Attribute.Tag.Name
+    - contextPath: MISP.Attribute.Tag.Name
       description: All tag names in the attribute.
       type: string
-    - contextPath: MISP.Search_attributes.Attribute.Tag.is_galaxy
+    - contextPath: MISP.Attribute.Tag.is_galaxy
       description: Is the tag is a galaxy.
       type: Boolean
-    - contextPath: MISP.Search_attributes.Attribute.Sighting.type
+    - contextPath: MISP.Attribute.Sighting.type
       description: Sighting type.
       type: String
-    - contextPath: MISP.Search_attributes.Attribute.Galaxy.Description
+    - contextPath: MISP.Attribute.Galaxy.Description
       description: Galaxy description.
       type: string
-    - contextPath: MISP.Search_attributes.Attribute.Galaxy.Name
+    - contextPath: MISP.Attribute.Galaxy.Name
       description: Galaxy name.
       type: string
-    - contextPath: MISP.Search_attributes.Attribute.Galaxy.Type
+    - contextPath: MISP.Attribute.Galaxy.Type
       description: Galaxy type.
-      type: number
-    - contextPath: MISP.Search_attributes.Paging.Current_page_number
-      description: Current page number.
-      type: String
-    - contextPath: MISP.Search_attributes.Paging.Next_page_number
-      description: Next page number.
-      type: number
-    - contextPath: MISP.Search_attributes.Paging.Last_page_number
-      description: Last page number.
-      type: number
-    - contextPath: MISP.Search_attributes.Paging.Total_matched_attributes
-      description: Total matched attributes.
-      type: number
-    - contextPath: MISP.Search_attributes.Paging.Page_size
-      description: Page size.
       type: number
   dockerimage: devtesting/pymisp:1.0.0.1622625217
   feed: false

@@ -141,6 +141,22 @@ SIGHTING_FROM_TYPE_MAP = {
     '2': 'expiration'
 }
 
+DBOT_SCORE_TYPE_MAP = {
+    'FILE': DBotScoreType.FILE,
+    'URL': DBotScoreType.URL,
+    'DOMAIN': DBotScoreType.DOMAIN,
+    'IP': DBotScoreType.IP,
+    'EMAIL': DBotScoreType.EMAIL,
+}
+
+DOMAIN_REGEX = (
+    "([a-z¡-\uffff0-9](?:[a-z¡-\uffff0-9-]{0,61}"
+    "[a-z¡-\uffff0-9])?(?:\\.(?!-)[a-z¡-\uffff0-9-]{1,63}(?<!-))*"
+    "\\.(?!-)(?!(jpg|jpeg|exif|tiff|tif|png|gif|otf|ttf|fnt|dtd|xhtml|css"
+    "|html)$)(?:[a-z¡-\uffff-]{2,63}|xn--[a-z0-9]{1,59})(?<!-)\\.?$"
+    "|localhost)"
+)
+
 ''' HELPER FUNCTIONS '''
 
 
@@ -788,73 +804,114 @@ def download_file(pymisp: ExpandedPyMISP, demisto_args: dict):
             return fileResult(filename, file_buffer)
 
 
-def get_urls_events(demisto_args, pymisp, malicious_tag_ids, suspicious_tag_ids):
+def get_urls_events(demisto_args, pymisp, malicious_tag_ids, suspicious_tag_ids, reliability):
     urls = argToList(demisto_args.get('url'), ',')
-    demisto.results(urls)
+    command_results = []
     for url in urls:
-        check_url(pymisp, url, malicious_tag_ids, suspicious_tag_ids)
+        command_results.append(check_url(pymisp, url, malicious_tag_ids, suspicious_tag_ids, reliability))
+    return command_results
 
 
-def check_url(pymisp, url, malicious_tag_ids, suspicious_tag_ids):
-    response = pymisp.search(value=url, type_attribute='url', controller='attributes', include_context=True,
-                             include_correlations=True, include_event_tags=True, enforce_warninglist=True)
+def check_url(pymisp, url, malicious_tag_ids, suspicious_tag_ids, reliability):
+    misp_response = pymisp.search(value=url, controller='attributes', include_context=True,
+                                  include_correlations=True, include_event_tags=True, enforce_warninglist=True,
+                                  include_decay_score=True, includeSightings=True)
 
-    if response:
-        dbot_list = list()
-        md_list = list()
-        url_list = list()
+    if misp_response:
+        outputs, score = parse_response_reputation_command(copy.deepcopy(misp_response), malicious_tag_ids,
+                                                           suspicious_tag_ids)
+        dbot = Common.DBotScore(indicator=url, indicator_type=DBotScoreType.URL,
+                                integration_name=INTEGRATION_NAME,
+                                score=score, reliability=reliability)
+        indicator = Common.URL(dbot_score=dbot)
 
-        for event_in_response in response:
-            event = event_in_response.get('Event')
-            dbot_score = get_dbot_level(event.get('threat_level_id'))
-            misp_organisation = f"MISP.{event.get('Orgc').get('name')}"
+        attribute_highlights = reputation_command_to_human_readable(outputs, score)
+        readable_output = tableToMarkdown(f'Results found in MISP for url: {url}', attribute_highlights)
+        return CommandResults(indicator=indicator,
+                              raw_response=misp_response,
+                              outputs=outputs,
+                              outputs_prefix='MISP.Attribute',
+                              outputs_key_field='ID',
+                              readable_output=readable_output)
 
-            dbot_obj = {
-                'Indicator': url,
-                'Type': 'url',
-                'Vendor': 'MISP V2',
-                'Score': dbot_score
-            }
+    dbot = Common.DBotScore(indicator=file_hash, indicator_type=DBotScoreType.FILE, integration_name=INTEGRATION_NAME,
+                            score=Common.DBotScore.NONE, reliability=reliability)
+    indicator = Common.File(dbot_score=dbot)
+    return CommandResults(indicator=indicator,
+                          readable_output=f"No events found in MISP for hash {file_hash}")
 
-            url_obj = {
-                'Data': url,
-            }
-            if dbot_score == 3:
-                url_obj['Malicious'] = {
-                    'Vendor': 'MISP V2',
-                    'Description': f'IP Found in MISP event: {event.get("id")}'
-                }
-            md_obj = {
-                'EventID': event.get('id'),
-                'Threat Level': THREAT_LEVELS_WORDS[event.get('threat_level_id')],
-                'Organisation': misp_organisation
-            }
-            dbot_list.append(dbot_obj)
-            md_list.append(md_obj)
-            url_list.append(url_obj)
-        outputs = {
-            outputPaths.get('url'): url_list,
-            outputPaths.get('dbotscore'): dbot_list,
-            MISP_PATH: build_context(response)
-        }
-        md = tableToMarkdown(f'MISP Reputation for URL: {url}', md_list)
 
-    else:
-        md = f'No events found in MISP for URL: {url}'
-        outputs = {
-            outputPaths.get('dbotscore'): {
-                'Indicator': url,
-                'Type': DBotScoreType.URL,
-                'Vendor': 'MISP V2',
-                'Score': Common.DBotScore.NONE,
-            },
-        }
+def generic_reputation_command(demisto_args, pymisp, reputation_type, dbot_type, malicious_tag_ids, suspicious_tag_ids,
+                               reliability):
+    reputation_value_list = argToList(demisto_args.get(reputation_type), ',')
+    command_results = []
+    for value in reputation_value_list:
+        command_results.append(
+            check_reputation_object(pymisp, value, dbot_type, malicious_tag_ids, suspicious_tag_ids, reliability))
+    return command_results
 
-    return_results(CommandResults(
-        readable_output=md,
-        outputs=outputs,
-        raw_response=response,
-    ))
+
+def reputation_value_validation(value, dbot_type):
+    if dbot_type == 'FILE':
+        # hashFormat will be used only in output
+        hash_format = get_hash_type(value).upper()
+        if hash_format == 'Unknown':
+            return_error('Invalid hash length, enter file hash of format MD5, SHA-1 or SHA-256')
+    if dbot_type == 'IP':
+        if not is_ip_valid(value):
+            return_error(f"Error: The given IP address: {value} is not valid")
+    if dbot_type == 'DOMAIN':
+        if not re.compile(DOMAIN_REGEX, regexFlags).match(value):
+            return_error(f"Error: The given domain: {value} is not valid")
+    if dbot_type == 'URL':
+        if not re.compile(urlRegex, regexFlags).match(value):
+            return_error(f"Error: The given url: {value} is not valid")
+    if dbot_type == 'EMAIL':
+        if not re.compile(emailRegex, regexFlags).match(value):
+            return_error(f"Error: The given email address: {value} is not valid")
+
+
+def check_reputation_object(pymisp, value, dbot_type, malicious_tag_ids, suspicious_tag_ids, reliability):
+    reputation_value_validation(value, dbot_type)
+    misp_response = pymisp.search(value=value, controller='attributes', include_context=True,
+                                  include_correlations=True, include_event_tags=True, enforce_warninglist=True,
+                                  include_decay_score=True, includeSightings=True)
+    indicator_type = DBOT_SCORE_TYPE_MAP[dbot_type]
+    if misp_response and misp_response.get('Attribute'):
+        outputs, score = parse_response_reputation_command(copy.deepcopy(misp_response), malicious_tag_ids,
+                                                           suspicious_tag_ids)
+        dbot = Common.DBotScore(indicator=value, indicator_type=indicator_type,
+                                integration_name=INTEGRATION_NAME,
+                                score=score, reliability=reliability)
+        indicator = get_dbot_indicator(dbot_type, dbot, value)
+
+        attribute_highlights = reputation_command_to_human_readable(outputs, score)
+        readable_output = tableToMarkdown(f'Results found in MISP for value: {value}', attribute_highlights)
+        return CommandResults(indicator=indicator,
+                              raw_response=misp_response,
+                              outputs=outputs,
+                              outputs_prefix='MISP.Attribute',
+                              outputs_key_field='ID',
+                              readable_output=readable_output)
+
+    dbot = Common.DBotScore(indicator=value, indicator_type=indicator_type, integration_name=INTEGRATION_NAME,
+                            score=Common.DBotScore.NONE, reliability=reliability)
+    indicator = get_dbot_indicator(dbot_type, dbot, value)
+    return CommandResults(indicator=indicator,
+                          readable_output=f"No events found in MISP for value: {value}")
+
+
+def get_dbot_indicator(dbot_type, dbot_score, value):
+    if dbot_type == "FILE":
+        return Common.File(dbot_score)
+    if dbot_type == "IP":
+        return Common.IP(ip=value, dbot_score=dbot_score)
+    if dbot_type == "DOMAIN":
+        return Common.Domain(domain=value, dbot_score=dbot_score)
+    if dbot_type == "EMAIL":
+        return Common.EMAIL(address=value, dbot_score=dbot_score)
+    if dbot_type == "URL":
+        return Common.URL(url=value, dbot_score=dbot_score)
 
 
 def get_domains_events(demisto_args, pymisp, malicious_tag_ids, suspicious_tag_ids):
@@ -1156,23 +1213,6 @@ def pagination_args_validation(page, limit):
     return page, limit
 
 
-def handle_pagination(pymisp, args, object_to_search_for='Attribute'):
-    page = args.get('page')
-    limit = args.get('limit')
-    page, limit = pagination_args_validation(page, limit)
-    args_without_paging = {key: value for key, value in args.items() if key not in ['page', 'limit']}
-    response = pymisp.search(**args_without_paging)
-    if type(response) == list:
-        number_of_matched_attributes = len(response)
-    else:
-        number_of_matched_attributes = len(response.get(object_to_search_for))
-    limit = min(limit, number_of_matched_attributes)
-    next_page_number = page + 1
-    last_page_number = number_of_matched_attributes // limit
-    next_page_number = next_page_number if next_page_number <= last_page_number else page
-    return number_of_matched_attributes, next_page_number, last_page_number
-
-
 def attribute_response_to_markdown_table(response: dict):
     attribute_highlights = []
     for attribute in response:
@@ -1211,34 +1251,17 @@ def search_attributes(pymisp: ExpandedPyMISP, demisto_args: dict) -> CommandResu
     response = pymisp.search(**args)
     return_only_values = argToBoolean(demisto_args.get('compact', True))
     include_correlations = argToBoolean(demisto_args.get('include_correlations', False))
-    page = demisto_args.get('page')
     limit = demisto_args.get('limit', 50)
+    page = demisto_args.get('page')
+    if page:
+        pagination_args_validation(page, limit)
+
     if response:
-        paging_outputs = {}
-        if page:
-            number_of_matched_attributes, next_page_number, last_page_number = handle_pagination(pymisp, args)
-            response_for_context = build_attributes_search_response(copy.deepcopy(response), include_correlations)
-            attribute_highlights = attribute_response_to_markdown_table(response_for_context)
-            md = tableToMarkdown(f"MISP search-attributes returned {len(response_for_context)} attributes",
-                                 attribute_highlights, removeNull=True)
-            md += f"Current page number: {page}\n Next page number: {next_page_number}\n " \
-                  f"Total matched attributes: {number_of_matched_attributes}\n Last page number: {last_page_number}\n" \
-                  f"Page size: {limit}"
-
-            paging_outputs = {
-                'Current_page_number': page,
-                'Next_page_number': next_page_number,
-                'Last_page_number': last_page_number,
-                'Total_matched_attributes': number_of_matched_attributes,
-                'Page_size': limit
-            }
-
-        elif return_only_values:
+        if return_only_values:
             response_for_context = build_attributes_search_response_only_values(response)
             number_of_results = len(response_for_context)
             md = tableToMarkdown(f"MISP search-attributes returned {number_of_results} attributes",
-                                 response_for_context[:number_of_results],
-                                 ["Value"])
+                                 response_for_context[:number_of_results], ["Value"])
 
         else:
             response_for_context = build_attributes_search_response(copy.deepcopy(response), include_correlations)
@@ -1246,11 +1269,14 @@ def search_attributes(pymisp: ExpandedPyMISP, demisto_args: dict) -> CommandResu
             md = tableToMarkdown(f"MISP search-attributes returned {len(response_for_context)} attributes",
                                  attribute_highlights, removeNull=True)
 
+        if page:
+            md += f"Current page number: {page}\n Page size: {limit}"
+
         return CommandResults(
             raw_response=response,
             readable_output=md,
-            outputs={"Attribute": response_for_context, "Paging": paging_outputs},
-            outputs_prefix="MISP.Search_attributes",
+            outputs=response_for_context,
+            outputs_prefix="MISP.Attribute",
             outputs_key_field="ID"
         )
     else:
@@ -1370,30 +1396,18 @@ def search_events(demisto_args, pymisp) -> CommandResults:
     limit = demisto_args.get('limit', 50)
 
     if response:
-        paging_outputs = {}
         response_for_context = build_events_search_response(copy.deepcopy(response))
         event_highlights = event_response_to_markdown_table(response_for_context)
         md = tableToMarkdown(f"MISP search-events returned {len(response_for_context)} events",
                              event_highlights, removeNull=True)
         if page:
-            number_of_matched_attributes, next_page_number, last_page_number = handle_pagination(pymisp, args)
-            md += f"Current page number: {page}\n Next page number: {next_page_number}\n " \
-                  f"Total matched attributes: {number_of_matched_attributes}\n Last page number: {last_page_number}\n" \
-                  f"Page size: {limit}"
-
-            paging_outputs = {
-                'Current_page_number': page,
-                'Next_page_number': next_page_number,
-                'Last_page_number': last_page_number,
-                'Total_matched_attributes': number_of_matched_attributes,
-                'Page_size': limit
-            }
+            md += f"Current page number: {page}\n Page size: {limit} "
 
         return CommandResults(
             raw_response=response,
             readable_output=md,
-            outputs={"Event": response_for_context, "Paging": paging_outputs},
-            outputs_prefix="MISP.Search_events",
+            outputs=response_for_context,
+            outputs_prefix="MISP.Event",
             outputs_key_field="ID"
         )
     else:
@@ -1727,20 +1741,25 @@ def main():
             return_results(
                 add_events_from_feed(demisto_args=args, pymisp=pymisp, use_ssl=verify, proxies=proxies))  # checked V
         elif command == 'file':
-            return_results(get_files_events(demisto_args=args, pymisp=pymisp, malicious_tag_ids=malicious_tag_ids,
-                                            suspicious_tag_ids=suspicious_tag_ids, reliability=reliability))
+            return_results(
+                generic_reputation_command(args, pymisp, 'file', 'FILE', malicious_tag_ids,
+                                           suspicious_tag_ids, reliability))
         elif command == 'url':
-            return_results(get_urls_events(demisto_args=args, pymisp=pymisp, malicious_tag_ids=malicious_tag_ids,
-                                           suspicious_tag_ids=suspicious_tag_ids, reliability=reliability))
+            return_results(
+                generic_reputation_command(args, pymisp, 'url', 'URL', malicious_tag_ids,
+                                           suspicious_tag_ids, reliability))
         elif command == 'ip':
-            return_results(get_ips_events(demisto_args=args, pymisp=pymisp, malicious_tag_ids=malicious_tag_ids,
-                                          suspicious_tag_ids=suspicious_tag_ids, reliability=reliability))
+            return_results(
+                generic_reputation_command(args, pymisp, 'ip', 'IP', malicious_tag_ids,
+                                           suspicious_tag_ids, reliability))
         elif command == 'domain':
-            return_results(get_domains_events(demisto_args=args, pymisp=pymisp, malicious_tag_ids=malicious_tag_ids,
-                                              suspicious_tag_ids=suspicious_tag_ids, reliability=reliability))
+            return_results(
+                generic_reputation_command(args, pymisp, 'domain', 'DOMAIN', malicious_tag_ids,
+                                           suspicious_tag_ids, reliability))
         elif command == 'email':
-            return_results(get_emails_events(demisto_args=args, pymisp=pymisp, malicious_tag_ids=malicious_tag_ids,
-                                             suspicious_tag_ids=suspicious_tag_ids, reliability=reliability))
+            return_results(
+                generic_reputation_command(args, pymisp, 'email', 'EMAIL', malicious_tag_ids,
+                                           suspicious_tag_ids, reliability))
         #  Object commands
         elif command == 'misp-add-email-object':
             return_results(add_email_object(demisto_args=args, pymisp=pymisp))  # checked V
