@@ -90,7 +90,7 @@ tasks:
       id: 6257b06f-4b2a-4b5e-82a0-f41e18fb0cca
       version: -1
       name: Enrich Process
-      description: Gets basic process information for segment  of process.
+      description: Gets basic process information for the segment of the process.
       script: '|||cb-edr-process-get'
       type: regular
       iscommand: true
@@ -160,19 +160,19 @@ inputs:
   value:
     simple: ${incident.pid}
   required: true
-  description: The id of the requested process.
+  description: The ID of the requested process.
   playbookInputQuery:
 - key: Segment ID
   value:
     simple: ${incident.carbonblackedrsegmentid}
   required: true
-  description: The id of the segment of the requested process.
+  description: The ID of the segment of the requested process.
   playbookInputQuery:
 - key: Enrich with related processes?
   value:
     simple: "false"
   required: true
-  description: Does the data fetched should include related processes (parent, sibling
+  description: Whether the data fetched should include related processes (parent, sibling
     and child processes) if available?
   playbookInputQuery:
 outputs: []
