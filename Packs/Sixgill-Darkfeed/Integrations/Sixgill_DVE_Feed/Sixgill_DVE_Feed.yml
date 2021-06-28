@@ -1,6 +1,6 @@
 category: Data Enrichment & Threat Intelligence
 commonfields:
-  id: Sixgill_DVE_Feed V2
+  id: Sixgill_DVE_Feed
   version: -1
 configuration:
 - display: Client Id
@@ -43,8 +43,7 @@ configuration:
   - F - Reliability cannot be judged
   required: true
   type: 15
-- additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators
-    fetched from the feed
+- additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed
   display: Traffic Light Protocol Color
   name: tlp_color
   options:
@@ -78,9 +77,9 @@ configuration:
   name: maxIndicators
   required: false
   type: 0
-- additionalinfo: When selected, the exclusion list is ignored for indicators from
-    this feed. This means that if an indicator from this feed is on the exclusion
-    list, the indicator might still be added to the system.
+- additionalinfo: When selected, the exclusion list is ignored for indicators from this
+    feed. This means that if an indicator from this feed is on the exclusion list, the
+    indicator might still be added to the system.
   display: Bypass exclusion list
   name: feedBypassExclusionList
   required: false
@@ -106,14 +105,10 @@ configuration:
   name: feedTags
   required: false
   type: 0
-description: The Cybersixgill Dynamic Vulnerability Exploit (DVE) Score is based on
-  the most comprehensive collection of vulnerability-related threat intelligence and
-  is the only solution that provides users total context and predicts the immediate
-  risks of a vulnerability based on threat actors’ intent. Cortex XSOAR users can
-  track threats stemming from CVEs that most others define as irrelevant and have
-  a higher probability of being exploited via their Cortex XSOAR dashboard.
-display: Cybersixgill DVE Feed Threat Intelligence V2
-name: Sixgill_DVE_Feed V2
+description: Leverage the power of Sixgill to supercharge Cortex XSOAR with real-time
+  Threat Intelligence indicators. Get CVE Feed straight into the XSOAR platform.
+display: Cybersixgill DVE Feed Threat Intelligence (Deprecated)
+name: Sixgill_DVE_Feed
 script:
   commands:
   - arguments:
@@ -128,7 +123,7 @@ script:
     description: Fetching Sixgill DVE Feed indicators
     execution: false
     name: sixgill-get-dve-feed
-  dockerimage: demisto/sixgill:1.0.0.20925
+  dockerimage: demisto/sixgill:1.0.0.18412
   feed: true
   isfetch: false
   longRunning: false
