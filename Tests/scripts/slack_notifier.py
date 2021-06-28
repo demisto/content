@@ -263,9 +263,11 @@ def get_attachments_for_test_playbooks(build_url, env_results_file_name):
 
 def get_fields():
     failed_tests = []
-    if os.path.isfile('./Tests/failed_tests.txt'):
+    # failed_tests.txt is copied into the artifacts directory
+    failed_tests_file_path = os.path.join(ARTIFACTS_FOLDER, 'failed_tests.txt')
+    if os.path.isfile(failed_tests_file_path):
         logging.info('Extracting failed_tests')
-        with open('./Tests/failed_tests.txt', 'r') as failed_tests_file:
+        with open(failed_tests_file_path, 'r') as failed_tests_file:
             failed_tests = failed_tests_file.readlines()
             failed_tests = [line.strip('\n') for line in failed_tests]
 
