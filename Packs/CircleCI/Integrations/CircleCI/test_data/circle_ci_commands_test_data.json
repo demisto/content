@@ -1,0 +1,69 @@
+{
+ "get_pipelines_list": {
+  "outputs_prefix": "CircleCI.Pipeline",
+  "outputs_key_field": "id",
+  "raw_response": {
+   "next_page_token": "dskal5jsadlkjk2l3j4l12j34eklzasjro;sd5;jh2o3;34j12lw3",
+   "items": [
+    {
+     "id": "2134asxx-12aa-2451-s8a2-as412039fsd09",
+     "errors": [],
+     "project_slug": "gh/demisto/content",
+     "updated_at": "2021-06-28T13:42:55.306Z",
+     "number": 97132,
+     "state": "created",
+     "created_at": "2021-06-28T13:42:55.306Z",
+     "trigger": {
+      "received_at": "2021-06-28T13:42:54.493Z",
+      "type": "webhook",
+      "actor": {
+       "login": "user1",
+       "avatar_url": null
+      }
+     },
+     "vcs": {
+      "origin_repository_url": "https://github.com/demisto/content",
+      "target_repository_url": "https://github.com/demisto/content",
+      "review_url": "https://github.com/demisto/content/pull/12976",
+      "revision": "93131e1312a40e6ba2a52f1e8a465b8cd6bf4171",
+      "review_id": "12976",
+      "provider_name": "GitHub",
+      "commit": {
+       "body": "Commit Body Message 1",
+       "subject": "Subject Commit Message 1"
+      },
+      "branch": "Branch 1"
+     }
+    },
+    {
+     "id": "d30c8d2a-efd0-47dc-1241-aaskl4j1224aaa",
+     "errors": [],
+     "project_slug": "gh/demisto/content",
+     "updated_at": "2021-06-28T13:38:31.747Z",
+     "number": 97131,
+     "state": "created",
+     "created_at": "2021-06-28T13:38:31.747Z",
+     "trigger": {
+      "received_at": "2021-06-28T13:38:31.480Z",
+      "type": "webhook",
+      "actor": {
+       "login": "User 2",
+       "avatar_url": "https://avatars.githubusercontent.com/u/21142167?v=4"
+      }
+     },
+     "vcs": {
+      "origin_repository_url": "https://github.com/demisto/content",
+      "target_repository_url": "https://github.com/demisto/content",
+      "revision": "5f73e7c8b3e43a3e75ed5be275c71dff4a5476b9",
+      "provider_name": "GitHub",
+      "commit": {
+       "body": "Body Commit Message 2",
+       "subject": "Subject Commit 2"
+      },
+      "branch": "master"
+     }
+    }
+   ]
+  }
+ }
+}
