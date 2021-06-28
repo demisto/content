@@ -1,0 +1,30 @@
+{
+    "associatedToAll": false,
+    "associatedTypes": [
+        "GIB Compromised Card"
+    ],
+    "caseInsensitive": false,
+    "cliName": "gibcardissuer",
+    "closeForm": false,
+    "content": true,
+    "description": "Issuer of compromised card",
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_gibcardissuer",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "GIB Card Issuer",
+    "neverSetAsRequired": false,
+    "ownerOnly": false,
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "shortText",
+    "unmapped": false,
+    "unsearchable": false,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.0.0"
+}

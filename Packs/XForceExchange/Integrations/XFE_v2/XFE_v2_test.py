@@ -449,7 +449,7 @@ def test_file_connections(requests_mock):
     requests_mock.get(f'{MOCK_BASE_URL}/malware/{MOCK_HASH}', json=MOCK_HASH_RESP)
 
     client = Client(MOCK_BASE_URL, MOCK_API_KEY, MOCK_PASSWORD, True, False)
-    relations = file_command(client, {'file': MOCK_HASH})[0].relations[0].to_context()
+    relations = file_command(client, {'file': MOCK_HASH})[0].relationships[0].to_context()
     assert relations.get('Relationship') == 'related-to'
     assert relations.get('EntityA') == MOCK_HASH
     assert relations.get('EntityAType') == 'File'

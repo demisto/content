@@ -69,6 +69,8 @@ def get_new_entity_record(entity_path: str) -> Tuple[str, str]:
     if 'layouts' in entity_path.lower():
         layout_kind = LAYOUT_TYPE_TO_NAME.get(data.get('kind', ''))
         type_id = data.get('typeId', '')
+        if not type_id:
+            return f'{data.get("id")}', f'(Available from Cortex XSOAR {data.get("fromVersion")})'
         return f'{type_id} - {layout_kind}', ''
 
     name = data.get('name', entity_path)

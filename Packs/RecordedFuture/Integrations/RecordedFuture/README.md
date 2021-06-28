@@ -27,7 +27,7 @@ A valid API Token for XSOAR from Recorded Future needed to fetch information.
 Several of the outputs below have been reduced in size to improve readability.
 
 ## Commands
-You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.
+You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### domain
 ***
@@ -1005,6 +1005,8 @@ Get threat intelligence for an IP, Domain, CVE, URL or File.
 | RecordedFuture.CVE.relatedEntities.RelatedCompany.id | String | Recorded Future Related ID |
 | RecordedFuture.CVE.relatedEntities.RelatedCompany.name | String | Recorded Future Related Name |
 | RecordedFuture.CVE.relatedEntities.RelatedCompany.type | String | Recorded Future Related Type |
+| RecordedFuture.CVE.cpe | String | Recorded Future  CPE information |
+| RecordedFuture.CVE.relatedLinks | String | Recorded Future CVE Related Links |
 | RecordedFuture.File.criticality | number | Risk Criticality |
 | RecordedFuture.File.criticalityLabel | string | Risk Criticality Label |
 | RecordedFuture.File.riskString | string | Risk String |

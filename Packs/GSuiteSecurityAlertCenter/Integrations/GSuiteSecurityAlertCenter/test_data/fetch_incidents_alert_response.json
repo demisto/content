@@ -1,0 +1,27 @@
+{
+  "alerts": [
+    {
+      "customerId": "demo_customerId",
+      "alertId": "demo_alertId",
+      "createTime": "2020-10-28T20:43:34.381Z",
+      "startTime": "2020-10-28T20:13:33Z",
+      "endTime": "2020-10-28T20:13:33Z",
+      "type": "Customer takeout initiated",
+      "source": "Domain wide takeout",
+      "data": {
+        "takeoutRequestId": "demo_takeoutRequestId",
+        "email": "demo_email"
+      },
+      "metadata": {
+        "customerId": "demo_customerId",
+        "alertId": "demo_alertId",
+        "status": "NOT_STARTED",
+        "updateTime": "2020-10-28T20:43:34.381Z",
+        "severity": "LOW",
+        "etag": "demo_etag="
+      },
+      "updateTime": "2020-10-28T20:43:34.381Z",
+      "etag": "demo_etag=="
+    }
+  ]
+}

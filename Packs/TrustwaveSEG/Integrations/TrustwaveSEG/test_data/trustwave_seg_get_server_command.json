@@ -1,0 +1,39 @@
+{
+    "configCommitSetId": 6,
+    "configTimeStamp": 0,
+    "disconnectedReason": "RPC call timed-out",
+    "isActive": false,
+    "isConfigDeferred": false,
+    "lastConnected": 1618145160,
+    "osVersion": "Windows Server 2016 ",
+    "pServiceStatus": [
+        {
+            "description": "Trustwave SEG Receiver.\nAccepts email messages for processing.",
+            "lastError": null,
+            "name": "Receiver",
+            "serviceId": 0,
+            "state": 0
+        },
+        {
+            "description": "Trustwave SEG Content Engine.\nApplies your email policy to messages.",
+            "lastError": null,
+            "name": "Engine",
+            "serviceId": 1,
+            "state": 0
+        },
+        {
+            "description": "Trustwave SEG Sender.\nForwards processed messages for delivery.",
+            "lastError": null,
+            "name": "Sender",
+            "serviceId": 2,
+            "state": 0
+        }
+    ],
+    "productVersion": "10.0.1.2030",
+    "serverDescription": "",
+    "serverId": 1,
+    "serverLocation": "",
+    "serverName": "DEV-TRUSTWAVE",
+    "timeZoneName": "Pacific Daylight Time",
+    "timeZoneOffset": 480
+}

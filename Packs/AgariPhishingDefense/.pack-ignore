@@ -1,0 +1,6 @@
+
+[file:incidentfield-APD_Alert_Definition_Name.json]
+ignore=IF100
+
+[file:incidentfield-APD_Policy_Event_ID.json]
+ignore=IF100

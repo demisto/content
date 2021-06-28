@@ -5,16 +5,16 @@ Indeni Integration
 This integration was integrated and tested with version 7.1.1 of Indeni
 ## Indeni Playbook
 ---
-The playbook periodically pulls vulnerability issues for Palo Alto Network devices and converts them to Demisto incidents. 
+The playbook periodically pulls vulnerability issues for Palo Alto Network devices and converts them to Cortex XSOAR incidents. 
 For every incident that's created, it posts a note back to Indeni to let user know that the issue is been handled by 
-Demisto and creates a Jira ticket with all the relevant information pulled from Inden API. One the assigned user marks 
+Cortex XSOAR and creates a Jira ticket with all the relevant information pulled from Inden API. One the assigned user marks 
 the Jira ticket as Done, the playbook will automatically acknowledge the issue in Indeni and close the incident. 
 
 ## Use Cases
 ---
 1. Pull in critical Indeni issues and triage the issues 
 
-## Configure Indeni on Demisto
+## Configure Indeni on Cortex XSOAR
 ---
 
 1. Navigate to __Settings__ > __Integrations__ > __Servers & Services__.
@@ -49,7 +49,7 @@ the Jira ticket as Done, the playbook will automatically acknowledge the issue i
 ```
 ## Commands
 ---
-You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.
+You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 1. indeni-get-device-info
 2. indeni-get-alert-info

@@ -118,7 +118,7 @@ tasks:
       id: be51ba42-9f41-4998-8033-81757c16970d
       version: -1
       name: Intezer - Analyze File by hash
-      description: Checks the file reputation of the uploaded file. Max file size is 20 MB.
+      description: Checks the file reputation of the uploaded file. Max file size is 150 MB.
       script: Intezer v2|||intezer-analyze-by-hash
       type: regular
       iscommand: true

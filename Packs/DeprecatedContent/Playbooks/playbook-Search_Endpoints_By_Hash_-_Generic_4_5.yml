@@ -418,3 +418,4 @@ outputs:
   type: unknown
 tests:
 - No test - tests exist for sub playbooks
+deprecated: true

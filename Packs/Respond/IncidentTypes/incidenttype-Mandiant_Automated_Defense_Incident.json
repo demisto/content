@@ -1,0 +1,27 @@
+{
+    "autorun": false,
+    "color": "#69A636",
+    "days": 0,
+    "daysR": 0,
+    "default": false,
+    "detached": false,
+    "disabled": false,
+    "extractSettings": {
+        "fieldCliNameToExtractSettings": {},
+        "mode": "All"
+    },
+    "hours": 0,
+    "hoursR": 0,
+    "id": "Mandiant Automated Defense Incident",
+    "layout": "1c9d70b1-1eda-4c86-817c-2bb1c6967903",
+    "locked": false,
+    "name": "Mandiant Automated Defense Incident",
+    "onChangeRepAlg": 1,
+    "readonly": false,
+    "reputationCalc": 0,
+    "system": false,
+    "version": -1,
+    "weeks": 0,
+    "weeksR": 0,
+    "fromVersion": "5.0.0"
+}

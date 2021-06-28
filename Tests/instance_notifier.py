@@ -1,16 +1,18 @@
 import argparse
 import json
 import logging
+import os
 
 import demisto_client
 from slack import WebClient as SlackClient
 
 from Tests.configure_and_test_integration_instances import update_content_on_demisto_instance
-from Tests.scripts.utils.log_util import install_simple_logging
+from Tests.scripts.utils.log_util import install_logging
 from Tests.test_integration import __create_integration_instance, __delete_integrations_instances
 from demisto_sdk.commands.common.tools import str2bool
 
 SERVER_URL = "https://{}"
+ARTIFACTS_FOLDER = os.getenv('ARTIFACTS_FOLDER')
 
 
 def options_handler():
@@ -60,11 +62,16 @@ def test_instances(secret_conf_path, server, username, password):
         is_byoi = integration.get('byoi', True)
         has_integration = integration.get('has_integration', True)
         validate_test = integration.get('validate_test', True)
-
         if has_integration:
-            instance_id, failure_message = __create_integration_instance(
-                server, username, password, integration_name, integration_instance_name,
-                integration_params, is_byoi, validate_test=validate_test)
+            try:
+                instance_id, failure_message = __create_integration_instance(
+                    server, username, password, integration_name, integration_instance_name,
+                    integration_params, is_byoi, validate_test=validate_test)
+            except Exception:
+                logging.exception(f'Failed to configure integration with name {integration_name}')
+                failed_integrations.append(
+                    f"{integration_name} {product_description} - devops comments: {devops_comments}")
+                continue
             if failure_message == 'No configuration':
                 logging.warning(
                     f"skipping {integration_name} as it exists in content-test-conf conf.json but not in content repo")
@@ -83,7 +90,7 @@ def test_instances(secret_conf_path, server, username, password):
 
 
 def create_failed_integrations_file(failed_instances):
-    with open("./Tests/failed_instances.txt", "w") as failed_instances_file:
+    with open(f"{ARTIFACTS_FOLDER}/failed_instances.txt", "w") as failed_instances_file:
         failed_instances_file.write('\n'.join(failed_instances))
 
 
@@ -147,10 +154,11 @@ def slack_notifier(slack_token, secret_conf_path, server, user, password, build_
 
 
 if __name__ == "__main__":
-    install_simple_logging()
+    install_logging('Instance-Test.log')
     options = options_handler()
     if options.instance_tests:
-        with open('./env_results.json', 'r') as json_file:
+        env_results_path = os.path.join(os.getenv('ARTIFACTS_FOLDER', './artifacts'), 'env_results.json')
+        with open(env_results_path, 'r') as json_file:
             env_results = json.load(json_file)
             server = f'https://localhost:{env_results[0]["TunnelPort"]}'
 

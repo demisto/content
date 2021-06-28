@@ -116,7 +116,7 @@ URL_RAW_RESPONSE = {
 URL_EC = {
     'URL(val.Data && val.Data == obj.Data)': [{
         'Data': {'url': 'http://www.fotoidea.com/sport/4x4_san_ponso/slides/IMG_0068.html/url_list'},
-        'Relations': [{
+        'Relationships': [{
             'Relationship': 'hosted-on',
             'EntityA': {'url': 'http://www.fotoidea.com/sport/4x4_san_ponso/slides/IMG_0068.html/url_list'},
             'EntityAType': 'URL', 'EntityB': 'fotoidea.com', 'EntityBType': 'Domain'}]
@@ -454,16 +454,18 @@ IP_RAW_RESPONSE_WITH_RELATIONSHIPS = {
 IP_EC_WITH_RELATIONSHIPS = {
     'IP(val.Address && val.Address == obj.Address)': [{
         'Address': '98.136.103.23', 'ASN': 'AS36647 YAHOO-GQ1', 'Geo': {'Location': '37.751:-97.822', 'Country': 'US'},
-        'Relations': [{'Relationship': 'indicator-of', 'EntityA': '98.136.103.23', 'EntityAType': 'IP',
-                       'EntityB': 'T1140 - Deobfuscate/Decode Files or Information', 'EntityBType': 'STIX Attack Pattern'},
-                      {'Relationship': 'indicator-of', 'EntityA': '98.136.103.23', 'EntityAType': 'IP',
-                       'EntityB': 'T1040 - Network Sniffing', 'EntityBType': 'STIX Attack Pattern'},
-                      {'Relationship': 'indicator-of', 'EntityA': '98.136.103.23', 'EntityAType': 'IP',
-                       'EntityB': 'T1053 - Scheduled Task/Job', 'EntityBType': 'STIX Attack Pattern'},
-                      {'Relationship': 'indicator-of', 'EntityA': '98.136.103.23', 'EntityAType': 'IP',
-                       'EntityB': 'T1060 - Registry Run Keys / Startup Folder', 'EntityBType': 'STIX Attack Pattern'},
-                      {'Relationship': 'indicator-of', 'EntityA': '98.136.103.23', 'EntityAType': 'IP',
-                       'EntityB': 'T1071 - Application Layer Protocol', 'EntityBType': 'STIX Attack Pattern'}]
+        'Relationships': [{'Relationship': 'indicator-of', 'EntityA': '98.136.103.23', 'EntityAType': 'IP',
+                           'EntityB': 'T1140 - Deobfuscate/Decode Files or Information',
+                           'EntityBType': 'STIX Attack Pattern'},
+                          {'Relationship': 'indicator-of', 'EntityA': '98.136.103.23', 'EntityAType': 'IP',
+                           'EntityB': 'T1040 - Network Sniffing', 'EntityBType': 'STIX Attack Pattern'},
+                          {'Relationship': 'indicator-of', 'EntityA': '98.136.103.23', 'EntityAType': 'IP',
+                           'EntityB': 'T1053 - Scheduled Task/Job', 'EntityBType': 'STIX Attack Pattern'},
+                          {'Relationship': 'indicator-of', 'EntityA': '98.136.103.23', 'EntityAType': 'IP',
+                           'EntityB': 'T1060 - Registry Run Keys / Startup Folder',
+                           'EntityBType': 'STIX Attack Pattern'},
+                          {'Relationship': 'indicator-of', 'EntityA': '98.136.103.23', 'EntityAType': 'IP',
+                           'EntityB': 'T1071 - Application Layer Protocol', 'EntityBType': 'STIX Attack Pattern'}]
     }],
     'DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor && val.Type == obj.Type)': [{
         'Indicator': '98.136.103.23', 'Type': 'ip', 'Vendor': 'AlienVault OTX v2', 'Score': 2,

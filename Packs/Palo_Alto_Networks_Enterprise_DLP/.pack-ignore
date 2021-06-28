@@ -1,2 +1,5 @@
 [file:pack_metadata.json]
-ignore=PA124
+ignore=PA125
+
+[file:Palo_Alto_Networks_Enterprise_DLP.yml]
+ignore=BA108,BA109

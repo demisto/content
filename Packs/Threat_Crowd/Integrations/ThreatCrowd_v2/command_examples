@@ -1,0 +1,5 @@
+!ip ip="1.2.3.4" using=ThreatCrowdv2_instance_1
+!file file=31d0e421894004393c48de1769744687 using=ThreatCrowdv2_instance_1
+!threat-crowd-antivirus antivirus="plugx" using=ThreatCrowdv2_instance_1
+!email email=william19770319@yahoo.com using=ThreatCrowdv2_instance_1
+!domain domain=aoldaily.com using=ThreatCrowdv2_instance_1

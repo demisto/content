@@ -856,8 +856,10 @@ class MsGraphClient:
         exclude_ids = last_run.get('LAST_RUN_IDS', [])
         last_run_folder_path = last_run.get('LAST_RUN_FOLDER_PATH')
         folder_path_changed = (last_run_folder_path != self._folder_to_fetch)
+        last_run_account = last_run.get('LAST_RUN_ACCOUNT')
+        mailbox_to_fetch_changed = last_run_account != self._mailbox_to_fetch
 
-        if folder_path_changed:
+        if folder_path_changed or mailbox_to_fetch_changed:
             # detected folder path change, get new folder id
             folder_id = self._get_folder_by_path(self._mailbox_to_fetch, self._folder_to_fetch).get('id')
             demisto.info("MS-Graph-Listener: detected file path change, ignored last run.")
@@ -877,7 +879,8 @@ class MsGraphClient:
             'LAST_RUN_TIME': next_run_time,
             'LAST_RUN_IDS': fetched_emails_ids,
             'LAST_RUN_FOLDER_ID': folder_id,
-            'LAST_RUN_FOLDER_PATH': self._folder_to_fetch
+            'LAST_RUN_FOLDER_PATH': self._folder_to_fetch,
+            'LAST_RUN_ACCOUNT': self._mailbox_to_fetch,
         }
         demisto.info(f"MS-Graph-Listener: fetched {len(incidents)} incidents")
 

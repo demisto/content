@@ -36,4 +36,7 @@
 /Packs/CommonScripts/Scripts/SearchIncidentsV2/* @demisto/content-leaders
 
 # Build related
-.circleci/config.yml @hod-alpert
+.circleci/config.yml @avidan-H @DinaMeylakh
+.gitlab/ci/* @avidan-H @DinaMeylakh
+.gitlab/* @avidan-H @DinaMeylakh
+.gitlab-ci.yml @avidan-H @DinaMeylakh

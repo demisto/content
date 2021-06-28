@@ -89,8 +89,21 @@ def is_incident_contains_python_magic(inc):
     return PYTHON_MAGIC in json.dumps(inc)
 
 
+def get_fields_to_populate_arg(fields_to_populate):
+    incidents_fields_to_populate = []
+    for field in fields_to_populate:
+        if "." in field:
+            # handle complex field case
+            incidents_fields_to_populate.append(field[:field.find(".")])
+        else:
+            incidents_fields_to_populate.append(field)
+    return ",".join(incidents_fields_to_populate)
+
+
 def get_incidents_by_page(args, page, fields_to_populate, include_context):
     args['page'] = page
+    if is_demisto_version_ge('6.2.0') and len(fields_to_populate) > 0:
+        args['populateFields'] = get_fields_to_populate_arg(fields_to_populate)
     res = demisto.executeCommand("getIncidents", args)
     if res[0]['Contents'].get('data') is None:
         return []

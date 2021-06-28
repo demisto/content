@@ -7,7 +7,7 @@ Download CheckPoint policy backup to the Cortex XSOAR War Room.
 | --- | --- |
 | Script Type | python3 |
 | Tags |  |
-| Demisto Version | 5.0.0 |
+| Cortex XSOAR Version | 5.0.0 |
 
 ## Inputs
 ---

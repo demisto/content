@@ -2,7 +2,9 @@ id: PANW - Hunting and threat detection by indicator type V2
 version: -1
 fromversion: 5.0.0
 name: PANW - Hunting and threat detection by indicator type V2
-description: Deprecated. Integrations list -  Cortex (Traps, PAN-OS, Analytics)\nThis is a multipurpose\
+description: Deprecated. Use the "Palo Alto Networks - Hunting And Threat Detection"\
+  \ playbook instead.
+ Integrations list -  Cortex (Traps, PAN-OS, Analytics)\nThis is a multipurpose\
   \ playbook used for hunting and threat detection. The playbook receives inputs based\
   \ on hashes, IP addresses, or domain names provided manually or from outputs by\
   \ other playbooks. \nWith the received indicators, the playbook leverages Palo Alto\
@@ -3437,3 +3439,4 @@ outputs:
   type: string
 tests:
 - No tests
+deprecated: true

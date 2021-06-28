@@ -6,7 +6,7 @@ Shows the DBot Score and reputation of the Domain.
 | --- | --- |
 | Script Type | python3 |
 | Tags | dynamic-section |
-| Demisto Version | 5.0.0 |
+| Cortex XSOAR Version | 5.0.0 |
 
 ## Inputs
 ---

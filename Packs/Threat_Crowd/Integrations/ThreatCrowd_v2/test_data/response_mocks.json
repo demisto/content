@@ -1,0 +1,141 @@
+{
+  "empty_ip_response": {
+    "response_code": "0"
+  },
+  "ip_response_1": {
+    "response_code": "1",
+    "resolutions": [
+      {
+        "last_resolved": "2014-12-14",
+        "domain": "test.com"
+      },
+      {
+        "last_resolved": "2013-12-20",
+        "domain": "000.in"
+      }
+    ],
+    "hashes": [
+      "009418664c249d76b1bb88fab98fccdd",
+      "00bbeeab92b10c2ab038671da99e9b47",
+      "00bffa26618ee214fac1adc89d39bb6a"
+    ],
+    "references": ["http://example1.txt", "https://example2/"],
+    "votes": -1,
+    "permalink": "https://www.threatcrowd.org/ip.php?ip=0.0.0.0"
+  },
+  "ip_response_2": {
+    "response_code": "1",
+    "resolutions": [],
+    "hashes": [],
+    "references": [],
+    "votes": -1,
+    "permalink": "https://www.threatcrowd.org/ip.php?ip=0.0.0.0"
+  },
+  "domain_response": {
+    "response_code": "1",
+    "resolutions": [
+      {
+        "last_resolved": "2018-07-11",
+        "ip_address": "1.1.1.1"
+      },
+      {
+        "last_resolved": "2020-05-01",
+        "ip_address": "0.0.0.0"
+      }
+    ],
+    "hashes": [],
+    "emails": [
+      "",
+      "test@test.test"
+    ],
+    "subdomains": [
+      "www.test1.com"
+    ],
+    "references": [],
+    "votes": 0,
+    "permalink": "https://www.threatcrowd.org/domain.php?domain=test1.com"
+  },
+  "email_response": {
+    "response_code": "1",
+    "domains": [
+      "test1.com",
+      "test2.com"
+    ],
+    "references": [],
+    "permalink": "https://www.threatcrowd.org/email.php?email=test@test.com"
+  },
+  "antivirus_response": {
+    "response_code": "1",
+    "hashes": [
+      "31d0e421894004393c48de1769744687"
+    ],
+    "references": [],
+    "permalink": "https://www.threatcrowd.org/listMalware.php?antivirus=test"
+  },
+  "file_response": {
+    "response_code": "1",
+    "md5": "test_md5",
+    "sha1": "test_sha1",
+    "scans": [
+      "Trojan/W32.Small.34304.EG"
+    ],
+    "ips": [
+      "0.0.0.0"
+    ],
+    "domains": [
+      "bad.domain.com"
+    ],
+    "references": [],
+    "permalink": "https://www.threatcrowd.org/malware.php?md5=test_md5"
+  },
+  "resulotion_respone": [
+    {
+      "last_resolved": "2013-11-03",
+      "domain": "test1.com"
+    },
+    {
+      "last_resolved": "2015-05-28",
+      "domain": "test2.com"
+    },
+    {
+      "last_resolved": "2015-05-05",
+      "domain": "test3.com"
+    },
+    {
+      "last_resolved": "2014-06-14",
+      "domain": "test4.com"
+    },
+    {
+      "last_resolved": "2015-05-05",
+      "domain": "test5.com"
+    },
+    {
+      "last_resolved": "2015-01-20",
+      "domain": "test6.com"
+    },
+    {
+      "last_resolved": "2014-03-10",
+      "domain": "test7.com"
+    },
+    {
+      "last_resolved": "2014-07-01",
+      "domain": "test8.com"
+    },
+    {
+      "last_resolved": "2014-05-16",
+      "domain": "test9.com"
+    },
+    {
+      "last_resolved": "2014-03-14",
+      "domain": "test10.com"
+    },
+    {
+      "last_resolved": "2015-08-15",
+      "domain": "test11.com"
+    },
+    {
+      "last_resolved": "2015-01-19",
+      "domain": "test12.com"
+    }
+  ]
+}

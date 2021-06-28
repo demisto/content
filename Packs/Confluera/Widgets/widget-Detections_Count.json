@@ -1,0 +1,11 @@
+{
+  "id": "detcount",
+  "name": "Confluera Detections Count",
+  "dataType": "scripts",
+  "widgetType": "number",
+  "query": "ConflueraDetectionsCount",
+  "version": -1,
+  "description": "Logs detections count",
+  "isPredefined": true,
+  "fromVersion": "6.0.0"
+}

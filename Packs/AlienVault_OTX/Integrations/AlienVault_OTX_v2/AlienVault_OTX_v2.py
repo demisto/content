@@ -158,12 +158,12 @@ def create_attack_pattern_relationships(client: Client, raw_response: dict, enti
     if pulses and isinstance(pulses, list) and 'attack_ids' in pulses[0]:
         display_names = [attack_id.get('display_name') for attack_id in pulses[0].get('attack_ids')]
         if display_names:
-            relationships = [EntityRelation(
-                name=EntityRelation.Relations.INDICATOR_OF,
+            relationships = [EntityRelationship(
+                name=EntityRelationship.Relationships.INDICATOR_OF,
                 entity_a=entity_a,
                 entity_a_type=entity_a_type,
                 entity_b=display_name,
-                entity_b_type="STIX Attack Pattern",
+                entity_b_type=FeedIndicatorType.indicator_type_by_server_version("STIX Attack Pattern"),
                 source_reliability=client.reliability,
                 brand=INTEGRATION_NAME) for display_name in display_names]
     return relationships
@@ -226,7 +226,7 @@ def ip_command(client: Client, ip_address: str, ip_version: str) -> List[Command
                                   geo_country=raw_response.get('country_code'),
                                   geo_latitude=raw_response.get("latitude"),
                                   geo_longitude=raw_response.get("longitude"),
-                                  relations=relationships)
+                                  relationships=relationships)
 
             context = {
                 'Reputation': raw_response.get('reputation'),
@@ -243,7 +243,7 @@ def ip_command(client: Client, ip_address: str, ip_version: str) -> List[Command
                 outputs={'IP': context},
                 indicator=ip_object,
                 raw_response=raw_response,
-                relations=relationships
+                relationships=relationships
             ))
 
     if not command_results:
@@ -277,7 +277,7 @@ def domain_command(client: Client, domain: str) -> List[CommandResults]:
                                           integration_name=INTEGRATION_NAME,
                                           score=calculate_dbot_score(client, raw_response.get('pulse_info', {})),
                                           reliability=client.reliability)
-            domain_object = Common.Domain(domain=domain, dbot_score=dbot_score, relations=relationships)
+            domain_object = Common.Domain(domain=domain, dbot_score=dbot_score, relationships=relationships)
 
             context = {
                 'Name': raw_response.get('indicator'),
@@ -294,7 +294,7 @@ def domain_command(client: Client, domain: str) -> List[CommandResults]:
                 outputs=context,
                 indicator=domain_object,
                 raw_response=raw_response,
-                relations=relationships
+                relationships=relationships
             ))
 
     if not command_results:
@@ -339,7 +339,7 @@ def file_command(client: Client, file: str) -> List[CommandResults]:
             file_object = Common.File(md5=shortcut.get('md5'), sha1=shortcut.get('sha1'), sha256=shortcut.get('sha256'),
                                       ssdeep=shortcut.get('ssdeep'), size=shortcut.get('filesize'),
                                       file_type=shortcut.get('file_type'), dbot_score=dbot_score,
-                                      relations=relationships)
+                                      relationships=relationships)
 
             context = {
                 'MD5': shortcut.get('md5'),
@@ -361,7 +361,7 @@ def file_command(client: Client, file: str) -> List[CommandResults]:
                 outputs=context,
                 indicator=file_object,
                 raw_response=raw_response_general,
-                relations=relationships
+                relationships=relationships
             ))
 
     if not command_results:
@@ -401,8 +401,8 @@ def url_command(client: Client, url: str) -> List[CommandResults]:
                         client, raw_response=raw_response, entity_a=url, entity_a_type=FeedIndicatorType.URL)
                     domain = raw_response.get('domain')
                     if domain:
-                        relationships.extend([EntityRelation(
-                            name=EntityRelation.Relations.HOSTED_ON, entity_a=url, entity_a_type=FeedIndicatorType.URL,
+                        relationships.extend([EntityRelationship(
+                            name=EntityRelationship.Relationships.HOSTED_ON, entity_a=url, entity_a_type=FeedIndicatorType.URL,
                             entity_b=domain, entity_b_type=FeedIndicatorType.Domain,
                             source_reliability=client.reliability, brand=INTEGRATION_NAME)])
 
@@ -410,7 +410,7 @@ def url_command(client: Client, url: str) -> List[CommandResults]:
                     indicator=url, indicator_type=DBotScoreType.URL, integration_name=INTEGRATION_NAME,
                     score=calculate_dbot_score(client, raw_response.get('pulse_info')), reliability=client.reliability)
 
-                url_object = Common.URL(url=url, dbot_score=dbot_score, relations=relationships)
+                url_object = Common.URL(url=url, dbot_score=dbot_score, relationships=relationships)
 
                 context = {
                     'Url': url,
@@ -428,7 +428,7 @@ def url_command(client: Client, url: str) -> List[CommandResults]:
                     outputs=context,
                     indicator=url_object,
                     raw_response=raw_response,
-                    relations=relationships
+                    relationships=relationships
                 ))
 
     if not raws:

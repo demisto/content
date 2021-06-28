@@ -10,8 +10,11 @@
  For example, if your Region is set to us-west-2, when you use CreateMembers to add a member account to Security Hub, the association of the member account with the master account is created only in the us-west-2 Region.
  Security Hub must be enabled for the member account in the same Region that the invite was sent from.
 
+For more information regarding the AWS SecurityHub service, please visit the official documentation found [here](https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/securityhub.html).
 
-## Configure AWS - Security Hub on Demisto
+For detailed instructions about setting up authentication, see: [AWS Integrations - Authentication](https://xsoar.pan.dev/docs/reference/articles/aws-integrations---authentication).
+
+## Configure AWS - Security Hub on Cortex XSOAR
 ---
 
 1. Navigate to __Settings__ > __Integrations__ > __Servers & Services__.
@@ -27,6 +30,8 @@
     * __Role Session Duration__
     * __Access Key__
     * __Secret Key__
+    * __Timeout__
+    * __Retries__
     * __Trust any certificate (not secure)__
     * __Use system proxy settings__
     * __Security Hub Severity level__ Severity level of fetched incidents
@@ -37,7 +42,7 @@
 
 ## Commands
 ---
-You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.
+You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 1. aws-securityhub-disable-security-hub
 2. aws-securityhub-batch-update-findings

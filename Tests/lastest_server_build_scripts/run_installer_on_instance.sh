@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 set -e
 
-INSTANCE_ID=$(cat ./env_results.json | jq .[0].InstanceID | sed "s/\"//g") 
+INSTANCE_ID=$(cat $ENV_RESULTS_PATH | jq .[0].InstanceID | sed "s/\"//g")
 
-PUBLIC_IP=$(cat ./env_results.json | jq .[0].InstanceDNS | sed "s/\"//g")
+PUBLIC_IP=$(cat $ENV_RESULTS_PATH | jq .[0].InstanceDNS | sed "s/\"//g")
 echo "Instance public IP is: $PUBLIC_IP"
 
 echo ${PUBLIC_IP} > public_ip

@@ -56,7 +56,7 @@
       }
     ]
   }],
-  "Flashpoint.Domain.Event(val.Fpid == obj.Fpid)": [
+  "Flashpoint.Domain.Event(val.Fpid && val.Fpid == obj.Fpid)": [
     {
       "Domain": "fakedomain.com",
       "Category": "category1",
