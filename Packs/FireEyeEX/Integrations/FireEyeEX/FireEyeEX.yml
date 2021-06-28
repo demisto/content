@@ -535,8 +535,7 @@ script:
       secret: false
     - default: false
       defaultValue: '100'
-      description:  Sets the maximum number (N) of items covered by each report.
-        This option is required only for IPS TopN reports.
+      description:  Sets the maximum number (N) of items covered by each report. This option is required only for IPS TopN reports.
       isArray: false
       name: limit
       required: false
@@ -547,7 +546,7 @@ script:
       - 'A'
       - 'B'
       - 'AB'
-      description: "Sets ihe internet interface. Possible values: 'A', 'B', and 'AB'." This option is required only for IPS reports.
+      description: Sets the internet interface. Possible values are 'A', 'B', and 'AB'. This option is required only for IPS reports.
       isArray: false
       name: interface
       required: false
