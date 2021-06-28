@@ -2,7 +2,8 @@ import json
 import pytest
 from stix2 import TAXIICollectionSource
 from test_data.mitre_test_data import ATTACK_PATTERN, COURSE_OF_ACTION, INTRUSION_SET, MALWARE, TOOL, ID_TO_NAME, \
-    RELATION, STIX_TOOL, STIX_MALWARE, STIX_ATTACK_PATTERN
+    RELATION, STIX_TOOL, STIX_MALWARE, STIX_ATTACK_PATTERN, MALWARE_LIST_WITHOUT_PREFIX, MALWARE_LIST_WITH_PREFIX, \
+    INDICATORS_LIST, NEW_INDICATORS_LIST, MITRE_ID_TO_MITRE_NAME, OLD_ID_TO_NAME, NEW_ID_TO_NAME
 
 
 class MockCollection:
@@ -39,7 +40,7 @@ def test_fetch_indicators(mocker, indicator, expected_result):
     import FeedMitreAttackv2 as fm
     from FeedMitreAttackv2 import Client, create_relationship
     client = Client(url="https://test.org", proxies=False, verify=False, tags=[], tlp_color=None)
-    default_id = 1
+    default_id = '95ecc380-afe9-11e4-9b6c-751b66dd541e'
     nondefault_id = 2
     client.collections = [MockCollection(default_id, 'default'), MockCollection(nondefault_id, 'not_default')]
     mocker.patch.object(client, 'initialise')
@@ -139,3 +140,28 @@ def test_get_item_type():
 def test_create_relationship_list():
     from FeedMitreAttackv2 import create_relationship_list
     assert create_relationship_list([RELATION.get('response')], ID_TO_NAME) == RELATION.get('indicator')
+
+
+def test_add_malware_prefix_to_dup_with_intrusion_set():
+    from FeedMitreAttackv2 import add_malware_prefix_to_dup_with_intrusion_set
+    malware_list = MALWARE_LIST_WITHOUT_PREFIX
+    add_malware_prefix_to_dup_with_intrusion_set(MALWARE_LIST_WITHOUT_PREFIX)
+    assert malware_list == MALWARE_LIST_WITH_PREFIX
+
+
+def test_add_obj_to_mitre_id_to_mitre_name():
+    from FeedMitreAttackv2 import add_obj_to_mitre_id_to_mitre_name
+    mitre_id_to_mitre_name = {}
+    add_obj_to_mitre_id_to_mitre_name(mitre_id_to_mitre_name, ATTACK_PATTERN['response'])
+    assert mitre_id_to_mitre_name == {'T1047': 'ATTACK_PATTERN 1'}
+
+
+def test_add_technique_prefix_to_sub_technique():
+    from FeedMitreAttackv2 import add_technique_prefix_to_sub_technique
+    indicators = INDICATORS_LIST
+    mitre_id_to_mitre_name = MITRE_ID_TO_MITRE_NAME
+    id_to_name = OLD_ID_TO_NAME
+
+    add_technique_prefix_to_sub_technique(indicators, id_to_name, mitre_id_to_mitre_name)
+    assert indicators == NEW_INDICATORS_LIST
+    assert id_to_name == NEW_ID_TO_NAME

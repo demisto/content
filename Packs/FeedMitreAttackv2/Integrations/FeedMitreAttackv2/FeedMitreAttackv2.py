@@ -117,7 +117,7 @@ class Client:
         mitre_id_list: Set[str] = set()
         mitre_relationships_list = []
         id_to_name: Dict = {}
-        mitre_id_to_mitre_name = {}
+        mitre_id_to_mitre_name: Dict = {}
         counter = 0
 
         # For each collection
@@ -176,20 +176,35 @@ class Client:
 
 
 def add_obj_to_mitre_id_to_mitre_name(mitre_id_to_mitre_name, mitre_item_json):
-    mitre_id = [external.get('external_id') for external in mitre_item_json.get('external_references', [])
-                if external.get('source_name', '') == 'mitre-attack']
-    mitre_id_to_mitre_name[mitre_id[0]] = mitre_item_json.get('name')
+    if mitre_item_json['type'] == 'attack-pattern':
+        mitre_id = [external.get('external_id') for external in mitre_item_json.get('external_references', [])
+                    if external.get('source_name', '') == 'mitre-attack']
+        if mitre_id:
+            mitre_id_to_mitre_name[mitre_id[0]] = mitre_item_json.get('name')
 
 
 def add_technique_prefix_to_sub_technique(indicators, id_to_name, mitre_id_to_mitre_name):
     for indicator in indicators:
-        if len(indicator['fields']['mitreid']) > 5:  # Txxxx.xxx is sub technique
+        if indicator['type'] in ['Attack Pattern', 'STIX Attack Pattern'] and \
+                len(indicator['fields']['mitreid']) > 5:  # Txxxx.xxx is sub technique
             parent_mitre_id = indicator['fields']['mitreid'][:5]
             value = indicator['value']
-            technique = mitre_id_to_mitre_name[parent_mitre_id]
+            technique = mitre_id_to_mitre_name.get(parent_mitre_id)  # TODO in case that technique doesnt exist
             new_value = f'{technique}: {value}'
             indicator['value'] = new_value
             id_to_name[indicator['fields']['stixid']] = new_value
+
+
+def add_malware_prefix_to_dup_with_intrusion_set(indicators):
+    intrusion_sets = []
+    for ind in indicators:
+        if ind['type'] in ['STIX Intrusion Set', 'Intrusion Set']:
+            intrusion_sets.append(ind['value'])
+
+    for ind in indicators:
+        if ind['type'] in ['STIX Malware', 'Malware'] and ind['value'] in intrusion_sets:
+            ind_value = ind['value']
+            ind['value'] = f'{ind_value} [Malware]'
 
 
 def get_item_type(mitre_type, is_up_to_6_2):
@@ -351,6 +366,7 @@ def fetch_indicators(client, create_relationships):
     is_up_to_6_2 = is_demisto_version_ge('6.2.0')
     indicators, mitre_relationships_list, id_to_name, mitre_id_to_mitre_name = client.build_iterator(
         create_relationships, is_up_to_6_2)
+    add_malware_prefix_to_dup_with_intrusion_set(indicators)
     add_technique_prefix_to_sub_technique(indicators, id_to_name, mitre_id_to_mitre_name)
     relationships = create_relationship_list(mitre_relationships_list, id_to_name)
 
