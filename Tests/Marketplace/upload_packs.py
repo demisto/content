@@ -309,7 +309,6 @@ def upload_index_to_storage(index_folder_path: str, extract_destination_path: st
         if is_private or current_index_generation == index_generation:
             # we upload both index.json and the index.zip to allow usage of index.json without having to unzip
             index_blob.upload_from_filename(index_zip_path)
-            logging.info(f'testing')
             logging.success(f"Finished uploading {GCPConfig.INDEX_NAME}.zip to storage.")
         else:
             logging.critical(f"Failed in uploading {GCPConfig.INDEX_NAME}, mismatch in index file generation.")
@@ -463,16 +462,9 @@ def add_private_content_to_index(private_index_path: str, extract_destination_pa
     updated_private_packs = []
 
     try:
-        logging.info("get_private_packs")
         private_packs = get_private_packs(private_index_path, pack_names,
                                           extract_destination_path)
-        logging.info(f'After getting private packs: {private_packs}')
-
-        logging.info("get_updated_private_packs")
         updated_private_packs = get_updated_private_packs(private_packs, index_folder_path)
-        logging.info(f'After getting updated private packs: {updated_private_packs}')
-
-        logging.info("add_private_packs_to_index")
         add_private_packs_to_index(index_folder_path, private_index_path)
 
     except Exception as e:
@@ -546,7 +538,6 @@ def get_private_packs(private_index_path: str, pack_names: set = set(),
                 metadata = json.load(metadata_file)
             pack_id = metadata.get('id')
             is_changed_private_pack = pack_id in pack_names
-            logging.info(f'pack_id: {pack_id}, \n\n pack_names: {pack_names}')
             if is_changed_private_pack:  # Should take metadata from artifacts.
                 with open(os.path.join(extract_destination_path, pack_id, "pack_metadata.json"),
                           "r") as metadata_file:
