@@ -1631,7 +1631,6 @@ def lr_get_case_evidence(data_args):
 
 def lr_execute_search_query(data_args):
     number_of_date = data_args.get('number_of_date')
-    source_entity = data_args.get('source_entity')
     source_type = data_args.get('source_type')
     host_name = data_args.get('host_name')
     username = data_args.get('username')
@@ -1652,7 +1651,7 @@ def lr_execute_search_query(data_args):
     if host_name:
         query.append(generate_query_item(filterType=23, valueType=4, value=str(host_name)))
 
-    if source_entity and source_entity != "all":
+    if ENTITY_ID:
         query.append(generate_query_item(filterType=136, valueType=2, value=int(ENTITY_ID)))
 
     if source_type and source_type != "all":
