@@ -31,13 +31,13 @@ configuration:
   required: false
   type: 15
 - defaultvalue: '2'
-  display: Wait between retries (seconds)
+  display: Wait time between report fetching retries (seconds)
   hidden: false
   name: wait_time_seconds
   required: false
   type: 0
 - defaultvalue: '30'
-  display: Number of retries
+  display: Number of report fetching retries
   hidden: false
   name: num_of_retries
   required: false
