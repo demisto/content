@@ -772,7 +772,8 @@ def incidents(incidents=None):
 
 
 def incident():
-    """Retrieves the current incident
+    """Retrieves the current incident and all its fields (e.g. name, type).
+    The incident custom fields will be populated under as an array under the CustomFields attribute.
 
     Returns:
       dict: dict representing an incident object
