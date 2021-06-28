@@ -1,4 +1,5 @@
 # Alibaba Cloud
+Manage Alibaba Cloud Elastic Compute Instances.
 
 To use this integration you must generate an Access/Secret token for your Alibaba tenancy.
 1. Navigate to the [Resource Access Management](https://ram.console.aliyun.com/users)

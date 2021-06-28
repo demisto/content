@@ -1,8 +1,8 @@
-This integration enables the management of Alibaba Cloud Elastic Compute Service.
+This integration enables the management of Alibaba Cloud Elastic Compute Service using Ansible modules. The Ansible engine is self-contained and pre-configured as part of this pack onto your XSOAR server, all you need to do is provide credentials you are ready to use the feature rich commands.
 
 To use this integration, configure an instance of this integration. This will associate a credential to be used to manage a Alibaba tenancy. Create separate instances for each region being managed.
 
-# Authorize Cortex XSOAR for AliCloud
+# Authorize Cortex XSOAR for Alibaba Cloud
 To use this integration you must generate an Access/Secret token for your Aliyun tenancy.
 1. Navigate to the [Resource Access Management](https://ram.console.aliyun.com/users)
 2. Create a service account dedicated for XSOAR with Programmatic Access enabled
@@ -28,13 +28,13 @@ The action commands in this integration are idempotent. This means that the resu
 
 # State Arguement
 Some of the commands in this integration take a state argument. These define the desired end state of the object being managed. As a result these commands are able to perform multiple management operations depending on the desired state value. Common state values are:
-    | **State** | **Result** |
-    | --- | --- |
-    | present | Object should exist. If not present, the object will be created with the provided parameters. If present but not with correct parameters, it will be modified to met provided parameters. |
-    | running | Object should be running not stopped. |
-    | stopped | Object should be stopped not running. |
-    | restarted | Object will be restarted. |
-    | absent | Object should not exist. If it it exists it will be deleted. |
+| **State** | **Result** |
+| --- | --- |
+| present | Object should exist. If not present, the object will be created with the provided parameters. If present but not with correct parameters, it will be modified to met provided parameters. |
+| running | Object should be running not stopped. |
+| stopped | Object should be stopped not running. |
+| restarted | Object will be restarted. |
+| absent | Object should not exist. If it it exists it will be deleted. |
 
 ## Commands
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
@@ -42,7 +42,7 @@ After you successfully execute a command, a DBot message appears in the War Room
 ### ali-instance
 ***
 Create, Start, Stop, Restart or Terminate an Instance in ECS. Add or Remove Instance to/from a Security Group.
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/ali_instance_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/ali_instance_module.html
 
 
 #### Base Command
@@ -119,7 +119,7 @@ Create, Start, Stop, Restart or Terminate an Instance in ECS. Add or Remove Inst
 ### ali-instance-info
 ***
 Gather information on instances of Alibaba Cloud ECS.
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/ali_instance_info_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/ali_instance_info_module.html
 
 
 #### Base Command
