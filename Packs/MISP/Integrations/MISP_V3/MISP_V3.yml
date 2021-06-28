@@ -1656,9 +1656,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Whether to return only the attributes set with the "to_ids" flag. Default is true.
+      description: Whether to return only the attributes set with the "to_ids" flag. The default is to return all attributes without with and with out to_ids flag.
       isArray: false
-      defaultValue: 'true'
       name: to_ids
       predefined:
       - 'true'
