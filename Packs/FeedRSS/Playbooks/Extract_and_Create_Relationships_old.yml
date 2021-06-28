@@ -16,7 +16,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "1"
+      - "19"
     separatecontext: false
     view: |-
       {
@@ -32,10 +32,10 @@ tasks:
     quietmode: 0
   "1":
     id: "1"
-    taskid: b4cae13b-69e9-42e2-8630-882b6d2043fe
+    taskid: 6cba394d-45e0-4348-8aa2-07b5983a2333
     type: regular
     task:
-      id: b4cae13b-69e9-42e2-8630-882b6d2043fe
+      id: 6cba394d-45e0-4348-8aa2-07b5983a2333
       version: -1
       name: Extract indicators from report description
       description: commands.local.cmd.extract.indicators
@@ -119,10 +119,10 @@ tasks:
       id: bf4e648c-904b-4a63-819e-17f74264e5a9
       version: -1
       name: Is CVE
+      description: ''
       type: condition
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#default#':
       - "6"
@@ -157,10 +157,10 @@ tasks:
       id: a4d84ca4-3066-4337-8b29-0ed8157a41e2
       version: -1
       name: Is IP
+      description: ''
       type: condition
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#default#':
       - "6"
@@ -233,12 +233,12 @@ tasks:
     quietmode: 0
   "6":
     id: "6"
-    taskid: 5de754b0-5c99-4fc4-8c6e-1a55a4975cfa
+    taskid: 0b1fea4b-1e9c-4187-814a-fcd342572faa
     type: regular
     task:
-      id: 5de754b0-5c99-4fc4-8c6e-1a55a4975cfa
+      id: 0b1fea4b-1e9c-4187-814a-fcd342572faa
       version: -1
-      name: Delete context subplaybook
+      name: Delete context
       description: Delete field from context
       scriptName: DeleteContext
       type: regular
@@ -246,8 +246,6 @@ tasks:
       brand: Builtin
     scriptarguments:
       all:
-        simple: "yes"
-      subplaybook:
         simple: "yes"
     separatecontext: false
     view: |-
@@ -270,10 +268,10 @@ tasks:
       id: c6ddb4b8-6212-4cb3-8d45-1ed73e6aa5f5
       version: -1
       name: Is Email
+      description: ''
       type: condition
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#default#':
       - "6"
@@ -352,10 +350,10 @@ tasks:
       id: e3d19e7a-f779-4cec-8e46-8ff79d50ca43
       version: -1
       name: Is Domain
+      description: ''
       type: condition
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#default#':
       - "6"
@@ -434,10 +432,10 @@ tasks:
       id: a89c9310-e5e6-4327-8a15-1af48c51c7d4
       version: -1
       name: Is URL
+      description: ''
       type: condition
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#default#':
       - "6"
@@ -668,6 +666,41 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+  "19":
+    id: "19"
+    taskid: ed05b058-a59a-4b25-8202-e5496a421344
+    type: regular
+    task:
+      id: ed05b058-a59a-4b25-8202-e5496a421344
+      version: -1
+      name: Delete context subplaybook
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      all:
+        simple: "yes"
+      subplaybook:
+        simple: "yes"
+    reputationcalc: 2
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 440,
+          "y": -580
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
 view: |-
   {
     "linkLabelsPosition": {},
@@ -695,4 +728,4 @@ outputs: []
 fromversion: 6.2.0
 description: Extract and enrich indicators
 tests:
-- No tests
+ -  No tests
