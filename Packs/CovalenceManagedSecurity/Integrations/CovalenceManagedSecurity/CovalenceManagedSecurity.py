@@ -26,7 +26,7 @@ class Portal():
         self.verbose = verbose
         self.provider_name = provider
         if bearer == "gan ceann":
-            Self.scheme = self.AuthScheme.FES
+            self.scheme = self.AuthScheme.FES
             # Headless login for those cursed with a GUI
         elif bearer:
             self.scheme = self.AuthScheme.BEARER
