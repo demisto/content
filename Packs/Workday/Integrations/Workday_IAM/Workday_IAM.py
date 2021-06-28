@@ -428,6 +428,18 @@ def fetch_samples(client, mapper_in, report_url, workday_date_format):
     return events
 
 
+def get_full_report_command(client, mapper_in, report_url, workday_date_format):
+    report_entries = client.get_full_report(report_url)
+    outputs = [get_workday_user_from_entry(entry, mapper_in, workday_date_format) for entry in report_entries]
+    results = CommandResults(
+        outputs_prefix='WorkdayIAM.ReportEntry',
+        outputs_key_field=EMPLOYEE_ID_FIELD,
+        outputs=outputs,
+        raw_response=report_entries
+    )
+    return results
+
+
 def fetch_incidents(client, mapper_in, report_url, workday_date_format, deactivation_date_field,
                     days_before_hire_to_sync, days_before_hire_to_enable_ad, source_priority):
     """
@@ -561,6 +573,9 @@ def main():
         if command == 'test-module':
             return_results(test_module(client, is_fetch, report_url, mapper_in, workday_date_format,
                                        days_before_hire_to_sync, days_before_hire_to_enable_ad, source_priority))
+
+        if command == 'workday-iam-get-full-report':
+            return_results(get_full_report_command(client, mapper_in, report_url, workday_date_format))
 
         if command == 'fetch-incidents':
             '''

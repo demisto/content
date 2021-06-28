@@ -96,6 +96,26 @@ description: Use the Workday IAM Integration as part of the IAM premium pack.
 display: Workday IAM
 name: Workday IAM
 script:
+  commands:
+  - deprecated: false
+    execution: false
+    name: workday-iam-get-full-report
+    outputs:
+    - contextPath: WorkdayIAM.ReportEntry.email
+      description: Email address of the employee in Workday.
+      type: String
+    - contextPath: WorkdayIAM.ReportEntry.employeeid
+      description: Employee ID in Workday.
+      type: String
+    - contextPath: WorkdayIAM.ReportEntry.username
+      description: Username of the employee in Workday.
+      type: String
+    - contextPath: WorkdayIAM.ReportEntry.displayname
+      description: Display name of the employee.
+      type: String
+    - contextPath: WorkdayIAM.ReportEntry.locationregion
+      description: Location of the employee in Workday.
+      type: String
   dockerimage: demisto/python3:3.9.5.21272
   feed: false
   isfetch: true
