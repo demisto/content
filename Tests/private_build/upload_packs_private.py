@@ -66,13 +66,13 @@ def update_private_index(private_index_path: str, unified_index_path: str):
         shutil.copy(path_to_pack_on_unified_index, path_to_pack_on_private_index)
 
 
-def add_private_pack(private_pack_metadata, private_packs, changed_pack_id):
+def add_private_pack(private_packs, private_pack_metadata, changed_pack_id):
     """Add a new or existing private pack to the list of private packs,
     that will later be added to index.json.
 
     Args:
-        private_pack_metadata (dict): The metadata of the private pack.
         private_packs (list): The current list of private packs, not including the one to be added.
+        private_pack_metadata (dict): The metadata of the private pack.
         changed_pack_id (str): The ID of the pack that was added / modified in the current private build.
 
     Returns:
@@ -107,7 +107,7 @@ def add_changed_private_pack(private_packs, extract_destination_path, changed_pa
     logging.info(f'Getting changed pack metadata from the artifacts, in path: {changed_pack_metadata_path}')
     with open(changed_pack_metadata_path, 'r') as metadata_file:
         changed_pack_metadata = json.load(metadata_file)
-    private_packs = add_private_pack(changed_pack_metadata, private_packs, changed_pack_id)
+    private_packs = add_private_pack(private_packs, changed_pack_metadata, changed_pack_id)
     return private_packs
 
 
@@ -132,7 +132,7 @@ def add_existing_private_packs_from_index(metadata_files, changed_pack_id):
             pack_id = metadata.get('id')
             if pack_id != changed_pack_id:
                 # The new / modified pack will be added later
-                private_packs = add_private_pack(metadata, private_packs, pack_id)
+                private_packs = add_private_pack(private_packs, metadata, pack_id)
 
         except ValueError:
             logging.exception(f'Invalid JSON in the metadata file [{metadata_file_path}].')
