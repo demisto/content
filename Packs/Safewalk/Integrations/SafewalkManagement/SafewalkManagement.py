@@ -1361,7 +1361,7 @@ def delete_user(client, args):
 
 
 def test_module(client):
-    results = json.loads(client.get_transactionlog(None, None, None)).get('results')
+    results = client.get_transactionlog(None, None, None).get('results')
 
     if results is not None:
         return 'ok'

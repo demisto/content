@@ -399,7 +399,7 @@ def test_module(client, is_fetch, last_run, first_fetch_str, fetch_limit):
     if argToBoolean(is_fetch):
         results, next_run = fetch_incidents(client, last_run, first_fetch_str, fetch_limit)
     else:
-        results = json.loads(client.list_incidents(None, None, None, None))['results']
+        results = client.list_incidents(None, None, None, None).get('results')
 
     if results:
         return 'ok'
@@ -420,10 +420,10 @@ def fetch_incidents(client, last_run, first_fetch_str, fetch_limit, query_filter
         q_list = query_filter.split(',')
         for q in q_list:
             if q:
-                tmp = json.loads(client.list_incidents(None, None, None, q)).get('results')
+                tmp = client.list_incidents(None, None, None, q).get('results')
                 results.extend([element for element in tmp if element not in results])
     else:
-        results = json.loads(client.list_incidents(None, None, None, query_filter)).get('results')
+        results = client.list_incidents(None, None, None, query_filter).get('results')
 
     for result in results:
         incident_time = dateparser.parse(result.get('timestamp')).strftime(DATE_FORMAT)
