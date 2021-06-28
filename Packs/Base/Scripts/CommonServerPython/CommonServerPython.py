@@ -2394,6 +2394,52 @@ class Common(object):
             }
             return ret_value
 
+
+    class CustomIndicator(Indicator):
+
+        CONTEXT_PATH = 'IP(val.Address && val.Address == obj.Address)'
+
+        def __init__(self, value, dbot_score, params):
+            """
+            :type value: ``Any``
+            :param value: Value of the indicator
+
+            :type dbot_score: ``DBotScore``
+            :param dbot_score: If IP has a score then create and set a DBotScore object.
+
+            :type params: ``Dict(Str,Any)``
+            :param params: A dictionary containing all the param names and their values
+
+            :return: None
+            :rtype: ``None``
+            """
+
+            self.value = value
+            if not isinstance(dbot_score, Common.DBotScore):
+                raise ValueError('dbot_score must be of type DBotScore')
+
+            self.dbot_score = dbot_score
+
+            for key in params:
+                setattr(self, key, params[key])
+
+        def to_context(self):
+            custom_context = {
+                'Value': self.value
+            }
+
+            for attr, value in self.__dict__.items():
+                custom_context[attr] = value
+
+            ret_value = {
+                Common.IP.CONTEXT_PATH: custom_context
+            }
+
+            if self.dbot_score:
+                ret_value.update(self.dbot_score.to_context())
+
+            return ret_value
+
     class IP(Indicator):
         """
         IP indicator class - https://xsoar.pan.dev/docs/integrations/context-standards-mandatory#ip
