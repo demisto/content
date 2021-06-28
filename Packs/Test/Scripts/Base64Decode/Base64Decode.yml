@@ -1,0 +1,34 @@
+args:
+- default: true
+  description: The value to decode in Base64 format.
+  name: value
+  required: true
+comment: Decodes an input in Base64 format.
+commonfields:
+  id: Base64Decode
+  version: -1
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: 5.0.0
+enabled: true
+name: Base64Decode
+outputs:
+- contextPath: Base64.decoded
+  description: The decoded output in Base64 format.
+  type: string
+- contextPath: Base64.originalValue
+  description: The passed value that was decoded.
+  type: string
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags:
+- Utility
+- transformer
+- string
+type: python
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)
