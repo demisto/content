@@ -105,9 +105,13 @@ def add_changed_private_pack(private_packs, extract_destination_path, changed_pa
 
     changed_pack_metadata_path = os.path.join(extract_destination_path, changed_pack_id, "pack_metadata.json")
     logging.info(f'Getting changed pack metadata from the artifacts, in path: {changed_pack_metadata_path}')
-    with open(changed_pack_metadata_path, 'r') as metadata_file:
-        changed_pack_metadata = json.load(metadata_file)
-    private_packs = add_private_pack(private_packs, changed_pack_metadata, changed_pack_id)
+    try:
+        with open(changed_pack_metadata_path, 'r') as metadata_file:
+            changed_pack_metadata = json.load(metadata_file)
+        private_packs = add_private_pack(private_packs, changed_pack_metadata, changed_pack_id)
+    except FileNotFoundError:
+        pass
+
     return private_packs
 
 
