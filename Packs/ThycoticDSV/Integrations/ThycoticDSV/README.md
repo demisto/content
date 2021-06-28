@@ -1,4 +1,5 @@
 Thycotic DevOps Secrets Vault is a high velocity vault that centralizes secrets management, enforces access, and provides automated logging trails.
+DevOps Secrets Vault is an API-as-a-Service, which makes getting up and running easy. No installation of the vault or database is required and Thycotic even handles all the updates.
 This integration was integrated and tested with version 6.0 of ThycoticDSV.
 Supported Cortex XSOAR versions: 5.0.0 and later.
 
