@@ -121,7 +121,8 @@ def main():
                 raise DemistoException(f'{server_url} is not rss feed url. Try look for a url containing \'feed\' '
                                        f'prefix or suffix.')
             else:
-                return_results("ok")
+                return_results("no ok")
+                # return_results("ok")
 
         elif command == 'rss-get-indicators':
             client.fetch_indicators()
