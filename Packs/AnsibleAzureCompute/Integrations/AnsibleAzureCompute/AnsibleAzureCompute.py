@@ -77,8 +77,6 @@ def main() -> None:
             return_results(generic_ansible('azurecompute', 'azure_rm_manageddisk', args, int_params, host_type))
         elif command == 'azure-rm-manageddisk-info':
             return_results(generic_ansible('azurecompute', 'azure_rm_manageddisk_info', args, int_params, host_type))
-        elif command == 'azure-rm-resource':
-            return_results(generic_ansible('azurecompute', 'azure_rm_resource', args, int_params, host_type))
         elif command == 'azure-rm-resource-info':
             return_results(generic_ansible('azurecompute', 'azure_rm_resource_info', args, int_params, host_type))
         elif command == 'azure-rm-resourcegroup':
