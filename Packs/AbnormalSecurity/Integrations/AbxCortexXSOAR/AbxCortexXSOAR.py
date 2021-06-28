@@ -58,8 +58,7 @@ class Client(BaseClient):
     def get_the_latest_threat_intel_feed_request(self, mock_data):
 
         headers = self._headers
-
-        response = self._http_request('get', 'threat-intel', headers=headers)
+        response = self._http_request('get', 'threat-intel', headers=headers, timeout=120)
 
         return response
 
@@ -151,8 +150,6 @@ def get_a_list_of_threats_command(client, args):
         outputs=response,
         raw_response=response
     )
-    demisto.results(command_results.outputs)
-
     return command_results
 
 
