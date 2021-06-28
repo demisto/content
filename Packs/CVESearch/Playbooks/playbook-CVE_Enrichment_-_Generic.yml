@@ -2,7 +2,7 @@ id: cve_enrichment_-_generic
 version: -1
 name: CVE Enrichment - Generic
 fromversion: 5.0.0
-description: Enrich CVE using one or more integrations.
+description:  Deprecated. Use CVE Enrichment - Generic v2 instead. Enrich CVE using one or more integrations.
 starttaskid: "0"
 tasks:
   "0":
@@ -396,3 +396,4 @@ outputs:
   type: string
 tests:
 - No tests (auto formatted)
+deprecated: true
