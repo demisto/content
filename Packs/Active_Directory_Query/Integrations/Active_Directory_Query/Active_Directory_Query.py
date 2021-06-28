@@ -293,8 +293,6 @@ def get_user_dn_by_email(default_base_dn, email):
 def modify_user_ou(dn, new_ou):
     assert conn is not None
     cn = dn.split(',', 1)[0]
-    demisto.log(f'CN is -> {cn}')
-    demisto.log(f'new_ou is -> {new_ou}')
 
     success = conn.modify_dn(dn, cn, new_superior=new_ou)
     return success
@@ -978,7 +976,6 @@ def update_user_iam(default_base_dn, args, create_if_not_exists, mapper_out, dis
                 fail_to_modify.append("ou")
 
             if manager_email := ad_user.get('manageremail'):
-                demisto.log("Manager email")
                 manager_dn = get_user_dn_by_email(manager_email)
                 modification = {'manager': [('MODIFY_REPLACE', manager_dn)]}
                 success = conn.modify(dn, modification)
