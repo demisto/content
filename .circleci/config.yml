@@ -1288,7 +1288,7 @@ jobs:
               ./Tests/scripts/slack_notifier.sh 'bucket_upload_flow' '' "$SLACK_CHANNEL"
             fi
           when: always
-      - *destroy_instances
+#      - *destroy_instances for testing
       - *store_artifacts
 
 workflows:
