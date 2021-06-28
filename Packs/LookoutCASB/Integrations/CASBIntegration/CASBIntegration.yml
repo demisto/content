@@ -8,7 +8,7 @@ description: Lookout CASB Integration
 configuration:
 - display: Server URL (e.g. https://management-server.ciphercloud.com)
   name: url
-  defaultvalue: https://krypton-ms.next.ciphercloud.in
+  defaultvalue: ""
   type: 0
   required: true
 - display: Fetch incidents
@@ -28,12 +28,12 @@ configuration:
   required: false
 - display: Client Id
   name: client_id
-  defaultvalue: cortexdev
+  defaultvalue: ""
   type: 0
   required: true
 - display: Client Secret
   name: client_secret
-  defaultvalue: XFrGiFHrQ8cG6a2ZMuYiKWBhf+4tLO7wg2aAdnyhDiA=
+  defaultvalue: ""
   type: 4
   required: true
 - display: First fetch time
@@ -68,23 +68,23 @@ script:
   - name: lookout-get-violations
     arguments:
     - name: start_time
-      description: Start time
+      description: Start time in ISO8601 format like 2020-01-01T00:11:22Z
     - name: end_time
-      description: End time
+      description: End time in ISO8601 format like 2020-01-10T00:11:22Z
     description: Get all violations for the given time interval.
   - name: lookout-get-events
     arguments:
     - name: start_time
-      description: Start time
+      description: Start time in ISO8601 format like 2020-01-01T00:11:22Z
     - name: end_time
-      description: End time
+      description: End time in ISO8601 format like 2020-01-10T00:11:22Z
     description: Get all user activity events for the given time interval.
   - name: lookout-get-anomalies
     arguments:
     - name: start_time
-      description: Start time
+      description: Start time in ISO8601 format like 2020-01-01T00:11:22Z
     - name: end_time
-      description: End time
+      description: End time in ISO8601 format like 2020-01-10T00:11:22Z
     description: Get all anomalous events for the given time interval.
   - name: lookout-get-information
     arguments:
@@ -115,9 +115,9 @@ script:
       description: Result type
       defaultValue: Content
     - name: start_time
-      description: Start time
+      description: Start time in ISO8601 format like 2020-01-01T00:11:22Z
     - name: end_time
-      description: End time
+      description: End time in ISO8601 format like 2020-01-10T00:11:22Z
     outputs:
     - contextPath: CipherCloud.Info.userRiskRating
       description: 'User risk rating: High, Medium, Low'
