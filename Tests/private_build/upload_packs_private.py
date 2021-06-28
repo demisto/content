@@ -111,7 +111,6 @@ def add_changed_private_pack(private_packs, extract_destination_path, changed_pa
         private_packs = add_private_pack(private_packs, changed_pack_metadata, changed_pack_id)
     except FileNotFoundError:
         logging.info(f'Metadata of changed pack {changed_pack_id} not found.')
-        pass
 
     return private_packs
 
