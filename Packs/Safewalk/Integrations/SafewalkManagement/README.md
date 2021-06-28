@@ -71,8 +71,6 @@ Display transaction log.
 | Safewalk.management.transactionlist.results.caller | String | Caller | 
 
 
-#### Command Example
-``` ```
 
 #### Human Readable Output
 
@@ -110,8 +108,6 @@ Search local users.
 | Safewalk.management.userlist.results.is_locked | Boolean | Is Locked | 
 
 
-#### Command Example
-``` ```
 
 #### Human Readable Output
 
@@ -150,8 +146,6 @@ Search LDAP users
 | Safewalk.management.ldapusers.results.is_locked | Boolean | Is locked | 
 
 
-#### Command Example
-``` ```
 
 #### Human Readable Output
 
@@ -203,8 +197,6 @@ Get LDAP configuration.
 | Safewalk.management.ldaps.priority | Number | ldaps.priority | 
 
 
-#### Command Example
-``` ```
 
 #### Human Readable Output
 
@@ -247,8 +239,6 @@ Get users personal information.
 | Safewalk.management.userpersonalinformation.last_authentication_attempt | Date | Last authentication attempt | 
 
 
-#### Command Example
-``` ```
 
 #### Human Readable Output
 
@@ -275,8 +265,6 @@ Set user personal information.
 
 There is no context output for this command.
 
-#### Command Example
-``` ```
 
 #### Human Readable Output
 
@@ -306,8 +294,6 @@ Get user access attempts
 | Safewalk.management.accessattempts.is_locked | Boolean | Is locked | 
 
 
-#### Command Example
-``` ```
 
 #### Human Readable Output
 
@@ -332,8 +318,6 @@ Delete user access attempts
 
 There is no context output for this command.
 
-#### Command Example
-``` ```
 
 #### Human Readable Output
 
@@ -367,8 +351,6 @@ Get user tokens
 | Safewalk.management.usertokens.status_change_date | Unknown | User tokens status change date | 
 
 
-#### Command Example
-``` ```
 
 #### Human Readable Output
 
@@ -395,8 +377,6 @@ Delete user token.
 
 There is no context output for this command.
 
-#### Command Example
-``` ```
 
 #### Human Readable Output
 
@@ -423,8 +403,6 @@ Send user virtual token.
 
 There is no context output for this command.
 
-#### Command Example
-``` ```
 
 #### Human Readable Output
 
@@ -559,8 +537,6 @@ Get user settings.
 | Safewalk.management.usersettings.inherited_multiple_step_auth_timeout.level | String | usersettings_inherited_multiple_step_auth_timeout.level | 
 
 
-#### Command Example
-``` ```
 
 #### Human Readable Output
 
@@ -595,8 +571,6 @@ Get user group.
 | Safewalk.management.usergroup.groups.priority | Number | groups priority | 
 
 
-#### Command Example
-``` ```
 
 #### Human Readable Output
 
@@ -622,8 +596,6 @@ Add user group.
 
 There is no context output for this command.
 
-#### Command Example
-``` ```
 
 #### Human Readable Output
 
@@ -649,8 +621,6 @@ Remove user group.
 
 There is no context output for this command.
 
-#### Command Example
-``` ```
 
 #### Human Readable Output
 
@@ -683,8 +653,6 @@ Get user registration code
 | Safewalk.management.registrationcode.purpose | String | registration code purpose | 
 
 
-#### Command Example
-``` ```
 
 #### Human Readable Output
 
@@ -711,8 +679,6 @@ Set user registration code
 
 There is no context output for this command.
 
-#### Command Example
-``` ```
 
 #### Human Readable Output
 
@@ -737,8 +703,6 @@ Send user registration code
 
 There is no context output for this command.
 
-#### Command Example
-``` ```
 
 #### Human Readable Output
 
@@ -763,8 +727,6 @@ Create user virtual token
 
 There is no context output for this command.
 
-#### Command Example
-``` ```
 
 #### Human Readable Output
 
@@ -790,8 +752,6 @@ Create user FastAuth Token
 
 There is no context output for this command.
 
-#### Command Example
-``` ```
 
 #### Human Readable Output
 
@@ -818,8 +778,6 @@ Create user TopMobile Token
 
 There is no context output for this command.
 
-#### Command Example
-``` ```
 
 #### Human Readable Output
 
@@ -845,8 +803,6 @@ Create user TotMobileHybrid
 
 There is no context output for this command.
 
-#### Command Example
-``` ```
 
 #### Human Readable Output
 
@@ -873,8 +829,6 @@ Create user Physical Token
 
 There is no context output for this command.
 
-#### Command Example
-``` ```
 
 #### Human Readable Output
 
@@ -902,8 +856,6 @@ Create user Backup Token
 
 There is no context output for this command.
 
-#### Command Example
-``` ```
 
 #### Human Readable Output
 
@@ -931,8 +883,6 @@ Set user backup token
 
 There is no context output for this command.
 
-#### Command Example
-``` ```
 
 #### Human Readable Output
 
@@ -958,8 +908,6 @@ Set user general settings
 
 There is no context output for this command.
 
-#### Command Example
-``` ```
 
 #### Human Readable Output
 
@@ -990,8 +938,6 @@ Set user hotpauthentication settings
 
 There is no context output for this command.
 
-#### Command Example
-``` ```
 
 #### Human Readable Output
 
@@ -1019,8 +965,6 @@ Set user sesamiauthentication setttings
 
 There is no context output for this command.
 
-#### Command Example
-``` ```
 
 #### Human Readable Output
 
@@ -1052,8 +996,6 @@ Set user  totpauthentication settings
 
 There is no context output for this command.
 
-#### Command Example
-``` ```
 
 #### Human Readable Output
 
@@ -1089,8 +1031,6 @@ Set user userauthentication settings
 
 There is no context output for this command.
 
-#### Command Example
-``` ```
 
 #### Human Readable Output
 
@@ -1117,8 +1057,6 @@ Set user virtualauthentication settings
 
 There is no context output for this command.
 
-#### Command Example
-``` ```
 
 #### Human Readable Output
 
@@ -1148,8 +1086,6 @@ Create user
 
 There is no context output for this command.
 
-#### Command Example
-``` ```
 
 #### Human Readable Output
 
@@ -1174,8 +1110,6 @@ Delete user
 
 There is no context output for this command.
 
-#### Command Example
-``` ```
 
 #### Human Readable Output
 
@@ -1201,8 +1135,6 @@ Update user group
 
 There is no context output for this command.
 
-#### Command Example
-``` ```
 
 #### Human Readable Output
 

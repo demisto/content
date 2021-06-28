@@ -56,8 +56,6 @@ safewalk-get-associated-users
 | Safewalk.reports.associated_users.data.label | String | users data label | 
 
 
-#### Command Example
-``` ```
 
 #### Human Readable Output
 
@@ -87,8 +85,6 @@ safewalk-get-authentication-methods-distribution
 | Safewalk.reports.device_auth_distribution.data | Number | device_auth_distribution.data | 
 
 
-#### Command Example
-``` ```
 
 #### Human Readable Output
 
@@ -118,8 +114,6 @@ safewalk-get-authentication-rate-per-device
 | Safewalk.reports.device_auth_rate.data | Number | device_auth_rate.data | 
 
 
-#### Command Example
-``` ```
 
 #### Human Readable Output
 
@@ -149,8 +143,6 @@ safewalk-get-least-active-users
 | Safewalk.reports.inactive_users.data.label | String | inactive_users.data.label | 
 
 
-#### Command Example
-``` ```
 
 #### Human Readable Output
 
@@ -181,8 +173,6 @@ safewalk-get-licenses-inventory
 | Safewalk.reports.licensesinventory.data | Number | licenses inventory data | 
 
 
-#### Command Example
-``` ```
 
 #### Human Readable Output
 
@@ -215,8 +205,6 @@ safewalk-get-licenses-usage
 | Safewalk.reports.licensesusage.data | Number | licenses usage data | 
 
 
-#### Command Example
-``` ```
 
 #### Human Readable Output
 
@@ -249,8 +237,6 @@ safewalk-get-most-active-users
 | Safewalk.reports.mostactiveusers.data | String | mostactiveusers.data | 
 
 
-#### Command Example
-``` ```
 
 #### Human Readable Output
 
@@ -281,8 +267,6 @@ safewalk-get-physical-tokens-inventory
 | Safewalk.reports.physicaltokeninventory.data | Number | physicaltokeninventory.data | 
 
 
-#### Command Example
-``` ```
 
 #### Human Readable Output
 
@@ -313,8 +297,6 @@ safewalk-get-registered-devices-distribution
 | Safewalk.reports.registereddevices.data | Number | registereddevices.data | 
 
 
-#### Command Example
-``` ```
 
 #### Human Readable Output
 
@@ -347,8 +329,6 @@ safewalk-get-registration
 | Safewalk.reports.registration.data.type | String | registration.data.type | 
 
 
-#### Command Example
-``` ```
 
 #### Human Readable Output
 
@@ -379,8 +359,6 @@ safewalk-get-users-associations-indicators
 | Safewalk.reports.usersassociations.data | Number | usersassociations.data | 
 
 
-#### Command Example
-``` ```
 
 #### Human Readable Output
 
