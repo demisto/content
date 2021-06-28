@@ -128,6 +128,14 @@
      "complex": null,
      "simple": "username"
     },
+    "manager": {
+     "complex": null,
+     "simple": "manager"
+    },
+    "manageremail": {
+     "complex": null,
+     "simple": "manageremail"
+    },
     "ou":{
      "complex": null,
      "simple": ""

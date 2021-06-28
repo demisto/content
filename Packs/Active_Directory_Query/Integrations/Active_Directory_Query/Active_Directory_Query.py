@@ -266,9 +266,35 @@ def get_user_activity_by_samaccountname(default_base_dn, samaccountname):
     return active
 
 
+def get_user_dn_by_email(default_base_dn, email):
+    """Get's user dn by it's email, this function assumes that user's unique sameaccountname it the email prefix
+    :param default_base_dn: The location in the DIT where the search will start
+    :param email: The user's email
+    :return: the user's dn
+    """
+    dn = ''
+    samaccountname = email.split('@')[0]
+    query = f'(&(objectClass=User)(objectCategory=person)(samaccountname={samaccountname}))'
+    entries = search_with_paging(
+        query,
+        default_base_dn,
+        attributes=["samaccountname"],
+        size_limit=1,
+        page_size=1
+    )
+
+    if entries.get('flat'):
+        user = entries.get('flat')[0]
+        dn = user.get('dn')[0]
+
+    return dn
+
+
 def modify_user_ou(dn, new_ou):
     assert conn is not None
     cn = dn.split(',', 1)[0]
+    demisto.log(f'CN is -> {cn}')
+    demisto.log(f'new_ou is -> {new_ou}')
 
     success = conn.modify_dn(dn, cn, new_superior=new_ou)
     return success
@@ -502,8 +528,11 @@ def search_users(default_base_dn, page_size):
         query = "(&(objectClass=User)(objectCategory=person)(mail={}))".format(email)
 
     # query by sAMAccountName
-    if args.get('username'):
-        username = escape_filter_chars(args['username'])
+    if args.get('username') or args.get('sAMAccountName'):
+        if args.get('username'):
+            username = escape_filter_chars(args['username'])
+        else:
+            username = escape_filter_chars(args['sAMAccountName'])
         query = "(&(objectClass=User)(objectCategory=person)(sAMAccountName={}))".format(username)
 
     # query by custom object attribute
@@ -810,6 +839,8 @@ def create_user_iam(default_base_dn, args, mapper_out, disabled_users_group_cn):
         ad_user = iam_user_profile.map_object(mapper_name=mapper_out)
 
         sam_account_name = ad_user.get("samaccountname")
+        mail = ad_user.get("mail")
+
         if not sam_account_name:
             raise DemistoException("User must have a sAMAccountName, please make sure a mapping "
                                    "exists in \"" + mapper_out + "\" outgoing mapper.")
@@ -820,14 +851,19 @@ def create_user_iam(default_base_dn, args, mapper_out, disabled_users_group_cn):
                                    "and schema type, under the \"ou\" field.")
 
         user_exists = check_if_user_exists_by_samaccountname(default_base_dn, sam_account_name)
+
         if user_exists:
             iam_user_profile = update_user_iam(default_base_dn, args, False, mapper_out, disabled_users_group_cn)
 
         else:
             user_dn = generate_dn_and_remove_from_user_profile(default_base_dn, ad_user)
             object_classes = ["top", "person", "organizationalPerson", "user"]
+            # ou and cn are updated from the dn, updating them seperatly can cause conflicts
             ad_user.pop('ou')
-
+            ad_user.pop('cn')
+            if manager_email := ad_user.get('manageremail'):
+                manager_dn = get_user_dn_by_email(manager_email)
+                ad_user['manager'] = manager_dn
             success = conn.add(user_dn, object_classes, ad_user)
             if success:
                 iam_user_profile.set_result(success=True,
@@ -940,6 +976,14 @@ def update_user_iam(default_base_dn, args, create_if_not_exists, mapper_out, dis
             ou_modified_succeed = modify_user_ou(dn, new_ou)
             if not ou_modified_succeed:
                 fail_to_modify.append("ou")
+
+            if manager_email := ad_user.get('manageremail'):
+                demisto.log("Manager email")
+                manager_dn = get_user_dn_by_email(manager_email)
+                modification = {'manager': [('MODIFY_REPLACE', manager_dn)]}
+                success = conn.modify(dn, modification)
+                if not success:
+                    fail_to_modify.append(key)
 
             if fail_to_modify:
                 error_list = '\n'.join(fail_to_modify)
