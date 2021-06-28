@@ -9,7 +9,7 @@ configuration:
   required: true
   type: 0
 - display: Article content max size in KB
-  additionalinfo: Default is 45KB. If you increase the limit substantialy, it may slow performance. You need to specify only a number. e.g, example 50.
+  additionalinfo: Default is 45KB. If you increase the limit substantialy, it may slow performance. You need to specify only a number. e.g, 50.
   name: max_size
   defaultvalue: '45'
   required: false
@@ -70,7 +70,7 @@ configuration:
   required: false
   type: 1
   display: ""
-- defaultvalue: '60'
+- defaultvalue: '240'
   display: Feed Fetch Interval
   name: feedFetchInterval
   required: false

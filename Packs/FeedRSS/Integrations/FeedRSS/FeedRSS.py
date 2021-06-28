@@ -17,17 +17,21 @@ class Client(BaseClient):
         proxy(str): Use system proxy.
     """
 
-    def __init__(self, server_url, use_ssl, proxy, feed_tags, tlp_color, content_max_size=45):
+    def __init__(self, server_url, use_ssl, proxy, reliability, feed_tags, tlp_color, content_max_size=45):
         super().__init__(base_url=server_url, proxy=proxy, verify=use_ssl)
         self.feed_tags = feed_tags
         self.tlp_color = tlp_color
         self.content_max_size = content_max_size * 1000
         self.parsed_indicators = []
         self.feed_data = None
-        self.feed_response = self.request_feed_url()
+        self.feed_response = None
+        self.reliability = reliability
 
     def request_feed_url(self):
-        return self._http_request(method='GET', resp_type='response')
+        self.feed_response = self._http_request(method='GET', resp_type='response')
+
+    def parse_feed_data(self):
+        self.feed_data = feedparser.parse(self.feed_response.text)
 
     def create_indicators_from_response(self):
         parsed_indicators: list = []
@@ -52,6 +56,7 @@ class Client(BaseClient):
                         "value": indicator.get('title').replace(',', ''),  # Remove comma because the script of create
                         # relationship includes that as a list of titles.
                         "rawJSON": {'value': indicator, 'type': 'Report', "firstseenbysource": published_iso},
+                        "reliability": self.reliability,
                         "fields": {
                             'rawcontent': text,
                             'publications': publications,
@@ -78,24 +83,34 @@ class Client(BaseClient):
             if tag.name in HTML_TAGS:
                 for string in tag.stripped_strings:
                     report_content += ' ' + string
-        if len(report_content.encode('utf-8')) > self.content_max_size:  # Ensure report_content does not exceed the
+        encoded_content = report_content.encode('utf-8', errors='replace')
+        if len(encoded_content) > self.content_max_size:  # Ensure report_content does not exceed the
             # indicator size limit (~50KB)
-            report_content = report_content.encode('utf-8')[:self.content_max_size].decode('utf-8')
+            report_content = encoded_content[:self.content_max_size].decode('utf-8')
+            report_content += ' This is trounced text, report content was too big.'
+
         return report_content
 
-    def fetch_indicators(self):
-        self.feed_data = feedparser.parse(self.feed_response.text)
-        self.parsed_indicators = self.create_indicators_from_response()
+
+def fetch_indicators(client: Client):
+    client.parse_feed_data()
+    parsed_indicators = client.create_indicators_from_response()
+    return parsed_indicators
 
 
-def get_indicators(client: Client, args: dict) -> CommandResults:
+def get_indicators(client: Client, indicators: list, args: dict) -> CommandResults:
     limit = int(args.get('limit', 10))
-    parsed_indicators = client.parsed_indicators[:limit]
-    parsed_for_hr = [{'Title': indicator.get('value'),
-                      'Link': indicator.get('fields').get('publications')[0].get('link'),
-                      'Type': indicator.get('type')}
-                     for indicator in parsed_indicators]
-    headers = ['Title', 'Link', 'Type']
+    parsed_indicators = indicators[:limit]
+    parsed_for_hr = []
+    for indicator in parsed_indicators:
+        link = indicator.get('fields', {}).get('publications', [{}])[0].get('link')
+        article_title = indicator.get('value', '')
+        article_field_hr = article_title
+        if link:
+            article_field_hr = f"[{article_title}]({link})"  # if there is a link to the article, we want the article's title to be a link.
+        parsed_for_hr.append({'Article': article_field_hr,
+                              'Type': indicator.get('type')})
+    headers = ['Article', 'Type']
     hr_ = tableToMarkdown(name='RSS Feed:', t=parsed_for_hr, headers=headers)
     return CommandResults(
         readable_output=hr_,
@@ -103,39 +118,55 @@ def get_indicators(client: Client, args: dict) -> CommandResults:
     )
 
 
+def test_module(client: Client):
+    if 'html' in client.feed_response.headers['content-type']:
+        raise DemistoException(f'{client._base_url} is not rss feed url. Try look for a url containing \'feed\' '
+                               f'prefix or suffix.')
+    else:
+        return_results("ok")
+
+
 def main():
     params = demisto.params()
     server_url = params.get('server_url')
     command = demisto.command()
     demisto.info(f'Command being called is {command}')
+
     try:
+        reliability = params.get('feedReliability')
+        reliability = reliability if reliability else DBotScoreReliability.F
+
+        if DBotScoreReliability.is_valid_type(reliability):
+            reliability = DBotScoreReliability.get_dbot_score_reliability_from_str(reliability)
+        else:
+            raise Exception("Please provide a valid value for the Source Reliability parameter.")
         client = Client(server_url=server_url,
                         use_ssl=not params.get('insecure', False),
                         proxy=params.get('proxy'),
+                        reliability=reliability,
                         feed_tags=argToList(params.get('feedTags')),
                         tlp_color=params.get('tlp_color'),
                         content_max_size=int(params.get('max_size', '45')))
 
+        client.request_feed_url()
+
         if command == 'test-module':
-            if 'html' in client.feed_response.headers['content-type']:
-                raise DemistoException(f'{server_url} is not rss feed url. Try look for a url containing \'feed\' '
-                                       f'prefix or suffix.')
-            else:
-                return_results("ok")
+            test_module(client)
 
         elif command == 'rss-get-indicators':
-            client.fetch_indicators()
-            return_results(get_indicators(client, demisto.args()))
+            parsed_indicators = fetch_indicators(client)
+            return_results(get_indicators(client, parsed_indicators, demisto.args()))
 
         elif command == 'fetch-indicators':
-            client.fetch_indicators()
-            for iter_ in batch(client.parsed_indicators, batch_size=2000):
+            parsed_indicators = fetch_indicators(client)
+            for iter_ in batch(parsed_indicators, batch_size=2000):
                 demisto.createIndicators(iter_)
         else:
             raise NotImplementedError(f'Command {command} is not implemented.')
 
     except ValueError:
-        raise DemistoException("Article content max size must be a number, for example 50.")
+        raise DemistoException("Article content max size must be a number, e.g 50.")
+
     except Exception as err:
         demisto.error(traceback.format_exc())  # print the traceback
         return_error(f"Failed to execute {command} command.\nError:\n{str(err)}")
