@@ -462,7 +462,6 @@ def main():
     is_fetch = params.get('isFetch')
     fetch_limit = params.get('max_fetch')
     first_fetch_str = params.get('first_fetch')
-    auto_generate_query_filter = params.get('auto_generate_query_filter')
     fetch_query_filter = params.get('fetch_query_filter')
 
     demisto.debug(f'Command being called is {command}')
