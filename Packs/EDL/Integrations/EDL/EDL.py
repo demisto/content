@@ -7,8 +7,9 @@ import re
 from base64 import b64decode
 from flask import Flask, Response, request
 from netaddr import IPAddress, IPSet
-from typing import Callable, Any, Dict, cast, Tuple
+from typing import Callable, Any, Dict, cast
 from math import ceil
+from threading import Lock
 import urllib3
 import dateparser
 
@@ -20,16 +21,16 @@ INTEGRATION_NAME: str = 'EDL'
 PAGE_SIZE: int = 2000
 PAN_OS_MAX_URL_LEN = 255
 APP: Flask = Flask('demisto-edl')
-EDL_VALUES_KEY: str = 'dmst_edl_values'
 EDL_LIMIT_ERR_MSG: str = 'Please provide a valid integer for EDL Size'
 EDL_OFFSET_ERR_MSG: str = 'Please provide a valid integer for Starting Index'
 EDL_COLLAPSE_ERR_MSG: str = 'The Collapse parameter can only get the following: 0 - Dont Collapse, ' \
                             '1 - Collapse to Ranges, 2 - Collapse to CIDRS'
 EDL_MISSING_REFRESH_ERR_MSG: str = 'Refresh Rate must be "number date_range_unit", examples: (2 hours, 4 minutes, ' \
                                    '6 months, 1 day, etc.)'
-EDL_FILTER_FIELDS = "name,type"  # based on func ToIoC https://github.com/demisto/server/blob/master/domain/insight.go
-EDL_ON_DEMAND_KEY = 'UpdateEDL'
-EDL_ON_DEMAND_CACHE_PATH = None
+# based on func ToIoC https://github.com/demisto/server/blob/master/domain/insight.go
+EDL_FILTER_FIELDS: Optional[str] = "name,type"
+EDL_ON_DEMAND_KEY: str = 'UpdateEDL'
+EDL_ON_DEMAND_CACHE_PATH: Optional[str] = None
 EDL_LOCK = Lock()
 
 ''' REFORMATTING REGEXES '''
@@ -73,24 +74,6 @@ class RequestArguments:
         self.collapse_ips = collapse_ips
         self.invalidate_empty_edl = invalidate_empty_edl
         self.dont_duplicate_glob = dont_duplicate_glob
-
-    def is_request_change(self, last_update_data: Dict):
-        if self.limit != last_update_data.get(self.CTX_LIMIT_KEY):
-            return True
-
-        elif self.offset != last_update_data.get(self.CTX_OFFSET_KEY):
-            return True
-
-        elif self.drop_invalids != last_update_data.get(self.CTX_INVALIDS_KEY):
-            return True
-
-        elif self.url_port_stripping != last_update_data.get(self.CTX_PORT_STRIP_KEY):
-            return True
-
-        elif self.collapse_ips != last_update_data.get(self.CTX_COLLAPSE_IPS_KEY):
-            return True
-
-        return False
 
     def to_context_json(self):
         return {
@@ -149,7 +132,8 @@ def create_new_edl(request_args: RequestArguments) -> str:
     indicator_searcher = IndicatorsSearcher(page=0, filter_fields=EDL_FILTER_FIELDS)
     iocs = find_indicators_to_limit(indicator_searcher, request_args.query, limit)
     formatted_iocs = format_indicators(iocs, request_args)
-    if len(formatted_iocs) < len(iocs):  # indicator list was truncated - try to fetch more
+    if len(formatted_iocs) < len(iocs):
+        # indicator list was truncated - try to fetch more indicators
         while len(formatted_iocs) < limit:
             current_search_limit = limit - len(formatted_iocs)
             new_iocs = find_indicators_to_limit(indicator_searcher, request_args.query, current_search_limit)
@@ -186,7 +170,7 @@ def find_indicators_to_limit(indicator_searcher: IndicatorsSearcher,
     last_found_len = PAGE_SIZE
     total_fetched = 0
     # last_found_len should be PAGE_SIZE (or PAGE_SIZE - 1, as observed for some users) for full pages
-    while last_found_len in (PAGE_SIZE, PAGE_SIZE - 1) and limit and total_fetched < limit:
+    while last_found_len in (PAGE_SIZE, PAGE_SIZE - 1) and (limit and total_fetched < limit):
         res = indicator_searcher.search_indicators_by_version(query=indicator_query, size=PAGE_SIZE)
         fetched_iocs = res.get('iocs') or []
         # save only the value and type of each indicator
@@ -263,12 +247,16 @@ def ips_to_ranges(ips: list, collapse_ips: str):
 def format_indicators(iocs: list, request_args: RequestArguments) -> list:
     """
     Create a list result of formatted_indicators
+     * Empty list:
+         1) if invalidate_empty_edl, return ['#']
      * IP / CIDR:
-         1) if collapse_ips, collapse IPs
+         1) if collapse_ips, collapse IPs/CIDRs
      * URL:
          1) if drop_invalids, drop invalids (length > 254 or has invalid chars)
-         2) if port_stripping, strip ports
-         3) if dont_duplicate_glob, refrains from creating a duplicate domain without the glob
+    * Other:
+        1) if drop_invalids, drop invalids (has invalid chars)
+        2) if port_stripping, strip ports
+        3) if not dont_duplicate_glob, add a duplicate domain without the glob - negative condition for BC
     """
     formatted_indicators = []
     ipv4_formatted_indicators = []
@@ -307,7 +295,7 @@ def format_indicators(iocs: list, request_args: RequestArguments) -> list:
             # for PAN-OS *.domain.com does not match domain.com
             # we should provide both
             # this could generate more than num entries according to PAGE_SIZE
-            if request_args and indicator.startswith('*.'):
+            if not request_args.dont_duplicate_glob and indicator.startswith('*.'):
                 formatted_indicators.append(indicator.lstrip('*.'))
 
         if request_args.collapse_ips != DONT_COLLAPSE and ioc_type == FeedIndicatorType.IP:
@@ -327,7 +315,7 @@ def format_indicators(iocs: list, request_args: RequestArguments) -> list:
         ipv6_formatted_indicators = ips_to_ranges(ipv6_formatted_indicators, request_args.collapse_ips)
         formatted_indicators.extend(ipv6_formatted_indicators)
     if len(formatted_indicators) == 0 and request_args.invalidate_empty_edl:
-        formatted_indicators = '#'
+        formatted_indicators.append('#')
     return formatted_indicators
 
 
@@ -336,7 +324,7 @@ def get_edl_on_demand():
     Use the local file system to store the on-demand result, using a lock to
     limit access to the file from multiple threads.
     """
-    global EDL_ON_DEMAND_CACHE_PATH, EDL_LOCK
+    global EDL_ON_DEMAND_CACHE_PATH
     EDL_LOCK.acquire()
     try:
         ctx = get_integration_context()
@@ -555,21 +543,19 @@ def update_edl_command(args: Dict, params: Dict):
     return hr, {}, {}
 
 
-def spit_context(args: Dict, params: Dict):
-    hr = get_integration_context()
-    return hr, {}, {}
-
-
 def main():
     """
     Main
     """
-    global PAGE_SIZE
+    global PAGE_SIZE, EDL_FILTER_FIELDS
     params = demisto.params()
     try:
         PAGE_SIZE = max(1, int(params.get('page_size') or PAGE_SIZE))
     except ValueError:
         demisto.debug(f'Non integer "page_size" provided: {params.get("page_size")}. defaulting to {PAGE_SIZE}')
+    if params.get('use_legacy_query'):
+        # workaround for "msgpack: invalid code" error
+        EDL_FILTER_FIELDS = None
     credentials = params.get('credentials') if params.get('credentials') else {}
     username: str = credentials.get('identifier', '')
     password: str = credentials.get('password', '')
@@ -583,7 +569,6 @@ def main():
     commands = {
         'test-module': test_module,
         'edl-update': update_edl_command,
-        'spit-context': spit_context
     }
 
     try:
