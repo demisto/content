@@ -1,5 +1,5 @@
 Safewalk server integration
-This integration was integrated and tested with version xx of SafewalkManagement
+This integration was integrated and tested with version 3 of SafewalkManagement
 
 ## Configure SafewalkManagement on Cortex XSOAR
 
