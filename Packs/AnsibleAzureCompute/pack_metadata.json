@@ -1,6 +1,6 @@
 {
     "name": "Ansible Azure Compute",
-    "description": "TODO",
+    "description": "Manage and control Azure Compute services.",
     "support": "xsoar",
     "currentVersion": "1.0.0",
     "author": "Cortex XSOAR",
@@ -9,7 +9,7 @@
     "categories": [
         "IT Services"
     ],
-    "tags": [],
-    "useCases": [],
+    "tags": ["IT"],
+    "useCases": ["IT Services", "Asset Management"],
     "keywords": []
 }
