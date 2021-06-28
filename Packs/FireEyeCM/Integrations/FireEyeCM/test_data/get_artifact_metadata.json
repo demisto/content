@@ -1,0 +1,15 @@
+{
+    "artifactsInfoList": [
+        {
+            "artifactName": "1.1.1.1-2.2.2.2-1621298864425130-33354739.txt.gz",
+            "artifactSize": "1272",
+            "artifactType": "l7_context_file",
+            "uuid": "uuid"
+        },
+        {
+            "artifactName": "1.1.1.1-2.2.2.2-1621298864421433-33354739-cs.pcap",
+            "artifactSize": "3645",
+            "artifactType": "bott_communication_capture"
+        }
+    ]
+}

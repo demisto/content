@@ -1,0 +1,45 @@
+{
+  "alert": [
+    {
+      "ack": "no",
+      "action": "notified",
+      "alertUrl": "https://FireEyeEX/emps/eanalysis?e_id=12\u0026type=url",
+      "applianceId": "appid",
+      "attackTime": "2021-02-14 09:45:55 +0000",
+      "dst": {
+        "smtpTo": "test@actualdomain.org"
+      },
+      "explanation": {
+        "malwareDetected": {
+          "malware": [
+            {
+              "md5Sum": "a705075df02f217e8bfc9ac5ec2ffee2",
+              "name": "Malicious.LIVE.DTI.URL",
+              "sha256": "d1eeadbb4e3d1c57af5a069a0886aa2b4f71484721aafe5c90708b66b8d0090a"
+            }
+          ]
+        },
+        "osChanges": []
+      },
+      "id": 3,
+      "malicious": "yes",
+      "name": "MALWARE_OBJECT",
+      "occurred": "2021-02-14 09:45:58 +0000",
+      "product": "EMAIL_MPS",
+      "scVersion": "1115.212",
+      "severity": "MAJR",
+      "smtpMessage": {
+        "subject": "test"
+      },
+      "src": {
+        "smtpMailFrom": "test@malicious.net"
+      },
+      "uuid": "uuid",
+      "vlan": 0
+    }
+  ],
+  "alertsCount": 1,
+  "appliance": "eMPS",
+  "msg": "concise",
+  "version": "eMPS (eMPS) 9.0.2.929543"
+}
