@@ -81,7 +81,7 @@ def add_private_pack(private_packs, private_pack_metadata, changed_pack_id):
     if private_pack_metadata:
         private_packs.append({
             'id': changed_pack_id,
-            'price': private_pack_metadata.get('price'),
+            'price': int(private_pack_metadata.get('price')),
             'vendorId': private_pack_metadata.get('vendorId', ""),
             'partnerId': private_pack_metadata.get('partnerId', ""),
             'partnerName': private_pack_metadata.get('partnerName', ""),
@@ -165,7 +165,7 @@ def get_private_packs(private_index_path: str, pack_names: set = set(),
     """
 
     private_metadata_paths = get_existing_private_packs_metadata_paths(private_index_path)
-    changed_pack_id = list(pack_names)[0] # In the private build, there is only one modified pack
+    changed_pack_id = list(pack_names)[0]  # In the private build, there is only one modified pack
     private_packs = add_existing_private_packs_from_index(private_metadata_paths, changed_pack_id)
     private_packs = add_changed_private_pack(private_packs, extract_destination_path, changed_pack_id)
 
