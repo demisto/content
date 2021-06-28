@@ -2,7 +2,7 @@ commonfields:
   id: RapidBreachResponseParseBlog
   version: -1
 name: RapidBreachResponseParseBlog
-comment: Deprecated. Please Use "ParseHTMLIndicators" Instead. Parse Volexity request blog
+comment: Deprecated. Use "ParseHTMLIndicators" Instead. Parse Volexity request blog
 script: ''
 type: python
 tags: []
