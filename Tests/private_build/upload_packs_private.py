@@ -90,13 +90,13 @@ def add_private_pack(private_pack_metadata, private_packs, changed_pack_id):
     return private_packs
 
 
-def add_changed_private_pack(extract_destination_path, private_packs, changed_pack_id):
+def add_changed_private_pack(private_packs, extract_destination_path, changed_pack_id):
     """Add the changed private pack (new or modified) to the list of private packs.
     The modified pack's data needs to be taken from the artifacts, as it may not exist in the index or be out of date.
 
     Args:
-        extract_destination_path (str): The path to which the artifacts' zip was extracted.
         private_packs (list): The current list of private packs, not including the one to be added.
+        extract_destination_path (str): The path to which the artifacts' zip was extracted.
         changed_pack_id (str): The ID of the pack that was added / modified in the current private build.
 
     Returns:
@@ -167,7 +167,7 @@ def get_private_packs(private_index_path: str, pack_names: set = set(),
     private_metadata_paths = get_existing_private_packs_metadata_paths(private_index_path)
     changed_pack_id = list(pack_names)[0] # In the private build, there is only one modified pack
     private_packs = add_existing_private_packs_from_index(private_metadata_paths, changed_pack_id)
-    private_packs = add_changed_private_pack(extract_destination_path, private_packs, changed_pack_id)
+    private_packs = add_changed_private_pack(private_packs, extract_destination_path, changed_pack_id)
 
     return private_packs
 

@@ -524,7 +524,7 @@ def get_private_packs(private_index_path: str, pack_names: set = set(),
     try:
         metadata_files = glob.glob(f"{private_index_path}/**/metadata.json")
     except Exception:
-        logging.info(f'Could not find metadata files in {private_index_path}.')
+        logging.exception(f'Could not find metadata files in {private_index_path}.')
         return []
 
     if not metadata_files:
