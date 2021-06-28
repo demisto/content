@@ -1,6 +1,3 @@
-<p align="center">
-  <img  src="https://github.com/xsoar-altipeak/content/blob/master/Packs/Safewalk/safewalk_logo.png">
-</p>
 # Safewalk - Access Management anywhere with everything
 
 **Safewalk** is a complete strong authentication platform that helps prevent takeover and online fraud by securing the access to all your cloud and on-premises applications and data.
