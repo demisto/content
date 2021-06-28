@@ -20,7 +20,7 @@ if not demisto.params().get('proxy', False):
 
 
 class Portal():
-    def __init__(self, user=None, bearer=None, portal_url="https://services.fieldeffect.net/v1", provider=None, verbose=False):
+    def __init__(self, bearer=None, portal_url="https://services.fieldeffect.net/v1", provider=None, verbose=False):
         self.auth = None
         self.portal_url = portal_url
         self.verbose = verbose
@@ -43,7 +43,7 @@ class Portal():
     def get_authorization(self, skip_refresh=False):
         if not skip_refresh:
             self.refresh_auth()
-        return '{} {}'.format(self.scheme, self.auth.get('token'))
+        return '{} {}'.format(self.scheme, self.auth['token'])
 
     def try_saved_token(self, token):
         # Return True if this token works, also save this token as the token
@@ -108,11 +108,11 @@ class Portal():
         return r
 
     def refresh_auth(self):
-        if datetime.now() > self.auth.get("expires") - timedelta(minutes=10):
-            r = self.post('refresh_auth_token', json={"refresh_token": self.auth.get("refresh")})
-            self.auth["token"] = r.json().get('auth_token')
-            self.auth["expires"] = datetime.now() + timedelta(seconds=int(r.json().get('seconds_to_expiry')))
-            self.auth["refresh"] = r.json().get('refresh_token')
+        if datetime.now() > self.auth["expires"] - timedelta(minutes=10):
+            r = self.post('refresh_auth_token', json={"refresh_token": self.auth["refresh"]})
+            self.auth["token"] = r.json()['auth_token']
+            self.auth["expires"] = datetime.now() + timedelta(seconds=int(r.json()['seconds_to_expiry']))
+            self.auth["refresh"] = r.json()['refresh_token']
 
     def get_provider_id(self):
         r = self.get('my_providers', auth=self.auth)
