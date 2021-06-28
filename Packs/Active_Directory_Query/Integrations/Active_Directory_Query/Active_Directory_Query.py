@@ -837,7 +837,6 @@ def create_user_iam(default_base_dn, args, mapper_out, disabled_users_group_cn):
         ad_user = iam_user_profile.map_object(mapper_name=mapper_out)
 
         sam_account_name = ad_user.get("samaccountname")
-        mail = ad_user.get("mail")
 
         if not sam_account_name:
             raise DemistoException("User must have a sAMAccountName, please make sure a mapping "
