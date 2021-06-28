@@ -1,4 +1,4 @@
-RSS Feed reader can ingest new items as Report indicators.
+RSS Feed can ingest new items as Report indicators.
 This integration was integrated and tested with version 2.0 of RSS.
 
 ## Configure RSS Feed on Cortex XSOAR
