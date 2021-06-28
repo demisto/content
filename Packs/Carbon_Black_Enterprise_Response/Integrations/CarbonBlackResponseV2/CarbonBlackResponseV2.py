@@ -433,7 +433,7 @@ def alert_update_command(client: Client, alert_ids: str, status: str = None, set
 
 def alert_search_command(client: Client, status: str = None, username: str = None, feedname: str = None,
                          hostname: str = None, report: str = None, sort: str = None, query: str = None,
-                         facet: str = None, limit: str = None, start: str = None) -> CommandResults:
+                         facet: str = None, limit: str = None, start: str = '0') -> CommandResults:
     res = client.get_alerts(status, username, feedname, hostname, report, sort, query, facet, limit, start)
     if not res:
         raise Exception(f'{INTEGRATION_NAME} - Request cannot be processed.')

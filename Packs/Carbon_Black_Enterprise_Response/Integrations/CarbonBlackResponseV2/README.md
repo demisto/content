@@ -1,18 +1,18 @@
 VMware Carbon Black EDR (formerly known as Carbon Black Response)
 This integration was integrated and tested with version 6.2 of VMware Carbon Black EDR
 
-*Note that this version is **not** backward compatible. Command name, inputs and outputs have changed drastically.*
-## Configure VMware Carbon Black EDR on Cortex XSOAR
+Some changes have been made that might affect your existing content. 
+
+## Configure VMware Carbon Black EDR v2 on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for VMware Carbon Black EDR.
+2. Search for VMware Carbon Black EDR v2.
 3. Click **Add instance** to create and configure a new integration instance.
 
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
     | Server URL |  | True |
-    | Credentials |  | True |
-    | Password |  | True |
+    | API Token |  | False |
     | Fetch incidents |  | False |
     | Incident type |  | False |
     | Filter alerts by query | Advanced query string. Accepts the same data as the search box on the Alert Search page.<br/>For more information on the query syntax see https://developer.carbonblack.com/resources/query_overview.pdf.<br/>If provided, other search filters are not allowed. | False |
@@ -64,7 +64,7 @@ Process search
 | CarbonBlackEDR.ProcessSearch.Results.filtering_known_dlls | Boolean | Whether known dlls are filtered. | 
 | CarbonBlackEDR.ProcessSearch.Results.modload_count | Number | The count of modules loaded in this process. | 
 | CarbonBlackEDR.ProcessSearch.Results.parent_unique_id | String | Internal CB process id of the process's parent. | 
-| CarbonBlackEDR.ProcessSearch.Results.emet_count | Number |  | 
+| CarbonBlackEDR.ProcessSearch.Results.emet_count | Number | Number of EMET associated with the event. | 
 | CarbonBlackEDR.ProcessSearch.Results.cmdline | String | The command line of the process. | 
 | CarbonBlackEDR.ProcessSearch.Results.filemod_count | Number | The count of file modifications in this process. | 
 | CarbonBlackEDR.ProcessSearch.Results.id | String | The internal CB process id for this process \(processes are identified by this id and their segment id\). | 
@@ -75,25 +75,26 @@ Process search
 | CarbonBlackEDR.ProcessSearch.Results.hostname | String | The hostname of the computer for this process. | 
 | CarbonBlackEDR.ProcessSearch.Results.last_update | Date | The time of the most recently received event for this process in remote computer GMT time. | 
 | CarbonBlackEDR.ProcessSearch.Results.start | Date | The start time of the process in remote computer GMT time. | 
-| CarbonBlackEDR.ProcessSearch.Results.comms_ip | Number |  | 
+| CarbonBlackEDR.ProcessSearch.Results.comms_ip | String | IP address that the Cb server received the events on. If the endpoint is behind a NAT,
+for example, this will be the external IP of the network the endpoint lives on. | 
 | CarbonBlackEDR.ProcessSearch.Results.regmod_count | Number | The count of registry modifications in this process. | 
-| CarbonBlackEDR.ProcessSearch.Results.interface_ip | Number |  | 
+| CarbonBlackEDR.ProcessSearch.Results.interface_ip | Number | The IP address of the network interface\(s\) on the endpoint that generated the message. | 
 | CarbonBlackEDR.ProcessSearch.Results.process_pid | Number | The pid of the process. | 
-| CarbonBlackEDR.ProcessSearch.Results.username | String |  | 
-| CarbonBlackEDR.ProcessSearch.Results.terminated | Boolean |  | 
+| CarbonBlackEDR.ProcessSearch.Results.username | String | The user assosicated with the process. | 
+| CarbonBlackEDR.ProcessSearch.Results.terminated | Boolean | Whether the process is terminated. | 
 | CarbonBlackEDR.ProcessSearch.Results.process_name | String | The name of the process. | 
-| CarbonBlackEDR.ProcessSearch.Results.emet_config | String |  | 
-| CarbonBlackEDR.ProcessSearch.Results.last_server_update | Date |  | 
+| CarbonBlackEDR.ProcessSearch.Results.emet_config | String | The configuration of the EMET. | 
+| CarbonBlackEDR.ProcessSearch.Results.last_server_update | Date | When the process was last updated in the server. | 
 | CarbonBlackEDR.ProcessSearch.Results.path | String | The full path of the executable backing this process, e.g., c:\\windows\\system32\\svchost.exe. | 
 | CarbonBlackEDR.ProcessSearch.Results.netconn_count | Number | The count of network connections in this process. | 
 | CarbonBlackEDR.ProcessSearch.Results.parent_pid | Number | The pid of the process's parent. | 
 | CarbonBlackEDR.ProcessSearch.Results.crossproc_count | Number | The count of cross process events launched by this process. | 
-| CarbonBlackEDR.ProcessSearch.Results.segment_id | Date | The process segment id \(processes are identified by this segment id and their id\) | 
-| CarbonBlackEDR.ProcessSearch.Results.watchlists.segments_hit | Date |  | 
-| CarbonBlackEDR.ProcessSearch.Results.watchlists.wid | String |  | 
-| CarbonBlackEDR.ProcessSearch.Results.watchlists.value | Date |  | 
+| CarbonBlackEDR.ProcessSearch.Results.segment_id | String | The process segment id \(processes are identified by this segment id and their id\) | 
+| CarbonBlackEDR.ProcessSearch.Results.watchlists.segments_hit | String | Number of segment hits associated with the watchlist. | 
+| CarbonBlackEDR.ProcessSearch.Results.watchlists.wid | String | The id of the watchlist associated with the process. | 
+| CarbonBlackEDR.ProcessSearch.Results.watchlists.value | String | The value of the watchlist associated with the process. | 
 | CarbonBlackEDR.ProcessSearch.Results.host_type | String | The type of the process's host. | 
-| CarbonBlackEDR.ProcessSearch.Results.processblock_count | Number |  | 
+| CarbonBlackEDR.ProcessSearch.Results.processblock_count | Number | The number of processblock associated with the process. | 
 | CarbonBlackEDR.ProcessSearch.Results.os_type | String | The operating system type of the computer for this process; one of windows, linux, osx. | 
 | CarbonBlackEDR.ProcessSearch.Results.childproc_count | Number | The count of child processes launched by this process. | 
 | CarbonBlackEDR.ProcessSearch.Results.unique_id | String | An internal CB process id combining of the process id and segment id. | 
@@ -239,33 +240,34 @@ Gets basic process information for segment  of process.
 | CarbonBlackEDR.Process.process.modload_count | Number | The count of modules loaded in this process. | 
 | CarbonBlackEDR.Process.process.parent_unique_id | String | Internal CB process id of the process's parent. | 
 | CarbonBlackEDR.Process.process.cmdline | String | The command line of the process. | 
-| CarbonBlackEDR.Process.process.max_last_update | Date |  | 
-| CarbonBlackEDR.Process.process.min_last_update | Date |  | 
+| CarbonBlackEDR.Process.process.max_last_update | Date | The maximum last update of the process. | 
+| CarbonBlackEDR.Process.process.min_last_update | Date | The minimum last update of the process. | 
 | CarbonBlackEDR.Process.process.last_update | Date | The time of the most recently received event for this process in remote computer GMT time. | 
 | CarbonBlackEDR.Process.process.id | String | The id of the process. | 
 | CarbonBlackEDR.Process.process.terminated | Boolean | Whether the process is terminated. | 
 | CarbonBlackEDR.Process.process.crossproc_count | Number | The count of cross process events launched by this process. | 
 | CarbonBlackEDR.Process.process.group | String | The CB Host group this sensor is assigned to. | 
-| CarbonBlackEDR.Process.process.max_last_server_update | Date |  | 
+| CarbonBlackEDR.Process.process.max_last_server_update | Date | When the process was last updated in the server. | 
 | CarbonBlackEDR.Process.process.parent_id | String | The id of the process's parent. | 
 | CarbonBlackEDR.Process.process.hostname | String | The hostname of the computer for this process. | 
 | CarbonBlackEDR.Process.process.filemod_count | Number | The count of file modifications in this process. | 
 | CarbonBlackEDR.Process.process.start | Date | The start time of the process in remote computer GMT time. | 
-| CarbonBlackEDR.Process.process.comms_ip | Number |  | 
+| CarbonBlackEDR.Process.process.comms_ip | String | IP address that the Cb server received the events on. If the endpoint is behind a NAT,
+for example, this will be the external IP of the network the endpoint lives on. | 
 | CarbonBlackEDR.Process.process.regmod_count | Number | The count of registry modifications in this process. | 
-| CarbonBlackEDR.Process.process.interface_ip | Number |  | 
+| CarbonBlackEDR.Process.process.interface_ip | Number | The IP address of the network interface\(s\) on the endpoint that generated the message. | 
 | CarbonBlackEDR.Process.process.process_pid | Number | The pid of the process. | 
-| CarbonBlackEDR.Process.process.username | String |  | 
+| CarbonBlackEDR.Process.process.username | String | The user assosicated with the process. | 
 | CarbonBlackEDR.Process.process.process_name | String | The name of the process. | 
-| CarbonBlackEDR.Process.process.emet_count | Number |  | 
-| CarbonBlackEDR.Process.process.last_server_update | Date |  | 
-| CarbonBlackEDR.Process.process.path | String | The full path of the executable backing this process, e.g., c:\\windows\\system32\\svchost.exe . | 
+| CarbonBlackEDR.Process.process.emet_count | Number | Number of EMET associated with the process. | 
+| CarbonBlackEDR.Process.process.last_server_update | Date | When the process was last updated in the server. | 
+| CarbonBlackEDR.Process.process.path | String | The full path of the executable backing this process, e.g., c:\\windows\\system32\\svchost.exe. | 
 | CarbonBlackEDR.Process.process.netconn_count | Number | The count of network connections in this process. | 
 | CarbonBlackEDR.Process.process.parent_pid | Number | The pid of the process's parent. | 
 | CarbonBlackEDR.Process.process.segment_id | Date | The process segment id \(processes are identified by this segment id and their id\) | 
-| CarbonBlackEDR.Process.process.min_last_server_update | Date |  | 
+| CarbonBlackEDR.Process.process.min_last_server_update | Date | When the process was last updated in the server. | 
 | CarbonBlackEDR.Process.process.host_type | String | The Type of the process's host. | 
-| CarbonBlackEDR.Process.process.processblock_count | Number |  | 
+| CarbonBlackEDR.Process.process.processblock_count | Number | The number of processblock associated with the process. | 
 | CarbonBlackEDR.Process.process.os_type | String | The operating system type of the computer for this process; one of windows, linux, osx. | 
 | CarbonBlackEDR.Process.process.childproc_count | Number | The count of child processes launched by this process. | 
 | CarbonBlackEDR.Process.process.unique_id | String | An internal CB process id combining of the process id and segment id | 
@@ -282,14 +284,14 @@ Gets basic process information for segment  of process.
 | CarbonBlackEDR.Process.siblings.last_update | Date | The time of the most recently received event for the sibling process in remote computer GMT time. | 
 | CarbonBlackEDR.Process.siblings.start | Date | The start time of the sibling process in remote computer GMT time. | 
 | CarbonBlackEDR.Process.siblings.process_pid | Number | The pid of the sibling process. | 
-| CarbonBlackEDR.Process.siblings.username | String |  | 
+| CarbonBlackEDR.Process.siblings.username | String | The user assosicated with the process. | 
 | CarbonBlackEDR.Process.siblings.process_name | String | The name of the sibling process. | 
 | CarbonBlackEDR.Process.siblings.path | String | The path of the sibling process. | 
 | CarbonBlackEDR.Process.siblings.parent_pid | Number | The pid of the sibling process's parent. | 
 | CarbonBlackEDR.Process.siblings.segment_id | Date | The sibling process segment id \(processes are identified by this segment id and their id\) | 
-| CarbonBlackEDR.Process.siblings.host_type | String |  | 
+| CarbonBlackEDR.Process.siblings.host_type | String | The type of the host associated with the process. | 
 | CarbonBlackEDR.Process.siblings.os_type | String | The operating system type of the computer for the sibling process; one of windows, linux, osx. | 
-| CarbonBlackEDR.Process.siblings.child_proc_type | String |  | 
+| CarbonBlackEDR.Process.siblings.child_proc_type | String | The type of the child process associated with the process. | 
 | CarbonBlackEDR.Process.siblings.unique_id | String | An internal CB process id combining of the sibling process id and segment id | 
 | CarbonBlackEDR.Process.children.process_md5 | String | The md5 of the binary image backing the children process. | 
 | CarbonBlackEDR.Process.children.sensor_id | Number | The internal CB id for the sensor on which the children process executed. | 
@@ -304,14 +306,14 @@ Gets basic process information for segment  of process.
 | CarbonBlackEDR.Process.children.last_update | Date | The time of the most recently received event for the child process in remote computer GMT time. | 
 | CarbonBlackEDR.Process.children.start | Date | The start time of the child process in remote computer GMT time. | 
 | CarbonBlackEDR.Process.children.process_pid | Number | The pid of the child process. | 
-| CarbonBlackEDR.Process.children.username | String |  | 
+| CarbonBlackEDR.Process.children.username | String | The user assosicated with the process. | 
 | CarbonBlackEDR.Process.children.process_name | String | The name of the child process. | 
-| CarbonBlackEDR.Process.children.path | String |  | 
+| CarbonBlackEDR.Process.children.path | String | The path of the child process. | 
 | CarbonBlackEDR.Process.children.parent_pid | Number | The pid of the child process's parent. | 
 | CarbonBlackEDR.Process.children.segment_id | Date | The child process segment id \(processes are identified by this segment id and their id\) | 
-| CarbonBlackEDR.Process.children.host_type | String |  | 
+| CarbonBlackEDR.Process.children.host_type | String | The host type of the children process. | 
 | CarbonBlackEDR.Process.children.os_type | String | The operating system type of the computer for the child process; one of windows, linux, osx. | 
-| CarbonBlackEDR.Process.children.child_proc_type | String |  | 
+| CarbonBlackEDR.Process.children.child_proc_type | String | The type of the host associated with the process. | 
 | CarbonBlackEDR.Process.children.unique_id | String | An internal CB process id combining of the child process id and segment id | 
 
 
@@ -370,102 +372,6 @@ Gets basic process information for segment  of process.
                     "terminated": false,
                     "uid": "S-1-5-21-2523591321-1041074104-504789541-500",
                     "unique_id": "00000018-0000-083c-01d5-9ed472f57ab4-01798d50a778",
-                    "username": "EC2AMAZ-L4C2OKC\\Administrator"
-                },
-                {
-                    "child_proc_type": "exec",
-                    "cmdline": "",
-                    "group": "default group",
-                    "host_type": "server",
-                    "hostname": "ec2amaz-l4c2okc",
-                    "id": "00000018-0000-0b94-01d5-9ed47304e5ef",
-                    "last_update": "2021-05-21T05:02:07.238Z",
-                    "os_type": "windows",
-                    "parent_id": "00000018-0000-164c-01d5-9ed472b33472",
-                    "parent_pid": 5708,
-                    "parent_unique_id": "00000018-0000-164c-01d5-9ed472b33472-000000000001",
-                    "path": "c:\\program files (x86)\\google\\chrome\\application\\chrome.exe",
-                    "process_md5": "8698e468bc379e30383a72ce63da7972",
-                    "process_name": "chrome.exe",
-                    "process_pid": 2964,
-                    "segment_id": 1621573543800,
-                    "sensor_id": 24,
-                    "start": "2019-11-19T12:25:37.725Z",
-                    "terminated": false,
-                    "uid": "S-1-5-21-2523591321-1041074104-504789541-500",
-                    "unique_id": "00000018-0000-0b94-01d5-9ed47304e5ef-01798d50a778",
-                    "username": "EC2AMAZ-L4C2OKC\\Administrator"
-                },
-                {
-                    "child_proc_type": "exec",
-                    "cmdline": "",
-                    "group": "default group",
-                    "host_type": "server",
-                    "hostname": "ec2amaz-l4c2okc",
-                    "id": "00000018-0000-0bf8-01d5-9ed4730ac533",
-                    "last_update": "2021-05-21T05:02:07.253Z",
-                    "os_type": "windows",
-                    "parent_id": "00000018-0000-164c-01d5-9ed472b33472",
-                    "parent_pid": 5708,
-                    "parent_unique_id": "00000018-0000-164c-01d5-9ed472b33472-000000000001",
-                    "path": "c:\\program files (x86)\\google\\chrome\\application\\chrome.exe",
-                    "process_md5": "8698e468bc379e30383a72ce63da7972",
-                    "process_name": "chrome.exe",
-                    "process_pid": 3064,
-                    "segment_id": 1621573543800,
-                    "sensor_id": 24,
-                    "start": "2019-11-19T12:25:37.763Z",
-                    "terminated": false,
-                    "uid": "S-1-5-21-2523591321-1041074104-504789541-500",
-                    "unique_id": "00000018-0000-0bf8-01d5-9ed4730ac533-01798d50a778",
-                    "username": "EC2AMAZ-L4C2OKC\\Administrator"
-                },
-                {
-                    "child_proc_type": "exec",
-                    "cmdline": "",
-                    "group": "default group",
-                    "host_type": "server",
-                    "hostname": "ec2amaz-l4c2okc",
-                    "id": "00000018-0000-0e1c-01d5-9ed490c5a441",
-                    "last_update": "2021-05-21T05:02:07.393Z",
-                    "os_type": "windows",
-                    "parent_id": "00000018-0000-164c-01d5-9ed472b33472",
-                    "parent_pid": 5708,
-                    "parent_unique_id": "00000018-0000-164c-01d5-9ed472b33472-000000000001",
-                    "path": "c:\\program files (x86)\\google\\chrome\\application\\chrome.exe",
-                    "process_md5": "8698e468bc379e30383a72ce63da7972",
-                    "process_name": "chrome.exe",
-                    "process_pid": 3612,
-                    "segment_id": 1621573543800,
-                    "sensor_id": 24,
-                    "start": "2019-11-19T12:26:27.642Z",
-                    "terminated": false,
-                    "uid": "S-1-5-21-2523591321-1041074104-504789541-500",
-                    "unique_id": "00000018-0000-0e1c-01d5-9ed490c5a441-01798d50a778",
-                    "username": "EC2AMAZ-L4C2OKC\\Administrator"
-                },
-                {
-                    "child_proc_type": "exec",
-                    "cmdline": "",
-                    "group": "default group",
-                    "host_type": "server",
-                    "hostname": "ec2amaz-l4c2okc",
-                    "id": "00000018-0000-1344-01d5-9ed472c1fd68",
-                    "last_update": "2021-05-21T05:02:07.206Z",
-                    "os_type": "windows",
-                    "parent_id": "00000018-0000-164c-01d5-9ed472b33472",
-                    "parent_pid": 5708,
-                    "parent_unique_id": "00000018-0000-164c-01d5-9ed472b33472-000000000001",
-                    "path": "c:\\program files (x86)\\google\\chrome\\application\\chrome.exe",
-                    "process_md5": "8698e468bc379e30383a72ce63da7972",
-                    "process_name": "chrome.exe",
-                    "process_pid": 4932,
-                    "segment_id": 1621573543800,
-                    "sensor_id": 24,
-                    "start": "2019-11-19T12:25:37.286Z",
-                    "terminated": false,
-                    "uid": "S-1-5-21-2523591321-1041074104-504789541-500",
-                    "unique_id": "00000018-0000-1344-01d5-9ed472c1fd68-01798d50a778",
                     "username": "EC2AMAZ-L4C2OKC\\Administrator"
                 }
             ],
@@ -555,110 +461,6 @@ Gets basic process information for segment  of process.
                     "uid": "S-1-5-18",
                     "unique_id": "00000018-0000-0228-01d5-9ed00a25b248-01798d50a778",
                     "username": "SYSTEM"
-                },
-                {
-                    "child_proc_type": "exec",
-                    "cmdline": "",
-                    "group": "default group",
-                    "host_type": "server",
-                    "hostname": "ec2amaz-l4c2okc",
-                    "id": "00000018-0000-0560-01d5-9ed383a60ee5",
-                    "last_update": "2021-05-21T05:02:05.972Z",
-                    "os_type": "windows",
-                    "parent_id": "00000018-ffff-ffff-0000-000000000000",
-                    "parent_pid": -1,
-                    "parent_unique_id": "00000018-ffff-ffff-0000-000000000000-000000000001",
-                    "path": "c:\\windows\\system32\\winlogon.exe",
-                    "process_md5": "e2908e2ded4c0dd15e81eef9087329d2",
-                    "process_name": "winlogon.exe",
-                    "process_pid": 1376,
-                    "segment_id": 1621573543800,
-                    "sensor_id": 24,
-                    "start": "2019-11-19T12:18:56.128Z",
-                    "terminated": false,
-                    "uid": "S-1-5-18",
-                    "unique_id": "00000018-0000-0560-01d5-9ed383a60ee5-01798d50a778",
-                    "username": "SYSTEM"
-                },
-                {
-                    "child_proc_type": "exec",
-                    "cmdline": "",
-                    "group": "default group",
-                    "host_type": "server",
-                    "hostname": "ec2amaz-l4c2okc",
-                    "id": "00000018-0000-101c-01d7-60f2ac7da18a",
-                    "last_update": "2021-06-14T13:01:07.922Z",
-                    "os_type": "windows",
-                    "parent_id": "00000018-ffff-ffff-0000-000000000000",
-                    "parent_pid": -1,
-                    "parent_unique_id": "00000018-ffff-ffff-0000-000000000000-000000000001",
-                    "process_pid": 4124,
-                    "segment_id": 1623675705568,
-                    "sensor_id": 24,
-                    "start": "2021-06-14T07:55:42.298Z",
-                    "terminated": false,
-                    "unique_id": "00000018-0000-101c-01d7-60f2ac7da18a-017a0a9d18e0",
-                    "username": ""
-                },
-                {
-                    "child_proc_type": "exec",
-                    "cmdline": "",
-                    "group": "default group",
-                    "host_type": "server",
-                    "hostname": "ec2amaz-l4c2okc",
-                    "id": "00000018-0000-16f4-01d6-fb73d06565ef",
-                    "last_update": "2021-06-03T11:03:35.908Z",
-                    "os_type": "windows",
-                    "parent_id": "00000018-ffff-ffff-0000-000000000000",
-                    "parent_pid": -1,
-                    "parent_unique_id": "00000018-ffff-ffff-0000-000000000000-000000000001",
-                    "process_pid": 5876,
-                    "segment_id": 1622718377406,
-                    "sensor_id": 24,
-                    "start": "2021-02-05T04:03:09.012Z",
-                    "terminated": false,
-                    "unique_id": "00000018-0000-16f4-01d6-fb73d06565ef-0179d18d6dbe",
-                    "username": ""
-                },
-                {
-                    "child_proc_type": "exec",
-                    "cmdline": "",
-                    "group": "default group",
-                    "host_type": "server",
-                    "hostname": "ec2amaz-l4c2okc",
-                    "id": "00000018-0000-1dc0-01d7-6018bc7f169e",
-                    "last_update": "2021-06-13T13:06:03.74Z",
-                    "os_type": "windows",
-                    "parent_id": "00000018-ffff-ffff-0000-000000000000",
-                    "parent_pid": -1,
-                    "parent_unique_id": "00000018-ffff-ffff-0000-000000000000-000000000001",
-                    "process_pid": 7616,
-                    "segment_id": 1623589602858,
-                    "sensor_id": 24,
-                    "start": "2021-06-13T05:55:38.864Z",
-                    "terminated": false,
-                    "unique_id": "00000018-0000-1dc0-01d7-6018bc7f169e-017a057b462a",
-                    "username": ""
-                },
-                {
-                    "child_proc_type": "exec",
-                    "cmdline": "",
-                    "group": "default group",
-                    "host_type": "server",
-                    "hostname": "ec2amaz-l4c2okc",
-                    "id": "00000018-0000-23e8-01d7-62a65796ab63",
-                    "last_update": "2021-06-16T13:06:11.748Z",
-                    "os_type": "windows",
-                    "parent_id": "00000018-ffff-ffff-0000-000000000000",
-                    "parent_pid": -1,
-                    "parent_unique_id": "00000018-ffff-ffff-0000-000000000000-000000000001",
-                    "process_pid": 9192,
-                    "segment_id": 1623848810495,
-                    "sensor_id": 24,
-                    "start": "2021-06-16T11:54:20.43Z",
-                    "terminated": false,
-                    "unique_id": "00000018-0000-23e8-01d7-62a65796ab63-017a14ee77ff",
-                    "username": ""
                 }
             ]
         }
@@ -804,33 +606,34 @@ Gets the events for the process with CB process id (process_id) and segment id (
 | CarbonBlackEDR.Events.modload_count | Number | The count of modules loaded in this process. | 
 | CarbonBlackEDR.Events.parent_unique_id | String | The id of the parent process. | 
 | CarbonBlackEDR.Events.cmdline | String | The command line of the process. | 
-| CarbonBlackEDR.Events.max_last_update | Date |  | 
-| CarbonBlackEDR.Events.min_last_update | Date |  | 
+| CarbonBlackEDR.Events.max_last_update | Date | The time of last update. | 
+| CarbonBlackEDR.Events.min_last_update | Date | The time of last update. | 
 | CarbonBlackEDR.Events.last_update | Date | The time of the last event received from this process, as recorded by the remote host. | 
 | CarbonBlackEDR.Events.id | String | The internal CB process id of this process. | 
-| CarbonBlackEDR.Events.terminated | Boolean |  | 
+| CarbonBlackEDR.Events.terminated | Boolean | Whether the event is terminated. | 
 | CarbonBlackEDR.Events.crossproc_count | Number | The count of cross process events launched by this process. | 
 | CarbonBlackEDR.Events.group | String | The sensor group the sensor was assigned to. | 
-| CarbonBlackEDR.Events.max_last_server_update | Date |  | 
+| CarbonBlackEDR.Events.max_last_server_update | Date | Time of server last update. | 
 | CarbonBlackEDR.Events.parent_id | String | The Carbon Black process id of the parent process. | 
 | CarbonBlackEDR.Events.hostname | String | The hostname of the computer this process executed on. | 
 | CarbonBlackEDR.Events.filemod_count | Number | The count of file modifications in this process. | 
 | CarbonBlackEDR.Events.start | Date | The start time of this process, as recorded by the remote host. | 
-| CarbonBlackEDR.Events.comms_ip | Number |  | 
+| CarbonBlackEDR.Events.comms_ip | Number | IP address that the Cb server received the events on. If the endpoint is behind a NAT,
+for example, this will be the external IP of the network the endpoint lives on. | 
 | CarbonBlackEDR.Events.regmod_count | Number | The count of registry modifications in this process. | 
-| CarbonBlackEDR.Events.interface_ip | Number |  | 
+| CarbonBlackEDR.Events.interface_ip | Number | The IP address of the network interface\(s\) on the endpoint that generated the message. | 
 | CarbonBlackEDR.Events.process_pid | Number | The pid of the process. | 
-| CarbonBlackEDR.Events.username | String |  | 
+| CarbonBlackEDR.Events.username | String | The user assosicated with the event. | 
 | CarbonBlackEDR.Events.process_name | String | The name of this process, e.g., svchost.exe. | 
-| CarbonBlackEDR.Events.emet_count | Number |  | 
-| CarbonBlackEDR.Events.last_server_update | Date |  | 
+| CarbonBlackEDR.Events.emet_count | Number | Number of EMET associated with the event. | 
+| CarbonBlackEDR.Events.last_server_update | Date | When the event was last updated in the server. | 
 | CarbonBlackEDR.Events.path | String | The full path of the executable backing this process, e.g., c:\\windows\\system32\\svchost.exe . | 
 | CarbonBlackEDR.Events.netconn_count | Number | The count of network connections in this process. | 
 | CarbonBlackEDR.Events.parent_pid | Number | The pid of the process's parent. | 
 | CarbonBlackEDR.Events.segment_id | Date | The segment id of this process. | 
-| CarbonBlackEDR.Events.min_last_server_update | Date |  | 
-| CarbonBlackEDR.Events.host_type | String |  | 
-| CarbonBlackEDR.Events.processblock_count | Number |  | 
+| CarbonBlackEDR.Events.min_last_server_update | Date | When the event was last updated in the server. | 
+| CarbonBlackEDR.Events.host_type | String | The host type associated with the event. | 
+| CarbonBlackEDR.Events.processblock_count | Number | The number of processblock associated with the process. | 
 | CarbonBlackEDR.Events.filemod_complete.operation_type | String | The operation type.
 One of Created the file, First wrote to the file, Deleted the file, Last wrote to the file. | 
 | CarbonBlackEDR.Events.filemod_complete.event_time | Date | The event time. | 
@@ -856,7 +659,7 @@ RemoteThread if remote thread creation; ProcessOpen if process handle open with 
 | CarbonBlackEDR.Events.crossproc_complete.requested_access_priviledges | String | The requested access priviledges. | 
 | CarbonBlackEDR.Events.crossproc_complete.flagged_as_potential_tamper_attempt | String | Whether event is flagged as potential tamper attempt. | 
 | CarbonBlackEDR.Events.os_type | String | The operating system type of the computer for this process. | 
-| CarbonBlackEDR.Events.binaries | String |  | 
+| CarbonBlackEDR.Events.binaries | String | The binaries associated with the event. | 
 | CarbonBlackEDR.Events.childproc_count | Number | The count of child processes launched by this process. | 
 | CarbonBlackEDR.Events.unique_id | String | The unique_id of the Event. | 
 
@@ -1046,52 +849,52 @@ List the CarbonBlack sensors
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | CarbonBlackEDR.Sensor.systemvolume_total_size | String | The size, in bytes, of system volume of endpoint on which sensor in installed. | 
-| CarbonBlackEDR.Sensor.emet_telemetry_path | String |  | 
+| CarbonBlackEDR.Sensor.emet_telemetry_path | String | The path of emet telemtry associated with the sensor. | 
 | CarbonBlackEDR.Sensor.os_environment_display_string | String | Human-readable string of the installed OS. | 
-| CarbonBlackEDR.Sensor.emet_version | String |  | 
-| CarbonBlackEDR.Sensor.emet_dump_flags | String |  | 
-| CarbonBlackEDR.Sensor.clock_delta | String |  | 
-| CarbonBlackEDR.Sensor.supports_cblr | Boolean |  | 
-| CarbonBlackEDR.Sensor.sensor_uptime | String |  | 
-| CarbonBlackEDR.Sensor.last_update | String |  | 
+| CarbonBlackEDR.Sensor.emet_version | String | The emet version associated with the sensor. | 
+| CarbonBlackEDR.Sensor.emet_dump_flags | String | The flags of emet dump associated with the sensor. | 
+| CarbonBlackEDR.Sensor.clock_delta | String | The clock delta associated with the sensor. | 
+| CarbonBlackEDR.Sensor.supports_cblr | Boolean | Whether the sensor supports cblr. | 
+| CarbonBlackEDR.Sensor.sensor_uptime | String | The uptime of the process. | 
+| CarbonBlackEDR.Sensor.last_update | String | When the sensor last updated. | 
 | CarbonBlackEDR.Sensor.physical_memory_size | Date | The size in bytes of physical memory. | 
 | CarbonBlackEDR.Sensor.build_id | Number | The sensor version installed on this endpoint. From the /api/builds/ endpoint. | 
 | CarbonBlackEDR.Sensor.uptime | String | Endpoint uptime in seconds. | 
 | CarbonBlackEDR.Sensor.is_isolating | Boolean | Boolean representing sensor-reported isolation status. | 
-| CarbonBlackEDR.Sensor.event_log_flush_time | Unknown | If event_log_flush_time is set, the server will instruct the sensor to immediately
+| CarbonBlackEDR.Sensor.event_log_flush_time | Date | If event_log_flush_time is set, the server will instruct the sensor to immediately
 send all data before this date, ignoring all other throttling mechansims.
 To force a host current, set this value to a value far in the future.
 When the sensor has finished sending it’s queued data, this value will be null. | 
 | CarbonBlackEDR.Sensor.computer_dns_name | String | The DNS name of the endpoint on which the sensor is installed. | 
-| CarbonBlackEDR.Sensor.emet_report_setting | String |  | 
+| CarbonBlackEDR.Sensor.emet_report_setting | String | The report setting of EMET associated with sensor. | 
 | CarbonBlackEDR.Sensor.id | Number | The sensor id of this sensor. | 
-| CarbonBlackEDR.Sensor.emet_process_count | Number |  | 
-| CarbonBlackEDR.Sensor.emet_is_gpo | Boolean |  | 
-| CarbonBlackEDR.Sensor.power_state | Number |  | 
+| CarbonBlackEDR.Sensor.emet_process_count | Number | The number of EMET processes associated with the sensor. | 
+| CarbonBlackEDR.Sensor.emet_is_gpo | Boolean | Whther the EMET is gpo. | 
+| CarbonBlackEDR.Sensor.power_state | Number | The sensor power state. | 
 | CarbonBlackEDR.Sensor.network_isolation_enabled | Boolean | Boolean representing network isolation request status. | 
 | CarbonBlackEDR.Sensor.systemvolume_free_size | Date | The bytes free on the system volume. | 
-| CarbonBlackEDR.Sensor.status | String |  | 
-| CarbonBlackEDR.Sensor.num_eventlog_bytes | String |  | 
+| CarbonBlackEDR.Sensor.status | String | The sensor status. | 
+| CarbonBlackEDR.Sensor.num_eventlog_bytes | String | Number bytes of eventlog. | 
 | CarbonBlackEDR.Sensor.sensor_health_message | String | Human-readable string indicating sensor’s self-reported status. | 
 | CarbonBlackEDR.Sensor.build_version_string | String | Human-readable string of the sensor version. | 
 | CarbonBlackEDR.Sensor.computer_sid | String | Machine SID of this host. | 
 | CarbonBlackEDR.Sensor.next_checkin_time | String | Next expected communication from this computer in server-local time and zone. | 
-| CarbonBlackEDR.Sensor.node_id | Number |  | 
-| CarbonBlackEDR.Sensor.cookie | Number |  | 
-| CarbonBlackEDR.Sensor.emet_exploit_action | String |  | 
+| CarbonBlackEDR.Sensor.node_id | Number | The node ID associated with the sensor. | 
+| CarbonBlackEDR.Sensor.cookie | Number | The cookie associated with the sensor. | 
+| CarbonBlackEDR.Sensor.emet_exploit_action | String | The EMET exploit action associated with the sensor. | 
 | CarbonBlackEDR.Sensor.computer_name | String | NetBIOS name of this computer. | 
-| CarbonBlackEDR.Sensor.license_expiration | Date |  | 
+| CarbonBlackEDR.Sensor.license_expiration | Date | When the licene of the sensor expires. | 
 | CarbonBlackEDR.Sensor.supports_isolation | Boolean | Whther sensor supports isolation. | 
-| CarbonBlackEDR.Sensor.parity_host_id | String |  | 
-| CarbonBlackEDR.Sensor.supports_2nd_gen_modloads | Boolean |  | 
+| CarbonBlackEDR.Sensor.parity_host_id | String | The ID of the parity host associated with the sensor. | 
+| CarbonBlackEDR.Sensor.supports_2nd_gen_modloads | Boolean | Whether the sensor support modload of 2nd generation. | 
 | CarbonBlackEDR.Sensor.network_adapters | String | A pipe-delimited list list of IP,MAC pairs for each network interface. | 
 | CarbonBlackEDR.Sensor.sensor_health_status | Number | self-reported health score, from 0 to 100. Higher numbers are better. | 
 | CarbonBlackEDR.Sensor.registration_time | String | Time this sensor originally registered in server-local time and zone. | 
-| CarbonBlackEDR.Sensor.restart_queued | Boolean |  | 
-| CarbonBlackEDR.Sensor.notes | Unknown |  | 
-| CarbonBlackEDR.Sensor.num_storefiles_bytes | String |  | 
-| CarbonBlackEDR.Sensor.os_environment_id | Number |  | 
-| CarbonBlackEDR.Sensor.shard_id | Number |  | 
+| CarbonBlackEDR.Sensor.restart_queued | Boolean | Whether a restart of the sensot is queued. | 
+| CarbonBlackEDR.Sensor.notes | String | The notes associated with the sensor. | 
+| CarbonBlackEDR.Sensor.num_storefiles_bytes | String | Number of storefiles bytes associated with the sensor. | 
+| CarbonBlackEDR.Sensor.os_environment_id | Number | The ID of the os enviroment of the sensor. | 
+| CarbonBlackEDR.Sensor.shard_id | Number | The ID of the shard associated with the sensor. | 
 | CarbonBlackEDR.Sensor.boot_id | String | A sequential counter of boots since the sensor was installed. | 
 | CarbonBlackEDR.Sensor.last_checkin_time | String | Last communication with this computer in server-local time and zone. | 
 | CarbonBlackEDR.Sensor.os_type | Number | The operating system type of the computer. | 
@@ -1350,17 +1153,17 @@ Retrieve watchlist in Carbon black Response.
 | CarbonBlackEDR.Watchlist.last_hit_count | Number | A count of lifetime watchlist matches. | 
 | CarbonBlackEDR.Watchlist.description | String | A description of the watchlist. | 
 | CarbonBlackEDR.Watchlist.search_query | String | The raw Carbon Black query that this watchlist matches. | 
-| CarbonBlackEDR.Watchlist.enabled | Boolean |  | 
-| CarbonBlackEDR.Watchlist.search_timestamp | Date |  | 
+| CarbonBlackEDR.Watchlist.enabled | Boolean | Whether the watchlist is enabled. | 
+| CarbonBlackEDR.Watchlist.search_timestamp | Date | Time of the search associated with the watchlist. | 
 | CarbonBlackEDR.Watchlist.index_type | String | The type of watchlist.
 Valid values are ‘modules’ and ‘events’ for binary and process watchlists, respectively. | 
-| CarbonBlackEDR.Watchlist.readonly | Boolean |  | 
-| CarbonBlackEDR.Watchlist.total_hits | String |  | 
+| CarbonBlackEDR.Watchlist.readonly | Boolean | Whether the watchlist is readonly. | 
+| CarbonBlackEDR.Watchlist.total_hits | String | The number of total hits associated with the watchlist. | 
 | CarbonBlackEDR.Watchlist.date_added | String | The date this watchlist was created on this Enterprise Server. | 
 | CarbonBlackEDR.Watchlist.group_id | Number | The sensor group id this watchlist is assigned to. | 
-| CarbonBlackEDR.Watchlist.total_tags | String |  | 
+| CarbonBlackEDR.Watchlist.total_tags | String | The number of total tags associated with the watchlist. | 
 | CarbonBlackEDR.Watchlist.id | String | The id of this watchlist. | 
-| CarbonBlackEDR.Watchlist.last_hit | Unknown | A timestamp of the last time this watchlist triggered a match. | 
+| CarbonBlackEDR.Watchlist.last_hit | Date | A timestamp of the last time this watchlist triggered a match. | 
 | CarbonBlackEDR.Watchlist.name | String | The name of this watchlist. | 
 
 
@@ -1397,7 +1200,7 @@ Valid values are ‘modules’ and ‘events’ for binary and process watchlist
                 "index_type": "events",
                 "last_hit": "2021-04-04 11:40:05.832123+00:00",
                 "last_hit_count": 50,
-                "name": "David-ipaddr:x.x.x.x",
+                "name": "Example-ipaddr:x.x.x.x",
                 "readonly": false,
                 "search_query": "chrome.exe",
                 "search_timestamp": "2021-06-03 11:20:03.732105",
@@ -1469,20 +1272,20 @@ Returns a list of banned hashes
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | CarbonBlackEDR.BinaryBan.username | String | The username who banned the record. | 
-| CarbonBlackEDR.BinaryBan.audit.username | String |  | 
-| CarbonBlackEDR.BinaryBan.audit.timestamp | String |  | 
-| CarbonBlackEDR.BinaryBan.audit.text | String |  | 
-| CarbonBlackEDR.BinaryBan.audit.enabled | Boolean |  | 
-| CarbonBlackEDR.BinaryBan.audit.user_id | Number |  | 
+| CarbonBlackEDR.BinaryBan.audit.username | String | The user assosicated with the binary ban. | 
+| CarbonBlackEDR.BinaryBan.audit.timestamp | Date | The time of the binary ban. | 
+| CarbonBlackEDR.BinaryBan.audit.text | String | The text assosicated with the binary ban. | 
+| CarbonBlackEDR.BinaryBan.audit.enabled | Boolean | Whether the binary ban is enabled. | 
+| CarbonBlackEDR.BinaryBan.audit.user_id | Number | The user ID assosiated with binary ban. | 
 | CarbonBlackEDR.BinaryBan.text | String | The text description of banned record. | 
 | CarbonBlackEDR.BinaryBan.md5hash | String | The banned hash. | 
 | CarbonBlackEDR.BinaryBan.block_count | Number | The total number of blocks on the banned list. | 
 | CarbonBlackEDR.BinaryBan.user_id | Number | The id of the user who banned the record. | 
-| CarbonBlackEDR.BinaryBan.last_block_sensor_id | Unknown | The last sensor id which prevented the hash from executing. | 
+| CarbonBlackEDR.BinaryBan.last_block_sensor_id | String | The last sensor id which prevented the hash from executing. | 
 | CarbonBlackEDR.BinaryBan.enabled | Boolean | Whether the ban is enabled. | 
-| CarbonBlackEDR.BinaryBan.last_block_time | Unknown | The  last time the hash was blocked or prevented from being executed. | 
+| CarbonBlackEDR.BinaryBan.last_block_time | Date | The  last time the hash was blocked or prevented from being executed. | 
 | CarbonBlackEDR.BinaryBan.timestamp | String | The date and time the record was banned. | 
-| CarbonBlackEDR.BinaryBan.last_block_hostname | Unknown | The last hostname to block this hash. | 
+| CarbonBlackEDR.BinaryBan.last_block_hostname | String | The last hostname to block this hash. | 
 
 
 #### Command Example
@@ -1607,7 +1410,7 @@ Retrieve alerts from Carbon Black Response.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | CarbonBlackEDR.Alert.Terms | String | A list of strings, each representing a token as parsed by the query parser. | 
-| CarbonBlackEDR.Alert.Results.username | String |  | 
+| CarbonBlackEDR.Alert.Results.username | String | The user assosicated with the alert. | 
 | CarbonBlackEDR.Alert.Results.alert_type | String | The type of the alert. | 
 | CarbonBlackEDR.Alert.Results.sensor_criticality | Number | The criticality of the sensor. | 
 | CarbonBlackEDR.Alert.Results.modload_count | Number | The count of modules loaded. | 
@@ -1616,19 +1419,20 @@ Retrieve alerts from Carbon Black Response.
 | CarbonBlackEDR.Alert.Results.sensor_id | Number | The id of the sensor. | 
 | CarbonBlackEDR.Alert.Results.feed_name | String | The name of the source feed | 
 | CarbonBlackEDR.Alert.Results.created_time | Date | The alert creation time. | 
-| CarbonBlackEDR.Alert.Results.report_ignored | Boolean |  | 
+| CarbonBlackEDR.Alert.Results.report_ignored | Boolean | Whether the alert report should be ignored. | 
 | CarbonBlackEDR.Alert.Results.ioc_type | String | The type of the resource. | 
 | CarbonBlackEDR.Alert.Results.watchlist_name | String | The name of the watchlist. | 
-| CarbonBlackEDR.Alert.Results.ioc_confidence | Number |  | 
-| CarbonBlackEDR.Alert.Results.ioc_attr | String |  | 
+| CarbonBlackEDR.Alert.Results.ioc_confidence | Number | The confience of the resource. | 
+| CarbonBlackEDR.Alert.Results.ioc_attr | String | The resource attributes. | 
 | CarbonBlackEDR.Alert.Results.alert_severity | Number | The severity of the alert. | 
 | CarbonBlackEDR.Alert.Results.crossproc_count | Number | The count of cross process events launched by this process. | 
 | CarbonBlackEDR.Alert.Results.group | String | The sensor group id this sensor is assigned to. | 
-| CarbonBlackEDR.Alert.Results.hostname | String |  | 
+| CarbonBlackEDR.Alert.Results.hostname | String | The hostname assisicated with the alert. | 
 | CarbonBlackEDR.Alert.Results.filemod_count | Number | The count of file modifications in this process. | 
-| CarbonBlackEDR.Alert.Results.comms_ip | String |  | 
+| CarbonBlackEDR.Alert.Results.comms_ip | String | IP address that the Cb server received the alert on. If the endpoint is behind a NAT,
+for example, this will be the external IP of the network the endpoint lives on. | 
 | CarbonBlackEDR.Alert.Results.netconn_count | Number | The count of network connections in this process. | 
-| CarbonBlackEDR.Alert.Results.interface_ip | String |  | 
+| CarbonBlackEDR.Alert.Results.interface_ip | String | The IP address of the network interface\(s\) on the endpoint that generated the message. | 
 | CarbonBlackEDR.Alert.Results.status | String | The status of the alert. One of Resolved, Unresolved, In Progress, or False Positive. | 
 | CarbonBlackEDR.Alert.Results.process_path | String | The path of the process. | 
 | CarbonBlackEDR.Alert.Results.description | String | The description of the alert. | 
@@ -1636,7 +1440,7 @@ Retrieve alerts from Carbon Black Response.
 | CarbonBlackEDR.Alert.Results.process_unique_id | String | The unique_id of the targeted process. | 
 | CarbonBlackEDR.Alert.Results.process_id | String | The id of the process. | 
 | CarbonBlackEDR.Alert.Results.link | String | A link to the report. | 
-| CarbonBlackEDR.Alert.Results._version_ | Number |  | 
+| CarbonBlackEDR.Alert.Results._version_ | Number | The version of the alert. | 
 | CarbonBlackEDR.Alert.Results.regmod_count | Number | The count of registry modifications in this process. | 
 | CarbonBlackEDR.Alert.Results.md5 | String | The md5 of the process. | 
 | CarbonBlackEDR.Alert.Results.segment_id | Date | The segment id of the process. | 
@@ -1742,6 +1546,7 @@ Retrieve alerts from Carbon Black Response.
                     "watchlist_id": "process_blocking",
                     "watchlist_name": "process_blocking"
                 }
+                
             ],
             "Terms": [
                 "status:Unresolved"
@@ -1755,7 +1560,7 @@ Retrieve alerts from Carbon Black Response.
 #### Human Readable Output
 
 >Carbon Black EDR - Alert Search Results### 
->Showing None - 2 out of 9669 results.
+>Showing 0 - 2 out of 9669 results.
 >|Alert ID|Created Time|File Name|File Path|Hostname|Segment ID|Severity|Source md5|Status|
 >|---|---|---|---|---|---|---|---|---|
 >| 5d652495-cca6-4bca-9007-579a5ee984a2 | 2018-03-13T15:07:26.805Z | svchost.exe | c:\windows\system32\svchost.exe | win-sosskvttqab | 1520953646722 | 60.75 | e3a2ad05e24105b35e986cf9cb38ec47 | Unresolved |
@@ -1799,7 +1604,7 @@ Untrusted Root, or Explicit Distrust. |
 | CarbonBlackEDR.BinaryMetadata.digsig_subject | String | If signed and present, the subject. | 
 | CarbonBlackEDR.BinaryMetadata.digsig_publisher | String | If signed and present, the publisher name. | 
 | CarbonBlackEDR.BinaryMetadata.group | String | A list of 0 or more sensor groups \(by name\) in which this binary was observed. | 
-| CarbonBlackEDR.BinaryMetadata.event_partition_id | Number |  | 
+| CarbonBlackEDR.BinaryMetadata.event_partition_id | Number | The ID of the event partition associated with the binary file. | 
 | CarbonBlackEDR.BinaryMetadata.file_version | String | If present, File version from FileVersionInformation. For more information check
 https://docs.microsoft.com/en-us/dotnet/api/system.diagnostics.fileversioninfo?redirectedfrom=MSDN&amp;view=net-5.0 | 
 | CarbonBlackEDR.BinaryMetadata.company_name | String | If present, Company name from FileVersionInformation. For more information check
@@ -1941,7 +1746,7 @@ https://docs.microsoft.com/en-us/dotnet/api/system.diagnostics.fileversioninfo?r
 | CarbonBlackEDR.BinarySearch.Results.endpoint | String | A list of 0 or more hostname, sensorid tuples on which this binary was observed.
 The | character serves as the delimiter between the hostname and the sensorid. | 
 | CarbonBlackEDR.BinarySearch.Results.group | String | A list of 0 or more sensor groups \(by name\) in which this binary was observed. | 
-| CarbonBlackEDR.BinarySearch.results.event_partition_id | Number |  | 
+| CarbonBlackEDR.BinarySearch.results.event_partition_id | Number | The ID of the event partition associated with the binary file. | 
 | CarbonBlackEDR.BinarySearch.Results.digsig_result_code | String | HRESULT_FROM_WIN32 for the result of the digital signature operation via WinVerifyTrust. | 
 | CarbonBlackEDR.BinarySearch.Results.file_version | String | If present, File version from FileVersionInformation. For more information check
 https://docs.microsoft.com/en-us/dotnet/api/system.diagnostics.fileversioninfo?redirectedfrom=MSDN&amp;view=net-5.0 | 
