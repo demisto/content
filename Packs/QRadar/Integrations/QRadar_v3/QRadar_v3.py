@@ -15,6 +15,7 @@ from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-impor
 urllib3.disable_warnings()  # pylint: disable=no-member
 
 ''' ADVANCED GLOBAL PARAMETERS '''
+SAMPLE_SIZE = 2  # number of samples to store in integration context
 EVENTS_INTERVAL_SECS = 15  # interval between events polling
 EVENTS_FAILURE_LIMIT = 3  # amount of consecutive failures events fetch will tolerate
 FAILURE_SLEEP = 15  # sleep between consecutive failures events fetch
@@ -1479,7 +1480,7 @@ def long_running_execution_command(client: Client, params: Dict):
             if not incidents and not new_highest_id:
                 continue
 
-            incident_batch_for_sample = incidents if incidents else ctx.get('samples', [])
+            incident_batch_for_sample = incidents[:SAMPLE_SIZE] if incidents else ctx.get('samples', [])
             set_integration_context({LAST_FETCH_KEY: new_highest_id, 'samples': incident_batch_for_sample,
                                      'last_mirror_update': ctx.get('last_mirror_update')})
 
