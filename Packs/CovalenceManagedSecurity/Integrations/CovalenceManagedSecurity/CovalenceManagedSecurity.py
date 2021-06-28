@@ -26,15 +26,14 @@ class Portal():
         self.verbose = verbose
         self.provider_name = provider
         if bearer == "gan ceann":
-            self.scheme = self.AuthScheme.FES
+            Self.scheme = self.AuthScheme.FES
             # Headless login for those cursed with a GUI
         elif bearer:
             self.scheme = self.AuthScheme.BEARER
             self.auth = {"token": bearer, "expires": datetime.now() + timedelta(days=10 * 365), "refresh": None}
             self.provider_id = self.get_provider_id()
         else:
-            self.scheme = self.AuthScheme.FES
-            self.auth = self.portal_auth(user=user)
+            raise ValueError('Bearer is missing')
 
     class AuthScheme(object):
         FES = 'FieldEffectAuth'
@@ -44,7 +43,7 @@ class Portal():
     def get_authorization(self, skip_refresh=False):
         if not skip_refresh:
             self.refresh_auth()
-        return '{} {}'.format(self.scheme, self.auth["token"])
+        return '{} {}'.format(self.scheme, self.auth.get('token'))
 
     def try_saved_token(self, token):
         # Return True if this token works, also save this token as the token
@@ -109,11 +108,11 @@ class Portal():
         return r
 
     def refresh_auth(self):
-        if datetime.now() > self.auth["expires"] - timedelta(minutes=10):
-            r = self.post('refresh_auth_token', json={"refresh_token": self.auth["refresh"]})
-            self.auth["token"] = r.json()['auth_token']
-            self.auth["expires"] = datetime.now() + timedelta(seconds=int(r.json()['seconds_to_expiry']))
-            self.auth["refresh"] = r.json()["refresh_token"]
+        if datetime.now() > self.auth.get("expires") - timedelta(minutes=10):
+            r = self.post('refresh_auth_token', json={"refresh_token": self.auth.get("refresh")})
+            self.auth["token"] = r.json().get('auth_token')
+            self.auth["expires"] = datetime.now() + timedelta(seconds=int(r.json().get('seconds_to_expiry')))
+            self.auth["refresh"] = r.json().get('refresh_token')
 
     def get_provider_id(self):
         r = self.get('my_providers', auth=self.auth)

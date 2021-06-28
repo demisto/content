@@ -189,19 +189,19 @@ def fetch_incidents(last_run, first_run_time_range):
                     #  Critical: 4
                     severity_from_portal = a['severity']
                     if severity_from_portal == 'Informational':
-                        incident['severity'] = 0.5
+                        incident['severity'] = '0.5'
                     elif severity_from_portal == 'Warning':
-                        incident['severity'] = 1
+                        incident['severity'] = '1'
                     elif severity_from_portal == 'Low':
-                        incident['severity'] = 1
+                        incident['severity'] = '1'
                     elif severity_from_portal == 'Medium':
-                        incident['severity'] = 2
+                        incident['severity'] = '2'
                     elif severity_from_portal == 'High':
-                        incident['severity'] = 3
+                        incident['severity'] = '3'
                     elif severity_from_portal == 'Critical':
-                        incident['severity'] = 4
+                        incident['severity'] = '4'
                 else:
-                    incident['severity'] = 0
+                    incident['severity'] = '0'
                 if a.get('analystDescription', None):
                     incident['details'] = a['analystDescription']
                 incidents.append(incident)
@@ -743,7 +743,7 @@ def main():
                 outputs_prefix='Covalence.EndpointAgents',
                 outputs_key_field='agentUuid',
                 outputs=r,
-                readable_output=tabletomarkdown('Endpoint Agents', r, removenull=true)
+                readable_output=tableToMarkdown('Endpoint Agents', r, removenull=true)
             )
             return_results(results)
 
@@ -753,7 +753,7 @@ def main():
                 outputs_prefix='Covalence.EndpointAgents',
                 outputs_key_field='agentUuid',
                 outputs=r,
-                readable_output=tabletomarkdown('Endpoint Agents', r, removenull=true)
+                readable_output=tableToMarkdown('Endpoint Agents', r, removenull=true)
             )
             return_results(results)
 
@@ -763,7 +763,7 @@ def main():
                 outputs_prefix='Covalence.EndpointAgents',
                 outputs_key_field='agentUuid',
                 outputs=r,
-                readable_output=tabletomarkdown('Endpoint Agents', r, removenull=true)
+                readable_output=tableToMarkdown('Endpoint Agents', r, removenull=true)
             )
             return_results(results)
 
@@ -773,7 +773,7 @@ def main():
                 outputs_prefix='Covalence.EndpointProcess',
                 outputs_key_field='id',
                 outputs=r,
-                readable_output=tabletomarkdown('Endpoint Process', r, removenull=true)
+                readable_output=tableToMarkdown('Endpoint Process', r, removenull=true)
             )
             return_results(results)
 
@@ -783,7 +783,7 @@ def main():
                 outputs_prefix='Covalence.EndpointSoftware',
                 outputs_key_field='id',
                 outputs=r,
-                readable_output=tabletomarkdown('Endpoint Software', r, removenull=true)
+                readable_output=tableToMarkdown('Endpoint Software', r, removenull=true)
             )
             return_results(results)
 
@@ -793,7 +793,7 @@ def main():
                 outputs_prefix='Covalence.EndpointSoftware',
                 outputs_key_field='id',
                 outputs=r,
-                readable_output=tabletomarkdown('Endpoint Software', r, removenull=true)
+                readable_output=tableToMarkdown('Endpoint Software', r, removenull=true)
             )
             return_results(results)
 
