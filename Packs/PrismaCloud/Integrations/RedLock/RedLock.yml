@@ -688,3 +688,5 @@ script:
 fromversion: 5.0.0
 defaultclassifier: RedLock
 defaultmapperin: RedLock-mapper
+tests:
+- No tests (auto formatted)
