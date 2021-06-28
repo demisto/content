@@ -86,7 +86,8 @@ args:
   secret: false
 - default: false
   defaultValue: '0.8'
-  description: Threshold by which to consider incidents as similar. The range of values is 0-1.
+  description: Threshold by which to consider incidents as similar. The range of values
+    is 0-1.
   isArray: false
   name: threshold
   required: false
@@ -133,8 +134,8 @@ args:
   required: false
   secret: false
   predefined:
-    - 'true'
-    - 'false'
+  - 'true'
+  - 'false'
 comment: Find a campaign of emails based on their textual similarity.
 commonfields:
   id: FindEmailCampaign
@@ -185,7 +186,7 @@ tags:
 - phishing
 timeout: '0'
 type: python
-dockerimage: demisto/sklearn:1.0.0.19770
+dockerimage: demisto/sklearn:1.0.0.21733
 tests:
 - No tests (auto formatted)
 runonce: true
