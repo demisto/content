@@ -1,0 +1,30 @@
+{
+    "id": "incident_carbonblackedrwatchlistid",
+    "version": -1,
+    "modified": "2021-05-30T15:52:44.774368+03:00",
+    "name": "Carbon Black EDR Watchlist Id",
+    "ownerOnly": false,
+    "cliName": "carbonblackedrwatchlistid",
+    "type": "shortText",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "associatedTypes": [
+        "Carbon Black EDR"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": false,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "5.5.0"
+}

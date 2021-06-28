@@ -3,82 +3,21 @@ from CommonServerPython import *
 from CommonServerUserPython import *
 
 import re
-import subprocess
-import requests
+
 from base64 import b64decode
-from multiprocessing import Process
-from gevent.pywsgi import WSGIServer
-import gevent
-from signal import SIGUSR1
 from flask import Flask, Response, request
-from flask.logging import default_handler
 from netaddr import IPAddress, IPSet
-from typing import Callable, List, Any, Dict, cast, Tuple
-from string import Template
-from time import sleep
+from typing import Callable, Any, Dict, cast, Tuple
 from math import ceil
 import urllib3
-from datetime import datetime, timezone
 import dateparser
-import os
-import traceback
 
 # Disable insecure warnings
 urllib3.disable_warnings()
 
-NGINX_SERVER_ACCESS_LOG = '/var/log/nginx/access.log'
-NGINX_SERVER_ERROR_LOG = '/var/log/nginx/error.log'
-NGINX_SERVER_CONF_FILE = '/etc/nginx/conf.d/default.conf'
-NGINX_SSL_KEY_FILE = '/etc/nginx/ssl/ssl.key'
-NGINX_SSL_CRT_FILE = '/etc/nginx/ssl/ssl.crt'
-NGINX_SSL_CERTS = f'''
-    ssl_certificate {NGINX_SSL_CRT_FILE};
-    ssl_certificate_key {NGINX_SSL_KEY_FILE};
-'''
-NGINX_SERVER_CONF = '''
-server {
-
-    listen $port default_server $ssl;
-
-    $sslcerts
-
-    proxy_cache_key $scheme$proxy_host$request_uri$extra_cache_key;
-
-    # Static test file
-    location = /nginx-test {
-        alias /var/lib/nginx/html/index.html;
-        default_type text/html;
-    }
-
-    # Proxy everything to python
-    location / {
-        proxy_pass http://localhost:$serverport/;
-        add_header X-Proxy-Cache $upstream_cache_status;
-        # allow bypassing the cache with an arg of nocache=1 ie http://server:7000/?nocache=1
-        proxy_cache_bypass $arg_nocache;
-    }
-}
-
-'''
-
-
-class Handler:
-    @staticmethod
-    def write(msg: str):
-        demisto.info(f'wsgi log: {msg}')
-
-
-class ErrorHandler:
-    @staticmethod
-    def write(msg: str):
-        demisto.error(f'wsgi error: {msg}')
-
-
 ''' GLOBAL VARIABLES '''
 INTEGRATION_NAME: str = 'EDL'
 PAGE_SIZE: int = 2000
-DEMISTO_LOGGER: Handler = Handler()
-ERROR_LOGGER: ErrorHandler = ErrorHandler()
 APP: Flask = Flask('demisto-edl')
 EDL_VALUES_KEY: str = 'dmst_edl_values'
 EDL_LIMIT_ERR_MSG: str = 'Please provide a valid integer for EDL Size'
@@ -152,37 +91,25 @@ def list_to_str(inp_list: list, delimiter: str = ',', map_func: Callable = str) 
     return str_res
 
 
-def get_params_port(params: dict = demisto.params()) -> int:
-    """
-    Gets port from the integration parameters
-    """
-    port_mapping: str = params.get('longRunningPort', '')
-    err_msg: str
-    port: int
-    if port_mapping:
-        err_msg = f'Listen Port must be an integer. {port_mapping} is not valid.'
-        if ':' in port_mapping:
-            port = try_parse_integer(port_mapping.split(':')[1], err_msg)
-        else:
-            port = try_parse_integer(port_mapping, err_msg)
-    else:
-        raise ValueError('Please provide a Listen Port.')
-    return port
-
-
-def refresh_edl_context(request_args: RequestArguments, save_integration_context: bool = False) -> str:
+def refresh_edl_context(
+        request_args: RequestArguments,
+        save_integration_context: bool = False,
+        use_legacy_query: bool = False,
+) -> str:
     """
     Refresh the cache values and format using an indicator_query to call demisto.searchIndicators
 
     Parameters:
         request_args: Request arguments
         save_integration_context: Flag to save the result to integration context instead of LOCAL_CACHE
+        use_legacy_query (bool): Whether to use filter fields in the indicators search.
+                                 When set to True will not filter fields.
 
     Returns: List(IoCs in output format)
     """
     now = datetime.now()
     # poll indicators into edl from demisto
-    iocs = find_indicators_to_limit(request_args.query, request_args.limit, request_args.offset)
+    iocs = find_indicators_to_limit(request_args.query, request_args.limit, request_args.offset, use_legacy_query)
     out_dict, actual_indicator_amount = create_values_for_returned_dict(iocs, request_args)
 
     while actual_indicator_amount < request_args.limit:
@@ -191,7 +118,7 @@ def refresh_edl_context(request_args: RequestArguments, save_integration_context
         new_limit = request_args.limit - actual_indicator_amount
 
         # poll additional indicators into list from demisto
-        new_iocs = find_indicators_to_limit(request_args.query, new_limit, new_offset)
+        new_iocs = find_indicators_to_limit(request_args.query, new_limit, new_offset, use_legacy_query)
 
         # in case no additional indicators exist - exit
         if len(new_iocs) == 0:
@@ -213,7 +140,12 @@ def refresh_edl_context(request_args: RequestArguments, save_integration_context
     return out_dict[EDL_VALUES_KEY]
 
 
-def find_indicators_to_limit(indicator_query: str, limit: int, offset: int = 0) -> list:
+def find_indicators_to_limit(
+        indicator_query: str,
+        limit: int,
+        offset: int = 0,
+        use_legacy_query: bool = False,
+) -> list:
     """
     Finds indicators using demisto.searchIndicators
 
@@ -222,6 +154,8 @@ def find_indicators_to_limit(indicator_query: str, limit: int, offset: int = 0) 
             the EDL (Cortex XSOAR indicator query syntax)
         limit (int): The maximum number of indicators to include in the EDL
         offset (int): The starting index from which to fetch incidents
+        use_legacy_query (bool): Whether to use filter fields in the indicators search.
+                                 When set to True will not filter fields.
 
     Returns:
         list: The IoCs list up until the amount set by 'limit'
@@ -237,7 +171,12 @@ def find_indicators_to_limit(indicator_query: str, limit: int, offset: int = 0) 
         offset_in_page = 0
 
     # the second returned variable is the next page - it is implemented for a future use of repolling
-    iocs, _ = find_indicators_to_limit_loop(indicator_query, limit, next_page=next_page)
+    iocs, _ = find_indicators_to_limit_loop(
+        indicator_query,
+        limit,
+        next_page=next_page,
+        use_legacy_query=use_legacy_query,
+    )
 
     # if offset in page is bigger than the amount of results returned return empty list
     if len(iocs) <= offset_in_page:
@@ -247,7 +186,9 @@ def find_indicators_to_limit(indicator_query: str, limit: int, offset: int = 0) 
 
 
 def find_indicators_to_limit_loop(indicator_query: str, limit: int, total_fetched: int = 0,
-                                  next_page: int = 0, last_found_len: int = None):
+                                  next_page: int = 0, last_found_len: int = None,
+                                  use_legacy_query: bool = False,
+                                  ):
     """
     Finds indicators using while loop with demisto.searchIndicators, and returns result and last page
 
@@ -258,12 +199,15 @@ def find_indicators_to_limit_loop(indicator_query: str, limit: int, total_fetche
         total_fetched (int): The amount of indicators already fetched
         next_page (int): The page we are up to in the loop
         last_found_len (int): The amount of indicators found in the last fetch
+        use_legacy_query (bool): Whether to use filter fields in the indicators search.
+                                 When set to True will not filter fields.
 
     Returns:
         (tuple): The iocs and the last page
     """
     iocs: List[dict] = []
-    filter_fields = "name,type"  # based on func ToIoC https://github.com/demisto/server/blob/master/domain/insight.go
+    # based on func ToIoC https://github.com/demisto/server/blob/master/domain/insight.go
+    filter_fields = 'name,type' if not use_legacy_query else None
     search_indicators = IndicatorsSearcher(page=next_page, filter_fields=filter_fields)
     if last_found_len is None:
         last_found_len = PAGE_SIZE
@@ -418,7 +362,9 @@ def create_values_for_returned_dict(iocs: list, request_args: RequestArguments) 
 def get_edl_ioc_values(on_demand: bool,
                        request_args: RequestArguments,
                        edl_cache: dict = None,
-                       cache_refresh_rate: str = None) -> str:
+                       cache_refresh_rate: str = None,
+                       use_legacy_query: bool = False,
+                       ) -> str:
     """
     Get the ioc list to return in the edl
 
@@ -427,6 +373,8 @@ def get_edl_ioc_values(on_demand: bool,
         request_args: the request arguments
         edl_cache: The integration context OR EDL_LOCAL_CACHE
         cache_refresh_rate: The cache_refresh_rate configuration value
+        use_legacy_query (bool): Whether to use filter fields in the indicators search.
+                                 When set to True will not filter fields.
 
     Returns:
         string representation of the iocs
@@ -454,11 +402,11 @@ def get_edl_ioc_values(on_demand: bool,
             cache_time, _ = parse_date_range(cache_refresh_rate, to_timestamp=True)
             if last_run <= cache_time or request_args.is_request_change(edl_cache) or \
                     request_args.query != last_query:
-                values_str = refresh_edl_context(request_args)
+                values_str = refresh_edl_context(request_args, use_legacy_query=use_legacy_query)
             else:
                 values_str = get_ioc_values_str_from_cache(edl_cache, request_args=request_args)
         else:
-            values_str = refresh_edl_context(request_args)
+            values_str = refresh_edl_context(request_args, use_legacy_query=use_legacy_query)
     return values_str
 
 
@@ -548,17 +496,19 @@ def route_edl_values() -> Response:
 
     request_args = get_request_args(request.args, params)
     on_demand = params.get('on_demand')
+    use_legacy_query = params.get('use_legacy_query', False) or False
     created = datetime.now(timezone.utc)
     values = get_edl_ioc_values(
         on_demand=on_demand,
         request_args=request_args,
         cache_refresh_rate=cache_refresh_rate,
+        use_legacy_query=use_legacy_query,
     )
     query_time = (datetime.now(timezone.utc) - created).total_seconds()
     edl_size = 0
     if values.strip():
         edl_size = values.count('\n') + 1  # add 1 as last line doesn't have a \n
-    max_age = ceil((datetime.now() - dateparser.parse(cache_refresh_rate)).total_seconds())
+    max_age = ceil((datetime.now() - dateparser.parse(cache_refresh_rate)).total_seconds())  # type: ignore[operator]
     demisto.debug(f'Returning edl of size: [{edl_size}], created: [{created}], query time seconds: [{query_time}],'
                   f' max age: [{max_age}]')
     resp = Response(values, status=200, mimetype='text/plain', headers=[
@@ -643,204 +593,6 @@ def test_module(_: Dict, params: Dict):
     return 'ok', {}, {}
 
 
-def create_nginx_server_conf(file_path: str, port: int, params: Dict):
-    """Create nginx conf file
-
-    Args:
-        file_path (str): path of server conf file
-        port (int): listening port. server port to proxy to will be port+1
-        params (Dict): additional nginx params
-
-    Raises:
-        DemistoException: raised if there is a detected config error
-    """
-    template_str = params.get('nginx_server_conf') or NGINX_SERVER_CONF
-    certificate: str = params.get('certificate', '')
-    private_key: str = params.get('key', '')
-    ssl = ''
-    sslcerts = ''
-    serverport = port + 1
-    extra_cache_key = ''
-    if (certificate and not private_key) or (private_key and not certificate):
-        raise DemistoException('If using HTTPS connection, both certificate and private key should be provided.')
-    if certificate and private_key:
-        demisto.debug('Using HTTPS for nginx conf')
-        with open(NGINX_SSL_CRT_FILE, 'wt') as f:
-            f.write(certificate)
-        with open(NGINX_SSL_KEY_FILE, 'wt') as f:
-            f.write(private_key)
-        ssl = 'ssl'  # to be included in the listen directive
-        sslcerts = NGINX_SSL_CERTS
-    credentials = params.get('credentials') or {}
-    if credentials.get('identifier'):
-        extra_cache_key = "$http_authorization"
-    server_conf = Template(template_str).safe_substitute(port=port, serverport=serverport, ssl=ssl,
-                                                         sslcerts=sslcerts, extra_cache_key=extra_cache_key)
-    with open(file_path, mode='wt') as f:
-        f.write(server_conf)
-
-
-def start_nginx_server(port: int, params: Dict) -> subprocess.Popen:
-    create_nginx_server_conf(NGINX_SERVER_CONF_FILE, port, params)
-    nginx_global_directives = 'daemon off;'
-    global_directives_conf = params.get('nginx_global_directives')
-    if global_directives_conf:
-        nginx_global_directives = f'{nginx_global_directives} {global_directives_conf}'
-    directive_args = ['-g', nginx_global_directives]
-    # we first do a test that all config is good and log it
-    try:
-        nginx_test_command = ['nginx', '-T']
-        nginx_test_command.extend(directive_args)
-        test_output = subprocess.check_output(nginx_test_command, stderr=subprocess.STDOUT, text=True)
-        demisto.info(f'ngnix test passed. command: [{nginx_test_command}]')
-        demisto.debug(f'nginx test ouput:\n{test_output}')
-    except subprocess.CalledProcessError as err:
-        raise ValueError(f"Failed testing nginx conf. Return code: {err.returncode}. Output: {err.output}")
-    nginx_command = ['nginx']
-    nginx_command.extend(directive_args)
-    res = subprocess.Popen(nginx_command, text=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-    demisto.info(f'done starting nginx with pid: {res.pid}')
-    return res
-
-
-def nginx_log_process(nginx_process: subprocess.Popen):
-    try:
-        old_access = NGINX_SERVER_ACCESS_LOG + '.old'
-        old_error = NGINX_SERVER_ERROR_LOG + '.old'
-        log_access = False
-        log_error = False
-        # first check if one of the logs are missing. This may happen on rare ocations that we renamed and deleted the file
-        # before nginx completed the role over of the logs
-        missing_log = False
-        if not os.path.isfile(NGINX_SERVER_ACCESS_LOG):
-            missing_log = True
-            demisto.info(f'Missing access log: {NGINX_SERVER_ACCESS_LOG}. Will send roll signal to nginx.')
-        if not os.path.isfile(NGINX_SERVER_ERROR_LOG):
-            missing_log = True
-            demisto.info(f'Missing error log: {NGINX_SERVER_ERROR_LOG}. Will send roll signal to nginx.')
-        if missing_log:
-            nginx_process.send_signal(int(SIGUSR1))
-            demisto.info(f'Done sending roll signal to nginx (pid: {nginx_process.pid}) after detecting missing log file.'
-                         ' Will skip this iteration.')
-            return
-        if os.path.getsize(NGINX_SERVER_ACCESS_LOG):
-            log_access = True
-            os.rename(NGINX_SERVER_ACCESS_LOG, old_access)
-        if os.path.getsize(NGINX_SERVER_ERROR_LOG):
-            log_error = True
-            os.rename(NGINX_SERVER_ERROR_LOG, old_error)
-        if log_access or log_error:
-            # nginx rolls the logs when getting sigusr1
-            nginx_process.send_signal(int(SIGUSR1))
-            gevent.sleep(0.5)  # sleep 0.5 to let nginx complete the roll
-        if log_access:
-            with open(old_access, 'rt') as f:
-                start = 1
-                for lines in batch(f.readlines(), 100):
-                    end = start + len(lines)
-                    demisto.info(f'nginx access log ({start}-{end-1}): ' + ''.join(lines))
-                    start = end
-            os.unlink(old_access)
-        if log_error:
-            with open(old_error, 'rt') as f:
-                start = 1
-                for lines in batch(f.readlines(), 100):
-                    end = start + len(lines)
-                    demisto.error(f'nginx error log ({start}-{end-1}): ' + ''.join(lines))
-                    start = end
-            os.unlink(old_error)
-    except Exception as e:
-        demisto.error(f'Failed nginx log processing: {e}. Exception: {traceback.format_exc()}')
-
-
-def nginx_log_monitor_loop(nginx_process: subprocess.Popen):
-    """An endless loop to monitor nginx logs. Meant to be spawned as a greenlet.
-    Will run every minute and if needed will dump the nginx logs and roll them if needed.
-
-    Args:
-        nginx_process (subprocess.Popen): the nginx process. Will send signal for log rolling.
-    """
-    while True:
-        gevent.sleep(60)
-        nginx_log_process(nginx_process)
-
-
-def test_nginx_server(port: int, params: Dict):
-    nginx_process = start_nginx_server(port, params)
-    # let nginx startup
-    sleep(0.5)
-    try:
-        protocol = 'https' if params.get('key') else 'http'
-        res = requests.get(f'{protocol}://localhost:{port}/nginx-test',
-                           verify=False, proxies={"http": "", "https": ""})  # nosec guardrails-disable-line
-        res.raise_for_status()
-        welcome = 'Welcome to nginx'
-        if welcome not in res.text:
-            raise ValueError(f'Unexpected response from nginx-text (does not contain "{welcome}"): {res.text}')
-    finally:
-        try:
-            nginx_process.terminate()
-            nginx_process.wait(1.0)
-        except Exception as ex:
-            demisto.error(f'failed stoping test nginx process: {ex}')
-
-
-def run_long_running(params: Dict, is_test: bool = False):
-    """
-    Start the long running server
-    :param params: Demisto params
-    :param is_test: Indicates whether it's test-module run or regular run
-    :return: None
-    """
-    nginx_process = None
-    nginx_log_monitor = None
-    try:
-        nginx_port = get_params_port(params)
-        server_port = nginx_port + 1
-        # set our own log handlers
-        APP.logger.removeHandler(default_handler)  # pylint: disable=no-member
-        integration_logger = IntegrationLogger()
-        integration_logger.buffering = False
-        log_handler = DemistoHandler(integration_logger)
-        log_handler.setFormatter(
-            logging.Formatter("flask log: [%(asctime)s] %(levelname)s in %(module)s: %(message)s")
-        )
-        APP.logger.addHandler(log_handler)  # pylint: disable=no-member
-        demisto.debug('done setting demisto handler for logging')
-        server = WSGIServer(('0.0.0.0', server_port), APP, log=DEMISTO_LOGGER, error_log=ERROR_LOGGER)
-        if is_test:
-            test_nginx_server(nginx_port, params)
-            server_process = Process(target=server.serve_forever)
-            server_process.start()
-            time.sleep(2)
-            try:
-                server_process.terminate()
-                server_process.join(1.0)
-            except Exception as ex:
-                demisto.error(f'failed stoping test wsgi server process: {ex}')
-        else:
-            nginx_process = start_nginx_server(nginx_port, params)
-            nginx_log_monitor = gevent.spawn(nginx_log_monitor_loop, nginx_process)
-            demisto.updateModuleHealth('')
-            server.serve_forever()
-    except Exception as e:
-        error_message = str(e)
-        demisto.error(f'An error occurred: {error_message}. Exception: {traceback.format_exc()}')
-        demisto.updateModuleHealth(f'An error occurred: {error_message}')
-        raise ValueError(error_message)
-    finally:
-        if nginx_process:
-            try:
-                nginx_process.terminate()
-            except Exception as ex:
-                demisto.error(f'Failed stopping nginx process when exiting: {ex}')
-        if nginx_log_monitor:
-            try:
-                nginx_log_monitor.kill(timeout=1.0)
-            except Exception as ex:
-                demisto.error(f'Failed stopping nginx_log_monitor when exiting: {ex}')
-
-
 def update_edl_command(args: Dict, params: Dict):
     """
     Updates the EDL values and format on demand
@@ -849,6 +601,7 @@ def update_edl_command(args: Dict, params: Dict):
     if not on_demand:
         raise DemistoException(
             '"Update EDL On Demand" is off. If you want to update the EDL manually please toggle it on.')
+    use_legacy_query = params.get('use_legacy_query', False) or False
     limit = try_parse_integer(args.get('edl_size', params.get('edl_size')), EDL_LIMIT_ERR_MSG)
     print_indicators = args.get('print_indicators')
     query = args.get('query', '')
@@ -857,7 +610,7 @@ def update_edl_command(args: Dict, params: Dict):
     drop_invalids = args.get('drop_invalids', '').lower() == 'true'
     offset = try_parse_integer(args.get('offset', 0), EDL_OFFSET_ERR_MSG)
     request_args = RequestArguments(query, limit, offset, url_port_stripping, drop_invalids, collapse_ips)
-    indicators = refresh_edl_context(request_args, save_integration_context=True)
+    indicators = refresh_edl_context(request_args, save_integration_context=True, use_legacy_query=use_legacy_query)
     hr = tableToMarkdown('EDL was updated successfully with the following values', indicators,
                          ['Indicators']) if print_indicators == 'true' else 'EDL was updated successfully'
     return hr, {}, indicators
@@ -899,6 +652,9 @@ def main():
     except Exception as e:
         err_msg = f'Error in {INTEGRATION_NAME} Integration [{e}]'
         return_error(err_msg)
+
+
+from NGINXApiModule import *  # noqa: E402
 
 
 if __name__ in ['__main__', '__builtin__', 'builtins']:

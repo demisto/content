@@ -798,7 +798,7 @@ get details of the user.
 | Gra.Cases.ownerName | String | Owner Name. | 
 | Gra.Cases.riskDate | Date | Risk Risk. | 
 | Gra.Cases.status | String | Case Status . | 
-
+| Gra.Cases.anomalies | String | Anomalies . | 
 
 #### Command Example
 ```!gra-cases status="OPEN" page=1 max=25```

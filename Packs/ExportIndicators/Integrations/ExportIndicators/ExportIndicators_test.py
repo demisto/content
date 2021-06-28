@@ -4,6 +4,7 @@ import pytest
 import demistomock as demisto
 from netaddr import IPAddress
 
+
 IOC_RES_LEN = 38
 
 '''Tests'''
