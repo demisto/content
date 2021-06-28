@@ -832,14 +832,6 @@
             "timeout": 2400
         },
         {
-            "integrations": "QRadar",
-            "playbookID": "test playbook - QRadarCorrelations",
-            "timeout": 2000,
-            "fromversion": "5.0.0",
-            "toversion": "5.9.9",
-            "is_mockable": false
-        },
-        {
             "integrations": "QRadar_v2",
             "playbookID": "test playbook - QRadarCorrelations For V2",
             "timeout": 2600,
@@ -1500,6 +1492,11 @@
             "integrations": "ipinfo_v2",
             "playbookID": "IPInfo_v2Test",
             "fromversion": "5.5.0"
+        },
+        {
+            "integrations": "GoogleMaps",
+            "playbookID": "GoogleMapsTest",
+            "fromversion": "6.0.0"
         },
         {
             "playbookID": "VerifyHumanReadableFormat"
@@ -3372,6 +3369,12 @@
         {
             "integrations": "Proofpoint TAP v2",
             "playbookID": "ProofpointTAP-Test"
+        },
+        {
+            "integrations": "QualysV2",
+            "playbookID": "QualysVulnerabilityManagement-Test",
+            "fromversion": "5.5.0",
+            "timeout": 3000
         },
         {
             "integrations": "ThreatExchange v2",
