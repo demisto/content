@@ -651,12 +651,13 @@ def check_reputation_object(pymisp, value, dbot_type, malicious_tag_ids, suspici
                                   include_correlations=True, include_event_tags=True, enforce_warninglist=True,
                                   include_decay_score=True, includeSightings=True)
     indicator_type = DBOT_SCORE_TYPE_MAP[dbot_type]
-    if misp_response and misp_response.get('Attribute'):
+    is_indicator_found = misp_response and misp_response.get('Attribute')
+    if is_indicator_found:
         outputs, score = parse_response_reputation_command(copy.deepcopy(misp_response), malicious_tag_ids,
                                                            suspicious_tag_ids)
         dbot = Common.DBotScore(indicator=value, indicator_type=indicator_type,
                                 integration_name=INTEGRATION_NAME,
-                                score=score, reliability=reliability)
+                                score=score, reliability=reliability, malicious_description="Match found in MISP")
         indicator = get_dbot_indicator(dbot_type, dbot, value)
 
         attribute_highlights = reputation_command_to_human_readable(outputs, score)
@@ -669,10 +670,11 @@ def check_reputation_object(pymisp, value, dbot_type, malicious_tag_ids, suspici
                               readable_output=readable_output)
 
     dbot = Common.DBotScore(indicator=value, indicator_type=indicator_type, integration_name=INTEGRATION_NAME,
-                            score=Common.DBotScore.NONE, reliability=reliability)
+                            score=Common.DBotScore.NONE, reliability=reliability,
+                            malicious_description="No results were found in MISP")
     indicator = get_dbot_indicator(dbot_type, dbot, value)
     return CommandResults(indicator=indicator,
-                          readable_output=f"No events found in MISP for value: {value}")
+                          readable_output=f"No attributes found in MISP for value: {value}")
 
 
 def get_dbot_indicator(dbot_type, dbot_score, value):
