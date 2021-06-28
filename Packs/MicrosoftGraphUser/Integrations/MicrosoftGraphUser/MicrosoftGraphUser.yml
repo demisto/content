@@ -25,8 +25,10 @@ configuration:
   hidden: false
   name: auth_endpoint
   options:
-  - default (.com)
+  - Default (.com)
   - GCC High US (.us)
+  - GCC High Germany (.de)
+  - GCC High China (.cn)
   required: false
   type: 15
 - display: Use a self-deployed Azure application

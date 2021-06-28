@@ -26,14 +26,19 @@ REFRESH_TOKEN = 'refresh_token'  # guardrails-disable-line
 DEVICE_CODE = 'urn:ietf:params:oauth:grant-type:device_code'
 REGEX_SEARCH_URL = '(?P<url>https?://[^\s]+)'
 SESSION_STATE = 'session_state'
-AUTH_ENDPOINTS = {'default (.com)': 'com', 'GCC High US (.us)': 'us'}
+AUTH_ENDPOINTS = {
+    'Default (.com)': 'https://login.microsoftonline.com',
+    'GCC High US (.us)': 'https://login.microsoftonline.us',
+    'GCC High Germany (.de)': 'https://login.microsoftonline.de',
+    'GCC High China (.cn)': 'https://login.partner.microsoftonline.cn'
+}
 
 
 class MicrosoftClient(BaseClient):
     def __init__(self, tenant_id: str = '',
                  auth_id: str = '',
                  enc_key: str = '',
-                 token_retrieval_url: str = 'https://login.microsoftonline.{endpoint}/{tenant_id}/oauth2/v2.0/token',
+                 token_retrieval_url: str = '{endpoint}/{tenant_id}/oauth2/v2.0/token',
                  app_name: str = '',
                  refresh_token: str = '',
                  auth_code: str = '',
@@ -45,8 +50,8 @@ class MicrosoftClient(BaseClient):
                  resources: List[str] = None,
                  verify: bool = True,
                  self_deployed: bool = False,
-                 azure_ad_endpoint: str = 'https://login.microsoftonline.{endpoint}',
-                 auth_endpoint: str = 'default (.com)',
+                 azure_ad_endpoint: str = '{endpoint}',
+                 auth_endpoint: str = 'Default (.com)',
                  *args, **kwargs):
         """
         Microsoft Client class that implements logic to authenticate with oproxy or self deployed applications.

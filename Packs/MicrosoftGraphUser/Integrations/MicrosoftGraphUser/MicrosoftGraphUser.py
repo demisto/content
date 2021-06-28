@@ -376,7 +376,7 @@ def main():
     redirect_uri = params.get('redirect_uri', '')
     auth_code = params.get('auth_code', '')
     proxy = params.get('proxy', False)
-    auth_endpoint = params.get('auth_endpoint', 'default (.com)')
+    auth_endpoint = params.get('auth_endpoint', 'Default (.com)')
 
     commands = {
         'msgraph-user-test': test_function,
