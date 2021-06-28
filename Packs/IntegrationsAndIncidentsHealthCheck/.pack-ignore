@@ -91,3 +91,6 @@ ignore=IF100
 
 [file:README.md]
 ignore=RM106
+
+[file:RestartFailedTasks.py]
+ignore=E9003
