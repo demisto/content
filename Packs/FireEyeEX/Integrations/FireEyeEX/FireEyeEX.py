@@ -6,9 +6,9 @@ from CommonServerPython import *
 requests.packages.urllib3.disable_warnings()
 
 ''' CONSTANTS '''
-INTEGRATION_NAME = 'FireEye Central Management'
-INTEGRATION_COMMAND_NAME = 'fireeye-cm'
-INTEGRATION_CONTEXT_NAME = 'FireEyeCM'
+INTEGRATION_NAME = 'FireEye Email Security'
+INTEGRATION_COMMAND_NAME = 'fireeye-ex'
+INTEGRATION_CONTEXT_NAME = 'FireEyeEX'
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
 
 
@@ -92,7 +92,7 @@ def get_alerts(client: Client, args: Dict[str, Any]) -> CommandResults:
         md_ = f'No alerts with the given arguments were found.\n Arguments {str(request_params)}'
     else:
         alerts = alerts[:limit]
-        headers = ['id', 'occurred', 'product', 'name', 'malicious', 'severity', 'alertUrl']
+        headers = ['id', 'occurred', 'name', 'action', 'smtpMessage', 'src', 'dst', 'alertUrl']
         md_ = tableToMarkdown(name=f'{INTEGRATION_NAME} Alerts:', t=alerts, headers=headers, removeNull=True)
 
     return CommandResults(
@@ -107,11 +107,11 @@ def get_alerts(client: Client, args: Dict[str, Any]) -> CommandResults:
 @logger
 def get_alert_details(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
     alert_ids = argToList(args.get('alert_id'))
-    timeout = int(args.get('timeout', '120'))
+    timeout = int(args.get('timeout', '30'))
 
     command_results: List[CommandResults] = []
 
-    headers = ['id', 'occurred', 'product', 'name', 'malicious', 'action', 'src', 'dst', 'severity', 'alertUrl']
+    headers = ['id', 'occurred', 'name', 'action', 'smtpMessage', 'src', 'dst', 'alertUrl']
 
     for alert_id in alert_ids:
         raw_response = client.fe_client.get_alert_details_request(alert_id, timeout)
@@ -128,28 +128,6 @@ def get_alert_details(client: Client, args: Dict[str, Any]) -> List[CommandResul
             outputs_key_field='uuid',
             outputs=alert_details,
             raw_response=raw_response
-        ))
-
-    return command_results
-
-
-@logger
-def alert_acknowledge(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
-    uuids = argToList(args.get('uuid'))
-    command_results: List[CommandResults] = []
-
-    for uuid in uuids:
-        try:
-            client.fe_client.alert_acknowledge_request(uuid)
-            md_ = f'Alert {uuid} was acknowledged successfully.'
-        except Exception as err:
-            if 'Error in API call [404]' in str(err):
-                md_ = f'Alert {uuid} was not found or cannot update. It may have been acknowledged in the past.'
-            else:
-                raise
-
-        command_results.append(CommandResults(
-            readable_output=md_
         ))
 
     return command_results
@@ -190,32 +168,6 @@ def get_artifacts_metadata_by_uuid(client: Client, args: Dict[str, Any]) -> List
 
 
 @logger
-def get_events(client: Client, args: Dict[str, Any]) -> CommandResults:
-    duration = args.get('duration', '12_hours')
-    end_time = to_fe_datetime_converter(args.get('end_time', 'now'))
-    mvx_correlated_only = argToBoolean(args.get('mvx_correlated_only', 'false'))
-    limit = int(args.get('limit', '20'))
-
-    raw_response = client.fe_client.get_events_request(duration, end_time, mvx_correlated_only)
-
-    events = raw_response.get('events')
-    if not events:
-        md_ = 'No events in the given timeframe were found.'
-    else:
-        events = events[:limit]
-        headers = ['occurred', 'ruleName', 'severity', 'malicious', 'cveId', 'eventId', 'srcIp', 'dstIp']
-        md_ = tableToMarkdown(name=f'{INTEGRATION_NAME} Events:', t=events, headers=headers, removeNull=True)
-
-    return CommandResults(
-        readable_output=md_,
-        outputs_prefix=f'{INTEGRATION_CONTEXT_NAME}.Events',
-        outputs_key_field='eventId',
-        outputs=events,
-        raw_response=raw_response
-    )
-
-
-@logger
 def get_quarantined_emails(client: Client, args: Dict[str, Any]) -> CommandResults:
     start_time = to_fe_datetime_converter(args.get('start_time', '1 day'))
     end_time = to_fe_datetime_converter(args.get('end_time', 'now'))
@@ -243,10 +195,9 @@ def get_quarantined_emails(client: Client, args: Dict[str, Any]) -> CommandResul
 
 @logger
 def release_quarantined_emails(client: Client, args: Dict[str, Any]) -> CommandResults:
-    sensor_name = args.get('sensor_name', '')
     queue_ids = argToList(args.get('queue_ids', ''))
 
-    raw_response = client.fe_client.release_quarantined_emails_request(queue_ids, sensor_name)
+    raw_response = client.fe_client.release_quarantined_emails_request(queue_ids)
 
     if raw_response.text:  # returns 200 either way. if operation is successful than resp is empty
         raise DemistoException(raw_response.json())
@@ -260,10 +211,9 @@ def release_quarantined_emails(client: Client, args: Dict[str, Any]) -> CommandR
 
 @logger
 def delete_quarantined_emails(client: Client, args: Dict[str, Any]) -> CommandResults:
-    sensor_name = args.get('sensor_name', '')
     queue_ids = argToList(args.get('queue_ids', ''))
 
-    raw_response = client.fe_client.delete_quarantined_emails_request(queue_ids, sensor_name)
+    raw_response = client.fe_client.delete_quarantined_emails_request(queue_ids)
     if raw_response.text:  # returns 200 either way. if operation is successful than resp is empty
         raise DemistoException(raw_response.json())
     else:
@@ -277,11 +227,10 @@ def delete_quarantined_emails(client: Client, args: Dict[str, Any]) -> CommandRe
 
 @logger
 def download_quarantined_emails(client: Client, args: Dict[str, Any]):
-    sensor_name = args.get('sensor_name', '')
     queue_id = args.get('queue_id', '')
     timeout = int(args.get('timeout', '120'))
 
-    raw_response = client.fe_client.download_quarantined_emails_request(queue_id, timeout, sensor_name)
+    raw_response = client.fe_client.download_quarantined_emails_request(queue_id, timeout)
 
     demisto.results(fileResult(f'quarantined_email_{queue_id}.eml', data=raw_response, file_type=EntryType.FILE))
 
@@ -325,6 +274,188 @@ def get_reports(client: Client, args: Dict[str, Any]):
 
 
 @logger
+def list_allowedlist(client: Client, args: Dict[str, Any]) -> CommandResults:
+    type_ = args.get('type', '')
+    limit = int(args.get('limit', '20'))
+
+    raw_response = client.fe_client.list_allowedlist_request(type_)
+    allowed_list = []
+    if not raw_response:
+        md_ = f'No allowed lists with the given type {type_} were found.'
+    else:
+        allowed_list = raw_response[:limit]
+        md_ = tableToMarkdown(name=f'{INTEGRATION_NAME} Allowed lists. showing {limit} of {len(raw_response)}:',
+                              t=allowed_list, removeNull=True)
+
+    return CommandResults(
+        readable_output=md_,
+        outputs_prefix=f'{INTEGRATION_CONTEXT_NAME}.Allowedlists',
+        outputs_key_field='name',
+        outputs=allowed_list,
+        raw_response=raw_response
+    )
+
+
+@logger
+def create_allowedlist(client: Client, args: Dict[str, Any]) -> CommandResults:
+    type_ = args.get('type', '')
+    entry_value = args.get('entry_value', '')
+    matches = int(args.get('matches', '0'))
+
+    # check that the entry_value does not exist
+    current_allowed_list = client.fe_client.list_allowedlist_request(type_)
+    for entry in current_allowed_list:
+        if entry_value == entry.get('name'):
+            raise DemistoException(str(f'Cannot create the entry_value {entry_value} as it is already exist in the '
+                                       f'Allowedlist of type {type_}.'))
+
+    # gets 200 back without content if successful
+    client.fe_client.create_allowedlist_request(type_, entry_value, matches)
+
+    return CommandResults(
+        readable_output=f'Allowedlist entry {entry_value} of type {type_} was created.'
+    )
+
+
+@logger
+def update_allowedlist(client: Client, args: Dict[str, Any]) -> CommandResults:
+    type_ = args.get('type', '')
+    entry_value = args.get('entry_value', '')
+    matches = int(args.get('matches', '0'))
+
+    # check that the entry_value does exist
+    exist = False
+    current_allowed_list = client.fe_client.list_allowedlist_request(type_)
+    for entry in current_allowed_list:
+        if entry_value == entry.get('name'):
+            exist = True
+    if not exist:
+        raise DemistoException(str(f'Cannot update the entry_value {entry_value} as it does not exist in the '
+                                   f'Allowedlist of type {type_}.'))
+
+    # gets 200 back without content if successful
+    client.fe_client.update_allowedlist_request(type_, entry_value, matches)
+
+    return CommandResults(
+        readable_output=f'Allowedlist entry {entry_value} of type {type_} was updated.'
+    )
+
+
+@logger
+def delete_allowedlist(client: Client, args: Dict[str, Any]) -> CommandResults:
+    type_ = args.get('type', '')
+    entry_value = args.get('entry_value', '')
+
+    # check that the entry_value does exist
+    exist = False
+    current_allowed_list = client.fe_client.list_allowedlist_request(type_)
+    for entry in current_allowed_list:
+        if entry_value == entry.get('name'):
+            exist = True
+    if not exist:
+        raise DemistoException(str(f'Cannot delete the entry_value {entry_value} as it does not exist in the '
+                                   f'Allowedlist of type {type_}.'))
+
+    # gets 200 back without content if successful
+    client.fe_client.delete_allowedlist_request(type_, entry_value)
+
+    return CommandResults(
+        readable_output=f'Allowedlist entry {entry_value} of type {type_} was deleted.'
+    )
+
+
+@logger
+def list_blockedlist(client: Client, args: Dict[str, Any]) -> CommandResults:
+    type_ = args.get('type', '')
+    limit = int(args.get('limit', '20'))
+
+    raw_response = client.fe_client.list_blockedlist_request(type_)
+    blocked_list = []
+    if not raw_response:
+        md_ = f'No blocked lists with the given type {type_} were found.'
+    else:
+        blocked_list = raw_response[:limit]
+        md_ = tableToMarkdown(name=f'{INTEGRATION_NAME} Blocked lists. showing {limit} of {len(raw_response)}:',
+                              t=blocked_list, removeNull=True)
+
+    return CommandResults(
+        readable_output=md_,
+        outputs_prefix=f'{INTEGRATION_CONTEXT_NAME}.Blockedlists',
+        outputs_key_field='name',
+        outputs=blocked_list,
+        raw_response=raw_response
+    )
+
+
+@logger
+def create_blockedlist(client: Client, args: Dict[str, Any]) -> CommandResults:
+    type_ = args.get('type', '')
+    entry_value = args.get('entry_value', '')
+    matches = int(args.get('matches', '0'))
+
+    # check that the entry_value does not exist
+    current_blocked_list = client.fe_client.list_blockedlist_request(type_)
+    for entry in current_blocked_list:
+        if entry_value == entry.get('name'):
+            raise DemistoException(str(f'Cannot create the entry_value {entry_value} as it is already exist in the '
+                                       f'Blockedlist of type {type_}.'))
+
+    # gets 200 back without content if successful
+    client.fe_client.create_blockedlist_request(type_, entry_value, matches)
+
+    return CommandResults(
+        readable_output=f'Blockedlist entry {entry_value} of type {type_} was created.'
+    )
+
+
+@logger
+def update_blockedlist(client: Client, args: Dict[str, Any]) -> CommandResults:
+    type_ = args.get('type', '')
+    entry_value = args.get('entry_value', '')
+    matches = int(args.get('matches', '0'))
+
+    # check that the entry_value does exist
+    exist = False
+    current_allowed_list = client.fe_client.list_blockedlist_request(type_)
+    for entry in current_allowed_list:
+        if entry_value == entry.get('name'):
+            exist = True
+    if not exist:
+        raise DemistoException(str(f'Cannot update the entry_value {entry_value} as it does not exist in the '
+                                   f'Blockedlist of type {type_}.'))
+
+    # gets 200 back without content if successful
+    client.fe_client.update_blockedlist_request(type_, entry_value, matches)
+
+    return CommandResults(
+        readable_output=f'Blockedlist entry {entry_value} of type {type_} was updated.'
+    )
+
+
+@logger
+def delete_blockedlist(client: Client, args: Dict[str, Any]) -> CommandResults:
+    type_ = args.get('type', '')
+    entry_value = args.get('entry_value', '')
+
+    # check that the entry_value does exist
+    exist = False
+    current_allowed_list = client.fe_client.list_blockedlist_request(type_)
+    for entry in current_allowed_list:
+        if entry_value == entry.get('name'):
+            exist = True
+    if not exist:
+        raise DemistoException(str(f'Cannot delete the entry_value {entry_value} as it does not exist in the '
+                                   f'Blockedlist of type {type_}.'))
+
+    # gets 200 back without content if successful
+    client.fe_client.delete_blockedlist_request(type_, entry_value)
+
+    return CommandResults(
+        readable_output=f'Blockedlist entry {entry_value} of type {type_} was deleted.'
+    )
+
+
+@logger
 def fetch_incidents(client: Client, last_run: dict, first_fetch: str, max_fetch: int = 50,
                     info_level: str = 'concise') -> Tuple[dict, list]:
     if not last_run:  # if first time fetching
@@ -344,7 +475,7 @@ def fetch_incidents(client: Client, last_run: dict, first_fetch: str, max_fetch:
     all_alerts = raw_response.get('alert')
 
     if not all_alerts:
-        demisto.info(f'{INTEGRATION_NAME} no alerts were fetched at: {str(last_run)}')
+        demisto.info(f'{INTEGRATION_NAME} no alerts were fetched at: {str(next_run)}')
         # as no alerts occurred till now, update last_run time accordingly
         next_run['time'] = to_fe_datetime_converter('now')
         return next_run, []
@@ -392,7 +523,7 @@ def main() -> None:
     verify = not argToBoolean(params.get('insecure', 'false'))
     proxy = argToBoolean(params.get('proxy'))
 
-    # fetch params
+    # # fetch params
     max_fetch = int(params.get('max_fetch', '50'))
     first_fetch = params.get('first_fetch', '3 days').strip()
     info_level = params.get('info_level', 'concise')
@@ -405,15 +536,20 @@ def main() -> None:
         commands = {
             f'{INTEGRATION_COMMAND_NAME}-get-alerts': get_alerts,
             f'{INTEGRATION_COMMAND_NAME}-get-alert-details': get_alert_details,
-            f'{INTEGRATION_COMMAND_NAME}-alert-acknowledge': alert_acknowledge,
             f'{INTEGRATION_COMMAND_NAME}-get-artifacts-by-uuid': get_artifacts_by_uuid,
             f'{INTEGRATION_COMMAND_NAME}-get-artifacts-metadata-by-uuid': get_artifacts_metadata_by_uuid,
-            f'{INTEGRATION_COMMAND_NAME}-get-events': get_events,
             f'{INTEGRATION_COMMAND_NAME}-get-quarantined-emails': get_quarantined_emails,
             f'{INTEGRATION_COMMAND_NAME}-release-quarantined-emails': release_quarantined_emails,
             f'{INTEGRATION_COMMAND_NAME}-delete-quarantined-emails': delete_quarantined_emails,
             f'{INTEGRATION_COMMAND_NAME}-download-quarantined-emails': download_quarantined_emails,
-            f'{INTEGRATION_COMMAND_NAME}-get-reports': get_reports,
+            f'{INTEGRATION_COMMAND_NAME}-list-allowedlist': list_allowedlist,
+            f'{INTEGRATION_COMMAND_NAME}-create-allowedlist': create_allowedlist,
+            f'{INTEGRATION_COMMAND_NAME}-update-allowedlist': update_allowedlist,
+            f'{INTEGRATION_COMMAND_NAME}-delete-allowedlist': delete_allowedlist,
+            f'{INTEGRATION_COMMAND_NAME}-list-blockedlist': list_blockedlist,
+            f'{INTEGRATION_COMMAND_NAME}-create-blockedlist': create_blockedlist,
+            f'{INTEGRATION_COMMAND_NAME}-update-blockedlist': update_blockedlist,
+            f'{INTEGRATION_COMMAND_NAME}-delete-blocklist': delete_blockedlist,
         }
         if command == 'test-module':
             return_results(run_test_module(client))
