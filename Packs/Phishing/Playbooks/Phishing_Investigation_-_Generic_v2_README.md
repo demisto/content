@@ -24,7 +24,6 @@ These task have the following names:
   - Acknowledge incident was received (task #13)
   - Update the user that the reported email is safe (task #16)
   - Update the user that the reported email is malicious (task #17)
-- Optional - Configure the inputs of the `Search for email campaign` (task #102) if you set the playbook input `SearchEmailCampaigns` to True.
 
 ##### Best Practices & Suggestions
 - The email received in the designated phishing inbox should be an email **containing** the potential phishing email as a file attachment, so that the headers of the original suspected email are retained.
