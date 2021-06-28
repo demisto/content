@@ -88,3 +88,6 @@ ignore=IF100
 
 [file:incidentfield-failedincidentscreateddate.json]
 ignore=IF100
+
+[file:README.md]
+ignore=RM106
