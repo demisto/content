@@ -52,7 +52,7 @@ configuration:
   required: false
   type: 8
 - display: Incident Type
-  name: incident_type
+  name: incidentType
   required: false
   type: 13
 - display: Fetch incidents
