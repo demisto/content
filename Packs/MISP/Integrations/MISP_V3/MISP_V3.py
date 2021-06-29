@@ -1041,10 +1041,10 @@ def delete_event(demisto_args: dict):
         return_error(f'Event ID: {event_id} has not found in MISP: \nError message: {event}')
     else:
         human_readable = f'Event {event_id} has been deleted'
-        return CommandResults(readable_output=human_readable)
+        return CommandResults(readable_output=human_readable, raw_response=event)
 
 
-def add_tag(demisto_args: dict):
+def add_tag(demisto_args: dict, is_attribute=False):
     """
     Function will add tag to given UUID of event or attribute.
     """
@@ -1052,14 +1052,24 @@ def add_tag(demisto_args: dict):
     tag = demisto_args.get('tag')
 
     PYMISP.tag(uuid, tag)
-    event = PYMISP.search(uuid=uuid)
-    human_readable = f'Tag {tag} has been successfully added to event {uuid}'
+    if is_attribute:
+        response = PYMISP.search(uuid=uuid, controller='attributes')
+        human_readable = f'Tag {tag} has been successfully added to attribute {uuid}'
+        return CommandResults(
+            readable_output=human_readable,
+            outputs_prefix='MISP.Attribute',
+            outputs_key_field='ID',
+            outputs=build_attributes_search_response(response),
+        )
 
+    # this is event
+    response = PYMISP.search(uuid=uuid)
+    human_readable = f'Tag {tag} has been successfully added to event {uuid}'
     return CommandResults(
         readable_output=human_readable,
         outputs_prefix='MISP.Event',
         outputs_key_field='ID',
-        outputs=build_context(event),
+        outputs=build_events_search_response(response),
     )
 
 
@@ -1341,8 +1351,10 @@ def main():
             return_results(delete_event(args))
         elif command == 'misp-add-sighting':
             return_results(add_sighting(args))
-        elif command == 'misp-add-tag':
+        elif command == 'misp-add-tag-to-event':
             return_results(add_tag(args))
+        elif command == 'misp-add-tag-to-attribute':
+            return_results(add_tag(demisto_args=args, is_attribute=True))
         elif command == 'misp-add-events-from-feed':
             return_results(add_events_from_feed(demisto_args=args, use_ssl=verify, proxies=proxies))
         elif command == 'file':
