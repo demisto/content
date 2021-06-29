@@ -1201,7 +1201,7 @@ def add_domain_object(demisto_args: dict = {}):
     """Adds a domain object to MISP
     domain-ip description: https://www.misp-project.org/objects.html#_domain_ip
     """
-    args = ['text', 'creation_date', 'first_seen', 'last_seen']
+    text = demisto_args.get('text')
     event_id = demisto_args.get('event_id')
     domain = demisto_args.get('name')
     obj = MISPObject('domain-ip')
@@ -1209,10 +1209,8 @@ def add_domain_object(demisto_args: dict = {}):
     for ip in ips:
         obj.add_attribute('ip', value=ip)
     obj.add_attribute('domain', value=domain)
-    for arg in args:
-        value = demisto_args.get(arg)
-        if value:
-            obj.add_attribute(arg, value=value)
+    if text:
+        obj.add_attribute('text', value=text)
     return add_object(event_id, obj)
 
 

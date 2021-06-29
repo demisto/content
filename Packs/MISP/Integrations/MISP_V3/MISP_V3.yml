@@ -1751,28 +1751,10 @@ script:
       required: true
       secret: false
     - default: false
-      description: A list (array) or IP addresses resolved by DNS.
+      description: A comma sperated list of IP addresses resolved by DNS.
       isArray: true
       name: dns
       required: true
-      secret: false
-    - default: false
-      description: Date that the domain was created.
-      isArray: false
-      name: creation_date
-      required: false
-      secret: false
-    - default: false
-      description: 'Datetime that the domain was last seen, for example: `2019-02-03`.'
-      isArray: false
-      name: last_seen
-      required: false
-      secret: false
-    - default: false
-      description: 'Datetime that the domain was first seen, for example: `2019-02-03`.'
-      isArray: false
-      name: first_seen
-      required: false
       secret: false
     - default: false
       description: A description of the domain.
@@ -1781,7 +1763,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Adds a domain object.
+    description: Adds a domain object to MISP.
     execution: false
     name: misp-add-domain-object
     outputs:
