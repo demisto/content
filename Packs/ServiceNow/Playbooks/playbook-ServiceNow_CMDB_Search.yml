@@ -357,11 +357,5 @@ outputs:
   description: Discovered CI records
   type: unknown
 tests:
-- Create ServiceNow Ticket and State Polling Test
-- servicenow_test_v2
-- ServiceNow_OAuth_Test
-- ServiceNow_CMDB_Test
-- Create ServiceNow Ticket and Mirror Test
-- ServiceNow_CMDB_OAuth_Test
-- ServiceNow IAM - Test Playbook
+- No tests
 fromversion: 6.0.0
