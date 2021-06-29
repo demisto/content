@@ -42,36 +42,39 @@ class Client(BaseClient):
             publications = []
             if indicator:
                 published = email.utils.parsedate(indicator.published)
-                if published:
-                    published_iso = datetime.fromtimestamp(mktime(published)).isoformat()
-                    publications.append({
-                        'timestamp': indicator.get('published'),
-                        'link': indicator.get('link'),
-                        'source': self._base_url,
-                        'title': indicator.get('title')
-                    })
-                    text = self.get_url_content(indicator.get('link'))
-                    indicator_obj = {
-                        "type": 'Report',
-                        "value": indicator.get('title').replace(',', ''),  # Remove comma because the script of create
-                        # relationship includes that as a list of titles.
-                        "rawJSON": {'value': indicator, 'type': 'Report', "firstseenbysource": published_iso},
-                        "reliability": self.reliability,
-                        "fields": {
-                            'rawcontent': text,
-                            'publications': publications,
-                            'description': indicator.get('summary'),
-                            'tags': self.feed_tags,
-                        }
+                if not published:
+                    continue
+                published_iso = datetime.fromtimestamp(mktime(published)).isoformat()
+                publications.append({
+                    'timestamp': indicator.get('published'),
+                    'link': indicator.get('link'),
+                    'source': self._base_url,
+                    'title': indicator.get('title')
+                })
+                text = self.get_url_content(indicator.get('link'))
+                if not text:
+                    continue
+                indicator_obj = {
+                    "type": 'Report',
+                    "value": indicator.get('title').replace(',', ''),  # Remove comma because the script of create
+                    # relationship includes that as a list of titles.
+                    "rawJSON": {'value': indicator, 'type': 'Report', "firstseenbysource": published_iso},
+                    "reliability": self.reliability,
+                    "fields": {
+                        'rawcontent': text,
+                        'publications': publications,
+                        'description': indicator.get('summary'),
+                        'tags': self.feed_tags,
                     }
-                    if self.tlp_color:
-                        indicator_obj['fields']['trafficlightprotocol'] = self.tlp_color
+                }
+                if self.tlp_color:
+                    indicator_obj['fields']['trafficlightprotocol'] = self.tlp_color
 
-                parsed_indicators.append(indicator_obj)
+            parsed_indicators.append(indicator_obj)
 
         return parsed_indicators
 
-    def get_url_content(self, link: str):
+    def get_url_content(self, link: str) -> str:
         """Returns the link content only from the relevant tags (listed on HTML_TAGS). For better performance - if the
          extracted content is bigger than "content_max_size" we trim him"""
 
@@ -83,7 +86,11 @@ class Client(BaseClient):
             if tag.name in HTML_TAGS:
                 for string in tag.stripped_strings:
                     report_content += ' ' + string
-        encoded_content = report_content.encode('utf-8', errors='replace')
+        try:
+            encoded_content = report_content.encode('utf-8', errors='replace')
+        except Exception as err:
+            demisto.debug(f"Fail encoding the article content, skipping report {link}. \nError:\n{str(err)}")
+            return ""
         if len(encoded_content) > self.content_max_size:  # Ensure report_content does not exceed the
             # indicator size limit (~50KB)
             report_content = encoded_content[:self.content_max_size].decode('utf-8')
