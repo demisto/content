@@ -176,7 +176,7 @@ def circleci_artifacts_list_command(client: Client, args: Dict[str, Any]) -> Com
                                             limit)
 
     if artifact_suffix:
-        response = [artifact for artifact in response if artifact.get('path').endswith(artifact_suffix)]
+        response = [artifact for artifact in response if artifact.get('path', '').endswith(artifact_suffix)]
     else:
         response = response[:limit]
 

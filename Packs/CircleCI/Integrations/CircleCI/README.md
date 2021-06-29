@@ -1,5 +1,5 @@
 Get details of CircleCI workflows, including details of its last runs, jobs, and retrieve artifact of jobs.
-This integration was integrated and tested with version xx of CircleCI
+This integration was integrated and tested with version v2 of CircleCI
 ## Configure CircleCI on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
