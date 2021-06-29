@@ -40,6 +40,13 @@ script:
       name: file_path
       required: true
       secret: false
+    - default: false
+      defaultValue: '5'
+      description: Number of retries.
+      isArray: false
+      name: retries
+      required: false
+      secret: false
     deprecated: false
     description: Displays the contents of the specified remote file located in the War Room.
     execution: false
@@ -141,6 +148,13 @@ script:
       - 'false'
       required: false
       secret: false
+    - default: false
+      defaultValue: '5'
+      description: Number of retries.
+      isArray: false
+      name: retries
+      required: false
+      secret: false
     deprecated: false
     description: Updates internal list data with the contents of a remote file.
     execution: true
@@ -229,6 +243,13 @@ script:
       isArray: false
       name: file_path
       required: true
+      secret: false
+    - default: false
+      defaultValue: '5'
+      description: Number of retries.
+      isArray: false
+      name: retries
+      required: false
       secret: false
     deprecated: false
     description: Compares internal list and external file contents.
