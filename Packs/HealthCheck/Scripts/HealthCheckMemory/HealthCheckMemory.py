@@ -54,12 +54,16 @@ def analyzeData(res):
 
 
 # Main
+incident = demisto.incidents()[0]
+accountName = incident.get('account')
+accountName = f"acc_{accountName}/" if accountName != "" else ""
+
 args = demisto.args()
 isWidget = argToBoolean(args.get('isWidget', True))
 stats = demisto.executeCommand(
     "demisto-api-post",
     {
-        "uri": "/statistics/widgets/query",
+        "uri": f"{accountName}/statistics/widgets/query",
         "body": {
             "size": 1440,
             "dataType": "system",

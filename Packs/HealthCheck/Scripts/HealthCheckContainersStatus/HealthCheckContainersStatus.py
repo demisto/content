@@ -1,8 +1,11 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
+incident = demisto.incidents()[0]
+accountName = incident.get('account')
+accountName = f"acc_{accountName}/" if accountName != "" else ""
 
-containers = demisto.executeCommand("demisto-api-get", {"uri": "/health/containers"})[0]['Contents']
+containers = demisto.executeCommand("demisto-api-get", {"uri": f"{accountName}health/containers"})[0]['Contents']
 table = []
 
 table.append(containers['response'])

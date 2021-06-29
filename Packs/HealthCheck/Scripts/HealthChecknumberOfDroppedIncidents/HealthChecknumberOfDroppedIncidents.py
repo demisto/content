@@ -4,6 +4,10 @@ from CommonServerPython import *  # noqa: F401
 
 from datetime import datetime, timedelta
 
+incident = demisto.incidents()[0]
+accountName = incident.get('account')
+accountName = f"acc_{accountName}/" if accountName != "" else ""
+
 args = demisto.args()
 Thresholds = {
     "numberofincidentswithmorethan500entries": 300,
@@ -19,7 +23,7 @@ daysAgo = datetime.today() - timedelta(days=30)
 stats = demisto.executeCommand(
     "demisto-api-post",
     {
-        "uri": "/settings/audits",
+        "uri": f"{accountName}settings/audits",
         "body": {
             "size": 10000,
             "query": "type:notcreated and modified:>%s" % str(daysAgo.strftime("%Y-%m-%d"))

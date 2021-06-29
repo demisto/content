@@ -24,8 +24,10 @@ def analyzeData(res):
                            "resolution": f"{RESOLUTION[0]}"})
     return addActions
 
-
 incident = demisto.incidents()[0]
+accountName = incident.get('account')
+accountName = f"acc_{accountName}" if accountName != "" else ""
+
 args = demisto.args()
 isWidget = argToBoolean(args.get('isWidget', True))
 widgetType = "number" if isWidget is True else "line"
@@ -41,7 +43,7 @@ if incident['CustomFields']["serverconfiguration"]:
 stats = demisto.executeCommand(
     "demisto-api-post",
     {
-        "uri": "/statistics/widgets/query",
+        "uri": f"{accountName}/statistics/widgets/query",
         "body": {
             "size": 1440,
             "dataType": "system",

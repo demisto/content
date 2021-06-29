@@ -1,6 +1,9 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
+incident = demisto.incidents()[0]
+accountName = incident.get('account')
+accountName = f"acc_{accountName}/" if accountName != "" else ""
 
 args = demisto.args()
 Thresholds = {
@@ -24,7 +27,7 @@ body = {
 }
 
 indicators = demisto.executeCommand(
-    "demisto-api-post", {"uri": "indicators/search", "body": body})[0]["Contents"]["response"]["iocObjects"]
+    "demisto-api-post", {"uri": f"{accountName}indicators/search", "body": body})[0]["Contents"]["response"]["iocObjects"]
 res = []
 DESCRIPTION = [
     "The indicator: \"{}\" was found {} times, you may consider adding it to the exclusion list"

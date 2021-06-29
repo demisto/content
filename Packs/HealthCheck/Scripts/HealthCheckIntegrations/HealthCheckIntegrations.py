@@ -1,11 +1,14 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
+incident = demisto.incidents()[0]
+accountName = incident.get('account')
+accountName = f"acc_{accountName}" if accountName != "" else ""
 
 res = demisto.executeCommand(
     "demisto-api-post",
     {
-        "uri": "/settings/integration/search",
+        "uri": f"{accountName}/settings/integration/search",
         "body": {
             "size": 500
         },
