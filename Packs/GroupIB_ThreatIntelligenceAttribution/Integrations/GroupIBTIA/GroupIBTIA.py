@@ -930,8 +930,6 @@ def get_info_by_id_command(collection_name: str):
         if coll_name == "compromised/breached":
             if "updateTime" in result:
                 del result["updateTime"]
-
-        if coll_name == "compromised/breached":
             main_table_data, additional_tables = result, []
         else:
             main_table_data, additional_tables = transform_function(result)
