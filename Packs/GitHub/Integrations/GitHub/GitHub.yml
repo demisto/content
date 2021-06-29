@@ -3652,7 +3652,7 @@ script:
       description: Event label color
       type: String
     - contextPath: GitHub.IssueEvent.performed_via_github_app
-      description: Whether event was performed via GitHub application.
+      description: Indicates whether event was performed via GitHub application.
       type: Unknown
     - contextPath: GitHub.IssueEvent.assignee.login
       description: Assignee login username.

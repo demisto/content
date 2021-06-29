@@ -2135,7 +2135,7 @@ Returns events corresponding to the given issue.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| issue_number | The issue number to retrieve its events. | Required | 
+| issue_number | The issue number for which to retrieve events. | Required | 
 
 
 #### Context Output
@@ -2162,14 +2162,14 @@ Returns events corresponding to the given issue.
 | GitHub.IssueEvent.actor.events_url | String | Event actor events URL. | 
 | GitHub.IssueEvent.actor.received_events_url | String | Event actor received events URL. | 
 | GitHub.IssueEvent.actor.type | String | Event actor type. | 
-| GitHub.IssueEvent.actor.site_admin | Boolean | Whether event actor is site admin. | 
+| GitHub.IssueEvent.actor.site_admin | Boolean | Indicates whether the event actor is site admin. | 
 | GitHub.IssueEvent.event | String | Issue event type, e.g labeled, closed. | 
 | GitHub.IssueEvent.commit_id | Unknown | Event commit ID. | 
 | GitHub.IssueEvent.commit_url | Unknown | Event commit URL. | 
 | GitHub.IssueEvent.created_at | Date | Event created time. | 
 | GitHub.IssueEvent.label.name | String | Event label name. | 
 | GitHub.IssueEvent.label.color | String | Event label color | 
-| GitHub.IssueEvent.performed_via_github_app | Unknown | Whether event was performed via GitHub application. | 
+| GitHub.IssueEvent.performed_via_github_app | Unknown | Indicates whether event was performed via GitHub application. | 
 | GitHub.IssueEvent.assignee.login | String | Assignee login username. | 
 | GitHub.IssueEvent.assignee.id | Number | Assignee ID. | 
 | GitHub.IssueEvent.assignee.node_id | String | Assignee node ID. | 
@@ -2187,7 +2187,7 @@ Returns events corresponding to the given issue.
 | GitHub.IssueEvent.assignee.events_url | String | Assignee events URL. | 
 | GitHub.IssueEvent.assignee.received_events_url | String | Assignee received events URL. | 
 | GitHub.IssueEvent.assignee.type | String | Assignee type. | 
-| GitHub.IssueEvent.assignee.site_admin | Boolean | Whether assignee is site admin. | 
+| GitHub.IssueEvent.assignee.site_admin | Boolean | Indicates whether the assignee is site admin. | 
 | GitHub.IssueEvent.assigner.login | String | Assigner login username. | 
 | GitHub.IssueEvent.assigner.id | Number | Assigner ID. | 
 | GitHub.IssueEvent.assigner.node_id | String | Assigner node ID. | 
@@ -2205,7 +2205,7 @@ Returns events corresponding to the given issue.
 | GitHub.IssueEvent.assigner.events_url | String | Assigner events URL. | 
 | GitHub.IssueEvent.assigner.received_events_url | String | Assigner received events URL. | 
 | GitHub.IssueEvent.assigner.type | String | Assigner type. | 
-| GitHub.IssueEvent.assigner.site_admin | Boolean | Whether assigner is site admin. | 
+| GitHub.IssueEvent.assigner.site_admin | Boolean | Indicates whether the assignee is site admin. | 
 
 
 #### Command Example
