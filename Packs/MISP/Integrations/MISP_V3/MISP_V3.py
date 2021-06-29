@@ -1164,7 +1164,6 @@ def add_object(event_id: str, obj: MISPObject):
     Args:
         obj: object to add to MISP
         event_id: ID of event
-        pymisp:
     """
     response = PYMISP.add_object(event_id, misp_object=obj)
     if 'errors' in response:
@@ -1190,7 +1189,7 @@ def add_object(event_id: str, obj: MISPObject):
     )
 
 
-def add_email_object(demisto_args: dict = {}):
+def add_file_object(demisto_args: dict = {}):
     entry_id = demisto_args.get('entry_id')
     event_id = demisto_args.get('event_id')
     email_path = demisto.getFilePath(entry_id).get('path')
@@ -1373,9 +1372,8 @@ def main():
         elif command == 'email':
             return_results(generic_reputation_command(args, 'email', 'EMAIL', malicious_tag_ids, suspicious_tag_ids,
                                                       reliability))
-        #  Object commands
-        elif command == 'misp-add-email-object':
-            return_results(add_email_object(args))
+        elif command == 'misp-add-file-object':
+            return_results(add_file_object(args))
         elif command == 'misp-add-domain-object':
             return_results(add_domain_object(args))
         elif command == 'misp-add-url-object':
