@@ -1590,7 +1590,7 @@ script:
   subtype: python2
   type: python
 tests:
-- test_Qradar
+- No test
 fromversion: 5.5.0
 defaultclassifier: QRadar
 defaultmapperin: QRadar-mapper
