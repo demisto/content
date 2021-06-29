@@ -3,13 +3,11 @@ import subprocess
 import tempfile
 from urllib.parse import urlparse, urlunparse
 
-from CommonServerUserPython import *
-
 from CommonServerPython import *
 
 ''' GLOBALS '''
 
-AUTHENTICATION: Union[str, Dict[Any, Any]] = {}
+AUTHENTICATION: Dict[Any, Any] = {}
 HOSTNAME = ''
 USERNAME = ''
 PORT = ''
@@ -22,16 +20,16 @@ CERTIFICATE_FILE = tempfile.NamedTemporaryFile(delete=False, mode='w')
 def initialize_instance(params: Dict[str, str]):
     global AUTHENTICATION, HOSTNAME, USERNAME, PORT, SSH_EXTRA_PARAMS, SCP_EXTRA_PARAMS, DOCUMENT_ROOT, CERTIFICATE_FILE
 
-    AUTHENTICATION = params.get('Authentication', {})
+    AUTHENTICATION = params.get('Authentication', {})  # type: ignore
 
-    HOSTNAME = str(params.get('hostname', ''))
-    USERNAME = str(AUTHENTICATION.get('identifier', ''))
+    HOSTNAME = str(params.get('hostname', ''))  # type: ignore
+    USERNAME = str(AUTHENTICATION.get('identifier', ''))  # type: ignore
     PORT = str(params.get('port')) if params.get('port', '') and len(params.get('port')) > 0 else ''  # type: ignore
 
-    SSH_EXTRA_PARAMS = params.get('ssh_extra_params').split() if params.get(
-        'ssh_extra_params') else None  # type: ignore
-    SCP_EXTRA_PARAMS = params.get('scp_extra_params').split() if params.get(
-        'scp_extra_params') else None  # type: ignore
+    SSH_EXTRA_PARAMS = params.get('ssh_extra_params').split() if params.get(  # type: ignore
+        'ssh_extra_params') else None
+    SCP_EXTRA_PARAMS = params.get('scp_extra_params').split() if params.get(  # type: ignore
+        'scp_extra_params') else None
     DOCUMENT_ROOT = f'/{params.get("document_root")}' if params.get('document_root') else ''
 
     create_certificate_file(AUTHENTICATION)
@@ -76,8 +74,8 @@ def ssh_execute(command: str):
             ['ssh', '-o', 'StrictHostKeyChecking=no', '-i', CERTIFICATE_FILE.name, '-p', PORT,
              USERNAME + '@' + HOSTNAME, command], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
     elif SSH_EXTRA_PARAMS:
-        param_list = ['ssh', '-o', 'StrictHostKeyChecking=no', '-i', CERTIFICATE_FILE.name] + SSH_EXTRA_PARAMS + [
-            USERNAME + '@' + HOSTNAME, command]  # type: ignore
+        param_list = ['ssh', '-o', 'StrictHostKeyChecking=no', '-i', CERTIFICATE_FILE.name] + \
+                     SSH_EXTRA_PARAMS + [USERNAME + '@' + HOSTNAME, command]  # type: ignore
         result = subprocess.run(param_list, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
     else:
         result = subprocess.run(
@@ -109,8 +107,8 @@ def ssh_execute(command: str):
 
 def scp_execute(file_name: str, file_path: str):
     if SCP_EXTRA_PARAMS:
-        param_list = ['scp', '-o', 'StrictHostKeyChecking=no', '-i', CERTIFICATE_FILE.name] + SCP_EXTRA_PARAMS + [
-            file_name, USERNAME + '@' + HOSTNAME + ':' + f'\'{file_path}\'']  # type: ignore
+        param_list = ['scp', '-o', 'StrictHostKeyChecking=no', '-i', CERTIFICATE_FILE.name] + \
+                     SCP_EXTRA_PARAMS + [file_name, f'{USERNAME}@{HOSTNAME}:\'{file_path}\'']  # type: ignore
         result = subprocess.run(param_list, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
     else:
         param_list = ['scp', '-o', 'StrictHostKeyChecking=no', '-i', CERTIFICATE_FILE.name, file_name,
