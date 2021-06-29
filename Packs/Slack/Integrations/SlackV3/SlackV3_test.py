@@ -1738,7 +1738,7 @@ async def test_handle_dm_empty_message(mocker):
     # Arrange
     await handle_dm(user, 'wazup', socket_client)
 
-    calls = slack_sdk.WebClient.api_call.call_args_list
+    calls = socket_client.web_client.api_call.call_args_list
     chat_call = [c for c in calls if c[0][0] == 'chat.postMessage']
     message_args = chat_call[0][1]['json']
 
@@ -1979,16 +1979,17 @@ async def test_get_user_by_id_async_user_doesnt_exist(mocker):
     mocker.patch.object(demisto, 'getIntegrationContext', side_effect=get_integration_context)
     mocker.patch.object(demisto, 'setIntegrationContext', side_effect=set_integration_context)
     mocker.patch.object(demisto, 'setIntegrationContext')
-    mocker.patch.object(slack_sdk.WebClient, 'api_call', side_effect=api_call)
+    socket_client = AsyncMock()
+    mocker.patch.object(socket_client.web_client, 'api_call', side_effect=api_call)
 
     user_id = 'XXXXXXX'
 
     # Arrange
-    user = await get_user_by_id_async(slack_sdk.WebClient, user_id)
+    user = await get_user_by_id_async(socket_client, user_id)
 
     # Assert
 
-    assert slack_sdk.WebClient.api_call.call_count == 1
+    assert socket_client.web_client.api_call.call_count == 1
     assert demisto.setIntegrationContext.call_count == 1
     assert user['name'] == 'spengler'
 
@@ -3326,7 +3327,7 @@ def test_invite_users_no_channel_doesnt_exist(mocker):
     assert SlackV3.get_conversation_by_name.call_count == 0
     assert SlackV3.invite_users_to_conversation.call_count == 0
     assert err_msg == 'Channel was not found - Either the Slack app is not a member of the channel, ' \
-                      'or the slack app does not have permission to find the channel..'
+                      'or the slack app does not have permission to find the channel.'
 
 
 def test_kick_users(mocker):
@@ -3408,7 +3409,7 @@ def test_kick_users_no_channel_doesnt_exist(mocker):
     assert SlackV3.get_conversation_by_name.call_count == 0
     assert SlackV3.invite_users_to_conversation.call_count == 0
     assert err_msg == 'Channel was not found - Either the Slack app is not a member of the channel, ' \
-                      'or the slack app does not have permission to find the channel..'
+                      'or the slack app does not have permission to find the channel.'
 
 
 def test_rename_channel(mocker):
@@ -3507,7 +3508,8 @@ def test_rename_no_args_no_investigation(mocker):
 
     # Assert
     assert SlackV3.get_conversation_by_name.call_count == 0
-    assert err_msg == 'Channel not found - the Demisto app needs to be a member of the channel in order to look it up.'
+    assert err_msg == 'Channel was not found - Either the Slack app is not a member of the channel, ' \
+                      'or the slack app does not have permission to find the channel.'
 
 
 def test_get_user(mocker):
@@ -3678,11 +3680,12 @@ async def test_message_setting_name_and_icon_async(mocker):
 
     init_globals()
 
-    mocker.patch.object(slack_sdk.WebClient, 'api_call', side_effect=api_call)
+    socket_client = AsyncMock()
+    mocker.patch.object(socket_client.web_client, 'api_call', side_effect=api_call)
 
     # Arrange
-    await send_slack_request_async(slack_sdk.WebClient, 'chat.postMessage', body={'channel': 'c', 'text': 't'})
-    send_args = slack_sdk.WebClient.api_call.call_args[1]
+    await send_slack_request_async(socket_client, 'chat.postMessage', body={'channel': 'c', 'text': 't'})
+    send_args = socket_client.web_client.api_call.call_args[1]
 
     # Assert
     assert 'username' in send_args['json']
@@ -3701,11 +3704,12 @@ async def test_message_not_setting_name_and_icon_async(mocker):
 
     init_globals()
 
-    mocker.patch.object(slack_sdk.WebClient, 'api_call', side_effect=api_call)
+    socket_client = AsyncMock()
+    mocker.patch.object(socket_client.web_client, 'api_call', side_effect=api_call)
 
     # Arrange
-    await send_slack_request_async(slack_sdk.WebClient, 'conversations.setTopic', body={'channel': 'c', 'topic': 't'})
-    send_args = slack_sdk.WebClient.api_call.call_args[1]
+    await send_slack_request_async(socket_client, 'conversations.setTopic', body={'channel': 'c', 'topic': 't'})
+    send_args = socket_client.web_client.api_call.call_args[1]
 
     # Assert
     assert 'username' not in send_args['json']
