@@ -61,7 +61,7 @@ class Client(BaseClient):
                     "rawJSON": {'value': indicator, 'type': 'Report', "firstseenbysource": published_iso},
                     "reliability": self.reliability,
                     "fields": {
-                        'rawcontent': text,
+                        'rssrawcontent': text,
                         'publications': publications,
                         'description': indicator.get('summary'),
                         'tags': self.feed_tags,
@@ -114,7 +114,8 @@ def get_indicators(client: Client, indicators: list, args: dict) -> CommandResul
         article_title = indicator.get('value', '')
         article_field_hr = article_title
         if link:
-            article_field_hr = f"[{article_title}]({link})"  # if there is a link to the article, we want the article's title to be a link.
+            article_field_hr = f"[{article_title}]({link})"  # if there is a link to the article, we want the
+            # article's title to be a link.
         parsed_for_hr.append({'Article': article_field_hr,
                               'Type': indicator.get('type')})
     headers = ['Article', 'Type']
