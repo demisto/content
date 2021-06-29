@@ -15,7 +15,7 @@ SSH_EXTRA_PARAMS = ''
 SCP_EXTRA_PARAMS = ''
 DOCUMENT_ROOT = ''
 CERTIFICATE_FILE = tempfile.NamedTemporaryFile(delete=False, mode='w')
-
+INTEGRATION_COMMAND_NAME = 'pan-os-edl'
 
 def initialize_instance(params: Dict[str, str]) -> None:
     global AUTHENTICATION, HOSTNAME, USERNAME, PORT, SSH_EXTRA_PARAMS, SCP_EXTRA_PARAMS, DOCUMENT_ROOT, CERTIFICATE_FILE
@@ -199,8 +199,9 @@ def edl_get_external_file_command(args: dict):
         file_path = os.path.join(DOCUMENT_ROOT, file_path)
 
     result = edl_get_external_file(file_path, retries)
+    sorted_list = sorted(result.split('\n'))
 
-    md = tableToMarkdown('File Content:', result, headers=['List'])
+    md = tableToMarkdown('File Content:', sorted_list, headers=['List'])
     demisto.results({
         'ContentsFormat': formats['markdown'],
         'Type': entryTypes['note'],
@@ -222,8 +223,9 @@ def edl_search_external_file_command(args: dict):
     search_string: str = str(args.get('search_string', ''))
 
     result = edl_search_external_file(file_path, search_string)
+    sorted_list = sorted(result.split('\n'))
 
-    md = tableToMarkdown('Search Results', result, headers=['Result'])
+    md = tableToMarkdown(f'Search Results for {search_string}:', sorted_list, headers=['Result'])
 
     demisto.results({
         'ContentsFormat': formats['markdown'],
@@ -234,7 +236,7 @@ def edl_search_external_file_command(args: dict):
 
 def edl_update_external_file(file_path: str, list_name: str, verbose: bool):
     dict_of_lists = demisto.getIntegrationContext()
-    list_data = dict_of_lists.get(list_name)
+    list_data = sorted(dict_of_lists.get(list_name))
 
     file_name = file_path.rsplit('/', 1)[-1]
     if not file_name.endswith('.txt'):
@@ -310,9 +312,10 @@ def edl_update_internal_list(list_name: str, list_items: list, add: bool, verbos
             md = 'List is empty, deleted from instance context.'
         else:
             # update list in instance context, can happen upon removal or addition of objects
-            dict_of_lists.update({list_name: list_items})
+            sorted_list = sorted(list_items)
+            dict_of_lists.update({list_name: sorted_list})
             if verbose:
-                md = tableToMarkdown('List items:', list_items, headers=[list_name])
+                md = tableToMarkdown('List items:', sorted_list, headers=[list_name])
             else:
                 md = 'Instance context updated successfully.'
 
@@ -371,23 +374,25 @@ def edl_update_from_external_file(list_name: str, file_path: str, type_: str, re
     dict_of_lists = demisto.getIntegrationContext()
     list_data = dict_of_lists.get(list_name, None)
     file_data = edl_get_external_file(file_path, retries)
+    sorted_file_data = sorted(file_data.split('\n'))
 
     if list_data:
         set_internal = set(list_data)
-        set_external = set(file_data.split('\n'))
+        set_external = set(sorted_file_data)
         set_external.discard('')
         if type_ == 'merge':
             unified = set_internal.union(set_external)
             list_data_new = list(unified)
         else:  # type_ == 'override'
             list_data_new = list(set_external)
-        dict_of_lists.update({list_name: list_data_new})
+        sorted_list_data_new = sorted(list_data_new)
+        dict_of_lists.update({list_name: sorted_list_data_new})
         demisto.setIntegrationContext(dict_of_lists)
-        return list_data_new
+        return sorted_list_data_new
     else:
-        dict_of_lists.update({list_name: file_data})
+        dict_of_lists.update({list_name: sorted_file_data})
         demisto.setIntegrationContext(dict_of_lists)
-        return file_data
+        return sorted_file_data
 
 
 def edl_update_from_external_file_command(args: dict):
@@ -442,7 +447,7 @@ def edl_list_internal_lists_command():
     List all instance context lists
     """
     dict_of_lists = demisto.getIntegrationContext()
-    list_names = list(dict_of_lists.keys())
+    list_names = sorted(list(dict_of_lists.keys()))
 
     md = tableToMarkdown('Instance context Lists:', list_names, headers=['List names'])
 
@@ -466,30 +471,30 @@ def edl_search_internal_list_command(args: dict):
     if not list_data:
         demisto.results({
             'Type': 11,
-            'Contents': 'List was not found in instance context.',
+            'Contents': f'List {list_name} was not found in the instance context.',
             'ContentsFormat': formats['text']
         })
     elif search_string in list_data:
         demisto.results({
             'Type': entryTypes['note'],
-            'Contents': 'Search string is in internal list.',
+            'Contents': f'Search string {search_string} is in the internal list {list_name}.',
             'ContentsFormat': formats['text']
         })
     else:
         demisto.results({
             'Type': 11,
-            'Contents': 'Search string was not found in instance context list.',
+            'Contents': f'Search string {search_string} was not found in the instance context list {list_name}.',
             'ContentsFormat': formats['text']
         })
 
 
 def edl_print_internal_list_command(args: dict):
     """
-    Print to the warroom instance context list
+    Print to the war room instance context list
     """
     list_name = args.get('list_name')
     dict_of_lists = demisto.getIntegrationContext()
-    list_data = dict_of_lists.get(list_name, None)
+    list_data = sorted(dict_of_lists.get(list_name, None))
 
     if not list_data:
         demisto.results({
@@ -511,10 +516,10 @@ def edl_dump_internal_list_command(args: dict):
     Dumps an instance context list to either a file or incident context
     """
     destination = args.get('destination')
-    list_name = args.get('list_name')
+    list_name = str(args.get('list_name', ''))
 
     dict_of_lists = demisto.getIntegrationContext()
-    list_data = dict_of_lists.get(list_name, None)
+    list_data = sorted(dict_of_lists.get(list_name, []))
     if not list_data:
         demisto.results({
             'Type': 11,
@@ -647,54 +652,34 @@ def main() -> None:
     command = demisto.command()
     args = demisto.args()
     params = demisto.params()
-    initialize_instance(params=params)
     LOG(f'command is {command}')
+    commands = {
+        f'{INTEGRATION_COMMAND_NAME}-get-external-file': edl_get_external_file_command,
+        f'{INTEGRATION_COMMAND_NAME}-search-external-file': edl_search_external_file_command,
+        f'{INTEGRATION_COMMAND_NAME}-update-internal-list': edl_update_internal_list_command,
+        f'{INTEGRATION_COMMAND_NAME}-update-external-file': edl_update_external_file_command,
+        f'{INTEGRATION_COMMAND_NAME}-update': edl_update,
+        f'{INTEGRATION_COMMAND_NAME}-update-from-external-file': edl_update_from_external_file_command,
+        f'{INTEGRATION_COMMAND_NAME}-delete-external-file': edl_delete_external_file_command,
+        f'{INTEGRATION_COMMAND_NAME}-search-internal-list': edl_search_internal_list_command,
+        f'{INTEGRATION_COMMAND_NAME}-print-internal-lis': edl_print_internal_list_command,
+        f'{INTEGRATION_COMMAND_NAME}-dump-internal-list': edl_dump_internal_list_command,
+        f'{INTEGRATION_COMMAND_NAME}-compare': edl_compare_command,
+        f'{INTEGRATION_COMMAND_NAME}-get-external-file-metadata': edl_get_external_file_metadata_command,
+    }
     try:
+        initialize_instance(params=params)
         if command == 'test-module':
             ssh_execute('echo 1')
-            demisto.results('ok')
-
-        elif command == 'pan-os-edl-get-external-file':
-            edl_get_external_file_command(args)
-
-        elif command == 'pan-os-edl-search-external-file':
-            edl_search_external_file_command(args)
-
-        elif command == 'pan-os-edl-update-internal-list':
-            edl_update_internal_list_command(args)
-
-        elif command == 'pan-os-edl-update-external-file':
-            edl_update_external_file_command(args)
-
-        elif command == 'pan-os-edl-update':
-            edl_update(args)
-
-        elif command == 'pan-os-edl-update-from-external-file':
-            edl_update_from_external_file_command(args)
-
-        elif command == 'pan-os-edl-delete-external-file':
-            edl_delete_external_file_command(args)
+            return_results('ok')
 
         elif command == 'pan-os-edl-list-internal-lists':
             edl_list_internal_lists_command()
 
-        elif command == 'pan-os-edl-search-internal-list':
-            edl_search_internal_list_command(args)
-
-        elif command == 'pan-os-edl-print-internal-list':
-            edl_print_internal_list_command(args)
-
-        elif command == 'pan-os-edl-dump-internal-list':
-            edl_dump_internal_list_command(args)
-
-        elif command == 'pan-os-edl-compare':
-            edl_compare_command(args)
-
-        elif command == 'pan-os-edl-get-external-file-metadata':
-            edl_get_external_file_metadata_command(args)
-
+        elif command in commands:
+            commands[command](args)
         else:
-            raise NotImplementedError(f'Command "{command}" is not implemented.')
+            raise NotImplementedError(f'Command "{command}" is not implemented in {INTEGRATION_COMMAND_NAME}.')
 
     except Exception as err:
         if str(err).find('warning') != -1:
