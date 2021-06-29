@@ -17,7 +17,7 @@ DOCUMENT_ROOT = ''
 CERTIFICATE_FILE = tempfile.NamedTemporaryFile(delete=False, mode='w')
 
 
-def initialize_instance(params: Dict[str, str]):
+def initialize_instance(params: Dict[str, str]) -> None:
     global AUTHENTICATION, HOSTNAME, USERNAME, PORT, SSH_EXTRA_PARAMS, SCP_EXTRA_PARAMS, DOCUMENT_ROOT, CERTIFICATE_FILE
 
     AUTHENTICATION = params.get('Authentication', {})  # type: ignore
@@ -35,7 +35,7 @@ def initialize_instance(params: Dict[str, str]):
     create_certificate_file(AUTHENTICATION)
 
 
-def create_certificate_file(authentication: dict):
+def create_certificate_file(authentication: dict) -> None:
     password = authentication.get('password', None)
     certificate = None
     if 'credentials' in authentication and 'sshkey' in authentication['credentials'] and len(
@@ -170,7 +170,7 @@ def parse_items(items: str) -> List[str]:
 ''' COMMANDS '''
 
 
-def edl_get_external_file(file_path: str, retries: int = 1):
+def edl_get_external_file(file_path: str, retries: int = 1) -> str:
     command = f'cat \'{file_path}\''
     while retries > 0:
         result = ssh_execute(command)
@@ -367,7 +367,7 @@ def edl_update(args: dict):
     edl_update_external_file(file_path, list_name, verbose)
 
 
-def edl_update_from_external_file(list_name: str, file_path: str, type_: str, retries: int):
+def edl_update_from_external_file(list_name: str, file_path: str, type_: str, retries: int) -> str:
     dict_of_lists = demisto.getIntegrationContext()
     list_data = dict_of_lists.get(list_name, None)
     file_data = edl_get_external_file(file_path, retries)
@@ -416,7 +416,7 @@ def edl_update_from_external_file_command(args: dict):
     })
 
 
-def edl_delete_external_file(file_path: str):
+def edl_delete_external_file(file_path: str) -> str:
     ssh_execute(f'rm -f \'{file_path}\'')
     return 'File deleted successfully'
 
@@ -643,7 +643,7 @@ def edl_get_external_file_metadata_command(args: dict):
 ''' EXECUTION '''
 
 
-def main():
+def main() -> None:
     command = demisto.command()
     args = demisto.args()
     params = demisto.params()
@@ -704,9 +704,9 @@ def main():
             return_error(str(err), err)
 
     finally:
-        shutil.rmtree(CERTIFICATE_FILE.name, ignore_errors=True)  # type: ignore
+        shutil.rmtree(CERTIFICATE_FILE.name, ignore_errors=True)
         LOG.print_log()
 
 
-if __name__ == "__builtin__" or __name__ == "builtins":
+if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()
