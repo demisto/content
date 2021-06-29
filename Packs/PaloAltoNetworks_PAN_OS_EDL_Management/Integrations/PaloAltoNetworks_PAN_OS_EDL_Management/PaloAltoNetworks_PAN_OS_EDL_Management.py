@@ -9,14 +9,14 @@ from CommonServerPython import *
 
 ''' GLOBALS '''
 
-AUTHENTICATION = None
-HOSTNAME = None
-USERNAME = None
-PORT = None
-SSH_EXTRA_PARAMS = None
-SCP_EXTRA_PARAMS = None
-DOCUMENT_ROOT = None
-CERTIFICATE_FILE = None
+AUTHENTICATION: Union[str, Dict[Any, Any]] = {}
+HOSTNAME = ''
+USERNAME = ''
+PORT = ''
+SSH_EXTRA_PARAMS = ''
+SCP_EXTRA_PARAMS = ''
+DOCUMENT_ROOT = ''
+CERTIFICATE_FILE = tempfile.NamedTemporaryFile(delete=False, mode='w')
 
 
 def initialize_instance(params: Dict[str, str]):
@@ -24,15 +24,17 @@ def initialize_instance(params: Dict[str, str]):
 
     AUTHENTICATION = params.get('Authentication', {})
 
-    HOSTNAME = params.get('hostname')
-    USERNAME = AUTHENTICATION.get('identifier')
-    PORT = str(params.get('port')) if params.get('port', None) and len(params.get('port')) > 0 else None
+    HOSTNAME = str(params.get('hostname', ''))
+    USERNAME = str(AUTHENTICATION.get('identifier', ''))
+    PORT = str(params.get('port')) if params.get('port', '') and len(params.get('port')) > 0 else ''  # type: ignore
 
-    SSH_EXTRA_PARAMS = params.get('ssh_extra_params').split() if params.get('ssh_extra_params', None) else None
-    SCP_EXTRA_PARAMS = params.get('scp_extra_params').split() if params.get('scp_extra_params', None) else None
-    DOCUMENT_ROOT = '/' + params.get('document_root') if params.get('document_root', None) else None
+    SSH_EXTRA_PARAMS = params.get('ssh_extra_params').split() if params.get(
+        'ssh_extra_params') else None  # type: ignore
+    SCP_EXTRA_PARAMS = params.get('scp_extra_params').split() if params.get(
+        'scp_extra_params') else None  # type: ignore
+    DOCUMENT_ROOT = f'/{params.get("document_root")}' if params.get('document_root') else ''
 
-    CERTIFICATE_FILE = create_certificate_file(AUTHENTICATION)
+    create_certificate_file(AUTHENTICATION)
 
 
 def create_certificate_file(authentication: dict):
@@ -42,11 +44,10 @@ def create_certificate_file(authentication: dict):
             authentication['credentials']['sshkey']) > 0:
         certificate = authentication.get('credentials', None).get('sshkey')
 
-    cert_file = tempfile.NamedTemporaryFile(delete=False, mode='w')
     if certificate:
-        cert_file.write(certificate)
-        cert_file.flush()
-        os.chmod(cert_file.name, 0o400)
+        CERTIFICATE_FILE.write(certificate)
+        CERTIFICATE_FILE.flush()
+        os.chmod(CERTIFICATE_FILE.name, 0o400)
     elif password:
         # check that password field holds a certificate and not a password
         if password.find('-----') == -1:
@@ -55,13 +56,11 @@ def create_certificate_file(authentication: dict):
         password_list = password.split('-----')
         # replace spaces with newline characters
         password_fixed = '-----'.join(password_list[:2] + [password_list[2].replace(' ', '\n')] + password_list[3:])
-        cert_file.write(password_fixed)
-        cert_file.flush()
-        os.chmod(cert_file.name, 0o400)
+        CERTIFICATE_FILE.write(password_fixed)
+        CERTIFICATE_FILE.flush()
+        os.chmod(CERTIFICATE_FILE.name, 0o400)
     else:
         return_error('To connect to the remote server, provide a certificate.')
-
-    return cert_file
 
 
 ''' UTILS '''
@@ -70,7 +69,7 @@ def create_certificate_file(authentication: dict):
 def ssh_execute(command: str):
     if PORT and SSH_EXTRA_PARAMS:
         param_list = ['ssh', '-o', 'StrictHostKeyChecking=no', '-i', CERTIFICATE_FILE.name, '-p',
-                      PORT] + SSH_EXTRA_PARAMS + [USERNAME + '@' + HOSTNAME, command]
+                      PORT] + SSH_EXTRA_PARAMS + [USERNAME + '@' + HOSTNAME, command]  # type: ignore
         result = subprocess.run(param_list, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
     elif PORT:
         result = subprocess.run(
@@ -78,7 +77,7 @@ def ssh_execute(command: str):
              USERNAME + '@' + HOSTNAME, command], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
     elif SSH_EXTRA_PARAMS:
         param_list = ['ssh', '-o', 'StrictHostKeyChecking=no', '-i', CERTIFICATE_FILE.name] + SSH_EXTRA_PARAMS + [
-            USERNAME + '@' + HOSTNAME, command]
+            USERNAME + '@' + HOSTNAME, command]  # type: ignore
         result = subprocess.run(param_list, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
     else:
         result = subprocess.run(
@@ -111,7 +110,7 @@ def ssh_execute(command: str):
 def scp_execute(file_name: str, file_path: str):
     if SCP_EXTRA_PARAMS:
         param_list = ['scp', '-o', 'StrictHostKeyChecking=no', '-i', CERTIFICATE_FILE.name] + SCP_EXTRA_PARAMS + [
-            file_name, USERNAME + '@' + HOSTNAME + ':' + f'\'{file_path}\'']
+            file_name, USERNAME + '@' + HOSTNAME + ':' + f'\'{file_path}\'']  # type: ignore
         result = subprocess.run(param_list, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
     else:
         param_list = ['scp', '-o', 'StrictHostKeyChecking=no', '-i', CERTIFICATE_FILE.name, file_name,
@@ -186,7 +185,7 @@ def edl_get_external_file(file_path: str, retries: int = 1):
             return result
 
     # if we get here, we failed as the file contains too many newlines to be valid
-    raise DemistoException('The file was containing too many newlines to be valid. '
+    raise DemistoException('The file contains too many newlines to be valid. '
                            'Please check the file contents on the external web server manually.')
 
 
@@ -218,10 +217,10 @@ def edl_search_external_file_command(args: dict):
     """
     Search the external file and return all matching entries to Warroom
     """
-    file_path = args.get('file_path')
+    file_path: str = str(args.get('file_path', ''))
     if DOCUMENT_ROOT:
         file_path = os.path.join(DOCUMENT_ROOT, file_path)
-    search_string = args.get('search_string')
+    search_string: str = str(args.get('search_string', ''))
 
     result = edl_search_external_file(file_path, search_string)
 
@@ -272,10 +271,10 @@ def edl_update_external_file_command(args: dict):
     """
     Overrides external file path with internal list
     """
-    file_path = args.get('file_path')
+    file_path: str = str(args.get('file_path', ''))
     if DOCUMENT_ROOT:
         file_path = os.path.join(DOCUMENT_ROOT, file_path)
-    list_name = args.get('list_name')
+    list_name: str = str(args.get('list_name', ''))
     verbose = args.get('verbose') == 'true'
 
     edl_update_external_file(file_path, list_name, verbose)
@@ -335,8 +334,8 @@ def edl_update_internal_list_command(args: dict):
     """
         Updates the instance context with the list name and items given
     """
-    list_name = args.get('list_name')
-    list_items = argToList(args.get('list_items'))
+    list_name: str = str(args.get('list_name', ''))
+    list_items: list = argToList(str(args.get('list_items', '')))
     if args.get('add_or_remove') not in ['add', 'remove']:
         raise Exception('add_or_remove argument is not \'add\' neither \'remove\'.')
     add = args.get('add_or_remove') == 'add'
@@ -350,13 +349,13 @@ def edl_update(args: dict):
     Updates the instance context with the list name and items given
     Overrides external file path with internal list
     """
-    file_path = args.get('file_path')
+    file_path: str = str(args.get('file_path', ''))
     if DOCUMENT_ROOT:
         file_path = os.path.join(DOCUMENT_ROOT, file_path)
 
     # Parse list items
-    list_name = args.get('list_name')
-    list_items = parse_items(items=args.get('list_items'))
+    list_name: str = str(args.get('list_name', ''))
+    list_items = parse_items(items=str(args.get('list_items', '')))
     if args.get('add_or_remove') not in ['add', 'remove']:
         return_error('add_or_remove argument is neither \'add\' nor \'remove\'.')
     add = args.get('add_or_remove') == 'add'
@@ -396,13 +395,13 @@ def edl_update_from_external_file_command(args: dict):
     """
     Updates internal list data with external file contents
     """
-    file_path = args.get('file_path')
+    file_path: str = str(args.get('file_path', ''))
     if DOCUMENT_ROOT:
         file_path = os.path.join(DOCUMENT_ROOT, file_path)
-    list_name = args.get('list_name')
-    type_ = args.get('type')
-    verbose = args.get('verbose') == 'true'
-    retries = int(args.get('retries', '1'))
+    list_name: str = str(args.get('list_name', ''))
+    type_: str = args.get('type', 'false')
+    verbose: bool = args.get('verbose') == 'true'
+    retries: int = int(args.get('retries', '1'))
 
     list_data_new = edl_update_from_external_file(list_name, file_path, type_, retries)
 
@@ -427,7 +426,7 @@ def edl_delete_external_file_command(args: dict):
     """
     Delete external file
     """
-    file_path = args.get('file_path')
+    file_path = str(args.get('file_path', ''))
     if DOCUMENT_ROOT:
         file_path = os.path.join(DOCUMENT_ROOT, file_path)
     result = edl_delete_external_file(file_path)
@@ -555,8 +554,8 @@ def edl_dump_internal_list_command(args: dict):
 
 
 def edl_compare_command(args: dict):
-    list_name = args.get('list_name')
-    file_path = args.get('file_path')
+    list_name = str(args.get('list_name', ''))
+    file_path = str(args.get('file_path', ''))
     retries = int(args.get('retries', '1'))
 
     if DOCUMENT_ROOT:
@@ -609,7 +608,7 @@ def edl_compare_command(args: dict):
 
 
 def edl_get_external_file_metadata_command(args: dict):
-    file_path = args.get('file_path')
+    file_path = str(args.get('file_path', ''))
     if DOCUMENT_ROOT:
         file_path = os.path.join(DOCUMENT_ROOT, file_path)
 
@@ -705,7 +704,7 @@ def main():
             return_error(f'Error: {str(err)}\nTrace:\n{traceback.format_exc()}')
 
     finally:
-        shutil.rmtree(CERTIFICATE_FILE.name, ignore_errors=True)
+        shutil.rmtree(CERTIFICATE_FILE.name, ignore_errors=True)  # type: ignore
         LOG.print_log()
 
 

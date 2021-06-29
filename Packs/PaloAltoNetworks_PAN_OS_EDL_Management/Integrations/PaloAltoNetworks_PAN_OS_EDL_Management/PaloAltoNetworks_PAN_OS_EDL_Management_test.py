@@ -17,7 +17,7 @@ def test_get_external_file_too_many_new_lines(mocker):
     import PaloAltoNetworks_PAN_OS_EDL_Management as PANW_EDL
     invalid_file = 'a\nb\na\nn\ni\nb\ni\na\nb\no\nd\ne\nb\ne\n'
     mocker.patch.object(PANW_EDL, 'ssh_execute', return_value=invalid_file)
-    err_msg = 'The file was containing too many newlines to be valid. ' \
+    err_msg = 'The file contains too many newlines to be valid. ' \
               'Please check the file contents on the external web server manually.'
     with pytest.raises(DemistoException, match=err_msg):
         PANW_EDL.edl_get_external_file(file_path='lies', retries=4)
