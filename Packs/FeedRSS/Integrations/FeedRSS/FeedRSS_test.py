@@ -6,6 +6,7 @@ from test_data.test_variables import HTML_CONTENT, FEED_DATA, TEST_DATA_MAX_SIZE
 
 def side_effect_feed_url(mocker, client):
     feed_content_res = Response()
+    type(feed_content_res).status_code = mocker.PropertyMock(return_value=200)
     type(feed_content_res).text = mocker.PropertyMock(return_value='text_to_parse')
 
     client.feed_response = feed_content_res
@@ -44,6 +45,7 @@ def test_parsed_indicators_from_response(mocker, parse_response, expected_output
     client = mock_client(mocker, parse_response)
 
     mocker.patch.object(Client, 'get_url_content', return_value='test description')
+    client.request_feed_url()
     indicators = fetch_indicators(client)
     assert indicators == expected_output
 

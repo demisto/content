@@ -31,7 +31,8 @@ class Client(BaseClient):
         self.feed_response = self._http_request(method='GET', resp_type='response')
 
     def parse_feed_data(self):
-        self.feed_data = feedparser.parse(self.feed_response.text)
+        if self.feed_response:
+            self.feed_data = feedparser.parse(self.feed_response.text)
 
     def create_indicators_from_response(self):
         parsed_indicators: list = []
@@ -127,7 +128,7 @@ def get_indicators(client: Client, indicators: list, args: dict) -> CommandResul
 
 
 def test_module(client: Client):
-    if 'html' in client.feed_response.headers['content-type']:
+    if client.feed_response and 'html' in client.feed_response.headers['content-type']:
         raise DemistoException(f'{client._base_url} is not rss feed url. Try look for a url containing \'feed\' '
                                f'prefix or suffix.')
     else:
