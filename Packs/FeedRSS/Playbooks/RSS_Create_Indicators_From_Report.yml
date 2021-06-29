@@ -48,7 +48,7 @@ tasks:
       - "3"
     scriptarguments:
       content:
-        simple: ${playbookQuery.CustomFields.rawcontent}
+        simple: ${playbookQuery.CustomFields.rssrawcontent}
       report_name:
         simple: ${playbookQuery.value}
     separatecontext: true
