@@ -4,20 +4,27 @@ from requests.models import Response
 from test_data.test_variables import HTML_CONTENT, FEED_DATA, TEST_DATA_MAX_SIZE
 
 
-def mock_client(mocker, dict_to_parse: dict, content_max_size: int = 45) -> Client:
-    """ Create a mock client"""
+def side_effect_feed_url(mocker, client):
     feed_content_res = Response()
     type(feed_content_res).text = mocker.PropertyMock(return_value='text_to_parse')
 
-    mocker.patch.object(Client, 'request_feed_url', return_value=feed_content_res)
-    mocker.patch.object(feedparser, 'parse', return_value=feedparser.util.FeedParserDict(dict_to_parse))
+    client.feed_response = feed_content_res
+
+
+def mock_client(mocker, dict_to_parse: dict, content_max_size: int = 45) -> Client:
+    """ Create a mock client"""
 
     client = Client(server_url='test.com',
                     use_ssl=False,
                     proxy=False,
+                    reliability='F - Reliability cannot be judged',
                     feed_tags=[],
                     tlp_color=None,
                     content_max_size=content_max_size)
+
+    mocker.patch.object(feedparser, 'parse', return_value=feedparser.util.FeedParserDict(dict_to_parse))
+    mocker.patch.object(Client, 'request_feed_url', side_effect=side_effect_feed_url(mocker=mocker, client=client))
+
     return client
 
 
@@ -37,9 +44,8 @@ def test_parsed_indicators_from_response(mocker, parse_response, expected_output
     client = mock_client(mocker, parse_response)
 
     mocker.patch.object(Client, 'get_url_content', return_value='test description')
-
-    client.fetch_indicators()
-    assert client.parsed_indicators == expected_output
+    indicators = fetch_indicators(client)
+    assert indicators == expected_output
 
 
 def test_get_url_content(mocker):
