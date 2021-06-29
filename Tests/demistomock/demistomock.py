@@ -773,7 +773,8 @@ def incidents(incidents=None):
 
 def incident():
     """Retrieves the current incident and all its fields (e.g. name, type).
-    The incident custom fields will be populated under as an array under the CustomFields attribute.
+    The incident custom fields will be populated as a `dict` under the CustomFields attribute
+    (for example the `filename` custom field can be retrieved using `demisto.incident()['CustomFields'].get('filename')`).
 
     Returns:
       dict: dict representing an incident object
