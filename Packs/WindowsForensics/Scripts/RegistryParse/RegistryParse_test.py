@@ -13,8 +13,9 @@ def test_get_sub_keys():
     mock_reg = util_load_json('./test_data/mock_reg_users.json')
     expected = util_load_json('./test_data/mock_reg_users_result.json')
     actual = reg_parse.get_sub_keys(mock_reg, key, folder_output_key)
-    assert actual[0] == expected[0]
-    assert actual[1] == expected[1]
+    for actual_items in actual:
+        for actual_item in actual_items:
+            assert actual_item in expected[0] or actual_item in expected[1]
 
 
 def test_parse_reg_values():
