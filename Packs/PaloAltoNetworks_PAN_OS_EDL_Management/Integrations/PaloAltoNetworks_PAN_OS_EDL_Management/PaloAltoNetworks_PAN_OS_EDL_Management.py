@@ -49,7 +49,7 @@ def create_certificate_file(authentication: dict):
     elif password:
         # check that password field holds a certificate and not a password
         if password.find('-----') == -1:
-            return_error('Password parameter must contain a certificate.')
+            raise DemistoException('Password parameter must contain a certificate.')
         # split certificate by dashes
         password_list = password.split('-----')
         # replace spaces with newline characters
@@ -58,7 +58,7 @@ def create_certificate_file(authentication: dict):
         CERTIFICATE_FILE.flush()
         os.chmod(CERTIFICATE_FILE.name, 0o400)
     else:
-        return_error('To connect to the remote server, provide a certificate.')
+        raise DemistoException('To connect to the remote server, provide a certificate.')
 
 
 ''' UTILS '''
@@ -74,8 +74,8 @@ def ssh_execute(command: str):
             ['ssh', '-o', 'StrictHostKeyChecking=no', '-i', CERTIFICATE_FILE.name, '-p', PORT,
              USERNAME + '@' + HOSTNAME, command], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
     elif SSH_EXTRA_PARAMS:
-        param_list = ['ssh', '-o', 'StrictHostKeyChecking=no', '-i', CERTIFICATE_FILE.name] \
-                     + SSH_EXTRA_PARAMS + [USERNAME + '@' + HOSTNAME, command]  # type: ignore
+        param_list = ['ssh', '-o', 'StrictHostKeyChecking=no', '-i',
+                      CERTIFICATE_FILE.name] + SSH_EXTRA_PARAMS + [USERNAME + '@' + HOSTNAME, command]  # type: ignore
         result = subprocess.run(param_list, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
     else:
         result = subprocess.run(
@@ -87,10 +87,10 @@ def ssh_execute(command: str):
             if result.stderr.find("Warning: Permanently added") != -1:
                 return result.stdout  # ignore addition of new hosts warnings
             elif result.stderr.find("Permission denied") != -1:
-                return_error(
+                raise DemistoException(
                     'Permission denied, check your username and certificate.\n' + 'Got error: ' + result.stderr)
             else:
-                return_error(result.stderr)
+                raise DemistoException(result.stderr)
         elif command.find('grep') != -1 and result.returncode == 1:
             #  a search command that did not find any value
             demisto.results({
@@ -100,19 +100,20 @@ def ssh_execute(command: str):
             })
             sys.exit(0)
         else:
-            return_error('Command failed with exit status: ' + str(result.returncode))
+            raise DemistoException(f'Command failed with exit status:{str(result.returncode)}')
 
     return result.stdout
 
 
 def scp_execute(file_name: str, file_path: str):
     if SCP_EXTRA_PARAMS:
-        param_list = ['scp', '-o', 'StrictHostKeyChecking=no', '-i', CERTIFICATE_FILE.name] \
-                + SCP_EXTRA_PARAMS + [file_name, f'{USERNAME}@{HOSTNAME}:\'{file_path}\'']  # type: ignore
+        param_list = ['scp', '-o', 'StrictHostKeyChecking=no',
+                      '-i', CERTIFICATE_FILE.name] + SCP_EXTRA_PARAMS + [file_name,  # type: ignore
+                                                                         f'{USERNAME}@{HOSTNAME}:\'{file_path}\'']
         result = subprocess.run(param_list, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
     else:
         param_list = ['scp', '-o', 'StrictHostKeyChecking=no', '-i', CERTIFICATE_FILE.name, file_name,
-                      USERNAME + '@' + HOSTNAME + ':' + f'\'{file_path}\'']
+                      f'{USERNAME}@{HOSTNAME}:\'{file_path}\'']
         result = subprocess.run(param_list, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
 
     if result.returncode != 0:
@@ -120,9 +121,9 @@ def scp_execute(file_name: str, file_path: str):
             if result.stderr.find("Warning: Permanently added") != -1:
                 return True  # ignore addition of new hosts warnings
             else:
-                return_error(result.stderr)
+                raise DemistoException(result.stderr)
         else:
-            return_error('Command failed with exit status: ' + str(result.returncode))
+            raise DemistoException(f'Command failed with exit status:{str(result.returncode)}')
     else:
         return True
 
@@ -187,7 +188,7 @@ def edl_get_external_file(file_path: str, retries: int = 1):
                            'Please check the file contents on the external web server manually.')
 
 
-def edl_get_external_file_command(args):
+def edl_get_external_file_command(args: dict):
     """
     Get external file from web-server and prints to Warroom
     """
@@ -247,7 +248,7 @@ def edl_update_external_file(file_path: str, list_name: str, verbose: bool):
         shutil.rmtree(file_name, ignore_errors=True)
 
     if not success:
-        return_error('External file was not updated successfully.')
+        raise DemistoException('External file was not updated successfully.')
     else:
         if verbose:
             external_file_items = ssh_execute(f'cat \'{file_path}\'')
@@ -355,7 +356,7 @@ def edl_update(args: dict):
     list_name: str = str(args.get('list_name', ''))
     list_items = parse_items(items=str(args.get('list_items', '')))
     if args.get('add_or_remove') not in ['add', 'remove']:
-        return_error('add_or_remove argument is neither \'add\' nor \'remove\'.')
+        raise DemistoException('add_or_remove argument is neither \'add\' nor \'remove\'.')
     add = args.get('add_or_remove') == 'add'
     verbose = args.get('verbose') == 'true'
 
@@ -699,7 +700,8 @@ def main():
         if str(err).find('warning') != -1:
             LOG(str(err))
         else:
-            return_error(f'Error: {str(err)}\nTrace:\n{traceback.format_exc()}')
+            demisto.error(traceback.format_exc())  # print the traceback
+            return_error(str(err), err)
 
     finally:
         shutil.rmtree(CERTIFICATE_FILE.name, ignore_errors=True)  # type: ignore
