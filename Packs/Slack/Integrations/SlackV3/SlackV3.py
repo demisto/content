@@ -75,6 +75,7 @@ BOT_NAME: str
 BOT_ICON_URL: str
 MAX_LIMIT_TIME: int
 PAGINATED_COUNT: int
+ENABLE_DM: bool
 
 
 ''' HELPER FUNCTIONS '''
@@ -531,7 +532,7 @@ def mirror_investigation():
         if mirror_direction:
             mirror['mirror_direction'] = mirror_direction
         if mirror_to and mirror['mirror_to'] != mirror_to:
-            return_error('Cannot change the Slack channel type from Demisto.')
+            return_error('Cannot change the Slack channel type from XSOAR.')
         if channel_name:
             return_error('Cannot change the Slack channel name.')
         if channel_topic:
@@ -603,6 +604,9 @@ def long_running_loop():
         except Exception as e:
             error = f'An error occurred: {str(e)}'
         finally:
+            loop = asyncio.get_running_loop()
+            demisto.info(f'loop info: {loop_info(loop)}')
+            demisto.updateModuleHealth('')
             if error:
                 demisto.error(error)
                 demisto.updateModuleHealth(error)
@@ -648,7 +652,6 @@ def answer_question(text: str, question: dict, email: str = ''):
 def check_for_unanswered_questions():
     integration_context = get_integration_context(SYNC_CONTEXT)
     questions = integration_context.get('questions', [])
-    # demisto.info(f"Questions are: {questions}")
     users = integration_context.get('users', [])
     if questions:
         questions = json.loads(questions)
@@ -665,9 +668,7 @@ def check_for_unanswered_questions():
                 # and remove it
                 expiry = datetime.strptime(question['expiry'], DATE_FORMAT)
                 if expiry < now:
-                    demisto.info("Trying to answer question")
                     answer_question(question.get('default_response'), question, email='')
-                    demisto.info("Answered question")
                     updated_questions.append(question)
                     continue
             # Check if it has been enough time(determined by the POLL_INTERVAL_MINUTES parameter)
@@ -818,7 +819,6 @@ async def start_listening():
     executor = concurrent.futures.ThreadPoolExecutor(max_workers=1)
     loop = asyncio.get_running_loop()
     loop.run_in_executor(executor, long_running_loop)
-    demisto.info(f'loop info: {loop_info(loop)}')
     await slack_loop()
 
 
@@ -1000,6 +1000,7 @@ async def listen(client: SocketModeClient, req: SocketModeRequest):
         message = data.get('message', {})
         # Check if slash command received. If so, ignore for now.
         if data.get('command', None):
+            demisto.debug("Slash command event received. Ignoring.")
             return
         actions = data.get('actions', [])
         if actions:
@@ -1018,12 +1019,13 @@ async def listen(client: SocketModeClient, req: SocketModeRequest):
 
         if subtype == 'bot_message' or message_bot_id or message.get('subtype') == 'bot_message' or \
                 event.get('bot_id', None):
+            demisto.debug("Received bot_message event type. Ignoring.")
             return
 
         if entitlement_reply:
             await client.web_client.chat_postMessage(channel=channel, thread_ts=thread,
                                                      text=entitlement_reply)
-        elif channel and channel[0] == 'D':
+        elif channel and channel[0] == 'D' and ENABLE_DM:
             # DM
             await handle_dm(user, text, client)
         else:
@@ -1065,8 +1067,11 @@ async def listen(client: SocketModeClient, req: SocketModeRequest):
                 await handle_text(client, investigation_id, text, user)
         # Reset module health
         demisto.updateModuleHealth("")
+        demisto.info("SlackV3 - Event handled successfully.")
     except Exception as e:
         await handle_listen_error(f'Error occurred while listening to Slack: {str(e)}')
+    finally:
+        time.sleep(5)
 
 
 async def get_user_by_id_async(client: SocketModeClient, user_id: str) -> dict:
@@ -1110,7 +1115,7 @@ async def handle_text(client: SocketModeClient, investigation_id: str, text: str
         text: The received text
         user: The sender
     """
-    demisto.info(f'Slack - adding entry to incident {investigation_id}')
+    demisto.info(f'SlackV3 - adding entry to incident {investigation_id}')
     if text:
         demisto.addEntry(id=investigation_id,
                          entry=await clean_message(text, client),
@@ -1118,6 +1123,7 @@ async def handle_text(client: SocketModeClient, investigation_id: str, text: str
                          email=user.get('profile', {}).get('email', ''),
                          footer=MESSAGE_FOOTER
                          )
+        demisto.info("SlackV3 - Text handled successfully.")
 
 
 async def check_and_handle_entitlement(text: str, user: dict, thread_id: str) -> str:
@@ -1233,7 +1239,6 @@ def slack_send():
     """
 
     args = demisto.args()
-    demisto.debug(f'Got slack send request. \n\n\n args: {args}')
     message = args.get('message', '')
     to = args.get('to')
     original_channel = args.get('channel')
@@ -1641,7 +1646,8 @@ def set_channel_topic():
         channel_id = channel.get('id')
 
     if not channel_id:
-        return_error('Channel not found - the Slack app needs to be a member of the channel in order to look it up.')
+        return_error('Channel was not found - Either the Slack app is not a member of the channel, '
+                     'or the slack app does not have permission to find the channel.')
 
     body = {
         'channel': channel_id,
@@ -1678,8 +1684,8 @@ def rename_channel():
         channel_id = channel.get('id')
 
     if not channel_id:
-        return_error('Channel not found - the Slack app needs to be a member of the channel in order to look it up.')
-
+        return_error('Channel was not found - Either the Slack app is not a member of the channel, '
+                     'or the slack app does not have permission to find the channel.')
     body = {
         'channel': channel_id,
         'name': new_name
@@ -1717,7 +1723,8 @@ def close_channel():
         channel_id = channel.get('id')
 
     if not channel_id:
-        return_error('Channel not found - the Slack app needs to be a member of the channel in order to look it up.')
+        return_error('Channel was not found - Either the Slack app is not a member of the channel, '
+                     'or the slack app does not have permission to find the channel.')
     body = {
         'channel': channel_id
     }
@@ -1774,8 +1781,8 @@ def invite_to_channel():
         channel_id = channel.get('id')
 
     if not channel_id:
-        return_error('Channel not found - the Slack app needs to be a member of the channel in order to look it up.')
-
+        return_error('Channel was not found - Either the Slack app is not a member of the channel, '
+                     'or the slack app does not have permission to find the channel.')
     slack_users = search_slack_users(users)
     if slack_users:
         invite_users_to_conversation(channel_id, list(map(lambda u: u.get('id'), slack_users)))
@@ -1800,8 +1807,8 @@ def kick_from_channel():
         channel_id = channel.get('id')
 
     if not channel_id:
-        return_error('Channel not found - the Slack app needs to be a member of the channel in order to look it up.')
-
+        return_error('Channel was not found - Either the Slack app is not a member of the channel, '
+                     'or the slack app does not have permission to find the channel.')
     slack_users = search_slack_users(users)
     if slack_users:
         kick_users_from_conversation(channel_id, list(map(lambda u: u.get('id'), slack_users)))
@@ -1849,8 +1856,9 @@ def init_globals(command_name: str = ''):
     Initializes global variables according to the integration parameters
     """
     global BOT_TOKEN, ACCESS_TOKEN, PROXY_URL, PROXIES, DEDICATED_CHANNEL, CLIENT, CHANNEL_CLIENT
-    global SEVERITY_THRESHOLD, ALLOW_INCIDENTS, NOTIFY_INCIDENTS, INCIDENT_TYPE, VERIFY_CERT
+    global SEVERITY_THRESHOLD, ALLOW_INCIDENTS, NOTIFY_INCIDENTS, INCIDENT_TYPE, VERIFY_CERT, ENABLE_DM
     global BOT_NAME, BOT_ICON_URL, MAX_LIMIT_TIME, PAGINATED_COUNT, SSL_CONTEXT, APP_TOKEN, ASYNC_CLIENT
+    global ENABLE_NOTIFICATIONS
 
     VERIFY_CERT = not demisto.params().get('unsecure', False)
     if not VERIFY_CERT:
@@ -1885,6 +1893,8 @@ def init_globals(command_name: str = ''):
     BOT_ICON_URL = demisto.params().get('bot_icon')  # Bot default icon url defined by the slack plugin (3-rd party)
     MAX_LIMIT_TIME = int(demisto.params().get('max_limit_time', '60'))
     PAGINATED_COUNT = int(demisto.params().get('paginated_count', '200'))
+    ENABLE_DM = demisto.params().get('enable_dm', True)
+    ENABLE_NOTIFICATIONS = demisto.params().get('enable_notifications', True)
 
 
 def print_thread_dump():
@@ -1944,10 +1954,10 @@ def main() -> None:
         'slack-get-integration-context': slack_get_integration_context,
     }
 
-    command_name = demisto.command()
+    command_name: str = demisto.command()
 
     try:
-        demisto.info(f'{command_name} started.')  # type: ignore
+        demisto.info(f'{command_name} started.')
         command_func = commands[command_name]
         init_globals(command_name)
         command_func()
@@ -1956,7 +1966,7 @@ def main() -> None:
         return_error(str(e))
     finally:
         demisto.info(
-            f'{command_name} completed.')  # type: ignore
+            f'{command_name} completed.')
 
 
 ''' ENTRY POINT '''

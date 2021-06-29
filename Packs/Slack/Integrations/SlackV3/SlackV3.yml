@@ -1,3 +1,4 @@
+beta: true
 category: Messaging
 commonfields:
   id: SlackV3
@@ -65,10 +66,11 @@ configuration:
   name: longRunning
   required: false
   type: 8
-- display: Bot display name in Slack (Cortex XSOAR by default)
+- display: Bot display name in Slack
   name: bot_name
   required: false
   type: 0
+  defaultvalue: 'Cortex XSOAR'
 - display: Bot icon in Slack - Image URL (Cortex XSOAR icon by default)
   name: bot_icon
   required: false
@@ -93,6 +95,11 @@ configuration:
   name: filtered_tags
   required: false
   type: 0
+- display: Enable DMs to the bot
+  hidden: false
+  name: enable_dm
+  required: false
+  type: 8
 description: Send messages and notifications to your Slack team.
 display: Slack v3
 name: SlackV3
