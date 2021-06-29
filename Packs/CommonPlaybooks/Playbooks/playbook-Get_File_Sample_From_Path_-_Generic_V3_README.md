@@ -24,7 +24,7 @@ This playbook does not use any commands.
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| Hostname | Hostname of the machine on which the file is located. |  | Optional |
+| Hostname | Hostname of the machine on which the file is located, For PS remote it can also be an IP address. |  | Optional |
 | Path | The path of the file to retrieve.<br/>For example:<br/>C:\\users\\folder\\file.txt<br/> |  | Optional |
 | Agent_ID | The ID of the agent, or of the endpoint, in the relevant integration \(such as EDR\). |  | Optional |
 

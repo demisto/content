@@ -216,7 +216,7 @@ inputs:
 - key: Hostname
   value: {}
   required: false
-  description: Hostname of the machine on which the file is located.
+  description: Hostname of the machine on which the file is located, for PS remote it can also be an IP address.
   playbookInputQuery:
 - key: Path
   value: {}
