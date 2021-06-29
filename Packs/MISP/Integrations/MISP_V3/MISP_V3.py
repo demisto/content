@@ -474,10 +474,6 @@ def get_new_event(args):
 
 def create_event(demisto_args: dict):
     """Creating event in MISP with the given attribute
-
-    Args:
-        demisto_args
-
     Returns:
     """
     new_event = get_new_event(demisto_args)
@@ -557,65 +553,6 @@ def add_attribute(event_id: int = None, internal: bool = False, demisto_args: di
         outputs_key_field='id',
         outputs=build_context(updated_event),
     )
-
-
-def download_samples(sample_hash=None, event_id=None, all_samples=False):
-    to_post = {'request': {'hash': sample_hash, 'eventID': event_id, 'allSamples': all_samples}}
-    response = PYMISP._prepare_request('POST', urljoin(PYMISP.root_url, 'attributes/downloadSample'),
-                                       data=json.dumps(to_post))
-    result = PYMISP._check_response(response)
-    if result.get('error') is not None:
-        return False, result.get('error')
-    if not result.get('result'):
-        return False, result.get('message')
-    details = []
-    for f in result['result']:
-        decoded = base64.b64decode(f['base64'])
-        zipped = BytesIO(decoded)
-        try:
-            archive = zipfile.ZipFile(zipped)
-            if f.get('md5'):
-                # New format
-                unzipped = BytesIO(archive.open(f['md5'], pwd=b'infected').read())
-            else:
-                # Old format
-                unzipped = BytesIO(archive.open(f['filename'], pwd=b'infected').read())
-            details.append([f['event_id'], f['filename'], unzipped])
-        except zipfile.BadZipfile:
-            # In case the sample isn't zipped
-            details.append([f['event_id'], f['filename'], zipped])
-
-    return True, details
-
-
-def download_file(demisto_args: dict):
-    """
-    Will post results of given file's hash if present.
-    MISP's response should be in case of success:
-        (True, [EventID, filename, fileContent])
-    in case of failure:
-        (False, 'No hits with the given parameters.')
-    """
-    file_hash = demisto_args.get('hash')
-    event_id = demisto_args.get('eventID')
-    unzip = argToBoolean(demisto_args.get('unzip', 'False'))
-    all_samples = True if demisto_args.get('allSamples') in ('1', 'true') else False
-    response = download_samples(sample_hash=file_hash, event_id=event_id, all_samples=all_samples)
-    if not response[0]:
-        return CommandResults(readable_output=f"Couldn't find file with hash {file_hash}")
-    else:
-        if unzip:
-            files = list()
-            for f in response:
-                # Check if it's tuple. if so, f = (EventID, hash, fileContent)
-                if isinstance(f, tuple) and len(f) == 3:
-                    filename = f[1]
-                    files.append(fileResult(filename, f[2].getbuffer()))
-            return files
-        else:
-            file_buffer = response[1][0][2].getbuffer()
-            filename = response[1][0][1]
-            return fileResult(filename, file_buffer)
 
 
 def generic_reputation_command(demisto_args, reputation_type, dbot_type, malicious_tag_ids, suspicious_tag_ids,
@@ -1386,8 +1323,6 @@ def main():
         malicious_tag_ids, suspicious_tag_ids = handle_tag_duplication_ids(malicious_tag_ids, suspicious_tag_ids)
         if command == 'test-module':
             return_results(test(malicious_tag_ids=malicious_tag_ids, suspicious_tag_ids=suspicious_tag_ids))
-        elif command == 'misp-download-sample':
-            return_results(download_file(args))
         elif command == 'misp-create-event':
             return_results(create_event(args))
         elif command == 'misp-add-attribute':

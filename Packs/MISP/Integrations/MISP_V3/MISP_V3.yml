@@ -638,47 +638,6 @@ script:
       type: string
   - arguments:
     - default: false
-      description: 'A hash in MD5 format. If the "allSamples" argument is supplied,
-        this can be any one of the following: md5, sha1, and sha256.'
-      isArray: false
-      name: hash
-      required: true
-      secret: false
-    - default: false
-      description: If set, will only fetch data from the given event ID.
-      isArray: false
-      name: eventID
-      required: false
-      secret: false
-    - auto: PREDEFINED
-      default: false
-      description: If set, will return all samples from events that match the hash
-        supplied in the "hash" argument.
-      isArray: false
-      name: allSamples
-      predefined:
-      - 'true'
-      - 'false'
-      required: false
-      secret: false
-    - auto: PREDEFINED
-      default: true
-      defaultValue: 'false'
-      description: True to return all files unzipped. False to return one zipped file.  Default
-        is "false".
-      isArray: false
-      name: unzip
-      predefined:
-      - 'true'
-      - 'false'
-      required: false
-      secret: false
-    deprecated: false
-    description: Downloads a file sample from MISP.
-    execution: true
-    name: misp-download-sample
-  - arguments:
-    - default: false
       description: MISP event ID.
       isArray: false
       name: id
