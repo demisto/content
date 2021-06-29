@@ -6751,6 +6751,10 @@ if 'requests' in sys.modules:
                 been exhausted.
             """
             try:
+                method_whitelist = "allowed_methods" if hasattr(Retry.DEFAULT, "allowed_methods") else "method_whitelist"
+                whitelist_kawargs = {
+                    method_whitelist: frozenset(['GET', 'POST', 'PUT'])
+                }
                 retry = Retry(
                     total=retries,
                     read=retries,
@@ -6758,9 +6762,9 @@ if 'requests' in sys.modules:
                     backoff_factor=backoff_factor,
                     status=retries,
                     status_forcelist=status_list_to_retry,
-                    method_whitelist=frozenset(['GET', 'POST', 'PUT']),
                     raise_on_status=raise_on_status,
-                    raise_on_redirect=raise_on_redirect
+                    raise_on_redirect=raise_on_redirect,
+                    **whitelist_kawargs
                 )
                 adapter = HTTPAdapter(max_retries=retry)
                 self._session.mount('http://', adapter)
