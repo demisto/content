@@ -3490,4 +3490,4 @@
 <p><img src="https://user-images.githubusercontent.com/38749041/64108828-99bb2000-cd86-11e9-9f45-d8984d719241.png"></p>
 <h2>Troubleshooting</h2>
 <hr>
-<p>For errors within Tenable.sc, the cause is generally specified, e.g., <code>The currently logged in used is not an administrator</code>, <code>Unable to retrieve Asset #2412. Asset #2412 does not exist</code> or <code>Invalid login credentials</code>. However there might be connection errors, for example when the server URL provided is incorrect. If you experience issues, contact <a href="mailto:support@demisto.com">Cortex XSOAR Support</a>.</p>
+<p>For errors within Tenable.sc, the cause is generally specified, e.g., <code>The currently logged in used is not an administrator</code>, <code>Unable to retrieve Asset #2412. Asset #2412 does not exist</code> or <code>Invalid login credentials</code>. However there might be connection errors, for example when the server URL provided is incorrect.</p>
