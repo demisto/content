@@ -13,30 +13,48 @@ configuration:
   name: api_key
   required: true
   type: 4
+- display: VC Type
+  name: vcs_type
+  type: 15
+  required: true
+  options:
+  - github
+  - bitbucket
+  additionalinfo: Type of VC.
+- display: Organization Name
+  name: organization
+  type: 0
+  required: true
+  additionalinfo: Name of the organization.
+- display: Project Name
+  name: project
+  type: 0
+  required: true
+  additionalinfo: Name of the project.
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
+  required: true
   type: 8
 - display: Use system proxy settings
   name: proxy
   required: false
   type: 8
-description: '[Enter a comprehensive, yet concise, description of what the integration
-  does, what use cases it is designed for, etc.]'
+description: Get details of CircleCI workflows, including details of its last runs, jobs, and retrieve artifact of jobs.
 display: CircleCI
 name: CircleCI
 script:
   commands:
   - arguments:
     - default: false
-      description: Pipeline ID to retrieve its info.
+      description: Organization to retrieve workflows from. Defaults to organization instance parameter if none is geven.
+      defaultValue: '20'
       isArray: false
-      name: pipeline_id
+      name: limit
       required: false
       secret: false
     - name: vcs_type
       required: false
-      description: 
+      description: VC type of the project.
       default: true
       auto: PREDEFINED
       predefined:
@@ -44,21 +62,114 @@ script:
       - bitbucket
       defaultValue: github
     - default: false
-      description: Organization to pipelines from. Defaults to organization instance parameter if none is geven.
+      description: Organization to retrieve workflows from. Defaults to organization instance parameter if none is geven.
       isArray: false
       name: organization
       required: false
       secret: false
     - default: false
-      description: Project to pipelines from. Defaults to project instance parameter if none is geven.
+      description: Project to retrieve workflows from. Defaults to project instance parameter if none is geven.
       isArray: false
       name: project
       required: false
       secret: false
     deprecated: false
-    description: Get info of pipelines.
+    description: Get info of workflows.
     execution: false
-    name: circleci-pipelines-list
+    name: circleci-workflows-list
+    outputs:
+    - contextPath: BaseIntegration.Output
+      description: '[Enter a description of the data returned in this output.]'
+      type: String
+  - arguments:
+    - default: false
+      description: Number of the job to retrieve its artifacts, e.g 31263.
+      isArray: false
+      name: job_number
+      required: true
+      secret: false
+    - default: false
+      description: Will return only artifact whom suffix corresponds to suffix given, e.g 'test_failures.txt' will retrieve only artifacts whom suffix ends with test_failures.txt.
+      isArray: false
+      name: artifact_suffix
+      required: false
+      secret: false
+    - name: vcs_type
+      required: false
+      description: VC type of the project.
+      default: true
+      auto: PREDEFINED
+      predefined:
+        - github
+        - bitbucket
+      defaultValue: github
+    - default: false
+      description: Organization to retrieve artifacts from. Defaults to organization instance parameter if none is geven.
+      isArray: false
+      name: organization
+      required: false
+      secret: false
+    - default: false
+      description: Project to retrieve artifacts from. Defaults to project instance parameter if none is geven.
+      isArray: false
+      name: project
+      required: false
+      secret: false
+    deprecated: false
+    description: Retrieves artifacts list from CircleCI job.
+    execution: false
+    name: circleci-artifacts-list
+    outputs:
+    - contextPath: BaseIntegration.Output
+      description: '[Enter a description of the data returned in this output.]'
+      type: String
+  - arguments:
+    - default: false
+      description: Workflow ID to retrieve its jobs, e.g 12zxcase-12za-as51-123zs4sdgf12
+      isArray: false
+      name: workflow_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Retrieves jobs list from CircleCI workflow.
+    execution: false
+    name: circleci-workflow-jobs-list
+    outputs:
+    - contextPath: BaseIntegration.Output
+      description: '[Enter a description of the data returned in this output.]'
+      type: String
+  - arguments:
+    - default: false
+      description: Name of workflow to retrieve its last runs details.
+      isArray: false
+      name: workflow_name
+      required: true
+      secret: false
+    - name: vcs_type
+      required: false
+      description: VC type of the project.
+      default: true
+      auto: PREDEFINED
+      predefined:
+        - github
+        - bitbucket
+      defaultValue: github
+    - default: false
+      description: Organization to retrieve workflow last runs from. Defaults to organization instance parameter if none is geven.
+      isArray: false
+      name: organization
+      required: false
+      secret: false
+    - default: false
+      description: Project to retrieve workflow last runs from. Defaults to project instance parameter if none is geven.
+      isArray: false
+      name: project
+      required: false
+      secret: false
+    deprecated: false
+    description: Retrieves jobs list from CircleCI workflow.
+    execution: false
+    name: circleci-workflow-last-runs
     outputs:
     - contextPath: BaseIntegration.Output
       description: '[Enter a description of the data returned in this output.]'
