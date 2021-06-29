@@ -102,7 +102,7 @@ configuration:
   required: false
   type: 8
 description: Send messages and notifications to your Slack team.
-display: Slack v3
+display: Slack v3 (beta)
 name: SlackV3
 script:
   commands:

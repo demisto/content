@@ -1253,6 +1253,8 @@ def slack_send():
     entry_object = args.get('entryObject')  # From server, available from demisto v6.1 and above
     entitlement = ''
 
+    demisto.info(f"Args are {args}")
+
     if message_type == MIRROR_TYPE and original_message.find(MESSAGE_FOOTER) != -1:
         # return so there will not be a loop of messages
         return
