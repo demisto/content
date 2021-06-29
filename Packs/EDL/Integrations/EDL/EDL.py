@@ -67,8 +67,8 @@ class RequestArguments:
                  dont_duplicate_glob=False):
 
         self.query = query
-        self.limit = int(limit)
-        self.offset = int(offset)
+        self.limit = try_parse_integer(limit)
+        self.offset = try_parse_integer(offset)
         self.url_port_stripping = url_port_stripping
         self.drop_invalids = drop_invalids
         self.collapse_ips = collapse_ips

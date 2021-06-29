@@ -1,67 +1,107 @@
 """Imports"""
 import json
 import pytest
-import demistomock as demisto
+import os
 from netaddr import IPAddress
+from tempfile import mkdtemp
 
 IOC_RES_LEN = 38
 
 '''Tests'''
 
 
+class TestRequestArguments:
+    from EDL import RequestArguments
+    context_json = {
+        RequestArguments.CTX_QUERY_KEY: "query",
+        RequestArguments.CTX_LIMIT_KEY: 10,
+        RequestArguments.CTX_OFFSET_KEY: 1,
+        RequestArguments.CTX_INVALIDS_KEY: True,
+        RequestArguments.CTX_PORT_STRIP_KEY: True,
+        RequestArguments.CTX_COLLAPSE_IPS_KEY: "collapse",
+        RequestArguments.CTX_INVALIDATE_EDL_KEY: True,
+        RequestArguments.CTX_DOMAIN_GLOB_KEY: True
+    }
+
+    request_args = RequestArguments(
+        query=context_json[RequestArguments.CTX_QUERY_KEY],
+        limit=context_json[RequestArguments.CTX_LIMIT_KEY],
+        offset=context_json[RequestArguments.CTX_OFFSET_KEY],
+        url_port_stripping=context_json[RequestArguments.CTX_PORT_STRIP_KEY],
+        drop_invalids=context_json[RequestArguments.CTX_PORT_STRIP_KEY],
+        collapse_ips=context_json[RequestArguments.CTX_COLLAPSE_IPS_KEY],
+        invalidate_empty_edl=context_json[RequestArguments.CTX_INVALIDATE_EDL_KEY],
+        dont_duplicate_glob=context_json[RequestArguments.CTX_DOMAIN_GLOB_KEY])
+
+    def test_to_context_json(self):
+        """
+        Test to_context_json transforms the class to the expected context_json
+        Given:
+            -  request_args
+        When:
+            - calling to_context_json()
+        Then:
+            - creates a dict in the expected format
+        """
+        assert self.request_args.to_context_json() == self.context_json
+
+    def test_from_context_json(self):
+        """
+        Test from_context_json creates an instance of the class with all the values
+        Given:
+            - context json with data
+        When:
+            - calling from_context_json()
+        Then:
+            - creates an instance of RequestArguments with the proper values
+        """
+        actual_request_args_dict = self.RequestArguments.from_context_json(self.context_json).__dict__
+        expected_request_args_dict = self.request_args.__dict__
+        for key, val in actual_request_args_dict.items():
+            assert expected_request_args_dict[key] == val
+
+
 class TestHelperFunctions:
-    def test_get_edl_ioc_values_1(self):
-        """Test on_demand"""
-        from EDL import get_edl_ioc_values, RequestArguments
-        with open('EDL_test/TestHelperFunctions/iocs_cache_values_text.json', 'r') as iocs_text_values_f:
-            iocs_text_dict = json.loads(iocs_text_values_f.read())
-            integration_context = {"last_output": iocs_text_dict}
-            request_args = RequestArguments(query='', limit=50, offset=0)
-            ioc_list = get_edl_ioc_values(
-                on_demand=True,
-                request_args=request_args,
-                edl_cache=integration_context
-            )
-            for ioc_row in ioc_list:
-                assert ioc_row in iocs_text_dict
-
-    def test_get_edl_ioc_values_2(self, mocker):
-        """Test update by not on_demand with no refresh"""
-        import CommonServerPython as CSP
-        mocker.patch.object(CSP, 'parse_date_range', return_value=(1578383899, 1578383899))
+    def test_get_edl_on_demand__with_cache(self, mocker):
+        """
+        Test get_edl_on_demand fetches indicators from cache
+        Given:
+            - No refresh signal in context
+            - Cache has a valid value
+        When:
+            - calling get_edl_on_demand
+        Then:
+            - return the edl from the system file
+        """
         import EDL as edl
-        with open('EDL_test/TestHelperFunctions/iocs_cache_values_text.json', 'r') as iocs_text_values_f:
-            iocs_text_dict = json.loads(iocs_text_values_f.read())
-            mocker.patch.object(edl, 'refresh_edl_context', return_value=iocs_text_dict)
-            mocker.patch.object(demisto, 'getLastRun', return_value={'last_run': 1578383898000})
-            request_args = edl.RequestArguments(query='', limit=50, offset=0)
-            ioc_list = edl.get_edl(
-                on_demand=False,
-                request_args=request_args,
-                edl_cache=iocs_text_dict,
-                cache_refresh_rate='1 minute'
-            )
-            for ioc_row in ioc_list:
-                assert ioc_row in iocs_text_dict
+        edl.EDL_ON_DEMAND_CACHE_PATH = 'EDL_test/TestHelperFunctions/iocs_cache_values_text.txt'
+        mocker.patch.object(edl, 'get_integration_context', return_value={})
+        actual_edl = edl.get_edl_on_demand()
+        with open(edl.EDL_ON_DEMAND_CACHE_PATH, 'r') as f:
+            expected_edl = f.read()
+            assert actual_edl == expected_edl
 
-    def test_get_edl_ioc_values_3(self, mocker):
-        """Test update by not on_demand with refresh"""
-        import CommonServerPython as CSP
-        mocker.patch.object(CSP, 'parse_date_range', return_value=(1578383898, 1578383898))
+    def test_get_edl_on_demand__with_refresh_signal(self, mocker):
+        """
+        Test get_edl_on_demand fetches new indicators and stores them to cache when key is passed
+        Given:
+            - refresh signal in context
+        When:
+            - calling get_edl_on_demand
+        Then:
+            - save the edl to the system file
+        """
         import EDL as edl
-        with open('EDL_test/TestHelperFunctions/iocs_cache_values_text.json', 'r') as iocs_text_values_f:
-            iocs_text_dict = json.loads(iocs_text_values_f.read())
-            mocker.patch.object(demisto, 'getIntegrationContext', return_value=iocs_text_dict)
-            request_args = edl.RequestArguments(query='', limit=50, offset=0)
-            mocker.patch.object(demisto, 'getLastRun', return_value={'last_run': 1578383898000})
-            ioc_list = edl.get_edl(
-                on_demand=False,
-                request_args=request_args,
-                edl_cache=iocs_text_dict,
-                cache_refresh_rate='1 minute'
-            )
-            for ioc_row in ioc_list:
-                assert ioc_row in iocs_text_dict
+        expected_edl = "8.8.8.8"
+        ctx = {edl.EDL_ON_DEMAND_KEY: True, edl.RequestArguments.CTX_QUERY_KEY: "*"}
+        tmp_dir = mkdtemp()
+        edl.EDL_ON_DEMAND_CACHE_PATH = os.path.join(tmp_dir, 'cache')
+        mocker.patch.object(edl, 'get_integration_context', return_value=ctx)
+        mocker.patch.object(edl, 'create_new_edl', return_value=expected_edl)
+        actual_edl = edl.get_edl_on_demand()
+        with open(edl.EDL_ON_DEMAND_CACHE_PATH, 'r') as f:
+            cached_edl = f.read()
+            assert actual_edl == expected_edl == cached_edl
 
     def test_list_to_str_1(self):
         """Test invalid"""
@@ -110,7 +150,7 @@ class TestHelperFunctions:
         params = {'longRunningPort': '80'}
         assert get_params_port(params) == 80
 
-    def test_refresh_edl_context_1(self, mocker):
+    def test_create_new_edl_1(self, mocker):
         """Sanity"""
         import EDL as edl
         with open('EDL_test/TestHelperFunctions/demisto_iocs.json', 'r') as iocs_json_f:
@@ -126,79 +166,42 @@ class TestHelperFunctions:
                 else:
                     assert ip in edl_vals
 
-    def test_find_indicators_to_limit_1(self, mocker):
+    def test_find_indicators_to_limit(self, mocker):
         """Test find indicators limit"""
         import EDL as edl
         with open('EDL_test/TestHelperFunctions/demisto_iocs.json', 'r') as iocs_json_f:
             iocs_json = json.loads(iocs_json_f.read())
-            limit = 30
-            mocker.patch.object(edl, 'find_indicators_to_limit_loop', return_value=(iocs_json, 1))
-            edl_vals = edl.find_indicators_to_limit(indicator_query='', limit=limit)
+            indicator_searcher_res = [{'iocs': iocs_json}, {'iocs': []}]
+            limit = 37
+            indicator_searcher = edl.IndicatorsSearcher()
+            mocker.patch.object(indicator_searcher, 'search_indicators_by_version', side_effect=indicator_searcher_res)
+            edl_vals = edl.find_indicators_to_limit(indicator_searcher=indicator_searcher,
+                                                    indicator_query='',
+                                                    limit=limit)
             assert len(edl_vals) == limit
 
-    def test_find_indicators_to_limit_and_offset_1(self, mocker):
-        """Test find indicators limit and offset"""
-        import EDL as edl
-        with open('EDL_test/TestHelperFunctions/demisto_iocs.json', 'r') as iocs_json_f:
-            iocs_json = json.loads(iocs_json_f.read())
-            limit = 30
-            offset = 1
-            mocker.patch.object(edl, 'find_indicators_to_limit_loop', return_value=(iocs_json, 1))
-            edl_vals = edl.find_indicators_to_limit(indicator_query='', limit=limit, offset=offset)
-            assert len(edl_vals) == limit
-            # check that the first value is the second on the list
-            assert edl_vals[0].get('value') == '212.115.110.19'
-
-    def test_find_indicators_to_limit_loop_1(self, mocker):
-        """Test find indicators stops when reached last page"""
-        import EDL as edl
-        with open('EDL_test/TestHelperFunctions/demisto_iocs.json', 'r') as iocs_json_f:
-            iocs_dict = {'iocs': json.loads(iocs_json_f.read())}
-            limit = 50
-            mocker.patch.object(demisto, 'searchIndicators', return_value=iocs_dict)
-            edl_vals, nxt_pg = edl.find_indicators_to_limit(indicator_query='', limit=limit)
-            assert nxt_pg == 1  # assert entered into loop
-
-    def test_find_indicators_to_limit_loop_2(self, mocker):
-        """Test find indicators stops when reached limit"""
-        import EDL as edl
-        with open('EDL_test/TestHelperFunctions/demisto_iocs.json', 'r') as iocs_json_f:
-            iocs_dict = {'iocs': json.loads(iocs_json_f.read())}
-            limit = 30
-            mocker.patch.object(demisto, 'searchIndicators', return_value=iocs_dict)
-            edl.PAGE_SIZE = IOC_RES_LEN
-            edl_vals, nxt_pg = edl.find_indicators_to_limit(indicator_query='', limit=limit,
-                                                            last_found_len=IOC_RES_LEN)
-            assert nxt_pg == 1  # assert entered into loop
-
-    def test_create_values_for_returned_dict(self):
-        from EDL import create_values_for_returned_dict, EDL_VALUES_KEY, RequestArguments
+    def test_format_indicators(self):
+        from EDL import format_indicators, RequestArguments
         with open('EDL_test/TestHelperFunctions/demisto_url_iocs.json', 'r') as iocs_json_f:
             iocs_json = json.loads(iocs_json_f.read())
 
             # strips port numbers
             request_args = RequestArguments(query='', drop_invalids=True, url_port_stripping=True)
-            returned_dict, num_of_indicators = create_values_for_returned_dict(iocs_json, request_args)
-            returned_output = returned_dict.get(EDL_VALUES_KEY)
-            assert returned_output == "1.2.3.4/wget\nwww.demisto.com/cool"
-            assert num_of_indicators == 2
+            returned_output = format_indicators(iocs_json, request_args)
+            assert returned_output == ['1.2.3.4/wget', 'www.demisto.com/cool']
 
             # should ignore indicators with port numbers
             request_args = RequestArguments(query='', drop_invalids=True, url_port_stripping=False)
-            returned_dict, num_of_indicators = create_values_for_returned_dict(iocs_json, request_args)
-            returned_output = returned_dict.get(EDL_VALUES_KEY)
-            assert returned_output == 'www.demisto.com/cool'
-            assert num_of_indicators == 1
+            returned_output = format_indicators(iocs_json, request_args)
+            assert returned_output == ['www.demisto.com/cool']
 
             # should not ignore indicators with '*' in them
             request_args = RequestArguments(query='', drop_invalids=False, url_port_stripping=False)
-            returned_dict, num_of_indicators = create_values_for_returned_dict(iocs_json, request_args)
-            returned_output = returned_dict.get(EDL_VALUES_KEY)
-            assert returned_output == 'www.demisto.com/cool\nwww.demisto.com/*'
-            assert num_of_indicators == 2
+            returned_output = format_indicators(iocs_json, request_args)
+            assert returned_output == ['www.demisto.com/cool', 'www.demisto.com/*']
 
-    def test_create_values_for_returned_dict__filters(self):
-        from EDL import create_values_for_returned_dict, EDL_VALUES_KEY, RequestArguments
+    def test_format_indicators__filters(self):
+        from EDL import format_indicators, RequestArguments
         iocs = [
             {'value': '2603:1006:1400::/40', 'indicator_type': 'IPv6'},
             {'value': '2002:ac8:b8d:0:0:0:0:0', 'indicator_type': 'IPv6'},
@@ -208,15 +211,14 @@ class TestHelperFunctions:
         ]
 
         request_args = RequestArguments(query='', drop_invalids=True, url_port_stripping=True)
-        returned_dict, num_of_indicators = create_values_for_returned_dict(iocs, request_args)
-        returned_output = returned_dict.get(EDL_VALUES_KEY, '').split('\n')
+        returned_output = format_indicators(iocs, request_args)
         assert '2603:1006:1400::/40' in returned_output
         assert '2002:ac8:b8d:0:0:0:0:0' in returned_output
         assert 'demisto.com/rest/of/path' in returned_output  # port stripping
         assert 'panw.com/path' in returned_output
         assert '*.domain.com' in returned_output
         assert 'domain.com' in returned_output  # PAN-OS URLs
-        assert num_of_indicators == 6
+        assert len(returned_output) == 6
 
     def test_validate_basic_authentication(self):
         """Test Authentication"""
