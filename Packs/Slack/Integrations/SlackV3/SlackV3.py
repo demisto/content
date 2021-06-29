@@ -1,4 +1,4 @@
-from typing import Any, Dict, List, Optional, Tuple, Union
+from typing import Tuple
 
 import demistomock as demisto
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
@@ -1212,7 +1212,7 @@ def get_conversation_by_name(conversation_name: str) -> dict:
         if conversation_filter:
             break
         if not cursor:
-            demisto.info(f"Reached the end of looking for a channel")
+            demisto.info("Reached the end of looking for a channel")
             break
 
         body = body.copy()  # strictly for unit-test purposes (test_get_conversation_by_name_paging)
@@ -1860,7 +1860,6 @@ def init_globals(command_name: str = ''):
     global BOT_TOKEN, ACCESS_TOKEN, PROXY_URL, PROXIES, DEDICATED_CHANNEL, CLIENT, CHANNEL_CLIENT
     global SEVERITY_THRESHOLD, ALLOW_INCIDENTS, NOTIFY_INCIDENTS, INCIDENT_TYPE, VERIFY_CERT, ENABLE_DM
     global BOT_NAME, BOT_ICON_URL, MAX_LIMIT_TIME, PAGINATED_COUNT, SSL_CONTEXT, APP_TOKEN, ASYNC_CLIENT
-    global ENABLE_NOTIFICATIONS
 
     VERIFY_CERT = not demisto.params().get('unsecure', False)
     if not VERIFY_CERT:
@@ -1896,7 +1895,6 @@ def init_globals(command_name: str = ''):
     MAX_LIMIT_TIME = int(demisto.params().get('max_limit_time', '60'))
     PAGINATED_COUNT = int(demisto.params().get('paginated_count', '200'))
     ENABLE_DM = demisto.params().get('enable_dm', True)
-    ENABLE_NOTIFICATIONS = demisto.params().get('enable_notifications', True)
 
 
 def print_thread_dump():
