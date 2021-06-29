@@ -2345,8 +2345,9 @@ def test_http_client_debug(mocker):
     HTTPConnection.debuglevel = 1
     con = HTTPConnection("google.com")
     con.request('GET', '/')
-    r = con.getresponse()
-    r.read()
+    with con.getresponse() as r:
+        r.read()
+    con.close()
     assert demisto.info.call_count > 5
     assert debug_log is not None
 
@@ -2362,8 +2363,9 @@ def test_http_client_debug_int_logger_sensitive_query_params(mocker):
     HTTPConnection.debuglevel = 1
     con = HTTPConnection("google.com")
     con.request('GET', '?apikey=dummy')
-    r = con.getresponse()
-    r.read()
+    with con.getresponse() as r:
+        r.read()
+    con.close()
     assert debug_log
     for arg in demisto.info.call_args_list:
         assert 'dummy' not in arg[0][0]
@@ -3546,8 +3548,13 @@ def test_arg_to_timestamp_invalid_inputs():
 def test_warnings_handler(mocker):
     mocker.patch.object(demisto, 'info')
     # need to initialize WarningsHandler as pytest over-rides the handler
-    handler = WarningsHandler()  # noqa
-    warnings.warn("This is a test", RuntimeWarning)
+    with pytest.warns(RuntimeWarning) as r:
+        warnings.warn("without handler", RuntimeWarning)
+        handler = WarningsHandler()  # noqa
+        warnings.warn("This is a test", RuntimeWarning)
+        assert len(r) == 1
+        assert str(r[0].message) == "without handler"
+
     # call_args is tuple (args list, kwargs). we only need the args
     msg = demisto.info.call_args[0][0]
     assert 'This is a test' in msg
