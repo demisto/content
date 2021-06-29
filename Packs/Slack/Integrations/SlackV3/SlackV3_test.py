@@ -455,9 +455,11 @@ async def test_get_slack_name_channel(mocker):
             return {'channel': js.loads(CONVERSATIONS)[0]}
         return None
 
+    socket_client = AsyncMock()
+
     mocker.patch.object(demisto, 'getIntegrationContext', side_effect=get_integration_context)
     mocker.patch.object(demisto, 'setIntegrationContext')
-    mocker.patch.object(slack_sdk.WebClient, 'api_call', side_effect=api_call)
+    mocker.patch.object(socket_client.web_client, 'api_call', side_effect=api_call)
 
     # Assert
 
@@ -465,19 +467,19 @@ async def test_get_slack_name_channel(mocker):
     channel_id = 'C012AB3CD'
     name = await get_slack_name(channel_id, slack_sdk.WebClient)
     assert name == 'general'
-    assert slack_sdk.WebClient.api_call.call_count == 0
+    assert socket_client.web_client.api_call.call_count == 0
 
     # Channel not in integration context
     unknown_channel = 'CSASSON'
     name = await get_slack_name(unknown_channel, slack_sdk.WebClient)
     assert name == 'general'
-    assert slack_sdk.WebClient.api_call.call_count == 1
+    assert socket_client.web_client.api_call.call_count == 1
 
     # Channel doesn't exist
     nonexisting_channel = 'lulz'
     name = await get_slack_name(nonexisting_channel, slack_sdk.WebClient)
     assert name == ''
-    assert slack_sdk.WebClient.api_call.call_count == 1
+    assert socket_client.web_client.api_call.call_count == 1
 
 
 @pytest.mark.asyncio

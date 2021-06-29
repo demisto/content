@@ -75,6 +75,7 @@ configuration:
   name: bot_icon
   required: false
   type: 0
+  defaultvalue: "https://avatars.slack-edge.com/2020-05-24/1142885630851_5529c7f034d9b96ec39c_512.png"
 - defaultvalue: '60'
   display: Maximum time to wait for a rate limiting call in seconds
   name: max_limit_time
