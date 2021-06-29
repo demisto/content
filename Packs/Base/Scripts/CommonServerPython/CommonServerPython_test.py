@@ -2343,6 +2343,7 @@ def test_http_client_debug(mocker):
     debug_log = DebugLogger()
     from http.client import HTTPConnection
     HTTPConnection.debuglevel = 1
+    # not using 'with' because its not compatible with all python versions
     con = HTTPConnection("google.com")
     con.request('GET', '/')
     with con.getresponse() as r:
@@ -2363,6 +2364,7 @@ def test_http_client_debug_int_logger_sensitive_query_params(mocker):
     HTTPConnection.debuglevel = 1
     con = HTTPConnection("google.com")
     con.request('GET', '?apikey=dummy')
+    # not using 'with' because its not compatible with all python versions
     with con.getresponse() as r:
         r.read()
     con.close()
