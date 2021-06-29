@@ -1,0 +1,31 @@
+{
+    "id": "asset_field",
+    "version": -1,
+    "modified": "2021-01-18T08:24:58.794144Z",
+    "name": "Asset Field",
+    "ownerOnly": false,
+    "cliName": "assetfield",
+    "type": "shortText",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "associatedTypes": [
+        "Asset Type"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": false,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.5.0",
+    "object": "Assets"
+}
