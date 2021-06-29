@@ -51,6 +51,23 @@ configuration:
   name: proxy
   required: false
   type: 8
+- display: Incident Type
+  name: incident_type
+  required: false
+  type: 13
+- display: Fetch incidents
+  name: isFetch
+  required: false
+  type: 8
+- defaultvalue: 7 days
+  display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
+  name: first_fetch
+  required: false
+  type: 0
+- defaultvalue: '50'
+  name: max_fetch
+  required: false
+  type: 0
 description: Triggers by any alert from endpoint, cloud, and network security monitoring, with mitigation steps where applicable. Query Covalence for more detail.
 display: Covalence For Security Providers
 fromversion: 5.0.0

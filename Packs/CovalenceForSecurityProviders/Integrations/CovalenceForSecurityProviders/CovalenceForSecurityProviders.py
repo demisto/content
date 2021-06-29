@@ -74,7 +74,7 @@ def login(host=HOST, cov_id=None, username=USERNAME, password=PASSWORD, verify_s
     s = requests.Session()
     if BROKER and cov_id:
         url = f'https://{HOST}/index/{cov_id}'
-        r = s.get(url, verify=verify_ssl)
+        s.get(url, verify=verify_ssl)
     p = {'username': username, 'password': password}
     r = s.post(host + '/rest/login', data=p, verify=verify_ssl)
 
