@@ -1,4 +1,4 @@
-description: "Collect Log bundle  and parse data\n\nHolding the default Thresholds:\n\
+description: "Collect Log bundle and parse data\n\nHolding the default Thresholds:\n\
   {\n\t\"LargeInvestigations\": {\n\t\t\"numberofincidentswithmorethan500entries\"\
   : 300,\n\t\t\"numberofincidentsbiggerthan10mb\": 1,\n\t\t\"numberofincidentsbiggerthan1mb\"\
   : 300\n\t},\n\t\"LargeInputsOutputs\": {\n\t\t\"numberofincidentsIObiggerthan10mb\"\

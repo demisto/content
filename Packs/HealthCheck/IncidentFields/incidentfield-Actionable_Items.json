@@ -66,7 +66,7 @@
     "id": "incident_actionableitems",
     "isReadOnly": false,
     "locked": false,
-    "name": "Actionable Items:",
+    "name": "Actionable Items",
     "neverSetAsRequired": false,
     "ownerOnly": false,
     "required": false,

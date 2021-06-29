@@ -6,7 +6,7 @@ args:
   predefined:
   - "True"
   - "False"
-comment: 'Present or parse Disk usage stats '
+comment: Present or parse Disk usage stats.
 commonfields:
   id: HealthCheckDiskUsage
   version: -1
