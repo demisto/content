@@ -367,7 +367,7 @@ def edl_update(args: dict):
     edl_update_external_file(file_path, list_name, verbose)
 
 
-def edl_update_from_external_file(list_name: str, file_path: str, type_: str, retries: int) -> str:
+def edl_update_from_external_file(list_name: str, file_path: str, type_: str, retries: int):
     dict_of_lists = demisto.getIntegrationContext()
     list_data = dict_of_lists.get(list_name, None)
     file_data = edl_get_external_file(file_path, retries)
