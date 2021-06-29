@@ -190,7 +190,7 @@ def edl_get_external_file(file_path: str, retries: int = 1):
 
 def edl_get_external_file_command(args: dict):
     """
-    Get external file from web-server and prints to Warroom
+    Get external file from web-server and prints to the war room
     """
     file_path = str(args.get('file_path', ''))
     retries = int(args.get('retries', '1'))
