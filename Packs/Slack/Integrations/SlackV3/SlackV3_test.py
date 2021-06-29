@@ -446,40 +446,41 @@ async def test_get_slack_name_channel(mocker):
 
     # Set
 
-    async def api_call(method: str, http_verb: str = 'POST', file: str = None, params=None, json=None, data=None):
-        if method == 'users.info':
-            user = params['user']
-            if user != 'alexios':
-                return {'user': js.loads(USERS)[0]}
-        elif method == 'conversations.info':
-            return {'channel': js.loads(CONVERSATIONS)[0]}
+    async def users_info(user: str):
+        if user != 'alexios':
+            return js.loads(USERS)[0]
         return None
+
+    async def conversations_info(channel=''):
+        return js.loads(CONVERSATIONS)[0]
 
     socket_client = AsyncMock()
 
     mocker.patch.object(demisto, 'getIntegrationContext', side_effect=get_integration_context)
     mocker.patch.object(demisto, 'setIntegrationContext')
-    mocker.patch.object(socket_client.web_client, 'api_call', side_effect=api_call)
+    mocker.patch.object(socket_client.web_client, 'users_info', side_effect=users_info)
+    mocker.patch.object(socket_client.web_client, 'conversations_info',
+                        side_effect=conversations_info)
 
     # Assert
 
     # Channel in integration context
     channel_id = 'C012AB3CD'
-    name = await get_slack_name(channel_id, socket_client.web_client)
+    name = await get_slack_name(channel_id, socket_client)
     assert name == 'general'
     assert socket_client.web_client.api_call.call_count == 0
 
     # Channel not in integration context
     unknown_channel = 'CSASSON'
-    name = await get_slack_name(unknown_channel, socket_client.web_client)
+    name = await get_slack_name(unknown_channel, socket_client)
     assert name == 'general'
-    assert socket_client.web_client.api_call.call_count == 1
+    assert socket_client.web_client.conversations_info.call_count == 1
 
     # Channel doesn't exist
     nonexisting_channel = 'lulz'
-    name = await get_slack_name(nonexisting_channel, socket_client.web_client)
+    name = await get_slack_name(nonexisting_channel, socket_client)
     assert name == ''
-    assert socket_client.web_client.api_call.call_count == 1
+    assert socket_client.web_client.conversations_info.call_count == 1
 
 
 @pytest.mark.asyncio
@@ -970,7 +971,7 @@ def test_mirror_investigation_existing_mirror_error_type(mocker):
     assert len(channels_call) == 0
 
     assert return_error_mock.call_count == 1
-    assert err_msg == 'Cannot change the Slack channel type from Demisto.'
+    assert err_msg == 'Cannot change the Slack channel type from XSOAR.'
 
 
 def test_mirror_investigation_existing_mirror_error_name(mocker):
@@ -1558,7 +1559,6 @@ def test_check_for_mirrors_user_email_not_matching(mocker):
 @pytest.mark.asyncio
 async def test_handle_dm_create_demisto_user(mocker):
     import SlackV3
-    from slack_sdk.socket_mode.aiohttp import SocketModeClient
 
     # Set
     async def api_call(method: str, http_verb: str = 'POST', file: str = None, params=None, json=None, data=None):
@@ -1573,20 +1573,23 @@ async def test_handle_dm_create_demisto_user(mocker):
     async def fake_translate(message: str, user_name: str, user_email: str, demisto_user: dict):
         return "sup"
 
+    socket_client = AsyncMock()
+
     mocker.patch.object(demisto, 'getIntegrationContext', side_effect=get_integration_context)
     mocker.patch.object(demisto, 'findUser', return_value={'id': 'demisto_id'})
     mocker.patch.object(slack_sdk.WebClient, 'api_call', side_effect=api_call)
     mocker.patch.object(SlackV3, 'translate_create', side_effect=fake_translate)
+    mocker.patch.object(socket_client.web_client, 'api_call', side_effect=api_call)
 
     user = js.loads(USERS)[0]
 
     # Arrange
-    await SlackV3.handle_dm(user, 'open 123 incident', )
-    await SlackV3.handle_dm(user, 'new incident abu ahmad', SocketModeClient)
-    await SlackV3.handle_dm(user, 'incident create 817', SocketModeClient)
-    await SlackV3.handle_dm(user, 'incident open', SocketModeClient)
-    await SlackV3.handle_dm(user, 'incident new', SocketModeClient)
-    await SlackV3.handle_dm(user, 'create incident name=abc type=Access', SocketModeClient)
+    await SlackV3.handle_dm(user, 'open 123 incident', socket_client)
+    await SlackV3.handle_dm(user, 'new incident abu ahmad', socket_client)
+    await SlackV3.handle_dm(user, 'incident create 817', socket_client)
+    await SlackV3.handle_dm(user, 'incident open', socket_client)
+    await SlackV3.handle_dm(user, 'incident new', socket_client)
+    await SlackV3.handle_dm(user, 'create incident name=abc type=Access', socket_client)
 
     # Assert
     assert SlackV3.translate_create.call_count == 6
@@ -1622,11 +1625,12 @@ async def test_handle_dm_nondemisto_user_shouldnt_create(mocker):
     mocker.patch.object(demisto, 'getIntegrationContext', side_effect=get_integration_context)
     mocker.patch.object(demisto, 'findUser', return_value=None)
     mocker.patch.object(SlackV3, 'translate_create', side_effect=fake_translate)
-    mocker.patch.object(slack_sdk.WebClient, 'api_call', side_effect=api_call)
+    socket_client = AsyncMock()
+    mocker.patch.object(socket_client.web_client, 'api_call', side_effect=api_call)
     user = js.loads(USERS)[0]
 
     # Arrange
-    await SlackV3.handle_dm(user, 'create incident abc', slack_sdk.WebClient)
+    await SlackV3.handle_dm(user, 'create incident abc', socket_client)
 
     # Assert
     assert SlackV3.translate_create.call_count == 0
@@ -1656,11 +1660,12 @@ async def test_handle_dm_nondemisto_user_should_create(mocker):
     mocker.patch.object(demisto, 'getIntegrationContext', side_effect=get_integration_context)
     mocker.patch.object(demisto, 'findUser', return_value=None)
     mocker.patch.object(SlackV3, 'translate_create', side_effect=fake_translate)
-    mocker.patch.object(slack_sdk.WebClient, 'api_call', side_effect=api_call)
+    socket_client = AsyncMock()
+    mocker.patch.object(socket_client.web_client, 'api_call', side_effect=api_call)
     user = js.loads(USERS)[0]
 
     # Arrange
-    await SlackV3.handle_dm(user, 'create incident abc', slack_sdk.WebClient)
+    await SlackV3.handle_dm(user, 'create incident abc', socket_client)
 
     # Assert
     assert SlackV3.translate_create.call_count == 1
@@ -1686,11 +1691,12 @@ async def test_handle_dm_non_create_nonexisting_user(mocker):
     mocker.patch.object(demisto, 'getIntegrationContext', side_effect=get_integration_context)
     mocker.patch.object(demisto, 'findUser', return_value=None)
     mocker.patch.object(demisto, 'directMessage', return_value=None)
-    mocker.patch.object(slack_sdk.WebClient, 'api_call', side_effect=api_call)
+    socket_client = AsyncMock()
+    mocker.patch.object(socket_client.web_client, 'api_call', side_effect=api_call)
     user = js.loads(USERS)[0]
 
     # Arrange
-    await handle_dm(user, 'wazup', slack_sdk.WebClient)
+    await handle_dm(user, 'wazup', socket_client)
 
     message = demisto.directMessage.call_args[0][0]
     username = demisto.directMessage.call_args[0][1]
@@ -1725,11 +1731,12 @@ async def test_handle_dm_empty_message(mocker):
     mocker.patch.object(demisto, 'getIntegrationContext', side_effect=get_integration_context)
     mocker.patch.object(demisto, 'findUser', return_value=None)
     mocker.patch.object(demisto, 'directMessage', return_value=None)
-    mocker.patch.object(slack_sdk.WebClient, 'api_call', side_effect=api_call)
+    socket_client = AsyncMock()
+    mocker.patch.object(socket_client.web_client, 'api_call', side_effect=api_call)
     user = js.loads(USERS)[0]
 
     # Arrange
-    await handle_dm(user, 'wazup', slack_sdk.WebClient)
+    await handle_dm(user, 'wazup', socket_client)
 
     calls = slack_sdk.WebClient.api_call.call_args_list
     chat_call = [c for c in calls if c[0][0] == 'chat.postMessage']
@@ -1755,20 +1762,21 @@ async def test_handle_dm_create_with_error(mocker):
 
     mocker.patch.object(demisto, 'getIntegrationContext', side_effect=get_integration_context)
     mocker.patch.object(demisto, 'findUser', return_value={'id': 'demisto_id'})
-    mocker.patch.object(slack_sdk.WebClient, 'api_call', side_effect=api_call)
+    socket_client = AsyncMock()
+    mocker.patch.object(socket_client.web_client, 'api_call', side_effect=api_call)
     mocker.patch.object(SlackV3, 'translate_create', side_effect=InterruptedError('omg'))
 
     user = js.loads(USERS)[0]
 
     # Arrange
-    await SlackV3.handle_dm(user, 'open 123 incident', slack_sdk.WebClient)
+    await SlackV3.handle_dm(user, 'open 123 incident', socket_client)
 
     # Assert
     assert SlackV3.translate_create.call_count == 1
 
     demisto_user = SlackV3.translate_create.call_args[0][3]
     incident_string = SlackV3.translate_create.call_args[0][0]
-    calls = slack_sdk.WebClient.api_call.call_args_list
+    calls = socket_client.web_client.api_call.call_args_list
     chat_call = [c for c in calls if c[0][0] == 'chat.postMessage']
     message_args = chat_call[0][1]['json']
 
@@ -3235,7 +3243,8 @@ def test_set_topic_no_args_no_investigation(mocker):
 
     # Assert
     assert SlackV3.get_conversation_by_name.call_count == 0
-    assert err_msg == 'Channel not found - the Demisto app needs to be a member of the channel in order to look it up.'
+    assert err_msg == 'Channel was not found - Either the Slack app is not a member of the channel, ' \
+                      'or the slack app does not have permission to find the channel.'
 
 
 def test_invite_users(mocker):
@@ -3316,7 +3325,8 @@ def test_invite_users_no_channel_doesnt_exist(mocker):
     # Assert
     assert SlackV3.get_conversation_by_name.call_count == 0
     assert SlackV3.invite_users_to_conversation.call_count == 0
-    assert err_msg == 'Channel not found - the Demisto app needs to be a member of the channel in order to look it up.'
+    assert err_msg == 'Channel was not found - Either the Slack app is not a member of the channel, ' \
+                      'or the slack app does not have permission to find the channel..'
 
 
 def test_kick_users(mocker):
@@ -3397,7 +3407,8 @@ def test_kick_users_no_channel_doesnt_exist(mocker):
     # Assert
     assert SlackV3.get_conversation_by_name.call_count == 0
     assert SlackV3.invite_users_to_conversation.call_count == 0
-    assert err_msg == 'Channel not found - the Demisto app needs to be a member of the channel in order to look it up.'
+    assert err_msg == 'Channel was not found - Either the Slack app is not a member of the channel, ' \
+                      'or the slack app does not have permission to find the channel..'
 
 
 def test_rename_channel(mocker):
