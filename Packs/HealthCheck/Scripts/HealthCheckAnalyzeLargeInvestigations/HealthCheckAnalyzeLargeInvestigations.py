@@ -41,7 +41,7 @@ def main(args):
                                                               "table_result": "true"})
     if is_error(res):
         return_results(res)
-        return_error('Failed to run GetLargestInvestigations.')
+        return_error('Failed to run GetLargestInvestigations. See additional error details in the above entries.')
 
     res_data = format_dict_keys(res[0]['Contents']['data'])
     incidentsbiggerthan1mb = res_data
@@ -65,7 +65,7 @@ def main(args):
     res = demisto.executeCommand('setIncident', analyze_fields)
     if is_error(res):
         return_results(res)
-        return_error('Failed to run setIncident.')
+        return_error('Failed to run setIncident. See additional error details in the above entries.')
 
     action_items = []
     if numberofincidentswithmorethan500entries > int(thresholds['numberofincidentswithmorethan500entries']):

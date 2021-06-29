@@ -2,49 +2,54 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
 
-args = demisto.args()
-Thresholds = {
-    "relatedIndicatorCount": 100,
+THRESHOLDS = {
+    'relatedIndicatorCount': 100,
 }
 
-thresholds = args.get('Thresholds', Thresholds)
-
-body = {
-    "page": 0,
-    "size": 10,
-    "query": "",
-    "sort": [{
-        "field": "relatedIncCount",
-        "asc": False
+BODY = {
+    'page': 0,
+    'size': 10,
+    'query': '',
+    'sort': [{
+        'field': 'relatedIncCount',
+        'asc': False,
     }],
-    "period": {
-        "by": "day",
-        "fromValue": 90
-    }
+    'period': {
+        'by': 'day',
+        'fromValue': 90,
+    },
 }
 
-indicators = demisto.executeCommand(
-    "demisto-api-post", {"uri": "indicators/search", "body": body})[0]["Contents"]["response"]["iocObjects"]
-res = []
-DESCRIPTION = [
-    "The indicator: \"{}\" was found {} times, you may consider adding it to the exclusion list"
-]
 
-RESOLUTION = [
-    "You may consider adding it to the exclusion list"
-]
+def main(args):
+    thresholds = args.get('Thresholds', THRESHOLDS)
+    indicator_res = demisto.executeCommand('demisto-api-post', {
+        'uri': 'indicators/search',
+        'body': BODY,
+    })
+    if is_error(indicator_res):
+        return_results(indicator_res)
+        return_error('Failed to execute demisto-api-post. See additional error details in the above entries.')
 
-for indicator in indicators:
-    if indicator["relatedIncCount"] > thresholds["relatedIndicatorCount"]:
-        res.append({"category": "Indicators",
-                    "severity": "Low",
-                    "description": f"{DESCRIPTION[0]}".format(indicator["value"], indicator["relatedIncCount"]),
-                    "resolution": f"{RESOLUTION[0]}"
-                    })
+    indicators = indicator_res[0]['Contents']['response']['iocObjects']
 
-results = CommandResults(
-    readable_output="HealthCheckCommonIndicators Done",
-    outputs_prefix="actionableitems",
-    outputs=res)
+    res = []
+    for indicator in indicators:
+        if indicator['relatedIncCount'] > thresholds['relatedIndicatorCount']:
+            res.append({
+                'category': 'Indicators',
+                'severity': 'Low',
+                'description': f'The indicator: "{indicator["value"]}" was found {indicator["relatedIncCount"]} times',
+                'resolution': 'You may consider adding it to the exclusion list',
+            })
 
-return_results(results)
+    results = CommandResults(
+        readable_output='HealthCheckCommonIndicators Done',
+        outputs_prefix='actionableitems',
+        outputs=res)
+
+    return results
+
+
+if __name__ in ('__main__', '__builtin__', 'builtins'):  # pragma: no cover
+    return_results(main(demisto.args()))

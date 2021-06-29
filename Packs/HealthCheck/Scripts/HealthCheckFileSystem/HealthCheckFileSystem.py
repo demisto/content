@@ -71,49 +71,57 @@ def read_section(section):
 RESOLUTION = ["Free up Disk Space with Data Archiving: https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-0/"
               "cortex-xsoar-admin/manage-data/free-up-disc-space-with-data-archiving"]
 
-res = []
-largeFilesTable = []
-path = demisto.executeCommand('getFilePath', {'id': demisto.args()['entryID']})
 
+def main(args):
+    entry_id = args.get('entryID')
+    path = demisto.getFilePath(entry_id)['path']
+    with open(path, 'rb') as file_:
+        fs = file_.read()
 
-if is_error(path):
-    demisto.results('File not found')
-    sys.exit(0)
+    res = []
+    large_files_table = []
 
-with open(path[0]['Contents']['path'], 'rb') as fh:
-    fs = fh.read()
-    fs = fs.split(2 * os.linesep.encode())
+    file_content = fs.split(2 * os.linesep.encode())
     large = []
     filesystem = {}
-    for section in fs:
+    for section in file_content:
         path, files, large_files = read_section(section)
         filesystem[path] = files
         if large_files:
             large += large_files
-    numberOfPartitions = count_partitions(filesystem)
-    demisto.executeCommand('setIncident', {"numberofdbpartitions": numberOfPartitions})
+
+    number_of_partitions = count_partitions(filesystem)
+    demisto.executeCommand('setIncident', {"numberofdbpartitions": number_of_partitions})
     for file in large:
         res.append({'category': 'File system', 'severity': 'Medium',
                     'description': f"The file: {file['path']}/{file['name']} has a size of: {file['size']}\n",
                     'resolution': RESOLUTION[0]
                     })
-        largeFilesTable.append({"file": f"{file['path']}/{file['name']}", "size": f"{file['size']}"})
-    if numberOfPartitions > 12:
+        large_files_table.append({"file": f"{file['path']}/{file['name']}", "size": f"{file['size']}"})
+    if number_of_partitions > 12:
         res.append({'category': 'File system', 'severity': 'Medium',
-                    'description': f"You have {numberOfPartitions} months data, consider to archive old data",
+                    'description': f"You have {number_of_partitions} months data, consider to archive old data",
                     'resolution': RESOLUTION[0]
                     })
-    elif numberOfPartitions > 6:
+    elif number_of_partitions > 6:
         res.append({'category': 'File system', 'severity': 'Low',
-                    'description': f"You have {numberOfPartitions} months data, consider to archive old data",
+                    'description': f"You have {number_of_partitions} months data, consider to archive old data",
                     'resolution': RESOLUTION[0]
                     })
 
-aa = demisto.executeCommand('setIncident', {"largefiles": largeFilesTable})
+    res = demisto.executeCommand('setIncident', {"largefiles": large_files_table})
+    if is_error(res):
+        return_results(res)
+        return_error('Failed to execute setIncident. See additional error details in the above entries.')
 
-results = CommandResults(
-    readable_output="HealthCheckFileSysLog Done",
-    outputs_prefix="actionableitems",
-    outputs=res)
+    results = CommandResults(
+        readable_output="HealthCheckFileSysLog Done",
+        outputs_prefix="actionableitems",
+        outputs=res,
+    )
 
-return_results(results)
+    return results
+
+
+if __name__ in ('__main__', '__builtin__', 'builtins'):  # pragma: no cover
+    return_results(main(demisto.args()))

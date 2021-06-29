@@ -2,18 +2,21 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
 
-containers = demisto.executeCommand("demisto-api-get", {"uri": "/health/containers"})[0]['Contents']
-table = []
+def main():
+    res = demisto.executeCommand('demisto-api-get', {'uri': '/health/containers'})
+    if is_error(res):
+        return_results(res)
+        return_error('Failed to execute demisto-api-get. See additional error details in the above entries.')
 
-table.append(containers['response'])
-md = tableToMarkdown('Containers Status', table, headers=['all', 'inactive', 'running'])
+    containers = res[0]['Contents']['response']
 
-dmst_entry = {'Type': entryTypes['note'],
-              'Contents': md,
-              'ContentsFormat': formats['markdown'],
-              'HumanReadable': md,
-              'ReadableContentsFormat': formats['markdown'],
-              'EntryContext': {'containers': table}}
+    return CommandResults(
+        readable_output=tableToMarkdown('Containers Status', [containers], headers=['all', 'inactive', 'running']),
+        outputs_prefix='containers',
+        outputs=[containers],
+        raw_response=containers,
+    )
 
 
-demisto.results(dmst_entry)
+if __name__ in ('__main__', '__builtin__', 'builtins'):  # pragma: no cover
+    return_results(main())
