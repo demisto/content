@@ -127,9 +127,9 @@ def get_indicators(client: Client, indicators: list, args: dict) -> CommandResul
     )
 
 
-def test_module(client: Client):
+def check_feed(client: Client):
     if client.feed_response and 'html' in client.feed_response.headers['content-type']:
-        raise DemistoException(f'{client._base_url} is not rss feed url. Try look for a url containing \'feed\' '
+        raise DemistoException(f'{client.base_url} is not rss feed url. Try look for a url containing \'feed\' '
                                f'prefix or suffix.')
     else:
         return_results("ok")
@@ -160,7 +160,7 @@ def main():
         client.request_feed_url()
 
         if command == 'test-module':
-            test_module(client)
+            check_feed(client)
 
         elif command == 'rss-get-indicators':
             parsed_indicators = fetch_indicators(client)
