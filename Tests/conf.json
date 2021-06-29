@@ -1868,12 +1868,6 @@
             "is_mockable": false
         },
         {
-            "integrations": "QRadar",
-            "playbookID": "test_Qradar",
-            "fromversion": "5.5.0",
-            "is_mockable": false
-        },
-        {
             "integrations": "QRadar_v2",
             "playbookID": "test_Qradar_v2",
             "fromversion": "6.0.0",
