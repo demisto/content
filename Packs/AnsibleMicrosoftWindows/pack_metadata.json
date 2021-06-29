@@ -1,6 +1,6 @@
 {
-    "name": "Ansible Microsoft Windows",
-    "description": "TODO",
+    "name": "Microsoft Windows",
+    "description": "Manage and control Windows hosts.",
     "support": "xsoar",
     "currentVersion": "1.0.0",
     "author": "Cortex XSOAR",
@@ -9,7 +9,7 @@
     "categories": [
         "IT Services"
     ],
-    "tags": [],
-    "useCases": [],
+    "tags": ["IT"],
+    "useCases": ["IT Services", "Asset Management"],
     "keywords": []
 }
