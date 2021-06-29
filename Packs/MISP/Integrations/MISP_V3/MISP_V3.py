@@ -96,7 +96,9 @@ ENTITIESDICT = {
     'template_version': 'TemplateVersion',
     'template_uuid': 'TemplateUUID',
     'meta-category': 'MetaCategory',
-    'decay_score': 'DecayScore'
+    'decay_score': 'DecayScore',
+    'first_seen': 'first_seen',
+    'last_seen': 'last_seen'
 }
 
 ANALYSIS_NUMBERS = {
@@ -109,7 +111,8 @@ DISTRIBUTION_NUMBERS = {
     'Your_organisation_only': 0,
     'This_community_only': 1,
     'Connected_communities': 2,
-    'All_communities': 3
+    'All_communities': 3,
+    'Inherit_event': 5
 }
 
 SIGHTING_TO_TYPE_MAP = {
@@ -267,13 +270,12 @@ def arrange_context_according_to_user_selection(context_data, data_keys_to_save=
             remove_unselected_context_keys(obj, data_keys_to_save)
 
 
-def build_context(response: Union[dict, requests.Response], data_keys_to_save=[]) -> dict:  # type: ignore
+def build_context(response: Union[dict, requests.Response]) -> dict:  # type: ignore
     """
     Gets a MISP's response and building it to be in context. If missing key, will return the one written.
 
     Args:
        response (requests.Response or dict):
-       data_keys_to_save (list):
     Returns:
         dict: context output
     """
@@ -344,7 +346,6 @@ def build_context(response: Union[dict, requests.Response], data_keys_to_save=[]
                 {'Name': tag.get('name')} for tag in events[i].get('Tag')
             ]
     events = replace_keys(events)  # type: ignore
-    arrange_context_according_to_user_selection(events, data_keys_to_save)  # type: ignore
     return events  # type: ignore
 
 
@@ -455,41 +456,37 @@ def get_time_now():
 
 def get_new_event(args):
     event = MISPEvent()
-    event.distribution = args.get('distribution')
+    event.distribution = DISTRIBUTION_NUMBERS[args.get('distribution')]
     threat_level_id_arg = args.get('threat_level_id')
     event.threat_level_id = THREAT_LEVELS_NUMBERS[
         threat_level_id_arg] if threat_level_id_arg in THREAT_LEVELS_NUMBERS else threat_level_id_arg
     analysis_arg = args.get('analysis')
     event.analysis = ANALYSIS_NUMBERS.get(analysis_arg) if analysis_arg in ANALYSIS_NUMBERS else analysis_arg
-
-    event.info = args.get('info') if args.get('info') else 'Event from Demisto'
-    event.date = args.get('date') if args.get('date') else get_time_now()
+    event.info = args.get('info') if args.get('info') else 'Event from XSOAR'
+    event.date = get_time_now()
     event.published = argToBoolean(args.get('published', 'False'))
-    event.orgc_id = args.get('orgc_id')
-    event.org_id = args.get('org_id')
-    event.sharing_group_id = args.get('sharing_group_id')
-
     return event
 
 
 def create_event(demisto_args: dict):
-    """Creating event in MISP with the given attribute
-    Returns:
-    """
+    """Creating event in MISP with the given attribute args"""
     new_event = get_new_event(demisto_args)
     new_event = PYMISP.add_event(new_event, True)
-    event_id = get_valid_event_id(new_event.id)
 
+    if isinstance(new_event, dict) and new_event.get('errors'):
+        return_error(new_event.get('errors'))
+
+    event_id = get_valid_event_id(new_event.id)
     add_attribute(event_id=event_id, internal=True, new_event=new_event, demisto_args=demisto_args)
     event = PYMISP.search(eventid=event_id)
-
     human_readable = f"## MISP create event\nNew event with ID: {event_id} has been successfully created.\n"
 
     return CommandResults(
         readable_output=human_readable,
         outputs_prefix='MISP.Event',
-        outputs_key_field='id',
-        outputs=build_context(event),
+        outputs_key_field='ID',
+        outputs=build_events_search_response(copy.deepcopy(event)),
+        raw_response=event
     )
 
 
@@ -514,7 +511,7 @@ def get_valid_distribution(distribution: int):
 
 
 def add_attribute(event_id: int = None, internal: bool = False, demisto_args: dict = {}, new_event: MISPEvent = None):
-    """Adding attribute to a given event
+    """Adding attribute to a given MISP event object
     This function can be called as an independence command or as part of another command (create event for example)
 
     Args:
@@ -524,34 +521,43 @@ def add_attribute(event_id: int = None, internal: bool = False, demisto_args: di
         new_event
     """
     attributes_args = {
-        'id': demisto_args.get('id'),  # misp event id
-        'type': demisto_args.get('type', 'Other'),
-        'category': demisto_args.get('category'),
+        'id': demisto_args.get('event_id'),  # misp event id
+        'type': demisto_args.get('type', 'other'),
+        'category': demisto_args.get('category', 'External analysis'),
         'to_ids': argToBoolean(demisto_args.get('to_ids', True)),
         'comment': demisto_args.get('comment'),
         'value': demisto_args.get('value')
     }
-    attributes_args.update({'id': get_valid_event_id(event_id)}) if event_id else None
+    if not event_id:
+        event_id = demisto_args.get('event_id')
+
+    event_id = get_valid_event_id(event_id)
+    attributes_args.update({'id': event_id}) if event_id else None
     distribution = demisto_args.get('distribution')
     attributes_args.update({'distribution': get_valid_distribution(distribution)}) if distribution else None
 
     if not new_event:
-        new_event = PYMISP.search(eventid=attributes_args.get('id'), pythonify=True)[0]
+        response = PYMISP.search(eventid=event_id, pythonify=True)
+        if not response:
+            return_error(
+                f"Error: An event with the given id: {event_id} was not found in MISP. please check it once again")
+        new_event = response[0]  # response[0] is MISP event
 
     new_event.add_attribute(**attributes_args)
     PYMISP.update_event(event=new_event)
     if internal:
         return
 
-    updated_event = PYMISP.search(eventid=attributes_args.get('id'))
-    human_readable = f"## MISP add attribute\nNew attribute: {attributes_args.get('value')} " \
-                     f"was added to event id {attributes_args.get('id')}.\n"
+    value = attributes_args.get('value')
+    updated_event = PYMISP.search(eventid=new_event.id, controller='attributes', value=value)
+    human_readable = f"## MISP add attribute\nNew attribute: {value} was added to event id {new_event.id}.\n"
 
     return CommandResults(
         readable_output=human_readable,
-        outputs_prefix='MISP.Event',
-        outputs_key_field='id',
-        outputs=build_context(updated_event),
+        outputs_prefix='MISP.Attribute',
+        outputs_key_field='ID',
+        outputs=build_attributes_search_response(copy.deepcopy(updated_event)),
+        raw_response=updated_event
     )
 
 
@@ -1326,7 +1332,7 @@ def main():
         elif command == 'misp-create-event':
             return_results(create_event(args))
         elif command == 'misp-add-attribute':
-            return_results(add_attribute(args))
+            return_results(add_attribute(demisto_args=args))
         elif command == 'misp-search-events':
             return_results(search_events(args))
         elif command == 'misp-search-attributes':
