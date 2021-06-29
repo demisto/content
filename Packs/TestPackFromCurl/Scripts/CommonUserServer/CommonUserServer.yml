@@ -1,0 +1,20 @@
+comment: Common user defined code that will be merged into each server script when
+  it runs
+commonfields:
+  id: CommonUserServer
+  version: -1
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ""
+name: CommonUserServer
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+tags:
+- infra
+- server
+type: javascript
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)
