@@ -1,5 +1,3 @@
-import os
-
 import demistomock as demisto
 from GetDuplicatesMlv2 import main, Utils
 from CommonServerPython import entryTypes
@@ -40,7 +38,6 @@ def test_main(mocker):
 
 
 def test_extract_domain_from_url():
-    os.environ['PYTHONHTTPSVERIFY'] = '0'
     res = Utils.extract_domain_from_url("https://www.google.com")  # disable-secrets-detection
     assert res == 'google.com'
     res = Utils.extract_domain_from_url("https://www.google.co.il")  # disable-secrets-detection
