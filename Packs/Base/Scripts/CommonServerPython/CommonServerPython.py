@@ -2397,9 +2397,7 @@ class Common(object):
 
     class CustomIndicator(Indicator):
 
-        CONTEXT_PATH = 'Custom(val.value && val.value == obj.value)'
-
-        def __init__(self, value, dbot_score, params, prefix_str=None):
+        def __init__(self, value, dbot_score, params, prefix_str):
             """
             :type value: ``Any``
             :param value: Value of the indicator
@@ -2411,14 +2409,17 @@ class Common(object):
             :param params: A dictionary containing all the param names and their values
 
             :type prefix_str: ``Str``
-            :param prefix_str: If passed context path prefix will be prefix_str, otherwise Custom
+            :param prefix_str: Will be used as the context path prefix
 
             :return: None
             :rtype: ``None``
             """
 
-            if prefix_str:
-                self.CONTEXT_PATH.replace('Custom', prefix_str)
+            if not prefix_str:
+                raise ValueError('prefix_str is mandatory for creating the indicator')
+
+            self.CONTEXT_PATH = f'{prefix_str}(val.value && val.value == obj.value)'
+
             self.value = value
             if not isinstance(dbot_score, Common.DBotScore):
                 raise ValueError('dbot_score must be of type DBotScore')
@@ -2437,7 +2438,7 @@ class Common(object):
                 custom_context[attr] = value
 
             ret_value = {
-                Common.CustomIndicator.CONTEXT_PATH: custom_context
+                self.CONTEXT_PATH: custom_context
             }
 
             if self.dbot_score:
