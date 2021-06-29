@@ -87,7 +87,7 @@ class Client(BaseClient):
         if len(encoded_content) > self.content_max_size:  # Ensure report_content does not exceed the
             # indicator size limit (~50KB)
             report_content = encoded_content[:self.content_max_size].decode('utf-8')
-            report_content += ' This is trounced text, report content was too big.'
+            report_content += ' This is truncated text, report content was too big.'
 
         return report_content
 
