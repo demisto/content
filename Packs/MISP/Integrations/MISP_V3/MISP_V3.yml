@@ -306,53 +306,18 @@ script:
       type: String
   - arguments:
     - default: true
-      description: domain to check
+      description: Domain to search.
       isArray: true
       name: domain
       required: false
       secret: false
     deprecated: false
-    description: Checks if the domain is in MISP events.
+    description: Checks the reputation of the given domain.
     execution: false
     name: domain
-  - arguments:
-    - default: true
-      description: email to check
-      isArray: true
-      name: email
-      required: false
-      secret: false
-    deprecated: false
-    description: Checks if the email is in MISP events.
-    execution: false
-    name: email
-  - arguments:
-    - default: true
-      description: Hash of the file to query. Supports MD5, SHA-1, and SHA-256. You
-        can pass CSV values to retrieve multiple responses.
-      isArray: true
-      name: file
-      required: false
-      secret: false
-    deprecated: false
-    description: Checks the file reputation of the given hash.
-    execution: false
-    name: file
     outputs:
-    - contextPath: File.MD5
-      description: The MD5 hash of the file.
-      type: String
-    - contextPath: File.SHA1
-      description: The SHA1 hash of the file.
-      type: String
-    - contextPath: File.SHA256
-      description: The SHA256 hash of the file.
-      type: String
-    - contextPath: File.Malicious.Vendor
-      description: The vendor that reported the file as malicious.
-      type: String
-    - contextPath: File.Malicious.Description
-      description: A description explaining why the file was determined to be malicious.
+    - contextPath: Domain.Name
+      description: The domain of the indicator.
       type: String
     - contextPath: DBotScore.Indicator
       description: The indicator that was tested.
@@ -366,26 +331,137 @@ script:
     - contextPath: DBotScore.Score
       description: The actual score.
       type: Number
+    - contextPath: DBotScore.Reliability
+      description: Reliability of the source providing the intelligence data.
+      type: String
+    - contextPath: MISP.Attribute.Distribution
+      description: Attribute distribution.
+      type: string
+    - contextPath: MISP.Attribute.Value
+      description: Attribute value.
+      type: string
+    - contextPath: MISP.Attribute.EventID
+      description: Attribute event ID.
+      type: string
+    - contextPath: MISP.Attribute.RelatedAttribute
+      description: Related Attibute.
+      type: Unknown
+    - contextPath: MISP.Attribute.last_seen
+      description: Attribute last_seen timestamp.
+      type: string
+    - contextPath: MISP.Attribute.first_seen
+      description: Attribute first_seen timestamp.
+      type: string
+    - contextPath: MISP.Attribute.Timestamp
+      description: Attribute timestamp.
+      type: string
+    - contextPath: MISP.Attribute.ObjectID
+      description: Attribute object id.
+      type: string
+    - contextPath: MISP.Attribute.Deleted
+      description: Is the attribute deleted.
+      type: boolean
+    - contextPath: MISP.Attribute.DisableCorrelation
+      description: Is attribute correlation disabled?
+      type: boolean
+    - contextPath: MISP.Attribute.Type
+      description: Attribute type.
+      type: string
+    - contextPath: MISP.Attribute.ID
+      description: Attribute ID.
+      type: string
+    - contextPath: MISP.Attribute.UUID
+      description: Attribute UUID.
+      type: string
+    - contextPath: MISP.Attribute.ToIDs
+      description: Is the Intrusion Detection System flag set.
+      type: boolean
+    - contextPath: MISP.Attribute.Category
+      description: Attribute category.
+      type: string
+    - contextPath: MISP.Attribute.SharingGroupID
+      description: Attribute sharing group ID.
+      type: string
+    - contextPath: MISP.Attribute.Comment
+      description: Attribute comment.
+      type: string
+    - contextPath: MISP.Attribute.Event.ID
+      description: MISP event ID.
+      type: string
+    - contextPath: MISP.Attribute.Event.Distribution
+      description: MISP event distribution.
+      type: string
+    - contextPath: MISP.Attribute.Event.Info
+      description: MISP event name.
+      type: string
+    - contextPath: MISP.Attribute.Event.Timestamp
+      description: Timestamp of the event.
+      type: string
+    - contextPath: MISP.Attribute.Event.Published
+      description: Is the event published.
+      type: boolean
+    - contextPath: MISP.Attribute.Event.Date
+      description: Event Date.
+      type: date
+    - contextPath: MISP.Attribute.Event.ThreatLevelID
+      description: Threat level of the MISP event (1 High, 2 Medium, 3 Low, 4 Undefined).
+      type: string
+    - contextPath: MISP.Attribute.Event.PublishTimestamp
+      description: Timestamp of the publish time (if published).
+      type: string
+    - contextPath: MISP.Attribute.Event.OrganisationID
+      description: MISP event organisation ID.
+      type: string
+    - contextPath: MISP.Attribute.Event.OwnerOrganisation.ID
+      description: Owner organization ID.
+      type: string
+    - contextPath: MISP.Attribute.Event.OwnerOrganisation.Name
+      description: Owner organization name.
+      type: string
+    - contextPath: MISP.Attribute.Event.OwnerOrganisation.UUID
+      description: Owner organization UUID.
+      type: string
+    - contextPath: MISP.Attribute.Event.OwnerOrganisation.local
+      description: Is owner organization is local.
+      type: boolean
+    - contextPath: MISP.Attribute.Event.UUID
+      description: MISP event UUID.
+      type: string
+    - contextPath: MISP.Attribute.Event.Analysis
+      description: Event analysis (0 Initial, 1 Ongoing, 2 Completed).
+      type: string
+    - contextPath: MISP.Attribute.Event.SharingGroupID
+      description: Event sharing group ID.
+      type: string
+    - contextPath: MISP.Attribute.Event.Tag.Name
+      description: Event tag name.
+      type: string
+    - contextPath: MISP.Attribute.Event.Tag.ID
+      description: Event tag ID.
+      type: string
+    - contextPath: MISP.Attribute.Tag.Name
+      description: Attribute tag name.
+      type: string
+    - contextPath: MISP.Attribute.Tag.ID
+      description: Attribute tag ID.
+      type: string
+    - contextPath: MISP.Attribute.Sighting.type
+      description: Attribute's sighting type.
+      type: string
   - arguments:
     - default: true
-      description: URL to check
+      description: Email address to search.
       isArray: true
-      name: url
+      name: email
       required: false
       secret: false
     deprecated: false
-    description: Checks if the URL is in MISP events.
+    description: Checks the reputation of the given email address.
     execution: false
-    name: url
+    name: email
     outputs:
-    - contextPath: URL.Data
-      description: The URL.
-      type: String
-    - contextPath: URL.Malicious.Vendor
-      description: The vendor reporting the URL as malicious.
-      type: String
-    - contextPath: URL.Malicious.Description
-      description: A description of the malicious URL.
+    - contextPath: Email.Address
+      description: The email address of the indicator.
       type: String
     - contextPath: DBotScore.Indicator
       description: The indicator that was tested.
@@ -398,7 +474,412 @@ script:
       type: String
     - contextPath: DBotScore.Score
       description: The actual score.
+      type: Number
+    - contextPath: DBotScore.Reliability
+      description: Reliability of the source providing the intelligence data.
       type: String
+    - contextPath: MISP.Attribute.Distribution
+      description: Attribute distribution.
+      type: string
+    - contextPath: MISP.Attribute.Value
+      description: Attribute value.
+      type: string
+    - contextPath: MISP.Attribute.EventID
+      description: Attribute event ID.
+      type: string
+    - contextPath: MISP.Attribute.RelatedAttribute
+      description: Related Attibute.
+      type: Unknown
+    - contextPath: MISP.Attribute.last_seen
+      description: Attribute last_seen timestamp.
+      type: string
+    - contextPath: MISP.Attribute.first_seen
+      description: Attribute first_seen timestamp.
+      type: string
+    - contextPath: MISP.Attribute.Timestamp
+      description: Attribute timestamp.
+      type: string
+    - contextPath: MISP.Attribute.ObjectID
+      description: Attribute object id.
+      type: string
+    - contextPath: MISP.Attribute.Deleted
+      description: Is the attribute deleted.
+      type: boolean
+    - contextPath: MISP.Attribute.DisableCorrelation
+      description: Is attribute correlation disabled?
+      type: boolean
+    - contextPath: MISP.Attribute.Type
+      description: Attribute type.
+      type: string
+    - contextPath: MISP.Attribute.ID
+      description: Attribute ID.
+      type: string
+    - contextPath: MISP.Attribute.UUID
+      description: Attribute UUID.
+      type: string
+    - contextPath: MISP.Attribute.ToIDs
+      description: Is the Intrusion Detection System flag set.
+      type: boolean
+    - contextPath: MISP.Attribute.Category
+      description: Attribute category.
+      type: string
+    - contextPath: MISP.Attribute.SharingGroupID
+      description: Attribute sharing group ID.
+      type: string
+    - contextPath: MISP.Attribute.Comment
+      description: Attribute comment.
+      type: string
+    - contextPath: MISP.Attribute.Event.ID
+      description: MISP event ID.
+      type: string
+    - contextPath: MISP.Attribute.Event.Distribution
+      description: MISP event distribution.
+      type: string
+    - contextPath: MISP.Attribute.Event.Info
+      description: MISP event name.
+      type: string
+    - contextPath: MISP.Attribute.Event.Timestamp
+      description: Timestamp of the event.
+      type: string
+    - contextPath: MISP.Attribute.Event.Published
+      description: Is the event published.
+      type: boolean
+    - contextPath: MISP.Attribute.Event.Date
+      description: Event Date.
+      type: date
+    - contextPath: MISP.Attribute.Event.ThreatLevelID
+      description: Threat level of the MISP event (1 High, 2 Medium, 3 Low, 4 Undefined).
+      type: string
+    - contextPath: MISP.Attribute.Event.PublishTimestamp
+      description: Timestamp of the publish time (if published).
+      type: string
+    - contextPath: MISP.Attribute.Event.OrganisationID
+      description: MISP event organisation ID.
+      type: string
+    - contextPath: MISP.Attribute.Event.OwnerOrganisation.ID
+      description: Owner organization ID.
+      type: string
+    - contextPath: MISP.Attribute.Event.OwnerOrganisation.Name
+      description: Owner organization name.
+      type: string
+    - contextPath: MISP.Attribute.Event.OwnerOrganisation.UUID
+      description: Owner organization UUID.
+      type: string
+    - contextPath: MISP.Attribute.Event.OwnerOrganisation.local
+      description: Is owner organization is local.
+      type: boolean
+    - contextPath: MISP.Attribute.Event.UUID
+      description: MISP event UUID.
+      type: string
+    - contextPath: MISP.Attribute.Event.Analysis
+      description: Event analysis (0 Initial, 1 Ongoing, 2 Completed).
+      type: string
+    - contextPath: MISP.Attribute.Event.SharingGroupID
+      description: Event sharing group ID.
+      type: string
+    - contextPath: MISP.Attribute.Event.Tag.Name
+      description: Event tag name.
+      type: string
+    - contextPath: MISP.Attribute.Event.Tag.ID
+      description: Event tag ID.
+      type: string
+    - contextPath: MISP.Attribute.Tag.Name
+      description: Attribute tag name.
+      type: string
+    - contextPath: MISP.Attribute.Tag.ID
+      description: Attribute tag ID.
+      type: string
+    - contextPath: MISP.Attribute.Sighting.type
+      description: Attribute's sighting type.
+      type: string
+  - arguments:
+    - default: true
+      description: Hash of the file to query. Supports MD5, SHA-1, and SHA-256.
+      isArray: true
+      name: file
+      required: false
+      secret: false
+    deprecated: false
+    description: Checks the file reputation of the given hash.
+    execution: false
+    name: file
+    outputs:
+    - contextPath: File.Name
+      description: The file hash.
+      type: String
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+    - contextPath: DBotScore.Reliability
+      description: Reliability of the source providing the intelligence data.
+      type: String
+    - contextPath: MISP.Attribute.Distribution
+      description: Attribute distribution.
+      type: string
+    - contextPath: MISP.Attribute.Value
+      description: Attribute value.
+      type: string
+    - contextPath: MISP.Attribute.EventID
+      description: Attribute event ID.
+      type: string
+    - contextPath: MISP.Attribute.RelatedAttribute
+      description: Related Attibute.
+      type: Unknown
+    - contextPath: MISP.Attribute.last_seen
+      description: Attribute last_seen timestamp.
+      type: string
+    - contextPath: MISP.Attribute.first_seen
+      description: Attribute first_seen timestamp.
+      type: string
+    - contextPath: MISP.Attribute.Timestamp
+      description: Attribute timestamp.
+      type: string
+    - contextPath: MISP.Attribute.ObjectID
+      description: Attribute object id.
+      type: string
+    - contextPath: MISP.Attribute.Deleted
+      description: Is the attribute deleted.
+      type: boolean
+    - contextPath: MISP.Attribute.DisableCorrelation
+      description: Is attribute correlation disabled?
+      type: boolean
+    - contextPath: MISP.Attribute.Type
+      description: Attribute type.
+      type: string
+    - contextPath: MISP.Attribute.ID
+      description: Attribute ID.
+      type: string
+    - contextPath: MISP.Attribute.UUID
+      description: Attribute UUID.
+      type: string
+    - contextPath: MISP.Attribute.ToIDs
+      description: Is the Intrusion Detection System flag set.
+      type: boolean
+    - contextPath: MISP.Attribute.Category
+      description: Attribute category.
+      type: string
+    - contextPath: MISP.Attribute.SharingGroupID
+      description: Attribute sharing group ID.
+      type: string
+    - contextPath: MISP.Attribute.Comment
+      description: Attribute comment.
+      type: string
+    - contextPath: MISP.Attribute.Event.ID
+      description: MISP event ID.
+      type: string
+    - contextPath: MISP.Attribute.Event.Distribution
+      description: MISP event distribution.
+      type: string
+    - contextPath: MISP.Attribute.Event.Info
+      description: MISP event name.
+      type: string
+    - contextPath: MISP.Attribute.Event.Timestamp
+      description: Timestamp of the event.
+      type: string
+    - contextPath: MISP.Attribute.Event.Published
+      description: Is the event published.
+      type: boolean
+    - contextPath: MISP.Attribute.Event.Date
+      description: Event Date.
+      type: date
+    - contextPath: MISP.Attribute.Event.ThreatLevelID
+      description: Threat level of the MISP event (1 High, 2 Medium, 3 Low, 4 Undefined).
+      type: string
+    - contextPath: MISP.Attribute.Event.PublishTimestamp
+      description: Timestamp of the publish time (if published).
+      type: string
+    - contextPath: MISP.Attribute.Event.OrganisationID
+      description: MISP event organisation ID.
+      type: string
+    - contextPath: MISP.Attribute.Event.OwnerOrganisation.ID
+      description: Owner organization ID.
+      type: string
+    - contextPath: MISP.Attribute.Event.OwnerOrganisation.Name
+      description: Owner organization name.
+      type: string
+    - contextPath: MISP.Attribute.Event.OwnerOrganisation.UUID
+      description: Owner organization UUID.
+      type: string
+    - contextPath: MISP.Attribute.Event.OwnerOrganisation.local
+      description: Is owner organization is local.
+      type: boolean
+    - contextPath: MISP.Attribute.Event.UUID
+      description: MISP event UUID.
+      type: string
+    - contextPath: MISP.Attribute.Event.Analysis
+      description: Event analysis (0 Initial, 1 Ongoing, 2 Completed).
+      type: string
+    - contextPath: MISP.Attribute.Event.SharingGroupID
+      description: Event sharing group ID.
+      type: string
+    - contextPath: MISP.Attribute.Event.Tag.Name
+      description: Event tag name.
+      type: string
+    - contextPath: MISP.Attribute.Event.Tag.ID
+      description: Event tag ID.
+      type: string
+    - contextPath: MISP.Attribute.Tag.Name
+      description: Attribute tag name.
+      type: string
+    - contextPath: MISP.Attribute.Tag.ID
+      description: Attribute tag ID.
+      type: string
+    - contextPath: MISP.Attribute.Sighting.type
+      description: Attribute's sighting type.
+      type: string
+  - arguments:
+    - default: true
+      description: URL address to check.
+      isArray: true
+      name: url
+      required: false
+      secret: false
+    deprecated: false
+    description: Checks the reputation of the given email address.
+    execution: false
+    name: url
+    outputs:
+    - contextPath: URL.Data
+      description: The url of the indicator.
+      type: String
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+    - contextPath: DBotScore.Reliability
+      description: Reliability of the source providing the intelligence data.
+      type: String
+    - contextPath: MISP.Attribute.Distribution
+      description: Attribute distribution.
+      type: string
+    - contextPath: MISP.Attribute.Value
+      description: Attribute value.
+      type: string
+    - contextPath: MISP.Attribute.EventID
+      description: Attribute event ID.
+      type: string
+    - contextPath: MISP.Attribute.RelatedAttribute
+      description: Related Attibute.
+      type: Unknown
+    - contextPath: MISP.Attribute.last_seen
+      description: Attribute last_seen timestamp.
+      type: string
+    - contextPath: MISP.Attribute.first_seen
+      description: Attribute first_seen timestamp.
+      type: string
+    - contextPath: MISP.Attribute.Timestamp
+      description: Attribute timestamp.
+      type: string
+    - contextPath: MISP.Attribute.ObjectID
+      description: Attribute object id.
+      type: string
+    - contextPath: MISP.Attribute.Deleted
+      description: Is the attribute deleted.
+      type: boolean
+    - contextPath: MISP.Attribute.DisableCorrelation
+      description: Is attribute correlation disabled?
+      type: boolean
+    - contextPath: MISP.Attribute.Type
+      description: Attribute type.
+      type: string
+    - contextPath: MISP.Attribute.ID
+      description: Attribute ID.
+      type: string
+    - contextPath: MISP.Attribute.UUID
+      description: Attribute UUID.
+      type: string
+    - contextPath: MISP.Attribute.ToIDs
+      description: Is the Intrusion Detection System flag set.
+      type: boolean
+    - contextPath: MISP.Attribute.Category
+      description: Attribute category.
+      type: string
+    - contextPath: MISP.Attribute.SharingGroupID
+      description: Attribute sharing group ID.
+      type: string
+    - contextPath: MISP.Attribute.Comment
+      description: Attribute comment.
+      type: string
+    - contextPath: MISP.Attribute.Event.ID
+      description: MISP event ID.
+      type: string
+    - contextPath: MISP.Attribute.Event.Distribution
+      description: MISP event distribution.
+      type: string
+    - contextPath: MISP.Attribute.Event.Info
+      description: MISP event name.
+      type: string
+    - contextPath: MISP.Attribute.Event.Timestamp
+      description: Timestamp of the event.
+      type: string
+    - contextPath: MISP.Attribute.Event.Published
+      description: Is the event published.
+      type: boolean
+    - contextPath: MISP.Attribute.Event.Date
+      description: Event Date.
+      type: date
+    - contextPath: MISP.Attribute.Event.ThreatLevelID
+      description: Threat level of the MISP event (1 High, 2 Medium, 3 Low, 4 Undefined).
+      type: string
+    - contextPath: MISP.Attribute.Event.PublishTimestamp
+      description: Timestamp of the publish time (if published).
+      type: string
+    - contextPath: MISP.Attribute.Event.OrganisationID
+      description: MISP event organisation ID.
+      type: string
+    - contextPath: MISP.Attribute.Event.OwnerOrganisation.ID
+      description: Owner organization ID.
+      type: string
+    - contextPath: MISP.Attribute.Event.OwnerOrganisation.Name
+      description: Owner organization name.
+      type: string
+    - contextPath: MISP.Attribute.Event.OwnerOrganisation.UUID
+      description: Owner organization UUID.
+      type: string
+    - contextPath: MISP.Attribute.Event.OwnerOrganisation.local
+      description: Is owner organization is local.
+      type: boolean
+    - contextPath: MISP.Attribute.Event.UUID
+      description: MISP event UUID.
+      type: string
+    - contextPath: MISP.Attribute.Event.Analysis
+      description: Event analysis (0 Initial, 1 Ongoing, 2 Completed).
+      type: string
+    - contextPath: MISP.Attribute.Event.SharingGroupID
+      description: Event sharing group ID.
+      type: string
+    - contextPath: MISP.Attribute.Event.Tag.Name
+      description: Event tag name.
+      type: string
+    - contextPath: MISP.Attribute.Event.Tag.ID
+      description: Event tag ID.
+      type: string
+    - contextPath: MISP.Attribute.Tag.Name
+      description: Attribute tag name.
+      type: string
+    - contextPath: MISP.Attribute.Tag.ID
+      description: Attribute tag ID.
+      type: string
+    - contextPath: MISP.Attribute.Sighting.type
+      description: Attribute's sighting type.
+      type: string
   - arguments:
     - default: true
       description: IP address to check.
@@ -411,27 +892,138 @@ script:
     execution: false
     name: ip
     outputs:
-    - contextPath: IP.Address
-      description: IP address.
-      type: String
-    - contextPath: IP.Malicious.Vendor
-      description: The vendor reporting the IP address as malicious.
-      type: String
-    - contextPath: IP.Malicious.Description
-      description: A description explaining why the IP address was reported as malicious.
-      type: String
-    - contextPath: DBotScore.Indicator
-      description: The indicator that was tested.
-      type: String
-    - contextPath: DBotScore.Type
-      description: The indicator type.
-      type: String
-    - contextPath: DBotScore.Vendor
-      description: The vendor used to calculate the score.
-      type: String
-    - contextPath: DBotScore.Score
-      description: The actual score.
-      type: Number
+      - contextPath: IP.Address
+        description: The ip address.
+        type: String
+      - contextPath: DBotScore.Indicator
+        description: The indicator that was tested.
+        type: String
+      - contextPath: DBotScore.Type
+        description: The indicator type.
+        type: String
+      - contextPath: DBotScore.Vendor
+        description: The vendor used to calculate the score.
+        type: String
+      - contextPath: DBotScore.Score
+        description: The actual score.
+        type: Number
+      - contextPath: DBotScore.Reliability
+        description: Reliability of the source providing the intelligence data.
+        type: String
+      - contextPath: MISP.Attribute.Distribution
+        description: Attribute distribution.
+        type: string
+      - contextPath: MISP.Attribute.Value
+        description: Attribute value.
+        type: string
+      - contextPath: MISP.Attribute.EventID
+        description: Attribute event ID.
+        type: string
+      - contextPath: MISP.Attribute.RelatedAttribute
+        description: Related Attibute.
+        type: Unknown
+      - contextPath: MISP.Attribute.last_seen
+        description: Attribute last_seen timestamp.
+        type: string
+      - contextPath: MISP.Attribute.first_seen
+        description: Attribute first_seen timestamp.
+        type: string
+      - contextPath: MISP.Attribute.Timestamp
+        description: Attribute timestamp.
+        type: string
+      - contextPath: MISP.Attribute.ObjectID
+        description: Attribute object id.
+        type: string
+      - contextPath: MISP.Attribute.Deleted
+        description: Is the attribute deleted.
+        type: boolean
+      - contextPath: MISP.Attribute.DisableCorrelation
+        description: Is attribute correlation disabled?
+        type: boolean
+      - contextPath: MISP.Attribute.Type
+        description: Attribute type.
+        type: string
+      - contextPath: MISP.Attribute.ID
+        description: Attribute ID.
+        type: string
+      - contextPath: MISP.Attribute.UUID
+        description: Attribute UUID.
+        type: string
+      - contextPath: MISP.Attribute.ToIDs
+        description: Is the Intrusion Detection System flag set.
+        type: boolean
+      - contextPath: MISP.Attribute.Category
+        description: Attribute category.
+        type: string
+      - contextPath: MISP.Attribute.SharingGroupID
+        description: Attribute sharing group ID.
+        type: string
+      - contextPath: MISP.Attribute.Comment
+        description: Attribute comment.
+        type: string
+      - contextPath: MISP.Attribute.Event.ID
+        description: MISP event ID.
+        type: string
+      - contextPath: MISP.Attribute.Event.Distribution
+        description: MISP event distribution.
+        type: string
+      - contextPath: MISP.Attribute.Event.Info
+        description: MISP event name.
+        type: string
+      - contextPath: MISP.Attribute.Event.Timestamp
+        description: Timestamp of the event.
+        type: string
+      - contextPath: MISP.Attribute.Event.Published
+        description: Is the event published.
+        type: boolean
+      - contextPath: MISP.Attribute.Event.Date
+        description: Event Date.
+        type: date
+      - contextPath: MISP.Attribute.Event.ThreatLevelID
+        description: Threat level of the MISP event (1 High, 2 Medium, 3 Low, 4 Undefined).
+        type: string
+      - contextPath: MISP.Attribute.Event.PublishTimestamp
+        description: Timestamp of the publish time (if published).
+        type: string
+      - contextPath: MISP.Attribute.Event.OrganisationID
+        description: MISP event organisation ID.
+        type: string
+      - contextPath: MISP.Attribute.Event.OwnerOrganisation.ID
+        description: Owner organization ID.
+        type: string
+      - contextPath: MISP.Attribute.Event.OwnerOrganisation.Name
+        description: Owner organization name.
+        type: string
+      - contextPath: MISP.Attribute.Event.OwnerOrganisation.UUID
+        description: Owner organization UUID.
+        type: string
+      - contextPath: MISP.Attribute.Event.OwnerOrganisation.local
+        description: Is owner organization is local.
+        type: boolean
+      - contextPath: MISP.Attribute.Event.UUID
+        description: MISP event UUID.
+        type: string
+      - contextPath: MISP.Attribute.Event.Analysis
+        description: Event analysis (0 Initial, 1 Ongoing, 2 Completed).
+        type: string
+      - contextPath: MISP.Attribute.Event.SharingGroupID
+        description: Event sharing group ID.
+        type: string
+      - contextPath: MISP.Attribute.Event.Tag.Name
+        description: Event tag name.
+        type: string
+      - contextPath: MISP.Attribute.Event.Tag.ID
+        description: Event tag ID.
+        type: string
+      - contextPath: MISP.Attribute.Tag.Name
+        description: Attribute tag name.
+        type: string
+      - contextPath: MISP.Attribute.Tag.ID
+        description: Attribute tag ID.
+        type: string
+      - contextPath: MISP.Attribute.Sighting.type
+        description: Attribute's sighting type.
+        type: string
   - arguments:
     - default: false
       defaultValue: other
@@ -1048,7 +1640,7 @@ script:
     outputs:
     - contextPath: MISP.Event.ID
       description: IDs of newly created events.
-      type: number
+      type: string
   - arguments:
     - default: false
       description: Entry ID of the email.

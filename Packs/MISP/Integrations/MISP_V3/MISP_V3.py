@@ -387,10 +387,11 @@ def parse_response_reputation_command(response, malicious_tag_ids, suspicious_ta
     attributes_tag_ids.update(attribute_tags_from_related)
     event_tag_ids.update(event_tags_from_related)
 
-    for event in first_attribute.get('RelatedAttribute', []):
-        if event.get('Event'):
-            event['Event'] = related_events[event.get('event_id')]
-
+    attribute_related_events = first_attribute.get('RelatedAttribute')
+    if attribute_related_events:
+        for event in attribute_related_events:
+            if event.get('Event'):
+                event['Event'] = related_events[event.get('event_id')]
     first_attribute['Event']['Tag'], first_attribute_event_tags = limit_tag_output(first_attribute.get('Event'), True)
     event_tag_ids.update(first_attribute_event_tags)
 
@@ -605,7 +606,6 @@ def check_reputation_object(value, dbot_type, malicious_tag_ids, suspicious_tag_
                                 integration_name=INTEGRATION_NAME,
                                 score=score, reliability=reliability, malicious_description="Match found in MISP")
         indicator = get_dbot_indicator(dbot_type, dbot, value)
-
         attribute_highlights = reputation_command_to_human_readable(outputs, score)
         readable_output = tableToMarkdown(f'Results found in MISP for value: {value}', attribute_highlights)
         return CommandResults(indicator=indicator,
@@ -625,7 +625,7 @@ def check_reputation_object(value, dbot_type, malicious_tag_ids, suspicious_tag_
 
 def get_dbot_indicator(dbot_type, dbot_score, value):
     if dbot_type == "FILE":
-        return Common.File(dbot_score)
+        return Common.File(dbot_score=dbot_score, name=value)
     if dbot_type == "IP":
         return Common.IP(ip=value, dbot_score=dbot_score)
     if dbot_type == "DOMAIN":
