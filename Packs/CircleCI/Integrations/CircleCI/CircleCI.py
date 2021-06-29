@@ -163,6 +163,7 @@ def circleci_artifacts_list_command(client: Client, args: Dict[str, Any]) -> Com
         - 'organization' (str): Organization to retrieve artifacts from.
                                 Defaults to artifacts parameter is none is given.
         - 'project' (str): Project to retrieve artifacts from. Defaults to project parameter is none is given.
+        - 'limit' (int): Maximum number of results to return.
 
     Returns:
         (CommandResults).
@@ -171,15 +172,17 @@ def circleci_artifacts_list_command(client: Client, args: Dict[str, Any]) -> Com
     job_number: str = args.get('job_number', '')
     artifact_suffix: Optional[str] = args.get('artifact_suffix')
 
-    response = client.get_job_artifacts(vc_type, organization, project, job_number)
-    response = response[:limit]
+    response = get_response_with_pagination(client.get_job_artifacts, [vc_type, organization, project, job_number],
+                                            limit)
 
     if artifact_suffix:
         response = [artifact for artifact in response if artifact.get('path').endswith(artifact_suffix)]
+    else:
+        response = response[:limit]
 
     return CommandResults(
         outputs_prefix='CircleCI.Artifact',
-        outputs_key_field='id',
+        outputs_key_field='url',
         readable_output=tableToMarkdown('CircleCI Artifacts', response, removeNull=True,
                                         headerTransform=camelize_string),
         outputs=response
@@ -188,11 +191,12 @@ def circleci_artifacts_list_command(client: Client, args: Dict[str, Any]) -> Com
 
 def circleci_workflow_jobs_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     """
-    Retrieves jobs list from CircleCI workflow.
+    Retrieve jobs list from CircleCI workflow.
     Args:
         client (Client): Client to perform the API calls
         args (Dict[str, Any]): XSOAR arguments.
         - 'workflow_id' (str): Workflow ID to retrieve its jobs.
+        - 'limit' (int): Maximum number of results to return.
 
     Returns:
         (CommandResults).
@@ -212,26 +216,27 @@ def circleci_workflow_jobs_list_command(client: Client, args: Dict[str, Any]) ->
 
 def circleci_workflow_last_runs_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     """
-    Retrieves jobs list from CircleCI workflow.
+    Retrieve jobs list from CircleCI workflow.
     Args:
         client (Client): Client to perform the API calls
         args (Dict[str, Any]): XSOAR arguments.
         - 'workflow_name' (str): Name of workflow to retrieve its last runs details.
         - 'vc_type' (str): VC type. One of 'github', 'bitbucket'.
-        - 'organization' (str): Organization to retrieve artifacts from.
+        - 'organization' (str): Organization to retrieve workflow last runs from.
                                 Defaults to artifacts parameter is none is given.
-        - 'project' (str): Project to retrieve artifacts from. Defaults to project parameter is none is given.
+        - 'project' (str): Project to retrieve workflow last runs from. Defaults to project parameter is none is given.
+        - 'limit' (int): Maximum number of results to return.
     Returns:
         (CommandResults).
     """
     vc_type, organization, project, limit = get_common_arguments(client, args)
-    workflow_name: str = args.get('workflow_name', '')
+    workflow_name: str = args.get('workflow_name', 'nightly')
 
     response = get_response_with_pagination(client.get_last_workflow_runs,
                                             [vc_type, organization, project, workflow_name], limit)
 
     return CommandResults(
-        outputs_prefix='CircleCI.Workflow.Run',
+        outputs_prefix='CircleCI.WorkflowRun',
         outputs_key_field='id',
         readable_output=tableToMarkdown(f'CircleCI Workflow {workflow_name} Last Runs', response, removeNull=True,
                                         headerTransform=camelize_string),

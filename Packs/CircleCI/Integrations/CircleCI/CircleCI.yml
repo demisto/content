@@ -46,7 +46,7 @@ script:
   commands:
   - arguments:
     - default: false
-      description: Organization to retrieve workflows from. Defaults to organization instance parameter if none is geven.
+      description: Maximum number of workflows to retrieve.
       defaultValue: '20'
       isArray: false
       name: limit
@@ -62,13 +62,13 @@ script:
       - bitbucket
       defaultValue: github
     - default: false
-      description: Organization to retrieve workflows from. Defaults to organization instance parameter if none is geven.
+      description: Organization to retrieve workflows from. Defaults to organization instance parameter if none is given.
       isArray: false
       name: organization
       required: false
       secret: false
     - default: false
-      description: Project to retrieve workflows from. Defaults to project instance parameter if none is geven.
+      description: Project to retrieve workflows from. Defaults to project instance parameter if none is given.
       isArray: false
       name: project
       required: false
@@ -78,9 +78,66 @@ script:
     execution: false
     name: circleci-workflows-list
     outputs:
-    - contextPath: BaseIntegration.Output
-      description: '[Enter a description of the data returned in this output.]'
+    - contextPath: CircleCI.Workflow.metrics.duration_metrics.max
+      description: Max time workflow has run.
+      type: Number
+    - contextPath: CircleCI.Workflow.metrics.duration_metrics.mean
+      description: Mean time workflow has run.
+      type: Number
+    - contextPath: CircleCI.Workflow.metrics.duration_metrics.median
+      description: Median time workflow has run.
+      type: Number
+    - contextPath: CircleCI.Workflow.metrics.duration_metrics.min
+      description: Min time workflow has run.
+      type: Number
+    - contextPath: CircleCI.Workflow.metrics.duration_metrics.p95
+      description: P95 workflow has run.
+      type: Number
+    - contextPath: CircleCI.Workflow.metrics.duration_metrics.standard_deviation
+      description: Standard deviation workflow has run.
+      type: Number
+    - contextPath: CircleCI.Workflow.metrics.duration_metrics.total_duration
+      description: Total duration.
+      type: Number
+    - contextPath: CircleCI.Workflow.metrics.failed_runs
+      description: Number of workflow failed runs.
+      type: Number
+    - contextPath: CircleCI.Workflow.metrics.median_credits_used
+      description: Median credits used.
+      type: Number
+    - contextPath: CircleCI.Workflow.metrics.mttr
+      description: Mean time to recovery.
+      type: Number
+    - contextPath: CircleCI.Workflow.metrics.success_rate
+      description: Success rate.
+      type: Number
+    - contextPath: CircleCI.Workflow.metrics.successful_runs
+      description: Number of successful runs.
+      type: Number
+    - contextPath: CircleCI.Workflow.metrics.throughput
+      description: Throughput.
+      type: Number
+    - contextPath: CircleCI.Workflow.metrics.total_credits_used
+      description: Total credits used.
+      type: Number
+    - contextPath: CircleCI.Workflow.metrics.total_recoveries
+      description: Total recoveries.
+      type: Number
+    - contextPath: CircleCI.Workflow.metrics.total_runs
+      description: Total runs.
+      type: Number
+    - contextPath: CircleCI.Workflow.name
+      description: Workflow name.
       type: String
+    - contextPath: CircleCI.Workflow.project_id
+      description: Project ID workflow belongs to.
+      type: String
+    - contextPath: CircleCI.Workflow.window_end
+      description: When workflow has ended.
+      type: Date
+    - contextPath: CircleCI.Workflow.window_start
+      description: When workflow has started.
+      type: Date
   - arguments:
     - default: false
       description: Number of the job to retrieve its artifacts, e.g 31263.
@@ -94,6 +151,13 @@ script:
       name: artifact_suffix
       required: false
       secret: false
+    - default: false
+      description: Maximum number of artifacts to retrieve.
+      defaultValue: '20'
+      isArray: false
+      name: limit
+      required: false
+      secret: false
     - name: vcs_type
       required: false
       description: VC type of the project.
@@ -104,13 +168,13 @@ script:
         - bitbucket
       defaultValue: github
     - default: false
-      description: Organization to retrieve artifacts from. Defaults to organization instance parameter if none is geven.
+      description: Organization to retrieve artifacts from. Defaults to organization instance parameter if none is given.
       isArray: false
       name: organization
       required: false
       secret: false
     - default: false
-      description: Project to retrieve artifacts from. Defaults to project instance parameter if none is geven.
+      description: Project to retrieve artifacts from. Defaults to project instance parameter if none is given.
       isArray: false
       name: project
       required: false
@@ -120,8 +184,14 @@ script:
     execution: false
     name: circleci-artifacts-list
     outputs:
-    - contextPath: BaseIntegration.Output
-      description: '[Enter a description of the data returned in this output.]'
+    - contextPath: CircleCI.Artifact.path
+      description: Artifact relative path.
+      type: String
+    - contextPath: CircleCI.Artifact.node_index
+      description: Artifact node index.
+      type: Number
+    - contextPath: CircleCI.Artifact.url
+      description: Artifact URL.
       type: String
   - arguments:
     - default: false
@@ -130,13 +200,44 @@ script:
       name: workflow_id
       required: true
       secret: false
+    - default: false
+      description: Maximum number of jobs to retrieve.
+      defaultValue: '20'
+      isArray: false
+      name: limit
+      required: false
+      secret: false
     deprecated: false
-    description: Retrieves jobs list from CircleCI workflow.
+    description: Retrieve jobs list from CircleCI workflow.
     execution: false
     name: circleci-workflow-jobs-list
     outputs:
-    - contextPath: BaseIntegration.Output
-      description: '[Enter a description of the data returned in this output.]'
+    - contextPath: CircleCI.WorkflowJob.id
+      description: Job ID.
+      type: String
+    - contextPath: CircleCI.WorkflowJob.job_number
+      description: Job number.
+      type: Number
+    - contextPath: CircleCI.WorkflowJob.name
+      description: Job name.
+      type: String
+    - contextPath: CircleCI.WorkflowJob.project_slug
+      description: The job project slug.
+      type: String
+    - contextPath: CircleCI.WorkflowJob.started_at
+      description: Time job was started.
+      type: Date
+    - contextPath: CircleCI.WorkflowJob.status
+      description: Job status.
+      type: String
+    - contextPath: CircleCI.WorkflowJob.stopped_at
+      description: Time when job was stopped.
+      type: Date
+    - contextPath: CircleCI.WorkflowJob.type
+      description: Job type.
+      type: String
+    - contextPath: CircleCI.WorkflowJob.dependencies
+      description: The job dependencies.
       type: String
   - arguments:
     - default: false
@@ -144,6 +245,13 @@ script:
       isArray: false
       name: workflow_name
       required: true
+      secret: false
+    - default: false
+      description: Maximum number of workflow runs to retrieve.
+      defaultValue: '20'
+      isArray: false
+      name: limit
+      required: false
       secret: false
     - name: vcs_type
       required: false
@@ -155,25 +263,43 @@ script:
         - bitbucket
       defaultValue: github
     - default: false
-      description: Organization to retrieve workflow last runs from. Defaults to organization instance parameter if none is geven.
+      description: Organization to retrieve workflow last runs from. Defaults to organization instance parameter if none is given.
       isArray: false
       name: organization
       required: false
       secret: false
     - default: false
-      description: Project to retrieve workflow last runs from. Defaults to project instance parameter if none is geven.
+      description: Project to retrieve workflow last runs from. Defaults to project instance parameter if none is given.
       isArray: false
       name: project
       required: false
       secret: false
     deprecated: false
-    description: Retrieves jobs list from CircleCI workflow.
+    description: Retrieve jobs list from CircleCI workflow.
     execution: false
     name: circleci-workflow-last-runs
     outputs:
-    - contextPath: BaseIntegration.Output
-      description: '[Enter a description of the data returned in this output.]'
+    - contextPath: CircleCI.WorkflowRun.branch
+      description: Branch name.
       type: String
+    - contextPath: CircleCI.WorkflowRun.created_at
+      description: Time run was created.
+      type: Date
+    - contextPath: CircleCI.WorkflowRun.credits_used
+      description: Credits used.
+      type: Number
+    - contextPath: CircleCI.WorkflowRun.duration
+      description: Duration of run in seconds.
+      type: Number
+    - contextPath: CircleCI.WorkflowRun.id
+      description: ID of the run.
+      type: String
+    - contextPath: CircleCI.WorkflowRun.status
+      description: Run status.
+      type: String
+    - contextPath: CircleCI.WorkflowRun.stopped_at
+      description: Time when run was stopped.
+      type: Date
   isfetch: false
   runonce: false
   script: '-'
