@@ -32,6 +32,7 @@ requests.packages.urllib3.disable_warnings()
 warnings.warn = warn
 
 ''' GLOBALS/PARAMS '''
+global PYMISP
 INTEGRATION_NAME = "MISP V3"
 
 PREDEFINED_FEEDS = {
@@ -44,6 +45,14 @@ PREDEFINED_FEEDS = {
                    'format': 'misp',
                    'input': 'network'}
 }
+
+THREAT_LEVELS_NUMBERS = {
+    'high': 1,
+    'medium': 2,
+    'low': 3,
+    'undefined': 4
+}
+
 ENTITIESDICT = {
     'deleted': 'Deleted',
     'category': 'Category',
@@ -463,23 +472,20 @@ def get_new_event(args):
     return event
 
 
-def create_event(pymisp: ExpandedPyMISP, demisto_args: dict, data_keys_to_save: list = []):
+def create_event(demisto_args: dict):
     """Creating event in MISP with the given attribute
 
     Args:
-        pymisp
         demisto_args
-        data_keys_to_save
 
     Returns:
     """
     new_event = get_new_event(demisto_args)
-    new_event = pymisp.add_event(new_event, True)
+    new_event = PYMISP.add_event(new_event, True)
     event_id = get_valid_event_id(new_event.id)
 
-    add_attribute(event_id=event_id, internal=True, pymisp=pymisp, data_keys_to_save=data_keys_to_save,
-                  new_event=new_event, demisto_args=demisto_args)
-    event = pymisp.search(eventid=event_id)
+    add_attribute(event_id=event_id, internal=True, new_event=new_event, demisto_args=demisto_args)
+    event = PYMISP.search(eventid=event_id)
 
     human_readable = f"## MISP create event\nNew event with ID: {event_id} has been successfully created.\n"
 
@@ -487,7 +493,7 @@ def create_event(pymisp: ExpandedPyMISP, demisto_args: dict, data_keys_to_save: 
         readable_output=human_readable,
         outputs_prefix='MISP.Event',
         outputs_key_field='id',
-        outputs=build_context(event, data_keys_to_save),
+        outputs=build_context(event),
     )
 
 
@@ -511,8 +517,7 @@ def get_valid_distribution(distribution: int):
     return distribution
 
 
-def add_attribute(pymisp: ExpandedPyMISP, event_id: int = None, internal: bool = False, demisto_args: dict = {},
-                  data_keys_to_save: list = [], new_event: MISPEvent = None):
+def add_attribute(event_id: int = None, internal: bool = False, demisto_args: dict = {}, new_event: MISPEvent = None):
     """Adding attribute to a given event
     This function can be called as an independence command or as part of another command (create event for example)
 
@@ -520,8 +525,7 @@ def add_attribute(pymisp: ExpandedPyMISP, event_id: int = None, internal: bool =
         event_id (int): Event ID to add attribute to
         internal (bool): if set to True, will not post results to Demisto
         demisto_args (dict): Demisto args
-        pymisp(ExpandedPyMISP):
-        data_keys_to_save (list):
+        new_event
     """
     attributes_args = {
         'id': demisto_args.get('id'),  # misp event id
@@ -536,14 +540,14 @@ def add_attribute(pymisp: ExpandedPyMISP, event_id: int = None, internal: bool =
     attributes_args.update({'distribution': get_valid_distribution(distribution)}) if distribution else None
 
     if not new_event:
-        new_event = pymisp.search(eventid=attributes_args.get('id'), pythonify=True)[0]
+        new_event = PYMISP.search(eventid=attributes_args.get('id'), pythonify=True)[0]
 
     new_event.add_attribute(**attributes_args)
-    pymisp.update_event(event=new_event)
+    PYMISP.update_event(event=new_event)
     if internal:
         return
 
-    updated_event = pymisp.search(eventid=attributes_args.get('id'))
+    updated_event = PYMISP.search(eventid=attributes_args.get('id'))
     human_readable = f"## MISP add attribute\nNew attribute: {attributes_args.get('value')} " \
                      f"was added to event id {attributes_args.get('id')}.\n"
 
@@ -551,15 +555,15 @@ def add_attribute(pymisp: ExpandedPyMISP, event_id: int = None, internal: bool =
         readable_output=human_readable,
         outputs_prefix='MISP.Event',
         outputs_key_field='id',
-        outputs=build_context(updated_event, data_keys_to_save),
+        outputs=build_context(updated_event),
     )
 
 
-def download_samples(pymisp: ExpandedPyMISP, sample_hash=None, event_id=None, all_samples=False):
+def download_samples(sample_hash=None, event_id=None, all_samples=False):
     to_post = {'request': {'hash': sample_hash, 'eventID': event_id, 'allSamples': all_samples}}
-    response = pymisp._prepare_request('POST', urljoin(pymisp.root_url, 'attributes/downloadSample'),
+    response = PYMISP._prepare_request('POST', urljoin(PYMISP.root_url, 'attributes/downloadSample'),
                                        data=json.dumps(to_post))
-    result = pymisp._check_response(response)
+    result = PYMISP._check_response(response)
     if result.get('error') is not None:
         return False, result.get('error')
     if not result.get('result'):
@@ -584,7 +588,7 @@ def download_samples(pymisp: ExpandedPyMISP, sample_hash=None, event_id=None, al
     return True, details
 
 
-def download_file(pymisp: ExpandedPyMISP, demisto_args: dict):
+def download_file(demisto_args: dict):
     """
     Will post results of given file's hash if present.
     MISP's response should be in case of success:
@@ -596,8 +600,7 @@ def download_file(pymisp: ExpandedPyMISP, demisto_args: dict):
     event_id = demisto_args.get('eventID')
     unzip = argToBoolean(demisto_args.get('unzip', 'False'))
     all_samples = True if demisto_args.get('allSamples') in ('1', 'true') else False
-
-    response = download_samples(pymisp=pymisp, sample_hash=file_hash, event_id=event_id, all_samples=all_samples)
+    response = download_samples(sample_hash=file_hash, event_id=event_id, all_samples=all_samples)
     if not response[0]:
         return CommandResults(readable_output=f"Couldn't find file with hash {file_hash}")
     else:
@@ -615,13 +618,13 @@ def download_file(pymisp: ExpandedPyMISP, demisto_args: dict):
             return fileResult(filename, file_buffer)
 
 
-def generic_reputation_command(demisto_args, pymisp, reputation_type, dbot_type, malicious_tag_ids, suspicious_tag_ids,
+def generic_reputation_command(demisto_args, reputation_type, dbot_type, malicious_tag_ids, suspicious_tag_ids,
                                reliability):
     reputation_value_list = argToList(demisto_args.get(reputation_type), ',')
     command_results = []
     for value in reputation_value_list:
         command_results.append(
-            check_reputation_object(pymisp, value, dbot_type, malicious_tag_ids, suspicious_tag_ids, reliability))
+            check_reputation_object(value, dbot_type, malicious_tag_ids, suspicious_tag_ids, reliability))
     return command_results
 
 
@@ -645,9 +648,9 @@ def reputation_value_validation(value, dbot_type):
             return_error(f"Error: The given email address: {value} is not valid")
 
 
-def check_reputation_object(pymisp, value, dbot_type, malicious_tag_ids, suspicious_tag_ids, reliability):
+def check_reputation_object(value, dbot_type, malicious_tag_ids, suspicious_tag_ids, reliability):
     reputation_value_validation(value, dbot_type)
-    misp_response = pymisp.search(value=value, controller='attributes', include_context=True,
+    misp_response = PYMISP.search(value=value, controller='attributes', include_context=True,
                                   include_correlations=True, include_event_tags=True, enforce_warninglist=True,
                                   include_decay_score=True, includeSightings=True)
     indicator_type = DBOT_SCORE_TYPE_MAP[dbot_type]
@@ -690,7 +693,7 @@ def get_dbot_indicator(dbot_type, dbot_score, value):
         return Common.URL(url=value, dbot_score=dbot_score)
 
 
-def build_misp_complex_filter(pymisp, demisto_query: str) -> str:
+def build_misp_complex_filter(demisto_query: str) -> str:
     """
     Args:
         demisto_query: complex query contains saved words: 'AND:', 'OR:' and 'NOT:'
@@ -732,13 +735,13 @@ def build_misp_complex_filter(pymisp, demisto_query: str) -> str:
         is_complex_search = True
 
     if is_complex_search:
-        misp_complex_query = pymisp.build_complex_query(**misp_query_params)
+        misp_complex_query = PYMISP.build_complex_query(**misp_query_params)
         return misp_complex_query
 
     return demisto_query
 
 
-def prepare_args_to_search(pymisp):
+def prepare_args_to_search():
     search_args = [
         'value',
         'type',
@@ -793,7 +796,7 @@ def prepare_args_to_search(pymisp):
         args['limit'] = '50'
     # build MISP complex filter
     if 'tags' in args:
-        args['tags'] = build_misp_complex_filter(pymisp, args['tags'])
+        args['tags'] = build_misp_complex_filter(args['tags'])
 
     demisto.debug(f"args for request search command are {args}")
     return args
@@ -911,15 +914,15 @@ def attribute_response_to_markdown_table(response: dict):
     return attribute_highlights
 
 
-def search_attributes(pymisp: ExpandedPyMISP, demisto_args: dict) -> CommandResults:
+def search_attributes(demisto_args: dict) -> CommandResults:
     """
     Execute a MIPS search using the 'attributes' controller.
     """
-    args = prepare_args_to_search(pymisp)
+    args = prepare_args_to_search()
     # Set the controller to attributes to search for attributes and not events
     args['controller'] = 'attributes'
     print(args)
-    response = pymisp.search(**args)
+    response = PYMISP.search(**args)
     return_only_values = argToBoolean(demisto_args.get('compact', True))
     include_correlations = argToBoolean(demisto_args.get('include_correlations', False))
     limit = demisto_args.get('limit', 50)
@@ -1055,14 +1058,14 @@ def event_response_to_markdown_table(response: dict):
     return event_highlights
 
 
-def search_events(demisto_args, pymisp) -> CommandResults:
+def search_events(demisto_args) -> CommandResults:
     """
     Execute a MIPS search using the 'event' controller.
     """
-    args = prepare_args_to_search(pymisp)
+    args = prepare_args_to_search()
     # Set the controller to events to search for events by the given args
     args['controller'] = 'events'
-    response = pymisp.search(**args)
+    response = PYMISP.search(**args)
     page = demisto_args.get('page')
     limit = demisto_args.get('limit', 50)
 
@@ -1085,12 +1088,12 @@ def search_events(demisto_args, pymisp) -> CommandResults:
         return CommandResults(readable_output=f"No events found in MISP for the given filters: {args}")
 
 
-def delete_event(pymisp: ExpandedPyMISP, demisto_args: dict):
+def delete_event(demisto_args: dict):
     """
     Gets an event id and deletes it.
     """
     event_id = demisto_args.get('event_id')
-    event = pymisp.delete_event(event_id)
+    event = PYMISP.delete_event(event_id)
     if 'errors' in event:
         return_error(f'Event ID: {event_id} has not found in MISP: \nError message: {event}')
     else:
@@ -1098,26 +1101,26 @@ def delete_event(pymisp: ExpandedPyMISP, demisto_args: dict):
         return CommandResults(readable_output=human_readable)
 
 
-def add_tag(pymisp: ExpandedPyMISP, demisto_args: dict, data_keys_to_save: list = []):
+def add_tag(demisto_args: dict):
     """
     Function will add tag to given UUID of event or attribute.
     """
     uuid = demisto_args.get('uuid')
     tag = demisto_args.get('tag')
 
-    pymisp.tag(uuid, tag)
-    event = pymisp.search(uuid=uuid)
+    PYMISP.tag(uuid, tag)
+    event = PYMISP.search(uuid=uuid)
     human_readable = f'Tag {tag} has been successfully added to event {uuid}'
 
     return CommandResults(
         readable_output=human_readable,
         outputs_prefix='MISP.Event',
         outputs_key_field='ID',
-        outputs=build_context(event, data_keys_to_save),
+        outputs=build_context(event),
     )
 
 
-def add_sighting(pymisp: ExpandedPyMISP, demisto_args: dict):
+def add_sighting(demisto_args: dict):
     """Adds sighting to MISP attribute
 
     """
@@ -1135,26 +1138,26 @@ def add_sighting(pymisp: ExpandedPyMISP, demisto_args: dict):
     }
     sigh_obj = MISPSighting()
     sigh_obj.from_dict(**sighting_args)
-    pymisp.add_sighting(sigh_obj, att_id)
+    PYMISP.add_sighting(sigh_obj, att_id)
 
     human_readable = f'Sighting \'{sighting_type}\' has been successfully added to attribute {att_id}'
     return CommandResults(readable_output=human_readable)
 
 
-def test(pymisp: ExpandedPyMISP, malicious_tag_ids, suspicious_tag_ids):
+def test(malicious_tag_ids, suspicious_tag_ids):
     """
     Test module.
     """
     is_tag_list_valid(malicious_tag_ids)
     is_tag_list_valid(suspicious_tag_ids)
-    response = pymisp._prepare_request('GET', 'servers/getPyMISPVersion.json')
-    if pymisp._check_json_response(response):
+    response = PYMISP._prepare_request('GET', 'servers/getPyMISPVersion.json')
+    if PYMISP._check_json_response(response):
         return 'ok'
     else:
         return_error('MISP has not connected.')
 
 
-def add_events_from_feed(pymisp: ExpandedPyMISP, demisto_args: dict, use_ssl: bool, proxies: dict):
+def add_events_from_feed(demisto_args: dict, use_ssl: bool, proxies: dict):
     """Gets an OSINT feed from url and publishing them to MISP
     urls with feeds for example: `https://www.misp-project.org/feeds/`
     feed format must be MISP.
@@ -1176,7 +1179,7 @@ def add_events_from_feed(pymisp: ExpandedPyMISP, demisto_args: dict, use_ssl: bo
             req = requests.get(f'{url}/{uri}.json', verify=use_ssl, headers=headers, proxies=proxies).json()
             e = MISPEvent()
             e.load(req)
-            event = pymisp.add_event(e)
+            event = PYMISP.add_event(e)
             event_data = event.get('Event')
             if event_data and 'id' in event_data:
                 events_numbers.append({'ID': event_data['id']})
@@ -1202,7 +1205,7 @@ def add_events_from_feed(pymisp: ExpandedPyMISP, demisto_args: dict, use_ssl: bo
         return_error(f'URL [{url}] is not a valid MISP feed. error: {e}')
 
 
-def add_object(event_id: str, obj: MISPObject, pymisp: ExpandedPyMISP):
+def add_object(event_id: str, obj: MISPObject):
     """Sending object to MISP and returning outputs
 
     Args:
@@ -1210,7 +1213,7 @@ def add_object(event_id: str, obj: MISPObject, pymisp: ExpandedPyMISP):
         event_id: ID of event
         pymisp:
     """
-    response = pymisp.add_object(event_id, misp_object=obj)
+    response = PYMISP.add_object(event_id, misp_object=obj)
     if 'errors' in response:
         errors = extract_error(response["errors"])
         error_string = str()
@@ -1220,7 +1223,7 @@ def add_object(event_id: str, obj: MISPObject, pymisp: ExpandedPyMISP):
                             f'\n\tErrors: {err["errors"]}\n'
         return_error(f'Error in `{demisto.command()}` command: {error_string}')
     for ref in obj.ObjectReference:
-        response = pymisp.add_object_reference(ref)
+        response = PYMISP.add_object_reference(ref)
 
     formatted_response = replace_keys(response)
     formatted_response.update({"ID": event_id})
@@ -1234,15 +1237,15 @@ def add_object(event_id: str, obj: MISPObject, pymisp: ExpandedPyMISP):
     )
 
 
-def add_email_object(pymisp: ExpandedPyMISP, demisto_args: dict = {}):
+def add_email_object(demisto_args: dict = {}):
     entry_id = demisto_args.get('entry_id')
     event_id = demisto_args.get('event_id')
     email_path = demisto.getFilePath(entry_id).get('path')
     obj = FileObject(email_path)
-    return add_object(event_id, obj, pymisp)
+    return add_object(event_id, obj)
 
 
-def add_domain_object(pymisp: ExpandedPyMISP, demisto_args: dict = {}):
+def add_domain_object(demisto_args: dict = {}):
     """Adds a domain object to MISP
     domain-ip description: https://www.misp-project.org/objects.html#_domain_ip
     """
@@ -1258,10 +1261,10 @@ def add_domain_object(pymisp: ExpandedPyMISP, demisto_args: dict = {}):
         value = demisto_args.get(arg)
         if value:
             obj.add_attribute(arg, value=value)
-    return add_object(event_id, obj, pymisp)
+    return add_object(event_id, obj)
 
 
-def add_url_object(pymisp: ExpandedPyMISP, demisto_args: dict = {}):
+def add_url_object(demisto_args: dict = {}):
     """Building url object in MISP scheme
     Scheme described https://www.misp-project.org/objects.html#_url
     """
@@ -1293,10 +1296,10 @@ def add_url_object(pymisp: ExpandedPyMISP, demisto_args: dict = {}):
             url_obj.append({arg.replace('_', '-'): user_arg})
 
     g_object = build_generic_object('url', url_obj)
-    return add_object(event_id, g_object, pymisp)
+    return add_object(event_id, g_object)
 
 
-def add_generic_object_command(pymisp: ExpandedPyMISP, demisto_args: dict = {}):
+def add_generic_object_command(demisto_args: dict = {}):
     event_id = demisto_args.get('event_id')
     template = demisto_args.get('template')
     attributes = demisto_args.get('attributes').replace("'", '"')
@@ -1305,13 +1308,13 @@ def add_generic_object_command(pymisp: ExpandedPyMISP, demisto_args: dict = {}):
         if not isinstance(args, list):
             args = build_list_from_dict(args)
         obj = build_generic_object(template, args)
-        return add_object(event_id, obj, pymisp)
+        return add_object(event_id, obj)
     except ValueError as e:
         return_error(f'`attribute` parameter could not be decoded, may not a valid JSON\nattribute: {attributes}',
                      str(e))
 
 
-def add_ip_object(pymisp: ExpandedPyMISP, demisto_args: dict = {}):
+def add_ip_object(demisto_args: dict = {}):
     # todo split into sub-functions
     event_id = demisto_args.get('event_id')
     args = [
@@ -1337,7 +1340,7 @@ def add_ip_object(pymisp: ExpandedPyMISP, demisto_args: dict = {}):
         if demisto_args.get('comment'):
             misp_attributes_args.append({'text': demisto_args.get('comment')})
         obj = build_generic_object('ip-port', misp_attributes_args)
-        return add_object(event_id, obj, pymisp)
+        return add_object(event_id, obj)
     else:
         return_error(f'None of required arguments presents. command {demisto.command()} requires one of {args}')
 
@@ -1359,89 +1362,75 @@ def is_tag_list_valid(tag_ids):
 
 
 def main():
+    global PYMISP
     params = demisto.params()
     verify = not params.get('insecure')
     proxies = handle_proxy()  # type: ignore
-
     misp_api_key = params.get('api_key')
     misp_url = params.get('url')
-
     malicious_tag_ids = argToList(params.get('malicious_tag_ids'))
     suspicious_tag_ids = argToList(params.get('suspicious_tag_ids'))
+    PYMISP = ExpandedPyMISP(url=misp_url, key=misp_api_key, ssl=verify, proxies=proxies)  # type: ExpandedPyMISP
 
     reliability = params.get('integrationReliability', 'B - Usually reliable')
-
     if DBotScoreReliability.is_valid_type(reliability):
         reliability = DBotScoreReliability.get_dbot_score_reliability_from_str(reliability)
     else:
         Exception("IDefense error: Please provide a valid value for the Source Reliability parameter")
 
-    pymisp = ExpandedPyMISP(url=misp_url, key=misp_api_key, ssl=verify, proxies=proxies)  # type: ExpandedPyMISP
-
     command = demisto.command()
-
     demisto.debug(f'MISP V3: command is {command}')
+    args = demisto.args()
 
     try:
         malicious_tag_ids, suspicious_tag_ids = handle_tag_duplication_ids(malicious_tag_ids, suspicious_tag_ids)
-
-        args = demisto.args()
         if command == 'test-module':
-            return_results(test(pymisp=pymisp, malicious_tag_ids=malicious_tag_ids,
-                                suspicious_tag_ids=suspicious_tag_ids))
+            return_results(test(malicious_tag_ids=malicious_tag_ids, suspicious_tag_ids=suspicious_tag_ids))
         elif command == 'misp-download-sample':
-            return_results(download_file(demisto_args=args, pymisp=pymisp))
+            return_results(download_file(args))
         elif command == 'misp-create-event':
-            return_results(create_event(demisto_args=args, pymisp=pymisp))
-            # checked V
+            return_results(create_event(args))
         elif command == 'misp-add-attribute':
-            return_results(
-                add_attribute(demisto_args=args, pymisp=pymisp))
+            return_results(add_attribute(args))
         elif command == 'misp-search-events':
-            return_results(
-                search_events(demisto_args=args, pymisp=pymisp))
+            return_results(search_events(args))
         elif command == 'misp-search-attributes':
-            return_results(search_attributes(pymisp, args))
+            return_results(search_attributes(args))
         elif command == 'misp-delete-event':
-            return_results(delete_event(demisto_args=args, pymisp=pymisp))
+            return_results(delete_event(args))
         elif command == 'misp-add-sighting':
-            return_results(add_sighting(demisto_args=args, pymisp=pymisp))
+            return_results(add_sighting(args))
         elif command == 'misp-add-tag':
-            return_results(add_tag(demisto_args=args, pymisp=pymisp))
+            return_results(add_tag(args))
         elif command == 'misp-add-events-from-feed':
-            return_results(
-                add_events_from_feed(demisto_args=args, pymisp=pymisp, use_ssl=verify, proxies=proxies))
+            return_results(add_events_from_feed(demisto_args=args, use_ssl=verify, proxies=proxies))
         elif command == 'file':
             return_results(
-                generic_reputation_command(args, pymisp, 'file', 'FILE', malicious_tag_ids,
-                                           suspicious_tag_ids, reliability))
+                generic_reputation_command(args, 'file', 'FILE', malicious_tag_ids, suspicious_tag_ids, reliability))
         elif command == 'url':
             return_results(
-                generic_reputation_command(args, pymisp, 'url', 'URL', malicious_tag_ids,
-                                           suspicious_tag_ids, reliability))
+                generic_reputation_command(args, 'url', 'URL', malicious_tag_ids, suspicious_tag_ids, reliability))
         elif command == 'ip':
             return_results(
-                generic_reputation_command(args, pymisp, 'ip', 'IP', malicious_tag_ids,
-                                           suspicious_tag_ids, reliability))
+                generic_reputation_command(args, 'ip', 'IP', malicious_tag_ids, suspicious_tag_ids, reliability))
         elif command == 'domain':
             return_results(
-                generic_reputation_command(args, pymisp, 'domain', 'DOMAIN', malicious_tag_ids,
-                                           suspicious_tag_ids, reliability))
+                generic_reputation_command(args, 'domain', 'DOMAIN', malicious_tag_ids, suspicious_tag_ids,
+                                           reliability))
         elif command == 'email':
-            return_results(
-                generic_reputation_command(args, pymisp, 'email', 'EMAIL', malicious_tag_ids,
-                                           suspicious_tag_ids, reliability))
+            return_results(generic_reputation_command(args, 'email', 'EMAIL', malicious_tag_ids, suspicious_tag_ids,
+                                                      reliability))
         #  Object commands
         elif command == 'misp-add-email-object':
-            return_results(add_email_object(demisto_args=args, pymisp=pymisp))
+            return_results(add_email_object(args))
         elif command == 'misp-add-domain-object':
-            return_results(add_domain_object(demisto_args=args, pymisp=pymisp))
+            return_results(add_domain_object(args))
         elif command == 'misp-add-url-object':
-            return_results(add_url_object(demisto_args=args, pymisp=pymisp))
+            return_results(add_url_object(args))
         elif command == 'misp-add-ip-object':
-            return_results(add_ip_object(demisto_args=args, pymisp=pymisp))  # split into sub-funcs
+            return_results(add_ip_object(args))  # split into sub-funcs
         elif command == 'misp-add-object':
-            return_results(add_generic_object_command(demisto_args=args, pymisp=pymisp))
+            return_results(add_generic_object_command(args))
     except PyMISPError as e:
         return_error(e.message)
     except Exception as e:
