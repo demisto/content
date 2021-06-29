@@ -128,8 +128,8 @@ tasks:
     scriptarguments:
       Agent_ID:
         simple: ${inputs.Agent_ID}
-      Hostname:
-        simple: ${inputs.Hostname}
+      Host:
+        simple: ${inputs.Host}
       Path:
         simple: ${inputs.Path}
     separatecontext: true
@@ -173,10 +173,11 @@ inputs:
   required: false
   description: The SHA256 hash value for the file to retrieve.
   playbookInputQuery:
-- key: Hostname
+- key: Host
   value: {}
   required: false
-  description: Hostname of the machine on which the file is located.
+  description: Hostname of the machine on which the file is located for PS remote
+    it can also be an IP address.
   playbookInputQuery:
 - key: Path
   value: {}

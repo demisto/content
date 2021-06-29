@@ -151,7 +151,7 @@ tasks:
       FilePath:
         simple: ${inputs.Path}
       Host:
-        simple: ${inputs.Hostname}
+        simple: ${inputs.Host}
       ZipFile:
         simple: "true"
     separatecontext: true
@@ -213,7 +213,7 @@ view: |-
     }
   }
 inputs:
-- key: Hostname
+- key: Host
   value: {}
   required: false
   description: Hostname of the machine on which the file is located, for PS remote it can also be an IP address.
