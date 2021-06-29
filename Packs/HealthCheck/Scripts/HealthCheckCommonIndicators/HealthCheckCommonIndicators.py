@@ -1,7 +1,6 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
-
 THRESHOLDS = {
     'relatedIndicatorCount': 100,
 }
@@ -22,9 +21,13 @@ BODY = {
 
 
 def main(args):
+    incident = demisto.incidents()[0]
+    account_name = incident.get('account')
+    account_name = f"acc_{account_name}/" if account_name != "" else ""
+
     thresholds = args.get('Thresholds', THRESHOLDS)
     indicator_res = demisto.executeCommand('demisto-api-post', {
-        'uri': 'indicators/search',
+        'uri': f'{account_name}/indicators/search',
         'body': BODY,
     })
     if is_error(indicator_res):

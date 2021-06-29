@@ -3,7 +3,11 @@ from CommonServerPython import *  # noqa: F401
 
 
 def main():
-    res = demisto.executeCommand('demisto-api-get', {'uri': '/health/containers'})
+    incident = demisto.incidents()[0]
+    account_name = incident.get('account')
+    account_name = f'acc_{account_name}/' if account_name != "" else ""
+
+    res = demisto.executeCommand('demisto-api-get', {'uri': f'{account_name}health/containers'})
     if is_error(res):
         return_results(res)
         return_error('Failed to execute demisto-api-get. See additional error details in the above entries.')

@@ -4,8 +4,11 @@ packs = []
 need_update = 0
 not_certified = 0
 
+incident = demisto.incidents()[0]
+accountName = incident.get('account')
+accountName = f"acc_{accountName}" if accountName != "" else ""
 
-config_json = demisto.executeCommand("demisto-api-get", {"uri": "/contentpacks/installed-expired"})[0]["Contents"]["response"]
+config_json = demisto.executeCommand("demisto-api-get", {"uri": f"{accountName}contentpacks/installed-expired"})[0]["Contents"]["response"]
 
 for item in config_json:
     packs.append({"packs": item['name'], "currentversion": item['currentVersion'], 'updateavailable': item['updateAvailable']})

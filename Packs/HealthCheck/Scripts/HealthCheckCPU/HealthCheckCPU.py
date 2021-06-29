@@ -2,10 +2,8 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
 
-RESOLUTION = [
-    "Performance Tuning of Cortex XSOAR Server: https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-0/"
-    "cortex-xsoar-admin/cortex-xsoar-overview/performance-tuning-of-cortex-xsoar-server"
-]
+RESOLUTION = 'Performance Tuning of Cortex XSOAR Server: https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-0/' \
+             'cortex-xsoar-admin/cortex-xsoar-overview/performance-tuning-of-cortex-xsoar-server'
 
 
 def analyze_data(res):
@@ -46,48 +44,52 @@ def analyze_data(res):
 
         if highRes:
             addActions.append({'category': 'CPU analysis', 'severity': 'High',
-                               'description': "CPU has reached 90%", "resolution": f"{RESOLUTION[0]}"})
+                               'description': 'CPU has reached 90%', 'resolution': RESOLUTION})
 
         if medRes:
             addActions.append({'category': 'CPU analysis', 'severity': 'Medium',
-                               'description': "CPU has reached 80% for 10 minutes", "resolution": f"{RESOLUTION[0]}"})
+                               'description': 'CPU has reached 80% for 10 minutes', 'resolution': RESOLUTION})
 
         if lowRes:
             addActions.append({'category': 'CPU analysis', 'severity': 'Low',
-                               'description': "CPU has reached 70% for 30 minutes", "resolution": f"{RESOLUTION[0]}"})
+                               'description': 'CPU has reached 70% for 30 minutes', 'resolution': RESOLUTION})
         return addActions
     else:
         return None
 
 
 def main(args):
+    incident = demisto.incidents()[0]
+    account_name = incident.get('account')
+    account_name = f'acc_{account_name}/' if account_name != "" else ""
+
     is_widget = argToBoolean(args.get('isWidget', True))
     res = demisto.executeCommand(
-        "demisto-api-post",
+        'demisto-api-post',
         {
-            "uri": "/statistics/widgets/query",
-            "body": {
-                "size": 1440,
-                "dataType": "system",
-                "params": {
-                    "timeFrame": "minutes",
-                    "format": "HH:mm",
+            'uri': f'{account_name}/statistics/widgets/query',
+            'body': {
+                'size': 1440,
+                'dataType': 'system',
+                'params': {
+                    'timeFrame': 'minutes',
+                    'format': 'HH:mm',
                 },
-                "query": "cpu.usedPercent",
-                "dateRange": {
-                    "period": {
-                        "byFrom": "hours",
-                        "fromValue": 24
+                'query': 'cpu.usedPercent',
+                'dateRange': {
+                    'period': {
+                        'byFrom': 'hours',
+                        'fromValue': 24,
                     }
                 },
-                "widgetType": "line"
+                'widgetType': 'line',
             }
         })
     if is_error(res):
         return_results(res)
         return_error('Failed to execute demisto-api-post. See additional error details in the above entries.')
 
-    stats = res[0]["Contents"]["response"]
+    stats = res[0]['Contents']['response']
     output = []
     counter = 0
     higher = 0
@@ -96,21 +98,21 @@ def main(args):
         if int(build_number) >= 618657:
             # Line graph:
             for entry in stats:
-                higher = max(entry["data"][0], higher)
+                higher = max(entry['data'][0], higher)
                 if counter % 2 == 0:
-                    output.append({"name": counter, "data": [higher]})
+                    output.append({'name': counter, 'data': [higher]})
                     higher = 0
                 counter += 1
 
             data = {
-                "Type": 17,
-                "ContentsFormat": "line",
-                "Contents": {
-                    "stats": output,
-                    "params": {
-                        "timeFrame": "minutes",
-                        "format": "HH:mm",
-                        "layout": "vertical"
+                'Type': 17,
+                'ContentsFormat': 'line',
+                'Contents': {
+                    'stats': output,
+                    'params': {
+                        'timeFrame': 'minutes',
+                        'format': 'HH:mm',
+                        'layout': 'vertical'
                     }
                 }
             }
@@ -120,21 +122,21 @@ def main(args):
             now = datetime.utcnow()
             then = now - timedelta(days=1)
             for entry in stats:
-                higher = max(entry["data"][0], higher)
+                higher = max(entry['data'][0], higher)
                 if counter % 60 == 0:
                     then += timedelta(hours=1)
-                    name = then.strftime("%H:%M")
-                    output.append({"name": name, "data": [higher]})
+                    name = then.strftime('%H:%M')
+                    output.append({'name': name, 'data': [higher]})
                     higher = 0
                 counter += 1
 
             data = {
-                "Type": 17,
-                "ContentsFormat": "bar",
-                "Contents": {
-                    "stats": output,
-                    "params": {
-                        "layout": "horizontal"
+                'Type': 17,
+                'ContentsFormat': 'bar',
+                'Contents': {
+                    'stats': output,
+                    'params': {
+                        'layout': 'horizontal'
                     }
                 }
             }
@@ -143,8 +145,8 @@ def main(args):
     else:
         add_actions = analyze_data(res)
         results = CommandResults(
-            readable_output="analyzeCPUUsage Done",
-            outputs_prefix="actionableitems",
+            readable_output='analyzeCPUUsage Done',
+            outputs_prefix='actionableitems',
             outputs=add_actions)
 
         return results
