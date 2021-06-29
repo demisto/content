@@ -328,6 +328,17 @@ def change_attack_pattern_to_stix_attack_pattern(indicator: dict):
     return indicator
 
 
+def add_parent_technique_prefix_to_sub_technique(attack_pattern_indicators, mitre_id_to_mitre_name):
+    for indicator in attack_pattern_indicators:
+        if len(indicator['fields']['mitreid']) > 5:  # Txxxx.xxx is sub technique
+            parent_mitre_id = indicator['fields']['mitreid'][:5]
+            value = indicator['value']
+            technique = mitre_id_to_mitre_name.get(parent_mitre_id)  # TODO in case that technique doesnt exist
+            new_value = f'{technique}: {value}'
+            indicator['value'] = new_value
+            # id_to_name[indicator['fields']['stixid']] = new_value
+
+
 def create_attack_pattern_indicator(attack_indicator_objects, feed_tags, tlp_color, is_up_to_6_2) -> List:
     """Parse the Attack Pattern objects retrieved from the feed.
 
@@ -342,11 +353,13 @@ def create_attack_pattern_indicator(attack_indicator_objects, feed_tags, tlp_col
     """
 
     attack_pattern_indicators = []
+    mitre_id_to_mitre_name = {}
 
     for attack_indicator in attack_indicator_objects:
 
         publications = get_indicator_publication(attack_indicator)
         mitre_id, value = get_attack_id_and_value_from_name(attack_indicator)
+        mitre_id_to_mitre_name[mitre_id] = value
 
         kill_chain_mitre = [chain.get('phase_name', '') for chain in attack_indicator.get('kill_chain_phases', [])]
         kill_chain_phases = [MITRE_CHAIN_PHASES_TO_DEMISTO_FIELDS.get(phase) for phase in kill_chain_mitre]
@@ -377,6 +390,8 @@ def create_attack_pattern_indicator(attack_indicator_objects, feed_tags, tlp_col
             indicator = change_attack_pattern_to_stix_attack_pattern(indicator)
 
         attack_pattern_indicators.append(indicator)
+    add_parent_technique_prefix_to_sub_technique(attack_pattern_indicators, mitre_id_to_mitre_name)
+
     return attack_pattern_indicators
 
 
