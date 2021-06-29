@@ -743,7 +743,7 @@ def main():
                 outputs_prefix='Covalence.EndpointAgents',
                 outputs_key_field='agentUuid',
                 outputs=r,
-                readable_output=tableToMarkdown('Endpoint Agents', r, removenull=True)
+                readable_output=tableToMarkdown('Endpoint Agents', r, removeNull=True)
             )
             return_results(results)
 
@@ -753,7 +753,7 @@ def main():
                 outputs_prefix='Covalence.EndpointAgents',
                 outputs_key_field='agentUuid',
                 outputs=r,
-                readable_output=tableToMarkdown('Endpoint Agents', r, removenull=True)
+                readable_output=tableToMarkdown('Endpoint Agents', r, removeNull=True)
             )
             return_results(results)
 
@@ -763,7 +763,7 @@ def main():
                 outputs_prefix='Covalence.EndpointAgents',
                 outputs_key_field='agentUuid',
                 outputs=r,
-                readable_output=tableToMarkdown('Endpoint Agents', r, removenull=True)
+                readable_output=tableToMarkdown('Endpoint Agents', r, removeNull=True)
             )
             return_results(results)
 
@@ -773,7 +773,7 @@ def main():
                 outputs_prefix='Covalence.EndpointProcess',
                 outputs_key_field='id',
                 outputs=r,
-                readable_output=tableToMarkdown('Endpoint Process', r, removenull=True)
+                readable_output=tableToMarkdown('Endpoint Process', r, removeNull=True)
             )
             return_results(results)
 
@@ -783,7 +783,7 @@ def main():
                 outputs_prefix='Covalence.EndpointSoftware',
                 outputs_key_field='id',
                 outputs=r,
-                readable_output=tableToMarkdown('Endpoint Software', r, removenull=True)
+                readable_output=tableToMarkdown('Endpoint Software', r, removeNull=True)
             )
             return_results(results)
 
@@ -793,7 +793,7 @@ def main():
                 outputs_prefix='Covalence.EndpointSoftware',
                 outputs_key_field='id',
                 outputs=r,
-                readable_output=tableToMarkdown('Endpoint Software', r, removenull=True)
+                readable_output=tableToMarkdown('Endpoint Software', r, removeNull=True)
             )
             return_results(results)
 
