@@ -17,6 +17,7 @@ DOCUMENT_ROOT = ''
 CERTIFICATE_FILE = tempfile.NamedTemporaryFile(delete=False, mode='w')
 INTEGRATION_COMMAND_NAME = 'pan-os-edl'
 
+
 def initialize_instance(params: Dict[str, str]) -> None:
     global AUTHENTICATION, HOSTNAME, USERNAME, PORT, SSH_EXTRA_PARAMS, SCP_EXTRA_PARAMS, DOCUMENT_ROOT, CERTIFICATE_FILE
 
@@ -492,7 +493,7 @@ def edl_print_internal_list_command(args: dict):
     """
     Print to the war room instance context list
     """
-    list_name = args.get('list_name')
+    list_name = str(args.get('list_name', ''))
     dict_of_lists = demisto.getIntegrationContext()
     list_data = sorted(dict_of_lists.get(list_name, None))
 
@@ -662,7 +663,7 @@ def main() -> None:
         f'{INTEGRATION_COMMAND_NAME}-update-from-external-file': edl_update_from_external_file_command,
         f'{INTEGRATION_COMMAND_NAME}-delete-external-file': edl_delete_external_file_command,
         f'{INTEGRATION_COMMAND_NAME}-search-internal-list': edl_search_internal_list_command,
-        f'{INTEGRATION_COMMAND_NAME}-print-internal-lis': edl_print_internal_list_command,
+        f'{INTEGRATION_COMMAND_NAME}-print-internal-list': edl_print_internal_list_command,
         f'{INTEGRATION_COMMAND_NAME}-dump-internal-list': edl_dump_internal_list_command,
         f'{INTEGRATION_COMMAND_NAME}-compare': edl_compare_command,
         f'{INTEGRATION_COMMAND_NAME}-get-external-file-metadata': edl_get_external_file_metadata_command,
