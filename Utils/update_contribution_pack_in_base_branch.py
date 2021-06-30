@@ -43,7 +43,7 @@ def main():
                 Popen(f'git fetch https://{token}@github.com/{repo}/content.git :{repo}/{branch}'.split(), stdout=dev_null)
         except SystemExit:
             pass
-        command = f'git checkout {repo}/{branch} {string_dir_names}'
+        command = f'git checkout {repo}/{branch} -- {string_dir_names}'
         print(f'Running command {command}')
         run_command(f'git checkout {repo}/{branch} {string_dir_names}')
     except Exception as e:
