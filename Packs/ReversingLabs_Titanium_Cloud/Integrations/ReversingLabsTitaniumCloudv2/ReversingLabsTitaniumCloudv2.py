@@ -746,7 +746,7 @@ def analyze_url_command():
 
 
 def analyze_url_output(response_json, url):
-    report_base = response_json.get("rl")
+    report_base = response_json.get("rl", {})
 
     markdown = f"""## ReversingLabs Analyze URL response for URL {url}\n **Status**: {report_base.get("status")}
     **Analysis ID**: {report_base.get("analysis_id")}
@@ -784,7 +784,7 @@ def detonate_sample_command():
 
 def detonate_sample_output(response_json, sha1):
 
-    report_base = response_json.get("rl")
+    report_base = response_json.get("rl", {})
 
     markdown = f"""## ReversingLabs submit sample {sha1} for Dynamic Analysis\n **Status**: {report_base.get("status")}
     **Requested hash**: {report_base.get("requested_hash")}
