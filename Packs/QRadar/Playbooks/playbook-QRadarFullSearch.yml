@@ -259,4 +259,4 @@ outputs:
 - contextPath: QRadar.Search.Result
   description: The result of the search
 tests:
-- test_Qradar
+- No test
