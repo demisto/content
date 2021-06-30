@@ -1,6 +1,6 @@
 category: Forensics & Malware Analysis
 commonfields:
-  id: Intezer v2-kfir
+  id: Intezer v2
   version: -1
 configuration:
   - display: API Key
@@ -22,8 +22,8 @@ configuration:
     required: false
     type: 8
 description: Malware detection and analysis based on code reuse
-display: Intezer v2-kfir
-name: Intezer v2-kfir
+display: Intezer v2
+name: Intezer v2
 script:
   commands:
     - name: intezer-analyze-by-hash
@@ -251,7 +251,7 @@ script:
         - contextPath: Intezer.Analysis.ComposedAnalysisID
           description: The Composed analysis id
           type: string
-  dockerimage: demisto/intezer:1.0.0.1625054311
+  dockerimage: devdemisto/intezer:1.0.0.22117
   isfetch: false
   runonce: false
   script: '-'
