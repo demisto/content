@@ -1,11 +1,6 @@
 # type: ignore
-import base64
-import logging
-import warnings
-import zipfile
-from io import BytesIO
-from typing import Union, List, Any, Tuple, Dict
-from urllib.parse import urlparse, urljoin
+from typing import Union, List, Dict
+from urllib.parse import urlparse
 
 import requests
 from pymisp import ExpandedPyMISP, PyMISPError, MISPObject, MISPSighting, MISPEvent
