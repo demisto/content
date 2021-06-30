@@ -127,7 +127,7 @@ script:
       required: true
       secret: false
     - name: result_limit
-      description: Maximum number of results to be returned.
+      description: Maximum number of results to be returned. Default is 5000.
       defaultValue: 5000
       default: false
       isArray: false
@@ -212,7 +212,7 @@ script:
       required: true
       secret: false
     - name: result_limit
-      description: Maximum number of results to be returned.
+      description: Maximum number of results to be returned. Default is 5000.
       defaultValue: 5000
       default: false
       isArray: false
@@ -234,7 +234,7 @@ script:
       required: true
       secret: false
     - name: result_limit
-      description: Maximum number of results to be returned.
+      description: Maximum number of results to be returned. Default is 5000.
       defaultValue: 5000
       default: false
       isArray: false
@@ -262,7 +262,7 @@ script:
       required: false
       secret: false
     - name: result_limit
-      description: Maximum number of results to be returned.
+      description: Maximum number of results to be returned Default is 5000.
       defaultValue: 5000
       default: false
       isArray: false
