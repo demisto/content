@@ -1364,7 +1364,7 @@ def main():
         elif command == 'misp-add-url-object':
             return_results(add_url_object(args))
         elif command == 'misp-add-ip-object':
-            return_results(add_ip_object(args))  # split into sub-funcs
+            return_results(add_ip_object(args))
         elif command == 'misp-add-object':
             return_results(add_generic_object_command(args))
     except PyMISPError as e:

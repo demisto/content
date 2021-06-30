@@ -1967,13 +1967,13 @@ script:
       required: true
       secret: false
     - default: false
-      description: Template name (can be found at https://www.misp-project.org/objects.html).
+      description: Template name (can be found at https://www.misp-project.org/objects.html), for example 'vehicle'.
       isArray: false
       name: template
       required: true
       secret: false
     - default: false
-      description: Attributes.
+      description: "Attributes, for example {'description': 'Manager Ferrari', 'make': 'Ferrari', 'model': '308 GTS'}"
       isArray: false
       name: attributes
       required: true
