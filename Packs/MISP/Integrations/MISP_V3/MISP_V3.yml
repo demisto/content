@@ -1042,7 +1042,7 @@ script:
     execution: false
     name: misp-create-event
     outputs:
-   - contextPath: MISP.Event.ID
+    - contextPath: MISP.Event.ID
       description: MISP event ID.
       type: string
     - contextPath: MISP.Event.Distribution
@@ -1302,7 +1302,7 @@ script:
     execution: false
     name: misp-add-tag-to-event
     outputs:
-   - contextPath: MISP.Event.ID
+    - contextPath: MISP.Event.ID
       description: MISP event ID.
       type: string
     - contextPath: MISP.Event.Distribution
@@ -1407,6 +1407,19 @@ script:
     - contextPath: MISP.Event.Object.UUID
       description: UUID of the object.
       type: String
+  - arguments:
+    - default: false
+      description: UUID of the attribute, e.g., 59575300-4be8-4ff6-8767-0037ac110032.
+      isArray: false
+      name: uuid
+      required: true
+      secret: false
+    - default: false
+      description: Tag to add to the attribute.
+      isArray: false
+      name: tag
+      required: true
+      secret: false
     deprecated: false
     description: Adds a tag to the given UUID attribute .
     execution: false
