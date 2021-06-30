@@ -69,12 +69,12 @@ tasks:
     quietmode: 0
   "2":
     id: "2"
-    taskid: 058b165c-26c1-4246-8504-6d96aeae8ce1
+    taskid: 151a8a05-a65a-40e8-8e79-1316553e562e
     type: regular
     task:
-      id: 058b165c-26c1-4246-8504-6d96aeae8ce1
+      id: 151a8a05-a65a-40e8-8e79-1316553e562e
       version: -1
-      name: create_relationship
+      name: CVE Create Relationship
       description: This automation creates a relationship between indicator objects.
       scriptName: CreateIndicatorRelationship
       type: regular
@@ -189,12 +189,12 @@ tasks:
     quietmode: 0
   "5":
     id: "5"
-    taskid: 2d997bc9-f41b-49d0-8c17-a634584edc06
+    taskid: fb9daaba-9263-41aa-89b7-393aacb1e2f8
     type: regular
     task:
-      id: 2d997bc9-f41b-49d0-8c17-a634584edc06
+      id: fb9daaba-9263-41aa-89b7-393aacb1e2f8
       version: -1
-      name: create_relationship
+      name: IP Create Relationship
       description: This automation creates a relationship between indicator objects.
       scriptName: CreateIndicatorRelationship
       type: regular
@@ -233,13 +233,14 @@ tasks:
     quietmode: 0
   "6":
     id: "6"
-    taskid: 5de754b0-5c99-4fc4-8c6e-1a55a4975cfa
+    taskid: 9f48aaf3-82e8-49a7-8195-b6d918afbd0a
     type: regular
     task:
-      id: 5de754b0-5c99-4fc4-8c6e-1a55a4975cfa
+      id: 9f48aaf3-82e8-49a7-8195-b6d918afbd0a
       version: -1
-      name: Delete context subplaybook
-      description: Delete field from context
+      name: Delete Context Subplaybook
+      description: 'In order to isolate each report and include only the data extracted
+        from the specific report. '
       scriptName: DeleteContext
       type: regular
       iscommand: false
@@ -302,12 +303,12 @@ tasks:
     quietmode: 0
   "8":
     id: "8"
-    taskid: c2839c76-c904-42c6-8108-6d9b83d9f39f
+    taskid: c25a9e24-d26f-4c40-8075-5b562309cc71
     type: regular
     task:
-      id: c2839c76-c904-42c6-8108-6d9b83d9f39f
+      id: c25a9e24-d26f-4c40-8075-5b562309cc71
       version: -1
-      name: create_relationship
+      name: Email Create Relationship
       description: This automation creates a relationship between indicator objects.
       scriptName: CreateIndicatorRelationship
       type: regular
@@ -384,12 +385,12 @@ tasks:
     quietmode: 0
   "11":
     id: "11"
-    taskid: 4e0b511e-5de1-427c-807e-990dc9c6121c
+    taskid: 22962692-2634-4176-896a-8795cb4ec804
     type: regular
     task:
-      id: 4e0b511e-5de1-427c-807e-990dc9c6121c
+      id: 22962692-2634-4176-896a-8795cb4ec804
       version: -1
-      name: create_relationship
+      name: Domain Create Relationship
       description: This automation creates a relationship between indicator objects.
       scriptName: CreateIndicatorRelationship
       type: regular
@@ -466,12 +467,12 @@ tasks:
     quietmode: 0
   "13":
     id: "13"
-    taskid: 38a869e6-d70a-4325-804b-55cbb51c8f4e
+    taskid: c17ba0f8-8199-4826-877c-61cad37444f5
     type: regular
     task:
-      id: 38a869e6-d70a-4325-804b-55cbb51c8f4e
+      id: c17ba0f8-8199-4826-877c-61cad37444f5
       version: -1
-      name: create_relationship
+      name: URL Create Relationship
       description: This automation creates a relationship between indicator objects.
       scriptName: CreateIndicatorRelationship
       type: regular
@@ -685,12 +686,12 @@ inputs:
   value: {}
   required: false
   description: ""
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: report_name
   value: {}
   required: false
   description: ""
-  playbookInputQuery:
+  playbookInputQuery: null
 outputs: []
 fromversion: 6.2.0
 description: Extract and enrich indicators
