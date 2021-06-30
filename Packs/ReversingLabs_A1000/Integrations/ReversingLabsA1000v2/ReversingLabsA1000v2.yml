@@ -31,6 +31,21 @@ configuration:
   - F - Reliability cannot be judged
   required: false
   type: 15
+- defaultvalue: '2'
+  display: Wait time between report fetching retries (seconds). Deafult is 2 seconds.
+  hidden: false
+  name: wait_time_seconds
+  required: false
+  type: 0
+- defaultvalue: '30'
+  display: Number of report fetching retries. Default is 30.
+  hidden: false
+  name: num_of_retries
+  required: false
+  type: 0
+defaultMapperIn: 'null'
+defaultMapperOut: 'null'
+defaultclassifier: 'null'
 description: ReversingLabs A1000 advanced Malware Analysis Platform.
 display: ReversingLabs A1000 v2
 name: ReversingLabs A1000 v2
@@ -297,16 +312,16 @@ script:
       type: Unknown
   - arguments:
     - default: false
-      isArray: false
       description: Advanced search query
+      isArray: false
       name: query
       required: true
       secret: false
     - default: false
       defaultValue: '5000'
+      description: Maximum number of results
       isArray: false
       name: result_limit
-      description: Maximum number of results
       required: false
       secret: false
     deprecated: false
