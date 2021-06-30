@@ -247,6 +247,7 @@ def circleci_workflow_last_runs_command(client: Client, args: Dict[str, Any]) ->
 ''' MAIN FUNCTION '''
 
 
+
 def main() -> None:
     command = demisto.command()
     params = demisto.params()
