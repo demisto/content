@@ -342,8 +342,9 @@ def get_full_related_event_objects(attributes_list):
                 event_tag_set_ids.update(current_event_tags)
             related_events[event.get('id')] = event
         if attribute_tag_list:
-            _, current_attribute_tags = limit_tag_output(attribute, False)
+            attribute_tags, current_attribute_tags = limit_tag_output(attribute, False)
             attributes_tag_set_ids.update(current_attribute_tags)
+            related_events[event.get('id')].update({'Tag': attribute_tags})
     return related_events, attributes_tag_set_ids, event_tag_set_ids
 
 
