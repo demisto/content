@@ -613,11 +613,7 @@ def file_download_command():
         readable_output=f"Requested sample is available for download under the name {hash_value}"
     )
 
-    with open(hash_value, "wb") as file_handle:
-        file_handle.write(response.content)
-
-    return_results(results)
-    demisto.results(file_result_existing_file(hash_value))
+    return_results([results, fileResult(hash_value, response.content)])
 
 
 def file_upload_command():
