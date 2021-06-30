@@ -1,4 +1,5 @@
 import json
+import io
 from ReversingLabsA1000v2 import a1000_report_output, list_extracted_files_output, get_classification_output
 
 
@@ -22,7 +23,7 @@ def test_a1000_list_extracted_output():
 
 def test_a1000_get_classification_output():
     test_response = util_load_json('TestData/a1000_get_classification_response.json')
-    test_context = jutil_load_json('TestData/a1000_get_classification_context.json')
+    test_context = util_load_json('TestData/a1000_get_classification_context.json')
 
     result = get_classification_output(test_response)
 

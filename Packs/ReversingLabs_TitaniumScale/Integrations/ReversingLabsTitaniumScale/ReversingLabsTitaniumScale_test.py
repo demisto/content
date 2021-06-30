@@ -1,4 +1,5 @@
 import json
+import io
 from ReversingLabsTitaniumScale import parse_report_and_return_results, parse_upload_report_and_return_results
 
 
