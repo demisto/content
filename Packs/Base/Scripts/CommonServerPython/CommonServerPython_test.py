@@ -3323,6 +3323,79 @@ def test_return_results_mixed_results(mocker):
     assert demisto_results_mock.call_args_list[1][0][0] == mock_demisto_results_entry
 
 
+class TestExecuteCommand():
+    @staticmethod
+    def test_sanity(mocker):
+        """
+        Given:
+            - A command with a single entry as output.
+        When:
+            - Calling execute_command.
+        Then:
+            - Assert that only the Contents value is returned.
+        """
+        from CommonServerPython import execute_command, EntryType
+        demisto_execute_mock = mocker.patch.object(demisto, 'executeCommand',
+                                                   return_value={'Type': EntryType.NOTE,
+                                                                 'Contents': {'hello': 'world'}})
+        res = execute_command('command', {'arg1': 'value'})
+        assert demisto_execute_mock.call_count == 1
+        assert res == {'hello': 'world'}
+
+    @staticmethod
+    def test_multiple_results(mocker):
+        """
+        Given:
+            - A command with several entries as output.
+        When:
+            - Calling execute_command.
+        Then:
+            - Assert that the "Contents" values of all entries are returned.
+        """
+        from CommonServerPython import execute_command, EntryType
+        entries = [
+            {'Type': EntryType.NOTE, 'Contents': {'hello': 'world'}},
+            {'Type': EntryType.NOTE, 'Context': 'no contents here'},
+            {'Type': EntryType.NOTE, 'Contents': {'entry': '2'}},
+        ]
+        demisto_execute_mock = mocker.patch.object(demisto, 'executeCommand',
+                                                   return_value=entries)
+        res = execute_command('command', {'arg1': 'value'})
+        assert demisto_execute_mock.call_count == 1
+        assert isinstance(res, list)
+        assert len(res) == 3
+        assert res[0] == {'hello': 'world'}
+        assert res[1] == {}
+        assert res[2] == {'entry': '2'}
+
+    @staticmethod
+    def test_failure(mocker):
+        """
+        Given:
+            - A command that fails.
+        When:
+            - Calling execute_command.
+        Then:
+            - Assert that the original error is returned to War-Room (using demisto.results).
+            - Assert an error is returned to the War-Room.
+            - Function ends the run using SystemExit.
+        """
+        from CommonServerPython import execute_command, EntryType
+        error_entry = {'Type': EntryType.ERROR, 'Contents': 'error'}
+        demisto_execute_mock = mocker.patch.object(demisto, 'executeCommand',
+                                                   return_value=error_entry)
+        demisto_results_mock = mocker.patch.object(demisto, 'results')
+
+        with raises(SystemExit, match='0'):
+            execute_command('bad', {'arg1': 'value'})
+
+        assert demisto_execute_mock.call_count == 1
+        assert demisto_results_mock.call_count == 2
+        # first call, args (not kwargs), first argument
+        assert demisto_results_mock.call_args_list[0][0][0] == error_entry
+        assert 'Failed to execute bad.' in demisto_results_mock.call_args_list[1][0][0]['Contents']
+
+
 def test_arg_to_int__valid_numbers():
     """
     Given
