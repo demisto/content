@@ -656,114 +656,120 @@ def main():
         elif demisto.command() == 'cov-secpr-list-alerts':
             r = list_alerts()
             if r:
-                message = 'Alerts'
+                readable_output = tableToMarkdown('Alerts', r, removeNull=True, headerTransform=string_to_table_header)
             else:
-                message = 'No result'
+                readable_output = 'No alerts found'
+
             results = CommandResults(
                 outputs_prefix='Covalence.Alert',
                 outputs_key_field='id',
                 outputs=r,
-                readable_output=tableToMarkdown(message, r, removeNull=True, headerTransform=string_to_table_header)
+                readable_output=readable_output
             )
             return_results(results)
 
         elif demisto.command() == 'cov-secpr-list-sensors':
             r = list_sensors()
             if r:
-                message = 'Sensors'
+                readable_output = tableToMarkdown('Sensors', r, removeNull=True, headerTransform=string_to_table_header)
             else:
-                message = 'No result'
+                readable_output = 'No sensors found'
+
             results = CommandResults(
                 outputs_prefix='Covalence.Sensors',
                 outputs_key_field='id',
                 outputs=r,
-                readable_output=tableToMarkdown(message, r, removeNull=True, headerTransform=string_to_table_header)
+                readable_output=readable_output
             )
             return_results(results)
 
         elif demisto.command() == 'cov-secpr-get-sensor':
             r = get_sensor()
             if r:
-                message = 'Sensor'
+                readable_output = tableToMarkdown('Sensor', r, removeNull=True, headerTransform=string_to_table_header)
             else:
-                message = 'No result'
+                readable_output = 'None sensor found'
+
             results = CommandResults(
                 outputs_prefix='Covalence.Sensor',
                 outputs_key_field='id',
                 outputs=r,
-                readable_output=tableToMarkdown(message, r, removeNull=True, headerTransform=string_to_table_header)
+                readable_output=readable_output
             )
             return_results(results)
 
         elif demisto.command() == 'cov-secpr-connections-summary-ip':
             r = connections_summary_by_ip()
             if r:
-                message = 'Connections'
+                readable_output = tableToMarkdown('Connections', r, removeNull=True, headerTransform=string_to_table_header)
             else:
-                message = 'No result'
+                readable_output = 'No connections found'
+
             results = CommandResults(
                 outputs_prefix='Covalence.Connections',
                 outputs_key_field='id',
                 outputs=r,
-                readable_output=tableToMarkdown(message, r, removeNull=True, headerTransform=string_to_table_header)
+                readable_output=readable_output
             )
             return_results(results)
 
         elif demisto.command() == 'cov-secpr-connections-summary-port':
             r = connections_summary_by_port()
             if r:
-                message = 'Connections'
+                readable_output = tableToMarkdown('Connections', r, removeNull=True, headerTransform=string_to_table_header)
             else:
-                message = 'No result'
+                readable_output = 'No connections found'
+
             results = CommandResults(
                 outputs_prefix='Covalence.Connections',
                 outputs_key_field='id',
                 outputs=r,
-                readable_output=tableToMarkdown(message, r, removeNull=True, headerTransform=string_to_table_header)
+                readable_output=readable_output
             )
             return_results(results)
 
         elif demisto.command() == 'cov-secpr-list-dns-resolutions':
             r = list_dns_resolutions()
             if r:
-                message = 'DNS Resolutions'
+                readable_output = tableToMarkdown('DNS Resolutions', r, removeNull=True, headerTransform=string_to_table_header)
             else:
-                message = 'No result'
+                readable_output = 'No DNS resolutions found'
+
             results = CommandResults(
                 outputs_prefix='Covalence.DNSResolutions',
                 outputs_key_field='id',
                 outputs=r,
-                readable_output=tableToMarkdown(message, r, removeNull=True, headerTransform=string_to_table_header)
+                readable_output=readable_output
             )
             return_results(results)
 
         elif demisto.command() == 'cov-secpr-list-internal-networks':
             r = list_internal_networks()
             if r:
-                message = 'Internal Networks'
+                readable_output = tableToMarkdown('Internal Networks', r, removeNull=True, headerTransform=string_to_table_header)
             else:
-                message = 'No result'
+                readable_output = 'No internal networks found'
+
             results = CommandResults(
                 outputs_prefix='Covalence.InternalNetworks',
                 outputs_key_field='cidr',
                 outputs=r,
-                readable_output=tableToMarkdown(message, r, removeNull=True, headerTransform=string_to_table_header)
+                readable_output=readable_output
             )
             return_results(results)
 
         elif demisto.command() == 'cov-secpr-set-internal-networks':
             r = set_internal_networks()
-            if r:
-                message = 'Internal Networks'
-            else:
-                message = 'No result'
+
             if r is True:
+                readable_output = tableToMarkdown('Internal Networks', r, removeNull=True, headerTransform=string_to_table_header)
+
                 r = list_internal_networks()
                 results = CommandResults(
                     outputs_prefix='Covalence.InternalNetworks',
                     outputs_key_field='cidr',
                     outputs=r,
-                    readable_output=tableToMarkdown(message, r, removeNull=True, headerTransform=string_to_table_header)
+                    readable_output=readable_output
                 )
                 return_results(results)
             else:
@@ -773,84 +779,90 @@ def main():
         elif demisto.command() == 'cov-secpr-list-endpoint-agents':
             r = list_endpoint_agents()
             if r:
-                message = 'Endpoint Agents'
+                readable_output = tableToMarkdown('Endpoint Agents', r, removeNull=True, headerTransform=string_to_table_header)
             else:
-                message = 'No result'
+                readable_output = 'No endpoint agents found'
+
             results = CommandResults(
                 outputs_prefix='Covalence.EndpointAgents',
                 outputs_key_field='agentUuid',
                 outputs=r,
-                readable_output=tableToMarkdown(message, r, removeNull=True, headerTransform=string_to_table_header)
+                readable_output=readable_output
             )
             return_results(results)
 
         elif demisto.command() == 'cov-secpr-find-endpoint-agents-by-user':
             r = find_endpoint_by_user()
             if r:
-                message = 'Endpoint Agents'
+                readable_output = tableToMarkdown('Endpoint Agents', r, removeNull=True, headerTransform=string_to_table_header)
             else:
-                message = 'No result'
+                readable_output = 'No endpoint agents found'
+
             results = CommandResults(
                 outputs_prefix='Covalence.EndpointAgents',
                 outputs_key_field='agentUuid',
                 outputs=r,
-                readable_output=tableToMarkdown(message, r, removeNull=True, headerTransform=string_to_table_header)
+                readable_output=readable_output
             )
             return_results(results)
 
         elif demisto.command() == 'cov-secpr-find-endpoint-agents-by-uuid':
             r = find_endpoint_by_uuid()
             if r:
-                message = 'Endpoint Agents'
+                readable_output = tableToMarkdown('Endpoint Agents', r, removeNull=True, headerTransform=string_to_table_header)
             else:
-                message = 'No result'
+                readable_output = 'No endpoint agents found'
+
             results = CommandResults(
                 outputs_prefix='Covalence.EndpointAgents',
                 outputs_key_field='agentUuid',
                 outputs=r,
-                readable_output=tableToMarkdown(message, r, removeNull=True, headerTransform=string_to_table_header)
+                readable_output=readable_output
             )
             return_results(results)
 
         elif demisto.command() == 'cov-secpr-search-endpoint-process':
             r = search_endpoint_process()
             if r:
-                message = 'Endpoint Process'
+                readable_output = tableToMarkdown('Endpoint Process', r, removeNull=True, headerTransform=string_to_table_header)
             else:
-                message = 'No result'
+                readable_output = 'No endpoint process found'
+
             results = CommandResults(
                 outputs_prefix='Covalence.EndpointProcess',
                 outputs_key_field='id',
                 outputs=r,
-                readable_output=tableToMarkdown(message, r, removeNull=True, headerTransform=string_to_table_header)
+                readable_output=readable_output
             )
             return_results(results)
 
         elif demisto.command() == 'cov-secpr-search-endpoint-installed-software':
             r = search_endpoint_installed_software()
             if r:
-                message = 'Endpoint Software'
+                readable_output = tableToMarkdown('Endpoint Software', r, removeNull=True, headerTransform=string_to_table_header)
             else:
-                message = 'No result'
+                readable_output = 'No endpoint software found'
+
             results = CommandResults(
                 outputs_prefix='Covalence.EndpointSoftware',
                 outputs_key_field='id',
                 outputs=r,
-                readable_output=tableToMarkdown(message, r, removeNull=True, headerTransform=string_to_table_header)
+                readable_output=readable_output
             )
             return_results(results)
 
         elif demisto.command() == 'cov-secpr-list-organizations':
             r = list_org()
             if r:
-                message = 'Endpoint Software'
+                readable_output = tableToMarkdown('Endpoint Software', r, removeNull=True, headerTransform=string_to_table_header)
             else:
-                message = 'No result'
+                readable_output = 'No endpoint software found'
+
             results = CommandResults(
                 outputs_prefix='Covalence.EndpointSoftware',
                 outputs_key_field='id',
                 outputs=r,
-                readable_output=tableToMarkdown(message, r, removeNull=True, headerTransform=string_to_table_header)
+                readable_output=readable_output
             )
             return_results(results)
 
