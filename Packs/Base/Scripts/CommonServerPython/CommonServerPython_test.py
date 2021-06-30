@@ -1963,6 +1963,15 @@ class TestCommandResults:
             )
         assert e.value.args[0] == 'indicators is DEPRECATED, use only indicator'
 
+    # TODO: test here?
+    def test_custom_indicator(self):
+        from CommonServerPython import Common, DBotScoreType
+        dbot_score = Common.DBotScore(
+            indicator='8.8.8.8',
+            integration_name='Virus Total',
+            indicator_type=DBotScoreType.IP,
+            score=Common.DBotScore.GOOD
+        )
     def test_indicator_with_no_auto_extract(self):
         """
        Given:
