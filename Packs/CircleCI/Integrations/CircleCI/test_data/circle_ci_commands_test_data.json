@@ -327,7 +327,7 @@
     "type": "build"
    }
   ],
-  "outputs_prefix": "CircleCI.Workflow.Job",
+  "outputs_prefix": "CircleCI.WorkflowJob",
   "outputs_key_field": "id"
  },
  "get_last_workflow_runs": {
