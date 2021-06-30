@@ -191,13 +191,13 @@ script:
       description: Dest Ip
       type: String
     - contextPath: Covalence.Alert..destIpAttributes.k
-      description: K
+      description: Key
       type: String
     - contextPath: Covalence.Alert..destIpAttributes.t
-      description: T
+      description: Type
       type: Number
     - contextPath: Covalence.Alert..destIpAttributes.v
-      description: V
+      description: Value
       type: String
     - contextPath: Covalence.Alert..destMajesticMillionRanking
       description: Dest Majestic Million Ranking
@@ -274,13 +274,13 @@ script:
       description: Source Ip
       type: String
     - contextPath: Covalence.Alert..sourceIpAttributes.k
-      description: K
+      description: Key
       type: String
     - contextPath: Covalence.Alert..sourceIpAttributes.t
-      description: T
+      description: Type
       type: Number
     - contextPath: Covalence.Alert..sourceIpAttributes.v
-      description: V
+      description: Value
       type: String
     - contextPath: Covalence.Alert..sourceMajesticMillionRanking
       description: Source Majestic Million Ranking

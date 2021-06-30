@@ -320,20 +320,28 @@ def main():
 
         elif demisto.command() == 'cov-mgsec-get-aro':
             r = get_aros()
+            if r:
+                message = 'AROs'
+            else:
+                message = 'No result'
             results = CommandResults(
                 outputs_prefix='FESPortal.ARO',
                 outputs_key_field='ID',
                 outputs=r,
-                readable_output=tableToMarkdown('AROs', r, removeNull=True)
+                readable_output=tableToMarkdown(message, r, removeNull=True, headerTransform=string_to_table_header)
             )
             return_results(results)
         elif demisto.command() == 'cov-mgsec-list-org':
             r = list_organizations()
+            if r:
+                message = 'Organizations'
+            else:
+                message = 'No result'
             results = CommandResults(
                 outputs_prefix='FESPortal.Org',
                 outputs_key_field='ID',
                 outputs=r,
-                readable_output=tableToMarkdown('Organzations', r, removeNull=True)
+                readable_output=tableToMarkdown(message, r, removeNull=True, headerTransform=string_to_table_header)
             )
             return_results(results)
         else:
