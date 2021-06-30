@@ -1281,7 +1281,7 @@ class Pack(object):
                     # Handling modified old release notes files, if there are any
                     rn_files_names = self.get_rn_files_names(modified_files_paths)
                     modified_release_notes_lines_dict = self.get_modified_release_notes_lines(
-                        release_notes_dir, latest_release_notes, changelog, rn_files_names)
+                        release_notes_dir, LooseVersion(latest_release_notes), changelog, rn_files_names)
 
                     if self._current_version != latest_release_notes:
                         # TODO Need to implement support for pre-release versions
