@@ -45,8 +45,6 @@ configuration:
   - F - Reliability cannot be judged
   required: true
   type: 15
-defaultMapperIn: 'null'
-defaultMapperOut: 'null'
 defaultclassifier: 'null'
 description: Malware information sharing platform and threat sharing.
 display: MISP v3
@@ -114,7 +112,9 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Search for events in MISP. This search command will return only inforamtaion about the matched events. In case you want to get inforamation about attributes, please use the commnads misp-search-attributes.
+    description: Search for events in MISP. This search command will return only inforamtaion
+      about the matched events. In case you want to get inforamation about attributes,
+      please use the commnads misp-search-attributes.
     execution: false
     name: misp-search-events
     outputs:
@@ -228,7 +228,7 @@ script:
       description: Domain to search.
       isArray: true
       name: domain
-      required: false
+      required: true
       secret: false
     deprecated: false
     description: Checks the reputation of the given domain.
@@ -372,7 +372,7 @@ script:
       description: Email address to search.
       isArray: true
       name: email
-      required: false
+      required: true
       secret: false
     deprecated: false
     description: Checks the reputation of the given email address.
@@ -516,7 +516,7 @@ script:
       description: Hash of the file to query. Supports MD5, SHA-1, and SHA-256.
       isArray: true
       name: file
-      required: false
+      required: true
       secret: false
     deprecated: false
     description: Checks the file reputation of the given hash.
@@ -660,7 +660,7 @@ script:
       description: URL address to check.
       isArray: true
       name: url
-      required: false
+      required: true
       secret: false
     deprecated: false
     description: Checks the reputation of the given email address.
@@ -804,145 +804,145 @@ script:
       description: IP address to check.
       isArray: true
       name: ip
-      required: false
+      required: true
       secret: false
     deprecated: false
     description: Checks the reputation of an IP address.
     execution: false
     name: ip
     outputs:
-      - contextPath: IP.Address
-        description: The ip address.
-        type: String
-      - contextPath: DBotScore.Indicator
-        description: The indicator that was tested.
-        type: String
-      - contextPath: DBotScore.Type
-        description: The indicator type.
-        type: String
-      - contextPath: DBotScore.Vendor
-        description: The vendor used to calculate the score.
-        type: String
-      - contextPath: DBotScore.Score
-        description: The actual score.
-        type: Number
-      - contextPath: DBotScore.Reliability
-        description: Reliability of the source providing the intelligence data.
-        type: String
-      - contextPath: MISP.Attribute.Distribution
-        description: Attribute distribution.
-        type: string
-      - contextPath: MISP.Attribute.Value
-        description: Attribute value.
-        type: string
-      - contextPath: MISP.Attribute.EventID
-        description: Attribute event ID.
-        type: string
-      - contextPath: MISP.Attribute.RelatedAttribute
-        description: Related Attibute.
-        type: Unknown
-      - contextPath: MISP.Attribute.last_seen
-        description: Attribute last_seen timestamp.
-        type: string
-      - contextPath: MISP.Attribute.first_seen
-        description: Attribute first_seen timestamp.
-        type: string
-      - contextPath: MISP.Attribute.Timestamp
-        description: Attribute timestamp.
-        type: string
-      - contextPath: MISP.Attribute.ObjectID
-        description: Attribute object id.
-        type: string
-      - contextPath: MISP.Attribute.Deleted
-        description: Is the attribute deleted.
-        type: boolean
-      - contextPath: MISP.Attribute.DisableCorrelation
-        description: Is attribute correlation disabled?
-        type: boolean
-      - contextPath: MISP.Attribute.Type
-        description: Attribute type.
-        type: string
-      - contextPath: MISP.Attribute.ID
-        description: Attribute ID.
-        type: string
-      - contextPath: MISP.Attribute.UUID
-        description: Attribute UUID.
-        type: string
-      - contextPath: MISP.Attribute.ToIDs
-        description: Is the Intrusion Detection System flag set.
-        type: boolean
-      - contextPath: MISP.Attribute.Category
-        description: Attribute category.
-        type: string
-      - contextPath: MISP.Attribute.SharingGroupID
-        description: Attribute sharing group ID.
-        type: string
-      - contextPath: MISP.Attribute.Comment
-        description: Attribute comment.
-        type: string
-      - contextPath: MISP.Attribute.Event.ID
-        description: MISP event ID.
-        type: string
-      - contextPath: MISP.Attribute.Event.Distribution
-        description: MISP event distribution.
-        type: string
-      - contextPath: MISP.Attribute.Event.Info
-        description: MISP event name.
-        type: string
-      - contextPath: MISP.Attribute.Event.Timestamp
-        description: Timestamp of the event.
-        type: string
-      - contextPath: MISP.Attribute.Event.Published
-        description: Is the event published.
-        type: boolean
-      - contextPath: MISP.Attribute.Event.Date
-        description: Event Date.
-        type: date
-      - contextPath: MISP.Attribute.Event.ThreatLevelID
-        description: Threat level of the MISP event (1 High, 2 Medium, 3 Low, 4 Undefined).
-        type: string
-      - contextPath: MISP.Attribute.Event.PublishTimestamp
-        description: Timestamp of the publish time (if published).
-        type: string
-      - contextPath: MISP.Attribute.Event.OrganisationID
-        description: MISP event organisation ID.
-        type: string
-      - contextPath: MISP.Attribute.Event.OwnerOrganisation.ID
-        description: Owner organization ID.
-        type: string
-      - contextPath: MISP.Attribute.Event.OwnerOrganisation.Name
-        description: Owner organization name.
-        type: string
-      - contextPath: MISP.Attribute.Event.OwnerOrganisation.UUID
-        description: Owner organization UUID.
-        type: string
-      - contextPath: MISP.Attribute.Event.OwnerOrganisation.local
-        description: Is owner organization is local.
-        type: boolean
-      - contextPath: MISP.Attribute.Event.UUID
-        description: MISP event UUID.
-        type: string
-      - contextPath: MISP.Attribute.Event.Analysis
-        description: Event analysis (0 Initial, 1 Ongoing, 2 Completed).
-        type: string
-      - contextPath: MISP.Attribute.Event.SharingGroupID
-        description: Event sharing group ID.
-        type: string
-      - contextPath: MISP.Attribute.Event.Tag.Name
-        description: Event tag name.
-        type: string
-      - contextPath: MISP.Attribute.Event.Tag.ID
-        description: Event tag ID.
-        type: string
-      - contextPath: MISP.Attribute.Tag.Name
-        description: Attribute tag name.
-        type: string
-      - contextPath: MISP.Attribute.Tag.ID
-        description: Attribute tag ID.
-        type: string
-      - contextPath: MISP.Attribute.Sighting.type
-        description: Attribute's sighting type.
-        type: string
+    - contextPath: IP.Address
+      description: The ip address.
+      type: String
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+    - contextPath: DBotScore.Reliability
+      description: Reliability of the source providing the intelligence data.
+      type: String
+    - contextPath: MISP.Attribute.Distribution
+      description: Attribute distribution.
+      type: string
+    - contextPath: MISP.Attribute.Value
+      description: Attribute value.
+      type: string
+    - contextPath: MISP.Attribute.EventID
+      description: Attribute event ID.
+      type: string
+    - contextPath: MISP.Attribute.RelatedAttribute
+      description: Related Attibute.
+      type: Unknown
+    - contextPath: MISP.Attribute.last_seen
+      description: Attribute last_seen timestamp.
+      type: string
+    - contextPath: MISP.Attribute.first_seen
+      description: Attribute first_seen timestamp.
+      type: string
+    - contextPath: MISP.Attribute.Timestamp
+      description: Attribute timestamp.
+      type: string
+    - contextPath: MISP.Attribute.ObjectID
+      description: Attribute object id.
+      type: string
+    - contextPath: MISP.Attribute.Deleted
+      description: Is the attribute deleted.
+      type: boolean
+    - contextPath: MISP.Attribute.DisableCorrelation
+      description: Is attribute correlation disabled?
+      type: boolean
+    - contextPath: MISP.Attribute.Type
+      description: Attribute type.
+      type: string
+    - contextPath: MISP.Attribute.ID
+      description: Attribute ID.
+      type: string
+    - contextPath: MISP.Attribute.UUID
+      description: Attribute UUID.
+      type: string
+    - contextPath: MISP.Attribute.ToIDs
+      description: Is the Intrusion Detection System flag set.
+      type: boolean
+    - contextPath: MISP.Attribute.Category
+      description: Attribute category.
+      type: string
+    - contextPath: MISP.Attribute.SharingGroupID
+      description: Attribute sharing group ID.
+      type: string
+    - contextPath: MISP.Attribute.Comment
+      description: Attribute comment.
+      type: string
+    - contextPath: MISP.Attribute.Event.ID
+      description: MISP event ID.
+      type: string
+    - contextPath: MISP.Attribute.Event.Distribution
+      description: MISP event distribution.
+      type: string
+    - contextPath: MISP.Attribute.Event.Info
+      description: MISP event name.
+      type: string
+    - contextPath: MISP.Attribute.Event.Timestamp
+      description: Timestamp of the event.
+      type: string
+    - contextPath: MISP.Attribute.Event.Published
+      description: Is the event published.
+      type: boolean
+    - contextPath: MISP.Attribute.Event.Date
+      description: Event Date.
+      type: date
+    - contextPath: MISP.Attribute.Event.ThreatLevelID
+      description: Threat level of the MISP event (1 High, 2 Medium, 3 Low, 4 Undefined).
+      type: string
+    - contextPath: MISP.Attribute.Event.PublishTimestamp
+      description: Timestamp of the publish time (if published).
+      type: string
+    - contextPath: MISP.Attribute.Event.OrganisationID
+      description: MISP event organisation ID.
+      type: string
+    - contextPath: MISP.Attribute.Event.OwnerOrganisation.ID
+      description: Owner organization ID.
+      type: string
+    - contextPath: MISP.Attribute.Event.OwnerOrganisation.Name
+      description: Owner organization name.
+      type: string
+    - contextPath: MISP.Attribute.Event.OwnerOrganisation.UUID
+      description: Owner organization UUID.
+      type: string
+    - contextPath: MISP.Attribute.Event.OwnerOrganisation.local
+      description: Is owner organization is local.
+      type: boolean
+    - contextPath: MISP.Attribute.Event.UUID
+      description: MISP event UUID.
+      type: string
+    - contextPath: MISP.Attribute.Event.Analysis
+      description: Event analysis (0 Initial, 1 Ongoing, 2 Completed).
+      type: string
+    - contextPath: MISP.Attribute.Event.SharingGroupID
+      description: Event sharing group ID.
+      type: string
+    - contextPath: MISP.Attribute.Event.Tag.Name
+      description: Event tag name.
+      type: string
+    - contextPath: MISP.Attribute.Event.Tag.ID
+      description: Event tag ID.
+      type: string
+    - contextPath: MISP.Attribute.Tag.Name
+      description: Attribute tag name.
+      type: string
+    - contextPath: MISP.Attribute.Tag.ID
+      description: Attribute tag ID.
+      type: string
+    - contextPath: MISP.Attribute.Sighting.type
+      description: Attribute's sighting type.
+      type: string
   - arguments:
     - default: false
       defaultValue: other
@@ -961,7 +961,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'true'
-      description: Whether to create the event's attribute with the Intrusion Detection System flag.
+      description: Whether to create the event's attribute with the Intrusion Detection
+        System flag.
       isArray: false
       name: to_ids
       predefined:
@@ -1171,7 +1172,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'true'
-      description: Whether to create the attribute with the Intrusion Detection System flag.
+      description: Whether to create the attribute with the Intrusion Detection System
+        flag.
       isArray: false
       name: to_ids
       predefined:
@@ -1880,13 +1882,15 @@ script:
       required: true
       secret: false
     - default: false
-      description: Template name (can be found at https://www.misp-project.org/objects.html), for example 'vehicle'.
+      description: Template name (can be found at https://www.misp-project.org/objects.html),
+        for example 'vehicle'.
       isArray: false
       name: template
       required: true
       secret: false
     - default: false
-      description: "Attributes, for example {'description': 'Manager Ferrari', 'make': 'Ferrari', 'model': '308 GTS'}"
+      description: "Attributes, for example {'description': 'Manager Ferrari', 'make':\
+        \ 'Ferrari', 'model': '308 GTS'}"
       isArray: false
       name: attributes
       required: true
@@ -2146,15 +2150,17 @@ script:
       required: false
       secret: false
     - default: false
-      description: Return attributues with the given UUID. Alternatively, return all the attributes that are part of the
-        given UUID's event. E.g., 59523300-4be8-4fa6-8867-0037ac110002 .
+      description: Return attributues with the given UUID. Alternatively, return all
+        the attributes that are part of the given UUID's event. E.g., 59523300-4be8-4fa6-8867-0037ac110002
+        .
       isArray: false
       name: uuid
       required: false
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Whether to return only the attributes set with the "to_ids" flag. The default is to return all attributes without with and with out to_ids flag.
+      description: Whether to return only the attributes set with the "to_ids" flag.
+        The default is to return all attributes without with and with out to_ids flag.
       isArray: false
       name: to_ids
       predefined:
@@ -2172,7 +2178,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Whether to return the decay score at the attribute level. Default is false.
+      description: Whether to return the decay score at the attribute level. Default
+        is false.
       isArray: false
       name: include_decay_score
       predefined:
@@ -2181,13 +2188,16 @@ script:
       required: false
       secret: false
     - default: false
-      description: Search by the creator organisation by supplying the organisation identifier.
+      description: Search by the creator organisation by supplying the organisation
+        identifier.
       isArray: false
       name: org
       required: false
       secret: false
     - default: false
-      description: 'A comma-separated list of tags to include in the results. To exclude a tag, prefix the tag name with "!". Can be: "AND", "OR", and "NOT" followed by ":". To chain logical operators use ";". for example, "AND:tag1,tag2;OR:tag3".'
+      description: 'A comma-separated list of tags to include in the results. To exclude
+        a tag, prefix the tag name with "!". Can be: "AND", "OR", and "NOT" followed
+        by ":". To chain logical operators use ";". for example, "AND:tag1,tag2;OR:tag3".'
       isArray: true
       name: tags
       required: false
@@ -2207,14 +2217,16 @@ script:
       required: false
       secret: false
     - default: false
-      description: A comma-separated list of event ids, rerutn the attributes that are part of the given event ids.
+      description: A comma-separated list of event ids, rerutn the attributes that
+        are part of the given event ids.
       isArray: true
       name: event_id
       required: false
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Whether to include the the sightings of the matching attributes. Default is false.
+      description: Whether to include the the sightings of the matching attributes.
+        Default is false.
       isArray: false
       name: include_sightings
       predefined:
@@ -2224,7 +2236,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Whether to include the correlations of the matching attributes. Defaule is false.
+      description: Whether to include the correlations of the matching attributes.
+        Defaule is false.
       isArray: false
       name: include_correlations
       predefined:
@@ -2257,7 +2270,9 @@ script:
       secret: false
     - auto: PREDEFINED
       default: true
-      description: Whether return only the attribute's values that match the search query. Default is true. In case you want to get the full attributes data, please set this argument to false.
+      description: Whether return only the attribute's values that match the search
+        query. Default is true. In case you want to get the full attributes data,
+        please set this argument to false.
       isArray: false
       name: compact
       predefined:
