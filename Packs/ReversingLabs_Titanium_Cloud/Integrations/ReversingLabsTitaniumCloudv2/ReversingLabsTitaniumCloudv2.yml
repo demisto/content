@@ -52,9 +52,18 @@ script:
     - contextPath: File.SHA256
       description: Bad hash SHA256
       type: Unknown
-    - contextPath: DBotScore
-      description: DBotScore
-      type: Unknown
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
     - contextPath: ReversingLabs.file_reputation
       description: ''
       type: Unknown
@@ -117,7 +126,7 @@ script:
       isArray: false
       required: true
       secret: false
-    - name: result-limit
+    - name: result_limit
       description: Maximum number of results to be returned.
       defaultValue: 5000
       default: false
@@ -149,9 +158,18 @@ script:
     - contextPath: File.MD5
       description: File MD5
       type: Unknown
-    - contextPath: DBotScore
-      description: DBotScore
-      type: Unknown
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
     - contextPath: ReversingLabs.rha1_analytics
       description: ''
       type: Unknown
@@ -193,7 +211,7 @@ script:
       isArray: false
       required: true
       secret: false
-    - name: result-limit
+    - name: result_limit
       description: Maximum number of results to be returned.
       defaultValue: 5000
       default: false
@@ -215,7 +233,7 @@ script:
       isArray: false
       required: true
       secret: false
-    - name: result-limit
+    - name: result_limit
       description: Maximum number of results to be returned.
       defaultValue: 5000
       default: false
@@ -243,7 +261,7 @@ script:
       isArray: false
       required: false
       secret: false
-    - name: result-limit
+    - name: result_limit
       description: Maximum number of results to be returned.
       defaultValue: 5000
       default: false
@@ -291,9 +309,18 @@ script:
     - contextPath: URL.Data
       description: The URL
       type: Unknown
-    - contextPath: DBotScore
-      description: DBotScore
-      type: Unknown
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
     - contextPath: ReversingLabs.url_report
       description: ''
       type: Unknown
@@ -356,7 +383,7 @@ script:
     deprecated: false
     execution: false
     arguments:
-    - name: certificate-thumbprint
+    - name: certificate_thumbprint
       description: Hash string.
       default: true
       isArray: false
@@ -377,4 +404,4 @@ script:
   type: python
 tests:
 - ReversingLabsTCTest
-fromversion: 5.0.0
+fromversion: 5.5.0
