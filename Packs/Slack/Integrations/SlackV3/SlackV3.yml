@@ -4,24 +4,12 @@ commonfields:
   id: SlackV3
   version: -1
 configuration:
-- display: ""
-  displaypassword: Slack API access token
-  name: access_token
-  type: 9
+- name: bot_token
   required: false
-  hiddenusername: true
-- display: ""
-  displaypassword: Slack API bot token
-  name: bot_token
-  type: 9
+  type: 4
+- name: app_token
   required: false
-  hiddenusername: true
-- display: ""
-  displaypassword: Slack API app token
-  name: app_token
-  type: 9
-  required: false
-  hiddenusername: true
+  type: 4
 - display: Dedicated Slack channel to receive notifications
   name: incidentNotificationChannel
   required: false
@@ -66,16 +54,16 @@ configuration:
   name: longRunning
   required: false
   type: 8
-- display: Bot display name in Slack
+- defaultvalue: Cortex XSOAR
+  display: Bot display name in Slack
   name: bot_name
   required: false
   type: 0
-  defaultvalue: 'Cortex XSOAR'
-- display: Bot icon in Slack - Image URL (Cortex XSOAR icon by default)
+- defaultvalue: https://avatars.slack-edge.com/2020-05-24/1142885630851_5529c7f034d9b96ec39c_512.png
+  display: Bot icon in Slack - Image URL (Cortex XSOAR icon by default)
   name: bot_icon
   required: false
   type: 0
-  defaultvalue: "https://avatars.slack-edge.com/2020-05-24/1142885630851_5529c7f034d9b96ec39c_512.png"
 - defaultvalue: '60'
   display: Maximum time to wait for a rate limiting call in seconds
   name: max_limit_time
