@@ -528,7 +528,7 @@
             }
         },
         "GIB Data Breach": {
-            "dontMapEventToLabels": false,
+            "dontMapEventToLabels": true,
             "internalMapping": {
                 "GIB Email": {
                     "complex": {
@@ -562,6 +562,24 @@
                         "accessor": "",
                         "filters": [],
                         "root": "password",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "GIB Severity": {
+                    "complex": {
+                        "accessor": "severity",
+                        "filters": [],
+                        "root": "evaluation",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "severity": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "systemSeverity",
                         "transformers": []
                     },
                     "simple": ""
