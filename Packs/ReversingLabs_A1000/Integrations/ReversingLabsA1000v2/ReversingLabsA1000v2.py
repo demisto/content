@@ -88,8 +88,6 @@ def a1000_report_output(response_json):
     file_subtype = result.get('file_subtype')
     file_size = result.get('file_size')
 
-    hash = sha1 if sha1 else sha256 if sha256 else sha512
-
     markdown = f'''## ReversingLabs A1000 results for: {result.get('sha1')}\n **Type:** {file_type}/{file_subtype}
     **Size:** {file_size} bytes \n'''
 
@@ -433,8 +431,8 @@ def main():
         user_agent=USER_AGENT,
         wait_time_seconds=wait_time_seconds,
         retries=num_of_retries
-
     )
+
     demisto.info(f'Command being called is {demisto.command()}')
 
     try:
