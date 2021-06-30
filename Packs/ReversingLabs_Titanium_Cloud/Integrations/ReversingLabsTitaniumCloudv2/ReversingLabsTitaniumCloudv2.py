@@ -182,13 +182,20 @@ def av_scanners_output(response_json, hash_value):
             """
 
             results_table = tableToMarkdown("Latest scan results", xref_results)
-            markdown = f"{markdown}\n {results_table}"
+            markdown = f"{markdown}\n{results_table}"
+
+    dbot_score = Common.DBotScore(
+                indicator=hash_value,
+                indicator_type=DBotScoreType.FILE,
+                integration_name='ReversingLabs TitaniumCloud v2',
+                score=0,
+    )
 
     indicator = Common.File(
         md5=md5,
         sha1=sha1,
         sha256=sha256,
-        dbot_score=0
+        dbot_score=dbot_score
     )
 
     results = CommandResults(
@@ -263,11 +270,18 @@ def file_analysis_output(response_json, hash_value):
     **RIPEMD-160 hash**: {sample.get("ripemd160")}
     """
 
+    dbot_score = Common.DBotScore(
+        indicator=hash_value,
+        indicator_type=DBotScoreType.FILE,
+        integration_name='ReversingLabs TitaniumCloud v2',
+        score=0,
+    )
+
     indicator = Common.File(
         md5=md5,
         sha1=sha1,
         sha256=sha256,
-        dbot_score=0
+        dbot_score=dbot_score
     )
 
     results = CommandResults(
@@ -805,9 +819,16 @@ def dynamic_analysis_results_command():
 
     response_json = response.json()
 
+    dbot_score = Common.DBotScore(
+        indicator=sha1,
+        indicator_type=DBotScoreType.FILE,
+        integration_name='ReversingLabs TitaniumCloud v2',
+        score=0
+    )
+
     indicator = Common.File(
         sha1=sha1,
-        dbot_score=0
+        dbot_score=dbot_score
     )
 
     results = CommandResults(
