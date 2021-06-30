@@ -1,6 +1,6 @@
 {
     "name": "ReversingLabs TitaniumScale",
-    "description": "Powered by TitaniumCore, the malware analysis engine that performs automated static analysis using the Active File Decomposition technology. Unpacks and recursively analyzes files without executing them. Extracts internal threat indicators to classify files and determine their threat level.",
+    "description": "Extract internal threat indicators with static malware analysis engine. Classify files and determine threat level.",
     "support": "partner",
     "currentVersion": "1.0.0",
     "author": "ReversingLabs",

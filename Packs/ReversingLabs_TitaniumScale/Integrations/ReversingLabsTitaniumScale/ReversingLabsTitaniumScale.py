@@ -38,7 +38,7 @@ def test():
         return_error(str(e))
 
     if r.status_code == 200:
-        demisto.results('ok')
+        return 'ok'
     else:
         return_error(f"An error has occurred, status code:{r.status_code}")
 
@@ -49,10 +49,8 @@ def get_status_from_classification(classification_int):
         2: "suspicious",
         1: "known"
     }
-    status = status_mapping.get(classification_int)
-    if not status:
-        return "unknown"
-    return status
+
+    return status_mapping.get(classification_int, 'unknown')
 
 
 def parse_upload_report_and_return_results(response_json):
@@ -79,10 +77,7 @@ def upload_file(tiscale):
     except Exception as e:
         return_error(str(e))
 
-    try:
-        command_result = parse_upload_report_and_return_results(response_json)
-    except Exception:
-        return_error("An error has occurred while parsing the report")
+    command_result = parse_upload_report_and_return_results(response_json)
 
     file_result = fileResult('Full report in JSON', json.dumps(response_json, indent=4),
                              file_type=EntryType.ENTRY_INFO_FILE)
@@ -136,7 +131,6 @@ def parse_report_and_return_results(title, response_json):
                 if "indicators" in tc_report:
                     md += tableToMarkdown('Indicators', tc_report.get("indicators"))
 
-                # gets returned as a part of a Common.File below but still goes to the root context path
                 dbot_score = Common.DBotScore(
                     indicator=list(filter(lambda elem: elem.get("name") == "sha1", file.get("hashes")))[0].get("value"),
                     indicator_type=DBotScoreType.FILE,
@@ -183,11 +177,8 @@ def get_report(tiscale):
     except Exception as e:
         return_error(str(e))
 
-    try:
-        command_result = parse_report_and_return_results(title='## ReversingLabs TitaniumScale get results\n',
-                                                         response_json=response_json)
-    except Exception:
-        return_error("An error has occurred while parsing the report")
+    command_result = parse_report_and_return_results(title='## ReversingLabs TitaniumScale get results\n',
+                                                     response_json=response_json)
 
     file_result = fileResult('Full report in JSON', json.dumps(response_json, indent=4),
                              file_type=EntryType.ENTRY_INFO_FILE)
@@ -207,12 +198,9 @@ def upload_file_and_get_results(tiscale):
     except Exception as e:
         return_error(str(e))
 
-    try:
-        command_result = parse_report_and_return_results(
-            title='## ReversingLabs TitaniumScale upload sample and get results\n',
-            response_json=response_json)
-    except Exception:
-        return_error("An error has occurred while parsing the report")
+    command_result = parse_report_and_return_results(
+        title='## ReversingLabs TitaniumScale upload sample and get results\n',
+        response_json=response_json)
 
     file_result = fileResult('Full report in JSON', json.dumps(response_json, indent=4),
                              file_type=EntryType.ENTRY_INFO_FILE)
@@ -221,6 +209,7 @@ def upload_file_and_get_results(tiscale):
 
 
 def main():
+
     try:
         wait_time_seconds = int(WAIT_TIME_SECONDS)
     except ValueError:
@@ -239,17 +228,22 @@ def main():
         wait_time_seconds=wait_time_seconds,
         retries=num_of_retries
     )
+    demisto.info(f'Command being called is {demisto.command()}')
 
-    if demisto.command() == 'test-module':
-        test()
-    elif demisto.command() == 'reversinglabs-titaniumscale-upload-sample-and-get-results':
-        return_results(upload_file_and_get_results(tiscale))
-    elif demisto.command() == 'reversinglabs-titaniumscale-upload-sample':
-        return_results(upload_file(tiscale))
-    elif demisto.command() == 'reversinglabs-titaniumscale-get-results':
-        return_results(get_report(tiscale))
-    else:
-        return_error(f'Command [{demisto.command()}] not implemented')
+    try:
+        if demisto.command() == 'test-module':
+            return_results(test())
+        elif demisto.command() == 'reversinglabs-titaniumscale-upload-sample-and-get-results':
+            return_results(upload_file_and_get_results(tiscale))
+        elif demisto.command() == 'reversinglabs-titaniumscale-upload-sample':
+            return_results(upload_file(tiscale))
+        elif demisto.command() == 'reversinglabs-titaniumscale-get-results':
+            return_results(get_report(tiscale))
+        else:
+            return_error(f'Command [{demisto.command()}] not implemented')
+
+    except Exception as e:
+        return_error(f'Failed to execute {demisto.command()} command. Error: {str(e)}')
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
