@@ -102,8 +102,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 410
+          "x": 440,
+          "y": 420
         }
       }
     note: false
@@ -113,16 +113,15 @@ tasks:
     quietmode: 0
   "3":
     id: "3"
-    taskid: bf4e648c-904b-4a63-819e-17f74264e5a9
+    taskid: 5bec7fb5-ce13-4511-80d1-aef73fd75db6
     type: condition
     task:
-      id: bf4e648c-904b-4a63-819e-17f74264e5a9
+      id: 5bec7fb5-ce13-4511-80d1-aef73fd75db6
       version: -1
-      name: Is CVE
+      name: Are there CVE's?
       type: condition
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#default#':
       - "6"
@@ -151,16 +150,16 @@ tasks:
     quietmode: 0
   "4":
     id: "4"
-    taskid: a4d84ca4-3066-4337-8b29-0ed8157a41e2
+    taskid: c2e4189d-714c-452f-8d85-edd955ed5ba6
     type: condition
     task:
-      id: a4d84ca4-3066-4337-8b29-0ed8157a41e2
+      id: c2e4189d-714c-452f-8d85-edd955ed5ba6
       version: -1
-      name: Is IP
+      name: Are there IPs?
       type: condition
       iscommand: false
       brand: ""
-      description: ''
+      description: "Checks whether IP's were extracted from report"
     nexttasks:
       '#default#':
       - "6"
@@ -245,6 +244,9 @@ tasks:
       type: regular
       iscommand: false
       brand: Builtin
+    nexttasks:
+      '#none#':
+      - "19"
     scriptarguments:
       all:
         simple: "yes"
@@ -254,8 +256,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 330,
-          "y": 1250
+          "x": 440,
+          "y": 1290
         }
       }
     note: false
@@ -265,16 +267,16 @@ tasks:
     quietmode: 0
   "7":
     id: "7"
-    taskid: c6ddb4b8-6212-4cb3-8d45-1ed73e6aa5f5
+    taskid: b8f4e5ac-95d7-45d5-8e6b-f6f9651720c8
     type: condition
     task:
-      id: c6ddb4b8-6212-4cb3-8d45-1ed73e6aa5f5
+      id: b8f4e5ac-95d7-45d5-8e6b-f6f9651720c8
       version: -1
-      name: Is Email
+      name: Are there Emails?
       type: condition
       iscommand: false
       brand: ""
-      description: ''
+      description: 'Checks whether Emails were extracted'
     nexttasks:
       '#default#':
       - "6"
@@ -347,16 +349,16 @@ tasks:
     quietmode: 0
   "10":
     id: "10"
-    taskid: e3d19e7a-f779-4cec-8e46-8ff79d50ca43
+    taskid: db3b6d2d-1633-4bdc-89d4-69a62e99ced9
     type: condition
     task:
-      id: e3d19e7a-f779-4cec-8e46-8ff79d50ca43
+      id: db3b6d2d-1633-4bdc-89d4-69a62e99ced9
       version: -1
-      name: Is Domain
+      name: Are there Domains?
       type: condition
       iscommand: false
       brand: ""
-      description: ''
+      description: 'Checks weather domains were extracted'
     nexttasks:
       '#default#':
       - "6"
@@ -429,16 +431,16 @@ tasks:
     quietmode: 0
   "12":
     id: "12"
-    taskid: a89c9310-e5e6-4327-8a15-1af48c51c7d4
+    taskid: 45b8d17f-c087-498a-8b09-ada63f0f34e6
     type: condition
     task:
-      id: a89c9310-e5e6-4327-8a15-1af48c51c7d4
+      id: 45b8d17f-c087-498a-8b09-ada63f0f34e6
       version: -1
-      name: Is URL
+      name: Are there URLs?
       type: condition
       iscommand: false
       brand: ""
-      description: ''
+      description: 'Checks whether URLs were extracted'
     nexttasks:
       '#default#':
       - "6"
@@ -628,7 +630,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
+          "x": 440,
           "y": 645
         }
       }
@@ -669,12 +671,36 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+  "19":
+    id: "19"
+    taskid: 0cc60b5b-63db-42fe-87dd-57491e02662c
+    type: title
+    task:
+      id: 0cc60b5b-63db-42fe-87dd-57491e02662c
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 440,
+          "y": 1460
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 2045,
+        "height": 2225,
         "width": 2200,
         "x": -490,
         "y": -700

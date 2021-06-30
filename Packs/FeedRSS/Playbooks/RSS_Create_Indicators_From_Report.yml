@@ -37,12 +37,12 @@ tasks:
     task:
       id: 1d9ea673-b690-4c61-84a9-88bbf8d80a98
       version: -1
-      name: Extract and Create Relationships
+      name: Extract and create relationship
       playbookName: Extract and Create Relationships
       type: playbook
       iscommand: false
       brand: ""
-      description: ''
+      description: 'Subplaybook who takes the report raw content and extract indicators found in'
     nexttasks:
       '#none#':
       - "3"
@@ -219,11 +219,14 @@ inputs:
 - key: ""
   value: {}
   required: false
-  description: ""
+  description: "Filter all Report indicators which haven't been processed. Please
+    make sure to add \"-tags:in_process \" to the query in order to filter out the
+    reports that are in process and \"-tags:{tag_name_given_as_input}\" to filter
+    out all processed reports .\nExample: type:Report -tags:processed -tags:in_process "
   playbookInputQuery:
     query: type:Report -tags:processed -tags:in_process
     queryEntity: indicators
-    results:
+    results: null
     daterange:
       fromdate: 0001-01-01T00:00:00Z
       todate: 0001-01-01T00:00:00Z
@@ -231,17 +234,16 @@ inputs:
         by: ""
         byto: ""
         byfrom: ""
-        tovalue:
-        fromvalue:
+        tovalue: null
+        fromvalue: null
         field: ""
       fromdatelicenseval: 0001-01-01T00:00:00Z
     runFromLastJobTime: false
 - key: tag
-  value:
-    simple: processed
+  value: {}
   required: false
-  description: ""
-  playbookInputQuery:
+  description: The tag which will be added to each processed report.
+  playbookInputQuery: null
 outputs: []
 fromversion: 6.2.0
 description: Extract indicators from report
