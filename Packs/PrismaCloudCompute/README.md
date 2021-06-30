@@ -70,5 +70,3 @@ At this point, you can add tasks that extend the playbook to check and respond t
 If any alerts are missing in Demisto, check the status of the integration:
 
 ![image](https://user-images.githubusercontent.com/49071222/72086124-18b0fe00-330f-11ea-894b-6b2f9f0528fd.png)
-
-If you're having further issues, contact [support@demisto.com](mailto:support@demisto.com) and attach the server logs.
