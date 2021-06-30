@@ -253,11 +253,12 @@ class Client(BaseClient):
 
         shutil.copyfile(demisto.getFilePath(file_entry)['path'], file_name)
         try:
-            files = {'file': open(file_name, 'rb')}
-            response = self._http_request(method='POST',
-                                          url_suffix=f"{endpoint}/attachments",
-                                          files=files,
-                                          data=request_params)
+            with open(file_name, 'rb') as file_obj:
+                files = {'file': file_obj}
+                response = self._http_request(method='POST',
+                                              url_suffix=f"{endpoint}/attachments",
+                                              files=files,
+                                              data=request_params)
         except Exception as e:
             os.remove(file_name)
             raise e
