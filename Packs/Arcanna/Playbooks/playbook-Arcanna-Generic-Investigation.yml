@@ -1,7 +1,8 @@
-id: ArcannaAI_triage
+id: 1e7632ed-8dad-41ab-892f-05d30bebfb09
 inputs: []
-name: ArcannaAI_triage
+name: Arcanna-Generic-Investigation
 outputs: []
+sourceplaybookid: e7ba7153-451b-441a-82bb-48c487c626de
 starttaskid: "0"
 tasks:
   "0":
@@ -20,7 +21,6 @@ tasks:
       iscommand: false
       name: ""
       version: -1
-      description: ''
     taskid: abf399b3-a5bc-4c2f-8de0-78494798342f
     timertriggers: []
     type: start
@@ -40,20 +40,19 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: f1509fb2-2e78-45e1-897a-6f5f2cc092ae
+      id: a9343630-d6f0-4cb6-8ab2-d85c846e3302
       iscommand: false
-      name: DOne
+      name: Done
       type: title
       version: -1
-      description: ''
-    taskid: f1509fb2-2e78-45e1-897a-6f5f2cc092ae
+    taskid: a9343630-d6f0-4cb6-8ab2-d85c846e3302
     timertriggers: []
     type: title
     view: |-
       {
         "position": {
-          "x": 377.5,
-          "y": 1945
+          "x": 380,
+          "y": 1950
         }
       }
   "4":
@@ -72,13 +71,13 @@ tasks:
     task:
       brand: ""
       description: Loads a json from string input, and returns a json object result
-      id: 37f89da2-5330-429d-8a7b-76c9f78a37c3
+      id: ac972b75-5f63-4777-8caa-1118dfd8d4c5
       iscommand: false
-      name: Prepare Json for Arcanna Inference
+      name: Prepare Incident Data for Arcanna processing
       script: bd41ea36-c3fe-4612-8c44-5f4afc7ba7f5
       type: regular
       version: -1
-    taskid: 37f89da2-5330-429d-8a7b-76c9f78a37c3
+    taskid: ac972b75-5f63-4777-8caa-1118dfd8d4c5
     timertriggers: []
     type: regular
     view: |-
@@ -99,8 +98,7 @@ tasks:
     scriptarguments:
       event_json:
         simple: ${JsonObject}
-      job_id:
-        simple: "101"
+      job_id: {}
       severity:
         simple: ${incident.severity}
       title:
@@ -108,15 +106,15 @@ tasks:
     separatecontext: false
     skipunavailable: false
     task:
-      brand: arcanna-demisto
+      brand: Arcanna.AI
       description: Sends a raw event to Arcanna
-      id: 3d805807-7e5e-452d-8976-b51055fc7315
+      id: 32488f9b-fdf1-4cfb-892a-e37a75c447c6
       iscommand: true
-      name: send_event
-      script: arcanna-demisto|||send_event
+      name: Send Incident Data to Arcanna
+      script: Arcanna.AI|||arcanna-send-event
       type: regular
       version: -1
-    taskid: 3d805807-7e5e-452d-8976-b51055fc7315
+    taskid: 32488f9b-fdf1-4cfb-892a-e37a75c447c6
     timertriggers: []
     type: regular
     view: |-
@@ -136,20 +134,20 @@ tasks:
     quietmode: 0
     scriptarguments:
       event_id:
-        simple: ${arcanna.event_id}
-      job_id:
-        simple: "101"
+        simple: ${Arcanna.Event.event_id}
+      job_id: {}
     separatecontext: false
     skipunavailable: false
     task:
-      brand: arcanna-demisto
-      id: db5729ab-b357-4b9e-822b-5cf99287e7d4
+      brand: ""
+      description: Retrieves Arcanna Inference result
+      id: 28aaad26-92fe-4b2b-80a7-de89829927f5
       iscommand: true
-      name: get_event_status
-      script: arcanna-demisto|||get_event_status
+      name: Get Arcanna Result
+      script: '|||arcanna-get-event-status'
       type: regular
       version: -1
-    taskid: db5729ab-b357-4b9e-822b-5cf99287e7d4
+    taskid: 28aaad26-92fe-4b2b-80a7-de89829927f5
     timertriggers: []
     type: regular
     view: |-
@@ -175,13 +173,13 @@ tasks:
     task:
       brand: ""
       description: Sleep for X seconds
-      id: ca237afe-1654-45f6-8256-763d01fb77e0
+      id: 400d3a84-4522-4df6-8b82-21c4003c7049
       iscommand: false
-      name: Sleep
+      name: Await Arcanna Inference to finish
       script: Sleep
       type: regular
       version: -1
-    taskid: ca237afe-1654-45f6-8256-763d01fb77e0
+    taskid: 400d3a84-4522-4df6-8b82-21c4003c7049
     timertriggers: []
     type: regular
     view: |-
@@ -197,7 +195,9 @@ tasks:
       - - left:
             iscontext: true
             value:
-              simple: arcanna.[1].status
+              complex:
+                accessor: status
+                root: Arcanna.Event
           operator: isEqualString
           right:
             value:
@@ -207,7 +207,9 @@ tasks:
       - - left:
             iscontext: true
             value:
-              simple: arcanna.[1].status
+              complex:
+                accessor: status
+                root: Arcanna.Event
           operator: isEqualString
           right:
             value:
@@ -226,12 +228,12 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: e49ee0b4-e5cf-4d7f-86c3-a23dba7e91cc
+      id: c1a27ffe-e3c0-4089-8080-2f842935638d
       iscommand: false
-      name: Arcanna-Status
+      name: 'Did Arcanna inference successfully completed ? '
       type: condition
       version: -1
-    taskid: e49ee0b4-e5cf-4d7f-86c3-a23dba7e91cc
+    taskid: c1a27ffe-e3c0-4089-8080-2f842935638d
     timertriggers: []
     type: condition
     view: |-
@@ -286,7 +288,9 @@ tasks:
       - - left:
             iscontext: true
             value:
-              simple: arcanna.result
+              complex:
+                accessor: result
+                root: Arcanna.Event
           operator: isEqualString
           right:
             value:
@@ -296,7 +300,9 @@ tasks:
       - - left:
             iscontext: true
             value:
-              simple: arcanna.result
+              complex:
+                accessor: result
+                root: Arcanna.Event
           operator: isEqualString
           right:
             value:
@@ -313,12 +319,12 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 83a2365f-f409-4a01-82ad-03e1a6f49c96
+      id: 0472ccd7-1744-4026-811a-9acc21da0958
       iscommand: false
       name: Is Arcanna Decision to close incident?
       type: condition
       version: -1
-    taskid: 83a2365f-f409-4a01-82ad-03e1a6f49c96
+    taskid: 0472ccd7-1744-4026-811a-9acc21da0958
     timertriggers: []
     type: condition
     view: |-
@@ -517,12 +523,10 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1960,
+        "height": 1965,
         "width": 932.5,
         "x": 50,
         "y": 50
       }
     }
   }
-fromversion: 6.0.0
-description: Arcanna.AI playbook for alert triage

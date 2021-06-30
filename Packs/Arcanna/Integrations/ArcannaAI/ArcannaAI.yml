@@ -1,16 +1,16 @@
 category: Data Enrichment & Threat Intelligence
 commonfields:
-  id: arcanna-demisto
+  id: Arcanna.AI
   version: -1
 configuration:
-- defaultvalue: https://arcanna.ai
-  additionalinfo: URL of Arcanna API
+- additionalinfo: URL of Arcanna API
+  defaultvalue: https://arcanna.ai
   display: Server URL (e.g. https://<your arcanna ai api>)
   name: url
   required: true
   type: 0
-- display: API Key
-  additionalinfo: Api Key for Arcanna API
+- additionalinfo: Api Key for Arcanna API
+  display: API Key
   name: apikey
   required: true
   type: 4
@@ -30,24 +30,33 @@ configuration:
   type: 0
 defaultclassifier: 'null'
 description: Arcanna integration for using the power of AI in SOC
-display: arcanna-demisto
-name: arcanna-demisto
+display: Arcanna.AI
+name: Arcanna.AI
 script:
   commands:
   - deprecated: false
     description: Get jobs list
     execution: false
-    name: arcanna_get_jobs
+    name: arcanna-get-jobs
     outputs:
-    - contextPath: arcanna_jobs
-      description: Arcanna jobs displayed as table Markdown
+    - contextPath: Arcanna.Jobs.job_id
+      description: Arcanna Job id
       type: String
+    - contextPath: Arcanna.Jobs.data_type
+      description: Arcanna Job type
+      type: Unknown
+    - contextPath: Arcanna.Jobs.title
+      description: Arcanna Job title
+      type: Unknown
+    - contextPath: Arcanna.Jobs.status
+      description: Arcanna job status
+      type: Unknown
   - arguments:
     - default: false
       description: arcanna running job_id
       isArray: false
       name: job_id
-      required: true
+      required: false
       secret: false
     - default: false
       description: json event for arcanna to inference
@@ -70,78 +79,91 @@ script:
     deprecated: false
     description: Sends a raw event to Arcanna
     execution: false
-    name: arcanna_send_event
+    name: arcanna-send-event
     outputs:
-    - contextPath: arcanna.event_id
-      description: arcanna_event_id
+    - contextPath: Arcanna.Event.event_id
+      description: Arcanna event id
       type: number
-    - contextPath: arcanna.event_status
-      description: arcanna_status
+    - contextPath: Arcanna.Event.status
+      description: Arcanna ingestion status
       type: string
-    - contextPath: arcanna.ingest_ts
-      description: arcanna ingest_ts
+    - contextPath: Arcanna.Event.ingest_timestamp
+      description: Arcanna ingestion timestamp
       type: date
+    - contextPath: Arcanna.Event.error_message
+      description: Arcanna error message if any
+      type: Unknown
   - arguments:
     - default: false
+      description: Arcanna Job Id
       isArray: false
       name: job_id
-      required: true
+      required: false
       secret: false
-      description: Arcanna Job Id
     - default: false
+      description: Arcanna generated unique event id
       isArray: false
       name: event_id
       required: true
       secret: false
-      description: Arcanna generated unique event id
     deprecated: false
-    execution: false
-    name: arcanna_get_event_status
     description: Retrieves Arcanna Inference result
+    execution: false
+    name: arcanna-get-event-status
     outputs:
-    - contextPath: arcanna.event_status
+    - contextPath: Arcanna.Event.event_id
+      description: Arcanna event id
       type: Unknown
-      description: event_status
-    - contextPath: arcanna.ingest_ts
+    - contextPath: Arcanna.Event.ingest_timestamp
+      description: Arcanna ingestion timestamp
       type: Unknown
-      description: arcanna.ingest_ts
-    - contextPath: arcanna.confidence_level
+    - contextPath: Arcanna.Event.confidence_level
+      description: Arcanna ML confidence_level
       type: Unknown
-      description: arcanna.confidence_level
-    - contextPath: arcanna.result
+    - contextPath: Arcanna.Event.result
+      description: Arcanna event  result
       type: Unknown
-      description: arcanna_event_id
-    - contextPath: arcanna.is_duplicated
-      description: is_duplicated
+    - contextPath: Arcanna.Event.is_duplicated
+      description: Arcanna signalling if event is duplicated by another alert
+      type: Unknown
+    - contextPath: Arcanna.Event.error_message
+      description: Arcanna error message if any
+      type: Unknown
+    - contextPath: Arcanna.Event.status
+      description: arcanna event status
       type: Unknown
   - deprecated: false
     description: Retrieves Arcanna Default Job id
     execution: false
-    name: arcanna_get_default_job_id
+    name: arcanna-get-default-job-id
     outputs:
-    - contextPath: arcanna.default_job_id
-      description: 'Retrieves Arcanna Default Job id '
+    - contextPath: Arcanna.Default_Job_Id
+      description: Arcanna Default Job id
       type: Number
   - arguments:
     - default: false
+      description: job_id
       isArray: false
       name: job_id
       required: true
       secret: false
-      description: job_id
     deprecated: false
     description: Sets Arcanna Default Job id
     execution: false
-    name: arcanna_set_default_job_id
+    name: arcanna-set-default-job-id
+    outputs:
+    - contextPath: Arcanna.Default_Job_Id
+      description: Arcanna default job id
+      type: Unknown
   dockerimage: demisto/python3:3.9.5.21272
   feed: false
   isfetch: false
   longRunning: false
-  longRunningPort: true
+  longRunningPort: false
   runonce: false
   script: '-'
   subtype: python3
   type: python
-fromversion: 5.0.0
 tests:
 - No tests (auto formatted)
+fromversion: 5.5.0

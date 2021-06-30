@@ -18,7 +18,7 @@ class Client:
     """ Implements Arcanna API
     """
 
-    def __init__(self, api_key, base_url, verify=True, proxy=False,  default_job_id=-1):
+    def __init__(self, api_key, base_url, verify=True, proxy=False, default_job_id=-1):
         self.base_url = base_url
         self.verify = verify
         self.proxy = proxy
@@ -44,16 +44,16 @@ class Client:
     def test_arcanna(self):
         url_suffix = 'api/v1/health'
         raw_response = requests.get(url=self.base_url + url_suffix, headers=self.get_headers(), verify=self.verify)
-        return json.loads(raw_response.text)
+        return raw_response.json()
 
     def list_jobs(self):
         url_suffix = 'api/v1/jobs'
         raw_response = requests.get(url=self.base_url + url_suffix, headers=self.get_headers(), verify=self.verify)
         if raw_response.status_code != 200:
             raise Exception(f"Error in API call [{raw_response.status_code}]. Reason: {raw_response.reason}")
-        return json.loads(raw_response.text)
+        return raw_response.json()
 
-    def send_raw_event(self, job_id=None, severity=None, title=None, raw_body=None):
+    def send_raw_event(self, job_id, severity, title, raw_body):
         url_suffix = 'api/v1/events/'
         raw = json.loads(raw_body)
         body = {
@@ -68,14 +68,14 @@ class Client:
                                      json=body)
         if raw_response.status_code != 201:
             raise Exception(f"Error HttpCode={raw_response.status_code} text={raw_response.text}")
-        return json.loads(raw_response.text)
+        return raw_response.json()
 
-    def get_event_status(self, job_id=None, event_id=None):
+    def get_event_status(self, job_id, event_id):
         url_suffix = f"api/v1/events/{job_id}/{event_id}"
         raw_response = requests.get(url=self.base_url + url_suffix, headers=self.get_headers(), verify=self.verify)
         if raw_response.status_code != 200:
             raise Exception(f"Error HttpCode={raw_response.status_code}")
-        return json.loads(raw_response.text)
+        return raw_response.json()
 
 
 ''' COMMAND FUNCTIONS '''
@@ -86,7 +86,7 @@ def test_module(client: Client) -> str:
         response = client.test_arcanna()
         demisto.info(f'test_module response={response}')
         if not response["connected"]:
-            return "Authentication Error, API Key invalid"
+            return "Authentication Error. Please check the API Key you provided."
         else:
             return "ok"
     except DemistoException as e:
@@ -100,41 +100,49 @@ def get_jobs(client: Client) -> CommandResults:
 
     readable_output = tableToMarkdown(name="Arcanna Jobs", headers=headers, t=result)
 
+    outputs = {
+        'Arcanna.Jobs(val.job_id && val.job_id === obj.job_id)': createContext(result)
+    }
     return CommandResults(
         readable_output=readable_output,
-        outputs_prefix='Arcanna.Jobs',
-        outputs_key_field='job_id',
-        outputs=result
+        outputs=outputs,
+        raw_response=result
     )
 
 
 def post_event(client: Client, args: Dict[str, Any]) -> CommandResults:
+    title = args.get("title")
+
+    job_id = args.get("job_id", None)
+    if job_id is None:
+        job_id = client.get_default_job_id()
 
     raw_payload = args.get("event_json")
-    title = args.get("title")
-    job_id = args.get("job_id")
     severity = args.get("severity")
 
     response = client.send_raw_event(job_id=job_id, severity=severity, title=title, raw_body=raw_payload)
     readable_output = f'## {response}'
+    event_id = response["event_id"]
     return CommandResults(
         readable_output=readable_output,
-        outputs_prefix='arcanna',
-        outputs_key_field='',
+        outputs_prefix='Arcanna.Event',
+        outputs_key_field=event_id,
         outputs=response
     )
 
 
 def get_event_status(client: Client, args: Dict[str, Any]) -> CommandResults:
-    job_id = args.get("job_id")
+    job_id = args.get("job_id", None)
+    if job_id is None:
+        job_id = client.get_default_job_id()
     event_id = args.get("event_id")
     response = client.get_event_status(job_id, event_id)
     readable_output = f'## {response}'
 
     return CommandResults(
         readable_output=readable_output,
-        outputs_prefix='arcanna',
-        outputs_key_field='',
+        outputs_prefix='Arcanna.Event',
+        outputs_key_field=event_id,
         outputs=response
     )
 
@@ -145,16 +153,16 @@ def get_default_job_id(client: Client) -> CommandResults:
 
     return CommandResults(
         readable_output=readable_output,
-        outputs_prefix='arcanna_default_job_id',
+        outputs_prefix='Arcanna.Default_Job_Id',
         outputs_key_field='',
         outputs=response
     )
 
 
-def set_default_job_id(client: Client, args: Dict[str, Any]) -> str:
+def set_default_job_id(client: Client, args: Dict[str, Any]) -> CommandResults:
     job_id = args.get("job_id")
     client.set_default_job_id(job_id)
-    return "ok"
+    return get_default_job_id(client)
 
 
 ''' MAIN FUNCTION '''
@@ -171,13 +179,7 @@ def main() -> None:
 
     # get the service API url
     base_url = urljoin(demisto.params()['url'])
-
-    # if your Client class inherits from BaseClient, SSL verification is
-    # handled out of the box by it, just pass ``verify_certificate`` to
-    # the Client constructor
     verify_certificate = not demisto.params().get('insecure', False)
-
-
     proxy = demisto.params().get('proxy', False)
 
     default_job_id = demisto.params().get('default_job_id', -1)
@@ -196,19 +198,19 @@ def main() -> None:
             # This is the call made when pressing the integration Test button.
             result_test = test_module(client)
             return_results(result_test)
-        elif demisto.command() == "arcanna_get_jobs":
+        elif demisto.command() == "arcanna-get-jobs":
             result_get_jobs = get_jobs(client)
             return_results(result_get_jobs)
-        elif demisto.command() == "arcanna_send_event":
+        elif demisto.command() == "arcanna-send-event":
             result_send_event = post_event(client, demisto.args())
             return_results(result_send_event)
-        elif demisto.command() == "arcanna_get_event_status":
+        elif demisto.command() == "arcanna-get-event-status":
             result_get_event = get_event_status(client, demisto.args())
             return_results(result_get_event)
-        elif demisto.command() == "arcanna_get_default_job_id":
+        elif demisto.command() == "arcanna-get-default-job-id":
             result_get_default_id = get_default_job_id(client)
             return_results(result_get_default_id)
-        elif demisto.command() == "arcanna_set_default_job_id":
+        elif demisto.command() == "arcanna-set-default-job-id":
             result_set_default_id = set_default_job_id(client, demisto.args())
             return_results(result_set_default_id)
 

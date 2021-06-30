@@ -3,7 +3,7 @@ args:
   description: Input string to transform to JSON escaped object
   name: input
   required: true
-comment: Loads a json from string input, and returns a json escaped  result
+comment: Loads a json from string input, and returns a json escaped result.
 commonfields:
   id: PrepareArcannaRawJson
   version: -1
@@ -21,6 +21,6 @@ subtype: python3
 tags:
 - Utility
 type: python
-fromversion: 5.0.0
+fromversion: 5.5.0
 tests:
 - No tests (auto formatted)

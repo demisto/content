@@ -5,7 +5,9 @@ Arcanna.ai can triage alerts in order for SOC analyst to focus on investigations
 
 ### What does this pack do?
 
-Communicates with Arcanna.AI SaaS instance 
+Communicates with Arcanna.AI SaaS instance
+
+Pack is providing one playbook, an integration and one script which helps prepare incident data for Arcanna usage
 
 ### About Arcanna.AI:
 
