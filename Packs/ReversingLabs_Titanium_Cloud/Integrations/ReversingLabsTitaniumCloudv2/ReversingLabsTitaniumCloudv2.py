@@ -170,26 +170,32 @@ def av_scanners_output(response_json, hash_value):
     """
 
     xref_list = sample.get("xref")
-    if len(xref_list) == 0:
-        return_error("The xref list has no scans")
-    latest_xref = xref_list[0]
 
-    markdown = f"""{markdown}**Scanner count**: {latest_xref.get("scanner_count")}
-    **Scanner match**: {latest_xref.get("scanner_match")}
-    """
+    if xref_list and len(xref_list) > 0:
+        latest_xref = xref_list[0]
 
-    xref_results = latest_xref.get("results")
-    if len(xref_results) == 0:
-        return_error("Latest xref results are empty")
+        xref_results = latest_xref.get("results")
 
-    results_table = tableToMarkdown("Latest scan results", xref_results)
-    markdown = f"{markdown}\n {results_table}"
+        if len(xref_results) > 0:
+            markdown = f"""{markdown}**Scanner count**: {latest_xref.get("scanner_count")}
+            **Scanner match**: {latest_xref.get("scanner_match")}
+            """
+
+            results_table = tableToMarkdown("Latest scan results", xref_results)
+            markdown = f"{markdown}\n{results_table}"
+
+    dbot_score = Common.DBotScore(
+                indicator=hash_value,
+                indicator_type=DBotScoreType.FILE,
+                integration_name='ReversingLabs TitaniumCloud v2',
+                score=0,
+    )
 
     indicator = Common.File(
         md5=md5,
         sha1=sha1,
         sha256=sha256,
-        dbot_score=0
+        dbot_score=dbot_score
     )
 
     results = CommandResults(
@@ -264,11 +270,18 @@ def file_analysis_output(response_json, hash_value):
     **RIPEMD-160 hash**: {sample.get("ripemd160")}
     """
 
+    dbot_score = Common.DBotScore(
+        indicator=hash_value,
+        indicator_type=DBotScoreType.FILE,
+        integration_name='ReversingLabs TitaniumCloud v2',
+        score=0,
+    )
+
     indicator = Common.File(
         md5=md5,
         sha1=sha1,
         sha256=sha256,
-        dbot_score=0
+        dbot_score=dbot_score
     )
 
     results = CommandResults(
@@ -288,7 +301,7 @@ def functional_similarity_command():
         password=PASSWORD
     )
     hash_value = demisto.getArg("hash")
-    limit = demisto.getArg("result-limit")
+    limit = demisto.getArg("result_limit")
 
     try:
         sha1_list = similarity.get_similar_hashes_aggregated(hash_input=hash_value, max_results=int(limit))
@@ -379,7 +392,7 @@ def rha1_analytics_output(response_json, hash_value):
         sha256=sha256,
         dbot_score=dbot_score
     )
-
+    
     results = CommandResults(
         outputs_prefix='ReversingLabs',
         outputs={'rha1_analytics': response_json},
@@ -494,7 +507,7 @@ def uri_index_command():
     )
 
     uri = demisto.getArg("uri")
-    limit = demisto.getArg("result-limit")
+    limit = demisto.getArg("result_limit")
 
     try:
         sha1_list = uri_index.get_uri_index_aggregated(uri_input=uri, max_results=int(limit))
@@ -524,7 +537,7 @@ def advanced_search_command():
     )
 
     query = demisto.getArg("query")
-    limit = demisto.getArg("result-limit")
+    limit = demisto.getArg("result_limit")
 
     try:
         result_list = advanced_search.search_aggregated(query_string=query, max_results=int(limit))
@@ -555,7 +568,7 @@ def expression_search_command():
 
     query = demisto.getArg("query")
     date = demisto.getArg("date")
-    limit = demisto.getArg("result-limit")
+    limit = demisto.getArg("result_limit")
     query_list = query.split(" ")
 
     try:
@@ -600,11 +613,7 @@ def file_download_command():
         readable_output=f"Requested sample is available for download under the name {hash_value}"
     )
 
-    with open(hash_value, "wb") as file_handle:
-        file_handle.write(response.content)
-
-    return_results(results)
-    demisto.results(file_result_existing_file(hash_value))
+    return_results([results, fileResult(hash_value, response.content)])
 
 
 def file_upload_command():
@@ -737,7 +746,7 @@ def analyze_url_command():
 
 
 def analyze_url_output(response_json, url):
-    report_base = response_json.get("rl")
+    report_base = response_json.get("rl", {})
 
     markdown = f"""## ReversingLabs Analyze URL response for URL {url}\n **Status**: {report_base.get("status")}
     **Analysis ID**: {report_base.get("analysis_id")}
@@ -775,7 +784,7 @@ def detonate_sample_command():
 
 def detonate_sample_output(response_json, sha1):
 
-    report_base = response_json.get("rl")
+    report_base = response_json.get("rl", {})
 
     markdown = f"""## ReversingLabs submit sample {sha1} for Dynamic Analysis\n **Status**: {report_base.get("status")}
     **Requested hash**: {report_base.get("requested_hash")}
@@ -806,9 +815,16 @@ def dynamic_analysis_results_command():
 
     response_json = response.json()
 
+    dbot_score = Common.DBotScore(
+        indicator=sha1,
+        indicator_type=DBotScoreType.FILE,
+        integration_name='ReversingLabs TitaniumCloud v2',
+        score=0
+    )
+
     indicator = Common.File(
         sha1=sha1,
-        dbot_score=0
+        dbot_score=dbot_score
     )
 
     results = CommandResults(
@@ -834,7 +850,7 @@ def certificate_analytics_command():
         password=PASSWORD
     )
 
-    thumbprint = demisto.getArg("certificate-thumbprint")
+    thumbprint = demisto.getArg("certificate_thumbprint")
 
     try:
         response = cert_analytics.get_certificate_analytics(certificate_thumbprints=thumbprint)
