@@ -259,10 +259,8 @@ class Client(BaseClient):
                                               url_suffix=f"{endpoint}/attachments",
                                               files=files,
                                               data=request_params)
-        except Exception:
+        finally:
             os.remove(file_name)
-            raise
-        os.remove(file_name)
         return response
 
     def list_attachments(self, incident_id: Optional[str], incident_number: Optional[str]) -> List[Dict[str, Any]]:
