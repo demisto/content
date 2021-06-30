@@ -8,6 +8,8 @@ HOST = demisto.getParam('host')
 TOKEN = demisto.getParam('token')
 VERIFY_CERT = demisto.getParam('verify')
 RELIABILITY = demisto.params().get('reliability', 'C - Fairly reliable')
+WAIT_TIME_SECONDS = demisto.params().get('wait_time_seconds')
+NUM_OF_RETRIES = demisto.params().get('num_of_retries')
 
 
 def classification_to_score(classification):
@@ -414,11 +416,24 @@ def advanced_search(a1000):
 
 def main():
 
+    try:
+        wait_time_seconds = int(WAIT_TIME_SECONDS)
+    except ValueError:
+        return_error("Integration parameter <Wait between retries> has to be of type integer.")
+
+    try:
+        num_of_retries = int(NUM_OF_RETRIES)
+    except ValueError:
+        return_error("Integration parameter <Number of retries> has to be of type integer.")
+
     a1000 = A1000(
         host=HOST,
         token=TOKEN,
         verify=VERIFY_CERT,
-        user_agent=USER_AGENT
+        user_agent=USER_AGENT,
+        wait_time_seconds=wait_time_seconds,
+        retries=num_of_retries
+
     )
     demisto.info(f'Command being called is {demisto.command()}')
 
