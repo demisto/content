@@ -1216,7 +1216,7 @@ script:
   - arguments:
     - description: The maximum number of objects to return.
       name: max_items
-    - description: The name of the field. Possible values: ID, type, name, description, parentGroupID, directoryID, externalID, virtualID, virtualType, virtualName, cloudType, cloudResourceType, and cloudID.
+    - description: The name of the field. The possible values are ID, type, name, description, parentGroupID, directoryID, externalID, virtualID, virtualType, virtualName, cloudType, cloudResourceType, and cloudID.
       name: field_name
       required: true
       auto: PREDEFINED
