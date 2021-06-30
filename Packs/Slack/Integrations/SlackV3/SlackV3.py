@@ -1028,13 +1028,13 @@ async def listen(client: SocketModeClient, req: SocketModeRequest):
             entitlement_reply = await check_and_handle_entitlement(text, user, thread)
 
         if entitlement_reply:
+            send_slack_request_sync(client=CLIENT, method='chat.postMessage',
+                                    body={
+                                        'channel': channel,
+                                        'thread_ts': thread,
+                                        'text': entitlement_reply
+                                    })
 
-            # slack_send_request(thread_id=thread, message=entitlement_reply, channel=channel, group='', to='')
-
-            send_slack_request_sync(client=CLIENT, method='chat.postMessage', body={'channel': channel, 'thread_ts': thread, 'text': entitlement_reply})
-
-            # await client.web_client.chat_postMessage(channel=channel, thread_ts=thread,
-            #                                          text=entitlement_reply)
         elif channel and channel[0] == 'D' and ENABLE_DM:
             # DM
             await handle_dm(user, text, client)

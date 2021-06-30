@@ -11,7 +11,6 @@ Slack V3 utilizes "Socket Mode" to enable the integration to communicate directl
 
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
-    | `access_token` | Slack API access token | False |
     | `bot_token` | Slack API bot token | False |
     | `app_token` | Slack API app token | False |
     | `incidentNotificationChannel` | Dedicated Slack channel to receive notifications | False |
@@ -69,20 +68,6 @@ In order to utilize the full functionality of the Slack integration, we recommen
 | `im:read` | View basic information about direct messages that the bot has been added to |
 | `mpim:history` | View messages and other content in group direct messages that the bot has been added to |
 | `mpim:read` | View basic information about group direct messages that the bot has been added to |
-| `users:read` | View people in a workspace |
-
-For the User token, we recommend the following scopes:
-
-| **OAuth Scope** | **Description** |
-| --- | --- |
-| `channels:history` | View messages and other content in public channels that the app has been added to |
-| `channels:write` | Manage a user’s public channels and create new ones on a user’s behalf |
-| `groups:history` | View messages and other content in private channels that the bot has been added to |
-| `groups:write` | Manage a user’s private channels and create new ones on a user’s behalf |
-| `im:history` | View messages and other content in direct messages that the bot has been added to |
-| `im:write` | Start direct messages with people on a user’s behalf |
-| `mpim:history` | View messages and other content in group direct messages that the bot has been added to |
-| `mpim:write` | Start group direct messages with people on a user’s behalf |
 | `users:read` | View people in a workspace |
 
 The App token requires the `connections:write` scope in order to open the socket connection and is required for the Events and Questions functionality. It's important to note that when configuring Socket Mode, this scope will automatically be created for you.
