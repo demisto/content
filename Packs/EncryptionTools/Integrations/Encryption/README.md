@@ -63,8 +63,8 @@ Encrypt text.
 
 #### Context Output
 
-| **Path**              | **Type** | **Description**                  |
-| --------------------- | -------- | -------------------------------- |
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
 | EncryptionTools.Value | String   | The value of the encrypted text. |
 
 #### Command Example
