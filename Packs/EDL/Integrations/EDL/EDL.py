@@ -325,8 +325,8 @@ def get_edl_on_demand():
     limit access to the file from multiple threads.
     """
     global EDL_ON_DEMAND_CACHE_PATH
-    EDL_LOCK.acquire()
     try:
+        EDL_LOCK.acquire()
         ctx = get_integration_context()
         if EDL_ON_DEMAND_KEY in ctx:
             ctx.pop(EDL_ON_DEMAND_KEY, None)
