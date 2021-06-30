@@ -423,9 +423,9 @@ script:
   longRunningPort: false
   runonce: false
   script: '-'
-  subtype: python3
+  subtype: python2
   type: python
-  dockerimage: demisto/python3:3.9.5.21272
+  dockerimage: demisto/python:2.7.18.20958
 tests:
 - Tenable.io test
 fromversion: 5.0.0
