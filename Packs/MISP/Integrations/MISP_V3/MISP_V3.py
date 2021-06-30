@@ -270,85 +270,6 @@ def arrange_context_according_to_user_selection(context_data, data_keys_to_save=
             remove_unselected_context_keys(obj, data_keys_to_save)
 
 
-def build_context(response: Union[dict, requests.Response]) -> dict:  # type: ignore
-    """
-    Gets a MISP's response and building it to be in context. If missing key, will return the one written.
-
-    Args:
-       response (requests.Response or dict):
-    Returns:
-        dict: context output
-    """
-    event_args = [
-        'id',
-        'date',
-        'threat_level_id',
-        'info',
-        'published',
-        'uuid',
-        'analysis',
-        'timestamp',
-        'distribution',
-        'proposal_email_lock',
-        'locked',
-        'publish_timestamp',
-        'sharing_group_id',
-        'disable_correlation',
-        'event_creator_email',
-        'Org',
-        'Orgc',
-        'Attribute',
-        'ShadowAttribute',
-        'RelatedEvent',
-        'Galaxy',
-        'Tag',
-        'Object'
-    ]
-    # Sometimes, PyMISP will return str instead of a dict. json.loads() wouldn't work unless we'll dumps it first
-    if isinstance(response, str):
-        response = json.loads(json.dumps(response))
-    # Remove 'Event' keyword
-    events = [event.get('Event') for event in response]  # type: ignore
-    for i in range(0, len(events)):
-
-        # Filter object from keys in event_args
-        events[i] = {
-            key: events[i].get(key)
-            for key in event_args if key in events[i]
-        }
-
-        # Remove 'Event' keyword from 'RelatedEvent'
-        if events[i].get('RelatedEvent'):
-            events[i]['RelatedEvent'] = [
-                r_event.get('Event') for r_event in events[i].get('RelatedEvent')
-            ]
-
-            # Get only IDs from related event
-            events[i]['RelatedEvent'] = [
-                {
-                    'id': r_event.get('id')
-                } for r_event in events[i].get('RelatedEvent')
-            ]
-
-        # Build Galaxy
-        if events[i].get('Galaxy'):
-            events[i]['Galaxy'] = [
-                {
-                    'name': star.get('name'),
-                    'type': star.get('type'),
-                    'description': star.get('description')
-                } for star in events[i]['Galaxy']
-            ]
-
-        # Build tag
-        if events[i].get('Tag'):
-            events[i]['Tag'] = [
-                {'Name': tag.get('name')} for tag in events[i].get('Tag')
-            ]
-    events = replace_keys(events)  # type: ignore
-    return events  # type: ignore
-
-
 def reputation_command_to_human_readable(outputs, score):
     return {
         'Attribute Type': outputs.get('Type'),
@@ -784,7 +705,6 @@ def build_attributes_search_response(response_object: Union[dict, requests.Respo
     attributes = response_object.get('Attribute')
     for i in range(len(attributes)):
         attributes[i] = {key: attributes[i].get(key) for key in attribute_fields if key in attributes[i]}
-
         # Build Galaxy
         if attributes[i].get('Galaxy'):
             attributes[i]['Galaxy'] = [
@@ -864,7 +784,6 @@ def search_attributes(demisto_args: dict) -> CommandResults:
     args = prepare_args_to_search()
     # Set the controller to attributes to search for attributes and not events
     args['controller'] = 'attributes'
-    print(args)
     response = PYMISP.search(**args)
     return_only_values = argToBoolean(demisto_args.get('compact', True))
     include_correlations = argToBoolean(demisto_args.get('include_correlations', False))
