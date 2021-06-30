@@ -849,6 +849,7 @@ def build_events_search_response(response_object: Union[dict, requests.Response]
         'RelatedEvent',
         'Galaxy',
         'Tag',
+        'decay_score',
         'Object'
     ]
     if isinstance(response_object, str):
