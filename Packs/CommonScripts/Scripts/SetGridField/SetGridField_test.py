@@ -71,8 +71,10 @@ def test_build_grid(datadir, mocker, keys: list, columns: list, dt_response_json
     import pandas as pd
 
     mocker.patch.object(SetGridField, 'demisto')
-    SetGridField.demisto.dt.return_value = json.load(open(datadir[dt_response_json]))
-    expected_grid = json.load(open(datadir[expected_json]))
+    with open(datadir[dt_response_json]) as json_file:
+        SetGridField.demisto.dt.return_value = json.load(json_file)
+    with open(datadir[expected_json]) as json_file:
+        expected_grid = json.load(json_file)
     assert pd.DataFrame(expected_grid).to_dict() == SetGridField.build_grid(
         context_path=mocker.MagicMock(), keys=keys, columns=columns, unpack_nested_elements=unpack_nested
     ).to_dict()
@@ -89,9 +91,11 @@ def test_build_grid_command(datadir, mocker, keys: List[str], columns: List[str]
     import SetGridField
     mocker.patch.object(SetGridField, 'get_current_table', return_value=[])
     mocker.patch.object(SetGridField, 'demisto')
-    SetGridField.demisto.dt.return_value = json.load(open(datadir[dt_response_path]))
+    with open(datadir[dt_response_path]) as json_file:
+        SetGridField.demisto.dt.return_value = json.load(json_file)
     results = SetGridField.build_grid_command(grid_id='test', context_path=mocker.MagicMock(), keys=keys,
                                               columns=columns, overwrite=True, sort_by=None,
                                               unpack_nested_elements=unpack_nested_elements)
-    expected_results = json.load(open(datadir[expected_results_path]))
+    with open(datadir[expected_results_path]) as json_file:
+        expected_results = json.load(json_file)
     assert json.dumps(results) == json.dumps(expected_results)
