@@ -1,6 +1,6 @@
 {
     "name": "ReversingLabs A1000",
-    "description": "Powerful threat detection and file analysis platform that integrates other ReversingLabs technologies (TitaniumCore - the automated static analysis solution, and TitaniumCloud File Reputation Service). Provides detailed information on each file's status and threat capabilities.",
+    "description": "Powerful threat detection and file analysis platform. Get detailed information on each file's status and threat capabilities.",
     "support": "partner",
     "currentVersion": "2.0.0",
     "author": "ReversingLabs",
