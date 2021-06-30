@@ -206,7 +206,7 @@ def circleci_workflow_jobs_list_command(client: Client, args: Dict[str, Any]) ->
     response = get_response_with_pagination(client.get_workflow_jobs, [workflow_id], limit)
 
     return CommandResults(
-        outputs_prefix='CircleCI.Workflow.Job',
+        outputs_prefix='CircleCI.WorkflowJob',
         outputs_key_field='id',
         readable_output=tableToMarkdown(f'CircleCI Workflow {workflow_id} Jobs', response, removeNull=True,
                                         headerTransform=camelize_string),
