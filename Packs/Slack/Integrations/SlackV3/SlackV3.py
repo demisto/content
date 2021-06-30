@@ -1289,7 +1289,6 @@ def slack_send():
             severity = int(severity)
         except Exception:
             severity = None
-            pass
 
     channel = original_channel
     if original_channel == INCIDENT_NOTIFICATION_CHANNEL or (not original_channel and message_type == INCIDENT_OPENED):
