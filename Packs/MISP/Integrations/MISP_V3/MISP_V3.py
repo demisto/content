@@ -829,13 +829,13 @@ def build_events_search_response(response_object: Union[dict, requests.Response]
         'id',
         'orgc_id',
         'org_id',
-        'date'
+        'date',
         'threat_level_id',
         'info',
         'published',
         'uuid',
         'analysis',
-        'attribute_count'
+        'attribute_count',
         'timestamp',
         'distribution',
         'proposal_email_lock',
