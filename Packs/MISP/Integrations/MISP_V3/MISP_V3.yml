@@ -1853,7 +1853,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: 'Date that this URL was first seen, for example: `2019-02-03`.'
+      description: Date that this URL was first seen, for example `2019-02-03`.'
       isArray: false
       name: first_seen
       required: false
@@ -1865,13 +1865,13 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'Date that this URL was last seen, for example: `2019-02-03`.'
+      description: Date that this URL was last seen, for example `2019-02-03`.
       isArray: false
       name: last_seen
       required: false
       secret: false
     - default: false
-      description: ID of the event.
+      description: ID of a MISP event.
       isArray: false
       name: event_id
       required: true
@@ -2063,14 +2063,14 @@ script:
       type: String
   - arguments:
     - default: false
-      description: ID of an event.
+      description: ID of a MISP event.
       isArray: false
       name: event_id
       required: true
       secret: false
     - default: false
-      description: IP address (require one of).
-      isArray: false
+      description: A comma seperated list of ip addresses.
+      isArray: true
       name: ip
       required: false
       secret: false
@@ -2093,37 +2093,37 @@ script:
       required: false
       secret: false
     - default: false
-      description: Hostname.
+      description: Hostname, For example 'mail123.example.com'.
       isArray: false
       name: hostname
       required: false
       secret: false
     - default: false
-      description: IP source.
+      description: IP source address.
       isArray: false
       name: ip_src
       required: false
       secret: false
     - default: false
-      description: IP destination.
+      description: IP destination adress.
       isArray: false
       name: ip_dst
       required: false
       secret: false
     - default: false
-      description: Date when the tuple was first seen.
+      description: Date when the ip address was first seen, for example `2019-02-03`.
       isArray: false
       name: first_seen
       required: false
       secret: false
     - default: false
-      description: Date when the tuple was last seen.
+      description: Date when the ip address was last seen, for example `2019-02-03`.
       isArray: false
       name: last_seen
       required: false
       secret: false
     - default: false
-      description: A description of the object.
+      description: Description of the object.
       isArray: false
       name: comment
       required: false

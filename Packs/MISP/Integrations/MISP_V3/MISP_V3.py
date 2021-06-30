@@ -1167,16 +1167,9 @@ def add_object(event_id: str, obj: MISPObject):
     """
     response = PYMISP.add_object(event_id, misp_object=obj)
     if 'errors' in response:
-        errors = extract_error(response["errors"])
-        error_string = str()
-        for err in errors:
-            error_string += f'\n\tError code: {err["code"]} ' \
-                            f'\n\tMessage: {err["message"]}' \
-                            f'\n\tErrors: {err["errors"]}\n'
-        return_error(f'Error in `{demisto.command()}` command: {error_string}')
+        return_error(f'Error in `{demisto.command()}` command: {response}')
     for ref in obj.ObjectReference:
         response = PYMISP.add_object_reference(ref)
-
     formatted_response = replace_keys(response)
     formatted_response.update({"ID": event_id})
 
@@ -1227,10 +1220,7 @@ def add_url_object(demisto_args: dict = {}):
     event_id = demisto_args.get('event_id')
     url = demisto_args.get('url')
     url_parse = urlparse(url)
-    url_obj = [
-        {'url': url}
-    ]
-
+    url_obj = [{'url': url}]
     url_obj.append({'scheme': url_parse.scheme}) if url_parse.scheme else None
     url_obj.append({'resource_path': url_parse.path}) if url_parse.path else None
     url_obj.append({'query_string': url_parse.query}) if url_parse.query else None
@@ -1239,11 +1229,7 @@ def add_url_object(demisto_args: dict = {}):
     url_obj.append({'port': url_parse.port}) if url_parse.port else None
     url_obj.append(
         {'credential': (url_parse.username, url_parse.password)}) if url_parse.username and url_parse.password else None
-
-    for arg in url_args:
-        user_arg = demisto_args.get(arg)
-        if user_arg:
-            url_obj.append({arg.replace('_', '-'): user_arg})
+    url_obj.extend(convert_arg_to_misp_args(demisto_args, url_args))
 
     g_object = build_generic_object('url', url_obj)
     return add_object(event_id, g_object)
@@ -1264,8 +1250,11 @@ def add_generic_object_command(demisto_args: dict = {}):
                      str(e))
 
 
+def convert_arg_to_misp_args(demisto_args, args_names):
+    return [{arg.replace('_', '-'): demisto_args.get(arg)} for arg in args_names if demisto_args.get(arg)]
+
+
 def add_ip_object(demisto_args: dict = {}):
-    # todo split into sub-functions
     event_id = demisto_args.get('event_id')
     args = [
         'dst_port',
@@ -1276,7 +1265,7 @@ def add_ip_object(demisto_args: dict = {}):
         'ip_dst'
     ]
     # converting args to MISP's arguments types
-    misp_attributes_args = [{arg.replace('_', '-'): demisto_args.get(arg)} for arg in args if demisto_args.get(arg)]
+    misp_attributes_args = convert_arg_to_misp_args(demisto_args, args)
     ips = argToList(demisto_args.get('ip'))
     for ip in ips:
         misp_attributes_args.append({'ip': ip})
@@ -1285,10 +1274,8 @@ def add_ip_object(demisto_args: dict = {}):
             'first_seen',
             'last_seen',
         ]
-        misp_attributes_args.extend(
-            {arg.replace('_', '-'): demisto_args.get(arg)} for arg in non_req_args if demisto_args.get(arg))
-        if demisto_args.get('comment'):
-            misp_attributes_args.append({'text': demisto_args.get('comment')})
+        misp_attributes_args.extend(convert_arg_to_misp_args(demisto_args, non_req_args))
+        misp_attributes_args.append({'text': demisto_args.get('comment')}) if demisto_args.get('comment') else None
         obj = build_generic_object('ip-port', misp_attributes_args)
         return add_object(event_id, obj)
     else:
