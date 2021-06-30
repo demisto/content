@@ -209,7 +209,6 @@ def upload_file_and_get_results(tiscale):
 
 
 def main():
-
     try:
         wait_time_seconds = int(WAIT_TIME_SECONDS)
     except ValueError:
@@ -228,6 +227,7 @@ def main():
         wait_time_seconds=wait_time_seconds,
         retries=num_of_retries
     )
+    
     demisto.info(f'Command being called is {demisto.command()}')
 
     try:
@@ -241,7 +241,6 @@ def main():
             return_results(get_report(tiscale))
         else:
             return_error(f'Command [{demisto.command()}] not implemented')
-
     except Exception as e:
         return_error(f'Failed to execute {demisto.command()} command. Error: {str(e)}')
 

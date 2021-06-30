@@ -1,6 +1,6 @@
 {
   "name": "ReversingLabs TitaniumCloud",
-  "description": "ReversingLabs TitaniumCloud is a threat intelligence solution providing up-to-date file reputation services, threat classification and rich context on over 10 billion goodware and malware files.",
+  "description": "ReversingLabs TitaniumCloud provides file reputation services, threat classification and rich context on over 10 billion files.",
   "support": "partner",
   "currentVersion": "2.0.0",
   "author": "ReversingLabs",
