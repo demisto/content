@@ -120,7 +120,7 @@ def a1000_report_output(response_json):
     **Identification version:** {result.get('identification_version')}\n'''
     indicators = demisto.get(result, 'summary.indicators')
     if indicators:
-        markdown += tableToMarkdown('RecersingLabs threat indicators', indicators)
+        markdown += tableToMarkdown('ReversingLabs threat indicators', indicators)
 
     dbot_score = Common.DBotScore(
         indicator=sha1,
