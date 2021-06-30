@@ -259,7 +259,7 @@ class Client(BaseClient):
                                               url_suffix=f"{endpoint}/attachments",
                                               files=files,
                                               data=request_params)
-        except Exception as e:
+        except Exception:
             os.remove(file_name)
             raise
         os.remove(file_name)
