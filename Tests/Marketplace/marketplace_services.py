@@ -1626,7 +1626,7 @@ class Pack(object):
         return tags
 
     def _enhance_pack_attributes(self, user_metadata, index_folder_path, pack_was_modified,
-                                 dependencies_data, statistics_handler=None):
+                                 dependencies_data, statistics_handler=None, is_reformat=False):
         """ Enhances the pack object with attributes for the metadata file
 
         Args:
@@ -1641,60 +1641,61 @@ class Pack(object):
         displayed_dependencies = user_metadata.get('displayedImages', [])
         trending_packs = None
         pack_dependencies_by_download_count = displayed_dependencies
-
-        # ===== Pack Regular Attributes =====
-        self._support_type = user_metadata.get('support', Metadata.XSOAR_SUPPORT)
-        self._support_details = self._create_support_section(
-            support_type=self._support_type, support_url=user_metadata.get('url'),
-            support_email=user_metadata.get('email')
-        )
-        self._author = self._get_author(support_type=self._support_type, author=user_metadata.get('author', ''))
-        self._certification = self._get_certification(
-            support_type=self._support_type, certification=user_metadata.get('certification')
-        )
-        self._legacy = user_metadata.get('legacy', True)
-        self._create_date = self._get_pack_creation_date(index_folder_path)
-        self._update_date = self._get_pack_update_date(index_folder_path, pack_was_modified)
-        self._use_cases = input_to_list(input_data=user_metadata.get('useCases'), capitalize_input=True)
-        self._categories = input_to_list(input_data=user_metadata.get('categories'), capitalize_input=True)
-        self._keywords = input_to_list(user_metadata.get('keywords'))
+        if not is_reformat:
+            # ===== Pack Regular Attributes =====
+            self._support_type = user_metadata.get('support', Metadata.XSOAR_SUPPORT)
+            self._support_details = self._create_support_section(
+                support_type=self._support_type, support_url=user_metadata.get('url'),
+                support_email=user_metadata.get('email')
+            )
+            self._author = self._get_author(support_type=self._support_type, author=user_metadata.get('author', ''))
+            self._certification = self._get_certification(
+                support_type=self._support_type, certification=user_metadata.get('certification')
+            )
+            self._legacy = user_metadata.get('legacy', True)
+            self._create_date = self._get_pack_creation_date(index_folder_path)
+            self._update_date = self._get_pack_update_date(index_folder_path, pack_was_modified)
+            self._use_cases = input_to_list(input_data=user_metadata.get('useCases'), capitalize_input=True)
+            self._categories = input_to_list(input_data=user_metadata.get('categories'), capitalize_input=True)
+            self._keywords = input_to_list(user_metadata.get('keywords'))
         self._dependencies = self._parse_pack_dependencies(user_metadata.get('dependencies', {}), dependencies_data)
 
         # ===== Pack Private Attributes =====
-        self._is_private_pack = 'partnerId' in user_metadata
-        self._is_premium = self._is_private_pack
-        self._preview_only = get_valid_bool(user_metadata.get('previewOnly', False))
-        self._price = convert_price(pack_id=self._pack_name, price_value_input=user_metadata.get('price'))
-        if self._is_private_pack:
-            self._vendor_id = user_metadata.get('vendorId', "")
-            self._partner_id = user_metadata.get('partnerId', "")
-            self._partner_name = user_metadata.get('partnerName', "")
-            self._content_commit_hash = user_metadata.get('contentCommitHash', "")
-            # Currently all content packs are legacy.
-            # Since premium packs cannot be legacy, we directly set this attribute to false.
-            self._legacy = False
+        if not is_reformat:
+            self._is_private_pack = 'partnerId' in user_metadata
+            self._is_premium = self._is_private_pack
+            self._preview_only = get_valid_bool(user_metadata.get('previewOnly', False))
+            self._price = convert_price(pack_id=self._pack_name, price_value_input=user_metadata.get('price'))
+            if self._is_private_pack:
+                self._vendor_id = user_metadata.get('vendorId', "")
+                self._partner_id = user_metadata.get('partnerId', "")
+                self._partner_name = user_metadata.get('partnerName', "")
+                self._content_commit_hash = user_metadata.get('contentCommitHash', "")
+                # Currently all content packs are legacy.
+                # Since premium packs cannot be legacy, we directly set this attribute to false.
+                self._legacy = False
 
-        # ===== Pack Statistics Attributes =====
-        if not self._is_private_pack and statistics_handler:  # Public Content case
-            self._pack_statistics_handler = mp_statistics.PackStatisticsHandler(
-                self._pack_name, statistics_handler.packs_statistics_df, statistics_handler.packs_download_count_desc,
-                displayed_dependencies
+            # ===== Pack Statistics Attributes =====
+            if not self._is_private_pack and statistics_handler:  # Public Content case
+                self._pack_statistics_handler = mp_statistics.PackStatisticsHandler(
+                    self._pack_name, statistics_handler.packs_statistics_df, statistics_handler.packs_download_count_desc,
+                    displayed_dependencies
+                )
+                self._downloads_count = self._pack_statistics_handler.download_count
+                trending_packs = statistics_handler.trending_packs
+                pack_dependencies_by_download_count = self._pack_statistics_handler.displayed_dependencies_sorted
+
+            self._tags = self._collect_pack_tags(user_metadata, landing_page_sections, trending_packs)
+            self._search_rank = mp_statistics.PackStatisticsHandler.calculate_search_rank(
+                tags=self._tags, certification=self._certification, content_items=self._content_items
             )
-            self._downloads_count = self._pack_statistics_handler.download_count
-            trending_packs = statistics_handler.trending_packs
-            pack_dependencies_by_download_count = self._pack_statistics_handler.displayed_dependencies_sorted
-
-        self._tags = self._collect_pack_tags(user_metadata, landing_page_sections, trending_packs)
-        self._search_rank = mp_statistics.PackStatisticsHandler.calculate_search_rank(
-            tags=self._tags, certification=self._certification, content_items=self._content_items
-        )
         self._related_integration_images = self._get_all_pack_images(
             self._displayed_integration_images, displayed_dependencies, dependencies_data,
             pack_dependencies_by_download_count
         )
 
     def format_metadata(self, user_metadata, index_folder_path, packs_dependencies_mapping, build_number, commit_hash,
-                        pack_was_modified, statistics_handler, pack_names):
+                        pack_was_modified, statistics_handler, pack_names, is_reformat=False):
         """ Re-formats metadata according to marketplace metadata format defined in issue #19786 and writes back
         the result.
 
@@ -1708,7 +1709,7 @@ class Pack(object):
             pack_was_modified (bool): Indicates whether the pack was modified or not.
             statistics_handler (StatisticsHandler): The marketplace statistics handler
             pack_names (list)List of all packs.
-
+            is_reformat
         Returns:
             bool: True is returned in case metadata file was parsed successfully, otherwise False.
 
@@ -1726,7 +1727,7 @@ class Pack(object):
                                                              user_metadata.get('displayedImages', []), pack_names)
 
             self._enhance_pack_attributes(
-                user_metadata, index_folder_path, pack_was_modified, dependencies_data, statistics_handler
+                user_metadata, index_folder_path, pack_was_modified, dependencies_data, statistics_handler, is_reformat
             )
             formatted_metadata = self._parse_pack_metadata(user_metadata, build_number, commit_hash)
             metadata_path = os.path.join(self._pack_path, Pack.METADATA)  # deployed metadata path after parsing
