@@ -261,7 +261,7 @@ class Client(BaseClient):
                                               data=request_params)
         except Exception as e:
             os.remove(file_name)
-            raise e
+            raise
         os.remove(file_name)
         return response
 
