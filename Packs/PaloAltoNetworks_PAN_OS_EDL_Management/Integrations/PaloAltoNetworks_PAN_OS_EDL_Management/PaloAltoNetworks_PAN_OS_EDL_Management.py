@@ -7,7 +7,6 @@ from CommonServerPython import *
 
 ''' GLOBALS '''
 
-AUTHENTICATION: Dict[Any, Any] = {}
 HOSTNAME = ''
 USERNAME = ''
 PORT = ''
@@ -19,12 +18,12 @@ INTEGRATION_COMMAND_NAME = 'pan-os-edl'
 
 
 def initialize_instance(params: Dict[str, str]) -> None:
-    global AUTHENTICATION, HOSTNAME, USERNAME, PORT, SSH_EXTRA_PARAMS, SCP_EXTRA_PARAMS, DOCUMENT_ROOT, CERTIFICATE_FILE
+    global HOSTNAME, USERNAME, PORT, SSH_EXTRA_PARAMS, SCP_EXTRA_PARAMS, DOCUMENT_ROOT, CERTIFICATE_FILE
 
-    AUTHENTICATION = params.get('Authentication', {})  # type: ignore
+    authentication = params.get('Authentication', {})  # type: ignore
 
     HOSTNAME = str(params.get('hostname', ''))  # type: ignore
-    USERNAME = str(AUTHENTICATION.get('identifier', ''))  # type: ignore
+    USERNAME = str(authentication.get('identifier', ''))  # type: ignore
     PORT = str(params.get('port')) if params.get('port', '') and len(params.get('port')) > 0 else ''  # type: ignore
 
     SSH_EXTRA_PARAMS = params.get('ssh_extra_params').split() if params.get(  # type: ignore
@@ -33,7 +32,7 @@ def initialize_instance(params: Dict[str, str]) -> None:
         'scp_extra_params') else None
     DOCUMENT_ROOT = f'/{params.get("document_root")}' if params.get('document_root') else ''
 
-    create_certificate_file(AUTHENTICATION)
+    create_certificate_file(authentication)
 
 
 def create_certificate_file(authentication: dict) -> None:
