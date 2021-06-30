@@ -1,3 +1,6 @@
+import os.path
+from typing import Tuple
+
 import rsa
 
 from CommonServerPython import *
@@ -10,13 +13,14 @@ def test_module():
         get_private_key()
     except Exception:
         raise DemistoException('You can either enter public and/or private key in the instance configuration or run the'
-                               ' "encryption-create-keys" to create the keys for the instance.')
+                               ' "encryption-tools-create-keys" command to create the keys for the instance.')
 
     return 'ok'
 
 
 def get_public_key() -> rsa.PublicKey:
-    """Gets the public key from the instance configuration. If none was provided it takes it from the integration context.
+    """Gets the public key from the instance configuration. If none was provided it takes it from the
+    integration context.
 
     Returns:
         rsa.PublicKey. The public key to be used with the integration.
@@ -111,10 +115,11 @@ def create_keys(params, args):
     except Exception as e:
         raise DemistoException(f'Failed to generate new RSA keys.\n{e}')
 
+    return_results(fileResult('xsoar-public-key', integration_context['public_key'], EntryType.ENTRY_INFO_FILE))
     return_results('Keys created successfully.')
 
 
-def encrypt_text(args) -> str:
+def encrypt_text(args) -> CommandResults:
     """Encrypts text into base64 string.
 
     Args:
@@ -132,7 +137,13 @@ def encrypt_text(args) -> str:
 
     try:
         encrypted_bytes = rsa.encrypt(text_to_encrypt, public_key)
-        return base64.b64encode(encrypted_bytes).decode('utf-8')
+        encrypted_value = base64.b64encode(encrypted_bytes).decode('utf-8')
+
+        return CommandResults(
+            outputs_prefix='EncryptionTools',
+            outputs={'Value': encrypted_value},
+            readable_output=f'### Encrypted Text:\n{encrypted_value}',
+        )
     except Exception as e:
         raise DemistoException(f'Could not encrypt text.\n{e}')
 
@@ -161,12 +172,28 @@ def decrypt_text(args) -> str:
         raise DemistoException(f'Could not decrypt text.\n{e}')
 
 
-def encrypt_file(args) -> None:
+def get_file_name_and_extension(full_file_name: str) -> Tuple[str, str]:
+    """Splits the full file name to file name and file extension.
+
+    Args:
+        full_file_name (str): The full file name.
+
+    Returns:
+        Tuple[str, str]. File name and file extension.
+    """
+    return os.path.splitext(full_file_name)
+
+
+def encrypt_file(args) -> Dict:
     """Encrypts a file and creates a war-room file entry with the encrypted content.
 
     Args:
         args:
             - entry_id (str): The entry ID of the file to encrypt.
+
+
+    Returns:
+        Dict. fileResult object.
     """
     entry_id = args.get('entry_id')
 
@@ -182,17 +209,21 @@ def encrypt_file(args) -> None:
             'text_to_encrypt': file_content,
         })
 
-        demisto.results(fileResult(f'{file_name}-xsoar-encrypted', base64_encrypted_content))
+        file_name, file_extension = get_file_name_and_extension(file_name)
+        return fileResult(f'{file_name}-xsoar-encrypted{file_extension}', base64_encrypted_content)
     except Exception as e:
         raise DemistoException(f'Could not encrypt file.\n{e}')
 
 
-def decrypt_file(args) -> None:
+def decrypt_file(args) -> Dict:
     """Decrypts a file and creates a war-room file entry with the decrypted content.
 
     Args:
         args:
             - entry_id (str): The entry ID of the file to decrypt.
+
+    Returns:
+        Dict. fileResult object.
     """
     entry_id = args.get('entry_id')
 
@@ -208,9 +239,42 @@ def decrypt_file(args) -> None:
             'base64_to_decrypt': file_content,
         })
 
-        demisto.results(fileResult(f'{file_name}-decrypted', decrypted_content))
+        file_name, file_extension = get_file_name_and_extension(file_name)
+        return fileResult(f'{file_name}-xsoar-decrypted{file_extension}', decrypted_content)
     except Exception as e:
         raise DemistoException(f'Could not decrypt file.\n{e}')
+
+
+def export_public_key(args):
+    """Exports the public key to file.
+
+    Args:
+        args:
+            - output_file_name (str): The name of the output file.
+
+    Returns:
+        Dict. fileResult object.
+    """
+    public_key = get_public_key()
+
+    output_file_name = args['output_file_name']
+    return fileResult(output_file_name, public_key.save_pkcs1().decode('utf-8'))
+
+
+def export_private_key(args):
+    """Exports the private key to file.
+
+    Args:
+        args:
+            - output_file_name (str): The name of the output file.
+
+    Returns:
+        Dict. fileResult object.
+    """
+    private_key = get_private_key()
+
+    output_file_name = args['output_file_name']
+    return fileResult(output_file_name, private_key.save_pkcs1().decode('utf-8'))
 
 
 def main() -> None:
@@ -222,6 +286,8 @@ def main() -> None:
         'encryption-tools-decrypt-text': decrypt_text,
         'encryption-tools-encrypt-file': encrypt_file,
         'encryption-tools-decrypt-file': decrypt_file,
+        'encryption-tools-export-public-key': export_public_key,
+        'encryption-tools-export-private-key': export_private_key,
     }
 
     command = demisto.command()
