@@ -1,14 +1,15 @@
 id: Extract and Create Relationships
 version: -1
 name: Extract and Create Relationships
+description: Extract and enrich indicators
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 03ca28b7-e18a-4c91-817a-a0a8f0c13ad4
+    taskid: 71df99dd-4183-431a-8600-d4a340dbda25
     type: start
     task:
-      id: 03ca28b7-e18a-4c91-817a-a0a8f0c13ad4
+      id: 71df99dd-4183-431a-8600-d4a340dbda25
       version: -1
       name: ""
       iscommand: false
@@ -32,10 +33,10 @@ tasks:
     quietmode: 0
   "1":
     id: "1"
-    taskid: b4cae13b-69e9-42e2-8630-882b6d2043fe
+    taskid: fbb5e6b1-fd5c-4214-852b-fb79829997e2
     type: regular
     task:
-      id: b4cae13b-69e9-42e2-8630-882b6d2043fe
+      id: fbb5e6b1-fd5c-4214-852b-fb79829997e2
       version: -1
       name: Extract indicators from report description
       description: commands.local.cmd.extract.indicators
@@ -45,11 +46,11 @@ tasks:
       brand: Builtin
     nexttasks:
       '#none#':
-      - "4"
-      - "7"
-      - "3"
-      - "10"
-      - "12"
+      - "20"
+      - "21"
+      - "23"
+      - "24"
+      - "22"
     scriptarguments:
       text:
         simple: ${inputs.content}
@@ -59,7 +60,7 @@ tasks:
       {
         "position": {
           "x": 440,
-          "y": -420
+          "y": -500
         }
       }
     note: false
@@ -69,10 +70,10 @@ tasks:
     quietmode: 0
   "2":
     id: "2"
-    taskid: 151a8a05-a65a-40e8-8e79-1316553e562e
+    taskid: c26a5a64-0089-4066-8eb8-b47041c475c9
     type: regular
     task:
-      id: 151a8a05-a65a-40e8-8e79-1316553e562e
+      id: c26a5a64-0089-4066-8eb8-b47041c475c9
       version: -1
       name: CVE Create Relationship
       description: This automation creates a relationship between indicator objects.
@@ -103,7 +104,7 @@ tasks:
       {
         "position": {
           "x": 440,
-          "y": 420
+          "y": 400
         }
       }
     note: false
@@ -113,12 +114,12 @@ tasks:
     quietmode: 0
   "3":
     id: "3"
-    taskid: 5bec7fb5-ce13-4511-80d1-aef73fd75db6
+    taskid: ce475c8b-1735-4209-8dd8-5ac172260f26
     type: condition
     task:
-      id: 5bec7fb5-ce13-4511-80d1-aef73fd75db6
+      id: ce475c8b-1735-4209-8dd8-5ac172260f26
       version: -1
-      name: Are there CVE's?
+      name: Are there CVEs?
       type: condition
       iscommand: false
       brand: ""
@@ -150,16 +151,16 @@ tasks:
     quietmode: 0
   "4":
     id: "4"
-    taskid: c2e4189d-714c-452f-8d85-edd955ed5ba6
+    taskid: 57416fce-a618-46df-804d-9eb0160e20b4
     type: condition
     task:
-      id: c2e4189d-714c-452f-8d85-edd955ed5ba6
+      id: 57416fce-a618-46df-804d-9eb0160e20b4
       version: -1
       name: Are there IPs?
+      description: Checks whether IP's were extracted from report
       type: condition
       iscommand: false
       brand: ""
-      description: "Checks whether IP's were extracted from report"
     nexttasks:
       '#default#':
       - "6"
@@ -177,7 +178,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1330,
+          "x": 1290,
           "y": 70
         }
       }
@@ -188,10 +189,10 @@ tasks:
     quietmode: 0
   "5":
     id: "5"
-    taskid: fb9daaba-9263-41aa-89b7-393aacb1e2f8
+    taskid: b0d7d818-cce3-4d12-845d-bfa27cea0a2b
     type: regular
     task:
-      id: fb9daaba-9263-41aa-89b7-393aacb1e2f8
+      id: b0d7d818-cce3-4d12-845d-bfa27cea0a2b
       version: -1
       name: IP Create Relationship
       description: This automation creates a relationship between indicator objects.
@@ -221,8 +222,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1320,
-          "y": 410
+          "x": 1290,
+          "y": 400
         }
       }
     note: false
@@ -232,10 +233,10 @@ tasks:
     quietmode: 0
   "6":
     id: "6"
-    taskid: 9f48aaf3-82e8-49a7-8195-b6d918afbd0a
+    taskid: d8217f92-af52-45ac-8547-ef35ce4396ee
     type: regular
     task:
-      id: 9f48aaf3-82e8-49a7-8195-b6d918afbd0a
+      id: d8217f92-af52-45ac-8547-ef35ce4396ee
       version: -1
       name: Delete Context Subplaybook
       description: 'In order to isolate each report and include only the data extracted
@@ -257,7 +258,7 @@ tasks:
       {
         "position": {
           "x": 440,
-          "y": 1290
+          "y": 1340
         }
       }
     note: false
@@ -267,16 +268,16 @@ tasks:
     quietmode: 0
   "7":
     id: "7"
-    taskid: b8f4e5ac-95d7-45d5-8e6b-f6f9651720c8
+    taskid: c7c0a500-cad9-4785-80ce-c3eb09135ea7
     type: condition
     task:
-      id: b8f4e5ac-95d7-45d5-8e6b-f6f9651720c8
+      id: c7c0a500-cad9-4785-80ce-c3eb09135ea7
       version: -1
       name: Are there Emails?
+      description: Checks whether Emails were extracted
       type: condition
       iscommand: false
       brand: ""
-      description: 'Checks whether Emails were extracted'
     nexttasks:
       '#default#':
       - "6"
@@ -294,7 +295,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 880,
+          "x": 870,
           "y": 70
         }
       }
@@ -305,10 +306,10 @@ tasks:
     quietmode: 0
   "8":
     id: "8"
-    taskid: c25a9e24-d26f-4c40-8075-5b562309cc71
+    taskid: 565d5e69-5843-46d0-8f17-6144a9c008b1
     type: regular
     task:
-      id: c25a9e24-d26f-4c40-8075-5b562309cc71
+      id: 565d5e69-5843-46d0-8f17-6144a9c008b1
       version: -1
       name: Email Create Relationship
       description: This automation creates a relationship between indicator objects.
@@ -339,7 +340,7 @@ tasks:
       {
         "position": {
           "x": 870,
-          "y": 410
+          "y": 400
         }
       }
     note: false
@@ -349,16 +350,16 @@ tasks:
     quietmode: 0
   "10":
     id: "10"
-    taskid: db3b6d2d-1633-4bdc-89d4-69a62e99ced9
+    taskid: 9a073a44-5430-421e-87cc-5e56d18bb710
     type: condition
     task:
-      id: db3b6d2d-1633-4bdc-89d4-69a62e99ced9
+      id: 9a073a44-5430-421e-87cc-5e56d18bb710
       version: -1
       name: Are there Domains?
+      description: Checks weather domains were extracted
       type: condition
       iscommand: false
       brand: ""
-      description: 'Checks weather domains were extracted'
     nexttasks:
       '#default#':
       - "6"
@@ -376,7 +377,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 0,
+          "x": 10,
           "y": 70
         }
       }
@@ -387,10 +388,10 @@ tasks:
     quietmode: 0
   "11":
     id: "11"
-    taskid: 22962692-2634-4176-896a-8795cb4ec804
+    taskid: 66e1c16b-7bf5-431c-881c-33201da03646
     type: regular
     task:
-      id: 22962692-2634-4176-896a-8795cb4ec804
+      id: 66e1c16b-7bf5-431c-881c-33201da03646
       version: -1
       name: Domain Create Relationship
       description: This automation creates a relationship between indicator objects.
@@ -420,7 +421,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -10,
+          "x": 10,
           "y": 400
         }
       }
@@ -431,16 +432,16 @@ tasks:
     quietmode: 0
   "12":
     id: "12"
-    taskid: 45b8d17f-c087-498a-8b09-ada63f0f34e6
+    taskid: 92376b14-5dd7-47ec-8d9e-ca114f98a85c
     type: condition
     task:
-      id: 45b8d17f-c087-498a-8b09-ada63f0f34e6
+      id: 92376b14-5dd7-47ec-8d9e-ca114f98a85c
       version: -1
       name: Are there URLs?
+      description: Checks whether URLs were extracted
       type: condition
       iscommand: false
       brand: ""
-      description: 'Checks whether URLs were extracted'
     nexttasks:
       '#default#':
       - "6"
@@ -458,7 +459,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -490,
+          "x": -420,
           "y": 70
         }
       }
@@ -469,10 +470,10 @@ tasks:
     quietmode: 0
   "13":
     id: "13"
-    taskid: c17ba0f8-8199-4826-877c-61cad37444f5
+    taskid: 529bddfa-72e2-4019-84d3-6cb17b6bc383
     type: regular
     task:
-      id: c17ba0f8-8199-4826-877c-61cad37444f5
+      id: 529bddfa-72e2-4019-84d3-6cb17b6bc383
       version: -1
       name: URL Create Relationship
       description: This automation creates a relationship between indicator objects.
@@ -502,8 +503,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -460,
-          "y": 390
+          "x": -430,
+          "y": 400
         }
       }
     note: false
@@ -513,10 +514,10 @@ tasks:
     quietmode: 0
   "14":
     id: "14"
-    taskid: 51fa53e7-b2e3-4119-816d-b1110b8cb3ef
+    taskid: 9ae971f3-48e2-4912-804e-0078e0d75e9f
     type: regular
     task:
-      id: 51fa53e7-b2e3-4119-816d-b1110b8cb3ef
+      id: 9ae971f3-48e2-4912-804e-0078e0d75e9f
       version: -1
       name: Domain enrichment
       description: commands.local.cmd.enrich.indicators
@@ -534,7 +535,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -10,
+          "x": 10,
           "y": 645
         }
       }
@@ -545,10 +546,10 @@ tasks:
     quietmode: 0
   "15":
     id: "15"
-    taskid: 43cb67df-6a91-47cd-8bfd-37539d256df6
+    taskid: 8f51f38e-8bbb-4831-8ea5-5ecec7b4e84a
     type: regular
     task:
-      id: 43cb67df-6a91-47cd-8bfd-37539d256df6
+      id: 8f51f38e-8bbb-4831-8ea5-5ecec7b4e84a
       version: -1
       name: Email enrichment
       description: commands.local.cmd.enrich.indicators
@@ -577,10 +578,10 @@ tasks:
     quietmode: 0
   "16":
     id: "16"
-    taskid: 9a4447ca-ec93-4303-84c5-52901dbc540a
+    taskid: 8c2323a2-b066-4722-854a-d965003cdfaf
     type: regular
     task:
-      id: 9a4447ca-ec93-4303-84c5-52901dbc540a
+      id: 8c2323a2-b066-4722-854a-d965003cdfaf
       version: -1
       name: IP enrichment
       description: commands.local.cmd.enrich.indicators
@@ -598,7 +599,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1320,
+          "x": 1290,
           "y": 645
         }
       }
@@ -609,10 +610,10 @@ tasks:
     quietmode: 0
   "17":
     id: "17"
-    taskid: c0bdc46a-6705-4d19-84fc-abcd8800ad4d
+    taskid: d4772cc8-6d5b-4f24-8a0d-50bfd62d5c64
     type: regular
     task:
-      id: c0bdc46a-6705-4d19-84fc-abcd8800ad4d
+      id: d4772cc8-6d5b-4f24-8a0d-50bfd62d5c64
       version: -1
       name: CVE enrichment
       description: commands.local.cmd.enrich.indicators
@@ -641,10 +642,10 @@ tasks:
     quietmode: 0
   "18":
     id: "18"
-    taskid: 46295125-4d05-48ea-82ef-a4e1afb0744d
+    taskid: 99f588d0-9478-4c07-82ff-172fcb09625b
     type: regular
     task:
-      id: 46295125-4d05-48ea-82ef-a4e1afb0744d
+      id: 99f588d0-9478-4c07-82ff-172fcb09625b
       version: -1
       name: URL enrichment
       description: commands.local.cmd.enrich.indicators
@@ -662,7 +663,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -460,
+          "x": -430,
           "y": 645
         }
       }
@@ -673,10 +674,10 @@ tasks:
     quietmode: 0
   "19":
     id: "19"
-    taskid: 0cc60b5b-63db-42fe-87dd-57491e02662c
+    taskid: afe40893-9631-4857-8a41-72e9099688d0
     type: title
     task:
-      id: 0cc60b5b-63db-42fe-87dd-57491e02662c
+      id: afe40893-9631-4857-8a41-72e9099688d0
       version: -1
       name: Done
       type: title
@@ -687,7 +688,142 @@ tasks:
       {
         "position": {
           "x": 440,
-          "y": 1460
+          "y": 1560
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "20":
+    id: "20"
+    taskid: 7006f767-a5a6-4188-831e-1a8e313a22a6
+    type: title
+    task:
+      id: 7006f767-a5a6-4188-831e-1a8e313a22a6
+      version: -1
+      name: IP
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1290,
+          "y": -100
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "21":
+    id: "21"
+    taskid: 5886062f-5ddb-49a8-8c51-519328fe851c
+    type: title
+    task:
+      id: 5886062f-5ddb-49a8-8c51-519328fe851c
+      version: -1
+      name: Email
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 870,
+          "y": -100
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "22":
+    id: "22"
+    taskid: 369258b8-2a6d-4598-84f7-ca946a8dd569
+    type: title
+    task:
+      id: 369258b8-2a6d-4598-84f7-ca946a8dd569
+      version: -1
+      name: URL
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -420,
+          "y": -100
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "23":
+    id: "23"
+    taskid: a58598ba-8bea-46d6-833d-eedb520eaf0d
+    type: title
+    task:
+      id: a58598ba-8bea-46d6-833d-eedb520eaf0d
+      version: -1
+      name: CVE
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 440,
+          "y": -100
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "24":
+    id: "24"
+    taskid: 83e2c287-f5e6-4ae1-85d6-1d3303610009
+    type: title
+    task:
+      id: 83e2c287-f5e6-4ae1-85d6-1d3303610009
+      version: -1
+      name: Domain
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 10,
+          "y": -100
         }
       }
     note: false
@@ -700,9 +836,9 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 2225,
-        "width": 2200,
-        "x": -490,
+        "height": 2325,
+        "width": 2100,
+        "x": -430,
         "y": -700
       }
     }
@@ -720,6 +856,5 @@ inputs:
   playbookInputQuery: null
 outputs: []
 fromversion: 6.2.0
-description: Extract and enrich indicators
 tests:
 - No tests
