@@ -100,8 +100,8 @@ class Pack(object):
         self._keywords = None  # initialized in enhance_pack_attributes function
         self._dependencies = None  # initialized in enhance_pack_attributes function
         self._pack_statistics_handler = None  # initialized in enhance_pack_attributes function
-        self._is_transformer = False  # a flag that specifies if pack contains a transformer script
-        self._is_filter = False  # a flag that specifies if pack contains a filter script
+        self._contains_transformer = False  # initialized in collect_content_items function
+        self._contains_filter = False  # initialized in collect_content_items function
 
     @property
     def name(self):
@@ -308,6 +308,18 @@ class Pack(object):
         """ str: the list of uploaded integration images
         """
         return self._uploaded_integration_images
+
+    @property
+    def contains_transformer(self):
+        """ bool: whether the pack contains a transformer script.
+        """
+        return self._contains_transformer
+
+    @property
+    def contains_filter(self):
+        """ bool: whether the pack contains a filter script.
+        """
+        return self._contains_filter
 
     def _get_latest_version(self):
         """ Return latest semantic version of the pack.
@@ -1477,8 +1489,8 @@ class Pack(object):
                             'tags': content_item_tags
                         })
 
-                        self._is_transformer = True if 'transformer' in content_item_tags else False
-                        self._is_filter = True if 'filter' in content_item_tags else False
+                        self._contains_transformer = True if 'transformer' in content_item_tags else False
+                        self._contains_filter = True if 'filter' in content_item_tags else False
 
                     elif current_directory == PackFolders.PLAYBOOKS.value:
                         self.is_feed_pack(content_item, 'Playbook')
@@ -1604,8 +1616,8 @@ class Pack(object):
         tags |= self._get_tags_from_landing_page(landing_page_sections)
         tags |= {PackTags.TIM} if self._is_feed else set()
         tags |= {PackTags.USE_CASE} if self._use_cases else set()
-        tags |= {PackTags.TRANSFORMER} if self._is_transformer else set()
-        tags |= {PackTags.FILTER} if self._is_filter else set()
+        tags |= {PackTags.TRANSFORMER} if self._contains_transformer else set()
+        tags |= {PackTags.FILTER} if self._contains_filter else set()
 
         if self._create_date:
             days_since_creation = (datetime.utcnow() - datetime.strptime(self._create_date, Metadata.DATE_FORMAT)).days
