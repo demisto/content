@@ -138,26 +138,11 @@ script:
       description: 'Content info'
       type: string
     description: Get information about user or content.
-  - name: lookout-profile-user
+  - name: lookout-get-user
     arguments:
     - name: email
       required: true
       description: Email
-    - name: risk_rating
-      auto: PREDEFINED
-      predefined:
-      - Low
-      - Medium
-      - High
-      description: Risk rating - Low, Medium, or High.
-    - name: action
-      auto: PREDEFINED
-      predefined:
-      - Get
-      - Update
-      - Delete
-      description: Action - Get, Update, Or Delete
-      defaultValue: Get
     outputs:
     - contextPath: CipherCloud.UserProfile.userEmail
       description: Email
@@ -173,7 +158,26 @@ script:
     - contextPath: CipherCloud.UserProfile.message
       description: Descriptive message
       type: string
-    description: Update user profile for realtime enforcements.
+    description: Get user profile for realtime enforcements.
+  - name: lookout-update-user
+    arguments:
+    - name: email
+      required: true
+      description: Email
+    - name: risk_rating
+      auto: PREDEFINED
+      predefined:
+      - Low
+      - Medium
+      - High
+      description: Risk rating - Low, Medium, or High.
+    description: Update user profile.
+  - name: lookout-delete-user
+    arguments:
+    - name: email
+      required: true
+      description: Email
+    description: Delete user profile.
   dockerimage: demisto/python3:3.9.5.21272
   isfetch: true
   runonce: false

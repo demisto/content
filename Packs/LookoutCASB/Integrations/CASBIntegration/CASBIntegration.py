@@ -693,12 +693,40 @@ def main() -> None:
             )
             return_results(cmd_result)
 
-        elif demisto.command() == 'lookout-profile-user':
+        elif demisto.command() == 'lookout-get-user':
             res = user_profile(
                 client=client,
                 user_email=user_email,
                 user_risk_rating=user_risk_rating,
-                action=action
+                action='Get'
+            )
+            cmd_result = CommandResults(
+                outputs_prefix='CipherCloud.UserProfile',
+                outputs_key_field=['userEmail'],
+                outputs=res
+            )
+            return_results(cmd_result)
+
+        elif demisto.command() == 'lookout-update-user':
+            res = user_profile(
+                client=client,
+                user_email=user_email,
+                user_risk_rating=user_risk_rating,
+                action='Update'
+            )
+            cmd_result = CommandResults(
+                outputs_prefix='CipherCloud.UserProfile',
+                outputs_key_field=['userEmail'],
+                outputs=res
+            )
+            return_results(cmd_result)
+
+        elif demisto.command() == 'lookout-delete-user':
+            res = user_profile(
+                client=client,
+                user_email=user_email,
+                user_risk_rating=user_risk_rating,
+                action='Delete'
             )
             cmd_result = CommandResults(
                 outputs_prefix='CipherCloud.UserProfile',

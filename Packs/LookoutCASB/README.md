@@ -8,5 +8,7 @@ It supports five commands for ingration.
 | lookout-get-anomalies | Get all anomalous events for the given time interval. |
 | lookout-get-events | Get all user activity events for the given time interval. |
 | lookout-get-information | Get information about user or content. |
-| lookout-profile-user | Update user profile for realtime enforcements. |
+| lookout-get-user | Get user profile for realtime enforcements. |
+| lookout-update-user | Update user profile. |
+| lookout-delete-user | Delete user profile. |
 
