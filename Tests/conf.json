@@ -3391,10 +3391,6 @@
             "playbookID": "CarbonBlackLiveResponseCloud-Test",
             "fromversion": "5.5.0",
             "is_mockable": false
-        },
-        {
-            "integrations": "CofenseIntelligenceV2",
-            "playbookID": "Cofense Intelligence v2 test"
         }
     ],
     "skipped_tests": {
