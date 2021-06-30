@@ -5,25 +5,24 @@ name: ParseHTMLIndicators
 script: ''
 type: python
 tags: []
-comment: This script will extract indicators from HTML and will handle bad TLD to
-  avoid file extensions false positives.
+comment: This script extracts indicators from HTML and handles bad top-level domains to avoid false positives caused by file extensions.
 enabled: true
 args:
 - name: url
   required: true
-  description: The full url of the blog
+  description: The full URL of the blog.
 - name: excludeIndicators
-  description: The indicators to exclude from the results
+  description: The indicators to be excluded from the results.
   isArray: true
 - name: unescapeDomain
   auto: PREDEFINED
   predefined:
   - "False"
   - "True"
-  description: Remove [.] from the Domain regex. Can result in higher false positives.
+  description: Whether to remove brackets [] from the domain regex extraction. Can result in higher false positives for file extensions.
   defaultValue: "False"
 - name: excludeTLD
-  description: Top Level Domain to exclude from domain indicators.
+  description: Top-level domain to be excluded from the domain indicators.
   isArray: true
   defaultValue: zip
 scripttarget: 0
@@ -33,4 +32,4 @@ dockerimage: demisto/bs4-tld:1.0.0.21999
 runas: DBotWeakRole
 fromversion: 5.5.0
 tests:
-- No tests (auto formatted)
+No tests (auto formatted)
