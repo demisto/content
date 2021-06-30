@@ -1084,7 +1084,8 @@ def main():
     for pack in packs_missing_dependencies:
 
         task_status = pack.format_metadata(user_metadata, index_folder_path, packs_dependencies_mapping, build_number,
-                                           current_commit_hash, pack_names, True)
+                                           current_commit_hash, pack_was_modified, statistics_handler, pack_names, True)
+
         if not task_status:
             pack.status = PackStatus.FAILED_METADATA_PARSING.name
             pack.cleanup()
