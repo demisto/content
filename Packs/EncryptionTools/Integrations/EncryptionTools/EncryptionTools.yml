@@ -1,4 +1,4 @@
-name: EncryptionTools
+name: Encryption Tools
 category: Utilities
 display: Encryption Tools
 configuration:
@@ -134,6 +134,8 @@ script:
   subtype: python3
   type: python
 commonfields:
-  id: EncryptionTools
+  id: Encryption Tools
   version: -1
-fromversion: 5.5.0
+fromversion: 6.0.0
+tests:
+- playbook-test-encryption-decryption

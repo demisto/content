@@ -119,6 +119,28 @@ def create_keys(params, args):
     return_results('Keys created successfully.')
 
 
+def encrypt(text_to_encrypt: str) -> str:
+    """Encrypts a string using the public key.
+
+    Args:
+        text_to_encrypt (str): The text to encrypt.
+
+    Returns:
+        str: The encrypted base64 string.
+    """
+    public_key = get_public_key()
+
+    if not public_key:
+        raise DemistoException('No public key has been provided or generated.')
+
+    try:
+        encrypted_bytes = rsa.encrypt(text_to_encrypt.encode('utf-8'), public_key)
+        encrypted_value = base64.b64encode(encrypted_bytes).decode('utf-8')
+        return encrypted_value
+    except Exception as e:
+        raise DemistoException(f'Could not encrypt data.\n{e}')
+
+
 def encrypt_text(args) -> CommandResults:
     """Encrypts text into base64 string.
 
@@ -129,23 +151,14 @@ def encrypt_text(args) -> CommandResults:
     Returns:
         str. The encrypted base64 string.
     """
-    text_to_encrypt = args.get('text_to_encrypt').encode('utf-8')
-    public_key = get_public_key()
+    text_to_encrypt = args.get('text_to_encrypt')
+    encrypted_value = encrypt(text_to_encrypt)
 
-    if not public_key:
-        raise DemistoException('No public key has been provided or generated.')
-
-    try:
-        encrypted_bytes = rsa.encrypt(text_to_encrypt, public_key)
-        encrypted_value = base64.b64encode(encrypted_bytes).decode('utf-8')
-
-        return CommandResults(
-            outputs_prefix='EncryptionTools',
-            outputs={'Value': encrypted_value},
-            readable_output=f'### Encrypted Text:\n{encrypted_value}',
-        )
-    except Exception as e:
-        raise DemistoException(f'Could not encrypt text.\n{e}')
+    return CommandResults(
+        outputs_prefix='EncryptionTools',
+        outputs={'Value': encrypted_value},
+        readable_output=f'### Encrypted Text:\n{encrypted_value}',
+    )
 
 
 def decrypt_text(args) -> str:
@@ -205,12 +218,16 @@ def encrypt_file(args) -> Dict:
         with open(file_path, 'r') as file:
             file_content = file.read()
 
-        base64_encrypted_content = encrypt_text({
-            'text_to_encrypt': file_content,
-        })
+        base64_encrypted_content = encrypt(text_to_encrypt=file_content)
 
         file_name, file_extension = get_file_name_and_extension(file_name)
-        return fileResult(f'{file_name}-xsoar-encrypted{file_extension}', base64_encrypted_content)
+        return fileResult(
+            f'{file_name}-xsoar-encrypted{file_extension}',
+            base64_encrypted_content,
+            EntryType.ENTRY_INFO_FILE,
+        )
+    except DemistoException:
+        raise
     except Exception as e:
         raise DemistoException(f'Could not encrypt file.\n{e}')
 
@@ -240,9 +257,15 @@ def decrypt_file(args) -> Dict:
         })
 
         file_name, file_extension = get_file_name_and_extension(file_name)
-        return fileResult(f'{file_name}-xsoar-decrypted{file_extension}', decrypted_content)
+        return fileResult(
+            f'{file_name}-xsoar-decrypted{file_extension}',
+            decrypted_content,
+            EntryType.ENTRY_INFO_FILE,
+        )
+    except DemistoException:
+        raise
     except Exception as e:
-        raise DemistoException(f'Could not decrypt file.\n{e}')
+        raise DemistoException(f'Could not decrypt file.\n{e}\n{file_content}')
 
 
 def export_public_key(args):
@@ -258,7 +281,11 @@ def export_public_key(args):
     public_key = get_public_key()
 
     output_file_name = args['output_file_name']
-    return fileResult(output_file_name, public_key.save_pkcs1().decode('utf-8'))
+    return fileResult(
+        output_file_name,
+        public_key.save_pkcs1().decode('utf-8'),
+        EntryType.ENTRY_INFO_FILE,
+    )
 
 
 def export_private_key(args):
@@ -274,7 +301,11 @@ def export_private_key(args):
     private_key = get_private_key()
 
     output_file_name = args['output_file_name']
-    return fileResult(output_file_name, private_key.save_pkcs1().decode('utf-8'))
+    return fileResult(
+        output_file_name,
+        private_key.save_pkcs1().decode('utf-8'),
+        EntryType.ENTRY_INFO_FILE,
+    )
 
 
 def main() -> None:

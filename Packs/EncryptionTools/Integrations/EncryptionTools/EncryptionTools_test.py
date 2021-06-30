@@ -2,7 +2,7 @@ import pytest
 import rsa
 
 from CommonServerPython import DemistoException
-from Encryption import get_public_key, get_private_key, create_keys
+from EncryptionTools import get_public_key, get_private_key, create_keys
 import demistomock as demisto
 
 

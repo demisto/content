@@ -32,10 +32,10 @@ tasks:
     quietmode: 0
   "2":
     id: "2"
-    taskid: ef3dcffa-d525-45a3-87f2-1a2fb41aca76
+    taskid: 7c68adb8-9f13-44dc-8997-3b670f4b4d52
     type: regular
     task:
-      id: ef3dcffa-d525-45a3-87f2-1a2fb41aca76
+      id: 7c68adb8-9f13-44dc-8997-3b670f4b4d52
       version: -1
       name: Create Keys with Override
       description: Create new RSA keys.
@@ -79,7 +79,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "4"
+      - "5"
     scriptarguments:
       text_to_encrypt:
         simple: XSOAR
@@ -96,52 +96,12 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "4":
-    id: "4"
-    taskid: 68fa8740-b12b-451b-8507-40ebdf1f1d46
-    type: regular
-    task:
-      id: 68fa8740-b12b-451b-8507-40ebdf1f1d46
-      version: -1
-      name: Encrypted Value to Context
-      description: "Takes the comments of a given entry ID and stores them in the\
-        \ incident context, under a provided context key. \nFor accessing the last\
-        \ executed task's comments, provide ${lastCompletedTaskEntries.[0]} as the\
-        \ value for the entryId input parameter."
-      scriptName: commentsToContext
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "5"
-    scriptarguments:
-      contextKey:
-        simple: TestText.encrypted
-      entryId:
-        complex:
-          root: ${lastCompletedTaskEntries}
-          transformers:
-          - operator: LastArrayElement
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 690
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "5":
     id: "5"
-    taskid: 75a0f26b-e260-4f52-8698-90bb13a58454
+    taskid: a0ce222f-4b41-4384-8e02-19efbffa62d1
     type: regular
     task:
-      id: 75a0f26b-e260-4f52-8698-90bb13a58454
+      id: a0ce222f-4b41-4384-8e02-19efbffa62d1
       version: -1
       name: Decrypt Text
       description: Decrypt text.
@@ -154,13 +114,13 @@ tasks:
       - "6"
     scriptarguments:
       base64_to_decrypt:
-        simple: ${TestText.encrypted}
+        simple: ${TestText.encrypted}${EncryptionTools.Value}
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 865
+          "y": 690
         }
       }
     note: false
@@ -200,7 +160,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1040
+          "y": 865
         }
       }
     note: false
@@ -238,7 +198,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1215
+          "y": 1040
         }
       }
     note: false
@@ -266,7 +226,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1390
+          "y": 1215
         }
       }
     note: false
@@ -329,7 +289,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1535
+          "y": 1360
         }
       }
     note: false
@@ -362,7 +322,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1710
+          "y": 1535
         }
       }
     note: false
@@ -372,10 +332,10 @@ tasks:
     quietmode: 0
   "12":
     id: "12"
-    taskid: 4cbe2580-15f0-4cb5-8fb0-3e8e28a69caa
+    taskid: 819fc9ee-df3d-4c5d-855d-5cf2c294aa7f
     type: regular
     task:
-      id: 4cbe2580-15f0-4cb5-8fb0-3e8e28a69caa
+      id: 819fc9ee-df3d-4c5d-855d-5cf2c294aa7f
       version: -1
       name: Decrypt File
       description: Decrypt file.
@@ -388,14 +348,14 @@ tasks:
       - "14"
     scriptarguments:
       entry_id:
-        simple: '${.=(val.File instanceof Array ? val.File[val.File.length-1].EntryID
-          : val.File.EntryID)}'
+        simple: '${.=(val.InfoFile instanceof Array ? val.InfoFile[val.InfoFile.length-1].EntryID
+          : val.InfoFile.EntryID)}'
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 1885
+          "y": 1710
         }
       }
     note: false
@@ -433,7 +393,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2235
+          "y": 2060
         }
       }
     note: false
@@ -443,10 +403,10 @@ tasks:
     quietmode: 0
   "14":
     id: "14"
-    taskid: 798966e8-d045-41d0-8930-435afacc3487
+    taskid: 3a08b14b-2002-47f9-834a-660c6d7041e0
     type: regular
     task:
-      id: 798966e8-d045-41d0-8930-435afacc3487
+      id: 3a08b14b-2002-47f9-834a-660c6d7041e0
       version: -1
       name: ReadFile
       description: Load the contents of a file into context.
@@ -459,14 +419,14 @@ tasks:
       - "13"
     scriptarguments:
       entryID:
-        simple: '${.=(val.File instanceof Array ? val.File[val.File.length-1].EntryID
-          : val.File.EntryID)}'
+        simple: '${.=(val.InfoFile instanceof Array ? val.InfoFile[val.InfoFile.length-1].EntryID
+          : val.InfoFile.EntryID)}'
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 2060
+          "y": 1885
         }
       }
     note: false
@@ -476,10 +436,148 @@ tasks:
     quietmode: 0
   "15":
     id: "15"
-    taskid: e45a6d99-8d2f-4597-8dcf-90e2f3ce2cc1
+    taskid: fc92850a-b2b5-472b-8497-c981644bfbb0
     type: title
     task:
-      id: e45a6d99-8d2f-4597-8dcf-90e2f3ce2cc1
+      id: fc92850a-b2b5-472b-8497-c981644bfbb0
+      version: -1
+      name: Test Exports
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "16"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2235
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "16":
+    id: "16"
+    taskid: 3031f5f1-f86a-4103-87a9-3b1c1b16f845
+    type: regular
+    task:
+      id: 3031f5f1-f86a-4103-87a9-3b1c1b16f845
+      version: -1
+      name: Export Private Key
+      description: Exports the private key to a file.
+      script: '|||encryption-tools-export-private-key'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      output_file_name:
+        simple: private_key
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2380
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "17":
+    id: "17"
+    taskid: 756fc21c-c607-4699-818c-dc6bbdad1f44
+    type: regular
+    task:
+      id: 756fc21c-c607-4699-818c-dc6bbdad1f44
+      version: -1
+      name: Export Public Key
+      description: Exports the private key to a file.
+      script: '|||encryption-tools-export-private-key'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "18"
+    scriptarguments:
+      output_file_name:
+        simple: public_key
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2555
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "18":
+    id: "18"
+    taskid: 6589face-6034-47c6-8965-184c8e1de2b1
+    type: condition
+    task:
+      id: 6589face-6034-47c6-8965-184c8e1de2b1
+      version: -1
+      name: Verify exported files
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "19"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: InfoFile.Name
+            iscontext: true
+          right:
+            value:
+              simple: private_key
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: InfoFile.Name
+            iscontext: true
+          right:
+            value:
+              simple: public_key
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2730
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "19":
+    id: "19"
+    taskid: c729eaf4-b6c7-4112-87c3-bee283896d2f
+    type: title
+    task:
+      id: c729eaf4-b6c7-4112-87c3-bee283896d2f
       version: -1
       name: DONE
       type: title
@@ -491,7 +589,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2410
+          "y": 2905
         }
       }
     note: false
@@ -504,7 +602,7 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 2425,
+        "height": 2920,
         "width": 380,
         "x": 50,
         "y": 50
@@ -514,4 +612,4 @@ view: |-
 inputs: []
 outputs: []
 fromversion: 6.0.0
-description: Test playbook for the Encyption Tools integration.
+description: Test playbook for Encryption Tools pack.
