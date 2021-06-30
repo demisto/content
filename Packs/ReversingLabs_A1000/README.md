@@ -6,7 +6,7 @@ firmware.
 This pack provides Cortex XSOAR integrations created by ReversingLabs that allow seamless and effective use of A1000 services through the Cortex XSOAR interface.
 
 #### Currently available integrations:
-- ReversingLabs A1000
+- ReversingLabs A1000 v2
     - Enables the use of a wide range of A1000 services.
     - The included commands can be used separately in the War Room or as part of a playbook.
 

@@ -8,6 +8,8 @@ HOST = demisto.getParam('host')
 TOKEN = demisto.getParam('token')
 VERIFY_CERT = demisto.getParam('verify')
 RELIABILITY = demisto.params().get('reliability', 'C - Fairly reliable')
+WAIT_TIME_SECONDS = demisto.params().get('wait_time_seconds')
+NUM_OF_RETRIES = demisto.params().get('num_of_retries')
 
 
 def classification_to_score(classification):
@@ -26,7 +28,7 @@ def test(a1000):
     """
     try:
         a1000.test_connection()
-        demisto.results('ok')
+        return 'ok'
     except Exception as e:
         return_error(str(e))
 
@@ -53,16 +55,14 @@ def upload_sample_and_get_results(a1000):
     """
     Upload file to A1000 and get report
     """
-    data = {'comment': demisto.getArg('comment'), 'tags': demisto.getArg('tags')}
     file_entry = demisto.getFilePath(demisto.getArg('entryId'))
-    data['filename'] = file_entry.get('name')
 
     try:
         with open(file_entry['path'], 'rb') as f:
             response_json = a1000.upload_sample_and_get_results(file_source=f,
-                                                                custom_filename=data.get('filename'),
-                                                                tags=data.get('tags'),
-                                                                comment=data.get('comment')).json()
+                                                                custom_filename=file_entry.get('name'),
+                                                                tags=demisto.getArg('tags'),
+                                                                comment=demisto.getArg('comment')).json()
     except Exception as e:
         return_error(str(e))
 
@@ -76,8 +76,8 @@ def upload_sample_and_get_results(a1000):
 
 def a1000_report_output(response_json):
     results = response_json.get('results')
-    result = results[0]
-    status = result.get('threat_status')
+    result = results[0] if results else {}
+    status = result.get('threat_status', '')
     d_bot_score = classification_to_score(status.upper())
 
     md5 = result.get('md5')
@@ -120,7 +120,7 @@ def a1000_report_output(response_json):
     **Identification version:** {result.get('identification_version')}\n'''
     indicators = demisto.get(result, 'summary.indicators')
     if indicators:
-        markdown += tableToMarkdown('Indicators', indicators)
+        markdown += tableToMarkdown('ReversingLabs threat indicators', indicators)
 
     dbot_score = Common.DBotScore(
         indicator=sha1,
@@ -151,14 +151,14 @@ def upload_sample(a1000):
     """
     Upload file to A1000 for analysis
     """
-    data = {'comment': demisto.getArg('comment'), 'tags': demisto.getArg('tags')}
     file_entry = demisto.getFilePath(demisto.getArg('entryId'))
-    data['filename'] = file_entry.get('name')
 
     try:
         with open(file_entry['path'], 'rb') as f:
-            response_json = a1000.upload_sample_from_file(f, custom_filename=data.get('filename'),
-                                                          tags=data.get('tags'), comment=data.get('comment')).json()
+            response_json = a1000.upload_sample_from_file(f,
+                                                          custom_filename=file_entry.get('name'),
+                                                          tags=demisto.getArg('tags'),
+                                                          comment=demisto.getArg('comment')).json()
     except Exception as e:
         return_error(str(e))
 
@@ -301,7 +301,7 @@ def download_extracted_files(a1000):
 
     filename = hash_value + '.zip'
     command_results = CommandResults(
-        readable_output=f"## ReversingLabs A1000 download extraced files \n Extracted files are available for download "
+        readable_output=f"## ReversingLabs A1000 download extraced files \nExtracted files are available for download "
                         f"under the name {filename}"
     )
 
@@ -322,7 +322,7 @@ def download_sample(a1000):
         return_error(str(e))
 
     command_results = CommandResults(
-        readable_output=f"## ReversingLabs A1000 download sample \n Requested sample is available for download under "
+        readable_output=f"## ReversingLabs A1000 download sample \nRequested sample is available for download under "
                         f"the name {hash_value}"
     )
 
@@ -403,7 +403,7 @@ def advanced_search(a1000):
     command_result = CommandResults(
         outputs_prefix='ReversingLabs',
         outputs={'a1000_advanced_search_report': result_list},
-        readable_output="## Reversinglabs A1000 advanced Search \n Full report is returned in a downloadable file"
+        readable_output="## Reversinglabs A1000 advanced Search \nFull report is returned in a downloadable file"
     )
 
     file_result = fileResult('Advanced search report file', json.dumps(result_list, indent=4),
@@ -412,34 +412,58 @@ def advanced_search(a1000):
     return [command_result, file_result]
 
 
-if __name__ in ('__main__', '__builtin__', 'builtins'):
+def main():
+
+    try:
+        wait_time_seconds = int(WAIT_TIME_SECONDS)
+    except ValueError:
+        return_error("Integration parameter <Wait between retries> has to be of type integer.")
+
+    try:
+        num_of_retries = int(NUM_OF_RETRIES)
+    except ValueError:
+        return_error("Integration parameter <Number of retries> has to be of type integer.")
+
     a1000 = A1000(
         host=HOST,
         token=TOKEN,
         verify=VERIFY_CERT,
-        user_agent=USER_AGENT
+        user_agent=USER_AGENT,
+        wait_time_seconds=wait_time_seconds,
+        retries=num_of_retries
     )
-    if demisto.command() == 'test-module':
-        test(a1000)
-    elif demisto.command() == 'reversinglabs-a1000-get-results':
-        return_results(get_results(a1000))
-    elif demisto.command() == 'reversinglabs-a1000-upload-sample-and-get-results':
-        return_results(upload_sample_and_get_results(a1000))
-    elif demisto.command() == 'reversinglabs-a1000-upload-sample':
-        return_results(upload_sample(a1000))
-    elif demisto.command() == 'reversinglabs-a1000-delete-sample':
-        return_results(delete_sample(a1000))
-    elif demisto.command() == 'reversinglabs-a1000-list-extracted-files':
-        return_results(list_extracted_files(a1000))
-    elif demisto.command() == 'reversinglabs-a1000-download-sample':
-        return_results(download_sample(a1000))
-    elif demisto.command() == 'reversinglabs-a1000-reanalyze':
-        return_results(reanalyze(a1000))
-    elif demisto.command() == 'reversinglabs-a1000-download-extracted-files':
-        return_results(download_extracted_files(a1000))
-    elif demisto.command() == 'reversinglabs-a1000-get-classification':
-        return_results(get_classification(a1000))
-    elif demisto.command() == 'reversinglabs-a1000-advanced-search':
-        return_results(advanced_search(a1000))
-    else:
-        return_error(f'Command [{demisto.command()}] not implemented')
+
+    demisto.info(f'Command being called is {demisto.command()}')
+
+    try:
+        if demisto.command() == 'test-module':
+            return_results(test(a1000))
+        elif demisto.command() == 'reversinglabs-a1000-get-results':
+            return_results(get_results(a1000))
+        elif demisto.command() == 'reversinglabs-a1000-upload-sample-and-get-results':
+            return_results(upload_sample_and_get_results(a1000))
+        elif demisto.command() == 'reversinglabs-a1000-upload-sample':
+            return_results(upload_sample(a1000))
+        elif demisto.command() == 'reversinglabs-a1000-delete-sample':
+            return_results(delete_sample(a1000))
+        elif demisto.command() == 'reversinglabs-a1000-list-extracted-files':
+            return_results(list_extracted_files(a1000))
+        elif demisto.command() == 'reversinglabs-a1000-download-sample':
+            return_results(download_sample(a1000))
+        elif demisto.command() == 'reversinglabs-a1000-reanalyze':
+            return_results(reanalyze(a1000))
+        elif demisto.command() == 'reversinglabs-a1000-download-extracted-files':
+            return_results(download_extracted_files(a1000))
+        elif demisto.command() == 'reversinglabs-a1000-get-classification':
+            return_results(get_classification(a1000))
+        elif demisto.command() == 'reversinglabs-a1000-advanced-search':
+            return_results(advanced_search(a1000))
+        else:
+            return_error(f'Command [{demisto.command()}] not implemented')
+
+    except Exception as e:
+        return_error(f'Failed to execute {demisto.command()} command. Error: {str(e)}')
+
+
+if __name__ in ('__main__', '__builtin__', 'builtins'):
+    main()
