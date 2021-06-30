@@ -43,9 +43,6 @@ configuration:
   name: num_of_retries
   required: false
   type: 0
-defaultMapperIn: 'null'
-defaultMapperOut: 'null'
-defaultclassifier: 'null'
 description: ReversingLabs A1000 advanced Malware Analysis Platform.
 display: ReversingLabs A1000 v2
 name: ReversingLabs A1000 v2
