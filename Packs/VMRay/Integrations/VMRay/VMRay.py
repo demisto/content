@@ -302,6 +302,18 @@ def test_module():
     )
 
 
+def encode_file_name(file_name):
+    """
+    encodes the file name - i.e ignoring non ASCII chars and removing backslashes
+
+    Args:
+        file_name (str): name of the file
+
+    Returns: encoded file name
+    """
+    return file_name.encode('ascii', 'ignore').replace('\\', '')
+
+
 def upload_sample(file_id, params):
     """Uploading sample to VMRay
 
@@ -315,7 +327,7 @@ def upload_sample(file_id, params):
     suffix = 'sample/submit'
     file_obj = demisto.getFilePath(file_id)
     # Ignoring non ASCII
-    file_name = file_obj['name'].encode('ascii', 'ignore')
+    file_name = encode_file_name(file_obj['name'])
     file_path = file_obj['path']
     with open(file_path, 'rb') as f:
         files = {'sample_file': (file_name, f)}

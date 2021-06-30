@@ -20,6 +20,7 @@ from collections import OrderedDict
 from datetime import datetime, timedelta
 from abc import abstractmethod
 from distutils.version import LooseVersion
+from threading import Lock
 
 import demistomock as demisto
 import warnings
@@ -6698,6 +6699,10 @@ if 'requests' in sys.modules:
                 been exhausted.
             """
             try:
+                method_whitelist = "allowed_methods" if hasattr(Retry.DEFAULT, "allowed_methods") else "method_whitelist"
+                whitelist_kawargs = {
+                    method_whitelist: frozenset(['GET', 'POST', 'PUT'])
+                }
                 retry = Retry(
                     total=retries,
                     read=retries,
@@ -6705,9 +6710,9 @@ if 'requests' in sys.modules:
                     backoff_factor=backoff_factor,
                     status=retries,
                     status_forcelist=status_list_to_retry,
-                    method_whitelist=frozenset(['GET', 'POST', 'PUT']),
                     raise_on_status=raise_on_status,
-                    raise_on_redirect=raise_on_redirect
+                    raise_on_redirect=raise_on_redirect,
+                    **whitelist_kawargs
                 )
                 adapter = HTTPAdapter(max_retries=retry)
                 self._session.mount('http://', adapter)
@@ -7734,3 +7739,25 @@ def set_feed_last_run(last_run_indicators):
         demisto.setLastRun(last_run_indicators)
     else:
         demisto.setIntegrationContext(last_run_indicators)
+
+
+def support_multithreading():
+    """Adds lock on the calls to the Cortex XSOAR server from the Demisto object to support integration which use multithreading.
+
+    :return: No data returned
+    :rtype: ``None``
+    """
+    global demisto
+    prev_do = demisto._Demisto__do  # type: ignore[attr-defined]
+    demisto.lock = Lock()  # type: ignore[attr-defined]
+
+    def locked_do(cmd):
+        try:
+            if demisto.lock.acquire(timeout=60):  # type: ignore[call-arg,attr-defined]
+                return prev_do(cmd)  # type: ignore[call-arg]
+            else:
+                raise RuntimeError('Failed acquiring lock')
+        finally:
+            demisto.lock.release()  # type: ignore[attr-defined]
+
+    demisto._Demisto__do = locked_do  # type: ignore[attr-defined]

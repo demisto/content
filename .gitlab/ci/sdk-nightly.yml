@@ -66,7 +66,7 @@ demisto_sdk_nightly:check_idset_dependent_commands:
     - echo "successfully merged public and private ID sets"
     - section_end "Merge public and private ID sets"
     - section_start "Build Content Descriptor" --collapsed
-    - python3 Utils/release_notes_generator.py $CONTENT_VERSION $CI_COMMIT_SHA $CI_BUILD_ID --output $ARTIFACTS_FOLDER/packs-release-notes.md --github-token $GITHUB_TOKEN
+    - python3 Utils/release_notes_generator.py $CONTENT_VERSION $GIT_SHA1 $CI_BUILD_ID --output $ARTIFACTS_FOLDER/packs-release-notes.md --github-token $GITHUB_TOKEN
     - cp content-descriptor.json $ARTIFACTS_FOLDER
     - section_end "Build Content Descriptor"
     - section_start "Common Server Documentation" --collapsed
@@ -141,6 +141,14 @@ demisto-sdk-nightly:run-commands-against-instance:
     - section_end "Destroy instances"
 
 
+demisto-sdk-nightly:fan-in:
+  stage: fan-in
+  extends:
+    - .sdk-nightly-schedule-rule-always
+  script:
+    - echo "fan in"
+
+
 demisto-sdk-nightly:trigger-slack-notify:
   extends:
     - .trigger-slack-notification
@@ -148,7 +156,7 @@ demisto-sdk-nightly:trigger-slack-notify:
   variables:
     PIPELINE_TO_QUERY: $CI_PIPELINE_ID
     WORKFLOW: 'Demisto SDK Nightly'
-    JOB_NAME: 'demisto-sdk-nightly:run-commands-against-instance'
+    JOB_NAME: 'demisto-sdk-nightly:fan-in'
     # Passes the environment variable from the parent pipeline to the child which can be useful for cases
     # when triggering pipeline with alternate env variable value passed in the API call
     SLACK_CHANNEL: $SLACK_CHANNEL

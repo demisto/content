@@ -159,6 +159,7 @@ def create_context_for_campaign_details(campaign_found=False, incidents_df=None,
             'isCampaignFound': campaign_found,
             'involvedIncidentsCount': len(incidents_df) if incidents_df is not None else 0,
             'firstIncidentDate': min_datetime,
+            'fieldsToDisplay': additional_context_fields,
             INCIDENTS_CONTEXT_TD: incidents_context
         }
 
