@@ -2375,7 +2375,7 @@ script:
     - contextPath: MISP.Attribute.Sighting.type
       description: Sighting type.
       type: String
-  dockerimage: devtesting/pymisp:1.0.0.1622625217
+  dockerimage: devtesting/pymisp24:1.0.0.1625053601
   feed: false
   isfetch: false
   longRunning: false
