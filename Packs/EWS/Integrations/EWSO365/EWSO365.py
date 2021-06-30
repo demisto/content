@@ -2066,9 +2066,18 @@ def parse_incident_from_item(item):
                     attached_email_bytes = attached_email.as_bytes()
                     chardet_detection = chardet.detect(attached_email_bytes)
                     encoding = chardet_detection.get('encoding', 'utf-8') or 'utf-8'
+                    try:
+                        # Trying to decode using the detected encoding
+                        data = attached_email_bytes.decode(encoding)
+                    except UnicodeDecodeError:
+                        # In case the detected encoding fails apply the default encoding
+                        demisto.info(f'Could not decode attached email using detected encoding:{encoding}, retrying '
+                                     f'using utf-8.\nAttached email:\n{attached_email}')
+                        data = attached_email_bytes.decode('utf-8')
+
                     file_result = fileResult(
                         get_attachment_name(attachment.name) + ".eml",
-                        attached_email_bytes.decode(encoding),
+                        data,
                     )
 
                 if file_result:
