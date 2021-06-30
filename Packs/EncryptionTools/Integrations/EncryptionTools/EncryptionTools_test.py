@@ -88,7 +88,7 @@ class TestCreateKeys:
 
     @staticmethod
     def test_keys_already_generated_no_override(mocker):
-        import Encryption as enc
+        import EncryptionTools as enc
         mocker.patch.object(enc, 'get_public_key', return_value='key')
 
         with pytest.raises(Exception) as e:
