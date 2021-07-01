@@ -2663,7 +2663,7 @@ RECIPIENT_HEADER_SIZE = 8
 ATTACHMENT_HEADER_SIZE = 8
 EMBEDDED_MSG_HEADER_SIZE = 24
 CONTROL_CHARS = re.compile(r'[\n\r\t]')
-MIME_ENCODED_WORD = re.compile(r'(.*)=\?(.+)\?([B|Q])\?(.+)\?=(.*)')
+MIME_ENCODED_WORD = re.compile(r'(.*)=\?(.+)\?([B|Q])\?(.+)\?=(.*)')  # guardrails-disable-line
 
 
 class Message(object):
