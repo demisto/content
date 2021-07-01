@@ -23,7 +23,7 @@ manual-stage:
       when: manual
       allow_failure: false  # Set to false to return to the previous behavior.
   script:
-    - echo "CI_PIPELINE_COMMIT=$CI_PIPELINE_COMMIT"
+    - echo "CI_COMMIT_SHA=$CI_COMMIT_SHA"
     - echo "CI_COMMIT_BRANCH=$CI_COMMIT_BRANCH"
     - echo "$(git branch | grep '*')"
     - echo "$(git rev-parse HEAD)"
