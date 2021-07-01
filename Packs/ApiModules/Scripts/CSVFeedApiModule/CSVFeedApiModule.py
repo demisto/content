@@ -6,7 +6,6 @@ from CommonServerUserPython import *
 import csv
 import gzip
 import urllib3
-from dateutil.parser import parse
 from typing import Optional, Pattern, Dict, Any, Tuple, Union, List
 
 # disable insecure warnings
