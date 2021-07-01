@@ -28,7 +28,7 @@ configuration:
   hidden: false
   name: private_key
   required: false
-  type: 4
+  type: 14
 description: This integration will run a server that will listen for PingCastle XML
   reports.
 display: PingCastle
