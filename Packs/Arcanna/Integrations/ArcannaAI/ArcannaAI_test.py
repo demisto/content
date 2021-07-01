@@ -3,7 +3,7 @@ import io
 import pytest
 import demistomock as demisto
 
-from Packs.Arcanna.Integrations.ArcannaAI.ArcannaAI import *
+from ArcannaAI import *
 
 client = Client(api_key="dummy", base_url="demisto.con", verify=False, proxy=False, default_job_id=-1)
 
