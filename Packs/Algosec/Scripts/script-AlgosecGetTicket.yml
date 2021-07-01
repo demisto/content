@@ -39,3 +39,5 @@ dependson:
   - algosec-get-ticket
 fromversion: 5.0.0
 dockerimage: demisto/python:2.7.18.20958
+tests:
+- No tests (auto formatted)
