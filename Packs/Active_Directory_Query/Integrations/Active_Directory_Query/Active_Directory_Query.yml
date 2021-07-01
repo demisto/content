@@ -296,7 +296,7 @@ script:
         is provided).
     - name: username
       description: Queries users by the samAccountName attribute.
-    - name: samAccountName
+    - name: sAMAccountName
       description: Queries users by the samAccountName attribute.
     - name: limit
       description: The maximum number of objects to return. Default is 20.
