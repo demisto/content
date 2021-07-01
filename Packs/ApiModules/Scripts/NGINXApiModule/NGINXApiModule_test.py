@@ -139,6 +139,7 @@ def test_nginx_log_process(nginx_cleanup, mocker: MockerFixture):
     # clear logs for test
     Path(module.NGINX_SERVER_ACCESS_LOG).unlink(missing_ok=True)
     Path(module.NGINX_SERVER_ERROR_LOG).unlink(missing_ok=True)
+    global NGINX_PROCESS
     NGINX_PROCESS = module.start_nginx_server(12345, {})
     sleep(0.5)  # give nginx time to start
     # create a request to get a log line
