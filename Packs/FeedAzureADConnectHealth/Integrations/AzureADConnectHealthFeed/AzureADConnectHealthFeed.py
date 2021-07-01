@@ -11,7 +11,7 @@ import re
 urllib3.disable_warnings()
 
 INTEGRATION_NAME = 'Microsoft Azure AD Connect Health Feed'
-pattern = re.compile(r"(https?:\/{2}|\*\.)([\w-]+\.)+\w{2,3}")
+pattern = re.compile(r"(https?:/{2}|\*\.)([\w-]+\.)+\w{2,3}")
 
 
 class Client(BaseClient):
