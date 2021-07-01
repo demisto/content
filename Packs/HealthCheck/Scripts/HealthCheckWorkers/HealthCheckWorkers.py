@@ -27,6 +27,7 @@ def analyzeData(res):
                            'description': DESCRIPTION[2], 'resolution': f"{RESOLUTION[0]}"})
     return addActions
 
+
 incident = demisto.incidents()[0]
 accountName = incident.get('account')
 accountName = f"acc_{accountName}/" if accountName != "" else ""
