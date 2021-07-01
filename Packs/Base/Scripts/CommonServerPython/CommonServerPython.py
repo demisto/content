@@ -5888,7 +5888,7 @@ def return_warning(message, exit=False, warning='', outputs=None, ignore_auto_ex
 
 def execute_command(command, args, extract_contents=True):
     """
-    Run demisto.executeCommand and check for errors.
+    Runs the `demisto.executeCommand()` function and checks for errors.
 
     :type command: ``str``
     :param command: The command to run. (required)
@@ -5899,7 +5899,7 @@ def execute_command(command, args, extract_contents=True):
     :type extract_contents: ``bool``
     :param extract_contents: Whether to return only the Contents part of the results. Default is True.
 
-    :return: The command results
+    :return: The command results.
     :rtype: ``list`` or ``dict`` or ``str``
     """
     if not hasattr(demisto, 'executeCommand'):
@@ -5907,15 +5907,9 @@ def execute_command(command, args, extract_contents=True):
 
     res = demisto.executeCommand(command, args)
     if is_error(res):
-        return_results(res)
-        return_error('Failed to execute {}. See additional error details in the above entries.'.format(command))
+        return_error('Failed to execute {}. Error details:\n{}'.format(command, get_error(res)))
 
     if not extract_contents:
-        return res
-
-    if isinstance(res, dict):
-        return res.get('Contents', {})
-    elif not isinstance(res, list):
         return res
 
     contents = [entry.get('Contents', {}) for entry in res]
@@ -7024,10 +7018,10 @@ def batch(iterable, batch_size=1):
 def dict_safe_get(dict_object, keys, default_return_value=None, return_type=None, raise_return_type=True):
     """Recursive safe get query (for nested dicts and lists), If keys found return value otherwise return None or default value.
     Example:
-    >>> dict = {"something" : {"test": "A"}}
-    >>> dict_safe_get(dict,['something', 'test'])
+    >>> data = {"something" : {"test": "A"}}
+    >>> dict_safe_get(data, ['something', 'test'])
     >>> 'A'
-    >>> dict_safe_get(dict,['something', 'else'],'default value')
+    >>> dict_safe_get(data, ['something', 'else'], 'default value')
     >>> 'default value'
 
     :type dict_object: ``dict``
@@ -7039,7 +7033,7 @@ def dict_safe_get(dict_object, keys, default_return_value=None, return_type=None
     :type default_return_value: ``object``
     :param default_return_value: Value to return when no key available.
 
-    :type return_type: ``object``
+    :type return_type: ``type``
     :param return_type: Excepted return type.
 
     :type raise_return_type: ``bool``
