@@ -13,57 +13,7 @@ description: "Collect Log bundle and parse data\n\nHolding the default Threshold
   : [\n\t\t\t\"Sleep\",\n\t\t\t\"EmailAskUser\"\n\t\t]\n\t},\n\t\"Incidents\": {\n\
   \t\t\"NumberOfDroppedIncidents\": 2000\n\t}\n}"
 id: Health Check - Collect Log Bundle
-inputs:
-- description: ""
-  key: Thresholds
-  playbookInputQuery:
-  required: false
-  value:
-    simple: |-
-      {
-        "LargeInvestigations": {
-          "numberofincidentswithmorethan500entries": 300,
-          "numberofincidentsbiggerthan10mb": 1,
-          "numberofincidentsbiggerthan1mb": 300
-        },
-        "LargeInputsOutputs": {
-          "numberofincidentsIObiggerthan10mb": 1,
-          "numberofincidentsIObiggerthan1mb": 10
-        },
-        "Indicators": {
-          "relatedIndicatorCount": 100
-        },
-        "CPU": {
-          "CPUHighUsage": 90,
-          "CPULowUsage": 30,
-          "CPUMediumUsage": 70
-        },
-        "Disk": {
-          "DiskUsageHigh": 90,
-          "DiskUsageMedium": 80,
-          "DiskUsageLow": 70,
-          "DiskUsageDailyIncrease": 2
-        },
-        "Docker": {
-          "DockerContainerCPUUsage": 10,
-          "DockerContainerRAMUsage": 10
-        },
-        "DB": {
-          "FSPartitionsMedium": 12,
-          "FSPartitionsLow": 6
-        },
-        "Playbooks": {
-          "CustomPlaybookLength": 30,
-          "CustomPlaybookSetIncidentCount": 4,
-          "CustomPlaybookDeprecatedScriptIds": [
-            "Sleep",
-            "EmailAskUser"
-          ]
-        },
-        "Incidents": {
-          "NumberOfDroppedIncidents": 2000
-        }
-      }
+inputs: []
 name: Health Check - Collect Log Bundle
 outputs: []
 starttaskid: "0"
@@ -80,12 +30,12 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 553a5e76-4da2-4657-8b99-85c205fcb881
+      id: 38b241c1-1d45-4b50-880b-ee4822076281
       iscommand: false
       name: ""
       version: -1
       description: ''
-    taskid: 553a5e76-4da2-4657-8b99-85c205fcb881
+    taskid: 38b241c1-1d45-4b50-880b-ee4822076281
     timertriggers: []
     type: start
     view: |-
@@ -104,7 +54,7 @@ tasks:
       "no":
       - "56"
       "yes":
-      - "74"
+      - "58"
     note: false
     quietmode: 0
     scriptarguments:
@@ -143,13 +93,13 @@ tasks:
       brand: ""
       description: "Extract files from log bundle - supports tar.gz & tar \n\nhandle\
         \ unsupported use cases and unextracted files. "
-      id: 1b372fe6-3bdf-4da9-80a2-4f0e76e46430
+      id: 05803224-f4d7-4d20-8892-f76018b78e6c
       iscommand: false
       name: UnPack the zipped log file
       script: HealthCheckUnpack
       type: condition
       version: -1
-    taskid: 1b372fe6-3bdf-4da9-80a2-4f0e76e46430
+    taskid: 05803224-f4d7-4d20-8892-f76018b78e6c
     timertriggers: []
     type: condition
     view: |-
@@ -175,13 +125,13 @@ tasks:
     task:
       brand: ""
       description: Prints an error entry with a given message
-      id: 420252be-9dfa-4870-8755-5e4a376bb0ce
+      id: 30fd6238-d7fd-48f5-86c8-7f92d24ac58a
       iscommand: false
       name: File Type is not supported
       script: PrintErrorEntry
       type: regular
       version: -1
-    taskid: 420252be-9dfa-4870-8755-5e4a376bb0ce
+    taskid: 30fd6238-d7fd-48f5-86c8-7f92d24ac58a
     timertriggers: []
     type: regular
     view: |-
@@ -207,13 +157,13 @@ tasks:
     task:
       brand: ""
       description: Prints an error entry with a given message
-      id: ec5a2324-1056-4f84-875f-560028d61ce1
+      id: e691da9a-0fee-45d7-84fa-36eb5252b107
       iscommand: false
       name: File can't be extracted
       script: PrintErrorEntry
       type: regular
       version: -1
-    taskid: ec5a2324-1056-4f84-875f-560028d61ce1
+    taskid: e691da9a-0fee-45d7-84fa-36eb5252b107
     timertriggers: []
     type: regular
     view: |-
@@ -232,20 +182,20 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 751a3357-1fc4-4a57-867c-c77da5226b87
+      id: 970a7093-1bda-4a50-8ce9-42d858519535
       iscommand: false
       name: continue
       type: title
       version: -1
       description: ''
-    taskid: 751a3357-1fc4-4a57-867c-c77da5226b87
+    taskid: 970a7093-1bda-4a50-8ce9-42d858519535
     timertriggers: []
     type: title
     view: |-
       {
         "position": {
           "x": 480,
-          "y": 720
+          "y": 790
         }
       }
   "72":
@@ -266,13 +216,13 @@ tasks:
     task:
       brand: ""
       description: Download files from Demisto server
-      id: f1f2ab80-b03f-4d90-83b4-6410a05eac37
+      id: d7ac5cf1-4045-472e-8522-5890ef4fa590
       iscommand: true
       name: Download log bundle
       script: '|||demisto-api-download'
       type: regular
       version: -1
-    taskid: f1f2ab80-b03f-4d90-83b4-6410a05eac37
+    taskid: d7ac5cf1-4045-472e-8522-5890ef4fa590
     timertriggers: []
     type: regular
     view: |-
@@ -282,50 +232,14 @@ tasks:
           "y": 195
         }
       }
-  "74":
-    id: "74"
-    ignoreworker: false
-    nexttasks:
-      '#none#':
-      - "58"
-    note: false
-    quietmode: 0
-    scriptarguments:
-      append: {}
-      key:
-        simple: Health Check Thresholds
-      stringify: {}
-      value:
-        simple: ${inputs.Thresholds}
-    separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      description: Set a value in context under the key you entered.
-      id: 13addb5e-5e4c-4eea-8fe5-c0c41e19e216
-      iscommand: false
-      name: Save Thresholds to Context
-      script: Set
-      type: regular
-      version: -1
-    taskid: 13addb5e-5e4c-4eea-8fe5-c0c41e19e216
-    timertriggers: []
-    type: regular
-    view: |-
-      {
-        "position": {
-          "x": 910,
-          "y": 545
-        }
-      }
 version: -1
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 735,
-        "width": 1240,
+        "height": 805,
+        "width": 810,
         "x": 50,
         "y": 50
       }

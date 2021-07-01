@@ -1,8 +1,21 @@
 description: Parse files
 id: Health Check - Log Analysis Read All files
-inputs: []
+inputs:
+- description: Log bundle files
+  key: LogFiles
+  playbookInputQuery:
+  required: false
+  value: {}
+- description: ""
+  key: Health Check Thresholds
+  playbookInputQuery:
+  required: false
+  value:
+    simple: ${Health Check Thresholds}
 name: Health Check - Log Analysis Read All files
-outputs: []
+outputs:
+- contextPath: actionableitems
+  description: Data read from war room file
 starttaskid: "0"
 tasks:
   "0":
@@ -17,12 +30,12 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 141a56c2-4c49-465b-8c3b-e16317a705b3
+      id: 37e67537-f842-457a-882a-a008b4463e1d
       iscommand: false
       name: ""
       version: -1
       description: ''
-    taskid: 141a56c2-4c49-465b-8c3b-e16317a705b3
+    taskid: 37e67537-f842-457a-882a-a008b4463e1d
     timertriggers: []
     type: start
     view: |-
@@ -48,25 +61,25 @@ tasks:
           - - left:
                 iscontext: true
                 value:
-                  simple: File.Name
+                  simple: inputs.LogFiles.Name
               operator: endWith
               right:
                 value:
                   simple: license_data.log
-          root: File
+          root: inputs.LogFiles
       maxFileSize: {}
     separatecontext: false
     skipunavailable: false
     task:
       brand: ""
       description: Read license_data.log and set customer name, license end date
-      id: 0b6b00f1-0803-45a3-89f1-41d702196f02
+      id: da6da15e-6d17-4b40-8b95-135f747e7ed4
       iscommand: false
       name: Read license_data.log and set customer name, license end date
       script: HealthCheckLicenseData
       type: regular
       version: -1
-    taskid: 0b6b00f1-0803-45a3-89f1-41d702196f02
+    taskid: da6da15e-6d17-4b40-8b95-135f747e7ed4
     timertriggers: []
     type: regular
     view: |-
@@ -94,7 +107,7 @@ tasks:
           - - left:
                 iscontext: true
                 value:
-                  simple: File.Name
+                  simple: inputs.LogFiles.Name
               operator: startWith
               right:
                 value:
@@ -102,12 +115,12 @@ tasks:
           - - left:
                 iscontext: true
                 value:
-                  simple: File.Name
+                  simple: inputs.LogFiles.Name
               operator: endWith
               right:
                 value:
                   simple: .log
-          root: File
+          root: inputs.LogFiles
       maxFileSize: {}
       since:
         simple: ${incident.lasince}
@@ -117,7 +130,7 @@ tasks:
       brand: ""
       description: Read server log file line by line and display warnings, fatal errors
         and keyword results in a table to the war room
-      id: 06b9f346-42b6-46a7-8c51-9958dd1b1526
+      id: b6acf23a-0253-41f9-8577-5faf5b449ef4
       iscommand: false
       name: Read server.log file and display
       script: HealthCheckServerLog
@@ -125,7 +138,7 @@ tasks:
       - ServerResults
       type: regular
       version: -1
-    taskid: 06b9f346-42b6-46a7-8c51-9958dd1b1526
+    taskid: b6acf23a-0253-41f9-8577-5faf5b449ef4
     timertriggers: []
     type: regular
     view: |-
@@ -148,13 +161,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 662c7b7c-b151-4b68-8b08-b0287adba5ab
+      id: 2ada1e12-1d0a-46b8-872e-65d3e1e8ed2f
       iscommand: false
       name: Read all files
       type: title
       version: -1
       description: ''
-    taskid: 662c7b7c-b151-4b68-8b08-b0287adba5ab
+    taskid: 2ada1e12-1d0a-46b8-872e-65d3e1e8ed2f
     timertriggers: []
     type: title
     view: |-
@@ -174,7 +187,7 @@ tasks:
     quietmode: 0
     scriptarguments:
       Thresholds:
-        simple: ${Health Check Thresholds.Docker}
+        simple: ${inputs.Health Check Thresholds.Docker}
       entryID:
         complex:
           accessor: EntryID
@@ -182,24 +195,24 @@ tasks:
           - - left:
                 iscontext: true
                 value:
-                  simple: File.Name
+                  simple: inputs.LogFiles.Name
               operator: endWith
               right:
                 value:
                   simple: docker.log
-          root: File
+          root: inputs.LogFiles
     separatecontext: false
     skipunavailable: false
     task:
       brand: ""
       description: Read docker log file
-      id: 9f23bcec-7a2b-4a14-8045-8260c6be2240
+      id: 32874663-f910-4d06-85b7-2056d43ed46a
       iscommand: false
       name: Read the Docker.log file
       script: HealthCheckDockerLog
       type: regular
       version: -1
-    taskid: 9f23bcec-7a2b-4a14-8045-8260c6be2240
+    taskid: 32874663-f910-4d06-85b7-2056d43ed46a
     timertriggers: []
     type: regular
     view: |-
@@ -215,7 +228,7 @@ tasks:
       - - left:
             iscontext: true
             value:
-              simple: File.Name
+              simple: inputs.LogFiles.Name
           operator: isEqualString
           right:
             value:
@@ -235,12 +248,12 @@ tasks:
     task:
       brand: ""
       description: Check if docker log exist
-      id: 92ab5cd8-f013-4a32-858f-133e0ab364f6
+      id: 96a5c5be-20e2-42d0-83b5-60cf757fe5e4
       iscommand: false
       name: 'Do we have a docker log in the bundle ? '
       type: condition
       version: -1
-    taskid: 92ab5cd8-f013-4a32-858f-133e0ab364f6
+    taskid: 96a5c5be-20e2-42d0-83b5-60cf757fe5e4
     timertriggers: []
     type: condition
     view: |-
@@ -266,25 +279,25 @@ tasks:
           - - left:
                 iscontext: true
                 value:
-                  simple: File.Name
+                  simple: inputs.LogFiles.Name
               operator: endWith
               right:
                 value:
                   simple: filesystem.log
-          root: File
+          root: inputs.LogFiles
       minFileSize: {}
     separatecontext: false
     skipunavailable: false
     task:
       brand: ""
       description: read and parse filesystem.log
-      id: b613cd32-4a90-4df3-8807-7c464c9c28a1
+      id: 6303f143-ca3d-4693-84a3-c54efeca5cb7
       iscommand: false
       name: Read the filesystem.log file
       script: HealthCheckFileSystem
       type: regular
       version: -1
-    taskid: b613cd32-4a90-4df3-8807-7c464c9c28a1
+    taskid: 6303f143-ca3d-4693-84a3-c54efeca5cb7
     timertriggers: []
     type: regular
     view: |-
@@ -303,13 +316,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: a8f38987-e074-4f70-89a7-9c1d1a5b156c
+      id: 8aa03635-88b1-4f8e-8c98-971ddd2c086d
       iscommand: false
       name: Done
       type: title
       version: -1
       description: ''
-    taskid: a8f38987-e074-4f70-89a7-9c1d1a5b156c
+    taskid: 8aa03635-88b1-4f8e-8c98-971ddd2c086d
     timertriggers: []
     type: title
     view: |-
@@ -335,25 +348,25 @@ tasks:
           - - left:
                 iscontext: true
                 value:
-                  simple: File.Name
+                  simple: inputs.LogFiles.Name
               operator: endWith
               right:
                 value:
                   simple: conf.log
-          root: File
+          root: inputs.LogFiles
       maxFileSize: {}
     separatecontext: false
     skipunavailable: false
     task:
       brand: ""
       description: Read the conf.log file extracted from the log bundle
-      id: 0c30fee6-ff4c-40b2-85e2-034c404db34d
+      id: b3158529-25ab-450f-8034-fe693eda375e
       iscommand: false
       name: 'Read the conf.log (demisto.conf) file '
       script: HealthCheckReadConf
       type: regular
       version: -1
-    taskid: 0c30fee6-ff4c-40b2-85e2-034c404db34d
+    taskid: b3158529-25ab-450f-8034-fe693eda375e
     timertriggers: []
     type: regular
     view: |-
@@ -380,24 +393,24 @@ tasks:
           - - left:
                 iscontext: true
                 value:
-                  simple: File.Name
+                  simple: inputs.LogFiles.Name
               operator: endWith
               right:
                 value:
                   simple: telemetry.log
-          root: File
+          root: inputs.LogFiles
     separatecontext: false
     skipunavailable: false
     task:
       brand: ""
       description: Read Telemetry file
-      id: a7ff0891-5450-4c36-8b5a-b7f633748615
+      id: 6aeef96b-c446-4a5e-88dd-4ab9c8944b42
       iscommand: false
       name: Read Telemetry file (check for API)
       script: HealthCheckReadTemeletryLog
       type: regular
       version: -1
-    taskid: a7ff0891-5450-4c36-8b5a-b7f633748615
+    taskid: 6aeef96b-c446-4a5e-88dd-4ab9c8944b42
     timertriggers: []
     type: regular
     view: |-
@@ -423,25 +436,25 @@ tasks:
           - - left:
                 iscontext: true
                 value:
-                  simple: File.Name
+                  simple: inputs.LogFiles.Name
               operator: endWith
               right:
                 value:
                   simple: version_control.log
-          root: File
+          root: inputs.LogFiles
       maxFileSize: {}
     separatecontext: false
     skipunavailable: false
     task:
       brand: ""
       description: Read the version_control.log file extracted from the log bundle
-      id: 9b95fbda-3d05-4da5-8f66-67166ee9be56
+      id: aebb7c60-abb3-4ceb-8b5d-c091e0dca5e3
       iscommand: false
       name: Read the version_control.log file to collect dev prod details
       script: HealthCheckReadVC
       type: regular
       version: -1
-    taskid: 9b95fbda-3d05-4da5-8f66-67166ee9be56
+    taskid: aebb7c60-abb3-4ceb-8b5d-c091e0dca5e3
     timertriggers: []
     type: regular
     view: |-
@@ -464,13 +477,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: b12e5da6-7cd4-4c1c-8665-cfb787adaccd
+      id: 88389527-5636-43ac-8ebe-a936590750d2
       iscommand: false
       name: Continue
       type: title
       version: -1
       description: ''
-    taskid: b12e5da6-7cd4-4c1c-8665-cfb787adaccd
+    taskid: 88389527-5636-43ac-8ebe-a936590750d2
     timertriggers: []
     type: title
     view: |-
@@ -492,13 +505,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 1a2bc69b-7246-4c28-8a22-5f8aa591cca8
+      id: c0c4a8b8-ee8e-40c5-884b-727cba918567
       iscommand: false
       name: Server Logs Logic
       type: title
       version: -1
       description: ''
-    taskid: 1a2bc69b-7246-4c28-8a22-5f8aa591cca8
+    taskid: c0c4a8b8-ee8e-40c5-884b-727cba918567
     timertriggers: []
     type: title
     view: |-

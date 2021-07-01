@@ -10,9 +10,7 @@ accountName = f"acc_{accountName}/" if accountName != "" else ""
 
 args = demisto.args()
 Thresholds = {
-    "numberofincidentswithmorethan500entries": 300,
-    "numberofincidentsbiggerthan10mb": 1,
-    "numberofincidentsbiggerthan1mb": 300,
+    "NumberOfDroppedIncidents": 2000
 }
 thresholds = args.get('Thresholds', Thresholds)
 isWidget = args.get('isWidget', True)

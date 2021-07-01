@@ -20,7 +20,7 @@ for instance in enabledInstances:
     if instance['name'] in ['testmodule', 'd2']:
         continue
     else:
-        enabledInstancesNames.append({'instances': instance['name']})
+        enabledInstancesNames.append({'instancename': instance['name']})
 
 demisto.executeCommand('setIncident', {'enabledinstances': enabledInstancesNames})
 demisto.executeCommand('setIncident', {'numberofengines': res['engines']['total']})
