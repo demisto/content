@@ -574,7 +574,7 @@
         },
         {
             "integrations": "SlackV3",
-            "playbookID": " SlackV3 TestPB",
+            "playbookID": "SlackV3 TestPB",
             "timeout": 400,
             "pid_threshold": 5,
             "fromversion": "5.0.0"

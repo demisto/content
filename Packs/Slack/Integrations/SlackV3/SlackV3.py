@@ -989,8 +989,6 @@ async def listen(client: SocketModeClient, req: SocketModeRequest):
     try:
         data: dict = req.payload
         event: dict = data.get('event', {})
-        demisto.info(f"Event is {event}")
-        demisto.info(f"Data is {data}")
         subtype = data.get('subtype', '')
         text = event.get('text', '')
         user_id = event.get('user', '')
@@ -1004,7 +1002,6 @@ async def listen(client: SocketModeClient, req: SocketModeRequest):
             return
 
         actions = data.get('actions', [])
-        demisto.info(f"Actions are: {actions}")
         if subtype == 'bot_message' or message_bot_id or message.get('subtype') == 'bot_message' \
                 or \
                 event.get('bot_id', None):
@@ -1013,7 +1010,6 @@ async def listen(client: SocketModeClient, req: SocketModeRequest):
                 return
 
         if len(actions) > 0:
-            demisto.info(f"Length of actions is {len(actions)}")
             channel = data.get('channel', {}).get('id', '')
             user_id = data.get('user', {}).get('id', '')
             entitlement_json = actions[0].get('value')
