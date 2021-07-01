@@ -41,25 +41,21 @@ def option_handler():
     parser.add_argument('-pvt', '--private', type=str2bool, help='Indicates if the tools is running '
                                                                  'on a private build.',
                         required=False, default=False)
-    parser.add_argument('-rt', '--remove_test_playbooks', type=str2bool,
-                        help='Whether to remove test playbooks from content packs or not.', default=True)
 
     return parser.parse_args()
 
 
-def zip_packs(packs, destination_path):
+def zip_packs(zipped_packs, destination_path):
     """
     Zips packs to a provided path.
     Args:
-        packs: The packs to zip
+        zipped_packs: A dictionary containing pack name as key and it's latest zip path as value
         destination_path: The destination path to zip the packs in.
     """
-
     with ZipFile(os.path.join(destination_path, ARTIFACT_NAME), mode='w') as zf:
-        for zip_pack in packs:
-            for name, path in zip_pack.items():
-                logging.info(f'Adding {name} to the zip file')
-                zf.write(path, f'{name}.zip')
+        for key, value in zipped_packs.items():
+            logging.info(f'Adding {key} to the zip file')
+            zf.write(value, f'{key}.zip')
 
 
 def remove_test_playbooks_if_exist(zips_path, packs):
@@ -109,7 +105,7 @@ def remove_test_playbooks_from_signatures(path, filenames):
         logging.warning(f'Could not find signatures in the pack {os.path.basename(os.path.dirname(path))}')
 
 
-def get_pack_files(entry_path):
+def get_pack_files(entry_path): # TODO: replace with existing function
     """
     Creates a list with all paths of files inside a directory and it's subdirectories.
     Args:
@@ -131,10 +127,10 @@ def get_zipped_packs_names(zip_path):
     Args:
         zip_path: path containing all the packs copied from the storage bucket
     Returns:
-        A list of dictionaries containing each pack name and it's zip path.
-        [{'Slack': 'content/packs/slack.zip'}, {'qualys': 'content/packs/qualys.zip'}]
+        A dictionary containing each pack name and it's zip path.
+        {'Slack': 'content/packs/slack/1.3.19/slack.zip', 'qualys': 'content/packs/qualys/2.0/qualys.zip'}
     """
-    zipped_packs = []
+    zipped_packs = {}
     zip_path = os.path.join(zip_path, 'packs')  # directory of the packs
 
     dir_entries = os.listdir(zip_path)
@@ -150,14 +146,14 @@ def get_zipped_packs_names(zip_path):
                 logging.warning(f'Failed to get the zip of the pack {entry} from GCP')
                 continue
             logging.info(f"Found latest zip of {entry}, which is {latest_zip}")
-            zipped_packs.append({Path(latest_zip).stem: latest_zip})
+            zipped_packs[Path(latest_zip).stem] = latest_zip
 
     if not zipped_packs:
         raise Exception('No zip files were found')
     return zipped_packs
 
 
-def download_packs_from_gcp(storage_bucket_name, dest_path):
+def download_packs_from_gcp(storage_bucket_name, dest_path):  # TODO: move to build process itself
     """
     Copies all content in the gcp path to destination_path
     Args:
@@ -175,14 +171,13 @@ def copy_zipped_packs_to_artifacts(zipped_packs, artifacts_path):
     """
     Copies zip files if needed
     Args:
-        zipped_packs: A list of dictionaries containing pack name as key and it's latest zip path as value
+        zipped_packs: A dictionary containing pack name as key and it's latest zip path as value
         artifacts_path: Path of the artifacts folder
     """
     if os.path.exists(artifacts_path):
-        for zip_pack in zipped_packs:
-            for name, path in zip_pack.items():
-                logging.info(f"Copying pack from {path} to {artifacts_path}/packs/{name}.zip")
-                shutil.copy(path, f'{artifacts_path}/packs/{name}.zip')
+        for key, value in zipped_packs.items():
+            logging.info(f"Copying pack from {value} to {artifacts_path}/packs/{key}.zip")
+            shutil.copy(value, f'{artifacts_path}/packs/{key}.zip')
 
 
 def cleanup(destination_path):
@@ -228,11 +223,11 @@ def main():
     zip_path = option.zip_path
     artifacts_path = option.artifacts_path
     storage_base_path = option.storage_base_path
-    remove_test_playbooks = option.remove_test_playbooks
+
     private_build = option.private
 
     if storage_base_path:
-        GCPConfig.STORAGE_BASE_PATH = storage_base_path
+        GCPConfig.STORAGE_BASE_PATH = storage_base_path # TODO: change to env var
 
     if private_build:
         packs_dir = '/home/runner/work/content-private/content-private/content/artifacts/packs'
@@ -244,7 +239,7 @@ def main():
             logging.debug("Temp dir not found. Creating.")
             os.mkdir(zip_path)
 
-    zipped_packs = []
+    zipped_packs = {}
     success = True
     try:
         download_packs_from_gcp(storage_bucket_name, zip_path)
@@ -263,13 +258,6 @@ def main():
             copy_zipped_packs_to_artifacts(zipped_packs, artifacts_path)
         except Exception as e:
             logging.exception(f'Failed to copy to artifacts, {e}')
-            success = False
-
-    if zipped_packs and remove_test_playbooks:
-        try:
-            remove_test_playbooks_if_exist(zip_path, zipped_packs)
-        except Exception:
-            logging.exception('Failed removing test playbooks from packs')
             success = False
 
     if zipped_packs and success:
