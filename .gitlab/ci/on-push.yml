@@ -8,9 +8,9 @@ pre:
     - .default-job-settings
   stage: .pre
   script:
-    - echo "CI_PIPELINE_COMMIT=$CI_PIPELINE_COMMIT"
-    - echo "CI_PIPELINE_BRANCH=$CI_PIPELINE_BRANCH"
-    - echo "$(git branch --show-current)"
+    - echo "CI_COMMIT_SHA=$CI_COMMIT_SHA"
+    - echo "CI_COMMIT_BRANCH=$CI_COMMIT_BRANCH"
+    - echo "$(git branch | grep '*')"
     - echo "$(git rev-parse HEAD)"
 
 manual-stage:
@@ -23,8 +23,8 @@ manual-stage:
       allow_failure: false  # Set to false to return to the previous behavior.
   script:
     - echo "CI_PIPELINE_COMMIT=$CI_PIPELINE_COMMIT"
-    - echo "CI_PIPELINE_BRANCH=$CI_PIPELINE_BRANCH"
-    - echo "$(git branch --show-current)"
+    - echo "CI_COMMIT_BRANCH=$CI_COMMIT_BRANCH"
+    - echo "$(git branch | grep '*')"
     - echo "$(git rev-parse HEAD)"
 
 
