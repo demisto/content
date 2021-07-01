@@ -533,6 +533,75 @@ script:
     description: Returns the integration context as a file. Use this command for debug purposes only.
     execution: false
     hidden: true
+  - arguments:
+    - default: false
+      description: The name of a channel or a regex pattern
+      isArray: false
+      name: name
+      required: false
+      secret: false
+    - default: false
+      description: The member ID who created the channel
+      isArray: false
+      name: creator
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: True, False, or None to ignore
+      isArray: false
+      name: is_archived
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: True, False, or None to ignore
+      isArray: false
+      name: is_general
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: True, False, or None to ignore
+      isArray: false
+      name: is_private
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    deprecated: false
+    description: Returns a list of channels matching criteria
+    execution: false
+    name: slack-filter-channels
+    outputs:
+    - contextPath: Slack.Channel.ID
+      description: The channel ID
+      type: String
+    - contextPath: Slack.Channel.Name
+      description: The channel name
+      type: String
+    - contextPath: Slack.Channel.Created
+      description: The channel creation timestamp
+      type: Number
+    - contextPath: Slack.Channel.Creator
+      description: The channel creator's member ID
+      type: String
+    - contextPath: Slack.Channel.IsArchived
+      description: Has the channel been archived?
+      type: Boolean
+    - contextPath: Slack.Channel.IsGeneral
+      description: Is the channel the general channel?
+      type: Boolean
+    - contextPath: Slack.Channel.IsPrivate
+      description: Is the channel a private channel?
+      type: Boolean
   dockerimage: demisto/slack:1.0.0.19258
   feed: false
   isfetch: false
