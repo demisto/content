@@ -12,6 +12,7 @@ pre:
     - echo "CI_COMMIT_BRANCH=$CI_COMMIT_BRANCH"
     - echo "$(git branch | grep '*')"
     - echo "$(git rev-parse HEAD)"
+    - echo "stam for a commit"
 
 manual-stage:
   extends: 
