@@ -295,7 +295,7 @@ script:
       required: false
       secret: false
     - auto: PREDEFINED
-      deafaultValue: 'false'
+      defaultValue: 'false'
       description: Pre policy validation.
       isArray: false
       name: validate-only
@@ -305,7 +305,7 @@ script:
       required: false
       secret: false
     - auto: PREDEFINED
-      deafaultValue: 'true'
+      defaultValue: 'true'
       description: Whether to include template changes.
       isArray: false
       name: include-template
