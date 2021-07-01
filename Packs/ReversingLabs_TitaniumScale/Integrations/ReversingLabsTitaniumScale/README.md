@@ -31,8 +31,8 @@ You need to obtain the following:
     | API Token | True |  
     | Verify host certificates | True (default: False) |
     | Reliability  |  True (default: C - Fairly reliable)
-    |Wait between retries (seconds)| True (default: 2)|
-    |Number of retries| True (default: 30)|
+    |Wait time between report fetching retries (seconds)| True (default: 2)|
+    |Number of report fetching retries| True (default: 30)|
 4. Click **Test** to validate connection.
 
 ## Commands
