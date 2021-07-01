@@ -202,7 +202,8 @@ def test_module(params: dict):
         private_key_file.close()
 
         s = socket.socket()
-        ssl.wrap_socket(s, keyfile=private_key_path, certfile=certificate_path, server_side=True)
+        ssl.wrap_socket(s, keyfile=private_key_path, certfile=certificate_path, server_side=True,
+                        ssl_version=ssl.PROTOCOL_TLSv1_2)
         return 'ok'
 
     except ssl.SSLError as e:
