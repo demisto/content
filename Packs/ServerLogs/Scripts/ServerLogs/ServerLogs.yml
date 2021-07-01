@@ -10,6 +10,9 @@ runonce: false
 script: ''
 scripttarget: 0
 subtype: python3
+dependson:
+  must:
+  - remoteaccess|||ssh
 tags:
 - widget
 type: python
