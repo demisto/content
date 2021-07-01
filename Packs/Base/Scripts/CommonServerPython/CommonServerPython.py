@@ -226,6 +226,7 @@ class DBotScoreType(object):
     DBotScoreType.ACCOUNT
     DBotScoreType.CRYPTOCURRENCY
     DBotScoreType.EMAIL
+    DBotScoreType.CUSTOM
     :return: None
     :rtype: ``None``
     """
@@ -240,6 +241,7 @@ class DBotScoreType(object):
     CERTIFICATE = 'certificate'
     CRYPTOCURRENCY = 'cryptocurrency'
     EMAIL = 'email'
+    CUSTOM = 'custom'
 
     def __init__(self):
         # required to create __init__ for create_server_docs.py purpose
@@ -261,7 +263,12 @@ class DBotScoreType(object):
             DBotScoreType.CERTIFICATE,
             DBotScoreType.CRYPTOCURRENCY,
             DBotScoreType.EMAIL,
+            DBotScoreType.CUSTOM,
         )
+
+    @classmethod
+    def set_custom_name(cls, name):
+        DBotScoreType.CUSTOM = name
 
 
 class DBotScoreReliability(object):
@@ -317,7 +324,7 @@ class DBotScoreReliability(object):
             return DBotScoreReliability.F
         raise Exception("Please use supported reliability only.")
 
-
+# TODO: should add custom somehow here
 INDICATOR_TYPE_TO_CONTEXT_KEY = {
     'ip': 'Address',
     'email': 'Address',
@@ -2397,8 +2404,11 @@ class Common(object):
 
     class CustomIndicator(Indicator):
 
-        def __init__(self, value, dbot_score, params, prefix_str):
+        def __init__(self, indicator_name, value, dbot_score, params, prefix_str):
             """
+            :type indicator_name: ``Str``
+            :param indicator_name: name of the indicator
+
             :type value: ``Any``
             :param value: Value of the indicator
 
@@ -2425,6 +2435,8 @@ class Common(object):
                 raise ValueError('dbot_score must be of type DBotScore')
 
             self.dbot_score = dbot_score
+
+            DBotScoreType.set_custom_name(indicator_name)
 
             for key in params:
                 setattr(self, key, params[key])
