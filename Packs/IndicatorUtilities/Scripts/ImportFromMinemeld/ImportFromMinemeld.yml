@@ -1,0 +1,43 @@
+args:
+- default: false
+  description: Minemeld Username
+  isArray: false
+  name: username
+  required: true
+  secret: false
+- default: false
+  description: Minemeld Password
+  isArray: false
+  name: password
+  required: true
+  secret: true
+- default: false
+  description: Minemeld url (ex. https://minemeld.corp.com)
+  isArray: false
+  name: url
+  required: false
+  secret: false
+comment: |-
+  Import all manually created indicators from minemeld.
+
+  This migration script dynamically looks for all manual nodes using the minemeld API, then converts all the indicators within those nodes to XSOAR indicators.
+
+  This script supports the following node types from Minemeld
+   * listIPv4Generic
+   * listIPv6Generic
+   * listDomainGeneric
+   * listURLGeneric
+commonfields:
+  id: ImportFromMinemeld
+  version: -1
+enabled: false
+name: ImportFromMinemeld
+script: '-'
+subtype: python3
+system: false
+timeout: '0'
+type: python
+dockerimage: demisto/python3:3.9.5.21272
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)

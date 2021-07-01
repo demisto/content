@@ -1,32 +1,39 @@
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
-import ipaddress
-
-"""
-This short script searches for CIDR indicators, then checks if any of the provided IP indicators are within them.
-
-If they are, they get tagged with the value of add_tag, which can then be searched on (-tags:added_tag)
-
-This automation is dynamic, so if the list of CIDR blocks changes the IP indicators are re-evaluated.
-
-This should be run attached as a feed triggered or scheduled job.
-"""
+import re
+from urllib.parse import urlparse
 
 
-def cidr_match(indicator, cidr_indicator_list):
+def glob_match(indicator, glob_indicator_list):
     """
-    Given a list of CIDR indicators and a single IP indicator, compare if the indicator is
-    in the list of CIDR blocks
-
-    Returns true if it DOES match
+    Given a list of domain indicators and a list of DomainGlob indicators, check indicators match DomainGlob
+    and if they do, return True.
     """
-    ip_addr = ipaddress.ip_address(indicator)
-    for cidr_indicator_data in cidr_indicator_list:
-        value = cidr_indicator_data.get("value")
-        net = ipaddress.ip_network(value)
-        if ip_addr in net:
-            return value
+    if re.match("https?://", indicator):
+        # If it's a URL, grab the hostname to check against glob
+        parsed_url = urlparse(indicator)
+        indicator = parsed_url.hostname
+
+    for glob_indicator in glob_indicator_list:
+        glob_indicator = glob_indicator.get("value")
+        if "*" in glob_indicator:
+            # Check if the domain exactly matches the domain glob with the leading . stripped
+            domain_only_glob = glob_indicator.replace("*.", "")
+            domain_only_glob = re.escape(domain_only_glob)
+            if re.match(domain_only_glob, indicator):
+                return domain_only_glob
+
+            # First replace wildcard with regex .*
+            glob_indicator_re = re.sub(r"(\*)", ".*", glob_indicator)
+            # then escape the entire string - this also escapes .*
+            glob_indicator_re = re.escape(glob_indicator_re)
+            # Finally, unescape the wildcard
+            glob_indicator_re = glob_indicator_re.replace(r"\.\*", ".*")
+            # Add the final component - useful if URL
+            glob_indicator_re = glob_indicator_re + r"(\/.*)?$"
+            if re.match(glob_indicator_re, indicator):
+                return glob_indicator
 
     return False
 
@@ -52,7 +59,7 @@ def find_tag(indicator, tag_name):
 
 def main():
     query = demisto.args().get("indicator_query")
-    whitelist_query = demisto.args().get("cidr_whitelist_query")
+    whitelist_query = demisto.args().get("glob_whitelist_query")
     add_tag = demisto.args().get("add_tag")
     size = int(demisto.args().get("size", 30000))
 
@@ -67,7 +74,7 @@ def main():
 
     for indicator_data in indicators:
         value = indicator_data.get("value")
-        match = cidr_match(value, whitelist_indicators)
+        match = glob_match(value, whitelist_indicators)
         # If IP exists in the whitelist query
         if match:
             new_tags = add_tag
@@ -90,8 +97,8 @@ def main():
                 demisto.executeCommand("removeIndicatorField",
                                        {'field': "tags", 'fieldValue': add_tag, "indicatorsValues": value})
 
-    tagged_table = tableToMarkdown(f"{len(tagged)} CIDR Whitelisted Indicators - Tagged", tagged)
-    untagged_table = tableToMarkdown(f"{len(untagged)} Indicators no longer in CIDR whitelist - untagged", untagged)
+    tagged_table = tableToMarkdown(f"{len(tagged)} Domain Whitelisted Indicators - Tagged", tagged)
+    untagged_table = tableToMarkdown(f"{len(untagged)} Indicators no longer in DomainGlob whitelist - untagged", untagged)
     md = ""
     md = md + tagged_table
     md = md + untagged_table
@@ -102,7 +109,7 @@ def main():
     return_results(
         CommandResults(
             readable_output=md,
-            outputs_prefix="CIDRIndicatorMatch",
+            outputs_prefix="DomainGlobIndicatorMatch",
             outputs=output
         )
     )

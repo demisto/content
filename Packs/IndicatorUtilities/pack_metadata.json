@@ -1,0 +1,18 @@
+{
+    "name": "IndicatorUtils",
+    "description": "IndicatorUtils provides a set of Scripts that add additional functionality to XSOAR TIM.",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "Adam Baumeister",
+    "url": "",
+    "email": "abaumeister@paloaltonetworks.com",
+    "created": "2021-07-01T08:37:18Z",
+    "categories": [
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "githubUser": [
+        "abaumeister"
+    ]
+}

@@ -1,12 +1,13 @@
 args:
 - default: false
-  description: CIDR Indicator query that returns a list of CIDR blocks to use as whitelist.
+  description: An indicator query that returns DomainGlob objects to check indicators
+    against.
   isArray: false
-  name: cidr_whitelist_query
+  name: glob_whitelist_query
   required: true
   secret: false
 - default: false
-  description: Tag to add to indicators that fall within the whitelist CIDR blocks
+  description: Tag to add to indicators that match domainGlob patterns
   isArray: false
   name: add_tag
   required: true
@@ -19,17 +20,17 @@ args:
   secret: false
 - default: true
   defaultValue: '30000'
-  description: Maximum indicators to search
+  description: Maximum number of indicators to return.
   isArray: false
   name: size
   required: false
   secret: false
 comment: Add the provided tag to indicators that match the given indicator query.
 commonfields:
-  id: WhiteListCIDR
+  id: WhiteListDomainGlob
   version: -1
 enabled: true
-name: WhiteListCIDR
+name: WhiteListDomainGlob
 script: '-'
 subtype: python3
 system: false
