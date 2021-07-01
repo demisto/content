@@ -611,7 +611,7 @@ def remove_fields_not_in_incident(*args, incorrect_fields: List[str]) -> List[st
 
 def get_results(model_processed: Type[PostProcessing]):
     number_of_sample = model_processed.stats["General"]["Nb sample"]
-    number_clusters_selected = len(model_processed.selected_clusters) - 1
+    number_clusters_selected = len(model_processed.selected_clusters)
     number_of_outliers = number_of_sample - model_processed.stats['number_of_clusterized_sample_after_selection']
     return number_of_sample, number_clusters_selected, number_of_outliers
 
