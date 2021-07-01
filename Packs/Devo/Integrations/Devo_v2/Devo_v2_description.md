@@ -42,7 +42,7 @@ If writing back to Devo make sure to also create a set of TLS credentials.
   }
   ```
 6. Devo base domain
-  - This is the base web UI URL that you use to interact with Devo. If you login to `us.devo.com` -> `https://us.devo.com/welcome`
+  - This is the base web UI URL that you use to interact with Devo. If you login to `us.devo.com` -> `https://us.devo.com`
 7. Fetches incidents
   - Check this box if you would like for the plugin to pull in Devo alerts as incidents. Please refer to `Fetch incident alert filter` and
     `Deduplication parameters JSON` for advanced configuration

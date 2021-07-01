@@ -148,9 +148,9 @@ def build_link(query, start_ts_milli, end_ts_milli, mode='queryApp', linq_base=N
     }).encode('ascii'))).decode()
 
     if linq_base:
-        url = linq_base + f"#/vapps/app.custom.queryApp_dev&targetQuery={myb64str}"
+        url = linq_base + f"/#/vapps/app.custom.queryApp_dev?&targetQuery={myb64str}"
     else:
-        url = LINQ_LINK_BASE + f"#/vapps/app.custom.queryApp_dev&targetQuery={myb64str}"
+        url = LINQ_LINK_BASE + f"/#/vapps/app.custom.queryApp_dev?&targetQuery={myb64str}"
 
     return url
 

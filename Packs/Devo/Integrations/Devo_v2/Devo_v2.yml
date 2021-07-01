@@ -28,7 +28,7 @@ configuration:
   required: false
 - display: Devo base domain
   name: linq_link_base
-  defaultvalue: https://us.devo.com/welcome
+  defaultvalue: https://us.devo.com
   type: 0
   required: false
 - display: Fetch incidents
