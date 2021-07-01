@@ -27,7 +27,12 @@ requests.packages.urllib3.disable_warnings()
 warnings.warn = warn
 
 ''' GLOBALS/PARAMS '''
-global PYMISP
+verify = not demisto.params().get('insecure')
+proxies = handle_proxy()  # type: ignore
+misp_api_key = demisto.params().get('api_key')
+misp_url = demisto.params().get('url')
+PYMISP = ExpandedPyMISP(url=misp_url, key=misp_api_key, ssl=verify, proxies=proxies)
+
 INTEGRATION_NAME = "MISP V3"
 
 PREDEFINED_FEEDS = {
@@ -1209,16 +1214,9 @@ def is_tag_list_valid(tag_ids):
 
 
 def main():
-    global PYMISP
     params = demisto.params()
-    verify = not params.get('insecure')
-    proxies = handle_proxy()  # type: ignore
-    misp_api_key = params.get('api_key')
-    misp_url = params.get('url')
     malicious_tag_ids = argToList(params.get('malicious_tag_ids'))
     suspicious_tag_ids = argToList(params.get('suspicious_tag_ids'))
-    PYMISP = ExpandedPyMISP(url=misp_url, key=misp_api_key, ssl=verify, proxies=proxies)  # type: ExpandedPyMISP
-
     reliability = params.get('integrationReliability', 'B - Usually reliable')
     if DBotScoreReliability.is_valid_type(reliability):
         reliability = DBotScoreReliability.get_dbot_score_reliability_from_str(reliability)
