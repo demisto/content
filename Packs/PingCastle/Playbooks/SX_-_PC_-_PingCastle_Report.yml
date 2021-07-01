@@ -1,0 +1,233 @@
+id: SX - PC - PingCastle Report
+inputs:
+- description: "playbookInputQuery"
+  key: ""
+  playbookInputQuery:
+    daterange:
+      fromdate: "0001-01-01T00:00:00Z"
+      fromdatelicenseval: "0001-01-01T00:00:00Z"
+      period:
+        by: ""
+        byfrom: ""
+        byto: ""
+        field: ""
+        fromvalue:
+        tovalue:
+      todate: "0001-01-01T00:00:00Z"
+    query: type:File
+    queryEntity: indicators
+    results:
+    runFromLastJobTime: true
+  required: false
+  value: {}
+name: SX - PC - PingCastle Report
+outputs: []
+quiet: true
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "8"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 5d9f17d8-28d4-4f55-8dd2-5d928cbfebce
+      iscommand: false
+      name: ""
+      version: -1
+      description: ''
+    taskid: 5d9f17d8-28d4-4f55-8dd2-5d928cbfebce
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5
+        }
+      }
+  "4":
+    id: "4"
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: c3d6543d-e35a-4ecd-8260-526c6133b8e9
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+      description: ''
+    taskid: c3d6543d-e35a-4ecd-8260-526c6133b8e9
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 690
+        }
+      }
+  "6":
+    id: "6"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "7"
+    note: false
+    quietmode: 2
+    scriptarguments:
+      data:
+        complex:
+          accessor: pingcastlexmlreport
+          root: incident
+      entryId: {}
+      filename:
+        complex:
+          accessor: filename
+          root: incident
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: |
+        Will create a file (using the given data input or entry ID) and upload it to current investigation war room.
+      id: 56b0e5eb-fbf0-4fa1-820f-32739173e29e
+      iscommand: false
+      name: FileCreateAndUpload
+      script: FileCreateAndUpload
+      type: regular
+      version: -1
+    taskid: 56b0e5eb-fbf0-4fa1-820f-32739173e29e
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 410
+        }
+      }
+  "7":
+    id: "7"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "4"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 61688c1d-c4c5-4ed3-8be1-2074a748cd1b
+      iscommand: false
+      name: Manual Review
+      description: Manual Review
+      type: regular
+      version: -1
+    taskid: 61688c1d-c4c5-4ed3-8be1-2074a748cd1b
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 560
+        }
+      }
+  "8":
+    id: "8"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "9"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      contextKey:
+        simple: PingCastleJsonReport
+      verbose: {}
+      xml:
+        simple: ${incident.pingcastlexmlreport}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Converts XML string to JSON format
+      id: 9743a9bc-5ebf-4640-8e4e-ac08164a5c59
+      iscommand: false
+      name: Convert XML to JSON
+      script: ConvertXmlToJson
+      type: regular
+      version: -1
+    taskid: 9743a9bc-5ebf-4640-8e4e-ac08164a5c59
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 120
+        }
+      }
+  "9":
+    id: "9"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "6"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      table:
+        simple: ${PingCastleJsonReport.HealthcheckData}
+      title:
+        simple: PingCastle JSON Report
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Converts a given array to an HTML table
+      id: debcfd26-33e0-4be9-89b0-bb5d7977c9b8
+      iscommand: false
+      name: Table to Markdown
+      script: ConvertTableToHTML
+      type: regular
+      version: -1
+    taskid: debcfd26-33e0-4be9-89b0-bb5d7977c9b8
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 270
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 750,
+        "width": 380,
+        "x": 50,
+        "y": 5
+      }
+    }
+  }
+tests:
+- SX - PC - Test Playbook
+fromversion: 5.5.0
+description: 'This playbook runs when a new report is sent from PingCastle. It then parses it to json and renders a table. It also puts a download link to the xml report in the war room.'
