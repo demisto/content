@@ -39,7 +39,7 @@ VERSION_JSON_FIELD = 'script_version'
 
 MAX_ALLOWED_EXCEPTIONS = 20
 
-NO_FETCH_EXTRACT = tldextract.TLDExtract(suffix_list_urls=None)
+NO_FETCH_EXTRACT = tldextract.TLDExtract(suffix_list_urls=None, cache_file='/ml/.cache')
 NON_POSITIVE_VALIDATION_VALUES = set(['none', 'fail', 'softfail'])
 
 VALIDATION_OTHER = 'other'
