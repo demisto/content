@@ -209,7 +209,6 @@ def upload_file_and_get_results(tiscale):
 
 
 def main():
-
     try:
         wait_time_seconds = int(WAIT_TIME_SECONDS)
     except ValueError:
