@@ -1489,8 +1489,8 @@ class Pack(object):
                             'tags': content_item_tags
                         })
 
-                        self._contains_transformer = True if 'transformer' in content_item_tags else False
-                        self._contains_filter = True if 'filter' in content_item_tags else False
+                        self._contains_transformer = True
+                        self._contains_filter = True
 
                     elif current_directory == PackFolders.PLAYBOOKS.value:
                         self.is_feed_pack(content_item, 'Playbook')
