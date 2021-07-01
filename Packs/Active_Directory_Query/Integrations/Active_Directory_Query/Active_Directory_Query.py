@@ -167,7 +167,7 @@ def base_dn_verified(base_dn):
     return True
 
 
-def validate_cn(default_base_dn, cn):
+def generate_unique_cn(default_base_dn, cn):
 
     changing_cn = cn
     i = 1
@@ -185,19 +185,18 @@ def generate_dn_and_remove_from_user_profile(default_base_dn, user):
     :return: The user's dn.
     """
     user_dn = user.get("dn")
+
     if user_dn:
         user.pop("dn")
         return user_dn
-
-    cn = validate_cn(default_base_dn, user.get("cn"))
-
-    if not cn:
+    user_cn = user.get("cn")
+    if not user_cn:
         raise Exception("User must have cn, please provide a valid value")
-    ou = user.get("ou")
-    if not ou:
-        raise Exception("User must have ou, please provide a valid value")
 
-    return 'CN=' + str(cn) + ',' + str(ou)
+    valid_cn = generate_unique_cn(default_base_dn, user.get("cn"))
+    ou = user.get("ou")
+
+    return 'CN=' + str(valid_cn) + ',' + str(ou)
 
 
 def check_if_user_exists_by_cn(default_base_dn, cn):
@@ -979,7 +978,7 @@ def update_user_iam(default_base_dn, args, create_if_not_exists, mapper_out, dis
                 modification = {'manager': [('MODIFY_REPLACE', manager_dn)]}
                 success = conn.modify(dn, modification)
                 if not success:
-                    fail_to_modify.append(key)
+                    fail_to_modify.append('manager')
 
             if fail_to_modify:
                 error_list = '\n'.join(fail_to_modify)
