@@ -400,7 +400,7 @@ def test_email_with_special_character(mocker):
 
 @pytest.mark.parametrize('encoded_subject, decoded_subject', [
     (
-        '[TESTING] =?utf-8?q?=F0=9F=94=92_=E2=9C=94_Votre_colis_est_disponible_chez_votre_co?= =?utf-8?q?mmer=C3=A7ant_Pickup_!?=',
+        '[TESTING] =?utf-8?q?=F0=9F=94=92_=E2=9C=94_Votre_colis_est_disponible_chez_votre_co?= =?utf-8?q?mmer=C3=A7ant_Pickup_!?=',  # noqa E501
         '[TESTING]\xf0\x9f\x94\x92 \xe2\x9c\x94 Votre colis est disponible chez votre commer\xc3\xa7ant Pickup !'
     ),
     (
