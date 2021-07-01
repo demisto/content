@@ -1,3 +1,11 @@
+import pytest
+
+from CommonServerPython import DemistoException
+
+TAG_IDS_LISTS = [([1, 2, 3], [2, 3, 4, 5], [1, 2, 3], [4, 5]),
+                 ([1, 2, 3], [4, 5], [1, 2, 3], [4, 5])]
+
+
 def mock_misp(mocker):
     from pymisp import ExpandedPyMISP
     mocker.patch.object(ExpandedPyMISP, '__init__', return_value=None)
@@ -133,3 +141,53 @@ def test_build_misp_complex_filter(mocker):
     expected = {'AND': ['tag1', 'tag2'], 'OR': ['tag3', 'tag4'], 'NOT': ['tag5']}
     actual = build_misp_complex_filter(complex_query_AND_OR_NOT)
     assert actual == expected
+
+
+def test_is_tag_list_valid(mocker):
+    mock_misp(mocker)
+    from MISPV3 import is_tag_list_valid
+    is_tag_list_valid(["200", 100])
+    assert True
+
+
+def test_is_tag_list_invalid(mocker):
+    mock_misp(mocker)
+    from MISPV3 import is_tag_list_valid
+    with pytest.raises(DemistoException) as e:
+        is_tag_list_valid(["abc", 100, "200"])
+        if not e:
+            assert False
+
+
+@pytest.mark.parametrize('malicious_tag_ids, suspicious_tag_ids, return_malicious_tag_ids, return_suspicious_tag_ids',
+                         TAG_IDS_LISTS)
+def test_handle_tag_duplication_ids(mocker, malicious_tag_ids, suspicious_tag_ids, return_malicious_tag_ids,
+                                    return_suspicious_tag_ids):
+    mock_misp(mocker)
+    from MISPV3 import handle_tag_duplication_ids
+    assert return_malicious_tag_ids, return_suspicious_tag_ids == handle_tag_duplication_ids(malicious_tag_ids,
+                                                                                             suspicious_tag_ids)
+
+
+def test_convert_arg_to_misp_args(mocker):
+    mock_misp(mocker)
+    from MISPV3 import convert_arg_to_misp_args
+    args = {'dst_port': 8001, 'src_port': 8002, 'name': 'test'}
+    args_names = ['dst_port', 'src_port', 'name']
+    assert convert_arg_to_misp_args(args, args_names) == [{'dst-port': 8001}, {'src-port': 8002}, {'name': 'test'}]
+
+
+def test_pagination_args_valid(mocker):
+    mock_misp(mocker)
+    from MISPV3 import pagination_args_validation
+    pagination_args_validation("5", 50)
+    assert True
+
+
+def test_pagination_args_invalid(mocker):
+    mock_misp(mocker)
+    from MISPV3 import pagination_args_validation
+    with pytest.raises(DemistoException) as e:
+        pagination_args_validation("page", "3")
+        if not e:
+            assert False

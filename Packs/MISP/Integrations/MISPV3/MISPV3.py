@@ -731,7 +731,7 @@ def pagination_args_validation(page, limit):
         page = int(page)
         limit = int(limit)
     except ValueError:
-        raise ValueError("page and limit should be numbers")
+        raise DemistoException("page and limit should be numbers")
     return page, limit
 
 
