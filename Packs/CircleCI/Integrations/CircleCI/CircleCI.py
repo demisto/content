@@ -74,7 +74,7 @@ def get_response_with_pagination(client_command: Callable, client_command_args: 
         next_page_token: Optional[str] = response.get('next_page_token')
         if not next_page_token:
             break
-        response = client_command(*(client_command_args + [next_page_token]), next_page_token=next_page_token)
+        response = client_command(*(client_command_args + [next_page_token]))
         data = response.get('items', [])
         results.extend(data)
     return results[:limit]
@@ -230,7 +230,7 @@ def circleci_workflow_last_runs_command(client: Client, args: Dict[str, Any]) ->
         (CommandResults).
     """
     vc_type, organization, project, limit = get_common_arguments(client, args)
-    workflow_name: str = args.get('workflow_name', 'nightly')
+    workflow_name: str = args.get('workflow_name', '')
 
     response = get_response_with_pagination(client.get_last_workflow_runs,
                                             [vc_type, organization, project, workflow_name], limit)
