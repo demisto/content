@@ -68,8 +68,6 @@ def _get_missing_file_result(file_hash: str) -> CommandResults:
 def _get_analysis_running_result(analysis_id: str = None, response: requests.Response = None) -> CommandResults:
     if response:
         analysis_id = response.json()['result_url'].split('/')[2]
-    else:
-        analysis_id = analysis_id
 
     context_json = {
         'Intezer.Analysis(val.ID && val.ID == obj.ID)': {
