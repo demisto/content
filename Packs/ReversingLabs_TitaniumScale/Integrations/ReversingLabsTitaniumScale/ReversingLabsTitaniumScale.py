@@ -227,7 +227,7 @@ def main():
         wait_time_seconds=wait_time_seconds,
         retries=num_of_retries
     )
-    
+
     demisto.info(f'Command being called is {demisto.command()}')
 
     try:
