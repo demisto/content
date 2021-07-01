@@ -386,38 +386,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "12":
-    id: "12"
-    taskid: af779c76-83d0-48e2-8afa-6e066c04f1ad
-    type: regular
-    task:
-      id: af779c76-83d0-48e2-8afa-6e066c04f1ad
-      version: -1
-      name: Close the channel
-      description: Archives a Slack channel.
-      script: SlackV3|||close-channel
-      type: regular
-      iscommand: true
-      brand: SlackV3
-    scriptarguments:
-      channel:
-        complex:
-          root: TimeNow2TimeNowUnix
-          transformers:
-          - operator: Stringify
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 3520
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "13":
     id: "13"
     taskid: 5c319dca-6c11-4539-8014-4e5b3e7fac7f
