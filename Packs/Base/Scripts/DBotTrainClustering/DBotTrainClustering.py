@@ -1,22 +1,21 @@
-import demistomock as demisto
-from CommonServerPython import *
-from CommonServerUserPython import *
-
-import pandas as pd
-import numpy as np
-import collections
-import dill as pickle
 import builtins
-from sklearn.pipeline import Pipeline
-from sklearn.compose import ColumnTransformer
-from sklearn import cluster
-from sklearn.base import BaseEstimator, TransformerMixin
-from sklearn.feature_extraction.text import TfidfVectorizer
-from sklearn.manifold import TSNE
-import hdbscan
+import collections
+import math
 from datetime import datetime
 from typing import Type, Tuple
-import math
+
+import dill as pickle
+import hdbscan
+import numpy as np
+import pandas as pd
+from sklearn import cluster
+from sklearn.base import BaseEstimator, TransformerMixin
+from sklearn.compose import ColumnTransformer
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.manifold import TSNE
+from sklearn.pipeline import Pipeline
+
+from CommonServerPython import *
 
 GENERAL_MESSAGE_RESULTS = "#### - We succeeded to group **%s incidents into %s groups**.\n #### - The grouping was based on " \
                           "the **%s** field(s).\n #### - Each group name is based on the majority value of the **%s** field in " \
@@ -612,7 +611,7 @@ def remove_fields_not_in_incident(*args, incorrect_fields: List[str]) -> List[st
 
 def get_results(model_processed: Type[PostProcessing]):
     number_of_sample = model_processed.stats["General"]["Nb sample"]
-    number_clusters_selected = len(model_processed.selected_clusters)
+    number_clusters_selected = len(model_processed.selected_clusters) - 1
     number_of_outliers = number_of_sample - model_processed.stats['number_of_clusterized_sample_after_selection']
     return number_of_sample, number_clusters_selected, number_of_outliers
 
