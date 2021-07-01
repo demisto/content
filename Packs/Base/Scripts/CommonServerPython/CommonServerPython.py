@@ -1185,6 +1185,40 @@ def remove_empty_elements(d):
         return {k: v for k, v in ((k, remove_empty_elements(v)) for k, v in d.items()) if not empty(v)}
 
 
+class SmartGetDict(dict):
+    """A dict that when called with get(key, default) will return the default passed
+    value, even if there is a value of "None" in the place of the key. Example with built-in dict:
+    ```
+    >>> d = {}
+    >>> d['test'] = None
+    >>> d.get('test', 1)
+    >>> print(d.get('test', 1))
+    None
+    ```
+    Example with SmartGetDict:
+    ```
+    >>> d = SmartGetDict()
+    >>> d['test'] = None
+    >>> d.get('test', 1)
+    >>> print(d.get('test', 1))
+    1
+    ```
+
+    :return: SmartGetDict
+    :rtype: ``SmartGetDict``
+
+    """
+    def get(self, key, default=None):
+        res = dict.get(self, key)
+        if res is not None:
+            return res
+        return default
+
+
+if (not os.getenv('COMMON_SERVER_NO_AUTO_PARAMS_REMOVE_NULLS')) and hasattr(demisto, 'params') and demisto.params():
+    demisto.callingContext['params'] = SmartGetDict(demisto.params())
+
+
 def aws_table_to_markdown(response, table_header):
     """
     Converts a raw response from AWS into a markdown formatted table. This function checks to see if
@@ -6699,6 +6733,10 @@ if 'requests' in sys.modules:
                 been exhausted.
             """
             try:
+                method_whitelist = "allowed_methods" if hasattr(Retry.DEFAULT, "allowed_methods") else "method_whitelist"
+                whitelist_kawargs = {
+                    method_whitelist: frozenset(['GET', 'POST', 'PUT'])
+                }
                 retry = Retry(
                     total=retries,
                     read=retries,
@@ -6706,9 +6744,9 @@ if 'requests' in sys.modules:
                     backoff_factor=backoff_factor,
                     status=retries,
                     status_forcelist=status_list_to_retry,
-                    method_whitelist=frozenset(['GET', 'POST', 'PUT']),
                     raise_on_status=raise_on_status,
-                    raise_on_redirect=raise_on_redirect
+                    raise_on_redirect=raise_on_redirect,
+                    **whitelist_kawargs
                 )
                 adapter = HTTPAdapter(max_retries=retry)
                 self._session.mount('http://', adapter)
