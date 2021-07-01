@@ -4654,7 +4654,7 @@ script:
       description: Installation status.
       type: string
     description: Installs specific content update file.
-  dockerimage: demisto/python3:3.9.5.20070
+  dockerimage: demisto/python3:3.9.5.21272
   feed: false
   isfetch: false
   longRunning: false
