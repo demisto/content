@@ -15,7 +15,6 @@ from bs4 import BeautifulSoup
 from collections import Counter
 import pandas as pd
 import signal
-import numpy as np
 import zlib
 from base64 import b64encode
 from nltk import ngrams
@@ -31,10 +30,9 @@ import io
 f = io.StringIO()
 stderr = sys.stderr
 sys.stderr = f
-from transformers import DistilBertTokenizer
+from transformers import DistilBertTokenizer  # noqa: E402
 
 sys.stderr = sys.__stderr__
-
 
 EXECUTION_JSON_FIELD = 'last_execution'
 VERSION_JSON_FIELD = 'script_version'
@@ -616,12 +614,13 @@ def clean_email_subject(email_subject):
 
 def get_bert_features_for_text(text):
     global TOKENIZER, BERT_MODEL
-    encoded_input = TOKENIZER(text, padding='max_length', max_length=512, return_tensors='np', truncation=True)
+    encoded_input = TOKENIZER(text, padding='max_length', max_length=512,  # type: ignore
+                              return_tensors='np', truncation=True)
     ort_inputs = {
         'input_ids': encoded_input['input_ids'],
         "attention_mask": encoded_input['attention_mask'],
     }
-    ort_outs = ORT_SESSION.run(None, ort_inputs)
+    ort_outs = ORT_SESSION.run(None, ort_inputs)  # type: ignore
     first_hidden_state = ort_outs[0][0][0].tolist()
     return first_hidden_state
 
