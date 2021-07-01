@@ -39,6 +39,7 @@ def main():
 
     stats = res[0]["Contents"]["response"]
     output = []
+    counter = 0
     higher = 0
 
     build_number = get_demisto_version()['buildNumber']
@@ -50,19 +51,41 @@ def main():
                 output.append({"name": counter, "data": [higher]})
                 higher = 0
 
-    data = {
-        "Type": 17,
-        "ContentsFormat": "line",
-        "Contents": {
-            "stats": output,
-            "params": {
-                "timeFrame": "minutes",
-                "format": "HH:mm",
-                "layout": "vertical"
+        data = {
+            "Type": 17,
+            "ContentsFormat": "line",
+            "Contents": {
+                "stats": output,
+                "params": {
+                    "timeFrame": "minutes",
+                    "format": "HH:mm",
+                    "layout": "vertical"
+                }
             }
         }
-    }
+    else:
+        # Bar graph:
+        now = datetime.utcnow()
+        then = now - timedelta(days=1)
+        for entry in stats:
+            higher = max(entry["data"][0], higher)
+            if counter % 60 == 0:
+                then = then + timedelta(hours=1)
+                name = then.strftime("%H:%M")
+                output.append({"name": name, "data": [higher]})
+                higher = 0
+            counter += 1
 
+        data = {
+            "Type": 17,
+            "ContentsFormat": "bar",
+            "Contents": {
+                "stats": output,
+                "params": {
+                    "layout": "horizontal"
+                }
+            }
+        }
     return data
 
 

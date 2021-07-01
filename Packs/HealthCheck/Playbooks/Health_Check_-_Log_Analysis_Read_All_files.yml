@@ -186,8 +186,7 @@ tasks:
     note: false
     quietmode: 0
     scriptarguments:
-      Thresholds:
-        simple: ${inputs.Health Check Thresholds.Docker}
+      Thresholds: {}
       entryID:
         complex:
           accessor: EntryID
@@ -206,13 +205,13 @@ tasks:
     task:
       brand: ""
       description: Read docker log file
-      id: 32874663-f910-4d06-85b7-2056d43ed46a
+      id: f67ff498-5a25-4dee-8dbe-58850dfe90f4
       iscommand: false
       name: Read the Docker.log file
       script: HealthCheckDockerLog
       type: regular
       version: -1
-    taskid: 32874663-f910-4d06-85b7-2056d43ed46a
+    taskid: f67ff498-5a25-4dee-8dbe-58850dfe90f4
     timertriggers: []
     type: regular
     view: |-

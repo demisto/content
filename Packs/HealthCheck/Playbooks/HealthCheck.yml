@@ -1073,10 +1073,6 @@ tasks:
               "DiskUsageLow": 70,
               "DiskUsageDailyIncrease": 2
             },
-            "Docker": {
-              "DockerContainerCPUUsage": 10,
-              "DockerContainerRAMUsage": 10
-            },
             "DB": {
               "FSPartitionsMedium": 12,
               "FSPartitionsLow": 6
@@ -1098,13 +1094,13 @@ tasks:
     task:
       brand: ""
       description: Set a value in context under the key you entered.
-      id: 275325ef-9bb9-4166-8a42-4da567d70107
+      id: e41c4c8c-e0c6-420e-8360-3f59a375f17c
       iscommand: false
       name: Set Thresholds
       script: Set
       type: regular
       version: -1
-    taskid: 275325ef-9bb9-4166-8a42-4da567d70107
+    taskid: e41c4c8c-e0c6-420e-8360-3f59a375f17c
     timertriggers: []
     type: regular
     view: |-
