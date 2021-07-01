@@ -12,17 +12,17 @@ tasks:
       version: -1
       name: ""
       iscommand: false
+      description: ""
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
-      - "4"
+      - "7"
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 50
+          "y": -130
         }
       }
     note: false
@@ -32,25 +32,47 @@ tasks:
     quietmode: 0
   "2":
     id: "2"
-    taskid: 1d9ea673-b690-4c61-84a9-88bbf8d80a98
+    taskid: 13307e7a-6ada-4d61-871f-61b12e39508b
     type: playbook
     task:
-      id: 1d9ea673-b690-4c61-84a9-88bbf8d80a98
+      id: 13307e7a-6ada-4d61-871f-61b12e39508b
       version: -1
       name: Extract and create relationship
-      playbookName: Extract and Create Relationships
+      playbookName: Extract and Create Relationships1
       type: playbook
+      description: Sub-playbook. Extract indicators from Report Raw content.
       iscommand: false
       brand: ""
-      description: 'Subplaybook who takes the report raw content and extract indicators found in'
     nexttasks:
       '#none#':
       - "3"
     scriptarguments:
       content:
-        simple: ${playbookQuery.CustomFields.rssrawcontent}
+        complex:
+          root: playbookQuery
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: playbookQuery.indicator_type
+                iscontext: true
+              right:
+                value:
+                  simple: Report
+          accessor: CustomFields.rssrawcontent
       report_name:
-        simple: ${playbookQuery.value}
+        complex:
+          root: playbookQuery
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: playbookQuery.indicator_type
+                iscontext: true
+              right:
+                value:
+                  simple: Report
+          accessor: value
     separatecontext: true
     loop:
       iscommand: false
@@ -72,10 +94,10 @@ tasks:
     quietmode: 0
   "3":
     id: "3"
-    taskid: 60ead64b-99c4-4533-844e-2707f291babc
+    taskid: 6e8f8f7c-380e-4092-827b-84083111a243
     type: regular
     task:
-      id: 60ead64b-99c4-4533-844e-2707f291babc
+      id: 6e8f8f7c-380e-4092-827b-84083111a243
       version: -1
       name: Tag report as "processed"
       description: commands.local.cmd.add.values.to.indicator.multi.select.field
@@ -92,7 +114,18 @@ tasks:
       fieldValue:
         simple: ${inputs.tag}
       indicatorsValues:
-        simple: ${playbookQuery.value}
+        complex:
+          root: playbookQuery
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: playbookQuery.indicator_type
+                iscontext: true
+              right:
+                value:
+                  simple: Report
+          accessor: value
     separatecontext: false
     view: |-
       {
@@ -108,10 +141,10 @@ tasks:
     quietmode: 0
   "4":
     id: "4"
-    taskid: 66d8db03-d387-49e9-8eef-e0ef62f0a2b4
+    taskid: 946382a7-5ef7-40d6-8735-4d492e4f11f6
     type: regular
     task:
-      id: 66d8db03-d387-49e9-8eef-e0ef62f0a2b4
+      id: 946382a7-5ef7-40d6-8735-4d492e4f11f6
       version: -1
       name: Tag reports "in process"
       description: commands.local.cmd.add.values.to.indicator.multi.select.field
@@ -128,7 +161,18 @@ tasks:
       fieldValue:
         simple: in_process
       indicatorsValues:
-        simple: ${playbookQuery.value}
+        complex:
+          root: playbookQuery
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: playbookQuery.indicator_type
+                iscontext: true
+              right:
+                value:
+                  simple: Report
+          accessor: value
     separatecontext: false
     view: |-
       {
@@ -144,10 +188,10 @@ tasks:
     quietmode: 0
   "5":
     id: "5"
-    taskid: 3208ea82-1aa4-4d61-8d47-50eaf185354c
+    taskid: 484315bb-bcfb-4838-8783-ef5304b62760
     type: regular
     task:
-      id: 3208ea82-1aa4-4d61-8d47-50eaf185354c
+      id: 484315bb-bcfb-4838-8783-ef5304b62760
       version: -1
       name: Remove tag "in process"
       description: commands.local.cmd.remove.values.to.indicator.multi.select.field
@@ -164,7 +208,18 @@ tasks:
       fieldValue:
         simple: in_process
       indicatorsValues:
-        simple: ${playbookQuery.value}
+        complex:
+          root: playbookQuery
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: playbookQuery.indicator_type
+                iscontext: true
+              right:
+                value:
+                  simple: Report
+          accessor: value
     separatecontext: false
     view: |-
       {
@@ -186,16 +241,57 @@ tasks:
       id: fc4676ba-8352-42e5-8adb-2d1a4358d225
       version: -1
       name: Done
+      description: ''
       type: title
       iscommand: false
       brand: ""
-      description: ''
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 895
+          "y": 915
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: 9389b85f-a08b-4b82-8833-e5bad240f456
+    type: condition
+    task:
+      id: 9389b85f-a08b-4b82-8833-e5bad240f456
+      version: -1
+      name: Is Report Type
+      description: Check if there is indicators from Report type
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "6"
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: playbookQuery.indicator_type
+            iscontext: true
+          right:
+            value:
+              simple: Report
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 30
         }
       }
     note: false
@@ -208,10 +304,10 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 910,
+        "height": 1110,
         "width": 380,
         "x": 50,
-        "y": 50
+        "y": -130
       }
     }
   }
@@ -224,7 +320,7 @@ inputs:
     reports that are in process and \"-tags:{tag_name_given_as_input}\" to filter
     out all processed reports .\nExample: type:Report -tags:processed -tags:in_process "
   playbookInputQuery:
-    query: type:Report -tags:processed -tags:in_process
+    query: type:Report -tags:in_process -tags:processed
     queryEntity: indicators
     results: null
     daterange:
@@ -245,6 +341,7 @@ inputs:
   description: The tag which will be added to each processed report.
   playbookInputQuery: null
 outputs: []
+quiet: true
 fromversion: 6.2.0
 description: Extract indicators from report
 tests:
