@@ -3407,9 +3407,9 @@ def convert_to_unicode(s):
             word_mime_encoded = s and MIME_ENCODED_WORD.search(s)
             if word_mime_encoded:
                 return mime_decode(word_mime_encoded)
-        except:  # noqa: E722
+        except Exception as e:
             # in case we failed to mine-decode, we continue and try to decode
-            pass
+            demisto.debug('Failed decoding mime-encoded string: {}. Will try regular decoding.'.format(str(e)))
         for decoded_s, encoding in decode_header(s):  # return a list of pairs(decoded, charset)
             if encoding:
                 res += decoded_s.decode(encoding).encode('utf-8')
