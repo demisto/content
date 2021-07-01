@@ -144,7 +144,8 @@ def listen_for_reports(params):
                 listener.socket = ssl.wrap_socket(listener.socket,
                                                   keyfile=private_key_path,
                                                   certfile=certificate_path,
-                                                  server_side=True)
+                                                  server_side=True,
+                                                  ssl_version=ssl.PROTOCOL_TLSv1_2)
 
             listener.serve_forever()
         except Exception:
