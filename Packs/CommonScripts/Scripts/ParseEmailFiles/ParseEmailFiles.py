@@ -3403,9 +3403,13 @@ def convert_to_unicode(s):
     global ENCODINGS_TYPES
     try:
         res = ''  # utf encoded result
-        word_mime_encoded = MIME_ENCODED_WORD.search(s)
-        if word_mime_encoded:
-            return mime_decode(word_mime_encoded)
+        try:
+            word_mime_encoded = s and MIME_ENCODED_WORD.search(s)
+            if word_mime_encoded:
+                return mime_decode(word_mime_encoded)
+        except:  # noqa: E722
+            # in case we failed to mine-decode, we continue and try to decode
+            pass
         for decoded_s, encoding in decode_header(s):  # return a list of pairs(decoded, charset)
             if encoding:
                 res += decoded_s.decode(encoding).encode('utf-8')
