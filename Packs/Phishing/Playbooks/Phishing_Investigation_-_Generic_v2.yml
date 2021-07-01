@@ -2,7 +2,7 @@ id: 1b207082-1c8e-4e45-8989-ffafa599130f
 version: -1
 contentitemexportablefields:
   contentitemfields: {}
-name: Phishing Investigation - Generic v2 (campaign)
+name: Phishing Investigation - Generic v2
 description: |-
   Use this playbook to investigate and remediate a potential phishing incident. The playbook simultaneously engages with the user that triggered the incident, while investigating the incident itself.
 
@@ -2364,7 +2364,7 @@ inputs:
   playbookInputQuery:
 - key: SearchAndDelete
   value:
-    simple: "True"
+    simple: "False"
   required: false
   description: |-
     Enable the "Search and Delete" capability (can be either "True" or "False").
