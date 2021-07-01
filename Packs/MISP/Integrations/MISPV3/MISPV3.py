@@ -245,26 +245,6 @@ def replace_keys(obj_to_build: Union[dict, list, str]) -> Union[dict, list, str]
     return obj_to_build
 
 
-def remove_unselected_context_keys(context_data, data_keys_to_save=[]):
-    for attribute in context_data['Attribute']:
-        for key in list(attribute.keys()):
-            if key not in data_keys_to_save:
-                del attribute[key]
-
-
-def arrange_context_according_to_user_selection(context_data, data_keys_to_save=[]):
-    if not data_keys_to_save:
-        return
-
-    # each related event has it's own attributes
-    for event in context_data:
-        # Remove filtered fields in event
-        remove_unselected_context_keys(event, data_keys_to_save)
-        # Remove filtered fields in object
-        for obj in event['Object']:
-            remove_unselected_context_keys(obj, data_keys_to_save)
-
-
 def reputation_command_to_human_readable(outputs, score):
     return {
         'Attribute Type': outputs.get('Type'),
