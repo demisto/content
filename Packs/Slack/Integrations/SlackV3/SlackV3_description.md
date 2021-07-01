@@ -35,10 +35,13 @@ Slack V3 utilizes "Socket Mode" to enable the integration to communicate directl
 | `files:write` | Upload, edit, and delete files as the bot |
 | `groups:history` | View messages and other content in private channels that the bot has been added to |
 | `groups:read` | View basic information about private channels that the bot has been added to |
+| `groups:write` | Manage private channels that the bot has been added to and create new ones |
 | `im:history` | View messages and other content in direct messages that the bot has been added to |
 | `im:read` | View basic information about direct messages that the bot has been added to |
+| `im:write` | Start direct messages with people |
 | `mpim:history` | View messages and other content in group direct messages that the bot has been added to |
 | `mpim:read` | View basic information about group direct messages that the bot has been added to |
+| `mpim:write` | Start group direct messages with people |
 | `users:read` | View people in a workspace |
 
 The App token requires the `connections:write` scope in order to open the socket connection and is required for the Events and Questions functionality. It's important to note that when configuring Socket Mode, this scope will automatically be created for you.

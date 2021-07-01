@@ -1,5 +1,6 @@
 import json as js
 import threading
+import io
 
 import pytest
 import slack_sdk
@@ -11,136 +12,15 @@ from CommonServerPython import *
 
 import datetime
 
-USERS = '''[{
-    "id": "U012A3CDE",
-    "team_id": "T012AB3C4",
-    "name": "spengler",
-    "deleted": false,
-    "color": "9f69e7",
-    "real_name": "spengler",
-    "tz": "America/Los_Angeles",
-    "tz_label": "Pacific Daylight Time",
-    "tz_offset": -25200,
-    "profile": {
-        "avatar_hash": "ge3b51ca72de",
-        "status_text": "Print is dead",
-        "status_emoji": ":books:",
-        "real_name": "Egon Spengler",
-        "display_name": "spengler",
-        "real_name_normalized": "Egon Spengler",
-        "display_name_normalized": "spengler",
-        "email": "spengler@ghostbusters.example.com",
-        "team": "T012AB3C4"
-    },
-    "is_admin": true,
-    "is_owner": false,
-    "is_primary_owner": false,
-    "is_restricted": false,
-    "is_ultra_restricted": false,
-    "is_bot": false,
-    "updated": 1502138686,
-    "is_app_user": false,
-    "has_2fa": false
-},
-{
-    "id": "U07QCRPA4",
-    "team_id": "T0G9PQBBK",
-    "name": "glinda",
-    "deleted": false,
-    "color": "9f69e7",
-    "real_name": "Glinda Southgood",
-    "tz": "America/Los_Angeles",
-    "tz_label": "Pacific Daylight Time",
-    "tz_offset": -25200,
-    "profile": {
-        "avatar_hash": "8fbdd10b41c6",
-        "first_name": "Glinda",
-        "last_name": "Southgood",
-        "title": "Glinda the Good",
-        "phone": "",
-        "skype": "",
-        "real_name": "Glinda Southgood",
-        "real_name_normalized": "Glinda Southgood",
-        "display_name": "Glinda the Fairly Good",
-        "display_name_normalized": "Glinda the Fairly Good",
-        "email": "Glenda@south.oz.coven"
-    },
-    "is_admin": true,
-    "is_owner": false,
-    "is_primary_owner": false,
-    "is_restricted": false,
-    "is_ultra_restricted": false,
-    "is_bot": false,
-    "updated": 1480527098,
-    "has_2fa": false
-}]'''
 
-CONVERSATIONS = '''[{
-    "id": "C012AB3CD",
-    "name": "general",
-    "is_channel": true,
-    "is_group": false,
-    "is_im": false,
-    "created": 1449252889,
-    "creator": "U012A3CDE",
-    "is_archived": false,
-    "is_general": true,
-    "unlinked": 0,
-    "name_normalized": "general",
-    "is_shared": false,
-    "is_ext_shared": false,
-    "is_org_shared": false,
-    "pending_shared": [],
-    "is_pending_ext_shared": false,
-    "is_member": true,
-    "is_private": false,
-    "is_mpim": false,
-    "topic": {
-        "value": "Company-wide announcements and work-based matters",
-        "creator": "",
-        "last_set": 0
-    },
-    "purpose": {
-        "value": "This channel is for team-wide communication and announcements. All team members are in this channel.",
-        "creator": "",
-        "last_set": 0
-    },
-    "previous_names": [],
-    "num_members": 4
-},
-{
-    "id": "C061EG9T2",
-    "name": "random",
-    "is_channel": true,
-    "is_group": false,
-    "is_im": false,
-    "created": 1449252889,
-    "creator": "U061F7AUR",
-    "is_archived": false,
-    "is_general": false,
-    "unlinked": 0,
-    "name_normalized": "random",
-    "is_shared": false,
-    "is_ext_shared": false,
-    "is_org_shared": false,
-    "pending_shared": [],
-    "is_pending_ext_shared": false,
-    "is_member": true,
-    "is_private": false,
-    "is_mpim": false,
-    "topic": {
-        "value": "Non-work banter and water cooler conversation",
-        "creator": "",
-        "last_set": 0
-    },
-    "purpose": {
-        "value": "A place for non-work-related flimflam.",
-        "creator": "",
-        "last_set": 0
-    },
-    "previous_names": [],
-    "num_members": 4
-}]'''
+def load_test_data(path):
+    with io.open(path, mode='r', encoding='utf-8') as f:
+        return f.read()
+
+
+USERS = load_test_data('./test_data/users.txt')
+CONVERSATIONS = load_test_data('./test_data/conversations.txt')
+PAYLOAD_JSON = load_test_data('./test_data/payload.txt')
 
 BOT = '''{
     "ok": true,
@@ -236,79 +116,6 @@ BLOCK_JSON = [{
         'style': 'danger',
         'value': '{\"entitlement\": \"e95cb5a1-e394-4bc5-8ce0-508973aaf298@22|43\", \"reply\": \"Thanks bro\"}',
     }]}]
-
-PAYLOAD_JSON = r'''
- {
-     "type":"block_actions",
-     "team":{
-        "id":"T9XJ4RGNQ",
-        "domain":"dombo60"
-     },
-     "user":{
-        "id":"U012A3CDE",
-        "username":"spengler",
-        "name":"spengler",
-        "team_id":"T9XJ4RGNQ"
-     },
-     "api_app_id":"AMU4M2QL8",
-     "token":"dummy-token",
-     "container":{
-        "type":"message",
-        "message_ts":"1567945126.000100",
-        "channel_id":"DMGSNFCSX",
-        "is_ephemeral":false
-     },
-     "trigger_id":"754598374743.337616866772.8c4b2dc28ca7fd4c8941247c1a01c7dd",
-     "channel":{
-        "id":"DMGSNFCSX",
-        "name":"directmessage"
-     },
-     "message":{
-        "type":"message",
-        "subtype":"bot_message",
-        "text":"This content can't be displayed.",
-        "ts":"1567945126.000100",
-        "username":"BlockTest",
-        "bot_id":"BMWFS6KSA",
-        "blocks":[
-           {
-              "type":"section",
-              "block_id":"F9iYK",
-              "text":{
-                 "type":"mrkdwn",
-                 "text":"Hopa this is a test. ",
-                 "verbatim":false
-              },
-              "accessory":{
-                 "type":"button",
-                 "text":{
-                    "type":"plain_text",
-                    "text":"Eyy",
-                    "emoji":true
-                 },
-                 "value":"{\"entitlement\": \"e95cb5a1-e394-4bc5-8ce0-508973aaf298@22|43\", \"reply\": \"Thanks bro\"}",
-                 "action_id":"W9J"
-              }
-           }
-        ]
-     },
-     "response_url":"hooks.slack.com",
-     "actions":[
-        {
-           "action_id":"W9J",
-           "block_id":"F9iYK",
-           "text":{
-              "type":"plain_text",
-              "text":"Eyy",
-              "emoji":true
-           },
-           "value":"{\"entitlement\": \"e95cb5a1-e394-4bc5-8ce0-508973aaf298@22|43\", \"reply\": \"Thanks bro\"}",
-           "type":"button",
-           "action_ts":"1567949681.728426"
-        }
-     ]
-  }
-'''
 
 SLACK_RESPONSE = SlackResponse(client=None, http_verb='', api_url='', req_args={}, data={'ts': 'cool'}, headers={},
                                status_code=0)
