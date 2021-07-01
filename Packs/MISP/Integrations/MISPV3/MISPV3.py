@@ -1205,7 +1205,7 @@ def is_tag_list_valid(tag_ids):
         try:
             tag = int(tag)
         except ValueError:
-            raise DemistoException(f"Tag id has to be an integer, please change the following: {tag}.")
+            raise DemistoException(f"Tag id has to be an integer, please change the given: '{tag}' id.")
 
 
 def main():
