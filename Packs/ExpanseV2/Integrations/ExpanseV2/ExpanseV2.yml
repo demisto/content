@@ -3087,6 +3087,13 @@ script:
         (comma separated) - annotations, severityCounts, attributionReasons, relatedRegistrationInformation,
         locationInformation
       defaultValue: none
+      auto: PREDEFINED
+      predefined:
+        - "annotations"
+        - "severityCounts"
+        - "attributionReasons"
+        - "relatedRegistrationInformation"
+        - "locationInformation"
       required: false
       secret: false
     - default: false
