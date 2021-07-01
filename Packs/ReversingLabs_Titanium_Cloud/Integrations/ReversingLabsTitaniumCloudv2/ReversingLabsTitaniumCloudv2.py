@@ -5,7 +5,6 @@ from ReversingLabs.SDK.ticloud import FileReputation, AVScanners, FileAnalysis, 
     RHA1Analytics, URIStatistics, URIIndex, AdvancedSearch, ExpressionSearch, FileDownload, FileUpload, \
     URLThreatIntelligence, AnalyzeURL, DynamicAnalysis, CertificateAnalytics
 
-
 VERSION = "v2.0.0"
 USER_AGENT = f"ReversingLabs XSOAR TitaniumCloud {VERSION}"
 
@@ -185,10 +184,10 @@ def av_scanners_output(response_json, hash_value):
             markdown = f"{markdown}\n{results_table}"
 
     dbot_score = Common.DBotScore(
-                indicator=hash_value,
-                indicator_type=DBotScoreType.FILE,
-                integration_name='ReversingLabs TitaniumCloud v2',
-                score=0,
+        indicator=hash_value,
+        indicator_type=DBotScoreType.FILE,
+        integration_name='ReversingLabs TitaniumCloud v2',
+        score=0,
     )
 
     indicator = Common.File(
@@ -392,7 +391,7 @@ def rha1_analytics_output(response_json, hash_value):
         sha256=sha256,
         dbot_score=dbot_score
     )
-    
+
     results = CommandResults(
         outputs_prefix='ReversingLabs',
         outputs={'rha1_analytics': response_json},
@@ -783,7 +782,6 @@ def detonate_sample_command():
 
 
 def detonate_sample_output(response_json, sha1):
-
     report_base = response_json.get("rl", {})
 
     markdown = f"""## ReversingLabs submit sample {sha1} for Dynamic Analysis\n **Status**: {report_base.get("status")}
