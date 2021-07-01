@@ -51,6 +51,13 @@ def to_context(relationships: list, verbose: bool) -> List[dict]:
     return context_list
 
 
+def handle_stix_types(entities_types):
+    is_up_to_6_2 = is_demisto_version_ge('6.2.0')
+    if not is_up_to_6_2:
+        for obj_type in ['Attack Pattern', 'Malware', 'Report', 'Threat Actor', 'Tool']:
+            entities_types.replace(obj_type, f'STIX {obj_type}')
+
+
 ''' MAIN FUNCTION '''
 
 
@@ -65,6 +72,7 @@ def main():
         revoked = argToBoolean(args.get('revoked', 'false'))
         query = 'revoked:T' if revoked else 'revoked:F'
 
+        handle_stix_types(entities_types)
         res = demisto.executeCommand("searchRelationships", {'entities': entities, 'entityTypes': entities_types,
                                                              'relationshipNames': relationships,
                                                              'size': limit, 'query': query})

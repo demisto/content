@@ -28,11 +28,15 @@ args:
   - ssdeep
   - accountRep
   - CIDR
-  - STIX Attack Pattern
-  - STIX Malware
-  - STIX Report
-  - STIX Threat Actor
-  - STIX Tool
+  - Attack Pattern
+  - Malware
+  - Report
+  - Threat Actor
+  - Tool
+  - Intrusion Set
+  - Campaign
+  - Course of Action
+  - Infrastructure.
 - default: false
   description: 'A comma-separated list of relationship types for which to search for relationships. For example: related-to,contains. This argument can be used in conjunction with the entities and the entitiesTypes arguments and all arguments will be treated with the AND operator.'
   isArray: true
