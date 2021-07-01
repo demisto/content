@@ -2,32 +2,60 @@
   rules:
     - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/'
 
-
-trigger-private-build:
-  needs: []
-  stage: unittests-and-validations
-  extends:
+pre:
+  extends: 
+    - .push-rule
     - .default-job-settings
-  rules:
-    - if: '$SKIP_PRIVATE_BUILD == "true"'
-      when: never
-    - if: '$CI_COMMIT_BRANCH =~ /pull\/[0-9]+/'
-      when: never
-    - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/'
-    - if: '$NIGHTLY'
+  stage: .pre
   script:
-    - echo "====Trigger Private Build===="
-    - python3 Utils/trigger_private_build.py --github-token $GITHUB_TOKEN
-    - python3 Utils/get_private_build_status.py --github-token $GITHUB_TOKEN
+    - echo "CI_PIPELINE_COMMIT=$CI_PIPELINE_COMMIT"
+    - echo "CI_PIPELINE_BRANCH=$CI_PIPELINE_BRANCH"
+    - echo "$(git branch --show-current)"
+    - echo "$(git rev-parse HEAD)"
+
+manual-stage:
+  extends: 
+    - .default-job-settings
+  stage: unittests-and-validations
+  rules:
+    - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/'
+      when: manual
+      allow_failure: false  # Set to false to return to the previous behavior.
+  script:
+    - echo "CI_PIPELINE_COMMIT=$CI_PIPELINE_COMMIT"
+    - echo "CI_PIPELINE_BRANCH=$CI_PIPELINE_BRANCH"
+    - echo "$(git branch --show-current)"
+    - echo "$(git rev-parse HEAD)"
+
+
+# trigger-private-build:
+#   needs: []
+#   stage: unittests-and-validations
+#   extends:
+#     - .default-job-settings
+#   rules:
+#     - if: '$SKIP_PRIVATE_BUILD == "true"'
+#       when: never
+#     - if: '$CI_COMMIT_BRANCH =~ /pull\/[0-9]+/'
+#       when: never
+#     - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/'
+#     - if: '$NIGHTLY'
+#   script:
+#     - echo "====Trigger Private Build===="
+#     - python3 Utils/trigger_private_build.py --github-token $GITHUB_TOKEN
+#     - python3 Utils/get_private_build_status.py --github-token $GITHUB_TOKEN
 
 
 create-instances:
   extends:
     - .default-job-settings
   rules:
-    - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/'
-    - if: '$NIGHTLY'
-    - if: '$INSTANCE_TESTS'
+    - if: '"true" == "true"'
+      when: never
+  # rules:
+  #   - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/'
+  #   - if: '$NIGHTLY'
+  #   - if: '$INSTANCE_TESTS'
   cache:
     policy: pull-push
   needs: []
@@ -90,7 +118,10 @@ create-instances:
 .test_content_on_server_instances_base:
   extends:
     - .default-job-settings
-    - .push-rule
+    # - .push-rule
+  rules:
+    - if: '"true" == "true"'
+      when: never
   needs: ["create-instances"]
   stage: run-instances
   script:
@@ -117,12 +148,18 @@ create-instances:
 
 server_5_0:
   extends: .test_content_on_server_instances_base
+  rules:
+    - if: '"true" == "true"'
+      when: never
   variables:
     INSTANCE_ROLE: "Server 5.0"
 
 
 server_5_5:
   extends: .test_content_on_server_instances_base
+  rules:
+    - if: '"true" == "true"'
+      when: never
   variables:
     INSTANCE_ROLE: "Server 5.5"
 
@@ -131,7 +168,10 @@ server_6_0:
   extends: .test_content_on_server_instances_base
   #  No need to trigger in case of release branch
   rules:
-    - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/ && $CI_COMMIT_BRANCH !~ /^[0-9]{2}\.[0-9]{1,2}\.[0-9]$/'
+    - if: '"true" == "true"'
+      when: never
+  # rules:
+  #   - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/ && $CI_COMMIT_BRANCH !~ /^[0-9]{2}\.[0-9]{1,2}\.[0-9]$/'
   variables:
     INSTANCE_ROLE: "Server 6.0"
 
@@ -141,9 +181,12 @@ server_master:
     - .test_content_on_server_instances_base
   #  No need to trigger in case of release branch
   rules:
-    - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/ && $CI_COMMIT_BRANCH !~ /^[0-9]{2}\.[0-9]{1,2}\.[0-9]$/'
-    - if: '$NIGHTLY'
-      when: always
+    - if: '"true" == "true"'
+      when: never
+  # rules:
+  #   - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/ && $CI_COMMIT_BRANCH !~ /^[0-9]{2}\.[0-9]{1,2}\.[0-9]$/'
+  #   - if: '$NIGHTLY'
+  #     when: always
   variables:
     INSTANCE_ROLE: "Server Master"
 
@@ -151,8 +194,11 @@ server_master:
 fan-in-nightly:
   stage: fan-in
   rules:
-    - if: '$NIGHTLY'
-      when: always
+    - if: '"true" == "true"'
+      when: never
+  # rules:
+  #   - if: '$NIGHTLY'
+  #     when: always
   script:
     - echo "fan in"
 
@@ -161,8 +207,11 @@ slack-notify-nightly-build:
   extends:
     - .trigger-slack-notification
   rules:
-    - if: '$NIGHTLY'
-      when: always
+    - if: '"true" == "true"'
+      when: never
+  # rules:
+  #   - if: '$NIGHTLY'
+  #     when: always
   variables:
     PIPELINE_TO_QUERY: $CI_PIPELINE_ID
     WORKFLOW: 'Content Nightly'
