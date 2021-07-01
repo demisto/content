@@ -17,7 +17,7 @@ from CommonServerPython import xml2json, json2xml, entryTypes, formats, tableToM
     argToBoolean, ipv4Regex, ipv4cidrRegex, ipv6cidrRegex, ipv6Regex, batch, FeedIndicatorType, \
     encode_string_results, safe_load_json, remove_empty_elements, aws_table_to_markdown, is_demisto_version_ge, \
     appendContext, auto_detect_indicator_type, handle_proxy, get_demisto_version_as_str, get_x_content_info_headers, \
-    url_to_clickable_markdown, WarningsHandler, DemistoException
+    url_to_clickable_markdown, WarningsHandler, DemistoException, SmartGetDict
 
 try:
     from StringIO import StringIO
@@ -38,6 +38,7 @@ INFO = {'b': 1,
             'c': {'d': 10},
         }
         }
+
 
 @pytest.fixture()
 def clear_version_cache():
@@ -126,98 +127,98 @@ TABLE_TO_MARKDOWN_ONLY_DATA_PACK = [
     )
 ]
 
-DATA_WITH_URLS =  [(
-        [
-            {
+DATA_WITH_URLS = [(
+    [
+        {
             'header_1': 'a1',
             'url1': 'b1',
             'url2': 'c1'
-            },
-            {
+        },
+        {
             'header_1': 'a2',
             'url1': 'b2',
             'url2': 'c2'
-            },
-            {
+        },
+        {
             'header_1': 'a3',
             'url1': 'b3',
             'url2': 'c3'
-            }
-        ],
-'''### tableToMarkdown test
+        }
+    ],
+    '''### tableToMarkdown test
 |header_1|url1|url2|
 |---|---|---|
 | a1 | [b1](b1) | [c1](c1) |
 | a2 | [b2](b2) | [c2](c2) |
 | a3 | [b3](b3) | [c3](c3) |
 '''
-    )]
+)]
 
 COMPLEX_DATA_WITH_URLS = [(
     [
-    {'data':
+        {'data':
          {'id': '1',
           'result':
-              {'files':
-                  [
-                      {
+          {'files':
+           [
+               {
                           'filename': 'name',
                           'size': 0,
                           'url': 'url'
-                      }
-                  ]
-              },
+                          }
+           ]
+           },
           'links': ['link']
           }
-     },
-    {'data':
-        {'id': '2',
-            'result':
-            {'files':
-               [
-                   {
-                       'filename': 'name',
-                       'size': 0,
-                       'url': 'url'
-                    }
-               ]
-            },
-            'links': ['link']
+         },
+        {'data':
+         {'id': '2',
+          'result':
+          {'files':
+           [
+               {
+                   'filename': 'name',
+                   'size': 0,
+                   'url': 'url'
+               }
+           ]
+           },
+          'links': ['link']
+          }
          }
-     }
-],
+    ],
     [
-    {'data':
+        {'data':
          {'id': '1',
           'result':
-              {'files':
-                  [
-                      {
-                          'filename': 'name',
-                          'size': 0,
-                          'url': '[url](url)'
-                      }
-                  ]
-              },
+          {'files':
+           [
+               {
+                   'filename': 'name',
+                   'size': 0,
+                   'url': '[url](url)'
+               }
+           ]
+           },
           'links': ['[link](link)']
           }
-     },
-    {'data':
-        {'id': '2',
-            'result':
-            {'files':
-               [
-                   {
-                       'filename': 'name',
-                       'size': 0,
-                       'url': '[url](url)'
-                    }
-               ]
-            },
-            'links': ['[link](link)']
+         },
+        {'data':
+         {'id': '2',
+          'result':
+          {'files':
+           [
+               {
+                   'filename': 'name',
+                   'size': 0,
+                   'url': '[url](url)'
+               }
+           ]
+           },
+          'links': ['[link](link)']
+          }
          }
-     }
-])]
+    ])]
 
 
 @pytest.mark.parametrize('data, expected_table', TABLE_TO_MARKDOWN_ONLY_DATA_PACK)
@@ -2343,10 +2344,12 @@ def test_http_client_debug(mocker):
     debug_log = DebugLogger()
     from http.client import HTTPConnection
     HTTPConnection.debuglevel = 1
+    # not using 'with' because its not compatible with all python versions
     con = HTTPConnection("google.com")
     con.request('GET', '/')
-    r = con.getresponse()
-    r.read()
+    with con.getresponse() as r:
+        r.read()
+    con.close()
     assert demisto.info.call_count > 5
     assert debug_log is not None
 
@@ -2362,8 +2365,10 @@ def test_http_client_debug_int_logger_sensitive_query_params(mocker):
     HTTPConnection.debuglevel = 1
     con = HTTPConnection("google.com")
     con.request('GET', '?apikey=dummy')
-    r = con.getresponse()
-    r.read()
+    # not using 'with' because its not compatible with all python versions
+    with con.getresponse() as r:
+        r.read()
+    con.close()
     assert debug_log
     for arg in demisto.info.call_args_list:
         assert 'dummy' not in arg[0][0]
@@ -3546,8 +3551,13 @@ def test_arg_to_timestamp_invalid_inputs():
 def test_warnings_handler(mocker):
     mocker.patch.object(demisto, 'info')
     # need to initialize WarningsHandler as pytest over-rides the handler
-    handler = WarningsHandler()  # noqa
-    warnings.warn("This is a test", RuntimeWarning)
+    with pytest.warns(RuntimeWarning) as r:
+        warnings.warn("without handler", RuntimeWarning)
+        handler = WarningsHandler()  # noqa
+        warnings.warn("This is a test", RuntimeWarning)
+        assert len(r) == 1
+        assert str(r[0].message) == "without handler"
+
     # call_args is tuple (args list, kwargs). we only need the args
     msg = demisto.info.call_args[0][0]
     assert 'This is a test' in msg
@@ -4844,3 +4854,13 @@ class TestIsDemistoServerGE:
             }
         )
         assert not is_demisto_version_ge(version, build)
+
+
+def test_smart_get_dict():
+    d = {'t1': None, "t2": 1}
+    # before we remove the dict will return null which is unexpected by a lot of users
+    assert d.get('t1', 2) is None
+    s = SmartGetDict(d)
+    assert s.get('t1', 2) == 2
+    assert s.get('t2') == 1
+    assert s.get('t3') is None
