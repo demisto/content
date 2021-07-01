@@ -70,17 +70,12 @@ configuration:
   name: drop_invalids
   required: false
   type: 8
-- additionalinfo: If selected, add to empty EDL the character "#" to invalidate the EDL.
-  display: Invalidate Empty EDL
+- additionalinfo: If selected, add to an empty EDL the comment "# Empty EDL".
+  display: Add Comment To Empty EDL
   hidden: false
-  name: invalidate_empty_edl
+  name: add_comment_if_empty
   required: false
-  type: 8
-- additionalinfo: If not selected, will create a duplicate entry of glob indicator, i.e. indicator starting with *. prefix, without the wild card. e.g. *.xsoar.com indicator will add xsoar.com to the EDL.
-  display: Don't Duplicate Glob Indicators
-  hidden: false
-  name: dont_duplicate_glob
-  required: false
+  defaultvalue: true
   type: 8
 - defaultvalue: Don't Collapse
   display: 'Should Collapse IPs:'
@@ -171,21 +166,9 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: false
-      description: If set to True, add to empty EDL the character "#" to invalidate the EDL.
+      description: If selected, add to an empty EDL the comment "# Empty EDL".
       isArray: false
-      name: invalidate_empty_edl
-      predefined:
-        - 'False'
-        - 'True'
-      required: false
-      secret: false
-    - auto: PREDEFINED
-      default: false
-      defaultValue: false
-      description: If set to False, will create a duplicate of glob indicator (indicator starting with *.)
-        without the wild card (e.g. *.xsoar.com will also add xsoar.com to the EDL).
-      isArray: false
-      name: dont_duplicate_glob
+      name: add_comment_if_empty
       predefined:
         - 'False'
         - 'True'

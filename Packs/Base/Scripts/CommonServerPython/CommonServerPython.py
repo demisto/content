@@ -7614,10 +7614,36 @@ class IndicatorsSearcher:
     :type filter_fields: ``Optional[str]``
     :param filter_fields: comma separated fields to filter (e.g. "value,type")
 
+    :type from_date: ``Optional[str]``
+    :param from_date: the start date to search from.
+
+    :type query: ``Optional[str]``
+    :param query: indicator search query
+
+    :type size: ``int``
+    :param size: limit the number of returned results.
+
+    :type to_date: ``Optional[str]``
+    :param to_date: the end date to search until to.
+
+    :type value: ``str``
+    :param value: the indicator value to search.
+
+    :type limit ``Optional[int]``
+    :param limit the upper limit of the search
+
     :return: No data returned
     :rtype: ``None``
     """
-    def __init__(self, page=0, filter_fields=None):
+    def __init__(self,
+                 page=0,
+                 filter_fields=None,
+                 from_date=None,
+                 query=None,
+                 size=10,
+                 to_date=None,
+                 value='',
+                 limit=None):
         # searchAfter is available in searchIndicators from version 6.1.0
         self._can_use_search_after = is_demisto_version_ge('6.1.0')
         # populateFields merged in https://github.com/demisto/server/pull/18398
@@ -7626,22 +7652,71 @@ class IndicatorsSearcher:
         self._search_after_param = None
         self._page = page
         self._filter_fields = filter_fields
+        self._total = None
+        self._from_date = from_date
+        self._query = query
+        self._size = size
+        self._to_date = to_date
+        self._value = value
+        self._limit = limit
+
+    def __iter__(self):
+        self._total = None
+        self._search_after_param = None
+        self._page = 0
+        return self
+
+    def __next__(self):
+        if self._is_search_done():
+            raise StopIteration
+        size = min(self._size, self.limit or self._size)
+        res = self.search_indicators_by_version(from_date=self._from_date,
+                                                query=self._query,
+                                                size=size,
+                                                to_date=self._to_date,
+                                                value=self._value)
+        fetched_len = len(res.get('iocs', []))
+        if fetched_len == 0:
+            raise StopIteration
+        if self.limit:
+            self.limit -= fetched_len
+        return res
+
+    def _is_search_done(self):
+        """
+        Checks one of 2 conditions:
+        1. self._total was populated by a previous search, but no self._search_after_param
+        2. self.limit is set, and it's less or equal to zero
+        """
+        return (self._total and not self._search_after_param) or (self.limit and self.limit <= 0)
+
+    @property
+    def page(self):
+        return self._page
+
+    @property
+    def limit(self):
+        return self._limit
+
+    @limit.setter
+    def limit(self, value):
+        self._limit = value
 
     def search_indicators_by_version(self, from_date=None, query='', size=100, to_date=None, value=''):
         """There are 2 cases depends on the sever version:
         1. Search indicators using paging, raise the page number in each call.
         2. Search indicators using searchAfter param, update the _search_after_param in each call.
 
-        :type from_date: ``str``
+        :type from_date: ``Optional[str]``
         :param from_date: the start date to search from.
 
-        :type query: ``str``
+        :type query: ``Optional[str]``
         :param query: indicator search query
 
-        :type size: ``size``
+        :type size: ``int``
         :param size: limit the number of returned results.
 
-        :type to_date: ``str``
+        :type to_date: ``Optional[str]``
         :param to_date: the end date to search until to.
 
         :type value: ``str``
@@ -7660,11 +7735,10 @@ class IndicatorsSearcher:
                 value=value,
                 searchAfter=self._search_after_param,
                 populateFields=self._filter_fields if self._can_use_filter_fields else None,
-                page=self._page if not self._can_use_search_after else None
             )
             res = demisto.searchIndicators(**search_iocs_params)
             self._search_after_param = res[self._search_after_title]
-
+            self.total = res.get('total')
             if res[self._search_after_title] is None:
                 demisto.info('Elastic search using searchAfter returned all indicators')
 
@@ -7672,12 +7746,9 @@ class IndicatorsSearcher:
             res = demisto.searchIndicators(fromDate=from_date, toDate=to_date, query=query, size=size, page=self._page,
                                            value=value)
             self._page += 1
+            self.total = res.get('total')
 
         return res
-
-    @property
-    def page(self):
-        return self._page
 
 
 class AutoFocusKeyRetriever:

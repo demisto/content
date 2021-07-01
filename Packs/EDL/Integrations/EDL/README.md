@@ -37,8 +37,7 @@ Unlike `PAN-OS EDL Management`, this integration hosts the EDL on the Cortex XSO
 | Credentials | Set user and password for accessing the EDL instance. (Only applicable when https is used and a certificate profile is configured on the pan-os edl object) | False |
 | Strip Ports from URLs | If selected, a URL that includes a port number will be reformatted to remove the port. For example, 'www.example.com:9999/path' would become 'www.example.com/path'. | False |
 | PAN-OS URL Drop Invalid Entries | If selected, any URL entry that is not compliant with PAN-OS EDL URL format is dropped instead of being rewritten. | False |
-| Invalidate Empty EDL | If selected, add to empty EDL the character "#" to invalidate the EDL. | False |
-| Don't Duplicate Glob Indicators | If not selected, will create a duplicate entry of glob indicator, i.e. indicator starting with *. prefix, without the wild card. e.g. *.xsoar.com indicator will add xsoar.com to the EDL. | False |
+| Add Comment To Empty EDL | If selected, add to an empty EDL the comment "# Empty EDL". | False |
 | Collapse IPs | Whether to collapse IPs, and if so - to ranges or CIDRs. | False |
 | XSOAR Indicator Page Size | Internal page size used when querying XSOAR for the EDL. By default, this value shouldn't be changed | False |
 | NGINX Global Directives | NGINX global directives to be passed on the command line using the -g option. Each directive should end with `;`. For example: `worker_processes 4; timer_resolution 100ms;`. Advanced configuration to be used only if instructed by XSOAR Support. | False |
@@ -67,8 +66,7 @@ Use the following arguments in the URL to change the request:
 | tr | Whether to collapse IPs. 0 - to not collapse, 1 - collapse to ranges or 2 - collapse to CIDRs | `https://{server_host}/instance/execute/{instance_name}?q="type:ip and sourceBrand:my_source"&tr=1` |
 | sp | If set will strip ports off URLs, otherwise will ignore URLs with ports. | `https://{server_host}/instance/execute/{instance_name}?sp` |
 | di | If set will ignore urls which are not compliant with PAN-OS URL format instead of being re-written. | `https://{server_host}/instance/execute/{instance_name}?di` |
-| iee | If set will add to empty EDL the character "#" to invalidate the EDL. | `https://{server_host}/instance/execute/{instance_name}?iee` |
-| ddg | If not set by the instance configuration or via URL will create a duplicate entry of glob indicator, i.e. indicator starting with *. prefix, without the wild card. e.g. *.xsoar.com indicator will add xsoar.com to the EDL. | `https://{server_host}/instance/execute/{instance_name}?ddg` |
+| ce | If selected, add to an empty EDL the comment "# Empty EDL". | `https://{server_host}/instance/execute/{instance_name}?ce` |
 
 ## Commands
 You can execute these commands from the Cortex XSOAR CLI as part of an automation, or in a playbook.
@@ -89,8 +87,7 @@ Updates values stored in the EDL (only available On-Demand).
 | collapse_ips | Whether to collapse IPs, and if so - to ranges or CIDRs. | Optional |
 | drop_invalids | If True, any URL entry that is not compliant with PAN-OS EDL URL format is dropped instead of being rewritten. | Optional |
 | url_port_stripping | If set to True, a URL that includes a port number will be reformatted to remove the port. For example, 'www.example.com:9999/path' would become 'www.example.com/path'. | Optional |
-| invalidate_empty_edl | If set to True, add to empty EDL the character "#" to invalidate the EDL. | Optional |
-| dont_duplicate_glob | If set to False, will create a duplicate of glob indicator (indicator starting with *.) without the wild card (e.g. *.xsoar.com will also add xsoar.com to the EDL). | Optional |
+| add_comment_if_empty | If selected, add to an empty EDL the comment "# Empty EDL". | Optional |
 | collapse_ips | Whether to collapse IPs to ranges or CIDRs. | Optional |
 | offset | The starting entry index from which to export the indicators. | Optional |
 

@@ -7,9 +7,8 @@ import re
 from base64 import b64decode
 from flask import Flask, Response, request
 from netaddr import IPAddress, IPSet
-from typing import Callable, Any, Dict, cast
+from typing import Callable, Any, Dict, cast, Iterable
 from math import ceil
-from threading import Lock
 import urllib3
 import dateparser
 
@@ -31,7 +30,6 @@ EDL_MISSING_REFRESH_ERR_MSG: str = 'Refresh Rate must be "number date_range_unit
 EDL_FILTER_FIELDS: Optional[str] = "name,type"
 EDL_ON_DEMAND_KEY: str = 'UpdateEDL'
 EDL_ON_DEMAND_CACHE_PATH: Optional[str] = None
-EDL_LOCK = Lock()
 
 ''' REFORMATTING REGEXES '''
 _PROTOCOL_REMOVAL = re.compile('^(?:[a-z]+:)*//')
@@ -53,8 +51,7 @@ class RequestArguments:
     CTX_INVALIDS_KEY = 'drop_invalids'
     CTX_PORT_STRIP_KEY = 'url_port_stripping'
     CTX_COLLAPSE_IPS_KEY = 'collapse_ips'
-    CTX_INVALIDATE_EDL_KEY = 'invalidate_empty_edl'
-    CTX_DOMAIN_GLOB_KEY = 'dont_duplicate_glob'
+    CTX_EMPTY_EDL_COMMENT_KEY = 'add_comment_if_empty'
 
     def __init__(self,
                  query: str,
@@ -63,8 +60,7 @@ class RequestArguments:
                  url_port_stripping: bool = False,
                  drop_invalids: bool = False,
                  collapse_ips: str = DONT_COLLAPSE,
-                 invalidate_empty_edl: bool = False,
-                 dont_duplicate_glob=False):
+                 add_comment_if_empty: bool = True):
 
         self.query = query
         self.limit = try_parse_integer(limit, EDL_LIMIT_ERR_MSG)
@@ -72,8 +68,7 @@ class RequestArguments:
         self.url_port_stripping = url_port_stripping
         self.drop_invalids = drop_invalids
         self.collapse_ips = collapse_ips
-        self.invalidate_empty_edl = invalidate_empty_edl
-        self.dont_duplicate_glob = dont_duplicate_glob
+        self.add_comment_if_empty = add_comment_if_empty
 
     def to_context_json(self):
         return {
@@ -83,8 +78,7 @@ class RequestArguments:
             self.CTX_INVALIDS_KEY: self.drop_invalids,
             self.CTX_PORT_STRIP_KEY: self.url_port_stripping,
             self.CTX_COLLAPSE_IPS_KEY: self.collapse_ips,
-            self.CTX_INVALIDATE_EDL_KEY: self.invalidate_empty_edl,
-            self.CTX_DOMAIN_GLOB_KEY: self.dont_duplicate_glob
+            self.CTX_EMPTY_EDL_COMMENT_KEY: self.add_comment_if_empty,
         }
 
     @classmethod
@@ -97,8 +91,7 @@ class RequestArguments:
                 drop_invalids=ctx_dict.get(cls.CTX_INVALIDS_KEY),
                 url_port_stripping=ctx_dict.get(cls.CTX_PORT_STRIP_KEY),
                 collapse_ips=ctx_dict.get(cls.CTX_COLLAPSE_IPS_KEY),
-                invalidate_empty_edl=ctx_dict.get(cls.CTX_INVALIDATE_EDL_KEY),
-                dont_duplicate_glob=ctx_dict.get(cls.CTX_DOMAIN_GLOB_KEY),
+                add_comment_if_empty=ctx_dict.get(cls.CTX_EMPTY_EDL_COMMENT_KEY),
             )
         )
 
@@ -106,16 +99,17 @@ class RequestArguments:
 ''' HELPER FUNCTIONS '''
 
 
-def list_to_str(inp_list: list, delimiter: str = ',', map_func: Callable = str) -> str:
+def iterable_to_str(iterable: Iterable, delimiter: str = '\n') -> str:
     """
-    Transforms a list to an str, with a custom delimiter between each list item
+    Transforms an iterable object to an str, with a custom delimiter between each item
     """
     str_res = ""
-    if inp_list:
-        if isinstance(inp_list, list):
-            str_res = delimiter.join(map(map_func, inp_list))
-        else:
-            raise AttributeError('Invalid inp_list provided to list_to_str')
+    if iterable:
+        try:
+            iter(iterable)
+        except TypeError:
+            raise DemistoException(f'non iterable object provided to iterable_to_str: {iterable}')
+        str_res = delimiter.join(map(str, iterable))
     return str_res
 
 
@@ -129,110 +123,91 @@ def create_new_edl(request_args: RequestArguments) -> str:
     Returns: Formatted indicators to display in EDL
     """
     limit = request_args.offset + request_args.limit
-    indicator_searcher = IndicatorsSearcher(page=0, filter_fields=EDL_FILTER_FIELDS)
-    iocs = find_indicators_to_limit(indicator_searcher, request_args.query, limit)
-    formatted_iocs = format_indicators(iocs, request_args)
-    if len(formatted_iocs) < len(iocs):
-        # indicator list was truncated - try to fetch more indicators
-        while len(formatted_iocs) < limit:
-            current_search_limit = limit - len(formatted_iocs)
-            new_iocs = find_indicators_to_limit(indicator_searcher, request_args.query, current_search_limit)
-
-            # in case no additional indicators exist - exit
-            if len(new_iocs) == 0:
-                break
-
-            # add the new results to the existing results
-            iocs += new_iocs
-
-            # reformat the output
-            formatted_iocs = format_indicators(iocs, request_args)
-
-    return list_to_str(formatted_iocs[request_args.offset:limit], '\n')
+    indicator_searcher = IndicatorsSearcher(filter_fields=EDL_FILTER_FIELDS, query=request_args.query, size=PAGE_SIZE)
+    iocs = []
+    formatted_iocs = set()
+    while True:
+        indicator_searcher.limit = limit - len(formatted_iocs)
+        new_iocs = find_indicators_to_limit(indicator_searcher)
+        iocs.extend(new_iocs)
+        formatted_iocs = format_indicators(iocs, request_args)
+        # continue searching iocs if 1) iocs was truncated or 2) got all available iocs
+        if len(formatted_iocs) >= len(iocs) or indicator_searcher.total <= limit:
+            break
+    return iterable_to_str(list(formatted_iocs)[request_args.offset:limit])
 
 
-def find_indicators_to_limit(indicator_searcher: IndicatorsSearcher,
-                             indicator_query: str,
-                             limit: int
-                             ) -> List[dict]:
+def find_indicators_to_limit(indicator_searcher: IndicatorsSearcher) -> List[dict]:
     """
     Finds indicators using while loop with demisto.searchIndicators, and returns result and last page
 
     Parameters:
         indicator_searcher (IndicatorsSearcher): The indicator searcher used to look for indicators
-        indicator_query (str): Cortex XSOAR indicator query
-        limit (int): The maximum number of indicators to include in the EDL
 
     Returns:
         (list): List of Indicators dict with value,indicator_type keys
     """
     iocs: List[dict] = []
-    last_found_len = PAGE_SIZE
-    total_fetched = 0
-    # last_found_len should be PAGE_SIZE (or PAGE_SIZE - 1, as observed for some users) for full pages
-    while last_found_len in (PAGE_SIZE, PAGE_SIZE - 1) and (limit and total_fetched < limit):
-        res = indicator_searcher.search_indicators_by_version(query=indicator_query, size=PAGE_SIZE)
-        fetched_iocs = res.get('iocs') or []
+    for ioc_res in indicator_searcher:
+        fetched_iocs = ioc_res.get('iocs') or []
         # save only the value and type of each indicator
         iocs.extend({'value': ioc.get('value'), 'indicator_type': ioc.get('indicator_type')}
                     for ioc in fetched_iocs)
-        last_found_len = len(fetched_iocs)
-        total_fetched += last_found_len
     return iocs
 
 
-def ip_groups_to_cidrs(ip_range_groups: list):
+def ip_groups_to_cidrs(ip_range_groups: Iterable):
     """Collapse ip groups list to CIDRs
 
     Args:
-        ip_range_groups (list): a list of lists containing connected IPs
+        ip_range_groups (Iterable): an Iterable of lists containing connected IPs
 
     Returns:
-        list. a list of CIDRs.
+        Set. a set of CIDRs.
     """
-    ip_ranges = []  # type:List
+    ip_ranges = set()
     for cidr in ip_range_groups:
         # handle single ips
         if len(cidr) == 1:
             # CIDR with a single IP appears with "/32" suffix so handle them differently
-            ip_ranges.append(str(cidr[0]))
+            ip_ranges.add(str(cidr[0]))
             continue
 
-        ip_ranges.append(str(cidr))
+        ip_ranges.add(str(cidr))
 
     return ip_ranges
 
 
-def ip_groups_to_ranges(ip_range_groups: list):
-    """Collapse ip groups list to ranges.
+def ip_groups_to_ranges(ip_range_groups: Iterable):
+    """Collapse ip groups to ranges.
 
     Args:
-        ip_range_groups (list): a list of lists containing connected IPs
+        ip_range_groups (Iterable): a list of lists containing connected IPs
 
     Returns:
-        list. a list of Ranges.
+        Set. a set of Ranges.
     """
-    ip_ranges = []  # type:List
+    ip_ranges = set()
     for group in ip_range_groups:
         # handle single ips
         if len(group) == 1:
-            ip_ranges.append(str(group[0]))
+            ip_ranges.add(str(group[0]))
             continue
 
-        ip_ranges.append(str(group))
+        ip_ranges.add(str(group))
 
     return ip_ranges
 
 
-def ips_to_ranges(ips: list, collapse_ips: str):
+def ips_to_ranges(ips: Iterable, collapse_ips: str):
     """Collapse IPs to Ranges or CIDRs.
 
     Args:
-        ips (list): a list of IP strings.
+        ips (Iterable): a group of IP strings.
         collapse_ips (str): Whether to collapse to Ranges or CIDRs.
 
     Returns:
-        list. a list to Ranges or CIDRs.
+        Set. a list to Ranges or CIDRs.
     """
 
     if collapse_ips == COLLAPSE_TO_RANGES:
@@ -244,23 +219,22 @@ def ips_to_ranges(ips: list, collapse_ips: str):
         return ip_groups_to_cidrs(cidrs)
 
 
-def format_indicators(iocs: list, request_args: RequestArguments) -> list:
+def format_indicators(iocs: list, request_args: RequestArguments) -> set:
     """
     Create a list result of formatted_indicators
      * Empty list:
-         1) if invalidate_empty_edl, return ['#']
+         1) if add_comment_if_empty, return {'# Empty EDL'}
      * IP / CIDR:
          1) if collapse_ips, collapse IPs/CIDRs
      * URL:
          1) if drop_invalids, drop invalids (length > 254 or has invalid chars)
-    * Other:
+    * Other indicator types:
         1) if drop_invalids, drop invalids (has invalid chars)
         2) if port_stripping, strip ports
-        3) if not dont_duplicate_glob, add a duplicate domain without the glob - negative condition for BC
     """
-    formatted_indicators = []
-    ipv4_formatted_indicators = []
-    ipv6_formatted_indicators = []
+    formatted_indicators = set()
+    ipv4_formatted_indicators = set()
+    ipv6_formatted_indicators = set()
     for ioc in iocs:
         indicator = ioc.get('value')
         if not indicator:
@@ -295,27 +269,25 @@ def format_indicators(iocs: list, request_args: RequestArguments) -> list:
             # for PAN-OS *.domain.com does not match domain.com
             # we should provide both
             # this could generate more than num entries according to PAGE_SIZE
-            if not request_args.dont_duplicate_glob and indicator.startswith('*.'):
-                formatted_indicators.append(indicator.lstrip('*.'))
+            if indicator.startswith('*.'):
+                formatted_indicators.add(indicator.lstrip('*.'))
 
         if request_args.collapse_ips != DONT_COLLAPSE and ioc_type == FeedIndicatorType.IP:
-            ipv4_formatted_indicators.append(IPAddress(indicator))
+            ipv4_formatted_indicators.add(IPAddress(indicator))
 
         elif request_args.collapse_ips != DONT_COLLAPSE and ioc_type == FeedIndicatorType.IPv6:
-            ipv6_formatted_indicators.append(IPAddress(indicator))
+            ipv6_formatted_indicators.add(IPAddress(indicator))
 
         else:
-            formatted_indicators.append(indicator)
+            formatted_indicators.add(indicator)
 
     if len(ipv4_formatted_indicators) > 0:
         ipv4_formatted_indicators = ips_to_ranges(ipv4_formatted_indicators, request_args.collapse_ips)
-        formatted_indicators.extend(ipv4_formatted_indicators)
+        formatted_indicators.update(ipv4_formatted_indicators)
 
     if len(ipv6_formatted_indicators) > 0:
         ipv6_formatted_indicators = ips_to_ranges(ipv6_formatted_indicators, request_args.collapse_ips)
-        formatted_indicators.extend(ipv6_formatted_indicators)
-    if len(formatted_indicators) == 0 and request_args.invalidate_empty_edl:
-        formatted_indicators.append('#')
+        formatted_indicators.update(ipv6_formatted_indicators)
     return formatted_indicators
 
 
@@ -324,28 +296,18 @@ def get_edl_on_demand():
     Use the local file system to store the on-demand result, using a lock to
     limit access to the file from multiple threads.
     """
-    global EDL_ON_DEMAND_CACHE_PATH
-    try:
-        EDL_LOCK.acquire()
-        ctx = get_integration_context()
-        if EDL_ON_DEMAND_KEY in ctx:
-            ctx.pop(EDL_ON_DEMAND_KEY, None)
-            set_integration_context(ctx)
-            request_args = RequestArguments.from_context_json(ctx)
-            values_str = create_new_edl(request_args)
-            if EDL_ON_DEMAND_CACHE_PATH is None:
-                EDL_ON_DEMAND_CACHE_PATH = demisto.uniqueFile()
-            with open(EDL_ON_DEMAND_CACHE_PATH, 'w') as file:
-                file.write(values_str)
-        else:
-            if EDL_ON_DEMAND_CACHE_PATH is None:  # EDL cache was never written
-                return ""
-            else:
-                with open(EDL_ON_DEMAND_CACHE_PATH, 'r') as file:
-                    values_str = file.read()
-    finally:
-        EDL_LOCK.release()
-    return values_str
+    ctx = get_integration_context()
+    if EDL_ON_DEMAND_KEY in ctx:
+        ctx.pop(EDL_ON_DEMAND_KEY, None)
+        request_args = RequestArguments.from_context_json(ctx)
+        edl = create_new_edl(request_args)
+        with open(EDL_ON_DEMAND_CACHE_PATH, 'w') as file:
+            file.write(edl)
+        set_integration_context(ctx)
+    else:
+        with open(EDL_ON_DEMAND_CACHE_PATH, 'r') as file:
+            edl = file.read()
+    return edl
 
 
 def try_parse_integer(int_to_parse: Any, err_msg: str) -> int:
@@ -383,7 +345,7 @@ def validate_basic_authentication(headers: dict, username: str, password: str) -
 
 def get_bool_arg_or_param(args: dict, params: dict, key: str):
     val = args.get(key)
-    return val.lower() == 'true' if isinstance(val, str) else params.get(key) or False
+    return val.lower() == 'true' if isinstance(val, str) else params.get(key, False)
 
 
 ''' ROUTE FUNCTIONS '''
@@ -417,6 +379,8 @@ def route_edl() -> Response:
     edl_size = 0
     if edl.strip():
         edl_size = edl.count('\n') + 1  # add 1 as last line doesn't have a \n
+    if len(edl) == 0 and request_args.add_comment_if_empty:
+        edl = '# Empty EDL'
     max_age = ceil((datetime.now() - dateparser.parse(cache_refresh_rate)).total_seconds())  # type: ignore[operator]
     demisto.debug(f'Returning edl of size: [{edl_size}], created: [{created}], query time seconds: [{query_time}],'
                   f' max age: [{max_age}]')
@@ -447,8 +411,7 @@ def get_request_args(request_args: dict, params: dict) -> RequestArguments:
     strip_port = request_args.get('sp', params.get('url_port_stripping') or False)
     drop_invalids = request_args.get('di', params.get('drop_invalids') or False)
     collapse_ips = request_args.get('tr', params.get('collapse_ips', DONT_COLLAPSE))
-    invalidate_empty_edl = request_args.get('iee', params.get('invalidate_empty_edl') or False)
-    dont_duplicate_glob = request_args.get('ddg', params.get('dont_duplicate_glob') or False)
+    add_comment_if_empty = request_args.get('ce', params.get('add_comment_if_empty', True))
 
     # handle flags
     if drop_invalids == '':
@@ -475,8 +438,7 @@ def get_request_args(request_args: dict, params: dict) -> RequestArguments:
                             strip_port,
                             drop_invalids,
                             collapse_ips,
-                            invalidate_empty_edl,
-                            dont_duplicate_glob)
+                            add_comment_if_empty)
 
 
 ''' COMMAND FUNCTIONS '''
@@ -525,8 +487,7 @@ def update_edl_command(args: Dict, params: Dict):
     collapse_ips = args.get('collapse_ips', DONT_COLLAPSE)
     url_port_stripping = get_bool_arg_or_param(args, params, 'url_port_stripping')
     drop_invalids = get_bool_arg_or_param(args, params, 'drop_invalids')
-    invalidate_empty_edl = get_bool_arg_or_param(args, params, 'invalidate_empty_edl')
-    dont_duplicate_glob = get_bool_arg_or_param(args, params, 'dont_duplicate_glob')
+    add_comment_if_empty = get_bool_arg_or_param(args, params, 'add_comment_if_empty')
     offset = try_parse_integer(args.get('offset', 0), EDL_OFFSET_ERR_MSG)
     request_args = RequestArguments(query,
                                     limit,
@@ -534,13 +495,34 @@ def update_edl_command(args: Dict, params: Dict):
                                     url_port_stripping,
                                     drop_invalids,
                                     collapse_ips,
-                                    invalidate_empty_edl,
-                                    dont_duplicate_glob)
+                                    add_comment_if_empty)
     ctx = request_args.to_context_json()
     ctx[EDL_ON_DEMAND_KEY] = True
     set_integration_context(ctx)
     hr = 'EDL will be updated the next time you access it'
     return hr, {}, {}
+
+
+def initialize_edl_context(params: dict):
+    global EDL_ON_DEMAND_CACHE_PATH
+    limit = try_parse_integer(params.get('edl_size'), EDL_LIMIT_ERR_MSG)
+    query = params.get('indicators_query', '')
+    collapse_ips = params.get('collapse_ips', DONT_COLLAPSE)
+    url_port_stripping = params.get('url_port_stripping', False)
+    drop_invalids = params.get('drop_invalids', False)
+    add_comment_if_empty = params.get('add_comment_if_empty', True)
+    offset = 0
+    request_args = RequestArguments(query,
+                                    limit,
+                                    offset,
+                                    url_port_stripping,
+                                    drop_invalids,
+                                    collapse_ips,
+                                    add_comment_if_empty)
+    EDL_ON_DEMAND_CACHE_PATH = demisto.uniqueFile()
+    ctx = request_args.to_context_json()
+    ctx[EDL_ON_DEMAND_KEY] = True
+    set_integration_context(ctx)
 
 
 def main():
@@ -563,7 +545,6 @@ def main():
         err_msg: str = 'If using credentials, both username and password should be provided.'
         demisto.debug(err_msg)
         raise DemistoException(err_msg)
-
     command = demisto.command()
     demisto.debug(f'Command being called is {command}')
     commands = {
@@ -572,6 +553,7 @@ def main():
     }
 
     try:
+        initialize_edl_context(params)
         if command == 'long-running-execution':
             run_long_running(params)
         elif command in commands:
