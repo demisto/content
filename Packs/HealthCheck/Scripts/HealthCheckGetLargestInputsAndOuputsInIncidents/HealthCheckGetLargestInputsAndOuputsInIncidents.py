@@ -102,7 +102,8 @@ def get_extra_data_from_investigations(investigations: list, is_table_result) ->
             'getInvPlaybookMetaData',
             args={
                 "incidentId": inv.get('IncidentID'),
-        })
+            },
+        )
 
         inputs_and_outputs = raw_output.get('tasks')
         get_largest_inputs_and_outputs(inputs_and_outputs,

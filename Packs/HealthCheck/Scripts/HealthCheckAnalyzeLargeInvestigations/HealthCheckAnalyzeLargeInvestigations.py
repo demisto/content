@@ -4,17 +4,17 @@ from CommonServerPython import *  # noqa: F401
 import dateutil.relativedelta
 
 THRESHOLDS = {
-    "numberofincidentswithmorethan500entries": 300,
-    "numberofincidentsbiggerthan10mb": 1,
-    "numberofincidentsbiggerthan1mb": 300,
+    'numberofincidentswithmorethan500entries': 300,
+    'numberofincidentsbiggerthan10mb': 1,
+    'numberofincidentsbiggerthan1mb': 300,
 }
 DESCRIPTION = [
-    "Too many incidents with high number of war room entries were found, consider to use quite mode in task settings",
-    "Large incidents were found, consider to use quite mode in task settings and delete context unneeded Context"
+    'Too many incidents with high number of war room entries were found, consider to use quite mode in task settings',
+    'Large incidents were found, consider to use quite mode in task settings and delete context unneeded Context'
 ]
 RESOLUTION = [
-    "Playbook Settings: https://xsoar.pan.dev/docs/playbooks/playbook-settings",
-    "Extending Context and Ignore Outputs: https://xsoar.pan.dev/docs/playbooks/playbooks-extend-context"
+    'Playbook Settings: https://xsoar.pan.dev/docs/playbooks/playbook-settings',
+    'Extending Context and Ignore Outputs: https://xsoar.pan.dev/docs/playbooks/playbooks-extend-context'
 ]
 
 
@@ -36,9 +36,11 @@ def main(args):
     thresholds = args.get('Thresholds', THRESHOLDS)
     prev_month = datetime.today() + dateutil.relativedelta.relativedelta(months=-1)
 
-    res = execute_command("GetLargestInvestigations", {"from": prev_month.strftime("%Y-%m-%d"),
-                                                              "to": prev_month.strftime("%Y-%m-%d"),
-                                                              "table_result": "true"})
+    res = execute_command('GetLargestInvestigations', {
+        'from': prev_month.strftime('%Y-%m-%d'),
+        'to': prev_month.strftime('%Y-%m-%d'),
+        'table_result': 'true',
+    })
 
     res_data = format_dict_keys(res['data'])
     incidentsbiggerthan1mb = res_data
@@ -51,12 +53,12 @@ def main(args):
     numberofincidentswithmorethan500entries = len(incidentswithmorethan500entries)
 
     analyze_fields = {
-        "investigationsbiggerthan1mb": incidentsbiggerthan1mb,
-        "investigationsbiggerthan10mb": incidentsbiggerthan10mb,
-        "investigationswithmorethan500entries": incidentswithmorethan500entries,
-        "numberofinvestigationsbiggerthan1mb": numberofincidentsbiggerthan1mb,
-        "numberofinvestigationsbiggerthan10mb": numberofincidentsbiggerthan10mb,
-        "numberofinvestigationswithmorethan500entries": numberofincidentswithmorethan500entries,
+        'investigationsbiggerthan1mb': incidentsbiggerthan1mb,
+        'investigationsbiggerthan10mb': incidentsbiggerthan10mb,
+        'investigationswithmorethan500entries': incidentswithmorethan500entries,
+        'numberofinvestigationsbiggerthan1mb': numberofincidentsbiggerthan1mb,
+        'numberofinvestigationsbiggerthan10mb': numberofincidentsbiggerthan10mb,
+        'numberofinvestigationswithmorethan500entries': numberofincidentswithmorethan500entries,
     }
 
     execute_command('setIncident', analyze_fields)
@@ -87,7 +89,7 @@ def main(args):
         })
 
     results = CommandResults(
-        outputs_prefix="dbstatactionableitems",
+        outputs_prefix='dbstatactionableitems',
         outputs=action_items)
 
     return results
