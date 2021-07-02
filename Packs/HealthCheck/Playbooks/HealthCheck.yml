@@ -579,7 +579,7 @@ tasks:
       id: 6ad7762c-6836-4aba-8cd1-dff84ddc9218
       iscommand: false
       name: Dropped Incidents
-      script: HealthChecknumberOfDroppedIncidents
+      script: HealthCheckNumberOfDroppedIncidents
       type: regular
       version: -1
     taskid: 6ad7762c-6836-4aba-8cd1-dff84ddc9218

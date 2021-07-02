@@ -9,13 +9,13 @@ RESOLUTION = 'Free up Disk Space with Data Archiving: https://docs.paloaltonetwo
 def analyze_data(res):
     add_actions = []
     disk_usage = res[-1]['data'][0]
-    thresholds = {
+    disk_usage_thresholds = {
         90: 'High',
         80: 'Medium',
         70: 'Low',
     }
 
-    for threshold, severity in thresholds.items():
+    for threshold, severity in disk_usage_thresholds.items():
         if disk_usage > threshold:
             add_actions.append({
                 'category': 'Disk usage analysis',

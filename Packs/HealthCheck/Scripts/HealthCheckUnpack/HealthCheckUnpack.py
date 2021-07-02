@@ -1,62 +1,58 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
-
 import tarfile
 import re
 
-ExtractedFiles = []
-ec = []
 
-entryID = demisto.args()['entryID']
-
-res = demisto.executeCommand('getFilePath', {'id': demisto.args()['entryID']})
-file_path = res[0]['Contents']['path']
-file_name = res[0]['Contents']['name']
-file_suffix = re.findall(r"re:|tar|gz", file_name)
-
-
-def extractFiles(path, action):
+def extract_files(path, action):
+    extracted_files = []
     try:
-        tar = tarfile.open(path, action)
+        with tarfile.open(path, action) as tar:
+            for tar_file in tar.getnames():
+                extracted_file = tar.extractfile(tar_file)
+                if not extracted_file:
+                    continue
 
-        for tar_file in tar.getnames():
-            extracted_file = tar.extractfile(tar_file)
-            if not extracted_file:
-                continue
+                data = extracted_file.read()
+                tar_file = tar_file.rsplit('/', 1)[1]
 
-            data = extracted_file.read()
-            tar_file = tar_file.rsplit('/', 1)[1]
+                return_results(fileResult(tar_file, data))
+                extracted_files.append(tar_file)
 
-            demisto.results(fileResult(tar_file, data))
-            ExtractedFiles.append(tar_file)
+        return_results(CommandResults(
+            readable_output=tableToMarkdown('', extracted_files, headers='Extracted Files'),
+            outputs_prefix='ExtractedFiles',
+            outputs=extracted_files,
+        ))
+        return 'yes'
 
-        # To display table in war room
-        for e in ExtractedFiles:
-            ec.append({'ExtractedFiles': e})
-
-        entry = {'Type': entryTypes['note'],
-                 'Contents': ec,
-                 'ContentsFormat': formats['table'],
-                 'EntryContext': {'ExtractedFiles': ExtractedFiles}}
-
-        demisto.results(entry)
-        demisto.results('yes')
     except UnicodeDecodeError:
-        demisto.results("Could not read file")
+        return "Could not read file"
     except IndexError:
-        demisto.results("Could not extract files")
-        tar = res[0]['Contents']['path']
+        return "Could not extract files"
 
 
-if "gz" in file_suffix and "tar" in file_suffix:
-    tar_action = "r:gz"
-elif "tar" in file_suffix:
-    tar_action = "r:"
-else:
-    demisto.results('no')
+def main(args):
+    entry_id = args['entryID']
 
-if res[0]['Type'] == entryTypes['error']:
-    demisto.results('File not found')
-else:
-    extractFiles(file_path, tar_action)
+    res = demisto.getFilePath(entry_id)
+    file_path = res['path']
+    file_name = res['name']
+    file_suffix = re.findall(r"re:|tar|gz", file_name)
+
+    if "gz" in file_suffix and "tar" in file_suffix:
+        tar_action = "r:gz"
+    elif "tar" in file_suffix:
+        tar_action = "r:"
+    else:
+        return 'no'
+
+    if res[0]['Type'] == entryTypes['error']:
+        return 'File not found'
+    else:
+        extract_files(file_path, tar_action)
+
+
+if __name__ in ('__main__', '__builtin__', 'builtins'):  # pragma: no cover
+    return_results(main(demisto.args()))

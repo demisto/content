@@ -3,8 +3,6 @@ from CommonServerPython import *  # noqa: F401
 
 
 def main():
-    partition = "/"
-
     res = demisto.executeCommand("demisto-api-get", {"uri": "/system/config"})
     if is_error(res):
         return_results(res)
