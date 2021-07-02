@@ -5,22 +5,31 @@ from CommonServerPython import *  # noqa: F401
 args = demisto.args()
 
 DESCRIPTION = [
-    "The playbook: \"{}\" may be a copy of a built-in playbook, you may consider using out of the box playbooks",
-    "The playbook: \"{}\" is using a sleep command, you may consider changing it",
-    "The playbook: \"{}\" is using the setIncident command 4 times or more, which could result with DB version violation",
-    "The playbook: \"{}\" is using the \"EmailAskUser\" functionality, you may consider switching it to Data Collection",
-    "The playbook: \"{}\" is using over 30 tasks, you may want to use sub-playbooks for better organization of playbook tasks"
+    'The playbook: "{}" may be a copy of a built-in playbook, you may consider using out of the box playbooks',
+
+    'The playbook: "{}" is using a sleep command, you may consider changing it',
+
+    'The playbook: "{}" is using the setIncident command 4 times or more, which could result with DB version violation',
+
+    'The playbook: "{}" is using the "EmailAskUser" functionality, you may consider switching it to Data Collection',
+
+    'The playbook: "{}" is using over 30 tasks, you may want to use sub-playbooks for better '
+    + 'organization of playbook tasks',
 ]
 
 RESOLUTION = [
     "Consider using out of the box playbooks",
+
     "Consider changing it to prefered methods such as: https://xsoar.pan.dev/docs/playbooks/generic-polling "
-    "https://knowledgebase.paloaltonetworks.com/KCSArticleDetail?id=kA10g000000PPOaCAO",
+    + "https://knowledgebase.paloaltonetworks.com/KCSArticleDetail?id=kA10g000000PPOaCAO",
+
     "Consider joining some of the setIncident tasks",
+
     "Communication Tasks: https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-0/"
-    "cortex-xsoar-admin/playbooks/playbook-tasks/communication-tasks",
+    + "cortex-xsoar-admin/playbooks/playbook-tasks/communication-tasks",
+
     "Sub-playbook Tutorial: https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-0/"
-    "cortex-xsoar-admin/playbooks/configure-a-sub-playbook-loop/sub-playbook-tutorial"
+    + "cortex-xsoar-admin/playbooks/configure-a-sub-playbook-loop/sub-playbook-tutorial",
 ]
 
 
