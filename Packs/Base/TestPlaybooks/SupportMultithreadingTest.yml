@@ -1,0 +1,43 @@
+commonfields:
+  id: SupportMultithreadingTest
+  version: -1
+vcShouldKeepItemLegacyProdMachine: false
+name: SupportMultithreadingTest
+script: |
+  from multiprocessing.pool import ThreadPool as Pool
+  import time
+
+  if argToBoolean(demisto.args().get('use_support_multithreading')):
+      support_multithreading()
+
+  pool_size = 10
+  def worker(item):
+      demisto.info(f'======1 ITEM IS : {item}')
+      time.sleep(0.1)
+      demisto.info(f'======2 ITEM IS : {item}')
+      time.sleep(0.1)
+      demisto.info(f'======3 ITEM IS : {item}')
+
+
+  with Pool(pool_size) as pool:
+      pool.map(worker, range(10))
+
+
+  print('done')
+type: python
+tags: []
+enabled: true
+args:
+- name: use_support_multithreading
+  auto: PREDEFINED
+  predefined:
+  - "true"
+  - "false"
+scripttarget: 0
+subtype: python3
+timeout: 5ns
+pswd: ""
+runonce: false
+dockerimage: demisto/python3:3.9.5.21272
+runas: DBotWeakRole
+fromversion: 5.0.0

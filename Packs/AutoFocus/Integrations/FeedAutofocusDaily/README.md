@@ -26,7 +26,7 @@ For more information click [here](https://docs.paloaltonetworks.com/autofocus/au
 
 
 ## Commands
-You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.
+You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### Get Indicators
@@ -58,7 +58,7 @@ There is no context output for this command.
 ### Indicators from AutoFocus:
 |Value|Type|
 |---|---|
-| demisto\<Span\>.com | Domain |
+| demsito\<Span\>.com | Domain |
 | {file hash} | File |
 | 8.8.8.8 | IP |
 | demsito\<Span\>.com/some/aditional/path | URL |

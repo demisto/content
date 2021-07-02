@@ -6,7 +6,7 @@ Health Check dynamic section, showing the top ten categories of the failed integ
 | --- | --- |
 | Script Type | python3 |
 | Tags | failedInstances, dynamic-section |
-| Demisto Version | 6.0.0 |
+| Cortex XSOAR Version | 6.0.0 |
 
 ## Inputs
 ---

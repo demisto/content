@@ -15,7 +15,7 @@
 1. Click on the desired look.
 2. Look at the URL - it should end with a number - that is the ID of the look.
 
-**Option B:** Demisto commands
+**Option B:** Cortex XSOAR commands
 1. Configure looker without fetching incidents or filling in the parameter.
 2. Run looker-search-queries or looker-search-looks
 3. The ID will be part of the results (among other look details).

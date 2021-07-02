@@ -4,7 +4,7 @@ commonfields:
   version: -1
 configuration:
 - additionalinfo: The query to run to update its EDL. To view expected results, you
-    can run the following command from the Demisto CLI `!findIndicators query=<your
+    can run the following command from the Cortex XSOAR CLI `!findIndicators query=<your
     query>`
   display: Indicator Query
   name: indicators_query
@@ -103,6 +103,14 @@ configuration:
   name: nginx_server_conf
   required: false
   type: 12
+- additionalinfo: "Legacy Queries: When enabled, the integration will query the Server
+    using full queries. Enable this query mode, if you've been instructed by Support,
+    or you've encountered in the log errors of the form: msgpack: invalid code."
+  display: 'Advanced: Use Legacy Queries'
+  hidden: false
+  name: use_legacy_query
+  required: false
+  type: 8
 description: This integration provides External Dynamic List (EDL) as a service for
   the system indicators (Outbound feed).
 display: Palo Alto Networks PAN-OS EDL Service

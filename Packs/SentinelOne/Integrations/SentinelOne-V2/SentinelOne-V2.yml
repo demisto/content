@@ -98,6 +98,13 @@ script:
       name: min_active_threats
       required: false
       secret: false
+    - default: false
+      defaultValue: '10'
+      description: The maximum number of agents to return.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
     deprecated: false
     description: Returns all agents that match the specified criteria.
     execution: false
@@ -1456,7 +1463,7 @@ script:
     description: Sends an uninstall command to all agents that match the input filter.
     execution: false
     name: sentinelone-uninstall-agent
-  dockerimage: demisto/python3:3.9.4.18682
+  dockerimage: demisto/python3:3.9.5.21272
   isfetch: true
   longRunning: false
   longRunningPort: false

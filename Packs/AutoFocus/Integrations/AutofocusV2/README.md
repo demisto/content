@@ -46,11 +46,11 @@ For more information on activating the license see [Activating AutoFocus License
 
 ## Commands
 ---
-You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.
+You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### Search for samples
 ---
-Searches for samples. To view the results provide polling=true, or run the `autofocus-samples-search-results` command with the returned Af Cookie. The AF Cookie expires 120 seconds after the search completes. Use the query that was created in AutoFocus within playbooks "as-is". To run the command with the query in Demisto, wrap the query in backticks ``. For example:
+Searches for samples. To view the results provide polling=true, or run the `autofocus-samples-search-results` command with the returned Af Cookie. The AF Cookie expires 120 seconds after the search completes. Use the query that was created in AutoFocus within playbooks "as-is". To run the command with the query in Cortex XSOAR, wrap the query in backticks ``. For example:
 ```
 !autofocus-search-samples query=`{"operator":"all","children":[{"field":"sample.malware","operator":"is","value":1}]}` scope=Global sort="First Seen (Create Date)" order=Ascending
 ```

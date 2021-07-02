@@ -7,7 +7,7 @@ Assigns analysts who are not out of the office to the shift handover incident. U
 | --- | --- |
 | Script Type | python3 |
 | Tags | Shift Management, ooo |
-| Demisto Version | 5.5.0 |
+| Cortex XSOAR Version | 5.5.0 |
 
 ## Used In
 ---

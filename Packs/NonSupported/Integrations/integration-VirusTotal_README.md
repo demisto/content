@@ -1,6 +1,6 @@
 <!-- HTML_DOC -->
 <p>Use the VirusTotal integration to analyze suspicious hashes, URLs, domains, and IP addresses.</p>
-<h2>Configure VirusTotal on Demisto</h2>
+<h2>Configure VirusTotal on Cortex XSOAR</h2>
 <ol>
 <li>Navigate to<span> </span><strong>Settings</strong><span> </span>&gt;<span> </span><strong>Integrations</strong><span> </span>&gt;<span> </span><strong>Servers &amp; Services.</strong>
 </li>
@@ -25,7 +25,7 @@
 <li>Click<span> </span><strong>Test</strong><span> </span>to validate the URLs, token, and connection.</li>
 </ol>
 <h2>Commands</h2>
-<p>You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.<br> After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
+<p>You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.<br> After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
 <ol>
 <li><a href="#%E2%80%9Ch_ae006d30-0dfa-4713-bb09-0a14c5025361%E2%80%9D" target="_self">Get the reputation of a file: file</a></li>
 <li><a href="#h_b4dc406b-b389-45ed-9f42-8c70b7db6bae" target="_self">Get the reputation of an IP address: ip</a></li>

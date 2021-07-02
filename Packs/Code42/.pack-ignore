@@ -3,3 +3,9 @@ ignore=IN126
 
 [file:README.md]
 ignore=RM102
+
+[file:playbook-Code42_Exfiltration_Playbook.yml]
+ignore=BA110
+
+[file:playbook-Code42_Exfiltration_Playbook_README.md]
+ignore=RM106

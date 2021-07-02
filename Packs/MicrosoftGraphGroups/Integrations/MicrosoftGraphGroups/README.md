@@ -42,7 +42,7 @@ For more details about the authentication used in this integration, see <a href=
 
 <h2>Commands</h2>
 <p>
-  You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.
+  You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
   After you successfully execute a command, a DBot message appears in the War Room with the command details.
 </p>
 <ol>
@@ -195,7 +195,7 @@ If the collection includes DynamicMembership, the group has dynamic membership; 
     <tr>
       <td>MSGraphGroup.ProxyAddresses</td>
       <td>String</td>
-      <td>Email addresses for the group that directs to the same group mailbox. For example: ["SMTP: support@demisto.com", "smtp: support@demisto.com"].</td>
+      <td>Email addresses for the group that directs to the same group mailbox. For example: ["SMTP: example@demisto.com", "smtp: example@demisto.com"].</td>
     </tr>
     <tr>
       <td>MSGraphGroup.RenewedDateTime</td>
@@ -409,7 +409,7 @@ If the collection includes DynamicMembership, the group has dynamic membership; 
     <tr>
       <td>MSGraphGroup.ProxyAddresses</td>
       <td>String</td>
-      <td>Email addresses for the group that directs to the same group mailbox. For example: ["SMTP: support@demisto.com", "smtp: support@demisto.com"].</td>
+      <td>Email addresses for the group that directs to the same group mailbox. For example: ["SMTP: example@demisto.com", "smtp: example@demisto.com"].</td>
     </tr>
     <tr>
       <td>MSGraphGroup.RenewedDateTime</td>
@@ -640,7 +640,7 @@ If the group collection includes DynamicMembership, the group has dynamic member
     <tr>
       <td>MSGraphGroup.ProxyAddresses</td>
       <td>String</td>
-      <td>Email addresses for the group that directs to the same group mailbox. For example, ["SMTP: support@demisto.com", "smtp: support@demisto.com"].</td>
+      <td>Email addresses for the group that directs to the same group mailbox. For example, ["SMTP: example@demisto.com", "smtp: example@demisto.com"].</td>
     </tr>
     <tr>
       <td>MSGraphGroup.RenewedDateTime</td>

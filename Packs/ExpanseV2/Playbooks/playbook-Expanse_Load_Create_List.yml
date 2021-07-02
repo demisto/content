@@ -2,9 +2,9 @@ id: Expanse Load-Create List
 version: -1
 name: Expanse Load-Create List
 description: |
-  Subplaybook to support Expanse Handle Incident playbook.
-  Load a list to be used in Expanse playbook.
-  Create the list if it does not exist.
+  Sub-playbook to support Expanse Handle Incident playbook.
+  Loads a list to be used in the Expanse playbook.
+  Creates the list if it does not exist.
 starttaskid: "0"
 tasks:
   "0":
@@ -42,7 +42,7 @@ tasks:
       id: 5d981e49-dca5-49ca-88c1-c81fe74e6b7c
       version: -1
       name: List Exists?
-      description: Check if list exist in demisto lists.
+      description: Check if the list exists in the Cortex XSOAR lists.
       scriptName: IsListExist
       type: condition
       iscommand: false
@@ -120,7 +120,7 @@ tasks:
       - "2"
     scriptarguments:
       listData:
-        simple: '{}'
+        simple: ${inputs.ListValues}
       listName:
         simple: ${inputs.ListName}
     separatecontext: false
@@ -263,7 +263,7 @@ tasks:
       - "6"
     scriptarguments:
       listData:
-        simple: '{}'
+        simple: ${inputs.ListValues}
       listName:
         simple: ${inputs.ListName}
     separatecontext: false
@@ -295,7 +295,12 @@ inputs:
 - key: ListName
   value: {}
   required: true
-  description: Name of the list to load. List will be created if it does not exist/empty.
+  description: Name of the list to load. List will be created if it does not exist or is empty.
+  playbookInputQuery:
+- key: ListValues
+  value: {}
+  required: true
+  description: If the list does not exist or is empty, it will be created with these values.
   playbookInputQuery:
 outputs:
 - contextPath: ParsedList

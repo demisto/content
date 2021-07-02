@@ -1,6 +1,6 @@
 Use the Flashpoint integration to access intelligence reports, technical data, and uniquely sourced conversations from illicit threat communities.
 
-## Configure Flashpoint on Demisto
+## Configure Flashpoint on Cortex XSOAR
 
 1.  Navigate to **Settings** > **Integrations** > **Servers & Services**.
 2.  Search for Flashpoint.
@@ -18,7 +18,7 @@ Use the Flashpoint integration to access intelligence reports, technical data, a
 
 ## Commands
 
-You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.
+You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### Get the reputation of an IP
 

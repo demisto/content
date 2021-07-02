@@ -7,7 +7,7 @@ Randomly assigns the active incidents to on-call analysts (requires shift manage
 | --- | --- |
 | Script Type | python3 |
 | Tags | Shift Management, ooo |
-| Demisto Version | 5.0.0 |
+| Cortex XSOAR Version | 5.0.0 |
 
 ## Used In
 ---

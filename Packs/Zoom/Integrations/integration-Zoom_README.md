@@ -4,7 +4,7 @@
 <p>Use the Zoom integration manage your Zoom users and meetings.</p>
 <p>This integration was integrated and tested with Zoom v4.1.28165.0716.</p>
 <p> </p>
-<h2>Configure the Zoom integration on Demisto</h2>
+<h2>Configure the Zoom integration on Cortex XSOAR</h2>
 <hr>
 <ol>
 <li>Navigate to <strong>Settings</strong> &gt; <strong>Integrations</strong> &gt; <strong>Servers &amp; Services</strong>.</li>
@@ -26,7 +26,7 @@
 <p> </p>
 <h2>Commands</h2>
 <hr>
-<p>You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
+<p>You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
 <ol>
 <li><a href="#h_30899346041532346681015">Create a Zoom user: zoom-create-user</a></li>
 <li><a href="#h_473319413361532347917368">Create a Zoom meeting: zoom-create-meeting</a></li>

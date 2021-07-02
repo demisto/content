@@ -7,7 +7,7 @@ Schedules the polling task. This script is called by the `GenericPolling` playbo
 | --- | --- |
 | Script Type | python |
 | Tags | - |
-| Demisto Version | 4.0.0+ |
+| Cortex XSOAR Version | 4.0.0+ |
 
 ## Inputs
 ---

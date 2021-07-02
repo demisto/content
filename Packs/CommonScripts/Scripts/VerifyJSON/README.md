@@ -6,7 +6,7 @@ Verifies if the supplied JSON string is valid and optionally verifies against a 
 | --- | --- |
 | Script Type | powershell |
 | Tags | JSON, Utility |
-| Demisto Version | 5.5.0 |
+| Cortex XSOAR Version | 5.5.0 |
 
 ## Inputs
 ---
