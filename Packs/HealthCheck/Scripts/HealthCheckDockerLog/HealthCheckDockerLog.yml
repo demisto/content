@@ -14,7 +14,7 @@ runas: DBotWeakRole
 runonce: false
 script: ''
 scripttarget: 0
-subtype: python2
+subtype: python3
 tags: []
 timeout: 600ns
 type: python

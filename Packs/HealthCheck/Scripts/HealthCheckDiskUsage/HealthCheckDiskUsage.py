@@ -50,7 +50,7 @@ def main(args):
             if entry.get('key', "") == 'disk.partitions.to.monitor':
                 partition = entry['value']
 
-    res = demisto.executeCommand(
+    res = execute_command(
         "demisto-api-post",
         {
             "uri": f"{account_name}/statistics/widgets/query",
@@ -70,11 +70,8 @@ def main(args):
                 "widgetType": widget_type,
             }
         })
-    if is_error(res):
-        return_results(res)
-        return_error('Failed to execute demisto-api-post. See additional error details in the above entries.')
 
-    stats = res[0]["Contents"]["response"]
+    stats = res["response"]
     data = {
         "Type": 17,
         "ContentsFormat": widget_type,

@@ -3,15 +3,12 @@ from CommonServerPython import *  # noqa: F401
 
 
 def main():
-    res = demisto.executeCommand("demisto-api-get", {"uri": "/system/config"})
-    if is_error(res):
-        return_results(res)
-        return_error('Failed to execute demisto-api-get. See additional error details in the above entries.')
+    res = execute_command("demisto-api-get", {"uri": "/system/config"})
 
-    config_json = res[0]['Contents']['response']
+    config_json = res['response']
     partition = config_json.get('sysConf', {}).get('disk.partitions.to.monitor') or '/'
 
-    res = demisto.executeCommand(
+    res = execute_command(
         "demisto-api-post",
         {
             "uri": "/statistics/widgets/query",
@@ -31,13 +28,9 @@ def main():
                 "widgetType": "line",
             },
         })
-    if is_error(res):
-        return_results(res)
-        return_error('Failed to execute demisto-api-post. See additional error details in the above entries.')
 
-    stats = res[0]["Contents"]["response"]
+    stats = res["response"]
     output = []
-    counter = 0
     higher = 0
 
     build_number = get_demisto_version()['buildNumber']
@@ -65,14 +58,13 @@ def main():
         # Bar graph:
         now = datetime.utcnow()
         then = now - timedelta(days=1)
-        for entry in stats:
+        for counter, entry in enumerate(stats):
             higher = max(entry["data"][0], higher)
             if counter % 60 == 0:
                 then = then + timedelta(hours=1)
                 name = then.strftime("%H:%M")
                 output.append({"name": name, "data": [higher]})
                 higher = 0
-            counter += 1
 
         data = {
             "Type": 17,

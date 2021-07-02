@@ -36,16 +36,13 @@ def main(args):
     thresholds = args.get('Thresholds', THRESHOLDS)
     prev_month = datetime.today() + dateutil.relativedelta.relativedelta(months=-1)
 
-    res = demisto.executeCommand("GetLargestInvestigations", {"from": prev_month.strftime("%Y-%m-%d"),
+    res = execute_command("GetLargestInvestigations", {"from": prev_month.strftime("%Y-%m-%d"),
                                                               "to": prev_month.strftime("%Y-%m-%d"),
                                                               "table_result": "true"})
-    if is_error(res):
-        return_results(res)
-        return_error('Failed to run GetLargestInvestigations. See additional error details in the above entries.')
 
-    res_data = format_dict_keys(res[0]['Contents']['data'])
+    res_data = format_dict_keys(res['data'])
     incidentsbiggerthan1mb = res_data
-    numberofincidentsbiggerthan1mb = res[0]['Contents']['total']
+    numberofincidentsbiggerthan1mb = res['total']
 
     incidentsbiggerthan10mb = [incident for incident in res_data if int(incident['size'].split()[0]) > 10]
     numberofincidentsbiggerthan10mb = len(incidentsbiggerthan10mb)
@@ -62,10 +59,7 @@ def main(args):
         "numberofinvestigationswithmorethan500entries": numberofincidentswithmorethan500entries,
     }
 
-    res = demisto.executeCommand('setIncident', analyze_fields)
-    if is_error(res):
-        return_results(res)
-        return_error('Failed to run setIncident. See additional error details in the above entries.')
+    execute_command('setIncident', analyze_fields)
 
     action_items = []
     if numberofincidentswithmorethan500entries > int(thresholds['numberofincidentswithmorethan500entries']):
@@ -89,7 +83,7 @@ def main(args):
             'category': 'DB Analysis',
             'severity': 'High',
             'description': DESCRIPTION[1],
-            'resolution': '{} \n{}'.format(RESOLUTION[0], RESOLUTION[1]),
+            'resolution': '{}\n{}'.format(RESOLUTION[0], RESOLUTION[1]),
         })
 
     results = CommandResults(

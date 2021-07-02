@@ -25,20 +25,17 @@ def main(args):
     account_name = incident.get('account')
     account_name = f"acc_{account_name}/" if account_name != "" else ""
 
-    thresholds = args.get('Thresholds', THRESHOLDS)
-    indicator_res = demisto.executeCommand('demisto-api-post', {
+    indicator_thresholds = args.get('Thresholds', THRESHOLDS)
+    indicator_res = execute_command('demisto-api-post', {
         'uri': f'{account_name}/indicators/search',
         'body': BODY,
     })
-    if is_error(indicator_res):
-        return_results(indicator_res)
-        return_error('Failed to execute demisto-api-post. See additional error details in the above entries.')
 
-    indicators = indicator_res[0]['Contents']['response']['iocObjects']
+    indicators = indicator_res['response']['iocObjects']
 
     res = []
     for indicator in indicators:
-        if indicator['relatedIncCount'] > thresholds['relatedIndicatorCount']:
+        if indicator['relatedIncCount'] > indicator_thresholds['relatedIndicatorCount']:
             res.append({
                 'category': 'Indicators',
                 'severity': 'Low',

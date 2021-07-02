@@ -64,7 +64,7 @@ def main(args):
     account_name = f'acc_{account_name}/' if account_name != "" else ""
 
     is_widget = argToBoolean(args.get('isWidget', True))
-    res = demisto.executeCommand(
+    res = execute_command(
         'demisto-api-post',
         {
             'uri': f'{account_name}/statistics/widgets/query',
@@ -85,11 +85,8 @@ def main(args):
                 'widgetType': 'line',
             }
         })
-    if is_error(res):
-        return_results(res)
-        return_error('Failed to execute demisto-api-post. See additional error details in the above entries.')
 
-    stats = res[0]['Contents']['response']
+    stats = res['response']
     output = []
     counter = 0
     higher = 0

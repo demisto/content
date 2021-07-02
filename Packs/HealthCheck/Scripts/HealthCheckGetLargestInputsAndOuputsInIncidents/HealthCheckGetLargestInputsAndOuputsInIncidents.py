@@ -1,6 +1,11 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
+THRESHOLDS = {
+    'numberofincidentsIObiggerthan10mb': 1,
+    'numberofincidentsIObiggerthan1mb': 10,
+}
+
 
 def find_largest_input_or_output(all_args_list, is_table_result) -> dict:
     if is_table_result is True:
@@ -28,6 +33,7 @@ def get_largest_inputs_and_outputs(inputs_and_outputs, largest_inputs_and_output
         # in that case we ignore the results and move on.
         if isinstance(inputs_and_outputs, str):
             return
+
         if is_table_result is True:
             for task in inputs_and_outputs:
                 task_id = task.get('id')
@@ -54,6 +60,7 @@ def get_largest_inputs_and_outputs(inputs_and_outputs, largest_inputs_and_output
                             'size': float(arg.get('size', 0)) / 1024,
                             'inputoroutput': "Input",
                         })
+
         if is_table_result is False:
             for task in inputs_and_outputs:
                 task_id = task.get('id')
@@ -80,6 +87,7 @@ def get_largest_inputs_and_outputs(inputs_and_outputs, largest_inputs_and_output
                             'Size(MB)': float(arg.get('size', 0)) / 1024,
                             'InputOrOutput': "Input",
                         })
+
     if inputs:
         largest_inputs_and_outputs.append(find_largest_input_or_output(inputs, is_table_result))
 
@@ -90,38 +98,34 @@ def get_largest_inputs_and_outputs(inputs_and_outputs, largest_inputs_and_output
 def get_extra_data_from_investigations(investigations: list, is_table_result) -> list:
     largest_inputs_and_outputs: List = []
     for inv in investigations:
-        raw_output = demisto.executeCommand('getInvPlaybookMetaData',
-                                            args={
-                                                "incidentId": inv.get('IncidentID'),
-                                            })
-        if is_error(raw_output):
-            raise DemistoException(f'Failed to run getInvPlaybookMetaData:\n{get_error(raw_output)}')
+        raw_output = execute_command(
+            'getInvPlaybookMetaData',
+            args={
+                "incidentId": inv.get('IncidentID'),
+        })
 
-        inputs_and_outputs = raw_output[0].get('Contents', {}).get('tasks')
-        get_largest_inputs_and_outputs(inputs_and_outputs, largest_inputs_and_outputs, inv.get('IncidentID'), is_table_result)
+        inputs_and_outputs = raw_output.get('tasks')
+        get_largest_inputs_and_outputs(inputs_and_outputs,
+                                       largest_inputs_and_outputs,
+                                       inv.get('IncidentID'),
+                                       is_table_result)
     return largest_inputs_and_outputs
 
 
 def main():
     try:
         args = demisto.args()
-        Thresholds = {
-            "numberofincidentsIObiggerthan10mb": 1,
-            "numberofincidentsIObiggerthan1mb": 10
-        }
-        thresholds = args.get('Thresholds', Thresholds)
+        incident_thresholds = args.get('Thresholds', THRESHOLDS)
 
         daysAgo = datetime.today() - timedelta(days=30)
         is_table_result = argToBoolean(args.get('table_result', False))
 
-        raw_output = demisto.executeCommand('GetLargestInvestigations',
-                                            args={
-                                                'from': args.get('from', str(daysAgo.strftime("%Y-%m-%d"))),
-                                                'to': args.get('to'),
-                                                'table_result': 'true',
-                                            })
-        if is_error(raw_output):
-            raise DemistoException(f'Failed to run GetLargestInvestigations:\n{get_error(raw_output)}')
+        raw_output = execute_command('GetLargestInvestigations',
+                                     args={
+                                         'from': args.get('from', str(daysAgo.strftime("%Y-%m-%d"))),
+                                         'to': args.get('to'),
+                                         'table_result': 'true',
+                                     })
 
         investigations = raw_output[0].get('Contents', {}).get('data')
         data = get_extra_data_from_investigations(investigations, is_table_result)

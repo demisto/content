@@ -1,4 +1,4 @@
-**Description**: The XSOAR Health Check pack automatically reviewing the current server and content for issues and best practices. 
+The XSOAR Health Check pack automatically reviewing the current server and content for issues and best practices. 
 The pack goal is to identify potential issues and remediate them before they become a real issue.
 
 The resulting layout tabs will be produced to provide current system status and system diagnostics to identify issues to resolve.
