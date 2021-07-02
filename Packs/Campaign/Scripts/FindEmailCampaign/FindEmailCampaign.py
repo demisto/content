@@ -1,3 +1,4 @@
+import itertools
 from collections import Counter
 
 import dateutil
@@ -11,7 +12,15 @@ from nltk.corpus import stopwords
 from sklearn.feature_extraction.text import CountVectorizer
 from numpy import dot
 from numpy.linalg import norm
+from email.utils import parseaddr
+import tldextract
+import pytz
 
+
+no_fetch_extract = tldextract.TLDExtract(suffix_list_urls=None)
+utc = pytz.UTC
+
+SELF_IN_CONTEXT = False
 EMAIL_BODY_FIELD = 'emailbody'
 EMAIL_SUBJECT_FIELD = 'emailsubject'
 EMAIL_HTML_FIELD = 'emailbodyhtml'
@@ -23,7 +32,7 @@ MERGED_TEXT_FIELD = 'mereged_text'
 EMAIL_TO_FIELD = 'emailto'
 EMAIL_CC_FIELD = 'emailcc'
 EMAIL_BCC_FIELD = 'emailbcc'
-
+RECIPIENTS_COLUMNS = [EMAIL_TO_FIELD, EMAIL_CC_FIELD, EMAIL_BCC_FIELD]
 MIN_CAMPAIGN_SIZE = int(demisto.args().get("minIncidentsForCampaign", 3))
 MIN_UNIQUE_RECIPIENTS = int(demisto.args().get("minUniqueRecipients", 2))
 DUPLICATE_SENTENCE_THRESHOLD = 0.95
@@ -64,6 +73,12 @@ STATUS_DICT = {
     3: "Archive",
 }
 
+INVALID_KEY_WARNING = 'Warning: the fields {fields} was not found in the phishing incidents. Please make sure that ' \
+                      'you\'ve specified the machine-name of the fields. The machine name can be found in the ' \
+                      'settings of the incident field you are trying to search.'
+
+INCIDENTS_CONTEXT_TD = 'incidents(obj.id == val.id)'
+
 
 def return_outputs_custom(readable_output, outputs=None, tag=None):
     return_entry = {
@@ -85,22 +100,67 @@ def add_context_key(entry_context):
     return new_context
 
 
-def create_context_for_campaign_details(campaign_found=False, incidents_df=None):
+def get_recipients(row):
+    global RECIPIENTS_COLUMNS
+    return list(itertools.chain(*[row[col] for col in RECIPIENTS_COLUMNS]))
+
+
+def extract_domain(address):
+    global no_fetch_extract
+    if address == '':
+        return ''
+    email_address = parseaddr(address)[1]
+    ext = no_fetch_extract(email_address)
+    return '{}.{}'.format(ext.domain, ext.suffix)
+
+
+def extract_domain_from_recipients(row):
+    domains_list = []
+    for address in row['recipients']:
+        try:
+            domain = extract_domain(address)
+        except Exception:
+            domain = ''
+        domains_list.append(domain)
+    return domains_list
+
+
+def create_context_for_campaign_details(campaign_found=False, incidents_df=None,
+                                        additional_context_fields: list = None):
     if not campaign_found:
         return {
             'isCampaignFound': campaign_found,
         }
     else:
         incident_id = demisto.incident()['id']
-        incident_df = incidents_df[
-            ['id', 'similarity', FROM_FIELD, FROM_DOMAIN_FIELD]]  # lgtm [py/hash-unhashable-value]
-        incident_df = incident_df[incident_df['id'] != incident_id]
+        incidents_df['recipients'] = incidents_df.apply(lambda row: get_recipients(row), axis=1)
+        incidents_df['recipientsdomain'] = incidents_df.apply(lambda row: extract_domain_from_recipients(row), axis=1)
+        context_keys = {'id', 'similarity', FROM_FIELD, FROM_DOMAIN_FIELD, 'recipients', 'recipientsdomain'}
+        invalid_context_keys = set()
+        if additional_context_fields is not None:
+            for key in additional_context_fields:
+                if key in incidents_df.columns:
+                    context_keys.add(key)
+                else:
+                    invalid_context_keys.add(key)
+
+        if invalid_context_keys:
+            return_warning(INVALID_KEY_WARNING.format(fields=invalid_context_keys))
+
+        incident_df = incidents_df[context_keys]  # lgtm [py/hash-unhashable-value]
+        if not SELF_IN_CONTEXT:
+            incident_df = incident_df[incident_df['id'] != incident_id]
+
         incident_df.rename({FROM_DOMAIN_FIELD: 'emailfromdomain'}, axis=1, inplace=True)
         incidents_context = incident_df.fillna(1).to_dict(orient='records')
+        datetimes: pd.DataFrame = incidents_df['created_dt'].dropna()
+        min_datetime = min(datetimes).isoformat()
         return {
             'isCampaignFound': campaign_found,
             'involvedIncidentsCount': len(incidents_df) if incidents_df is not None else 0,
-            'incidents': incidents_context
+            'firstIncidentDate': min_datetime,
+            'fieldsToDisplay': additional_context_fields,
+            INCIDENTS_CONTEXT_TD: incidents_context
         }
 
 
@@ -162,7 +222,18 @@ def get_str_representation_top_n_values(values_list, counter_tuples_list, top_n)
     return ', '.join('{} ({})'.format(domain, count) for domain, count in domains_counter_top)
 
 
+def standardize_recipients_column(df, column):
+    if column not in df.columns:
+        df[column] = [[] for _ in range(len(df))]
+        return df
+    df[column] = df[column].apply(argToList)
+    df[column] = df[column].apply(lambda x: [value.strip() for value in x if isinstance(value, str)])
+    df[column] = df[column].apply(lambda x: [value for value in x if '@' in value])
+    return df
+
+
 def calculate_campaign_details_table(incidents_df, fields_to_display):
+    global RECIPIENTS_COLUMNS
     n_incidents = len(incidents_df)
     similarities = incidents_df['similarity'].dropna().to_list()
     max_similarity = max(similarities)
@@ -190,12 +261,12 @@ def calculate_campaign_details_table(incidents_df, fields_to_display):
     senders_counter = Counter(senders).most_common()  # type: ignore
     senders_domain = incidents_df[FROM_DOMAIN_FIELD].replace('', np.nan).dropna().tolist()
     domains_counter = Counter(senders_domain).most_common()  # type: ignore
-    if EMAIL_TO_FIELD in incidents_df.columns:
-        recipients = incidents_df[EMAIL_TO_FIELD].replace('', np.nan).dropna().tolist()
-    if EMAIL_CC_FIELD in incidents_df.columns:
-        recipients += incidents_df[EMAIL_CC_FIELD].replace('', np.nan).dropna().tolist()
-    if EMAIL_BCC_FIELD in incidents_df.columns:
-        recipients += incidents_df[EMAIL_BCC_FIELD].replace('', np.nan).dropna().tolist()
+    for column in RECIPIENTS_COLUMNS:
+        incidents_df = standardize_recipients_column(incidents_df, column)
+    recipients = []
+    for column in RECIPIENTS_COLUMNS:
+        for incidents_recipient in incidents_df[column]:
+            recipients += incidents_recipient
     recipients_counter = Counter(recipients).most_common()  # type: ignore
     if len(senders_counter) == 1:
         domain_header = "Sender domain"
@@ -220,6 +291,8 @@ def calculate_campaign_details_table(incidents_df, fields_to_display):
         if field in incidents_df.columns:
             field_values = get_non_na_empty_values(incidents_df, field)
             if len(field_values) > 0:
+                if field in RECIPIENTS_COLUMNS:
+                    field_values = [item for sublist in field_values for item in sublist]
                 field_values_counter = Counter(field_values).most_common()  # type: ignore
                 field_value_str = get_str_representation_top_n_values(field_values, field_values_counter, top_n)
                 headers.append(field)
@@ -282,7 +355,7 @@ def summarize_email_body(body, subject, nb_sentences=3, subject_weight=1.5, keyw
     return '\n'.join(summary)
 
 
-def create_email_summary_hr(incidents_df):
+def create_email_summary_hr(incidents_df, fields_to_display):
     hr_email_summary = ''
     clean_email_subject = incidents_df.iloc[0][PREPROCESSED_EMAIL_SUBJECT]
     email_summary = 'Subject: ' + clean_email_subject.replace('\n', '')
@@ -293,20 +366,52 @@ def create_email_summary_hr(incidents_df):
             email_summary = re.sub(r'(?<!\w)({})(?!\w)'.format(cased_word), '**{}**'.format(cased_word), email_summary)
     hr_email_summary += '\n\n' + '### Current Incident\'s Email Snippets'
     hr_email_summary += '\n ##### ' + email_summary
-    context = add_context_key(create_context_for_campaign_details(campaign_found=True, incidents_df=incidents_df))
+    context = add_context_key(
+        create_context_for_campaign_details(
+            campaign_found=True,
+            incidents_df=incidents_df,
+            additional_context_fields=fields_to_display
+        )
+    )
     return context, hr_email_summary
+
+
+def horizontal_to_vertical_md_table(horizontal_md_table: str) -> str:
+    """
+    convert the output of tableToMarkdown to be vertical.
+    Args:
+        horizontal_md_table: original tableToMarkdown output
+
+    Returns: md string with rotated table
+    """
+    lines = horizontal_md_table.split('\n')
+    headers_list = lines[1][1:-1].split('|')
+    content_list = lines[3][1:-1].split('|')
+
+    new_table = '\n| | |'
+    new_table += '\n|---|---|'
+    for header, content in zip(headers_list, content_list):
+        new_table += f"\n|**{header}**|{content}|"
+
+    return new_table
 
 
 def return_campaign_details_entry(incidents_df, fields_to_display):
     hr_campaign_details = calculate_campaign_details_table(incidents_df, fields_to_display)
-    context, hr_email_summary = create_email_summary_hr(incidents_df)
+    context, hr_email_summary = create_email_summary_hr(incidents_df, fields_to_display)
     hr = '\n'.join([hr_campaign_details, hr_email_summary])
+
+    vertical_hr_campaign_details = horizontal_to_vertical_md_table(hr_campaign_details)
+    demisto.executeCommand('setIncident',
+                           {'emailcampaignsummary': f"{vertical_hr_campaign_details}\n{hr_email_summary}"})
     return return_outputs_custom(hr, context, tag='campaign_details')
 
 
 def return_no_mututal_indicators_found_entry():
     hr = '### Mutual Indicators' + '\n'
     hr += 'No mutual indicators were found.'
+
+    demisto.executeCommand('setIncident', {'emailcampaignmutualindicators': hr})
     return_outputs_custom(hr, add_context_key(create_context_for_indicators()), tag='indicators')
 
 
@@ -337,6 +442,9 @@ def return_indicator_entry(incidents_df):
 
     hr = tableToMarkdown('Mutual Indicators', indicators_df.to_dict(orient='records'),
                          headers=indicators_headers)
+
+    hr_no_title = '\n'.join(hr.split('\n')[1:])
+    demisto.executeCommand('setIncident', {'emailcampaignmutualindicators': hr_no_title})  # without title
     return_outputs_custom(hr, add_context_key(create_context_for_indicators(indicators_df)), tag='indicators')
     return indicators_df
 
@@ -402,9 +510,14 @@ def draw_canvas(incidents, indicators):
                                                                     'indicators': filtered_indicators,
                                                                     'overrideUserCanvas': 'true'
                                                                     })
+
         if not is_error(res):
             res[-1]['Tags'] = ['canvas']
-            demisto.results(res)
+        try:
+            demisto.executeCommand('setIncident', {'emailcampaigncanvas': res[-1].get('HumanReadable')})
+        except Exception:
+            pass
+        demisto.results(res)
     except Exception:
         pass
 
@@ -418,13 +531,15 @@ def analyze_incidents_campaign(incidents, fields_to_display):
 
 
 def main():
-    global EMAIL_BODY_FIELD, EMAIL_SUBJECT_FIELD, EMAIL_HTML_FIELD, FROM_FIELD
+    global EMAIL_BODY_FIELD, EMAIL_SUBJECT_FIELD, EMAIL_HTML_FIELD, FROM_FIELD, SELF_IN_CONTEXT
     input_args = demisto.args()
     EMAIL_BODY_FIELD = input_args.get('emailBody', EMAIL_BODY_FIELD)
     EMAIL_SUBJECT_FIELD = input_args.get('emailSubject', EMAIL_SUBJECT_FIELD)
     EMAIL_HTML_FIELD = input_args.get('emailBodyHTML', EMAIL_HTML_FIELD)
     FROM_FIELD = input_args.get('emailFrom', FROM_FIELD)
     fields_to_display = input_args.get('fieldsToDisplay')
+    SELF_IN_CONTEXT = argToBoolean(input_args.get('includeSelf', 'false'))
+
     if fields_to_display is not None:
         input_args['populateFields'] = fields_to_display
         fields_to_display = get_comma_sep_list(fields_to_display)
@@ -435,6 +550,7 @@ def main():
         return_error(get_error(res))
     res = res[-1]
     incidents = json.loads(res['Contents'])
+
     if is_number_of_incidents_too_low(res, incidents):
         return
     if is_number_of_unique_recipients_is_too_low(incidents):

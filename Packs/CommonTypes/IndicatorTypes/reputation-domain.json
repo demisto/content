@@ -406,6 +406,62 @@
                 ]
             }
         },
+		"communitynotes": {
+			"simple": "",
+			"complex": {
+				"root": "Domain",
+				"filters": [],
+				"accessor": "CommunityNotes",
+				"transformers": [
+					{
+						"operator": "uniq",
+						"args": {}
+					}
+				]
+			}
+		},
+		"publications": {
+			"simple": "",
+			"complex": {
+				"root": "Domain",
+				"filters": [],
+				"accessor": "Publications",
+				"transformers": [
+					{
+						"operator": "uniq",
+						"args": {}
+					}
+				]
+			}
+		},
+        "feedrelatedindicators": {
+          "simple": "",
+          "complex": {
+              "root": "Domain",
+              "filters": [],
+              "accessor": "FeedRelatedIndicators",
+              "transformers": [
+                  {
+                      "operator": "uniq",
+                      "args": {}
+                  }
+              ]
+          }
+        },
+        "malwarefamily": {
+          "simple": "",
+          "complex": {
+              "root": "Domain",
+              "filters": [],
+              "accessor": "MalwareFamily",
+              "transformers": [
+                  {
+                      "operator": "uniq",
+                      "args": {}
+                  }
+              ]
+          }
+        },
         "threattypes": {
             "simple": "",
             "complex": {

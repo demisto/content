@@ -12,12 +12,12 @@ mimecast-login -> fetches new access key & secret key
 mimecast-discover -> lists supported auth types of user
 mimecast-refresh-token -> refreshes the validity duration of access key & secret key (3 days)
 <li>2. In order to use the rest of the commands, you are required to provide: App ID, App Key, Access Key, and Secret
- Key. For detailed information about creating these fields, please refer to the <a href="https://www.mimecast.com/tech-connect/authentication-scripts-server-apps/" target="_self">Mimecast Documentation</a>.</li>
+ Key. For detailed information about creating these fields, please refer to the <a href="https://integrations.mimecast.com/documentation/api-overview/authentication-and-authorization/" target="_self">Mimecast Documentation</a>.</li>
 <li>3. Fetch Incidents - the integration has the ability to fetch 3 types of incidents: url, attachment & impersonation.
 In order to activate them first tick "fetch incidents" box, then tick the relevant boxes for each fetch type you want.
 </ul><h2>Fetch Incidents</h2>
 <p>Populate this section with Fetch incidents data</p>
-<h2>Configure MimecastV2 on Demisto</h2>
+<h2>Configure MimecastV2 on Cortex XSOAR</h2>
 <ol>
   <li>Navigate to&nbsp;<strong>Settings</strong>&nbsp;&gt;&nbsp;<strong>Integrations</strong>
   &nbsp;&gt;&nbsp;<strong>Servers &amp; Services</strong>.</li>
@@ -49,7 +49,7 @@ In order to activate them first tick "fetch incidents" box, then tick the releva
 </ol>
 <h2>Commands</h2>
 <p>
-  You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.
+  You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
   After you successfully execute a command, a DBot message appears in the War Room with the command details.
 </p>
 <ol>

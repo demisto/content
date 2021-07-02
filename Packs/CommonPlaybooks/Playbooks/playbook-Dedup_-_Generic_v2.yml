@@ -679,4 +679,5 @@ outputs:
   type: unknown
 fromversion: 5.0.0
 tests:
-- Dedup - Generic v2 - Test
+- No tests
+deprecated: true

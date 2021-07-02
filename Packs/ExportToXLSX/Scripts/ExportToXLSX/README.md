@@ -7,7 +7,7 @@ Exports context data to a Microsoft Excel Open XML Spreadsheet (XLSX) file.
 | --- | --- |
 | Script Type | python3 |
 | Tags |  |
-| Demisto Version | 5.0.0 |
+| Cortex XSOAR Version | 5.0.0 |
 
 ## Inputs
 ---

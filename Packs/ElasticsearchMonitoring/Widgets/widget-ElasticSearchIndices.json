@@ -1,0 +1,25 @@
+{
+    "id": "es-indices-total",
+    "version": -1,
+    "fromVersion": "6.1.0",
+    "modified": "2021-01-12T08:20:59.592323Z",
+    "name": "Elasticsearch Current Total Indexes",
+    "dataType": "system",
+    "widgetType": "number",
+    "query": "es-index.total",
+    "isPredefined": true,
+    "description": "Elasticsearch total amount of indexes",
+    "dateRange": {
+        "fromDate": "0001-01-01T00:00:00Z",
+        "toDate": "0001-01-01T00:00:00Z",
+        "period": {
+            "by": "",
+            "byTo": "",
+            "byFrom": "",
+            "toValue": null,
+            "fromValue": null,
+            "field": ""
+        },
+        "fromDateLicense": "0001-01-01T00:00:00Z"
+    }
+}

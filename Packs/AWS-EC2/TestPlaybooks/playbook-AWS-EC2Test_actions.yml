@@ -13,6 +13,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -25,6 +26,10 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "1":
     id: "1"
     taskid: 4aa07349-33b0-4ee9-851c-9e5fb15d8e70
@@ -43,11 +48,6 @@ tasks:
       - "31"
       - "30"
       - "32"
-    scriptarguments:
-      region: {}
-      roleArn: {}
-      roleSessionDuration: {}
-      roleSessionName: {}
     separatecontext: false
     view: |-
       {
@@ -57,6 +57,10 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "2":
     id: "2"
     taskid: 15f5580d-e1a9-439c-8550-4f1e5f19b330
@@ -65,7 +69,8 @@ tasks:
       id: 15f5580d-e1a9-439c-8550-4f1e5f19b330
       version: -1
       name: aws-ec2-associate-address
-      description: Associates an Elastic IP address with an instance or a network interface.
+      description: Associates an Elastic IP address with an instance or a network
+        interface.
       script: AWS - EC2|||aws-ec2-associate-address
       type: regular
       iscommand: true
@@ -76,15 +81,8 @@ tasks:
     scriptarguments:
       allocationId:
         simple: ${AWS.EC2.ElasticIPs.AllocationId}
-      allowReassociation: {}
       instanceId:
         simple: ${AWS.EC2.Instances.InstanceId}
-      networkInterfaceId: {}
-      privateIpAddress: {}
-      region: {}
-      roleArn: {}
-      roleSessionDuration: {}
-      roleSessionName: {}
     separatecontext: false
     view: |-
       {
@@ -94,6 +92,10 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "3":
     id: "3"
     taskid: fca6d93b-45d1-488b-81a1-de3bab10b3c9
@@ -102,7 +104,9 @@ tasks:
       id: fca6d93b-45d1-488b-81a1-de3bab10b3c9
       version: -1
       name: aws-ec2-create-snapshot
-      description: Creates a snapshot of an EBS volume and stores it in Amazon S3. You can use snapshots for backups, to make copies of EBS volumes, and to save data before shutting down an instance.
+      description: Creates a snapshot of an EBS volume and stores it in Amazon S3.
+        You can use snapshots for backups, to make copies of EBS volumes, and to save
+        data before shutting down an instance.
       script: AWS - EC2|||aws-ec2-create-snapshot
       type: regular
       iscommand: true
@@ -115,11 +119,6 @@ tasks:
     scriptarguments:
       description:
         simple: test
-      region: {}
-      roleArn: {}
-      roleSessionDuration: {}
-      roleSessionName: {}
-      tags: {}
       volumeId:
         simple: ${AWS.EC2.Instances.BlockDeviceMappings.Ebs.VolumeId}
     separatecontext: false
@@ -131,6 +130,10 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "4":
     id: "4"
     taskid: e9482263-cd96-47cb-8489-ab9ad02306a2
@@ -148,10 +151,6 @@ tasks:
       '#none#':
       - "7"
     scriptarguments:
-      region: {}
-      roleArn: {}
-      roleSessionDuration: {}
-      roleSessionName: {}
       snapshotId:
         simple: ${AWS.EC2.Snapshots.SnapshotId}
     separatecontext: false
@@ -163,6 +162,10 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "5":
     id: "5"
     taskid: 0abe0a82-afeb-4e9d-82d9-16df8b16fa30
@@ -171,7 +174,8 @@ tasks:
       id: 0abe0a82-afeb-4e9d-82d9-16df8b16fa30
       version: -1
       name: aws-ec2-create-image
-      description: Creates an Amazon EBS-backed AMI from an Amazon EBS-backed instance that is either running or stopped.
+      description: Creates an Amazon EBS-backed AMI from an Amazon EBS-backed instance
+        that is either running or stopped.
       script: AWS - EC2|||aws-ec2-create-image
       type: regular
       iscommand: true
@@ -189,10 +193,6 @@ tasks:
         simple: Test
       noReboot:
         simple: "True"
-      region: {}
-      roleArn: {}
-      roleSessionDuration: {}
-      roleSessionName: {}
     separatecontext: false
     view: |-
       {
@@ -202,6 +202,10 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "6":
     id: "6"
     taskid: ef2ecab1-df53-4912-8b10-b0d5ce69fae6
@@ -221,10 +225,6 @@ tasks:
     scriptarguments:
       imageId:
         simple: ${AWS.EC2.Images.[1].ImageId}
-      region: {}
-      roleArn: {}
-      roleSessionDuration: {}
-      roleSessionName: {}
     separatecontext: false
     view: |-
       {
@@ -234,6 +234,10 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "7":
     id: "7"
     taskid: e6b1a266-9ee0-4220-8b46-3f76ec91afa2
@@ -242,7 +246,8 @@ tasks:
       id: e6b1a266-9ee0-4220-8b46-3f76ec91afa2
       version: -1
       name: aws-ec2-modify-volume
-      description: You can modify several parameters of an existing EBS volume, including volume size, volume type, and IOPS capacity.
+      description: You can modify several parameters of an existing EBS volume, including
+        volume size, volume type, and IOPS capacity.
       script: AWS - EC2|||aws-ec2-modify-volume
       type: regular
       iscommand: true
@@ -253,16 +258,10 @@ tasks:
       - "49"
       - "50"
     scriptarguments:
-      iops: {}
-      region: {}
-      roleArn: {}
-      roleSessionDuration: {}
-      roleSessionName: {}
       size:
         simple: "60"
       volumeId:
         simple: ${AWS.EC2.Instances.BlockDeviceMappings.Ebs.VolumeId}
-      volumeType: {}
     separatecontext: false
     view: |-
       {
@@ -272,6 +271,10 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "8":
     id: "8"
     taskid: 69414416-c3ce-4fa7-8243-381e9814e8b5
@@ -280,7 +283,8 @@ tasks:
       id: 69414416-c3ce-4fa7-8243-381e9814e8b5
       version: -1
       name: aws-ec2-create-tags
-      description: Adds or overwrites one or more tags for the specified Amazon EC2 resource or resources.
+      description: Adds or overwrites one or more tags for the specified Amazon EC2
+        resource or resources.
       script: AWS - EC2|||aws-ec2-create-tags
       type: regular
       iscommand: true
@@ -289,12 +293,8 @@ tasks:
       '#none#':
       - "2"
     scriptarguments:
-      region: {}
       resources:
         simple: ${AWS.EC2.Instances.InstanceId}
-      roleArn: {}
-      roleSessionDuration: {}
-      roleSessionName: {}
       tags:
         simple: key=Usage,value=Test
     separatecontext: false
@@ -306,6 +306,10 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "9":
     id: "9"
     taskid: 1f24c3b0-8b3f-40f0-82e7-87df29133f63
@@ -314,7 +318,8 @@ tasks:
       id: 1f24c3b0-8b3f-40f0-82e7-87df29133f63
       version: -1
       name: aws-ec2-disassociate-address
-      description: Disassociates an Elastic IP address from the instance or network interface its associated with.
+      description: Disassociates an Elastic IP address from the instance or network
+        interface its associated with.
       script: AWS - EC2|||aws-ec2-disassociate-address
       type: regular
       iscommand: true
@@ -325,10 +330,6 @@ tasks:
     scriptarguments:
       associationId:
         simple: ${AWS.EC2.ElasticIPs.AssociationId}
-      region: {}
-      roleArn: {}
-      roleSessionDuration: {}
-      roleSessionName: {}
     separatecontext: false
     view: |-
       {
@@ -338,6 +339,10 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "10":
     id: "10"
     taskid: 9b4d1372-5f9e-4a18-8f8a-f3dbbc02fb27
@@ -357,10 +362,6 @@ tasks:
     scriptarguments:
       allocationId:
         simple: ${AWS.EC2.ElasticIPs.AllocationId}
-      region: {}
-      roleArn: {}
-      roleSessionDuration: {}
-      roleSessionName: {}
     separatecontext: false
     view: |-
       {
@@ -370,6 +371,10 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "11":
     id: "11"
     taskid: cd812038-6402-496e-8f44-c2a30d18b65a
@@ -389,10 +394,6 @@ tasks:
     scriptarguments:
       instanceIds:
         simple: ${AWS.EC2.Instances.InstanceId}
-      region: {}
-      roleArn: {}
-      roleSessionDuration: {}
-      roleSessionName: {}
     separatecontext: false
     view: |-
       {
@@ -402,6 +403,10 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "12":
     id: "12"
     taskid: 4aa82372-623f-485b-8b17-268ba3eaa3dc
@@ -421,10 +426,6 @@ tasks:
     scriptarguments:
       instanceIds:
         simple: ${AWS.EC2.Instances.InstanceId}
-      region: {}
-      roleArn: {}
-      roleSessionDuration: {}
-      roleSessionName: {}
     separatecontext: false
     view: |-
       {
@@ -434,6 +435,10 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "13":
     id: "13"
     taskid: 8b7e1bb5-4dc7-44ac-873c-27f114859533
@@ -442,7 +447,8 @@ tasks:
       id: 8b7e1bb5-4dc7-44ac-873c-27f114859533
       version: -1
       name: aws-ec2-terminate-instances
-      description: Shuts down one or more instances. This operation is idempotent; if you terminate an instance more than once, each call succeeds.
+      description: Shuts down one or more instances. This operation is idempotent;
+        if you terminate an instance more than once, each call succeeds.
       script: AWS - EC2|||aws-ec2-terminate-instances
       type: regular
       iscommand: true
@@ -453,10 +459,6 @@ tasks:
     scriptarguments:
       instanceIds:
         simple: ${AWS.EC2.Instances.InstanceId}
-      region: {}
-      roleArn: {}
-      roleSessionDuration: {}
-      roleSessionName: {}
     separatecontext: false
     view: |-
       {
@@ -466,6 +468,10 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "14":
     id: "14"
     taskid: 3bb812e2-2a34-4ed7-8f1a-733140c727bd
@@ -474,7 +480,8 @@ tasks:
       id: 3bb812e2-2a34-4ed7-8f1a-733140c727bd
       version: -1
       name: aws-ec2-create-volume
-      description: Creates an EBS volume that can be attached to an instance in the same Availability Zone.
+      description: Creates an EBS volume that can be attached to an instance in the
+        same Availability Zone.
       script: AWS - EC2|||aws-ec2-create-volume
       type: regular
       iscommand: true
@@ -487,17 +494,8 @@ tasks:
     scriptarguments:
       availabilityZone:
         simple: ${AWS.EC2.Instances.Placement.AvailabilityZone}
-      encrypted: {}
-      iops: {}
-      kmsKeyId: {}
-      region: {}
-      roleArn: {}
-      roleSessionDuration: {}
-      roleSessionName: {}
       size:
         simple: "20"
-      snapshotId: {}
-      tags: {}
       volumeType:
         simple: gp2
     separatecontext: false
@@ -509,6 +507,10 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "15":
     id: "15"
     taskid: a2940b2b-7de9-4c3f-8979-95b6adc81069
@@ -517,7 +519,8 @@ tasks:
       id: a2940b2b-7de9-4c3f-8979-95b6adc81069
       version: -1
       name: aws-ec2-attach-volume
-      description: Attaches an EBS volume to a running or stopped instance and exposes it to the instance with the specified device name.
+      description: Attaches an EBS volume to a running or stopped instance and exposes
+        it to the instance with the specified device name.
       script: AWS - EC2|||aws-ec2-attach-volume
       type: regular
       iscommand: true
@@ -532,10 +535,6 @@ tasks:
         simple: /dev/xvdb
       instanceId:
         simple: ${AWS.EC2.Instances.InstanceId}
-      region: {}
-      roleArn: {}
-      roleSessionDuration: {}
-      roleSessionName: {}
       volumeId:
         simple: ${AWS.EC2.Volumes.VolumeId}
     separatecontext: false
@@ -547,6 +546,10 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "16":
     id: "16"
     taskid: 72d8e6c9-14c2-4f33-8e2a-85c088708930
@@ -566,13 +569,6 @@ tasks:
       - "60"
       - "59"
     scriptarguments:
-      device: {}
-      force: {}
-      instanceId: {}
-      region: {}
-      roleArn: {}
-      roleSessionDuration: {}
-      roleSessionName: {}
       volumeId:
         simple: ${AWS.EC2.Volumes.VolumeId}
     separatecontext: false
@@ -584,6 +580,10 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "17":
     id: "17"
     taskid: 97439a12-ceab-4840-8a71-4715b705fa1e
@@ -592,7 +592,8 @@ tasks:
       id: 97439a12-ceab-4840-8a71-4715b705fa1e
       version: -1
       name: aws-ec2-delete-volume
-      description: Deletes the specified EBS volume. The volume must be in the available state (not attached to an instance).
+      description: Deletes the specified EBS volume. The volume must be in the available
+        state (not attached to an instance).
       script: AWS - EC2|||aws-ec2-delete-volume
       type: regular
       iscommand: true
@@ -601,10 +602,6 @@ tasks:
       '#none#':
       - "63"
     scriptarguments:
-      region: {}
-      roleArn: {}
-      roleSessionDuration: {}
-      roleSessionName: {}
       volumeId:
         simple: ${AWS.EC2.Volumes.VolumeId}
     separatecontext: false
@@ -616,6 +613,10 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "18":
     id: "18"
     taskid: 0260c93e-a497-436b-8bfe-e06ef712d6bd
@@ -624,7 +625,12 @@ tasks:
       id: 0260c93e-a497-436b-8bfe-e06ef712d6bd
       version: -1
       name: aws-ec2-run-instances
-      description: Launches the specified number of instances using an AMI for which you have permissions. You can create a launch template , which is a resource that contains the parameters to launch an instance. When you launch an instance using RunInstances , you can specify the launch template instead of specifying the launch parameters. An instance is ready for you to use when its in the running state. You can check the state of your instance using DescribeInstances.
+      description: Launches the specified number of instances using an AMI for which
+        you have permissions. You can create a launch template , which is a resource
+        that contains the parameters to launch an instance. When you launch an instance
+        using RunInstances , you can specify the launch template instead of specifying
+        the launch parameters. An instance is ready for you to use when its in the
+        running state. You can check the state of your instance using DescribeInstances.
       script: AWS - EC2|||aws-ec2-run-instances
       type: regular
       iscommand: true
@@ -641,40 +647,22 @@ tasks:
         simple: "1"
       deviceName:
         simple: /dev/xvda
-      disableApiTermination: {}
       ebsDeleteOnTermination:
         simple: "True"
-      ebsEncrypted: {}
-      ebsIops: {}
-      ebsKmsKeyId: {}
-      ebsOptimized: {}
-      ebsSnapshotId: {}
       ebsVolumeSize:
         simple: "50"
       ebsVolumeType:
         simple: gp2
-      iamInstanceProfileArn: {}
-      iamInstanceProfileName: {}
       imageId:
         simple: ${AWS.EC2.Images.ImageId}
       instanceType:
         simple: t2.small
       keyName:
         simple: frankfurt-test
-      launchTemplateId: {}
-      launchTemplateName: {}
-      launchTemplateVersion: {}
-      region: {}
-      roleArn: {}
-      roleSessionDuration: {}
-      roleSessionName: {}
       securityGroupIds:
         simple: ${AWS.EC2.SecurityGroups.GroupId}
-      securityGroups: {}
-      subnetId: {}
       tags:
         simple: key=Name,Value=PlaybookTest
-      userData: {}
     separatecontext: false
     view: |-
       {
@@ -684,6 +672,10 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "19":
     id: "19"
     taskid: a0d22c52-0f65-4730-826b-29aa05ce4eeb
@@ -692,7 +684,8 @@ tasks:
       id: a0d22c52-0f65-4730-826b-29aa05ce4eeb
       version: -1
       name: aws-ec2-waiter-instance-running
-      description: A waiter function that runs every 15  seconds until a successful state is reached.
+      description: A waiter function that runs every 15  seconds until a successful
+        state is reached.
       script: AWS - EC2|||aws-ec2-waiter-instance-running
       type: regular
       iscommand: true
@@ -701,15 +694,8 @@ tasks:
       '#none#':
       - "13"
     scriptarguments:
-      filter: {}
       instanceIds:
         simple: ${AWS.EC2.Instances.InstanceId}
-      region: {}
-      roleArn: {}
-      roleSessionDuration: {}
-      roleSessionName: {}
-      waiterDelay: {}
-      waiterMaxAttempts: {}
     separatecontext: false
     view: |-
       {
@@ -719,6 +705,10 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "20":
     id: "20"
     taskid: 64f606bf-b770-44c1-8019-cebfa8f03397
@@ -727,7 +717,8 @@ tasks:
       id: 64f606bf-b770-44c1-8019-cebfa8f03397
       version: -1
       name: aws-ec2-waiter-instance-status-ok
-      description: A waiter function that runs every 15  seconds until a successful state is reached
+      description: A waiter function that runs every 15  seconds until a successful
+        state is reached
       script: AWS - EC2|||aws-ec2-waiter-instance-status-ok
       type: regular
       iscommand: true
@@ -736,15 +727,8 @@ tasks:
       '#none#':
       - "70"
     scriptarguments:
-      filter: {}
       instanceIds:
         simple: ${AWS.EC2.Instances.InstanceId}
-      region: {}
-      roleArn: {}
-      roleSessionDuration: {}
-      roleSessionName: {}
-      waiterDelay: {}
-      waiterMaxAttempts: {}
     separatecontext: false
     view: |-
       {
@@ -754,6 +738,10 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "21":
     id: "21"
     taskid: 63febf06-96bd-4cb7-8435-2dba189f2f5d
@@ -762,7 +750,8 @@ tasks:
       id: 63febf06-96bd-4cb7-8435-2dba189f2f5d
       version: -1
       name: aws-ec2-waiter-instance-stopped
-      description: A waiter function that runs every 15  seconds until a successful state is reached
+      description: A waiter function that runs every 15  seconds until a successful
+        state is reached
       script: AWS - EC2|||aws-ec2-waiter-instance-stopped
       type: regular
       iscommand: true
@@ -771,15 +760,8 @@ tasks:
       '#none#':
       - "11"
     scriptarguments:
-      filter: {}
       instanceIds:
         simple: ${AWS.EC2.Instances.InstanceId}
-      region: {}
-      roleArn: {}
-      roleSessionDuration: {}
-      roleSessionName: {}
-      waiterDelay: {}
-      waiterMaxAttempts: {}
     separatecontext: false
     view: |-
       {
@@ -789,6 +771,10 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "22":
     id: "22"
     taskid: a53f24dc-7981-4af9-89ba-1e95a95297be
@@ -797,7 +783,8 @@ tasks:
       id: a53f24dc-7981-4af9-89ba-1e95a95297be
       version: -1
       name: aws-ec2-waiter-instance-terminated
-      description: A waiter function that runs every 15  seconds until a successful state is reached
+      description: A waiter function that runs every 15  seconds until a successful
+        state is reached
       script: AWS - EC2|||aws-ec2-waiter-instance-terminated
       type: regular
       iscommand: true
@@ -806,15 +793,8 @@ tasks:
       '#none#':
       - "29"
     scriptarguments:
-      filter: {}
       instanceIds:
         simple: ${AWS.EC2.Instances.InstanceId}
-      region: {}
-      roleArn: {}
-      roleSessionDuration: {}
-      roleSessionName: {}
-      waiterDelay: {}
-      waiterMaxAttempts: {}
     separatecontext: false
     view: |-
       {
@@ -824,6 +804,10 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "23":
     id: "23"
     taskid: 72261e80-f1d7-46ca-80f6-c150a0d29148
@@ -841,17 +825,8 @@ tasks:
       '#none#':
       - "66"
     scriptarguments:
-      executableUsers: {}
-      filters: {}
       imageIds:
         simple: ${AWS.EC2.Images.[1].ImageId}
-      owners: {}
-      region: {}
-      roleArn: {}
-      roleSessionDuration: {}
-      roleSessionName: {}
-      waiterDelay: {}
-      waiterMaxAttempts: {}
     separatecontext: false
     view: |-
       {
@@ -861,6 +836,10 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "24":
     id: "24"
     taskid: 3d68dea3-8e6e-49de-83b1-7962325062dd
@@ -878,17 +857,8 @@ tasks:
       '#none#':
       - "67"
     scriptarguments:
-      filters: {}
-      ownerIds: {}
-      region: {}
-      restorableByUserIds: {}
-      roleArn: {}
-      roleSessionDuration: {}
-      roleSessionName: {}
       snapshotIds:
         simple: ${AWS.EC2.Snapshots.SnapshotId}
-      waiterDelay: {}
-      waiterMaxAttempts: {}
     separatecontext: false
     view: |-
       {
@@ -898,6 +868,10 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "25":
     id: "25"
     taskid: 1be14a97-9bf5-4b67-8fd3-d60743a17f67
@@ -917,15 +891,10 @@ tasks:
       - "35"
       - "33"
     scriptarguments:
-      executableUsers: {}
       filters:
         simple: Name=name,Values=CentOS Linux 7 x86_64 HVM EBS*
       owners:
         simple: aws-marketplace
-      region: {}
-      roleArn: {}
-      roleSessionDuration: {}
-      roleSessionName: {}
     separatecontext: false
     view: |-
       {
@@ -935,6 +904,10 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "26":
     id: "26"
     taskid: a812275d-aec3-41f3-8ecc-d79637a24f94
@@ -958,10 +931,6 @@ tasks:
         simple: Demisto-PlaybookTest
       groupName:
         simple: Demisto-PlaybookTest
-      region: {}
-      roleArn: {}
-      roleSessionDuration: {}
-      roleSessionName: {}
       vpcId:
         simple: vpc-7bfc8e10
     separatecontext: false
@@ -973,6 +942,10 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "27":
     id: "27"
     taskid: c2e32871-45ce-4677-800c-2342583b2c38
@@ -989,20 +962,19 @@ tasks:
     scriptarguments:
       groupId:
         simple: ${AWS.EC2.SecurityGroups.GroupId}
-      groupName: {}
-      region: {}
-      roleArn: {}
-      roleSessionDuration: {}
-      roleSessionName: {}
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 910,
-          "y": 8770
+          "y": 8945
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "28":
     id: "28"
     taskid: 0ad15846-9c50-4d9f-86e8-f4f66b5a42c8
@@ -1028,11 +1000,6 @@ tasks:
         simple: ${AWS.EC2.SecurityGroups.GroupId}
       ipProtocol:
         simple: TCP
-      region: {}
-      roleArn: {}
-      roleSessionDuration: {}
-      roleSessionName: {}
-      sourceSecurityGroupName: {}
       toPort:
         simple: "22"
     separatecontext: false
@@ -1044,6 +1011,10 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "29":
     id: "29"
     taskid: 692065ec-88f9-4160-852d-ebc94dfb93f9
@@ -1052,14 +1023,16 @@ tasks:
       id: 692065ec-88f9-4160-852d-ebc94dfb93f9
       version: -1
       name: aws-ec2-revoke-security-group-ingress-rule
-      description: Removes egress rule from a security group. To remove a rule, the values that you specify (for example, ports) must match the existing rule's values exactly.
+      description: Removes egress rule from a security group. To remove a rule, the
+        values that you specify (for example, ports) must match the existing rule's
+        values exactly.
       script: AWS - EC2|||aws-ec2-revoke-security-group-ingress-rule
       type: regular
       iscommand: true
       brand: AWS - EC2
     nexttasks:
       '#none#':
-      - "27"
+      - "72"
     scriptarguments:
       cidrIp:
         simple: 0.0.0.0/0
@@ -1069,11 +1042,6 @@ tasks:
         simple: ${AWS.EC2.SecurityGroups.GroupId}
       ipProtocol:
         simple: TCP
-      region: {}
-      roleArn: {}
-      roleSessionDuration: {}
-      roleSessionName: {}
-      sourceSecurityGroupName: {}
       toPort:
         simple: "22"
     separatecontext: false
@@ -1085,6 +1053,10 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "30":
     id: "30"
     taskid: e9450631-5f3d-4dc8-87ad-c924b370ea5b
@@ -1107,8 +1079,6 @@ tasks:
       '#none#':
       - "25"
     scriptarguments:
-      expectedValue: {}
-      fields: {}
       path:
         simple: AWS.EC2.ElasticIPs.AllocationId
     separatecontext: false
@@ -1120,6 +1090,10 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "31":
     id: "31"
     taskid: 30669d1a-294b-47b1-8b99-6ea76e5a3cc5
@@ -1142,8 +1116,6 @@ tasks:
       '#none#':
       - "25"
     scriptarguments:
-      expectedValue: {}
-      fields: {}
       path:
         simple: AWS.EC2.ElasticIPs.Domain
     separatecontext: false
@@ -1155,6 +1127,10 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "32":
     id: "32"
     taskid: c00b6c3b-35b4-486f-8c27-dfde0c92f65f
@@ -1177,8 +1153,6 @@ tasks:
       '#none#':
       - "25"
     scriptarguments:
-      expectedValue: {}
-      fields: {}
       path:
         simple: AWS.EC2.ElasticIPs.PublicIp
     separatecontext: false
@@ -1190,6 +1164,10 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "33":
     id: "33"
     taskid: e316159b-21c6-448c-8a22-e0ee34d037b9
@@ -1212,8 +1190,6 @@ tasks:
       '#none#':
       - "26"
     scriptarguments:
-      expectedValue: {}
-      fields: {}
       path:
         simple: AWS.EC2.Images.CreationDate
     separatecontext: false
@@ -1225,6 +1201,10 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "34":
     id: "34"
     taskid: 2d059368-16ff-4c9d-863d-2dae9c2ae662
@@ -1247,8 +1227,6 @@ tasks:
       '#none#':
       - "26"
     scriptarguments:
-      expectedValue: {}
-      fields: {}
       path:
         simple: AWS.EC2.Images.ImageId
     separatecontext: false
@@ -1260,6 +1238,10 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "35":
     id: "35"
     taskid: ec427bd8-ca7f-4813-841b-1c1d6571e4b7
@@ -1282,8 +1264,6 @@ tasks:
       '#none#':
       - "26"
     scriptarguments:
-      expectedValue: {}
-      fields: {}
       path:
         simple: AWS.EC2.Images.ImageType
     separatecontext: false
@@ -1295,6 +1275,10 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "36":
     id: "36"
     taskid: c4b1f30e-11d9-4a9f-8055-a5e996db441c
@@ -1317,8 +1301,6 @@ tasks:
       '#none#':
       - "28"
     scriptarguments:
-      expectedValue: {}
-      fields: {}
       path:
         simple: AWS.EC2.SecurityGroups.VpcId
     separatecontext: false
@@ -1330,6 +1312,10 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "37":
     id: "37"
     taskid: db4ee8a3-01c1-4842-8d44-2d967e6e8ddd
@@ -1352,8 +1338,6 @@ tasks:
       '#none#':
       - "28"
     scriptarguments:
-      expectedValue: {}
-      fields: {}
       path:
         simple: AWS.EC2.SecurityGroups.Description
     separatecontext: false
@@ -1365,6 +1349,10 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "38":
     id: "38"
     taskid: bab6b383-dd1d-4524-89db-473eedbb47b1
@@ -1387,8 +1375,6 @@ tasks:
       '#none#':
       - "28"
     scriptarguments:
-      expectedValue: {}
-      fields: {}
       path:
         simple: AWS.EC2.SecurityGroups.GroupName
     separatecontext: false
@@ -1400,6 +1386,10 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "39":
     id: "39"
     taskid: b198c853-5559-46ff-87ce-7cc57a63b99f
@@ -1422,8 +1412,6 @@ tasks:
       '#none#':
       - "20"
     scriptarguments:
-      expectedValue: {}
-      fields: {}
       path:
         simple: AWS.EC2.Instances.InstanceType
     separatecontext: false
@@ -1435,6 +1423,10 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "40":
     id: "40"
     taskid: 9a56cbdc-a759-439d-8fe7-27033e30a3c0
@@ -1457,8 +1449,6 @@ tasks:
       '#none#':
       - "20"
     scriptarguments:
-      expectedValue: {}
-      fields: {}
       path:
         simple: AWS.EC2.Instances.SecurityGroups.GroupId
     separatecontext: false
@@ -1470,6 +1460,10 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "41":
     id: "41"
     taskid: f17efbd4-8dde-42bf-8a2e-4ded2d456140
@@ -1492,8 +1486,6 @@ tasks:
       '#none#':
       - "20"
     scriptarguments:
-      expectedValue: {}
-      fields: {}
       path:
         simple: AWS.EC2.Instances.InstanceId
     separatecontext: false
@@ -1505,6 +1497,10 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "42":
     id: "42"
     taskid: d58ae543-a310-430b-8978-055151d0d863
@@ -1527,8 +1523,6 @@ tasks:
       '#none#':
       - "20"
     scriptarguments:
-      expectedValue: {}
-      fields: {}
       path:
         simple: AWS.EC2.Instances.Monitoring.State
     separatecontext: false
@@ -1540,6 +1534,10 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "43":
     id: "43"
     taskid: b4404c3f-98b2-4643-868a-1c8104b08d16
@@ -1562,8 +1560,6 @@ tasks:
       '#none#':
       - "20"
     scriptarguments:
-      expectedValue: {}
-      fields: {}
       path:
         simple: AWS.EC2.Instances.SubnetId
     separatecontext: false
@@ -1575,6 +1571,10 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "44":
     id: "44"
     taskid: 6e4303be-a69f-430a-8777-9de8ce95a4fc
@@ -1597,8 +1597,6 @@ tasks:
       '#none#':
       - "68"
     scriptarguments:
-      expectedValue: {}
-      fields: {}
       path:
         simple: AWS.EC2.ElasticIPs.AssociationId
     separatecontext: false
@@ -1610,6 +1608,10 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "45":
     id: "45"
     taskid: b30bea42-3071-44af-8949-eb58bcff48ff
@@ -1632,8 +1634,6 @@ tasks:
       '#none#':
       - "24"
     scriptarguments:
-      expectedValue: {}
-      fields: {}
       path:
         simple: AWS.EC2.Snapshots.SnapshotId
     separatecontext: false
@@ -1645,6 +1645,10 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "46":
     id: "46"
     taskid: 7b279655-bf6e-497d-8a94-bae5357c9cf7
@@ -1667,8 +1671,6 @@ tasks:
       '#none#':
       - "24"
     scriptarguments:
-      expectedValue: {}
-      fields: {}
       path:
         simple: AWS.EC2.Snapshots.State
     separatecontext: false
@@ -1680,6 +1682,10 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "47":
     id: "47"
     taskid: 2503e053-c276-4334-873c-0f7cc7a21634
@@ -1702,8 +1708,6 @@ tasks:
       '#none#':
       - "24"
     scriptarguments:
-      expectedValue: {}
-      fields: {}
       path:
         simple: AWS.EC2.Snapshots.StartTime
     separatecontext: false
@@ -1715,6 +1719,10 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "48":
     id: "48"
     taskid: 95ab4445-6f47-4e43-8ab1-f3363d9d6d1f
@@ -1737,8 +1745,6 @@ tasks:
       '#none#':
       - "5"
     scriptarguments:
-      expectedValue: {}
-      fields: {}
       path:
         simple: AWS.EC2.Volumes.Modification.VolumeId
     separatecontext: false
@@ -1750,6 +1756,10 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "49":
     id: "49"
     taskid: ee49871f-fdb4-4ed2-886c-661d50870103
@@ -1772,8 +1782,6 @@ tasks:
       '#none#':
       - "5"
     scriptarguments:
-      expectedValue: {}
-      fields: {}
       path:
         simple: AWS.EC2.Volumes.Modification.ModificationState
     separatecontext: false
@@ -1785,6 +1793,10 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "50":
     id: "50"
     taskid: b4491887-ab68-4240-8746-71cd62c48c62
@@ -1807,8 +1819,6 @@ tasks:
       '#none#':
       - "5"
     scriptarguments:
-      expectedValue: {}
-      fields: {}
       path:
         simple: AWS.EC2.Volumes.Modification.OriginalSize
     separatecontext: false
@@ -1820,6 +1830,10 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "51":
     id: "51"
     taskid: c3bfe8c7-8a9b-4219-8900-57e57f8ef2d8
@@ -1842,8 +1856,6 @@ tasks:
       '#none#':
       - "23"
     scriptarguments:
-      expectedValue: {}
-      fields: {}
       path:
         simple: AWS.EC2.Images.Name
     separatecontext: false
@@ -1855,6 +1867,10 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "52":
     id: "52"
     taskid: 4c1afaab-7582-42f8-8bd7-000b7476bb17
@@ -1877,8 +1893,6 @@ tasks:
       '#none#':
       - "23"
     scriptarguments:
-      expectedValue: {}
-      fields: {}
       path:
         simple: AWS.EC2.Images.ImageId
     separatecontext: false
@@ -1890,6 +1904,10 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "53":
     id: "53"
     taskid: 06458db2-6ec1-4c06-8cdf-033e90885ffb
@@ -1912,8 +1930,6 @@ tasks:
       '#none#':
       - "15"
     scriptarguments:
-      expectedValue: {}
-      fields: {}
       path:
         simple: AWS.EC2.Volumes.Iops
     separatecontext: false
@@ -1925,6 +1941,10 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "54":
     id: "54"
     taskid: 560a025e-1b13-4f9c-8d6b-78c5eba6ec85
@@ -1947,8 +1967,6 @@ tasks:
       '#none#':
       - "15"
     scriptarguments:
-      expectedValue: {}
-      fields: {}
       path:
         simple: AWS.EC2.Volumes.VolumeId
     separatecontext: false
@@ -1960,6 +1978,10 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "55":
     id: "55"
     taskid: 5acde28c-b1cc-4bc7-8a8b-47bda9c56e30
@@ -1982,8 +2004,6 @@ tasks:
       '#none#':
       - "15"
     scriptarguments:
-      expectedValue: {}
-      fields: {}
       path:
         simple: AWS.EC2.Volumes.Size
     separatecontext: false
@@ -1995,6 +2015,10 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "56":
     id: "56"
     taskid: 38b9a152-8dd9-4a30-85eb-7433147f63b5
@@ -2017,8 +2041,6 @@ tasks:
       '#none#':
       - "16"
     scriptarguments:
-      expectedValue: {}
-      fields: {}
       path:
         simple: AWS.EC2.Volumes.Attachments.Device
     separatecontext: false
@@ -2030,6 +2052,10 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "57":
     id: "57"
     taskid: cdb0ee85-30ed-4e29-89b0-7cd347837713
@@ -2052,8 +2078,6 @@ tasks:
       '#none#':
       - "16"
     scriptarguments:
-      expectedValue: {}
-      fields: {}
       path:
         simple: AWS.EC2.Volumes.Attachments.VolumeId
     separatecontext: false
@@ -2065,6 +2089,10 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "58":
     id: "58"
     taskid: 1b8c5995-fc14-479d-82d4-535d33251a6e
@@ -2087,8 +2115,6 @@ tasks:
       '#none#':
       - "16"
     scriptarguments:
-      expectedValue: {}
-      fields: {}
       path:
         simple: AWS.EC2.Volumes.Attachments.AttachTime
     separatecontext: false
@@ -2100,6 +2126,10 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "59":
     id: "59"
     taskid: 98d721ad-4800-4a7d-8f0f-3e55a45fc396
@@ -2122,8 +2152,6 @@ tasks:
       '#none#':
       - "17"
     scriptarguments:
-      expectedValue: {}
-      fields: {}
       path:
         simple: AWS.EC2.Volumes.Attachments.InstanceId
     separatecontext: false
@@ -2135,6 +2163,10 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "60":
     id: "60"
     taskid: 84074114-c438-40ad-8e3e-1cd41161584d
@@ -2157,8 +2189,6 @@ tasks:
       '#none#':
       - "17"
     scriptarguments:
-      expectedValue: {}
-      fields: {}
       path:
         simple: AWS.EC2.Volumes.Attachments.AttachTime
     separatecontext: false
@@ -2170,6 +2200,10 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "61":
     id: "61"
     taskid: ba0ca8e6-d5fc-46b2-8849-37fdab3cc88d
@@ -2192,8 +2226,6 @@ tasks:
       '#none#':
       - "17"
     scriptarguments:
-      expectedValue: {}
-      fields: {}
       path:
         simple: AWS.EC2.Volumes.Attachments.Device
     separatecontext: false
@@ -2205,6 +2237,10 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "62":
     id: "62"
     taskid: 81cca167-9479-4abb-8d66-47e370d93e81
@@ -2222,13 +2258,8 @@ tasks:
       '#none#':
       - "8"
     scriptarguments:
-      filters: {}
       instanceIds:
         simple: ${AWS.EC2.Instances.InstanceId}
-      region: {}
-      roleArn: {}
-      roleSessionDuration: {}
-      roleSessionName: {}
     separatecontext: false
     view: |-
       {
@@ -2238,6 +2269,10 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "63":
     id: "63"
     taskid: cd9f9a22-9431-418d-8f27-309b6ea25e65
@@ -2246,7 +2281,11 @@ tasks:
       id: cd9f9a22-9431-418d-8f27-309b6ea25e65
       version: -1
       name: aws-ec2-reboot-instances
-      description: Requests a reboot of one or more instances. This operation is asynchronous; it only queues a request to reboot the specified instances. The operation succeeds if the instances are valid and belong to you. Requests to reboot terminated instances are ignored.  If an instance does not cleanly shut down within four minutes, Amazon EC2 performs a hard reboot.
+      description: Requests a reboot of one or more instances. This operation is asynchronous;
+        it only queues a request to reboot the specified instances. The operation
+        succeeds if the instances are valid and belong to you. Requests to reboot
+        terminated instances are ignored.  If an instance does not cleanly shut down
+        within four minutes, Amazon EC2 performs a hard reboot.
       script: AWS - EC2_copy|||aws-ec2-reboot-instances
       type: regular
       iscommand: true
@@ -2254,8 +2293,6 @@ tasks:
     nexttasks:
       '#none#':
       - "9"
-    scriptarguments:
-      instanceIds: {}
     separatecontext: false
     view: |-
       {
@@ -2265,6 +2302,10 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "64":
     id: "64"
     taskid: 99e87193-f9fd-4766-8552-77919f5742a8
@@ -2293,6 +2334,10 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "65":
     id: "65"
     taskid: 5845d4a8-632f-4c83-8e35-437f047bcbab
@@ -2321,6 +2366,10 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "66":
     id: "66"
     taskid: 54c89ed3-9696-49bb-8285-7cf09d0d19bb
@@ -2329,7 +2378,8 @@ tasks:
       id: 54c89ed3-9696-49bb-8285-7cf09d0d19bb
       version: -1
       name: aws-ec2-copy-image
-      description: Initiates the copy of an AMI from the specified source region to the current region.
+      description: Initiates the copy of an AMI from the specified source region to
+        the current region.
       script: AWS - EC2_copy|||aws-ec2-copy-image
       type: regular
       iscommand: true
@@ -2338,10 +2388,6 @@ tasks:
       '#none#':
       - "6"
     scriptarguments:
-      clientToken: {}
-      description: {}
-      encrypted: {}
-      kmsKeyId: {}
       name:
         simple: test2
       sourceImageId:
@@ -2357,6 +2403,10 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "67":
     id: "67"
     taskid: ccb58b2a-52f1-48a8-8aaa-6b591a5bad47
@@ -2365,7 +2415,9 @@ tasks:
       id: ccb58b2a-52f1-48a8-8aaa-6b591a5bad47
       version: -1
       name: aws-ec2-copy-snapshot
-      description: Copies a point-in-time snapshot of an EBS volume and stores it in Amazon S3. You can copy the snapshot within the same region or from one region to another.
+      description: Copies a point-in-time snapshot of an EBS volume and stores it
+        in Amazon S3. You can copy the snapshot within the same region or from one
+        region to another.
       script: AWS - EC2_copy|||aws-ec2-copy-snapshot
       type: regular
       iscommand: true
@@ -2374,9 +2426,6 @@ tasks:
       '#none#':
       - "4"
     scriptarguments:
-      description: {}
-      encrypted: {}
-      kmsKeyId: {}
       sourceRegion:
         simple: eu-central-1
       sourceSnapshotId:
@@ -2390,6 +2439,10 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "68":
     id: "68"
     taskid: 57ac74a5-4136-48f0-8b0b-2db68beacceb
@@ -2406,7 +2459,6 @@ tasks:
       '#none#':
       - "3"
     scriptarguments:
-      all: {}
       key:
         simple: AWS.EC2.Images
     separatecontext: false
@@ -2418,6 +2470,10 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "69":
     id: "69"
     taskid: 11405132-3995-4531-85f7-8d266a96195c
@@ -2439,10 +2495,6 @@ tasks:
         simple: Demisto-PlaybookTest2
       groupName:
         simple: Demisto-PlaybookTest2
-      region: {}
-      roleArn: {}
-      roleSessionDuration: {}
-      roleSessionName: {}
       vpcId:
         simple: vpc-7bfc8e10
     separatecontext: false
@@ -2454,6 +2506,10 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "70":
     id: "70"
     taskid: a21775a9-b8d2-4e48-866c-f3b811c83d8a
@@ -2462,7 +2518,13 @@ tasks:
       id: a21775a9-b8d2-4e48-866c-f3b811c83d8a
       version: -1
       name: aws-ec2-modify-instance-attribute
-      description: Modifies the specified attribute of the specified instance. You can specify only one attribute at a time. Using this action to change the security groups associated with an elastic network interface (ENI) attached to an instance in a VPC can result in an error if the instance has more than one ENI. To change the security groups associated with an ENI attached to an instance that has multiple ENIs, we recommend that you use the ModifyNetworkInterfaceAttribute action.
+      description: Modifies the specified attribute of the specified instance. You
+        can specify only one attribute at a time. Using this action to change the
+        security groups associated with an elastic network interface (ENI) attached
+        to an instance in a VPC can result in an error if the instance has more than
+        one ENI. To change the security groups associated with an ENI attached to
+        an instance that has multiple ENIs, we recommend that you use the ModifyNetworkInterfaceAttribute
+        action.
       script: AWS - EC2_copy|||aws-ec2-modify-instance-attribute
       type: regular
       iscommand: true
@@ -2471,15 +2533,8 @@ tasks:
       '#none#':
       - "71"
     scriptarguments:
-      disableApiTermination: {}
-      ebsOptimized: {}
-      enaSupport: {}
-      groups: {}
       instanceId:
         simple: ${AWS.EC2.Instances.InstanceId}
-      instanceInitiatedShutdownBehavior: {}
-      instanceType: {}
-      sourceDestCheck: {}
     separatecontext: false
     view: |-
       {
@@ -2489,6 +2544,10 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "71":
     id: "71"
     taskid: 33f2ce33-747f-421b-8f22-224c5732f9d2
@@ -2497,7 +2556,8 @@ tasks:
       id: 33f2ce33-747f-421b-8f22-224c5732f9d2
       version: -1
       name: aws-ec2-modify-network-interface-attribute
-      description: Modifies the specified network interface attribute. You can specify only one attribute at a time.
+      description: Modifies the specified network interface attribute. You can specify
+        only one attribute at a time.
       script: AWS - EC2_copy|||aws-ec2-modify-network-interface-attribute
       type: regular
       iscommand: true
@@ -2506,13 +2566,8 @@ tasks:
       '#none#':
       - "65"
     scriptarguments:
-      attachmentId: {}
-      deleteOnTermination: {}
-      description: {}
-      groups: {}
       networkInterfaceId:
         simple: ${AWS.EC2.Instances.NetworkInterfaces.NetworkInterfaceId}
-      sourceDestCheck: {}
     separatecontext: false
     view: |-
       {
@@ -2522,12 +2577,57 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "72":
+    id: "72"
+    taskid: 1dd06c13-1bd5-41ab-8f1f-f6288015b424
+    type: regular
+    task:
+      id: 1dd06c13-1bd5-41ab-8f1f-f6288015b424
+      version: -1
+      name: aws-ec2-revoke-security-group-egress-rule
+      description: Removes egress rule from a security group. To remove a rule, the
+        values that you specify (for example, ports) must match the existing rule's
+        values exactly.
+      script: AWS - EC2|||aws-ec2-revoke-security-group-egress-rule
+      type: regular
+      iscommand: true
+      brand: AWS - EC2
+    nexttasks:
+      '#none#':
+      - "27"
+    scriptarguments:
+      IpPermissionsIpProtocol:
+        simple: "-1"
+      IpPermissionsToPort:
+        simple: "1"
+      IpPermissionsfromPort:
+        simple: "1"
+      groupId:
+        simple: ${AWS.EC2.SecurityGroups.GroupId}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 8770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+system: true
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 8815,
+        "height": 8990,
         "width": 2100,
         "x": 50,
         "y": 50
@@ -2537,3 +2637,4 @@ view: |-
 inputs: []
 outputs: []
 fromversion: 5.0.0
+description: Test playbook for actions in AWS EC2 integration.

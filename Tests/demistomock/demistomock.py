@@ -408,6 +408,7 @@ exampleDemistoUrls = {
     "warRoom": "https://test-address:8443/#/WarRoom/7ab2ac46-4142-4af8-8cbe-538efb4e63d6",
     "workPlan": "https://test-address:8443/#/WorkPlan/7ab2ac46-4142-4af8-8cbe-538efb4e63d6",
 }
+exampleAutoFocusApiKey = '1234'
 
 callingContext = {}  # type: dict
 
@@ -771,7 +772,9 @@ def incidents(incidents=None):
 
 
 def incident():
-    """Retrieves the current incident
+    """Retrieves the current incident and all its fields (e.g. name, type).
+    The incident custom fields will be populated as a `dict` under the CustomFields attribute
+    (for example the `filename` custom field can be retrieved using `demisto.incident()['CustomFields'].get('filename')`).
 
     Returns:
       dict: dict representing an incident object
@@ -812,6 +815,19 @@ def demistoUrls():
 
     """
     return exampleDemistoUrls
+
+
+def getAutoFocusApiKey():
+    """Retrieves the AutoFocus API Key related to this Cortex XSOAR License.
+    You can use this API Key in all AutoFocus integrations and Feeds.
+    This command is not available on tenants.
+
+
+    Returns:
+      str: String containing the API Key
+
+    """
+    return exampleAutoFocusApiKey
 
 
 def dt(obj=None, trnsfrm=None):
@@ -988,7 +1004,8 @@ def createIndicators(indicators_batch):
     return ""
 
 
-def searchIndicators(fromDate='', query='', size=100, page=0, toDate='', value='', searchAfter=None):
+def searchIndicators(fromDate='', query='', size=100, page=0, toDate='', value='', searchAfter=None,
+                     populateFields=None):
     """Searches for indicators according to given query
 
     Args:
@@ -999,6 +1016,7 @@ def searchIndicators(fromDate='', query='', size=100, page=0, toDate='', value='
       todate (str): The end date to search until to (Default value = '')
       value (str): The indicator value to search (Default value = '')
       searchAfter (str): Use the last searchIndicators() outputs for search batch (Default value = None)
+      populateFields (str): Comma separated fields to filter (e.g. "value,type")
 
     Returns:
       dict: Object contains the search results

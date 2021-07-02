@@ -1,0 +1,50 @@
+{
+    "project": {
+        "id": 1511896439667,
+        "url-identifier": "g/my-devsecops/galaxy",
+        "name": "my-devsecops/galaxy",
+        "url": "https://lgtm.com/projects/g/my-devsecops/galaxy"
+    },
+    "columns": [
+        "col0",
+        "src",
+        "sink",
+        "col3",
+        "col4",
+        "col5"
+    ],
+    "data": [
+        [
+            {
+                "line": 45,
+                "file": "/src/atom.py",
+                "value": "BinaryExpr",
+                "url": "https://lgtm.com/projects/g/my-devsecops/galaxy/snapshot/472c1d3933ec0046fd914ef04ff4770454325ccb/files/src/atom.py#L45"
+            },
+            {
+                "line": 42,
+                "file": "/src/atom.py",
+                "value": "externally controlled string",
+                "url": "https://lgtm.com/projects/g/my-devsecops/galaxy/snapshot/472c1d3933ec0046fd914ef04ff4770454325ccb/files/src/atom.py#L42"
+            },
+            {
+                "line": 45,
+                "file": "/src/atom.py",
+                "value": "externally controlled string",
+                "url": "https://lgtm.com/projects/g/my-devsecops/galaxy/snapshot/472c1d3933ec0046fd914ef04ff4770454325ccb/files/src/atom.py#L45"
+            },
+            {
+                "value": "This SQL query depends on $@."
+            },
+            {
+                "line": 42,
+                "file": "/src/atom.py",
+                "value": "username",
+                "url": "https://lgtm.com/projects/g/my-devsecops/galaxy/snapshot/472c1d3933ec0046fd914ef04ff4770454325ccb/files/src/atom.py#L42"
+            },
+            {
+                "value": "a user-provided value"
+            }
+        ]
+    ]
+}

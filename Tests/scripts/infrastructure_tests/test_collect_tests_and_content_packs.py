@@ -4,6 +4,7 @@ import logging
 import os
 import tempfile
 from pathlib import Path
+from unittest.mock import patch
 
 import pytest
 from ruamel.yaml import YAML
@@ -13,11 +14,11 @@ import Tests
 from demisto_sdk.commands.common.constants import (PACK_METADATA_SUPPORT,
                                                    PACKS_PACK_META_FILE_NAME)
 from Tests.scripts.collect_tests_and_content_packs import (
-    PACKS_DIR, TestConf, collect_content_packs_to_install,
+    PACKS_DIR, SANITY_TESTS, TestConf, collect_content_packs_to_install,
     create_filter_envs_file, get_from_version_and_to_version_bounderies,
     get_test_list_and_content_packs_to_install, is_documentation_changes_only,
-    remove_ignored_tests, remove_tests_for_non_supported_packs)
-from Tests.scripts.utils.get_modified_files_for_testing import get_modified_files_for_testing
+    remove_ignored_tests, remove_tests_for_non_supported_packs, is_release_branch)
+from Tests.scripts.utils.get_modified_files_for_testing import get_modified_files_for_testing, ModifiedFiles
 from Tests.scripts.utils import content_packs_util
 
 from TestSuite import repo, test_tools
@@ -270,12 +271,13 @@ class TestChangedTestPlaybook:
             - Create filter_envs.json file with all as true
         """
         create_filter_envs_file('0.0.0', '99.99.99')
-        with open("./Tests/filter_envs.json", "r") as filter_envs_file:
+        with open("./artifacts/filter_envs.json", "r") as filter_envs_file:
             filter_envs = json.load(filter_envs_file)
         assert filter_envs.get('Server 5.5') is True
-        assert filter_envs.get('Server Master') is True
-        assert filter_envs.get('Server 6.0') is True
         assert filter_envs.get('Server 5.0') is True
+        if not is_release_branch():
+            assert filter_envs.get('Server Master') is True
+            assert filter_envs.get('Server 6.0') is True
 
     def test_get_from_version_and_to_version_from_modified_files(self):
         """
@@ -290,19 +292,23 @@ class TestChangedTestPlaybook:
 
         """
         test_path = 'Tests/scripts/infrastructure_tests/tests_data/mock_test_playbooks/fake_test_playbook.yml'
-        modified_files_list, modified_tests_list, changed_common, _, sample_tests, modified_metadata_list, _, _ = \
-            create_get_modified_files_ret(modified_files_list=[test_path], modified_tests_list=[test_path])
-        all_modified_files_paths = set(modified_files_list + modified_tests_list + changed_common + sample_tests)
+        modified_files_instance = create_get_modified_files_ret(modified_files_list=[test_path],
+                                                                modified_tests_list=[test_path])
+        all_modified_files_paths = set(modified_files_instance.modified_files
+                                       + modified_files_instance.modified_tests
+                                       + modified_files_instance.changed_common_files
+                                       + modified_files_instance.sample_tests)
         from_version, to_version = get_from_version_and_to_version_bounderies(all_modified_files_paths,
                                                                               MOCK_ID_SET)
 
         create_filter_envs_file(from_version, to_version)
-        with open("./Tests/filter_envs.json", "r") as filter_envs_file:
+        with open("./artifacts/filter_envs.json", "r") as filter_envs_file:
             filter_envs = json.load(filter_envs_file)
         assert filter_envs.get('Server 5.5') is True
-        assert filter_envs.get('Server Master') is True
-        assert filter_envs.get('Server 6.0') is True
         assert filter_envs.get('Server 5.0') is False
+        if not is_release_branch():
+            assert filter_envs.get('Server Master') is True
+            assert filter_envs.get('Server 6.0') is True
 
     def test_get_from_and_to_version_from_modified_files(self):
         """
@@ -554,7 +560,10 @@ class TestChangedCommonTesting:
 
     def test_all_tests(self):
         filterd_tests, content_packs = get_mock_test_list(git_diff_ret=self.GIT_DIFF_RET)
-        assert content_packs == {"DeveloperTools", "Base"}
+        assert 'TestCommonPython' in filterd_tests
+        # verify all sanity tests are collected
+        assert len(SANITY_TESTS - filterd_tests) == 0
+        assert content_packs == {'DeveloperTools', 'Base', 'HelloWorld', 'Gmail'}
 
 
 class TestPackageFilesModified:
@@ -567,17 +576,10 @@ A       Packs/Active_Directory_Query/Integrations/Active_Directory_Query/key.pem
 """
 
     def test_changed_runnable_test_non_mocked_get_modified_files(self):
-        (files_list,
-         tests_list,
-         all_tests,
-         is_conf_json,
-         sample_tests,
-         modified_metadata_list,
-         is_reputations_json,
-         is_indicator_json) = get_modified_files_for_testing(self.GIT_DIFF_RET)
-        assert len(sample_tests) == 0
+        modified_files_instance = get_modified_files_for_testing(self.GIT_DIFF_RET)
+        assert len(modified_files_instance.sample_tests) == 0
         assert 'Packs/Active_Directory_Query/Integrations/' \
-               'Active_Directory_Query/Active_Directory_Query.yml' in files_list
+               'Active_Directory_Query/Active_Directory_Query.yml' in modified_files_instance.modified_files
 
 
 class TestNoChange:
@@ -591,11 +593,11 @@ class TestNoChange:
 
 def create_get_modified_files_ret(modified_files_list=None, modified_tests_list=None, changed_common=None,
                                   is_conf_json=False, sample_tests=None, modified_metadata_list=None,
-                                  is_reputations_json=None, is_indicator_json=None):
+                                  is_reputations_json=None, is_indicator_json=None, is_landing_page_sections_json=None):
     """
     Returns return value for get_modified_files() to be used with a mocker patch
     """
-    return (
+    return ModifiedFiles(
         modified_files_list if modified_files_list is not None else [],
         modified_tests_list if modified_tests_list is not None else [],
         changed_common if changed_common is not None else [],
@@ -603,7 +605,8 @@ def create_get_modified_files_ret(modified_files_list=None, modified_tests_list=
         sample_tests if sample_tests is not None else [],
         modified_metadata_list if modified_metadata_list is not None else [],
         is_reputations_json if is_reputations_json is not None else [],
-        is_indicator_json if is_indicator_json is not None else []
+        is_indicator_json if is_indicator_json is not None else [],
+        is_landing_page_sections_json if is_landing_page_sections_json is not None else False
     )
 
 
@@ -1254,3 +1257,30 @@ def test_get_from_version_and_to_version_bounderies_modified_metadata():
 
     assert '6.1.0' in from_version
     assert '99.99.99' in to_version
+
+
+@patch.dict('os.environ', {'CI_COMMIT_BRANCH': '21.12.0'})
+def test_is_release_branch_positive():
+    """
+    Given:
+        - That branch name found from 'CI_COMMIT_BRANCH' env variable is a release branch.
+    When:
+        - running is_release_branch method.
+    Then:
+        - Validate the response is positive.
+    """
+    assert is_release_branch()
+
+
+@pytest.mark.parametrize('mocked_branch_name', ['some_branch_name', ''])
+def test_is_release_branch_negative(mocked_branch_name):
+    """
+    Given:
+        - That branch name found from 'CI_COMMIT_BRANCH' env variable is a regular branch name or an empty value
+    When:
+        - running is_release_branch method.
+    Then:
+        - Validate the response is negative.
+    """
+    with patch.dict('os.environ', {'CI_COMMIT_BRANCH': mocked_branch_name}):
+        assert not is_release_branch()

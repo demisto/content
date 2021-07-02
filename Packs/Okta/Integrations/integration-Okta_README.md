@@ -10,8 +10,8 @@
 <li>Add, remove, or view user group members.</li>
 </ul>
 <h2>Prerequisites</h2>
-<p>Go to <a href="https://developer.okta.com/docs/api/getting_started/getting_a_token" target="_self" rel="nofollow">Okta documentation</a> to create an API token to use on Demisto. </p>
-<h2>Configure Okta on Demisto</h2>
+<p>Go to <a href="https://developer.okta.com/docs/api/getting_started/getting_a_token" target="_self" rel="nofollow">Okta documentation</a> to create an API token to use on Cortex XSOAR. </p>
+<h2>Configure Okta on Cortex XSOAR</h2>
 <ol>
 <li>Navigate to <strong>Settings</strong> &gt; <strong>Integrations</strong> &gt; <strong>Servers &amp; Services</strong>.</li>
 <li>Search for Okta.</li>
@@ -33,7 +33,7 @@
 </ol>
 <h2>Commands</h2>
 <hr>
-<p>You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
+<p>You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
 <ol>
 <li><a href="#h_94040463051533631362437">Unlock a user: okta-unlock-user</a></li>
 <li><a href="#h_5955856451351533631369089">Deactivate a user: okta-deactivate-user</a></li>
@@ -2788,11 +2788,11 @@
 <tr>
 <td style="width: 256px;">filter</td>
 <td style="width: 438px;">
-<p>Useful for performing structured queries where constraints on <a href="https://developer.okta.com/okta-sdk-php/1.0.0/Okta/Generated/Logs/LogEvent.html"><em>LogEvent</em></a> attribute values can be explicitly targeted.</p>
+<p>Useful for performing structured queries where constraints on <a href="https://developer.okta.com/docs/reference/api/system-log/#logevent-object"><em>LogEvent</em></a> attribute values can be explicitly targeted.</p>
 <p>For more information about filtering, visit <a href="https://developer.okta.com/docs/api/getting_started/design_principles#filtering" rel="nofollow">Okta Support on Filtering</a></p>
 </td>
 <td style="width: 624px;">
-<p>These Okta parameters are supported on Demisto:</p>
+<p>These Okta parameters are supported on Cortex XSOAR:</p>
 <ul>
 <li>
 <strong><em>eventType</em></strong> - Events that have a specific action (<em>eventType eq </em>on Okta)</li>
@@ -3167,7 +3167,7 @@
 <td style="width: 148px;">filter</td>
 <td style="width: 564px;">
 <p>Useful for performing structured queries where constraints on group attribute values are explicitly targeted.</p>
-<p>These are some examples of Okta parameters that are supported on Demisto for groups with the filter query parameter:</p>
+<p>These are some examples of Okta parameters that are supported on Cortex XSOAR for groups with the filter query parameter:</p>
 <ul>
 <li>
 <em><strong>type eq </strong>"OKTA_GROUP"</em> - Groups that have an <em>OKTA_GROUP</em> type</li>

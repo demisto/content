@@ -21,20 +21,19 @@ type of response can be found in the [API Documentation.](https://help.rapid7.co
 
 #### Nexpose Scan Assets
 
-![image](./doc_files/Scan_Assets_-_Nexpose.png)
-
+![image](https://github.com/demisto/content/raw/master/Packs/Rapid7_Nexpose/doc_files/Scan_Assets_-_Nexpose.png)
 #### Nexpose Scan Site
 
-![image](./doc_files/Scan_Site_-_Nexpose.png)
+![image](https://github.com/demisto/content/raw/master/Packs/Rapid7_Nexpose/doc_files/Scan_Site_-_Nexpose.png)
 
 #### Vulnerability Handling - Nexpose
 
-![image](./doc_files/Vulnerability_Handling_-_Nexpose.png)
+![image](https://github.com/demisto/content/raw/master/Packs/Rapid7_Nexpose/doc_files/Vulnerability_Handling_-_Nexpose.png)
 
 #### Vulnerability Management - Nexpose
 
-![image](./doc_files/Vulnerability_Management_-_Nexpose.png)
+![image](https://github.com/demisto/content/raw/master/Packs/Rapid7_Nexpose/doc_files/Vulnerability_Management_-_Nexpose.png)
 
 #### Nexpose - Create and download a report - GenericPolling
 
-![image](./doc_files/Nexpose_-_Create_and_download_a_report.png)
+![image](https://github.com/demisto/content/raw/master/Packs/Rapid7_Nexpose/doc_files/Nexpose_-_Create_and_download_a_report.png)

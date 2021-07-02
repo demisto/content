@@ -8,4 +8,7 @@ ignore=IN126
 ignore=IN126
 
 [file:README.md]
-ignore=RM102
+ignore=RM102,RM104
+
+[file:integration-ArcherRSA_README.md]
+ignore=RM106

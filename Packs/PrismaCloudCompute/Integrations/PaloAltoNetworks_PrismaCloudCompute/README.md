@@ -1,25 +1,25 @@
 ![image](https://user-images.githubusercontent.com/49071222/72906531-0e452a00-3d3b-11ea-8703-8b97ddf30be0.png)
 
 
-This integration lets you import **Palo Alto Networks - Prisma Cloud Compute** alerts into Demisto
+This integration lets you import **Palo Alto Networks - Prisma Cloud Compute** alerts into Cortex XSOAR
 
 ## Use Cases
 
-- Manage Prisma Cloud Compute alerts in Demisto.
+- Manage Prisma Cloud Compute alerts in Cortex XSOAR.
 - You can create new playbooks, or extend the default ones, to analyze alerts, assign tasks based on your analysis, and open tickets on other platforms.
 
-## Configure Prisma Cloud Compute to Send Alerts to Demisto
+## Configure Prisma Cloud Compute to Send Alerts to Cortex XSOAR
 
-To send alerts from Prisma Cloud Compute to Demisto, you need to create an alert profile.
+To send alerts from Prisma Cloud Compute to Cortex XSOAR, you need to create an alert profile.
 
 1. Log in to your Prisma Cloud Compute console.
 2. Navigate to **Manage > Alerts**.
 3. Click **Add Profile** to create a new alert profile.
 4. On the left, select **Demisto** from the provider list.
-5. On the right, select the alert triggers. Alert triggers specify which alerts are sent to Demisto.
+5. On the right, select the alert triggers. Alert triggers specify which alerts are sent to Cortex XSOAR.
 6. Click **Save** to save the alert profile.
 
-## Configure Demisto
+## Configure Cortex XSOAR
 
 1. Navigate to **Settings > Integrations > Servers & Services**.
 2. Search for **Prisma Cloud Compute**.
@@ -41,7 +41,7 @@ To send alerts from Prisma Cloud Compute to Demisto, you need to create an alert
 
 ## Using the Integration and Scripts
 
-The integration ships with four default playbooks and four scripts that are used by the playbooks. The scripts encode the raw JSON alerts into Demisto objects that can then be used in the playbooks. The scripts are:
+The integration ships with four default playbooks and four scripts that are used by the playbooks. The scripts encode the raw JSON alerts into Cortex XSOAR objects that can then be used in the playbooks. The scripts are:
 
 * PrismaCloudComputeParseAuditAlert
 * PrismaCloudComputeParseComplianceAlert
@@ -68,8 +68,7 @@ At this point, you can add tasks that extend the playbook to check and respond t
 
 ## Troubleshooting
 
-If any alerts are missing in Demisto, check the status of the integration.
+If any alerts are missing in Cortex XSOAR, check the status of the integration.
 
 ![image](https://user-images.githubusercontent.com/49071222/72086124-18b0fe00-330f-11ea-894b-6b2f9f0528fd.png)
 
-If you have any questions, contact [Demisto support](mailto:support@demisto.com) and attach the server logs.

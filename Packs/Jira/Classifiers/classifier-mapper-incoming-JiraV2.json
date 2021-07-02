@@ -3,9 +3,57 @@
  "feed": false,
  "id": "classifier-mapper-incoming-JiraV2",
  "mapping": {
-  "dbot_classification_incident_type_all": {
+  "Jira Incident": {
    "dontMapEventToLabels": false,
    "internalMapping": {
+    "Created Time": {
+     "complex": null,
+     "simple": "fields.created"
+    },
+    "Jira Attachments": {
+     "complex": null,
+     "simple": "fields.attachment"
+    },
+    "Jira Description": {
+     "complex": null,
+     "simple": "fields.description"
+    },
+    "Jira Due Date": {
+     "complex": null,
+     "simple": "fields.duedate"
+    },
+    "Jira Labels": {
+     "complex": null,
+     "simple": "fields.labels"
+    },
+    "Jira Priority": {
+     "complex": null,
+     "simple": "fields.priority.name"
+    },
+    "Jira Reporter Email": {
+     "complex": null,
+     "simple": "fields.reporter.emailAddress"
+    },
+    "Jira Reporter Name": {
+     "complex": null,
+     "simple": "fields.reporter.displayName"
+    },
+    "Jira Status": {
+     "complex": null,
+     "simple": "fields.status.name"
+    },
+    "Jira Summary": {
+     "complex": null,
+     "simple": "fields.summary"
+    },
+    "Last Seen": {
+     "complex": null,
+     "simple": "fields.lastViewed"
+    },
+    "Last Update Time": {
+     "complex": null,
+     "simple": "fields.updated"
+    },
     "dbotMirrorDirection": {
      "complex": null,
      "simple": "mirror_direction"
@@ -17,6 +65,75 @@
     "dbotMirrorInstance": {
      "complex": null,
      "simple": "mirror_instance"
+    },
+    "dbotMirrorTags": {
+     "complex": null,
+     "simple": "mirror_tags"
+    }
+   }
+  },
+  "dbot_classification_incident_type_all": {
+   "dontMapEventToLabels": false,
+   "internalMapping": {
+    "Assigned User": {
+     "complex": null,
+     "simple": "fields.assignee.emailAddress"
+    },
+    "IncomingMirrorError": {
+     "complex": null,
+     "simple": "in_mirror_error"
+    },
+    "Jira Attachments": {
+     "complex": null,
+     "simple": "fields.attachment"
+    },
+    "Jira Description": {
+     "complex": null,
+     "simple": "fields.description"
+    },
+    "Jira Due Date": {
+     "complex": null,
+     "simple": "fields.duedate"
+    },
+    "Jira Labels": {
+     "complex": null,
+     "simple": "fields.labels"
+    },
+    "Jira Priority": {
+     "complex": null,
+     "simple": "fields.priority.name"
+    },
+    "Jira Reporter Email": {
+     "complex": null,
+     "simple": "fields.reporter.emailAddress"
+    },
+    "Jira Reporter Name": {
+     "complex": null,
+     "simple": "fields.reporter.displayName"
+    },
+    "Jira Status": {
+     "complex": null,
+     "simple": "fields.status.name"
+    },
+    "Jira Summary": {
+     "complex": null,
+     "simple": "fields.summary"
+    },
+    "dbotMirrorDirection": {
+     "complex": null,
+     "simple": "mirror_direction"
+    },
+    "dbotMirrorId": {
+     "complex": null,
+     "simple": "id"
+    },
+    "dbotMirrorInstance": {
+     "complex": null,
+     "simple": "mirror_instance"
+    },
+    "dbotMirrorTags": {
+     "complex": null,
+     "simple": "mirror_tags"
     }
    }
   }

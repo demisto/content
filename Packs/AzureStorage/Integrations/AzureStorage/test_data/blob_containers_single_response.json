@@ -1,0 +1,16 @@
+{
+    "id": "/subscriptions/subscription_id/resourceGroups/resource_groups/providers/Microsoft.Storage/storageAccounts/account_name/blobServices/default/containers/test",
+    "name": "test",
+    "type": "Microsoft.Storage/storageAccounts/blobServices/containers",
+    "properties": {
+      "deleted": false,
+      "remainingRetentionDays": 0,
+      "denyEncryptionScopeOverride": false,
+      "publicAccess": "None",
+      "leaseStatus": "Unlocked",
+      "leaseState": "Available",
+      "lastModifiedTime": "2020-02-20T20:20:20.0000000Z",
+      "hasImmutabilityPolicy": false,
+      "hasLegalHold": false
+    }
+}

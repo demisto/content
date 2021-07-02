@@ -240,6 +240,34 @@ def pretty_print_events(result: dict, title: str = None) -> str:
     return string
 
 
+def pretty_print_attachment_metadata(result: dict, title: str = None) -> str:
+    string = title if title else ""
+    string += f"#### *{result['data']['addedByUser']['userName']} - {result['data']['addedTime']}*\n"
+    string += f"{result['data']['name']} ({result['data']['mimeType']}, {result['data']['size']} bytes)\n\n"
+    string += f"_id: {result['data']['id']}_\n"
+    return string
+
+
+def add_attachment_helper(case_id: int, file_id: str) -> dict:
+    path_res = demisto.getFilePath(file_id)
+    full_file_name = path_res.get("name")
+    file_name, file_extension = os.path.splitext(full_file_name)
+    file_name = f"{file_name}{ATTACHMENT_SUBSTRING}{file_extension}"
+    mime_type = mimetypes.guess_type(full_file_name)
+    if not mime_type[0]:
+        error = f"File {full_file_name} mimetype unknown, not sending. Consider zipping file."
+        demisto.error(error)
+        return {"error": error}
+    with open(path_res.get("path"), "rb") as file_to_send:
+        # noinspection PyTypeChecker
+        return add_attachment(
+            caseID=case_id,
+            name=file_name,
+            mimeType=mime_type[0],
+            data=b64_encode(file_to_send.read()),
+        )
+
+
 """ COMMAND FUNCTIONS """
 
 
@@ -401,7 +429,8 @@ def get_remote_data_command(
     }
 
     # Close case?
-    if case.get("status", "") == "closed":
+    close_incident = demisto.params().get("close_incident", True)
+    if case.get("status", "") == "closed" and close_incident:
         entries.append(
             {
                 "Type": EntryType.NOTE,
@@ -471,7 +500,8 @@ def update_remote_system_command(args: Dict[str, Any]) -> CommandResults:
             )
 
     # Close incident if relevant
-    if parsed_args.inc_status == IncidentStatus.DONE:
+    close_argus_case = demisto.params().get("close_argus_case", True)
+    if parsed_args.inc_status == IncidentStatus.DONE and close_argus_case:
         demisto.debug(f"Closing remote incident {parsed_args.remote_incident_id}")
         close_case(
             caseID=parsed_args.remote_incident_id,
@@ -495,23 +525,31 @@ def append_demisto_entry_to_argus_case(case_id: int, entry: Dict[str, Any]) -> N
         comment += str(entry.get("contents"))
         add_comment(caseID=case_id, comment=comment)
     elif entry.get("type") == 3:  # type file
-        path_res = demisto.getFilePath(entry.get("id"))
-        full_file_name = path_res.get("name")
-        file_name, file_extension = os.path.splitext(full_file_name)
-        file_name = f"{file_name}{ATTACHMENT_SUBSTRING}{file_extension}"
-        mime_type = mimetypes.guess_type(full_file_name)
-        if not mime_type[0]:
-            error = f"File {full_file_name} unknown, not sending. Zipping should be implemented."
-            demisto.debug(error)
-            return
-        with open(path_res.get("path"), "rb") as file_to_send:
-            # noinspection PyTypeChecker
-            add_attachment(
-                caseID=case_id,
-                name=file_name,
-                mimeType=mime_type[0],
-                data=b64_encode(file_to_send.read()),
-            )
+        add_attachment_helper(case_id, str(entry.get("id")))
+
+
+def add_attachment_command(args: Dict[str, Any]) -> CommandResults:
+    case_id = args.get("case_id")
+    file_id = args.get("file_id")
+    if not case_id:
+        raise ValueError("case_id not specified")
+    if not file_id:
+        raise ValueError("file_id not specified")
+
+    result = add_attachment_helper(case_id, file_id)
+    if "error" in result.keys():
+        raise Exception(result["error"])
+
+    readable_output = pretty_print_attachment_metadata(
+        result, f"# #{case_id}: attachment metadata\n"
+    )
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix="Argus.Attachments",
+        outputs=result,
+        raw_response=result,
+    )
 
 
 def add_case_tag_command(args: Dict[str, Any]) -> CommandResults:
@@ -805,13 +843,11 @@ def get_attachment_command(args: Dict[str, Any]) -> CommandResults:
         raise ValueError("attachment id not specified")
 
     result = get_attachment(caseID=case_id, attachmentID=attachment_id)
-    readable_output = f"# #{case_id}: attachment metadata\n"
-    readable_output += f"#### *{result['data']['addedByUser']['userName']} - {result['data']['addedTime']}*\n"
-    readable_output += f"{result['data']['name']} ({result['data']['mimeType']}, {result['data']['size']} bytes)\n\n"
-    readable_output += f"_id: {result['data']['id']}_\n"
 
     return CommandResults(
-        readable_output=readable_output,
+        readable_output=pretty_print_attachment_metadata(
+            result, f"# #{case_id}: attachment metadata\n"
+        ),
         outputs_prefix="Argus.Attachments",
         outputs=result,
         raw_response=result,
@@ -1356,6 +1392,9 @@ def main() -> None:
                     mirror_tags=demisto.params().get("mirror_tag"),
                 )
             )
+
+        elif demisto.command() == "argus-add-attachment":
+            return_results(add_attachment_command(demisto.args()))
 
         elif demisto.command() == "update-remote-system":
             return_results(update_remote_system_command(demisto.args()))

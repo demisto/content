@@ -36,6 +36,7 @@ Required Permissions
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
     | app_id | Application ID | True |
+    | azure_ad_endpoint | Azure AD endpoint associated with a national cloud | False |
     | insecure | Trust any certificate \(not secure\) | False |
     | proxy | Use system proxy settings | False |
 

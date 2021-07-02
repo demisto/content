@@ -450,3 +450,4 @@ outputs:
   type: number
 tests:
 - no test - each enrichment sub-playbook has or will have its own test
+deprecated: true

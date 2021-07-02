@@ -1,4 +1,5 @@
-Ingest indicator feeds from OpenCTI.
+Ingest indicator feeds from OpenCTI. 
+Compatible with OpenCTI v3 instances. For v4.* and grater OpenCTI versions use the OpenCTI Feed 4.X integration.
 ## Configure OpenCTI Feed on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
@@ -67,7 +68,7 @@ The following types are supported in OpenCTI but are not supported out of the bo
 
 4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.
+You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### opencti-get-indicators
 ***

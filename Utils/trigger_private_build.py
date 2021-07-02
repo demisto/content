@@ -17,6 +17,10 @@ PRIVATE_BUILD_INFRA_SCRIPTS = ['Tests/scripts/validate_premium_packs.sh', 'Tests
                                'Tests/scripts/validate_index.py']
 PRIVATE_BUILD_INFRA_FOLDERS = ['Tests/private_build', 'Tests/Marketplace']
 
+NON_PRIVATE_BUILD_FILES = ['Tests/Marketplace/landingPage_sections.json',
+                           'Tests/Marketplace/validate_landing_page_sections.py',
+                           'Tests/Marketplace/Tests/validate_landing_page_sections_test.py']
+
 TRIGGER_BUILD_URL = 'https://api.github.com/repos/demisto/content-private/dispatches'
 GET_DISPATCH_WORKFLOWS_URL = 'https://api.github.com/repos/demisto/content-private/actions/runs'
 WORKFLOW_HTML_URL = 'https://github.com/demisto/content-private/actions/runs'
@@ -24,14 +28,14 @@ GET_WORKFLOW_URL = 'https://api.github.com/repos/demisto/content-private/actions
 
 PRIVATE_REPO_WORKFLOW_ID_FILE = 'PRIVATE_REPO_WORKFLOW_ID.txt'
 
-GET_WORKFLOWS_MAX_RETRIES = 3
+GET_WORKFLOWS_MAX_RETRIES = 5
 
 GET_WORKFLOWS_TIMEOUT_THRESHOLD = 3600  # one hour
 
 
 def get_modified_files(branch_name: str = None) -> List[str]:
     """ Gets modified files between master branch and the input branch_name, If the branch_name is empty the method
-        compare master branch with the commit sha1 from the environment variable CIRCLE_SHA1.
+        compare master branch with the commit sha1 from the environment variable CI_COMMIT_SHA.
 
     Args:
         branch_name: The branch name to compare with master.
@@ -40,7 +44,7 @@ def get_modified_files(branch_name: str = None) -> List[str]:
 
     """
     if not branch_name:
-        branch_name = os.environ.get('CIRCLE_SHA1')
+        branch_name = os.environ.get('CI_COMMIT_SHA')
 
     files = []
     files_string = tools.run_command(f'git diff --name-only origin/master...{branch_name}')
@@ -61,6 +65,8 @@ def branch_has_private_build_infra_change(branch_name: str = None) -> bool:
     """
     modified_files = get_modified_files(branch_name)
     for infra_file in modified_files:
+        if infra_file in NON_PRIVATE_BUILD_FILES:
+            continue
         if infra_file in PRIVATE_BUILD_INFRA_SCRIPTS:
             return True
 

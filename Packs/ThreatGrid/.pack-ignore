@@ -3,3 +3,9 @@ ignore=BA101
 
 [file:playbook-Detonate_URL_-_ThreatGrid.yml]
 ignore=BA101
+
+[file:playbook-Detonate_File_-_ThreatGrid_README.md]
+ignore=RM106
+
+[file:playbook-Detonate_URL_-_ThreatGrid_README.md]
+ignore=RM106

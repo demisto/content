@@ -1,0 +1,69 @@
+{
+    "size": 5,
+    "dataType": "metrics",
+    "params": {
+        "groupBy": [
+            "instance"
+        ],
+        "keys": [
+            "sum|executionCount"
+        ],
+        "limitType": "bottom",
+        "showOthers": false,
+        "tableColumns": [
+            {
+                "isDefault": true,
+                "key": "count",
+                "position": 0
+            },
+            {
+                "isDefault": true,
+                "key": "data",
+                "position": 1
+            },
+            {
+                "isDefault": true,
+                "key": "floatData",
+                "position": 2
+            },
+            {
+                "isDefault": true,
+                "key": "groups",
+                "position": 3
+            },
+            {
+                "isDefault": true,
+                "key": "name",
+                "position": 4
+            },
+            {
+                "isDefault": true,
+                "key": "color",
+                "position": 5
+            }
+        ],
+        "valuesFormat": "abbreviated"
+    },
+    "query": "type:integration",
+    "modified": "2021-05-31T13:07:37.522187996Z",
+    "name": "Least executed Commands per Instance",
+    "dateRange": {
+        "fromDate": "0001-01-01T00:00:00Z",
+        "toDate": "0001-01-01T00:00:00Z",
+        "period": {
+            "by": "",
+            "byTo": "",
+            "byFrom": "days",
+            "toValue": null,
+            "fromValue": 7,
+            "field": ""
+        },
+        "fromDateLicense": "0001-01-01T00:00:00Z"
+    },
+    "isPredefined": true,
+    "version": -1,
+    "id": "least-executed-commands-per-instance",
+    "widgetType": "column",
+    "fromVersion": "6.2.0",
+    "description": "Least executed Commands per Instance"
+}

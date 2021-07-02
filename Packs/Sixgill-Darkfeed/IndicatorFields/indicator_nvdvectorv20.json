@@ -1,0 +1,31 @@
+{
+ "id": "indicator_nvdvectorv20",
+ "version": -1,
+ "modified": "2021-03-11T02:12:16.087744983Z",
+ "name": "NVD Vector - v 2.0",
+ "ownerOnly": false,
+ "description": "NVD Vector - v 2.0",
+ "cliName": "nvdvectorv20",
+ "type": "shortText",
+ "closeForm": false,
+ "editForm": true,
+ "required": false,
+ "neverSetAsRequired": false,
+ "isReadOnly": false,
+ "useAsKpi": false,
+ "locked": false,
+ "system": false,
+ "content": true,
+ "group": 2,
+ "hidden": false,
+ "associatedTypes": [
+  "CVE"
+ ],
+ "associatedToAll": false,
+ "unmapped": false,
+ "unsearchable": false,
+ "caseInsensitive": true,
+ "sla": 0,
+ "threshold": 72,
+ "fromVersion": "5.5.0"
+}

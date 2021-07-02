@@ -385,17 +385,18 @@ tasks:
     quietmode: 0
   "16":
     id: "16"
-    taskid: 38993eeb-59c8-44ee-8b55-6d2e6199c52b
+    taskid: cfefcb2a-3dcf-44a5-8aed-ef231d7fe00b
     type: playbook
     task:
-      id: 38993eeb-59c8-44ee-8b55-6d2e6199c52b
+      id: cfefcb2a-3dcf-44a5-8aed-ef231d7fe00b
       version: -1
       name: Cortex XDR - Block File
+      description: Use this playbook to add files to Cortex XDR block list with a
+        given file SHA256 playbook input.
       playbookName: Cortex XDR - Block File
       type: playbook
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "3"
@@ -419,7 +420,7 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
+    skipunavailable: true
     quietmode: 0
 system: true
 view: |-

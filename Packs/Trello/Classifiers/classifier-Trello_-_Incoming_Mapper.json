@@ -1,0 +1,61 @@
+{
+	"description": "",
+	"feed": false,
+	"id": "Trello - Incoming Mapper",
+	"mapping": {
+		"Trello": {
+			"dontMapEventToLabels": true,
+			"internalMapping": {
+				"Trello Board ID": {
+					"complex": null,
+					"simple": "create_action.board_id"
+				},
+				"Trello Board Name": {
+					"complex": null,
+					"simple": "create_action.list_name"
+				},
+				"Trello Card ID": {
+					"complex": null,
+					"simple": "id"
+				},
+				"Trello Card URL": {
+					"complex": null,
+					"simple": "url"
+				},
+				"Trello Created By": {
+					"complex": null,
+					"simple": "create_action.memberCreator.fullName"
+				},
+				"Trello Details": {
+					"complex": null,
+					"simple": "desc"
+				},
+				"Trello List ID": {
+					"complex": null,
+					"simple": "create_action.list_id"
+				},
+				"Trello List Name": {
+					"complex": null,
+					"simple": "create_action.board_name"
+				},
+				"Trello SLA": {
+					"complex": null,
+					"simple": "due"
+				},
+				"details": {
+					"complex": null,
+					"simple": "desc"
+				}
+			}
+		},
+		"dbot_classification_incident_type_all": {
+			"dontMapEventToLabels": false,
+			"internalMapping": {
+			}
+		}
+	},
+	"name": "Trello - Incoming Mapper",
+	"type": "mapping-incoming",
+	"version": -1,
+	"fromVersion": "6.0.0"
+}

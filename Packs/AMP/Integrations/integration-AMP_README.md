@@ -1,7 +1,7 @@
 Uses CISCO AMP Endpoint
 This integration was integrated and tested with API version v1 of AMP
 
-## Configure AMP on Demisto
+## Configure AMP on Cortex XSOAR
 ---
 
 1. Navigate to __Settings__ > __Integrations__ > __Servers & Services__.
@@ -15,7 +15,7 @@ This integration was integrated and tested with API version v1 of AMP
 
 ## Commands
 ---
-You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.
+You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 1. amp_get_computers
 2. amp_get_computer_by_connector

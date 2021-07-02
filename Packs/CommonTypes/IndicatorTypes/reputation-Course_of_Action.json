@@ -1,0 +1,32 @@
+{
+    "id": "Course of Action",
+    "version": -1,
+    "modified": "2021-05-02T14:24:51.564326+03:00",
+    "shouldCommit": false,
+    "regex": "",
+    "details": "Course of Action",
+    "prevDetails": "Course of Action",
+    "system": false,
+    "locked": false,
+    "disabled": false,
+    "file": false,
+    "updateAfter": 0,
+    "mergeContext": false,
+    "manualMapping": {
+        "action": {
+            "simple": "CourseofAction.action",
+            "complex": null
+        },
+        "description": {
+            "simple": "CourseofAction.description",
+            "complex": null
+        },
+        "stixid": {
+            "simple": "CourseofAction.stixid",
+            "complex": null
+        }
+    },
+    "expiration": 0,
+    "layout": "Course of Action",
+    "fromVersion": "5.5.0"
+}

@@ -1,42 +1,37 @@
-import demistomock as demisto
-from CommonServerPython import *
-from email import message_from_string
-from email.header import decode_header
 import base64
-from base64 import b64decode
-
-import email.utils
-from email.parser import HeaderParser
-import traceback
-import tempfile
-import sys
-
+# -*- coding: utf-8 -*-
+import codecs
 # -*- coding: utf-8 -*-
 # !/usr/bin/env python
 # Based on MS-OXMSG protocol specification
 # ref:https://blogs.msdn.microsoft.com/openspecification/2010/06/20/msg-file-format-rights-managed-email-message-part-2/
 # ref:https://msdn.microsoft.com/en-us/library/cc463912(v=EXCHG.80).aspx
 import email
-import re
-# -*- coding: utf-8 -*-
-import codecs
+import email.utils
 import os
+import re
+import sys
+import tempfile
+import traceback
 import unicodedata
-from email import encoders
-from email.header import Header
+from base64 import b64decode
+# coding=utf-8
+from datetime import datetime, timedelta
+from email import encoders, message_from_string
+from email.header import Header, decode_header
 from email.mime.audio import MIMEAudio
 from email.mime.base import MIMEBase
 from email.mime.image import MIMEImage
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
+from email.parser import HeaderParser
 from email.utils import getaddresses
-
-from olefile import OleFileIO, isOleFile
-
-# coding=utf-8
-from datetime import datetime, timedelta
 from struct import unpack
+
 import chardet
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
+from olefile import OleFileIO, isOleFile
 
 reload(sys)
 sys.setdefaultencoding('utf8')  # pylint: disable=no-member
@@ -190,11 +185,21 @@ class DataModel(object):
     def PtypString(data_value):
         if data_value:
             try:
-                data_value = data_value.decode("utf-16-le", errors="ignore").replace('\x00', '')
-            except UnicodeDecodeError:
                 res = chardet.detect(data_value)
                 enc = res['encoding'] or 'ascii'  # in rare cases chardet fails to detect and return None as encoding
-                data_value = data_value.decode(enc, errors='ignore').replace('\x00', '')
+                if enc != 'ascii':
+                    if enc.lower() == 'windows-1252' and res['confidence'] < 0.9:
+                        demisto.debug('encoding detection confidence below threshold {}, '
+                                      'switching encoding to "windows-1250"'.format(res))
+                        enc = 'windows-1250'
+                    data_value = data_value.decode(enc, errors='ignore').replace('\x00', '')
+                elif '\x00' not in data_value:
+                    data_value = data_value.decode("ascii", errors="ignore").replace('\x00', '')
+                else:
+                    data_value = data_value.decode("utf-16-le", errors="ignore").replace('\x00', '')
+
+            except UnicodeDecodeError:
+                data_value = data_value.decode("utf-16-le", errors="ignore").replace('\x00', '')
 
         return data_value
 
@@ -2922,12 +2927,18 @@ class Message(object):
         property_name = property_details.get("name")
         property_type = property_details.get("data_type")
         if not property_type:
+            demisto.info('could not parse property type, skipping property "{}"'.format(property_details))
             return None
 
         try:
             raw_content = ole_file.openstream(stream_name).read()
         except IOError:
-            raw_content = None
+            raw_content = ''
+        if not raw_content:
+            demisto.debug('Could not read raw content from stream "{}", '
+                          'skipping property "{}"'.format(stream_name, property_details))
+            return None
+
         property_value = self._data_model.get_value(raw_content, data_type=property_type)
         if property_value:
             property_detail = {property_name: property_value}
@@ -3565,7 +3576,7 @@ def handle_eml(file_path, b64=False, file_name=None, parse_only_headers=False, m
                             except TypeError:
                                 pass  # In case the file is a string, decode=True for get_payload is not working
 
-                    elif isinstance(part.get_payload(), basestring) and base64_encoded:
+                    elif isinstance(part.get_payload(), basestring):
                         file_content = part.get_payload(decode=True)
                     else:
                         demisto.debug("found eml attachment with Content-Type=message/rfc822 but has no payload")
@@ -3603,7 +3614,7 @@ def handle_eml(file_path, b64=False, file_name=None, parse_only_headers=False, m
                             attachment_file_name = indiv_msg.get_filename()
                             try:
                                 # In some cases the body content is empty and cannot be decoded.
-                                msg_info = base64.b64decode(msg).decode('utf-8')
+                                msg_info = base64.b64decode(msg).decode('utf-8', errors='ignore')
                             except TypeError:
                                 msg_info = str(msg)
                             attached_emails.append(msg_info)

@@ -1,0 +1,2282 @@
+id: Cymulate V2 Test
+name: Cymulate V2 Test
+version: -1
+fromversion: 6.0.0
+starttaskid: '0'
+tasks:
+  "0":
+    id: "0"
+    taskid: 379e3e1a-899c-4fd3-8971-51dafaa47a3a
+    type: start
+    task:
+      id: 379e3e1a-899c-4fd3-8971-51dafaa47a3a
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: 3ce8ae61-cc1d-489a-8a18-0763d9cd837c
+    type: regular
+    task:
+      description: ''
+      id: 3ce8ae61-cc1d-489a-8a18-0763d9cd837c
+      version: -1
+      name: DeleteContext
+      script: DeleteContext
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: 2206a564-159d-41cf-8fe7-f0280f844a9d
+    type: regular
+    task:
+      description: ''
+      id: 2206a564-159d-41cf-8fe7-f0280f844a9d
+      version: -1
+      name: cymulate-exfiltration-template-list
+      script: '|||cymulate-exfiltration-template-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: e3c30771-b69b-4f73-8481-6f05f46b7d6c
+    type: condition
+    task:
+      description: ''
+      id: e3c30771-b69b-4f73-8481-6f05f46b7d6c
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Cymulate.Exfiltration.Template.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Cymulate.Exfiltration.Template.name
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: 74899d27-826b-4b63-819e-f32e00db2169
+    type: regular
+    task:
+      description: ''
+      id: 74899d27-826b-4b63-819e-f32e00db2169
+      version: -1
+      name: cymulate-exfiltration-start
+      script: '|||cymulate-exfiltration-start'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      agent_name:
+        simple: LAPTOP-L839VER5
+      schedule:
+        simple: "false"
+      schedule_loop:
+        simple: one-time
+      template_id:
+        simple: 5df0e79b85a00138dc648e75
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: 61099101-59d3-4c29-81c6-21edb82c2bfb
+    type: condition
+    task:
+      description: ''
+      id: 61099101-59d3-4c29-81c6-21edb82c2bfb
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Cymulate.Exfiltration.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Cymulate.Exfiltration.success
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: da75ccf0-bcf9-47f3-8384-162a39729973
+    type: regular
+    task:
+      description: ''
+      id: da75ccf0-bcf9-47f3-8384-162a39729973
+      version: -1
+      name: cymulate-exfiltration-stop
+      script: '|||cymulate-exfiltration-stop'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: 3e3a5014-afe8-4014-8774-12d2d2badcc1
+    type: condition
+    task:
+      description: ''
+      id: 3e3a5014-afe8-4014-8774-12d2d2badcc1
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "8"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Cymulate.Exfiltration.data
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Cymulate.Exfiltration.success
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: 226dcf4b-9afd-4ca8-84bf-c78e89bb469c
+    type: regular
+    task:
+      description: ''
+      id: 226dcf4b-9afd-4ca8-84bf-c78e89bb469c
+      version: -1
+      name: cymulate-exfiltration-status
+      script: '|||cymulate-exfiltration-status'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      assessment_id:
+        simple: 602e538affe5ad2fc85c1921
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "9":
+    id: "9"
+    taskid: 7c50315a-3230-42d1-8dca-fb24cf1138d5
+    type: condition
+    task:
+      description: ''
+      id: 7c50315a-3230-42d1-8dca-fb24cf1138d5
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "10"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Cymulate.Exfiltration.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Cymulate.Exfiltration.categories
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "10":
+    id: "10"
+    taskid: abf9fa68-f401-4ad7-8602-c60c75e18c8e
+    type: regular
+    task:
+      description: ''
+      id: abf9fa68-f401-4ad7-8602-c60c75e18c8e
+      version: -1
+      name: cymulate-email-gateway-template-list
+      script: '|||cymulate-email-gateway-template-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "11":
+    id: "11"
+    taskid: 1b50ab21-1d28-4f48-846e-76cc891064ac
+    type: condition
+    task:
+      description: ''
+      id: 1b50ab21-1d28-4f48-846e-76cc891064ac
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "12"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Cymulate.EmailGateway.Template.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Cymulate.EmailGateway.Template.name
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "12":
+    id: "12"
+    taskid: d64d4921-2a3c-4fdb-8e81-1a0d725d8be9
+    type: regular
+    task:
+      description: ''
+      id: d64d4921-2a3c-4fdb-8e81-1a0d725d8be9
+      version: -1
+      name: cymulate-email-gateway-start
+      script: '|||cymulate-email-gateway-start'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      agent_email:
+        simple: cymulatetests@cymulate.com
+      schedule:
+        simple: "false"
+      schedule_loop:
+        simple: one-time
+      template_id:
+        simple: 5c6920853659191ccf6858fc
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "13":
+    id: "13"
+    taskid: 708666b4-5645-4895-8823-2cb8d2199845
+    type: condition
+    task:
+      description: ''
+      id: 708666b4-5645-4895-8823-2cb8d2199845
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "14"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Cymulate.EmailGateway.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Cymulate.EmailGateway.success
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "14":
+    id: "14"
+    taskid: fc4a5b29-27d2-4fb2-8573-7526a71a935d
+    type: regular
+    task:
+      description: ''
+      id: fc4a5b29-27d2-4fb2-8573-7526a71a935d
+      version: -1
+      name: cymulate-email-gateway-stop
+      script: '|||cymulate-email-gateway-stop'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "15":
+    id: "15"
+    taskid: 5073231b-66fb-4098-80c8-62809bf0d10a
+    type: condition
+    task:
+      description: ''
+      id: 5073231b-66fb-4098-80c8-62809bf0d10a
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "16"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Cymulate.EmailGateway.data
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Cymulate.EmailGateway.success
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "16":
+    id: "16"
+    taskid: b8e03c08-d922-44dd-8fa4-dca5e5b93724
+    type: regular
+    task:
+      description: ''
+      id: b8e03c08-d922-44dd-8fa4-dca5e5b93724
+      version: -1
+      name: cymulate-email-gateway-status
+      script: '|||cymulate-email-gateway-status'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      assessment_id:
+        simple: 602d47f5fd72ea058cd63538
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "17":
+    id: "17"
+    taskid: 8435e1b4-b3d0-4778-8612-a47bfb5618df
+    type: condition
+    task:
+      description: ''
+      id: 8435e1b4-b3d0-4778-8612-a47bfb5618df
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "18"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Cymulate.EmailGateway.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Cymulate.EmailGateway.success
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Cymulate.EmailGateway.progress
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Cymulate.EmailGateway.addresses
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "18":
+    id: "18"
+    taskid: 7ce0b856-48c9-458e-8690-de46288496e1
+    type: regular
+    task:
+      description: ''
+      id: 7ce0b856-48c9-458e-8690-de46288496e1
+      version: -1
+      name: cymulate-endpoint-security-template-list
+      script: '|||cymulate-endpoint-security-template-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "19"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "19":
+    id: "19"
+    taskid: 68cb3f2c-7da0-49ee-86c8-51e4da1e4998
+    type: condition
+    task:
+      description: ''
+      id: 68cb3f2c-7da0-49ee-86c8-51e4da1e4998
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "20"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Cymulate.EndpointSecurity.Template.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Cymulate.EndpointSecurity.Template.name
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "20":
+    id: "20"
+    taskid: b324f77e-bd83-4c1a-813c-8ce7c05a9d8f
+    type: regular
+    task:
+      description: ''
+      id: b324f77e-bd83-4c1a-813c-8ce7c05a9d8f
+      version: -1
+      name: cymulate-endpoint-security-start
+      script: '|||cymulate-endpoint-security-start'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "21"
+    scriptarguments:
+      agent_name:
+        simple: LAPTOP-L839VER5
+      schedule:
+        simple: "false"
+      schedule_loop:
+        simple: one-time
+      template_id:
+        simple: 5e98461d312a740ee4839700
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "21":
+    id: "21"
+    taskid: daa20fe8-363a-4a95-8890-4648ef18d6f6
+    type: condition
+    task:
+      description: ''
+      id: daa20fe8-363a-4a95-8890-4648ef18d6f6
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "22"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Cymulate.EndpointSecurity.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Cymulate.EndpointSecurity.success
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "22":
+    id: "22"
+    taskid: f096d47c-3f7d-4a8a-871a-c5809329f382
+    type: regular
+    task:
+      description: ''
+      id: f096d47c-3f7d-4a8a-871a-c5809329f382
+      version: -1
+      name: cymulate-endpoint-security-stop
+      script: '|||cymulate-endpoint-security-stop'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "23"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "23":
+    id: "23"
+    taskid: 13d79976-9728-47d4-81dd-c20898484820
+    type: condition
+    task:
+      description: ''
+      id: 13d79976-9728-47d4-81dd-c20898484820
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "24"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Cymulate.EndpointSecurity.data
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Cymulate.EndpointSecurity.success
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "24":
+    id: "24"
+    taskid: 207a605c-d9cd-4dce-85fb-adc182388573
+    type: regular
+    task:
+      description: ''
+      id: 207a605c-d9cd-4dce-85fb-adc182388573
+      version: -1
+      name: cymulate-endpoint-security-status
+      script: '|||cymulate-endpoint-security-status'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "25"
+    scriptarguments:
+      assessment_id:
+        simple: 5ff31ddb32664d1fc9bb36bc
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "25":
+    id: "25"
+    taskid: dea4caac-af6d-486a-802b-d9ada43d3a3d
+    type: condition
+    task:
+      description: ''
+      id: dea4caac-af6d-486a-802b-d9ada43d3a3d
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "26"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Cymulate.EndpointSecurity.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Cymulate.EndpointSecurity.progress
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Cymulate.EndpointSecurity.categories
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "26":
+    id: "26"
+    taskid: f371afea-36e7-4cb3-80ad-56de8750913d
+    type: regular
+    task:
+      description: ''
+      id: f371afea-36e7-4cb3-80ad-56de8750913d
+      version: -1
+      name: cymulate-waf-template-list
+      script: '|||cymulate-waf-template-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "27"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "27":
+    id: "27"
+    taskid: 03ac7a3c-e8e0-4346-8c5b-3ef210eba081
+    type: condition
+    task:
+      description: ''
+      id: 03ac7a3c-e8e0-4346-8c5b-3ef210eba081
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "28"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Cymulate.WAF.Template.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Cymulate.WAF.Template.name
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "28":
+    id: "28"
+    taskid: f1a40476-14fc-4b2a-85d9-66100908ed6f
+    type: regular
+    task:
+      description: ''
+      id: f1a40476-14fc-4b2a-85d9-66100908ed6f
+      version: -1
+      name: cymulate-waf-start
+      script: '|||cymulate-waf-start'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "29"
+    scriptarguments:
+      schedule:
+        simple: "false"
+      schedule_loop:
+        simple: one-time
+      sites:
+        simple: http://cymulatelabs.com
+      template_id:
+        simple: 5ee0726cef621bbc25251d7a
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "29":
+    id: "29"
+    taskid: d81d716a-7976-423e-893a-340ae3e492b8
+    type: condition
+    task:
+      description: ''
+      id: d81d716a-7976-423e-893a-340ae3e492b8
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "30"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Cymulate.WAF.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Cymulate.WAF.success
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "30":
+    id: "30"
+    taskid: 3b75961c-7b60-4e84-8481-0461c40d4cf3
+    type: regular
+    task:
+      description: ''
+      id: 3b75961c-7b60-4e84-8481-0461c40d4cf3
+      version: -1
+      name: cymulate-waf-stop
+      script: '|||cymulate-waf-stop'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "31"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 6000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "31":
+    id: "31"
+    taskid: f9f206dc-1341-4f4e-830c-d9f7715890a7
+    type: condition
+    task:
+      description: ''
+      id: f9f206dc-1341-4f4e-830c-d9f7715890a7
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "32"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Cymulate.WAF.data
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Cymulate.WAF.success
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 6200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "32":
+    id: "32"
+    taskid: 99baf74f-464d-4657-8c3a-d4787669399f
+    type: regular
+    task:
+      description: ''
+      id: 99baf74f-464d-4657-8c3a-d4787669399f
+      version: -1
+      name: cymulate-waf-status
+      script: '|||cymulate-waf-status'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "33"
+    scriptarguments:
+      assessment_id:
+        simple: 5ff31ef451647c20338bd235
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 6400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "33":
+    id: "33"
+    taskid: a63410b2-7187-4827-87d4-1e2086051a92
+    type: condition
+    task:
+      description: ''
+      id: a63410b2-7187-4827-87d4-1e2086051a92
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "34"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Cymulate.WAF.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Cymulate.WAF.progress
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Cymulate.WAF.categories
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 6600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "34":
+    id: "34"
+    taskid: 15191476-2317-4c2e-8a3b-b9ce04f34d3d
+    type: regular
+    task:
+      description: ''
+      id: 15191476-2317-4c2e-8a3b-b9ce04f34d3d
+      version: -1
+      name: cymulate-immediate-threat-start
+      script: '|||cymulate-immediate-threat-start'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "35"
+    scriptarguments:
+      browsing_address: {}
+      edr_address:
+        simple: LAPTOP-L839VER5
+      mail_address: {}
+      template_id:
+        simple: 603270ce63aa15930631b938
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 6800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "35":
+    id: "35"
+    taskid: 13d8b174-8fc0-4ce6-8bef-770e0cb582ab
+    type: condition
+    task:
+      description: ''
+      id: 13d8b174-8fc0-4ce6-8bef-770e0cb582ab
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "36"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Cymulate.ImmediateThreats.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Cymulate.ImmediateThreats.success
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 7000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "36":
+    id: "36"
+    taskid: daed9713-b67d-41ff-88f8-2457f64ac946
+    type: regular
+    task:
+      description: ''
+      id: daed9713-b67d-41ff-88f8-2457f64ac946
+      version: -1
+      name: cymulate-immediate-threat-stop
+      script: '|||cymulate-immediate-threat-stop'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "37"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 7200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "37":
+    id: "37"
+    taskid: 66ff3a73-67ce-4f6b-8d24-6c94e378a97c
+    type: condition
+    task:
+      description: ''
+      id: 66ff3a73-67ce-4f6b-8d24-6c94e378a97c
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "38"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Cymulate.ImmediateThreats.data
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Cymulate.ImmediateThreats.success
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 7400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "38":
+    id: "38"
+    taskid: eaa117f6-e349-4554-8fd0-97523a979510
+    type: regular
+    task:
+      description: ''
+      id: eaa117f6-e349-4554-8fd0-97523a979510
+      version: -1
+      name: cymulate-immediate-threat-status
+      script: '|||cymulate-immediate-threat-status'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "39"
+    scriptarguments:
+      assessment_id:
+        simple: 603505e0c3d4b76ab14c02e1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 7600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "39":
+    id: "39"
+    taskid: 2244ed56-7626-44e9-89dd-fb8577048a62
+    type: condition
+    task:
+      description: ''
+      id: 2244ed56-7626-44e9-89dd-fb8577048a62
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "40"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Cymulate.ImmediateThreats.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Cymulate.ImmediateThreats.categories
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Cymulate.ImmediateThreats.progress
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 7800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "40":
+    id: "40"
+    taskid: c84a21ec-d3a8-4aee-8ea4-45a71e023076
+    type: regular
+    task:
+      description: ''
+      id: c84a21ec-d3a8-4aee-8ea4-45a71e023076
+      version: -1
+      name: cymulate-phishing-awareness-contacts-group-list
+      script: '|||cymulate-phishing-awareness-contacts-group-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "41"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 8000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "41":
+    id: "41"
+    taskid: 79985006-e608-42cb-8f6d-dd2ee650f0ba
+    type: condition
+    task:
+      description: ''
+      id: 79985006-e608-42cb-8f6d-dd2ee650f0ba
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "42"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Cymulate.Phishing.Groups.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Cymulate.Phishing.Groups.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Cymulate.Phishing.Groups.client
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Cymulate.Phishing.Groups.canDelete
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 8200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "42":
+    id: "42"
+    taskid: b004a5a8-e550-4c91-8723-76f48adc8297
+    type: regular
+    task:
+      description: ''
+      id: b004a5a8-e550-4c91-8723-76f48adc8297
+      version: -1
+      name: cymulate-phishing-awareness-contacts-group-create
+      script: '|||cymulate-phishing-awareness-contacts-group-create'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "43"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 8400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "43":
+    id: "43"
+    taskid: 01511471-fe1c-4877-834f-e56b5e26ff7b
+    type: condition
+    task:
+      description: ''
+      id: 01511471-fe1c-4877-834f-e56b5e26ff7b
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "44"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Cymulate.Phishing.Groups.success
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Cymulate.Phishing.Groups.id
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 8600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "44":
+    id: "44"
+    taskid: e0878fc1-78c5-4fb5-8692-8bcd15c98f19
+    type: regular
+    task:
+      description: ''
+      id: e0878fc1-78c5-4fb5-8692-8bcd15c98f19
+      version: -1
+      name: cymulate-phishing-awareness-contacts-get
+      script: '|||cymulate-phishing-awareness-contacts-get'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "45"
+    scriptarguments:
+      group_id:
+        simple: 5d7f43b497177063b8ceff92
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 8800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "45":
+    id: "45"
+    taskid: d47d1fcb-e9b0-40fe-8487-781fb9004405
+    type: condition
+    task:
+      description: ''
+      id: d47d1fcb-e9b0-40fe-8487-781fb9004405
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "46"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Cymulate.Phishing.Groups.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Cymulate.Phishing.Groups.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Cymulate.Phishing.Groups.client
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Cymulate.Phishing.Groups.canDelete
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 9000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "46":
+    id: "46"
+    taskid: cdbdc6f5-ac10-4eb4-8079-8629a776184f
+    type: regular
+    task:
+      description: ''
+      id: cdbdc6f5-ac10-4eb4-8079-8629a776184f
+      version: -1
+      name: cymulate-lateral-movement-template-list
+      script: '|||cymulate-lateral-movement-template-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "47"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 9200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "47":
+    id: "47"
+    taskid: 8ba858e6-02d6-49dc-8253-d2cd20703a46
+    type: condition
+    task:
+      description: ''
+      id: 8ba858e6-02d6-49dc-8253-d2cd20703a46
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "48"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Cymulate.LateralMovement.Template.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Cymulate.LateralMovement.Template.name
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 9400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "48":
+    id: "48"
+    taskid: b98ce976-9caf-4ddd-858a-100eef918bad
+    type: regular
+    task:
+      description: ''
+      id: b98ce976-9caf-4ddd-858a-100eef918bad
+      version: -1
+      name: cymulate-lateral-movement-start
+      script: '|||cymulate-lateral-movement-start'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "49"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 9600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "49":
+    id: "49"
+    taskid: 6674f6c2-0ce1-4000-811f-61ef421f70d9
+    type: condition
+    task:
+      description: ''
+      id: 6674f6c2-0ce1-4000-811f-61ef421f70d9
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "50"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Cymulate.LateralMovement.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Cymulate.LateralMovement.success
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 9800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "50":
+    id: "50"
+    taskid: d6070d32-0585-4ccb-869f-202035e8d693
+    type: regular
+    task:
+      description: ''
+      id: d6070d32-0585-4ccb-869f-202035e8d693
+      version: -1
+      name: cymulate-lateral-movement-stop
+      script: '|||cymulate-lateral-movement-stop'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "51"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 10000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "51":
+    id: "51"
+    taskid: 246d7e71-2ed4-4307-84b2-a3b08bfaff98
+    type: condition
+    task:
+      description: ''
+      id: 246d7e71-2ed4-4307-84b2-a3b08bfaff98
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "52"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Cymulate.LateralMovement.data
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Cymulate.LateralMovement.success
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 10200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "52":
+    id: "52"
+    taskid: 099e6c3a-88e0-4340-8c1e-00d96f71089f
+    type: regular
+    task:
+      description: ''
+      id: 099e6c3a-88e0-4340-8c1e-00d96f71089f
+      version: -1
+      name: cymulate-lateral-movement-status
+      script: '|||cymulate-lateral-movement-status'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "53"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 10400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "53":
+    id: "53"
+    taskid: 6527b4ca-cb69-412d-8a85-e58ef01e6f86
+    type: condition
+    task:
+      description: ''
+      id: 6527b4ca-cb69-412d-8a85-e58ef01e6f86
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "54"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Cymulate.LateralMovement.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Cymulate.LateralMovement.inProgress
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 10600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "54":
+    id: "54"
+    taskid: 357ea17e-3cda-4d13-84e8-3a0ec14638db
+    type: regular
+    task:
+      description: ''
+      id: 357ea17e-3cda-4d13-84e8-3a0ec14638db
+      version: -1
+      name: cymulate-agent-list
+      script: '|||cymulate-agent-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "55"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 10800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "55":
+    id: "55"
+    taskid: d5e1cfbe-204a-43e0-818b-24a6d5fea7a5
+    type: condition
+    task:
+      description: ''
+      id: d5e1cfbe-204a-43e0-818b-24a6d5fea7a5
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "56"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Cymulate.Agent.agentAddress
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Cymulate.Agent.agentMethod
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Cymulate.Agent.agentName
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 11000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "56":
+    id: "56"
+    taskid: e2fef3eb-5f8d-4313-8613-dbfd42c8cd02
+    type: regular
+    task:
+      description: ''
+      id: e2fef3eb-5f8d-4313-8613-dbfd42c8cd02
+      version: -1
+      name: cymulate-simulations-list
+      script: '|||cymulate-simulations-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "57"
+    scriptarguments:
+      attack_id:
+        simple: 603ba9adc3d4b76ab14dda28
+      module:
+        simple: waf
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 11200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "57":
+    id: "57"
+    taskid: 8580de55-4a4a-4b47-8dd3-a8769be9468f
+    type: condition
+    task:
+      description: ''
+      id: 8580de55-4a4a-4b47-8dd3-a8769be9468f
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "58"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Cymulate.Simulations.Module
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Cymulate.Simulations.Status
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Cymulate.Simulations.PrevStatus
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Cymulate.Simulations.Risk
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Cymulate.Simulations.Source
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Cymulate.Simulations.Mitigation
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Cymulate.Simulations.Id
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 11400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "58":
+    id: "58"
+    taskid: 7202eb33-1080-4431-88a7-128fc700abf5
+    type: regular
+    task:
+      description: ''
+      id: 7202eb33-1080-4431-88a7-128fc700abf5
+      version: -1
+      name: cymulate-simulations-id-list
+      script: '|||cymulate-simulations-id-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "59"
+    scriptarguments:
+      from_date:
+        simple: "2021-01-01"
+      module:
+        simple: kill-chain
+      to_date: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 11600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "59":
+    id: "59"
+    taskid: ff0f6254-7081-4b23-8b3e-8fefbddafc2c
+    type: condition
+    task:
+      description: ''
+      id: ff0f6254-7081-4b23-8b3e-8fefbddafc2c
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "60"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Cymulate.Simulations.ID
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Cymulate.Simulations.Timestamp
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Cymulate.Simulations.Agent
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Cymulate.Simulations.Template
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 11800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "60":
+    id: "60"
+    taskid: 03f2e2ac-c4ec-4acf-88eb-203eba3d6598
+    type: title
+    task:
+      id: 03f2e2ac-c4ec-4acf-88eb-203eba3d6598
+      version: -1
+      name: Test Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 12000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: '{"linkLabelsPosition": {}, "paper": {"dimensions": {"height": 200, "width":
+  380, "x": 50, "y": 50}}}'
+inputs: []
+outputs: []
+description: 'Test playbook for cymulate integration.'

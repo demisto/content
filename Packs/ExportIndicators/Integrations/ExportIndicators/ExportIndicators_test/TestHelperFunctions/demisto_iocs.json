@@ -3030,5 +3030,84 @@
         "timestamp": "2019-12-23T12:31:04.598941+02:00",
         "value": "190.102.154.131",
         "version": 1
+    },
+    {
+        "account": "",
+        "calculatedTime": "2019-12-23T12:30:29.353516+02:00",
+        "comment": "",
+        "expiration": "0001-01-01T00:00:00Z",
+        "expirationSource": {
+            "expirationInterval": 0,
+            "expirationPolicy": "never",
+            "feedId": "CSVFeed.IP26k",
+            "setTime": "2019-12-23T12:30:29.348429+02:00",
+            "source": "indicatorType",
+            "user": ""
+        },
+        "expirationStatus": "active",
+        "firstSeen": "2019-12-23T12:30:29.353516+02:00",
+        "firstSeenEntryID": "API",
+        "id": "10914",
+        "indicator_type": "IP",
+        "insightCache": null,
+        "investigationIDs": [],
+        "isShared": false,
+        "lastReputationRun": "0001-01-01T00:00:00Z",
+        "lastSeen": "2019-12-23T12:30:29.353516+02:00",
+        "lastSeenEntryID": "API",
+        "manualScore": false,
+        "manualSetTime": "0001-01-01T00:00:00Z",
+        "manuallyEditedFields": null,
+        "modified": "2019-12-23T12:31:05.226319+02:00",
+        "modifiedTime": "2019-12-23T12:23:34+02:00",
+        "moduleToFeedMap": {
+            "CSVFeed.IP26k": {
+                "CustomFields": null,
+                "ExpirationSource": {
+                    "expirationInterval": 0,
+                    "expirationPolicy": "never",
+                    "feedId": "CSVFeed.IP26k",
+                    "setTime": "2019-12-23T12:30:29.348429+02:00",
+                    "source": "indicatorType",
+                    "user": ""
+                },
+                "expiration": "0001-01-01T00:00:00Z",
+                "expirationInterval": 0,
+                "expirationPolicy": "indicatorType",
+                "fetchTime": "2019-12-23T12:23:34+02:00",
+                "firstSeen": "0001-01-01T00:00:00Z",
+                "lastSeen": "0001-01-01T00:00:00Z",
+                "modifiedTime": "2019-12-23T12:23:34+02:00",
+                "rawJSON": null,
+                "reliability": "F - Reliability cannot be judged",
+                "score": 0,
+                "source": {
+                    "content": "",
+                    "contentFormat": "",
+                    "context": null,
+                    "isTypedIndicator": false,
+                    "score": 0,
+                    "scoreChangeTimestamp": "0001-01-01T00:00:00Z",
+                    "timestamp": "0001-01-01T00:00:00Z",
+                    "type": ""
+                },
+                "sourceBrand": "CSVFeed",
+                "sourceInstance": "IP26k",
+                "timestamp": "0001-01-01T00:00:00Z",
+                "type": "IP",
+                "value": "213.182.138.224"
+            }
+        },
+        "score": 0,
+        "sortValues": null,
+        "sourceBrands": [
+            "CSVFeed"
+        ],
+        "sourceInstances": [
+            "IP26k"
+        ],
+        "timestamp": "2019-12-23T12:31:05.2263+02:00",
+        "value": null,
+        "version": 1
     }
 ]

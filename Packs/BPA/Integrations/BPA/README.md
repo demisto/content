@@ -10,7 +10,7 @@ Supported Cortex XSOAR versions: 5.0.0 and later.
 
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
-    | server | Panorama Server URL \(e.g., https://192.168.0.1\) | True |
+    | server | Server URL \(either Firewall or Panorama\). e.g., https:\/\/192.168.0.1 | True |
     | key | Panorama API Key | True |
     | token | BPA Access Token | True |
     | insecure | Trust any certificate \(not secure\) | False |
@@ -272,7 +272,7 @@ Gets the documentation of all BPA checks.
 
 ### pan-os-bpa-submit-job
 ***
-Submits a job to the BPA job queue.
+Submits a job to the BPA job queue. PAN-OS devices with large configuration files may take a few minutes for the job to be submitted.
 
 
 #### Base Command
@@ -283,7 +283,7 @@ Submits a job to the BPA job queue.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | generate_zip_bundle | Whether to download the Panorama report. Can be "true" or "false". Default is "false". | Optional | 
-
+| timeout | The timeout for the request. Default is 120. | Optional |
 
 #### Context Output
 

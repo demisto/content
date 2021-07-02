@@ -1,4 +1,5 @@
-from HTTPFeedApiModule import get_indicators_command, Client, datestring_to_server_format, feed_main
+from HTTPFeedApiModule import get_indicators_command, Client, datestring_to_server_format, feed_main,\
+    fetch_indicators_command
 import requests_mock
 import demistomock as demisto
 
@@ -240,7 +241,8 @@ def test_feed_main_fetch_indicators(mocker, requests_mock):
             'value': 'AS397539'
         },
         'type': indicator_type,
-        'value': 'AS397539'
+        'value': 'AS397539',
+        'fields': {'tags': ['tag1', 'tag2'], 'trafficlightprotocol': 'AMBER'}
     } in indicators
 
 
@@ -304,3 +306,138 @@ def test_feed_main_test_module(mocker, requests_mock):
     assert demisto.results.call_count == 1
     results = demisto.results.call_args[0][0]
     assert results['HumanReadable'] == 'ok'
+
+
+def test_get_indicators_with_relations():
+    """
+    Given:
+    - feed url config including relations values
+    When:
+    - Fetching indicators
+    - create_relationships param is set to True
+    Then:
+    - Validate the returned list of indicators return relationships.
+    """
+
+    feed_url_to_config = {
+        'https://www.spamhaus.org/drop/asndrop.txt': {
+            "indicator_type": 'IP',
+            "indicator": {
+                "regex": r"^.+,\"?(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})\"?",
+                "transform": "\\1"
+            },
+            'relationship_name': 'indicator-of',
+            'relationship_entity_b_type': 'STIX Malware',
+            "fields": [{
+                'firstseenbysource': {
+                    "regex": r"^(\d{4}-\d{2}-\d{2}\s\d{2}:\d{2}:\d{2})",
+                    "transform": "\\1"
+                },
+                "port": {
+                    "regex": r"^.+,.+,(\d{1,5}),",
+                    "transform": "\\1"
+                },
+                "updatedate": {
+                    "regex": r"^.+,.+,.+,(\d{4}-\d{2}-\d{2})",
+                    "transform": "\\1"
+                },
+                "malwarefamily": {
+                    "regex": r"^.+,.+,.+,.+,(.+)",
+                    "transform": "\\1"
+                },
+                "relationship_entity_b": {
+                    "regex": r"^.+,.+,.+,.+,\"(.+)\"",
+                    "transform": "\\1"
+                }
+            }],
+        }
+    }
+    expected_res = [{'value': '127.0.0.1', 'type': 'IP',
+                     'rawJSON': {'malwarefamily': '"Test"', 'relationship_entity_b': 'Test', 'value': '127.0.0.1',
+                                 'type': 'IP', 'tags': []},
+                     'relationships': [
+                         {'name': 'indicator-of', 'reverseName': 'indicated-by', 'type': 'IndicatorToIndicator',
+                          'entityA': '127.0.0.1', 'entityAFamily': 'Indicator', 'entityAType': 'IP',
+                          'entityB': 'Test',
+                          'entityBFamily': 'Indicator', 'entityBType': 'STIX Malware', 'fields': {}}],
+                     'fields': {'tags': []}}]
+
+    asn_ranges = '"2021-01-17 07:44:49","127.0.0.1","3889","online","2021-04-22","Test"'
+    with requests_mock.Mocker() as m:
+        m.get('https://www.spamhaus.org/drop/asndrop.txt', content=asn_ranges.encode('utf-8'))
+        client = Client(
+            url="https://www.spamhaus.org/drop/asndrop.txt",
+            source_name='spamhaus',
+            ignore_regex='^;.*',
+            feed_url_to_config=feed_url_to_config,
+            indicator_type='ASN'
+        )
+        indicators = fetch_indicators_command(client, feed_tags=[], tlp_color=[], itype='IP', auto_detect=False,
+                                              create_relationships=True)
+
+        assert indicators == expected_res
+
+
+def test_get_indicators_without_relations():
+    """
+    Given:
+    - feed url config including relations values
+    When:
+    - Fetching indicators
+    - create_relationships param is set to False
+    Then:
+    - Validate the returned list of indicators dont return relationships.
+    """
+
+    feed_url_to_config = {
+        'https://www.spamhaus.org/drop/asndrop.txt': {
+            "indicator_type": 'IP',
+            "indicator": {
+                "regex": r"^.+,\"?(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})\"?",
+                "transform": "\\1"
+            },
+            'relationship_name': 'indicator-of',
+            'relationship_entity_b_type': 'STIX Malware',
+            "fields": [{
+                'firstseenbysource': {
+                    "regex": r"^(\d{4}-\d{2}-\d{2}\s\d{2}:\d{2}:\d{2})",
+                    "transform": "\\1"
+                },
+                "port": {
+                    "regex": r"^.+,.+,(\d{1,5}),",
+                    "transform": "\\1"
+                },
+                "updatedate": {
+                    "regex": r"^.+,.+,.+,(\d{4}-\d{2}-\d{2})",
+                    "transform": "\\1"
+                },
+                "malwarefamily": {
+                    "regex": r"^.+,.+,.+,.+,(.+)",
+                    "transform": "\\1"
+                },
+                "relationship_entity_b": {
+                    "regex": r"^.+,.+,.+,.+,\"(.+)\"",
+                    "transform": "\\1"
+                }
+            }],
+        }
+    }
+    expected_res = [{'value': '127.0.0.1', 'type': 'IP',
+                     'rawJSON': {'malwarefamily': '"Test"', 'relationship_entity_b': 'Test', 'value': '127.0.0.1',
+                                 'type': 'IP', 'tags': []},
+                     'fields': {'tags': []}}]
+
+    asn_ranges = '"2021-01-17 07:44:49","127.0.0.1","3889","online","2021-04-22","Test"'
+    with requests_mock.Mocker() as m:
+        m.get('https://www.spamhaus.org/drop/asndrop.txt', content=asn_ranges.encode('utf-8'))
+        client = Client(
+            url="https://www.spamhaus.org/drop/asndrop.txt",
+            source_name='spamhaus',
+            ignore_regex='^;.*',
+            feed_url_to_config=feed_url_to_config,
+            indicator_type='ASN'
+        )
+        indicators = fetch_indicators_command(client, feed_tags=[], tlp_color=[], itype='IP', auto_detect=False,
+                                              create_relationships=False)
+
+        assert indicators == expected_res

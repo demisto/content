@@ -7,7 +7,7 @@ This script adds the reputation to Onion URL indicators. The script is automatic
 | --- | --- |
 | Script Type | python3 |
 | Tags | reputation |
-| Demisto Version | 5.0.0 |
+| Cortex XSOAR Version | 5.0.0 |
 
 ## Inputs
 ---

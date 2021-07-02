@@ -1,0 +1,8 @@
+[file:playbook-SolarStorm_Activity_Behavior_Hunting_playbook.yml]
+ignore=BA110
+
+[file:playbook-SolarStorm_and_SUNBURST_Hunting_and_Response_Playbook_5_9_9.yml]
+ignore=BA110
+
+[file:playbook-SolarStorm_and_SUNBURST_Hunting_and_Response_Playbook_6.yml]
+ignore=BA110

@@ -1,0 +1,28 @@
+{
+  "Type": 1,
+  "Contents": [
+    {
+      "configuredName": "Phishing-Suspected",
+      "customCategory": true,
+      "dbCategorizedUrls": [],
+      "editable": true,
+      "id": "CUSTOM_1",
+      "keywordsRetainingParentCategory": [],
+      "type": "URL_CATEGORY",
+      "urls": [],
+      "val": 144
+    }
+  ],
+  "ContentsFormat": "json",
+  "ReadableContentsFormat": "markdown",
+  "HumanReadable": "### Zscaler Categories\n|ID|Description|CustomCategory|Name|\n|---|---|---|---|\n| CUSTOM_1 |  | true | Phishing-Suspected |\n",
+  "EntryContext": {
+    "Zscaler.Category(val.ID && val.ID === obj.ID)": [
+      {
+        "ID": "CUSTOM_1",
+        "CustomCategory": true,
+        "Name": "Phishing-Suspected"
+      }
+    ]
+  }
+}

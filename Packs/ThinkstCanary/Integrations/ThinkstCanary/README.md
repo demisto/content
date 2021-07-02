@@ -7,17 +7,17 @@
 </div>
 <div class="cl-preview-section">
 <ul>
-<li>Fetch alerts from CanaryTools as incidents in Demisto and acknowledge them.</li>
+<li>Fetch alerts from CanaryTools as incidents in Cortex XSOAR and acknowledge them.</li>
 <li>Get information about all registered Canaries.</li>
 <li>Get information about Canary Tokens.</li>
 <li>Whitelist IP addresses.</li>
 </ul>
 </div>
 <div class="cl-preview-section">
-<h2 id="configure-thinkst-canary-on-demisto">Configure Thinkst Canary on Demisto</h2>
+<h2 id="configure-thinkst-canary-on-demisto">Configure Thinkst Canary on Cortex XSOAR</h2>
 </div>
 <div class="cl-preview-section">
-<p>For information about how to get your Authentication Token, see the <a href="https://help.canary.tools/knowledge_base/topics/forget-logging-in-what-apis-does-canary-support">Canary documentation</a>.</p>
+<p>For information about how to get your Authentication Token, see the <a href="https://help.canary.tools/hc/en-gb/articles/360012727537-How-does-the-API-work-">Canary documentation</a>.</p>
 </div>
 <div class="cl-preview-section">
 <ol>
@@ -44,7 +44,7 @@
 <h2 id="commands">Commands</h2>
 </div>
 <div class="cl-preview-section">
-<p>You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
+<p>You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
 </div>
 <div class="cl-preview-section">
 <ol>

@@ -1,0 +1,30 @@
+{
+    "id": "incident_f5silverlineiruleversion",
+    "version": -1,
+    "modified": "2021-05-13T15:55:55.142402734Z",
+    "name": "F5 Silverline IRule Version",
+    "ownerOnly": false,
+    "cliName": "f5silverlineiruleversion",
+    "type": "shortText",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "associatedTypes": [
+        "F5 Silverline iRule Events"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": false,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.0.0"
+}

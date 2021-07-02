@@ -19,7 +19,7 @@ This integration was integrated and tested with PagerDuty API v2.
 4. Click **Test** to validate the URLs, token, and connection.
 
 ## Fetched Incidents Data
-By default, the integration will import PagerDuty incidents data as Demisto incidents. All incidents created in the minute prior to the configuration of Fetch Incidents and up to current time will be imported.
+By default, the integration will import PagerDuty incidents data as Cortex XSOAR incidents. All incidents created in the minute prior to the configuration of Fetch Incidents and up to current time will be imported.
 
 ## Commands
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.

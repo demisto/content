@@ -1,0 +1,307 @@
+id: VirusTotal (API v3) Detonate Test
+version: -1
+name: VirusTotal (API v3) Detonate Test
+description: Tests detonate playbooks of VT v3
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 57e3f975-68ad-41c7-84c2-3589af109cbf
+    type: start
+    task:
+      id: 57e3f975-68ad-41c7-84c2-3589af109cbf
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: 81ccaabd-2840-4562-8185-432e0f8c74d5
+    type: regular
+    task:
+      id: 81ccaabd-2840-4562-8185-432e0f8c74d5
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: 804047fe-62b1-4665-8f57-eb4795208fe2
+    type: regular
+    task:
+      id: 804047fe-62b1-4665-8f57-eb4795208fe2
+      version: -1
+      name: Download FIle
+      description: Sends http request. Returns the response as json.
+      scriptName: http
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+      - "9"
+      - "8"
+    scriptarguments:
+      body: {}
+      filename: {}
+      headers: {}
+      insecure: {}
+      method:
+        simple: GET
+      password: {}
+      proxy: {}
+      saveAsFile:
+        simple: "yes"
+      unsecure: {}
+      url:
+        complex:
+          root: inputs.url_of_file_to_download
+      username: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: f3385504-4709-4f3b-87c5-fbb18f0e85a3
+    type: title
+    task:
+      id: f3385504-4709-4f3b-87c5-fbb18f0e85a3
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: 38395312-3331-4d50-8d99-4cded41043fd
+    type: regular
+    task:
+      id: 38395312-3331-4d50-8d99-4cded41043fd
+      version: -1
+      name: Rescan
+      description: Rescans an already submitted file. This avoids having to upload
+        the file again. Use the vt-analysis-get command to get the scan results.
+      script: VirusTotal (API v3)|||file-rescan
+      type: regular
+      iscommand: true
+      brand: VirusTotal (API v3)
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      file:
+        complex:
+          root: File
+          accessor: MD5
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: 286ef21f-fcea-403d-84e2-4d72893136d6
+    type: condition
+    task:
+      id: 286ef21f-fcea-403d-84e2-4d72893136d6
+      version: -1
+      name: Verify Context
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "5"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: VirusTotal.Submission
+                accessor: id
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: e283b36a-7b26-47d5-8a7f-99b86533dc2a
+    type: playbook
+    task:
+      id: e283b36a-7b26-47d5-8a7f-99b86533dc2a
+      version: -1
+      name: Detonate URL - VirusTotal (API v3)
+      playbookName: Detonate URL - VirusTotal (API v3)
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "5"
+    separatecontext: true
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "9":
+    id: "9"
+    taskid: 357d9cfb-82f6-4084-8709-b1f6c5a4df1a
+    type: playbook
+    task:
+      id: 357d9cfb-82f6-4084-8709-b1f6c5a4df1a
+      version: -1
+      name: Detonate URL - VirusTotal (API v3)
+      playbookName: Detonate URL - VirusTotal (API v3)
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      URL:
+        complex:
+          root: inputs.URL
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 0
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 910,
+        "width": 1240,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: URL
+  value:
+    simple: https://google.com
+  required: false
+  description: ""
+  playbookInputQuery:
+- key: url_of_file_to_download
+  value:
+    simple: https://raw.githubusercontent.com/demisto/content/master/__init__.py
+  required: false
+  description: ""
+  playbookInputQuery:
+outputs: []
+fromversion: 5.5.0

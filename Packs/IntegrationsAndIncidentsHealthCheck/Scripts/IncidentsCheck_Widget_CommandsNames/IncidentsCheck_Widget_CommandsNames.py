@@ -46,7 +46,7 @@ def main():
             "data": [
                 0
             ],
-            "name": "N\A",
+            "name": "N/A",
             "color": "#00CD33"
         }]
 

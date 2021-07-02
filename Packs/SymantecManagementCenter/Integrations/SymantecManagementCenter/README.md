@@ -3,7 +3,7 @@
 <p>Symantec Management Center provides a unified management environment for the Symantec Security Platform portfolio of products. Management Center brings Symantec’s network, security, and cloud technologies to you under a single umbrella making it easier to deploy, manage, and monitor your security environment.</p>
 </div>
 <div class="cl-preview-section">
-<p>In Demisto, the integration with Symantec MC allows viewing and managing devices and policies.<br> The integration was integrated and tested with version 2.2.1.1 of Symantec Management Center.</p>
+<p>In Cortex XSOAR, the integration with Symantec MC allows viewing and managing devices and policies.<br> The integration was integrated and tested with version 2.2.1.1 of Symantec Management Center.</p>
 </div>
 <div class="cl-preview-section">
 <h2 id="use-cases">Use Cases</h2>
@@ -16,7 +16,7 @@
 </ol>
 </div>
 <div class="cl-preview-section">
-<h2 id="configure-symantec-management-center-on-demisto">Configure Symantec Management Center on Demisto</h2>
+<h2 id="configure-symantec-management-center-on-demisto">Configure Symantec Management Center on Cortex XSOAR</h2>
 </div>
 <div class="cl-preview-section">
 <p>In order to access the API, user credentials for Symantec Management Center are required.</p>
@@ -42,7 +42,7 @@
 <h2 id="commands">Commands</h2>
 </div>
 <div class="cl-preview-section">
-<p>You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
+<p>You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
 </div>
 <div class="cl-preview-section">
 <ol>
@@ -2511,5 +2511,4 @@
 <p><strong>HTTP 500 Internal Server Error</strong> - Error in Symantec MC. Could occur if requests are made in parallel.</p>
 </div>
 <div class="cl-preview-section">
-<p>If you encounter any issues, contact us at <a href="mailto:support@demisto.com">support@demisto.com</a>.</p>
 </div>

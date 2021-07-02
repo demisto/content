@@ -1,5 +1,15 @@
 The CyberArk Application Identity Manager (AIM) provides a secure safe in which to store your account credentials. Use this integration to retrieve the account credentials in CyberArk AIM. This integration fetches credentials. For more information, see [Managing Credentials](https://xsoar.pan.dev/docs/reference/articles/managing-credentials).
 
+## Authentication Options
+The integration uses the `Central Credential Provider` and supports the following authentication methods:
+* **OS User (Windows NTLM Authentication)**: Set the domain user and password in the credentials field. Make sure your CyberArk Server is configured to support `NTLM` authentication as documented [here](https://docs.cyberark.com/Product-Doc/OnlineHelp/AAM-CP/Latest/en/Content/CCP/Configure_CCPWindows.htm#ConfigureWindowsDomainAuthentication). Note that the `user` option may require specifying full `domain\user`.
+* **Client Certificate Authentication**: Enter the Certificate and Private key in the integration instance configuration parameters. Make sure to follow the instructions [here](https://docs.cyberark.com/Product-Doc/OnlineHelp/AAM-CP/Latest/en/Content/CCP/Configure_CCPWindows.htm#SecurecommunicationbetweenapplicationsandtheCentralCredentialProvider) to enable the `Central Credential Provider` to accept client authentication with client certificates.
+* **Allowed Machines**: Leave all authentication methods empty. Follow CyberArk's instructions [here](https://docs.cyberark.com/Product-Doc/OnlineHelp/AAM-CP/Latest/en/Content/CP%20and%20ASCP/Application-Authentication-Methods-general.htm?tocpath=Administration%7CManage%20applications%7CApplication%20authentication%7CApplication%20authentication%20methods%7C_____0#allowed) to accept the `Cortex XSOAR Server IP` for the configured AppID.
+
+Further information is available from CyberArk at:
+* https://docs.cyberark.com/Product-Doc/OnlineHelp/AAM-CP/Latest/en/Content/CP%20and%20ASCP/Application-Authentication-Methods-general.htm
+* https://docs.cyberark.com/Product-Doc/OnlineHelp/AAM-CP/Latest/en/Content/CCP/Configure_CCPWindows.htm
+
 ## Configure CyberArkAIM v2 on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
@@ -22,7 +32,7 @@ The CyberArk Application Identity Manager (AIM) provides a secure safe in which 
 
 4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.
+You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### cyberark-aim-list-credentials
 ***
@@ -99,4 +109,3 @@ There are no input arguments for this command.
 >|AccountCategory|AccountDescription|AccountDiscoveryDate|AccountEnabled|AccountExpirationDate|AccountOSGroups|AccountType|Address|CPMDisabled|CPMStatus|CreationMethod|DeviceType|DiscoveryPlatformType|Domain|Folder|LastLogonDate|LastPasswordSetDate|LastSuccessChange|LastSuccessReconciliation|LastSuccessVerification|LastTask|LogonDomain|MachineOSFamily|Name|OSVersion|OU|PasswordChangeInProcess|PasswordNeverExpires|PolicyID|RetriesCount|SID|Safe|SequenceID|Tags|UserName|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| True | Built-in account for administering the computer/domain | 1573128798 | True | 0 | Administrators | Domain | AIM.COM | (CPM)Newly discovered dependency | success | AutoDetected | Operating System | Windows Domain | AIM.COM | Root | 1572451901 | 1566376303 | 1575910475 | 1583521898 | 1583256386 | ReconcileTask | domain1 | Server | name1 | Windows Server 2016 Standard | CN=Users,DC=COM | False | True | WinDomain | -1 | sid | Windows Domain Admins | 1 | DAdmin | username1 |
-

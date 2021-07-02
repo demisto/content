@@ -803,7 +803,7 @@ script:
         case 'vx-scan': // Deprecated
         case 'crowdstrike-scan':
             var res = scan(args.file);
-            if (res.length > 0){
+            if (Object.keys(res).length > 0){
                 return scanToEntry(res, args.file);
             } else {
                 return {
@@ -1495,5 +1495,5 @@ script:
   runonce: false
 tests:
 - VxStream Test
-- detonate_file_-_generic_test
+- Detonate File - Generic Test
 fromversion: 5.0.0

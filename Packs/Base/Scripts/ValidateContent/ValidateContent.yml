@@ -53,10 +53,10 @@ outputs:
   description: The code line number in which the error was found in the lint.
   type: String
 scripttarget: 0
-timeout: 300ns
+timeout: 600ns
 runonce: false
 runas: DBotWeakRole
 fromversion: 5.5.0
-dockerimage: demisto/xsoar-tools:1.0.0.17588
+dockerimage: demisto/xsoar-tools:1.0.0.19258
 tests:
 - ValidateContent - Test

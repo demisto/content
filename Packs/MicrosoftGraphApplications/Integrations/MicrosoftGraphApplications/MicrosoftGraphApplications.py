@@ -4,7 +4,6 @@ https://docs.microsoft.com/en-us/graph/api/resources/serviceprincipal?view=graph
 """
 
 import urllib3
-
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 from CommonServerUserPython import *  # noqa
 
@@ -13,7 +12,8 @@ urllib3.disable_warnings()
 
 
 class Client:
-    def __init__(self, app_id: str, verify: bool, proxy: bool):
+    def __init__(self, app_id: str, verify: bool, proxy: bool,
+                 azure_ad_endpoint: str = 'https://login.microsoftonline.com'):
         if '@' in app_id:
             app_id, refresh_token = app_id.split('@')
             integration_context = get_integration_context()
@@ -28,7 +28,8 @@ class Client:
             base_url='https://graph.microsoft.com',
             verify=verify,
             proxy=proxy,
-            scope='offline_access Application.ReadWrite.All'
+            scope='offline_access Application.ReadWrite.All',
+            azure_ad_endpoint=azure_ad_endpoint
         )
 
     def get_service_principals(
@@ -92,11 +93,8 @@ class Client:
 
 
 def start_auth(client: Client) -> CommandResults:
-    user_code = client.ms_client.device_auth_request()
-    return CommandResults(readable_output=f"""### Authorization instructions
-1. To sign in, use a web browser to open the page [https://microsoft.com/devicelogin](https://microsoft.com/devicelogin)
- and enter the code **{user_code}** to authenticate.
-2. Run the **!msgraph-apps-auth-complete** command in the War Room.""")
+    result = client.ms_client.start_auth('!msgraph-apps-auth-complete')
+    return CommandResults(readable_output=result)
 
 
 def complete_auth(client: Client) -> str:
@@ -174,6 +172,8 @@ def main():
             app_id=params.get('app_id', ''),
             verify=not params.get('insecure', False),
             proxy=params.get('proxy', False),
+            azure_ad_endpoint=params.get('azure_ad_endpoint',
+                                         'https://login.microsoftonline.com') or 'https://login.microsoftonline.com'
         )
 
         if command == 'test-module':

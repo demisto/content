@@ -1,0 +1,66 @@
+{
+    "description": "A mapper of VirusTotal Intelligence LiveHunt Notification",
+    "feed": false,
+    "id": "VirusTotal Intelligence LiveHunt Notification",
+    "mapping": {
+        "VirusTotal Intelligence LiveHunt Notification": {
+            "dontMapEventToLabels": true,
+            "internalMapping": {
+                "Alert ID": {
+                    "complex": null,
+                    "simple": "id"
+                },
+                "Country": {
+                    "complex": null,
+                    "simple": "attributes.source_country"
+                },
+                "File Hash": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [
+                            [
+                                {
+                                    "ignoreCase": false,
+                                    "left": {
+                                        "isContext": true,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "attributes.tags"
+                                        }
+                                    },
+                                    "operator": "stringHasLength",
+                                    "right": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "64"
+                                        }
+                                    }
+                                }
+                            ]
+                        ],
+                        "root": "attributes.tags",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "Rule Name": {
+                    "complex": null,
+                    "simple": "attributes.rule_name"
+                },
+                "Tags": {
+                    "complex": null,
+                    "simple": "attributes.tags"
+                }
+            }
+        },
+        "dbot_classification_incident_type_all": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {}
+        }
+    },
+    "name": "VirusTotal Intelligence LiveHunt Notification",
+    "type": "mapping-incoming",
+    "version": -1,
+    "fromVersion": "6.0.0"
+}

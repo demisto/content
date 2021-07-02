@@ -1,0 +1,32 @@
+[
+  {
+    "agentAddress": "agent@cymulate.com",
+    "agentMethod": "smtp"
+  },
+  {
+    "agentAddress": "jamesbond@cymulate.com",
+    "agentMethod": "smtp"
+  },
+  {
+    "agentAddress": "info@cymulate.com",
+    "agentMethod": "smtp"
+  },
+  {
+    "agentAddress": "test@cymulate.com",
+    "agentMethod": "smtp"
+  },
+  {
+    "agentAddress": "Billg@cymulate.com",
+    "agentMethod": "smtp"
+  },
+  {
+    "agentName": "LAPTOP-1234",
+    "agentAddress": "LAPTOP-1234",
+    "agentMethod": "http"
+  },
+  {
+    "agentName": "CYMULATE",
+    "agentAddress": "CYMULATE ",
+    "agentMethod": "http"
+  }
+]

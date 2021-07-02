@@ -1,25 +1,26 @@
-The Expanse Content Pack for Cortex XSOAR provides full coverage of the Expander and Behavior product capabilities from Expanse to allow SOCs to automate the defense of their Company's attack surface. The Integrations included in the Pack enable fetching and mirroring of Expanse Issues into Cortex XSOAR Incidents, and ingestion of Indicators (IPs, Domains and Certificates) referring to the corporate Network Perimeter as discovered by Expanse, a Palo Alto Networks company.
+The Expanse content pack for Cortex XSOAR provides full coverage of the Expanse Expander and Behavior product capabilities to allow SOCs to automate the defense of their company's attack surface. The integrations included in the pack enable fetching and mirroring of Expanse Issues into Cortex XSOAR incidents, and ingestion of indicators (IPs, domains, and certificates) referring to the corporate network perimeter as discovered by Expanse, a Palo Alto Networks company.
 
-Through a powerful set of Playbooks, analysts can correlate the discovered information with data provided from internal security systems (such as Palo Alto Networks Cortex Data Lake, Prisma Cloud and Panorama, Active Directory, Splunk SIEM, etc.) to help pinpoint the right owners of assets and automate remediation.
+Through a powerful set of playbooks, analysts can correlate the discovered information with data provided from internal security systems (Palo Alto Networks Cortex Data Lake, Prisma Cloud, and Panorama, Active Directory, Splunk SIEM, etc.) to help pinpoint the right owners of assets and automate remediation.
 
 ##### What does this pack do?
-- Provides the **Expanse v2** integration (for Expanse Expander and Behavior), which allows XSOAR to collect Expanse Issues and bi-directionally mirror them. Several commands are available to search, tag, and update Issues and Assets in Expanse.
-- Provides a feed integration named **Expanse Expander Feed**, which is compatible with the Cortex XSOAR Threat Intel Management capabilities to retrieve and store discovered assets (IPs, IP Ranges, Domains, Certificates) in Cortex XSOAR for analysis and correlation.
-- Provides an **Expanse Issue** Incident Type with dedicated fields and layouts.
-- Provides a rich set of Playbooks and Subplaybooks that handle the investigation and remediation of Expanse Issues.
-- Provides Dashboards that display the Network perimeter as discovered by Expanse and the status of Expanse Issues.
+- Provides the **Expanse v2** integration (for Expanse Expander and Behavior), which allows XSOAR to collect Expanse Issues and bi-directionally mirror them. Several commands are available to search, tag, and update issues and assets in Expanse. The integration also supports the services API.
+- Provides a feed integration named **Expanse Expander Feed**, which is compatible with the Cortex XSOAR Threat Intel Management capabilities to retrieve and store discovered assets (IPs, IP ranges, domains, certificates) in Cortex XSOAR for analysis and correlation.
+- Provides an **Expanse Issue** incident type with dedicated fields and layouts.
+- Provides a rich set of playbooks and sub-playbooks that handle the investigation and remediation of Expanse Issues.
+- Provides dashboards that display the network perimeter as discovered by Expanse and the status of Expanse Issues.
 
 ##### How to use this pack?
-- After the Expanse API key is added in the **Expanse v2** integration and the parameters are set, the Expanse issues will start getting mapped to Expanse Incident type and the **Handle Expanse Incident** Playbook will automatically be launched.
-- If you are only interested in Enrichment and Attribution, you can use the **Handle Expanse Incident - Attribution Only** Playbook instead, by assigning it to the **Expanse Issue** Incident Type.
+- After the Expanse API key is added in the **Expanse v2** integration and the parameters are set, the Expanse issues will start getting mapped to the Expanse incident type and the **Handle Expanse Incident** playbook will automatically be launched.
+- If you are only interested in enrichment and attribution, you can use the **Handle Expanse Incident - Attribution Only** playbook instead, by assigning it to the **Expanse Issue** incident type.
+- This pack also includes a generic playbook called **Xpanse Incident Handling - Generic**. In order to use it, configure the instance without any classifier and choose **Xpanse Issue - Generic** as the incident type.
 
 ##### Screenshots
 
-- **Expanse Incidents Dashboard**: The main Dashboard for all the Expanse Incidents.
+- **Expanse Incidents Dashboard**: The main dashboard for all the Expanse incidents.
 
     ![Expanse Incidents Dashboard](https://raw.githubusercontent.com/demisto/content/b8efd3c2e9409b02b9c4b1873ff3e783524c5104/Packs/ExpanseV2/doc_files/Expanse_Incidents_Dashboard.png)
 
-- **Expanse Incident Layout**: The included default layout for Expanse Incidents.
+- **Expanse Incident Layout**: The included default layout for Expanse incidents.
 
     ![Expanse Incident Layout](https://raw.githubusercontent.com/demisto/content/b8efd3c2e9409b02b9c4b1873ff3e783524c5104/Packs/ExpanseV2/doc_files/Expanse_Incident_Layout.png)
 
@@ -27,7 +28,7 @@ Through a powerful set of Playbooks, analysts can correlate the discovered infor
 
     ![Expanse Attribution Report](https://raw.githubusercontent.com/demisto/content/b8efd3c2e9409b02b9c4b1873ff3e783524c5104/Packs/ExpanseV2/doc_files/Expanse_Attribution_Report.png)
 
-- **Handle Expanse Incident - Remediation**: An excerpt of the remediation stage of the main playbook. Note the different branches handling notifications, automatic network remediation and follow up Shadow IT investigation if the asset is marked as Shadow IT by the incident assignee.
+- **Handle Expanse Incident - Remediation**: An excerpt of the remediation stage of the main playbook. Note the different branches handling notifications, automatic network remediation, and follow up Shadow IT investigation if the asset is marked as Shadow IT by the incident assignee.
 
     ![Handle Expanse Incident Remediation](https://raw.githubusercontent.com/demisto/content/b8efd3c2e9409b02b9c4b1873ff3e783524c5104/Packs/ExpanseV2/doc_files/Handle_Expanse_Incident_Remediation.png)
 

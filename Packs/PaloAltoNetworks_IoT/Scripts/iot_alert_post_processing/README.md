@@ -6,7 +6,7 @@ IoT alert post processing script to resolve the alert in IoT security portal usi
 | --- | --- |
 | Script Type | python3 |
 | Tags | iot, post-processing |
-| Demisto Version | 5.5.0 |
+| Cortex XSOAR Version | 5.5.0 |
 
 This script executes the 'iot-security-resolve-alert' command to resolve an alert in PANW IoT security portal during post-processing.
 

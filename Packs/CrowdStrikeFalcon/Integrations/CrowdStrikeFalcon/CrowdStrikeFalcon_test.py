@@ -2296,7 +2296,13 @@ def get_fetch_data():
         return json.loads(f.read())
 
 
+def get_fetch_data2():
+    with open('./test_data/test_data2.json', 'r') as f:
+        return json.loads(f.read())
+
+
 test_data = get_fetch_data()
+test_data2 = get_fetch_data2()
 
 
 def test_get_indicator_device_id(requests_mock):
@@ -2697,3 +2703,86 @@ def test_get_proccesses_ran_on_command_not_exists(requests_mock):
     with pytest.raises(DemistoException) as excinfo:
         get_proccesses_ran_on_command(ioc_type='test', value='mock', device_id='123')
     assert expected_error == excinfo.value.args[0]
+
+
+def test_search_device_command(requests_mock):
+    """
+    Test search_device_command with a successful id
+    Given
+     - There is a device that is found
+    When
+     - The user is running cs-falcon-search-device with an id
+    Then
+     - Return a CrowdStrike context output
+     - Return an Endpoint context output
+     """
+    from CrowdStrikeFalcon import search_device_command
+    response = {'resources': {'meta': {'query_time': 0.010188508, 'pagination': {'offset': 1, 'limit': 100, 'total': 1},
+                                       'powered_by': 'device-api', 'trace_id': 'c876614b-da71-4942-88db-37b939a78eb3'},
+                              'resources': ['15dbb9d8f06b45fe9f61eb46e829d986'], 'errors': []}}
+    device_context = {'ID': 'identifier_number', 'ExternalIP': '1.1.1.1', 'MacAddress': '42-01-0a-80-00-07',
+                      'Hostname': 'FALCON-CROWDSTR', 'FirstSeen': '2020-02-10T12:40:18Z',
+                      'LastSeen': '2021-04-05T13:48:12Z', 'LocalIP': '1.1.1.1', 'OS': 'Windows Server 2019',
+                      'Status': 'normal'}
+    endpoint_context = {'Hostname': 'FALCON-CROWDSTR', 'ID': 'identifier_number', 'IPAddress': '1.1.1.1',
+                        'MACAddress': '42-01-0a-80-00-07', 'OS': 'Windows', 'OSVersion': 'Windows Server 2019',
+                        'Status': 'Online', 'Vendor': 'CrowdStrike Falcon'}
+
+    requests_mock.get(
+        f'{SERVER_URL}/devices/queries/devices/v1',
+        json=response,
+        status_code=200,
+    )
+    requests_mock.get(
+        f'{SERVER_URL}/devices/entities/devices/v1?ids=meta&ids=resources&ids=errors',
+        json=test_data2,
+        status_code=200,
+    )
+
+    outputs = search_device_command()
+    result = outputs[0].to_context()
+
+    context = result.get('EntryContext')
+    for key, value in context.items():
+        if 'Device' in key:
+            assert context[key] == device_context
+        if 'Endpoint' in key:
+            assert context[key] == [endpoint_context]
+
+
+def test_get_endpint_command(requests_mock, mocker):
+    """
+    Test get_endpint_command with a successful id
+    Given
+     - There is a device that is found
+    When
+     - The user is running cs-falcon-search-device with an id
+    Then
+     - Return an Endpoint context output
+     """
+    from CrowdStrikeFalcon import get_endpoint_command
+    response = {'resources': {'meta': {'query_time': 0.010188508, 'pagination': {'offset': 1, 'limit': 100, 'total': 1},
+                                       'powered_by': 'device-api', 'trace_id': 'c876614b-da71-4942-88db-37b939a78eb3'},
+                              'resources': ['15dbb9d8f06b45fe9f61eb46e829d986'], 'errors': []}}
+    endpoint_context = {'Hostname': 'FALCON-CROWDSTR', 'ID': 'identifier_number', 'IPAddress': '1.1.1.1',
+                        'MACAddress': '42-01-0a-80-00-07', 'OS': 'Windows', 'OSVersion': 'Windows Server 2019',
+                        'Status': 'Online', 'Vendor': 'CrowdStrike Falcon'}
+
+    requests_mock.get(
+        f'{SERVER_URL}/devices/queries/devices/v1',
+        json=response,
+        status_code=200,
+    )
+    requests_mock.get(
+        f'{SERVER_URL}/devices/entities/devices/v1?ids=meta&ids=resources&ids=errors',
+        json=test_data2,
+        status_code=200,
+    )
+
+    mocker.patch.object(demisto, 'args', return_value={'id': 'dentifier_numbe'})
+
+    outputs = get_endpoint_command()
+    result = outputs[0].to_context()
+    context = result.get('EntryContext')
+
+    assert context['Endpoint(val.ID && val.ID == obj.ID)'] == [endpoint_context]

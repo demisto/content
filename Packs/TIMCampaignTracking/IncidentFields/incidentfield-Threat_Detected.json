@@ -1,0 +1,33 @@
+{
+    "associatedToAll": false,
+    "associatedTypes": [
+        "TIM - Campaign"
+    ],
+    "caseInsensitive": true,
+    "cliName": "timcampaignthreatdetected",
+    "closeForm": false,
+    "content": true,
+    "description": "Detected in network?",
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_timcampaignthreatdetected",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "TIM Campaign Threat Detected",
+    "neverSetAsRequired": false,
+    "ownerOnly": false,
+    "propagationLabels": [
+        "all"
+    ],
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "boolean",
+    "unmapped": false,
+    "unsearchable": false,
+    "useAsKpi": true,
+    "version": -1,
+    "fromVersion": "6.0.0"
+}

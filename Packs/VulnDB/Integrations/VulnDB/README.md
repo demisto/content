@@ -1,7 +1,7 @@
 <!-- HTML_DOC -->
 <p>Use the VulnDB integration to get information about vulnerabilities for various products, including operating systems, applications, and so on.</p>
 <h2>
-<a id="Configure_VulnDB_on_Demisto_2"></a>Configure VulnDB on Demisto</h2>
+<a id="Configure_VulnDB_on_Demisto_2"></a>Configure VulnDB on Cortex XSOAR</h2>
 <ol>
 <li>Navigate to<span> </span><strong>Settings</strong><span> </span>&gt;<span> </span><strong>Integrations</strong><span> </span>&gt;<span> </span><strong>Servers &amp; Services</strong>.</li>
 <li>Search for VulnDB.</li>
@@ -20,7 +20,7 @@
 </ol>
 <h2>
 <a id="Commands_15"></a>Commands</h2>
-<p>You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
+<p>You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
 <ol>
 <li><a href="#h_87eccbb7-b791-43e3-bc50-751655f9fac9" target="_self">Get information for a vulnerability (ID): vulndb-get-vuln-by-id</a></li>
 <li><a href="#h_7da6d70b-7f4d-4a84-b289-af5f1ee3118d" target="_self">Get information for a vendor: vulndb-get-vendor</a></li>
