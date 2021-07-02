@@ -3433,6 +3433,14 @@ class TestExecuteCommand:
         assert 'error number 2' in error_text
         assert 'not an error' not in error_text
 
+    @staticmethod
+    def test_failure_integration(monkeypatch):
+        from CommonServerPython import execute_command, EntryType
+        monkeypatch.delattr(demisto, 'executeCommand')
+
+        with raises(DemistoException, match=r'Cannot run demisto.executeCommand\(\) from integrations.'):
+            execute_command('bad', {'arg1': 'value'})
+
 
 def test_arg_to_int__valid_numbers():
     """

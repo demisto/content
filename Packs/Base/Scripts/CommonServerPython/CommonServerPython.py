@@ -5903,7 +5903,7 @@ def execute_command(command, args, extract_contents=True):
     :rtype: ``list`` or ``dict`` or ``str``
     """
     if not hasattr(demisto, 'executeCommand'):
-        raise DemistoException('Cannot run execute command from integrations.')
+        raise DemistoException('Cannot run demisto.executeCommand() from integrations.')
 
     res = demisto.executeCommand(command, args)
     if is_error(res):
