@@ -145,7 +145,7 @@
 </table>
 <p> </p>
 <h5>Command Example</h5>
-<pre>!send-mail to="name@company.com" cc="test@company.com" bcc="admin@company.com" subject="Topic of the day" replyTo="replymail@company.com" attachIDs="111@02a9cf84-c76f-4b2e-8840-c6b2a85c53cf,129@02a9cf84-c86f-4b2e-8840-c6c2a89c53cf" attachNames="notcookie.png,cookie.jpg" attachCIDs="notcookie,mycookie" transientFile="friendly_note.txt" transientFileContent="this is some text" htmlBody="&lt;html&gt;<br> &lt;body&gt;<br>&lt;p&gt;HELLO&lt;/p&gt;<br> &lt;img src=\"cid:mycookie\"/&gt;<br> &lt;/body&gt;<br>&lt;/html&gt;"</pre>
+<pre>!send-mail to="name@example.com" cc="test@example.com" bcc="admin@example.com" subject="Topic of the day" replyTo="replymail@example.com" attachIDs="111@02a9cf84-c76f-4b2e-8840-c6b2a85c53cf,129@02a9cf84-c86f-4b2e-8840-c6c2a89c53cf" attachNames="notcookie.png,cookie.jpg" attachCIDs="notcookie,mycookie" transientFile="friendly_note.txt" transientFileContent="this is some text" htmlBody="&lt;html&gt;<br> &lt;body&gt;<br>&lt;p&gt;HELLO&lt;/p&gt;<br> &lt;img src=\"cid:mycookie\"/&gt;<br> &lt;/body&gt;<br>&lt;/html&gt;"</pre>
 <p> </p>
 <h2>About CIDs</h2>
 <p>CIDs work by attaching the image to the email you are sending, and then using standard HTML image tags that reference that image to embed it in the email when the user opens it.</p>

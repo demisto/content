@@ -36,4 +36,4 @@ This playbook does not use any scripts.
 
 ## Playbook Image
 ---
-![Cortex XDR - check file existence](Insert the link to your image here)
+![Cortex XDR - check file existence](https://raw.githubusercontent.com/demisto/content/2e19477c6355d781bf8f5c9dfdd1216a6bca07b7/Packs/CortexXDR/doc_files/Cortex_XDR_-_Check_file_existence.png)
