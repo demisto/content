@@ -35,7 +35,7 @@ def initialize_instance(params: Dict[str, str]) -> None:
     create_certificate_file(authentication)
 
 
-def create_certificate_file(authentication: dict) -> None:
+def create_certificate_file(authentication) -> None:
     password = authentication.get('password', None)
     certificate = None
     if 'credentials' in authentication and 'sshkey' in authentication['credentials'] and len(
