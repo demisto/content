@@ -982,5 +982,34 @@
     "error": true
   },
 
-  "CLOSE_ALERT_SUCCESS": {"closed_false_positive": 1}
+  "CLOSE_BENIGN_SUCCESS": {
+    "closed_benign": 2
+  },
+  "CLOSE_BENIGN_FAILURE": {
+    "closed_benign": 0,
+    "alertsNotFound": [
+      "invalidAlert1",
+      "invalidAlert2"
+    ]
+  },
+  "CLOSE_FALSE_POSITIVE_SUCCESS": {
+    "closed_false_positive": 2
+  },
+  "CLOSE_FALSE_POSITIVE_FAILURE": {
+    "closed_false_positive": 0,
+    "alertsNotFound": [
+      "invalidAlert1",
+      "invalidAlert2"
+    ]
+  },
+  "CLOSE_TRUE_POSITIVE_SUCCESS": {
+    "closed_true_positive": 2
+  },
+  "CLOSE_TRUE_POSITIVE_FAILURE": {
+    "closed_true_positive": 0,
+    "alertsNotFound": [
+      "invalidAlert1",
+      "invalidAlert2"
+    ]
+  }
 }

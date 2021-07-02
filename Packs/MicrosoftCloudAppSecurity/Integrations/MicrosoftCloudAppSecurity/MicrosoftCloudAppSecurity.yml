@@ -104,9 +104,9 @@ script:
       name: comment
       required: false
       secret: false
-    deprecated: false
-    description: Dismisses multiple alerts (bulk dismiss) that match the specified
-      filters.
+    deprecated: true
+    description: Deprecated. Use the one of the alert-close commands instead.
+      Dismisses multiple alerts (bulk dismiss) that match the specified filters.
     execution: false
     name: microsoft-cas-alert-dismiss-bulk
   - arguments:
@@ -315,9 +315,10 @@ script:
       name: comment
       required: false
       secret: false
-    deprecated: false
-    description: Resolves multiple alerts (bulk resolve) that match the specified
-      filters. Filters include origin IP address, IP subnet category, action taken
+    deprecated: true
+    description: Deprecated. Use one of the alert-close commands instead.
+      Resolves multiple alerts (bulk resolve) that match the specified filters.
+      Filters include origin IP address, IP subnet category, action taken
       on the activity, source type, or a custom filter.
     execution: false
     name: microsoft-cas-alert-resolve-bulk
@@ -345,16 +346,21 @@ script:
       name: comment
       required: false
       secret: false
-    - default: false
+    - auto: PREDEFINED
+      default: false
       description: |-
         The reason for closing the alerts as benign. Providing a reason helps improve the accuracy of the detection over time. Possible values include:
-
-        2: Actual severity is lower
-        4: Other
-        5: Confirmed with end user
-        6: Triggered by test
+        * Actual severity is lower
+        * Other
+        * Confirmed with end user
+        * Triggered by test
       isArray: false
-      name: reasonId
+      name: reason
+      predefined:
+        - Actual severity is lower
+        - Other
+        - Confirmed with end user
+        - Triggered by test
       required: false
       secret: false
     - auto: PREDEFINED
@@ -489,19 +495,17 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      defaultValue: None
       description: |-
         The reason for closing the alerts as false positive. Providing a reason helps improve the accuracy of the detection over time. Possible values include:
-
-        0: Not of interest
-        1: Too many similar alerts
-        3: Alert is not accurate
-        4: Other
+        * Not of interest
+        * Too many similar alerts
+        * Alert is not accurate
+        * Other
       isArray: false
-      name: reasonId
+      name: reason
       predefined:
       - Not of interest
-      - ' Too many similar alerts'
+      - Too many similar alerts
       - Alert is not accurate
       - Other
       required: false

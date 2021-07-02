@@ -1,5 +1,7 @@
 import pytest
 import json
+
+from CommonServerPython import DemistoException
 from MicrosoftCloudAppSecurity import Client
 
 
@@ -154,33 +156,263 @@ def test_alerts_to_incidents_and_fetch_start_from(requests_mock):
     assert res_incidents == []
 
 
-def test_close_false_positive_command_success(requests_mock):
-    """
-    Given:
-        - List of alerts
-    When:
-        - Close requested alerts as false positive
-    Then:
-        - Returns message: POST SUCCEEDED
-    """
-    from MicrosoftCloudAppSecurity import close_false_positive_command
-    raw_response = get_fetch_data()
-    args = {"filters": {
-        "id": {
-            "eq": [
-                "6060c4300be9cfd6182c934d",
-                "604f14400be9cfd6181b13fb"
-            ]
+class TestCloseBenign:
+    def setup(self):
+        self.success_response = get_fetch_data()['CLOSE_BENIGN_SUCCESS']
+        self.failure_response = get_fetch_data()['CLOSE_BENIGN_FAILURE']
+
+    def test_sanity_ids(self, requests_mock):
+        """
+        Given:
+            - List of alerts.
+        When:
+            - Closing requested alerts as benign.
+        Then:
+            - Command success.
+        """
+        from MicrosoftCloudAppSecurity import close_benign_command
+        alert_ids = '6060c4300be9cfd6182c934d,604f14400be9cfd6181b13fb'
+        args = {'alert_ids': alert_ids}
+
+        requests_mock.post('https://demistodev.eu2.portal.cloudappsecurity.com/api/v1/alerts/close_benign/',
+                           json=self.success_response)
+
+        res = close_benign_command(client_mocker, args)
+        assert res.raw_response == self.success_response
+        assert '2 alerts were closed as benign.' in res.readable_output
+
+    def test_sanity_filter(self, requests_mock):
+        """
+        Given:
+            - a custom filter.
+        When:
+            - Closing requested alerts as benign.
+        Then:
+            - Command success.
+        """
+        from MicrosoftCloudAppSecurity import close_benign_command
+        custom_filter = {
+            'filters': {
+                'id': {
+                    'eq': [
+                        '6060c4300be9cfd6182c934d',
+                        '604f14400be9cfd6181b13fb',
+                    ],
+                },
+            },
         }
-    }
-    }
-    custom_filter = {"custom_filter": json.dumps(args)}
+        args = {"custom_filter": json.dumps(custom_filter)}
+        requests_mock.post('https://demistodev.eu2.portal.cloudappsecurity.com/api/v1/alerts/close_benign/',
+                           json=self.success_response)
 
-    expected = raw_response["CLOSE_ALERT_SUCCESS"]
-    requests_mock.post('https://demistodev.eu2.portal.cloudappsecurity.com/api/v1/alerts/close_false_positive/',
-                       json=expected)
+        res = close_benign_command(client_mocker, args)
+        assert res.raw_response == self.success_response
+        assert '2 alerts were closed as benign.' in res.readable_output
 
-    res = close_false_positive_command(client_mocker, custom_filter).outputs
-    assert res == expected
+    def test_sanity_filter_dict(self, requests_mock):
+        """
+        Given:
+            - a custom filter as dict (use-case: taken from context).
+        When:
+            - Closing requested alerts as benign.
+        Then:
+            - Command success.
+        """
+        from MicrosoftCloudAppSecurity import close_benign_command
+        custom_filter = {
+            'filters': {
+                'id': {
+                    'eq': [
+                        '6060c4300be9cfd6182c934d',
+                        '604f14400be9cfd6181b13fb',
+                    ],
+                },
+            },
+        }
+        args = {"custom_filter": custom_filter}
+        requests_mock.post('https://demistodev.eu2.portal.cloudappsecurity.com/api/v1/alerts/close_benign/',
+                           json=self.success_response)
 
-# close_benign and close_true_positive are the same as close_false_positive
+        res = close_benign_command(client_mocker, args)
+        assert res.raw_response == self.success_response
+        assert '2 alerts were closed as benign.' in res.readable_output
+
+    def test_failure_not_found(self, requests_mock):
+        """
+        Given:
+            - list of alerts including invalid alert id.
+        When:
+            - Closing requested alerts as benign.
+        Then:
+            - Command failure.
+        """
+        from MicrosoftCloudAppSecurity import close_benign_command
+        alert_ids = '6060c4300be9cfd6182c934d,604f14400be9cfd6181b13fb,invalidAlert1,invalidAlert2'
+        args = {'alert_ids': alert_ids}
+
+        requests_mock.post('https://demistodev.eu2.portal.cloudappsecurity.com/api/v1/alerts/close_benign/',
+                           json=self.failure_response)
+
+        with pytest.raises(DemistoException, match='Failed to close the following alerts:.*'):
+            close_benign_command(client_mocker, args)
+
+    def test_failure_invalid_input(self):
+        """
+        Given:
+            - no alert ids nor filter.
+        When:
+            - Closing requested alerts as benign.
+        Then:
+            - Command failure.
+        """
+        from MicrosoftCloudAppSecurity import close_benign_command
+
+        with pytest.raises(DemistoException, match='Expecting at least one of the following arguments:'
+                                                   ' alert_id, custom_filter.'):
+            close_benign_command(client_mocker, {})
+
+
+class TestCloseTruePositive:
+    def setup(self):
+        self.success_response = get_fetch_data()['CLOSE_TRUE_POSITIVE_SUCCESS']
+        self.failure_response = get_fetch_data()['CLOSE_TRUE_POSITIVE_FAILURE']
+
+    def test_sanity_ids(self, requests_mock):
+        """
+        Given:
+            - List of alerts.
+        When:
+            - Close requested alerts as true-positive.
+        Then:
+            - Command success.
+        """
+        from MicrosoftCloudAppSecurity import close_true_positive_command
+        alert_ids = '6060c4300be9cfd6182c934d,604f14400be9cfd6181b13fb'
+        args = {'alert_ids': alert_ids}
+
+        requests_mock.post('https://demistodev.eu2.portal.cloudappsecurity.com/api/v1/alerts/close_true_positive/',
+                           json=self.success_response)
+
+        res = close_true_positive_command(client_mocker, args)
+        assert res.raw_response == self.success_response
+        assert '2 alerts were closed as true-positive.' in res.readable_output
+
+    def test_sanity_filter(self, requests_mock):
+        """
+        Given:
+            - a custom filter.
+        When:
+            - Close requested alerts as true-positive.
+        Then:
+            - Command success.
+        """
+        from MicrosoftCloudAppSecurity import close_true_positive_command
+        custom_filter = {
+            'filters': {
+                'id': {
+                    'eq': [
+                        '6060c4300be9cfd6182c934d',
+                        '604f14400be9cfd6181b13fb',
+                    ],
+                },
+            },
+        }
+        args = {"custom_filter": json.dumps(custom_filter)}
+        requests_mock.post('https://demistodev.eu2.portal.cloudappsecurity.com/api/v1/alerts/close_true_positive/',
+                           json=self.success_response)
+
+        res = close_true_positive_command(client_mocker, args)
+        assert res.raw_response == self.success_response
+        assert '2 alerts were closed as true-positive.' in res.readable_output
+
+    def test_failure_not_found(self, requests_mock):
+        """
+        Given:
+            - list of alerts including invalid alert id.
+        When:
+            - Close requested alerts as true-positive.
+        Then:
+            - Command failure.
+        """
+        from MicrosoftCloudAppSecurity import close_true_positive_command
+        alert_ids = '6060c4300be9cfd6182c934d,604f14400be9cfd6181b13fb,invalidAlert1,invalidAlert2'
+        args = {'alert_ids': alert_ids}
+
+        requests_mock.post('https://demistodev.eu2.portal.cloudappsecurity.com/api/v1/alerts/close_true_positive/',
+                           json=self.failure_response)
+
+        with pytest.raises(DemistoException, match='Failed to close the following alerts:.*'):
+            close_true_positive_command(client_mocker, args)
+
+
+class TestCloseFalsePositive:
+    def setup(self):
+        self.success_response = get_fetch_data()['CLOSE_FALSE_POSITIVE_SUCCESS']
+        self.failure_response = get_fetch_data()['CLOSE_FALSE_POSITIVE_FAILURE']
+
+    def test_sanity_ids(self, requests_mock):
+        """
+        Given:
+            - List of alerts.
+        When:
+            - Close requested alerts as false-positive.
+        Then:
+            - Command success.
+        """
+        from MicrosoftCloudAppSecurity import close_false_positive_command
+        alert_ids = '6060c4300be9cfd6182c934d,604f14400be9cfd6181b13fb'
+        args = {'alert_ids': alert_ids}
+
+        requests_mock.post('https://demistodev.eu2.portal.cloudappsecurity.com/api/v1/alerts/close_false_positive/',
+                           json=self.success_response)
+
+        res = close_false_positive_command(client_mocker, args)
+        assert res.raw_response == self.success_response
+        assert '2 alerts were closed as false-positive.' in res.readable_output
+
+    def test_sanity_filter(self, requests_mock):
+        """
+        Given:
+            - a custom filter.
+        When:
+            - Close requested alerts as false-positive.
+        Then:
+            - Command success.
+        """
+        from MicrosoftCloudAppSecurity import close_false_positive_command
+        custom_filter = {
+            'filters': {
+                'id': {
+                    'eq': [
+                        '6060c4300be9cfd6182c934d',
+                        '604f14400be9cfd6181b13fb',
+                    ],
+                },
+            },
+        }
+        args = {"custom_filter": json.dumps(custom_filter)}
+        requests_mock.post('https://demistodev.eu2.portal.cloudappsecurity.com/api/v1/alerts/close_false_positive/',
+                           json=self.success_response)
+
+        res = close_false_positive_command(client_mocker, args)
+        assert res.raw_response == self.success_response
+        assert '2 alerts were closed as false-positive.' in res.readable_output
+
+    def test_failure_not_found(self, requests_mock):
+        """
+        Given:
+            - list of alerts including invalid alert id.
+        When:
+            - Close requested alerts as false-positive.
+        Then:
+            - Command failure.
+        """
+        from MicrosoftCloudAppSecurity import close_false_positive_command
+        alert_ids = '6060c4300be9cfd6182c934d,604f14400be9cfd6181b13fb,invalidAlert1,invalidAlert2'
+        args = {'alert_ids': alert_ids}
+
+        requests_mock.post('https://demistodev.eu2.portal.cloudappsecurity.com/api/v1/alerts/close_false_positive/',
+                           json=self.failure_response)
+
+        with pytest.raises(DemistoException, match='Failed to close the following alerts:.*'):
+            close_false_positive_command(client_mocker, args)
