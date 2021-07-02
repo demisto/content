@@ -1306,12 +1306,12 @@ def get_conversation_by_name(conversation_name: str) -> dict:
 
 
 def filter_conversations(
-        name: str = '',
-        creator: str = '',
-        is_archived: Union[bool, None] = None,
-        is_general: Union[bool, None] = None,
-        is_private: Union[bool, None] = None
-        ) -> list:
+    name: str = '',
+    creator: str = '',
+    is_archived: Union[bool, None] = None,
+    is_general: Union[bool, None] = None,
+    is_private: Union[bool, None] = None
+) -> list:
     """
     Get a filtered list of slack conversations
 
@@ -1350,7 +1350,7 @@ def filter_conversations(
         if conversation_filter:
             return conversation_filter
 
-    filters = {}
+    filters: Dict[str, Union[str, bool]] = {}
     if name:
         filters.update({'name': name})
     if creator:
