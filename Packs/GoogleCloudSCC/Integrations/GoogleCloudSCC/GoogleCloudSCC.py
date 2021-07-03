@@ -942,7 +942,7 @@ def prepare_hr_and_ec_for_cloud_asset_list(result: Dict[str, Any]) -> Tuple[str,
     ec_dict: Dict[str, Any] = {OUTPUT_PREFIX["LIST_RESOURCE"]: ec_asset_list}
     next_page_token = result.get("nextPageToken", "")
     if next_page_token:
-        token_ec = {"name": "google-cloud-cai-asset-resource-list", "nextPageToken": next_page_token}
+        token_ec = {"name": "google-cloud-scc-asset-resource-list", "nextPageToken": next_page_token}
         ec_dict[OUTPUT_PREFIX["TOKEN"]] = token_ec
 
     return readable_output, remove_empty_elements(ec_dict)
@@ -1354,10 +1354,10 @@ def main() -> None:
         if command == "test-module":
             # This is the call made when pressing the integration test button.
             test_module(params)
-        elif command == "google-cloud-cai-asset-resource-list":
+        elif command == "google-cloud-scc-asset-resource-list":
             client = init_google_cloud_assets_client(**params)
             return_results(cloud_asset_list_command(client, args))
-        elif command == "google-cloud-cai-asset-owner-get":
+        elif command == "google-cloud-scc-asset-owner-get":
             client = init_google_cloud_assets_client(**params)
             return_results(cloud_asset_owner_get_command(client, args))
         elif command == "fetch-incidents":

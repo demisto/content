@@ -579,14 +579,14 @@ Update an organization's or source's finding.
 >| [organizations/595779152576/sources/10134421585261057824/findings/00002906967111ea87141217baf6db4d](https://console.cloud.google.com/security/command-center/findings?organizationId=595779152576&resourceId=organizations/595779152576/sources/10134421585261057824/findings/00002906967111ea87141217baf6db4d) | ACTIVE | page | February 11, 2021 at 01:52:25 PM | May 15, 2020 at 05:57:46 AM | [http://www.fake-url.com](http://www.fake-url.com) | //cloudresourcemanager.googleapis.com/projects/339295427573 |
 
 
-### google-cloud-cai-asset-resource-list
+### google-cloud-scc-asset-resource-list
 ***
 Lists cloud asset's resources.
 
 
 #### Base Command
 
-`google-cloud-cai-asset-resource-list`
+`google-cloud-scc-asset-resource-list`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -594,7 +594,7 @@ Lists cloud asset's resources.
 | parent | Name of the organization or project the assets belong to. Organization Id provided in the Integration Configuration will be taken by default, if no value is provided to the parent.<br/><br/>Format: "organizations/[organization-number]" (such as "organizations/123"), "projects/[project-id]" (such as "projects/my-project-id"), or "projects/[project-number]" (such as "projects/12345"). | Optional | 
 | assetTypes | This parameter is used to filter assets by asset types by providing a single value or a comma-separated value of asset types.<br/>For example: "compute.googleapis.com/Disk".<br/><br/>Regular expression is also supported. <br/>For example:<br/>1) "compute.googleapis.com.*" resources whose asset type starts with "compute.googleapis.com".<br/>2) ".*Instance" resources whose asset type ends with "Instance".<br/>3) ".*Instance.*" resources whose asset type contains "Instance". | Optional | 
 | pageSize | The maximum number of results to return in a single response. The minimum value is 1 and maximum value is 1000. Default is 10. | Optional | 
-| pageToken | The nextPageToken returned from the previous cai-asset-resource-list command response, or unspecified for the first  cai-asset-resource-list command. It is a continuation of a prior cai-asset-resource-list call, and the API should return the next page of assets. | Optional | 
+| pageToken | The nextPageToken returned from the previous scc-asset-resource-list command response, or unspecified for the first  scc-asset-resource-list command. It is a continuation of a prior scc-asset-resource-list call, and the API should return the next page of assets. | Optional | 
 | readTime | Time used as a reference point when filtering assets. This can only be set to a timestamp between the current time and the current time minus 35 days (inclusive). If not provided, it will take current time. <br/><br/>Format:<br/>(&lt;number&gt; &lt;time unit&gt;, e.g., "12 hours ago", "7 days ago", "1 week", "1 month") or (&lt;date&gt; &lt;time&gt;, e.g. "yyyy-mm-ddTHH-MM-SS") or ( "YYYY-MM-ddTHH:mm:ss.sssZ", e.g. 2020-07-22T07:10:02.782Z) or (&lt;date&gt;, e.g. "2020-07-22"). | Optional | 
 
 
@@ -619,7 +619,7 @@ Lists cloud asset's resources.
 
 
 #### Command Example
-```!google-cloud-cai-asset-resource-list pageSize=2```
+```!google-cloud-scc-asset-resource-list pageSize=2```
 
 #### Context Example
 ```json
@@ -668,7 +668,7 @@ Lists cloud asset's resources.
             ]
         },
         "Token": {
-            "name": "google-cloud-cai-asset-resource-list",
+            "name": "google-cloud-scc-asset-resource-list",
             "nextPageToken": "dummy"
         }
     }
@@ -683,14 +683,14 @@ Lists cloud asset's resources.
 >| //cloudbilling.googleapis.com/billingAccounts/23456-7890 | cloudbilling.googleapis.com/BillingAccount | BillingAccount | organizations/123456789 | April 01, 2021 at 07:38:12 PM |
 
 
-### google-cloud-cai-asset-owner-get
+### google-cloud-scc-asset-owner-get
 ***
 Gets the owner information for the provided projects.
 
 
 #### Base Command
 
-`google-cloud-cai-asset-owner-get`
+`google-cloud-scc-asset-owner-get`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -720,7 +720,7 @@ Gets the owner information for the provided projects.
 
 
 #### Command Example
-```!google-cloud-cai-asset-owner-get projectName="projects/123456789"```
+```!google-cloud-scc-asset-owner-get projectName="projects/123456789"```
 
 #### Context Example
 ```json

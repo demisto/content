@@ -600,9 +600,9 @@ script:
       required: false
       secret: false
     - default: false
-      description: The nextPageToken returned from the previous cai-asset-resource-list
-        command response, or unspecified for the first  cai-asset-resource-list command.
-        It is a continuation of a prior cai-asset-resource-list call, and the API
+      description: The nextPageToken returned from the previous scc-asset-resource-list
+        command response, or unspecified for the first  scc-asset-resource-list command.
+        It is a continuation of a prior scc-asset-resource-list call, and the API
         should return the next page of assets.
       isArray: false
       name: pageToken
@@ -623,7 +623,7 @@ script:
     deprecated: false
     description: Lists cloud asset's resources.
     execution: false
-    name: google-cloud-cai-asset-resource-list
+    name: google-cloud-scc-asset-resource-list
     outputs:
     - contextPath: GoogleCloudSCC.CloudAsset.Resource.name
       description: The full name of the asset.
@@ -702,7 +702,7 @@ script:
     deprecated: false
     description: Gets the owner information for the provided projects.
     execution: false
-    name: google-cloud-cai-asset-owner-get
+    name: google-cloud-scc-asset-owner-get
     outputs:
     - contextPath: GoogleCloudSCC.CloudAsset.IamPolicy.name
       description: The full name of the asset.
@@ -763,7 +763,7 @@ script:
       description: Specifies the identities that do not cause logging for this type
         of permission.
       type: String
-  dockerimage: demisto/google-api-py3:1.0.0.21732
+  dockerimage: demisto/google-api-py3:1.0.0.22099
   feed: false
   isfetch: true
   longRunning: false

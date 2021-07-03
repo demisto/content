@@ -494,9 +494,9 @@ tasks:
     task:
       id: fbc4c3f0-2034-45a2-88f2-9603530caddf
       version: -1
-      name: google-cloud-cai-asset-resource-list
+      name: google-cloud-scc-asset-resource-list
       description: Lists cloud asset's resources.
-      script: '|||google-cloud-cai-asset-resource-list'
+      script: '|||google-cloud-scc-asset-resource-list'
       type: regular
       iscommand: true
       brand: ""
@@ -595,9 +595,9 @@ tasks:
     task:
       id: 023dea3b-b84b-4969-86d2-2f8215d0b12c
       version: -1
-      name: google-cloud-cai-asset-owner-get
+      name: google-cloud-scc-asset-owner-get
       description: Gets the owner information for the provided projects.
-      script: '|||google-cloud-cai-asset-owner-get'
+      script: '|||google-cloud-scc-asset-owner-get'
       type: regular
       iscommand: true
       brand: ""
