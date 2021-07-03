@@ -143,7 +143,8 @@ def upload_core_packs_config(production_bucket: Bucket, build_number: str, extra
     # construct core pack data with public gcs urls
     core_packs_data = {
         'corePacks': corepacks_list,
-        'buildNumber': build_number
+        'buildNumber': build_number,
+        'upgradeCorePacks': GCPConfig.UPGRADE_CORE_PACKS_LIST
     }
 
     # upload core pack json file to gcs

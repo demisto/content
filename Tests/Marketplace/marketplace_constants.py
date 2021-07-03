@@ -58,6 +58,9 @@ class GCPConfig(object):
     with open(os.path.join(os.path.dirname(__file__), 'core_packs_list.json'), 'r') as core_packs_list_file:
         CORE_PACKS_LIST = json.load(core_packs_list_file)
 
+    with open(os.path.join(os.path.dirname(__file__), 'upgrade_core_packs_list.json'), 'r') as upgrade_packs_list_file:
+        UPGRADE_CORE_PACKS_LIST = json.load(upgrade_packs_list_file)
+
 
 class PackTags(object):
     """ Pack tag constants """

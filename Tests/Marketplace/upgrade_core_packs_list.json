@@ -1,0 +1,11 @@
+[
+  "Base",
+  "DemistoRESTAPI",
+  "DemistoLocking",
+  "CommonScripts",
+  "CommonPlaybooks",
+  "CommonTypes",
+  "CommonDashboards",
+  "CommonReports",
+  "CommonWidgets",
+]
