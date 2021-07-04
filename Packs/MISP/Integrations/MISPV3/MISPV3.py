@@ -479,7 +479,7 @@ def generic_reputation_command(demisto_args, reputation_type, dbot_type, malicio
 def reputation_value_validation(value, dbot_type):
     if dbot_type == 'FILE':
         # hashFormat will be used only in output
-        hash_format = get_hash_type(value).upper()
+        hash_format = get_hash_type(value)
         if hash_format == 'Unknown':
             return_error('Invalid hash length, enter file hash of format MD5, SHA-1 or SHA-256')
     if dbot_type == 'IP':
