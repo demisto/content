@@ -55,7 +55,7 @@ def handle_stix_types(entities_types):
     entities_types = argToList(entities_types)
     for e_type in entities_types:
         FeedIndicatorType.indicator_type_by_server_version(e_type)
-    return ','.join(str(x) for x in entities_types).replace(' ', '')
+    return ','.join(str(x) for x in entities_types).replace(', ', ',')
 
 
 ''' MAIN FUNCTION '''
