@@ -951,3 +951,81 @@ Returns a list of events, by alarm ID.
 >| 1040 | Authentication Failure | Audit | 3 | 19812 | User Logon Failure : Bad Password | 1 | 0 | Unknown | 1 | Primary Site | 1 | Primary Site | win-jsbol5ercqa.demisto.lab |  | win-jsbol5ercqa.demisto.lab | Unknown | messageId | 2019-06-20 05:27:03 | WIN-JSBOL5ERCQA | 1 | WIN-JSBOL5ERCQA | 1 | WIN-JSBOL5ERCQA MS Security Log | 1000030 | MS Windows Event Logging - Security | administrator | 20384578-60c1-4828-bdea-68cdc202d719 | 1 | 1060400 | EVID 4625 : User Logon Type 3: Wrong Password | 2019-06-20 12:27:03 | 2019-06-20 12:27:03 | 2019-06-20 12:27:03 | NtLmSsp | 0xC000006A | 1 | Primary Site | -1 | 0 | Unknown | 0x0 | 3 | -1 | Unknown user name or bad password | 1 | Primary Site | 1 | 211154 | 0x0 | Information | 0xC000006D | Unknown user name or bad password | An account failed to log on | 4625 |
 >| 1040 | Authentication Failure | Audit | 3 | 19812 | User Logon Failure : Bad Password | 1 | 0 | Unknown | 1 | Primary Site | 1 | Primary Site | win-jsbol5ercqa.demisto.lab |  | win-jsbol5ercqa.demisto.lab | Unknown | messageId | 2019-06-20 05:27:03 | WIN-JSBOL5ERCQA | 1 | WIN-JSBOL5ERCQA | 1 | WIN-JSBOL5ERCQA MS Security Log | 1000030 | MS Windows Event Logging - Security | administrator | dd2c2251-ede1-4559-916b-0422ea8c0f9e | 1 | 1060400 | EVID 4625 : User Logon Type 3: Wrong Password | 2019-06-20 12:27:03 | 2019-06-20 12:27:03 | 2019-06-20 12:27:03 | NtLmSsp | 0xC000006A | 1 | Primary Site | -1 | 0 | Unknown | 0x0 | 3 | -1 | Unknown user name or bad password | 1 | Primary Site | 1 | 211153 | 0x0 | Information | 0xC000006D | Unknown user name or bad password | An account failed to log on | 4625 |
 
+### lr-get-case-evidence
+***
+Execute evidence query for a specific case-id
+
+
+#### Base Command
+
+`lr-get-case-evidence`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| case_id | The case ID. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Logrhythm.Search.Evidence.status | String | Status | 
+| Logrhythm.Search.Evidence.text | String | Evidence Text | 
+| Logrhythm.Search.Evidence.number | Number | Evidence ID | 
+| Logrhythm.Search.Evidence.dateCreated | Date | Created date | 
+| Logrhythm.Search.Evidence.pinned | Boolean | isPinned | 
+| Logrhythm.Search.Evidence.lastUpdatedBy.name | String | Last updated by | 
+| Logrhythm.Search.Evidence.createdBy.name | String | Created by | 
+| Logrhythm.Search.Evidence.dateUpdated | Date | Date updated | 
+| Logrhythm.Search.Evidence.type | String | Evidence type | 
+
+
+#### Command Example
+```!lr-get-case-evidence case_id=12345```
+
+#### Context Example
+```json
+{
+    "Logrhythm": {
+        "Evidence": {
+            "alarm": {
+                "alarmDate": "2019-04-15T00:02:52.847Z",
+                "alarmId": 190,
+                "alarmRuleId": 1098,
+                "alarmRuleName": "LogRhythm Data Indexer Max Index Exceeded",
+                "dateInserted": "2019-04-15T00:02:52.86Z",
+                "entityId": 1,
+                "entityName": "Primary Site",
+                "riskBasedPriorityMax": 37
+            },
+            "createdBy": {
+                "disabled": false,
+                "name": "LogRhythm Administrator",
+                "number": -100
+            },
+            "dateCreated": "2019-04-15T21:41:34.61Z",
+            "datePinned": null,
+            "dateUpdated": "2019-04-15T21:41:34.61Z",
+            "lastUpdatedBy": {
+                "disabled": false,
+                "name": "LogRhythm Administrator",
+                "number": -100
+            },
+            "number": 3,
+            "pinned": false,
+            "status": "completed",
+            "statusMessage": null,
+            "text": "",
+            "type": "alarm"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Evidences for case FD05A0D9-6749-45F7-BB5D-596FBA68E731
+>|Alarm|Createdby|Datecreated|Datepinned|Dateupdated|Lastupdatedby|Number|Pinned|Status|Statusmessage|Text|Type|
+>|---|---|---|---|---|---|---|---|---|---|---|---|
+>| alarmDate: 2019-04-15T00:02:52.847Z<br/>dateInserted: 2019-04-15T00:02:52.86Z<br/>alarmRuleId: 1098<br/>entityName: Primary Site<br/>alarmId: 190<br/>riskBasedPriorityMax: 37<br/>entityId: 1<br/>alarmRuleName: LogRhythm Data Indexer Max Index Exceeded | disabled: false<br/>number: -100<br/>name: LogRhythm Administrator | 2019-04-15T21:41:34.61Z |  | 2019-04-15T21:41:34.61Z | disabled: false<br/>number: -100<br/>name: LogRhythm Administrator | 3 | false | completed |  |  | alarm |
