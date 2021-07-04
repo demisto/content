@@ -14,6 +14,3 @@ To create a new API secret:
 The API secret value will appear. Copy it into the API secret parameter.
 
 **Note**: You will not be able to view the API secret key after closing the popup window!
-
-## API version
-The version of the API to use. Currently, the available version is *v1* (the default value).
