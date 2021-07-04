@@ -1720,7 +1720,8 @@ def lr_execute_search_query(data_args):
         outputs={"TaskID": task_id},
         outputs_prefix="Logrhythm.Search.Task",
         outputs_key_field='taskID',
-        raw_response=search_task
+        raw_response=search_task,
+        readable_output='New search query created, Task ID=' + task_id
     )
 
     return_results(results)
