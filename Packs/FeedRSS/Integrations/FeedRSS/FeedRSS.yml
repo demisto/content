@@ -4,12 +4,12 @@ commonfields:
   version: -1
 configuration:
 - display: Feed URL
-  additionalinfo: RSS URL should be a url with 'feed' as suffix or prefix.
+  additionalinfo: The RSS URL should be a URL with 'feed' as the suffix or prefix.
   name: server_url
   required: true
   type: 0
 - display: Article content max size in KB
-  additionalinfo: Default is 45KB. If you increase the limit substantialy, it may slow performance. You need to specify only a number. e.g, 50.
+  additionalinfo: Default is 45KB. If you increase the limit substantialy, it may slow performance. You need to specify only a number, e.g., 50.
   name: max_size
   defaultvalue: '45'
   required: false
@@ -43,9 +43,9 @@ configuration:
   - F - Reliability cannot be judged
   required: true
   type: 15
-  additionalinfo: Reliability of the source providing the intelligence data
+  additionalinfo: Reliability of the source providing the intelligence data.
 - additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators
-    fetched from the feed
+    fetched from the feed.
   display: Traffic Light Protocol Color
   name: tlp_color
   options:
@@ -96,7 +96,7 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: RSS Feed reader can ingest new items as Report indicators.
+description: RSS Feed reader can ingest new items as report indicators.
 display: RSS Feed
 name: RSS Feed
 script:
