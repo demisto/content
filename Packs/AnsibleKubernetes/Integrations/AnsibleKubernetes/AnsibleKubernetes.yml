@@ -29,7 +29,10 @@ configuration:
   display: Validate Certs
   name: validate_certs
   required: true
-  type: 4
+  type: 15
+  options:
+  - "False"
+  - "True"
 description: Manage Kubernetes
 display: Kubernetes
 fromversion: 6.0.0
@@ -162,17 +165,6 @@ script:
         `name`, and `namespace` will be overwritten by corresponding values found
         in the provided `resource_definition`.'
       name: resource_definition
-    - description: Token used to authenticate with the API. Can also be specified
-        via K8S_AUTH_API_KEY environment variable.
-      name: api_key
-    - description: Path to an existing Kubernetes config file. If not provided, and
-        no other connection options are provided, the openshift client will attempt
-        to load the default configuration file from `~/.kube/config.json`. Can also
-        be specified via K8S_AUTH_KUBECONFIG environment variable.
-      name: kubeconfig
-    - description: The name of a context found in the config file. Can also be specified
-        via K8S_AUTH_CONTEXT environment variable.
-      name: context
     description: "Manage Kubernetes (K8s) objects\n Further documentation available\
       \ at https://docs.ansible.com/ansible/2.9/modules/k8s_module.html"
     name: k8s-k8s
@@ -200,17 +192,6 @@ script:
       name: label_selectors
     - description: List of field selectors to use to filter results
       name: field_selectors
-    - description: Token used to authenticate with the API. Can also be specified
-        via K8S_AUTH_API_KEY environment variable.
-      name: api_key
-    - description: Path to an existing Kubernetes config file. If not provided, and
-        no other connection options are provided, the openshift client will attempt
-        to load the default configuration file from `~/.kube/config.json`. Can also
-        be specified via K8S_AUTH_KUBECONFIG environment variable.
-      name: kubeconfig
-    - description: The name of a context found in the config file. Can also be specified
-        via K8S_AUTH_CONTEXT environment variable.
-      name: context
     description: "Describe Kubernetes (K8s) objects\n Further documentation available\
       \ at https://docs.ansible.com/ansible/2.9/modules/k8s_info_module.html"
     name: k8s-info
@@ -244,17 +225,6 @@ script:
         object. If `resource definition` is provided, the `metadata.namespace` value
         from the `resource_definition` will override this option.
       name: namespace
-    - description: Token used to authenticate with the API. Can also be specified
-        via K8S_AUTH_API_KEY environment variable.
-      name: api_key
-    - description: Path to an existing Kubernetes config file. If not provided, and
-        no other connection options are provided, the openshift client will attempt
-        to load the default configuration file from `~/.kube/config.json`. Can also
-        be specified via K8S_AUTH_KUBECONFIG environment variable.
-      name: kubeconfig
-    - description: The name of a context found in the config file. Can also be specified
-        via K8S_AUTH_CONTEXT environment variable.
-      name: context
     - description: 'Provide a valid YAML definition (either as a string, list, or
         dict) for an object when creating or updating. NOTE: `kind`, `api_version`,
         `name`, and `namespace` will be overwritten by corresponding values found
@@ -369,17 +339,6 @@ script:
         `https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/`'
       isArray: true
       name: selector
-    - description: Token used to authenticate with the API. Can also be specified
-        via K8S_AUTH_API_KEY environment variable.
-      name: api_key
-    - description: Path to an existing Kubernetes config file. If not provided, and
-        no other connection options are provided, the openshift client will attempt
-        to load the default configuration file from `~/.kube/config.json`. Can also
-        be specified via K8S_AUTH_KUBECONFIG environment variable.
-      name: kubeconfig
-    - description: The name of a context found in the config file. Can also be specified
-        via K8S_AUTH_CONTEXT environment variable.
-      name: context
     description: "Manage Services on Kubernetes\n Further documentation available\
       \ at https://docs.ansible.com/ansible/2.9/modules/k8s_service_module.html"
     name: k8s-service
