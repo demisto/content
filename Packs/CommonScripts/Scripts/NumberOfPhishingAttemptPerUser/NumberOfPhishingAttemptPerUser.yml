@@ -11,7 +11,7 @@ tags:
 - dynamic-section
 timeout: '0'
 type: python
-dockerimage: demisto/python3:3.8.3.9324
+dockerimage: demisto/python3:3.9.5.21272
 runas: DBotRole
 runonce: false
 subtype: python3
