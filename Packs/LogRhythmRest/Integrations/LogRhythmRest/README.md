@@ -1,5 +1,5 @@
 LogRhythm security intelligence.
-This integration was integrated and tested with version xx of LogRhythmRest
+This integration was integrated and tested with version 7.4.6 of LogRhythmRest
 ## Configure LogRhythmRest on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
@@ -63,7 +63,7 @@ Executes a query for logs that match query parameters.
             "EventID": "4625", 
             "Task": "Logon", 
             "Level": "Information", 
-            "Computer": "WIN-1234.demisto.lab", 
+            "Computer": "WIN-1234.lab", 
             "Opcode": "Info", 
             "Keywords": "Audit Failure", 
             "EventData": "An account failed to log on.\n\nSubject:\n\tSecurity ID:\t\tNULL SID\n\tAccount Name:\t\t-\n\tAccount Domain:\t\t-\n\tLogon ID:\t\t0x0\n\nLogon Type:\t\t\t3\n\nAccount For Which Logon Failed:\n\tSecurity ID:\t\tNULL SID\n\tAccount Name:\t\tGPWARD\n\tAccount Domain:\t\t\n\nFailure Information:\n\tFailure Reason:\t\tUnknown user name or bad password.\n\tStatus:\t\t\t0xC000006D\n\tSub Status:\t\t0xC0000064\n\nProcess Information:\n\tCaller Process ID:\t0x0\n\tCaller Process Name:\t-\n\nNetwork Information:\n\tWorkstation Name:\t-\n\tSource Network Address:\t-\n\tSource Port:\t\t-\n\nDetailed Authentication Information:\n\tLogon Process:\t\tNtLmSsp \n\tAuthentication Package:\tNTLM\n\tTransited Services:\t-\n\tPackage Name (NTLM only):\t-\n\tKey Length:\t\t0\n\nThis event is generated when a logon request fails. It is generated on the computer where access was attempted.\n\nThe Subject fields indicate the account on the local system which requested the logon. This is most commonly a service such as the Server service, or a local process such as Winlogon.exe or Services.exe.\n\nThe Logon Type field indicates the kind of logon that was requested. The most common types are 2 (interactive) and 3 (network).\n\nThe Process Information fields indicate which account and process on the system requested the logon.\n\nThe Network Information fields indicate where a remote logon request originated. Workstation name is not always available and may be left blank in some cases.\n\nThe authentication information fields provide detailed information about this specific logon request.\n\t- Transited services indicate which intermediate services have participated in this logon request.\n\t- Package name indicates which sub-protocol was used among the NTLM protocols.\n\t- Key length indicates the length of the generated session key. This will be 0 if no session key was requested.", 
@@ -73,7 +73,7 @@ Executes a query for logs that match query parameters.
             "EventID": "4625", 
             "Task": "Logon", 
             "Level": "Information", 
-            "Computer": "WIN-1234.demisto.lab", 
+            "Computer": "WIN-1234.lab", 
             "Opcode": "Info", 
             "Keywords": "Audit Failure", 
             "EventData": "An account failed to log on.\n\nSubject:\n\tSecurity ID:\t\tNULL SID\n\tAccount Name:\t\t-\n\tAccount Domain:\t\t-\n\tLogon ID:\t\t0x0\n\nLogon Type:\t\t\t3\n\nAccount For Which Logon Failed:\n\tSecurity ID:\t\tNULL SID\n\tAccount Name:\t\tTMARTIN\n\tAccount Domain:\t\t\n\nFailure Information:\n\tFailure Reason:\t\tUnknown user name or bad password.\n\tStatus:\t\t\t0xC000006D\n\tSub Status:\t\t0xC0000064\n\nProcess Information:\n\tCaller Process ID:\t0x0\n\tCaller Process Name:\t-\n\nNetwork Information:\n\tWorkstation Name:\t-\n\tSource Network Address:\t-\n\tSource Port:\t\t-\n\nDetailed Authentication Information:\n\tLogon Process:\t\tNtLmSsp \n\tAuthentication Package:\tNTLM\n\tTransited Services:\t-\n\tPackage Name (NTLM only):\t-\n\tKey Length:\t\t0\n\nThis event is generated when a logon request fails. It is generated on the computer where access was attempted.\n\nThe Subject fields indicate the account on the local system which requested the logon. This is most commonly a service such as the Server service, or a local process such as Winlogon.exe or Services.exe.\n\nThe Logon Type field indicates the kind of logon that was requested. The most common types are 2 (interactive) and 3 (network).\n\nThe Process Information fields indicate which account and process on the system requested the logon.\n\nThe Network Information fields indicate where a remote logon request originated. Workstation name is not always available and may be left blank in some cases.\n\nThe authentication information fields provide detailed information about this specific logon request.\n\t- Transited services indicate which intermediate services have participated in this logon request.\n\t- Package name indicates which sub-protocol was used among the NTLM protocols.\n\t- Key length indicates the length of the generated session key. This will be 0 if no session key was requested.", 
@@ -88,8 +88,8 @@ Executes a query for logs that match query parameters.
 >### Hosts for primary
 >|Level|Computer|Channel|Keywords|EventData|
 >|---|---|---|---|---|
->| Information | WIN-1234.demisto.lab | Security | Audit Failure | An account failed to log on.\n\nSubject:\n\tSecurity ID:\t\tNULL SID\n\tAccount Name:\t\t-\n\tAccount Domain:\t\t-\n\tLogon ID:\t\t0x0\n\nLogon Type:\t\t\t3\n\nAccount For Which Logon Failed:\n\tSecurity ID:\t\tNULL SID\n\tAccount Name:\t\tGPWARD\n\tAccount Domain:\t\t\n\nFailure Information:\n\tFailure Reason:\t\tUnknown user name or bad password.\n\tStatus:\t\t\t0xC000006D\n\tSub Status:\t\t0xC0000064\n\nProcess Information:\n\tCaller Process ID:\t0x0\n\tCaller Process Name:\t-\n\nNetwork Information:\n\tWorkstation Name:\t-\n\tSource Network Address:\t-\n\tSource Port:\t\t-\n\nDetailed Authentication Information:\n\tLogon Process:\t\tNtLmSsp \n\tAuthentication Package:\tNTLM\n\tTransited Services:\t-\n\tPackage Name (NTLM only):\t-\n\tKey Length:\t\t0\n\nThis event is generated when a logon request fails. It is generated on the computer where access was attempted.\n\nThe Subject fields indicate the account on the local system which requested the logon. This is most commonly a service such as the Server service, or a local process such as Winlogon.exe or Services.exe.\n\nThe Logon Type field indicates the kind of logon that was requested. The most common types are 2 (interactive) and 3 (network).\n\nThe Process Information fields indicate which account and process on the system requested the logon.\n\nThe Network Information fields indicate where a remote logon request originated. Workstation name is not always available and may be left blank in some cases.\n\nThe authentication information fields provide detailed information about this specific logon request.\n\t- Transited services indicate which intermediate services have participated in this logon request.\n\t- Package name indicates which sub-protocol was used among the NTLM protocols.\n\t- Key length indicates the length of the generated session key. This will be 0 if no session key was requested. |
->| Information | WIN-1234.demisto.lab | Security | Audit Failure | An account failed to log on.\n\nSubject:\n\tSecurity ID:\t\tNULL SID\n\tAccount Name:\t\t-\n\tAccount Domain:\t\t-\n\tLogon ID:\t\t0x0\n\nLogon Type:\t\t\t3\n\nAccount For Which Logon Failed:\n\tSecurity ID:\t\tNULL SID\n\tAccount Name:\t\tTMARTIN\n\tAccount Domain:\t\t\n\nFailure Information:\n\tFailure Reason:\t\tUnknown user name or bad password.\n\tStatus:\t\t\t0xC000006D\n\tSub Status:\t\t0xC0000064\n\nProcess Information:\n\tCaller Process ID:\t0x0\n\tCaller Process Name:\t-\n\nNetwork Information:\n\tWorkstation Name:\t-\n\tSource Network Address:\t-\n\tSource Port:\t\t-\n\nDetailed Authentication Information:\n\tLogon Process:\t\tNtLmSsp \n\tAuthentication Package:\tNTLM\n\tTransited Services:\t-\n\tPackage Name (NTLM only):\t-\n\tKey Length:\t\t0\n\nThis event is generated when a logon request fails. It is generated on the computer where access was attempted.\n\nThe Subject fields indicate the account on the local system which requested the logon. This is most commonly a service such as the Server service, or a local process such as Winlogon.exe or Services.exe.\n\nThe Logon Type field indicates the kind of logon that was requested. The most common types are 2 (interactive) and 3 (network).\n\nThe Process Information fields indicate which account and process on the system requested the logon.\n\nThe Network Information fields indicate where a remote logon request originated. Workstation name is not always available and may be left blank in some cases.\n\nThe authentication information fields provide detailed information about this specific logon request.\n\t- Transited services indicate which intermediate services have participated in this logon request.\n\t- Package name indicates which sub-protocol was used among the NTLM protocols.\n\t- Key length indicates the length of the generated session key. This will be 0 if no session key was requested. |
+>| Information | WIN-1234.lab | Security | Audit Failure | An account failed to log on.\n\nSubject:\n\tSecurity ID:\t\tNULL SID\n\tAccount Name:\t\t-\n\tAccount Domain:\t\t-\n\tLogon ID:\t\t0x0\n\nLogon Type:\t\t\t3\n\nAccount For Which Logon Failed:\n\tSecurity ID:\t\tNULL SID\n\tAccount Name:\t\tGPWARD\n\tAccount Domain:\t\t\n\nFailure Information:\n\tFailure Reason:\t\tUnknown user name or bad password.\n\tStatus:\t\t\t0xC000006D\n\tSub Status:\t\t0xC0000064\n\nProcess Information:\n\tCaller Process ID:\t0x0\n\tCaller Process Name:\t-\n\nNetwork Information:\n\tWorkstation Name:\t-\n\tSource Network Address:\t-\n\tSource Port:\t\t-\n\nDetailed Authentication Information:\n\tLogon Process:\t\tNtLmSsp \n\tAuthentication Package:\tNTLM\n\tTransited Services:\t-\n\tPackage Name (NTLM only):\t-\n\tKey Length:\t\t0\n\nThis event is generated when a logon request fails. It is generated on the computer where access was attempted.\n\nThe Subject fields indicate the account on the local system which requested the logon. This is most commonly a service such as the Server service, or a local process such as Winlogon.exe or Services.exe.\n\nThe Logon Type field indicates the kind of logon that was requested. The most common types are 2 (interactive) and 3 (network).\n\nThe Process Information fields indicate which account and process on the system requested the logon.\n\nThe Network Information fields indicate where a remote logon request originated. Workstation name is not always available and may be left blank in some cases.\n\nThe authentication information fields provide detailed information about this specific logon request.\n\t- Transited services indicate which intermediate services have participated in this logon request.\n\t- Package name indicates which sub-protocol was used among the NTLM protocols.\n\t- Key length indicates the length of the generated session key. This will be 0 if no session key was requested. |
+>| Information | WIN-1234.lab | Security | Audit Failure | An account failed to log on.\n\nSubject:\n\tSecurity ID:\t\tNULL SID\n\tAccount Name:\t\t-\n\tAccount Domain:\t\t-\n\tLogon ID:\t\t0x0\n\nLogon Type:\t\t\t3\n\nAccount For Which Logon Failed:\n\tSecurity ID:\t\tNULL SID\n\tAccount Name:\t\tTMARTIN\n\tAccount Domain:\t\t\n\nFailure Information:\n\tFailure Reason:\t\tUnknown user name or bad password.\n\tStatus:\t\t\t0xC000006D\n\tSub Status:\t\t0xC0000064\n\nProcess Information:\n\tCaller Process ID:\t0x0\n\tCaller Process Name:\t-\n\nNetwork Information:\n\tWorkstation Name:\t-\n\tSource Network Address:\t-\n\tSource Port:\t\t-\n\nDetailed Authentication Information:\n\tLogon Process:\t\tNtLmSsp \n\tAuthentication Package:\tNTLM\n\tTransited Services:\t-\n\tPackage Name (NTLM only):\t-\n\tKey Length:\t\t0\n\nThis event is generated when a logon request fails. It is generated on the computer where access was attempted.\n\nThe Subject fields indicate the account on the local system which requested the logon. This is most commonly a service such as the Server service, or a local process such as Winlogon.exe or Services.exe.\n\nThe Logon Type field indicates the kind of logon that was requested. The most common types are 2 (interactive) and 3 (network).\n\nThe Process Information fields indicate which account and process on the system requested the logon.\n\nThe Network Information fields indicate where a remote logon request originated. Workstation name is not always available and may be left blank in some cases.\n\nThe authentication information fields provide detailed information about this specific logon request.\n\t- Transited services indicate which intermediate services have participated in this logon request.\n\t- Package name indicates which sub-protocol was used among the NTLM protocols.\n\t- Key length indicates the length of the generated session key. This will be 0 if no session key was requested. |
 
 
 ### lr-get-hosts-by-entity
@@ -360,13 +360,13 @@ Retrieves a list of persons.
     "Logrhythm": {
         "Person": {
             "DateUpdated": "0001-01-01T00:00:00Z",
-            "FirstName": "demisto",
+            "FirstName": "logrhythm",
             "HostStatus": "Retired",
             "ID": 7,
             "IsAPIPerson": false,
-            "LastName": "demisto",
+            "LastName": "logrhythm",
             "UserID": 5,
-            "UserLogin": "DEMISTO\\lrapi2"
+            "UserLogin": "lrapi2"
         }
     }
 }
@@ -377,7 +377,7 @@ Retrieves a list of persons.
 >### Persons information
 >|ID|HostStatus|IsAPIPerson|FirstName|LastName|UserID|UserLogin|DateUpdated|
 >|---|---|---|---|---|---|---|---|
->| 7 | Retired | false | demisto | demisto | 5 | DEMISTO\lrapi2 | 0001-01-01T00:00:00Z |
+>| 7 | Retired | false | logrhythm | logrhythm | 5 | lrapi2 | 0001-01-01T00:00:00Z |
 
 
 ### lr-get-networks
@@ -662,9 +662,9 @@ Returns a list of events, by alarm ID.
                     "entityName": "Primary Site",
                     "impactedEntityId": 1,
                     "impactedEntityName": "Primary Site",
-                    "impactedHost": "win-jsbol5ercqa.demisto.lab",
+                    "impactedHost": "win-jsbol5ercqa.lab",
                     "impactedHostName": "",
-                    "impactedName": "win-jsbol5ercqa.demisto.lab",
+                    "impactedName": "win-jsbol5ercqa.lab",
                     "impactedZoneName": "Unknown",
                     "keyField": "messageId",
                     "logDate": "2019-06-20 05:27:03",
@@ -719,9 +719,9 @@ Returns a list of events, by alarm ID.
                     "entityName": "Primary Site",
                     "impactedEntityId": 1,
                     "impactedEntityName": "Primary Site",
-                    "impactedHost": "win-jsbol5ercqa.demisto.lab",
+                    "impactedHost": "win-jsbol5ercqa.lab",
                     "impactedHostName": "",
-                    "impactedName": "win-jsbol5ercqa.demisto.lab",
+                    "impactedName": "win-jsbol5ercqa.lab",
                     "impactedZoneName": "Unknown",
                     "keyField": "messageId",
                     "logDate": "2019-06-20 05:27:03",
@@ -776,9 +776,9 @@ Returns a list of events, by alarm ID.
                     "entityName": "Primary Site",
                     "impactedEntityId": 1,
                     "impactedEntityName": "Primary Site",
-                    "impactedHost": "win-jsbol5ercqa.demisto.lab",
+                    "impactedHost": "win-jsbol5ercqa.lab",
                     "impactedHostName": "",
-                    "impactedName": "win-jsbol5ercqa.demisto.lab",
+                    "impactedName": "win-jsbol5ercqa.lab",
                     "impactedZoneName": "Unknown",
                     "keyField": "messageId",
                     "logDate": "2019-06-20 05:27:03",
@@ -833,9 +833,9 @@ Returns a list of events, by alarm ID.
                     "entityName": "Primary Site",
                     "impactedEntityId": 1,
                     "impactedEntityName": "Primary Site",
-                    "impactedHost": "win-jsbol5ercqa.demisto.lab",
+                    "impactedHost": "win-jsbol5ercqa.lab",
                     "impactedHostName": "",
-                    "impactedName": "win-jsbol5ercqa.demisto.lab",
+                    "impactedName": "win-jsbol5ercqa.lab",
                     "impactedZoneName": "Unknown",
                     "keyField": "messageId",
                     "logDate": "2019-06-20 05:27:03",
@@ -890,9 +890,9 @@ Returns a list of events, by alarm ID.
                     "entityName": "Primary Site",
                     "impactedEntityId": 1,
                     "impactedEntityName": "Primary Site",
-                    "impactedHost": "win-jsbol5ercqa.demisto.lab",
+                    "impactedHost": "win-jsbol5ercqa.lab",
                     "impactedHostName": "",
-                    "impactedName": "win-jsbol5ercqa.demisto.lab",
+                    "impactedName": "win-jsbol5ercqa.lab",
                     "impactedZoneName": "Unknown",
                     "keyField": "messageId",
                     "logDate": "2019-06-20 05:27:03",
@@ -945,11 +945,11 @@ Returns a list of events, by alarm ID.
 >### Events information for alarm 1835
 >|classificationId|classificationName|classificationTypeName|command|commonEventId|commonEventName|count|direction|directionName|entityId|entityName|impactedEntityId|impactedEntityName|impactedHost|impactedHostName|impactedName|impactedZoneName|keyField|logDate|logSourceHost|logSourceHostId|logSourceHostName|logSourceId|logSourceName|logSourceType|logSourceTypeName|login|messageId|messageTypeEnum|mpeRuleId|mpeRuleName|normalDate|normalDateMin|normalMsgDateMax|object|objectName|originEntityId|originEntityName|originHostId|originZone|originZoneName|parentProcessId|priority|protocolId|reason|rootEntityId|rootEntityName|ruleBlockNumber|sequenceNumber|session|severity|status|subject|vendorInfo|vendorMessageId|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
->| 1040 | Authentication Failure | Audit | 3 | 19812 | User Logon Failure : Bad Password | 1 | 0 | Unknown | 1 | Primary Site | 1 | Primary Site | win-jsbol5ercqa.demisto.lab |  | win-jsbol5ercqa.demisto.lab | Unknown | messageId | 2019-06-20 05:27:03 | WIN-JSBOL5ERCQA | 1 | WIN-JSBOL5ERCQA | 1 | WIN-JSBOL5ERCQA MS Security Log | 1000030 | MS Windows Event Logging - Security | administrator | 1e28712d-4af4-4e82-9403-a2ebfda82f2d | 1 | 1060400 | EVID 4625 : User Logon Type 3: Wrong Password | 2019-06-20 12:27:03 | 2019-06-20 12:27:03 | 2019-06-20 12:27:03 | NtLmSsp | 0xC000006A | 1 | Primary Site | -1 | 0 | Unknown | 0x0 | 3 | -1 | Unknown user name or bad password | 1 | Primary Site | 1 | 211157 | 0x0 | Information | 0xC000006D | Unknown user name or bad password | An account failed to log on | 4625 |
->| 1040 | Authentication Failure | Audit | 3 | 19812 | User Logon Failure : Bad Password | 1 | 0 | Unknown | 1 | Primary Site | 1 | Primary Site | win-jsbol5ercqa.demisto.lab |  | win-jsbol5ercqa.demisto.lab | Unknown | messageId | 2019-06-20 05:27:03 | WIN-JSBOL5ERCQA | 1 | WIN-JSBOL5ERCQA | 1 | WIN-JSBOL5ERCQA MS Security Log | 1000030 | MS Windows Event Logging - Security | administrator | ec975fad-44fd-42cd-be8e-1573742c6d7a | 1 | 1060400 | EVID 4625 : User Logon Type 3: Wrong Password | 2019-06-20 12:27:03 | 2019-06-20 12:27:03 | 2019-06-20 12:27:03 | NtLmSsp | 0xC000006A | 1 | Primary Site | -1 | 0 | Unknown | 0x0 | 3 | -1 | Unknown user name or bad password | 1 | Primary Site | 1 | 211156 | 0x0 | Information | 0xC000006D | Unknown user name or bad password | An account failed to log on | 4625 |
->| 1040 | Authentication Failure | Audit | 3 | 19812 | User Logon Failure : Bad Password | 1 | 0 | Unknown | 1 | Primary Site | 1 | Primary Site | win-jsbol5ercqa.demisto.lab |  | win-jsbol5ercqa.demisto.lab | Unknown | messageId | 2019-06-20 05:27:03 | WIN-JSBOL5ERCQA | 1 | WIN-JSBOL5ERCQA | 1 | WIN-JSBOL5ERCQA MS Security Log | 1000030 | MS Windows Event Logging - Security | administrator | 21318d09-2b01-4b88-8b18-efc48c597e1f | 1 | 1060400 | EVID 4625 : User Logon Type 3: Wrong Password | 2019-06-20 12:27:03 | 2019-06-20 12:27:03 | 2019-06-20 12:27:03 | NtLmSsp | 0xC000006A | 1 | Primary Site | -1 | 0 | Unknown | 0x0 | 3 | -1 | Unknown user name or bad password | 1 | Primary Site | 1 | 211155 | 0x0 | Information | 0xC000006D | Unknown user name or bad password | An account failed to log on | 4625 |
->| 1040 | Authentication Failure | Audit | 3 | 19812 | User Logon Failure : Bad Password | 1 | 0 | Unknown | 1 | Primary Site | 1 | Primary Site | win-jsbol5ercqa.demisto.lab |  | win-jsbol5ercqa.demisto.lab | Unknown | messageId | 2019-06-20 05:27:03 | WIN-JSBOL5ERCQA | 1 | WIN-JSBOL5ERCQA | 1 | WIN-JSBOL5ERCQA MS Security Log | 1000030 | MS Windows Event Logging - Security | administrator | 20384578-60c1-4828-bdea-68cdc202d719 | 1 | 1060400 | EVID 4625 : User Logon Type 3: Wrong Password | 2019-06-20 12:27:03 | 2019-06-20 12:27:03 | 2019-06-20 12:27:03 | NtLmSsp | 0xC000006A | 1 | Primary Site | -1 | 0 | Unknown | 0x0 | 3 | -1 | Unknown user name or bad password | 1 | Primary Site | 1 | 211154 | 0x0 | Information | 0xC000006D | Unknown user name or bad password | An account failed to log on | 4625 |
->| 1040 | Authentication Failure | Audit | 3 | 19812 | User Logon Failure : Bad Password | 1 | 0 | Unknown | 1 | Primary Site | 1 | Primary Site | win-jsbol5ercqa.demisto.lab |  | win-jsbol5ercqa.demisto.lab | Unknown | messageId | 2019-06-20 05:27:03 | WIN-JSBOL5ERCQA | 1 | WIN-JSBOL5ERCQA | 1 | WIN-JSBOL5ERCQA MS Security Log | 1000030 | MS Windows Event Logging - Security | administrator | dd2c2251-ede1-4559-916b-0422ea8c0f9e | 1 | 1060400 | EVID 4625 : User Logon Type 3: Wrong Password | 2019-06-20 12:27:03 | 2019-06-20 12:27:03 | 2019-06-20 12:27:03 | NtLmSsp | 0xC000006A | 1 | Primary Site | -1 | 0 | Unknown | 0x0 | 3 | -1 | Unknown user name or bad password | 1 | Primary Site | 1 | 211153 | 0x0 | Information | 0xC000006D | Unknown user name or bad password | An account failed to log on | 4625 |
+>| 1040 | Authentication Failure | Audit | 3 | 19812 | User Logon Failure : Bad Password | 1 | 0 | Unknown | 1 | Primary Site | 1 | Primary Site | win-jsbol5ercqa.lab |  | win-jsbol5ercqa.lab | Unknown | messageId | 2019-06-20 05:27:03 | WIN-JSBOL5ERCQA | 1 | WIN-JSBOL5ERCQA | 1 | WIN-JSBOL5ERCQA MS Security Log | 1000030 | MS Windows Event Logging - Security | administrator | 1e28712d-4af4-4e82-9403-a2ebfda82f2d | 1 | 1060400 | EVID 4625 : User Logon Type 3: Wrong Password | 2019-06-20 12:27:03 | 2019-06-20 12:27:03 | 2019-06-20 12:27:03 | NtLmSsp | 0xC000006A | 1 | Primary Site | -1 | 0 | Unknown | 0x0 | 3 | -1 | Unknown user name or bad password | 1 | Primary Site | 1 | 211157 | 0x0 | Information | 0xC000006D | Unknown user name or bad password | An account failed to log on | 4625 |
+>| 1040 | Authentication Failure | Audit | 3 | 19812 | User Logon Failure : Bad Password | 1 | 0 | Unknown | 1 | Primary Site | 1 | Primary Site | win-jsbol5ercqa.lab |  | win-jsbol5ercqa.lab | Unknown | messageId | 2019-06-20 05:27:03 | WIN-JSBOL5ERCQA | 1 | WIN-JSBOL5ERCQA | 1 | WIN-JSBOL5ERCQA MS Security Log | 1000030 | MS Windows Event Logging - Security | administrator | ec975fad-44fd-42cd-be8e-1573742c6d7a | 1 | 1060400 | EVID 4625 : User Logon Type 3: Wrong Password | 2019-06-20 12:27:03 | 2019-06-20 12:27:03 | 2019-06-20 12:27:03 | NtLmSsp | 0xC000006A | 1 | Primary Site | -1 | 0 | Unknown | 0x0 | 3 | -1 | Unknown user name or bad password | 1 | Primary Site | 1 | 211156 | 0x0 | Information | 0xC000006D | Unknown user name or bad password | An account failed to log on | 4625 |
+>| 1040 | Authentication Failure | Audit | 3 | 19812 | User Logon Failure : Bad Password | 1 | 0 | Unknown | 1 | Primary Site | 1 | Primary Site | win-jsbol5ercqa.lab |  | win-jsbol5ercqa.lab | Unknown | messageId | 2019-06-20 05:27:03 | WIN-JSBOL5ERCQA | 1 | WIN-JSBOL5ERCQA | 1 | WIN-JSBOL5ERCQA MS Security Log | 1000030 | MS Windows Event Logging - Security | administrator | 21318d09-2b01-4b88-8b18-efc48c597e1f | 1 | 1060400 | EVID 4625 : User Logon Type 3: Wrong Password | 2019-06-20 12:27:03 | 2019-06-20 12:27:03 | 2019-06-20 12:27:03 | NtLmSsp | 0xC000006A | 1 | Primary Site | -1 | 0 | Unknown | 0x0 | 3 | -1 | Unknown user name or bad password | 1 | Primary Site | 1 | 211155 | 0x0 | Information | 0xC000006D | Unknown user name or bad password | An account failed to log on | 4625 |
+>| 1040 | Authentication Failure | Audit | 3 | 19812 | User Logon Failure : Bad Password | 1 | 0 | Unknown | 1 | Primary Site | 1 | Primary Site | win-jsbol5ercqa.lab |  | win-jsbol5ercqa.lab | Unknown | messageId | 2019-06-20 05:27:03 | WIN-JSBOL5ERCQA | 1 | WIN-JSBOL5ERCQA | 1 | WIN-JSBOL5ERCQA MS Security Log | 1000030 | MS Windows Event Logging - Security | administrator | 20384578-60c1-4828-bdea-68cdc202d719 | 1 | 1060400 | EVID 4625 : User Logon Type 3: Wrong Password | 2019-06-20 12:27:03 | 2019-06-20 12:27:03 | 2019-06-20 12:27:03 | NtLmSsp | 0xC000006A | 1 | Primary Site | -1 | 0 | Unknown | 0x0 | 3 | -1 | Unknown user name or bad password | 1 | Primary Site | 1 | 211154 | 0x0 | Information | 0xC000006D | Unknown user name or bad password | An account failed to log on | 4625 |
+>| 1040 | Authentication Failure | Audit | 3 | 19812 | User Logon Failure : Bad Password | 1 | 0 | Unknown | 1 | Primary Site | 1 | Primary Site | win-jsbol5ercqa.lab |  | win-jsbol5ercqa.lab | Unknown | messageId | 2019-06-20 05:27:03 | WIN-JSBOL5ERCQA | 1 | WIN-JSBOL5ERCQA | 1 | WIN-JSBOL5ERCQA MS Security Log | 1000030 | MS Windows Event Logging - Security | administrator | dd2c2251-ede1-4559-916b-0422ea8c0f9e | 1 | 1060400 | EVID 4625 : User Logon Type 3: Wrong Password | 2019-06-20 12:27:03 | 2019-06-20 12:27:03 | 2019-06-20 12:27:03 | NtLmSsp | 0xC000006A | 1 | Primary Site | -1 | 0 | Unknown | 0x0 | 3 | -1 | Unknown user name or bad password | 1 | Primary Site | 1 | 211153 | 0x0 | Information | 0xC000006D | Unknown user name or bad password | An account failed to log on | 4625 |
 
 ### lr-get-case-evidence
 ***
