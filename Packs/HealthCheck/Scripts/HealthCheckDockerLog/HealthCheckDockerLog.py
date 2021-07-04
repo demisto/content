@@ -49,7 +49,7 @@ def main(args):
     path = demisto.getFilePath(args['entryID'])['path']
 
     getimages = re.compile(
-        r'(?P<repository>[\w*/.\-<>]*)\s+(?P<tag>\d[\.|\d]*|\blatest\b|\b<none>\b|\b1\.[0-9]-alpine\b)'
+        r'(?P<repository>[\w*/.\-<>]*)\s+(?P<tag>\d[.\d]*|\blatest\b|\b<none>\b|\b1\.\d-alpine\b)'
         r'\s+(?P<ImageID>\w+)\s+(?P<Created>\d{0,2}\s(?:\byears\b|\bmonths\b|weeks\b) ago)\s+(?P<size>\d+.*B)')
     getcontainers = re.compile(
         r'^(?P<container>[\w]+)\s+(?P<name>[\w\d\-\.]+)\s+(?P<cpu>[\d\.]+)\%\s+(?P<memusage>[\d\.]+(?:MiB|GiB))\s+\/\s+'
