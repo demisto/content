@@ -3365,6 +3365,10 @@
             "nightly": true
         },
         {
+	        "integrations": "Trend Micro Deep Security",
+	        "playbookID": "Trend Micro Deep Security - Test"
+	      },
+        {
             "integrations": "Carbon Black Endpoint Standard",
             "playbookID": "carbonBlackEndpointStandardTestPlaybook",
             "fromversion": "5.5.0",
