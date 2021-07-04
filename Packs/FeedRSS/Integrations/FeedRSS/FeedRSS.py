@@ -129,8 +129,8 @@ def get_indicators(client: Client, indicators: list, args: dict) -> CommandResul
 
 def check_feed(client: Client):
     if client.feed_response and 'html' in client.feed_response.headers['content-type']:
-        raise DemistoException(f'{client._base_url} is not rss feed url. Try look for a url containing \'feed\' '
-                               f'prefix or suffix.')
+        raise DemistoException(f'{client._base_url} is not rss feed url. Try look for a url containing xml format data,'
+                               f' that could be found under urls with \'feed\' prefix or suffix.')
     else:
         return_results("ok")
 
