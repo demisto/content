@@ -1,9 +1,24 @@
 import pytest
+from pymisp import PyMISP
 
 from CommonServerPython import DemistoException
+from MISPV3 import DISTRIBUTION_NUMBERS
 
+INVALID_DISTRIBUTION_ERROR = f"Invalid Distribution. Can be one of the following: {[key for key in DISTRIBUTION_NUMBERS.keys()]}"
 TAG_IDS_LISTS = [([1, 2, 3], [2, 3, 4, 5], [1, 2, 3], [4, 5]),
                  ([1, 2, 3], [4, 5], [1, 2, 3], [4, 5])]
+
+INVALID_HASH_ERROR = "Invalid hash length, enter file hash of format MD5, SHA-1 or SHA-256'"
+REPUTATION_COMMANDS_ERROR_LIST = [
+    ("FILE", "invalid_hash", INVALID_HASH_ERROR),  # invalid HASH,
+    ("IP", "1.2.3", f"Error: The given IP address: 1.2.3 is not valid"),  # invalid IP,
+    ("DOMAIN", "invalid_domain", f"Error: The given domain: invalid_domain is not valid"),  # invalid DOMAIN,
+    ("URL", "invalid_url", f"Error: The given url: invalid_url is not valid"),  # invalid URL,
+    ("EMAIL", "invalid_email", f"Error: The given invalid_email address: example is not valid"),  # invalid EMAIL,
+]
+
+VALID_DISTRIBUTION_LIST = [(0, 0), ("1", 1), ("Your_organisation_only", 0)]
+INVALID_DISTRIBUTION_LIST = ["invalid_distribution", 1.5, "53.5"]
 
 
 def mock_misp(mocker):
@@ -191,3 +206,31 @@ def test_pagination_args_invalid(mocker):
         pagination_args_validation("page", "3")
         if not e:
             assert False
+
+
+# @pytest.mark.parametrize('value, indicator_type, score, return_suspicious_tag_ids',
+#                          TAG_IDS_LISTS)
+# def test_get_dbot_indicator(mocker, value, indicator_type, score):
+#     mock_misp(mocker)
+#     from MISPV3 import get_dbot_indicator
+#     dbot = Common.DBotScore(indicator=value, indicator_type=indicator_type, integration_name="MISP V3", score=score)
+
+
+@pytest.mark.parametrize('dbot_type, value, error_expected', REPUTATION_COMMANDS_ERROR_LIST)
+def test_reputation_value_validation(mocker, dbot_type, value, error_expected):
+    mock_misp(mocker)
+    from MISPV3 import reputation_value_validation
+    with pytest.raises(SystemExit) as e:
+        reputation_value_validation(value, dbot_type)
+        assert error_expected in str(e.value)
+
+
+@pytest.mark.parametrize('distribution_id, expected_distribution_id', VALID_DISTRIBUTION_LIST)
+def test_get_valid_distribution(mocker, distribution_id, expected_distribution_id):
+    #from pymisp import ExpandedPyMISP
+    #mock_misp(mocker)
+    #mocker.patch.object(PyMISP, '__init__', return_value=None)
+    #mocker.patch.object(ExpandedPyMISP, '__init__', return_value=None)
+    from MISPV3 import get_valid_distribution
+
+    assert get_valid_distribution(distribution_id) == expected_distribution_id
