@@ -146,6 +146,8 @@ def strip_scheme(url):
     Strip the protocol from an URL
     """
     parsed = urlparse(url)
+    if not parsed.scheme:
+        return url
     scheme = f"{parsed.scheme}://" if '://' in url else f"{parsed.scheme}"
     return parsed.geturl().replace(scheme, '', 1)
 
