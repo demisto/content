@@ -842,7 +842,7 @@ tasks:
       id: 9cc4b1bb-225d-4f85-8696-53027ba3472a
       iscommand: false
       name: Large inputs and outputs
-      script: HealthCheckGetLargestInputsAndOuputsInIncidents
+      script: HealthCheckGetLargestInputsAndOutputsInIncidents
       type: regular
       version: -1
     taskid: 9cc4b1bb-225d-4f85-8696-53027ba3472a

@@ -185,7 +185,7 @@ def main():
             return_results(results)
 
     except Exception as exc:
-        return_error(f'Failed to execute GetLargestInputsAndOuputsInIncidents.\nError: {exc}', error=exc)
+        return_error(f'Failed to execute GetLargestInputsAndOutputsInIncidents.\nError: {exc}', error=exc)
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):

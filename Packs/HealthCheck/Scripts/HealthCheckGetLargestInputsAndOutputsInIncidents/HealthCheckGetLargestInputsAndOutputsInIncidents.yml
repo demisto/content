@@ -4,11 +4,11 @@ args:
 comment: Returns inputs and outputs larger than 1 MB from all Cortex XSOAR investigations
   in the last 1 / 2 months.
 commonfields:
-  id: HealthCheckGetLargestInputsAndOuputsInIncidents
+  id: HealthCheckGetLargestInputsAndOutputsInIncidents
   version: -1
 dockerimage: demisto/python3:3.9.5.21272
 enabled: true
-name: HealthCheckGetLargestInputsAndOuputsInIncidents
+name: HealthCheckGetLargestInputsAndOutputsInIncidents
 runas: DBotWeakRole
 runonce: false
 script: ''
