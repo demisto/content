@@ -16,7 +16,7 @@ try:
         data = file.readlines()
 
         for line in data:
-            result = re.findall(r'\w+', line)
+            result = line.split()
             if ('Remote status: Enabled' in line) or ('Remote: true' in line):
                 devprod = True
 
