@@ -9,6 +9,9 @@ outputs:
 - contextPath: FileData
   description: Data read from war room file
   type: Unknown
+- contextPath: HealthCheck.ActionableItems
+  description: A list of possible actions for improving the system health.
+  type: Unknown
 runas: DBotWeakRole
 runonce: false
 script: ''

@@ -45,10 +45,9 @@ def main(args):
     widget_type = "number" if is_widget else "line"
 
     partition = "/"
-    if incident['CustomFields']["serverconfiguration"]:
-        for entry in incident['CustomFields']["serverconfiguration"]:
-            if entry.get('key', "") == 'disk.partitions.to.monitor':
-                partition = entry['value']
+    for entry in dict_safe_get(incident, ['CustomFields', 'xsoarserverconfiguration'], []):  # type: ignore
+        if entry.get('key', "") == 'disk.partitions.to.monitor':
+            partition = entry['value']
 
     res = execute_command(
         "demisto-api-post",

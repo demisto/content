@@ -103,7 +103,7 @@ try:
     res = []
     checkKeyValue(config_json)
 
-    demisto.executeCommand("setIncident", {"serverconfiguration": new_json})
+    demisto.executeCommand("setIncident", {"xsoarserverconfiguration": new_json})
 
     if AE:
         res.append({"category": "Configuration", "severity": "Medium",

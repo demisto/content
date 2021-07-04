@@ -4,7 +4,7 @@
         "System Diagnostics and Health Check"
     ],
     "caseInsensitive": true,
-    "cliName": "serverconfiguration",
+    "cliName": "xsoarserverconfiguration",
     "closeForm": false,
     "columns": [
         {
@@ -39,10 +39,10 @@
     "editForm": true,
     "group": 0,
     "hidden": false,
-    "id": "incident_serverconfiguration",
+    "id": "incident_xsoarserverconfiguration",
     "isReadOnly": false,
     "locked": false,
-    "name": "Server Configuration",
+    "name": "XSOAR Server Configuration",
     "neverSetAsRequired": false,
     "ownerOnly": false,
     "required": false,

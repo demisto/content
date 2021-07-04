@@ -19,8 +19,8 @@ try:
             if '"remote": {' in line:
                 multiRepo = 'True'
         demisto.executeCommand("setIncident", {
-            "multitenant": multitenant,
-            "multirepo": multiRepo
+            "xsoarmultitenant": multitenant,
+            "xsoarmultirepo": multiRepo,
         })
 
 

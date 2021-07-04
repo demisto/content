@@ -102,7 +102,7 @@
                             },
                             {
                                 "endCol": 4,
-                                "fieldId": "multitenant",
+                                "fieldId": "xsoarmultitenant",
                                 "height": 22,
                                 "id": "90c29a70-c210-11eb-9118-13a43afba38c",
                                 "index": 0,
@@ -129,7 +129,7 @@
                             },
                             {
                                 "endCol": 4,
-                                "fieldId": "dr",
+                                "fieldId": "xsoardr",
                                 "height": 22,
                                 "id": "ab99f0f0-c210-11eb-9118-13a43afba38c",
                                 "index": 3,
@@ -381,7 +381,7 @@
                         "items": [
                             {
                                 "endCol": 4,
-                                "fieldId": "serverconfiguration",
+                                "fieldId": "xsoarserverconfiguration",
                                 "height": 106,
                                 "id": "dea34760-c398-11eb-8a20-995c02e612f8",
                                 "index": 0,
