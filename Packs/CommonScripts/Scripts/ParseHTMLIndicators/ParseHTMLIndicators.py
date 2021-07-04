@@ -10,9 +10,9 @@ from tld import get_tld
 args = demisto.args()
 blog_url = args.get("url")
 page = requests.get(blog_url)
-exclusionList = argToList(args.get("excludeIndicators"))
-TLDExclusion = argToList(args.get("excludeTLD"))
-unescapeDomain = args.get("unescapeDomain")
+exclusionList = argToList(args.get("exclude_indicators"))
+TLDExclusion = argToList(args.get("exclude_TLD"))
+unescapeDomain = args.get("unescape_domain")
 badDomainTLD = []
 
 # parse html content
@@ -43,6 +43,11 @@ ip = re.findall(ip_regex, page_update)
 # Indicators exclusion
 for ex_indicator in exclusionList:
     domain[:] = (value for value in domain if value != ex_indicator)
+    url[:] = (value for value in url if value != ex_indicator)
+    ip[:] = (value for value in ip if value != ex_indicator)
+    md5[:] = (value for value in md5 if value != ex_indicator)
+    sha1[:] = (value for value in sha1 if value != ex_indicator)
+    sha256[:] = (value for value in sha256 if value != ex_indicator)
 
 # Convert domain indicators to url (match Domain Indicator Type formatting script)
 domain = ["hxxp://" + sub for sub in domain]
