@@ -260,30 +260,29 @@ def args_to_filter_close_alerts(alert_ids: Optional[List] = None,
                                 feedback_text: Optional[str] = None,
                                 allow_contact: bool = False,
                                 contact_email: Optional[str] = None,
-                                reason: Optional[int] = None
+                                reason: Optional[int] = None,
                                 ):
-    request_data: Dict[str, Any] = {}
-
     if custom_filter:
         if isinstance(custom_filter, str):
             request_data = json.loads(custom_filter)
         else:
             request_data = custom_filter
     elif alert_ids:
-        request_data['filters'] = {
-            'id': {
-                'eq': alert_ids,
+        request_data = {
+            'filters': {
+                'id': {
+                    'eq': alert_ids,
+                },
             },
+            'comment': comment,
+            'reason': reason,
+            'sendFeedback': send_feedback,
+            'feedbackText': feedback_text,
+            'allowContact': allow_contact,
+            'contactEmail': contact_email,
         }
     else:
         raise DemistoException("Expecting at least one of the following arguments: alert_id, custom_filter.")
-
-    request_data['comment'] = comment
-    request_data['reason'] = reason
-    request_data['sendFeedback'] = send_feedback
-    request_data['feedbackText'] = feedback_text
-    request_data['allowContact'] = allow_contact
-    request_data['contactEmail'] = contact_email
 
     return request_data
 
@@ -636,15 +635,19 @@ def fetch_incidents(client: Client, max_results: Optional[str], last_run: dict, 
     last_fetch = last_run.get('last_fetch')
     fetch_start_time = calculate_fetch_start_time(last_fetch, first_fetch)
     filters["date"] = {"gte": fetch_start_time}
+
+    demisto.debug(f'fetching alerts using filter {filters} with max results {max_results}')
     alerts_response_data = client.list_incidents(filters, limit=max_results)
     alerts = alerts_response_data.get('data')
     alerts = arrange_alerts_by_incident_type(alerts)
     incidents, fetch_start_time, last_fetch_id = alerts_to_incidents_and_fetch_start_from(
         alerts, str(fetch_start_time), last_run)
+
     if incidents:
         # since we use gte filter, we increase the latest event timestamp by 1 to avoid duplicates in the next fetch
         fetch_start_time += 1
     next_run = {'last_fetch': fetch_start_time, 'last_fetch_id': last_fetch_id}
+    demisto.debug(f'setting last run to: {last_run}')
     return next_run, incidents
 
 
@@ -670,7 +673,7 @@ def params_to_filter(severity: List[str], resolution_status: str):
     return filters
 
 
-def close_benign_command(client: Client, args: dict):
+def close_benign_command(client: Client, args: dict) -> CommandResults:
     """
     Closing alerts as benign.
 
@@ -708,7 +711,7 @@ def close_benign_command(client: Client, args: dict):
     )
 
 
-def close_false_positive_command(client: Client, args: dict):
+def close_false_positive_command(client: Client, args: dict) -> CommandResults:
     """
     Closing alert as false-positive.
 
@@ -746,7 +749,7 @@ def close_false_positive_command(client: Client, args: dict):
     )
 
 
-def close_true_positive_command(client: Client, args: dict):
+def close_true_positive_command(client: Client, args: dict) -> CommandResults:
     """
     Closing alerts as true-positive.
 
