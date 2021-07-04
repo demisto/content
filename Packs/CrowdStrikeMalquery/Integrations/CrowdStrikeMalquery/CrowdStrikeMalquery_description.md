@@ -11,3 +11,7 @@ You must have the Falcon Administrator role to view, create, or modify API clien
 6. Click **Add**.
 
 ***Tip***: Record your API client secret somewhere safe. For security purposes, it's only shown when you create or reset the API client. If you lose your secret, you must reset it, which removes access for any integrations that still use the previous secret.
+
+
+---
+[View Integration Documentation](https://xsoar.pan.dev/docs/reference/integrations/crowd-strike-malquery)

@@ -1,6 +1,5 @@
-import demistomock as demisto
-from CommonServerPython import *  # noqa: E402 lgtm [py/polluting-import]
-from CommonServerUserPython import *  # noqa: E402 lgtm [py/polluting-import]
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -9,7 +8,7 @@ requests.packages.urllib3.disable_warnings()
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 VENDOR_NAME = 'CrowdStrikeMalquery'
 DBOT_SCORE = {
-    'unknown': 0,
+    'unknown': 1,
     'clean': 1,
     'unwanted': 2,
     'malware': 3,
