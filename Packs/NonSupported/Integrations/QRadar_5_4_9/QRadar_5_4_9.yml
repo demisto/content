@@ -1418,6 +1418,6 @@ script:
   subtype: python2
   type: python
 tests:
-- test_Qradar
+- No test
 toversion: 5.4.9
 fromversion: 5.0.0

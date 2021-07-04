@@ -7,4 +7,7 @@ Allows you to interact with Windows hosts for actions such as acquiring forensic
 
 The pack includes the Powershell Remoting integration.
 
-For more information, visit the [Cortex XSOAR Developer Docs](https://xsoar.pan.dev/docs/reference/integration/PowerShell_Remoting).
+##### Need to know
+This pack is recommended to use in conjunction with the [Windows Forensics Pack](https://xsoar.pan.dev/marketplace/details/WindowsForensics) which contains playbooks and other content to use with this integration.
+
+For more information, visit the [Cortex XSOAR Developer Docs](https://xsoar.pan.dev/docs/reference/articles/Powershell_Remoting_-_Configuration).
