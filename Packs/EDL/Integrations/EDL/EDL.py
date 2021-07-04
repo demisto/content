@@ -11,6 +11,7 @@ from typing import Callable, Any, Dict, cast, Tuple
 from math import ceil
 import urllib3
 import dateparser
+import hashlib
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -504,17 +505,19 @@ def route_edl_values() -> Response:
         cache_refresh_rate=cache_refresh_rate,
         use_legacy_query=use_legacy_query,
     )
+    etag = f'"{hashlib.sha1(values.encode()).hexdigest()}"'
     query_time = (datetime.now(timezone.utc) - created).total_seconds()
     edl_size = 0
     if values.strip():
         edl_size = values.count('\n') + 1  # add 1 as last line doesn't have a \n
     max_age = ceil((datetime.now() - dateparser.parse(cache_refresh_rate)).total_seconds())  # type: ignore[operator]
     demisto.debug(f'Returning edl of size: [{edl_size}], created: [{created}], query time seconds: [{query_time}],'
-                  f' max age: [{max_age}]')
+                  f' max age: [{max_age}], etag: [{etag}]')
     resp = Response(values, status=200, mimetype='text/plain', headers=[
         ('X-EDL-Created', created.isoformat()),
         ('X-EDL-Query-Time-Secs', "{:.3f}".format(query_time)),
-        ('X-EDL-Size', str(edl_size))
+        ('X-EDL-Size', str(edl_size)),
+        ('ETag', etag),
     ])
     resp.cache_control.max_age = max_age
     resp.cache_control['stale-if-error'] = '600'  # number of seconds we are willing to serve stale content when there is an error
