@@ -63,10 +63,6 @@
     "Username": {
      "complex": null,
      "simple": "message.affected_user"
-    },
-    "aaa": {
-     "complex": null,
-     "simple": "message.affected_users"
     }
    }
   }

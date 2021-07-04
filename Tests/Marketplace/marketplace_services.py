@@ -1626,12 +1626,13 @@ class Pack(object):
         return tags
 
     def _enhance_pack_attributes(self, user_metadata, index_folder_path, pack_was_modified,
-                                 dependencies_data, statistics_handler=None, is_reformat=False):
+                                 dependencies_data, statistics_handler=None, only_dependencies_reformat=False):
         """ Enhances the pack object with attributes for the metadata file
 
         Args:
             user_metadata (dict): user metadata that was created in pack initialization.
             dependencies_data (dict): mapping of pack dependencies data, of all levels.
+            only_dependencies_reformat (bool) Indicates whether it's just a reformat for dependencies_data
 
         Returns:
             dict: parsed pack metadata.
@@ -1641,7 +1642,7 @@ class Pack(object):
         displayed_dependencies = user_metadata.get('displayedImages', [])
         trending_packs = None
         pack_dependencies_by_download_count = displayed_dependencies
-        if not is_reformat:
+        if not only_dependencies_reformat:
             # ===== Pack Regular Attributes =====
             self._support_type = user_metadata.get('support', Metadata.XSOAR_SUPPORT)
             self._support_details = self._create_support_section(
@@ -1661,7 +1662,7 @@ class Pack(object):
         self._dependencies = self._parse_pack_dependencies(user_metadata.get('dependencies', {}), dependencies_data)
 
         # ===== Pack Private Attributes =====
-        if not is_reformat:
+        if not only_dependencies_reformat:
             self._is_private_pack = 'partnerId' in user_metadata
             self._is_premium = self._is_private_pack
             self._preview_only = get_valid_bool(user_metadata.get('previewOnly', False))
@@ -1695,7 +1696,7 @@ class Pack(object):
         )
 
     def format_metadata(self, user_metadata, index_folder_path, packs_dependencies_mapping, build_number, commit_hash,
-                        pack_was_modified, statistics_handler, pack_names, is_reformat=False):
+                        pack_was_modified, statistics_handler, pack_names, only_dependencies_reformat=False):
         """ Re-formats metadata according to marketplace metadata format defined in issue #19786 and writes back
         the result.
 
@@ -1708,8 +1709,8 @@ class Pack(object):
             commit_hash (str): current commit hash.
             pack_was_modified (bool): Indicates whether the pack was modified or not.
             statistics_handler (StatisticsHandler): The marketplace statistics handler
-            pack_names (list)List of all packs.
-            is_reformat
+            pack_names (list): List of all packs.
+            only_dependencies_reformat (bool) Indicates whether it's just a reformat for dependencies_data
         Returns:
             bool: True is returned in case metadata file was parsed successfully, otherwise False.
 
@@ -1727,54 +1728,9 @@ class Pack(object):
                                                              user_metadata.get('displayedImages', []), pack_names)
 
             self._enhance_pack_attributes(
-                user_metadata, index_folder_path, pack_was_modified, dependencies_data, statistics_handler, is_reformat
+                user_metadata, index_folder_path, pack_was_modified, dependencies_data, statistics_handler,
+                only_dependencies_reformat
             )
-            formatted_metadata = self._parse_pack_metadata(user_metadata, build_number, commit_hash)
-            metadata_path = os.path.join(self._pack_path, Pack.METADATA)  # deployed metadata path after parsing
-            json_write(metadata_path, formatted_metadata)  # writing back parsed metadata
-
-            logging.success(f"Finished formatting {self._pack_name} packs's {Pack.METADATA} {metadata_path} file.")
-            task_status = True
-
-        except Exception as e:
-            logging.exception(f"Failed in formatting {self._pack_name} pack metadata. Additional Info: {str(e)}")
-
-        finally:
-            return task_status
-
-    def reformat_metadata_with_missing_dependencies(self, user_metadata, index_folder_path, packs_dependencies_mapping,
-                                                    build_number, commit_hash, pack_names):
-        """ Re-formats metadata with missing dependencies on new packs that are not in the previous index.
-
-        Args:
-            user_metadata (dict): user defined pack_metadata, prior the parsing process.
-            public url.
-            index_folder_path (str): downloaded index folder directory path.
-            build_number (str): circleCI build number.
-            commit_hash (str): current commit hash.
-            pack_names (list)List of all packs.
-
-        Returns:
-            bool: True is returned in case metadata file was parsed successfully, otherwise False.
-
-        """
-        task_status = False
-        try:
-            self.set_pack_dependencies(user_metadata, packs_dependencies_mapping)
-            if 'displayedImages' not in user_metadata:
-                user_metadata['displayedImages'] = packs_dependencies_mapping.get(
-                    self._pack_name, {}).get('displayedImages', [])
-                logging.info(f"Adding auto generated display images for {self._pack_name} pack")
-
-            dependencies_data = self._load_pack_dependencies(index_folder_path,
-                                                             user_metadata.get('dependencies', {}),
-                                                             user_metadata.get('displayedImages', []), pack_names)
-
-            self._dependencies = self._parse_pack_dependencies(user_metadata.get('dependencies', {}), dependencies_data)
-            self._related_integration_images = self._get_all_pack_images(
-                self._displayed_integration_images, user_metadata.get('displayedImages', []), dependencies_data,
-                self._pack_statistics_handler.displayed_dependencies_sorted)
-
             formatted_metadata = self._parse_pack_metadata(user_metadata, build_number, commit_hash)
             metadata_path = os.path.join(self._pack_path, Pack.METADATA)  # deployed metadata path after parsing
             json_write(metadata_path, formatted_metadata)  # writing back parsed metadata
