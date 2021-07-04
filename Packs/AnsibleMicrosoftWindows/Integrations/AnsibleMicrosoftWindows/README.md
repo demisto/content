@@ -71,13 +71,6 @@ Gathers facts about remote hosts
 | --- | --- | --- |
 
 
-#### Command Example
-``` ```
-
-#### Human Readable Output
-
-
-
 ### win-acl
 ***
 Set file/directory/registry permissions for a system user or group
@@ -1035,13 +1028,6 @@ Manages Windows Credentials in the Credential Manager
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-
-
-#### Command Example
-``` ```
-
-#### Human Readable Output
-
 
 
 ### win-defrag
@@ -2038,11 +2024,6 @@ Configures DNS lookup on Windows hosts
 | --- | --- | --- |
 
 
-#### Command Example
-``` ```
-
-#### Human Readable Output
-
 
 
 ### win-dns-record
@@ -2073,11 +2054,6 @@ Manage Windows Server DNS records
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 
-
-#### Command Example
-``` ```
-
-#### Human Readable Output
 
 
 
@@ -2168,11 +2144,6 @@ Manage computers in Active Directory
 | --- | --- | --- |
 
 
-#### Command Example
-``` ```
-
-#### Human Readable Output
-
 
 
 ### win-domain-controller
@@ -2207,11 +2178,6 @@ Manage domain controller/member server state for a Windows host
 | --- | --- | --- |
 | MicrosoftWindows.winDomainController.reboot_required | boolean | True if changes were made that require a reboot. | 
 
-
-#### Command Example
-``` ```
-
-#### Human Readable Output
 
 
 
@@ -2264,11 +2230,6 @@ Creates, modifies or removes domain groups
 | MicrosoftWindows.winDomainGroup.created | boolean | Whether a group was created | 
 
 
-#### Command Example
-``` ```
-
-#### Human Readable Output
-
 
 
 ### win-domain-group-membership
@@ -2303,11 +2264,6 @@ Manage Windows domain group membership
 | MicrosoftWindows.winDomainGroupMembership.members | unknown | A list of all domain group members at completion; this is empty if the group contains no members. | 
 
 
-#### Command Example
-``` ```
-
-#### Human Readable Output
-
 
 
 ### win-domain-membership
@@ -2339,11 +2295,6 @@ Manage domain/workgroup membership for a Windows host
 | --- | --- | --- |
 | MicrosoftWindows.winDomainMembership.reboot_required | boolean | True if changes were made that require a reboot. | 
 
-
-#### Command Example
-``` ```
-
-#### Human Readable Output
 
 
 
@@ -2420,11 +2371,6 @@ Manages Windows Active Directory user accounts
 | MicrosoftWindows.winDomainUser.created | boolean | Whether a user was created | 
 
 
-#### Command Example
-``` ```
-
-#### Human Readable Output
-
 
 
 ### win-dotnet-ngen
@@ -2457,11 +2403,6 @@ Runs ngen to recompile DLLs after .NET  updates
 | MicrosoftWindows.winDotnetNgen.dotnet_ngen64_eqi_output | string | The stdout after running the 64-bit ngen.exe executeQueuedItems command. | 
 
 
-#### Command Example
-``` ```
-
-#### Human Readable Output
-
 
 
 ### win-dsc
@@ -2492,11 +2433,6 @@ Invokes a PowerShell DSC configuration
 | MicrosoftWindows.winDsc.verbose_test | unknown | The verbose output as a list from executing the DSC test method. | 
 | MicrosoftWindows.winDsc.verbose_set | unknown | The verbose output as a list from executing the DSC Set method. | 
 
-
-#### Command Example
-``` ```
-
-#### Human Readable Output
 
 
 
@@ -3524,11 +3460,6 @@ Install and uninstalls Windows hotfixes
 | MicrosoftWindows.winHotfix.reboot_required | string | Whether a reboot is required for the install or uninstall to finalise. | 
 
 
-#### Command Example
-``` ```
-
-#### Human Readable Output
-
 
 
 ### win-http-proxy
@@ -3605,11 +3536,6 @@ Configures a virtual directory in IIS
 | --- | --- | --- |
 
 
-#### Command Example
-``` ```
-
-#### Human Readable Output
-
 
 
 ### win-iis-webapplication
@@ -3641,11 +3567,6 @@ Configures IIS web applications
 | MicrosoftWindows.winIisWebapplication.physical_path | string | The used/implemented physical_path value. | 
 
 
-#### Command Example
-``` ```
-
-#### Human Readable Output
-
 
 
 ### win-iis-webapppool
@@ -3674,11 +3595,6 @@ Configure IIS Web Application Pools
 | MicrosoftWindows.winIisWebapppool.attributes | unknown | Application Pool attributes that were set and processed by this module invocation. | 
 | MicrosoftWindows.winIisWebapppool.info | unknown | Information on current state of the Application Pool. See https://www.iis.net/configreference/system.applicationhost/applicationpools/add\#005 for the full list of return attributes based on your IIS version. | 
 
-
-#### Command Example
-``` ```
-
-#### Human Readable Output
 
 
 
@@ -3718,11 +3634,6 @@ Can be removed, updated, matched, or added |
 | MicrosoftWindows.winIisWebbinding.binding_info | unknown | Information on the binding being manipulated | 
 
 
-#### Command Example
-``` ```
-
-#### Human Readable Output
-
 
 
 ### win-iis-website
@@ -3756,11 +3667,6 @@ Configures a IIS Web site
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 
-
-#### Command Example
-``` ```
-
-#### Human Readable Output
 
 
 
@@ -3904,11 +3810,6 @@ Map network drives for users
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 
-
-#### Command Example
-``` ```
-
-#### Human Readable Output
 
 
 
@@ -4226,11 +4127,6 @@ Installs/uninstalls an installable package
 | MicrosoftWindows.winPackage.stderr | string | The stderr stream of the package process. | 
 
 
-#### Command Example
-``` ```
-
-#### Human Readable Output
-
 
 
 ### win-pagefile
@@ -4423,11 +4319,6 @@ Run Pester tests on Windows hosts
 | MicrosoftWindows.winPester.pester_version | string | Version of the pester module found on the remote host. | 
 | MicrosoftWindows.winPester.output | unknown | Results of the Pester tests. | 
 
-
-#### Command Example
-``` ```
-
-#### Human Readable Output
 
 
 
@@ -4835,11 +4726,6 @@ Manage RabbitMQ plugins
 | MicrosoftWindows.winRabbitmqPlugin.disabled | unknown | List of plugins disabled during task run. | 
 
 
-#### Command Example
-``` ```
-
-#### Human Readable Output
-
 
 
 ### win-rds-cap
@@ -4879,11 +4765,6 @@ Manage Connection Authorization Policies (CAP) on a Remote Desktop Gateway serve
 | --- | --- | --- |
 
 
-#### Command Example
-``` ```
-
-#### Human Readable Output
-
 
 
 ### win-rds-rap
@@ -4915,11 +4796,6 @@ Manage Resource Authorization Policies (RAP) on a Remote Desktop Gateway server
 | --- | --- | --- |
 
 
-#### Command Example
-``` ```
-
-#### Human Readable Output
-
 
 
 ### win-rds-settings
@@ -4947,11 +4823,6 @@ Manage main settings of a Remote Desktop Gateway server
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 
-
-#### Command Example
-``` ```
-
-#### Human Readable Output
 
 
 
@@ -6303,11 +6174,6 @@ Configures the Windows SNMP service
 | MicrosoftWindows.winSnmp.permitted_managers | unknown | The list of permitted managers for this machine. | 
 
 
-#### Command Example
-``` ```
-
-#### Human Readable Output
-
 
 
 ### win-stat
@@ -7386,11 +7252,6 @@ Installs packages using Web Platform Installer command-line
 | --- | --- | --- |
 
 
-#### Command Example
-``` ```
-
-#### Human Readable Output
-
 
 
 ### win-whoami
@@ -7815,10 +7676,5 @@ Manages XML file content on Windows hosts
 | MicrosoftWindows.winXml.msg | string | What was done. | 
 | MicrosoftWindows.winXml.err | unknown | XML comparison exceptions. | 
 
-
-#### Command Example
-``` ```
-
-#### Human Readable Output
 
 
