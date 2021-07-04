@@ -42,7 +42,7 @@ demisto.executeCommand("setIncident", {
 
 results = CommandResults(
     readable_output="HealchCheckInstalledPacks Done",
-    outputs_prefix="actionableitems",
+    outputs_prefix="HealthCheck.ActionableItems",
     outputs=res)
 
 return_results(results)

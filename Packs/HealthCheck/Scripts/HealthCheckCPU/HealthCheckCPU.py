@@ -143,7 +143,7 @@ def main(args):
         add_actions = analyze_data(res)
         results = CommandResults(
             readable_output='analyzeCPUUsage Done',
-            outputs_prefix='actionableitems',
+            outputs_prefix='HealthCheck.ActionableItems',
             outputs=add_actions)
 
         return results

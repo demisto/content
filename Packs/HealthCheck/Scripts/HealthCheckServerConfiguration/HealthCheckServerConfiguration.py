@@ -115,7 +115,7 @@ try:
 
     results = CommandResults(
         readable_output="HealthCheckConfServer Done",
-        outputs_prefix="actionableitems",
+        outputs_prefix="HealthCheck.ActionableItems",
         outputs=res)
 
     return_results(results)

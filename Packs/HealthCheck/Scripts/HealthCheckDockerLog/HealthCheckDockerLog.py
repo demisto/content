@@ -132,7 +132,7 @@ def main(args):
 
     return CommandResults(
         readable_output="HealthCheckDockerLog Done",
-        outputs_prefix="actionableitems",
+        outputs_prefix="HealthCheck.ActionableItems",
         outputs=res)
 
 

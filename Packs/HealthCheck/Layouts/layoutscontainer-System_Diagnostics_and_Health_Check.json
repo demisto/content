@@ -48,7 +48,7 @@
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "contentversion",
+                                "fieldId": "xsoarcontentversion",
                                 "height": 22,
                                 "id": "4b301640-c210-11eb-9118-13a43afba38c",
                                 "index": 3,
@@ -57,7 +57,7 @@
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "license",
+                                "fieldId": "xsoarlicense",
                                 "height": 22,
                                 "id": "503862f0-c210-11eb-9118-13a43afba38c",
                                 "index": 4,
@@ -66,7 +66,7 @@
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "licensevalidtill",
+                                "fieldId": "xsoarlicensevalidtill",
                                 "height": 22,
                                 "id": "52976190-c210-11eb-9118-13a43afba38c",
                                 "index": 5,
@@ -138,7 +138,7 @@
                             },
                             {
                                 "endCol": 4,
-                                "fieldId": "devprod",
+                                "fieldId": "xsoardevprod",
                                 "height": 22,
                                 "id": "1fa17680-c211-11eb-9118-13a43afba38c",
                                 "index": 4,
@@ -147,7 +147,7 @@
                             },
                             {
                                 "endCol": 4,
-                                "fieldId": "devprodmode",
+                                "fieldId": "xsoardevprodmode",
                                 "height": 22,
                                 "id": "26c52920-c211-11eb-9118-13a43afba38c",
                                 "index": 5,
@@ -829,7 +829,7 @@
                         "items": [
                             {
                                 "endCol": 6,
-                                "fieldId": "actionableitems",
+                                "fieldId": "healthcheckactionableitems",
                                 "height": 106,
                                 "id": "54ff4790-c215-11eb-9118-13a43afba38c",
                                 "index": 0,

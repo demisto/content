@@ -194,7 +194,7 @@ else:
 
         results = CommandResults(
             readable_output="HealthCheckServerLog Done",
-            outputs_prefix="actionableitems",
+            outputs_prefix="HealthCheck.ActionableItems",
             outputs=res)
 
         return_results(results)

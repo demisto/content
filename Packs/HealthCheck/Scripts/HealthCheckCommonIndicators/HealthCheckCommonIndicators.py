@@ -45,7 +45,7 @@ def main(args):
 
     results = CommandResults(
         readable_output='HealthCheckCommonIndicators Done',
-        outputs_prefix='actionableitems',
+        outputs_prefix='HealthCheck.ActionableItems',
         outputs=res)
 
     return results

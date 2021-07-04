@@ -4,7 +4,7 @@
         "System Diagnostics and Health Check"
     ],
     "caseInsensitive": true,
-    "cliName": "actionableitems",
+    "cliName": "healthcheckactionableitems",
     "closeForm": false,
     "columns": [
         {
@@ -63,10 +63,10 @@
     "editForm": true,
     "group": 0,
     "hidden": false,
-    "id": "incident_actionableitems",
+    "id": "incident_healthcheckactionableitems",
     "isReadOnly": false,
     "locked": false,
-    "name": "Actionable Items",
+    "name": "Health Check Actionable Items",
     "neverSetAsRequired": false,
     "ownerOnly": false,
     "required": false,

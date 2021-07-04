@@ -60,7 +60,7 @@ def main(args):
 
         results = CommandResults(
             readable_output="HealthCheckWorkers Done",
-            outputs_prefix="actionableitems",
+            outputs_prefix="HealthCheck.ActionableItems",
             outputs=add_actions)
 
     return results

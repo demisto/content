@@ -692,9 +692,9 @@ tasks:
       columns:
         simple: category,severity,description,resolution
       context_path:
-        simple: actionableitems
+        simple: HealthCheck.ActionableItems
       grid_id:
-        simple: actionableitems
+        simple: healthcheckactionableitems
       keys:
         simple: category,severity,description,resolution
       overwrite:
@@ -901,7 +901,7 @@ tasks:
       context_path:
         simple: dbstatactionableitems
       grid_id:
-        simple: actionableitems
+        simple: healthcheckactionableitems
       keys:
         simple: category,severity,description,resolution
       overwrite:

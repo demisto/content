@@ -86,7 +86,7 @@ for customPlaybook in customPlaybooks:
 
 results = CommandResults(
     readable_output="HealthCheckPlaybookAnalysis Done",
-    outputs_prefix="actionableitems",
+    outputs_prefix="HealthCheck.ActionableItems",
     outputs=res)
 
 return_results(results)

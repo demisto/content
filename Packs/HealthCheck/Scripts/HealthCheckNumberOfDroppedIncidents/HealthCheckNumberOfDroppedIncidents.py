@@ -61,7 +61,7 @@ else:
 
         results = CommandResults(
             readable_output="HealthCheckFileSysLog Done",
-            outputs_prefix="actionableitems",
+            outputs_prefix="HealthCheck.ActionableItems",
             outputs=actionItems)
 
         return_results(results)

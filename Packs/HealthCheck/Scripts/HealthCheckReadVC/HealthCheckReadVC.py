@@ -16,43 +16,43 @@ try:
         data = file.readlines()
 
         for line in data:
-            result = re.findall("\w+", line)
+            result = re.findall(r'\w+', line)
             if ('Remote status: Enabled' in line) or ('Remote: true' in line):
                 devprod = True
 
             if 'Mode:' in line:
                 if devprod:
-                    demisto.executeCommand("setIncident", {"devprodmode": result[1]})
+                    demisto.executeCommand("setIncident", {"xsoardevprodmode": result[1]})
 
             if 'Content mode:' in line:
                 if devprod:
-                    demisto.executeCommand("setIncident", {"devprodmode": result[2]})
+                    demisto.executeCommand("setIncident", {"xsoardevprodmode": result[2]})
 
 
 except ValueError:  # includes simplejson.decoder.JSONDecodeError
     demisto.results('Decoding JSON has failed')
 
 if not devprodmode:
-    demisto.executeCommand("setIncident", {"devprodmode": "False"})
+    demisto.executeCommand("setIncident", {"xsoardevprodmode": "False"})
 
-if not (devprod):
-    demisto.executeCommand("setIncident", {"devprod": "False"})
+if not devprod:
+    demisto.executeCommand("setIncident", {"xsoardevprod": "False"})
     demisto.results('Dev Prod is not enabled')
 else:
     try:
-        demisto.executeCommand("setIncident", {"devprod": "True"})
+        demisto.executeCommand("setIncident", {"xsoardevprod": "True"})
         with open(res[0]['Contents']['path'], 'r') as file:
             data = file.readlines()
             for line in data:
-                result = re.findall("\w+", line)
+                result = re.findall(r'\w+', line)
 
-                if ('Version:' in line):
-                    result = re.findall("\d.*", line)[0]
-                    demisto.executeCommand("setIncident", {"devprodgit": result})
+                if 'Version:' in line:
+                    result = re.findall(r'\d.*', line)[0]
+                    demisto.executeCommand("setIncident", {"xsoardevprodgit": result})
                     git = True
 
                 if ver is True and git is False:
-                    demisto.executeCommand("setIncident", {"devprodgit": line[:-1]})
+                    demisto.executeCommand("setIncident", {"xsoardevprodgit": line[:-1]})
                     ver = False
                 if ('Git version:' in line) or ('Version:' in line):
                     ver = True

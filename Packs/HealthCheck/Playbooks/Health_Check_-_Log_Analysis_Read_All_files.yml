@@ -14,7 +14,7 @@ inputs:
     simple: ${Health Check Thresholds}
 name: Health Check - Log Analysis Read All files
 outputs:
-- contextPath: actionableitems
+- contextPath: HealthCheck.ActionableItems
   description: Data read from war room file
 starttaskid: "0"
 tasks:
