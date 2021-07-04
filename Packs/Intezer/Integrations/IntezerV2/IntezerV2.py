@@ -65,18 +65,24 @@ def _get_missing_file_result(file_hash: str) -> CommandResults:
     )
 
 
+def _get_missing_analysis_result(analysis_id: str) -> CommandResults:
+    return CommandResults(
+        readable_output=f'The Analysis {analysis_id} was not found on Intezer Analyze'
+    )
+
+
 def _get_analysis_running_result(analysis_id: str = None, response: requests.Response = None) -> CommandResults:
     if response:
         analysis_id = response.json()['result_url'].split('/')[2]
 
     context_json = {
-        'Intezer.Analysis(val.ID && val.ID == obj.ID)': {
-            'ID': analysis_id,
-            'Status': 'InProgress'
-        }
+        'ID': analysis_id,
+        'Status': 'InProgress'
     }
 
     return CommandResults(
+        outputs_prefix='Intezer.Analysis',
+        outputs_key_field='ID',
         readable_output='Analysis is still in progress',
         outputs=context_json
     )
@@ -103,14 +109,14 @@ def analyze_by_hash_command(intezer_api: IntezerApi, args: Dict[str, str]) -> Co
         analysis_id = analysis.analysis_id
 
         context_json = {
-            'Intezer.Analysis(val.ID && val.ID == obj.ID)': {
-                'ID': analysis.analysis_id,
-                'Status': 'Created',
-                'type': 'File'
-            }
+            'ID': analysis.analysis_id,
+            'Status': 'Created',
+            'type': 'File'
         }
 
         return CommandResults(
+            outputs_prefix='Intezer.Analysis',
+            outputs_key_field='ID',
             outputs=context_json,
             readable_output='Analysis created successfully: {}'.format(analysis_id)
         )
@@ -143,14 +149,14 @@ def analyze_by_uploaded_file_command(intezer_api: IntezerApi, args: dict) -> Com
         analysis.send()
 
         context_json = {
-            'Intezer.Analysis(val.ID && val.ID == obj.ID)': {
-                'ID': analysis.analysis_id,
-                'Status': 'Created',
-                'type': 'File'
-            }
+            'ID': analysis.analysis_id,
+            'Status': 'Created',
+            'type': 'File'
         }
 
         return CommandResults(
+            outputs_prefix='Intezer.Analysis',
+            outputs_key_field='ID',
             outputs=context_json,
             readable_output='Analysis created successfully: {}'.format(analysis.analysis_id)
         )
@@ -158,31 +164,39 @@ def analyze_by_uploaded_file_command(intezer_api: IntezerApi, args: dict) -> Com
         return _get_analysis_running_result(response=error.response)
 
 
-def check_analysis_status_and_get_results_command(intezer_api: IntezerApi, args: dict) -> CommandResults:
+def check_analysis_status_and_get_results_command(intezer_api: IntezerApi, args: dict) -> List[CommandResults]:
     analysis_type = args.get('analysis_type', 'File')
-    analysis_id = args.get('analysis_id')
+    analysis_ids = argToList(args.get('analysis_id'))
     indicator_name = args.get('indicator_name')
 
-    try:
-        if analysis_type == 'Endpoint':
-            response = intezer_api.get_url_result(f'/endpoint-analyses/{analysis_id}')
-            analysis_result = response.json()['result']
-        else:
-            analysis = get_analysis_by_id(analysis_id, api=intezer_api)
-            analysis_result = analysis.result()
+    command_results = []
 
-        if analysis_result and analysis_type == 'Endpoint':
-            return enrich_dbot_and_display_endpoint_analysis_results(analysis_result, indicator_name)
-        else:
-            return enrich_dbot_and_display_file_analysis_results(analysis_result)
+    for analysis_id in analysis_ids:
+        try:
+            if analysis_type == 'Endpoint':
+                response = intezer_api.get_url_result(f'/endpoint-analyses/{analysis_id}')
+                analysis_result = response.json()['result']
+            else:
+                analysis = get_analysis_by_id(analysis_id, api=intezer_api)
+                analysis_result = analysis.result()
 
-    except HTTPError as http_error:
-        if http_error.response.status_code == HTTPStatus.CONFLICT:
-            return _get_analysis_running_result(analysis_id=analysis_id)
-        else:
-            raise http_error
-    except AnalysisIsStillRunning:
-        return _get_analysis_running_result(analysis_id=analysis_id)
+            if analysis_result and analysis_type == 'Endpoint':
+                command_results.append(
+                    enrich_dbot_and_display_endpoint_analysis_results(analysis_result, indicator_name))
+            else:
+                command_results.append(enrich_dbot_and_display_file_analysis_results(analysis_result))
+
+        except HTTPError as http_error:
+            if http_error.response.status_code == HTTPStatus.CONFLICT:
+                command_results.append(_get_analysis_running_result(analysis_id=analysis_id))
+            elif http_error.response.status_code == HTTPStatus.NOT_FOUND:
+                command_results.append(_get_missing_analysis_result(analysis_id))
+            else:
+                raise http_error
+        except AnalysisIsStillRunning:
+            command_results.append(_get_analysis_running_result(analysis_id=analysis_id))
+
+    return command_results
 
 
 def get_analysis_sub_analyses_command(intezer_api: IntezerApi, args: dict) -> CommandResults:
@@ -195,13 +209,13 @@ def get_analysis_sub_analyses_command(intezer_api: IntezerApi, args: dict) -> Co
     sub_analyses_table = tableToMarkdown('Sub Analyses', all_sub_analyses_ids, headers=['Analysis IDs'])
 
     context_json = {
-        'Intezer.Analysis(val.ID && val.ID == obj.ID)': {
-            'ID': analysis.analysis_id,
-            'SubAnalyses': all_sub_analyses_ids
-        }
+        'ID': analysis.analysis_id,
+        'SubAnalyses': all_sub_analyses_ids
     }
 
     return CommandResults(
+        outputs_prefix='Intezer.Analysis',
+        outputs_key_field='ID',
         readable_output=sub_analyses_table,
         outputs=context_json,
         raw_response=all_sub_analyses_ids
@@ -234,15 +248,15 @@ def get_analysis_code_reuse_command(intezer_api: IntezerApi, args: dict) -> Comm
         readable_output += '\n'.join(tableToMarkdown(family['family_name'], family) for family in families)
 
     context_json = {
-        'Intezer.Analysis(val.ID && val.ID == obj.ID)': {
-            'ID': analysis_id if sub_analysis_id == 'root' else sub_analysis_id,
-            'ComposedAnalysisID': analysis_id,
-            'CodeReuse': sub_analysis_code_reuse,
-            'CodeReuseFamilies': families
-        }
+        'ID': analysis_id if sub_analysis_id == 'root' else sub_analysis_id,
+        'ComposedAnalysisID': analysis_id,
+        'CodeReuse': sub_analysis_code_reuse,
+        'CodeReuseFamilies': families
     }
 
     return CommandResults(
+        outputs_prefix='Intezer.Analysis',
+        outputs_key_field='ID',
         readable_output=readable_output,
         outputs=context_json,
         raw_response=sub_analysis.code_reuse
@@ -264,14 +278,14 @@ def get_analysis_metadata_command(intezer_api: IntezerApi, args: dict) -> Comman
     metadata_table = tableToMarkdown('Analysis Metadata', sub_analysis_metadata)
 
     context_json = {
-        'Intezer.Analysis(val.ID && val.ID == obj.ID)': {
-            'ID': analysis_id if sub_analysis_id == 'root' else sub_analysis_id,
-            'ComposedAnalysisID': analysis_id,
-            'Metadata': sub_analysis_metadata
-        }
+        'ID': analysis_id if sub_analysis_id == 'root' else sub_analysis_id,
+        'ComposedAnalysisID': analysis_id,
+        'Metadata': sub_analysis_metadata
     }
 
     return CommandResults(
+        outputs_prefix='Intezer.Analysis',
+        outputs_key_field='ID',
         readable_output=metadata_table,
         outputs=context_json,
         raw_response=sub_analysis_metadata

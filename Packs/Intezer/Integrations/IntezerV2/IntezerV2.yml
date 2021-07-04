@@ -108,7 +108,7 @@ script:
       arguments:
         - default: false
           description: The analysis ID we want to get results for
-          isArray: false
+          isArray: true
           name: analysis_id
           required: false
           secret: false
