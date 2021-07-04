@@ -1,7 +1,8 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
+import copy
 
-INCIDENTS_HEADER = ['id', 'name', 'email_from', 'recipients', 'severity', 'status', 'created']
+DEFAULT_HEADERS = ['id', 'name', 'emailfrom', 'recipients', 'severity', 'status', 'created']
 KEYS_FETCHED_BY_QUERY = ['status', 'severity']
 NO_CAMPAIGN_INCIDENTS_MSG = 'There is no Campaign Incidents in the Context'
 LINKABLE_ID_FORMAT = '[{incident_id}](#/Details/{incident_id})'
@@ -19,7 +20,7 @@ DEFAULT_CUSTOM_FIELDS = {
 }
 
 
-def update_incident_with_required_keys(incidents, required_keys):
+def update_incident_with_required_keys(incidents: List, required_keys: List):
     """
         Update the given incident dict (from context) with values retrieved by GetIncidentsByQuery command
 
@@ -45,52 +46,63 @@ def update_incident_with_required_keys(incidents, required_keys):
             incident[key] = updated_incident.get(key)
 
 
-def get_incident_val(incident, key):
+def convert_incident_to_hr(incident):
     """
         Get the value from incident dict and convert it in some cases e.g. make id linkable etc.
+        Note: this script change the original incident
 
         :type incident: ``dict``
         :param incident: the incident to get the value from
 
-        :type key: ``str``
-        :param key: the key in dict
-
-        :rtype: ``str``
-        :return the value form dict
+        :rtype: ``dict``
+        :return Converted incident
     """
-    if key == 'status':
-        return STATUS_DICT.get(incident.get(key))
+    converted_incident = copy.deepcopy(incident)
 
-    if key == 'id':
-        return LINKABLE_ID_FORMAT.format(incident_id=incident.get(key))
+    for key in converted_incident.keys():
 
-    return incident.get(key.replace('_', ''))
+        if key == 'status':
+            converted_incident[key] = STATUS_DICT.get(converted_incident.get(key))
+
+        if key == 'id':
+            converted_incident[key] = LINKABLE_ID_FORMAT.format(incident_id=converted_incident.get(key))
+
+        converted_incident[key] = converted_incident.get(key.replace('_', ''))
+
+    return converted_incident
 
 
 def get_campaign_incidents_from_context():
     return demisto.get(demisto.context(), 'EmailCampaign.incidents')
 
 
-def get_incidents_info_md(incidents):
+def get_incidents_info_md(incidents: List, fields_to_display: List = None):
     """
         Get the campaign incidents relevant info in MD table
 
         :type incidents: ``list``
         :param incidents: the campaign incidents to collect the info from
+        :type fields_to_display: ``list``
+        :param fields_to_display: list of result headers
 
         :rtype: ``str``
         :return the MD table str
 
     """
+
     if incidents:
-        incidents_info = [
-            {key: get_incident_val(incident, key) for key in INCIDENTS_HEADER} for incident in incidents
-        ]
+        if not fields_to_display:
+            headers = DEFAULT_HEADERS
+        else:
+            headers = fields_to_display
+
+        converted_incidents = [convert_incident_to_hr(incident) for incident in incidents]
+
         return tableToMarkdown(
             name='',
-            t=incidents_info,
+            t=converted_incidents,
             headerTransform=string_to_table_header,
-            headers=INCIDENTS_HEADER,
+            headers=headers,
             removeNull=True,
         )
 
@@ -113,10 +125,11 @@ def update_empty_fields():
 def main():
     try:
         incidents = get_campaign_incidents_from_context()
+        fields_to_display = demisto.get(demisto.context(), 'EmailCampaign.fieldsToDisplay')
         if incidents:
             update_incident_with_required_keys(incidents, KEYS_FETCHED_BY_QUERY)
             update_empty_fields()
-            readable_output = get_incidents_info_md(incidents)
+            readable_output = get_incidents_info_md(incidents, fields_to_display)
         else:
             readable_output = NO_CAMPAIGN_INCIDENTS_MSG
 
