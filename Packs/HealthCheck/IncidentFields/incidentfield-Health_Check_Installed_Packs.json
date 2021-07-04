@@ -7,7 +7,7 @@
         "System Diagnostics and Health Check"
     ],
     "caseInsensitive": true,
-    "cliName": "installedpacks",
+    "cliName": "healthcheckinstalledpacks",
     "closeForm": false,
     "columns": [
         {
@@ -56,10 +56,10 @@
     "editForm": true,
     "group": 0,
     "hidden": false,
-    "id": "incident_installedpacks",
+    "id": "incident_healthcheckinstalledpacks",
     "isReadOnly": false,
     "locked": false,
-    "name": "Installed Packs",
+    "name": "Health Check Installed Packs",
     "neverSetAsRequired": false,
     "ownerOnly": false,
     "required": false,
