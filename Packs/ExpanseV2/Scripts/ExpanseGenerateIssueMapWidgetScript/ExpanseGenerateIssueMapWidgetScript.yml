@@ -21,7 +21,7 @@ commonfields:
 dockerimage: demisto/chromium:1.0.0.15159
 enabled: true
 name: ExpanseGenerateIssueMapWidgetScript
-runas: DBotWeakRole
+runas: DBotRole
 runonce: false
 script: '-'
 scripttarget: 0

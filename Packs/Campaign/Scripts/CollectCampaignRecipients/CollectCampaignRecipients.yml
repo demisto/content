@@ -4,7 +4,7 @@ commonfields:
 dockerimage: demisto/python3:3.9.5.20070
 enabled: true
 name: CollectCampaignRecipients
-runas: DBotWeakRole
+runas: DBotRole
 runonce: false
 script: ''
 comment: Collect the recipients from all campaign incidents.

@@ -12,7 +12,7 @@ tags:
 timeout: '0'
 type: python
 dockerimage: demisto/python3:3.8.3.9324
-runas: DBotWeakRole
+runas: DBotRole
 runonce: false
 subtype: python3
 tests:

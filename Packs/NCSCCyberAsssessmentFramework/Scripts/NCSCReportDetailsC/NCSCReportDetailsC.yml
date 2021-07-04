@@ -4,7 +4,7 @@ commonfields:
 dockerimage: demisto/python3:3.9.1.14969
 enabled: true
 name: NCSCReportDetails_C
-runas: DBotWeakRole
+runas: DBotRole
 runonce: false
 script: ''
 scripttarget: 0
