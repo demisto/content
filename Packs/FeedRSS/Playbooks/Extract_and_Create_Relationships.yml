@@ -158,7 +158,7 @@ tasks:
       id: 57416fce-a618-46df-804d-9eb0160e20b4
       version: -1
       name: Are there IPs?
-      description: Checks whether IP's were extracted from report
+      description: Checks whether IPs were extracted from the report.
       type: condition
       iscommand: false
       brand: ""
@@ -241,7 +241,7 @@ tasks:
       version: -1
       name: Delete Context Subplaybook
       description: 'In order to isolate each report and include only the data extracted
-        from the specific report. '
+        from the specific report.'
       scriptName: DeleteContext
       type: regular
       iscommand: false
@@ -275,7 +275,7 @@ tasks:
       id: c7c0a500-cad9-4785-80ce-c3eb09135ea7
       version: -1
       name: Are there Emails?
-      description: Checks whether Emails were extracted
+      description: Checks whether emails were extracted.
       type: condition
       iscommand: false
       brand: ""
@@ -357,7 +357,7 @@ tasks:
       id: 9a073a44-5430-421e-87cc-5e56d18bb710
       version: -1
       name: Are there Domains?
-      description: Checks weather domains were extracted
+      description: Checks whether domains were extracted.
       type: condition
       iscommand: false
       brand: ""
@@ -439,7 +439,7 @@ tasks:
       id: 92376b14-5dd7-47ec-8d9e-ca114f98a85c
       version: -1
       name: Are there URLs?
-      description: Checks whether URLs were extracted
+      description: Checks whether URLs were extracted.
       type: condition
       iscommand: false
       brand: ""

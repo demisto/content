@@ -1,4 +1,4 @@
-RSS Feed can ingest new items as Report indicators.
+RSS Feed can ingest new items as report indicators.
 This integration was integrated and tested with version 2.0 of RSS.
 
 ## Configure RSS Feed on Cortex XSOAR
@@ -9,12 +9,12 @@ This integration was integrated and tested with version 2.0 of RSS.
 
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
-    | Feed URL | RSS URL should be a url with 'feed' as suffix or prefix. | True |
-    | Article content max size in KB | Default is 45KB. If you increase the limit substantialy, it may slow performance. You need to specify only a number. e.g, example 50. | False |
+    | Feed URL | The RSS URL should be a URL with 'feed' as the suffix or prefix. | True |
+    | Article content max size in KB | Default is 45KB. If you increase the limit substantialy, it may slow performance. You need to specify only a number, e.g., 50. | False |
     | Fetch indicators |  | False |
-    | Indicator Reputation | Indicators from this integration instance will be marked with this reputation | False |
-    | Source Reliability | Reliability of the source providing the intelligence data | True |
-    | Traffic Light Protocol Color | The Traffic Light Protocol \(TLP\) designation to apply to indicators fetched from the feed | False |
+    | Indicator Reputation | Indicators from this integration instance will be marked with this reputation. | False |
+    | Source Reliability | Reliability of the source providing the intelligence data. | True |
+    | Traffic Light Protocol Color | The Traffic Light Protocol \(TLP\) designation to apply to indicators fetched from the feed. | False |
     | Feed Expiration Method |  | False |
     | feedExpirationInterval |  | False |
     | Feed Fetch Interval |  | False |

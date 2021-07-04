@@ -266,7 +266,7 @@ tasks:
       id: 9389b85f-a08b-4b82-8833-e5bad240f456
       version: -1
       name: Is Report Type
-      description: Check if there is indicators from Report type
+      description: Check if there are indicators from the Report type.
       type: condition
       iscommand: false
       brand: ""
@@ -315,10 +315,10 @@ inputs:
 - key: ""
   value: {}
   required: false
-  description: "Filter all Report indicators which haven't been processed. Please
-    make sure to add \"-tags:in_process \" to the query in order to filter out the
+  description: "Filter all Report indicators which haven't been processed.
+    Make sure to add \"-tags:in_process \" to the query to filter out the
     reports that are in process and \"-tags:{tag_name_given_as_input}\" to filter
-    out all processed reports .\nExample: type:Report -tags:processed -tags:in_process "
+    out all processed reports.\nExample: type:Report -tags:processed -tags:in_process "
   playbookInputQuery:
     query: type:Report -tags:in_process -tags:processed
     queryEntity: indicators
@@ -338,7 +338,7 @@ inputs:
 - key: tag
   value: {}
   required: false
-  description: The tag which will be added to each processed report.
+  description: The tag that will be added to each processed report.
   playbookInputQuery: null
 outputs: []
 quiet: true
