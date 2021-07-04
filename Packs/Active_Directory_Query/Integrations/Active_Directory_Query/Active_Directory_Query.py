@@ -284,7 +284,7 @@ def get_user_dn_by_email(default_base_dn, email):
 
     if entries.get('flat'):
         user = entries.get('flat')[0]
-        dn = user.get('dn')[0]
+        dn = user.get('dn')
 
     return dn
 
@@ -962,6 +962,10 @@ def update_user_iam(default_base_dn, args, create_if_not_exists, mapper_out, dis
                     ad_user.pop(field)
 
             fail_to_modify = []
+            if manager_email := ad_user.get('manageremail'):
+                manager_dn = get_user_dn_by_email(default_base_dn, manager_email)
+                ad_user['manager'] = manager_dn
+                ad_user.pop('manageremail')
 
             for key in ad_user:
                 modification = {key: [('MODIFY_REPLACE', ad_user.get(key))]}
@@ -972,13 +976,6 @@ def update_user_iam(default_base_dn, args, create_if_not_exists, mapper_out, dis
             ou_modified_succeed = modify_user_ou(dn, new_ou)
             if not ou_modified_succeed:
                 fail_to_modify.append("ou")
-
-            if manager_email := ad_user.get('manageremail'):
-                manager_dn = get_user_dn_by_email(manager_email)
-                modification = {'manager': [('MODIFY_REPLACE', manager_dn)]}
-                success = conn.modify(dn, modification)
-                if not success:
-                    fail_to_modify.append('manager')
 
             if fail_to_modify:
                 error_list = '\n'.join(fail_to_modify)
@@ -1472,7 +1469,7 @@ def delete_group():
 def get_mapping_fields_command(search_base):
     ad_attributes = get_all_attributes(search_base)
     # add keys that are not attributes but can be used in mapping
-    ad_attributes.extend(("dn", "samaccountname"))
+    ad_attributes.extend(("dn", "samaccountname", "manageremail"))
 
     incident_type_scheme = SchemeTypeMapping(type_name=IAMUserProfile.INDICATOR_TYPE)
 
