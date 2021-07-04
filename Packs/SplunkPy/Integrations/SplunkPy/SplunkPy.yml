@@ -25,8 +25,8 @@ configuration:
   required: false
   type: 0
   additionalinfo: The Splunk search query by which to fetch events. The default query fetches ES notable events.
-	You can edit this query to fetch other types of events. 
-	Note, that to fetch ES noatable events, make sure to include the \`notable\` macro in your query.
+	  You can edit this query to fetch other types of events. 
+	  Note, that to fetch ES noatable events, make sure to include the \`notable\` macro in your query.
 - defaultvalue: '50'
   display: Fetch Limit (Max.- 200, Recommended less than 50)
   name: fetch_limit
