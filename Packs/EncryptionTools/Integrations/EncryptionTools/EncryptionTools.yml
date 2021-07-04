@@ -124,7 +124,7 @@ script:
       isArray: false
     outputs: []
     execution: true
-  dockerimage: demisto/btfl-soup:1.0.1.20928
+  dockerimage: demisto/crypto:1.0.0.19032
   feed: false
   isfetch: false
   longRunning: false

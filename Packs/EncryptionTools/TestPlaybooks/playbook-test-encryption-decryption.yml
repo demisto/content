@@ -114,7 +114,7 @@ tasks:
       - "6"
     scriptarguments:
       base64_to_decrypt:
-        simple: ${TestText.encrypted}${EncryptionTools.Value}
+        simple: ${EncryptionTools.Value}
     separatecontext: false
     view: |-
       {
