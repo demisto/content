@@ -627,6 +627,14 @@ class Pack(object):
 
         return dependencies_data_result
 
+
+    def _update_changelog_entry(self, changelog, version, release_notes=None, version_display_name=None,
+                               build_number=None, released_time=None):
+
+
+
+
+
     def _create_changelog_entry(self, release_notes, version_display_name, build_number, pack_was_modified=False,
                                 new_version=True, initial_release=False, initial_entry_time=None):
         """ Creates dictionary entry for changelog.
@@ -638,7 +646,7 @@ class Pack(object):
             pack_was_modified (bool): whether the pack was modified.
             new_version (bool): whether the entry is new or not. If not new, R letter will be appended to build number.
             initial_release (bool): whether the entry is an initial release or not.
-
+            initial_entry_time (datetime): the time the entry was first created.
         Returns:
             dict: release notes entry of changelog
 
@@ -1318,6 +1326,13 @@ class Pack(object):
                             logging.info("Creating changelog entries for modified rn")
                             for version, modified_release_notes_lines in modified_release_notes_lines_dict.items():
                                 #  For modified old entries, keep the initial release timestamp
+                                self._update_changlog_entry(changelog, version, release_notes=modified_release_notes_lines,
+                                                            version_display_name=version,
+                                                            build_number=build_number,
+                                                            released_time=initial_entry_time,
+                                                            )
+
+
                                 initial_entry_time = changelog[version]['released']
                                 changelog_entry = self._create_changelog_entry(
                                     release_notes=modified_release_notes_lines,
