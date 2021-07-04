@@ -791,4 +791,3 @@ The following information is sent to the dedicated endpoint in the request:
 <p>If messages are not mirrored in Cortex XSOAR, or direct messages are not handled properly, check the integration status on the integration page:</p>
 <img alt="" src="https://github.com/demisto/content/raw/09eaa5901b0967706af2e83dfad567321e72ead8/Packs/Slack/doc_files/slack-health.png"/>
 <br>
-<span>If you're having further issues, contact us at <a href="mailto:support@demisto.com">support@demisto.com</a> and attach the server logs.</span>

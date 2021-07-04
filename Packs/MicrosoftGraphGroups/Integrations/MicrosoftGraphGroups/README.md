@@ -195,7 +195,7 @@ If the collection includes DynamicMembership, the group has dynamic membership; 
     <tr>
       <td>MSGraphGroup.ProxyAddresses</td>
       <td>String</td>
-      <td>Email addresses for the group that directs to the same group mailbox. For example: ["SMTP: support@demisto.com", "smtp: support@demisto.com"].</td>
+      <td>Email addresses for the group that directs to the same group mailbox. For example: ["SMTP: example@demisto.com", "smtp: example@demisto.com"].</td>
     </tr>
     <tr>
       <td>MSGraphGroup.RenewedDateTime</td>
@@ -409,7 +409,7 @@ If the collection includes DynamicMembership, the group has dynamic membership; 
     <tr>
       <td>MSGraphGroup.ProxyAddresses</td>
       <td>String</td>
-      <td>Email addresses for the group that directs to the same group mailbox. For example: ["SMTP: support@demisto.com", "smtp: support@demisto.com"].</td>
+      <td>Email addresses for the group that directs to the same group mailbox. For example: ["SMTP: example@demisto.com", "smtp: example@demisto.com"].</td>
     </tr>
     <tr>
       <td>MSGraphGroup.RenewedDateTime</td>
@@ -640,7 +640,7 @@ If the group collection includes DynamicMembership, the group has dynamic member
     <tr>
       <td>MSGraphGroup.ProxyAddresses</td>
       <td>String</td>
-      <td>Email addresses for the group that directs to the same group mailbox. For example, ["SMTP: support@demisto.com", "smtp: support@demisto.com"].</td>
+      <td>Email addresses for the group that directs to the same group mailbox. For example, ["SMTP: example@demisto.com", "smtp: example@demisto.com"].</td>
     </tr>
     <tr>
       <td>MSGraphGroup.RenewedDateTime</td>
