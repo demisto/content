@@ -309,18 +309,6 @@ class Pack(object):
         """
         return self._uploaded_integration_images
 
-    @property
-    def contains_transformer(self):
-        """ bool: whether the pack contains a transformer script.
-        """
-        return self._contains_transformer
-
-    @property
-    def contains_filter(self):
-        """ bool: whether the pack contains a filter script.
-        """
-        return self._contains_filter
-
     def _get_latest_version(self):
         """ Return latest semantic version of the pack.
 
