@@ -63,4 +63,4 @@ This playbook does not use any scripts.
 
 ## Playbook Image
 ---
-![Logrhythm - Search query](Insert the link to your image here)
+![Logrhythm - Search query](../doc_files/Logrhythm_-_Search_query.png)
