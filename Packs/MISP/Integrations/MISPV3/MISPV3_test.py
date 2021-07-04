@@ -1,13 +1,13 @@
 import pytest
-from pymisp import PyMISP
+import json
+import io
+from CommonServerPython import DemistoException, Common
 
-from CommonServerPython import DemistoException
-from MISPV3 import DISTRIBUTION_NUMBERS
-
-INVALID_DISTRIBUTION_ERROR = f"Invalid Distribution. Can be one of the following: {[key for key in DISTRIBUTION_NUMBERS.keys()]}"
 TAG_IDS_LISTS = [([1, 2, 3], [2, 3, 4, 5], [1, 2, 3], [4, 5]),
                  ([1, 2, 3], [4, 5], [1, 2, 3], [4, 5])]
 
+ATTRIBUTE_TAG_LIMIT = [{'ID': '1', 'Name': 'Tag1'}, {'ID': '2', 'Name': 'misp-galaxy:tag2'},
+                       {'ID': '3', 'Name': 'misp-galaxy:tag3'}]
 INVALID_HASH_ERROR = "Invalid hash length, enter file hash of format MD5, SHA-1 or SHA-256'"
 REPUTATION_COMMANDS_ERROR_LIST = [
     ("FILE", "invalid_hash", INVALID_HASH_ERROR),  # invalid HASH,
@@ -17,8 +17,31 @@ REPUTATION_COMMANDS_ERROR_LIST = [
     ("EMAIL", "invalid_email", f"Error: The given invalid_email address: example is not valid"),  # invalid EMAIL,
 ]
 
+CASE_OF_MALICIOUS_ATTRIBUTE = (['1'], ['2'], ['1'], ['4'], Common.DBotScore.BAD)
+CASE_OF_SUSPICIOUS_ATTRIBUTE = (['1'], ['2'], ['2'], ['1'], Common.DBotScore.SUSPICIOUS)
+CASE_OF_MALICIOUS_EVENT = (['8'], ['2'], ['2'], ['1'], Common.DBotScore.BAD)
+CASE_OF_SUSPICIOUS_EVENT = (['8'], ['2'], ['3'], ['2'], Common.DBotScore.SUSPICIOUS)
+CASE_OF_UNKNOWN = (['1'], ['2'], ['3'], ['4'], Common.DBotScore.NONE)
+TEST_TAG_SCORES = [CASE_OF_MALICIOUS_ATTRIBUTE, CASE_OF_SUSPICIOUS_ATTRIBUTE, CASE_OF_MALICIOUS_EVENT,
+                   CASE_OF_SUSPICIOUS_EVENT, CASE_OF_UNKNOWN]
+
 VALID_DISTRIBUTION_LIST = [(0, 0), ("1", 1), ("Your_organisation_only", 0)]
 INVALID_DISTRIBUTION_LIST = ["invalid_distribution", 1.5, "53.5"]
+
+TEST_PREPARE_ARGS = [({'type': '1', 'to_ids': 0, 'from': '2', 'to': '3', 'event_id': '4', 'last': '5',
+                       'include_decay_score': 0, 'include_sightings': 0, 'include_correlations': 0,
+                       'enforceWarninglist': 0, 'tags': 'NOT:param3', 'value': 6, 'category': '7', 'limit': 10,
+                       'org': 7}, {'type_attribute': '1', 'to_ids': 0, 'from_date': '2', 'to_date': '3',
+                                   'eventid': ['4'], 'publish_timestamp': '5', 'include_decay_score': 0,
+                                   'include_sightings': 0, 'include_correlations': 0, 'enforceWarninglist': 0,
+                                   'limit': 10, 'tags': {'NOT': ['param3']}, 'org': 7, 'value': 6, 'category': '7'}),
+                     ({}, {'limit': '50'})  # default value
+                     ]
+
+
+def util_load_json(path):
+    with io.open(path, mode="r", encoding="utf-8") as f:
+        return json.loads(f.read())
 
 
 def mock_misp(mocker):
@@ -208,14 +231,6 @@ def test_pagination_args_invalid(mocker):
             assert False
 
 
-# @pytest.mark.parametrize('value, indicator_type, score, return_suspicious_tag_ids',
-#                          TAG_IDS_LISTS)
-# def test_get_dbot_indicator(mocker, value, indicator_type, score):
-#     mock_misp(mocker)
-#     from MISPV3 import get_dbot_indicator
-#     dbot = Common.DBotScore(indicator=value, indicator_type=indicator_type, integration_name="MISP V3", score=score)
-
-
 @pytest.mark.parametrize('dbot_type, value, error_expected', REPUTATION_COMMANDS_ERROR_LIST)
 def test_reputation_value_validation(mocker, dbot_type, value, error_expected):
     mock_misp(mocker)
@@ -227,10 +242,102 @@ def test_reputation_value_validation(mocker, dbot_type, value, error_expected):
 
 @pytest.mark.parametrize('distribution_id, expected_distribution_id', VALID_DISTRIBUTION_LIST)
 def test_get_valid_distribution(mocker, distribution_id, expected_distribution_id):
-    #from pymisp import ExpandedPyMISP
-    #mock_misp(mocker)
-    #mocker.patch.object(PyMISP, '__init__', return_value=None)
-    #mocker.patch.object(ExpandedPyMISP, '__init__', return_value=None)
+    mock_misp(mocker)
     from MISPV3 import get_valid_distribution
-
     assert get_valid_distribution(distribution_id) == expected_distribution_id
+
+
+@pytest.mark.parametrize('distribution_id', INVALID_DISTRIBUTION_LIST)
+def test_get_invalid_distribution(mocker, distribution_id):
+    mock_misp(mocker)
+    from MISPV3 import get_valid_distribution
+    with pytest.raises(SystemExit) as e:
+        get_valid_distribution(distribution_id)
+        if not e:
+            assert False
+
+
+@pytest.mark.parametrize('event_id', ['event_id', 23.4])
+def test_get_invalid_event_id(mocker, event_id):
+    mock_misp(mocker)
+    from MISPV3 import get_valid_event_id
+    with pytest.raises(SystemExit) as e:
+        get_valid_event_id(event_id)
+        if not e:
+            assert False
+
+
+@pytest.mark.parametrize('is_event_level, expected_output, expected_tag_list_ids', [
+    (False, ATTRIBUTE_TAG_LIMIT, {'1', '3'}),
+    (True, ATTRIBUTE_TAG_LIMIT, {'1', '3', '2'})])
+def test_limit_tag_output(mocker, is_event_level, expected_output, expected_tag_list_ids):
+    mock_misp(mocker)
+    from MISPV3 import limit_tag_output
+    mock_tag_json = util_load_json("test_data/Attribute_Tags.json")
+    outputs, tag_list_id = limit_tag_output(mock_tag_json, is_event_level)
+    assert outputs == expected_output
+    assert tag_list_id == expected_tag_list_ids
+
+
+@pytest.mark.parametrize('attribute_tags_ids, event_tags_ids, malicious_tag_ids, suspicious_tag_ids, expected_score',
+                         TEST_TAG_SCORES)
+def test_get_score_by_tags(mocker, attribute_tags_ids, event_tags_ids, malicious_tag_ids, suspicious_tag_ids,
+                           expected_score):
+    mock_misp(mocker)
+    from MISPV3 import get_score_by_tags
+    assert get_score_by_tags(attribute_tags_ids, event_tags_ids, malicious_tag_ids,
+                             suspicious_tag_ids) == expected_score
+
+
+def test_event_response_to_markdown_table(mocker):
+    mock_misp(mocker)
+    from MISPV3 import event_response_to_markdown_table
+    event_response = util_load_json("test_data/event_response_to_md.json")
+    md = event_response_to_markdown_table(event_response)[0]
+    assert md['Event ID'] == '1'
+    assert md['Event Tags'] == ["Tag1", "misp-galaxy:tag2", "misp-galaxy:tag3"]
+    assert md['Event Galaxies'] == ["galaxy1", "galaxy2"]
+    assert md['Event Objects'] == ["obj1", "obj2"]
+    assert md['Publish Timestamp'] == '2021-06-16 08:35:01'
+    assert md['Event Info'] == 'Test'
+    assert md['Event Org ID'] == '1'
+    assert md['Event Orgc ID'] == '8'
+    assert md['Event Distribution'] == '0'
+    assert md['Event UUID'] == '5e6b322a-9f80-4e2f-9f2a-3cab0a123456'
+
+
+def test_attribute_response_to_markdown_table(mocker):
+    mock_misp(mocker)
+    from MISPV3 import attribute_response_to_markdown_table
+    attribute_response = util_load_json("test_data/attribute_response_to_md.json")
+    md = attribute_response_to_markdown_table(attribute_response)[0]
+    assert md['Attribute ID'] == "1"
+    assert md['Event ID'] == "2"
+    assert md['Attribute Category'] == "Payload delivery"
+    assert md['Attribute Type'] == "md5"
+    assert md['Attribute Value'] == "6c73d338ec64e0e44bd54ea123456789"
+    assert md['Attribute Tags'] == ["Tag1", "misp-galaxy:tag2", "misp-galaxy:tag3"]
+    assert md['To IDs'] == True
+    assert md['Event Info'] == 'Test'
+    assert md['Event Organisation ID'] == '1'
+    assert md['Event Distribution'] == '0'
+    assert md['Event UUID'] == '5e6b322a-9f80-4e2f-9f2a-3cab0a123456'
+
+
+def test_parse_response_reputation_command(mocker):
+    mock_misp(mocker)
+    from MISPV3 import parse_response_reputation_command
+    reputation_response = util_load_json("test_data/reputation_command_response.json")
+    reputation_expected = util_load_json("test_data/reputation_command_outputs.json")
+    malicious_tag_ids = ['279', '131']
+    suspicious_tag_ids = ['104']
+    outputs, _ = parse_response_reputation_command(reputation_response, malicious_tag_ids, suspicious_tag_ids)
+    assert outputs == reputation_expected
+
+
+@pytest.mark.parametrize('demisto_args, expected_args', TEST_PREPARE_ARGS)
+def test_prepare_args_to_search(mocker, demisto_args, expected_args):
+    mock_misp(mocker)
+    from MISPV3 import prepare_args_to_search
+    mocker.patch.object(demisto, 'args', return_value=demisto_args)
+    assert prepare_args_to_search() == expected_args

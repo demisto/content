@@ -143,8 +143,6 @@ DOMAIN_REGEX = (
     "|localhost)"
 )
 
-''' HELPER FUNCTIONS '''
-
 
 def extract_error(error: list) -> List[dict]:
     """Extracting errors
@@ -204,7 +202,7 @@ def build_generic_object(template_name: str, args: List[dict]) -> GenericObjectG
     """
 
     Args:
-        template_name: template name as described in
+        template_name: template name as described in https://github.com/MISP/misp-objects
         args: arguments to create the generic object
 
     Returns:
@@ -227,7 +225,7 @@ def convert_timestamp(timestamp: Union[str, int]) -> str:
     """
         Gets a timestamp from MISP response (1546713469) and converts it to human readable format
     """
-    return datetime.utcfromtimestamp(int(timestamp)).strftime('%Y-%m-%d %H:%M:%S')
+    return datetime.utcfromtimestamp(int(timestamp)).strftime('%Y-%m-%d %H:%M:%S') if timestamp else ""
 
 
 def replace_keys(obj_to_build: Union[dict, list, str]) -> Union[dict, list, str]:
@@ -957,6 +955,7 @@ def delete_event(demisto_args: dict):
 def add_tag(demisto_args: dict, is_attribute=False):
     """
     Function will add tag to given UUID of event or attribute.
+    is_attribute (bool): if the given UUID is an attribute's one. Otherwise it's event's.
     """
     uuid = demisto_args.get('uuid')
     tag = demisto_args.get('tag')
@@ -973,7 +972,7 @@ def add_tag(demisto_args: dict, is_attribute=False):
             raw_response=response
         )
 
-    # this is event
+    # event's uuid
     response = PYMISP.search(uuid=uuid)
     human_readable = f'Tag {tag} has been successfully added to event {uuid}'
     return CommandResults(
