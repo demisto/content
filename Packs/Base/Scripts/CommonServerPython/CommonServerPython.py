@@ -1185,6 +1185,40 @@ def remove_empty_elements(d):
         return {k: v for k, v in ((k, remove_empty_elements(v)) for k, v in d.items()) if not empty(v)}
 
 
+class SmartGetDict(dict):
+    """A dict that when called with get(key, default) will return the default passed
+    value, even if there is a value of "None" in the place of the key. Example with built-in dict:
+    ```
+    >>> d = {}
+    >>> d['test'] = None
+    >>> d.get('test', 1)
+    >>> print(d.get('test', 1))
+    None
+    ```
+    Example with SmartGetDict:
+    ```
+    >>> d = SmartGetDict()
+    >>> d['test'] = None
+    >>> d.get('test', 1)
+    >>> print(d.get('test', 1))
+    1
+    ```
+
+    :return: SmartGetDict
+    :rtype: ``SmartGetDict``
+
+    """
+    def get(self, key, default=None):
+        res = dict.get(self, key)
+        if res is not None:
+            return res
+        return default
+
+
+if (not os.getenv('COMMON_SERVER_NO_AUTO_PARAMS_REMOVE_NULLS')) and hasattr(demisto, 'params') and demisto.params():
+    demisto.callingContext['params'] = SmartGetDict(demisto.params())
+
+
 def aws_table_to_markdown(response, table_header):
     """
     Converts a raw response from AWS into a markdown formatted table. This function checks to see if
@@ -5852,6 +5886,36 @@ def return_warning(message, exit=False, warning='', outputs=None, ignore_auto_ex
         sys.exit(0)
 
 
+def execute_command(command, args, extract_contents=True):
+    """
+    Runs the `demisto.executeCommand()` function and checks for errors.
+
+    :type command: ``str``
+    :param command: The command to run. (required)
+
+    :type args: ``dict``
+    :param args: The command arguments. (required)
+
+    :type extract_contents: ``bool``
+    :param extract_contents: Whether to return only the Contents part of the results. Default is True.
+
+    :return: The command results.
+    :rtype: ``list`` or ``dict`` or ``str``
+    """
+    if not hasattr(demisto, 'executeCommand'):
+        raise DemistoException('Cannot run demisto.executeCommand() from integrations.')
+
+    res = demisto.executeCommand(command, args)
+    if is_error(res):
+        return_error('Failed to execute {}. Error details:\n{}'.format(command, get_error(res)))
+
+    if not extract_contents:
+        return res
+
+    contents = [entry.get('Contents', {}) for entry in res]
+    return contents[0] if len(contents) == 1 else contents
+
+
 def camelize(src, delim=' ', upper_camel=True):
     """
         Convert all keys of a dictionary (or list of dictionaries) to CamelCase (with capital first letter)
@@ -6332,7 +6396,7 @@ class DemistoHandler(logging.Handler):
                 self.int_logger(msg)
             else:
                 demisto.debug(msg)
-        except Exception:
+        except Exception:  # noqa: disable=broad-except
             pass
 
 
@@ -6396,12 +6460,12 @@ class DebugLogger(object):
                                                                                             os.environ)
         if hasattr(demisto, 'params'):
             msg += "\n#### Params: {}.".format(json.dumps(demisto.params(), indent=2))
-        callingContext = demisto.callingContext.get('context', {})
-        msg += "\n#### Docker image: [{}]".format(callingContext.get('DockerImage'))
-        brand = callingContext.get('IntegrationBrand')
+        calling_context = demisto.callingContext.get('context', {})
+        msg += "\n#### Docker image: [{}]".format(calling_context.get('DockerImage'))
+        brand = calling_context.get('IntegrationBrand')
         if brand:
-            msg += "\n#### Integration: brand: [{}] instance: [{}]".format(brand, callingContext.get('IntegrationInstance'))
-        sm = get_schedule_metadata(context=callingContext)
+            msg += "\n#### Integration: brand: [{}] instance: [{}]".format(brand, calling_context.get('IntegrationInstance'))
+        sm = get_schedule_metadata(context=calling_context)
         if sm.get('is_polling'):
             msg += "\n#### Schedule Metadata: scheduled command: [{}] args: [{}] times ran: [{}] scheduled: [{}] end " \
                    "date: [{}]".format(sm.get('polling_command'),
@@ -6905,7 +6969,7 @@ if 'requests' in sys.modules:
             except requests.exceptions.RetryError as exception:
                 try:
                     reason = 'Reason: {}'.format(exception.args[0].reason.args[0])
-                except Exception:
+                except Exception:  # noqa: disable=broad-except
                     reason = ''
                 err_msg = 'Max Retries Error- Request attempts with {} retries failed. \n{}'.format(retries, reason)
                 raise DemistoException(err_msg, exception)
@@ -6954,10 +7018,10 @@ def batch(iterable, batch_size=1):
 def dict_safe_get(dict_object, keys, default_return_value=None, return_type=None, raise_return_type=True):
     """Recursive safe get query (for nested dicts and lists), If keys found return value otherwise return None or default value.
     Example:
-    >>> dict = {"something" : {"test": "A"}}
-    >>> dict_safe_get(dict,['something', 'test'])
+    >>> data = {"something" : {"test": "A"}}
+    >>> dict_safe_get(data, ['something', 'test'])
     >>> 'A'
-    >>> dict_safe_get(dict,['something', 'else'],'default value')
+    >>> dict_safe_get(data, ['something', 'else'], 'default value')
     >>> 'default value'
 
     :type dict_object: ``dict``
@@ -6969,7 +7033,7 @@ def dict_safe_get(dict_object, keys, default_return_value=None, return_type=None
     :type default_return_value: ``object``
     :param default_return_value: Value to return when no key available.
 
-    :type return_type: ``object``
+    :type return_type: ``type``
     :param return_type: Excepted return type.
 
     :type raise_return_type: ``bool``

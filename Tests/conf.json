@@ -3487,7 +3487,6 @@
         "get_original_email_-_ews-_test": "Issue 27571",
         "PANW Threat Vault - Signature Search - Test": "Issue 30930",
         "TAXII_Feed_Test": "Issue 37588",
-        "Git_Integration-Test": "Issue 37800",
         "Majestic Million Test Playbook": "Issue 30931",
         "FireEyeNX-Test": "Issue 33216",
         "Microsoft Teams - Test": "Issue 38263"
@@ -3696,7 +3695,7 @@
         "EWSO365": "oproxy dependent",
         "MISP V2": "Cleanup process isn't performed as expected.",
         "Azure Network Security Groups": "Has a command that sends parameters in the path",
-        "GitHub": "Cannot use proxy"
+        "GitHub": "Cannt use proxy"
     },
     "parallel_integrations": [
         "AWS - EC2",
