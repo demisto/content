@@ -6,8 +6,8 @@ import os
 import sys
 import re
 
-LS_RE = br'(?P<type>^[d-])(?P<u>...)(?P<g>...)(?P<o>...)(?P<S>[.\s]+)(?P<hlinks>\d+)\s+(?P<uid>\S+)\s+(?P<gid>\S+)\s+' \
-        br'(?P<size>[\w\d.]+)\s+(?P<modified>\w+\s+\d+\s+\d+:?\d+)\s+(?P<name>.*)'
+LS_RE = br'(?P<type>^[d-])(?P<u>.{3})(?P<g>.{3})(?P<o>.{3})(?P<S>[.\s]+)(?P<hlinks>\d+)\s+(?P<uid>\S+)\s+' \
+        br'(?P<gid>\S+)\s+(?P<size>[\w\d.]+)\s+(?P<modified>\w+\s+\d+\s+\d+:?\d+)\s+(?P<name>.*)'
 UNITS = {'B': 1, 'K': 10**3, 'M': 10**6, 'G': 10**9, 'T': 10**12}
 
 
@@ -19,7 +19,7 @@ def count_partitions(filesystem):
 
 
 def parse_size(size):
-    m = re.match(br'^(?P<number>[0-9.]+)(?P<unit>\w*)$', size)
+    m = re.match(br'^(?P<number>[\d.]+)(?P<unit>\w*)$', size)
     if not m:
         sys.exit(0)
     number, unit = m.group('number'), str(m.group('unit'), 'utf-8')
