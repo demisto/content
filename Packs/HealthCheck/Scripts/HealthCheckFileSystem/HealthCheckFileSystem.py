@@ -91,7 +91,7 @@ def main(args):
             large += large_files
 
     number_of_partitions = count_partitions(filesystem)
-    demisto.executeCommand('setIncident', {"numberofdbpartitions": number_of_partitions})
+    demisto.executeCommand('setIncident', {"xsoarnumberofdbpartitions": number_of_partitions})
     for file in large:
         res.append({'category': 'File system', 'severity': 'Medium',
                     'description': f"The file: {file['path']}/{file['name']} has a size of: {file['size']}\n",
@@ -109,7 +109,7 @@ def main(args):
                     'resolution': RESOLUTION[0]
                     })
 
-    res = demisto.executeCommand('setIncident', {"largefiles": large_files_table})
+    res = demisto.executeCommand('setIncident', {"healthchecklargefiles": large_files_table})
     if is_error(res):
         return_results(res)
         return_error('Failed to execute setIncident. See additional error details in the above entries.')

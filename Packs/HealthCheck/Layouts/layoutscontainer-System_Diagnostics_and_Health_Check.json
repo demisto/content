@@ -19,7 +19,7 @@
                         "items": [
                             {
                                 "endCol": 2,
-                                "fieldId": "customername",
+                                "fieldId": "xsoarcustomername",
                                 "height": 22,
                                 "id": "351cb070-c210-11eb-9118-13a43afba38c",
                                 "index": 0,
@@ -75,7 +75,7 @@
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "usedusers",
+                                "fieldId": "healthcheckusedusers",
                                 "height": 22,
                                 "id": "586966e0-c210-11eb-9118-13a43afba38c",
                                 "index": 6,
@@ -84,7 +84,7 @@
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "telemetrystatus",
+                                "fieldId": "xsoartelemetrystatus",
                                 "height": 22,
                                 "id": "86b2c460-c210-11eb-9118-13a43afba38c",
                                 "index": 7,
@@ -93,7 +93,7 @@
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "permittedusers",
+                                "fieldId": "healthcheckpermittedusers",
                                 "height": 22,
                                 "id": "6400ee60-c210-11eb-9118-13a43afba38c",
                                 "index": 8,
@@ -111,16 +111,7 @@
                             },
                             {
                                 "endCol": 4,
-                                "fieldId": "restartcount",
-                                "height": 22,
-                                "id": "457992c0-c211-11eb-9118-13a43afba38c",
-                                "index": 1,
-                                "sectionItemType": "field",
-                                "startCol": 2
-                            },
-                            {
-                                "endCol": 4,
-                                "fieldId": "elasticsearch",
+                                "fieldId": "xsoarelasticsearch",
                                 "height": 22,
                                 "id": "a3cd2d10-c210-11eb-9118-13a43afba38c",
                                 "index": 2,
@@ -156,7 +147,7 @@
                             },
                             {
                                 "endCol": 4,
-                                "fieldId": "restartcount",
+                                "fieldId": "healthcheckrestartcount",
                                 "height": 22,
                                 "id": "441b6250-c211-11eb-9118-13a43afba38c",
                                 "index": 6,
@@ -165,7 +156,7 @@
                             },
                             {
                                 "endCol": 4,
-                                "fieldId": "logsince",
+                                "fieldId": "healthchecklogsince",
                                 "height": 22,
                                 "id": "547d1c10-c211-11eb-9118-13a43afba38c",
                                 "index": 7,
@@ -174,7 +165,7 @@
                             },
                             {
                                 "endCol": 4,
-                                "fieldId": "loguntil",
+                                "fieldId": "healthcheckloguntil",
                                 "height": 22,
                                 "id": "57abc6c0-c211-11eb-9118-13a43afba38c",
                                 "index": 8,
@@ -233,7 +224,7 @@
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "workersbusy",
+                                "fieldId": "healthcheckworkersbusy",
                                 "height": 22,
                                 "id": "cd61e6b0-c211-11eb-9118-13a43afba38c",
                                 "index": 3,
@@ -242,7 +233,7 @@
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "workerstotal",
+                                "fieldId": "healthcheckworkerstotal",
                                 "height": 22,
                                 "id": "cf7620b0-c211-11eb-9118-13a43afba38c",
                                 "index": 4,
@@ -268,7 +259,7 @@
                         "items": [
                             {
                                 "endCol": 2,
-                                "fieldId": "dockercontainers",
+                                "fieldId": "healthcheckdockercontainers",
                                 "height": 22,
                                 "id": "25733840-c212-11eb-9118-13a43afba38c",
                                 "index": 0,
@@ -277,7 +268,7 @@
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "dockerrunning",
+                                "fieldId": "healthcheckdockerrunning",
                                 "height": 22,
                                 "id": "28127430-c212-11eb-9118-13a43afba38c",
                                 "index": 1,
@@ -286,7 +277,7 @@
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "dockerstop",
+                                "fieldId": "healthcheckdockerstop",
                                 "height": 22,
                                 "id": "2a6d0600-c212-11eb-9118-13a43afba38c",
                                 "index": 2,
@@ -295,7 +286,7 @@
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "dockerpaused",
+                                "fieldId": "healthcheckdockerpaused",
                                 "height": 22,
                                 "id": "2cbd3790-c212-11eb-9118-13a43afba38c",
                                 "index": 3,
@@ -304,7 +295,7 @@
                             },
                             {
                                 "endCol": 4,
-                                "fieldId": "dockerversion",
+                                "fieldId": "healthcheckdockerversion",
                                 "height": 22,
                                 "id": "3023bb20-c212-11eb-9118-13a43afba38c",
                                 "index": 4,
@@ -424,7 +415,7 @@
                             },
                             {
                                 "endCol": 6,
-                                "fieldId": "enabledinstances",
+                                "fieldId": "healthcheckenabledinstances",
                                 "height": 106,
                                 "id": "18d3a7e0-c6fa-11eb-a8ef-5f644da8ef19",
                                 "index": 0,
@@ -623,7 +614,7 @@
                         "items": [
                             {
                                 "endCol": 2,
-                                "fieldId": "numberofdbpartitions",
+                                "fieldId": "xsoarnumberofdbpartitions",
                                 "height": 53,
                                 "id": "6e835f90-c214-11eb-9118-13a43afba38c",
                                 "index": 0,
@@ -690,7 +681,7 @@
                             {
                                 "dropEffect": "move",
                                 "endCol": 2,
-                                "fieldId": "largefiles",
+                                "fieldId": "healthchecklargefiles",
                                 "height": 106,
                                 "id": "8a665320-c6c9-11eb-aa83-714a14ec6c50",
                                 "index": 0,

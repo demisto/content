@@ -65,9 +65,9 @@ try:
                 uid = python_dict['license']['id']
 
             demisto.executeCommand("setIncident", {
-                'customername': customer,
-                'permittedusers': permittedUsers,
-                'usedusers': usedUsers,
+                'healthcheckpermittedusers': permittedUsers,
+                'healthcheckusedusers': usedUsers,
+                'xsoarcustomername': customer,
                 'xsoarlicense': licenseType,
                 'xsoarlicensevalidtill': validTil,
                 'xsoartelemetryuuid': uid,

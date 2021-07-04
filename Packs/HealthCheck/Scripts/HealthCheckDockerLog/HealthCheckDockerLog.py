@@ -123,11 +123,11 @@ def main(args):
             'xsoarcpu': dataset['CPUs'],
             'xsoaros': dataset['Operating System'],
             'xsoarmemory': dataset['Total Memory'],
-            'dockercontainers': dataset['Containers'],
-            'dockerrunning': dataset['Running'],
-            'dockerpaused': dataset['Paused'],
-            'dockerstop': dataset['Stopped'],
-            'dockerversion': dataset['Server Version']
+            'healthcheckdockercontainers': dataset['Containers'],
+            'healthcheckdockerrunning': dataset['Running'],
+            'healthcheckdockerpaused': dataset['Paused'],
+            'healthcheckdockerstop': dataset['Stopped'],
+            'healthcheckdockerversion': dataset['Server Version']
         })
 
     return CommandResults(

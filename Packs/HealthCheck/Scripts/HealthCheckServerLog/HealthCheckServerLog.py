@@ -184,9 +184,9 @@ else:
         demisto.setContext("LogServer.since", str(oldestDate))
         demisto.setContext("LogServer.logUntil", str(newestDate))
         demisto.setContext("LogServer.restartCount", restartcount)
-        demisto.executeCommand("setIncident", {"restartcount": restartcount,
-                                               "logsince": str(oldestDate),
-                                               "loguntil": str(newestDate)})
+        demisto.executeCommand("setIncident", {"healthcheckrestartcount": restartcount,
+                                               "healthchecklogsince": str(oldestDate),
+                                               "healthcheckloguntil": str(newestDate)})
 
         if suggestions:
             for entry in suggestions:

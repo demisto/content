@@ -22,5 +22,5 @@ for instance in enabledInstances:
     else:
         enabledInstancesNames.append({'instancename': instance['name']})
 
-demisto.executeCommand('setIncident', {'enabledinstances': enabledInstancesNames})
-demisto.executeCommand('setIncident', {'numberofengines': res['engines']['total']})
+demisto.executeCommand('setIncident', {'healthcheckenabledinstances': enabledInstancesNames})
+demisto.executeCommand('setIncident', {'healthchecknumberofengines': res['engines']['total']})

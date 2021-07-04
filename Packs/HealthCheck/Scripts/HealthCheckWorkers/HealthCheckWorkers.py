@@ -53,8 +53,8 @@ def main(args):
     else:
         workers = demisto.executeCommand("demisto-api-get", {"uri": "/workers/status"})[0]['Contents']
         demisto.executeCommand("setIncident", {
-            'workerstotal': workers['response']['Total'],
-            'workersbusy': workers['response']['Busy']
+            'healthcheckworkerstotal': workers['response']['Total'],
+            'healthcheckworkersbusy': workers['response']['Busy']
         })
         add_actions = analyze_data(workers['response'])
 
