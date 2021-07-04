@@ -16,7 +16,7 @@ def check_context():
     incident_id = incidents[0]['id']
     failed_tasks = (demisto.executeCommand("getContext", {"id": incident_id}))
     if not failed_tasks:
-        raise DemistoException("Error while retrieving context data.")
+        raise DemistoException(f'Error while retrieving context data. Error:\n{get_error(failed_tasks)}')
     failed_tasks = failed_tasks[0].get('Contents', {}).get('context', {}).get('GetFailedTasks')
     if not failed_tasks:
         raise DemistoException("Couldn't find failed tasks in the context under the key GetFailedTasks. Please run "
