@@ -36,7 +36,7 @@ if not_certified > 0:
 
 demisto.executeCommand("setIncident", {
     'healthcheckinstalledpacks': packs,
-    'lf': len(packs),
+    'healthchecktotalpacksinstalled': len(packs),
     'healthcheckpacksneedupdate': need_update,
 })
 

@@ -5,7 +5,7 @@ GREEN_HTML_STYLE = "color:#00CD33;text-align:center;font-size:800%;>"
 
 def main():
     incident = demisto.incidents()
-    query = incident[0].get('CustomFields', {}).get('totalpacksinstalled', 0)
+    query = incident[0].get('CustomFields', {}).get('healthchecktotalpacksinstalled', 0)
 
     html = f"<h1 style={GREEN_HTML_STYLE}{str(query)}</h1>"
 

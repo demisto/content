@@ -53,6 +53,6 @@ def test_main(mocker):
 
     # Assert
     assert len(result.outputs) == 3
-    assert set_incident_fields['numberofinvestigationsbiggerthan1mb'] == 3
-    assert set_incident_fields['numberofinvestigationsbiggerthan10mb'] == 2
-    assert set_incident_fields['numberofinvestigationswithmorethan500entries'] == 1
+    assert set_incident_fields['healthchecknumberofinvestigationsbiggerthan1mb'] == 3
+    assert set_incident_fields['healthchecknumberofinvestigationsbiggerthan10mb'] == 2
+    assert set_incident_fields['healthchecknumberofinvestigationswithmorethan500entries'] == 1

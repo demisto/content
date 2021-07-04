@@ -148,10 +148,10 @@ def main():
             numIncidentsList = len(incidentsList)
             numIncidentsListBiggerThan10 = len(incidentsListBiggerThan10)
             analyzeFields = {
-                "investigationsinputoutputbiggerthan1mb": incidentsList,
-                "investigationsinputoutputbiggerthan10mb": incidentsListBiggerThan10,
-                "numberofinvestigationsinputoutputbiggerthan1mb": numIncidentsList,
-                "numberofinvestigationsinputoutputbiggerthan10mb": numIncidentsListBiggerThan10
+                "healthcheckinvestigationsinputoutputbiggerthan1mb": incidentsList,
+                "healthcheckinvestigationsinputoutputbiggerthan10mb": incidentsListBiggerThan10,
+                "healthchecknumberofinvestigationsinputoutputbiggerthan1mb": numIncidentsList,
+                "healthchecknumberofinvestigationsinputoutputbiggerthan10mb": numIncidentsListBiggerThan10,
             }
 
             demisto.executeCommand('setIncident', analyzeFields)
@@ -168,14 +168,14 @@ def main():
             if numIncidentsList >= incident_thresholds['numberofincidentsIObiggerthan1mb']:
                 actionableItems.append({'category': 'DB analysis',
                                         'severity': 'Medium',
-                                        'description': "{} {}".format(numIncidentsList, DESCRIPTION[0]),
-                                        'resolution': '{}'.format(RESOLUTION[0])
+                                        'description': '{} {}'.format(numIncidentsList, DESCRIPTION[0]),
+                                        'resolution': RESOLUTION[0],
                                         })
             if numIncidentsListBiggerThan10 >= incident_thresholds['numberofincidentsIObiggerthan10mb']:
                 actionableItems.append({'category': 'DB analysis',
                                         'severity': 'High',
-                                        'description': "{} {}".format(numIncidentsListBiggerThan10, DESCRIPTION[1]),
-                                        'resolution': '{}'.format(RESOLUTION[0])
+                                        'description': '{} {}'.format(numIncidentsListBiggerThan10, DESCRIPTION[1]),
+                                        'resolution': RESOLUTION[0]
                                         })
             results = CommandResults(
                 readable_output="HealthCheckFileSysLog Done",

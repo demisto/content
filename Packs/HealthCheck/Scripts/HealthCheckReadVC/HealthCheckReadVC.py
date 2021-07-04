@@ -41,21 +41,6 @@ if not devprod:
 else:
     try:
         demisto.executeCommand("setIncident", {"xsoardevprod": "True"})
-        with open(res[0]['Contents']['path'], 'r') as file:
-            data = file.readlines()
-            for line in data:
-                result = re.findall(r'\w+', line)
-
-                if 'Version:' in line:
-                    result = re.findall(r'\d.*', line)[0]
-                    demisto.executeCommand("setIncident", {"xsoardevprodgit": result})
-                    git = True
-
-                if ver is True and git is False:
-                    demisto.executeCommand("setIncident", {"xsoardevprodgit": line[:-1]})
-                    ver = False
-                if ('Git version:' in line) or ('Version:' in line):
-                    ver = True
 
     except ValueError:
         demisto.results('Decoding JSON has failed')

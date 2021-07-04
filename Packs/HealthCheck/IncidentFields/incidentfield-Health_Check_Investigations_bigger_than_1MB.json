@@ -4,7 +4,7 @@
         "System Diagnostics and Health Check"
     ],
     "caseInsensitive": true,
-    "cliName": "investigationsbiggerthan10mb",
+    "cliName": "healthcheckinvestigationsbiggerthan1mb",
     "closeForm": false,
     "columns": [
         {
@@ -13,42 +13,6 @@
             "isDefault": true,
             "isReadOnly": false,
             "key": "incidentid",
-            "required": false,
-            "script": "",
-            "selectValues": null,
-            "type": "shortText",
-            "width": 150
-        },
-        {
-            "displayName": "Incident ID",
-            "fieldCalcScript": "",
-            "isDefault": true,
-            "isReadOnly": false,
-            "key": "incidentid",
-            "required": false,
-            "script": "",
-            "selectValues": null,
-            "type": "shortText",
-            "width": 150
-        },
-        {
-            "displayName": "Date",
-            "fieldCalcScript": "",
-            "isDefault": true,
-            "isReadOnly": false,
-            "key": "date",
-            "required": false,
-            "script": "",
-            "selectValues": null,
-            "type": "shortText",
-            "width": 150
-        },
-        {
-            "displayName": "Amount of entries",
-            "fieldCalcScript": "",
-            "isDefault": true,
-            "isReadOnly": false,
-            "key": "amountofentries",
             "required": false,
             "script": "",
             "selectValues": null,
@@ -66,20 +30,43 @@
             "selectValues": null,
             "type": "shortText",
             "width": 150
+        },
+        {
+            "displayName": "Amount of entries",
+            "fieldCalcScript": "",
+            "isDefault": true,
+            "isReadOnly": false,
+            "key": "amountofentries",
+            "required": false,
+            "script": "",
+            "selectValues": null,
+            "type": "number",
+            "width": 130
+        },
+        {
+            "displayName": "Date",
+            "fieldCalcScript": "",
+            "isDefault": true,
+            "isReadOnly": false,
+            "key": "date",
+            "required": false,
+            "script": "",
+            "selectValues": null,
+            "type": "shortText",
+            "width": 150
         }
     ],
     "content": true,
     "defaultRows": [
-        {},
         {}
     ],
     "editForm": true,
     "group": 0,
     "hidden": false,
-    "id": "incident_investigationsbiggerthan10mb",
+    "id": "incident_healthcheckinvestigationsbiggerthan1mb",
     "isReadOnly": false,
     "locked": false,
-    "name": "Investigations bigger than 10MB",
+    "name": "Health Check Investigations bigger than 1MB",
     "neverSetAsRequired": false,
     "ownerOnly": false,
     "required": false,

@@ -53,12 +53,12 @@ def main(args):
     numberofincidentswithmorethan500entries = len(incidentswithmorethan500entries)
 
     analyze_fields = {
-        'investigationsbiggerthan1mb': incidentsbiggerthan1mb,
-        'investigationsbiggerthan10mb': incidentsbiggerthan10mb,
-        'investigationswithmorethan500entries': incidentswithmorethan500entries,
-        'numberofinvestigationsbiggerthan1mb': numberofincidentsbiggerthan1mb,
-        'numberofinvestigationsbiggerthan10mb': numberofincidentsbiggerthan10mb,
-        'numberofinvestigationswithmorethan500entries': numberofincidentswithmorethan500entries,
+        'healthcheckinvestigationsbiggerthan1mb': incidentsbiggerthan1mb,
+        'healthcheckinvestigationsbiggerthan10mb': incidentsbiggerthan10mb,
+        'healthcheckinvestigationswithmorethan500entries': incidentswithmorethan500entries,
+        'healthchecknumberofinvestigationsbiggerthan1mb': numberofincidentsbiggerthan1mb,
+        'healthchecknumberofinvestigationsbiggerthan10mb': numberofincidentsbiggerthan10mb,
+        'healthchecknumberofinvestigationswithmorethan500entries': numberofincidentswithmorethan500entries,
     }
 
     execute_command('setIncident', analyze_fields)

@@ -92,7 +92,7 @@ tasks:
     task:
       brand: ""
       description: "Extract files from log bundle - supports tar.gz & tar \n\nhandle\
-        \ unsupported use cases and unextracted files. "
+        \ unsupported use cases and unextracted files."
       id: 05803224-f4d7-4d20-8892-f76018b78e6c
       iscommand: false
       name: UnPack the zipped log file

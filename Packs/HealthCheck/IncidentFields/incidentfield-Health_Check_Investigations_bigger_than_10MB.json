@@ -1,7 +1,10 @@
 {
-    "associatedToAll": true,
+    "associatedToAll": false,
+    "associatedTypes": [
+        "System Diagnostics and Health Check"
+    ],
     "caseInsensitive": true,
-    "cliName": "investigationsinputoutputbiggerthan1mb",
+    "cliName": "healthcheckinvestigationsbiggerthan10mb",
     "closeForm": false,
     "columns": [
         {
@@ -17,11 +20,11 @@
             "width": 150
         },
         {
-            "displayName": "Input or Output",
+            "displayName": "Incident ID",
             "fieldCalcScript": "",
             "isDefault": true,
             "isReadOnly": false,
-            "key": "inputoroutput",
+            "key": "incidentid",
             "required": false,
             "script": "",
             "selectValues": null,
@@ -29,11 +32,23 @@
             "width": 150
         },
         {
-            "displayName": "Task ID",
+            "displayName": "Date",
             "fieldCalcScript": "",
             "isDefault": true,
             "isReadOnly": false,
-            "key": "taskid",
+            "key": "date",
+            "required": false,
+            "script": "",
+            "selectValues": null,
+            "type": "shortText",
+            "width": 150
+        },
+        {
+            "displayName": "Amount of entries",
+            "fieldCalcScript": "",
+            "isDefault": true,
+            "isReadOnly": false,
+            "key": "amountofentries",
             "required": false,
             "script": "",
             "selectValues": null,
@@ -55,15 +70,16 @@
     ],
     "content": true,
     "defaultRows": [
+        {},
         {}
     ],
     "editForm": true,
     "group": 0,
     "hidden": false,
-    "id": "incident_investigationsinputoutputbiggerthan1mb",
+    "id": "incident_healthcheckinvestigationsbiggerthan10mb",
     "isReadOnly": false,
     "locked": false,
-    "name": "Investigations input / output bigger than 1MB",
+    "name": "Health Check Investigations bigger than 10MB",
     "neverSetAsRequired": false,
     "ownerOnly": false,
     "required": false,
@@ -72,7 +88,7 @@
     "threshold": 72,
     "type": "grid",
     "unmapped": false,
-    "unsearchable": false,
+    "unsearchable": true,
     "useAsKpi": false,
     "version": -1,
     "fromVersion": "6.0.0"
