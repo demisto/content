@@ -59,7 +59,7 @@ tasks:
               right:
                 value:
                   simple: Report
-          accessor: CustomFields.rssrawcontent
+          accessor: CustomFields.rssfeedrawcontent
       report_name:
         complex:
           root: playbookQuery

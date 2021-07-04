@@ -62,7 +62,7 @@ class Client(BaseClient):
                     "rawJSON": {'value': indicator, 'type': 'Report', "firstseenbysource": published_iso},
                     "reliability": self.reliability,
                     "fields": {
-                        'rssrawcontent': text,
+                        'rssfeedrawcontent': text,
                         'publications': publications,
                         'description': indicator.get('summary'),
                         'tags': self.feed_tags,
