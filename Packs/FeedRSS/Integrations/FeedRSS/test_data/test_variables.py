@@ -74,7 +74,7 @@ FEED_DATA = [({'bozo': False,
                 'source': 'test.com',
                 'title': 'Test Article, with comma'
             }],
-            'rssrawcontent': 'test description',
+            'rssfeedrawcontent': 'test description',
             'tags': [],
             'description': 'this is summary'
         }}])]
