@@ -68,19 +68,22 @@ class Client(BaseClient):
         )
 
     def activate_user(self, user_id):
+        query_params = {'sendEmail': 'false'}
         uri = f'users/{user_id}/lifecycle/activate'
         self._http_request(
             method="POST",
-            url_suffix=uri
+            url_suffix=uri,
+            params=query_params
         )
 
     def create_user(self, user_data):
+        # create a user in staged mode (not active)
         body = {
             'profile': user_data
         }
         uri = 'users'
         query_params = {
-            'activate': 'true',
+            'activate': 'false',
             'provider': 'true'
         }
         res = self._http_request(
@@ -431,6 +434,7 @@ def create_user_command(client, args, mapper_out, is_command_enabled, is_update_
             else:
                 okta_profile = user_profile.map_object(mapper_out)
                 created_user = client.create_user(okta_profile)
+                client.activate_user(created_user.get('id'))
                 user_profile.set_result(
                     action=IAMActions.CREATE_USER,
                     success=True,

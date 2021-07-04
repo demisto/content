@@ -1,0 +1,11 @@
+[file:README.md]
+ignore=RM104,RM106
+
+[file:Active_Directory_Query.yml]
+ignore=BA108,BA109
+
+[file:classifier-User_Profile_-_Active_Directory_(Incoming).json]
+ignore=BA101
+
+[file:classifier-User_Profile_-_Active_Directory_(Outgoing).json]
+ignore=BA101

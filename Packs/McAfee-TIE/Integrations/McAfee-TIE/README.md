@@ -12,7 +12,7 @@
 <li class="has-line-data" data-line-start="10" data-line-end="11">Client private key (<code>client.key</code><span> </span>file)</li>
 <li class="has-line-data" data-line-start="11" data-line-end="13">Broker list properties file (‘brokerlist.properties’ file)</li>
 </ul>
-<p class="has-line-data" data-line-start="13" data-line-end="14">To use the<span> </span><strong>tie-set-file-reputation</strong><span> </span>command, you need to authorize the client (Demisto) to run the command. Follow the instructions in the<span> </span><a href="https://opendxl.github.io/opendxl-client-python/pydoc/marsendauth.html">OpenDXL documentation</a>. In step #4, instead of selecting<span> </span><strong>Active Response Server API</strong>, select<span> </span><strong>TIE Server Set Enterprise Reputation</strong>.</p>
+<p class="has-line-data" data-line-start="13" data-line-end="14">To use the<span> </span><strong>tie-set-file-reputation</strong><span> </span>command, you need to authorize the client (Cortex XSOAR) to run the command. Follow the instructions in the<span> </span><a href="https://opendxl.github.io/opendxl-client-python/pydoc/marsendauth.html">OpenDXL documentation</a>. In step #4, instead of selecting<span> </span><strong>Active Response Server API</strong>, select<span> </span><strong>TIE Server Set Enterprise Reputation</strong>.</p>
 <h3 class="code-line" data-line-start="15" data-line-end="16">
 <a id="Dependencies_Python_packages_15"></a>Dependencies (Python packages)</h3>
 <p class="has-line-data" data-line-start="16" data-line-end="17">You don’t need to install the packages, they are included in the Docker image.</p>
@@ -21,7 +21,7 @@
 <li class="has-line-data" data-line-start="18" data-line-end="20"><a href="https://opendxl.github.io/opendxl-tie-client-python/pydoc/">DXL TIE client documentation</a></li>
 </ul>
 <h2 class="code-line" data-line-start="20" data-line-end="21">
-<a id="Configure_McAfee_Threat_Intelligence_Exchange_on_Demisto_20"></a>Configure McAfee Threat Intelligence Exchange on Demisto</h2>
+<a id="Configure_McAfee_Threat_Intelligence_Exchange_on_Demisto_20"></a>Configure McAfee Threat Intelligence Exchange on Cortex XSOAR</h2>
 <ol>
 <li class="has-line-data" data-line-start="21" data-line-end="22">Navigate to<span> </span><strong>Settings</strong><span> </span>&gt;<span> </span><strong>Integrations</strong><span> </span>&gt;<span> </span><strong>Servers &amp; Services</strong>.</li>
 <li class="has-line-data" data-line-start="22" data-line-end="23">Search for McAfee Threat Intelligence Exchange.</li>
@@ -32,14 +32,14 @@
 <li class="has-line-data" data-line-start="25" data-line-end="26"><strong>Broker CA certificates content (see<span> </span><code>brokercerts.crt</code><span> </span>in Detailed Instructions)</strong></li>
 <li class="has-line-data" data-line-start="26" data-line-end="27"><strong>Client certificates content (see<span> </span><code>client.crt</code><span> </span>in Detailed Instructions)</strong></li>
 <li class="has-line-data" data-line-start="27" data-line-end="28"><strong>Client private key path (e.g., /usr/config/client.key)</strong></li>
-<li class="has-line-data" data-line-start="28" data-line-end="29"><strong>A CSV list of broker URLs in the format: [ssl://]&lt;hostname&gt;[:port]) Get the hostname and port from the<span> </span><code>brokerlist.properties</code><span> </span>file (in instructions). The broker should be reachable from Demisto server.</strong></li>
+<li class="has-line-data" data-line-start="28" data-line-end="29"><strong>A CSV list of broker URLs in the format: [ssl://]&lt;hostname&gt;[:port]) Get the hostname and port from the<span> </span><code>brokerlist.properties</code><span> </span>file (in instructions). The broker should be reachable from Cortex XSOAR server.</strong></li>
 </ul>
 </li>
 <li class="has-line-data" data-line-start="29" data-line-end="31">Click<span> </span><strong>Test</strong><span> </span>to validate the URLs, token, and connection.</li>
 </ol>
 <h2 class="code-line" data-line-start="31" data-line-end="32">
 <a id="Commands_31"></a>Commands</h2>
-<p class="has-line-data" data-line-start="32" data-line-end="33">You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
+<p class="has-line-data" data-line-start="32" data-line-end="33">You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
 <ol>
 <li class="has-line-data" data-line-start="33" data-line-end="34"><a href="#h_20443057-9349-4fb0-a44e-7cfe1c4b75b3" target="_self">Get the reputation for a file hash: file</a></li>
 <li class="has-line-data" data-line-start="34" data-line-end="35"><a href="#h_e37c9af6-dce4-4198-bd27-2c152fc253b1" target="_self">Set the enterprise reputation for a file: tie-set-file-reputation</a></li>

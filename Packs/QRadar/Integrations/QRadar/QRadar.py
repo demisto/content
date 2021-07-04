@@ -492,17 +492,18 @@ def get_domains_by_id(domain_id, _fields=''):
 
 def test_module():
     try:
-        get_offenses('0-0')
+        raw_offenses = get_offenses('0-0')
+        if demisto.params().get('isFetch'):
+            enrich_offense_res_with_source_and_destination_address(raw_offenses)
+
     except Exception as err:
         demisto.info("Failed to perform an API call to the 'api/siem/offenses' endpoint. Reason:\n {}.\n "
                      "Trying to perform an API call to 'api/ariel/databases' endpoint.".format(str(err)))
         full_url = '{0}/api/ariel/databases'.format(SERVER)
         headers = dict(AUTH_HEADERS)
         send_request('GET', full_url, headers)
-    if demisto.params().get('isFetch'):
-        fetch_incidents()
 
-    # If encountered error, send_request or fetch_incidents will return error
+    # If encountered error, send_request or enrich_offense_res_with_source_and_destination_address will return error
     return 'ok'
 
 
@@ -1189,7 +1190,9 @@ def get_indicators_list(indicator_query, limit, page):
     """
     indicators_values_list = []
     indicators_data_list = []
-    fetched_iocs = demisto.searchIndicators(query=indicator_query, page=page, size=limit).get('iocs')
+    search_indicators = IndicatorsSearcher(page=page)
+
+    fetched_iocs = search_indicators.search_indicators_by_version(query=indicator_query, size=limit).get('iocs')
     for indicator in fetched_iocs:
         indicators_values_list.append(indicator['value'])
         indicators_data_list.append({

@@ -176,7 +176,7 @@ script:
       description: The actual score.
       type: Number
     description: Get specific indicator reputation
-  dockerimage: demisto/python3:3.9.2.17246
+  dockerimage: demisto/python3:3.9.5.20070
   feed: false
   isfetch: false
   longRunning: false

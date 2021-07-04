@@ -20,7 +20,7 @@ Deprecated. Use the ThreatConnect v2 integration instead.
 
 4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.
+You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### ip
 ***
@@ -539,6 +539,7 @@ Retrieves information about an indicator.
 | indicator_associations | Retrieve Indicator Associations | Optional | 
 | indicator_observations | Retrieve Indicator Observations | Optional | 
 | indicator_tags | Retrieve Indicator Tags | Optional | 
+| indicator_attributes | Retrieve Indicator Attributes | Optional | 
 
 
 #### Context Output
@@ -558,6 +559,12 @@ Retrieves information about an indicator.
 | TC.Indicator.File.MD5 | string | The MD5 hash of the indicator of the file. | 
 | TC.Indicator.File.SHA1 | string | The SHA1 hash of the indicator of the file. | 
 | TC.Indicator.File.SHA256 | string | The SHA256 hash of the indicator of the file. | 
+| TC.Indicator.IndicatorAttributes.dateAdded | date | The date on which the indicator attribute was originally added. | 
+| TC.Indicator.IndicatorAttributes.displayed | boolean | A boolean flag to show on ThreatConnect.   | 
+| TC.Indicator.IndicatorAttributes.id | number | The ID of the attribute. | 
+| TC.Indicator.IndicatorAttributes.lastModified | date | The date on which the indicator attribute was last modified. | 
+| TC.Indicator.IndicatorAttributes.type | string | The name of the attribute. | 
+| TC.Indicator.IndicatorAttributes.value | string | The contents of the attribute. | 
 | DBotScore.Indicator | string | The value assigned by DBot for the indicator. | 
 | DBotScore.Type | string | The type assigned by DBot for the indicator. | 
 | DBotScore.Score | number | The score assigned by DBot for the indicator. | 

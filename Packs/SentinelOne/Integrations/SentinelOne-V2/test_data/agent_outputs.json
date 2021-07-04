@@ -1,0 +1,19 @@
+[
+  {
+    "ID": "657613730168123595",
+    "NetworkStatus": "connecting",
+    "AgentVersion": "3.1.3.38",
+    "IsDecommissioned": true,
+    "IsActive": false,
+    "LastActiveDate": "2020-02-20T00:26:33.955830Z",
+    "RegisteredAt": "2019-06-27T08:01:05.567249Z",
+    "ExternalIP": "3.122.240.42",
+    "ThreatCount": 0,
+    "EncryptedApplications": false,
+    "OSName": "Windows Server 2016",
+    "ComputerName": "EC2AMAZ-AJ0KANC",
+    "Domain": "WORKGROUP",
+    "CreatedAt": "2019-06-27T08:01:05.571895Z",
+    "SiteName": "demisto"
+  }
+]

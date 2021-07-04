@@ -25,9 +25,7 @@ To access the Security & Compliance Center, you need to be a global administrato
 
    ![side-menu](../../doc_imgs/security-and-compliance-side-menu.png)
 
-2. Search for and select the **Compliance Administrator** role.
-
-   ![image-20201129135216851](../../doc_imgs/security-and-compliance-roles.png)
+2. Search for and select the **Data Investigator** role.
 
 3. Click **Edit role group**. 
 
@@ -963,8 +961,7 @@ There are no input arguments for this command.
 
 ### o365-sc-get-search-action
 ***
-Gets compliance search action from the Security & Compliance Center.  An additional result will be 
-shown only for "Preview" action type.
+Gets compliance search action from the Security & Compliance Center.
 
 
 #### Base Command
@@ -1008,6 +1005,9 @@ shown only for "Preview" action type.
 | O365.SecurityAndCompliance.ContentSearch.SearchAction.PublicFolderLocation | String | Security and compliance search action public folder locations to include. |
 | O365.SecurityAndCompliance.ContentSearch.SearchAction.PublicFolderLocationExclusion | String | Security and compliance search action public folder locations to exclude. |
 | O365.SecurityAndCompliance.ContentSearch.SearchAction.Results.Location | String | Security and compliance search action result location. |
+| O365.SecurityAndCompliance.ContentSearch.SearchAction.Results.ItemCount | String | Security and compliance search action result item count. |
+| O365.SecurityAndCompliance.ContentSearch.SearchAction.Results.TotalSize | String | Security and compliance search action result total size. |
+| O365.SecurityAndCompliance.ContentSearch.SearchAction.Results.FailedCount | String | Security and compliance search action result failed count. |
 | O365.SecurityAndCompliance.ContentSearch.SearchAction.Results.Sender | String | Security and compliance search action result mail sender. |
 | O365.SecurityAndCompliance.ContentSearch.SearchAction.Results.Subject | String | Security and compliance search action result subject. |
 | O365.SecurityAndCompliance.ContentSearch.SearchAction.Results.Type | String | Security and compliance search action result type. |
@@ -1022,7 +1022,6 @@ shown only for "Preview" action type.
 | O365.SecurityAndCompliance.ContentSearch.SearchAction.SharePointLocationExclusion | String | Security and compliance search action SharePoint locations to exclude. |
 | O365.SecurityAndCompliance.ContentSearch.SearchAction.Status | String | Security and compliance search action status. Either "Started" or "Completed". |
 | O365.SecurityAndCompliance.ContentSearch.SearchAction.TenantId | String | Security and compliance search action Tenant ID. |
-
 
 #### Command Example
 ```!o365-sc-get-search-action search_action_name="example_Preview"```
@@ -1105,9 +1104,10 @@ shown only for "Preview" action type.
 
 ## Known Limitations
 
-* Security and compliance integrations do not support Security and compliance on-premise .
+* Security and compliance integrations do not support Security and compliance on-premise.
 * Each security and compliance command creates a PSSession (PowerShell session). The security and compliance PowerShell limits the number of concurrent sessions to 3. Since this affects the behavior of multiple playbooks running concurrently it we recommend that you retry failed tasks when using the integration commands in playbooks.
 * Proxies are not supported due to a Microsoft [limitation](https://github.com/PowerShell/PowerShell/issues/9721).
+* Due to a Microsoft limitation, you can perform a search and purge operation on a maximum of 50,000 mailboxes. To work around this limitation, configure multiple instances of the integration each with different permission filtering so that the number of mailboxes in each instance does not exceed 50,000.
 
 
 

@@ -104,8 +104,8 @@ def aws_session(service='network-firewall', region=None, roleArn=None, roleSessi
     if kwargs and AWS_ACCESS_KEY_ID is None:
 
         if AWS_ACCESS_KEY_ID is None:
-            sts_client = boto3.client(
-                'sts', config=config, verify=VERIFY_CERTIFICATE)
+            sts_client = boto3.client('sts', config=config, verify=VERIFY_CERTIFICATE,
+                                      region_name=AWS_DEFAULT_REGION)
             sts_response = sts_client.assume_role(**kwargs)
             if region is not None:
                 client = boto3.client(

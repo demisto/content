@@ -6,7 +6,7 @@ Copies the anaylst notes from the integrations and incidents grid.
 | --- | --- |
 | Script Type | python3 |
 | Tags | failedIncidents, failedInstances |
-| Demisto Version | 6.0.0 |
+| Cortex XSOAR Version | 6.0.0 |
 
 ## Used In
 ---

@@ -1,0 +1,10 @@
+[file:README.md]
+ignore=RM104
+
+[file:classifier-mapper-incoming-Nutanix_Hypervisor.json]
+ignore=BA101
+[file:incidentfield-Alert_Closing_User.json]
+ignore=IF100
+
+[file:incidentfield-Alert_Type_UUID.json]
+ignore=IF100

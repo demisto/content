@@ -23,6 +23,8 @@ configuration:
   - sa-east-1
   - eu-north-1
   - eu-west-3
+  - us-gov-east-1
+  - us-gov-west-1
   required: false
   type: 15
 - display: Role Arn
@@ -416,7 +418,7 @@ script:
     description: Updates findings with the new values provided in the request.
     execution: false
     name: aws-access-analyzer-update-findings
-  dockerimage: demisto/boto3py3:1.0.0.4409
+  dockerimage: demisto/boto3py3:1.0.0.19032
   isfetch: true
   longRunning: false
   longRunningPort: false

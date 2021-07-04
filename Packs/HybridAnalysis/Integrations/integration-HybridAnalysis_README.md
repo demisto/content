@@ -25,7 +25,7 @@
 <li>MIME RFC 822 (*.eml)</li>
 <li>Outlook (*.msg files)</li>
 </ul>
-<h2>Configure the Hybrid Analysis Integration on Demisto</h2>
+<h2>Configure the Hybrid Analysis Integration on Cortex XSOAR</h2>
 <ol>
 <li>Navigate to <strong>Settings</strong> &gt; <strong>Integrations</strong> &gt; <strong>Servers &amp; Services</strong>.</li>
 <li>Search for Hybrid Analysis.</li>
@@ -37,7 +37,7 @@
 <strong>Server URI</strong>: for example, <a href="https://216.128.82">https://216.128.82</a>
 </li>
 <li>
-<strong>API Key</strong>: Demisto creates an API key, <strong>do not</strong> populate this field.</li>
+<strong>API Key</strong>: Cortex XSOAR creates an API key, <strong>do not</strong> populate this field.</li>
 <li><strong>Secret Key (applicable for v1)</strong></li>
 <li>
 <strong>Do not validate server certificate</strong> (insecure)</li>
@@ -53,7 +53,7 @@
 <li>Search the Hybrid Analysis database.</li>
 </ul>
 <h2>Commands</h2>
-<p>You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
+<p>You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
 <ol>
 <li><a href="#h_c4334626-ced3-4767-9f87-cca1e07d9ac2" target="_self">Scan a file hash: hybrid-analysis-scan</a></li>
 <li><a href="#h_b63c2c7b-06fb-4a46-bfdc-4061401623d0" target="_self">Submit a sample file: hybrid-analysis-submit-sample</a></li>

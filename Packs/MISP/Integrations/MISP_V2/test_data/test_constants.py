@@ -38,7 +38,8 @@ full_response_before_filtering = [
                     "to_ids": False,
                     "type": "sha256",
                     "uuid": "57174f19-f06c-4809-92b3-476d02de0b81",
-                    "value": "mock"},
+                    "value": "mock"
+                },
                 {
                     "Galaxy": [],
                     "ShadowAttribute": [],
@@ -56,7 +57,8 @@ full_response_before_filtering = [
                     "to_ids": False,
                     "type": "sha1",
                     "uuid": "57174f19-c3d8-43f0-96bb-43e402de0b81",
-                    "value": "mock"},
+                    "value": "mock"
+                },
                 {
                     "Galaxy": [],
                     "ShadowAttribute": [],
@@ -74,7 +76,8 @@ full_response_before_filtering = [
                     "to_ids": False,
                     "type": "link",
                     "uuid": "57174f1a-a47c-458d-9900-451e02de0b81",
-                    "value": "mock"},
+                    "value": "mock"
+                },
                 {
                     "Galaxy": [],
                     "ShadowAttribute": [],
@@ -331,3 +334,268 @@ filtered_recent_attributes = [{'EventID': '2193', 'Timestamp': '1461152936'},
                               {'EventID': '2193', 'Timestamp': '1461153063'},
                               {'EventID': '2193', 'Timestamp': '1461153134'}]
 
+full_attributes_response = {
+    'Attribute': [
+        {
+            'id': '67898',
+            'event_id': '2226',
+            'object_id': '10691',
+            'object_relation': 'description',
+            'category': 'Other',
+            'type': 'text',
+            'to_ids': False,
+            'uuid': '953bc093-a9e3-4685-b544-3d513fddb080',
+            'timestamp': '1572948879',
+            'distribution': '5',
+            'sharing_group_id': '0',
+            'comment': '',
+            'deleted': False,
+            'disable_correlation': True,
+            'value': 'Bars Ferrari',
+            'Event': {
+                'org_id': None,
+                'distribution': None,
+                'id': None,
+                'info': None,
+                'orgc_id': None,
+                'uuid': None
+            },
+            'Object': {
+                'id': '10691',
+                'distribution': '5',
+                'sharing_group_id': '0'
+            },
+            "Tag": [{
+                "colour": "#0088cc", "id": "56", "local": False,
+                "name": "test name",
+                "numerical_value": None
+                }
+            ],
+            "decay_score": [{
+                "DecayingModel": {
+                    "id": "2",
+                    "name": "test name"
+                },
+                "base_score": 80,
+                "decayed": False,
+                "score": 69.30162037037037
+                }
+            ]
+        },
+        {
+            'id': '67899',
+            'event_id': '2226',
+            'object_id': '10691',
+            'object_relation': 'make',
+            'category': 'Other',
+            'type': 'text',
+            'to_ids': False,
+            'uuid': '3ba21810-4c1f-409a-a3e4-26f3436b1e39',
+            'timestamp': '1572948879',
+            'distribution': '5',
+            'sharing_group_id': '0',
+            'comment': '',
+            'deleted': False,
+            'disable_correlation': True,
+            'value': 'Ferrari',
+            'Event': {
+                'org_id': None,
+                'distribution': None,
+                'id': None,
+                'info': None,
+                'orgc_id': None,
+                'uuid': None
+            },
+            'Object': {
+                'id': '10691',
+                'distribution': '5',
+                'sharing_group_id': '0'
+            }
+        },
+        {
+            'id': '67902',
+            'event_id': '2226',
+            'object_id': '10691',
+            'object_relation': 'model',
+            'category': 'Other',
+            'type': 'text',
+            'to_ids': False,
+            'uuid': '4e8df4e7-99d9-4f64-975c-59cc1689b8ae',
+            'timestamp': '1572948879',
+            'distribution': '5',
+            'sharing_group_id': '0',
+            'comment': '',
+            'deleted': False,
+            'disable_correlation': True,
+            'value': '308 GTS',
+            'Event': {
+                'org_id': None,
+                'distribution': None,
+                'id': None,
+                'info': None,
+                'orgc_id': None,
+                'uuid': None
+            },
+            'Object': {
+                'id': '10691',
+                'distribution': '5',
+                'sharing_group_id': '0'
+            }
+        },
+        {
+            'id': '211859',
+            'event_id': '11700',
+            'object_id': '0',
+            'object_relation': None,
+            'category': 'External analysis',
+            'type': 'other',
+            'to_ids': False,
+            'uuid': '4ec5d53a-c73d-4ecf-aeb7-745a967d1e11',
+            'timestamp': '1615659935',
+            'distribution': '0',
+            'sharing_group_id': '0',
+            'comment': '',
+            'deleted': False,
+            'disable_correlation': False,
+            'value': 'test',
+            'Event': {
+                'org_id': '1',
+                'distribution': '0',
+                'id': '11700',
+                'info': 'Testplayboook',
+                'orgc_id': '1',
+                'uuid': '604d039e-ee5c-4f14-94f5-784eac110002'
+            }
+        }
+    ]
+}
+
+filtered_attributes_response = [
+    {
+        'ID': '67898',
+        'EventID': '2226',
+        'ObjectID': '10691',
+        'ObjectRelation': 'description',
+        'Category': 'Other',
+        'Type': 'text',
+        'ToIDs': False,
+        'UUID': '953bc093-a9e3-4685-b544-3d513fddb080',
+        'Timestamp': '1572948879',
+        'Distribution': '5',
+        'SharingGroupID': '0',
+        'Comment': '',
+        'Deleted': False,
+        'DisableCorrelation': True,
+        'Value': 'Bars Ferrari',
+        'Event': {
+            'OrganisationID': None,
+            'Distribution': None,
+            'ID': None,
+            'Info': None,
+            'OwnerOrganisation.ID': None,
+            'UUID': None
+        },
+        'Object': {
+            'ID': '10691',
+            'Distribution': '5',
+            'SharingGroupID': '0'
+        },
+        'Tag': [{
+            'Name': 'test name',
+        }],
+        'DecayScore': [{
+            'DecayingModel':
+                {
+                    'ID': '2',
+                    'Name': 'test name'
+                },
+            'base_score': 80,
+            'decayed': False,
+            'score': 69.30162037037037
+        }]
+    },
+    {
+        'ID': '67899',
+        'EventID': '2226',
+        'ObjectID': '10691',
+        'ObjectRelation': 'make',
+        'Category': 'Other',
+        'Type': 'text',
+        'ToIDs': False,
+        'UUID': '3ba21810-4c1f-409a-a3e4-26f3436b1e39',
+        'Timestamp': '1572948879',
+        'Distribution': '5',
+        'SharingGroupID': '0',
+        'Comment': '',
+        'Deleted': False,
+        'DisableCorrelation': True,
+        'Value': 'Ferrari',
+        'Event': {
+            'OrganisationID': None,
+            'Distribution': None,
+            'ID': None,
+            'Info': None,
+            'OwnerOrganisation.ID': None,
+            'UUID': None
+        },
+        'Object': {
+            'ID': '10691',
+            'Distribution': '5',
+            'SharingGroupID': '0'
+        }
+    },
+    {
+        'ID': '67902',
+        'EventID': '2226',
+        'ObjectID': '10691',
+        'ObjectRelation': 'model',
+        'Category': 'Other',
+        'Type': 'text',
+        'ToIDs': False,
+        'UUID': '4e8df4e7-99d9-4f64-975c-59cc1689b8ae',
+        'Timestamp': '1572948879', 'Distribution': '5',
+        'SharingGroupID': '0',
+        'Comment': '',
+        'Deleted': False,
+        'DisableCorrelation': True,
+        'Value': '308 GTS',
+        'Event': {
+            'OrganisationID': None,
+            'Distribution': None,
+            'ID': None,
+            'Info': None,
+            'OwnerOrganisation.ID': None,
+            'UUID': None
+        },
+        'Object': {
+            'ID': '10691',
+            'Distribution': '5',
+            'SharingGroupID': '0'
+        }
+    },
+    {
+        'ID': '211859',
+        'EventID': '11700',
+        'ObjectID': '0',
+        'ObjectRelation': None,
+        'Category': 'External analysis',
+        'Type': 'other',
+        'ToIDs': False,
+        'UUID': '4ec5d53a-c73d-4ecf-aeb7-745a967d1e11',
+        'Timestamp': '1615659935',
+        'Distribution': '0',
+        'SharingGroupID': '0',
+        'Comment': '',
+        'Deleted': False,
+        'DisableCorrelation': False,
+        'Value': 'test',
+        'Event': {
+            'OrganisationID': '1',
+            'Distribution': '0',
+            'ID': '11700',
+            'Info': 'Testplayboook',
+            'OwnerOrganisation.ID': '1',
+            'UUID': '604d039e-ee5c-4f14-94f5-784eac110002'
+        }
+    }
+]

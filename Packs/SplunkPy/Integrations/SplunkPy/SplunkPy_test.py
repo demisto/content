@@ -758,7 +758,7 @@ def test_get_remote_data_command(mocker):
     splunk.get_remote_data_command(Service(), args, close_incident=False)
     results = demisto.results.call_args[0][0]
     assert demisto.results.call_count == 1
-    assert results == [updated_notable]
+    assert results == [{'status': '1'}]
 
 
 def test_get_remote_data_command_close_incident(mocker):
@@ -782,7 +782,7 @@ def test_get_remote_data_command_close_incident(mocker):
     results = demisto.results.call_args[0][0]
     assert demisto.results.call_count == 1
     assert results == [
-        updated_notable,
+        {'status': '5'},
         {
             'Type': EntryType.NOTE,
             'Contents': {
@@ -1003,3 +1003,34 @@ def test_get_cim_mapping_field_command(mocker):
         'Asset Data': ASSET,
         'Identity Data': IDENTITY
     }
+
+
+def test_build_search_human_readable(mocker):
+    """
+    Given:
+        table headers in query
+
+    When:
+        building a human readable table as part of splunk-search
+
+    Then:
+        Test headers are calculated correctly:
+            * comma-separated, space-separated
+            * support commas and spaces inside header values (if surrounded with parenthesis)
+
+    """
+    func_patch = mocker.patch('SplunkPy.update_headers_from_field_names')
+    results = [
+        {'ID': 1, 'Header with space': 'h1', 'header3': 1, 'header_without_space': '1234'},
+        {'ID': 2, 'Header with space': 'h2', 'header3': 2, 'header_without_space': '1234'},
+    ]
+    args = {
+        'query': 'something | table ID "Header with space" header3 header_without_space '
+                 'comma,separated "Single,Header,with,Commas" | something else'
+    }
+    expected_headers = ['ID', 'Header with space', 'header3', 'header_without_space',
+                        'comma', 'separated', 'Single,Header,with,Commas']
+
+    splunk.build_search_human_readable(args, results)
+    headers = func_patch.call_args[0][1]
+    assert headers == expected_headers

@@ -1,7 +1,7 @@
 import unittest
 
 from CommonServerPython import *
-from DBotPreprocessTextData import clean_html, remove_line_breaks, hash_word, \
+from DBotPreprocessTextData import clean_html_from_text, remove_line_breaks, hash_word, \
     concat_text_fields, whitelist_dict_fields, remove_short_text, remove_duplicate_by_indices, pre_process_batch, main, \
     read_file, Tokenizer
 import string
@@ -20,7 +20,7 @@ def test_clean_html(mocker):
         </body>
         </html>
     """
-    assert clean_html(html_string) == "My First Heading"
+    assert clean_html_from_text(html_string) == "My First Heading"
 
 
 def test_remove_line_breaks():

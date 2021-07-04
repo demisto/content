@@ -1,0 +1,5 @@
+[file:README.md]
+ignore=RM104
+
+[file:classifier-mapper-incoming-Google_Drive.json]
+ignore=BA101

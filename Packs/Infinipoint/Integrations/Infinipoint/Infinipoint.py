@@ -236,7 +236,7 @@ def get_auth_headers(access_key, private_key):
             "iat": int(time.time()),
             "sub": access_key
         }
-        token = jwt.encode(payload, private_key.replace('\\n', '\n'), 'ES256').decode("utf-8")
+        token = str(jwt.encode(payload, private_key.replace('\\n', '\n'), 'ES256'))
         return {"Content-Type": "application/json",
                 "Authorization": f"Bearer {token}"}
     except Exception as e:

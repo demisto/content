@@ -1,0 +1,102 @@
+{
+  "id": "1079d791-79f6-3122-a965-980471a244e8",
+  "tenant": {
+    "id": "04b5140e-bbe2-3e9c-9318-a39a3b547ed5",
+    "name": "VanDelay Industries",
+    "tenantId": "04b5140e-bbe2-3e9c-9318-a39a3b547ed5"
+  },
+  "businessUnits": [
+    {
+      "id": "04b5140e-bbe2-3e9c-9318-a39a3b547ed5",
+      "name": "VanDelay Industries",
+      "tenantId": "04b5140e-bbe2-3e9c-9318-a39a3b547ed5"
+    }
+  ],
+  "dateAdded": "2019-11-21T09:15:02.271281Z",
+  "firstObserved": null,
+  "lastObserved": null,
+  "providers": [
+    {
+      "id": "Unknown",
+      "name": "None"
+    }
+  ],
+  "certificate": {
+    "md5Hash": "Jr8RiLR4OfFslz9VmELI9g==",
+    "id": "26bf1188-b478-39f1-ac97-3f559842c8f6",
+    "issuer": "C",
+    "issuerAlternativeNames": "",
+    "issuerCountry": "GB",
+    "issuerEmail": null,
+    "issuerLocality": "Salford",
+    "issuerName": "COMODO RSA Organization Validation Secure Server CA",
+    "issuerOrg": "COMODO CA Limited",
+    "issuerOrgUnit": null,
+    "issuerState": "Greater Manchester",
+    "publicKey": "d",
+    "publicKeyAlgorithm": "RSA",
+    "publicKeyRsaExponent": 65537,
+    "signatureAlgorithm": "SHA256withRSA",
+    "subject": "d",
+    "subjectAlternativeNames": "base3.pets.com,base4.pets.com",
+    "subjectCountry": "US",
+    "subjectEmail": null,
+    "subjectLocality": "Hoffman Estates",
+    "subjectName": "base2.pets.com",
+    "subjectOrg": "Sears Brands LLC",
+    "subjectOrgUnit": "eCommerce Development,Multi-Domain SSL",
+    "subjectState": "Illinois",
+    "serialNumber": "145397449086924134621453997645674717378",
+    "validNotBefore": "2016-03-22T00:00:00Z",
+    "validNotAfter": "2018-03-22T23:59:59Z",
+    "version": "3",
+    "publicKeyBits": 2048,
+    "pemSha256": "8OLAalY9ZOgYCD6yQJWyGNXZrWl9bugv-S3AGlIQi84=",
+    "pemSha1": "DN3fXmU-IR3C6l1CTISAlgpvGFA=",
+    "publicKeyModulus": "",
+    "publicKeySpki": "U_pBSH73cx7BWHRuE3UZvYkONJ8s694ziYTHbLVgtis="
+  },
+  "commonName": "base2.pets.com",
+  "properties": [
+    "EXPIRED"
+  ],
+  "hasLinkedCloudResources": false,
+  "certificateAdvertisementStatus": [
+    "NO_CERTIFICATE_ADVERTISEMENT"
+  ],
+  "serviceStatus": [
+    "NO_ACTIVE_SERVICE",
+    "NO_ACTIVE_CLOUD_SERVICE",
+    "NO_ACTIVE_ON_PREM_SERVICE"
+  ],
+  "details": {
+    "recentIps": [
+      {
+        "ip": "12.4.49.74",
+        "domain": null,
+        "type": "CERTIFICATE_SIGHTING",
+        "assetType": "CERTIFICATE",
+        "assetKey": "Jr8RiLR4OfFslz9VmELI9g==",
+        "provider": {
+          "id": "AWS",
+          "name": "Amazon Web Services"
+        },
+        "lastObserved": "2020-06-23T03:41:18Z",
+        "tenant": {
+          "id": "04b5140e-bbe2-3e9c-9318-a39a3b547ed5",
+          "name": "VanDelay Industries",
+          "tenantId": "04b5140e-bbe2-3e9c-9318-a39a3b547ed5"
+        },
+        "businessUnits": [
+          {
+            "id": "04b5140e-bbe2-3e9c-9318-a39a3b547ed5",
+            "name": "VanDelay Industries",
+            "tenantId": "04b5140e-bbe2-3e9c-9318-a39a3b547ed5"
+          }
+        ],
+        "commonName": "base2.pets.com"
+      }
+    ],
+    "cloudResources": []
+  }
+}

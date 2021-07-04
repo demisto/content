@@ -1,385 +1,378 @@
-contentitemexportablefields:
-  contentitemfields:
-    propagationLabels:
-    - all
 id: Content developer setup
-inputs:
-- description: User to configure as git user.
-  key: user
-  playbookInputQuery:
-  required: true
-  value:
-    simple: ${incident.tidyuser}
-- description: Github token with public key admin permissions.
-  key: Github token
-  playbookInputQuery:
-  required: true
-  value:
-    simple: ${incident.tidygithubtoken}
+version: -1
+contentitemexportablefields:
+  contentitemfields: {}
 name: Content developer setup
-outputs: []
+description: Install content working environment.
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    ignoreworker: false
+    taskid: 85ab7fbf-584b-4ce8-8e93-cc79d975ab0e
+    type: start
+    task:
+      id: 85ab7fbf-584b-4ce8-8e93-cc79d975ab0e
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "1"
-    note: false
-    quietmode: 0
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      id: c00cc1d2-766d-4828-8813-41d1f285a6a7
-      iscommand: false
-      name: ""
-      version: -1
-      description: ''
-    taskid: c00cc1d2-766d-4828-8813-41d1f285a6a7
-    timertriggers: []
-    type: start
     view: |-
       {
         "position": {
-          "x": 2732.5,
+          "x": 1820,
           "y": 50
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "1":
     id: "1"
-    ignoreworker: false
+    taskid: c8b52f06-2fa9-4fe5-8bff-ede3f24e0345
+    type: regular
+    task:
+      id: c8b52f06-2fa9-4fe5-8bff-ede3f24e0345
+      version: -1
+      name: Install osx-command line tools
+      description: Install OSx command-line tools, For more info - https://osxdaily.com/2014/02/12/install-command-line-tools-mac-os-x/
+        .
+      script: '|||tidy-osx-command-line-tools'
+      type: regular
+      iscommand: true
+      brand: ""
     nexttasks:
       '#none#':
       - "4"
       - "2"
       - "3"
       - "5"
-    note: false
-    quietmode: 0
     scriptarguments:
-      hostname: {}
-      password: {}
-      user: {}
+      execution-timeout:
+        simple: "7200"
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      description: Install OSx command-line tools, For more info - https://osxdaily.com/2014/02/12/install-command-line-tools-mac-os-x/
-        .
-      id: 44a9168c-3b94-4368-89a2-f9cda7dcc76a
-      iscommand: true
-      name: Install osx-command line tools
-      script: '|||tidy-osx-command-line-tools'
-      type: regular
-      version: -1
-    taskid: 44a9168c-3b94-4368-89a2-f9cda7dcc76a
-    timertriggers: []
-    type: regular
     view: |-
       {
         "position": {
-          "x": 2732.5,
+          "x": 1820,
           "y": 195
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "2":
     id: "2"
-    ignoreworker: false
-    note: false
-    quietmode: 0
-    scriptarguments:
-      apps:
-        simple: git,zsh
-      cask_apps:
-        simple: pycharm-ce,goland,webstorm,visual-studio-code,iterm2,postman,google-chrome,slack,docker
-      hostname: {}
-      password: {}
-      user: {}
-    separatecontext: false
-    skipunavailable: false
+    taskid: f6ed32ce-b262-4546-8509-3e377e765c17
+    type: regular
     task:
-      brand: ""
+      id: f6ed32ce-b262-4546-8509-3e377e765c17
+      version: -1
+      name: Install basic packages using homebrew
       description: Install and configure homebrew, Install additional homebrew/-cask
         packages.
-      id: 80cf1e19-7643-4e00-804a-bee8de1ac58f
-      iscommand: true
-      name: Install basic packages using homebrew
       script: '|||tidy-homebrew'
       type: regular
-      version: -1
-    taskid: 80cf1e19-7643-4e00-804a-bee8de1ac58f
-    timertriggers: []
-    type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "20"
+      - "7"
+      - "8"
+      - "9"
+    scriptarguments:
+      apps:
+        simple: git,zsh,libxmlsec1,protobuf,jq,protoc-gen-go,protoc-gen-go,elastic/tap/elasticsearch-full,pyenv,nodenv,pipenv
+      cask_apps:
+        simple: pycharm-ce,goland,webstorm,visual-studio-code,iterm2,postman,docker
+      execution-timeout:
+        simple: "7182"
+      homebrew_taps:
+        simple: elastic/tap
+    separatecontext: false
     view: |-
       {
         "position": {
-          "x": 2732.5,
-          "y": 370
+          "x": 275,
+          "y": 545
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "3":
     id: "3"
-    ignoreworker: false
+    taskid: 7e45d2cc-2f48-4aaa-8cba-035f1108efe7
+    type: regular
+    task:
+      id: 7e45d2cc-2f48-4aaa-8cba-035f1108efe7
+      version: -1
+      name: Git user configuration
+      description: Configure git cli.
+      script: '|||tidy-git-config'
+      type: regular
+      iscommand: true
+      brand: ""
     nexttasks:
       '#none#':
       - "6"
-    note: false
-    quietmode: 0
     scriptarguments:
-      hostname: {}
       key:
         simple: user.name
-      password: {}
-      scope: {}
-      user: {}
       value:
         simple: h
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      description: Configure git cli.
-      id: 3b37a511-c2af-4c69-8142-c70b4c35e4ab
-      iscommand: true
-      name: Git user configuration
-      script: '|||tidy-git-config'
-      type: regular
-      version: -1
-    taskid: 3b37a511-c2af-4c69-8142-c70b4c35e4ab
-    timertriggers: []
-    type: regular
     view: |-
       {
         "position": {
-          "x": 3162.5,
+          "x": 2475,
           "y": 370
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "4":
     id: "4"
-    ignoreworker: false
+    taskid: 0d9ddd75-5ceb-493b-8936-a0e419c3c1c9
+    type: regular
+    task:
+      id: 0d9ddd75-5ceb-493b-8936-a0e419c3c1c9
+      version: -1
+      name: Git email configuration
+      description: Configure git cli.
+      script: '|||tidy-git-config'
+      type: regular
+      iscommand: true
+      brand: ""
     nexttasks:
       '#none#':
       - "6"
-    note: false
-    quietmode: 0
     scriptarguments:
-      hostname: {}
       key:
         simple: user.name
-      password: {}
-      scope: {}
-      user: {}
       value:
         simple: h
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      description: Configure git cli.
-      id: 48930179-2adc-4f57-88ef-92002fdad568
-      iscommand: true
-      name: Git email configuration
-      script: '|||tidy-git-config'
-      type: regular
-      version: -1
-    taskid: 48930179-2adc-4f57-88ef-92002fdad568
-    timertriggers: []
-    type: regular
     view: |-
       {
         "position": {
-          "x": 1340,
+          "x": 50,
           "y": 370
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "5":
     id: "5"
-    ignoreworker: false
+    taskid: dc8f9b1f-1458-4b28-8f8f-5ad9dde01d74
+    type: regular
+    task:
+      id: dc8f9b1f-1458-4b28-8f8f-5ad9dde01d74
+      version: -1
+      name: ZSH, oh-my-zsh
+      description: Install zsh, oh-my-zsh, p10k.
+      script: '|||tidy-zsh'
+      type: regular
+      iscommand: true
+      brand: ""
     nexttasks:
       '#none#':
       - "7"
       - "8"
-    note: false
-    quietmode: 0
-    scriptarguments:
-      hostname: {}
-      password: {}
-      user: {}
+      - "6"
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      description: Install zsh, oh-my-zsh, p10k.
-      id: be66b8bc-3769-4959-8efa-f4e41e05f293
-      iscommand: true
-      name: ZSH, p10k, oh-my-zsh
-      script: '|||tidy-zsh'
-      type: regular
-      version: -1
-    taskid: be66b8bc-3769-4959-8efa-f4e41e05f293
-    timertriggers: []
-    type: regular
     view: |-
       {
         "position": {
-          "x": 3705,
-          "y": 720
+          "x": 3775,
+          "y": 370
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "6":
     id: "6"
-    ignoreworker: false
+    taskid: 3d9a7235-a54a-49b8-8782-266b0d342aff
+    type: regular
+    task:
+      id: 3d9a7235-a54a-49b8-8782-266b0d342aff
+      version: -1
+      name: GitHub deploy public ssh key
+      description: Generate private/public key, Configure ssh client, and deploy keys
+        to your GitHub account.
+      script: '|||tidy-github-ssh-key'
+      type: regular
+      iscommand: true
+      brand: ""
     nexttasks:
       '#none#':
       - "24"
-    note: false
-    quietmode: 0
     scriptarguments:
       access_token:
         simple: ${inputs.Github token}
-      hostname: {}
-      password: {}
+      retry-count:
+        simple: "2"
       user:
         simple: ${inputs.user}
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      description: Generate private/public key, Configure ssh client, and deploy keys
-        to your GitHub account.
-      id: cb763ebd-6504-48f1-86ef-8fc14341c00b
-      iscommand: true
-      name: GitHub deploy public ssh key
-      script: '|||tidy-github-ssh-key'
-      type: regular
-      version: -1
-    taskid: cb763ebd-6504-48f1-86ef-8fc14341c00b
-    timertriggers: []
-    type: regular
     view: |-
       {
         "position": {
-          "x": 1770,
+          "x": 1810,
           "y": 545
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "7":
     id: "7"
-    ignoreworker: false
+    taskid: 9ccfed91-df95-45dc-864f-6a8da1b7cc39
+    type: regular
+    task:
+      id: 9ccfed91-df95-45dc-864f-6a8da1b7cc39
+      version: -1
+      name: Install Pyenv (Python)
+      description: Install Python versions, Using Pyenv.
+      script: '|||tidy-pyenv'
+      type: regular
+      iscommand: true
+      brand: ""
     nexttasks:
       '#none#':
       - "9"
-    note: false
-    quietmode: 0
+      - "26"
     scriptarguments:
+      execution-timeout:
+        simple: "7200"
       globals:
-        simple: 3.8.5,2.7.18
-      hostname: {}
-      password: {}
-      user: {}
+        simple: 3.8.5
+      retry-count:
+        simple: "2"
       versions:
         simple: 3.8.5,2.7.18
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      description: Install Python versions, Using Pyenv.
-      id: 426f3e75-c002-4a62-8220-ff5f9ff6cf4b
-      iscommand: true
-      name: Install Pyenv (Python)
-      script: '|||tidy-pyenv'
-      type: regular
-      version: -1
-    taskid: 426f3e75-c002-4a62-8220-ff5f9ff6cf4b
-    timertriggers: []
-    type: regular
     view: |-
       {
         "position": {
-          "x": 3490,
+          "x": 827.5,
           "y": 895
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "8":
     id: "8"
-    ignoreworker: false
+    taskid: 081ee3e3-3719-4f6f-8e16-44408960f712
+    type: regular
+    task:
+      id: 081ee3e3-3719-4f6f-8e16-44408960f712
+      version: -1
+      name: Install Goenv (GoLang)
+      description: Install GoLang versions, Using Goenv.
+      script: '|||tidy-goenv'
+      type: regular
+      iscommand: true
+      brand: ""
     nexttasks:
       '#none#':
       - "20"
-    note: false
-    quietmode: 0
+      - "7"
     scriptarguments:
+      execution-timeout:
+        simple: "7200"
       globals:
-        simple: 1.13.0
-      hostname: {}
-      password: {}
-      user: {}
+        simple: 1.16.0
+      retry-count:
+        simple: "2"
       versions:
-        simple: 1.13.0
+        simple: 1.16.0
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      description: Install GoLang versions, Using Goenv.
-      id: 64ae225f-6eb4-48b7-8f5b-b29e178a8f5b
-      iscommand: true
-      name: Install Goenv (GoLang)
-      script: '|||tidy-goenv'
-      type: regular
-      version: -1
-    taskid: 64ae225f-6eb4-48b7-8f5b-b29e178a8f5b
-    timertriggers: []
-    type: regular
     view: |-
       {
         "position": {
-          "x": 3920,
-          "y": 1070
+          "x": 715,
+          "y": 720
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "9":
     id: "9"
-    ignoreworker: false
+    taskid: 7e9da74d-5a1b-4f18-8122-3a432446a8ff
+    type: regular
+    task:
+      id: 7e9da74d-5a1b-4f18-8122-3a432446a8ff
+      version: -1
+      name: Install nodenv (Node.js)
+      description: Install Node.js versions, Using nodenv.
+      script: '|||tidy-nodenv'
+      type: regular
+      iscommand: true
+      brand: ""
     nexttasks:
       '#none#':
       - "21"
-    note: false
-    quietmode: 0
     scriptarguments:
+      execution-timeout:
+        simple: "7200"
       globals:
-        simple: 11.6.0
-      hostname: {}
-      password: {}
-      user: {}
+        simple: 12.20.1
       versions:
-        simple: 11.6.0
+        simple: 12.20.1
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      description: Install Node.js versions, Using nodenv.
-      id: 229ec9b8-fdf9-4e8e-80cc-029fcb4ff4f2
-      iscommand: true
-      name: Install nodenv (Node.js)
-      script: '|||tidy-nodenv'
-      type: regular
-      version: -1
-    taskid: 229ec9b8-fdf9-4e8e-80cc-029fcb4ff4f2
-    timertriggers: []
-    type: regular
     view: |-
       {
         "position": {
-          "x": 3490,
+          "x": 377.5,
           "y": 1070
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "10":
     id: "10"
-    ignoreworker: false
+    taskid: 1ad6ae2e-a7bd-4d85-8738-8e72d4b97b22
+    type: title
+    task:
+      id: 1ad6ae2e-a7bd-4d85-8738-8e72d4b97b22
+      version: -1
+      name: Content related repos
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "12"
@@ -387,587 +380,569 @@ tasks:
       - "14"
       - "15"
       - "16"
-    note: false
-    quietmode: 0
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      id: c4ef4eed-0210-4750-8880-2ac589f29dc4
-      iscommand: false
-      name: Server related repos
-      type: title
-      version: -1
-      description: ''
-    taskid: c4ef4eed-0210-4750-8880-2ac589f29dc4
-    timertriggers: []
-    type: title
     view: |-
       {
         "position": {
-          "x": 910,
+          "x": 1922.5,
           "y": 910
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "11":
     id: "11"
-    ignoreworker: false
+    taskid: cb43beac-a574-4f1c-81d8-42d77c23da0c
+    type: title
+    task:
+      id: cb43beac-a574-4f1c-81d8-42d77c23da0c
+      version: -1
+      name: Server related repos
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "17"
       - "18"
       - "19"
-    note: false
-    quietmode: 0
+      - "25"
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      id: e47b645d-a535-4782-859a-1f799c513bd4
-      iscommand: false
-      name: Content related repos
-      type: title
-      version: -1
-      description: ''
-    taskid: e47b645d-a535-4782-859a-1f799c513bd4
-    timertriggers: []
-    type: title
     view: |-
       {
         "position": {
-          "x": 2630,
+          "x": 3857.5,
           "y": 910
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "12":
     id: "12"
-    ignoreworker: false
+    taskid: 8d7564ea-4290-42b7-8072-9ee47fa9dfcf
+    type: regular
+    task:
+      id: 8d7564ea-4290-42b7-8072-9ee47fa9dfcf
+      version: -1
+      name: Clone content
+      description: Clone git repository to destination.
+      script: '|||tidy-git-clone'
+      type: regular
+      iscommand: true
+      brand: ""
     nexttasks:
       '#none#':
-      - "22"
-    note: false
-    quietmode: 0
+      - "26"
     scriptarguments:
       dest:
         simple: ~/dev/demisto/content
       force:
         simple: "yes"
-      hostname: {}
-      password: {}
       repo:
         simple: git@github.com:demisto/content.git
       update:
         simple: "yes"
-      user: {}
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      description: Clone git repository to destination.
-      id: 002c58a6-18bb-4edb-8cef-c9654f6deb84
-      iscommand: true
-      name: Clone content
-      script: '|||tidy-git-clone'
-      type: regular
-      version: -1
-    taskid: 002c58a6-18bb-4edb-8cef-c9654f6deb84
-    timertriggers: []
-    type: regular
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 1062.5,
           "y": 1070
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "13":
     id: "13"
-    ignoreworker: false
-    note: false
-    quietmode: 0
+    taskid: 6334ac69-ccfb-415e-8b32-faa8896806a5
+    type: regular
+    task:
+      id: 6334ac69-ccfb-415e-8b32-faa8896806a5
+      version: -1
+      name: Clone demisto-sdk
+      description: Clone git repository to destination.
+      script: '|||tidy-git-clone'
+      type: regular
+      iscommand: true
+      brand: ""
     scriptarguments:
       dest:
         simple: ~/dev/demisto/demisto-sdk
       force:
         simple: "yes"
-      hostname: {}
-      password: {}
       repo:
         simple: git@github.com:demisto/demisto-sdk.git
       update:
         simple: "yes"
-      user: {}
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      description: Clone git repository to destination.
-      id: 675604cf-f360-4b8f-899d-35b72b34aed2
-      iscommand: true
-      name: Clone demisto-sdk
-      script: '|||tidy-git-clone'
-      type: regular
-      version: -1
-    taskid: 675604cf-f360-4b8f-899d-35b72b34aed2
-    timertriggers: []
-    type: regular
     view: |-
       {
         "position": {
-          "x": 480,
+          "x": 1492.5,
           "y": 1070
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "14":
     id: "14"
-    ignoreworker: false
-    note: false
-    quietmode: 0
+    taskid: 26b7deb9-7be7-4c74-805a-d5401d885b69
+    type: regular
+    task:
+      id: 26b7deb9-7be7-4c74-805a-d5401d885b69
+      version: -1
+      name: Clone internal-content
+      description: Clone git repository to destination.
+      script: '|||tidy-git-clone'
+      type: regular
+      iscommand: true
+      brand: ""
     scriptarguments:
       dest:
         simple: ~/dev/demisto/internal-content
       force:
         simple: "yes"
-      hostname: {}
-      password: {}
       repo:
         simple: git@github.com:demisto/internal-content.git
       update:
         simple: "yes"
-      user: {}
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      description: Clone git repository to destination.
-      id: 41c1514f-c905-4ad2-8e2f-b910162e7e5b
-      iscommand: true
-      name: Clone internal-content
-      script: '|||tidy-git-clone'
-      type: regular
-      version: -1
-    taskid: 41c1514f-c905-4ad2-8e2f-b910162e7e5b
-    timertriggers: []
-    type: regular
     view: |-
       {
         "position": {
-          "x": 910,
+          "x": 1922.5,
           "y": 1070
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "15":
     id: "15"
-    ignoreworker: false
-    note: false
-    quietmode: 0
+    taskid: 53858639-1654-4b3f-8bf9-460e7c13a8ee
+    type: regular
+    task:
+      id: 53858639-1654-4b3f-8bf9-460e7c13a8ee
+      version: -1
+      name: Clone content-test-conf
+      description: Clone git repository to destination.
+      script: '|||tidy-git-clone'
+      type: regular
+      iscommand: true
+      brand: ""
     scriptarguments:
       dest:
         simple: ~/dev/demisto/content-test-conf
       force:
         simple: "yes"
-      hostname: {}
-      password: {}
       repo:
         simple: git@github.com:demisto/content-test-conf.git
       update:
         simple: "yes"
-      user: {}
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      description: Clone git repository to destination.
-      id: da893fd2-fdb8-4caf-8af9-b708b00b4646
-      iscommand: true
-      name: Clone content-test-conf
-      script: '|||tidy-git-clone'
-      type: regular
-      version: -1
-    taskid: da893fd2-fdb8-4caf-8af9-b708b00b4646
-    timertriggers: []
-    type: regular
     view: |-
       {
         "position": {
-          "x": 1340,
+          "x": 2352.5,
           "y": 1070
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "16":
     id: "16"
-    ignoreworker: false
-    note: false
-    quietmode: 0
+    taskid: f6c7ea17-b833-4141-8a99-1fcd35480f1f
+    type: regular
+    task:
+      id: f6c7ea17-b833-4141-8a99-1fcd35480f1f
+      version: -1
+      name: Clone dockerfiles
+      description: Clone git repository to destination.
+      script: '|||tidy-git-clone'
+      type: regular
+      iscommand: true
+      brand: ""
     scriptarguments:
       dest:
         simple: ~/dev/demisto/dockerfiles
       force:
         simple: "yes"
-      hostname: {}
-      password: {}
       repo:
         simple: git@github.com:demisto/dockerfiles.git
       update:
         simple: "yes"
-      user: {}
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      description: Clone git repository to destination.
-      id: 6914ac3b-ae1e-486c-8192-68e46f1535ce
-      iscommand: true
-      name: Clone dockerfiles
-      script: '|||tidy-git-clone'
-      type: regular
-      version: -1
-    taskid: 6914ac3b-ae1e-486c-8192-68e46f1535ce
-    timertriggers: []
-    type: regular
     view: |-
       {
         "position": {
-          "x": 1770,
+          "x": 2782.5,
           "y": 1070
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "17":
     id: "17"
-    ignoreworker: false
+    taskid: 80de34a5-686c-4b8f-8635-1b416770c1d2
+    type: regular
+    task:
+      id: 80de34a5-686c-4b8f-8635-1b416770c1d2
+      version: -1
+      name: Clone web-client
+      description: Clone git repository to destination.
+      script: '|||tidy-git-clone'
+      type: regular
+      iscommand: true
+      brand: ""
     nexttasks:
       '#none#':
       - "21"
-    note: false
-    quietmode: 0
     scriptarguments:
       dest:
         simple: ~/dev/demisto/web-client
       force:
         simple: "yes"
-      hostname: {}
-      password: {}
       repo:
         simple: git@github.com:demisto/web-client.git
       update:
         simple: "yes"
-      user: {}
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      description: Clone git repository to destination.
-      id: 63cd0601-a808-48bb-8db2-81088d1d98d1
-      iscommand: true
-      name: Clone web-client
-      script: '|||tidy-git-clone'
-      type: regular
-      version: -1
-    taskid: 63cd0601-a808-48bb-8db2-81088d1d98d1
-    timertriggers: []
-    type: regular
     view: |-
       {
         "position": {
-          "x": 2200,
+          "x": 3212.5,
           "y": 1070
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "18":
     id: "18"
-    ignoreworker: false
-    note: false
-    quietmode: 0
+    taskid: 672d0a2e-de9e-4bdc-8d62-8fcc01ea48dd
+    type: regular
+    task:
+      id: 672d0a2e-de9e-4bdc-8d62-8fcc01ea48dd
+      version: -1
+      name: Clone etc
+      description: Clone git repository to destination.
+      script: '|||tidy-git-clone'
+      type: regular
+      iscommand: true
+      brand: ""
     scriptarguments:
       dest:
         simple: ~/dev/demisto/etc
       force:
         simple: "yes"
-      hostname: {}
-      password: {}
       repo:
         simple: git@github.com:demisto/etc.git
       update:
         simple: "yes"
-      user: {}
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      description: Clone git repository to destination.
-      id: cf3f4125-7ca1-4ffd-80ae-b223af2f228d
-      iscommand: true
-      name: Clone etc
-      script: '|||tidy-git-clone'
-      type: regular
-      version: -1
-    taskid: cf3f4125-7ca1-4ffd-80ae-b223af2f228d
-    timertriggers: []
-    type: regular
     view: |-
       {
         "position": {
-          "x": 2630,
+          "x": 3642.5,
           "y": 1070
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "19":
     id: "19"
-    ignoreworker: false
+    taskid: 98e004a0-29a2-4f25-80b8-20b74cd90b34
+    type: regular
+    task:
+      id: 98e004a0-29a2-4f25-80b8-20b74cd90b34
+      version: -1
+      name: Clone server
+      description: Clone git repository to destination.
+      script: '|||tidy-git-clone'
+      type: regular
+      iscommand: true
+      brand: ""
     nexttasks:
       '#none#':
       - "20"
-    note: false
-    quietmode: 0
     scriptarguments:
+      execution-timeout:
+        simple: "7200"
       dest:
         simple: ~/dev/go/src/github.com/demisto/server
       force:
         simple: "yes"
-      hostname: {}
-      password: {}
       repo:
         simple: git@github.com:demisto/server.git
       update:
         simple: "yes"
-      user: {}
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      description: Clone git repository to destination.
-      id: 7064fb55-1c44-4ec7-89bd-da7d02a3908f
-      iscommand: true
-      name: Clone server
-      script: '|||tidy-git-clone'
-      type: regular
-      version: -1
-    taskid: 7064fb55-1c44-4ec7-89bd-da7d02a3908f
-    timertriggers: []
-    type: regular
     view: |-
       {
         "position": {
-          "x": 3060,
+          "x": 4072.5,
           "y": 1070
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "20":
     id: "20"
-    ignoreworker: false
-    note: false
-    quietmode: 0
-    scriptarguments:
-      hostname: {}
-      password: {}
-      user: {}
-    separatecontext: false
-    skipunavailable: false
+    taskid: 83f9cc9f-b646-4b9e-8418-e32b41561de1
+    type: regular
     task:
-      brand: Tidy
-      description: Set demisto developement server.
-      id: 86f3eb4a-88fa-41e5-830d-bd1d052bc9ec
-      iscommand: true
+      id: 83f9cc9f-b646-4b9e-8418-e32b41561de1
+      version: -1
       name: Install server
+      description: Set demisto developement server.
       script: Tidy|||tidy-demisto-server
       type: regular
-      version: -1
-    taskid: 86f3eb4a-88fa-41e5-830d-bd1d052bc9ec
-    timertriggers: []
-    type: regular
+      iscommand: true
+      brand: Tidy
+    scriptarguments:
+      execution-timeout:
+        simple: "7200"
+    separatecontext: false
     view: |-
       {
         "position": {
-          "x": 3490,
+          "x": 490,
           "y": 1245
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "21":
     id: "21"
-    ignoreworker: false
-    note: false
-    quietmode: 0
-    scriptarguments:
-      hostname: {}
-      password: {}
-      user: {}
-    separatecontext: false
-    skipunavailable: false
+    taskid: 33a47b68-fc29-4363-8972-b35286721ff5
+    type: regular
     task:
-      brand: Tidy
+      id: 33a47b68-fc29-4363-8972-b35286721ff5
+      version: -1
+      name: Install web-client
       description: Set demisto developement web-client.
-      id: 3d296bed-cc5a-4dc7-82c9-3029a39c4f81
-      iscommand: true
-      name: |-
-        Install web-client
-        Install web-client
       script: Tidy|||tidy-demisto-web-client
       type: regular
-      version: -1
-    taskid: 3d296bed-cc5a-4dc7-82c9-3029a39c4f81
-    timertriggers: []
-    type: regular
+      iscommand: true
+      brand: Tidy
+    scriptarguments:
+      execution-timeout:
+        simple: "7200"
+      retry-count:
+        simple: "2"
+    separatecontext: false
     view: |-
       {
         "position": {
-          "x": 2845,
+          "x": 2107.5,
           "y": 1245
         }
       }
-  "22":
-    id: "22"
+    note: false
+    timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "24":
+    id: "24"
+    taskid: 0c1e4494-507c-4b1a-881b-9f37d4223d47
+    type: collection
+    task:
+      id: 0c1e4494-507c-4b1a-881b-9f37d4223d47
+      version: -1
+      name: Enable github SSO
+      description: ""
+      type: collection
+      iscommand: false
+      brand: ""
     nexttasks:
       '#none#':
-      - "23"
-    note: false
-    quietmode: 0
-    scriptarguments:
-      chdir:
-        simple: ~/dev/demisto/content
-      command:
-        simple: pip3 install -r dev-requirements3.py
-      hostname: {}
-      password: {}
-      user: {}
+      - "10"
+      - "11"
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      description: Run command in host.
-      id: d5a5b4a9-1ba5-4c04-80f8-4d8491c785e4
-      iscommand: true
-      name: Install requirements
-      script: '|||tidy-exec'
-      type: regular
-      version: -1
-    taskid: d5a5b4a9-1ba5-4c04-80f8-4d8491c785e4
-    timertriggers: []
-    type: regular
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 1245
+          "x": 1810,
+          "y": 720
         }
       }
-  "23":
-    id: "23"
+    note: false
+    timertriggers: []
     ignoreworker: false
-    note: false
-    quietmode: 0
-    scriptarguments:
-      chdir:
-        simple: ~/dev/demisto/content
-      command:
-        simple: source .hooks/bootstrap
-      hostname: {}
-      password: {}
-      user: {}
-    separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      description: Run command in host.
-      id: a6db9007-9b47-4450-81e7-b0880ed96643
-      iscommand: true
-      name: Set git hooks
-      script: '|||tidy-exec'
-      type: regular
-      version: -1
-    taskid: a6db9007-9b47-4450-81e7-b0880ed96643
-    timertriggers: []
-    type: regular
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1420
-        }
-      }
-  "24":
+    message:
+      to:
+        simple: Read-Only
+      subject:
+        simple: Enable SSO
+      body: {}
+      methods:
+      - email
+      format: ""
+      bcc:
+      cc:
+        simple: Read-Only
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
     form:
-      description: ""
-      expired: false
       questions:
-      - defaultrows: []
-        fieldassociated: ""
-        gridcolumns: []
-        id: "0"
+      - id: "0"
         label: ""
         labelarg:
           simple: Did you enabled GitHub ssh key - SSO
+        required: true
+        gridcolumns: []
+        defaultrows: []
+        type: singleSelect
         options: []
         optionsarg:
         - {}
         - simple: "Yes"
         - simple: "No"
+        fieldassociated: ""
         placeholder: ""
-        readonly: false
-        required: true
         tooltip: ""
-        type: singleSelect
-      sender: Your SOC team
+        readonly: false
       title: GitHub SSH SSO
+      description: Enable GitHub ssh key
+      sender: Your SOC team
+      expired: false
       totalanswers: 0
-    id: "24"
-    ignoreworker: false
-    message:
-      bcc:
-      body: {}
-      cc:
-        simple: Read-Only
-      format: ""
-      methods:
-      - email
-      subject:
-        simple: Enable SSO
-      timings:
-        completeafterreplies: 1
-        retriescount: 2
-        retriesinterval: 360
-      to:
-        simple: Read-Only
-    nexttasks:
-      '#none#':
-      - "10"
-      - "11"
-    note: false
-    quietmode: 0
-    separatecontext: false
     skipunavailable: false
+    quietmode: 0
+  "25":
+    id: "25"
+    taskid: d7277583-d3b1-44e3-8a54-933f78b73cee
+    type: regular
     task:
-      brand: ""
-      id: 4ad64efc-9fc0-4502-84e8-cd12a542a0f9
-      iscommand: false
-      description: ""
-      name: Enable github SSO
-      type: collection
+      id: d7277583-d3b1-44e3-8a54-933f78b73cee
       version: -1
-    taskid: 4ad64efc-9fc0-4502-84e8-cd12a542a0f9
-    timertriggers: []
-    type: collection
+      name: Clone oproxy
+      description: Clone git repository to destination.
+      script: '|||tidy-git-clone'
+      type: regular
+      iscommand: true
+      brand: ""
+    scriptarguments:
+      dest:
+        simple: ~/dev/demisto/oproxy
+      force:
+        simple: "yes"
+      repo:
+        simple: git@github.com:demisto/oproxy.git
+      update:
+        simple: "yes"
+    separatecontext: false
     view: |-
       {
         "position": {
-          "x": 1770,
-          "y": 710
+          "x": 4502.5,
+          "y": 1070
         }
       }
-version: -1
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "26":
+    id: "26"
+    taskid: 1481d89b-430e-4ae7-8dee-f5063fa44adc
+    type: regular
+    task:
+      id: 1481d89b-430e-4ae7-8dee-f5063fa44adc
+      version: -1
+      name: Install python environment
+      description: Install python environment.
+      script: '|||tidy-python-env'
+      type: regular
+      iscommand: true
+      brand: ""
+    scriptarguments:
+      execution-timeout:
+        simple: "7200"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2557.5,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1465,
-        "width": 4250,
+        "height": 1290,
+        "width": 4832.5,
         "x": 50,
         "y": 50
       }
     }
   }
+inputs:
+- key: user
+  value:
+    simple: ${incident.tidyuser}
+  required: true
+  description: User to configure as git user.
+  playbookInputQuery:
+- key: Github token
+  value:
+    simple: ${incident.tidygithubtoken}
+  required: true
+  description: Github token with public key admin permissions.
+  playbookInputQuery:
+- key: Host Name
+  value:
+    simple: ${incident.hostname}
+  required: false
+  description: Endpoint IP/URL to be installed.
+  playbookInputQuery:
+outputs:
+- contextPath: Tidy.Install.Status
+  description: The status of the installation
+  type: string
 tests:
 - No tests (auto formatted)
 fromversion: 6.0.0
-description: 6.0.0

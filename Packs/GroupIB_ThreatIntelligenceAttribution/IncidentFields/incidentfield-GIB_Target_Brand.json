@@ -1,0 +1,30 @@
+{
+    "associatedToAll": false,
+    "associatedTypes": [
+        "GIB Brand Protection Phishing Kit",
+        "GIB Brand Protection Phishing"
+    ],
+    "caseInsensitive": false,
+    "cliName": "gibtargetbrand",
+    "closeForm": false,
+    "content": true,
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_gibtargetbrand",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "GIB Target Brand",
+    "neverSetAsRequired": false,
+    "ownerOnly": false,
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "shortText",
+    "unmapped": false,
+    "unsearchable": false,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.0.0"
+}

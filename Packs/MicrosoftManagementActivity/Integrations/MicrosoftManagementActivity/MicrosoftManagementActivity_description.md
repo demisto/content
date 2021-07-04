@@ -2,9 +2,9 @@ To read the integration's description and authentication instructions more conve
 https://xsoar.pan.dev/docs/reference/integrations/microsoft-management-activity-api-(O365/Azure-Events)
 
 Microsoft Management Activity API (O365/Azure Events) should be used to retrieve content records from the various Microsoft Management Activity content types.
-Through the integration you can subscribe to new content types or stop your subscription, list the available content of each content type, and most importantly - fetch new content records from content types of your choice as Demisto incidents.
+Through the integration you can subscribe to new content types or stop your subscription, list the available content of each content type, and most importantly - fetch new content records from content types of your choice as Cortex XSOAR incidents.
 
-## Grant Demisto Authorization in Microsoft Management Activity API
+## Grant Cortex XSOAR Authorization in Microsoft Management Activity API
 To allow us to access Microsoft Management Activity API you will be required to give us authorization to access it.
 
 1. To grant authorization, click the [HERE](https://oproxy.demisto.ninja/ms-management-api).

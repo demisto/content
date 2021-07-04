@@ -1,0 +1,19 @@
+{
+	"pChunk": {
+		"KLCSP_ITERATOR_ARRAY": [
+			{
+				"type": "params",
+				"value": {
+					"KLHST_INSTANCEID": "025ed284-389b-44c5-a9ef-6e723f7d9466",
+					"KLHST_WKS_DNSDOMAIN": "eu-west-2.compute.internal",
+					"KLHST_WKS_DNSNAME": "ip-172-32-34-237",
+					"KLHST_WKS_FQDN": "ip-172-32-34-237.eu-west-2.compute.internal",
+					"KLHST_WKS_GROUPID": 0,
+					"KLHST_WKS_HOSTNAME": "4328e16g-bf83-47c3-8d0b-0fdf79f9d673",
+					"KLHST_WKS_OS_NAME": "Microsoft Windows Server 2016"
+				}
+			}
+		]
+	},
+	"PxgRetVal": 1
+}

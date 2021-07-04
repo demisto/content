@@ -1,0 +1,30 @@
+{
+    "associatedToAll": false,
+    "associatedTypes": [
+        "Netscout Arbor Sightline Alert"
+    ],
+    "caseInsensitive": true,
+    "cliName": "netscoutarborsightlinealerttype",
+    "closeForm": false,
+    "content": true,
+    "description": "Type of alert",
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_netscoutarborsightlinealerttype",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "Netscout Arbor Sightline Alert Type",
+    "neverSetAsRequired": false,
+    "ownerOnly": false,
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "shortText",
+    "unmapped": false,
+    "unsearchable": false,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "5.0.0"
+}

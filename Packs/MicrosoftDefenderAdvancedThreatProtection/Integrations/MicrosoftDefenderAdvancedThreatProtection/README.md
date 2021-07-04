@@ -34,7 +34,7 @@ For more details about the authentication used in this integration, see [Microso
 * Url.Read.All - Application
 * User.Read.All - Application
 
-## Configure Microsoft Defender for Endpoint on Demisto
+## Configure Microsoft Defender for Endpoint on Cortex XSOAR
 ---
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
@@ -2450,7 +2450,7 @@ Alert.ReadWrite.All
 ```
 
 ##### Human Readable Output
-##### User demisto related alerts Info:
+##### User XSOAR related alerts Info:
 |ID|Title|Description|IncidentID|Severity|Status|Category|MachineID|
 |---|---|---|---|---|---|---|---|
 | da637175364336494657_410871946 | Suspicious process injection observed | A process abnormally injected code into another process, As a result, unexpected code may be running in the target process memory. Injection is often used to hide malicious code execution within a trusted process. As a result, the target process may exhibit abnormal behaviors such as opening a listening port or connecting to a command and control server. | 7 | Medium | InProgress | DefenseEvasion | 4899036531e374137f63289c3267bad772c13fef |
@@ -2556,7 +2556,7 @@ Machine.ReadWrite.All
 ```
 
 ##### Human Readable Output
-##### Machines that are related to user demisto:
+##### Machines that are related to user XSOAR:
 |ID|ComputerDNSName|OSPlatform|LastIPAddress|LastExternalIPAddress|HealthStatus|RiskScore|ExposureLevel|
 |---|---|---|---|---|---|---|---|
 | 4899036531e374137f63289c3267bad772c13fef | desktop-s2455r8 | Windows10 | 192.168.1.71 | 81.166.99.236 | Active | High | Medium |
@@ -2655,6 +2655,7 @@ Lists all indicators by the ID that the system creates when the indicator is ing
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | limit | The maximum amount of indicators to return. Default is 50. | Optional | 
+| page_size | Specify the page size of the result set. Maximum is 200. Default value is 50. | Optional |
 
 
 #### Context Output

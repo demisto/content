@@ -1,0 +1,2 @@
+!CheckPhish-check-urls url=test.com
+!url url=test.com

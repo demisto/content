@@ -795,13 +795,13 @@ outputs:
   description: Web ID
   type: string
 - contextPath: File.Name
-  description: Filename (only in case of report type=json)
+  description: The file's name (only in case of report type=json)
   type: string
 - contextPath: File.SHA1
-  description: SHA1 of the file
+  description: SHA1 hash of the file
   type: string
 - contextPath: File.SHA256
-  description: SHA256 of the file
+  description: SHA256 hash of the file
   type: string
 - contextPath: File.Size
   description: File size (only in case of report type=json)
@@ -853,7 +853,7 @@ outputs:
   description: The File's object
   type: unknown
 - contextPath: File.MD5
-  description: MD5 of the file
+  description: MD5 hash of the file
   type: string
 - contextPath: Joe.Analysis.SampleName
   description: Sample Data, could be a file name or URL
@@ -901,7 +901,7 @@ outputs:
   description: Basic information of the file
   type: string
 - contextPath: File.Extension
-  description: File Extension
+  description: The extension of the file
   type: string
 - contextPath: InfoFile
   description: The report file's object
@@ -1186,29 +1186,8 @@ outputs:
 - contextPath: ANYRUN.Task.Process.Version.Version
   description: Version of the program executed.
   type: String
-- contextPath: File.Extension
-  description: Extension of the file submitted for analysis.
-  type: String
-- contextPath: File.Name
-  description: The name of the file submitted for analysis.
-  type: String
-- contextPath: File.MD5
-  description: MD5 hash of the file submitted for analysis.
-  type: String
-- contextPath: File.SHA1
-  description: SHA1 hash of the file submitted for analysis.
-  type: String
-- contextPath: File.SHA256
-  description: SHA256 hash of the file submitted for analysis.
-  type: String
 - contextPath: File.SSDeep
   description: SSDeep hash of the file submitted for analysis.
-  type: String
-- contextPath: File.Malicious.Vendor
-  description: For malicious files, the vendor that made the decision.
-  type: String
-- contextPath: File.Malicious.Description
-  description: For malicious files, the reason that the vendor made the decision.
   type: String
 - contextPath: ANYRUN.Task.Status
   description: Task analysis status.

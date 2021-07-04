@@ -524,7 +524,7 @@ def main():
         auth_id = params['auth_id']
         enc_key = params['enc_key']
 
-        refresh_token = (demisto.getIntegrationContext().get('current_refresh_token') or refresh_token)
+        refresh_token = get_integration_context().get('current_refresh_token') or refresh_token
 
         client = Client(
             base_url=base_url,

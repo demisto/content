@@ -20,6 +20,10 @@ MAPPING = {
     'links_reportTotalCount': 'intel471reporttotalcount',
     'links_instantMessageTotalCount': 'intel471instantmessagetotalcount',
 }
+DEMISTO_VERSION = demisto.demistoVersion()
+CONTENT_PACK = 'Intel471 Feed/2.0.1'
+INTEGRATION = 'Intel471 Actors Feed'
+USER_AGENT = f'XSOAR/{DEMISTO_VERSION["version"]}.{DEMISTO_VERSION["buildNumber"]} - {CONTENT_PACK} - {INTEGRATION}'
 
 
 def _create_url(**kwargs):
@@ -161,9 +165,10 @@ def custom_handle_indicator(client: Client, item: Dict, feed_config: Dict, servi
 
 def main():
     params = {k: v for k, v in demisto.params().items() if v is not None}
+    params['headers'] = {'user-agent': USER_AGENT}
     url = _create_url(**params)
     params['url'] = url
-    params['indicator_type'] = 'Threat Actor'
+    params['indicator_type'] = 'STIX Threat Actor'
     params['feed_name_to_config'] = {
         'actors': {
             'extractor': 'actors[*]',

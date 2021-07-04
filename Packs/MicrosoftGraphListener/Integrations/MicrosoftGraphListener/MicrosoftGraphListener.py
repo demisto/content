@@ -154,6 +154,43 @@ def prepare_args(command, args):
     return args
 
 
+def prepare_outputs_for_reply_mail_command(reply, email_to, message_id):
+    reply.pop('attachments', None)
+    to_recipients, cc_recipients, bcc_recipients = build_recipients_human_readable(reply)
+    reply['toRecipients'] = to_recipients
+    reply['ccRecipients'] = cc_recipients
+    reply['bccRecipients'] = bcc_recipients
+    reply['ID'] = message_id
+
+    message_content = assign_params(**reply)
+    human_readable = tableToMarkdown(f'Replied message was successfully sent to {", ".join(email_to)} .',
+                                     message_content)
+
+    return CommandResults(
+        outputs_prefix="MicrosoftGraph",
+        readable_output=human_readable,
+        outputs_key_field="SentMail",
+        outputs=message_content,
+    )
+
+
+def build_recipients_human_readable(message_content):
+    to_recipients = []
+    cc_recipients = []
+    bcc_recipients = []
+
+    for recipients_dict in message_content.get('toRecipients', {}):
+        to_recipients.append(recipients_dict.get('emailAddress', {}).get('address'))
+
+    for recipients_dict in message_content.get('ccRecipients', {}):
+        cc_recipients.append(recipients_dict.get('emailAddress', {}).get('address'))
+
+    for recipients_dict in message_content.get('bccRecipients', {}):
+        bcc_recipients.append(recipients_dict.get('emailAddress', {}).get('address'))
+
+    return to_recipients, cc_recipients, bcc_recipients
+
+
 ''' MICROSOFT GRAPH MAIL CLIENT '''
 
 
@@ -508,7 +545,8 @@ class MsGraphClient:
                 'contentBytes': b64_encoded_data.decode('utf-8'),
                 'isInline': is_inline,
                 'name': attach_name if provided_names else uploaded_file_name,
-                'size': file_size
+                'size': file_size,
+                'contentId': attach_id,
             }
             file_attachments_result.append(attachment)
 
@@ -760,6 +798,30 @@ class MsGraphClient:
 
         return f'### Replied to: {", ".join(to_recipients)} with comment: {comment}'
 
+    def reply_mail(self, args):
+        email_to = argToList(args.get('to'))
+        email_from = args.get('from', self._mailbox_to_fetch)
+        message_id = args.get('inReplyTo')
+        email_body = args.get('body', "")
+        email_subject = args.get('subject', "")
+        email_subject = f'Re: {email_subject}'
+        attach_ids = argToList(args.get('attachIDs'))
+        email_cc = argToList(args.get('cc'))
+        email_bcc = argToList(args.get('bcc'))
+        html_body = args.get('htmlBody')
+        attach_names = argToList(args.get('attachNames'))
+        attach_cids = argToList(args.get('attachCIDs'))
+        message_body = html_body or email_body
+
+        suffix_endpoint = f'/users/{email_from}/messages/{message_id}/reply'
+        reply = self.build_message_to_reply(email_to, email_cc, email_bcc, email_subject, message_body,
+                                            attach_ids,
+                                            attach_names, attach_cids)
+        self.ms_client.http_request('POST', suffix_endpoint, json_data={'message': reply, 'comment': message_body},
+                                    resp_type="text")
+
+        return prepare_outputs_for_reply_mail_command(reply, email_to, message_id)
+
     def send_draft(self, draft_id):
         """
         Send draft message.
@@ -774,6 +836,22 @@ class MsGraphClient:
         self.ms_client.http_request('POST', suffix_endpoint, resp_type="text")
 
         return f'### Draft with: {draft_id} id was sent successfully.'
+
+    @staticmethod
+    def build_message_to_reply(to_recipients, cc_recipients, bcc_recipients, subject, email_body, attach_ids,
+                               attach_names, attach_cids):
+        """
+        Builds a valid reply message dict.
+        For more information https://docs.microsoft.com/en-us/graph/api/resources/message?view=graph-rest-1.0
+        """
+        return {
+            'toRecipients': MsGraphClient._build_recipient_input(to_recipients),
+            'ccRecipients': MsGraphClient._build_recipient_input(cc_recipients),
+            'bccRecipients': MsGraphClient._build_recipient_input(bcc_recipients),
+            'subject': subject,
+            'bodyPreview': email_body[:255],
+            'attachments': MsGraphClient._build_file_attachments_input(attach_ids, attach_names, attach_cids, [])
+        }
 
     def test_connection(self):
         """
@@ -819,7 +897,7 @@ def main():
     # params related to oproxy
     # In case the script is running for the first time, refresh token is retrieved from integration parameters,
     # in other case it's retrieved from integration context.
-    refresh_token = (demisto.getIntegrationContext().get('current_refresh_token') or refresh_token)
+    refresh_token = get_integration_context().get('current_refresh_token') or refresh_token
 
     client = MsGraphClient(self_deployed, tenant_id, auth_and_token_url, enc_key, app_name, base_url, use_ssl, proxy,
                            ok_codes, refresh_token, mailbox_to_fetch, folder_to_fetch, first_fetch_interval,
@@ -851,6 +929,8 @@ def main():
         elif command == 'send-mail':
             human_readable, ec = client.send_email(**args)
             return_outputs(human_readable, ec)
+        elif command == 'reply-mail':
+            return_results(client.reply_mail(args))
     except Exception as e:
         return_error(str(e))
 

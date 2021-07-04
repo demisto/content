@@ -1,0 +1,31 @@
+{
+ "id": "indicator_sixgilldvescorehighesteverdate",
+ "version": -1,
+ "modified": "2021-03-11T02:21:36.594907683Z",
+ "name": "Sixgill DVE Score - Highest Ever Date",
+ "ownerOnly": false,
+ "description": "Sixgill DVE Score - Highest Ever Date",
+ "cliName": "sixgilldvescorehighesteverdate",
+ "type": "date",
+ "closeForm": false,
+ "editForm": true,
+ "required": false,
+ "neverSetAsRequired": false,
+ "isReadOnly": false,
+ "useAsKpi": false,
+ "locked": false,
+ "system": false,
+ "content": true,
+ "group": 2,
+ "hidden": false,
+ "associatedTypes": [
+  "CVE"
+ ],
+ "associatedToAll": false,
+ "unmapped": false,
+ "unsearchable": false,
+ "caseInsensitive": true,
+ "sla": 0,
+ "threshold": 72,
+ "fromVersion": "5.5.0"
+}

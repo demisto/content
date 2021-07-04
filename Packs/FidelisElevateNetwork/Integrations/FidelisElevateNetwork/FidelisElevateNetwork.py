@@ -1131,7 +1131,7 @@ def fetch_incidents():
         incident_date = datetime.strptime(item['ALERT_TIME'], '%Y-%m-%d %H:%M:%S')
         incident = {
             'Type': 'Fidelis',
-            'name': '{} {}'.format(item['ALERT_ID'], item['SUMMARY']),
+            'name': '{} {}'.format(item['ALERT_ID'].encode('utf-8'), item['SUMMARY'].encode('utf-8')),
             'occurred': incident_date.strftime('%Y-%m-%dT%H:%M:%SZ'),
             'rawJSON': json.dumps(item),
         }

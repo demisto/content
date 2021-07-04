@@ -14,9 +14,9 @@ from google.cloud.storage import Bucket
 from distutils.version import LooseVersion
 from typing import List
 
-from Tests.Marketplace.marketplace_services import PACKS_FULL_PATH, IGNORED_FILES, GCPConfig, init_storage_client
+from Tests.Marketplace.marketplace_services import init_storage_client
+from Tests.Marketplace.marketplace_constants import GCPConfig, PACKS_FULL_PATH, IGNORED_FILES, PACKS_FOLDER
 from Tests.scripts.utils.content_packs_util import is_pack_deprecated
-from demisto_sdk.commands.common.constants import PACKS_DIR
 
 PACK_METADATA_FILE = 'pack_metadata.json'
 PACK_PATH_VERSION_REGEX = re.compile(fr'^{GCPConfig.STORAGE_BASE_PATH}/[A-Za-z0-9-_.]+/(\d+\.\d+\.\d+)/[A-Za-z0-9-_.]'
@@ -395,7 +395,7 @@ def search_pack_and_its_dependencies(client: demisto_client,
         if dependencies:
             # Check that the dependencies don't include a deprecated pack:
             for dependency in dependencies:
-                pack_path = os.path.join(PACKS_DIR, dependency.get('id'))
+                pack_path = os.path.join(PACKS_FOLDER, dependency.get('id'))
                 if is_pack_deprecated(pack_path):
                     logging.critical(f'Pack {pack_id} depends on pack {dependency.get("id")} which is a deprecated '
                                      f'pack.')
@@ -504,6 +504,7 @@ def install_all_content_packs(client: demisto_client, host: str, server_version:
             # pack is hidden (deprecated):
             if ('Master' in server_version or LooseVersion(server_version) >= LooseVersion(server_min_version)) and \
                     not hidden:
+                logging.debug(f"Appending pack id {pack_id}")
                 all_packs.append(get_pack_installation_request_data(pack_id, pack_version))
     return install_packs(client, host, all_packs)
 

@@ -1,0 +1,11 @@
+{
+  "id": "detsummary",
+  "name": "Confluera Detections Summary",
+  "dataType": "scripts",
+  "widgetType": "pie",
+  "query": "ConflueraDetectionsSummary",
+  "version": -1,
+  "description": "Logs detections data ( categories of detections )",
+  "isPredefined": true,
+  "fromVersion": "6.0.0"
+}

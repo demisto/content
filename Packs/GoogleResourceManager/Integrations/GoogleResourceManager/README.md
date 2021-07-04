@@ -1,5 +1,5 @@
 <!-- HTML_DOC -->
-<h2>Configure Google Resource Manager on Demisto</h2>
+<h2>Configure Google Resource Manager on Cortex XSOAR</h2>
 <ol>
 <li>Navigate to <strong>Settings</strong> &gt; <strong>Integrations</strong> &gt; <strong>Servers &amp; Services</strong>.</li>
 <li>Search for Google Resource Manager.</li>
@@ -19,7 +19,7 @@
 <li>Click <strong>Test</strong> to validate the URLs, token, and connection.</li>
 </ol>
 <h2>Commands</h2>
-<p>You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.<br>After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
+<p>You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.<br>After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
 <ol>
 <li><a href="#h_41199988831548576986335">Create a new project: grm-create-project</a></li>
 <li><a href="#h_142730261761548576992423">Get information for a project: grm-get-project</a></li>

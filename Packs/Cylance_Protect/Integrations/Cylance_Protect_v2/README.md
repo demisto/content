@@ -1,9 +1,9 @@
 <!-- HTML_DOC -->
 <h2>Overview</h2>
-<p>Use the Cylance Protect v2 integration to manage endpoints, streamline remediation, and response from Demisto.</p>
+<p>Use the Cylance Protect v2 integration to manage endpoints, streamline remediation, and response from Cortex XSOAR.</p>
 <p>This integration was integrated and tested with version 2.0.5 rev6 of Cylance Protect.</p>
 <h2>Prerequisites</h2>
-<p>Before you integrate Cylance Protect on Demisto, you need to obtain a Cylance token.</p>
+<p>Before you integrate Cylance Protect on Cortex XSOAR, you need to obtain a Cylance token.</p>
 <ol>
 <li>In Cylance, navigate to <strong>Settings</strong> &gt; <strong>Integrations</strong>.</li>
 <li>Click <strong>Add Application</strong>.</li>
@@ -12,7 +12,7 @@
 <li>Record the Application ID and Application Secret for later use. You will not be able to access these later.</li>
 <li>Locate the Tenant ID at the top right side of the Integrations page and record it for later use. </li>
 </ol>
-<h2>Configure the Cylance Protect v2 Integration on Demisto</h2>
+<h2>Configure the Cylance Protect v2 Integration on Cortex XSOAR</h2>
 <ol>
 <li>Navigate to <strong>Settings</strong> &gt; <strong>Integrations</strong> &gt; <strong>Servers &amp; Services</strong>.</li>
 <li>Search for Cylance Protect v2.</li>
@@ -68,7 +68,7 @@
 <li>Retrieve and create policies and zones.</li>
 </ul>
 <h2> Commands</h2>
-<p>You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
+<p>You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
 <ol>
 <li><a href="#h_2673377171530178254852">List console device resources for a tenant: cylance-protect-get-devices</a></li>
 <li><a href="#h_594628183251530425419438">Get a console device resource for a tenant: cylance-protect-get-device</a></li>
