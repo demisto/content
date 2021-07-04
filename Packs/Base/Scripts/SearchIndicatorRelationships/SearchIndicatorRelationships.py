@@ -52,10 +52,10 @@ def to_context(relationships: list, verbose: bool) -> List[dict]:
 
 
 def handle_stix_types(entities_types):
-    is_up_to_6_2 = is_demisto_version_ge('6.2.0')
-    if not is_up_to_6_2:
-        for obj_type in ['Attack Pattern', 'Malware', 'Report', 'Threat Actor', 'Tool']:
-            entities_types.replace(obj_type, f'STIX {obj_type}')
+    entities_types = argToList(entities_types)
+    for e_type in entities_types:
+        FeedIndicatorType.indicator_type_by_server_version(e_type)
+    return ','.join(str(x) for x in entities_types).replace(' ', '')
 
 
 ''' MAIN FUNCTION '''
