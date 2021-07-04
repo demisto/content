@@ -22,14 +22,15 @@ description: |-
       - Creating a new Shadow IT issue (if the asset is detected to be Shadow IT and the analyst confirms it)
       - Adding the service to a Vulnerability Management system
       - Linking the incident to a related Prisma Cloud alert for the asset (if the asset is found under Prisma Cloud inventory)
+      - Bringing rogue cloud accounts under management
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 6787ba70-8ed2-447b-8fc6-a3a628ba1462
+    taskid: 1008efd6-a73d-4810-8d0a-a1eaacc9df84
     type: start
     task:
-      id: 6787ba70-8ed2-447b-8fc6-a3a628ba1462
+      id: 1008efd6-a73d-4810-8d0a-a1eaacc9df84
       version: -1
       name: ""
       iscommand: false
@@ -53,10 +54,10 @@ tasks:
     quietmode: 0
   "1":
     id: "1"
-    taskid: 5c111694-e05c-4863-8faf-b3dc243b666a
+    taskid: 9b6f637c-0380-4f67-8840-3a7749195308
     type: condition
     task:
-      id: 5c111694-e05c-4863-8faf-b3dc243b666a
+      id: 9b6f637c-0380-4f67-8840-3a7749195308
       version: -1
       name: Are there Expanse Asset Tags for this incident?
       description: Check whether Expanse asset tags are present in this incident.
@@ -93,10 +94,10 @@ tasks:
     quietmode: 0
   "2":
     id: "2"
-    taskid: 252558dc-71f0-4e89-8dcc-829d4c25af87
+    taskid: 5ea61de4-7445-44a2-829b-e5d0e9b788b5
     type: title
     task:
-      id: 252558dc-71f0-4e89-8dcc-829d4c25af87
+      id: 5ea61de4-7445-44a2-829b-e5d0e9b788b5
       version: -1
       name: Use Device Groups from Expanse Asset Tags
       type: title
@@ -121,10 +122,10 @@ tasks:
     quietmode: 0
   "3":
     id: "3"
-    taskid: 5bb2ee82-61b3-45e1-8035-793b052fabc6
+    taskid: 35c2de8d-64ef-403d-831c-de57756781cb
     type: title
     task:
-      id: 5bb2ee82-61b3-45e1-8035-793b052fabc6
+      id: 35c2de8d-64ef-403d-831c-de57756781cb
       version: -1
       name: Search Device Groups from Logs
       type: title
@@ -149,10 +150,10 @@ tasks:
     quietmode: 0
   "4":
     id: "4"
-    taskid: 001457d4-06f2-41e2-84d1-861e4563169b
+    taskid: ab96f9e3-a659-4f43-80d5-b0c48daf413f
     type: regular
     task:
-      id: 001457d4-06f2-41e2-84d1-861e4563169b
+      id: ab96f9e3-a659-4f43-80d5-b0c48daf413f
       version: -1
       name: Find Possible Device Groups
       description: Set a value in context under the key you entered. If no value is
@@ -220,10 +221,10 @@ tasks:
     quietmode: 0
   "5":
     id: "5"
-    taskid: ed8d23f4-533f-49e5-8e70-acaed824bab1
+    taskid: ed51d697-ea57-4ef7-8f57-87fa3c855bf2
     type: title
     task:
-      id: ed8d23f4-533f-49e5-8e70-acaed824bab1
+      id: ed51d697-ea57-4ef7-8f57-87fa3c855bf2
       version: -1
       name: Set Up Context Variables
       type: title
@@ -251,10 +252,10 @@ tasks:
     quietmode: 0
   "6":
     id: "6"
-    taskid: 23cc2b32-e7ed-4b20-8bc6-ecc93aa551db
+    taskid: 6f9303dd-b30b-4fbd-8714-f67ba241756e
     type: condition
     task:
-      id: 23cc2b32-e7ed-4b20-8bc6-ecc93aa551db
+      id: 6f9303dd-b30b-4fbd-8714-f67ba241756e
       version: -1
       name: Is Incident Priority Above AutoRemediation Threshold?
       description: Check whether incident priority is above the autoremediation threshold.
@@ -293,10 +294,10 @@ tasks:
     quietmode: 0
   "8":
     id: "8"
-    taskid: a1c4930f-a238-48a9-841e-00377e459cd9
+    taskid: f5a254b4-3211-471f-8c13-16f1ccddb01e
     type: title
     task:
-      id: a1c4930f-a238-48a9-841e-00377e459cd9
+      id: f5a254b4-3211-471f-8c13-16f1ccddb01e
       version: -1
       name: Done Network Remediation
       type: title
@@ -321,10 +322,10 @@ tasks:
     quietmode: 0
   "9":
     id: "9"
-    taskid: 856c79ee-30e0-431d-8471-180b1157e70c
+    taskid: 04afdd02-9e0d-4ec7-8f31-aac057589255
     type: condition
     task:
-      id: 856c79ee-30e0-431d-8471-180b1157e70c
+      id: 04afdd02-9e0d-4ec7-8f31-aac057589255
       version: -1
       name: Is Issue AutoRemediable with PAN-OS? (On-premise and has IP:Port)
       description: Check whether the issue can be auto-remediated with PAN-OS (on-premise
@@ -393,10 +394,10 @@ tasks:
     quietmode: 0
   "10":
     id: "10"
-    taskid: f340edbb-08e4-4cae-8c79-d10e19c17dc3
+    taskid: 3add9f3a-cb7b-4313-8dc9-82c8d682bd1a
     type: condition
     task:
-      id: f340edbb-08e4-4cae-8c79-d10e19c17dc3
+      id: 3add9f3a-cb7b-4313-8dc9-82c8d682bd1a
       version: -1
       name: Block ${incident.expanseip}:${incident.expanseport}/${incident.expanseprotocol}
         on ${TargetDG} ?
@@ -424,10 +425,10 @@ tasks:
     quietmode: 0
   "11":
     id: "11"
-    taskid: cff181ca-63ea-44b2-8f65-6f696d4bdc12
+    taskid: 9c7a7514-3c2e-4bf3-8717-452bcd94fa9e
     type: regular
     task:
-      id: cff181ca-63ea-44b2-8f65-6f696d4bdc12
+      id: 9c7a7514-3c2e-4bf3-8717-452bcd94fa9e
       version: -1
       name: Transpose Firewall TagList
       description: Set a value in context under the key you entered. If no value is
@@ -471,10 +472,10 @@ tasks:
     quietmode: 0
   "12":
     id: "12"
-    taskid: 453a112d-9021-4622-8839-9d75bf6c05ba
+    taskid: 985ff29c-d355-4d3b-887b-cccd87fca1e4
     type: regular
     task:
-      id: 453a112d-9021-4622-8839-9d75bf6c05ba
+      id: 985ff29c-d355-4d3b-887b-cccd87fca1e4
       version: -1
       name: Extract XSOAR Incident Tags from Expanse
       description: Set a value in context under the key you entered. If no value is
@@ -526,10 +527,10 @@ tasks:
     quietmode: 0
   "13":
     id: "13"
-    taskid: 90aac7fa-bfec-414b-84c8-f3383fa31732
+    taskid: 2267b70b-e186-4259-8a10-9084f0139106
     type: regular
     task:
-      id: 90aac7fa-bfec-414b-84c8-f3383fa31732
+      id: 2267b70b-e186-4259-8a10-9084f0139106
       version: -1
       name: Manual Block on Network
       description: Perform manual block on the network.
@@ -554,10 +555,10 @@ tasks:
     quietmode: 0
   "14":
     id: "14"
-    taskid: 991259c5-636a-44b3-8b75-f2586dfb35f4
+    taskid: 72662aac-860c-47a3-868c-a92515f00aff
     type: title
     task:
-      id: 991259c5-636a-44b3-8b75-f2586dfb35f4
+      id: 72662aac-860c-47a3-868c-a92515f00aff
       version: -1
       name: Manual Network Remediation
       type: title
@@ -582,10 +583,10 @@ tasks:
     quietmode: 0
   "15":
     id: "15"
-    taskid: 37c823a7-7510-420b-8376-ff5d03b56eb0
+    taskid: 506da85c-e36e-414e-8242-210ff46b8ecc
     type: condition
     task:
-      id: 37c823a7-7510-420b-8376-ff5d03b56eb0
+      id: 506da85c-e36e-414e-8242-210ff46b8ecc
       version: -1
       name: Suggested Device Groups found?
       description: Check whether a target device group is found.
@@ -621,10 +622,10 @@ tasks:
     quietmode: 0
   "16":
     id: "16"
-    taskid: 37d9e1c9-88ed-4d0f-871c-6456de0e5c63
+    taskid: 275a0fa2-01ab-46a6-8168-7ca30a43389d
     type: collection
     task:
-      id: 37d9e1c9-88ed-4d0f-871c-6456de0e5c63
+      id: 275a0fa2-01ab-46a6-8168-7ca30a43389d
       version: -1
       name: Choose Device Group to enforce policy
       description: Ask the user on which Device Group to enforce the policy change.
@@ -696,10 +697,10 @@ tasks:
     quietmode: 0
   "18":
     id: "18"
-    taskid: 20acc70d-1268-4168-8ae9-8dc10fa27b87
+    taskid: 065cae1e-98c6-4bc4-8255-a01b0de0a079
     type: title
     task:
-      id: 20acc70d-1268-4168-8ae9-8dc10fa27b87
+      id: 065cae1e-98c6-4bc4-8255-a01b0de0a079
       version: -1
       name: DG Tagging
       type: title
@@ -724,10 +725,10 @@ tasks:
     quietmode: 0
   "22":
     id: "22"
-    taskid: 8dc40050-592a-4d16-8562-0c12a90e3a00
+    taskid: 3f8edbf9-6e4a-433a-87c2-85a5e9e9b4c0
     type: title
     task:
-      id: 8dc40050-592a-4d16-8562-0c12a90e3a00
+      id: 3f8edbf9-6e4a-433a-87c2-85a5e9e9b4c0
       version: -1
       name: Start Validation
       description: Start validation of incident.
@@ -753,10 +754,10 @@ tasks:
     quietmode: 0
   "23":
     id: "23"
-    taskid: c5535a82-8529-4442-8e22-6a97c811b9fe
+    taskid: 193fccf6-be21-41b7-832d-f2c830d37a67
     type: playbook
     task:
-      id: c5535a82-8529-4442-8e22-6a97c811b9fe
+      id: 193fccf6-be21-41b7-832d-f2c830d37a67
       version: -1
       name: PAN-OS - Block Destination Service
       description: This playbook blocks a Destination IP and Service (TCP or UDP port)
@@ -819,10 +820,10 @@ tasks:
     quietmode: 0
   "24":
     id: "24"
-    taskid: a403f655-9b3a-430c-8501-4ac67898893b
+    taskid: 9694f7c1-1d42-48ad-8c4e-e8fd75b0de54
     type: title
     task:
-      id: a403f655-9b3a-430c-8501-4ac67898893b
+      id: 9694f7c1-1d42-48ad-8c4e-e8fd75b0de54
       version: -1
       name: Block Service
       type: title
@@ -847,10 +848,10 @@ tasks:
     quietmode: 0
   "25":
     id: "25"
-    taskid: 9a1b6b1d-1c56-4c12-838b-2d9c5962684e
+    taskid: e6be8ac9-db6f-42c7-8e9c-bb4260415639
     type: regular
     task:
-      id: 9a1b6b1d-1c56-4c12-838b-2d9c5962684e
+      id: e6be8ac9-db6f-42c7-8e9c-bb4260415639
       version: -1
       name: Get PAN-OS Version
       description: Show firewall device software version.
@@ -878,10 +879,10 @@ tasks:
     quietmode: 0
   "26":
     id: "26"
-    taskid: 85cb41f2-41a8-4eb9-8f11-c91fdee71118
+    taskid: 20db97fc-df12-4c13-88aa-04aa4c1ccb77
     type: condition
     task:
-      id: 85cb41f2-41a8-4eb9-8f11-c91fdee71118
+      id: 20db97fc-df12-4c13-88aa-04aa4c1ccb77
       version: -1
       name: Firewall or Panorama?
       description: Check whether the target device is a firewall or Panorama.
@@ -922,10 +923,10 @@ tasks:
     quietmode: 0
   "27":
     id: "27"
-    taskid: 3ad8dd38-b85c-46c6-856c-deeb6504fadb
+    taskid: c103330a-5b2e-4c76-8382-7d76132b0426
     type: playbook
     task:
-      id: 3ad8dd38-b85c-46c6-856c-deeb6504fadb
+      id: c103330a-5b2e-4c76-8382-7d76132b0426
       version: -1
       name: PAN-OS - Block Destination Service
       description: This playbook blocks a destination IP and service (TCP or UDP port)
@@ -986,10 +987,10 @@ tasks:
     quietmode: 0
   "28":
     id: "28"
-    taskid: 5291b87c-a5c1-484e-8401-9069bcc4335c
+    taskid: 3fcf3526-af1c-4d0f-8f96-8e2073db66c4
     type: title
     task:
-      id: 5291b87c-a5c1-484e-8401-9069bcc4335c
+      id: 3fcf3526-af1c-4d0f-8f96-8e2073db66c4
       version: -1
       name: Enrichment
       type: title
@@ -1016,10 +1017,10 @@ tasks:
     quietmode: 0
   "29":
     id: "29"
-    taskid: 8a688db1-7f4c-4619-8431-d63b00045a9d
+    taskid: 4a500f51-ffc1-4698-8e41-b0b0bf96b87f
     type: title
     task:
-      id: 8a688db1-7f4c-4619-8431-d63b00045a9d
+      id: 4a500f51-ffc1-4698-8e41-b0b0bf96b87f
       version: -1
       name: Done Enrichment
       type: title
@@ -1044,10 +1045,10 @@ tasks:
     quietmode: 0
   "30":
     id: "30"
-    taskid: c92c9191-6302-463f-8347-1c9188cca15e
+    taskid: 16a2ecf7-7e46-42fc-897f-1c270fb4bdd0
     type: title
     task:
-      id: c92c9191-6302-463f-8347-1c9188cca15e
+      id: 16a2ecf7-7e46-42fc-897f-1c270fb4bdd0
       version: -1
       name: Remediation
       type: title
@@ -1060,6 +1061,7 @@ tasks:
       - "82"
       - "84"
       - "109"
+      - "211"
     separatecontext: false
     view: |-
       {
@@ -1075,10 +1077,10 @@ tasks:
     quietmode: 0
   "31":
     id: "31"
-    taskid: 9d163411-019d-4a56-8112-fef2603e0c37
+    taskid: d5d26b4b-4819-4def-8936-4fc2020e049e
     type: regular
     task:
-      id: 9d163411-019d-4a56-8112-fef2603e0c37
+      id: d5d26b4b-4819-4def-8936-4fc2020e049e
       version: -1
       name: Extract Risky Flows from Behavior
       description: Retrieve Expanse Behavior Risky Flows.
@@ -1118,10 +1120,10 @@ tasks:
     quietmode: 0
   "34":
     id: "34"
-    taskid: 48a88295-5fe8-4219-8bd2-61250b300ef0
+    taskid: cbe9a476-b64e-4a7e-8d42-b18cd4fef20b
     type: playbook
     task:
-      id: 48a88295-5fe8-4219-8bd2-61250b300ef0
+      id: cbe9a476-b64e-4a7e-8d42-b18cd4fef20b
       version: -1
       name: Expanse Attribution
       description: |
@@ -1179,10 +1181,10 @@ tasks:
     quietmode: 0
   "36":
     id: "36"
-    taskid: ac40f468-ea35-475b-882f-729bfd111b40
+    taskid: 99913e03-d8a7-49c2-879d-8530328b4f81
     type: condition
     task:
-      id: ac40f468-ea35-475b-882f-729bfd111b40
+      id: 99913e03-d8a7-49c2-879d-8530328b4f81
       version: -1
       name: Is Issue Related To Cloud Asset?
       description: Check whether the asset is on-premise or cloud.
@@ -1223,10 +1225,10 @@ tasks:
     quietmode: 0
   "40":
     id: "40"
-    taskid: 9527f790-32a0-49d4-8019-feb58f88c07e
+    taskid: c2531997-2bd4-4e5a-8a56-15aa71062754
     type: regular
     task:
-      id: 9527f790-32a0-49d4-8019-feb58f88c07e
+      id: c2531997-2bd4-4e5a-8a56-15aa71062754
       version: -1
       name: Suggest possible Shadow IT
       description: Set a value in context under the key you entered.
@@ -1260,10 +1262,10 @@ tasks:
     quietmode: 0
   "48":
     id: "48"
-    taskid: e36ef9fd-4f80-4661-8036-308931e74b1e
+    taskid: 82e89a1e-cd28-4d41-88df-3862cd4ba841
     type: collection
     task:
-      id: e36ef9fd-4f80-4661-8036-308931e74b1e
+      id: 82e89a1e-cd28-4d41-88df-3862cd4ba841
       version: -1
       name: 'Ask: What Is The Organization Unit?'
       description: Ask the user to perform attribution.
@@ -1382,10 +1384,10 @@ tasks:
     quietmode: 0
   "49":
     id: "49"
-    taskid: 249ff9af-df20-4090-88d3-074844a6fcab
+    taskid: d4fbc043-bdcf-4e67-8587-a5c1218d1617
     type: regular
     task:
-      id: 249ff9af-df20-4090-88d3-074844a6fcab
+      id: d4fbc043-bdcf-4e67-8587-a5c1218d1617
       version: -1
       name: Set Organization Unit
       description: commands.local.cmd.set.incident
@@ -1397,291 +1399,12 @@ tasks:
       '#none#':
       - "93"
     scriptarguments:
-      accountid: {}
-      accountname: {}
-      addLabels: {}
-      agentid: {}
-      app: {}
-      appendMultiSelect: {}
-      assetid: {}
-      assigneduser: {}
-      assignmentgroup: {}
-      attachmentcount: {}
-      attachmentextension: {}
-      attachmenthash: {}
-      attachmentid: {}
-      attachmentname: {}
-      attachmentsize: {}
-      attachmenttype: {}
-      blockedaction: {}
-      bugtraq: {}
-      caller: {}
-      city: {}
-      closeNotes: {}
-      closeReason: {}
-      cloudservice: {}
-      commandline: {}
-      costcenter: {}
-      costcentercode: {}
-      country: {}
-      countryname: {}
-      criticalassets: {}
-      customFields: {}
-      cve: {}
-      cvss: {}
-      dbotMirrorDirection: {}
-      dbotMirrorId: {}
-      dbotMirrorInstance: {}
-      dbotMirrorTags: {}
-      dbotprediction: {}
-      dbotpredictionprobability: {}
-      dbottextsuggestionhighlighted: {}
-      deleteEmptyField: {}
-      department: {}
-      dest: {}
-      desthostname: {}
-      destinationhostname: {}
-      destinationip: {}
-      destinationnetwork: {}
-      destinationport: {}
-      destntdomain: {}
-      destos: {}
-      details: {}
-      detectedexternalhosts: {}
-      detectedexternalips: {}
-      detectedinternalhosts: {}
-      detectedinternalips: {}
-      detectedusers: {}
-      detectionendtime: {}
-      detectionid: {}
-      detectionupdatetime: {}
-      detectionurl: {}
-      deviceexternalip: {}
-      devicehash: {}
-      devicelocalip: {}
-      devicemodel: {}
-      devicename: {}
-      displayname: {}
-      duration: {}
-      email: {}
-      emailauthenticitycheck: {}
-      emailbcc: {}
-      emailbody: {}
-      emailbodyformat: {}
-      emailbodyhtml: {}
-      emailcc: {}
-      emailclassification: {}
-      emailclientname: {}
-      emailfrom: {}
-      emailheaders: {}
-      emailhtml: {}
-      emailinreplyto: {}
-      emailkeywords: {}
-      emailmessageid: {}
-      emailreceived: {}
-      emailreplyto: {}
-      emailreturnpath: {}
-      emailsenderip: {}
-      emailsize: {}
-      emailsource: {}
-      emailsubject: {}
-      emailto: {}
-      emailtocount: {}
-      emailurlclicked: {}
-      employeedisplayname: {}
-      employeeemail: {}
-      employeemanageremail: {}
-      escalation: {}
-      eventaction: {}
-      eventid: {}
-      eventtype: {}
-      expanseactivitystatus: {}
-      expanseasset: {}
       expanseassetorganizationunit:
         complex:
           root: Analysis of Asset Attribution.Answers
           accessor: "0"
           transformers:
           - operator: FirstArrayElement
-      expanseassetowner: {}
-      expanseassignee: {}
-      expansebusinessunits: {}
-      expansecategory: {}
-      expansecertificate: {}
-      expansecreated: {}
-      expansedomain: {}
-      expanseinitialevidence: {}
-      expanseip: {}
-      expanseissueid: {}
-      expanseissuetype: {}
-      expanselatestevidence: {}
-      expansemodified: {}
-      expanseport: {}
-      expansepriority: {}
-      expanseprogressstatus: {}
-      expanseprotocol: {}
-      expanseprovider: {}
-      expanseshadowit: {}
-      expansetags: {}
-      externaladdresses: {}
-      filehash: {}
-      filename: {}
-      filepath: {}
-      filesize: {}
-      firstname: {}
-      firstseen: {}
-      givenname: {}
-      helloworldid: {}
-      helloworldstatus: {}
-      helloworldtype: {}
-      hostname: {}
-      id: {}
-      incomingmirrorerror: {}
-      infectedhosts: {}
-      internaladdresses: {}
-      investigationstage: {}
-      isolated: {}
-      jobcode: {}
-      jobfamily: {}
-      jobfunction: {}
-      labels: {}
-      lastmodifiedby: {}
-      lastmodifiedon: {}
-      lastname: {}
-      lastseen: {}
-      leadership: {}
-      location: {}
-      locationregion: {}
-      logsource: {}
-      macaddress: {}
-      maliciousbehavior: {}
-      malwarefamily: {}
-      malwarename: {}
-      manageremailaddress: {}
-      managername: {}
-      md5: {}
-      mobiledevicemodel: {}
-      mobilephone: {}
-      name: {}
-      occurred: {}
-      os: {}
-      osversion: {}
-      outgoingmirrorerror: {}
-      owner: {}
-      parentprocessid: {}
-      personalemail: {}
-      phase: {}
-      phishingsubtype: {}
-      phonenumber: {}
-      pid: {}
-      policydeleted: {}
-      policydescription: {}
-      policydetails: {}
-      policyid: {}
-      policyrecommendation: {}
-      policyremediable: {}
-      policyseverity: {}
-      policytype: {}
-      prismacloudid: {}
-      prismacloudreason: {}
-      prismacloudrules: {}
-      prismacloudstatus: {}
-      prismacloudtime: {}
-      protocol: {}
-      protocols: {}
-      quarantined: {}
-      rating: {}
-      region: {}
-      regionid: {}
-      replacePlaybook: {}
-      reporteremailaddress: {}
-      resourceapiname: {}
-      resourcecloudtype: {}
-      resourceid: {}
-      resourcename: {}
-      resourcetype: {}
-      riskrating: {}
-      riskscore: {}
-      roles: {}
-      rrn: {}
-      samaccountname: {}
-      severity: {}
-      sha256: {}
-      shadowitaccountowneremail: {}
-      shadowitaccountownername: {}
-      shadowitcloudaccountid: {}
-      shadowitcloudaccounttype: {}
-      signature: {}
-      skuname: {}
-      skutier: {}
-      sla: {}
-      slaField: {}
-      sourcehostname: {}
-      sourceip: {}
-      sourcenetwork: {}
-      sourceport: {}
-      sourceusername: {}
-      src: {}
-      srchostname: {}
-      srcntdomain: {}
-      srcos: {}
-      srcuser: {}
-      state: {}
-      streetaddress: {}
-      subcategory: {}
-      subscriptionassignedby: {}
-      subscriptioncreatedby: {}
-      subscriptioncreatedon: {}
-      subscriptiondescription: {}
-      subscriptionid: {}
-      subscriptionname: {}
-      subscriptiontype: {}
-      subscriptionupdatedby: {}
-      subscriptionupdatedon: {}
-      subtype: {}
-      surname: {}
-      systemdefault: {}
-      systems: {}
-      targetfirewallversion: {}
-      tenantname: {}
-      terminatedaction: {}
-      threatactor: {}
-      ticketcloseddate: {}
-      ticketnumber: {}
-      ticketopeneddate: {}
-      title: {}
-      triggeredsecurityprofile: {}
-      type: {}
-      uniqueports: {}
-      urlsslverification: {}
-      user: {}
-      useraccountcontrol: {}
-      username: {}
-      vendorid: {}
-      vendorproduct: {}
-      vpcid: {}
-      vulnerabilitycategory: {}
-      workphone: {}
-      xdralertcount: {}
-      xdralerts: {}
-      xdrassigneduseremail: {}
-      xdrassigneduserprettyname: {}
-      xdrdescription: {}
-      xdrdetectiontime: {}
-      xdrfileartifacts: {}
-      xdrhighseverityalertcount: {}
-      xdrhostcount: {}
-      xdrincidentid: {}
-      xdrlowseverityalertcount: {}
-      xdrmediumseverityalertcount: {}
-      xdrnetworkartifacts: {}
-      xdrnotes: {}
-      xdrresolvecomment: {}
-      xdrstatus: {}
-      xdrstatusv2: {}
-      xdrurl: {}
-      xdrusercount: {}
-      zipcode: {}
     separatecontext: false
     view: |-
       {
@@ -1695,73 +1418,12 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "51":
-    id: "51"
-    taskid: e4a36978-5c42-40bb-81b0-c98e60819cd6
-    type: regular
-    task:
-      id: e4a36978-5c42-40bb-81b0-c98e60819cd6
-      version: -1
-      name: 'Setup Vulnerability Assessment Tool To Scan ${incident.expanseip}:${incident.expanseport}/${incident.expanseprotocol} '
-      description: Add this discovered asset to Vulnerability Management tools.
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "53"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": -630,
-          "y": 7210
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "52":
-    id: "52"
-    taskid: b6e1a383-cbd8-4ad1-8a4f-9e60c73ffb76
-    type: condition
-    task:
-      id: b6e1a383-cbd8-4ad1-8a4f-9e60c73ffb76
-      version: -1
-      name: |-
-        Check if ${incident.expanseip}:${incident.expanseport}/${incident.expanseprotocol} is scanned by Vulnerability Assessment systems.
-
-        Is this protected?
-      description: Check if this system is scanned by Vulnerability Management systems.
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "51"
-      "Yes":
-      - "53"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": -277.5,
-          "y": 6965
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "53":
     id: "53"
-    taskid: c6887eee-a422-42d9-807e-5c1945ea7a4f
+    taskid: 8d8d914a-b2b6-4f72-8d8c-8f07d7a82944
     type: title
     task:
-      id: c6887eee-a422-42d9-807e-5c1945ea7a4f
+      id: 8d8d914a-b2b6-4f72-8d8c-8f07d7a82944
       version: -1
       name: Done Vulnerability Assessment
       type: title
@@ -1786,10 +1448,10 @@ tasks:
     quietmode: 0
   "56":
     id: "56"
-    taskid: 9820f14a-390e-46ab-8c39-ff6f9e1aa90d
+    taskid: 3ee3588e-017f-449c-83d5-2968d3a171b0
     type: condition
     task:
-      id: 9820f14a-390e-46ab-8c39-ff6f9e1aa90d
+      id: 3ee3588e-017f-449c-83d5-2968d3a171b0
       version: -1
       name: Is Asset Organization Unit Known?
       description: Check the attributed Organization Unit.
@@ -1836,10 +1498,10 @@ tasks:
     quietmode: 0
   "58":
     id: "58"
-    taskid: f2267b0d-0a69-438c-81b8-cf3bd6d8ac3e
+    taskid: a3915f7e-e23c-4129-88e8-52f600a52218
     type: regular
     task:
-      id: f2267b0d-0a69-438c-81b8-cf3bd6d8ac3e
+      id: a3915f7e-e23c-4129-88e8-52f600a52218
       version: -1
       name: Notify OU Owner
       description: Send an email.
@@ -1902,10 +1564,10 @@ tasks:
     quietmode: 0
   "59":
     id: "59"
-    taskid: 32975315-bcb3-469e-8479-aa6b07ddfd68
+    taskid: 75e0bf72-f042-4fcf-81e4-55104cffd8ae
     type: condition
     task:
-      id: 32975315-bcb3-469e-8479-aa6b07ddfd68
+      id: 75e0bf72-f042-4fcf-81e4-55104cffd8ae
       version: -1
       name: Check for Possible Shadow IT?
       description: Check if the incident is a possible Shadow IT incident.
@@ -1947,10 +1609,10 @@ tasks:
     quietmode: 0
   "62":
     id: "62"
-    taskid: 6785a8ca-71a8-4831-8424-45278e375fbf
+    taskid: a4824548-dcb7-4620-84e5-9756441dbd1e
     type: title
     task:
-      id: 6785a8ca-71a8-4831-8424-45278e375fbf
+      id: a4824548-dcb7-4620-84e5-9756441dbd1e
       version: -1
       name: Shadow IT
       type: title
@@ -1975,10 +1637,10 @@ tasks:
     quietmode: 0
   "63":
     id: "63"
-    taskid: c7d1610e-130b-4584-8581-44081a96867f
+    taskid: 7c06554c-dc59-4f03-8b9b-07934c3c3a63
     type: title
     task:
-      id: c7d1610e-130b-4584-8581-44081a96867f
+      id: 7c06554c-dc59-4f03-8b9b-07934c3c3a63
       version: -1
       name: Organization Unit
       type: title
@@ -2006,10 +1668,10 @@ tasks:
     quietmode: 0
   "65":
     id: "65"
-    taskid: 5dcaad4e-88c7-4008-88e4-b2ff7cacf791
+    taskid: e9486c6a-b7c9-4ddf-8148-6b3838a68b94
     type: regular
     task:
-      id: 5dcaad4e-88c7-4008-88e4-b2ff7cacf791
+      id: e9486c6a-b7c9-4ddf-8148-6b3838a68b94
       version: -1
       name: Extract List of Low Confidence Discovery tags from PB Inputs
       description: Set a value in context under the key you entered. If no value is
@@ -2051,10 +1713,10 @@ tasks:
     quietmode: 0
   "66":
     id: "66"
-    taskid: d96abe53-d7fc-40cc-8518-8f43125940f1
+    taskid: 83c42d46-aa1f-487f-8d55-78d141fd5249
     type: regular
     task:
-      id: d96abe53-d7fc-40cc-8518-8f43125940f1
+      id: 83c42d46-aa1f-487f-8d55-78d141fd5249
       version: -1
       name: Print Target Device Group suggestions
       description: Convert an array to a nice table display. Usually, from the context.
@@ -2091,10 +1753,10 @@ tasks:
     quietmode: 0
   "67":
     id: "67"
-    taskid: ea46a7b0-640a-40fd-8b50-87427e7c57cf
+    taskid: 56fedbbc-df14-4b7f-8936-82d0dc80e7f4
     type: regular
     task:
-      id: ea46a7b0-640a-40fd-8b50-87427e7c57cf
+      id: 56fedbbc-df14-4b7f-8936-82d0dc80e7f4
       version: -1
       name: Set Target Device Group based on user input
       description: Set a value in context under the key you entered.
@@ -2130,10 +1792,10 @@ tasks:
     quietmode: 0
   "68":
     id: "68"
-    taskid: ddc36e20-a011-4339-88e4-3ab8d8a21ac9
+    taskid: 2291687a-990b-48a8-8315-06a64ce0cb3b
     type: regular
     task:
-      id: ddc36e20-a011-4339-88e4-3ab8d8a21ac9
+      id: 2291687a-990b-48a8-8315-06a64ce0cb3b
       version: -1
       name: Print Target Users suggestions
       description: Convert an array to a nice table display. Usually, from the context.
@@ -2185,10 +1847,10 @@ tasks:
     quietmode: 0
   "69":
     id: "69"
-    taskid: bf2a573d-152f-40b3-86a7-68dd860b4a14
+    taskid: 2d521c0e-0e30-4123-80d6-8edf702abeab
     type: regular
     task:
-      id: bf2a573d-152f-40b3-86a7-68dd860b4a14
+      id: 2d521c0e-0e30-4123-80d6-8edf702abeab
       version: -1
       name: Print Target IP suggestions
       description: Convert an array to a nice table display. Usually, from the context.
@@ -2240,10 +1902,10 @@ tasks:
     quietmode: 0
   "70":
     id: "70"
-    taskid: 16dab237-f597-443e-8980-e5e6431f5fb4
+    taskid: ece8c5e3-2ab9-450f-8b22-93b0f1466ee2
     type: regular
     task:
-      id: 16dab237-f597-443e-8980-e5e6431f5fb4
+      id: ece8c5e3-2ab9-450f-8b22-93b0f1466ee2
       version: -1
       name: Print Target Devices suggestions
       description: Convert an array to a nice table display. Usually, from the context.
@@ -2295,10 +1957,10 @@ tasks:
     quietmode: 0
   "73":
     id: "73"
-    taskid: e0f6e9e4-dfcf-448c-8a6b-78e0c1ff9bc8
+    taskid: e672fa05-4240-4420-8632-e9f30f31a20b
     type: condition
     task:
-      id: e0f6e9e4-dfcf-448c-8a6b-78e0c1ff9bc8
+      id: e672fa05-4240-4420-8632-e9f30f31a20b
       version: -1
       name: Is this shadow IT?
       description: Check if the incident is marked as Shadow IT.
@@ -2335,10 +1997,10 @@ tasks:
     quietmode: 0
   "74":
     id: "74"
-    taskid: e3a77ba2-2132-41ea-84e0-9635a9c2ae70
+    taskid: 7faace73-d807-4e6e-8a71-201c1422eeee
     type: regular
     task:
-      id: e3a77ba2-2132-41ea-84e0-9635a9c2ae70
+      id: 7faace73-d807-4e6e-8a71-201c1422eeee
       version: -1
       name: Create Shadow IT Incident
       description: commands.local.cmd.create.inc
@@ -2350,197 +2012,6 @@ tasks:
       '#none#':
       - "105"
     scriptarguments:
-      accountid: {}
-      accountname: {}
-      agentid: {}
-      alertid: {}
-      alertname: {}
-      app: {}
-      applicationid: {}
-      applicationname: {}
-      assetid: {}
-      assigneduser: {}
-      assignmentgroup: {}
-      attachmentcount: {}
-      attachmentextension: {}
-      attachmenthash: {}
-      attachmentid: {}
-      attachmentname: {}
-      attachmentsize: {}
-      attachmenttype: {}
-      blockedaction: {}
-      bugtraq: {}
-      caller: {}
-      categorycount: {}
-      city: {}
-      closetime: {}
-      closingreason: {}
-      closinguser: {}
-      cloudservice: {}
-      commandline: {}
-      compliancenotes: {}
-      costcenter: {}
-      costcentercode: {}
-      country: {}
-      countryname: {}
-      criticalassets: {}
-      customFields: {}
-      cve: {}
-      cvss: {}
-      cvssavailabilityrequirement: {}
-      cvsscollateraldamagepotential: {}
-      cvssconfidentialityrequirement: {}
-      cvssintegrityrequirement: {}
-      dbotprediction: {}
-      dbotpredictionprobability: {}
-      dbottextsuggestionhighlighted: {}
-      department: {}
-      dest: {}
-      desthostname: {}
-      destinationgeolocation: {}
-      destinationhostname: {}
-      destinationip: {}
-      destinationips: {}
-      destinationipv6: {}
-      destinationmacaddress: {}
-      destinationnetwork: {}
-      destinationport: {}
-      destntdomain: {}
-      destos: {}
-      details: {}
-      detectedexternalhosts: {}
-      detectedexternalips: {}
-      detectedinternalhosts: {}
-      detectedinternalips: {}
-      detectedusers: {}
-      detectionendtime: {}
-      detectionid: {}
-      detectionupdatetime: {}
-      detectionurl: {}
-      deviceexternalip: {}
-      devicehash: {}
-      devicelocalip: {}
-      devicemodel: {}
-      devicename: {}
-      devicetime: {}
-      displayname: {}
-      dnsname: {}
-      dstports: {}
-      duration: {}
-      email: {}
-      emailauthenticitycheck: {}
-      emailbcc: {}
-      emailbody: {}
-      emailbodyformat: {}
-      emailbodyhtml: {}
-      emailcc: {}
-      emailclassification: {}
-      emailclientname: {}
-      emailfrom: {}
-      emailheaders: {}
-      emailhtml: {}
-      emailhtmlimage: {}
-      emailinreplyto: {}
-      emailkeywords: {}
-      emaillabels: {}
-      emaillatestmessage: {}
-      emailmessageid: {}
-      emailreceived: {}
-      emailreplyto: {}
-      emailreturnpath: {}
-      emailsenderip: {}
-      emailsize: {}
-      emailsource: {}
-      emailsubject: {}
-      emailto: {}
-      emailtocount: {}
-      emailurlclicked: {}
-      employeedisplayname: {}
-      employeeemail: {}
-      employeemanageremail: {}
-      entryIDs: {}
-      errorcode: {}
-      errormessage: {}
-      escalation: {}
-      eventaction: {}
-      eventdescriptions: {}
-      eventid: {}
-      eventnames: {}
-      events: {}
-      eventtype: {}
-      expanseactivitystatus: {}
-      expanseasset: {}
-      expanseassetorganizationunit: {}
-      expanseassetowner: {}
-      expanseassignee: {}
-      expansebusinessunits: {}
-      expansecategory: {}
-      expansecertificate: {}
-      expansecreated: {}
-      expansedomain: {}
-      expansegeolocation: {}
-      expanseinitialevidence: {}
-      expanseip: {}
-      expanseissueid: {}
-      expanseissuetype: {}
-      expanselatestevidence: {}
-      expanselatestevidencegeolocation: {}
-      expansemlfeatures: {}
-      expansemodified: {}
-      expanseport: {}
-      expansepriority: {}
-      expanseprogressstatus: {}
-      expanseprotocol: {}
-      expanseprovider: {}
-      expanseregion: {}
-      expanseservice: {}
-      expanseshadowit: {}
-      expansetags: {}
-      externaladdresses: {}
-      filehash: {}
-      filename: {}
-      filepath: {}
-      filesize: {}
-      firstname: {}
-      firstseen: {}
-      followup: {}
-      givenname: {}
-      helloworldid: {}
-      helloworldstatus: {}
-      helloworldtype: {}
-      highlevelcategories: {}
-      hostname: {}
-      incomingmirrorerror: {}
-      infectedhosts: {}
-      internaladdresses: {}
-      investigationstage: {}
-      isolated: {}
-      jobcode: {}
-      jobfamily: {}
-      jobfunction: {}
-      labels: {}
-      lastmodifiedby: {}
-      lastmodifiedon: {}
-      lastname: {}
-      lastseen: {}
-      lastupdatetime: {}
-      leadership: {}
-      listofrulesevent: {}
-      location: {}
-      locationregion: {}
-      logsource: {}
-      logsourcename: {}
-      logsourcetype: {}
-      lowlevelcategoriesevents: {}
-      macaddress: {}
-      maliciousbehavior: {}
-      malwarefamily: {}
-      malwarename: {}
-      manageremailaddress: {}
-      managername: {}
-      md5: {}
-      mobiledevicemodel: {}
-      mobilephone: {}
       name:
         complex:
           root: incident
@@ -2552,169 +2023,13 @@ tasks:
                 value:
                   simple: 'Shadow IT Detected by Expanse on IP: '
               suffix: {}
-      numberoflogsources: {}
-      occurred: {}
-      os: {}
-      osversion: {}
-      outgoingmirrorerror: {}
-      owner: {}
-      parentprocessid: {}
-      personalemail: {}
-      phase: {}
-      phishingsubtype: {}
-      phonenumber: {}
-      pid: {}
-      policydeleted: {}
-      policydescription: {}
-      policydetails: {}
-      policyid: {}
-      policyrecommendation: {}
-      policyremediable: {}
-      policyseverity: {}
-      policytype: {}
-      postnatdestinationip: {}
-      postnatdestinationport: {}
-      postnatsourceip: {}
-      postnatsourceport: {}
-      prenatdestinationport: {}
-      prenatsourceip: {}
-      prenatsourceport: {}
-      prismacloudid: {}
-      prismacloudreason: {}
-      prismacloudrules: {}
-      prismacloudstatus: {}
-      prismacloudtime: {}
-      protocol: {}
-      protocolevent: {}
-      protocols: {}
-      quarantined: {}
-      rating: {}
-      rawevent: {}
-      region: {}
-      regionid: {}
-      reporteremailaddress: {}
-      resourceapiname: {}
-      resourcecloudtype: {}
-      resourceid: {}
-      resourcename: {}
-      resourcetype: {}
-      riskrating: {}
-      riskscore: {}
-      roles: {}
-      rrn: {}
-      samaccountname: {}
       severity:
         complex:
           root: incident
           accessor: severity
-      sha256: {}
-      shadowitaccountowneremail: {}
-      shadowitaccountownername: {}
-      shadowitbilledtocorp: {}
-      shadowitcertificate: {}
-      shadowitcloudaccountid: {}
-      shadowitcloudaccounttype: {}
-      shadowitfqdn: {}
-      shadowitip: {}
-      shadowitorganizationalunit: {}
-      shadowitoucontactemail: {}
-      shadowitoucontactname: {}
-      shadowitport: {}
-      shadowitprovider: {}
-      shadowitregion: {}
-      shadowitrisk: {}
-      shadowitsactionedservice: {}
-      shadowitsensitivedata: {}
-      shadowitservice: {}
-      shadowitservicepurpose: {}
-      shadowitsource: {}
-      shadowitusersuggestions: {}
-      shadowusersuggestions: {}
-      signature: {}
-      skuname: {}
-      skutier: {}
-      sla: {}
-      slaField: {}
-      sourcegeolocation: {}
-      sourcehostname: {}
-      sourceip: {}
-      sourceips: {}
-      sourceipv6: {}
-      sourcemacaddress: {}
-      sourcenetwork: {}
-      sourceport: {}
-      sourceusername: {}
-      src: {}
-      srchostname: {}
-      srcntdomain: {}
-      srcos: {}
-      srcports: {}
-      srcuser: {}
-      starttime: {}
-      state: {}
-      streetaddress: {}
-      subcategory: {}
-      subscriptionassignedby: {}
-      subscriptioncreatedby: {}
-      subscriptioncreatedon: {}
-      subscriptiondescription: {}
-      subscriptionid: {}
-      subscriptionname: {}
-      subscriptiontype: {}
-      subscriptionupdatedby: {}
-      subscriptionupdatedon: {}
-      subtype: {}
-      surname: {}
-      systemdefault: {}
-      systems: {}
-      targetfirewallversion: {}
-      technicalowner: {}
-      technicalownercontact: {}
-      technicaluser: {}
-      tenantname: {}
-      terminatedaction: {}
-      threatactor: {}
-      ticketcloseddate: {}
-      ticketnumber: {}
-      ticketopeneddate: {}
-      title: {}
-      trafficdirection: {}
-      triggeredsecurityprofile: {}
       type:
         complex:
           root: inputs.ShadowITIncidentType
-      uniqueports: {}
-      urlsslverification: {}
-      user: {}
-      useraccountcontrol: {}
-      userid: {}
-      username: {}
-      usernames: {}
-      vendorid: {}
-      vendorproduct: {}
-      vpcid: {}
-      vulnerabilitycategory: {}
-      workphone: {}
-      xdralertcount: {}
-      xdralerts: {}
-      xdrassigneduseremail: {}
-      xdrassigneduserprettyname: {}
-      xdrdescription: {}
-      xdrdetectiontime: {}
-      xdrfileartifacts: {}
-      xdrhighseverityalertcount: {}
-      xdrhostcount: {}
-      xdrincidentid: {}
-      xdrlowseverityalertcount: {}
-      xdrmediumseverityalertcount: {}
-      xdrnetworkartifacts: {}
-      xdrnotes: {}
-      xdrresolvecomment: {}
-      xdrstatus: {}
-      xdrstatusv2: {}
-      xdrurl: {}
-      xdrusercount: {}
-      zipcode: {}
     separatecontext: false
     view: |-
       {
@@ -2730,10 +2045,10 @@ tasks:
     quietmode: 0
   "75":
     id: "75"
-    taskid: 943b18f9-921c-4dd8-848a-013c5510719d
+    taskid: ca90a949-472f-4c5c-8cad-4279365af9ec
     type: title
     task:
-      id: 943b18f9-921c-4dd8-848a-013c5510719d
+      id: ca90a949-472f-4c5c-8cad-4279365af9ec
       version: -1
       name: Close Investigation
       type: title
@@ -2758,10 +2073,10 @@ tasks:
     quietmode: 0
   "76":
     id: "76"
-    taskid: f6893240-bc15-4819-882d-8014104909d2
+    taskid: 07671ff1-24b1-436c-8b6f-862a6b32ee80
     type: condition
     task:
-      id: f6893240-bc15-4819-882d-8014104909d2
+      id: 07671ff1-24b1-436c-8b6f-862a6b32ee80
       version: -1
       name: Close Investigation?
       description: Ask the user whether to close the investigation.
@@ -2788,10 +2103,10 @@ tasks:
     quietmode: 0
   "77":
     id: "77"
-    taskid: 8fbe3d34-0ceb-4e1b-860c-fac24398d909
+    taskid: 8bba46af-ec09-4f22-86d3-920ab1683349
     type: regular
     task:
-      id: 8fbe3d34-0ceb-4e1b-860c-fac24398d909
+      id: 8bba46af-ec09-4f22-86d3-920ab1683349
       version: -1
       name: Close Investigation
       description: commands.local.cmd.close.inv
@@ -2826,10 +2141,10 @@ tasks:
     quietmode: 0
   "78":
     id: "78"
-    taskid: 7ecbd2d6-e3a0-4395-8478-415a6f4f41f5
+    taskid: e1314de8-85aa-40de-8808-cb4975d6c9f7
     type: title
     task:
-      id: 7ecbd2d6-e3a0-4395-8478-415a6f4f41f5
+      id: e1314de8-85aa-40de-8808-cb4975d6c9f7
       version: -1
       name: All done
       type: title
@@ -2851,10 +2166,10 @@ tasks:
     quietmode: 0
   "81":
     id: "81"
-    taskid: 159f1781-99da-48b8-8889-6d1cb93273cf
+    taskid: bc1fc0b9-7607-43c7-8057-471ba1d629b9
     type: title
     task:
-      id: 159f1781-99da-48b8-8889-6d1cb93273cf
+      id: bc1fc0b9-7607-43c7-8057-471ba1d629b9
       version: -1
       name: Vulnerability Assessment
       type: title
@@ -2863,7 +2178,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "52"
+      - "210"
     separatecontext: false
     view: |-
       {
@@ -2879,10 +2194,10 @@ tasks:
     quietmode: 0
   "82":
     id: "82"
-    taskid: 384767ae-2a7c-43fe-83b0-5455afb5390f
+    taskid: 460f200a-e66b-4673-8de2-e799bf5685e2
     type: title
     task:
-      id: 384767ae-2a7c-43fe-83b0-5455afb5390f
+      id: 460f200a-e66b-4673-8de2-e799bf5685e2
       version: -1
       name: Notification Flow
       type: title
@@ -2907,10 +2222,10 @@ tasks:
     quietmode: 0
   "83":
     id: "83"
-    taskid: 1946784c-920b-48bb-8e80-890503b9a450
+    taskid: f5110bdb-fbb0-4a07-81fe-28c93d734e47
     type: title
     task:
-      id: 1946784c-920b-48bb-8e80-890503b9a450
+      id: f5110bdb-fbb0-4a07-81fe-28c93d734e47
       version: -1
       name: Done Notification
       type: title
@@ -2935,10 +2250,10 @@ tasks:
     quietmode: 0
   "84":
     id: "84"
-    taskid: 7b2c2e40-4e9f-4762-81db-4196b3649bd1
+    taskid: 9cdcf6b0-d3a2-4dc5-8440-6890feb17363
     type: title
     task:
-      id: 7b2c2e40-4e9f-4762-81db-4196b3649bd1
+      id: 9cdcf6b0-d3a2-4dc5-8440-6890feb17363
       version: -1
       name: Network Remediation
       type: title
@@ -2963,10 +2278,10 @@ tasks:
     quietmode: 0
   "85":
     id: "85"
-    taskid: 7e9b2fd7-ad29-48b8-84e2-95be24da7ecf
+    taskid: 7a42ea55-78cf-4763-8b59-69cb9c7c96e6
     type: title
     task:
-      id: 7e9b2fd7-ad29-48b8-84e2-95be24da7ecf
+      id: 7a42ea55-78cf-4763-8b59-69cb9c7c96e6
       version: -1
       name: Shadow IT
       type: title
@@ -2991,10 +2306,10 @@ tasks:
     quietmode: 0
   "86":
     id: "86"
-    taskid: c76455c0-3aa2-4213-8056-a54704ebbda0
+    taskid: 12c8ea49-d163-49e6-840e-5ea51ae03038
     type: title
     task:
-      id: c76455c0-3aa2-4213-8056-a54704ebbda0
+      id: 12c8ea49-d163-49e6-840e-5ea51ae03038
       version: -1
       name: Done Shadow IT
       type: title
@@ -3019,10 +2334,10 @@ tasks:
     quietmode: 0
   "88":
     id: "88"
-    taskid: 0f69197e-de37-4db7-87d5-8fcbdaa32ce2
+    taskid: 6a8a48ca-b9c8-4554-8e56-eb149bacc0bf
     type: condition
     task:
-      id: 0f69197e-de37-4db7-87d5-8fcbdaa32ce2
+      id: 6a8a48ca-b9c8-4554-8e56-eb149bacc0bf
       version: -1
       name: Should Add New OU?
       description: Determine if a new OU has to be added.
@@ -3060,10 +2375,10 @@ tasks:
     quietmode: 0
   "89":
     id: "89"
-    taskid: 5f333eeb-e232-47d4-88ff-bad96f230759
+    taskid: 0432d418-3284-4fba-82a2-b1cb3e1af98e
     type: collection
     task:
-      id: 5f333eeb-e232-47d4-88ff-bad96f230759
+      id: 0432d418-3284-4fba-82a2-b1cb3e1af98e
       version: -1
       name: Add New OU
       description: Collect new OU details from the user.
@@ -3166,10 +2481,10 @@ tasks:
     quietmode: 0
   "90":
     id: "90"
-    taskid: a353d999-04d7-4613-8bcf-4394c81e99ea
+    taskid: 3c2457ff-8f48-4fc7-879e-a64a12921c89
     type: regular
     task:
-      id: a353d999-04d7-4613-8bcf-4394c81e99ea
+      id: 3c2457ff-8f48-4fc7-879e-a64a12921c89
       version: -1
       name: Save New Organization Unit to List
       description: Adds/Replaces a key in key/value store backed by an XSOAR list.
@@ -3231,10 +2546,10 @@ tasks:
     quietmode: 0
   "91":
     id: "91"
-    taskid: 6cbcd7b0-6692-413a-8d6b-62542c3a97f1
+    taskid: ff6fac08-0b89-4f9d-8f52-b48ec659a360
     type: regular
     task:
-      id: 6cbcd7b0-6692-413a-8d6b-62542c3a97f1
+      id: ff6fac08-0b89-4f9d-8f52-b48ec659a360
       version: -1
       name: Set Organization Unit
       description: commands.local.cmd.set.incident
@@ -3246,287 +2561,12 @@ tasks:
       '#none#':
       - "93"
     scriptarguments:
-      accountid: {}
-      accountname: {}
-      addLabels: {}
-      agentid: {}
-      app: {}
-      appendMultiSelect: {}
-      assetid: {}
-      assigneduser: {}
-      assignmentgroup: {}
-      attachmentcount: {}
-      attachmentextension: {}
-      attachmenthash: {}
-      attachmentid: {}
-      attachmentname: {}
-      attachmentsize: {}
-      attachmenttype: {}
-      blockedaction: {}
-      bugtraq: {}
-      caller: {}
-      city: {}
-      closeNotes: {}
-      closeReason: {}
-      cloudservice: {}
-      commandline: {}
-      costcenter: {}
-      costcentercode: {}
-      country: {}
-      countryname: {}
-      criticalassets: {}
-      customFields: {}
-      cve: {}
-      cvss: {}
-      dbotMirrorDirection: {}
-      dbotMirrorId: {}
-      dbotMirrorInstance: {}
-      dbotMirrorTags: {}
-      dbotprediction: {}
-      dbotpredictionprobability: {}
-      dbottextsuggestionhighlighted: {}
-      deleteEmptyField: {}
-      department: {}
-      dest: {}
-      desthostname: {}
-      destinationhostname: {}
-      destinationip: {}
-      destinationnetwork: {}
-      destinationport: {}
-      destntdomain: {}
-      destos: {}
-      details: {}
-      detectedexternalhosts: {}
-      detectedexternalips: {}
-      detectedinternalhosts: {}
-      detectedinternalips: {}
-      detectedusers: {}
-      detectionendtime: {}
-      detectionid: {}
-      detectionupdatetime: {}
-      detectionurl: {}
-      deviceexternalip: {}
-      devicehash: {}
-      devicelocalip: {}
-      devicemodel: {}
-      devicename: {}
-      displayname: {}
-      duration: {}
-      email: {}
-      emailauthenticitycheck: {}
-      emailbcc: {}
-      emailbody: {}
-      emailbodyformat: {}
-      emailbodyhtml: {}
-      emailcc: {}
-      emailclassification: {}
-      emailclientname: {}
-      emailfrom: {}
-      emailheaders: {}
-      emailhtml: {}
-      emailinreplyto: {}
-      emailkeywords: {}
-      emailmessageid: {}
-      emailreceived: {}
-      emailreplyto: {}
-      emailreturnpath: {}
-      emailsenderip: {}
-      emailsize: {}
-      emailsource: {}
-      emailsubject: {}
-      emailto: {}
-      emailtocount: {}
-      emailurlclicked: {}
-      employeedisplayname: {}
-      employeeemail: {}
-      employeemanageremail: {}
-      escalation: {}
-      eventaction: {}
-      eventid: {}
-      eventtype: {}
-      expanseactivitystatus: {}
-      expanseasset: {}
       expanseassetorganizationunit:
         complex:
           root: Add New Organization Unit.Answers
           accessor: "0"
           transformers:
           - operator: FirstArrayElement
-      expanseassetowner: {}
-      expanseassignee: {}
-      expansebusinessunits: {}
-      expansecategory: {}
-      expansecertificate: {}
-      expansecreated: {}
-      expansedomain: {}
-      expanseinitialevidence: {}
-      expanseip: {}
-      expanseissueid: {}
-      expanseissuetype: {}
-      expanselatestevidence: {}
-      expansemodified: {}
-      expanseport: {}
-      expansepriority: {}
-      expanseprogressstatus: {}
-      expanseprotocol: {}
-      expanseprovider: {}
-      expanseshadowit: {}
-      expansetags: {}
-      externaladdresses: {}
-      filehash: {}
-      filename: {}
-      filepath: {}
-      filesize: {}
-      firstname: {}
-      firstseen: {}
-      givenname: {}
-      helloworldid: {}
-      helloworldstatus: {}
-      helloworldtype: {}
-      hostname: {}
-      id: {}
-      incomingmirrorerror: {}
-      infectedhosts: {}
-      internaladdresses: {}
-      investigationstage: {}
-      isolated: {}
-      jobcode: {}
-      jobfamily: {}
-      jobfunction: {}
-      labels: {}
-      lastmodifiedby: {}
-      lastmodifiedon: {}
-      lastname: {}
-      lastseen: {}
-      leadership: {}
-      location: {}
-      locationregion: {}
-      logsource: {}
-      macaddress: {}
-      maliciousbehavior: {}
-      malwarefamily: {}
-      malwarename: {}
-      manageremailaddress: {}
-      managername: {}
-      md5: {}
-      mobiledevicemodel: {}
-      mobilephone: {}
-      name: {}
-      occurred: {}
-      os: {}
-      osversion: {}
-      outgoingmirrorerror: {}
-      owner: {}
-      parentprocessid: {}
-      personalemail: {}
-      phase: {}
-      phishingsubtype: {}
-      phonenumber: {}
-      pid: {}
-      policydeleted: {}
-      policydescription: {}
-      policydetails: {}
-      policyid: {}
-      policyrecommendation: {}
-      policyremediable: {}
-      policyseverity: {}
-      policytype: {}
-      prismacloudid: {}
-      prismacloudreason: {}
-      prismacloudrules: {}
-      prismacloudstatus: {}
-      prismacloudtime: {}
-      protocol: {}
-      protocols: {}
-      quarantined: {}
-      rating: {}
-      region: {}
-      regionid: {}
-      replacePlaybook: {}
-      reporteremailaddress: {}
-      resourceapiname: {}
-      resourcecloudtype: {}
-      resourceid: {}
-      resourcename: {}
-      resourcetype: {}
-      riskrating: {}
-      riskscore: {}
-      roles: {}
-      rrn: {}
-      samaccountname: {}
-      severity: {}
-      sha256: {}
-      signature: {}
-      skuname: {}
-      skutier: {}
-      sla: {}
-      slaField: {}
-      sourcehostname: {}
-      sourceip: {}
-      sourcenetwork: {}
-      sourceport: {}
-      sourceusername: {}
-      src: {}
-      srchostname: {}
-      srcntdomain: {}
-      srcos: {}
-      srcuser: {}
-      state: {}
-      streetaddress: {}
-      subcategory: {}
-      subscriptionassignedby: {}
-      subscriptioncreatedby: {}
-      subscriptioncreatedon: {}
-      subscriptiondescription: {}
-      subscriptionid: {}
-      subscriptionname: {}
-      subscriptiontype: {}
-      subscriptionupdatedby: {}
-      subscriptionupdatedon: {}
-      subtype: {}
-      surname: {}
-      systemdefault: {}
-      systems: {}
-      targetfirewallversion: {}
-      tenantname: {}
-      terminatedaction: {}
-      threatactor: {}
-      ticketcloseddate: {}
-      ticketnumber: {}
-      ticketopeneddate: {}
-      title: {}
-      triggeredsecurityprofile: {}
-      type: {}
-      uniqueports: {}
-      urlsslverification: {}
-      user: {}
-      useraccountcontrol: {}
-      username: {}
-      vendorid: {}
-      vendorproduct: {}
-      vpcid: {}
-      vulnerabilitycategory: {}
-      workphone: {}
-      xdralertcount: {}
-      xdralerts: {}
-      xdrassigneduseremail: {}
-      xdrassigneduserprettyname: {}
-      xdrdescription: {}
-      xdrdetectiontime: {}
-      xdrfileartifacts: {}
-      xdrhighseverityalertcount: {}
-      xdrhostcount: {}
-      xdrincidentid: {}
-      xdrlowseverityalertcount: {}
-      xdrmediumseverityalertcount: {}
-      xdrnetworkartifacts: {}
-      xdrnotes: {}
-      xdrresolvecomment: {}
-      xdrstatus: {}
-      xdrstatusv2: {}
-      xdrurl: {}
-      xdrusercount: {}
-      zipcode: {}
     separatecontext: false
     view: |-
       {
@@ -3542,10 +2582,10 @@ tasks:
     quietmode: 0
   "93":
     id: "93"
-    taskid: 7af77f78-1804-4a7f-841b-38d359c7cb57
+    taskid: cc42a7d9-9ae2-4e41-8907-fbe20f95d256
     type: title
     task:
-      id: 7af77f78-1804-4a7f-841b-38d359c7cb57
+      id: cc42a7d9-9ae2-4e41-8907-fbe20f95d256
       version: -1
       name: Done Organization Unit
       type: title
@@ -3571,10 +2611,10 @@ tasks:
     quietmode: 0
   "94":
     id: "94"
-    taskid: 2b7bb962-a6b4-417d-8be4-2531e498d290
+    taskid: c2022652-c1b8-46ff-8721-2aa3864bcc90
     type: regular
     task:
-      id: 2b7bb962-a6b4-417d-8be4-2531e498d290
+      id: c2022652-c1b8-46ff-8721-2aa3864bcc90
       version: -1
       name: Save New Organization Tag to List
       description: Adds/Replaces a key in key/value store backed by an XSOAR list.
@@ -3628,10 +2668,10 @@ tasks:
     quietmode: 0
   "95":
     id: "95"
-    taskid: bffbb1d9-6fd8-4b17-88c5-ed16fac2d117
+    taskid: cf338360-9de5-4966-8b94-1eb9abac675f
     type: regular
     task:
-      id: bffbb1d9-6fd8-4b17-88c5-ed16fac2d117
+      id: cf338360-9de5-4966-8b94-1eb9abac675f
       version: -1
       name: Create Tag in Expanse (if it doesn't exist already)
       description: Create a new tag in Expanse.
@@ -3663,10 +2703,10 @@ tasks:
     quietmode: 0
   "96":
     id: "96"
-    taskid: b8b92c6c-d420-447d-8f6b-22859f73ad96
+    taskid: 8b64cf86-4670-4219-8c04-714c91a9d542
     type: condition
     task:
-      id: b8b92c6c-d420-447d-8f6b-22859f73ad96
+      id: 8b64cf86-4670-4219-8c04-714c91a9d542
       version: -1
       name: Do We Have Tag To Use?
       description: Branch depending on the OU.
@@ -3730,10 +2770,10 @@ tasks:
     quietmode: 0
   "99":
     id: "99"
-    taskid: 3a125587-d6f2-48c9-8156-c4e78b9c0d34
+    taskid: 560ef1e9-c503-4293-8c0d-dbb98f0e69c4
     type: regular
     task:
-      id: 3a125587-d6f2-48c9-8156-c4e78b9c0d34
+      id: 560ef1e9-c503-4293-8c0d-dbb98f0e69c4
       version: -1
       name: Tag Assets on Expanse with AssetTag
       description: Assign tags to asset.
@@ -3775,10 +2815,10 @@ tasks:
     quietmode: 0
   "103":
     id: "103"
-    taskid: fd7c2c48-8c63-42b7-804a-a3e5f4e2cf96
+    taskid: 7fbc57e0-2611-4c34-808e-2add895463ce
     type: regular
     task:
-      id: fd7c2c48-8c63-42b7-804a-a3e5f4e2cf96
+      id: 7fbc57e0-2611-4c34-808e-2add895463ce
       version: -1
       name: Set AssetTag with Known OU Tag
       description: Set a value in context under the key you entered.
@@ -3820,10 +2860,10 @@ tasks:
     quietmode: 0
   "104":
     id: "104"
-    taskid: 908c82d7-8360-41b6-8072-76061a394e3e
+    taskid: 542b77c5-165b-492f-8e40-c173351539fa
     type: regular
     task:
-      id: 908c82d7-8360-41b6-8072-76061a394e3e
+      id: 542b77c5-165b-492f-8e40-c173351539fa
       version: -1
       name: Set AssetTag with Invalid Tag from Inputs
       description: Set a value in context under the key you entered.
@@ -3858,10 +2898,10 @@ tasks:
     quietmode: 0
   "105":
     id: "105"
-    taskid: 67bbd48a-fb4a-4c58-8664-5ea371bb653e
+    taskid: b9cd17b9-f981-4123-86b7-769495f2b21e
     type: regular
     task:
-      id: 67bbd48a-fb4a-4c58-8664-5ea371bb653e
+      id: b9cd17b9-f981-4123-86b7-769495f2b21e
       version: -1
       name: Link Incidents
       description: commands.local.cmd.linkIncidents
@@ -3894,10 +2934,10 @@ tasks:
     quietmode: 0
   "106":
     id: "106"
-    taskid: 0f638d94-a06c-409f-8123-a48e4445ec3b
+    taskid: 62086ed0-c83a-4b80-8a17-59960bf67d07
     type: regular
     task:
-      id: 0f638d94-a06c-409f-8123-a48e4445ec3b
+      id: 62086ed0-c83a-4b80-8a17-59960bf67d07
       version: -1
       name: Copy Suggestion Notes to Created Incident
       description: Copy notes from current incident to a remote incident.
@@ -3929,10 +2969,10 @@ tasks:
     quietmode: 0
   "108":
     id: "108"
-    taskid: c4527952-0ea6-4088-8116-11becd29b88c
+    taskid: f5a4d24b-4946-4d0d-89c5-a212abee3893
     type: regular
     task:
-      id: c4527952-0ea6-4088-8116-11becd29b88c
+      id: f5a4d24b-4946-4d0d-89c5-a212abee3893
       version: -1
       name: Print Prisma Cloud suggestions
       description: Convert an array to a nice table display. Usually, from the context.
@@ -3983,10 +3023,10 @@ tasks:
     quietmode: 0
   "109":
     id: "109"
-    taskid: 876f3d9c-aea6-4d31-8011-35c61544d830
+    taskid: 00974652-fb70-4dc2-89b7-4de40f1ad02f
     type: title
     task:
-      id: 876f3d9c-aea6-4d31-8011-35c61544d830
+      id: 00974652-fb70-4dc2-89b7-4de40f1ad02f
       version: -1
       name: Prisma Cloud Alert Detection
       type: title
@@ -4011,10 +3051,10 @@ tasks:
     quietmode: 0
   "110":
     id: "110"
-    taskid: 1cf90da1-5be2-4a1c-8071-e9361f03e623
+    taskid: c51fddaa-2d87-4acc-8a84-a271a6cc9c3d
     type: condition
     task:
-      id: 1cf90da1-5be2-4a1c-8071-e9361f03e623
+      id: c51fddaa-2d87-4acc-8a84-a271a6cc9c3d
       version: -1
       name: Are assets in Prisma Cloud found?
       description: Check whether assets are found in Prisma Cloud.
@@ -4051,10 +3091,10 @@ tasks:
     quietmode: 0
   "111":
     id: "111"
-    taskid: ea69cf87-766b-41b3-872c-d1429fec0c8b
+    taskid: fe00331b-ae7d-4f7c-8e4e-8229d41652ee
     type: title
     task:
-      id: ea69cf87-766b-41b3-872c-d1429fec0c8b
+      id: fe00331b-ae7d-4f7c-8e4e-8229d41652ee
       version: -1
       name: Done Prisma Cloud Alert Detection
       type: title
@@ -4079,10 +3119,10 @@ tasks:
     quietmode: 0
   "116":
     id: "116"
-    taskid: 81d15dc4-3d3e-4b59-8d8f-6dee55228fcb
+    taskid: e1235d66-732a-4610-8656-67cacba27c09
     type: regular
     task:
-      id: 81d15dc4-3d3e-4b59-8d8f-6dee55228fcb
+      id: e1235d66-732a-4610-8656-67cacba27c09
       version: -1
       name: Create DG Tag in Expanse (if it doesn't already exist)
       description: Create a new tag in Expanse.
@@ -4114,10 +3154,10 @@ tasks:
     quietmode: 0
   "118":
     id: "118"
-    taskid: c8fb61b4-7e06-4203-89aa-1dfb86896203
+    taskid: 8950dfdd-442e-4095-89a6-000399015d09
     type: regular
     task:
-      id: c8fb61b4-7e06-4203-89aa-1dfb86896203
+      id: 8950dfdd-442e-4095-89a6-000399015d09
       version: -1
       name: Save DG Tag to List
       description: Adds/Replaces a key in key/value store backed by an XSOAR list.
@@ -4156,10 +3196,10 @@ tasks:
     quietmode: 0
   "119":
     id: "119"
-    taskid: 8aa14c11-857a-440a-8c29-66cee2143db9
+    taskid: b03e7efb-90e2-42be-8d49-e1936986e881
     type: condition
     task:
-      id: 8aa14c11-857a-440a-8c29-66cee2143db9
+      id: b03e7efb-90e2-42be-8d49-e1936986e881
       version: -1
       name: Determine Target
       description: Determine the target Device Group.
@@ -4251,10 +3291,10 @@ tasks:
     quietmode: 0
   "120":
     id: "120"
-    taskid: 0aead5b7-e566-4dda-8aac-2cba7690bc1d
+    taskid: 1a616bb3-db30-468f-8309-227c65fb037d
     type: collection
     task:
-      id: 0aead5b7-e566-4dda-8aac-2cba7690bc1d
+      id: 1a616bb3-db30-468f-8309-227c65fb037d
       version: -1
       name: Insert Device Group name and tag
       description: Collect Device Group information from user.
@@ -4331,10 +3371,10 @@ tasks:
     quietmode: 0
   "121":
     id: "121"
-    taskid: 7010099c-826e-4066-80ed-1c10a7f13639
+    taskid: cab3d5ba-d6f4-42dc-8bdd-4a2c38ff9716
     type: regular
     task:
-      id: 7010099c-826e-4066-80ed-1c10a7f13639
+      id: cab3d5ba-d6f4-42dc-8bdd-4a2c38ff9716
       version: -1
       name: Refresh Assets to sync updated tags
       description: |
@@ -4361,10 +3401,10 @@ tasks:
     quietmode: 0
   "122":
     id: "122"
-    taskid: ced5ad8f-6473-45a0-8ce7-c945efae13d1
+    taskid: 4bacc0bd-6870-429b-8c65-5657561e44ef
     type: regular
     task:
-      id: ced5ad8f-6473-45a0-8ce7-c945efae13d1
+      id: 4bacc0bd-6870-429b-8c65-5657561e44ef
       version: -1
       name: Extract All Asset Tags from Expanse
       description: Set a value in context under the key you entered. If no value is
@@ -4407,10 +3447,10 @@ tasks:
     quietmode: 0
   "123":
     id: "123"
-    taskid: d40153bf-f327-41bc-8510-7535a4f0779f
+    taskid: b23604c4-fe43-41e0-8a8e-db104fceaf6a
     type: regular
     task:
-      id: d40153bf-f327-41bc-8510-7535a4f0779f
+      id: b23604c4-fe43-41e0-8a8e-db104fceaf6a
       version: -1
       name: Extract only XSOAR-related Asset Tags
       description: Set a value in context under the key you entered. If no value is
@@ -4456,10 +3496,10 @@ tasks:
     quietmode: 0
   "124":
     id: "124"
-    taskid: 47421455-5bea-4b4f-8f0e-5d8b79c8cec2
+    taskid: af3d17db-75bf-49d4-81dc-ff0d34c36e6e
     type: regular
     task:
-      id: 47421455-5bea-4b4f-8f0e-5d8b79c8cec2
+      id: af3d17db-75bf-49d4-81dc-ff0d34c36e6e
       version: -1
       name: Set Device Group Tag Prefix
       description: Set a value in context under the key you entered.
@@ -4501,10 +3541,10 @@ tasks:
     quietmode: 0
   "125":
     id: "125"
-    taskid: 043da868-5c99-436a-8ed5-a8d3e049d133
+    taskid: 30abc613-b3d9-4d6f-81fa-02a6c0e87590
     type: regular
     task:
-      id: 043da868-5c99-436a-8ed5-a8d3e049d133
+      id: 30abc613-b3d9-4d6f-81fa-02a6c0e87590
       version: -1
       name: Find Device Group Tags
       description: Set a value in context under the key you entered. If no value is
@@ -4550,10 +3590,10 @@ tasks:
     quietmode: 0
   "133":
     id: "133"
-    taskid: 2f747558-305a-45e1-8ee6-0e0a4aa33701
+    taskid: 532c3fcd-30ec-42d3-8cda-5dd09fdf7985
     type: regular
     task:
-      id: 2f747558-305a-45e1-8ee6-0e0a4aa33701
+      id: 532c3fcd-30ec-42d3-8cda-5dd09fdf7985
       version: -1
       name: Suggest No Shadow IT
       description: Set a value in context under the key you entered.
@@ -4587,10 +3627,10 @@ tasks:
     quietmode: 0
   "135":
     id: "135"
-    taskid: b224e618-7144-4a72-8520-899a4ec2b9fb
+    taskid: cc54e024-f6c9-422a-8171-a323117cb48f
     type: regular
     task:
-      id: b224e618-7144-4a72-8520-899a4ec2b9fb
+      id: cc54e024-f6c9-422a-8171-a323117cb48f
       version: -1
       name: Set Shadow IT flag based on User response
       description: commands.local.cmd.set.incident
@@ -4602,125 +3642,6 @@ tasks:
       '#none#':
       - "93"
     scriptarguments:
-      accountid: {}
-      accountname: {}
-      addLabels: {}
-      agentid: {}
-      app: {}
-      appendMultiSelect: {}
-      assetid: {}
-      assigneduser: {}
-      assignmentgroup: {}
-      attachmentcount: {}
-      attachmentextension: {}
-      attachmenthash: {}
-      attachmentid: {}
-      attachmentname: {}
-      attachmentsize: {}
-      attachmenttype: {}
-      blockedaction: {}
-      bugtraq: {}
-      caller: {}
-      city: {}
-      closeNotes: {}
-      closeReason: {}
-      cloudservice: {}
-      commandline: {}
-      costcenter: {}
-      costcentercode: {}
-      country: {}
-      countryname: {}
-      criticalassets: {}
-      customFields: {}
-      cve: {}
-      cvss: {}
-      dbotMirrorDirection: {}
-      dbotMirrorId: {}
-      dbotMirrorInstance: {}
-      dbotMirrorTags: {}
-      dbotprediction: {}
-      dbotpredictionprobability: {}
-      dbottextsuggestionhighlighted: {}
-      deleteEmptyField: {}
-      department: {}
-      dest: {}
-      desthostname: {}
-      destinationhostname: {}
-      destinationip: {}
-      destinationnetwork: {}
-      destinationport: {}
-      destntdomain: {}
-      destos: {}
-      details: {}
-      detectedexternalhosts: {}
-      detectedexternalips: {}
-      detectedinternalhosts: {}
-      detectedinternalips: {}
-      detectedusers: {}
-      detectionendtime: {}
-      detectionid: {}
-      detectionupdatetime: {}
-      detectionurl: {}
-      deviceexternalip: {}
-      devicehash: {}
-      devicelocalip: {}
-      devicemodel: {}
-      devicename: {}
-      displayname: {}
-      duration: {}
-      email: {}
-      emailauthenticitycheck: {}
-      emailbcc: {}
-      emailbody: {}
-      emailbodyformat: {}
-      emailbodyhtml: {}
-      emailcc: {}
-      emailclassification: {}
-      emailclientname: {}
-      emailfrom: {}
-      emailheaders: {}
-      emailhtml: {}
-      emailinreplyto: {}
-      emailkeywords: {}
-      emailmessageid: {}
-      emailreceived: {}
-      emailreplyto: {}
-      emailreturnpath: {}
-      emailsenderip: {}
-      emailsize: {}
-      emailsource: {}
-      emailsubject: {}
-      emailto: {}
-      emailtocount: {}
-      emailurlclicked: {}
-      employeedisplayname: {}
-      employeeemail: {}
-      employeemanageremail: {}
-      escalation: {}
-      eventaction: {}
-      eventid: {}
-      eventtype: {}
-      expanseactivitystatus: {}
-      expanseasset: {}
-      expanseassetorganizationunit: {}
-      expanseassetowner: {}
-      expanseassignee: {}
-      expansebusinessunits: {}
-      expansecategory: {}
-      expansecertificate: {}
-      expansecreated: {}
-      expansedomain: {}
-      expanseinitialevidence: {}
-      expanseip: {}
-      expanseissueid: {}
-      expanseissuetype: {}
-      expanselatestevidence: {}
-      expansemodified: {}
-      expanseport: {}
-      expansepriority: {}
-      expanseprogressstatus: {}
-      expanseprotocol: {}
-      expanseprovider: {}
       expanseshadowit:
         complex:
           root: Analysis of Asset Attribution.Answers
@@ -4737,179 +3658,6 @@ tasks:
               then:
                 value:
                   simple: "true"
-      expansetags: {}
-      externaladdresses: {}
-      filehash: {}
-      filename: {}
-      filepath: {}
-      filesize: {}
-      firstname: {}
-      firstseen: {}
-      givenname: {}
-      helloworldid: {}
-      helloworldstatus: {}
-      helloworldtype: {}
-      hostname: {}
-      id: {}
-      incomingmirrorerror: {}
-      infectedhosts: {}
-      internaladdresses: {}
-      investigationstage: {}
-      isolated: {}
-      jobcode: {}
-      jobfamily: {}
-      jobfunction: {}
-      labels: {}
-      lastmodifiedby: {}
-      lastmodifiedon: {}
-      lastname: {}
-      lastseen: {}
-      leadership: {}
-      location: {}
-      locationregion: {}
-      logsource: {}
-      macaddress: {}
-      maliciousbehavior: {}
-      malwarefamily: {}
-      malwarename: {}
-      manageremailaddress: {}
-      managername: {}
-      md5: {}
-      mobiledevicemodel: {}
-      mobilephone: {}
-      name: {}
-      occurred: {}
-      os: {}
-      osversion: {}
-      outgoingmirrorerror: {}
-      owner: {}
-      parentprocessid: {}
-      personalemail: {}
-      phase: {}
-      phishingsubtype: {}
-      phonenumber: {}
-      pid: {}
-      policydeleted: {}
-      policydescription: {}
-      policydetails: {}
-      policyid: {}
-      policyrecommendation: {}
-      policyremediable: {}
-      policyseverity: {}
-      policytype: {}
-      prismacloudid: {}
-      prismacloudreason: {}
-      prismacloudrules: {}
-      prismacloudstatus: {}
-      prismacloudtime: {}
-      protocol: {}
-      protocols: {}
-      quarantined: {}
-      rating: {}
-      region: {}
-      regionid: {}
-      replacePlaybook: {}
-      reporteremailaddress: {}
-      resourceapiname: {}
-      resourcecloudtype: {}
-      resourceid: {}
-      resourcename: {}
-      resourcetype: {}
-      riskrating: {}
-      riskscore: {}
-      roles: {}
-      rrn: {}
-      samaccountname: {}
-      severity: {}
-      sha256: {}
-      shadowitaccountowneremail: {}
-      shadowitaccountownername: {}
-      shadowitbilledtocorp: {}
-      shadowitcertificate: {}
-      shadowitcloudaccountid: {}
-      shadowitcloudaccounttype: {}
-      shadowitfqdn: {}
-      shadowitip: {}
-      shadowitorganizationalunit: {}
-      shadowitoucontactemail: {}
-      shadowitoucontactname: {}
-      shadowitport: {}
-      shadowitprovider: {}
-      shadowitrisk: {}
-      shadowitsactionedservice: {}
-      shadowitsource: {}
-      shadowusersuggestions: {}
-      signature: {}
-      skuname: {}
-      skutier: {}
-      sla: {}
-      slaField: {}
-      sourcehostname: {}
-      sourceip: {}
-      sourcenetwork: {}
-      sourceport: {}
-      sourceusername: {}
-      src: {}
-      srchostname: {}
-      srcntdomain: {}
-      srcos: {}
-      srcuser: {}
-      state: {}
-      streetaddress: {}
-      subcategory: {}
-      subscriptionassignedby: {}
-      subscriptioncreatedby: {}
-      subscriptioncreatedon: {}
-      subscriptiondescription: {}
-      subscriptionid: {}
-      subscriptionname: {}
-      subscriptiontype: {}
-      subscriptionupdatedby: {}
-      subscriptionupdatedon: {}
-      subtype: {}
-      surname: {}
-      systemdefault: {}
-      systems: {}
-      targetfirewallversion: {}
-      tenantname: {}
-      terminatedaction: {}
-      threatactor: {}
-      ticketcloseddate: {}
-      ticketnumber: {}
-      ticketopeneddate: {}
-      title: {}
-      triggeredsecurityprofile: {}
-      type: {}
-      uniqueports: {}
-      urlsslverification: {}
-      user: {}
-      useraccountcontrol: {}
-      username: {}
-      vendorid: {}
-      vendorproduct: {}
-      vpcid: {}
-      vulnerabilitycategory: {}
-      workphone: {}
-      xdralertcount: {}
-      xdralerts: {}
-      xdrassigneduseremail: {}
-      xdrassigneduserprettyname: {}
-      xdrdescription: {}
-      xdrdetectiontime: {}
-      xdrfileartifacts: {}
-      xdrhighseverityalertcount: {}
-      xdrhostcount: {}
-      xdrincidentid: {}
-      xdrlowseverityalertcount: {}
-      xdrmediumseverityalertcount: {}
-      xdrnetworkartifacts: {}
-      xdrnotes: {}
-      xdrresolvecomment: {}
-      xdrstatus: {}
-      xdrstatusv2: {}
-      xdrurl: {}
-      xdrusercount: {}
-      zipcode: {}
     separatecontext: false
     view: |-
       {
@@ -4925,10 +3673,10 @@ tasks:
     quietmode: 0
   "136":
     id: "136"
-    taskid: 1087caa3-49a0-4b40-83d6-a497e9cc9683
+    taskid: 36f3913e-55ef-4fe3-832b-5e8e8a150ffb
     type: condition
     task:
-      id: 1087caa3-49a0-4b40-83d6-a497e9cc9683
+      id: 36f3913e-55ef-4fe3-832b-5e8e8a150ffb
       version: -1
       name: Did User reply to the Shadow IT question?
       description: Check whether user answered the Shadow IT question.
@@ -4969,10 +3717,10 @@ tasks:
     quietmode: 0
   "140":
     id: "140"
-    taskid: cb9d3123-6f95-4036-8266-bd10724c7a81
+    taskid: 1418a447-df74-49cb-8ac2-06370420db90
     type: regular
     task:
-      id: cb9d3123-6f95-4036-8266-bd10724c7a81
+      id: 1418a447-df74-49cb-8ac2-06370420db90
       version: -1
       name: Set Device Group Tag Value
       description: Set a value in context under the key you entered.
@@ -5022,10 +3770,10 @@ tasks:
     quietmode: 0
   "141":
     id: "141"
-    taskid: 1c02727a-bf8b-400e-8b92-4dfe82a044e6
+    taskid: b989e2da-8fe0-4a5e-8df3-b668f51e31b7
     type: regular
     task:
-      id: 1c02727a-bf8b-400e-8b92-4dfe82a044e6
+      id: b989e2da-8fe0-4a5e-8df3-b668f51e31b7
       version: -1
       name: Get Expanse Comments
       description: Retrieve issue comments (subset of updates).
@@ -5061,10 +3809,10 @@ tasks:
     quietmode: 0
   "147":
     id: "147"
-    taskid: 593ba383-561d-4a96-823a-bcd5292be2b7
+    taskid: a19be9d7-17bc-49aa-8451-bab96a06bbbc
     type: title
     task:
-      id: 593ba383-561d-4a96-823a-bcd5292be2b7
+      id: a19be9d7-17bc-49aa-8451-bab96a06bbbc
       version: -1
       name: Done Validation
       type: title
@@ -5079,7 +3827,7 @@ tasks:
       {
         "position": {
           "x": 1327.5,
-          "y": 620
+          "y": 600
         }
       }
     note: false
@@ -5089,10 +3837,10 @@ tasks:
     quietmode: 0
   "151":
     id: "151"
-    taskid: 23103234-729a-46a0-8b13-ac336de0eb60
+    taskid: 5d7bffcf-41f8-45a4-8d78-d94c5b5697b6
     type: regular
     task:
-      id: 23103234-729a-46a0-8b13-ac336de0eb60
+      id: 5d7bffcf-41f8-45a4-8d78-d94c5b5697b6
       version: -1
       name: 'Set Shadow IT Condition variable: On Prisma Cloud?'
       description: Set a value in context under the key you entered. If no value is
@@ -5143,10 +3891,10 @@ tasks:
     quietmode: 0
   "152":
     id: "152"
-    taskid: c4c2a701-9240-4927-82b8-ff5be34db847
+    taskid: 9bb82cdb-fdda-4119-8bda-8e2e915a60c8
     type: regular
     task:
-      id: c4c2a701-9240-4927-82b8-ff5be34db847
+      id: 9bb82cdb-fdda-4119-8bda-8e2e915a60c8
       version: -1
       name: 'Set Shadow IT Condition variable: On-premise high confidence to True'
       description: Set a value in context under the key you entered. If no value is
@@ -5190,10 +3938,10 @@ tasks:
     quietmode: 0
   "153":
     id: "153"
-    taskid: dd53f028-f287-453f-842f-15b019a22984
+    taskid: f49a3ed8-ebf4-4d4e-8348-2c5cd5250f2e
     type: regular
     task:
-      id: dd53f028-f287-453f-842f-15b019a22984
+      id: f49a3ed8-ebf4-4d4e-8348-2c5cd5250f2e
       version: -1
       name: 'Set Shadow IT Condition variable: any Firewall exposing service?'
       description: Set a value in context under the key you entered. If no value is
@@ -5253,10 +4001,10 @@ tasks:
     quietmode: 0
   "154":
     id: "154"
-    taskid: 4fd66c19-3e6a-4a66-87b3-2d523a4a4783
+    taskid: efdb0bc4-2194-4468-8c26-a918db621b90
     type: title
     task:
-      id: 4fd66c19-3e6a-4a66-87b3-2d523a4a4783
+      id: efdb0bc4-2194-4468-8c26-a918db621b90
       version: -1
       name: Set up Shadow IT Condition Variables for report
       type: title
@@ -5283,10 +4031,10 @@ tasks:
     quietmode: 0
   "155":
     id: "155"
-    taskid: 7f4042b7-0ad7-4a2e-8b7d-fc2b30ec8d28
+    taskid: afd4c44f-ecf7-4c27-838e-ed624c9df7f4
     type: title
     task:
-      id: 7f4042b7-0ad7-4a2e-8b7d-fc2b30ec8d28
+      id: afd4c44f-ecf7-4c27-838e-ed624c9df7f4
       version: -1
       name: Done Setting up Shadow IT Conditions for Report
       type: title
@@ -5311,10 +4059,10 @@ tasks:
     quietmode: 0
   "156":
     id: "156"
-    taskid: d02a612b-f698-4687-89ee-307f5ed896a2
+    taskid: 1d6190dd-1064-4d23-8a6a-a2ce77abef2d
     type: condition
     task:
-      id: d02a612b-f698-4687-89ee-307f5ed896a2
+      id: 1d6190dd-1064-4d23-8a6a-a2ce77abef2d
       version: -1
       name: On-prem with high confidence?
       description: Check whether the asset is marked as on-premise with a high degree
@@ -5376,10 +4124,10 @@ tasks:
     quietmode: 0
   "157":
     id: "157"
-    taskid: ad1a266f-8ca1-45bc-8198-4389ef9cf30d
+    taskid: 4308b346-0765-43f1-85a5-111f3d42fee2
     type: regular
     task:
-      id: ad1a266f-8ca1-45bc-8198-4389ef9cf30d
+      id: 4308b346-0765-43f1-85a5-111f3d42fee2
       version: -1
       name: 'Set Shadow IT Condition variable: On-premise high confidence to False'
       description: Set a value in context under the key you entered. If no value is
@@ -5423,10 +4171,10 @@ tasks:
     quietmode: 0
   "158":
     id: "158"
-    taskid: 477ccccf-63fa-479b-8a95-fe4e34fc2cfc
+    taskid: 69f6337b-78e5-4ff7-8d05-d8d88346cf9b
     type: regular
     task:
-      id: 477ccccf-63fa-479b-8a95-fe4e34fc2cfc
+      id: 69f6337b-78e5-4ff7-8d05-d8d88346cf9b
       version: -1
       name: Generate Report for Attribution
       description: 'Print '
@@ -5511,10 +4259,10 @@ tasks:
     quietmode: 0
   "159":
     id: "159"
-    taskid: b0efd4f5-e68e-4f53-8c24-223e769d1112
+    taskid: 15400f99-2244-49bd-8c36-e38c3b6656c0
     type: regular
     task:
-      id: b0efd4f5-e68e-4f53-8c24-223e769d1112
+      id: 15400f99-2244-49bd-8c36-e38c3b6656c0
       version: -1
       name: 'Extract XSOAR Incident Tags related to OU Attribtion '
       description: Set a value in context under the key you entered. If no value is
@@ -5558,10 +4306,10 @@ tasks:
     quietmode: 0
   "161":
     id: "161"
-    taskid: 940b64fb-9a91-4876-816b-a33c95558147
+    taskid: c8d403a6-ff70-4c85-8174-c8499674199f
     type: regular
     task:
-      id: 940b64fb-9a91-4876-816b-a33c95558147
+      id: c8d403a6-ff70-4c85-8174-c8499674199f
       version: -1
       name: Set Progress Status to Investigating in Expanse Issue
       description: Update Expanse Issue.
@@ -5596,10 +4344,10 @@ tasks:
     quietmode: 0
   "162":
     id: "162"
-    taskid: 40fbf1f0-0966-4161-8b4c-b908270d8e67
+    taskid: 9c6684f0-90e2-4f79-809f-d2669c6f6a20
     type: regular
     task:
-      id: 40fbf1f0-0966-4161-8b4c-b908270d8e67
+      id: 9c6684f0-90e2-4f79-809f-d2669c6f6a20
       version: -1
       name: Add "Being investigated by XSOAR" comment to Expanse Issue
       description: Update Expanse Issue.
@@ -5634,10 +4382,10 @@ tasks:
     quietmode: 0
   "163":
     id: "163"
-    taskid: 8f7254c6-cb2b-438b-88e9-36e609651f99
+    taskid: 6d1e3151-65f8-4e41-8cb6-4dd208ff16d0
     type: condition
     task:
-      id: 8f7254c6-cb2b-438b-88e9-36e609651f99
+      id: 6d1e3151-65f8-4e41-8cb6-4dd208ff16d0
       version: -1
       name: Are we writing to Expanse?
       description: Determine whether the playbook should write data back to Expanse.
@@ -5677,10 +4425,10 @@ tasks:
     quietmode: 0
   "164":
     id: "164"
-    taskid: 88bf4419-33ff-4426-8d9d-d72834d844a6
+    taskid: c9a0f514-5ae5-4008-8343-afd9899cb2e4
     type: condition
     task:
-      id: 88bf4419-33ff-4426-8d9d-d72834d844a6
+      id: c9a0f514-5ae5-4008-8343-afd9899cb2e4
       version: -1
       name: Are we writing to Expanse?
       description: Determine whether the playbook should write data back to Expanse.
@@ -5720,10 +4468,10 @@ tasks:
     quietmode: 0
   "165":
     id: "165"
-    taskid: b7933c10-4a57-430f-8536-40f8343b5600
+    taskid: 7c7ce247-900d-4c78-8bb5-43064a2fc696
     type: title
     task:
-      id: b7933c10-4a57-430f-8536-40f8343b5600
+      id: 7c7ce247-900d-4c78-8bb5-43064a2fc696
       version: -1
       name: Tag Assets
       type: title
@@ -5748,10 +4496,10 @@ tasks:
     quietmode: 0
   "166":
     id: "166"
-    taskid: 3bcb3acd-0e9d-426a-8e4b-65345f676472
+    taskid: 79b07a85-b985-4b90-82d2-0b04baf49b53
     type: title
     task:
-      id: 3bcb3acd-0e9d-426a-8e4b-65345f676472
+      id: 79b07a85-b985-4b90-82d2-0b04baf49b53
       version: -1
       name: Done Tagging
       type: title
@@ -5776,10 +4524,10 @@ tasks:
     quietmode: 0
   "167":
     id: "167"
-    taskid: 5c378e00-6638-41a2-888d-1c9fea52a4f5
+    taskid: f72a6612-3b8e-4445-8537-653a87ec0ea9
     type: playbook
     task:
-      id: 5c378e00-6638-41a2-888d-1c9fea52a4f5
+      id: f72a6612-3b8e-4445-8537-653a87ec0ea9
       version: -1
       name: Extract and Enrich Expanse Indicators
       description: Extract and Enrich Indicators (CIDRs, IPs, Certificates, and Domains)
@@ -5822,10 +4570,10 @@ tasks:
     quietmode: 0
   "169":
     id: "169"
-    taskid: 07d4f11d-4054-4505-844d-39d8a2d8f28f
+    taskid: f8b61946-090a-4c4f-8fe0-febb7ec01792
     type: condition
     task:
-      id: 07d4f11d-4054-4505-844d-39d8a2d8f28f
+      id: f8b61946-090a-4c4f-8fe0-febb7ec01792
       version: -1
       name: Are we writing to Expanse?
       description: Determine whether the playbook should write data back to Expanse.
@@ -5863,10 +4611,10 @@ tasks:
     quietmode: 0
   "172":
     id: "172"
-    taskid: b6279c8c-454d-429b-86fe-72a27ab36194
+    taskid: 2264cd03-bf1f-4fa0-8580-9819728cfdeb
     type: playbook
     task:
-      id: b6279c8c-454d-429b-86fe-72a27ab36194
+      id: 2264cd03-bf1f-4fa0-8580-9819728cfdeb
       version: -1
       name: Prisma Cloud Correlate Alerts
       description: Search alerts in Prisma Cloud for a specific asset ID and, if present
@@ -5905,10 +4653,10 @@ tasks:
     quietmode: 0
   "173":
     id: "173"
-    taskid: c066d9e9-a089-4b47-893d-0fffb8debfe1
+    taskid: e60b1b5d-b1f0-4c95-8436-87cc51ed844c
     type: regular
     task:
-      id: c066d9e9-a089-4b47-893d-0fffb8debfe1
+      id: e60b1b5d-b1f0-4c95-8436-87cc51ed844c
       version: -1
       name: Refresh Assets
       description: |
@@ -5935,10 +4683,10 @@ tasks:
     quietmode: 0
   "174":
     id: "174"
-    taskid: e5ad0374-877e-4fd2-8bda-305482d7eeef
+    taskid: bc7057f5-f45b-472f-86b6-0afff7918e5d
     type: title
     task:
-      id: e5ad0374-877e-4fd2-8bda-305482d7eeef
+      id: bc7057f5-f45b-472f-86b6-0afff7918e5d
       version: -1
       name: Done DG Tagging
       type: title
@@ -5963,10 +4711,10 @@ tasks:
     quietmode: 0
   "175":
     id: "175"
-    taskid: 98de7bbf-c6b9-4cb8-8a9d-17f3ced525d6
+    taskid: 8f08965f-8e3e-4df5-8f6e-8498b3397c56
     type: regular
     task:
-      id: 98de7bbf-c6b9-4cb8-8a9d-17f3ced525d6
+      id: 8f08965f-8e3e-4df5-8f6e-8498b3397c56
       version: -1
       name: Refresh Assets to sync updated tags
       description: |
@@ -5993,10 +4741,10 @@ tasks:
     quietmode: 0
   "176":
     id: "176"
-    taskid: f29fb579-9258-4afb-876c-7fd2d031ad61
+    taskid: 2ba3eaf8-b4b2-4efa-8283-aa6123b36325
     type: condition
     task:
-      id: f29fb579-9258-4afb-876c-7fd2d031ad61
+      id: 2ba3eaf8-b4b2-4efa-8283-aa6123b36325
       version: -1
       name: Collect Risky Flows from Behavior?
       description: Collect Risky Flows for the IP address from Expanse Behavior?
@@ -6036,10 +4784,10 @@ tasks:
     quietmode: 0
   "177":
     id: "177"
-    taskid: 0f048d87-a207-4590-8dfa-aa2649fd47d7
+    taskid: d383a16d-3967-4a69-86db-5725d23cd386
     type: condition
     task:
-      id: 0f048d87-a207-4590-8dfa-aa2649fd47d7
+      id: d383a16d-3967-4a69-86db-5725d23cd386
       version: -1
       name: Create Shadow IT Incident automatically?
       description: If the ShadowITIncidentType input is set, an incident of this type
@@ -6076,10 +4824,10 @@ tasks:
     quietmode: 0
   "178":
     id: "178"
-    taskid: 421938dd-f7a8-4b8e-8633-96c2d754a934
+    taskid: 33c7c0d2-dca5-4183-8749-2c11f70ffa3d
     type: regular
     task:
-      id: 421938dd-f7a8-4b8e-8633-96c2d754a934
+      id: 33c7c0d2-dca5-4183-8749-2c11f70ffa3d
       version: -1
       name: Manually create Shadow IT Incident
       description: Manually create an incident to handle the Shadow IT investigation.
@@ -6105,10 +4853,10 @@ tasks:
     quietmode: 0
   "179":
     id: "179"
-    taskid: 9f422485-30e0-4bb1-88b3-4d6b3e7cb6e8
+    taskid: 8e789bb5-819a-4972-89a1-d5c6a07420f2
     type: regular
     task:
-      id: 9f422485-30e0-4bb1-88b3-4d6b3e7cb6e8
+      id: 8e789bb5-819a-4972-89a1-d5c6a07420f2
       version: -1
       name: Set Shadow IT Pack Incident Fields
       description: If the Shadow IT content pack is enabled and the Shadow IT incident
@@ -6122,272 +4870,13 @@ tasks:
       '#none#':
       - "106"
     scriptarguments:
-      accountid: {}
-      accountname: {}
-      addLabels: {}
-      agentid: {}
-      alertid: {}
-      alertname: {}
-      app: {}
-      appendMultiSelect: {}
-      applicationid: {}
-      applicationname: {}
-      assetid: {}
-      assigneduser: {}
-      assignmentgroup: {}
-      attachmentcount: {}
-      attachmentextension: {}
-      attachmenthash: {}
-      attachmentid: {}
-      attachmentname: {}
-      attachmentsize: {}
-      attachmenttype: {}
-      blockedaction: {}
-      bugtraq: {}
-      caller: {}
-      categorycount: {}
-      city: {}
-      closeNotes: {}
-      closeReason: {}
-      closetime: {}
-      closingreason: {}
-      closinguser: {}
-      cloudservice: {}
-      commandline: {}
-      compliancenotes: {}
-      costcenter: {}
-      costcentercode: {}
-      country: {}
-      countryname: {}
-      criticalassets: {}
-      customFields: {}
-      cve: {}
-      cvss: {}
-      cvssavailabilityrequirement: {}
-      cvsscollateraldamagepotential: {}
-      cvssconfidentialityrequirement: {}
-      cvssintegrityrequirement: {}
-      dbotMirrorDirection: {}
-      dbotMirrorId: {}
-      dbotMirrorInstance: {}
-      dbotMirrorTags: {}
-      dbotprediction: {}
-      dbotpredictionprobability: {}
-      dbottextsuggestionhighlighted: {}
-      deleteEmptyField: {}
-      department: {}
-      dest: {}
-      desthostname: {}
-      destinationgeolocation: {}
-      destinationhostname: {}
-      destinationip: {}
-      destinationips: {}
-      destinationipv6: {}
-      destinationmacaddress: {}
-      destinationnetwork: {}
-      destinationport: {}
-      destntdomain: {}
-      destos: {}
-      details: {}
-      detectedexternalhosts: {}
-      detectedexternalips: {}
-      detectedinternalhosts: {}
-      detectedinternalips: {}
-      detectedusers: {}
-      detectionendtime: {}
-      detectionid: {}
-      detectionupdatetime: {}
-      detectionurl: {}
-      deviceexternalip: {}
-      devicehash: {}
-      devicelocalip: {}
-      devicemodel: {}
-      devicename: {}
-      devicetime: {}
-      displayname: {}
-      dnsname: {}
-      dstports: {}
-      duration: {}
-      email: {}
-      emailauthenticitycheck: {}
-      emailbcc: {}
-      emailbody: {}
-      emailbodyformat: {}
-      emailbodyhtml: {}
-      emailcc: {}
-      emailclassification: {}
-      emailclientname: {}
-      emailfrom: {}
-      emailheaders: {}
-      emailhtml: {}
-      emailhtmlimage: {}
-      emailinreplyto: {}
-      emailkeywords: {}
-      emaillabels: {}
-      emaillatestmessage: {}
-      emailmessageid: {}
-      emailreceived: {}
-      emailreplyto: {}
-      emailreturnpath: {}
-      emailsenderip: {}
-      emailsize: {}
-      emailsource: {}
-      emailsubject: {}
-      emailto: {}
-      emailtocount: {}
-      emailurlclicked: {}
-      employeedisplayname: {}
-      employeeemail: {}
-      employeemanageremail: {}
-      errorcode: {}
-      errormessage: {}
-      escalation: {}
-      eventaction: {}
-      eventdescriptions: {}
-      eventid: {}
-      eventnames: {}
-      events: {}
-      eventtype: {}
-      expanseactivitystatus: {}
-      expanseasset: {}
-      expanseassetorganizationunit: {}
-      expanseassetowner: {}
-      expanseassignee: {}
-      expansebusinessunits: {}
-      expansecategory: {}
-      expansecertificate: {}
-      expansecreated: {}
-      expansedomain: {}
-      expansegeolocation: {}
-      expanseinitialevidence: {}
-      expanseip: {}
-      expanseissueid: {}
-      expanseissuetype: {}
-      expanselatestevidence: {}
-      expanselatestevidencegeolocation: {}
-      expansemlfeatures: {}
-      expansemodified: {}
-      expanseport: {}
-      expansepriority: {}
-      expanseprogressstatus: {}
-      expanseprotocol: {}
-      expanseprovider: {}
-      expanseregion: {}
-      expanseservice: {}
-      expanseshadowit: {}
-      expansetags: {}
-      externaladdresses: {}
-      filehash: {}
-      filename: {}
-      filepath: {}
-      filesize: {}
-      firstname: {}
-      firstseen: {}
-      followup: {}
-      givenname: {}
-      helloworldid: {}
-      helloworldstatus: {}
-      helloworldtype: {}
-      highlevelcategories: {}
-      hostname: {}
       id:
         complex:
           root: CreatedIncidentID
-      incomingmirrorerror: {}
-      infectedhosts: {}
-      internaladdresses: {}
-      investigationstage: {}
-      isolated: {}
-      jobcode: {}
-      jobfamily: {}
-      jobfunction: {}
-      labels: {}
-      lastmodifiedby: {}
-      lastmodifiedon: {}
-      lastname: {}
-      lastseen: {}
-      lastupdatetime: {}
-      leadership: {}
-      listofrulesevent: {}
-      location: {}
-      locationregion: {}
-      logsource: {}
-      logsourcename: {}
-      logsourcetype: {}
-      lowlevelcategoriesevents: {}
-      macaddress: {}
-      maliciousbehavior: {}
-      malwarefamily: {}
-      malwarename: {}
-      manageremailaddress: {}
-      managername: {}
-      md5: {}
-      mobiledevicemodel: {}
-      mobilephone: {}
-      name: {}
-      numberoflogsources: {}
-      occurred: {}
-      os: {}
-      osversion: {}
-      outgoingmirrorerror: {}
-      owner: {}
-      parentprocessid: {}
-      personalemail: {}
-      phase: {}
-      phishingsubtype: {}
-      phonenumber: {}
-      pid: {}
-      policydeleted: {}
-      policydescription: {}
-      policydetails: {}
-      policyid: {}
-      policyrecommendation: {}
-      policyremediable: {}
-      policyseverity: {}
-      policytype: {}
-      postnatdestinationip: {}
-      postnatdestinationport: {}
-      postnatsourceip: {}
-      postnatsourceport: {}
-      prenatdestinationport: {}
-      prenatsourceip: {}
-      prenatsourceport: {}
-      prismacloudid: {}
-      prismacloudreason: {}
-      prismacloudrules: {}
-      prismacloudstatus: {}
-      prismacloudtime: {}
-      protocol: {}
-      protocolevent: {}
-      protocols: {}
-      quarantined: {}
-      rating: {}
-      rawevent: {}
-      region: {}
-      regionid: {}
-      replacePlaybook: {}
-      reporteremailaddress: {}
-      resourceapiname: {}
-      resourcecloudtype: {}
-      resourceid: {}
-      resourcename: {}
-      resourcetype: {}
-      riskrating: {}
-      riskscore: {}
-      roles: {}
-      rrn: {}
-      samaccountname: {}
-      severity: {}
-      sha256: {}
-      shadowitaccountowneremail: {}
-      shadowitaccountownername: {}
-      shadowitbilledtocorp: {}
       shadowitcertificate:
         complex:
           root: incident
           accessor: expansecertificate
-      shadowitcloudaccountid: {}
-      shadowitcloudaccounttype: {}
       shadowitfqdn:
         complex:
           root: incident
@@ -6442,12 +4931,6 @@ tasks:
         complex:
           root: incident
           accessor: expanseprovider
-      shadowitregion: {}
-      shadowitrisk: {}
-      shadowitsactionedservice: {}
-      shadowitsensitivedata: {}
-      shadowitservice: {}
-      shadowitservicepurpose: {}
       shadowitsource:
         simple: Expanse
       shadowitusersuggestions:
@@ -6466,89 +4949,6 @@ tasks:
                 value:
                   simple: '{name: username, email: mail, notes: join('' '', [''Found
                     '', to_string(sightings), '' log entries''])}'
-      signature: {}
-      skuname: {}
-      skutier: {}
-      sla: {}
-      slaField: {}
-      sourcegeolocation: {}
-      sourcehostname: {}
-      sourceip: {}
-      sourceips: {}
-      sourceipv6: {}
-      sourcemacaddress: {}
-      sourcenetwork: {}
-      sourceport: {}
-      sourceusername: {}
-      src: {}
-      srchostname: {}
-      srcntdomain: {}
-      srcos: {}
-      srcports: {}
-      srcuser: {}
-      starttime: {}
-      state: {}
-      streetaddress: {}
-      subcategory: {}
-      subscriptionassignedby: {}
-      subscriptioncreatedby: {}
-      subscriptioncreatedon: {}
-      subscriptiondescription: {}
-      subscriptionid: {}
-      subscriptionname: {}
-      subscriptiontype: {}
-      subscriptionupdatedby: {}
-      subscriptionupdatedon: {}
-      subtype: {}
-      surname: {}
-      systemdefault: {}
-      systems: {}
-      targetfirewallversion: {}
-      technicalowner: {}
-      technicalownercontact: {}
-      technicaluser: {}
-      tenantname: {}
-      terminatedaction: {}
-      threatactor: {}
-      ticketcloseddate: {}
-      ticketnumber: {}
-      ticketopeneddate: {}
-      title: {}
-      trafficdirection: {}
-      triggeredsecurityprofile: {}
-      type: {}
-      uniqueports: {}
-      urlsslverification: {}
-      user: {}
-      useraccountcontrol: {}
-      userid: {}
-      username: {}
-      usernames: {}
-      vendorid: {}
-      vendorproduct: {}
-      vpcid: {}
-      vulnerabilitycategory: {}
-      workphone: {}
-      xdralertcount: {}
-      xdralerts: {}
-      xdrassigneduseremail: {}
-      xdrassigneduserprettyname: {}
-      xdrdescription: {}
-      xdrdetectiontime: {}
-      xdrfileartifacts: {}
-      xdrhighseverityalertcount: {}
-      xdrhostcount: {}
-      xdrincidentid: {}
-      xdrlowseverityalertcount: {}
-      xdrmediumseverityalertcount: {}
-      xdrnetworkartifacts: {}
-      xdrnotes: {}
-      xdrresolvecomment: {}
-      xdrstatus: {}
-      xdrstatusv2: {}
-      xdrurl: {}
-      xdrusercount: {}
-      zipcode: {}
     separatecontext: false
     view: |-
       {
@@ -6564,10 +4964,10 @@ tasks:
     quietmode: 0
   "180":
     id: "180"
-    taskid: 8b176b68-4261-4fbf-81d4-ff6c9524ede7
+    taskid: 57fc2fe1-0481-4baf-8887-c35570879bee
     type: playbook
     task:
-      id: 8b176b68-4261-4fbf-81d4-ff6c9524ede7
+      id: 57fc2fe1-0481-4baf-8887-c35570879bee
       version: -1
       name: Expanse Enrich Cloud Assets
       playbookName: Expanse Enrich Cloud Assets
@@ -6593,10 +4993,10 @@ tasks:
     quietmode: 0
   "184":
     id: "184"
-    taskid: 830dee14-969a-4365-852b-b0ad76a86584
+    taskid: 4d7d2792-847f-4e37-8291-5bfb939f52e7
     type: regular
     task:
-      id: 830dee14-969a-4365-852b-b0ad76a86584
+      id: 4d7d2792-847f-4e37-8291-5bfb939f52e7
       version: -1
       name: Save OU To Tag List
       description: Set a value in context under the key you entered.
@@ -6632,10 +5032,10 @@ tasks:
     quietmode: 0
   "187":
     id: "187"
-    taskid: 1afccf8e-14ca-4c18-8d0a-cedd756b050e
+    taskid: d72e671b-5e83-4d81-8833-1f8997170eca
     type: regular
     task:
-      id: 1afccf8e-14ca-4c18-8d0a-cedd756b050e
+      id: d72e671b-5e83-4d81-8833-1f8997170eca
       version: -1
       name: Save OU To Owner List
       description: Set a value in context under the key you entered.
@@ -6671,10 +5071,10 @@ tasks:
     quietmode: 0
   "188":
     id: "188"
-    taskid: 144034b4-a033-4aa7-8d4c-4015e68ea0e2
+    taskid: 57c54be6-3fb1-4002-87fb-c16596af91e2
     type: regular
     task:
-      id: 144034b4-a033-4aa7-8d4c-4015e68ea0e2
+      id: 57c54be6-3fb1-4002-87fb-c16596af91e2
       version: -1
       name: Save Firewall Tag List
       description: Set a value in context under the key you entered.
@@ -6710,10 +5110,10 @@ tasks:
     quietmode: 0
   "190":
     id: "190"
-    taskid: 86bde740-aa95-4a42-8e2f-c1e32fba9648
+    taskid: 7199b11d-1c6f-41fd-8447-78f9e78e82dc
     type: regular
     task:
-      id: 86bde740-aa95-4a42-8e2f-c1e32fba9648
+      id: 7199b11d-1c6f-41fd-8447-78f9e78e82dc
       version: -1
       name: Reload OU To Owner List
       description: commands.local.cmd.list.get
@@ -6744,10 +5144,10 @@ tasks:
     quietmode: 0
   "191":
     id: "191"
-    taskid: 352a34cc-5462-45ca-8d5b-ea02816e3ae6
+    taskid: dc076e3e-45e1-4156-8406-9f5d33df2a8f
     type: regular
     task:
-      id: 352a34cc-5462-45ca-8d5b-ea02816e3ae6
+      id: dc076e3e-45e1-4156-8406-9f5d33df2a8f
       version: -1
       name: Set OU To Owner List
       description: Set a value in context under the key you entered.
@@ -6785,10 +5185,10 @@ tasks:
     quietmode: 0
   "192":
     id: "192"
-    taskid: 6adfabe7-031d-46c2-8d4e-4a6464746de9
+    taskid: 3ac22aab-71aa-4115-89fa-61e3639748e3
     type: regular
     task:
-      id: 6adfabe7-031d-46c2-8d4e-4a6464746de9
+      id: 3ac22aab-71aa-4115-89fa-61e3639748e3
       version: -1
       name: Reload OU To Tag List
       description: commands.local.cmd.list.get
@@ -6819,10 +5219,10 @@ tasks:
     quietmode: 0
   "193":
     id: "193"
-    taskid: 88754c96-8017-4252-89db-163a88d4c66a
+    taskid: a1183b9f-e758-4407-801a-2042e3467706
     type: regular
     task:
-      id: 88754c96-8017-4252-89db-163a88d4c66a
+      id: a1183b9f-e758-4407-801a-2042e3467706
       version: -1
       name: Set OU To Tag List
       description: Set a value in context under the key you entered.
@@ -6860,10 +5260,10 @@ tasks:
     quietmode: 0
   "194":
     id: "194"
-    taskid: dbb275a5-0004-483d-8c73-4e7fafe38a5d
+    taskid: 513f93bf-5374-42e3-82d1-da6b90079fc5
     type: regular
     task:
-      id: dbb275a5-0004-483d-8c73-4e7fafe38a5d
+      id: 513f93bf-5374-42e3-82d1-da6b90079fc5
       version: -1
       name: Tag Assets on Expanse
       description: Assign tags to Asset.
@@ -6905,10 +5305,10 @@ tasks:
     quietmode: 0
   "196":
     id: "196"
-    taskid: ba58e87f-63bb-43d0-8945-1a4ba52ddc1b
+    taskid: b125cd5b-f1c7-4b45-8de1-28afc08fd2cf
     type: regular
     task:
-      id: ba58e87f-63bb-43d0-8945-1a4ba52ddc1b
+      id: b125cd5b-f1c7-4b45-8de1-28afc08fd2cf
       version: -1
       name: Reload Device Group List
       description: commands.local.cmd.list.get
@@ -6940,10 +5340,10 @@ tasks:
     quietmode: 0
   "197":
     id: "197"
-    taskid: b40c8e9a-174e-4729-8f4c-5174c802979d
+    taskid: 98af48f7-d8d6-4f15-8d9d-f66b22d97310
     type: regular
     task:
-      id: b40c8e9a-174e-4729-8f4c-5174c802979d
+      id: 98af48f7-d8d6-4f15-8d9d-f66b22d97310
       version: -1
       name: Set Firewall Tag List
       description: Set a value in context under the key you entered.
@@ -6981,10 +5381,10 @@ tasks:
     quietmode: 0
   "198":
     id: "198"
-    taskid: 736b5614-b0ac-46a2-826f-62a1b3a5283e
+    taskid: fd41d924-2b39-447d-81bb-e8c56dba6b41
     type: regular
     task:
-      id: 736b5614-b0ac-46a2-826f-62a1b3a5283e
+      id: fd41d924-2b39-447d-81bb-e8c56dba6b41
       version: -1
       name: Set Target Device Group
       description: Set a value in context under the key you entered.
@@ -7020,10 +5420,10 @@ tasks:
     quietmode: 0
   "199":
     id: "199"
-    taskid: 605df4fc-33a4-4762-848a-c4443f19be37
+    taskid: 0ca7a015-d8ab-46d4-84a4-537e63d0f84d
     type: regular
     task:
-      id: 605df4fc-33a4-4762-848a-c4443f19be37
+      id: 0ca7a015-d8ab-46d4-84a4-537e63d0f84d
       version: -1
       name: Set Device Group Tag Value
       description: Set a value in context under the key you entered.
@@ -7065,10 +5465,10 @@ tasks:
     quietmode: 0
   "200":
     id: "200"
-    taskid: ec3ae74b-61ef-4c3d-889c-a38d8cf1c1f5
+    taskid: abbd91dc-9220-4174-85f8-6389bbeb1951
     type: playbook
     task:
-      id: ec3ae74b-61ef-4c3d-889c-a38d8cf1c1f5
+      id: abbd91dc-9220-4174-85f8-6389bbeb1951
       version: -1
       name: Expanse Load-Create List
       playbookName: Expanse Load-Create List
@@ -7104,10 +5504,10 @@ tasks:
     quietmode: 0
   "201":
     id: "201"
-    taskid: 7e7b4fdc-39a0-4bc5-8f6e-049dfb9fcb92
+    taskid: 6fab6d35-f47e-4676-8623-5f6c11d158a0
     type: playbook
     task:
-      id: 7e7b4fdc-39a0-4bc5-8f6e-049dfb9fcb92
+      id: 6fab6d35-f47e-4676-8623-5f6c11d158a0
       version: -1
       name: Expanse Load-Create List
       playbookName: Expanse Load-Create List
@@ -7143,10 +5543,10 @@ tasks:
     quietmode: 0
   "202":
     id: "202"
-    taskid: dc5bf0aa-e476-41e8-8919-9ba3d22ddb84
+    taskid: 16fbd4a9-9b8c-49ff-8038-5683015346a3
     type: playbook
     task:
-      id: dc5bf0aa-e476-41e8-8919-9ba3d22ddb84
+      id: 16fbd4a9-9b8c-49ff-8038-5683015346a3
       version: -1
       name: Expanse Load-Create List
       playbookName: Expanse Load-Create List
@@ -7182,10 +5582,10 @@ tasks:
     quietmode: 0
   "203":
     id: "203"
-    taskid: b3072eae-ed9f-4430-84c7-857a35a2bee8
+    taskid: f2c454a1-bbc2-4f56-8aae-2a6946f4716c
     type: title
     task:
-      id: b3072eae-ed9f-4430-84c7-857a35a2bee8
+      id: f2c454a1-bbc2-4f56-8aae-2a6946f4716c
       version: -1
       name: Load/Create Lists
       type: title
@@ -7210,10 +5610,10 @@ tasks:
     quietmode: 0
   "204":
     id: "204"
-    taskid: c9eb073a-f749-4997-8a4b-247b8ff9b674
+    taskid: cf098d34-c8dd-4cf8-81f0-bdcea99c097e
     type: title
     task:
-      id: c9eb073a-f749-4997-8a4b-247b8ff9b674
+      id: cf098d34-c8dd-4cf8-81f0-bdcea99c097e
       version: -1
       name: Add new OU
       type: title
@@ -7238,10 +5638,10 @@ tasks:
     quietmode: 0
   "205":
     id: "205"
-    taskid: 3a6e4008-0c80-4ab6-845e-bbb2eda4e239
+    taskid: 562bf6e0-9f5d-4bbb-8d94-674696119db8
     type: regular
     task:
-      id: 3a6e4008-0c80-4ab6-845e-bbb2eda4e239
+      id: 562bf6e0-9f5d-4bbb-8d94-674696119db8
       version: -1
       name: Refresh Assets to make sure IDs are in sync
       description: |
@@ -7268,10 +5668,10 @@ tasks:
     quietmode: 0
   "206":
     id: "206"
-    taskid: 5d5e611b-e425-460b-8fd6-96068b88db14
+    taskid: 148c3795-74ea-44e7-87e7-79b6c9389f17
     type: regular
     task:
-      id: 5d5e611b-e425-460b-8fd6-96068b88db14
+      id: 148c3795-74ea-44e7-87e7-79b6c9389f17
       version: -1
       name: Refresh Assets to make sure IDs are in sync
       description: |
@@ -7298,10 +5698,10 @@ tasks:
     quietmode: 0
   "207":
     id: "207"
-    taskid: 7f55d875-2ee4-4e0e-847c-84f936a3f21f
+    taskid: fd8c09e4-2646-4119-80a6-374806c494dd
     type: regular
     task:
-      id: 7f55d875-2ee4-4e0e-847c-84f936a3f21f
+      id: fd8c09e4-2646-4119-80a6-374806c494dd
       version: -1
       name: Set Target Device Groups from Expanse Tags
       description: Set a value in context under the key you entered. If no value is
@@ -7354,10 +5754,10 @@ tasks:
     quietmode: 0
   "208":
     id: "208"
-    taskid: 987cf091-980a-497b-8aac-5e8b9e89a04b
+    taskid: 40abcb80-e9f1-4e5a-8ed0-a5a242473736
     type: condition
     task:
-      id: 987cf091-980a-497b-8aac-5e8b9e89a04b
+      id: 40abcb80-e9f1-4e5a-8ed0-a5a242473736
       version: -1
       name: Are there Expanse Asset Tags?
       description: Check whether there are any Expanse asset tags.
@@ -7392,7 +5792,139 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-system: true
+  "210":
+    id: "210"
+    taskid: c3f3a453-7955-4c27-84ef-51ea21da93d2
+    type: playbook
+    task:
+      id: c3f3a453-7955-4c27-84ef-51ea21da93d2
+      version: -1
+      name: Expanse VM Enrich
+      playbookName: Expanse VM Enrich
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "53"
+    separatecontext: true
+    view: |-
+      {
+        "position": {
+          "x": -277.5,
+          "y": 7145
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "211":
+    id: "211"
+    taskid: 481f60dd-4d8f-4d3b-8a15-1ae43675eaa2
+    type: title
+    task:
+      id: 481f60dd-4d8f-4d3b-8a15-1ae43675eaa2
+      version: -1
+      name: Handle Unmanaged Cloud
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "212"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -1960,
+          "y": 6830
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "212":
+    id: "212"
+    taskid: 25abce72-3208-4b12-842d-df3fdc762f99
+    type: playbook
+    task:
+      id: 25abce72-3208-4b12-842d-df3fdc762f99
+      version: -1
+      name: Expanse Unmanaged Cloud
+      playbookName: Expanse Unmanaged Cloud
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "213"
+    scriptarguments:
+      ExpanseCloudManagedEmailBody:
+        simple: "Infosec has identified a security issue on a cloud service we believe\
+          \ may belong to you or your team. This asset or service does not appear\
+          \ to be behind proper compliance controls. \n\nPlease get in touch with\
+          \ your Infosec team to define proper remediation access."
+      ExpanseCloudManagedIPv4:
+        complex:
+          root: ${incident.labels
+          accessor: ip}
+      ExpanseCloudManagedIssueId:
+        complex:
+          root: ${incident
+          accessor: expanseissueid}
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 0
+    view: |-
+      {
+        "position": {
+          "x": -1960,
+          "y": 7210
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "213":
+    id: "213"
+    taskid: 109e7303-a8f1-483e-8c75-ab59df78152a
+    type: title
+    task:
+      id: 109e7303-a8f1-483e-8c75-ab59df78152a
+      version: -1
+      name: Done Unmanaged Cloud
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "75"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -1960,
+          "y": 7505
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
 view: |-
   {
     "linkLabelsPosition": {
@@ -7416,8 +5948,8 @@ view: |-
     "paper": {
       "dimensions": {
         "height": 17025,
-        "width": 5070,
-        "x": -1450,
+        "width": 5580,
+        "x": -1960,
         "y": -2870
       }
     }
