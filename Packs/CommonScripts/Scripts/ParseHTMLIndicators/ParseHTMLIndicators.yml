@@ -5,7 +5,7 @@ name: ParseHTMLIndicators
 script: ''
 type: python
 tags: []
-comment: This script extracts indicators from HTML and handles bad top-level domains to avoid false positives caused by file extensions.
+comment: This script will extract indicators from given HTML and will handle bad top-level domains to avoid false positives caused by file extensions.
 enabled: true
 args:
 - name: url
