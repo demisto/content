@@ -9,7 +9,6 @@ from flask import Flask, Response, request
 from netaddr import IPAddress, IPSet
 from typing import Callable, Any, cast, Dict, Tuple
 from math import ceil
-from urllib.parse import urlparse
 import dateparser
 
 ''' GLOBAL VARIABLES '''
@@ -139,17 +138,6 @@ class RequestArguments:
 
 
 ''' HELPER FUNCTIONS '''
-
-
-def strip_scheme(url):
-    """
-    Strip the protocol from an URL
-    """
-    parsed = urlparse(url)
-    if not parsed.scheme:
-        return url
-    scheme = f"{parsed.scheme}://" if '://' in url else f"{parsed.scheme}"
-    return parsed.geturl().replace(scheme, '', 1)
 
 
 def list_to_str(inp_list: list, delimiter: str = ',', map_func: Callable = str) -> str:
@@ -452,19 +440,18 @@ def create_proxysg_out_format(iocs: list, category_attribute: list, category_def
 
     for indicator in iocs:
         if indicator.get('indicator_type') in ['URL', 'Domain', 'DomainGlob'] and indicator.get('value'):
-            strip_indicator_value = strip_scheme(indicator.get('value')) if \
-                indicator.get('indicator_type') == 'URL' else indicator.get('value')
+            stripped_indicator = _PROTOCOL_REMOVAL.sub('', indicator.get('value'))
             indicator_proxysg_category = indicator.get('proxysgcategory')
             # if a ProxySG Category is set and it is in the category_attribute list or that the attribute list is empty
             # than list add the indicator to it's category list
             if indicator_proxysg_category is not None and \
                     (indicator_proxysg_category in category_attribute or len(category_attribute) == 0):
-                category_dict = add_indicator_to_category(strip_indicator_value, indicator_proxysg_category,
+                category_dict = add_indicator_to_category(stripped_indicator, indicator_proxysg_category,
                                                           category_dict)
 
             else:
                 # if ProxySG Category is not set or does not exist in the category_attribute list
-                category_dict = add_indicator_to_category(strip_indicator_value, category_default, category_dict)
+                category_dict = add_indicator_to_category(stripped_indicator, category_default, category_dict)
 
     for category, indicator_list in category_dict.items():
         sub_output_string = f"define category {category}\n"

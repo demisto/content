@@ -486,7 +486,7 @@ class TestHelperFunctions:
             returned_dict, num_of_indicators = create_proxysg_out_format(iocs=iocs_json, category_default="default",
                                                                          category_attribute='')
             returned_output = returned_dict.get(CTX_VALUES_KEY)
-            assert returned_output == "define category category2\n1.2.3.4/wget\nend\n" \
+            assert returned_output == "define category category2\n1.2.3.4:89/wget\nend\n" \
                                       "define category category1\nwww.demisto.com/cool\nend\n"
 
             assert num_of_indicators == 2
@@ -495,7 +495,7 @@ class TestHelperFunctions:
             returned_dict, num_of_indicators = create_proxysg_out_format(iocs=iocs_json, category_default="default",
                                                                          category_attribute="category3")
             returned_output = returned_dict.get(CTX_VALUES_KEY)
-            assert returned_output == "define category default\n1.2.3.4/wget\n" \
+            assert returned_output == "define category default\n1.2.3.4:89/wget\n" \
                                       "www.demisto.com/cool\nend\n"
             assert num_of_indicators == 2
 
@@ -503,7 +503,7 @@ class TestHelperFunctions:
             returned_dict, num_of_indicators = create_proxysg_out_format(iocs=iocs_json, category_default="default",
                                                                          category_attribute="category2")
             returned_output = returned_dict.get(CTX_VALUES_KEY)
-            assert returned_output == "define category category2\n1.2.3.4/wget\nend\n" \
+            assert returned_output == "define category category2\n1.2.3.4:89/wget\nend\n" \
                                       "define category default\nwww.demisto.com/cool\nend\n"
 
             assert num_of_indicators == 2
@@ -518,7 +518,7 @@ class TestHelperFunctions:
             returned_dict = create_mwg_out_format(iocs=iocs_json, mwg_type="ip")
             returned_output = returned_dict.get(CTX_VALUES_KEY)
 
-            assert returned_output == "type=ip\n\"1.2.3.4/wget\" \"AutoFocus Feed\"\n\"" \
+            assert returned_output == "type=ip\n\"1.2.3.4:89/wget\" \"AutoFocus Feed\"\n\"" \
                                       "https://www.demisto.com/cool\" \"AutoFocus V2,VirusTotal," \
                                       "Alien Vault OTX TAXII Feed\""
 
