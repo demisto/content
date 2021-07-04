@@ -38,7 +38,7 @@ tasks:
       id: 13307e7a-6ada-4d61-871f-61b12e39508b
       version: -1
       name: Extract and create relationship
-      playbookName: Extract and Create Relationships1
+      playbookName: Extract and Create Relationships
       type: playbook
       description: Sub-playbook. Extract indicators from Report Raw content.
       iscommand: false
