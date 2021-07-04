@@ -1098,8 +1098,8 @@ def add_object(event_id: str, obj: MISPObject):
 def add_file_object(demisto_args: dict = {}):
     entry_id = demisto_args.get('entry_id')
     event_id = demisto_args.get('event_id')
-    email_path = demisto.getFilePath(entry_id).get('path')
-    obj = FileObject(email_path)
+    file_path = demisto.getFilePath(entry_id).get('path')
+    obj = FileObject(file_path)
     demisto.debug(f"in add_file_object, obj is: {obj}")
     return add_object(event_id, obj)
 
