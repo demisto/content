@@ -11,6 +11,7 @@ from typing import Callable, Any, Dict, cast, Iterable
 from math import ceil
 import urllib3
 import dateparser
+import hashlib
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -375,6 +376,7 @@ def route_edl() -> Response:
     on_demand = params.get('on_demand')
     created = datetime.now(timezone.utc)
     edl = get_edl_on_demand() if on_demand else create_new_edl(request_args)
+    etag = f'"{hashlib.sha1(edl.encode()).hexdigest()}"'
     query_time = (datetime.now(timezone.utc) - created).total_seconds()
     edl_size = 0
     if edl.strip():
@@ -383,11 +385,12 @@ def route_edl() -> Response:
         edl = '# Empty EDL'
     max_age = ceil((datetime.now() - dateparser.parse(cache_refresh_rate)).total_seconds())  # type: ignore[operator]
     demisto.debug(f'Returning edl of size: [{edl_size}], created: [{created}], query time seconds: [{query_time}],'
-                  f' max age: [{max_age}]')
+                  f' max age: [{max_age}], etag: [{etag}]')
     resp = Response(edl, status=200, mimetype='text/plain', headers=[
         ('X-EDL-Created', created.isoformat()),
         ('X-EDL-Query-Time-Secs', "{:.3f}".format(query_time)),
-        ('X-EDL-Size', str(edl_size))
+        ('X-EDL-Size', str(edl_size)),
+        ('ETag', etag),
     ])
     resp.cache_control.max_age = max_age
     resp.cache_control[

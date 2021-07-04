@@ -17,7 +17,7 @@ from CommonServerPython import xml2json, json2xml, entryTypes, formats, tableToM
     argToBoolean, ipv4Regex, ipv4cidrRegex, ipv6cidrRegex, ipv6Regex, batch, FeedIndicatorType, \
     encode_string_results, safe_load_json, remove_empty_elements, aws_table_to_markdown, is_demisto_version_ge, \
     appendContext, auto_detect_indicator_type, handle_proxy, get_demisto_version_as_str, get_x_content_info_headers, \
-    url_to_clickable_markdown, WarningsHandler, DemistoException
+    url_to_clickable_markdown, WarningsHandler, DemistoException, SmartGetDict
 
 try:
     from StringIO import StringIO
@@ -38,6 +38,7 @@ INFO = {'b': 1,
             'c': {'d': 10},
         }
         }
+
 
 @pytest.fixture()
 def clear_version_cache():
@@ -126,98 +127,98 @@ TABLE_TO_MARKDOWN_ONLY_DATA_PACK = [
     )
 ]
 
-DATA_WITH_URLS =  [(
-        [
-            {
+DATA_WITH_URLS = [(
+    [
+        {
             'header_1': 'a1',
             'url1': 'b1',
             'url2': 'c1'
-            },
-            {
+        },
+        {
             'header_1': 'a2',
             'url1': 'b2',
             'url2': 'c2'
-            },
-            {
+        },
+        {
             'header_1': 'a3',
             'url1': 'b3',
             'url2': 'c3'
-            }
-        ],
-'''### tableToMarkdown test
+        }
+    ],
+    '''### tableToMarkdown test
 |header_1|url1|url2|
 |---|---|---|
 | a1 | [b1](b1) | [c1](c1) |
 | a2 | [b2](b2) | [c2](c2) |
 | a3 | [b3](b3) | [c3](c3) |
 '''
-    )]
+)]
 
 COMPLEX_DATA_WITH_URLS = [(
     [
-    {'data':
+        {'data':
          {'id': '1',
           'result':
-              {'files':
-                  [
-                      {
+          {'files':
+           [
+               {
                           'filename': 'name',
                           'size': 0,
                           'url': 'url'
-                      }
-                  ]
-              },
+                          }
+           ]
+           },
           'links': ['link']
           }
-     },
-    {'data':
-        {'id': '2',
-            'result':
-            {'files':
-               [
-                   {
-                       'filename': 'name',
-                       'size': 0,
-                       'url': 'url'
-                    }
-               ]
-            },
-            'links': ['link']
+         },
+        {'data':
+         {'id': '2',
+          'result':
+          {'files':
+           [
+               {
+                   'filename': 'name',
+                   'size': 0,
+                   'url': 'url'
+               }
+           ]
+           },
+          'links': ['link']
+          }
          }
-     }
-],
+    ],
     [
-    {'data':
+        {'data':
          {'id': '1',
           'result':
-              {'files':
-                  [
-                      {
-                          'filename': 'name',
-                          'size': 0,
-                          'url': '[url](url)'
-                      }
-                  ]
-              },
+          {'files':
+           [
+               {
+                   'filename': 'name',
+                   'size': 0,
+                   'url': '[url](url)'
+               }
+           ]
+           },
           'links': ['[link](link)']
           }
-     },
-    {'data':
-        {'id': '2',
-            'result':
-            {'files':
-               [
-                   {
-                       'filename': 'name',
-                       'size': 0,
-                       'url': '[url](url)'
-                    }
-               ]
-            },
-            'links': ['[link](link)']
+         },
+        {'data':
+         {'id': '2',
+          'result':
+          {'files':
+           [
+               {
+                   'filename': 'name',
+                   'size': 0,
+                   'url': '[url](url)'
+               }
+           ]
+           },
+          'links': ['[link](link)']
+          }
          }
-     }
-])]
+    ])]
 
 
 @pytest.mark.parametrize('data, expected_table', TABLE_TO_MARKDOWN_ONLY_DATA_PACK)
@@ -2343,10 +2344,12 @@ def test_http_client_debug(mocker):
     debug_log = DebugLogger()
     from http.client import HTTPConnection
     HTTPConnection.debuglevel = 1
+    # not using 'with' because its not compatible with all python versions
     con = HTTPConnection("google.com")
     con.request('GET', '/')
-    r = con.getresponse()
-    r.read()
+    with con.getresponse() as r:
+        r.read()
+    con.close()
     assert demisto.info.call_count > 5
     assert debug_log is not None
 
@@ -2362,8 +2365,10 @@ def test_http_client_debug_int_logger_sensitive_query_params(mocker):
     HTTPConnection.debuglevel = 1
     con = HTTPConnection("google.com")
     con.request('GET', '?apikey=dummy')
-    r = con.getresponse()
-    r.read()
+    # not using 'with' because its not compatible with all python versions
+    with con.getresponse() as r:
+        r.read()
+    con.close()
     assert debug_log
     for arg in demisto.info.call_args_list:
         assert 'dummy' not in arg[0][0]
@@ -3318,6 +3323,125 @@ def test_return_results_mixed_results(mocker):
     assert demisto_results_mock.call_args_list[1][0][0] == mock_demisto_results_entry
 
 
+class TestExecuteCommand:
+    @staticmethod
+    def test_sanity(mocker):
+        """
+        Given:
+            - A successful command with a single entry as output.
+        When:
+            - Calling execute_command.
+        Then:
+            - Assert that only the Contents value is returned.
+        """
+        from CommonServerPython import execute_command, EntryType
+        demisto_execute_mock = mocker.patch.object(demisto, 'executeCommand',
+                                                   return_value=[{'Type': EntryType.NOTE,
+                                                                 'Contents': {'hello': 'world'}}])
+        res = execute_command('command', {'arg1': 'value'})
+        execute_command_args = demisto_execute_mock.call_args_list[0][0]
+        assert demisto_execute_mock.call_count == 1
+        assert execute_command_args[0] == 'command'
+        assert execute_command_args[1] == {'arg1': 'value'}
+        assert res == {'hello': 'world'}
+
+    @staticmethod
+    def test_multiple_results(mocker):
+        """
+        Given:
+            - A successful command with several entries as output.
+        When:
+            - Calling execute_command.
+        Then:
+            - Assert that the "Contents" values of all entries are returned.
+        """
+        from CommonServerPython import execute_command, EntryType
+        entries = [
+            {'Type': EntryType.NOTE, 'Contents': {'hello': 'world'}},
+            {'Type': EntryType.NOTE, 'Context': 'no contents here'},
+            {'Type': EntryType.NOTE, 'Contents': {'entry': '2'}},
+        ]
+        demisto_execute_mock = mocker.patch.object(demisto, 'executeCommand',
+                                                   return_value=entries)
+        res = execute_command('command', {'arg1': 'value'})
+        assert demisto_execute_mock.call_count == 1
+        assert isinstance(res, list)
+        assert len(res) == 3
+        assert res[0] == {'hello': 'world'}
+        assert res[1] == {}
+        assert res[2] == {'entry': '2'}
+
+    @staticmethod
+    def test_raw_results(mocker):
+        """
+        Given:
+            - A successful command with several entries as output.
+        When:
+            - Calling execute_command.
+        Then:
+            - Assert that the entire entries are returned.
+        """
+        from CommonServerPython import execute_command, EntryType
+        entries = [
+            {'Type': EntryType.NOTE, 'Contents': {'hello': 'world'}},
+            {'Type': EntryType.NOTE, 'Context': 'no contents here'},
+            'text',
+            1337,
+        ]
+        demisto_execute_mock = mocker.patch.object(demisto, 'executeCommand',
+                                                   return_value=entries)
+        res = execute_command('command', {'arg1': 'value'}, extract_contents=False)
+        assert demisto_execute_mock.call_count == 1
+        assert isinstance(res, list)
+        assert len(res) == 4
+        assert res[0] == {'Type': EntryType.NOTE, 'Contents': {'hello': 'world'}}
+        assert res[1] == {'Type': EntryType.NOTE, 'Context': 'no contents here'}
+        assert res[2] == 'text'
+        assert res[3] == 1337
+
+    @staticmethod
+    def test_failure(mocker):
+        """
+        Given:
+            - A command that fails.
+        When:
+            - Calling execute_command.
+        Then:
+            - Assert that the original error is returned to War-Room (using demisto.results).
+            - Assert an error is returned to the War-Room.
+            - Function ends the run using SystemExit.
+        """
+        from CommonServerPython import execute_command, EntryType
+        error_entries = [
+            {'Type': EntryType.ERROR, 'Contents': 'error number 1'},
+            {'Type': EntryType.NOTE, 'Contents': 'not an error'},
+            {'Type': EntryType.ERROR, 'Contents': 'error number 2'},
+        ]
+        demisto_execute_mock = mocker.patch.object(demisto, 'executeCommand',
+                                                   return_value=error_entries)
+        demisto_results_mock = mocker.patch.object(demisto, 'results')
+
+        with raises(SystemExit, match='0'):
+            execute_command('bad', {'arg1': 'value'})
+
+        assert demisto_execute_mock.call_count == 1
+        assert demisto_results_mock.call_count == 1
+        # first call, args (not kwargs), first argument
+        error_text = demisto_results_mock.call_args_list[0][0][0]['Contents']
+        assert 'Failed to execute bad.' in error_text
+        assert 'error number 1' in error_text
+        assert 'error number 2' in error_text
+        assert 'not an error' not in error_text
+
+    @staticmethod
+    def test_failure_integration(monkeypatch):
+        from CommonServerPython import execute_command, EntryType
+        monkeypatch.delattr(demisto, 'executeCommand')
+
+        with raises(DemistoException, match=r'Cannot run demisto.executeCommand\(\) from integrations.'):
+            execute_command('bad', {'arg1': 'value'})
+
+
 def test_arg_to_int__valid_numbers():
     """
     Given
@@ -3546,8 +3670,13 @@ def test_arg_to_timestamp_invalid_inputs():
 def test_warnings_handler(mocker):
     mocker.patch.object(demisto, 'info')
     # need to initialize WarningsHandler as pytest over-rides the handler
-    handler = WarningsHandler()  # noqa
-    warnings.warn("This is a test", RuntimeWarning)
+    with pytest.warns(RuntimeWarning) as r:
+        warnings.warn("without handler", RuntimeWarning)
+        handler = WarningsHandler()  # noqa
+        warnings.warn("This is a test", RuntimeWarning)
+        assert len(r) == 1
+        assert str(r[0].message) == "without handler"
+
     # call_args is tuple (args list, kwargs). we only need the args
     msg = demisto.info.call_args[0][0]
     assert 'This is a test' in msg
@@ -4933,3 +5062,13 @@ class TestIsDemistoServerGE:
             }
         )
         assert not is_demisto_version_ge(version, build)
+
+
+def test_smart_get_dict():
+    d = {'t1': None, "t2": 1}
+    # before we remove the dict will return null which is unexpected by a lot of users
+    assert d.get('t1', 2) is None
+    s = SmartGetDict(d)
+    assert s.get('t1', 2) == 2
+    assert s.get('t2') == 1
+    assert s.get('t3') is None
