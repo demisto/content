@@ -22,7 +22,7 @@ This integration was integrated and tested with Splunk v7.2.
 | host | The host name to the server, including the scheme (x.x.x.x). | True |
 | authentication | The username used for authentication. To use Splunk token authentication, enter the text: `_token` in the **Username** field and your token value in the **Password** field. To create an authentication token, go to [Splunk create authentication tokens](https://docs.splunk.com/Documentation/SplunkCloud/8.1.2101/Security/CreateAuthTokens). | True |
 | port | The port affiliated with the server. | True |
-| fetchQuery | The notable events ES query to be fetched. | False |
+| fetchQuery | The events query to be fetched. | False |
 | fetch_limit | The limit of incidents to fetch. The maximum is 200. (It is recommended to fetch less than 50). | False |
 | isFetch | The incidents fetched. | False |
 | incidentType | The incident type. | False |
@@ -78,7 +78,7 @@ where the **$IDENTITY_VALUE** is replaced with the **user** and **src_user** fro
 #### How to configure
 1. Configure the integration to fetch incidents (see the Integration documentation for details).
 2. *Enrichment Types*: Select the enrichment types you want to enrich each fetched notable with. If none are selected, the integration will fetch notables as usual (without enrichment).
-3. *Fetch notable events ES query*: The query for the notable events enrichment (defined by default). If you decide to edit this, make sure to provide a query that uses the \`notable\` macro. See the default query as an example.  
+3. *Fetch events query*: The query for fetching events. The default query is for fetching notable events. You can edit this query to fetch other types of events. Note that to fetch notable events, make sure the query uses the \`notable\` macro.  
 4. *Enrichment Timeout (Minutes)*:  The timeout for each enrichment (default is 5min). When the selected timeout was reached, notable events that were not enriched will be saved without the enrichment.
 5. *Number of Events Per Enrichment Type*: The maximal amount of events to fetch per enrichment type (default to 20).
 
@@ -106,7 +106,7 @@ To setup the mirroring follow these instructions:
 1. Navigate to __Settings__ > __Integrations__ > __Servers & Services__.
 2. Search for SplunkPy and select your integration instance.
 3. Enable **Fetches incidents**.
-4. You can go to the *Fetch notable events ES enrichment query* parameter and select the query to fetch the notables from Splunk. Make sure to provide a query which uses the \`notable\` macro, See the default query as an example.
+4. You can go to the *Fetch events query* parameter and select the query to fetch the notables from Splunk. Make sure to provide a query which uses the \`notable\` macro, See the default query as an example.
 4. In the *Incident Mirroring Direction* integration parameter, select in which direction the incidents should be mirrored:
     - Incoming - Any changes in Splunk notables (notable's status, status_label, urgency, comments, and owner) will be reflected in XSOAR incidents.
     - Outgoing - Any changes in XSOAR incidents (notable's status (not status_label), urgency, comments, and owner) will be reflected in Splunk notables.
@@ -123,7 +123,7 @@ Note: This will not effect existing incidents.
 This implies that new fetched events might have a slightly different structure than old events fetched so far.
 Users who wish to enrich or mirror fetched notables and have already used the integration in the past:
 1. Might have to slightly change the existing logic for some of their custom entities configured for Splunk (Playbooks, Mappers, Pre-Processing Rules, Scripts, Classifiers, etc.) in order for them to work with the modified structure of the fetched events. 
-2. Will need to change the *Fetch notable events ES enrichment query* integration parameter to the following query (or a fetch query of their own that uses the \`notable\` macro): 
+2. Will need to change the *Fetch events query* integration parameter to the following query (or a fetch query of their own that uses the \`notable\` macro): 
 
 ```
 search `notable` | eval rule_name=if(isnull(rule_name),source,rule_name) | eval rule_title=if(isnull(rule_title),rule_name,rule_title) | `get_urgency` | `risk_correlation` | eval rule_description=if(isnull(rule_description),source,rule_description) | eval security_domain=if(isnull(security_domain),source,security_domain)
@@ -137,7 +137,7 @@ This enables you to map fields for an incident without having to generate a new 
 The ***get-mapping-fields*** command can be executed in the Playground to test and review the list of sample objects that are returned under the current configuration.
 
 To use this feature, you must set several integration instance parameters:
- - *Fetch notable events ES query* - The query used for fetching new incidents. *Select Schema* will run a modified version of this query to get the object samples, so it is important to have the correct query here. 
+ - *Fetch events query* - The query used for fetching new incidents. *Select Schema* will run a modified version of this query to get the object samples, so it is important to have the correct query here. 
  - *Event Type Field* - The name of the field that contains the type of the event or alert. The default value is *source* which for *Notable Events* will contains the rule name. However, you may choose any custom field that suits this purpose.
  - *First fetch timestamp* - The time scope of objects to be pulled. You may choose to go back further in time to include samples for alert types that haven't triggered recently - so long as your Splunk server can handle the more intensive Search Job involved.
 
@@ -169,12 +169,23 @@ Use the following naming convention: (demisto_fields_{type}).
 ![image](https://user-images.githubusercontent.com/50324325/63265640-c5261100-c296-11e9-9bd6-426fb328c09c.png)
 6. In the Summary indexing section, select the summary index, and enter the {key:value} pair for Cortex XSOAR classification.
 ![image](https://user-images.githubusercontent.com/50324325/63265665-d0793c80-c296-11e9-9919-cf6c6af33294.png)
-7. Configure the incident type in Cortex XSOAR by navigating to __Settings > Advanced > Incident Types.__
-![image](https://user-images.githubusercontent.com/50324325/63265677-d66f1d80-c296-11e9-95df-190ab18ae484.png)
-8. Navigate to __Settings > Integrations > Classification & Mapping__, and drag the value to the appropriate incident type.
-![image](https://user-images.githubusercontent.com/50324325/63265720-ea1a8400-c296-11e9-8062-dd40606c5a42.png)
-9. Click the __Edit mapping__ link to map the Splunk fields to Cortex XSOAR.
-![image](https://user-images.githubusercontent.com/50324325/63265811-1d5d1300-c297-11e9-8026-52ff1cf30cbf.png)
+7. Configure the incident type in Cortex XSOAR by navigating to __Settings > Advanced > Incident Types.__ Note: In the example, Splunk Generic is a custom incident type.
+![image](../../../docs/doc_imgs/reference/incident_type.png)
+(../../../docs/doc_imgs/reference/ilm-integration-instance.png)
+8. Configure the classification. Make sure that your non ES incident fields are associated with your custom incident type.
+   1. Navigate to __Settings > Integrations > Classification & Mapping__.
+   1. Click your classifier.
+   2. Select your instance.
+   3. Click the fetched data.
+   4. Drag the value to the appropriate incident type.
+![image](../../../docs/doc_imgs/reference/classify.png)
+9. Configure the mapping. Make sure to map your non ES fields accordingly and make sure that these incident fields are associated with their custom incident type.
+   1. Navigate to __Settings > Integrations > Classification & Mapping__.
+   1. Click your mapper.
+   2. Select your instance.
+   3. Click the __Choose data path__ link for the field you want to map.
+   4. Click the data from the Splunk fields to map it to Cortex XSOAR.
+![image](../../../docs/doc_imgs/reference/mapping.png)
 10. (Optional) Create custom fields.
 11. Build a playbook and assign it as the default for this incident type.
 
