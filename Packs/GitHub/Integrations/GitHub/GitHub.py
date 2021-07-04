@@ -1632,6 +1632,15 @@ def create_release_command():
     ))
 
 
+def get_issue_events_command():
+    args = demisto.args()
+    issue_number = args.get('issue_number')
+    res = http_request(method='GET', url_suffix=f'{ISSUE_SUFFIX}/{issue_number}/events')
+    return_results(CommandResults(outputs_prefix='GitHub.IssueEvent', outputs_key_field='id', outputs=res,
+                                  readable_output=tableToMarkdown(f'GitHub Issue Events For Issue {issue_number}',
+                                                                  res)))
+
+
 def fetch_incidents_command():
     last_run = demisto.getLastRun()
     if last_run and 'start_time' in last_run:
@@ -1723,6 +1732,7 @@ COMMANDS = {
     'Github-get-check-run': get_github_get_check_run,
     'Github-commit-file': commit_file_command,
     'GitHub-create-release': create_release_command,
+    'Github-list-issue-events': get_issue_events_command
 }
 
 
