@@ -25,3 +25,4 @@ runas: DBotWeakRole
 tests:
 - No test
 fromversion: 5.0.0
+dockerimage: demisto/python2:1.2.3.123
