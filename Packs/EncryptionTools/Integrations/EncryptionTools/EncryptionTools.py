@@ -238,11 +238,13 @@ def decrypt_file(args) -> Dict:
     Args:
         args:
             - entry_id (str): The entry ID of the file to decrypt.
+            - output_as_file(bool): Whether to output the decrypted data to file or to the war room.
 
     Returns:
         Dict. fileResult object.
     """
     entry_id = args.get('entry_id')
+    output_as_file = argToBoolean(args.get('output_as_file', False))
 
     try:
         file_entry = demisto.getFilePath(entry_id)
@@ -255,6 +257,9 @@ def decrypt_file(args) -> Dict:
         decrypted_content = decrypt_text({
             'base64_to_decrypt': file_content,
         })
+
+        if not output_as_file:
+            return CommandResults(decrypted_content)
 
         file_name, file_extension = get_file_name_and_extension(file_name)
         return fileResult(

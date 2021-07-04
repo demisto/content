@@ -102,6 +102,11 @@ There is no context output for this command.
 
 > XSOAR
 
+#### Usage Recommendations:
+The output of this command is the decrypted value, which may be sensitive data.
+In order to wrap the output and prevent the data from being printed to the war room you should call the command from a script using the following code:
+`decrypted_content = execute_command('encryption-tools-decrypt-text', {'base64_to_decrypt': <decrypted_striing>'}, True)`
+
 ### encryption-tools-encrypt-file
 
 ***
@@ -116,6 +121,7 @@ Encrypt file.
 | **Argument Name** | **Description**                                                                               | **Required** |
 | ----------------- | --------------------------------------------------------------------------------------------- | ------------ |
 | entry_id          | The entry ID of the file to encrypt.                                                          | Required     |
+| output_as_file    | Whether to output the decrypted data to file. Default is "true".                              | Optional     |
 | output_file_name  | The name of the output encrypted file. If not provided, the "encrypted" suffix will be added. | Optional     |
 
 #### Context Output
@@ -157,6 +163,11 @@ There is no context output for this command.
 #### Human Readable Output
 
 >File Output.
+
+#### Usage Recommendations:
+The output of this command is the decrypted file, which might include be sensitive data.
+In order to wrap the output and prevent the file from being printed to the war room you should call the command from a script using the following code:
+`decrypted_content = execute_command('encryption-tools-decrypt-file', {'entry_id': '184@327', 'output_as_file': 'false'}, True)`
 
 
 ### encryption-tools-export-public-key

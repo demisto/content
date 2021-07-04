@@ -2,128 +2,135 @@ name: Encryption Tools
 category: Utilities
 display: Encryption Tools
 configuration:
-- name: public_key
-  display: Public Key
-  required: false
-  defaultvalue:
-  type: 12
-  additionalinfo:
-- name: private_key
-  display: Private Key
-  required: false
-  defaultvalue:
-  type: 4
-  additionalinfo: ""
+  - name: public_key
+    display: Public Key
+    required: false
+    defaultvalue: null
+    type: 12
+    additionalinfo: null
+  - name: private_key
+    display: Private Key
+    required: false
+    defaultvalue: null
+    type: 4
+    additionalinfo: ""
 description: Encryption Tools - Encrypt and Decrypt text and files.
 script:
   commands:
-  - arguments:
-    - default: false
-      description: The number of bits required to store (n = p * q). Default is 512.
-      isArray: false
-      name: nbits
-      required: true
-      secret: false
-    - auto: PREDEFINED
-      default: false
-      defaultValue: "false"
-      description: Whether to override the current generated keys.
-      isArray: false
-      name: override_keys
-      required: false
-      secret: false
-      predefined:
-      - "true"
-      - "false"
-    deprecated: false
-    description: Create new RSA keys.
-    execution: false
-    name: encryption-tools-create-keys
-    outputs: []
-  - arguments:
-    - default: true
-      description: The text to encrypt.
-      isArray: false
-      name: text_to_encrypt
-      required: true
-      secret: false
-    deprecated: false
-    description: Encrypt text.
-    execution: false
-    name: encryption-tools-encrypt-text
-    outputs:
-    - contextPath: EncryptionTools.Value
-      description: The value of the encrypted text.
-      type: String
-  - arguments:
-    - default: true
-      description: The base64 text to decrypt.
-      isArray: false
-      name: base64_to_decrypt
-      required: true
-      secret: false
-    deprecated: false
-    description: Decrypt text.
-    execution: false
-    name: encryption-tools-decrypt-text
-    outputs: []
-  - arguments:
-    - default: true
-      description: The entry ID of the file to encrypt.
-      isArray: false
-      name: entry_id
-      required: true
-      secret: false
-    - default: false
-      description: The name of the output encrypted file. If not provided, the "xsoar-encrypted"
-        suffix will be added.
-      isArray: false
-      name: output_file_name
-      required: false
-      secret: false
-    deprecated: false
-    description: Encrypt file.
-    execution: false
-    name: encryption-tools-encrypt-file
-    outputs: []
-  - arguments:
-    - default: true
-      description: The entry ID of the file to decrypt.
-      isArray: false
-      name: entry_id
-      required: true
-      secret: false
-    - default: false
-      description: The name of the output decrypted file. If not provided, the "xsoar-decrypted"
-        suffix will be added.
-      isArray: false
-      name: output_file_name
-      required: false
-      secret: false
-    deprecated: false
-    description: Decrypt file.
-    execution: false
-    name: encryption-tools-decrypt-file
-    outputs: []
-  - name: encryption-tools-export-public-key
-    description: Exports the public key to a file.
-    deprecated: false
-    arguments:
-    - name: output_file_name
-      description: The name of the output file.
-      required: true
-      isArray: false
-    outputs: []
-  - name: encryption-tools-export-private-key
-    description: Exports the private key to a file.
-    deprecated: false
-    arguments:
-    - name: output_file_name
-      description: The name of the output file.
-      required: true
-      isArray: false
-    outputs: []
-    execution: true
+    - arguments:
+        - default: false
+          description: The number of bits required to store (n = p * q). Default is 512.
+          isArray: false
+          name: nbits
+          required: true
+          secret: false
+        - auto: PREDEFINED
+          default: false
+          defaultValue: "false"
+          description: Whether to override the current generated keys.
+          isArray: false
+          name: override_keys
+          required: false
+          secret: false
+          predefined:
+            - "true"
+            - "false"
+      deprecated: false
+      description: Create new RSA keys.
+      execution: false
+      name: encryption-tools-create-keys
+      outputs: []
+    - arguments:
+        - default: true
+          description: The text to encrypt.
+          isArray: false
+          name: text_to_encrypt
+          required: true
+          secret: false
+      deprecated: false
+      description: Encrypt text.
+      execution: false
+      name: encryption-tools-encrypt-text
+      outputs:
+        - contextPath: EncryptionTools.Value
+          description: The value of the encrypted text.
+          type: String
+    - arguments:
+        - default: true
+          description: The base64 text to decrypt.
+          isArray: false
+          name: base64_to_decrypt
+          required: true
+          secret: false
+      deprecated: false
+      description: Decrypt text.
+      execution: false
+      name: encryption-tools-decrypt-text
+      outputs: []
+    - arguments:
+        - default: true
+          description: The entry ID of the file to encrypt.
+          isArray: false
+          name: entry_id
+          required: true
+          secret: false
+        - default: false
+          description: The name of the output encrypted file. If not provided, the
+            "xsoar-encrypted" suffix will be added.
+          isArray: false
+          name: output_file_name
+          required: false
+          secret: false
+      deprecated: false
+      description: Encrypt file.
+      execution: false
+      name: encryption-tools-encrypt-file
+      outputs: []
+    - arguments:
+        - default: true
+          description: The entry ID of the file to decrypt.
+          isArray: false
+          name: entry_id
+          required: true
+          secret: false
+        - name: output_as_file
+          description: Whether to output the decrypted data to file. Default is "true".
+          required: false
+          isArray: false
+          defaultValue: "true"
+          predefined:
+            - true, false
+        - default: false
+          description: The name of the output decrypted file. If not provided, the
+            "xsoar-decrypted" suffix will be added.
+          isArray: false
+          name: output_file_name
+          required: false
+          secret: false
+      deprecated: false
+      description: Decrypt file.
+      execution: false
+      name: encryption-tools-decrypt-file
+      outputs: []
+    - name: encryption-tools-export-public-key
+      description: Exports the public key to a file.
+      deprecated: false
+      arguments:
+        - name: output_file_name
+          description: The name of the output file.
+          required: true
+          isArray: false
+      outputs: []
+    - name: encryption-tools-export-private-key
+      description: Exports the private key to a file.
+      deprecated: false
+      arguments:
+        - name: output_file_name
+          description: The name of the output file.
+          required: true
+          isArray: false
+      outputs: []
+      execution: true
   dockerimage: demisto/crypto:1.0.0.19032
   feed: false
   isfetch: false
