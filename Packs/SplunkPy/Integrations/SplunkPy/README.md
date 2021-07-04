@@ -171,7 +171,6 @@ Use the following naming convention: (demisto_fields_{type}).
 ![image](https://user-images.githubusercontent.com/50324325/63265665-d0793c80-c296-11e9-9919-cf6c6af33294.png)
 7. Configure the incident type in Cortex XSOAR by navigating to __Settings > Advanced > Incident Types.__ Note: In the example, Splunk Generic is a custom incident type.
 ![image](../../../docs/doc_imgs/reference/incident_type.png)
-(../../../docs/doc_imgs/reference/ilm-integration-instance.png)
 8. Configure the classification. Make sure that your non ES incident fields are associated with your custom incident type.
    1. Navigate to __Settings > Integrations > Classification & Mapping__.
    1. Click your classifier.
