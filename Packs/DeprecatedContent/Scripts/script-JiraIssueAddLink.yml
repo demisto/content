@@ -46,3 +46,4 @@ dependson:
   must:
   - jira-issue-add-link
 fromversion: 5.0.0
+dockerimage: demisto/python:2.7.18.20958
