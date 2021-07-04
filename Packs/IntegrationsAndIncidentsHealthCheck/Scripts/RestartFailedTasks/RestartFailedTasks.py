@@ -26,7 +26,7 @@ def check_context():
 
 def remove_exclusion(failed_tasks: list, playbook_exclusion: list):
     """
-    Check if on of the failed task is from an excluded playbook, and if so removes it from the list.
+    Checks if one of the failed tasks is from an excluded playbook and if so removes it from the list.
 
     Args:
         failed_tasks: A list of failed tasks.
