@@ -16,6 +16,7 @@ from intezer_sdk.api import IntezerApi
 from intezer_sdk.errors import AnalysisIsAlreadyRunning
 from intezer_sdk.errors import AnalysisIsStillRunning
 from intezer_sdk.errors import HashDoesNotExistError
+from intezer_sdk.errors import IntezerError
 from intezer_sdk.family import Family
 from intezer_sdk.sub_analysis import SubAnalysis
 from requests import HTTPError
@@ -92,8 +93,11 @@ def _get_analysis_running_result(analysis_id: str = None, response: requests.Res
 
 
 def check_is_available(intezer_api: IntezerApi, args: dict) -> str:
-    result = intezer_api.get_url_result(f'/{IS_AVAILABLE_URL}')
-    return 'ok' if result else 'Failure'
+    try:
+        response = intezer_api.get_url_result(f'/{IS_AVAILABLE_URL}')
+        return 'ok' if response else 'Empty response from intezer service'
+    except (IntezerError, HTTPError) as error:
+        return str(error)
 
 
 def analyze_by_hash_command(intezer_api: IntezerApi, args: Dict[str, str]) -> CommandResults:
@@ -400,7 +404,7 @@ def main():
 
         intezer_api = IntezerApi(consts.API_VERSION, intezer_api_key, analyze_base_url)
 
-        command_handlers: Dict[str, Callable[[IntezerApi, dict], Union[CommandResults, str]]] = {
+        command_handlers: Dict[str, Callable[[IntezerApi, dict], Union[List[CommandResults], CommandResults, str]]] = {
             'test-module': check_is_available,
             'intezer-analyze-by-hash': analyze_by_hash_command,
             'intezer-analyze-by-file': analyze_by_uploaded_file_command,
