@@ -1,0 +1,304 @@
+{
+    "id": "rbvm",
+    "version": -1,
+    "locked": false,
+    "system": false,
+    "name": "Vulnerability Management",
+    "fromVersion": "6.5.0",
+    "definitions": [{
+        "id": "assets",
+        "name": "Assets",
+        "partitioned": true,
+        "auditable": false,
+        "rbacSupport": true
+    }, {
+        "id": "assetGroups",
+        "name": "Asset Groups",
+        "partitioned": false,
+        "auditable": true,
+        "rbacSupport": false
+    }],
+    "views": [{
+        "icon": "icon-widget-infinity-24-s",
+        "name": "Vulnerability Management",
+        "title": "Risk Base Vulnerability Management",
+        "tabs": [{
+            "name": "Assets",
+            "newButtonDefinitionId": "assets",
+            "dashboard": {
+                "id": "assets_dashboard",
+                "version": -1,
+                "fromDate": "0001-01-01T00:00:00Z",
+                "toDate": "0001-01-01T00:00:00Z",
+                "period": {
+                    "by": "",
+                    "byTo": "",
+                    "byFrom": "days",
+                    "toValue": null,
+                    "fromValue": 7,
+                    "field": ""
+                },
+                "name": "Assets Dashboard",
+                "prevName": "Assets Dashboard",
+                "layout": [
+                    {
+                        "id": "3a352fc0-dca9-11eb-999f-35f993b96a7c",
+                        "forceRange": false,
+                        "x": 0,
+                        "y": 0,
+                        "i": "3a352fc0-dca9-11eb-999f-35f993b96a7c",
+                        "w": 12,
+                        "h": 3,
+                        "widget": {
+                            "id": "f5833f22-7357-40c9-8d5b-c02ee1f0c53b",
+                            "version": 2,
+                            "modified": "2021-03-20T23:03:11.86024+02:00",
+                            "sortValues": null,
+                            "packID": "",
+                            "itemVersion": "",
+                            "fromServerVersion": "",
+                            "toServerVersion": "",
+                            "propagationLabels": [
+                                "all"
+                            ],
+                            "vcShouldIgnore": false,
+                            "vcShouldKeepItemLegacyProdMachine": false,
+                            "commitMessage": "",
+                            "shouldCommit": false,
+                            "name": "A Widget v2",
+                            "prevName": "A Widget v2",
+                            "dataType": "incidents",
+                            "widgetType": "pie",
+                            "query": "",
+                            "sort": null,
+                            "isPredefined": false,
+                            "dateRange": {
+                                "fromDate": "0001-01-01T00:00:00Z",
+                                "toDate": "0001-01-01T00:00:00Z",
+                                "period": {
+                                    "by": "",
+                                    "byTo": "",
+                                    "byFrom": "days",
+                                    "toValue": null,
+                                    "fromValue": 7,
+                                    "field": ""
+                                },
+                                "fromDateLicense": "0001-01-01T00:00:00Z"
+                            },
+                            "params": {
+                                "groupBy": [
+                                    "type"
+                                ],
+                                "tableColumns": [
+                                    {
+                                        "isDefault": true,
+                                        "key": "id",
+                                        "position": 0,
+                                        "width": 110
+                                    },
+                                    {
+                                        "isDefault": true,
+                                        "key": "name",
+                                        "position": 2,
+                                        "width": 300
+                                    },
+                                    {
+                                        "isDefault": true,
+                                        "key": "type",
+                                        "position": 3,
+                                        "width": 200
+                                    },
+                                    {
+                                        "isDefault": true,
+                                        "key": "severity",
+                                        "position": 4,
+                                        "width": 80
+                                    },
+                                    {
+                                        "isDefault": true,
+                                        "key": "status",
+                                        "position": 5,
+                                        "width": 80
+                                    },
+                                    {
+                                        "isDefault": true,
+                                        "key": "owner",
+                                        "position": 6,
+                                        "width": 160
+                                    },
+                                    {
+                                        "isDefault": true,
+                                        "key": "roles",
+                                        "position": 7,
+                                        "width": 160
+                                    },
+                                    {
+                                        "isDefault": true,
+                                        "key": "playbookId",
+                                        "position": 8,
+                                        "width": 150
+                                    },
+                                    {
+                                        "isDefault": true,
+                                        "key": "occurred",
+                                        "position": 9,
+                                        "width": 200
+                                    },
+                                    {
+                                        "isDefault": true,
+                                        "key": "dueDate",
+                                        "position": 10,
+                                        "width": 200
+                                    }
+                                ]
+                            },
+                            "size": 0,
+                            "category": ""
+                        },
+                        "reflectDimensions": true
+                    }
+                ],
+                "system": true,
+                "isCommon": true
+            }
+        }, {
+            "name": "Asset Groups",
+            "dashboard": {
+                "id": "asset_groups",
+                "version": -1,
+                "fromDate": "0001-01-01T00:00:00Z",
+                "toDate": "0001-01-01T00:00:00Z",
+                "period": {
+                    "by": "",
+                    "byTo": "",
+                    "byFrom": "days",
+                    "toValue": null,
+                    "fromValue": 7,
+                    "field": ""
+                },
+                "name": "Asset Groups Dashboard",
+                "prevName": "Asset Groups Dashboard",
+                "layout": [
+                    {
+                        "id": "3a352fc0-dca9-11eb-999f-35f993b96a7c",
+                        "forceRange": false,
+                        "x": 0,
+                        "y": 0,
+                        "i": "3a352fc0-dca9-11eb-999f-35f993b96a7c",
+                        "w": 12,
+                        "h": 3,
+                        "widget": {
+                            "id": "f5833f22-7357-40c9-8d5b-c02ee1f0c53b",
+                            "version": 2,
+                            "modified": "2021-03-20T23:03:11.86024+02:00",
+                            "sortValues": null,
+                            "packID": "",
+                            "itemVersion": "",
+                            "fromServerVersion": "",
+                            "toServerVersion": "",
+                            "propagationLabels": [
+                                "all"
+                            ],
+                            "vcShouldIgnore": false,
+                            "vcShouldKeepItemLegacyProdMachine": false,
+                            "commitMessage": "",
+                            "shouldCommit": false,
+                            "name": "A Widget v2",
+                            "prevName": "A Widget v2",
+                            "dataType": "incidents",
+                            "widgetType": "pie",
+                            "query": "",
+                            "sort": null,
+                            "isPredefined": false,
+                            "dateRange": {
+                                "fromDate": "0001-01-01T00:00:00Z",
+                                "toDate": "0001-01-01T00:00:00Z",
+                                "period": {
+                                    "by": "",
+                                    "byTo": "",
+                                    "byFrom": "days",
+                                    "toValue": null,
+                                    "fromValue": 7,
+                                    "field": ""
+                                },
+                                "fromDateLicense": "0001-01-01T00:00:00Z"
+                            },
+                            "params": {
+                                "groupBy": [
+                                    "type"
+                                ],
+                                "tableColumns": [
+                                    {
+                                        "isDefault": true,
+                                        "key": "id",
+                                        "position": 0,
+                                        "width": 110
+                                    },
+                                    {
+                                        "isDefault": true,
+                                        "key": "name",
+                                        "position": 2,
+                                        "width": 300
+                                    },
+                                    {
+                                        "isDefault": true,
+                                        "key": "type",
+                                        "position": 3,
+                                        "width": 200
+                                    },
+                                    {
+                                        "isDefault": true,
+                                        "key": "severity",
+                                        "position": 4,
+                                        "width": 80
+                                    },
+                                    {
+                                        "isDefault": true,
+                                        "key": "status",
+                                        "position": 5,
+                                        "width": 80
+                                    },
+                                    {
+                                        "isDefault": true,
+                                        "key": "owner",
+                                        "position": 6,
+                                        "width": 160
+                                    },
+                                    {
+                                        "isDefault": true,
+                                        "key": "roles",
+                                        "position": 7,
+                                        "width": 160
+                                    },
+                                    {
+                                        "isDefault": true,
+                                        "key": "playbookId",
+                                        "position": 8,
+                                        "width": 150
+                                    },
+                                    {
+                                        "isDefault": true,
+                                        "key": "occurred",
+                                        "position": 9,
+                                        "width": 200
+                                    },
+                                    {
+                                        "isDefault": true,
+                                        "key": "dueDate",
+                                        "position": 10,
+                                        "width": 200
+                                    }
+                                ]
+                            },
+                            "size": 0,
+                            "category": ""
+                        },
+                        "reflectDimensions": true
+                    }
+                ],
+                "system": true,
+                "isCommon": true
+            }
+        }]
+    }]
+}

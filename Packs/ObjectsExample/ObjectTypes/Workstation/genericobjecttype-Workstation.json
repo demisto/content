@@ -1,0 +1,12 @@
+{
+    "id": "Workstation",
+    "layout": "Workstation Layout",
+    "locked": false,
+    "name": "Workstation",
+    "color": "#8052f4",
+    "onChangeRepAlg": 2,
+    "definitionId": "assets",
+    "system": false,
+    "version": -1,
+    "fromVersion": "6.5.0"
+}
