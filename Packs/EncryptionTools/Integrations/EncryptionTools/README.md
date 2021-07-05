@@ -167,7 +167,7 @@ There is no context output for this command.
 #### Usage Recommendations:
 The output of this command is the decrypted file, which might include be sensitive data.
 In order to wrap the output and prevent the file from being printed to the war room you should call the command from a script using the following code:
-`decrypted_content = execute_command('encryption-tools-decrypt-file', {'entry_id': '184@327', 'output_as_file': 'false'}, True)`
+`decrypted_content = execute_command('encryption-tools-decrypt-file', {'entry_id': <your_entry_id>, 'output_as_file': 'false'}, True)`
 
 
 ### encryption-tools-export-public-key
