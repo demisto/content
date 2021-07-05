@@ -338,6 +338,21 @@ script:
       - contextPath: DBotScore.Score
         description: Analysis verdict as score from 1 to 10
         type: Number
+      - contextPath: File.Name
+        description: The full file name (including file extension).
+        type: String
+      - contextPath: File.MD5
+        description: The MD5 hash of the file.
+        type: String
+      - contextPath: File.SHA1
+        description: The SHA1 hash of the file.
+        type: String
+      - contextPath: File.SHA256
+        description: The SHA1 hash of the file.
+        type: String
+      - contextPath: URL.Data
+        description: The URL
+        type: String
   - arguments:
     - default: false
       isArray: false
