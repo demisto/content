@@ -5990,7 +5990,7 @@ script:
     - contextPath: TOPdesk.Attachment.Person
       description: Attachment's person
       type: Unknown
-  dockerimage: demisto/python3:3.9.5.20070
+  dockerimage: demisto/python3:3.9.5.21272
   isfetch: true
   longRunning: false
   longRunningPort: false
