@@ -47,63 +47,63 @@ Lists Covalence alerts
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Covalence.Alert..acknowledgedStatus | String | Acknowledged Status | 
-| Covalence.Alert..alertCount | Number | Alert Count | 
-| Covalence.Alert..alertHash | String | Alert Hash | 
-| Covalence.Alert..analystDescription | String | Analyst Description | 
-| Covalence.Alert..analystTitle | String | Analyst Title | 
-| Covalence.Alert..assignee | String | Assignee | 
-| Covalence.Alert..blacklistDetails.blacklistedEntity | String | Blacklisted Entity | 
-| Covalence.Alert..blacklistDetails.bytesIn | Number | Bytes In | 
-| Covalence.Alert..blacklistDetails.bytesOut | Number | Bytes Out | 
-| Covalence.Alert..blacklistDetails.listLabels | String | List Labels | 
-| Covalence.Alert..blacklistDetails.listUuids | String | List Uuids | 
-| Covalence.Alert..createdTime | Number | Created Time | 
-| Covalence.Alert..destCiscoUmbrellaRanking | Number | Dest Cisco Umbrella Ranking | 
-| Covalence.Alert..destCiscoUmbrellaTopLevelDomainRanking | Number | Dest Cisco Umbrella Top Level Domain Ranking | 
-| Covalence.Alert..destCityName | String | Dest City Name | 
-| Covalence.Alert..destCountryName | unknown | Dest Country Name | 
-| Covalence.Alert..destDomainName | String | Dest Domain Name | 
-| Covalence.Alert..destGeoX | Number | Dest Geo X | 
-| Covalence.Alert..destGeoY | Number | Dest Geo Y | 
-| Covalence.Alert..destIp | String | Dest Ip | 
-| Covalence.Alert..destIpAttributes.k | String | Key | 
-| Covalence.Alert..destIpAttributes.t | Number | Type | 
-| Covalence.Alert..destIpAttributes.v | String | Value | 
-| Covalence.Alert..destMajesticMillionRanking | Number | Dest Majestic Million Ranking | 
-| Covalence.Alert..destMajesticMillionTopLevelDomainRanking | Number | Dest Majestic Million Top Level Domain Ranking | 
-| Covalence.Alert..destPort | String | Dest Port | 
-| Covalence.Alert..endpointAgentUuid | String | Endpoint Agent Uuid | 
-| Covalence.Alert..facility | String | Facility | 
-| Covalence.Alert..id | String | Id | 
-| Covalence.Alert..isFavorite | Boolean | Is Favorite | 
-| Covalence.Alert..lastAlertedTime | Number | Last Alerted Time | 
-| Covalence.Alert..notes | String | Notes | 
-| Covalence.Alert..organizationId | String | Organization Id | 
-| Covalence.Alert..pcapResourceUuid | String | Pcap Resource Uuid | 
-| Covalence.Alert..priority | unknown | Priority | 
-| Covalence.Alert..protocol | String | Protocol | 
-| Covalence.Alert..sensorId | String | Sensor Id | 
-| Covalence.Alert..severity | String | Severity | 
-| Covalence.Alert..sigEvalDetails.id | Number | Id | 
-| Covalence.Alert..sigEvalDetails.message | String | Message | 
-| Covalence.Alert..sourceCiscoUmbrellaRanking | Number | Source Cisco Umbrella Ranking | 
-| Covalence.Alert..sourceCiscoUmbrellaTopLevelDomainRanking | Number | Source Cisco Umbrella Top Level Domain Ranking | 
-| Covalence.Alert..sourceCityName | String | Source City Name | 
-| Covalence.Alert..sourceCountryName | String | Source Country Name | 
-| Covalence.Alert..sourceDomainName | String | Source Domain Name | 
-| Covalence.Alert..sourceGeoX | Number | Source Geo X | 
-| Covalence.Alert..sourceGeoY | Number | Source Geo Y | 
-| Covalence.Alert..sourceIp | String | Source Ip | 
-| Covalence.Alert..sourceIpAttributes.k | String | Key | 
-| Covalence.Alert..sourceIpAttributes.t | Number | Type | 
-| Covalence.Alert..sourceIpAttributes.v | String | Value | 
-| Covalence.Alert..sourceMajesticMillionRanking | Number | Source Majestic Million Ranking | 
-| Covalence.Alert..sourceMajesticMillionTopLevelDomainRanking | Number | Source Majestic Million Top Level Domain Ranking | 
-| Covalence.Alert..sourcePort | String | Source Port | 
-| Covalence.Alert..subType | String | Sub Type | 
-| Covalence.Alert..title | String | Title | 
-| Covalence.Alert..type | String | Type | 
+| Covalence.Alert.acknowledgedStatus | String | Acknowledged Status | 
+| Covalence.Alert.alertCount | Number | Alert Count | 
+| Covalence.Alert.alertHash | String | Alert Hash | 
+| Covalence.Alert.analystDescription | String | Analyst Description | 
+| Covalence.Alert.analystTitle | String | Analyst Title | 
+| Covalence.Alert.assignee | String | Assignee | 
+| Covalence.Alert.blacklistDetails.blacklistedEntity | String | Blacklisted Entity | 
+| Covalence.Alert.blacklistDetails.bytesIn | Number | Bytes In | 
+| Covalence.Alert.blacklistDetails.bytesOut | Number | Bytes Out | 
+| Covalence.Alert.blacklistDetails.listLabels | String | List Labels | 
+| Covalence.Alert.blacklistDetails.listUuids | String | List Uuids | 
+| Covalence.Alert.createdTime | Number | Created Time | 
+| Covalence.Alert.destCiscoUmbrellaRanking | Number | Dest Cisco Umbrella Ranking | 
+| Covalence.Alert.destCiscoUmbrellaTopLevelDomainRanking | Number | Dest Cisco Umbrella Top Level Domain Ranking | 
+| Covalence.Alert.destCityName | String | Dest City Name | 
+| Covalence.Alert.destCountryName | unknown | Dest Country Name | 
+| Covalence.Alert.destDomainName | String | Dest Domain Name | 
+| Covalence.Alert.destGeoX | Number | Dest Geo X | 
+| Covalence.Alert.destGeoY | Number | Dest Geo Y | 
+| Covalence.Alert.destIp | String | Dest Ip | 
+| Covalence.Alert.destIpAttributes.k | String | Key | 
+| Covalence.Alert.destIpAttributes.t | Number | Type | 
+| Covalence.Alert.destIpAttributes.v | String | Value | 
+| Covalence.Alert.destMajesticMillionRanking | Number | Dest Majestic Million Ranking | 
+| Covalence.Alert.destMajesticMillionTopLevelDomainRanking | Number | Dest Majestic Million Top Level Domain Ranking | 
+| Covalence.Alert.destPort | String | Dest Port | 
+| Covalence.Alert.endpointAgentUuid | String | Endpoint Agent Uuid | 
+| Covalence.Alert.facility | String | Facility | 
+| Covalence.Alert.id | String | Id | 
+| Covalence.Alert.isFavorite | Boolean | Is Favorite | 
+| Covalence.Alert.lastAlertedTime | Number | Last Alerted Time | 
+| Covalence.Alert.notes | String | Notes | 
+| Covalence.Alert.organizationId | String | Organization Id | 
+| Covalence.Alert.pcapResourceUuid | String | Pcap Resource Uuid | 
+| Covalence.Alert.priority | unknown | Priority | 
+| Covalence.Alert.protocol | String | Protocol | 
+| Covalence.Alert.sensorId | String | Sensor Id | 
+| Covalence.Alert.severity | String | Severity | 
+| Covalence.Alert.sigEvalDetails.id | Number | Id | 
+| Covalence.Alert.sigEvalDetails.message | String | Message | 
+| Covalence.Alert.sourceCiscoUmbrellaRanking | Number | Source Cisco Umbrella Ranking | 
+| Covalence.Alert.sourceCiscoUmbrellaTopLevelDomainRanking | Number | Source Cisco Umbrella Top Level Domain Ranking | 
+| Covalence.Alert.sourceCityName | String | Source City Name | 
+| Covalence.Alert.sourceCountryName | String | Source Country Name | 
+| Covalence.Alert.sourceDomainName | String | Source Domain Name | 
+| Covalence.Alert.sourceGeoX | Number | Source Geo X | 
+| Covalence.Alert.sourceGeoY | Number | Source Geo Y | 
+| Covalence.Alert.sourceIp | String | Source Ip | 
+| Covalence.Alert.sourceIpAttributes.k | String | Key | 
+| Covalence.Alert.sourceIpAttributes.t | Number | Type | 
+| Covalence.Alert.sourceIpAttributes.v | String | Value | 
+| Covalence.Alert.sourceMajesticMillionRanking | Number | Source Majestic Million Ranking | 
+| Covalence.Alert.sourceMajesticMillionTopLevelDomainRanking | Number | Source Majestic Million Top Level Domain Ranking | 
+| Covalence.Alert.sourcePort | String | Source Port | 
+| Covalence.Alert.subType | String | Sub Type | 
+| Covalence.Alert.title | String | Title | 
+| Covalence.Alert.type | String | Type | 
 
 
 #### Command Example
@@ -133,14 +133,14 @@ Lists Covalence sensors
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Covalence.Sensors..id | String | Id | 
-| Covalence.Sensors..name | String | Name | 
-| Covalence.Sensors..isAuthorized | Boolean | Is Authorized | 
-| Covalence.Sensors..isNetflowGenerator | Boolean | Is Netflow Generator | 
-| Covalence.Sensors..bytesIn | Number | Bytes In | 
-| Covalence.Sensors..bytesOut | Number | Bytes Out | 
-| Covalence.Sensors..lastActive | String | Last Active | 
-| Covalence.Sensors..listeningInterfaces | String | Listening Interfaces | 
+| Covalence.Sensors.id | String | Id | 
+| Covalence.Sensors.name | String | Name | 
+| Covalence.Sensors.isAuthorized | Boolean | Is Authorized | 
+| Covalence.Sensors.isNetflowGenerator | Boolean | Is Netflow Generator | 
+| Covalence.Sensors.bytesIn | Number | Bytes In | 
+| Covalence.Sensors.bytesOut | Number | Bytes Out | 
+| Covalence.Sensors.lastActive | String | Last Active | 
+| Covalence.Sensors.listeningInterfaces | String | Listening Interfaces | 
 
 
 #### Command Example
@@ -170,14 +170,14 @@ Get sensor details when provided with the sensor id
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Covalence.Sensor..id | String | Id | 
-| Covalence.Sensor..name | String | Name | 
-| Covalence.Sensor..isAuthorized | Boolean | Is Authorized | 
-| Covalence.Sensor..listeningInterfaces | String | Listening Interfaces | 
-| Covalence.Sensor..isNetflowGenerator | Boolean | Is Netflow Generator | 
-| Covalence.Sensor..bytesIn | Number | Bytes In | 
-| Covalence.Sensor..bytesOut | Number | Bytes Out | 
-| Covalence.Sensor..lastActive | String | Last Active | 
+| Covalence.Sensor.id | String | Id | 
+| Covalence.Sensor.name | String | Name | 
+| Covalence.Sensor.isAuthorized | Boolean | Is Authorized | 
+| Covalence.Sensor.listeningInterfaces | String | Listening Interfaces | 
+| Covalence.Sensor.isNetflowGenerator | Boolean | Is Netflow Generator | 
+| Covalence.Sensor.bytesIn | Number | Bytes In | 
+| Covalence.Sensor.bytesOut | Number | Bytes Out | 
+| Covalence.Sensor.lastActive | String | Last Active | 
 
 
 #### Command Example
@@ -215,30 +215,30 @@ List summarized connections details by IP Address
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Covalence.Connections..averageDuration | Number | Average Duration | 
-| Covalence.Connections..bytesIn | Number | Bytes In | 
-| Covalence.Connections..bytesOut | Number | Bytes Out | 
-| Covalence.Connections..clientServerRelationship | String | Client Server Relationship | 
-| Covalence.Connections..continuingConnectionCount | Number | Continuing Connection Count | 
-| Covalence.Connections..destinationCity | String | Destination City | 
-| Covalence.Connections..destinationCountry | String | Destination Country | 
-| Covalence.Connections..destinationId | String | Destination Id | 
-| Covalence.Connections..destinationIpAddress | String | Destination Ip Address | 
-| Covalence.Connections..destinationMacAddress | String | Destination Mac Address | 
-| Covalence.Connections..dstDomainName | String | Dst Domain Name | 
-| Covalence.Connections..id | String | Id | 
-| Covalence.Connections..packetsIn | Number | Packets In | 
-| Covalence.Connections..packetsOut | Number | Packets Out | 
-| Covalence.Connections..serverPortCount | Number | Server Port Count | 
-| Covalence.Connections..serverPorts | String | Server Ports | 
-| Covalence.Connections..sourceCity | String | Source City | 
-| Covalence.Connections..sourceCountry | String | Source Country | 
-| Covalence.Connections..sourceDomainName | String | Source Domain Name | 
-| Covalence.Connections..sourceId | String | Source Id | 
-| Covalence.Connections..sourceIpAddress | String | Source Ip Address | 
-| Covalence.Connections..sourceMacAddress | String | Source Mac Address | 
-| Covalence.Connections..terminatedConnectionCount | Number | Terminated Connection Count | 
-| Covalence.Connections..totalDuration | Number | Total Duration | 
+| Covalence.Connections.averageDuration | Number | Average Duration | 
+| Covalence.Connections.bytesIn | Number | Bytes In | 
+| Covalence.Connections.bytesOut | Number | Bytes Out | 
+| Covalence.Connections.clientServerRelationship | String | Client Server Relationship | 
+| Covalence.Connections.continuingConnectionCount | Number | Continuing Connection Count | 
+| Covalence.Connections.destinationCity | String | Destination City | 
+| Covalence.Connections.destinationCountry | String | Destination Country | 
+| Covalence.Connections.destinationId | String | Destination Id | 
+| Covalence.Connections.destinationIpAddress | String | Destination Ip Address | 
+| Covalence.Connections.destinationMacAddress | String | Destination Mac Address | 
+| Covalence.Connections.dstDomainName | String | Dst Domain Name | 
+| Covalence.Connections.id | String | Id | 
+| Covalence.Connections.packetsIn | Number | Packets In | 
+| Covalence.Connections.packetsOut | Number | Packets Out | 
+| Covalence.Connections.serverPortCount | Number | Server Port Count | 
+| Covalence.Connections.serverPorts | String | Server Ports | 
+| Covalence.Connections.sourceCity | String | Source City | 
+| Covalence.Connections.sourceCountry | String | Source Country | 
+| Covalence.Connections.sourceDomainName | String | Source Domain Name | 
+| Covalence.Connections.sourceId | String | Source Id | 
+| Covalence.Connections.sourceIpAddress | String | Source Ip Address | 
+| Covalence.Connections.sourceMacAddress | String | Source Mac Address | 
+| Covalence.Connections.terminatedConnectionCount | Number | Terminated Connection Count | 
+| Covalence.Connections.totalDuration | Number | Total Duration | 
 
 
 #### Command Example
@@ -276,31 +276,31 @@ List summarized connections details by Port
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Covalence.Connections..averageDuration | Number | Average Duration | 
-| Covalence.Connections..bytesIn | Number | Bytes In | 
-| Covalence.Connections..bytesOut | Number | Bytes Out | 
-| Covalence.Connections..continuingConnectionCount | Number | Continuing Connection Count | 
-| Covalence.Connections..destinationCity | String | Destination City | 
-| Covalence.Connections..destinationCountry | String | Destination Country | 
-| Covalence.Connections..destinationId | String | Destination Id | 
-| Covalence.Connections..destinationIpAddress | String | Destination Ip Address | 
-| Covalence.Connections..destinationMacAddress | String | Destination Mac Address | 
-| Covalence.Connections..dstDomainName | String | Dst Domain Name | 
-| Covalence.Connections..endTime | Date | End Time | 
-| Covalence.Connections..id | String | Id | 
-| Covalence.Connections..packetsIn | Number | Packets In | 
-| Covalence.Connections..packetsOut | Number | Packets Out | 
-| Covalence.Connections..protocol | String | Protocol | 
-| Covalence.Connections..serverPort | Number | Server Port | 
-| Covalence.Connections..sourceCity | String | Source City | 
-| Covalence.Connections..sourceCountry | String | Source Country | 
-| Covalence.Connections..sourceDomainName | String | Source Domain Name | 
-| Covalence.Connections..sourceId | String | Source Id | 
-| Covalence.Connections..sourceIpAddress | String | Source Ip Address | 
-| Covalence.Connections..sourceMacAddress | String | Source Mac Address | 
-| Covalence.Connections..startTime | Date | Start Time | 
-| Covalence.Connections..terminatedConnectionCount | Number | Terminated Connection Count | 
-| Covalence.Connections..totalDuration | Number | Total Duration | 
+| Covalence.Connections.averageDuration | Number | Average Duration | 
+| Covalence.Connections.bytesIn | Number | Bytes In | 
+| Covalence.Connections.bytesOut | Number | Bytes Out | 
+| Covalence.Connections.continuingConnectionCount | Number | Continuing Connection Count | 
+| Covalence.Connections.destinationCity | String | Destination City | 
+| Covalence.Connections.destinationCountry | String | Destination Country | 
+| Covalence.Connections.destinationId | String | Destination Id | 
+| Covalence.Connections.destinationIpAddress | String | Destination Ip Address | 
+| Covalence.Connections.destinationMacAddress | String | Destination Mac Address | 
+| Covalence.Connections.dstDomainName | String | Dst Domain Name | 
+| Covalence.Connections.endTime | Date | End Time | 
+| Covalence.Connections.id | String | Id | 
+| Covalence.Connections.packetsIn | Number | Packets In | 
+| Covalence.Connections.packetsOut | Number | Packets Out | 
+| Covalence.Connections.protocol | String | Protocol | 
+| Covalence.Connections.serverPort | Number | Server Port | 
+| Covalence.Connections.sourceCity | String | Source City | 
+| Covalence.Connections.sourceCountry | String | Source Country | 
+| Covalence.Connections.sourceDomainName | String | Source Domain Name | 
+| Covalence.Connections.sourceId | String | Source Id | 
+| Covalence.Connections.sourceIpAddress | String | Source Ip Address | 
+| Covalence.Connections.sourceMacAddress | String | Source Mac Address | 
+| Covalence.Connections.startTime | Date | Start Time | 
+| Covalence.Connections.terminatedConnectionCount | Number | Terminated Connection Count | 
+| Covalence.Connections.totalDuration | Number | Total Duration | 
 
 
 #### Command Example
@@ -339,15 +339,15 @@ List summarized connections details by Port
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Covalence.DNSResolutions..id | String | Id | 
-| Covalence.DNSResolutions..domainName | String | Domain Name | 
-| Covalence.DNSResolutions..resolvedIp | String | Resolved Ip | 
-| Covalence.DNSResolutions..requestOriginIp | String | Request Origin Ip | 
-| Covalence.DNSResolutions..nameserverIp | String | Nameserver Ip | 
-| Covalence.DNSResolutions..nodeLabel | String | Node Label | 
-| Covalence.DNSResolutions..requestTime | Number | Request Time | 
-| Covalence.DNSResolutions..byteCount | Number | Byte Count | 
-| Covalence.DNSResolutions..pktCount | Number | Pkt Count | 
+| Covalence.DNSResolutions.id | String | Id | 
+| Covalence.DNSResolutions.domainName | String | Domain Name | 
+| Covalence.DNSResolutions.resolvedIp | String | Resolved Ip | 
+| Covalence.DNSResolutions.requestOriginIp | String | Request Origin Ip | 
+| Covalence.DNSResolutions.nameserverIp | String | Nameserver Ip | 
+| Covalence.DNSResolutions.nodeLabel | String | Node Label | 
+| Covalence.DNSResolutions.requestTime | Number | Request Time | 
+| Covalence.DNSResolutions.byteCount | Number | Byte Count | 
+| Covalence.DNSResolutions.pktCount | Number | Pkt Count | 
 
 
 #### Command Example
@@ -376,8 +376,8 @@ List internal networks
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Covalence.InternalNetworks..cidr | String | Cidr | 
-| Covalence.InternalNetworks..notes | String | Notes | 
+| Covalence.InternalNetworks.cidr | String | Cidr | 
+| Covalence.InternalNetworks.notes | String | Notes | 
 
 
 #### Command Example
@@ -408,8 +408,8 @@ Set internal networks
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Covalence.InternalNetworks..cidr | String | Cidr | 
-| Covalence.InternalNetworks..notes | String | Notes | 
+| Covalence.InternalNetworks.cidr | String | Cidr | 
+| Covalence.InternalNetworks.notes | String | Notes | 
 
 
 #### Command Example
@@ -440,31 +440,31 @@ List endpoint agents
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Covalence.EndpointAgents..agentUuid | String | Agent Uuid | 
-| Covalence.EndpointAgents..agentVersion | String | Agent Version | 
-| Covalence.EndpointAgents..firstSeenTime | Date | First Seen Time | 
-| Covalence.EndpointAgents..lastSeenTime | Date | Last Seen Time | 
-| Covalence.EndpointAgents..lastSessionUser | String | Last Session User | 
-| Covalence.EndpointAgents..isMobile | Boolean | Is Mobile | 
-| Covalence.EndpointAgents..isConnected | Boolean | Is Connected | 
-| Covalence.EndpointAgents..coreVersion | String | Core Version | 
-| Covalence.EndpointAgents..coreArchitecture | String | Core Architecture | 
-| Covalence.EndpointAgents..coreOs | String | Core Os | 
-| Covalence.EndpointAgents..operatingSystem | String | Operating System | 
-| Covalence.EndpointAgents..hostName | String | Host Name | 
-| Covalence.EndpointAgents..hardwareVendor | String | Hardware Vendor | 
-| Covalence.EndpointAgents..hardwareModel | String | Hardware Model | 
-| Covalence.EndpointAgents..arch | String | Arch | 
-| Covalence.EndpointAgents..osDistro | String | Os Distro | 
-| Covalence.EndpointAgents..osVersion | String | Os Version | 
-| Covalence.EndpointAgents..kernelVersion | String | Kernel Version | 
-| Covalence.EndpointAgents..operatingSystemReleaseId | String | Operating System Release Id | 
-| Covalence.EndpointAgents..ipAddress | String | Ip Address | 
-| Covalence.EndpointAgents..secondaryIpAddress | String | Secondary Ip Address | 
-| Covalence.EndpointAgents..ipAddresses | String | Ip Addresses | 
-| Covalence.EndpointAgents..serialNumber | String | Serial Number | 
-| Covalence.EndpointAgents..deviceIdentifier | String | Device Identifier | 
-| Covalence.EndpointAgents..cpuArchitectureEnum | String | Cpu Architecture Enum | 
+| Covalence.EndpointAgents.agentUuid | String | Agent Uuid | 
+| Covalence.EndpointAgents.agentVersion | String | Agent Version | 
+| Covalence.EndpointAgents.firstSeenTime | Date | First Seen Time | 
+| Covalence.EndpointAgents.lastSeenTime | Date | Last Seen Time | 
+| Covalence.EndpointAgents.lastSessionUser | String | Last Session User | 
+| Covalence.EndpointAgents.isMobile | Boolean | Is Mobile | 
+| Covalence.EndpointAgents.isConnected | Boolean | Is Connected | 
+| Covalence.EndpointAgents.coreVersion | String | Core Version | 
+| Covalence.EndpointAgents.coreArchitecture | String | Core Architecture | 
+| Covalence.EndpointAgents.coreOs | String | Core Os | 
+| Covalence.EndpointAgents.operatingSystem | String | Operating System | 
+| Covalence.EndpointAgents.hostName | String | Host Name | 
+| Covalence.EndpointAgents.hardwareVendor | String | Hardware Vendor | 
+| Covalence.EndpointAgents.hardwareModel | String | Hardware Model | 
+| Covalence.EndpointAgents.arch | String | Arch | 
+| Covalence.EndpointAgents.osDistro | String | Os Distro | 
+| Covalence.EndpointAgents.osVersion | String | Os Version | 
+| Covalence.EndpointAgents.kernelVersion | String | Kernel Version | 
+| Covalence.EndpointAgents.operatingSystemReleaseId | String | Operating System Release Id | 
+| Covalence.EndpointAgents.ipAddress | String | Ip Address | 
+| Covalence.EndpointAgents.secondaryIpAddress | String | Secondary Ip Address | 
+| Covalence.EndpointAgents.ipAddresses | String | Ip Addresses | 
+| Covalence.EndpointAgents.serialNumber | String | Serial Number | 
+| Covalence.EndpointAgents.deviceIdentifier | String | Device Identifier | 
+| Covalence.EndpointAgents.cpuArchitectureEnum | String | Cpu Architecture Enum | 
 
 
 #### Command Example
@@ -494,31 +494,31 @@ List endpoint agents where the last session user is the one provided as paramete
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Covalence.EndpointAgents..agentUuid | String | Agent Uuid | 
-| Covalence.EndpointAgents..agentVersion | String | Agent Version | 
-| Covalence.EndpointAgents..firstSeenTime | Date | First Seen Time | 
-| Covalence.EndpointAgents..lastSeenTime | Date | Last Seen Time | 
-| Covalence.EndpointAgents..lastSessionUser | String | Last Session User | 
-| Covalence.EndpointAgents..isMobile | Boolean | Is Mobile | 
-| Covalence.EndpointAgents..isConnected | Boolean | Is Connected | 
-| Covalence.EndpointAgents..coreVersion | String | Core Version | 
-| Covalence.EndpointAgents..coreArchitecture | String | Core Architecture | 
-| Covalence.EndpointAgents..coreOs | String | Core Os | 
-| Covalence.EndpointAgents..operatingSystem | String | Operating System | 
-| Covalence.EndpointAgents..hostName | String | Host Name | 
-| Covalence.EndpointAgents..hardwareVendor | String | Hardware Vendor | 
-| Covalence.EndpointAgents..hardwareModel | String | Hardware Model | 
-| Covalence.EndpointAgents..arch | String | Arch | 
-| Covalence.EndpointAgents..osDistro | String | Os Distro | 
-| Covalence.EndpointAgents..osVersion | String | Os Version | 
-| Covalence.EndpointAgents..kernelVersion | String | Kernel Version | 
-| Covalence.EndpointAgents..operatingSystemReleaseId | String | Operating System Release Id | 
-| Covalence.EndpointAgents..ipAddress | String | Ip Address | 
-| Covalence.EndpointAgents..secondaryIpAddress | String | Secondary Ip Address | 
-| Covalence.EndpointAgents..ipAddresses | String | Ip Addresses | 
-| Covalence.EndpointAgents..serialNumber | String | Serial Number | 
-| Covalence.EndpointAgents..deviceIdentifier | String | Device Identifier | 
-| Covalence.EndpointAgents..cpuArchitectureEnum | String | Cpu Architecture Enum | 
+| Covalence.EndpointAgents.agentUuid | String | Agent Uuid | 
+| Covalence.EndpointAgents.agentVersion | String | Agent Version | 
+| Covalence.EndpointAgents.firstSeenTime | Date | First Seen Time | 
+| Covalence.EndpointAgents.lastSeenTime | Date | Last Seen Time | 
+| Covalence.EndpointAgents.lastSessionUser | String | Last Session User | 
+| Covalence.EndpointAgents.isMobile | Boolean | Is Mobile | 
+| Covalence.EndpointAgents.isConnected | Boolean | Is Connected | 
+| Covalence.EndpointAgents.coreVersion | String | Core Version | 
+| Covalence.EndpointAgents.coreArchitecture | String | Core Architecture | 
+| Covalence.EndpointAgents.coreOs | String | Core Os | 
+| Covalence.EndpointAgents.operatingSystem | String | Operating System | 
+| Covalence.EndpointAgents.hostName | String | Host Name | 
+| Covalence.EndpointAgents.hardwareVendor | String | Hardware Vendor | 
+| Covalence.EndpointAgents.hardwareModel | String | Hardware Model | 
+| Covalence.EndpointAgents.arch | String | Arch | 
+| Covalence.EndpointAgents.osDistro | String | Os Distro | 
+| Covalence.EndpointAgents.osVersion | String | Os Version | 
+| Covalence.EndpointAgents.kernelVersion | String | Kernel Version | 
+| Covalence.EndpointAgents.operatingSystemReleaseId | String | Operating System Release Id | 
+| Covalence.EndpointAgents.ipAddress | String | Ip Address | 
+| Covalence.EndpointAgents.secondaryIpAddress | String | Secondary Ip Address | 
+| Covalence.EndpointAgents.ipAddresses | String | Ip Addresses | 
+| Covalence.EndpointAgents.serialNumber | String | Serial Number | 
+| Covalence.EndpointAgents.deviceIdentifier | String | Device Identifier | 
+| Covalence.EndpointAgents.cpuArchitectureEnum | String | Cpu Architecture Enum | 
 
 
 #### Command Example
@@ -548,31 +548,31 @@ Find the endpoint agent with the UUID provided as parameter
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Covalence.EndpointAgents..agentUuid | String | Agent Uuid | 
-| Covalence.EndpointAgents..agentVersion | String | Agent Version | 
-| Covalence.EndpointAgents..firstSeenTime | Date | First Seen Time | 
-| Covalence.EndpointAgents..lastSeenTime | Date | Last Seen Time | 
-| Covalence.EndpointAgents..lastSessionUser | String | Last Session User | 
-| Covalence.EndpointAgents..isMobile | Boolean | Is Mobile | 
-| Covalence.EndpointAgents..isConnected | Boolean | Is Connected | 
-| Covalence.EndpointAgents..coreVersion | String | Core Version | 
-| Covalence.EndpointAgents..coreArchitecture | String | Core Architecture | 
-| Covalence.EndpointAgents..coreOs | String | Core Os | 
-| Covalence.EndpointAgents..operatingSystem | String | Operating System | 
-| Covalence.EndpointAgents..hostName | String | Host Name | 
-| Covalence.EndpointAgents..hardwareVendor | String | Hardware Vendor | 
-| Covalence.EndpointAgents..hardwareModel | String | Hardware Model | 
-| Covalence.EndpointAgents..arch | String | Arch | 
-| Covalence.EndpointAgents..osDistro | String | Os Distro | 
-| Covalence.EndpointAgents..osVersion | String | Os Version | 
-| Covalence.EndpointAgents..kernelVersion | String | Kernel Version | 
-| Covalence.EndpointAgents..operatingSystemReleaseId | String | Operating System Release Id | 
-| Covalence.EndpointAgents..ipAddress | String | Ip Address | 
-| Covalence.EndpointAgents..secondaryIpAddress | String | Secondary Ip Address | 
-| Covalence.EndpointAgents..ipAddresses | String | Ip Addresses | 
-| Covalence.EndpointAgents..serialNumber | String | Serial Number | 
-| Covalence.EndpointAgents..deviceIdentifier | String | Device Identifier | 
-| Covalence.EndpointAgents..cpuArchitectureEnum | String | Cpu Architecture Enum | 
+| Covalence.EndpointAgents.agentUuid | String | Agent Uuid | 
+| Covalence.EndpointAgents.agentVersion | String | Agent Version | 
+| Covalence.EndpointAgents.firstSeenTime | Date | First Seen Time | 
+| Covalence.EndpointAgents.lastSeenTime | Date | Last Seen Time | 
+| Covalence.EndpointAgents.lastSessionUser | String | Last Session User | 
+| Covalence.EndpointAgents.isMobile | Boolean | Is Mobile | 
+| Covalence.EndpointAgents.isConnected | Boolean | Is Connected | 
+| Covalence.EndpointAgents.coreVersion | String | Core Version | 
+| Covalence.EndpointAgents.coreArchitecture | String | Core Architecture | 
+| Covalence.EndpointAgents.coreOs | String | Core Os | 
+| Covalence.EndpointAgents.operatingSystem | String | Operating System | 
+| Covalence.EndpointAgents.hostName | String | Host Name | 
+| Covalence.EndpointAgents.hardwareVendor | String | Hardware Vendor | 
+| Covalence.EndpointAgents.hardwareModel | String | Hardware Model | 
+| Covalence.EndpointAgents.arch | String | Arch | 
+| Covalence.EndpointAgents.osDistro | String | Os Distro | 
+| Covalence.EndpointAgents.osVersion | String | Os Version | 
+| Covalence.EndpointAgents.kernelVersion | String | Kernel Version | 
+| Covalence.EndpointAgents.operatingSystemReleaseId | String | Operating System Release Id | 
+| Covalence.EndpointAgents.ipAddress | String | Ip Address | 
+| Covalence.EndpointAgents.secondaryIpAddress | String | Secondary Ip Address | 
+| Covalence.EndpointAgents.ipAddresses | String | Ip Addresses | 
+| Covalence.EndpointAgents.serialNumber | String | Serial Number | 
+| Covalence.EndpointAgents.deviceIdentifier | String | Device Identifier | 
+| Covalence.EndpointAgents.cpuArchitectureEnum | String | Cpu Architecture Enum | 
 
 
 #### Command Example
@@ -604,19 +604,19 @@ Search processes by name or advanced filter, at least one parameter is required
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Covalence.EndpointProcess..id | Number | Id | 
-| Covalence.EndpointProcess..agentUuid | String | Agent Uuid | 
-| Covalence.EndpointProcess..processName | String | Process Name | 
-| Covalence.EndpointProcess..processPath | String | Process Path | 
-| Covalence.EndpointProcess..parentProcessName | String | Parent Process Name | 
-| Covalence.EndpointProcess..parentProcessPath | String | Parent Process Path | 
-| Covalence.EndpointProcess..commandLine | String | Command Line | 
-| Covalence.EndpointProcess..username | String | Username | 
-| Covalence.EndpointProcess..firstSeenTime | Date | First Seen Time | 
-| Covalence.EndpointProcess..lastSeenTime | Date | Last Seen Time | 
-| Covalence.EndpointProcess..lastEndTime | Date | Last End Time | 
-| Covalence.EndpointProcess..seenCount | Number | Seen Count | 
-| Covalence.EndpointProcess..activeCount | Number | Active Count | 
+| Covalence.EndpointProcess.id | Number | Id | 
+| Covalence.EndpointProcess.agentUuid | String | Agent Uuid | 
+| Covalence.EndpointProcess.processName | String | Process Name | 
+| Covalence.EndpointProcess.processPath | String | Process Path | 
+| Covalence.EndpointProcess.parentProcessName | String | Parent Process Name | 
+| Covalence.EndpointProcess.parentProcessPath | String | Parent Process Path | 
+| Covalence.EndpointProcess.commandLine | String | Command Line | 
+| Covalence.EndpointProcess.username | String | Username | 
+| Covalence.EndpointProcess.firstSeenTime | Date | First Seen Time | 
+| Covalence.EndpointProcess.lastSeenTime | Date | Last Seen Time | 
+| Covalence.EndpointProcess.lastEndTime | Date | Last End Time | 
+| Covalence.EndpointProcess.seenCount | Number | Seen Count | 
+| Covalence.EndpointProcess.activeCount | Number | Active Count | 
 
 
 #### Command Example
@@ -649,22 +649,22 @@ Search for endpoint installed software
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Covalence.EndpointSoftware..arch | Number | Arch | 
-| Covalence.EndpointSoftware..type | Number | Type | 
-| Covalence.EndpointSoftware..packageManager | Number | Package Manager | 
-| Covalence.EndpointSoftware..installTimestamp | Date | Install Timestamp | 
-| Covalence.EndpointSoftware..uninstallTimestamp | Date | Uninstall Timestamp | 
-| Covalence.EndpointSoftware..name | String | Name | 
-| Covalence.EndpointSoftware..version | String | Version | 
-| Covalence.EndpointSoftware..vendor | String | Vendor | 
-| Covalence.EndpointSoftware..installPath | String | Install Path | 
-| Covalence.EndpointSoftware..appDataPath | String | App Data Path | 
-| Covalence.EndpointSoftware..sharedDataPath | String | Shared Data Path | 
-| Covalence.EndpointSoftware..installedForUser | String | Installed For User | 
-| Covalence.EndpointSoftware..installSource | String | Install Source | 
-| Covalence.EndpointSoftware..id | Number | Id | 
-| Covalence.EndpointSoftware..agentUuid | String | Agent Uuid | 
-| Covalence.EndpointSoftware..softwareNotifyAction | String | Software Notify Action | 
+| Covalence.EndpointSoftware.arch | Number | Arch | 
+| Covalence.EndpointSoftware.type | Number | Type | 
+| Covalence.EndpointSoftware.packageManager | Number | Package Manager | 
+| Covalence.EndpointSoftware.installTimestamp | Date | Install Timestamp | 
+| Covalence.EndpointSoftware.uninstallTimestamp | Date | Uninstall Timestamp | 
+| Covalence.EndpointSoftware.name | String | Name | 
+| Covalence.EndpointSoftware.version | String | Version | 
+| Covalence.EndpointSoftware.vendor | String | Vendor | 
+| Covalence.EndpointSoftware.installPath | String | Install Path | 
+| Covalence.EndpointSoftware.appDataPath | String | App Data Path | 
+| Covalence.EndpointSoftware.sharedDataPath | String | Shared Data Path | 
+| Covalence.EndpointSoftware.installedForUser | String | Installed For User | 
+| Covalence.EndpointSoftware.installSource | String | Install Source | 
+| Covalence.EndpointSoftware.id | Number | Id | 
+| Covalence.EndpointSoftware.agentUuid | String | Agent Uuid | 
+| Covalence.EndpointSoftware.softwareNotifyAction | String | Software Notify Action | 
 
 
 #### Command Example
@@ -690,7 +690,7 @@ There are no input arguments for this command.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Covalence.Organization..org_name | String | Org_name | 
+| Covalence.Organization.org_name | String | Org_name | 
 
 
 #### Command Example
