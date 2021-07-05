@@ -14,5 +14,11 @@
     "useCases": [
         "Access"
     ],
-    "keywords": []
+    "keywords": [],
+    "dependencies": {
+        "AbuseDB": {
+            "mandatory": true,
+            "display_name": "AbuseIPDB"
+        }
+    }
 }
