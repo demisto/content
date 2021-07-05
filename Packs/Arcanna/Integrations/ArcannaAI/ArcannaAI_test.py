@@ -48,13 +48,6 @@ arcanna_jobs_response = [
 ]
 
 
-# cmd test_module
-def test_module_command(mocker):
-    mocker.patch.object(client, "test_arcanna", return_value=connection_json)
-    result = test_module(client)
-    assert result is "ok"
-
-
 def test_arcanna_get_default_job_id_command(mocker):
     mocker.patch.object(client, "get_default_job_id", return_value=10)
     command_result = get_default_job_id(client)

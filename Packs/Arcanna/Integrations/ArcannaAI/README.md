@@ -1,98 +1,230 @@
-Arcanna.ai can triage alerts so you can focus on investigation!
+Arcanna integration for using the power of AI in SOC
+This integration was integrated and tested with version xx of Arcanna.AI
 
-Alert triage is one of the biggest problems in today’s IT & Cybersecurity due to the sheer number of sensors, devices and applications that need to be monitored and continuously generate alerts.
-
-
-Arcanna uses data, machine learning, and automation to unlock greater human potential by helping them focus on innovation rather than false alarms
-
-Arcanna.ai is designed and built to enhance teams of experts with AI, enabling them to extract insights and automate processes that would otherwise consume much of their valuable time or not even possible
-
-## Configure Arcanna.AI  on Cortex XSOAR
+## Configure Arcanna.AI on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Arcanna.
+2. Search for Arcanna.AI.
 3. Click **Add instance** to create and configure a new integration instance.
 
+    | **Parameter** | **Description** | **Required** |
+    | --- | --- | --- |
+    | Server URL (e.g. https://&lt;your arcanna ai api&gt;) | URL of Arcanna API | True |
+    | API Key | Api Key for Arcanna API | True |
+    | Trust any certificate (not secure) |  | False |
+    | Use system proxy settings |  | False |
+    | Default Arcanna Job Id |  | False |
+
+4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+### arcanna-get-jobs
+***
+Get jobs list
 
 
-### check_arcanna_status
-checks if Arcanna configured endpoint is valid and configured api_key is valid.
-##### Output
-Writes in WarRoom status
+#### Base Command
 
-### get_default_job_id
-Retrieves Arcanna Default Job id
-Default job id is useful when you have one arcanna job and you want to send all that incident data only to that particular job
+`arcanna-get-jobs`
+#### Input
 
-##### Output
+There are no input arguments for this command.
+
+#### Context Output
+
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| arcanna_default_job_id | Number | Default Job Id | 
+| Arcanna.Jobs.job_id | String | Arcanna Job id | 
+| Arcanna.Jobs.data_type | Unknown | Arcanna Job type | 
+| Arcanna.Jobs.title | Unknown | Arcanna Job title | 
+| Arcanna.Jobs.status | Unknown | Arcanna job status | 
 
-### set_default_job_id
+
+#### Command Example
+```!arcanna-get-jobs```
+
+#### Context Example
+```json
+{
+    "Arcanna": {
+        "Jobs": [
+            {
+                "data_type": "es",
+                "job_id": 1101,
+                "status": "IDLE",
+                "title": "cortex"
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Arcanna Jobs
+>|job_id|title|data_type|status|
+>|---|---|---|---|
+>| 1101 | cortex | es | IDLE |
+
+
+### arcanna-send-event
+***
+Sends a raw event to Arcanna
+
+
+#### Base Command
+
+`arcanna-send-event`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| job_id | arcanna running job_id. | Optional | 
+| event_json | json event for arcanna to inference. | Required | 
+| title | event title. | Required | 
+| severity | event severity. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Arcanna.Event.event_id | number | Arcanna event id | 
+| Arcanna.Event.status | string | Arcanna ingestion status | 
+| Arcanna.Event.ingest_timestamp | date | Arcanna ingestion timestamp | 
+| Arcanna.Event.error_message | Unknown | Arcanna error message if any | 
+
+
+#### Command Example
+``` ```
+
+#### Human Readable Output
+
+
+
+### arcanna-get-event-status
+***
+Retrieves Arcanna Inference result
+
+
+#### Base Command
+
+`arcanna-get-event-status`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| job_id | Arcanna Job Id. | Optional | 
+| event_id | Arcanna generated unique event id. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Arcanna.Event.event_id | Unknown | Arcanna event id | 
+| Arcanna.Event.ingest_timestamp | Unknown | Arcanna ingestion timestamp | 
+| Arcanna.Event.confidence_level | Unknown | Arcanna ML confidence_level | 
+| Arcanna.Event.result | Unknown | Arcanna event  result | 
+| Arcanna.Event.is_duplicated | Unknown | Arcanna signalling if event is duplicated by another alert | 
+| Arcanna.Event.error_message | Unknown | Arcanna error message if any | 
+| Arcanna.Event.status | Unknown | arcanna event status | 
+
+
+#### Command Example
+```!arcanna-get-event-status job_id="1102" event_id="11021484171024"```
+
+#### Context Example
+```json
+{
+    "Arcanna": {
+        "Event": {
+            "confidence_level": 0.9999940395355225,
+            "error_message": null,
+            "event_id": "11021484171024",
+            "ingest_timestamp": "2021-07-02T10:16:12.148417",
+            "is_duplicated": false,
+            "result": "drop_alert",
+            "status": "OK"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>## {'event_id': '11021484171024', 'ingest_timestamp': '2021-07-02T10:16:12.148417', 'status': 'OK', 'confidence_level': 0.9999940395355225, 'result': 'drop_alert', 'is_duplicated': False, 'error_message': None}
+
+### arcanna-get-default-job-id
+***
+Retrieves Arcanna Default Job id
+
+
+#### Base Command
+
+`arcanna-get-default-job-id`
+#### Input
+
+There are no input arguments for this command.
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Arcanna.Default_Job_Id | Number | Arcanna Default Job id | 
+
+
+#### Command Example
+```!arcanna-get-default-job-id```
+
+#### Context Example
+```json
+{
+    "Arcanna": {
+        "Default_Job_Id": "1102"
+    }
+}
+```
+
+#### Human Readable Output
+
+>## 1102
+
+### arcanna-set-default-job-id
+***
 Sets Arcanna Default Job id
 
-##### Input
-| **Path** | **Type** | **Description** | **Mandatory** | 
-| --- | --- | --- | --- |
-| job_id | Number | Job Id to be set as default | yes |
 
-##### Output
-Writes in WarRoom status
+#### Base Command
 
-### get_event_status
-Retrieves Arcanna AI inference result based on the job_id and event_id.
-Retrieving inference result is an async operation (in most cases)
+`arcanna-set-default-job-id`
+#### Input
 
-##### Input
-| **Path** | **Type** | **Description** | **Mandatory** | 
-| --- | --- | --- | --- |
-| job_id | Number | Job Id  | yes |
-| event_id | Number | Unique Id generated by Arcanna at send_event  | yes |
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| job_id | job_id. | Required | 
 
 
-##### Output
+#### Context Output
+
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| arcanna_jobs[].error_message | String | specifies the type of Arcanna ML processor used  | 
-| arcanna_jobs[].confidence_level | Number | Arcanna ML confidende score  | 
-| arcanna_jobs[].status | String | specifies inference status of the Arcanna processing of event .Ex [Inference Pending/Error/Ok]  | 
-| arcanna_jobs[].event_id | String | Unique id generated by Arcanna.Ex 112341515161616121  | 
-| arcanna_jobs[].ingest_timestamp | String | Ingest timestamp  generated by Arcanna  | 
-| arcanna_jobs[].result | String | Arcanna decision for current event.Ex [drop_alert/escale_alert]  | 
-| arcanna_jobs[].is_duplicated | Boolean | Arcanna can detect if the event is a duplicate | 
-
-### get_jobs
-Retrieves all available Arcanna jobs as a tableMarkdown
-Can be used for discriminating jobs based on input type
-
-##### Output
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| arcanna_jobs[].data_type | String | specifies the type of Arcanna ML processor used  | 
-| arcanna_jobs[].job_id | Number | specifies Arcanna Job internal job_id.Ex 1001  | 
-| arcanna_jobs[].status | String | specifies status of the Arcanna Job.Ex [Started/Idle/Stopped]  | 
-### send_event
-Sends an event to Arcanna to run inference based on the resutl 
+| Arcanna.Default_Job_Id | Unknown | Arcanna default job id | 
 
 
-##### Input
-| **Path** | **Type** | **Description** | **Mandatory** | 
-| --- | --- | --- | --- |
-| job_id | Number | Job Id  | yes |
-| event_json | String | Json string of the raw event| yes |
-| severity | Number | Incident severity| yes |
-| title | String | Incident title| yes |
+#### Command Example
+```!arcanna-set-default-job-id job_id=1102```
 
+#### Context Example
+```json
+{
+    "Arcanna": {
+        "Default_Job_Id": "1102"
+    }
+}
+```
 
-##### Output
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| arcanna_jobs[].error_message | String | specifies the type of Arcanna ML processor used  | 
-| arcanna_jobs[].status | String | specifies inference status of the Arcanna processing of event .Ex [Inference Pending/Error/Ok]  | 
-| arcanna_jobs[].event_id | String | Unique id generated by Arcanna.Ex 112341515161616121  | 
-| arcanna_jobs[].ingest_timestamp | String | Ingest timestamp  generated by Arcanna  | 
+#### Human Readable Output
 
+>## 1102
