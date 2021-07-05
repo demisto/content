@@ -997,17 +997,18 @@ def main():
             pack.cleanup()
             continue
 
-        task_status = pack.format_metadata(user_metadata, index_folder_path, packs_dependencies_mapping, build_number,
-                                           current_commit_hash, pack_was_modified, statistics_handler, pack_names)
+        task_status, is_missing_dependencies = pack.format_metadata(user_metadata, index_folder_path,
+                                                                    packs_dependencies_mapping, build_number,
+                                                                    current_commit_hash, pack_was_modified,
+                                                                    statistics_handler, pack_names)
 
-        if pack._is_missing_dependencies:
+        if is_missing_dependencies:
             # If the pack is dependent on a new pack
             # (which is not yet in the index.zip as it might not have been iterated yet)
             # we will note that it is missing dependencies.
             # And finally after updating all the packages in index.zip - i.e. the new pack exists now.
             # We will go over the pack again to add what was missing.
             # See issue #37290
-            pack.status = PackStatus.PACK_IS_MISSING_DEPENDENCIES.name
             packs_missing_dependencies.append(pack)
 
         if not task_status:
@@ -1086,12 +1087,12 @@ def main():
     # updating them with the new data for the new packs that were added to the index.zip
     for pack in packs_missing_dependencies:
 
-        task_status = pack.format_metadata(user_metadata, index_folder_path, packs_dependencies_mapping, build_number,
-                                           current_commit_hash, pack_was_modified, statistics_handler, pack_names,
-                                           format_dependencies_only=True)
+        task_status, _ = pack.format_metadata(user_metadata, index_folder_path, packs_dependencies_mapping,
+                                              build_number, current_commit_hash, pack_was_modified, statistics_handler,
+                                              pack_names, format_dependencies_only=True)
 
         if not task_status:
-            pack.status = PackStatus.FAILED_METADATA_PARSING.name
+            pack.status = PackStatus.FAILED_METADATA_REFORMATING.name
             pack.cleanup()
             continue
 

@@ -609,6 +609,8 @@ class Pack(object):
 
         Returns:
             dict: pack id as key and loaded metadata of packs as value.
+            bool: True is returned in pack is missing dependencies.
+
         """
         dependencies_data_result = {}
         dependencies_ids = {d for d in first_level_dependencies.keys()}
@@ -636,7 +638,8 @@ class Pack(object):
 
             else:
                 logging.warning(f"{self._pack_name} pack dependency with id {dependency_pack_id} was not found")
-        return dependencies_data_result
+
+        return dependencies_data_result, self._is_missing_dependencies
 
     def _create_changelog_entry(self, release_notes, version_display_name, build_number, pack_was_modified=False,
                                 new_version=True, initial_release=False):
@@ -1715,6 +1718,7 @@ class Pack(object):
             format_dependencies_only (bool): Indicates whether the metadata formation is just for formatting the dependencies or not.
         Returns:
             bool: True is returned in case metadata file was parsed successfully, otherwise False.
+            bool: True is returned in pack is missing dependencies.
 
         """
         task_status = False
@@ -1725,7 +1729,7 @@ class Pack(object):
                 user_metadata['displayedImages'] = packs_dependencies_mapping.get(
                     self._pack_name, {}).get('displayedImages', [])
                 logging.info(f"Adding auto generated display images for {self._pack_name} pack")
-            dependencies_data = self._load_pack_dependencies(index_folder_path,
+            dependencies_data, is_missing_dependencies = self._load_pack_dependencies(index_folder_path,
                                                              user_metadata.get('dependencies', {}),
                                                              user_metadata.get('displayedImages', []), pack_names)
 
@@ -1744,7 +1748,7 @@ class Pack(object):
             logging.exception(f"Failed in formatting {self._pack_name} pack metadata. Additional Info: {str(e)}")
 
         finally:
-            return task_status
+            return task_status, is_missing_dependencies
 
     @staticmethod
     def pack_created_in_time_delta(pack_name, time_delta: timedelta, index_folder_path: str) -> bool:
@@ -2313,6 +2317,10 @@ class Pack(object):
             os.path.basename(file_path).startswith('integration'),
             os.path.basename(file_path).endswith('.yml')
         ])
+
+    @property
+    def is_missing_dependencies(self):
+        return self._is_missing_dependencies
 
 
 # HELPER FUNCTIONS
