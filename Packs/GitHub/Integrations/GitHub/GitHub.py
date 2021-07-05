@@ -1,13 +1,13 @@
-import demistomock as demisto
-from CommonServerPython import *
-from CommonServerUserPython import *
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 
 ''' IMPORTS '''
-import json
 import copy
-import requests
-from typing import Union, Any
+import json
 from datetime import datetime
+from typing import Any, Union
+
+import requests
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -21,8 +21,10 @@ INSTALLATION_ID: str
 REPOSITORY: str
 USE_SSL: bool
 FETCH_TIME: str
+MAX_FETCH_PAGE_RESULTS: int
 USER_SUFFIX: str
 ISSUE_SUFFIX: str
+PROJECT_SUFFIX: str
 RELEASE_SUFFIX: str
 PULLS_SUFFIX: str
 FILE_SUFFIX: str
@@ -37,6 +39,7 @@ FILE_HEADERS = ['Name', 'Path', 'Type', 'Size', 'SHA', 'DownloadUrl']
 
 # Headers to be sent in requests
 MEDIA_TYPE_INTEGRATION_PREVIEW = "application/vnd.github.machine-man-preview+json"
+PROJECTS_PREVIEW = 'application/vnd.github.inertia-preview+json'
 
 ''' HELPER FUNCTIONS '''
 
@@ -1160,12 +1163,83 @@ def update_command():
     context_create_issue(response, issue)
 
 
-def list_all_issue(state):
-    params = {'state': state}
+def list_all_issue(state, page=1):
+    params = {'state': state, 'page': page, 'per_page': MAX_FETCH_PAGE_RESULTS, }
     response = http_request(method='GET',
                             url_suffix=ISSUE_SUFFIX,
                             params=params)
-    return response
+    if len(response) == MAX_FETCH_PAGE_RESULTS:
+        return response + list_all_issue(state=state, page=page + 1)
+    else:
+        return response
+
+
+def get_cards(url, header, page=1):
+    resp = requests.get(url=url,
+                        headers=header,
+                        verify=USE_SSL,
+                        params={'page': page, 'per_page': MAX_FETCH_PAGE_RESULTS}
+                        )
+    cards = resp.json()
+    column_issues = []
+    for card in cards:
+        if "content_url" in card:
+            column_issues.append(int(card["content_url"].rsplit('/', 1)[1]))
+    if len(cards) == MAX_FETCH_PAGE_RESULTS:
+        return column_issues + get_cards(url=url, header=header, page=page + 1)
+    else:
+        return column_issues
+
+
+def get_project_details(project, header):
+    resp_column = requests.get(url=project["columns_url"],
+                               headers=header,
+                               verify=USE_SSL)
+    json_column = resp_column.json()
+    columns_data = {}
+    all_project_issues = []
+    for column in json_column:
+        cards = get_cards(url=column["cards_url"], header=header)
+        columns_data[column["name"]] = {'name': column["name"],
+                                        'column_id': column["id"],
+                                        'cards': cards}
+        all_project_issues += cards
+    return {'name': project["name"],
+            'proj_id': project["id"],
+            'proj_number': project["number"],
+            'columns': columns_data,
+            'all_issues': all_project_issues,
+            }
+
+
+def list_all_projects_command():
+    project_filter = False
+    if 'project_filter' in demisto.args():
+        project_filter = True
+        project_f = demisto.args().get('project_filter').split(",")
+
+    header = HEADERS
+    header.update({'Accept': PROJECTS_PREVIEW})
+    params = {'per_page': MAX_FETCH_PAGE_RESULTS}
+    resp_projects = requests.get(url=BASE_URL + PROJECT_SUFFIX,
+                                 headers=header,
+                                 verify=USE_SSL,
+                                 params=params
+                                 )
+    projects = resp_projects.json()
+    projects_obj = {}
+    for proj in projects:
+        if project_filter:
+            if str(proj["number"]) in project_f:
+                projects_obj[proj["name"]] = get_project_details(project=proj, header=header)
+        else:
+            projects_obj[proj["name"]] = get_project_details(project=proj, header=header)
+    command_results = CommandResults(
+        outputs_prefix='GitHub.Projects',
+        outputs_key_field='name',
+        outputs=projects_obj
+    )
+    return_results(command_results)
 
 
 def list_all_command():
@@ -1641,15 +1715,7 @@ def get_issue_events_command():
                                                                   res)))
 
 
-def fetch_incidents_command():
-    last_run = demisto.getLastRun()
-    if last_run and 'start_time' in last_run:
-        start_time = datetime.strptime(last_run.get('start_time'), '%Y-%m-%dT%H:%M:%SZ')
-
-    else:
-        start_time = datetime.now() - timedelta(days=int(FETCH_TIME))
-
-    last_time = start_time
+def fetch_incidents_command_rec(start_time, last_time, page=1):
     incidents = []
 
     if demisto.params().get('fetch_object') == "Pull_requests":
@@ -1658,7 +1724,8 @@ def fetch_incidents_command():
                                params={
                                    'state': 'open',
                                    'sort': 'created',
-                                   'page': 1
+                                   'page': page,
+                                   'per_page': MAX_FETCH_PAGE_RESULTS,
                                })
         for pr in pr_list:
             updated_at_str = pr.get('created_at')
@@ -1672,10 +1739,19 @@ def fetch_incidents_command():
                 incidents.append(inc)
                 if updated_at > last_time:
                     last_time = updated_at
+
+        if len(pr_list) == MAX_FETCH_PAGE_RESULTS:
+            rec_prs, rec_last_time = fetch_incidents_command_rec(start_time=start_time, last_time=last_time,
+                                                                 page=page + 1)
+            incidents = incidents + rec_prs
+            if rec_last_time > last_time:
+                last_time = rec_last_time
     else:
+        params = {'page': page, 'per_page': MAX_FETCH_PAGE_RESULTS, 'state': 'all'}
+        # params.update({'labels': 'DevOps'})
         issue_list = http_request(method='GET',
                                   url_suffix=ISSUE_SUFFIX,
-                                  params={'state': 'all'})
+                                  params=params)
 
         for issue in issue_list:
             updated_at_str = issue.get('created_at')
@@ -1690,6 +1766,25 @@ def fetch_incidents_command():
                 if updated_at > last_time:
                     last_time = updated_at
 
+        if len(issue_list) == MAX_FETCH_PAGE_RESULTS:
+            rec_incidents, rec_last_time = fetch_incidents_command_rec(start_time=start_time, last_time=last_time,
+                                                                       page=page + 1)
+            incidents = incidents + rec_incidents
+            if rec_last_time > last_time:
+                last_time = rec_last_time
+    return incidents, last_time
+
+
+def fetch_incidents_command():
+    last_run = demisto.getLastRun()
+    if last_run and 'start_time' in last_run:
+        start_time = datetime.strptime(last_run.get('start_time'), '%Y-%m-%dT%H:%M:%SZ')
+
+    else:
+        start_time = datetime.now() - timedelta(days=int(FETCH_TIME))
+
+    incidents, last_time = fetch_incidents_command_rec(start_time=start_time, last_time=start_time)
+
     demisto.setLastRun({'start_time': datetime.strftime(last_time, '%Y-%m-%dT%H:%M:%SZ')})
     demisto.incidents(incidents)
 
@@ -1703,6 +1798,7 @@ COMMANDS = {
     'GitHub-close-issue': close_command,
     'GitHub-update-issue': update_command,
     'GitHub-list-all-issues': list_all_command,
+    'GitHub-list-all-projects': list_all_projects_command,
     'GitHub-search-issues': search_command,
     'GitHub-get-download-count': get_download_count,
     'GitHub-get-stale-prs': get_stale_prs_command,
@@ -1745,8 +1841,10 @@ def main():
     global REPOSITORY
     global USE_SSL
     global FETCH_TIME
+    global MAX_FETCH_PAGE_RESULTS
     global USER_SUFFIX
     global ISSUE_SUFFIX
+    global PROJECT_SUFFIX
     global RELEASE_SUFFIX
     global PULLS_SUFFIX
     global FILE_SUFFIX
@@ -1762,8 +1860,10 @@ def main():
     REPOSITORY = params.get('repository')
     USE_SSL = not params.get('insecure', False)
     FETCH_TIME = params.get('fetch_time', '3')
+    MAX_FETCH_PAGE_RESULTS = 100
 
     USER_SUFFIX = '/repos/{}/{}'.format(USER, REPOSITORY)
+    PROJECT_SUFFIX = USER_SUFFIX + '/projects'
     ISSUE_SUFFIX = USER_SUFFIX + '/issues'
     RELEASE_SUFFIX = USER_SUFFIX + '/releases'
     PULLS_SUFFIX = USER_SUFFIX + '/pulls'
