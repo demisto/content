@@ -45,7 +45,7 @@ Checks file reputation of the given hash, supports SHA256, SHA1 and MD5
 
 #### Command Example
 ``` 
-!intezer-analyze-by-hash file_hash="8cbf90aeab2c93b2819fcfd6262b2cdb"
+!intezer-analyze-by-hash file_hash="<file hash>"
 ```
 
 #### Human Readable Output
@@ -92,7 +92,7 @@ intezer-get-latest-report file_hash="8cbf90aeab2c93b2819fcfd6262b2cdb"
 ```
 Intezer File analysis result
 ----
-SHA256: bf293bda73c5b4c1ec66561ad20d7e2bc6692d051282d35ce8b7b7020c753467
+SHA256: some-sha256
 Verdict: malicious (known_malicious)
 Family: WannaCry
 
@@ -105,7 +105,7 @@ analysis_url	https://analyze.intezer.com/analyses/006c54ba-3159-43a0-98a0-1c5032
 family_id	0b13c0d4-7779-4c06-98fa-4d33ca98f8a9
 family_name	WannaCry
 is_private	false
-sha256          bf293bda73c5b4c1ec66561ad20d7e2bc6692d051282d35ce8b7b7020c753467
+sha256          some-sha256
 sub_verdict	known_malicious
 verdict	        malicious
 ```
@@ -187,7 +187,7 @@ intezer-get-analysis-result analysis_id="9e3acdc3-b7ea-412b-88ae-7103eebc9398"
 ```
 Intezer File analysis result
 ----
-SHA256: bf293bda73c5b4c1ec66561ad20d7e2bc6692d051282d35ce8b7b7020c753467
+SHA256: some-sha256
 Verdict: malicious (known_malicious)
 Family: WannaCry
 
@@ -200,7 +200,7 @@ analysis_url	https://analyze.intezer.com/analyses/006c54ba-3159-43a0-98a0-1c5032
 family_id	0b13c0d4-7779-4c06-98fa-4d33ca98f8a9
 family_name	WannaCry
 is_private	false
-sha256          bf293bda73c5b4c1ec66561ad20d7e2bc6692d051282d35ce8b7b7020c753467
+sha256          some-sha256
 sub_verdict	known_malicious
 verdict	        malicious
 ```
@@ -408,13 +408,13 @@ architecture	        i386
 company	                Microsoft Corporation
 compilation_timestamp	2009:07:13 23:19:35+00:00
 file_type	        pe
-md5	                264b6a2d214586ed9b213d29b2262046
+md5	                md5
 original_filename	LODCTR.EXE
 product	                Microsoft® Windows® Operating System
 product_version	        6.1.7600.16385 ^^^
-sha1	                0e838068e42a7bfbd7d40a4743fae3cf733f7ac1
-sha256	                bf293bda73c5b4c1ec66561ad20d7e2bc6692d051282d35ce8b7b7020c7534^^^67
+sha1	                sha1
+sha256	                sha256
 size_in_bytes	        245760
-ssdeep	                3072:Rmrhd5J1eigWcR+uiUg6p4FLlG4tlL8z+mmCeHFZjoHEo3m:REd5vIZiZhLlG4AimmCo
+ssdeep	                ssdeep
 ```
 
