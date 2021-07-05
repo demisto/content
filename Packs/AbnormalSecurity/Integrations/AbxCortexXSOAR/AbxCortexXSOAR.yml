@@ -1,6 +1,6 @@
 category: Data Enrichment & Threat Intelligence
 commonfields:
-  id: Abnormal Security Client API
+  id: AbnormalSecurity
   version: -1
 configuration:
 - defaultvalue: https://api.abnormalplatform.com/v1
@@ -25,8 +25,8 @@ configuration:
   type: 8
 description: "Abnormal Security detects the whole spectrum of email attacks, from vendor email compromise and spear-phishing to unwanted email spam and graymail. \
 To stop these advanced attacks, Abnormal leverages the industry’s most advanced behavioral data science to baseline known good behavior and detects anomalies."
-display: Abnormal Security Client API
-name: Abnormal Security Client API
+display: Abnormal Security
+name: Abnormal Security
 script:
   commands:
   - arguments:
@@ -36,7 +36,7 @@ script:
       required: true
     - description: A UUID representing the action id for a case
       isArray: false
-      name: actionId
+      name: action_id
       required: true
     - description: Returns test data if set to `True`
       isArray: false
@@ -45,7 +45,7 @@ script:
     description: Check the status of an action requested on a case.
     name: abxcortexxsoar-check-the-status-of-an-action-requested-on-a-case
     outputs:
-    - contextPath: AbxCortexXSOAR.ActionStatus.status
+    - contextPath: AbnormalSecurity.ActionStatus.status
       description: ''
       type: String
     - contextPath: AbxCortexXSOAR.ActionStatus.description
@@ -320,4 +320,4 @@ script:
   script: ''
   subtype: python3
   type: python
-fromversion: 5.0.0
+fromversion: 6.0.0

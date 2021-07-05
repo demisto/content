@@ -93,7 +93,7 @@ def check_the_status_of_an_action_requested_on_a_case_command(client, args):
 
     response = client.check_the_status_of_an_action_requested_on_a_case_request(caseId, actionId, mock_data)
     command_results = CommandResults(
-        outputs_prefix='AbxCortexXSOAR.ActionStatus',
+        outputs_prefix='AbnormalSecurity.ActionStatus',
         outputs_key_field='',
         outputs=response,
         raw_response=response
@@ -109,7 +109,7 @@ def check_the_status_of_an_action_requested_on_a_threat_command(client, args):
 
     response = client.check_the_status_of_an_action_requested_on_a_threat_request(threatId, actionId, mock_data)
     command_results = CommandResults(
-        outputs_prefix='AbxCortexXSOAR.ActionStatus',
+        outputs_prefix='AbnormalSecurity.ActionStatus',
         outputs_key_field='',
         outputs=response,
         raw_response=response
@@ -127,7 +127,7 @@ def get_a_list_of_abnormal_cases_identified_by_abnormal_security_command(client,
     response = client.get_a_list_of_abnormal_cases_identified_by_abnormal_security_request(filter, pageSize, pageNumber,
                                                                                            mock_data)
     command_results = CommandResults(
-        outputs_prefix='AbxCortexXSOAR.inline_response_200_1',
+        outputs_prefix='AbnormalSecurity.inline_response_200_1',
         outputs_key_field='',
         outputs=response,
         raw_response=response
@@ -139,13 +139,13 @@ def get_a_list_of_abnormal_cases_identified_by_abnormal_security_command(client,
 def get_a_list_of_threats_command(client, args):
     filter = str(args.get('filter', ''))
     pageSize = args.get('pageSize', None)
-    pageNumber = args.get('pageNumber', None)
+    pageNumber = args.get('page_number', None)
     mock_data = str(args.get('mock_data', ''))
     source = str(args.get('source', ''))
 
     response = client.get_a_list_of_threats_request(filter, pageSize, pageNumber, mock_data, source)
     command_results = CommandResults(
-        outputs_prefix='AbxCortexXSOAR.inline_response_200',
+        outputs_prefix='AbnormalSecurity.inline_response_200',
         outputs_key_field='',
         outputs=response,
         raw_response=response
@@ -159,7 +159,7 @@ def get_details_of_a_threat_command(client, args):
 
     response = client.get_details_of_a_threat_request(threatId, mock_data)
     command_results = CommandResults(
-        outputs_prefix='AbxCortexXSOAR.ThreatDetails',
+        outputs_prefix='AbnormalSecurity.ThreatDetails',
         outputs_key_field='',
         outputs=response,
         raw_response=response
@@ -174,7 +174,7 @@ def get_details_of_an_abnormal_case_command(client, args):
 
     response = client.get_details_of_an_abnormal_case_request(caseId, mock_data)
     command_results = CommandResults(
-        outputs_prefix='AbxCortexXSOAR.AbnormalCaseDetails',
+        outputs_prefix='AbnormalSecurity.AbnormalCaseDetails',
         outputs_key_field='',
         outputs=response,
         raw_response=response
@@ -188,7 +188,7 @@ def get_the_latest_threat_intel_feed_command(client, args):
 
     response = client.get_the_latest_threat_intel_feed_request(mock_data)
     command_results = CommandResults(
-        outputs_prefix='AbxCortexXSOAR',
+        outputs_prefix='AbnormalSecurity',
         outputs_key_field='',
         outputs=response,
         raw_response=response
@@ -204,7 +204,7 @@ def manage_a_threat_identified_by_abnormal_security_command(client, args):
 
     response = client.manage_a_threat_identified_by_abnormal_security_request(threatId, mock_data, action)
     command_results = CommandResults(
-        outputs_prefix='AbxCortexXSOAR',
+        outputs_prefix='AbnormalSecurity',
         outputs_key_field='',
         outputs=response,
         raw_response=response
@@ -220,7 +220,7 @@ def manage_an_abnormal_case_command(client, args):
 
     response = client.manage_an_abnormal_case_request(caseId, mock_data, action)
     command_results = CommandResults(
-        outputs_prefix='AbxCortexXSOAR',
+        outputs_prefix='AbnormalSecurity',
         outputs_key_field='',
         outputs=response,
         raw_response=response
@@ -234,7 +234,7 @@ def submit_an_inquiry_to_request_a_report_on_misjudgement_by_abnormal_security_c
 
     response = client.submit_an_inquiry_to_request_a_report_on_misjudgement_by_abnormal_security_request(mock_data)
     command_results = CommandResults(
-        outputs_prefix='AbxCortexXSOAR',
+        outputs_prefix='AbnormalSecurity',
         outputs_key_field='',
         outputs=response,
         raw_response=response
@@ -270,24 +270,24 @@ def main():
         client = Client(urljoin(url, ''), verify_certificate, proxy, headers=headers, auth=None)
 
         commands = {
-            'abxcortexxsoar-check-the-status-of-an-action-requested-on-a-case':
+            'abnormal-security-check-case-action-status':
                 check_the_status_of_an_action_requested_on_a_case_command,
-            'abxcortexxsoar-check-the-status-of-an-action-requested-on-a-threat':
+            'abnormal-security-check-threat-action-status':
                 check_the_status_of_an_action_requested_on_a_threat_command,
-            'abxcortexxsoar-get-a-list-of-abnormal-cases-identified-by-abnormal-security':
+            'abnormal-security-list-abnormal-cases-identified-by-abnormal-security':
                 get_a_list_of_abnormal_cases_identified_by_abnormal_security_command,
-            'abxcortexxsoar-get-a-list-of-threats':
+            'abnormal-security-list-threats':
                 get_a_list_of_threats_command,
-            'abxcortexxsoar-get-details-of-a-threat':
+            'abnormal-security-get-threat':
                 get_details_of_a_threat_command,
-            'abxcortexxsoar-get-details-of-an-abnormal-case':
+            'abnormal-security-get-abnormal-case':
                 get_details_of_an_abnormal_case_command,
-            'abxcortexxsoar-get-the-latest-threat-intel-feed': get_the_latest_threat_intel_feed_command,
-            'abxcortexxsoar-manage-a-threat-identified-by-abnormal-security':
+            'abnormal-security-get-latest-threat-intel-feed': get_the_latest_threat_intel_feed_command,
+            'abnormal-security-manage-threat-identified-by-abnormal-security':
                 manage_a_threat_identified_by_abnormal_security_command,
-            'abxcortexxsoar-manage-an-abnormal-case':
+            'abnormal-security-manage-abnormal-case':
                 manage_an_abnormal_case_command,
-            'abxcortexxsoar-submit-an-inquiry-to-request-a-report-on-misjudgement-by-abnormal-security':
+            'abnormal-security-submit-inquiry-to-request-a-report-on-misjudgement-by-abnormal-security':
                 submit_an_inquiry_to_request_a_report_on_misjudgement_by_abnormal_security_command,
         }
 
