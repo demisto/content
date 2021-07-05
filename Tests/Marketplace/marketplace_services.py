@@ -68,6 +68,7 @@ class Pack(object):
         self._hidden = False  # initialized in load_user_metadata function
         self._description = None  # initialized in load_user_metadata function
         self._display_name = None  # initialized in load_user_metadata function
+        self._user_metadata = None  # initialized in load_user_metadata function
         self._is_feed = False  # a flag that specifies if pack is a feed pack
         self._downloads_count = 0  # number of pack downloads
         self._bucket_url = None  # URL of where the pack was uploaded.
@@ -220,6 +221,12 @@ class Pack(object):
         """ str: Display name of the pack (found in pack_metadata.json).
         """
         return self._display_name
+
+    @property
+    def user_metadata(self):
+        """ dict: the pack_metadata.
+        """
+        return self._user_metadata
 
     @display_name.setter
     def display_name(self, display_name_value):
@@ -1597,7 +1604,7 @@ class Pack(object):
             self.hidden = user_metadata.get('hidden', False)
             self.description = user_metadata.get('description', False)
             self.display_name = user_metadata.get('name', '')
-
+            self._user_metadata = user_metadata
             logging.info(f"Finished loading {self._pack_name} pack user metadata")
             task_status = True
         except Exception:
@@ -1714,7 +1721,7 @@ class Pack(object):
             commit_hash (str): current commit hash.
             pack_was_modified (bool): Indicates whether the pack was modified or not.
             statistics_handler (StatisticsHandler): The marketplace statistics handler
-            pack_names (list): List of all packs.
+            pack_names (set): List of all packs.
             format_dependencies_only (bool): Indicates whether the metadata formation is just for formatting the dependencies or not.
         Returns:
             bool: True is returned in case metadata file was parsed successfully, otherwise False.
