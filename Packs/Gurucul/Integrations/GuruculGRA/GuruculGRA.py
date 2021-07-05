@@ -124,7 +124,7 @@ def fetch_incidents_open_cases(client: Client, max_results: int, last_run: Dict[
                                first_fetch_time: Optional[int]
                                ) -> Tuple[Dict[str, int], List[dict]]:
     last_fetch = last_run.get('last_fetch', None)
-    case_anomaly = demisto.params().get('fetch_incident_cases')
+    case_anomaly = demisto.params().get('fetch_incident_cases', 'Case Per Anomaly')
 
     if last_fetch is None:
         last_fetch = first_fetch_time
@@ -148,7 +148,6 @@ def fetch_incidents_open_cases(client: Client, max_results: int, last_run: Dict[
             incident_created_time_ms = incident_created_time * 1000
             record['incidentType'] = 'GRACase'
             anomalies = record.get('anomalies')
-            demisto.info(anomalies)
             if record.get('caseId') is not None:
                 if case_anomaly == 'Case Per Anomaly':
                     for anomaly in anomalies:

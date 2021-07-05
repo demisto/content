@@ -16,6 +16,7 @@ This integration was built to interact with the sample SOAR Gurucul API To check
 | isFetch | Fetch incidents | False |
 | incidentType | Incident type | False |
 | max_fetch | Maximum number of incidents per fetch | False |
+| fetch_incident_cases | Fetch Incident Cases | False |
 | apikey | API Key | True |
 | threshold_ip | Score threshold for ip reputation command \(0\-100\) | False |
 | threshold_domain | Score threshold for domain reputation command \(0\-100\) | False |
