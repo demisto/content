@@ -38,10 +38,10 @@ tasks:
     quietmode: 0
   "1":
     id: "1"
-    taskid: ab50a31b-5fa5-4da5-8f43-69acf9604d04
+    taskid: 6d2ebaba-b617-4839-8590-e7c400538d6c
     type: regular
     task:
-      id: ab50a31b-5fa5-4da5-8f43-69acf9604d04
+      id: 6d2ebaba-b617-4839-8590-e7c400538d6c
       version: -1
       name: Detect email campaign
       description: Find a campaign of emails based on their textual similarity.
@@ -85,8 +85,12 @@ tasks:
       maxIncidentsToReturn:
         complex:
           root: inputs.maxIncidentsToReturn
-      minIncidentsForCampaign: {}
-      minUniqueRecipients: {}
+      minIncidentsForCampaign:
+        complex:
+          root: inputs.minIncidentsForCampaign
+      minUniqueRecipients:
+        complex:
+          root: inputs.minUniqueRecipients
       query:
         complex:
           root: inputs.query
@@ -273,13 +277,14 @@ tasks:
     quietmode: 0
   "7":
     id: "7"
-    taskid: 4039d9cf-2c1e-49cf-8e07-b3f747eebce2
+    taskid: a07d5342-50af-4e84-8809-a9c6e69ce882
     type: condition
     task:
-      id: 4039d9cf-2c1e-49cf-8e07-b3f747eebce2
+      id: a07d5342-50af-4e84-8809-a9c6e69ce882
       version: -1
       name: Is there an existing campaign incident?
-      description: Checks whether any of the similar phishing incidents are currently linked to an existing phishing campaign.
+      description: Checks whether any of the similar phishing incidents are currently
+        linked to an existing phishing campaign.
       type: condition
       iscommand: false
       brand: ""
@@ -877,4 +882,4 @@ inputs:
 outputs: []
 tests:
 - No tests (auto formatted)
-fromversion: 6.0.0
+fromversion: 5.0.0
