@@ -46,3 +46,4 @@ Packs/**/__init__.py
 # coverage related
 /coverage_report
 .coverage
+.demisto-sdk-report
