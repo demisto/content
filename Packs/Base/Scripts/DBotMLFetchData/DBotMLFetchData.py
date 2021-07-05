@@ -73,7 +73,7 @@ WORD_TO_NGRAMS = None
 
 FETCH_DATA_VERSION = '4.0'
 LAST_EXECUTION_LIST_NAME = 'FETCH_DATA_ML_LAST_EXECUTION'
-MAX_INCIDENTS_TO_FETCH_PERIODIC_EXECUTION = 300
+MAX_INCIDENTS_TO_FETCH_PERIODIC_EXECUTION = 400
 MAX_INCIDENTS_TO_FETCH_FIRST_EXECUTION = 3000
 FROM_DATA_FIRST_EXECUTION = FROM_DATA_PERIODIC_EXECUTION = '30 days ago'
 DATETIME_FORMAT = '%Y-%m-%dT%H:%M:%S.%f'
@@ -626,8 +626,7 @@ def get_bert_features_for_text(text):
 
 
 def get_bert_features_for_incident(email_subject, email_body):
-    return {'bert_subject': get_bert_features_for_text(email_subject),
-            # 'bert_body': get_bert_features_for_text(email_body),
+    return {
             'bert_subject_body': get_bert_features_for_text(email_subject + '\n' + email_body),
             }
 
