@@ -62,14 +62,6 @@
      "complex": null,
      "simple": "telephoneNumber"
     },
-    "Manager": {
-     "complex": null,
-     "simple": "manager"
-    },
-    "Manager Email": {
-     "complex": null,
-     "simple": "managerEmail"
-    },
     "Zip Code": {
      "complex": null,
      "simple": "postalCode"
