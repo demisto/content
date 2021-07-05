@@ -308,12 +308,6 @@ class Pack(object):
         """
         return self._uploaded_integration_images
 
-    @property
-    def is_missing_dependencies(self):
-        """ bool: whether the as missing dependencies or not.
-        """
-        return self._is_missing_dependencies
-
     def _get_latest_version(self):
         """ Return latest semantic version of the pack.
 
@@ -609,7 +603,7 @@ class Pack(object):
             index_folder_path (str): full path to download index folder.
             first_level_dependencies (dict): user defined dependencies.
             all_level_displayed_dependencies (list): all level pack's images to display.
-            pack_names (list)List of all packs.
+            pack_names (list): List of all packs.
 
         Returns:
             dict: pack id as key and loaded metadata of packs as value.
@@ -635,7 +629,9 @@ class Pack(object):
                 # We will go over the pack again to add what was missing
                 self._is_missing_dependencies = True
                 logging.warning(f"{self._pack_name} pack dependency with id {dependency_pack_id} "
-                                f"was not found in index, Marks it as missing dependencies")
+                                f"was not found in index, marking it as missing dependencies - to be resolved in next"
+                                f" iteration over packs")
+
             else:
                 logging.warning(f"{self._pack_name} pack dependency with id {dependency_pack_id} was not found")
         return dependencies_data_result
@@ -1626,13 +1622,13 @@ class Pack(object):
         return tags
 
     def _enhance_pack_attributes(self, user_metadata, index_folder_path, pack_was_modified,
-                                 dependencies_data, statistics_handler=None, only_dependencies_reformat=False):
+                                 dependencies_data, statistics_handler=None, format_dependencies_only=False):
         """ Enhances the pack object with attributes for the metadata file
 
         Args:
             user_metadata (dict): user metadata that was created in pack initialization.
             dependencies_data (dict): mapping of pack dependencies data, of all levels.
-            only_dependencies_reformat (bool) Indicates whether it's just a reformat for dependencies_data
+            format_dependencies_only (bool): Indicates whether the metadata formation is just for formatting the dependencies or not.
 
         Returns:
             dict: parsed pack metadata.
@@ -1642,7 +1638,7 @@ class Pack(object):
         displayed_dependencies = user_metadata.get('displayedImages', [])
         trending_packs = None
         pack_dependencies_by_download_count = displayed_dependencies
-        if not only_dependencies_reformat:
+        if not format_dependencies_only:
             # ===== Pack Regular Attributes =====
             self._support_type = user_metadata.get('support', Metadata.XSOAR_SUPPORT)
             self._support_details = self._create_support_section(
@@ -1662,7 +1658,7 @@ class Pack(object):
         self._dependencies = self._parse_pack_dependencies(user_metadata.get('dependencies', {}), dependencies_data)
 
         # ===== Pack Private Attributes =====
-        if not only_dependencies_reformat:
+        if not format_dependencies_only:
             self._is_private_pack = 'partnerId' in user_metadata
             self._is_premium = self._is_private_pack
             self._preview_only = get_valid_bool(user_metadata.get('previewOnly', False))
@@ -1690,13 +1686,17 @@ class Pack(object):
             self._search_rank = mp_statistics.PackStatisticsHandler.calculate_search_rank(
                 tags=self._tags, certification=self._certification, content_items=self._content_items
             )
+
+        if not self._is_private_pack and statistics_handler and format_dependencies_only:  # Public Content case and reformat for dependencies
+            pack_dependencies_by_download_count = self._pack_statistics_handler.displayed_dependencies_sorted
+
         self._related_integration_images = self._get_all_pack_images(
             self._displayed_integration_images, displayed_dependencies, dependencies_data,
             pack_dependencies_by_download_count
         )
 
     def format_metadata(self, user_metadata, index_folder_path, packs_dependencies_mapping, build_number, commit_hash,
-                        pack_was_modified, statistics_handler, pack_names, only_dependencies_reformat=False):
+                        pack_was_modified, statistics_handler, pack_names, format_dependencies_only=False):
         """ Re-formats metadata according to marketplace metadata format defined in issue #19786 and writes back
         the result.
 
@@ -1710,7 +1710,7 @@ class Pack(object):
             pack_was_modified (bool): Indicates whether the pack was modified or not.
             statistics_handler (StatisticsHandler): The marketplace statistics handler
             pack_names (list): List of all packs.
-            only_dependencies_reformat (bool) Indicates whether it's just a reformat for dependencies_data
+            format_dependencies_only (bool): Indicates whether the metadata formation is just for formatting the dependencies or not.
         Returns:
             bool: True is returned in case metadata file was parsed successfully, otherwise False.
 
@@ -1729,7 +1729,7 @@ class Pack(object):
 
             self._enhance_pack_attributes(
                 user_metadata, index_folder_path, pack_was_modified, dependencies_data, statistics_handler,
-                only_dependencies_reformat
+                format_dependencies_only
             )
             formatted_metadata = self._parse_pack_metadata(user_metadata, build_number, commit_hash)
             metadata_path = os.path.join(self._pack_path, Pack.METADATA)  # deployed metadata path after parsing

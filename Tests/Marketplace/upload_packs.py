@@ -1000,11 +1000,14 @@ def main():
         task_status = pack.format_metadata(user_metadata, index_folder_path, packs_dependencies_mapping, build_number,
                                            current_commit_hash, pack_was_modified, statistics_handler, pack_names)
 
-        if pack.is_missing_dependencies:
-            # If the pack is dependent on a new pack (which is not yet in the index.json)
+        if pack._is_missing_dependencies:
+            # If the pack is dependent on a new pack
+            # (which is not yet in the index.zip as it might not have been iterated yet)
             # we will note that it is missing dependencies.
-            # And finally after updating all the packages in index.json.
-            # We will go over the pack again to add what was missing
+            # And finally after updating all the packages in index.zip - i.e. the new pack exists now.
+            # We will go over the pack again to add what was missing.
+            # See issue #37290
+            pack.status = PackStatus.PACK_IS_MISSING_DEPENDENCIES.name
             packs_missing_dependencies.append(pack)
 
         if not task_status:
@@ -1071,20 +1074,21 @@ def main():
 
         # in case that pack already exist at cloud storage path and in index, don't show that the pack was changed
         if skipped_upload and exists_in_index:
-            logging.info(f"{pack.name} pack status is {PackStatus.PACK_ALREADY_EXISTS.name}")
             pack.status = PackStatus.PACK_ALREADY_EXISTS.name
             pack.cleanup()
             continue
-
-        pack.status = PackStatus.SUCCESS.name
+        if pack.status != PackStatus.PACK_IS_MISSING_DEPENDENCIES.name:
+            pack.status = PackStatus.SUCCESS.name
 
     logging.info(f"packs_missing_dependencies: {packs_missing_dependencies}")
 
-    # will go over all the packs what was marked as missing dependencies and will update them with the new index.json
+    # Going over all packs that were marked as missing dependencies,
+    # updating them with the new data for the new packs that were added to the index.zip
     for pack in packs_missing_dependencies:
 
         task_status = pack.format_metadata(user_metadata, index_folder_path, packs_dependencies_mapping, build_number,
-                                           current_commit_hash, pack_was_modified, statistics_handler, pack_names, True)
+                                           current_commit_hash, pack_was_modified, statistics_handler, pack_names,
+                                           format_dependencies_only=True)
 
         if not task_status:
             pack.status = PackStatus.FAILED_METADATA_PARSING.name
