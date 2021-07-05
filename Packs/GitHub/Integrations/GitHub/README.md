@@ -2120,7 +2120,7 @@ Create a release.
 ```
 
 #### Human Readable Output
-Release 1.0.0 created successfully for repo sdk: https://github.com/demisto/sdk/releases/tag/1.0.0
+> Release 1.0.0 created successfully for repo sdk: https:<span>//github</span>.com/demisto/sdk/releases/tag/1.0.0
 
 
 ### Github-list-issue-events
