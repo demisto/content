@@ -4,7 +4,7 @@
         "Vulnerability"
     ],
     "caseInsensitive": true,
-    "cliName": "cves",
+    "cliName": "edgescancves",
     "closeForm": false,
     "content": true,
     "editForm": true,
@@ -13,7 +13,7 @@
     "id": "incident_cves",
     "isReadOnly": false,
     "locked": false,
-    "name": "CVES",
+    "name": "Edgescan CVES",
     "neverSetAsRequired": false,
     "ownerOnly": false,
     "propagationLabels": [
