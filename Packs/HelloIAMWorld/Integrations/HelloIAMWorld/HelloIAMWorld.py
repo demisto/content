@@ -256,11 +256,12 @@ def main():
     args = demisto.args()
 
     is_create_enabled = params.get("create_user_enabled")
+    is_enable_enabled = params.get("enable_user_enabled")
     is_disable_enabled = params.get("disable_user_enabled")
-    is_update_enabled = demisto.params().get("update_user_enabled")
-    create_if_not_exists = demisto.params().get("create_if_not_exists")
+    is_update_enabled = params.get("update_user_enabled")
+    create_if_not_exists = params.get("create_if_not_exists")
 
-    iam_command = IAMCommand(is_create_enabled, is_disable_enabled, is_update_enabled,
+    iam_command = IAMCommand(is_create_enabled, is_enable_enabled, is_disable_enabled, is_update_enabled,
                              create_if_not_exists, mapper_in, mapper_out)
 
     headers = {
