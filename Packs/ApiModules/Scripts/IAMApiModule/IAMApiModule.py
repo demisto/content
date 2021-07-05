@@ -289,19 +289,20 @@ class IAMCommand:
     :return: None
     :rtype: ``None``
     """
-    def __init__(self, is_create_enabled=True, is_disable_enabled=True, is_update_enabled=True,
+    def __init__(self, is_create_enabled=True, is_enable_enabled=True, is_disable_enabled=True, is_update_enabled=True,
                  create_if_not_exists=True, mapper_in=None, mapper_out=None, attr='email'):
         """ The IAMCommand c'tor
 
-        :param is_create_enabled: (bool) Whether or not the `iam-create-user` command is enabled in the instance
-        :param is_disable_enabled: (bool) Whether or not the `iam-disable-user` command is enabled in the instance
-        :param is_update_enabled: (bool) Whether or not the `iam-update-user` command is enabled in the instance
-        :param create_if_not_exists: (bool) Whether or not to create a user if does not exist in the application
+        :param is_create_enabled: (bool) Whether or not to allow creating users in the application.
+        :param is_enable_enabled: (bool) Whether or not to allow enabling users in the application.
+        :param is_disable_enabled: (bool) Whether or not to allow disabling users in the application.
+        :param is_update_enabled: (bool) Whether or not to allow updating users in the application.
+        :param create_if_not_exists: (bool) Whether or not to create a user if does not exist in the application.
         :param mapper_in: (str) Incoming mapper from the application to Cortex XSOAR
         :param mapper_out: (str) Outgoing mapper from the Cortex XSOAR to the application
-        :param attr: (str) The name of the identifier attribute of users in the application.
         """
         self.is_create_enabled = is_create_enabled
+        self.is_enable_enabled = is_enable_enabled
         self.is_disable_enabled = is_disable_enabled
         self.is_update_enabled = is_update_enabled
         self.create_if_not_exists = create_if_not_exists
@@ -446,7 +447,7 @@ class IAMCommand:
                 if user_app_data:
                     app_profile = user_profile.map_object(self.mapper_out)
 
-                    if allow_enable and not user_app_data.is_active:
+                    if allow_enable and self.is_enable_enabled and not user_app_data.is_active:
                         client.enable_user(user_app_data.id)
 
                     updated_user = client.update_user(user_app_data.id, app_profile)
