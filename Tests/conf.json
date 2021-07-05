@@ -3489,7 +3489,9 @@
         "TAXII_Feed_Test": "Issue 37588",
         "Majestic Million Test Playbook": "Issue 30931",
         "FireEyeNX-Test": "Issue 33216",
-        "Microsoft Teams - Test": "Issue 38263"
+        "Microsoft Teams - Test": "Issue 38263",
+        "QualysVulnerabilityManagement-Test": "Issue 38640",
+        "test playbook - QRadarCorrelations": "Issue 38639"
     },
     "skipped_integrations": {
         
@@ -3578,7 +3580,6 @@
         "Infoblox": "Unstable instance, issue 25651",
         
         "_comment3": "~~~ QUOTA ISSUES ~~~",
-        "XFE_v2": "Required proper instance, otherwise we get quota errors",
         "Lastline": "issue 20323",
         "Google Resource Manager": "Cannot create projects because have reached allowed quota.",
         "Looker": "Warehouse 'DEMO_WH' cannot be resumed because resource monitor 'LIMITER' has exceeded its quota.",
