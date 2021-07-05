@@ -1,5 +1,5 @@
 Triggers by triaged alerts from endpoint, cloud, and network security monitoring. Contains event details and easy-to-follow mitigation steps.
-This integration was integrated and tested with version xx of Covalence Managed Security
+This integration was integrated and tested with version 3.0 of Covalence Managed Security
 ## Configure Covalence Managed Security on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.

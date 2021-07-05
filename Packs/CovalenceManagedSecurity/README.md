@@ -21,4 +21,3 @@ This pack collects the alerts that have been triaged to remove false positives, 
 - Lists monitored organization, of interest for MSPs or equivalent who are managing alerts for multiple organizations
 
 Note this pack should not be executed alongside the Covalence for Service Providers pack, or duplicate incidents will be generated.   
-Integration tested with Covalence version 3.0.   
