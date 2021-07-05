@@ -170,21 +170,21 @@ Use the following naming convention: (demisto_fields_{type}).
 6. In the Summary indexing section, select the summary index, and enter the {key:value} pair for Cortex XSOAR classification.
 ![image](https://user-images.githubusercontent.com/50324325/63265665-d0793c80-c296-11e9-9919-cf6c6af33294.png)
 7. Configure the incident type in Cortex XSOAR by navigating to __Settings > Advanced > Incident Types.__ Note: In the example, Splunk Generic is a custom incident type.
-![image](../../../docs/doc_imgs/reference/incident_type.png)
+![image](https://github.com/demisto/content-docs/blob/master/docs/doc_imgs/integrations/incident_type.png)
 8. Configure the classification. Make sure that your non ES incident fields are associated with your custom incident type.
    1. Navigate to __Settings > Integrations > Classification & Mapping__.
    1. Click your classifier.
    2. Select your instance.
    3. Click the fetched data.
    4. Drag the value to the appropriate incident type.
-![image](../../../docs/doc_imgs/reference/classify.png)
+![image](https://github.com/demisto/content-docs/blob/master/docs/doc_imgs/integrations/classify.png)
 9. Configure the mapping. Make sure to map your non ES fields accordingly and make sure that these incident fields are associated with their custom incident type.
    1. Navigate to __Settings > Integrations > Classification & Mapping__.
    1. Click your mapper.
    2. Select your instance.
    3. Click the __Choose data path__ link for the field you want to map.
    4. Click the data from the Splunk fields to map it to Cortex XSOAR.
-![image](../../../docs/doc_imgs/reference/mapping.png)
+![image](https://github.com/demisto/content-docs/blob/master/docs/doc_imgs/integrations/mapping.png)
 10. (Optional) Create custom fields.
 11. Build a playbook and assign it as the default for this incident type.
 
