@@ -352,19 +352,18 @@ def summarize_email_body(body, subject, nb_sentences=3, subject_weight=1.5, keyw
         elif sent_i - 1 not in top_sentences_indices and sent_i + 1 not in top_sentences_indices:
             sent = '... ' + sent + ' ...'
         summary.append(sent)
-    return ' '.join(summary)
+    return '\n'.join(summary)
 
 
 def create_email_summary_hr(incidents_df, fields_to_display):
-    hr_email_summary = '| | |\n|---|---|'
     clean_email_subject = incidents_df.iloc[0][PREPROCESSED_EMAIL_SUBJECT]
-    email_summary = '|*Subject*| ' + clean_email_subject.replace('\n', '') + ' |'
+    email_summary = '*Subject*: ' + clean_email_subject.replace('\n', '') + ' |'
     clean_email_body = incidents_df.iloc[0][PREPROCESSED_EMAIL_BODY]
-    email_summary += '\n|*Body*| ' + summarize_email_body(clean_email_body, clean_email_subject) + ' |'
+    email_summary += '\n*Body*: \n' + summarize_email_body(clean_email_body, clean_email_subject) + ' |'
     for word in KEYWORDS:
         for cased_word in [word.lower(), word.title(), word.upper()]:
             email_summary = re.sub(r'(?<!\w)({})(?!\w)'.format(cased_word), '**{}**'.format(cased_word), email_summary)
-    hr_email_summary += '\n' + email_summary
+    hr_email_summary = '\n' + email_summary
     context = add_context_key(
         create_context_for_campaign_details(
             campaign_found=True,
@@ -408,8 +407,7 @@ def return_campaign_details_entry(incidents_df, fields_to_display):
 
 
 def return_no_mututal_indicators_found_entry():
-    hr = '### Mutual Indicators' + '\n'
-    hr += 'No mutual indicators were found.'
+    hr = 'No mutual indicators were found.'
 
     demisto.executeCommand('setIncident', {'emailcampaignmutualindicators': hr})
     return_outputs_custom(hr, add_context_key(create_context_for_indicators()), tag='indicators')
