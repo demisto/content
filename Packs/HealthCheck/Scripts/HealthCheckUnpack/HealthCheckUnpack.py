@@ -36,22 +36,23 @@ def extract_files(path, action):
 def main(args):
     entry_id = args['entryID']
 
-    res = demisto.getFilePath(entry_id)
-    file_path = res['path']
-    file_name = res['name']
-    file_suffix = re.findall(r"re:|tar|gz", file_name)
+    try:
+        res = demisto.getFilePath(entry_id)
+        file_path = res['path']
+        file_name = res['name']
+        file_suffix = re.findall(r"re:|tar|gz", file_name)
 
-    if "gz" in file_suffix and "tar" in file_suffix:
-        tar_action = "r:gz"
-    elif "tar" in file_suffix:
-        tar_action = "r:"
-    else:
-        return 'no'
+        if "gz" in file_suffix and "tar" in file_suffix:
+            tar_action = "r:gz"
+        elif "tar" in file_suffix:
+            tar_action = "r:"
+        else:
+            return 'no'
 
-    if res[0]['Type'] == entryTypes['error']:
+        return extract_files(file_path, tar_action)
+
+    except Exception:
         return 'File not found'
-    else:
-        extract_files(file_path, tar_action)
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):  # pragma: no cover

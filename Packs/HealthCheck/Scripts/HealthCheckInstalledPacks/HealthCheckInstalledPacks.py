@@ -6,7 +6,7 @@ not_certified = 0
 
 incident = demisto.incidents()[0]
 accountName = incident.get('account')
-accountName = f"acc_{accountName}" if accountName != "" else ""
+accountName = f"acc_{accountName}/" if accountName != "" else ""
 
 config_json = demisto.executeCommand("demisto-api-get",
                                      {"uri": f"{accountName}contentpacks/installed-expired"})[0]["Contents"]["response"]
@@ -37,7 +37,7 @@ if not_certified > 0:
 demisto.executeCommand("setIncident", {
     'healthcheckinstalledpacks': packs,
     'healthchecktotalpacksinstalled': len(packs),
-    'healthcheckpacksneedupdate': need_update,
+    'healthchecktotaloutdatedpacks': need_update
 })
 
 results = CommandResults(

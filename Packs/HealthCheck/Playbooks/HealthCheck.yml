@@ -6,7 +6,7 @@ inputs:
   playbookInputQuery:
   required: false
   value:
-    simple: "true"
+    simple: "false"
 name: HealthCheck
 outputs: []
 starttaskid: "0"

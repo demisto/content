@@ -95,7 +95,7 @@ def main(args):
     if is_widget:
         return data
     else:
-        add_actions = analyze_data(res)
+        add_actions = analyze_data(stats)
         return CommandResults(
             readable_output="analyzeCPUUsage Done",
             outputs_prefix="HealthCheck.ActionableItems",

@@ -38,12 +38,16 @@ Thresholds = {
     "CustomPlaybookLength": 30,
 }
 
+incident = demisto.incidents()[0]
+account_name = incident.get('account')
+account_name = f'acc_{account_name}/' if account_name != "" else ""
+
 thresholds = args.get('Thresholds', Thresholds)
 
 customPlaybooks = demisto.executeCommand(
-    "demisto-api-post", {"uri": "/playbook/search", "body": {"query": "system:F"}})[0]["Contents"]["response"]["playbooks"]
+    "demisto-api-post", {"uri": f"{account_name}playbook/search", "body": {"query": "system:F"}})[0]["Contents"]["response"]["playbooks"]
 builtinPlaybooks = demisto.executeCommand(
-    "demisto-api-post", {"uri": "/playbook/search", "body": {"query": "system:T"}})[0]["Contents"]["response"]["playbooks"]
+    "demisto-api-post", {"uri": f"{account_name}playbook/search", "body": {"query": "system:T"}})[0]["Contents"]["response"]["playbooks"]
 
 builtinPlaybooksNames = []
 res = []

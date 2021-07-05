@@ -67,7 +67,7 @@ def main(args):
     res = execute_command(
         'demisto-api-post',
         {
-            'uri': f'{account_name}/statistics/widgets/query',
+            'uri': f'{account_name}statistics/widgets/query',
             'body': {
                 'size': 1440,
                 'dataType': 'system',
@@ -140,7 +140,7 @@ def main(args):
 
         return data
     else:
-        add_actions = analyze_data(res)
+        add_actions = analyze_data(stats)
         results = CommandResults(
             readable_output='analyzeCPUUsage Done',
             outputs_prefix='HealthCheck.ActionableItems',
