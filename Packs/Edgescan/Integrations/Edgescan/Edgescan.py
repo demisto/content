@@ -1,5 +1,5 @@
 import time
-from typing import Any, Dict, List, Optional, Tuple, Union, cast
+from typing import Tuple, cast
 
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
@@ -107,7 +107,8 @@ class Client(BaseClient):
 
     def user_create_request(self, username, email, first_name, last_name, phone_number, mfa_enabled, mfa_method, is_super):
         data = {"user": {"email": email, "first_name": first_name, "last_name": last_name,
-                         "mfa_enabled": mfa_enabled, "mfa_method": mfa_method, "phone_number": phone_number, "username": username, "is_super": is_super}}
+                         "mfa_enabled": mfa_enabled, "mfa_method": mfa_method,
+                         "phone_number": phone_number, "username": username, "is_super": is_super}}
         headers = self._headers
         response = self._http_request('POST', 'api/v1/users.json', json_data=data, headers=headers)
         return response
@@ -157,9 +158,9 @@ class Client(BaseClient):
         response = self._http_request('GET', 'api/v1/vulnerabilities/' + id + '.json', headers=headers)
         return response
 
-    def vulnerabilities_get_query_request(self, request, l, o):
+    def vulnerabilities_get_query_request(self, request, limit, o):
         data = {"c": request,
-                "l": l, "o": o, "s": {"date_opened": "asc"}}
+                "l": limit, "o": o, "s": {"date_opened": "asc"}}
         headers = self._headers
         response = self._http_request('POST', 'api/v1/vulnerabilities/query.json', json_data=data, headers=headers)
         return response
@@ -179,7 +180,7 @@ class Client(BaseClient):
 
 def host_get_hosts_command(client, args):
     response = client.host_get_hosts_request()['hosts']
-    readable_output = tableToMarkdown(f'Hosts', response, ['os_name', 'id', 'location', 'status'])
+    readable_output = tableToMarkdown('Hosts', response, ['os_name', 'id', 'location', 'status'])
     command_results = CommandResults(
         readable_output=readable_output,
         outputs_prefix='Edgescan.HostGetHosts',
@@ -217,13 +218,13 @@ def fetch_incidents(client: Client, max_results: int, last_run: Dict[str, int],
     request = {
         "risk_more_than": risk_more_than,
         "cvss_score": cvss_score,
-        "date_opened_after": str(datetime.fromtimestamp(last_fetch).isoformat()) + ".000Z"
+        "date_opened_after": str(datetime.fromtimestamp(last_fetch).isoformat()) + ".000Z"  # type: ignore
     }
 
-    if cvss_score == "" or cvss_score == None:
+    if cvss_score == "" or cvss_score is None:
         del request['cvss_score']
 
-    alerts = client.vulnerabilities_get_query_request(request=request, l=max_results, o=offset)['vulnerabilities']
+    alerts = client.vulnerabilities_get_query_request(request=request, limit=max_results, o=offset)['vulnerabilities']
     for alert in alerts:
         # If no created_time set is as epoch (0). We use time in ms so we must
         date_opened = alert.get('date_opened', '0')
@@ -271,7 +272,7 @@ def test_module(client: Client) -> str:
 def host_get_command(client, args):
     id = args.get('id')
     response = client.host_get_request(id)['host']
-    readable_output = tableToMarkdown(f'Host', response, ['os_name', 'id', 'location', 'status', 'services'])
+    readable_output = tableToMarkdown('Host', response, ['os_name', 'id', 'location', 'status', 'services'])
     command_results = CommandResults(
         readable_output=readable_output,
         outputs_prefix='Edgescan.HostGet',
@@ -285,7 +286,7 @@ def host_get_command(client, args):
 
 def host_get_export_command(client, args):
     response = client.host_get_export_request()
-    readable_output = tableToMarkdown(f'Hosts export', response, ['os_name', 'id', 'location', 'status', 'open_tcp_ports'])
+    readable_output = tableToMarkdown('Hosts export', response, ['os_name', 'id', 'location', 'status', 'open_tcp_ports'])
     command_results = CommandResults(
         readable_output=readable_output,
         outputs_prefix='Edgescan.HostGetExport',
@@ -299,7 +300,7 @@ def host_get_export_command(client, args):
 
 def host_get_query_command(client, args):
     response = client.host_get_query_request(args)['hosts']
-    readable_output = tableToMarkdown(f'Hosts query', response, ['os_name', 'id', 'location', 'status', 'services'])
+    readable_output = tableToMarkdown('Hosts query', response, ['os_name', 'id', 'location', 'status', 'services'])
     command_results = CommandResults(
         readable_output=readable_output,
         outputs_prefix='Edgescan.HostGetQuery',
@@ -330,7 +331,7 @@ def asset_get_assets_command(client, args):
     detail_level = args.get('detail_level')
 
     response = client.asset_get_assets_request(detail_level)['assets']
-    readable_output = tableToMarkdown(f'Assets', response,
+    readable_output = tableToMarkdown('Assets', response,
                                       ['id', 'name', 'asset_status', 'blocked_status', 'hostname'])
     command_results = CommandResults(
         readable_output=readable_output,
@@ -346,7 +347,7 @@ def asset_get_assets_command(client, args):
 def asset_get_command(client, args):
     id = args.get('id')
     response = client.asset_get_request(id=id)['asset']
-    readable_output = tableToMarkdown(f'Asset', response)
+    readable_output = tableToMarkdown('Asset', response)
     command_results = CommandResults(
         readable_output=readable_output,
         outputs_prefix='Edgescan.AssetGet',
@@ -360,7 +361,7 @@ def asset_get_command(client, args):
 
 def asset_get_query_command(client, args):
     response = client.asset_get_query_request(args)['assets']
-    readable_output = tableToMarkdown(f'Assets query', response,
+    readable_output = tableToMarkdown('Assets query', response,
                                       ['id', 'name', 'asset_status', 'blocked_status', 'hostname'])
     command_results = CommandResults(
         readable_output=readable_output,
@@ -433,7 +434,7 @@ def asset_delete_command(client, args):
 
 def user_get_users_command(client, args):
     response = client.user_get_users_request()['users']
-    readable_output = tableToMarkdown(f'Users', response,
+    readable_output = tableToMarkdown('Users', response,
                                       ['id', 'username', 'email', 'phone_number', "mfa_enabled"])
     command_results = CommandResults(
         readable_output=readable_output,
@@ -449,7 +450,7 @@ def user_get_users_command(client, args):
 def user_get_command(client, args):
     id = args.get('id')
     response = client.user_get_request(id=id)['user']
-    readable_output = tableToMarkdown(f'User', response,
+    readable_output = tableToMarkdown('User', response,
                                       ['id', 'username', 'email', 'phone_number', "mfa_enabled"])
     command_results = CommandResults(
         readable_output=readable_output,
@@ -464,7 +465,7 @@ def user_get_command(client, args):
 
 def user_get_query_command(client, args):
     response = client.user_get_query_request(args)['users']
-    readable_output = tableToMarkdown(f'User query', response,
+    readable_output = tableToMarkdown('User query', response,
                                       ['id', 'username', 'email', 'phone_number', "mfa_enabled"])
     command_results = CommandResults(
         readable_output=readable_output,
@@ -489,7 +490,7 @@ def user_create_command(client, args):
 
     response = client.user_create_request(username, email, first_name, last_name,
                                           phone_number, mfa_enabled, mfa_method, is_super)['user']
-    readable_output = tableToMarkdown(f'User created', response)
+    readable_output = tableToMarkdown('User created', response)
     command_results = CommandResults(
         readable_output=readable_output,
         outputs_prefix='Edgescan.UserCreate',
@@ -504,7 +505,7 @@ def user_create_command(client, args):
 def user_delete_command(client, args):
     id = args.get('id')
     response = client.user_delete_request(id=id)['user']
-    readable_output = tableToMarkdown(f'User deleted', response)
+    readable_output = tableToMarkdown('User deleted', response)
     command_results = CommandResults(
         readable_output=readable_output,
         outputs_prefix='Edgescan.UserDelete',
@@ -545,7 +546,7 @@ def user_reset_email_command(client, args):
 def user_lock_account_command(client, args):
     id = args.get('id')
     response = client.user_lock_account_request(id=id)['user']
-    readable_output = tableToMarkdown(f'User locked', response)
+    readable_output = tableToMarkdown('User locked', response)
     command_results = CommandResults(
         readable_output=readable_output,
         outputs_prefix='Edgescan.UserLockAccount',
@@ -560,7 +561,7 @@ def user_lock_account_command(client, args):
 def user_unlock_account_command(client, args):
     id = args.get('id')
     response = client.user_unlock_account_request(id=id)['user']
-    readable_output = tableToMarkdown(f'User unlocked', response)
+    readable_output = tableToMarkdown('User unlocked', response)
     command_results = CommandResults(
         readable_output=readable_output,
         outputs_prefix='Edgescan.UserUnlockAccount',
@@ -575,7 +576,7 @@ def user_unlock_account_command(client, args):
 def user_get_permissions_command(client, args):
     id = args.get('id')
     response = client.user_get_permissions_request(id=id)['permissions']
-    readable_output = tableToMarkdown(f'User permissions', response)
+    readable_output = tableToMarkdown('User permissions', response)
     command_results = CommandResults(
         readable_output=readable_output,
         outputs_prefix='Edgescan.UserGetPermissions',
@@ -589,7 +590,7 @@ def user_get_permissions_command(client, args):
 
 def vulnerabilities_get_command(client, args):
     response = client.vulnerabilities_get_request()['vulnerabilities']
-    readable_output = tableToMarkdown(f'Vulnerabilities', response, ['id', 'asset_id', 'name', 'severity', 'cvss_score'])
+    readable_output = tableToMarkdown('Vulnerabilities', response, ['id', 'asset_id', 'name', 'severity', 'cvss_score'])
     command_results = CommandResults(
         readable_output=readable_output,
         outputs_prefix='Edgescan.VulnerabilitiesGet',
@@ -616,7 +617,7 @@ def vulnerabilities_get_export_command(client, args):
 def vulnerabilities_get_details_command(client, args):
     id = args.get('id')
     response = client.vulnerabilities_get_details_request(id)['vulnerability']
-    readable_output = tableToMarkdown(f'Vulnerability ID:' + id, response)
+    readable_output = tableToMarkdown('Vulnerability ID:' + id, response)
     command_results = CommandResults(
         readable_output=readable_output,
         outputs_prefix='Edgescan.VulnerabilitiesGetDetails',
@@ -630,7 +631,7 @@ def vulnerabilities_get_details_command(client, args):
 
 def vulnerabilities_get_query_command(client, args):
     response = client.vulnerabilities_get_query_request(args, 50, 0)['vulnerabilities']
-    readable_output = tableToMarkdown(f'Vulnerabilities', response,
+    readable_output = tableToMarkdown('Vulnerabilities', response,
                                       ['id', 'asset_id', 'name', 'severity', 'cvss_score'])
     command_results = CommandResults(
         readable_output=readable_output,
@@ -646,7 +647,7 @@ def vulnerabilities_get_query_command(client, args):
 def vulnerabilities_retest_command(client, args):
     id = args.get('id')
     response = client.vulnerabilities_retest_request(id=id)
-    readable_output = tableToMarkdown(f'Vulnerability retested ID:' + id, response)
+    readable_output = tableToMarkdown('Vulnerability retested ID:' + id, response)
     command_results = CommandResults(
         readable_output=readable_output,
         outputs_prefix='Edgescan.VulnerabilitiesRetest',
@@ -662,7 +663,7 @@ def vulnerabilities_risk_accept_command(client, args):
     value = args.get('value')
     id = args.get('id')
     response = client.vulnerabilities_risk_accept_request(value=value, id=id)
-    readable_output = tableToMarkdown(f'Vulnerability Risk-accepted ID:' + id, response)
+    readable_output = tableToMarkdown('Vulnerability Risk-accepted ID:' + id, response)
     command_results = CommandResults(
         readable_output=readable_output,
         outputs_prefix='Edgescan.VulnerabilitiesRiskAccept',
@@ -739,7 +740,6 @@ def main():
             # Set and define the fetch incidents command to run after activated via integration settings.
             cvss_score = demisto.params().get('cvss_score', None)
             risk_more_than = demisto.params().get('risk_more_than', None)
-            min_severity = demisto.params().get('min_severity', None)
 
             # Convert the argument to an int using helper function or set to MAX_INCIDENTS_TO_FETCH
             max_results = arg_to_number(
