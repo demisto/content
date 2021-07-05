@@ -3,7 +3,7 @@ The RSS Feed integration provides information for the *RSS Create Indicators Fro
 The playbook:
 1. Extracts indicators from article content.
 2. Creates relationships between the extracted indicators and the report.
-3. Runs reputation commands on the extracted indicators. 
+3. Runs enrich indicators command on the extracted indicators. 
 
 Cortex XSOAR recommends that you configure a job to run every 12 hours to execute this playbook. 
 
@@ -46,4 +46,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![RSS Create Indicators From Report](Insert the link to your image here)
+![Setup Account](./../../doc_files/Rss_create_indicators_playbook_image.png)
