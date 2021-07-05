@@ -364,7 +364,7 @@ script:
     - contextPath: MISP.Attribute.Tag.ID
       description: Attribute tag ID.
       type: string
-    - contextPath: MISP.Attribute.Sighting.type
+    - contextPath: MISP.Attribute.Sighting.Type
       description: Attribute's sighting type.
       type: string
   - arguments:
@@ -508,7 +508,7 @@ script:
     - contextPath: MISP.Attribute.Tag.ID
       description: Attribute tag ID.
       type: string
-    - contextPath: MISP.Attribute.Sighting.type
+    - contextPath: MISP.Attribute.Sighting.Type
       description: Attribute's sighting type.
       type: string
   - arguments:
@@ -652,7 +652,7 @@ script:
     - contextPath: MISP.Attribute.Tag.ID
       description: Attribute tag ID.
       type: string
-    - contextPath: MISP.Attribute.Sighting.type
+    - contextPath: MISP.Attribute.Sighting.Type
       description: Attribute's sighting type.
       type: string
   - arguments:
@@ -796,7 +796,7 @@ script:
     - contextPath: MISP.Attribute.Tag.ID
       description: Attribute tag ID.
       type: string
-    - contextPath: MISP.Attribute.Sighting.type
+    - contextPath: MISP.Attribute.Sighting.Type
       description: Attribute's sighting type.
       type: string
   - arguments:
@@ -940,7 +940,7 @@ script:
     - contextPath: MISP.Attribute.Tag.ID
       description: Attribute tag ID.
       type: string
-    - contextPath: MISP.Attribute.Sighting.type
+    - contextPath: MISP.Attribute.Sighting.Type
       description: Attribute's sighting type.
       type: string
   - arguments:
@@ -2372,7 +2372,7 @@ script:
     - contextPath: MISP.Attribute.Tag.is_galaxy
       description: Is the tag is a galaxy.
       type: Boolean
-    - contextPath: MISP.Attribute.Sighting.type
+    - contextPath: MISP.Attribute.Sighting.Type
       description: Sighting type.
       type: String
   dockerimage: demisto/pymisp2:1.0.0.22163
