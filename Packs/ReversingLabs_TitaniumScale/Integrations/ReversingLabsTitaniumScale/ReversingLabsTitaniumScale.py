@@ -109,7 +109,7 @@ def parse_report_and_return_results(title, response_json):
                     md += f"\n **{name}:** {value}"
 
         classification_obj = tc_report[0].get('classification')
-        if "scan_results" in classification_obj and len(classification_obj.get("scan_results")) > 0:
+        if classification_obj.get("scan_results"):
             scan_result = classification_obj.get("scan_results")[0]
             if "classification" in scan_result:
                 classification = scan_result.get("classification")
