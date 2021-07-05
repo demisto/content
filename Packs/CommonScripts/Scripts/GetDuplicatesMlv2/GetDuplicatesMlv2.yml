@@ -89,6 +89,6 @@ outputs:
 scripttarget: 0
 runas: DBotWeakRole
 runonce: true
-dockerimage: demisto/machine-learning
+dockerimage: demisto/machine-learning:1.0.0.22015
 tests:
 - No test
