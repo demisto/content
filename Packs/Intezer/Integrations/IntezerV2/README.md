@@ -48,6 +48,17 @@ Checks file reputation of the given hash, supports SHA256, SHA1 and MD5
 !intezer-analyze-by-hash file_hash="<file hash>"
 ```
 
+#### Context Example
+```
+{
+    "Intezer.Analysis": {
+        "Status": "Created", 
+        "type": "File", 
+        "ID": "59e2f081-45f3-4822-bf45-407670dcb4d7"
+    }
+}
+```
+
 #### Human Readable Output
 ```
 Analysis created successfully: 59e2f081-45f3-4822-bf45-407670dcb4d7
@@ -86,6 +97,33 @@ Checks file reputation of the given hash, supports SHA256, SHA1 and MD5 by looki
 #### Command Example
 ```
 intezer-get-latest-report file_hash="8cbf90aeab2c93b2819fcfd6262b2cdb"
+```
+
+#### Context Example
+```
+{
+    "DBotScore": {
+        "Vendor": "Intezer", 
+        "Indicator": "<some sha>>", 
+        "Score": 0, 
+        "Type": "hash"
+    }, 
+    "File": {
+        "ExistsInIntezer": true, 
+        "SHA256": "<some sha256>", 
+        "Metadata": {
+            "analysis_id": "006c54ba-3159-43a0-98a0-1c5032145f47", 
+            "sub_verdict": "known_malicious", 
+            "analysis_url": "https://analyze.intezer.com/analyses/006c54ba-3159-43a0-98a0-1c5032145f47", 
+            "verdict": "malicious", 
+            "family_id": "0b13c0d4-7779-4c06-98fa-4d33ca98f8a9",
+            "family_name": "WannaCry",
+            "sha256": "<some sha256>",
+            "is_private": true, 
+            "analysis_time": "Wed, 19 Jun 2019 07:48:12 GMT"
+        }
+    }
+}
 ```
 
 #### Human Readable Output
@@ -140,6 +178,17 @@ Checks file reputation for uploaded file (up to 150MB)
 intezer-analyze-by-file file_entry_id=1188@6
 ```
 
+#### Context Example
+```
+{
+    "Intezer.Analysis": {
+        "Status": "Created", 
+        "type": "File", 
+        "ID": "675515a1-62e9-4d55-880c-fd46a7963a56"
+    }
+}
+```
+
 #### Human Readable Output
 ```
 Analysis created successfully: 675515a1-62e9-4d55-880c-fd46a7963a56
@@ -183,6 +232,33 @@ Check the analysis status and get analysis result, support file and endpoint ana
 intezer-get-analysis-result analysis_id="9e3acdc3-b7ea-412b-88ae-7103eebc9398"
 ```
 
+#### Context Example
+```
+{
+    "DBotScore": {
+        "Vendor": "Intezer", 
+        "Indicator": "<some sha>>", 
+        "Score": 0, 
+        "Type": "hash"
+    }, 
+    "File": {
+        "ExistsInIntezer": true, 
+        "SHA256": "<some sha256>", 
+        "Metadata": {
+            "analysis_id": "006c54ba-3159-43a0-98a0-1c5032145f47", 
+            "sub_verdict": "known_malicious", 
+            "analysis_url": "https://analyze.intezer.com/analyses/006c54ba-3159-43a0-98a0-1c5032145f47", 
+            "verdict": "malicious", 
+            "family_id": "0b13c0d4-7779-4c06-98fa-4d33ca98f8a9",
+            "family_name": "WannaCry",
+            "sha256": "<some sha256>",
+            "is_private": true, 
+            "analysis_time": "Wed, 19 Jun 2019 07:48:12 GMT"
+        }
+    }
+}
+```
+
 #### Human Readable Output
 ```
 Intezer File analysis result
@@ -204,7 +280,6 @@ sha256          some-sha256
 sub_verdict	known_malicious
 verdict	        malicious
 ```
-
 
 
 ### intezer-get-sub-analyses
@@ -235,6 +310,21 @@ Get a list of the analysis sub analyses
 ```
 intezer-get-sub-analyses analysis_id=006c54ba-3159-43a0-98a0-1c5032145f47
 ```
+
+#### Context Example
+```
+{
+    "Intezer.Analysis": {
+        "Status": "Done", 
+        "type": "File", 
+        "ID": "675515a1-62e9-4d55-880c-fd46a7963a56",
+        "SubAnalyses": [
+            "2bf5baa9-6964-4171-b060-5e3d8de8741f"
+        ]
+    }
+}
+```
+
 
 #### Human Readable Output
 ```
@@ -274,6 +364,18 @@ Get family information from Intezer Analyze
 #### Command Example
 ``` 
 intezer-get-family-info family_id=006c54ba-3159-43a0-98a0-1c5032145f47
+```
+
+
+#### Context Example
+```
+{
+    "Intezer.Family": {
+        "ID": "e710e4b3-3dd1-40ff-be74-9d8a95466ae4", 
+        "Type": "malware", 
+        "Name": "CobaltStrike"
+    }
+}
 ```
 
 #### Human Readable Output
