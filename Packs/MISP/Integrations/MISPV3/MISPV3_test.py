@@ -317,7 +317,7 @@ def test_attribute_response_to_markdown_table(mocker):
     assert md['Attribute Type'] == "md5"
     assert md['Attribute Value'] == "6c73d338ec64e0e44bd54ea123456789"
     assert md['Attribute Tags'] == ["Tag1", "misp-galaxy:tag2", "misp-galaxy:tag3"]
-    assert md['To IDs'] == True
+    assert md['To IDs'] is True
     assert md['Event Info'] == 'Test'
     assert md['Event Organisation ID'] == '1'
     assert md['Event Distribution'] == '0'
@@ -341,3 +341,27 @@ def test_prepare_args_to_search(mocker, demisto_args, expected_args):
     from MISPV3 import prepare_args_to_search
     mocker.patch.object(demisto, 'args', return_value=demisto_args)
     assert prepare_args_to_search() == expected_args
+
+
+def test_build_events_search_response(mocker):
+    mock_misp(mocker)
+    from MISPV3 import build_events_search_response, ENTITIESDICT
+    search_response = util_load_json("test_data/search_event_by_tag.json")
+    search_expected_output = util_load_json("test_data/search_event_by_tag_outputs.json")
+    search_outputs = build_events_search_response(search_response)
+    for actual_event, expected_event in zip(search_outputs, search_expected_output):
+        for key, event_field in ENTITIESDICT.items():
+            if actual_event.get(event_field):
+                assert actual_event.get(event_field) == expected_event.get(event_field)
+
+
+def test_build_attributes_search_response(mocker):
+    mock_misp(mocker)
+    from MISPV3 import build_attributes_search_response, ENTITIESDICT
+    search_response = util_load_json("test_data/search_attribute_by_type.json")
+    search_expected_output = util_load_json("test_data/search_attribute_by_type_outputs.json")
+    search_outputs = build_attributes_search_response(search_response)
+    for actual_attribute, expected_attribute in zip(search_outputs, search_expected_output):
+        for key, event_field in ENTITIESDICT.items():
+            if actual_attribute.get(event_field):
+                assert actual_attribute.get(event_field) == expected_attribute.get(event_field)

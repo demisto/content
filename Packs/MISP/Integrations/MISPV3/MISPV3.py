@@ -143,6 +143,60 @@ DOMAIN_REGEX = (
     "|localhost)"
 )
 
+EVENT_FIELDS = [
+    'id',
+    'orgc_id',
+    'org_id',
+    'date',
+    'threat_level_id',
+    'info',
+    'published',
+    'uuid',
+    'analysis',
+    'attribute_count',
+    'timestamp',
+    'distribution',
+    'proposal_email_lock',
+    'locked',
+    'publish_timestamp',
+    'sharing_group_id',
+    'disable_correlation',
+    'event_creator_email',
+    'Org',
+    'Orgc',
+    'RelatedEvent',
+    'Galaxy',
+    'Tag',
+    'decay_score',
+    'Object'
+]
+
+ATTRIBUTE_FIELDS = [
+    'id',
+    'event_id',
+    'object_id',
+    'object_relation',
+    'category',
+    'type',
+    'to_ids',
+    'uuid',
+    'timestamp',
+    'distribution',
+    'sharing_group_id',
+    'comment',
+    'deleted',
+    'disable_correlation',
+    'first_seen',
+    'last_seen',
+    'value',
+    'Event',
+    'Object',
+    'Galaxy',
+    'Tag',
+    'decay_score',
+    'Sighting',
+]
+
 
 def extract_error(error: list) -> List[dict]:
     """Extracting errors
@@ -654,40 +708,15 @@ def build_attributes_search_response(response_object: Union[dict, requests.Respo
     """
     Convert the response of attribute search returned from MIPS to the context output format.
     """
-    attribute_fields = [
-        'id',
-        'event_id',
-        'object_id',
-        'object_relation',
-        'category',
-        'type',
-        'to_ids',
-        'uuid',
-        'timestamp',
-        'distribution',
-        'sharing_group_id',
-        'comment',
-        'deleted',
-        'disable_correlation',
-        'first_seen',
-        'last_seen',
-        'value',
-        'Event',
-        'Object',
-        'Galaxy',  # field wasn't tested as we don't see it in our responses. Was added by customer's request.
-        'Tag',
-        'decay_score',
-        'Sighting',
-    ]
     if include_correlations:
-        # only if user want to get back the related attributes
-        attribute_fields.append('RelatedAttribute')
+        # if user want to get back the related attributes only
+        ATTRIBUTE_FIELDS.append('RelatedAttribute')
 
     if isinstance(response_object, str):
         response_object = json.loads(json.dumps(response_object))
     attributes = response_object.get('Attribute')
     for i in range(len(attributes)):
-        attributes[i] = {key: attributes[i].get(key) for key in attribute_fields if key in attributes[i]}
+        attributes[i] = {key: attributes[i].get(key) for key in ATTRIBUTE_FIELDS if key in attributes[i]}
         # Build Galaxy
         if attributes[i].get('Galaxy'):
             attributes[i]['Galaxy'] = [
@@ -811,39 +840,12 @@ def build_events_search_response(response_object: Union[dict, requests.Response]
     please note: attributes are excluded from search-events output as the information is too big. User can use the
     command search-attributes in order to get the information about the attributes.
     """
-    event_fields = [
-        'id',
-        'orgc_id',
-        'org_id',
-        'date',
-        'threat_level_id',
-        'info',
-        'published',
-        'uuid',
-        'analysis',
-        'attribute_count',
-        'timestamp',
-        'distribution',
-        'proposal_email_lock',
-        'locked',
-        'publish_timestamp',
-        'sharing_group_id',
-        'disable_correlation',
-        'event_creator_email',
-        'Org',
-        'Orgc',
-        'RelatedEvent',
-        'Galaxy',
-        'Tag',
-        'decay_score',
-        'Object'
-    ]
     if isinstance(response_object, str):
         response_object = json.loads(json.dumps(response_object))
     events = [event.get('Event') for event in response_object]
     for i in range(0, len(events)):
         # Filter object from keys in event_args
-        events[i] = {key: events[i].get(key) for key in event_fields if key in events[i]}
+        events[i] = {key: events[i].get(key) for key in EVENT_FIELDS if key in events[i]}
         # Remove 'Event' keyword from 'RelatedEvent'
         if events[i].get('RelatedEvent'):
             events[i]['RelatedEvent'] = [r_event.get('Event') for r_event in events[i].get('RelatedEvent')]
