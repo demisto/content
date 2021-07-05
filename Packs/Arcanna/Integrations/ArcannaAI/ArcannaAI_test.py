@@ -1,6 +1,5 @@
 import json
 import io
-import pytest
 import demistomock as demisto
 
 from ArcannaAI import Client, get_jobs, post_event, get_default_job_id, set_default_job_id, get_event_status
