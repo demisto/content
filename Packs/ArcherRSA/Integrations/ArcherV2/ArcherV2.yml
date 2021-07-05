@@ -66,6 +66,12 @@ configuration:
   name: proxy
   required: false
   type: 8
+- display: API Endpoint
+  hidden: false
+  name: ApiEndpoint
+  required: false
+  defaultValue: api
+  type: 0
 description: The RSA Archer GRC Platform provides a common foundation for managing
   policies, controls, risks, assessments, and deficiencies across lines of business.
 display: RSA Archer v2
