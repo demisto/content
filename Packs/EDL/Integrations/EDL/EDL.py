@@ -7,7 +7,7 @@ import re
 from base64 import b64decode
 from flask import Flask, Response, request
 from netaddr import IPAddress, IPSet
-from typing import Callable, Any, Dict, cast, Iterable
+from typing import Any, Dict, cast, Iterable
 from math import ceil
 import urllib3
 import dateparser
