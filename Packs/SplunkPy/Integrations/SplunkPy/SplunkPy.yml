@@ -20,13 +20,13 @@ configuration:
     | eval rule_title=if(isnull(rule_title),rule_name,rule_title) | `get_urgency`
     | `risk_correlation` | eval rule_description=if(isnull(rule_description),source,rule_description)
     | eval security_domain=if(isnull(security_domain),source,security_domain)
-  display: Fetch notable events ES query
+  display: Fetch events query
   name: fetchQuery
   required: false
   type: 0
-  additionalinfo: The query for the notable events enrichment (defined by default).
-    If you decide to edit this, make sure to provide a query that uses the \`notable\`
-    macro. Use the new default query as an example.
+  additionalinfo: The Splunk search query by which to fetch events. The default query fetches ES notable events.
+   You can edit this query to fetch other types of events.
+    Note, that to fetch ES noatable events, make sure to include the \`notable\` macro in your query.
 - defaultvalue: '50'
   display: Fetch Limit (Max.- 200, Recommended less than 50)
   name: fetch_limit
@@ -774,7 +774,7 @@ script:
   - name: splunk-reset-enriching-fetch-mechanism
     arguments: []
     description: Resets the enrichment mechanism of fetched notables.
-  dockerimage: demisto/splunksdk:1.0.0.19034
+  dockerimage: demisto/splunksdk:1.0.0.21241
   feed: false
   isfetch: true
   longRunning: false
