@@ -3580,7 +3580,6 @@
         "Infoblox": "Unstable instance, issue 25651",
         
         "_comment3": "~~~ QUOTA ISSUES ~~~",
-        "XFE_v2": "Required proper instance, otherwise we get quota errors",
         "Lastline": "issue 20323",
         "Google Resource Manager": "Cannot create projects because have reached allowed quota.",
         "Looker": "Warehouse 'DEMO_WH' cannot be resumed because resource monitor 'LIMITER' has exceeded its quota.",
