@@ -371,6 +371,14 @@ MOCK_CVE_SEARCH_RESP = {'total_rows': 1,
 
 
 def test_ip(requests_mock):
+    """
+    Given: Arguments for ip command
+
+    When: The server response is complete
+
+    Then: validates the outputs
+
+    """
     requests_mock.get(f'{MOCK_BASE_URL}/ipr/{MOCK_IP}', json=MOCK_IP_RESP)
 
     client = Client(MOCK_BASE_URL, MOCK_API_KEY, MOCK_PASSWORD, True, False)
@@ -384,6 +392,14 @@ def test_ip(requests_mock):
 
 
 def test_ip_with_invalid_resp(requests_mock):
+    """
+    Given: Arguments for ip command
+
+    When: The server response is not complete and some data fields are empty
+
+    Then: validates the outputs
+
+    """
     requests_mock.get(f'{MOCK_BASE_URL}/ipr/{MOCK_IP}', json=MOCK_INVALID_IP_RESP)
 
     client = Client(MOCK_BASE_URL, MOCK_API_KEY, MOCK_PASSWORD, True, False)
