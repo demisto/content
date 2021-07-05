@@ -171,9 +171,11 @@ def generate_unique_cn(default_base_dn, cn):
 
     changing_cn = cn
     i = 1
-    while check_if_user_exists_by_cn(default_base_dn, changing_cn):
+    while check_if_user_exists_by_attribute(default_base_dn, "cn", changing_cn):
         changing_cn = cn+str(i)
         i += 1
+        if i == 30:
+            raise Exception("User CN couldn't be generated")
     return changing_cn
 
 
@@ -199,45 +201,23 @@ def generate_dn_and_remove_from_user_profile(default_base_dn, user):
     return 'CN=' + str(valid_cn) + ',' + str(ou)
 
 
-def check_if_user_exists_by_cn(default_base_dn, cn):
-    """Check if user exists base on his samaccountname
+def check_if_user_exists_by_attribute(default_base_dn, attr, val):
+    """Check if user exists base on a specific attribute
     :param default_base_dn: The location in the DIT where the search will start
-    :param cn: The user's unique cn
+    :param attr: The attribute to search by
+    :param val: The attribute's value
     :return: True if the user exists, False otherwise.
     """
-    query = f'(&(objectClass=User)(objectCategory=person)(cn={cn}))'
+    query = f'(&(objectClass=User)(objectCategory=person)({attr}={val}))'
     entries = search_with_paging(
         query,
         default_base_dn,
-        attributes=["cn"],
+        attributes=[attr],
         size_limit=1,
         page_size=1
     )
-
     if entries.get('flat'):
         return True
-
-    return False
-
-
-def check_if_user_exists_by_samaccountname(default_base_dn, samaccountname):
-    """Check if user exists base on his samaccountname
-    :param default_base_dn: The location in the DIT where the search will start
-    :param samaccountname: The user's unique samaccountname
-    :return: True if the user exists, False otherwise.
-    """
-    query = f'(&(objectClass=User)(objectCategory=person)(samaccountname={samaccountname}))'
-    entries = search_with_paging(
-        query,
-        default_base_dn,
-        attributes=["samaccountname"],
-        size_limit=1,
-        page_size=1
-    )
-
-    if entries.get('flat'):
-        return True
-
     return False
 
 
@@ -846,7 +826,7 @@ def create_user_iam(default_base_dn, args, mapper_out, disabled_users_group_cn):
                                    "in \"" + mapper_out + "\" outgoing mapper, in the User Profile incident type "
                                    "and schema type, under the \"ou\" field.")
 
-        user_exists = check_if_user_exists_by_samaccountname(default_base_dn, sam_account_name)
+        user_exists = check_if_user_exists_by_attribute(default_base_dn, "samaccountname", sam_account_name)
 
         if user_exists:
             iam_user_profile = update_user_iam(default_base_dn, args, False, mapper_out, disabled_users_group_cn)
@@ -926,13 +906,13 @@ def update_user_iam(default_base_dn, args, create_if_not_exists, mapper_out, dis
                                    "and schema type, under the \"ou\" field.")
 
         new_ou = ad_user.get("ou")
-        user_exists = check_if_user_exists_by_samaccountname(default_base_dn, sam_account_name)
+        user_exists = check_if_user_exists_by_attribute(default_base_dn, "samaccountname", sam_account_name)
 
         user_profile = json.loads(user_profile)
         if old_user_data := user_profile.get('olduserdata'):
             # if olduserdata exists - the user's email is updated:
             old_sam_account_name = get_old_samaccountname(old_user_data, mapper_out)
-            old_user_exists = check_if_user_exists_by_samaccountname(default_base_dn, old_sam_account_name)
+            old_user_exists = check_if_user_exists_by_attribute(default_base_dn, "samaccountname", old_sam_account_name)
 
         if not user_exists and not old_user_exists and create_if_not_exists:
             iam_user_profile = create_user_iam(default_base_dn, args, mapper_out, disabled_users_group_cn)
@@ -1286,7 +1266,7 @@ def disable_user_iam(default_base_dn, disabled_users_group_cn, args, mapper_out)
             raise DemistoException("User must have a sAMAccountName, please make sure a mapping "
                                    "exists in \"" + mapper_out + "\" outgoing mapper.")
 
-        user_exists = check_if_user_exists_by_samaccountname(default_base_dn, sam_account_name)
+        user_exists = check_if_user_exists_by_attribute(default_base_dn, "samaccountname", sam_account_name)
         if not user_exists:
             iam_user_profile.set_result(success=True, action=IAMActions.DISABLE_USER,
                                         skip=True, skip_reason="User doesn't exist")
