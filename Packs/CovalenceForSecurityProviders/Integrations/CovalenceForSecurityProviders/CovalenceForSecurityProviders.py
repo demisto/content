@@ -11,7 +11,7 @@ import demistomock as demisto
 
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%S'
 HOST = demisto.params().get('host')
-BROKER = demisto.params().get('broker')
+BROKER = argToBoolean(demisto.params().get('broker', False))
 USERNAME = demisto.params().get('credentials')['identifier']
 PASSWORD = demisto.params().get('credentials')['password']
 VERIFY_SSL = demisto.params().get('verify_ssl')
@@ -29,7 +29,7 @@ if not demisto.params().get('proxy', False):
 def find_covs(client_name):
 
     url = f'https://{HOST}/index'
-    r = requests.get(url, verify=False)
+    r = requests.get(url, verify=VERIFY_SSL)
     covs = []
 
     soup = BeautifulSoup(r.text, 'html.parser')
@@ -90,7 +90,6 @@ def login(host=HOST, cov_id=None, username=USERNAME, password=PASSWORD, verify_s
 
 def send_request(method, api_endpoint, target_org=None, host=HOST, headers=None, params=None, data=None, json=None):
     cov_ids = []
-    BROKER = demisto.params().get('broker')
     if BROKER:
         if target_org:
             cov_ids = find_covs(target_org)
@@ -618,12 +617,11 @@ def search_endpoint_installed_software():
 
 
 def list_org():
-    BROKER = demisto.params().get('broker')
     if not BROKER:
         ValueError(f'{demisto.command()} is only available in broker mode')
 
     url = f'https://{HOST}/index'
-    r = requests.get(url, verify=False)
+    r = requests.get(url, verify=VERIFY_SSL)
     org_names: List[dict] = []
 
     soup = BeautifulSoup(r.text, 'html.parser')

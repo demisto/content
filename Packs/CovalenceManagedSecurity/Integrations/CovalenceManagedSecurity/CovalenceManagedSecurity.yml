@@ -20,6 +20,23 @@ configuration:
   name: first_run_time_range
   required: false
   type: 0
+- display: Incident type
+  name: incidentType
+  required: false
+  type: 13
+- display: Fetch incidents
+  name: isFetch
+  required: false
+  type: 8
+- defaultvalue: 7 days
+  display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
+  name: first_fetch
+  required: false
+  type: 0
+- defaultvalue: '50'
+  name: max_fetch
+  required: false
+  type: 0
 description: Triggers by triaged alerts from endpoint, cloud, and network security monitoring. Contains event details and easy-to-follow mitigation steps.
 display: Covalence Managed Security
 fromversion: 5.0.0
@@ -140,7 +157,7 @@ script:
     - contextPath: FESPortal.Aro.type
       description: Type
       type: String
-  - arguments: null
+  - arguments: []
     deprecated: false
     description: List organizations
     execution: false
@@ -158,7 +175,7 @@ script:
     - contextPath: FESPortal.Org.name
       description: Name
       type: String
-  dockerimage: demisto/python3:3.9.1.15759
+  dockerimage: demisto/python3:3.9.5.21272
   isfetch: true
   runonce: false
   script: '-'

@@ -41,8 +41,8 @@ class Portal():
         KEY = 'FieldEffectKey'
 
     def get_authorization(self, skip_refresh=False):
-        if not skip_refresh:
-            self.refresh_auth()
+        # if not skip_refresh:
+        #     self.refresh_auth()
         return '{} {}'.format(self.scheme, self.auth['token'])
 
     def try_saved_token(self, token):
