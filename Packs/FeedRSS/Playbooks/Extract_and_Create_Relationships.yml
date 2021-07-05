@@ -33,10 +33,10 @@ tasks:
     quietmode: 0
   "1":
     id: "1"
-    taskid: fbb5e6b1-fd5c-4214-852b-fb79829997e2
+    taskid: c4f28b19-3fe6-4f9d-82e4-88a6b1406f4a
     type: regular
     task:
-      id: fbb5e6b1-fd5c-4214-852b-fb79829997e2
+      id: c4f28b19-3fe6-4f9d-82e4-88a6b1406f4a
       version: -1
       name: Extract indicators from report description
       description: commands.local.cmd.extract.indicators
@@ -51,9 +51,10 @@ tasks:
       - "23"
       - "24"
       - "22"
+      - "25"
     scriptarguments:
       text:
-        simple: ${inputs.content}
+        simple: ${inputs.raw_content}
     reputationcalc: 2
     separatecontext: false
     view: |-
@@ -70,10 +71,10 @@ tasks:
     quietmode: 0
   "2":
     id: "2"
-    taskid: c26a5a64-0089-4066-8eb8-b47041c475c9
+    taskid: ea11f575-2b94-492c-8afc-7ae2e6f1ccfd
     type: regular
     task:
-      id: c26a5a64-0089-4066-8eb8-b47041c475c9
+      id: ea11f575-2b94-492c-8afc-7ae2e6f1ccfd
       version: -1
       name: CVE Create Relationship
       description: This automation creates a relationship between indicator objects.
@@ -90,7 +91,7 @@ tasks:
       description:
         simple: Extracted from report
       entity_a:
-        simple: ${inputs.report_name}
+        simple: ${inputs.indicator_value}
       entity_a_type:
         simple: Report
       entity_b:
@@ -120,10 +121,10 @@ tasks:
       id: ce475c8b-1735-4209-8dd8-5ac172260f26
       version: -1
       name: Are there CVEs?
+      description: Checks whether CVEs were extracted
       type: condition
       iscommand: false
       brand: ""
-      description: ""
     nexttasks:
       '#default#':
       - "6"
@@ -190,10 +191,10 @@ tasks:
     quietmode: 0
   "5":
     id: "5"
-    taskid: b0d7d818-cce3-4d12-845d-bfa27cea0a2b
+    taskid: 845439c7-c9a2-46a0-87b7-be54140a94d7
     type: regular
     task:
-      id: b0d7d818-cce3-4d12-845d-bfa27cea0a2b
+      id: 845439c7-c9a2-46a0-87b7-be54140a94d7
       version: -1
       name: IP Create Relationship
       description: This automation creates a relationship between indicator objects.
@@ -210,7 +211,7 @@ tasks:
       description:
         simple: Extracted from report
       entity_a:
-        simple: ${inputs.report_name}
+        simple: ${inputs.indicator_value}
       entity_a_type:
         simple: Report
       entity_b:
@@ -307,10 +308,10 @@ tasks:
     quietmode: 0
   "8":
     id: "8"
-    taskid: 565d5e69-5843-46d0-8f17-6144a9c008b1
+    taskid: 8414df6b-b3b7-4e74-8100-bd9986ab60b5
     type: regular
     task:
-      id: 565d5e69-5843-46d0-8f17-6144a9c008b1
+      id: 8414df6b-b3b7-4e74-8100-bd9986ab60b5
       version: -1
       name: Email Create Relationship
       description: This automation creates a relationship between indicator objects.
@@ -327,7 +328,7 @@ tasks:
       description:
         simple: Extracted from report
       entity_a:
-        simple: ${inputs.report_name}
+        simple: ${inputs.indicator_value}
       entity_a_type:
         simple: Report
       entity_b:
@@ -389,10 +390,10 @@ tasks:
     quietmode: 0
   "11":
     id: "11"
-    taskid: 66e1c16b-7bf5-431c-881c-33201da03646
+    taskid: 7254c2bf-6b16-4e19-8e5c-dfc0b4f0a43b
     type: regular
     task:
-      id: 66e1c16b-7bf5-431c-881c-33201da03646
+      id: 7254c2bf-6b16-4e19-8e5c-dfc0b4f0a43b
       version: -1
       name: Domain Create Relationship
       description: This automation creates a relationship between indicator objects.
@@ -409,7 +410,7 @@ tasks:
       description:
         simple: Extracted from report
       entity_a:
-        simple: ${inputs.report_name}
+        simple: ${inputs.indicator_value}
       entity_a_type:
         simple: Report
       entity_b:
@@ -471,10 +472,10 @@ tasks:
     quietmode: 0
   "13":
     id: "13"
-    taskid: 529bddfa-72e2-4019-84d3-6cb17b6bc383
+    taskid: 46d07da8-d775-4586-8a31-5c6bde51c157
     type: regular
     task:
-      id: 529bddfa-72e2-4019-84d3-6cb17b6bc383
+      id: 46d07da8-d775-4586-8a31-5c6bde51c157
       version: -1
       name: URL Create Relationship
       description: This automation creates a relationship between indicator objects.
@@ -491,7 +492,7 @@ tasks:
       description:
         simple: Extracted from report
       entity_a:
-        simple: ${inputs.report_name}
+        simple: ${inputs.indicator_value}
       entity_a_type:
         simple: Report
       entity_b:
@@ -838,30 +839,173 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+  "25":
+    id: "25"
+    taskid: 9fb16778-7525-47b1-879f-be520f7f820b
+    type: title
+    task:
+      id: 9fb16778-7525-47b1-879f-be520f7f820b
+      version: -1
+      name: File
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "26"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -870,
+          "y": -100
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "26":
+    id: "26"
+    taskid: d3b09852-d38a-46cf-8914-c237ebd9be53
+    type: condition
+    task:
+      id: d3b09852-d38a-46cf-8914-c237ebd9be53
+      version: -1
+      name: Are there Files hash?
+      description: Checks whether URLs were extracted
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "6"
+      "yes":
+      - "27"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ExtractedIndicators.File
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": -870,
+          "y": 70
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "27":
+    id: "27"
+    taskid: c64a9bfb-0cfc-4987-8fa4-6837005d8396
+    type: regular
+    task:
+      id: c64a9bfb-0cfc-4987-8fa4-6837005d8396
+      version: -1
+      name: File Create Relationship
+      description: This automation creates a relationship between indicator objects.
+      scriptName: CreateIndicatorRelationship
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "28"
+    scriptarguments:
+      create_indicator:
+        simple: "true"
+      description:
+        simple: Extracted from report
+      entity_a:
+        simple: ${inputs.indicator_value}
+      entity_a_type:
+        simple: Report
+      entity_b:
+        simple: ${ExtractedIndicators.File}
+      entity_b_type:
+        simple: FILE
+      relationship:
+        simple: related-to
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -870,
+          "y": 400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "28":
+    id: "28"
+    taskid: a137b4ff-595c-4f77-8838-2338b8249f3c
+    type: regular
+    task:
+      id: a137b4ff-595c-4f77-8838-2338b8249f3c
+      version: -1
+      name: File enrichment
+      description: commands.local.cmd.enrich.indicators
+      script: Builtin|||enrichIndicators
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      indicatorsValues:
+        simple: ${ExtractedIndicators.File}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -870,
+          "y": 645
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+system: true
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
         "height": 2325,
-        "width": 2100,
-        "x": -430,
+        "width": 2540,
+        "x": -870,
         "y": -700
       }
     }
   }
 inputs:
-- key: content
+- key: raw_content
   value: {}
   required: false
   description: ""
   playbookInputQuery:
-- key: report_name
+- key: indicator_value
   value: {}
   required: false
   description: ""
   playbookInputQuery:
 outputs: []
-fromversion: 6.2.0
 tests:
-- No tests
+- No tests (auto formatted)
+fromversion: 6.2.0
