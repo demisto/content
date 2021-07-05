@@ -11,8 +11,10 @@ RESTARTED_TASKS = [{'IncidentID': '1', 'TaskID': '1', 'PlaybookName': 'playbook1
                    {'IncidentID': '2', 'TaskID': '2', 'PlaybookName': 'playbook2', 'TaskName': 'task2'}]
 
 
-@pytest.mark.parametrize('incidents, error, context', [(None, True, None), (GET_INCIDENTS_RESPONSE, True, None),
-                                                (GET_INCIDENTS_RESPONSE, False, GET_CONTEXT_RESPONSE_NO_FAILED_TASKS)])
+@pytest.mark.parametrize('incidents, error, context', [(None, True, None),
+                                                       (GET_INCIDENTS_RESPONSE, True, None),
+                                                       (GET_INCIDENTS_RESPONSE, False,
+                                                        GET_CONTEXT_RESPONSE_NO_FAILED_TASKS)])
 def test_get_context_no_incidents_or_context(mocker, incidents, error, context):
     """
     Given: No incidents in XSOAR were created or the context data is empty or the key 'GetFailedTasks' is not
