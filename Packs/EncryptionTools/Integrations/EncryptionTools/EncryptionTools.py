@@ -232,7 +232,7 @@ def encrypt_file(args) -> Dict:
         raise DemistoException(f'Could not encrypt file.\n{e}')
 
 
-def decrypt_file(args) -> Dict:
+def decrypt_file(args) -> Union[Dict, str]:
     """Decrypts a file and creates a war-room file entry with the decrypted content.
 
     Args:
@@ -241,7 +241,9 @@ def decrypt_file(args) -> Dict:
             - output_as_file(bool): Whether to output the decrypted data to file or to the war room.
 
     Returns:
-        Dict. fileResult object.
+        One of:
+            - Dict. fileResult object.
+            - str. The decrypted file content.
     """
     entry_id = args.get('entry_id')
     output_as_file = argToBoolean(args.get('output_as_file', False))
@@ -259,7 +261,7 @@ def decrypt_file(args) -> Dict:
         })
 
         if not output_as_file:
-            return CommandResults(decrypted_content)
+            return decrypted_content
 
         file_name, file_extension = get_file_name_and_extension(file_name)
         return fileResult(
