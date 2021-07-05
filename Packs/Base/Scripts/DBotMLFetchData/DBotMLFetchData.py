@@ -626,9 +626,7 @@ def get_bert_features_for_text(text):
 
 
 def get_bert_features_for_incident(email_subject, email_body):
-    return {
-            'bert_subject_body': get_bert_features_for_text(email_subject + '\n' + email_body),
-            }
+    return {'first_vec_subject_body': get_bert_features_for_text(email_subject + '\n' + email_body)}
 
 
 def extract_features_from_incident(row, label_fields):
