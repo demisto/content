@@ -32,7 +32,7 @@ args:
   description: HTTP method.
 - name: headers
   description: Custom HTTP header. Comma separated list
-    of "key=value". e.g. Type=IP,Size=100.
+    of "key=value". e.g. User-Agent=curl/7.54.0,Accept=*/*
 - name: disable_compression
   defaultValue: "true"
   auto: PREDEFINED

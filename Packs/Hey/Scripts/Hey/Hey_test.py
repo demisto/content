@@ -1,4 +1,7 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 import Hey as hey
+import pytest
 
 
 def test_try_re():
@@ -15,18 +18,20 @@ def test_try_re():
     assert hey.try_re(hey.BYTES_RE, 'disk size is 1337 byte', 0) is None
 
 
-def test_try_semicolon_arg_to_dict():
+def test_try_name_value_arg_to_dict():
     test_str = 'a=1'
-    assert hey.semicolon_arg_to_dict(test_str) == {'a': '1'}
+    assert hey.name_value_arg_to_dict(test_str) == {'a': '1'}
 
     test_str = 'a==1'
-    assert hey.semicolon_arg_to_dict(test_str) == {'a': '=1'}
+    assert hey.name_value_arg_to_dict(test_str) == {'a': '=1'}
 
     test_str = 'a_invalid,b=1'
-    assert hey.semicolon_arg_to_dict(test_str) == {'b': '1'}
+    with pytest.raises(DemistoException):
+        hey.name_value_arg_to_dict(test_str)
 
     test_str = 'nothing to extract'
-    assert hey.semicolon_arg_to_dict(test_str) == {}
+    with pytest.raises(DemistoException):
+        hey.name_value_arg_to_dict(test_str)
 
 
 def test_construct_hey_query():

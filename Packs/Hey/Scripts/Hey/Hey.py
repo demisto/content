@@ -27,14 +27,16 @@ def try_re(pattern: str, string: str, i: int = 0) -> Optional[Any]:
     return None
 
 
-def semicolon_arg_to_dict(arg: Optional[str]):
+def name_value_arg_to_dict(arg: Optional[str]):
     parsed_input: Dict[str, str] = {}
     if arg:
         args = argToList(arg)
         for item in args:
             if isinstance(item, str):
                 key_val = item.split('=')
-                if len(key_val) > 1:
+                if len(key_val) <= 1:
+                    raise DemistoException(f'Invalid arg provided {item}. expected comma separated list of "key=value"')
+                else:
                     key = key_val[0]
                     val = item[len(key) + 1:]
                     parsed_input[key] = val
@@ -70,7 +72,7 @@ def construct_hey_query(url: str,
     if disable_redirects == 'true':
         hey_query += ' -disable-redirects '
     if headers:
-        for header_key, header_val in semicolon_arg_to_dict(headers).items():
+        for header_key, header_val in name_value_arg_to_dict(headers).items():
             hey_query += f' -H "{header_key}: {header_val}"'
     hey_query += " ".join(f"-{k} {v}" for k, v in hey_map.items()) + f' {url}'
     hey_query = hey_query.replace("  ", " ")  # remove double spaces
@@ -95,7 +97,7 @@ class HeyPerformanceResult:
         _n = int(n or 200)
         self._n = _n - (_n % self._c)  # remove c remainder
         self._result = result or ''
-        self._ext_outputs = semicolon_arg_to_dict(results_map)
+        self._ext_outputs = name_value_arg_to_dict(results_map)
 
     def _get_summary(self, result: List[str]) -> Tuple[dict, int]:
         """Returns summary dictionary and index after the summary"""
