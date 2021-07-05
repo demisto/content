@@ -1078,8 +1078,8 @@ def main():
             pack.status = PackStatus.PACK_ALREADY_EXISTS.name
             pack.cleanup()
             continue
-        if pack.status != PackStatus.PACK_IS_MISSING_DEPENDENCIES.name:
-            pack.status = PackStatus.SUCCESS.name
+
+        pack.status = PackStatus.SUCCESS.name
 
     logging.info(f"packs_missing_dependencies: {packs_missing_dependencies}")
 
