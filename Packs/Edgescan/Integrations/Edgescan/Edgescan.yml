@@ -1,0 +1,431 @@
+category: Vulnerability Management
+commonfields:
+  id: Edgescan
+  version: -1
+configuration:
+- defaultvalue: https://demo.edgescan.com/
+  display: Server URL
+  name: url
+  required: true
+  type: 0
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: API Key
+  name: api_key
+  required: true
+  type: 4
+- defaultvalue: "50"
+  display: Max number of incidents to fetch at once
+  name: max_fetch
+  required: false
+  type: 0
+- additionalinfo: This has to be an exact value. No filter operator available.
+  display: Fetch vulnerabilities with CVSS
+  name: cvss_score
+  required: false
+  type: 0
+- defaultvalue: "3"
+  display: Fetch vulnerabilities with risk more than
+  name: risk_more_than
+  required: false
+  type: 0
+- additionalinfo: How many days to fetch back on first run.
+  defaultvalue: 3 days
+  display: First fetch time
+  name: first_fetch
+  required: false
+  type: 0
+- display: Fetch incidents
+  name: isFetch
+  required: false
+  type: 8
+- display: Incident type
+  name: incidentType
+  required: false
+  type: 13
+description: Cloud-based continuous vulnerability management and penetration testing
+  solution.
+display: Edgescan
+name: Edgescan
+script:
+  commands:
+  - arguments: []
+    description: Get a list of all hosts
+    name: edgescan-host-get-hosts
+    outputs:
+    - contextPath: Edgescan.HostGetHosts
+      description: List of all hosts
+      type: Unknown
+  - arguments:
+    - description: The host id
+      name: id
+      required: true
+    description: Get detailed information about a host.
+    name: edgescan-host-get
+    outputs:
+    - contextPath: Edgescan.HostGet
+      description: Detailed host information
+      type: Unknown
+  - arguments: []
+    description: Get a list of hosts in export format.
+    name: edgescan-host-get-export
+    outputs:
+    - contextPath: Edgescan.HostGetExport
+      description: Export host information
+      type: Unknown
+  - arguments:
+    - name: asset_id
+    - name: os_name
+    - name: label
+    - name: status
+    - description: The host id
+      name: id
+    description: Get a list of hosts by query
+    name: edgescan-host-get-query
+    outputs:
+    - contextPath: Edgescan.HostGetQuery
+      description: The result of a host query
+      type: Unknown
+  - arguments:
+    - name: label
+    - description: The host id to update
+      name: id
+      required: true
+    description: Update a host
+    name: edgescan-host-update
+    outputs:
+    - contextPath: Edgescan.HostUpdate
+      description: Information returned after host update
+      type: Unknown
+  - arguments:
+    - name: detail_level
+    description: Get the full list of assets
+    name: edgescan-asset-get-assets
+    outputs:
+    - contextPath: Edgescan.AssetGetAssets
+      description: List of all assets
+      type: Unknown
+  - arguments:
+    - name: id
+      required: true
+    description: Get asset details
+    name: edgescan-asset-get
+    outputs:
+    - contextPath: Edgescan.AssetGet
+      description: Detailed information about an asset
+      type: Unknown
+  - arguments:
+    - name: id
+    - name: name
+    - name: hostname
+    - name: priority
+    - name: type
+    - name: authenticated
+    - name: host_count
+    - name: created_at
+    - name: updated_at
+    - name: id
+    - name: location
+    - name: location_type
+    - name: pci_enabled
+    - name: last_host_scan
+    - name: network_access
+    - name: current_assessment
+    - name: next_assessment_date
+    - name: active_licence
+    - name: blocked_status
+    - name: last_assessment_date
+    - name: asset_status
+    description: Query the asset database
+    name: edgescan-asset-get-query
+    outputs:
+    - contextPath: Edgescan.AssetGetQuery
+      description: Output of an asset query
+      type: Unknown
+  - arguments:
+    - name: id
+    - name: name
+    - name: priority
+    - name: type
+    - name: authenticatied
+    - name: tags
+    - name: location_secifiers
+    description: Create an asset
+    name: edgescan-asset-create
+    outputs:
+    - contextPath: Edgescan.AssetCreate
+      description: Information about asset creation
+      type: Unknown
+  - arguments:
+    - name: name
+    - name: priority
+    - name: type
+    - name: authenticatied
+    - name: tags
+    - name: location_secifiers
+    - description: The asset ID to update
+      name: id
+      required: true
+    description: Update an asset
+    name: edgescan-asset-update
+    outputs:
+    - contextPath: Edgescan.AssetUpdate
+      description: Information about asset update
+      type: Unknown
+  - arguments:
+    - name: name
+    - name: priority
+    - name: type
+    - name: authenticatied
+    - name: tags
+    - name: location_secifiers
+    - description: The asset id to delete
+      name: id
+      required: true
+    description: Delete an asset
+    name: edgescan-asset-delete
+    outputs:
+    - contextPath: Edgescan.AssetDelete
+      description: Information about asset deletion
+      type: Unknown
+  - arguments: []
+    description: Get the full user list
+    name: edgescan-user-get-users
+    outputs:
+    - contextPath: Edgescan.UserGetusers
+      description: The list of all users
+      type: Unknown
+  - arguments:
+    - description: The user ID to get
+      name: id
+      required: true
+    description: Get user details
+    name: edgescan-user-get
+    outputs:
+    - contextPath: Edgescan.UserGet
+      description: Detailed user information
+      type: Unknown
+  - arguments:
+    - name: id
+    - name: username
+    - name: phone_number
+    - name: phone_number_confirmed
+    - name: mfa_enabled
+    - name: mfa_method
+    - name: email
+    - name: email_confirmed
+    - name: created_at
+    - name: updated_at
+    - name: is_super
+    - name: account_locked
+    - name: lock_reason
+    - name: lock_time
+    - name: last_login_time
+    - name: last_password_reset_time
+    - name: first_name
+    - name: last_name
+    - name: l
+    description: Query for a user
+    name: edgescan-user-get-query
+    outputs:
+    - contextPath: Edgescan.UserGetQuery
+      description: Result of a user query
+      type: Unknown
+  - arguments:
+    - name: username
+    - name: email
+    - name: first_name
+    - name: last_name
+    - name: phone_number
+    - name: mfa_enabled
+    - name: mfa_method
+    - name: is_super
+    description: Create a user
+    name: edgescan-user-create
+    outputs:
+    - contextPath: Edgescan.UserCreate
+      description: Information about a created user
+      type: Unknown
+  - arguments:
+    - defaultValue: The user id to delete
+      name: id
+      required: true
+    description: Delete a user
+    name: edgescan-user-delete
+    outputs:
+    - contextPath: Edgescan.UserDelete
+      description: Information about a deleted user
+      type: Unknown
+  - arguments:
+    - description: The user id to reset the password for
+      name: id
+      required: true
+    description: Reset a user's password
+    name: edgescan-user-reset-password
+    outputs:
+    - contextPath: Edgescan.UserResetPassword
+      description: Information about User password reset
+      type: Unknown
+  - arguments:
+    - description: The user id to reset the email for
+      name: id
+      required: true
+    description: Reset a users password
+    name: edgescan-user-reset-email
+    outputs:
+    - contextPath: Edgescan.UserResetEmail
+      description: Information about User email reset.
+      type: Unknown
+  - arguments:
+    - description: The user id to lock
+      name: id
+      required: true
+    description: Lock a user
+    name: edgescan-user-lock-account
+    outputs:
+    - contextPath: Edgescan.UserLockAccount
+      description: Information about the User lock
+      type: Unknown
+  - arguments:
+    - description: The user id to unlock
+      name: id
+      required: true
+    description: Unlock a user
+    name: edgescan-user-unlock-account
+    outputs:
+    - contextPath: Edgescan.UserUnlockAccount
+      description: Information about user unlock status
+      type: Unknown
+  - arguments:
+    - description: The user id to get the permissions for
+      name: id
+      required: true
+    description: Get user's permissions
+    name: edgescan-user-get-permissions
+    outputs:
+    - contextPath: Edgescan.UserGetPermissions
+      description: The user permissions
+      type: Unknown
+  - arguments: []
+    description: Get the full list of vulnerabilities
+    name: edgescan-vulnerabilities-get
+    outputs:
+    - contextPath: EdgeScan.VulnerabilitiesGet
+      description: The list of all Vulnerabilities
+      type: Unknown
+  - arguments: []
+    description: Get the full list of vulnerabilities for export
+    name: edgescan-vulnerabilities-get-export
+    outputs:
+    - contextPath: Edgescan.VulnerabilitiesGetExport
+      description: The vulnerabilities export list
+      type: Unknown
+  - arguments:
+    - description: The vulnerability details to get details for
+      name: id
+      predefined:
+      - ""
+      required: true
+    description: Get vulnerability details
+    name: edgescan-vulnerabilities-get-details
+    outputs:
+    - contextPath: Edgescan.VulnerabilitiesGetDetails
+      description: The vulnerability details
+      type: Unknown
+  - arguments:
+    - name: asset_tagged_with_any
+    - name: risk_more_than
+    - name: date_opened
+    - description: The vulnerability id
+      name: id
+    - description: The vulnerability severity
+      name: severity
+    - description: The vulnerability threat level
+      name: threat
+    - description: The asset_id associated with the vulnerability
+      name: asset_id
+    - description: The asset name associated with the vulnerability
+      name: asset_name
+    - description: The vulnerability risk level
+      name: risk
+    - description: The vulnerability CVSS score
+      name: cvss_score
+    - description: The vulnerability CVSS vector
+      name: cvss_vector
+    - description: The vulnerability CVSS v2 score
+      name: cvss_v2_score
+    - description: The CVSS version to query for
+      name: cvss_version
+    - description: true/false
+      name: altered_score
+    - description: The date on which the vulnerability was opened
+      name: date_opened
+    - description: The date on which the vulnerability was closed
+      name: date_closed
+    - description: The status of the vulnerability
+      name: status
+    - description: The vulnerability pci complience status
+      name: pci_compliance_status
+    - description: The vulnerability location
+      name: location
+    - description: The vulnerability location specifier id
+      name: location_specifier_id
+    - description: The vulnerability confidence level
+      name: confidence
+    - description: The vulnerability label
+      name: label
+    - description: The vulnerability level.
+      name: layer
+    - description: The vulnerability last PCI exception
+      name: last_pci_exception
+    - description: The vulnerability updated at time
+      name: updated_at
+    - description: The vulnerability created at time.
+      name: created_at
+    - description: The vulnerability name
+      name: name
+    - description: The date the vulnerability was opened after i.e. "2021-04-01T14:27:10.900Z"
+      name: date_opened_after
+    description: Run a vulnerability query
+    name: edgescan-vulnerabilities-get-query
+    outputs:
+    - contextPath: Edgescan.VulnerabilitiesGetQuery
+      description: The result of a vulnerability query
+      type: Unknown
+  - arguments:
+    - description: The vulnerability id to retest
+      name: id
+      required: true
+    description: Retest a vulnerability
+    name: edgescan-vulnerabilities-retest
+    outputs:
+    - contextPath: Edgescan.VulnerabilitiesRetest
+      description: The Vulnerability retest result
+      type: Unknown
+  - arguments:
+    - defaultValue: "true"
+      name: value
+    - description: The vulnerability id to risk accept
+      name: id
+      required: true
+    description: Rish accept a vulnerability
+    name: edgescan-vulnerabilities-risk-accept
+    outputs:
+    - contextPath: Edgescan.VulnerabilitiesRiskAccept
+      description: The vulnerability retest result
+      type: Unknown
+  dockerimage: demisto/python3:3.9.5.21272
+  isfetch: true
+  runonce: false
+  script: ''
+  subtype: python3
+  type: python
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)
