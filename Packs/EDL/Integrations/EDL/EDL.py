@@ -30,7 +30,7 @@ EDL_MISSING_REFRESH_ERR_MSG: str = 'Refresh Rate must be "number date_range_unit
 # based on func ToIoC https://github.com/demisto/server/blob/master/domain/insight.go
 EDL_FILTER_FIELDS: Optional[str] = "name,type"
 EDL_ON_DEMAND_KEY: str = 'UpdateEDL'
-EDL_ON_DEMAND_CACHE_PATH: Optional[str] = None
+EDL_ON_DEMAND_CACHE_PATH: str = ''
 
 ''' REFORMATTING REGEXES '''
 _PROTOCOL_REMOVAL = re.compile('^(?:[a-z]+:)*//')
@@ -84,6 +84,7 @@ class RequestArguments:
 
     @classmethod
     def from_context_json(cls, ctx_dict):
+        """Returns an initiated instance of the class from a json"""
         return cls(
             **assign_params(
                 query=ctx_dict.get(cls.CTX_QUERY_KEY),
@@ -126,7 +127,7 @@ def create_new_edl(request_args: RequestArguments) -> str:
     limit = request_args.offset + request_args.limit
     indicator_searcher = IndicatorsSearcher(filter_fields=EDL_FILTER_FIELDS, query=request_args.query, size=PAGE_SIZE)
     iocs = []
-    formatted_iocs = set()
+    formatted_iocs: set = set()
     while True:
         indicator_searcher.limit = limit - len(formatted_iocs)
         new_iocs = find_indicators_to_limit(indicator_searcher)
@@ -309,17 +310,6 @@ def get_edl_on_demand():
         with open(EDL_ON_DEMAND_CACHE_PATH, 'r') as file:
             edl = file.read()
     return edl
-
-
-def try_parse_integer(int_to_parse: Any, err_msg: str) -> int:
-    """
-    Tries to parse an integer, and if fails will throw DemistoException with given err_msg
-    """
-    try:
-        res = int(int_to_parse)
-    except (TypeError, ValueError):
-        raise DemistoException(err_msg)
-    return res
 
 
 def validate_basic_authentication(headers: dict, username: str, password: str) -> bool:

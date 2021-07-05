@@ -135,55 +135,70 @@ class TestHelperFunctions:
         params = {'longRunningPort': '80'}
         assert get_params_port(params) == 80
 
-    # def test_create_new_edl_1(self, mocker):
-    #     """Sanity"""
-    #     import EDL as edl
-    #     with open('EDL_test/TestHelperFunctions/demisto_iocs.json', 'r') as iocs_json_f:
-    #         iocs_json = json.loads(iocs_json_f.read())
-    #         mocker.patch.object(edl, 'find_indicators_to_limit', return_value=iocs_json)
-    #         request_args = edl.RequestArguments(query='', limit=38, url_port_stripping=True)
-    #         edl_vals = edl.create_new_edl(request_args)
-    #         for ioc in iocs_json:
-    #             ip = ioc.get('value')
-    #             stripped_ip = edl._PORT_REMOVAL.sub(edl._URL_WITHOUT_PORT, ip)
-    #             if stripped_ip != ip:
-    #                 assert stripped_ip.replace('https://', '') in edl_vals
-    #             else:
-    #                 assert ip in edl_vals
-    #
-    # def test_find_indicators_to_limit(self, mocker):
-    #     """Test find indicators limit"""
-    #     import EDL as edl
-    #     with open('EDL_test/TestHelperFunctions/demisto_iocs.json', 'r') as iocs_json_f:
-    #         iocs_json = json.loads(iocs_json_f.read())
-    #         indicator_searcher_res = [{'iocs': iocs_json}, {'iocs': []}]
-    #         limit = 37
-    #         indicator_searcher = edl.IndicatorsSearcher()
-    #         mocker.patch.object(indicator_searcher, 'search_indicators_by_version', side_effect=indicator_searcher_res)
-    #         edl_vals = edl.find_indicators_to_limit(indicator_searcher=indicator_searcher,
-    #                                                 indicator_query='',
-    #                                                 limit=limit)
-    #         assert len(edl_vals) == limit
-    #
-    # def test_format_indicators(self):
-    #     from EDL import format_indicators, RequestArguments
-    #     with open('EDL_test/TestHelperFunctions/demisto_url_iocs.json', 'r') as iocs_json_f:
-    #         iocs_json = json.loads(iocs_json_f.read())
-    #
-    #         # strips port numbers
-    #         request_args = RequestArguments(query='', drop_invalids=True, url_port_stripping=True)
-    #         returned_output = format_indicators(iocs_json, request_args)
-    #         assert returned_output == ['1.2.3.4/wget', 'www.demisto.com/cool']
-    #
-    #         # should ignore indicators with port numbers
-    #         request_args = RequestArguments(query='', drop_invalids=True, url_port_stripping=False)
-    #         returned_output = format_indicators(iocs_json, request_args)
-    #         assert returned_output == ['www.demisto.com/cool']
-    #
-    #         # should not ignore indicators with '*' in them
-    #         request_args = RequestArguments(query='', drop_invalids=False, url_port_stripping=False)
-    #         returned_output = format_indicators(iocs_json, request_args)
-    #         assert returned_output == ['www.demisto.com/cool', 'www.demisto.com/*']
+    def test_create_new_edl(self, mocker):
+        """Sanity"""
+        import EDL as edl
+        with open('EDL_test/TestHelperFunctions/demisto_iocs.json', 'r') as iocs_json_f:
+            iocs_json = json.loads(iocs_json_f.read())
+            mocker.patch.object(edl, 'find_indicators_to_limit', return_value=iocs_json)
+            request_args = edl.RequestArguments(query='', limit=38, url_port_stripping=True)
+            edl_vals = edl.create_new_edl(request_args)
+            for ioc in iocs_json:
+                ip = ioc.get('value')
+                stripped_ip = edl._PORT_REMOVAL.sub(edl._URL_WITHOUT_PORT, ip)
+                if stripped_ip != ip:
+                    assert stripped_ip.replace('https://', '') in edl_vals
+                else:
+                    assert ip in edl_vals
+
+    def test_find_indicators_to_limit(self, mocker):
+        """Test find indicators limit"""
+        import EDL as edl
+        with open('EDL_test/TestHelperFunctions/demisto_iocs.json', 'r') as iocs_json_f:
+            iocs_json = json.loads(iocs_json_f.read())
+            indicator_searcher_res = [{'iocs': iocs_json}, {'iocs': []}]
+            limit = 37
+            indicator_searcher = edl.IndicatorsSearcher()
+            indicator_searcher.limit = limit
+            mocker.patch.object(indicator_searcher, 'search_indicators_by_version', side_effect=indicator_searcher_res)
+            edl_vals = edl.find_indicators_to_limit(indicator_searcher=indicator_searcher)
+            assert len(edl_vals) == limit
+
+    def test_format_indicators(self):
+        from EDL import format_indicators, RequestArguments
+        with open('EDL_test/TestHelperFunctions/demisto_url_iocs.json', 'r') as iocs_json_f:
+            iocs_json = json.loads(iocs_json_f.read())
+
+            # strips port numbers
+            request_args = RequestArguments(query='', drop_invalids=True, url_port_stripping=True)
+            returned_output = format_indicators(iocs_json, request_args)
+            assert returned_output == {'1.2.3.4/wget', 'www.demisto.com/cool'}
+
+            # should ignore indicators with port numbers
+            request_args = RequestArguments(query='', drop_invalids=True, url_port_stripping=False)
+            returned_output = format_indicators(iocs_json, request_args)
+            assert returned_output == {'www.demisto.com/cool'}
+
+            # should not ignore indicators with '*' in them
+            request_args = RequestArguments(query='', drop_invalids=False, url_port_stripping=False)
+            returned_output = format_indicators(iocs_json, request_args)
+            assert returned_output == {'www.demisto.com/cool', 'www.demisto.com/*'}
+
+        with open('EDL_test/TestHelperFunctions/simplified_demisto_ip_iocs.json', 'r') as iocs_json_f:
+            iocs_json = json.loads(iocs_json_f.read())
+
+            # collapse IPs
+            request_args = RequestArguments(query='', collapse_ips=True)
+            returned_output = format_indicators(iocs_json, request_args)
+            assert returned_output == {'1.1.1.2/31', '1.1.1.1'}
+
+        with open('EDL_test/TestHelperFunctions/simplified_demisto_ip_v6_iocs.json', 'r') as iocs_json_f:
+            iocs_json = json.loads(iocs_json_f.read())
+
+            # collapse IPv6
+            request_args = RequestArguments(query='', collapse_ips=True)
+            returned_output = format_indicators(iocs_json, request_args)
+            assert returned_output == {'1:1:1:1:1:1:1:2/127', '1:1:1:1:1:1:1:1'}
 
     def test_format_indicators__filters(self):
         from EDL import format_indicators, RequestArguments
@@ -261,3 +276,83 @@ class TestHelperFunctions:
         assert "1.1.1.3" not in ip_range_list
         assert "2.2.2.2" in ip_range_list
         assert "25.24.23.22" in ip_range_list
+
+    def test_get_bool_arg_or_param(self):
+        """
+        Given:
+          - bool arg that is not in args
+          - bool arg that is in args and is in params
+          - bool arg that is not in args but is in params
+        When:
+          - calling get_bool_arg_or_param
+        Then:
+          - return False
+          - return arg bool equivelant value
+          - return param bool value
+        """
+        from EDL import get_bool_arg_or_param
+        existing_key = 'exists'
+        missing_key = 'missing'
+        args = {
+            existing_key: 'true'
+        }
+        params = {
+            existing_key: False,
+            missing_key: True
+        }
+
+        # missing from both
+        assert get_bool_arg_or_param(args, params, '') is False
+
+        # exists in args and params
+        assert get_bool_arg_or_param(args, params, existing_key) is True
+
+        # exists in params only
+        assert get_bool_arg_or_param(args, params, missing_key) is True
+
+    def test_get_request_args(self):
+        """
+        Test get_request_args sets RequestArgs with priority to request_args and params as fallback
+        """
+        from EDL import get_request_args, COLLAPSE_TO_CIDR, COLLAPSE_TO_RANGES
+        limit = 100
+        offset = '1'
+        query = 'q'
+        strip_port = True
+        drop_invalids = True
+        add_comment_if_empty = True
+        request_args = {
+            'n': limit,
+            's': offset,
+            'q': query,
+            'sp': strip_port,
+            'di': drop_invalids,
+            'tr': 1,
+            'ce': add_comment_if_empty,
+        }
+        params = {
+            'edl_size': limit + 1,
+            'indicators_query': query + '42',
+            'url_port_stripping': not strip_port,
+            'drop_invalids': not drop_invalids,
+            'collapse_ips': 2,
+            'add_comment_if_empty': not add_comment_if_empty
+        }
+
+        # request with no request_args
+        res = get_request_args({}, params)
+        assert res.limit == params['edl_size']
+        assert res.query == params['indicators_query']
+        assert res.url_port_stripping == params['url_port_stripping']
+        assert res.drop_invalids == params['drop_invalids']
+        assert res.collapse_ips == COLLAPSE_TO_CIDR
+        assert res.add_comment_if_empty == params['add_comment_if_empty']
+
+        # request with full request_args
+        res = get_request_args(request_args, params)
+        assert res.limit == request_args['n']
+        assert res.query == request_args["q"]
+        assert res.url_port_stripping == request_args["sp"]
+        assert res.drop_invalids == request_args["di"]
+        assert res.collapse_ips == COLLAPSE_TO_RANGES
+        assert res.add_comment_if_empty == request_args["ce"]
