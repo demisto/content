@@ -7758,6 +7758,10 @@ class IndicatorsSearcher:
         return self._page
 
     @property
+    def total(self):
+        return self._total
+
+    @property
     def limit(self):
         return self._limit
 
