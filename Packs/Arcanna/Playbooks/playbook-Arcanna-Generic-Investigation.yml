@@ -77,7 +77,7 @@ tasks:
       id: ac972b75-5f63-4777-8caa-1118dfd8d4c5
       iscommand: false
       name: Prepare Incident Data for Arcanna processing
-      script: bd41ea36-c3fe-4612-8c44-5f4afc7ba7f5
+      script: PrepareArcannaRawJson
       type: regular
       version: -1
     taskid: ac972b75-5f63-4777-8caa-1118dfd8d4c5

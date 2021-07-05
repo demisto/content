@@ -24,6 +24,14 @@ from Tests.scripts.utils.get_modified_files_for_testing import get_modified_file
 from Tests.scripts.utils.log_util import install_logging
 
 
+SANITY_TESTS = {
+    'Sanity Test - Playbook with integration',
+    'Sanity Test - Playbook with no integration',
+    'Sanity Test - Playbook with mocked integration',
+    'Sanity Test - Playbook with Unmockable Integration',
+}
+
+
 class TestConf(object):
     __test__ = False  # required because otherwise pytest will try to run it as it has Test prefix
 
@@ -135,7 +143,7 @@ if os.path.isfile('./artifacts/id_set.json'):
         ID_SET = json.load(conf_file)
 
 if os.path.isfile('./artifacts/conf.json'):
-    with open('./Tests/conf.json', 'r') as conf_file:
+    with open('./artifacts/conf.json', 'r') as conf_file:
         CONF = TestConf(json.load(conf_file))
 
 
@@ -1204,24 +1212,21 @@ def get_test_list_and_content_packs_to_install(files_string,
     # All filtering out of tests should be done here
     tests = filter_tests(tests, id_set)
 
-    if not tests:
-        logging.info("No tests found running sanity check only")
+    if not tests or changed_common:
+        if not tests:
+            logging.info("No tests found running sanity check only.")
+        else:
+            logging.info("Changed one of the Common Server files, running sanity check too.")
 
-        sanity_tests = {
-            "Sanity Test - Playbook with no integration",
-            "Sanity Test - Playbook with integration",
-            "Sanity Test - Playbook with mocked integration",
-            "Sanity Test - Playbook with Unmockable Integration"
-        }
-        logging.debug(f"Adding sanity tests: {sanity_tests}")
-        tests.update(sanity_tests)
+        logging.debug(f"Adding sanity tests: {SANITY_TESTS}")
+        tests.update(SANITY_TESTS)
         logging.debug("Adding HelloWorld to tests as most of the sanity tests requires it.")
         logging.debug(
             "Adding Gmail to packs to install as 'Sanity Test - Playbook with Unmockable Integration' uses it"
         )
         packs_to_install.update(["HelloWorld", "Gmail"])
 
-    # We add Base andDeveloperTools packs for every build
+    # We add Base and DeveloperTools packs for every build
     packs_to_install.update(["DeveloperTools", "Base"])
 
     return tests, packs_to_install

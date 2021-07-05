@@ -1871,9 +1871,7 @@ script:
             - mht
             - xml
             - csv
-          description: 'One output format may be specified. '
-        - name: hide_header
-          description: 0,1
+          description: One output format may be specified.
         - name: recipient_group_id
           description: Specify users who will receive the email notification when the report is complete (i.e. supply a distribution group ID). Where do I find this ID? Log in to your Qualys account, go to Users > Distribution Groups and select Info for a group in the list.
         - name: pdf_password
