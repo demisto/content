@@ -77,7 +77,7 @@ def restart_tasks(failed_tasks: list, sleep_time: int, group_size: int):
         # Sleep if the group size has been hit
         if restarted_tasks_count % group_size == 0:
             demisto.info("Sleeping")
-            time.sleep(sleep_time)
+            time.sleep(sleep_time)  # pylint: disable=E9003
 
     return restarted_tasks_count, restarted_tasks
 
