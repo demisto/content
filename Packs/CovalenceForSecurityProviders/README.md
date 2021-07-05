@@ -21,3 +21,4 @@ This pack collects the alerts generated, which are generated as incidents within
 - Query Covalence for additional detail about a user or process of interest
 
 Note this pack should not be executed alongside the Covalence Managed Security pack, or duplicate incidents will be generated.    
+Integration tested with Covalence version 3.0.   

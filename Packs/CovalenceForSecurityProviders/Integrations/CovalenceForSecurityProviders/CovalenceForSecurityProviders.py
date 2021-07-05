@@ -90,6 +90,7 @@ def login(host=HOST, cov_id=None, username=USERNAME, password=PASSWORD, verify_s
 
 def send_request(method, api_endpoint, target_org=None, host=HOST, headers=None, params=None, data=None, json=None):
     cov_ids = []
+    BROKER = argToBoolean(demisto.params().get('broker', False))
     if BROKER:
         if target_org:
             cov_ids = find_covs(target_org)
