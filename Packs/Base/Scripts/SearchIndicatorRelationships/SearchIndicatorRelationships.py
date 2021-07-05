@@ -51,6 +51,13 @@ def to_context(relationships: list, verbose: bool) -> List[dict]:
     return context_list
 
 
+def handle_stix_types(entities_types):
+    entities_types = argToList(entities_types)
+    for e_type in entities_types:
+        FeedIndicatorType.indicator_type_by_server_version(e_type)
+    return ','.join(str(x) for x in entities_types).replace(', ', ',')
+
+
 ''' MAIN FUNCTION '''
 
 
@@ -65,6 +72,7 @@ def main():
         revoked = argToBoolean(args.get('revoked', 'false'))
         query = 'revoked:T' if revoked else 'revoked:F'
 
+        handle_stix_types(entities_types)
         res = demisto.executeCommand("searchRelationships", {'entities': entities, 'entityTypes': entities_types,
                                                              'relationshipNames': relationships,
                                                              'size': limit, 'query': query})
