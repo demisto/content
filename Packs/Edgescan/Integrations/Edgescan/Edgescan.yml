@@ -3,7 +3,7 @@ commonfields:
   id: Edgescan
   version: -1
 configuration:
-- defaultvalue: https://demo.edgescan.com/
+- defaultvalue: ''
   display: Server URL
   name: url
   required: true
