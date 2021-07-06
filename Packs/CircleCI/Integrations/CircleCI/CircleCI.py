@@ -118,7 +118,8 @@ def test_module_command(client: Client) -> str:
         client.get_workflows_list(vc_type, organization, project)
     except DemistoException as e:
         if 'not found' in str(e).lower():
-            message = 'Error connecting to CircleCI. Make sure your URL and API token are configured correctly.'
+            message = 'Error connecting to CircleCI. Check if your organization and repository names are correct.' \
+                      ' If it is a private repository, make sure your API token is valid.'
         else:
             raise e
     return message
@@ -252,7 +253,7 @@ def main() -> None:
     params = demisto.params()
     args = demisto.args()
 
-    base_url: str = params.get('url', '')
+    base_url: str = urljoin(params.get('url', ''), '/api/v2')
     verify_certificate: bool = not params.get('insecure', False)
     proxy: bool = params.get('proxy', False)
 

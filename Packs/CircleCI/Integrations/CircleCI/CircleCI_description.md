@@ -1,6 +1,7 @@
 ## CircleCI
-
-### Get your API key
+### API key
+**note**: API key is needed when repository given is private.
+#### Get your API key
 1. In the CircleCI application, go to your user settings.
 2. Click **Personal API Tokens**.
 3. Click **Create New Token**.
