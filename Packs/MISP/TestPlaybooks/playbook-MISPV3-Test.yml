@@ -1,0 +1,2678 @@
+id: MISPV3-Test
+version: -1
+name: MISPV3-Test
+fromversion: 5.0.0
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 2b063532-4ec0-416e-870e-2a32336f540e
+    type: start
+    task:
+      id: 2b063532-4ec0-416e-870e-2a32336f540e
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 1137cc60-1a47-4762-8fad-f4692bef2d36
+    type: regular
+    task:
+      id: 1137cc60-1a47-4762-8fad-f4692bef2d36
+      version: -1
+      name: DeleteContext
+      script: DeleteContext
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 5340c666-a069-4578-8564-c3557bc06dde
+    type: regular
+    task:
+      id: 5340c666-a069-4578-8564-c3557bc06dde
+      version: -1
+      name: misp-search-events by event_id
+      script: '|||misp-search-events'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      event_id:
+        simple: ${MISP.Event.ID}
+      limit:
+        simple: "1"
+      page:
+        simple: "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 865
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: c46b748d-df4a-4cf2-838c-c198da902bcc
+    type: condition
+    task:
+      id: c46b748d-df4a-4cf2-838c-c198da902bcc
+      version: -1
+      name: Verify Search Event Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "16"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: MISP.Event.ID
+            iscontext: true
+          right:
+            value:
+              simple: ${MISP.Event.ID}
+            iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              simple: MISP.Event.Distribution
+            iscontext: true
+          right:
+            value:
+              simple: "0"
+      - - operator: isEqualString
+          left:
+            value:
+              simple: MISP.Event.ThreatLevelID
+            iscontext: true
+          right:
+            value:
+              simple: "3"
+      - - operator: isEqualString
+          left:
+            value:
+              simple: MISP.Event.Info
+            iscontext: true
+          right:
+            value:
+              simple: TPB-New-Event
+      - - operator: greaterThanOrEqual
+          left:
+            value:
+              simple: MISP.Event.AttributeCount
+            iscontext: true
+          right:
+            value:
+              simple: "1"
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: MISP.Event.UUID
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: MISP.Event.Analysis
+            iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              simple: MISP.Event.SharingGroupID
+            iscontext: true
+          right:
+            value:
+              simple: "0"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1040
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 83c7a485-ccd6-4298-8aa3-aaddb1bb0b34
+    type: regular
+    task:
+      id: 83c7a485-ccd6-4298-8aa3-aaddb1bb0b34
+      version: -1
+      name: domain
+      script: '|||domain'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      domain:
+        simple: google.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 2965
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: ecbf4ed8-566b-4a75-8b6f-edc02fd42370
+    type: condition
+    task:
+      id: ecbf4ed8-566b-4a75-8b6f-edc02fd42370
+      version: -1
+      name: Verify  Domain Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "51"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Domain.Name
+            iscontext: true
+          right:
+            value:
+              simple: google.com
+      - - operator: isEqualString
+          left:
+            value:
+              simple: DBotScore.Type
+            iscontext: true
+          right:
+            value:
+              simple: domain
+      - - operator: isEqualString
+          left:
+            value:
+              simple: DBotScore.Score
+            iscontext: true
+          right:
+            value:
+              simple: "0"
+      - - operator: isEqualString
+          left:
+            value:
+              simple: DBotScore.Indicator
+            iscontext: true
+          right:
+            value:
+              simple: google.com
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 3140
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: d8f0ef98-352f-457a-82c8-2b66271a1289
+    type: regular
+    task:
+      id: d8f0ef98-352f-457a-82c8-2b66271a1289
+      version: -1
+      name: email
+      script: '|||email'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      email:
+        simple: email@email.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 2965
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: cd29b8af-c380-483d-85d5-5cc707a8a490
+    type: condition
+    task:
+      id: cd29b8af-c380-483d-85d5-5cc707a8a490
+      version: -1
+      name: Verify Email Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "51"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Email.Address
+            iscontext: true
+          right:
+            value:
+              simple: email@email.com
+      - - operator: isEqualString
+          left:
+            value:
+              simple: DBotScore.Indicator
+            iscontext: true
+          right:
+            value:
+              simple: email@email.com
+      - - operator: isEqualString
+          left:
+            value:
+              simple: DBotScore.Type
+            iscontext: true
+          right:
+            value:
+              simple: email
+      - - operator: isEqualString
+          left:
+            value:
+              simple: DBotScore.Score
+            iscontext: true
+          right:
+            value:
+              simple: "0"
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 3140
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: 33227dda-7d02-4868-87ed-f53a6f644387
+    type: regular
+    task:
+      id: 33227dda-7d02-4868-87ed-f53a6f644387
+      version: -1
+      name: file
+      script: '|||file'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      file:
+        simple: 098f6bcd4621d373cade4e832627b4f6
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2200,
+          "y": 2965
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: 19d8369c-e39b-42fc-828c-ccee2153f3e7
+    type: condition
+    task:
+      id: 19d8369c-e39b-42fc-828c-ccee2153f3e7
+      version: -1
+      name: Verify File Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "51"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: File.Name
+            iscontext: true
+          right:
+            value:
+              simple: 098f6bcd4621d373cade4e832627b4f6
+      - - operator: isEqualString
+          left:
+            value:
+              simple: DBotScore.Indicator
+            iscontext: true
+          right:
+            value:
+              simple: 098f6bcd4621d373cade4e832627b4f6
+      - - operator: isEqualString
+          left:
+            value:
+              simple: DBotScore.Type
+            iscontext: true
+          right:
+            value:
+              simple: file
+      - - operator: isEqualString
+          left:
+            value:
+              simple: DBotScore.Score
+            iscontext: true
+          right:
+            value:
+              simple: "0"
+    view: |-
+      {
+        "position": {
+          "x": 2200,
+          "y": 3140
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: 338c9575-d826-493b-87da-b7b6c845b8b4
+    type: regular
+    task:
+      id: 338c9575-d826-493b-87da-b7b6c845b8b4
+      version: -1
+      name: url
+      script: '|||url'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      url:
+        simple: www.example.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1770,
+          "y": 2965
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: 442e779c-363f-4608-8eac-60f52f6922de
+    type: condition
+    task:
+      id: 442e779c-363f-4608-8eac-60f52f6922de
+      version: -1
+      name: 'Verify URL Outputs '
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "51"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: URL.Data
+            iscontext: true
+          right:
+            value:
+              simple: www.example.com
+      - - operator: isEqualString
+          left:
+            value:
+              simple: DBotScore.Indicator
+            iscontext: true
+          right:
+            value:
+              simple: www.example.com
+      - - operator: isEqualString
+          left:
+            value:
+              simple: DBotScore.Type
+            iscontext: true
+          right:
+            value:
+              simple: url
+      - - operator: isEqualString
+          left:
+            value:
+              simple: DBotScore.Score
+            iscontext: true
+          right:
+            value:
+              simple: "0"
+    view: |-
+      {
+        "position": {
+          "x": 1770,
+          "y": 3140
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: 725f532a-0473-47bf-8262-fbbbe9bad9e1
+    type: regular
+    task:
+      id: 725f532a-0473-47bf-8262-fbbbe9bad9e1
+      version: -1
+      name: ip
+      script: '|||ip'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      ip:
+        simple: 1.2.3.4
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 2965
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: 1852a078-3d09-409c-895d-ef07ece95f42
+    type: condition
+    task:
+      id: 1852a078-3d09-409c-895d-ef07ece95f42
+      version: -1
+      name: Verify IP Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "51"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: IP.Address
+            iscontext: true
+          right:
+            value:
+              simple: 1.2.3.4
+      - - operator: isEqualString
+          left:
+            value:
+              simple: DBotScore.Indicator
+            iscontext: true
+          right:
+            value:
+              simple: 1.2.3.4
+      - - operator: isEqualString
+          left:
+            value:
+              simple: DBotScore.Type
+            iscontext: true
+          right:
+            value:
+              simple: ip
+      - - operator: isEqualString
+          left:
+            value:
+              simple: DBotScore.Score
+            iscontext: true
+          right:
+            value:
+              simple: "0"
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 3140
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: c109e449-4ecf-4bbc-8479-7420e6963d2a
+    type: regular
+    task:
+      id: c109e449-4ecf-4bbc-8479-7420e6963d2a
+      version: -1
+      name: misp-create-event
+      script: '|||misp-create-event'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "49"
+      - "50"
+    scriptarguments:
+      info:
+        simple: TPB-New-Event
+      threat_level_id:
+        simple: low
+      value:
+        simple: 1.1.1.1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: 776557a2-6c9a-4aaa-8fdf-6d866062fd33
+    type: condition
+    task:
+      id: 776557a2-6c9a-4aaa-8fdf-6d866062fd33
+      version: -1
+      name: Verify New Event Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "2"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: MISP.Event.ID
+            iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              simple: MISP.Event.Distribution
+            iscontext: true
+          right:
+            value:
+              simple: "0"
+      - - operator: isEqualString
+          left:
+            value:
+              simple: MISP.Event.ThreatLevelID
+            iscontext: true
+          right:
+            value:
+              simple: "3"
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: MISP.Event.EventCreatorEmail
+            iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              simple: MISP.Event.Info
+            iscontext: true
+          right:
+            value:
+              simple: TPB-New-Event
+      - - operator: greaterThanOrEqual
+          left:
+            value:
+              simple: MISP.Event.AttributeCount
+            iscontext: true
+          right:
+            value:
+              simple: "1"
+      - - operator: isEqualString
+          left:
+            value:
+              simple: MISP.Event.OrganisationID
+            iscontext: true
+          right:
+            value:
+              simple: "1"
+      - - operator: isEqualString
+          left:
+            value:
+              simple: MISP.Event.Organisation.ID
+            iscontext: true
+          right:
+            value:
+              simple: "1"
+      - - operator: isEqualString
+          left:
+            value:
+              simple: MISP.Event.Organisation.Name
+            iscontext: true
+          right:
+            value:
+              simple: ORGNAME
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: MISP.Event.Organisation.UUID
+            iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              simple: MISP.Event.OwnerOrganisation.ID
+            iscontext: true
+          right:
+            value:
+              simple: "1"
+      - - operator: isEqualString
+          left:
+            value:
+              simple: MISP.Event.OwnerOrganisation.Name
+            iscontext: true
+          right:
+            value:
+              simple: ORGNAME
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: MISP.Event.OwnerOrganisation.UUID
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: MISP.Event.Timestamp
+            iscontext: true
+      - - operator: isFalse
+          left:
+            value:
+              simple: MISP.Event.Published
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: MISP.Event.UUID
+            iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              simple: MISP.Event.Analysis
+            iscontext: true
+          right:
+            value:
+              simple: "0"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "16":
+    id: "16"
+    taskid: 88a53eee-3db2-4826-89d9-f9c56c17876b
+    type: regular
+    task:
+      id: 88a53eee-3db2-4826-89d9-f9c56c17876b
+      version: -1
+      name: misp-add-attribute
+      script: '|||misp-add-attribute'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      comment:
+        simple: test-add-attribute
+      event_id:
+        simple: ${MISP.Event.ID}
+      value:
+        simple: "10"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1215
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: 850a1ee8-e29b-4629-83fe-c6f5ad4c88c9
+    type: condition
+    task:
+      id: 850a1ee8-e29b-4629-83fe-c6f5ad4c88c9
+      version: -1
+      name: Verify Add Attribute Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "21"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: MISP.Attribute.Distribution
+            iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              simple: MISP.Attribute.Value
+            iscontext: true
+          right:
+            value:
+              simple: "10"
+      - - operator: isEqualString
+          left:
+            value:
+              simple: MISP.Attribute.EventID
+            iscontext: true
+          right:
+            value:
+              simple: ${MISP.Event.ID}
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: MISP.Attribute.Timestamp
+            iscontext: true
+      - - operator: isFalse
+          left:
+            value:
+              simple: MISP.Attribute.Deleted
+            iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              simple: MISP.Attribute.Type
+            iscontext: true
+          right:
+            value:
+              simple: other
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: MISP.Attribute.ID
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: MISP.Attribute.UUID
+            iscontext: true
+      - - operator: isTrue
+          left:
+            value:
+              simple: MISP.Attribute.ToIDs
+            iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              simple: MISP.Attribute.Category
+            iscontext: true
+          right:
+            value:
+              simple: External analysis
+      - - operator: isEqualString
+          left:
+            value:
+              simple: MISP.Attribute.Comment
+            iscontext: true
+          right:
+            value:
+              simple: test-add-attribute
+      - - operator: isEqualString
+          left:
+            value:
+              simple: MISP.Attribute.Event.ID
+            iscontext: true
+          right:
+            value:
+              simple: ${MISP.Event.ID}
+            iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              simple: MISP.Attribute.Event.Distribution
+            iscontext: true
+          right:
+            value:
+              simple: "0"
+      - - operator: isEqualString
+          left:
+            value:
+              simple: MISP.Attribute.Event.Info
+            iscontext: true
+          right:
+            value:
+              simple: TPB-New-Event
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: MISP.Attribute.Event.UUID
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "19":
+    id: "19"
+    taskid: 8755882d-86c2-43b2-83bb-fd5aeb8e2075
+    type: regular
+    task:
+      id: 8755882d-86c2-43b2-83bb-fd5aeb8e2075
+      version: -1
+      name: misp-add-tag-to-event
+      script: '|||misp-add-tag-to-event'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "20"
+    scriptarguments:
+      tag:
+        simple: EventTag
+      uuid:
+        simple: ${MISP.Event.UUID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1125,
+          "y": 3985
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "20":
+    id: "20"
+    taskid: be865234-4697-4e73-8df1-0171e18d38c0
+    type: condition
+    task:
+      id: be865234-4697-4e73-8df1-0171e18d38c0
+      version: -1
+      name: Verify Event Tags
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "34"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: MISP.Event.ID
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: MISP.Event.Info
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: MISP.Event.UUID
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: MISP.Event.Analysis
+            iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              simple: MISP.Event.Tag.Name
+            iscontext: true
+          right:
+            value:
+              simple: EventTag
+      - - operator: isFalse
+          left:
+            value:
+              simple: MISP.Event.Tag.is_galaxy
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 1125,
+          "y": 4160
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "21":
+    id: "21"
+    taskid: 53e52c7d-a8ef-45f2-86e2-423f0437f799
+    type: regular
+    task:
+      id: 53e52c7d-a8ef-45f2-86e2-423f0437f799
+      version: -1
+      name: misp-add-tag-to-attribute
+      script: '|||misp-add-tag-to-attribute'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "23"
+    scriptarguments:
+      tag:
+        simple: TestPlaybook
+      uuid:
+        simple: ${MISP.Attribute.UUID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1565
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "22":
+    id: "22"
+    taskid: 0b0e99af-a1ad-4b78-89f3-db6215f84001
+    type: condition
+    task:
+      id: 0b0e99af-a1ad-4b78-89f3-db6215f84001
+      version: -1
+      name: Verify Attribute Tags
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "41"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: MISP.Attribute.Value
+            iscontext: true
+          right:
+            value:
+              simple: "10"
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: MISP.Attribute.ID
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: MISP.Attribute.UUID
+            iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              simple: MISP.Attribute.Tag.Name
+            iscontext: true
+          right:
+            value:
+              simple: TestPlaybook
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1915
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "23":
+    id: "23"
+    taskid: 16f03061-0694-4ad2-8b2f-209deb7390e5
+    type: regular
+    task:
+      id: 16f03061-0694-4ad2-8b2f-209deb7390e5
+      version: -1
+      name: misp-add-sighting
+      script: '|||misp-add-sighting'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "22"
+    scriptarguments:
+      id:
+        simple: ${MISP.Attribute.ID}
+      type:
+        simple: sighting
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1740
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "24":
+    id: "24"
+    taskid: 0162c141-9ba7-482c-83a1-500ad7385dfa
+    type: regular
+    task:
+      id: 0162c141-9ba7-482c-83a1-500ad7385dfa
+      version: -1
+      name: misp-add-events-from-feed
+      script: '|||misp-add-events-from-feed'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "51"
+    scriptarguments:
+      feed:
+        simple: Botvrij.eu
+      limit:
+        simple: "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3140
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "26":
+    id: "26"
+    taskid: c88a2f47-46f9-4587-81dd-e95a35ec84c0
+    type: regular
+    task:
+      id: c88a2f47-46f9-4587-81dd-e95a35ec84c0
+      version: -1
+      name: misp-add-file-object
+      script: '|||misp-add-file-object'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "59"
+    scriptarguments:
+      entry_id:
+        simple: ${File.EntryID}
+      event_id:
+        simple: ${MISP.Event.ID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1125,
+          "y": 5910
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "28":
+    id: "28"
+    taskid: 0b04d344-3433-4e83-8711-bf4c5eb7fed0
+    type: regular
+    task:
+      id: 0b04d344-3433-4e83-8711-bf4c5eb7fed0
+      version: -1
+      name: misp-add-domain-object
+      script: '|||misp-add-domain-object'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "29"
+    scriptarguments:
+      dns:
+        simple: 2.2.2.2
+      event_id:
+        simple: ${MISP.Event.ID}
+      name:
+        simple: example.com
+      text:
+        simple: DomainTPB
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1125,
+          "y": 5385
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "29":
+    id: "29"
+    taskid: d147d4ec-6754-436e-8dcc-a57928ac2736
+    type: condition
+    task:
+      id: d147d4ec-6754-436e-8dcc-a57928ac2736
+      version: -1
+      name: Verify Domain Obj Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "58"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: MISP.Event.ID
+            iscontext: true
+      - - operator: in
+          left:
+            value:
+              simple: domain-ip
+          right:
+            value:
+              simple: MISP.Event.Object.Name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: MISP.Event.Object.ID
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: MISP.Event.Object.UUID
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: MISP.Event.Object.Description
+            iscontext: true
+      - - operator: in
+          left:
+            value:
+              simple: 2.2.2.2
+          right:
+            value:
+              simple: ${MISP.Event.Object.Attribute.Value}
+            iscontext: true
+      - - operator: in
+          left:
+            value:
+              simple: example.com
+          right:
+            value:
+              simple: ${MISP.Event.Object.Attribute.Value}
+            iscontext: true
+      - - operator: in
+          left:
+            value:
+              simple: DomainTPB
+          right:
+            value:
+              simple: ${MISP.Event.Object.Attribute.Value}
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 1125,
+          "y": 5560
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "30":
+    id: "30"
+    taskid: e9fff1e9-4180-4675-86da-9c5ba2f2b250
+    type: regular
+    task:
+      id: e9fff1e9-4180-4675-86da-9c5ba2f2b250
+      version: -1
+      name: misp-add-url-object
+      script: '|||misp-add-url-object'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "48"
+    scriptarguments:
+      event_id:
+        simple: ${MISP.Event.ID}
+      text:
+        simple: URLTPB
+      url:
+        simple: www.example.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1125,
+          "y": 5035
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "32":
+    id: "32"
+    taskid: 3b28d564-c641-4ee5-80e7-e29f57bdea48
+    type: regular
+    task:
+      id: 3b28d564-c641-4ee5-80e7-e29f57bdea48
+      version: -1
+      name: misp-add-object
+      script: '|||misp-add-object'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "57"
+    scriptarguments:
+      attributes:
+        simple: '{''description'': ''Manager Ferrari'', ''make'': ''Ferrari'', ''model'':
+          ''308 GTS''}'
+      event_id:
+        simple: ${MISP.Event.ID}
+      template:
+        simple: vehicle
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1125,
+          "y": 4685
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "34":
+    id: "34"
+    taskid: d966a3ab-3f7a-48f0-82b9-e75ef3ceac05
+    type: regular
+    task:
+      id: d966a3ab-3f7a-48f0-82b9-e75ef3ceac05
+      version: -1
+      name: misp-add-ip-object
+      script: '|||misp-add-ip-object'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "56"
+    scriptarguments:
+      event_id:
+        simple: ${MISP.Event.ID}
+      ip:
+        simple: 3.3.3.3
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1125,
+          "y": 4335
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "36":
+    id: "36"
+    taskid: dd61abc6-7408-4a25-8c74-c598526ee268
+    type: regular
+    task:
+      id: dd61abc6-7408-4a25-8c74-c598526ee268
+      version: -1
+      name: misp-search-attributes only values
+      script: '|||misp-search-attributes'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "37"
+    scriptarguments:
+      compact:
+        simple: "true"
+      type:
+        simple: other
+      value:
+        simple: "10"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2265
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "37":
+    id: "37"
+    taskid: 7116edb1-e6a0-49e1-8372-27aa7338b7f7
+    type: condition
+    task:
+      id: 7116edb1-e6a0-49e1-8372-27aa7338b7f7
+      version: -1
+      name: Verify Search Attribute Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "42"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: in
+          left:
+            value:
+              simple: "10"
+          right:
+            value:
+              simple: ${MISP.Attribute}
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2440
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "38":
+    id: "38"
+    taskid: 2140b25b-2f77-4303-8d6c-c3c41a3d927a
+    type: title
+    task:
+      id: 2140b25b-2f77-4303-8d6c-c3c41a3d927a
+      version: -1
+      name: Test Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1125,
+          "y": 6435
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "39":
+    id: "39"
+    taskid: 7fc5d7e1-8348-4b01-8e79-199e91a0c8c9
+    type: regular
+    task:
+      id: 7fc5d7e1-8348-4b01-8e79-199e91a0c8c9
+      version: -1
+      name: misp-search-attributes full output
+      script: '|||misp-search-attributes'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "40"
+    scriptarguments:
+      compact:
+        simple: "false"
+      include_sightings:
+        simple: "true"
+      limit:
+        simple: "1"
+      page:
+        simple: "1"
+      type:
+        simple: other
+      value:
+        simple: "10"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2790
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "40":
+    id: "40"
+    taskid: cb200644-5426-4be3-83ce-dcaebe134dd8
+    type: condition
+    task:
+      id: cb200644-5426-4be3-83ce-dcaebe134dd8
+      version: -1
+      name: Verify Search Attribute Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "24"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: MISP.Attribute.Distribution
+            iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              simple: MISP.Attribute.Value
+            iscontext: true
+          right:
+            value:
+              simple: "10"
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: MISP.Attribute.EventID
+            iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              simple: MISP.Attribute.Type
+            iscontext: true
+          right:
+            value:
+              simple: other
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: MISP.Attribute.ID
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: MISP.Attribute.UUID
+            iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              simple: MISP.Attribute.Category
+            iscontext: true
+          right:
+            value:
+              simple: External analysis
+      - - operator: isEqualString
+          left:
+            value:
+              simple: MISP.Attribute.Comment
+            iscontext: true
+          right:
+            value:
+              simple: test-add-attribute
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: MISP.Attribute.Event.ID
+            iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              simple: MISP.Attribute.Event.Info
+            iscontext: true
+          right:
+            value:
+              simple: TPB-New-Event
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: MISP.Attribute.Event.UUID
+            iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              simple: MISP.Attribute.Tag.Name
+            iscontext: true
+          right:
+            value:
+              simple: TestPlaybook
+      - - operator: isEqualString
+          left:
+            value:
+              simple: MISP.Attribute.Sighting.Type
+            iscontext: true
+          right:
+            value:
+              simple: "0"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2965
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "41":
+    id: "41"
+    taskid: 7c68161b-7dc5-489a-870b-be2f2ad330bf
+    type: regular
+    task:
+      id: 7c68161b-7dc5-489a-870b-be2f2ad330bf
+      version: -1
+      name: Delete Attribute Context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "36"
+    scriptarguments:
+      key:
+        simple: MISP.Attribute
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2090
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "42":
+    id: "42"
+    taskid: e73814a8-9399-4dd7-8d91-b919194fb921
+    type: regular
+    task:
+      id: e73814a8-9399-4dd7-8d91-b919194fb921
+      version: -1
+      name: Delete Attribute Context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "39"
+    scriptarguments:
+      key:
+        simple: MISP.Attribute
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2615
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "43":
+    id: "43"
+    taskid: bfa92262-1c67-444e-8783-70b0a63bda91
+    type: regular
+    task:
+      id: bfa92262-1c67-444e-8783-70b0a63bda91
+      version: -1
+      name: 'misp-add-attribute domain '
+      script: '|||misp-add-attribute'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      event_id:
+        simple: ${MISP.Event.ID}
+      value:
+        simple: google.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 2790
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "44":
+    id: "44"
+    taskid: 36707cc6-66c7-4f79-8adb-5669049b1dd7
+    type: regular
+    task:
+      id: 36707cc6-66c7-4f79-8adb-5669049b1dd7
+      version: -1
+      name: 'misp-add-attribute email '
+      script: '|||misp-add-attribute'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      event_id:
+        simple: ${MISP.Event.ID}
+      value:
+        simple: email@email.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 2790
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "45":
+    id: "45"
+    taskid: 7d044a00-0dc6-4f72-88d9-661ef24ba494
+    type: regular
+    task:
+      id: 7d044a00-0dc6-4f72-88d9-661ef24ba494
+      version: -1
+      name: 'misp-add-attribute file '
+      script: '|||misp-add-attribute'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      event_id:
+        simple: ${MISP.Event.ID}
+      value:
+        simple: 098f6bcd4621d373cade4e832627b4f6
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2200,
+          "y": 2790
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "46":
+    id: "46"
+    taskid: e17bb855-db24-405f-84aa-62e6c54b0422
+    type: regular
+    task:
+      id: e17bb855-db24-405f-84aa-62e6c54b0422
+      version: -1
+      name: 'misp-add-attribute ip '
+      script: '|||misp-add-attribute'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      event_id:
+        simple: ${MISP.Event.ID}
+      value:
+        simple: 1.2.3.4
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 2790
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "47":
+    id: "47"
+    taskid: 8cc4c7f5-1c3d-4e8d-8b26-0311c03bc12a
+    type: regular
+    task:
+      id: 8cc4c7f5-1c3d-4e8d-8b26-0311c03bc12a
+      version: -1
+      name: misp-add-attribute url
+      script: '|||misp-add-attribute'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      event_id:
+        simple: ${MISP.Event.ID}
+      value:
+        simple: www.example.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1770,
+          "y": 2790
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "48":
+    id: "48"
+    taskid: f5e2e46e-e11f-4680-8d90-499ec64c8123
+    type: condition
+    task:
+      id: f5e2e46e-e11f-4680-8d90-499ec64c8123
+      version: -1
+      name: Verify URL Obj Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "28"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: MISP.Event.ID
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: MISP.Event.Object.MetaCategory
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: MISP.Event.Object.Distribution
+            iscontext: true
+      - - operator: in
+          left:
+            value:
+              simple: url
+          right:
+            value:
+              simple: ${MISP.Event.Object.Name}
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: MISP.Event.Object.ID
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: MISP.Event.Object.UUID
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: MISP.Event.Object.Description
+            iscontext: true
+      - - operator: in
+          left:
+            value:
+              simple: www.example.com
+          right:
+            value:
+              simple: ${MISP.Event.Object.Attribute.Value}
+            iscontext: true
+      - - operator: in
+          left:
+            value:
+              simple: www.example.com
+          right:
+            value:
+              simple: ${MISP.Event.Object.Attribute.Value}
+            iscontext: true
+      - - operator: in
+          left:
+            value:
+              simple: URLTPB
+          right:
+            value:
+              simple: ${MISP.Event.Object.Attribute.Value}
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 1125,
+          "y": 5210
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "49":
+    id: "49"
+    taskid: 596ddb20-89a1-4b6d-8279-d8ad44ded612
+    type: title
+    task:
+      id: 596ddb20-89a1-4b6d-8279-d8ad44ded612
+      version: -1
+      name: Reputation Commands
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "43"
+      - "44"
+      - "45"
+      - "46"
+      - "47"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 2630
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "50":
+    id: "50"
+    taskid: 8709d847-cde5-462c-80dc-b46581b995f0
+    type: title
+    task:
+      id: 8709d847-cde5-462c-80dc-b46581b995f0
+      version: -1
+      name: MISP Commands
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "51":
+    id: "51"
+    taskid: 34b6d33b-6718-414b-8604-bfae461733df
+    type: regular
+    task:
+      id: 34b6d33b-6718-414b-8604-bfae461733df
+      version: -1
+      name: Delete Event
+      description: Deletes an event according to the given event ID.
+      script: '|||misp-delete-event'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "52"
+    scriptarguments:
+      event_id:
+        simple: ${MISP.Event.ID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1125,
+          "y": 3315
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "52":
+    id: "52"
+    taskid: 3f7938be-1b08-4ab4-861f-fd48f1b01f2d
+    type: title
+    task:
+      id: 3f7938be-1b08-4ab4-861f-fd48f1b01f2d
+      version: -1
+      name: Object Commands
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "53"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1125,
+          "y": 3490
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "53":
+    id: "53"
+    taskid: 4d22e7a9-32a2-4c31-8db8-427ba98a56c9
+    type: regular
+    task:
+      id: 4d22e7a9-32a2-4c31-8db8-427ba98a56c9
+      version: -1
+      name: DeleteContext
+      script: DeleteContext
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "55"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1125,
+          "y": 3635
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "54":
+    id: "54"
+    taskid: 45eccd10-299b-4585-8b12-c190d049b6ec
+    type: regular
+    task:
+      id: 45eccd10-299b-4585-8b12-c190d049b6ec
+      version: -1
+      name: Delete Event
+      description: Deletes an event according to the given event ID.
+      script: '|||misp-delete-event'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "38"
+    scriptarguments:
+      event_id:
+        simple: ${MISP.Event.ID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1125,
+          "y": 6260
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "55":
+    id: "55"
+    taskid: ea24ec38-fb9d-4510-867c-d95ae652ea8b
+    type: regular
+    task:
+      id: ea24ec38-fb9d-4510-867c-d95ae652ea8b
+      version: -1
+      name: misp-create-event
+      script: '|||misp-create-event'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      info:
+        simple: TPB-New-Event
+      threat_level_id:
+        simple: low
+      value:
+        simple: 1.1.1.1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1125,
+          "y": 3810
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "56":
+    id: "56"
+    taskid: a88f1c20-8c26-4f0b-8537-9591402394a1
+    type: condition
+    task:
+      id: a88f1c20-8c26-4f0b-8537-9591402394a1
+      version: -1
+      name: Verify IP Obj Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "32"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: MISP.Event.ID
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: MISP.Event.Object.MetaCategory
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: MISP.Event.Object.Distribution
+            iscontext: true
+      - - operator: in
+          left:
+            value:
+              simple: ip-port
+          right:
+            value:
+              simple: ${MISP.Event.Object.Name}
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: MISP.Event.Object.ID
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: MISP.Event.Object.UUID
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: MISP.Event.Object.Description
+            iscontext: true
+      - - operator: in
+          left:
+            value:
+              simple: 3.3.3.3
+          right:
+            value:
+              simple: ${MISP.Event.Object.Attribute.Value}
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 1125,
+          "y": 4510
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "57":
+    id: "57"
+    taskid: aef49541-167b-4389-899a-d8317c9b01b6
+    type: condition
+    task:
+      id: aef49541-167b-4389-899a-d8317c9b01b6
+      version: -1
+      name: Verify Object Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "30"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: MISP.Event.ID
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: MISP.Event.Object.MetaCategory
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: MISP.Event.Object.Distribution
+            iscontext: true
+      - - operator: in
+          left:
+            value:
+              simple: vehicle
+          right:
+            value:
+              simple: MISP.Event.Object.Name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: MISP.Event.Object.ID
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: MISP.Event.Object.UUID
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: MISP.Event.Object.Description
+            iscontext: true
+      - - operator: in
+          left:
+            value:
+              simple: Manager Ferrari
+          right:
+            value:
+              simple: ${MISP.Event.Object.Attribute.Value}
+            iscontext: true
+      - - operator: in
+          left:
+            value:
+              simple: Ferrari
+          right:
+            value:
+              simple: ${MISP.Event.Object.Attribute.Value}
+            iscontext: true
+      - - operator: in
+          left:
+            value:
+              simple: 308 GTS
+          right:
+            value:
+              simple: ${MISP.Event.Object.Attribute.Value}
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 1125,
+          "y": 4860
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "58":
+    id: "58"
+    taskid: 42c4e4b4-f859-4a3c-8565-b7548c749bef
+    type: regular
+    task:
+      id: 42c4e4b4-f859-4a3c-8565-b7548c749bef
+      version: -1
+      name: get file
+      description: Sends http request. Returns the response as json.
+      scriptName: http
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "26"
+    scriptarguments:
+      method:
+        simple: GET
+      saveAsFile:
+        simple: "yes"
+      url:
+        simple: https://github.com/demisto/content/blob/master/TestData/regular_english_file.txt
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1125,
+          "y": 5735
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "59":
+    id: "59"
+    taskid: 00b21f43-1fe0-4038-8d8f-6451b06cf760
+    type: condition
+    task:
+      id: 00b21f43-1fe0-4038-8d8f-6451b06cf760
+      version: -1
+      name: Verify File Obj Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "54"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: MISP.Event.ID
+            iscontext: true
+      - - operator: in
+          left:
+            value:
+              simple: file
+          right:
+            value:
+              simple: MISP.Event.Object.Name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: MISP.Event.Object.ID
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: MISP.Event.Object.UUID
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: MISP.Event.Object.Description
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 1125,
+          "y": 6085
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 6450,
+        "width": 2530,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
