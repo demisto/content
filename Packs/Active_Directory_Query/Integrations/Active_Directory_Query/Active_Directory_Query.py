@@ -172,7 +172,7 @@ def generate_unique_cn(default_base_dn, cn):
     changing_cn = cn
     i = 1
     while check_if_user_exists_by_attribute(default_base_dn, "cn", changing_cn):
-        changing_cn = cn+str(i)
+        changing_cn = cn + str(i)
         i += 1
         if i == 30:
             raise Exception("User CN couldn't be generated")
@@ -838,7 +838,7 @@ def create_user_iam(default_base_dn, args, mapper_out, disabled_users_group_cn):
             ad_user.pop('ou')
             ad_user.pop('cn')
             if manager_email := ad_user.get('manageremail'):
-                manager_dn = get_user_dn_by_email(manager_email)
+                manager_dn = get_user_dn_by_email(default_base_dn, manager_email)
                 ad_user['manager'] = manager_dn
             success = conn.add(user_dn, object_classes, ad_user)
             if success:
