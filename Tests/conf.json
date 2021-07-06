@@ -3493,7 +3493,8 @@
         "TAXII_Feed_Test": "Issue 37588",
         "Majestic Million Test Playbook": "Issue 30931",
         "FireEyeNX-Test": "Issue 33216",
-        "Microsoft Teams - Test": "Issue 38263"
+        "Microsoft Teams - Test": "Issue 38263",
+        "Trend Micro Deep Security - Test": "outsourced"
     },
     "skipped_integrations": {
         
