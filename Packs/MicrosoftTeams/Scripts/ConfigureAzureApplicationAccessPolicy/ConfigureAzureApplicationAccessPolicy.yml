@@ -44,7 +44,7 @@ script: '-'
 system: false
 timeout: '0'
 type: powershell
-dockerimage: demisto/powershell-teams:1.0.0.17428
+dockerimage: demisto/powershell-teams:1.0.0.22275
 fromversion: 5.5.0
 tests:
 - No test
