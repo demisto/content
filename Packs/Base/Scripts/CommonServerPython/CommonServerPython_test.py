@@ -4384,7 +4384,7 @@ class TestIndicatorsSearcher:
         if page >= 17:
             # checking a unique case when trying to reach a certain page and not all the indicators
             iocs = []
-            searchAfter = ''
+            searchAfter = None
 
         return {'searchAfter': searchAfter, 'iocs': iocs, 'total': 7}
 
@@ -4475,7 +4475,7 @@ class TestIndicatorsSearcher:
         search_indicators_obj_search_after._can_use_search_after = True
         search_indicators_obj_search_after.search_indicators_by_version()
 
-        assert search_indicators_obj_search_after._search_after_param == ''
+        assert search_indicators_obj_search_after._search_after_param is None
         assert search_indicators_obj_search_after._page == 17
 
     def test_iterator(self, mocker):

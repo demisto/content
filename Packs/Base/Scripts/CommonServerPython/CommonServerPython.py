@@ -7677,7 +7677,7 @@ class TableOrListWidget(BaseWidget):
 class IndicatorsSearcher:
     """Used in order to search indicators by the paging or serachAfter param
     :type page: ``Optional[int]``
-    :param page: the number of page from which we start search indicators from.
+    :param page: the number of page from which we start search indicators from. (will be updated via iter)
 
     :type filter_fields: ``Optional[str]``
     :param filter_fields: comma separated fields to filter (e.g. "value,type")
@@ -7698,7 +7698,7 @@ class IndicatorsSearcher:
     :param value: the indicator value to search.
 
     :type limit ``Optional[int]``
-    :param limit the upper limit of the search
+    :param limit the upper limit of the search (will be updated via iter)
 
     :return: No data returned
     :rtype: ``None``
@@ -7728,7 +7728,7 @@ class IndicatorsSearcher:
         self._to_date = to_date
         self._value = value
         self._original_limit = limit
-        self._limit = limit
+        self._next_limit = limit
 
     def __iter__(self):
         self._total = None
@@ -7739,7 +7739,7 @@ class IndicatorsSearcher:
 
     # python2
     def next(self):
-        self.__next__()
+        return self.__next__()
 
     def __next__(self):
         if self._is_search_done():
@@ -7767,20 +7767,30 @@ class IndicatorsSearcher:
 
     @property
     def limit(self):
-        return self._limit
+        return self._next_limit
 
     @limit.setter
     def limit(self, value):
-        self._limit = value
+        self._next_limit = value
 
     def _is_search_done(self):
         """
-        Checks one of 2 conditions:
-        1. self._total was populated by a previous search, but no self._search_after_param
-        2. self.limit is set, and it's less or equal to zero
+        Checks one of these conditions:
+        1. self.limit is set, and it's updated to be less or equal to zero
+        2. for search_after if self.total was populated by a previous search, but no self._search_after_param
+        3. for page if self.total was populated by a previous search, but page is too large
         """
-        return (self._total and self._can_use_search_after and not self._search_after_param) or \
-               (isinstance(self.limit, int) and self.limit <= 0)
+        reached_limit = isinstance(self.limit, int) and self.limit <= 0
+        if reached_limit:
+            return True
+
+        if self.total is None:
+            return False
+        else:
+            if self._can_use_search_after:
+                return self._search_after_param is None
+            else:
+                return self.total == self.page * self._size
 
     def search_indicators_by_version(self, from_date=None, query='', size=100, to_date=None, value=''):
         """There are 2 cases depends on the sever version:
