@@ -55,7 +55,7 @@
                             {
                                 "dropEffect": "move",
                                 "endCol": 2,
-                                "fieldId": "classification",
+                                "fieldId": "ironscalesclassification",
                                 "height": 22,
                                 "id": "597718d0-87e5-11eb-9a74-3d6514e07cbd",
                                 "index": 4,

@@ -6,10 +6,6 @@
         "Ironscales": {
             "dontMapEventToLabels": false,
             "internalMapping": {
-                "Classification": {
-                    "complex": null,
-                    "simple": "classification"
-                },
                 "Ironscales-Classification": {
                     "complex": null,
                     "simple": "classification"

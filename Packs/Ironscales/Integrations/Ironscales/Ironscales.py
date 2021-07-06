@@ -189,11 +189,12 @@ def fetch_incidents(client: Client, last_run: Dict[str, Any], first_fetch: set, 
 
     for incident in incidents:
         data = client.get_incident(incident)
+        json_data = json.dumps(data)
         incident_name = "Ironscales incident : IS-%s" % incident
         incident = {
             "name": incident_name,
-            "occurred": timestamp_to_datestring(0),
-            "rawJSON": json.dumps(data),
+            "occurred": json_data.get("first_reported_date"),
+            "rawJSON": json_data,
             'type': 'Ironscales'
         }
 
