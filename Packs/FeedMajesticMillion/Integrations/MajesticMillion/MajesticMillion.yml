@@ -88,6 +88,10 @@ configuration:
   name: proxy
   required: false
   type: 8
+- display: Use HTTPS connection
+  name: use_https
+  type: 8
+  required: false
 description: Free search and download of the top million websites.
 display: Majestic Million Feed
 name: Majestic Million
