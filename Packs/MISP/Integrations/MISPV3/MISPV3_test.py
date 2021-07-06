@@ -11,10 +11,10 @@ ATTRIBUTE_TAG_LIMIT = [{'ID': '1', 'Name': 'Tag1'}, {'ID': '2', 'Name': 'misp-ga
 INVALID_HASH_ERROR = "Invalid hash length, enter file hash of format MD5, SHA-1 or SHA-256'"
 REPUTATION_COMMANDS_ERROR_LIST = [
     ("FILE", "invalid_hash", INVALID_HASH_ERROR),  # invalid HASH,
-    ("IP", "1.2.3", f"Error: The given IP address: 1.2.3 is not valid"),  # invalid IP,
-    ("DOMAIN", "invalid_domain", f"Error: The given domain: invalid_domain is not valid"),  # invalid DOMAIN,
-    ("URL", "invalid_url", f"Error: The given url: invalid_url is not valid"),  # invalid URL,
-    ("EMAIL", "invalid_email", f"Error: The given invalid_email address: example is not valid"),  # invalid EMAIL,
+    ("IP", "1.2.3", "Error: The given IP address: 1.2.3 is not valid"),  # invalid IP,
+    ("DOMAIN", "invalid_domain", "Error: The given domain: invalid_domain is not valid"),  # invalid DOMAIN,
+    ("URL", "invalid_url", "Error: The given url: invalid_url is not valid"),  # invalid URL,
+    ("EMAIL", "invalid_email", "Error: The given invalid_email address: example is not valid"),  # invalid EMAIL,
 ]
 
 CASE_OF_MALICIOUS_ATTRIBUTE = (['1'], ['2'], ['1'], ['4'], Common.DBotScore.BAD)
@@ -339,7 +339,8 @@ def test_parse_response_reputation_command(mocker):
 def test_prepare_args_to_search(mocker, demisto_args, expected_args):
     mock_misp(mocker)
     from MISPV3 import prepare_args_to_search
-    mocker.patch.object(demisto, 'args', return_value=demisto_args)
+    import demistomock
+    mocker.patch.object(demistomock, 'args', return_value=demisto_args)
     assert prepare_args_to_search() == expected_args
 
 
