@@ -1,0 +1,250 @@
+description: "Collect Log bundle and parse data\n\nHolding the default Thresholds:\n\
+  {\n\t\"LargeInvestigations\": {\n\t\t\"numberofincidentswithmorethan500entries\"\
+  : 300,\n\t\t\"numberofincidentsbiggerthan10mb\": 1,\n\t\t\"numberofincidentsbiggerthan1mb\"\
+  : 300\n\t},\n\t\"LargeInputsOutputs\": {\n\t\t\"numberofincidentsIObiggerthan10mb\"\
+  : 1,\n\t\t\"numberofincidentsIObiggerthan1mb\": 10\n\t},\n\t\"Indicators\": {\n\t\
+  \t\"relatedIndicatorCount\": 100\n\t},\n\t\"CPU\": {\n\t\t\"CPUHighUsage\": 90,\n\
+  \t\t\"CPULowUsage\": 30,\n\t\t\"CPUMediumUsage\": 70\n\t},\n\t\"Disk\": {\n\t\t\"\
+  DiskUsageHigh\": 90,\n\t\t\"DiskUsageMedium\": 80,\n\t\t\"DiskUsageLow\": 70,\n\t\
+  \t\"DiskUsageDailyIncrease\": 2\n\t},\n\t\"Docker\": {\n\t\t\"DockerContainerCPUUsage\"\
+  : 10,\n\t\t\"DockerContainerRAMUsage\": 10\n\t},\n\t\"DB\": {\n\t\t\"FSPartitionsMedium\"\
+  : 12,\n\t\t\"FSPartitionsLow\": 6\n\t},\n\t\"Playbooks\": {\n\t\t\"CustomPlaybookLength\"\
+  : 30,\n\t\t\"CustomPlaybookSetIncidentCount\": 4,\n\t\t\"CustomPlaybookDeprecatedScriptIds\"\
+  : [\n\t\t\t\"Sleep\",\n\t\t\t\"EmailAskUser\"\n\t\t]\n\t},\n\t\"Incidents\": {\n\
+  \t\t\"NumberOfDroppedIncidents\": 2000\n\t}\n}"
+id: Health Check - Collect Log Bundle
+inputs: []
+name: Health Check - Collect Log Bundle
+outputs: []
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "72"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 38b241c1-1d45-4b50-880b-ee4822076281
+      iscommand: false
+      name: ""
+      version: -1
+      description: ''
+    taskid: 38b241c1-1d45-4b50-880b-ee4822076281
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 50
+        }
+      }
+  "3":
+    id: "3"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "57"
+      "no":
+      - "56"
+      "yes":
+      - "58"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      entryID:
+        complex:
+          accessor: EntryID
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: File.Name
+              operator: containsString
+              right:
+                value:
+                  simple: logs-bundle
+            - left:
+                iscontext: true
+                value:
+                  simple: File.Extension
+              operator: isEqualString
+              right:
+                value:
+                  simple: tar
+            - left:
+                iscontext: true
+                value:
+                  simple: File.Extension
+              operator: isEqualString
+              right:
+                value:
+                  simple: gz
+          root: File
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: "Extract files from log bundle - supports tar.gz & tar \n\nhandle\
+        \ unsupported use cases and unextracted files."
+      id: 05803224-f4d7-4d20-8892-f76018b78e6c
+      iscommand: false
+      name: UnPack the zipped log file
+      script: HealthCheckUnpack
+      type: condition
+      version: -1
+    taskid: 05803224-f4d7-4d20-8892-f76018b78e6c
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 370
+        }
+      }
+  "56":
+    id: "56"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "58"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      message:
+        simple: File type is not supported
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Prints an error entry with a given message
+      id: 30fd6238-d7fd-48f5-86c8-7f92d24ac58a
+      iscommand: false
+      name: File Type is not supported
+      script: PrintErrorEntry
+      type: regular
+      version: -1
+    taskid: 30fd6238-d7fd-48f5-86c8-7f92d24ac58a
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+  "57":
+    id: "57"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "58"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      message:
+        simple: File can't be extracted
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Prints an error entry with a given message
+      id: e691da9a-0fee-45d7-84fa-36eb5252b107
+      iscommand: false
+      name: File can't be extracted
+      script: PrintErrorEntry
+      type: regular
+      version: -1
+    taskid: e691da9a-0fee-45d7-84fa-36eb5252b107
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 545
+        }
+      }
+  "58":
+    id: "58"
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 970a7093-1bda-4a50-8ce9-42d858519535
+      iscommand: false
+      name: continue
+      type: title
+      version: -1
+      description: ''
+    taskid: 970a7093-1bda-4a50-8ce9-42d858519535
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 790
+        }
+      }
+  "72":
+    id: "72"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      description: {}
+      filename: {}
+      uri:
+        simple: /log/bundle
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Download files from Demisto server
+      id: d7ac5cf1-4045-472e-8522-5890ef4fa590
+      iscommand: true
+      name: Download log bundle
+      script: '|||demisto-api-download'
+      type: regular
+      version: -1
+    taskid: d7ac5cf1-4045-472e-8522-5890ef4fa590
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 195
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 805,
+        "width": 810,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)
