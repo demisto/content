@@ -53,7 +53,7 @@ def test_convert_timestamp(mocker):
     """
 
     Given:
-    - params and args.
+    - MISP response includes timestamp.
 
     When:
     - Getting Timestamp of a misp event ot attribute.
@@ -70,13 +70,13 @@ def test_build_list_from_dict(mocker):
     """
 
     Given:
-    - params and args.
+    - Dictionary describes MISP object
 
     When:
-    - Getting Timestamp of a misp event ot attribute.
+    - Trying to use MISP's GenericObjectGenerator.
 
     Then:
-    - Ensure timestamp converted successfully to human readable format.
+    - The dict was parsed to a list.
     """
     mock_misp(mocker)
     from MISPV3 import build_list_from_dict
@@ -85,6 +85,17 @@ def test_build_list_from_dict(mocker):
 
 
 def test_extract_error(mocker):
+    """
+
+    Given:
+    - list of responses from error section.
+
+    When:
+    - Getting response with errors from MISP.
+
+    Then:
+    - Ensures that the error was extracted correctly.
+    """
     mock_misp(mocker)
     from MISPV3 import extract_error
     error_response = [
@@ -121,6 +132,17 @@ def test_extract_error(mocker):
 
 
 def test_build_misp_complex_filter(mocker):
+    """
+
+    Given:
+    - A complex query contains saved words: 'AND:', 'OR:' and 'NOT:'.
+
+    When:
+    - Calling a command that uses 'tags' as input.
+
+    Then:
+    - Ensure the input query converted to ש dictionary created for misp to perform complex query.
+    """
     mock_misp(mocker)
     from MISPV3 import build_misp_complex_filter
 
@@ -204,6 +226,17 @@ def test_build_misp_complex_filter(mocker):
 
 
 def test_is_tag_list_valid(mocker):
+    """
+
+    Given:
+    - a tag list ids
+
+    When:
+    - configuring a MISP instance.
+
+    Then:
+    - Ensure the all the ids are valid.
+    """
     mock_misp(mocker)
     from MISPV3 import is_tag_list_valid
     is_tag_list_valid(["200", 100])
@@ -211,6 +244,17 @@ def test_is_tag_list_valid(mocker):
 
 
 def test_is_tag_list_invalid(mocker):
+    """
+
+    Given:
+    - a tag list ids
+
+    When:
+    - configuring a MISP instance.
+
+    Then:
+    - Ensure that an error is returned when an id is invalid.
+    """
     mock_misp(mocker)
     from MISPV3 import is_tag_list_valid
     with pytest.raises(DemistoException) as e:
@@ -223,6 +267,17 @@ def test_is_tag_list_invalid(mocker):
                          TAG_IDS_LISTS)
 def test_handle_tag_duplication_ids(mocker, malicious_tag_ids, suspicious_tag_ids, return_malicious_tag_ids,
                                     return_suspicious_tag_ids):
+    """
+
+    Given:
+    - 2 lists of tag ids: one for malicious and the other one is for suspicious.
+
+    When:
+    - configuring a MISP instance.
+
+    Then:
+    - Ensure that in case an id exists in both lists, it will be removed from the suspicious one.
+    """
     mock_misp(mocker)
     from MISPV3 import handle_tag_duplication_ids
     assert return_malicious_tag_ids, return_suspicious_tag_ids == handle_tag_duplication_ids(malicious_tag_ids,
@@ -230,6 +285,16 @@ def test_handle_tag_duplication_ids(mocker, malicious_tag_ids, suspicious_tag_id
 
 
 def test_convert_arg_to_misp_args(mocker):
+    """
+    Given:
+    - demisto args includes '_'.
+
+    When:
+    - Using the integrations' commands.
+
+    Then:
+    - Ensure args with '_' converted to be with '-'.
+    """
     mock_misp(mocker)
     from MISPV3 import convert_arg_to_misp_args
     args = {'dst_port': 8001, 'src_port': 8002, 'name': 'test'}
@@ -238,6 +303,16 @@ def test_convert_arg_to_misp_args(mocker):
 
 
 def test_pagination_args_valid(mocker):
+    """
+    Given:
+    - page number.
+
+    When:
+    - Using the integrations' commands that have pagination.
+
+    Then:
+    - Ensure tha given page number is valid (only digits).
+    """
     mock_misp(mocker)
     from MISPV3 import pagination_args_validation
     pagination_args_validation("5", 50)
@@ -245,6 +320,17 @@ def test_pagination_args_valid(mocker):
 
 
 def test_pagination_args_invalid(mocker):
+    """
+
+    Given:
+    - a page number.
+
+    When:
+    - Using the integrations' commands that have pagination.
+
+    Then:
+    - Ensure that an error is returned when a page number is invalid.
+    """
     mock_misp(mocker)
     from MISPV3 import pagination_args_validation
     with pytest.raises(DemistoException) as e:
@@ -255,6 +341,17 @@ def test_pagination_args_invalid(mocker):
 
 @pytest.mark.parametrize('dbot_type, value, error_expected', REPUTATION_COMMANDS_ERROR_LIST)
 def test_reputation_value_validation(mocker, dbot_type, value, error_expected):
+    """
+
+    Given:
+    - an indicator type and value
+
+    When:
+    - Running a reputation command (ip, domain, email, url, file).
+
+    Then:
+    - Ensure that the value is valid (depends on the type).
+    """
     mock_misp(mocker)
     from MISPV3 import reputation_value_validation
     with pytest.raises(SystemExit) as e:
@@ -264,6 +361,16 @@ def test_reputation_value_validation(mocker, dbot_type, value, error_expected):
 
 @pytest.mark.parametrize('distribution_id, expected_distribution_id', VALID_DISTRIBUTION_LIST)
 def test_get_valid_distribution(mocker, distribution_id, expected_distribution_id):
+    """
+    Given:
+    - distribution id.
+
+    When:
+    - Using the integrations' commands that includes distribution as an argument.
+
+    Then:
+    - Ensure tha given distribution id is valid according to MISP.
+    """
     mock_misp(mocker)
     from MISPV3 import get_valid_distribution
     assert get_valid_distribution(distribution_id) == expected_distribution_id
@@ -271,6 +378,16 @@ def test_get_valid_distribution(mocker, distribution_id, expected_distribution_i
 
 @pytest.mark.parametrize('distribution_id', INVALID_DISTRIBUTION_LIST)
 def test_get_invalid_distribution(mocker, distribution_id):
+    """
+    Given:
+    - distribution id.
+
+    When:
+    - Using the integrations' commands that includes distribution as an argument.
+
+    Then:
+    - Ensure that an error is returned when a distribution id is invalid according to MISP.
+    """
     mock_misp(mocker)
     from MISPV3 import get_valid_distribution
     with pytest.raises(SystemExit) as e:
@@ -281,6 +398,16 @@ def test_get_invalid_distribution(mocker, distribution_id):
 
 @pytest.mark.parametrize('event_id', ['event_id', 23.4])
 def test_get_invalid_event_id(mocker, event_id):
+    """
+    Given:
+    - event id.
+
+    When:
+    - Using the integrations' commands that includes event id as an argument.
+
+    Then:
+    - Ensure that an error is returned when an event id is invalid.
+    """
     mock_misp(mocker)
     from MISPV3 import get_valid_event_id
     with pytest.raises(SystemExit) as e:
@@ -293,6 +420,17 @@ def test_get_invalid_event_id(mocker, event_id):
     (False, ATTRIBUTE_TAG_LIMIT, {'1', '3'}),
     (True, ATTRIBUTE_TAG_LIMIT, {'1', '3', '2'})])
 def test_limit_tag_output(mocker, is_event_level, expected_output, expected_tag_list_ids):
+    """
+    Given:
+    -   is_event_level (bool): whether this is a dict of event. False is for attribute level.
+        ATTRIBUTE_TAG_LIMIT: list includes a dict of MISP tags.
+
+    When:
+    -   parsing a reputation response from MISP.
+
+    Then:
+    - Ensure that the Tag section is limited to include only name and id.
+    """
     mock_misp(mocker)
     from MISPV3 import limit_tag_output
     mock_tag_json = util_load_json("test_data/Attribute_Tags.json")
@@ -305,6 +443,21 @@ def test_limit_tag_output(mocker, is_event_level, expected_output, expected_tag_
                          TEST_TAG_SCORES)
 def test_get_score_by_tags(mocker, attribute_tags_ids, event_tags_ids, malicious_tag_ids, suspicious_tag_ids,
                            expected_score):
+    """
+
+    Given:
+    - 4 lists that include tag ids.
+        attribute_tags_ids : all tag ids of an attribute.
+        event_tags_ids: all tag ids of an event.
+        malicious_tag_ids: tag ids that defined to be recognized as malicious.
+        suspicious_tag_ids: tag ids that defined to be recognized as  suspicious.
+
+    When:
+    - Running a reputation command and want to get the dbot score.
+
+    Then:
+    - Check that the returned score match the expected one, depends on the given lists.
+    """
     mock_misp(mocker)
     from MISPV3 import get_score_by_tags
     assert get_score_by_tags(attribute_tags_ids, event_tags_ids, malicious_tag_ids,
@@ -312,6 +465,17 @@ def test_get_score_by_tags(mocker, attribute_tags_ids, event_tags_ids, malicious
 
 
 def test_event_response_to_markdown_table(mocker):
+    """
+
+    Given:
+    - A MISP event search response (json).
+
+    When:
+    - Running misp-search-events command.
+
+    Then:
+    - Ensure that the output to human readable is valid and was parsed correctly.
+    """
     mock_misp(mocker)
     from MISPV3 import event_response_to_markdown_table
     event_response = util_load_json("test_data/event_response_to_md.json")
@@ -329,6 +493,17 @@ def test_event_response_to_markdown_table(mocker):
 
 
 def test_attribute_response_to_markdown_table(mocker):
+    """
+
+    Given:
+    - A MISP attribute search response (json).
+
+    When:
+    - Running misp-search-attributes command.
+
+    Then:
+    - Ensure that the output to human readable is valid and was parsed correctly.
+    """
     mock_misp(mocker)
     from MISPV3 import attribute_response_to_markdown_table
     attribute_response = util_load_json("test_data/attribute_response_to_md.json")
@@ -347,6 +522,17 @@ def test_attribute_response_to_markdown_table(mocker):
 
 
 def test_parse_response_reputation_command(mocker):
+    """
+
+    Given:
+    - a response of reputation command.
+
+    When:
+    - searching for an attribute by a given value.
+
+    Then:
+    -  Ensure that the output is valid and was parsed correctly.
+    """
     mock_misp(mocker)
     from MISPV3 import parse_response_reputation_command
     reputation_response = util_load_json("test_data/reputation_command_response.json")
@@ -359,6 +545,17 @@ def test_parse_response_reputation_command(mocker):
 
 @pytest.mark.parametrize('demisto_args, expected_args', TEST_PREPARE_ARGS)
 def test_prepare_args_to_search(mocker, demisto_args, expected_args):
+    """
+
+    Given:
+    - demisto args.
+
+    When:
+    - running every integration command, when switching the given args to MISP's args format.
+
+    Then:
+    - Ensure that the conversion to MISP args format is valid.
+    """
     mock_misp(mocker)
     from MISPV3 import prepare_args_to_search
     import demistomock
@@ -367,6 +564,17 @@ def test_prepare_args_to_search(mocker, demisto_args, expected_args):
 
 
 def test_build_events_search_response(mocker):
+    """
+
+    Given:
+    - A MISP event search response (json).
+
+    When:
+    - Running misp-search-events command.
+
+    Then:
+    - Ensure that the output to context data is valid and was parsed correctly.
+    """
     mock_misp(mocker)
     from MISPV3 import build_events_search_response, ENTITIESDICT
     search_response = util_load_json("test_data/search_event_by_tag.json")
@@ -379,6 +587,17 @@ def test_build_events_search_response(mocker):
 
 
 def test_build_attributes_search_response(mocker):
+    """
+
+    Given:
+    - A MISP attribute search response (json).
+
+    When:
+    - Running misp-search-attributes command.
+
+    Then:
+    - Ensure that the output to context data is valid and was parsed correctly.
+    """
     mock_misp(mocker)
     from MISPV3 import build_attributes_search_response, ENTITIESDICT
     search_response = util_load_json("test_data/search_attribute_by_type.json")
