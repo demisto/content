@@ -29,8 +29,8 @@ Check the status of an action requested on a case.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| case_id | A string representing the case. | Required | 
-| action_id | A UUID representing the action id for a case. | Required | 
+| case_id | A string representing the email case. Can be retrieved by first running command to list cases. | Required | 
+| action_id | A string representing the email case. Can be retrieved from payload after performing an action on a case. | Required | 
 | mock-data | Returns test data if set to `True`. | Optional | 
 
 
@@ -78,7 +78,7 @@ Check the status of an action requested on a threat.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | threat_id | A UUID representing a threat campaign. Full list of threat IDs can be obtained by first running the command to list a threat. | Required | 
-| action_id | A UUID representing the action id for a threat. | Required | 
+| action_id | A UUID representing the action id for a threat. Can be obtained from payload after performing an action on the threat. | Required | 
 | mock-data | Returns test data if set to `True`. | Optional | 
 
 
@@ -351,7 +351,7 @@ Get details of an Abnormal case
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| case_id | A string representing the case. | Required | 
+| case_id | A string representing the email case. Can be retrieved by first running command to list cases. | Required | 
 | mock-data | Returns test data if set to `True`. | Optional | 
 
 
@@ -473,7 +473,7 @@ Manage an Abnormal Case.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| case_id | A string representing the case. | Required | 
+| case_id | A string representing the email case. Can be retrieved by first running command to list cases. | Required | 
 | action | Action to perform on case. | Required | 
 | mock-data | Returns test data if set to `True`. | Optional | 
 

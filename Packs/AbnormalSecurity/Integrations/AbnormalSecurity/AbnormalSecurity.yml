@@ -32,11 +32,12 @@ name: Abnormal Security
 script:
   commands:
   - arguments:
-    - description: A string representing the case
+    - description: "A string representing the email case. Can be retrieved by first running command to list cases"
       isArray: false
       name: case_id
       required: true
-    - description: A UUID representing the action id for a case
+    - description: "A string representing the email case. Can be retrieved from payload \
+        after performing an action on a case"
       isArray: false
       name: action_id
       required: true
@@ -59,7 +60,8 @@ script:
       isArray: false
       name: threat_id
       required: true
-    - description: A UUID representing the action id for a threat.
+    - description: "A UUID representing the action id for a threat. Can be obtained from payload \
+        after performing an action on the threat"
       isArray: false
       name: action_id
       required: true
@@ -251,7 +253,7 @@ script:
       description: The party that was targeted by an attack.
       type: String
   - arguments:
-    - description: A string representing the case
+    - description: "A string representing the email case. Can be retrieved by first running command to list cases"
       isArray: false
       name: case_id
       required: true
@@ -298,7 +300,7 @@ script:
     description: Manage a Threat identified by Abnormal Security
     name: abnormal-security-manage-threat-identified-by-abnormal-security
   - arguments:
-    - description: A string representing the case
+    - description: "A string representing the email case. Can be retrieved by first running command to list cases"
       isArray: false
       name: case_id
       required: true
