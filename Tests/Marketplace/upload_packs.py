@@ -964,7 +964,7 @@ def main():
 
     # starting iteration over packs
     for pack in packs_list:
-        task_status, user_metadata = pack.load_user_metadata()
+        task_status = pack.load_user_metadata()
         if not task_status:
             pack.status = PackStatus.FAILED_LOADING_USER_METADATA.value
             pack.cleanup()
@@ -997,7 +997,7 @@ def main():
             pack.cleanup()
             continue
 
-        task_status, is_missing_dependencies = pack.format_metadata(user_metadata, index_folder_path,
+        task_status, is_missing_dependencies = pack.format_metadata(index_folder_path,
                                                                     packs_dependencies_mapping, build_number,
                                                                     current_commit_hash, pack_was_modified,
                                                                     statistics_handler, pack_names)
@@ -1086,9 +1086,8 @@ def main():
     # Going over all packs that were marked as missing dependencies,
     # updating them with the new data for the new packs that were added to the index.zip
     for pack in packs_missing_dependencies:
-
-        task_status, _ = pack.format_metadata(user_metadata, index_folder_path, packs_dependencies_mapping,
-                                              build_number, current_commit_hash, pack_was_modified, statistics_handler,
+        task_status, _ = pack.format_metadata(index_folder_path, packs_dependencies_mapping,
+                                              build_number, current_commit_hash, False, statistics_handler,
                                               pack_names, format_dependencies_only=True)
 
         if not task_status:
