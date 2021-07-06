@@ -3500,7 +3500,7 @@
         "TestEmailRepIOPlaybook": "Issue 33219",
         "get_original_email_-_ews-_test": "Issue 27571",
         "PANW Threat Vault - Signature Search - Test": "Issue 30930",
-        "Majestic Million Test Playbook": "Issue 30931",
+        "TAXII_Feed_Test": "Issue 37588",
         "FireEyeNX-Test": "Issue 33216",
         "Microsoft Teams - Test": "Issue 38263",
         "QualysVulnerabilityManagement-Test": "Issue 38640",
