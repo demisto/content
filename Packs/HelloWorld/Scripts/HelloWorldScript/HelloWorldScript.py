@@ -89,7 +89,7 @@ def main():
         return_results(say_hello_command(demisto.args()))
     except Exception as ex:
         demisto.error(traceback.format_exc())  # print the traceback
-        return_error(f'Failed to execute HelloWorldScript. Error: {str(ex)}')
+        return_error(f'Failed to execute HelloWorldScript. Error: {str(ex)}')     # pylint: disable=E9008
 
 
 ''' ENTRY POINT '''
