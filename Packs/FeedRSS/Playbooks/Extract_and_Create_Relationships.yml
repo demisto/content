@@ -933,7 +933,7 @@ tasks:
       entity_b:
         simple: ${ExtractedIndicators.File}
       entity_b_type:
-        simple: FILE
+        simple: File
       relationship:
         simple: related-to
     separatecontext: false

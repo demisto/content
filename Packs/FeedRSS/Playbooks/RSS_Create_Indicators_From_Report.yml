@@ -338,7 +338,7 @@ inputs:
     runFromLastJobTime: false
 - key: tag
   value:
-    simple: processed
+    simple:
   required: false
   description: The tag which will be added to each processed report.
   playbookInputQuery:
