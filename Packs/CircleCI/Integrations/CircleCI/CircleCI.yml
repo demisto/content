@@ -308,4 +308,4 @@ script:
   dockerimage: demisto/python3:3.9.5.21272
 fromversion: 5.5.0
 tests:
-No tests (auto formatted)
+- No tests (auto formatted)
