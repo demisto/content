@@ -25,6 +25,7 @@ class Client(BaseClient):
 
     def __init__(self, base_url: str, api_params: Dict, verify=True, proxy=False,
                  credentials: Dict = None, threshold=None):
+      
         self.command_params = api_params
         self.threshold = threshold if threshold else Client.DEFAULT_THRESHOLD
         if credentials:
