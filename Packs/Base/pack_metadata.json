@@ -3,6 +3,7 @@
     "description": "The base pack for Cortex XSOAR.",
     "support": "xsoar",
     "currentVersion": "1.12.19",
+    "currentVersion": "1.12.20",
     "author": "Cortex XSOAR",
     "serverMinVersion": "6.0.0",
     "url": "https://www.paloaltonetworks.com/cortex",
