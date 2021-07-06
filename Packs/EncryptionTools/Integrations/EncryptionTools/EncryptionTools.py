@@ -12,15 +12,13 @@ def test_module():
         get_public_key()
         get_private_key()
     except Exception:
-        raise DemistoException('You can either enter public and/or private key in the instance configuration or run the'
-                               ' "encryption-tools-create-keys" command to create the keys for the instance.')
+        raise DemistoException('You must provide public and/or private keys.')
 
     return 'ok'
 
 
 def get_public_key() -> rsa.PublicKey:
-    """Gets the public key from the instance configuration. If none was provided it takes it from the
-    integration context.
+    """Gets the public key from the instance configuration.
 
     Returns:
         rsa.PublicKey. The public key to be used with the integration.
@@ -31,20 +29,11 @@ def get_public_key() -> rsa.PublicKey:
     if params_public_key:
         return rsa.PublicKey.load_pkcs1(params_public_key)
 
-    integration_context = get_integration_context()
-    public_key = integration_context.get('public_key')
-
-    if not public_key:
-        raise DemistoException('Public key is not defined.')
-
-    public_key = public_key.encode('utf-8')
-
-    return rsa.PublicKey.load_pkcs1(public_key)
+    raise DemistoException('Public key is not defined.')
 
 
 def get_private_key() -> rsa.PrivateKey:
-    """Gets the private key from the instance configuration. If none was provided it takes it from the
-    integration context.
+    """Gets the private key from the instance configuration.
 
     Returns:
         rsa.PrivateKey. The private key to be used with the integration.
@@ -55,68 +44,7 @@ def get_private_key() -> rsa.PrivateKey:
     if params_private_key:
         return rsa.PrivateKey.load_pkcs1(params_private_key)
 
-    integration_context = get_integration_context()
-    private_key = integration_context.get('private_key')
-
-    if not private_key:
-        raise DemistoException('Private key is not defined.')
-
-    private_key = private_key.encode('utf-8')
-
-    return rsa.PrivateKey.load_pkcs1(private_key)
-
-
-def create_keys(params, args):
-    """Creates new private and public keys that will be saved to the integration context.
-
-    Args:
-        params:
-            - public_key (str): The public key provided in the instance configuration. (Optional)
-            - private_key (str): The private key provided in the instance configuration. (Optional)
-        args:
-            - override_keys (bool): Whether to override the existing keys or not.
-
-    Note:
-        - This function will fail if any of the keys are already set in the instance configuration,
-        or provided in the integration context and the "override_keys" argument is not set to "True".
-    """
-    params_public_key = params.get('public_key')
-    params_private_key = params.get('private_key')
-
-    if any([params_public_key, params_private_key]):
-        raise DemistoException(
-            'Public key or Private key are provided in the instance configuration. Skipping new keys creation.'
-        )
-
-    override_keys = argToBoolean(args.get('override_keys', False))
-    if not override_keys:
-        try:
-            get_public_key()
-            get_private_key()
-        except DemistoException:
-            # That means that no public key has been generated.
-            pass
-        else:
-            raise DemistoException(
-                'Keys have already been generated. You can use the "override_keys=true" argument in order to '
-                'override the current generated keys.'
-            )
-
-    try:
-        nbits = arg_to_number(args.get('nbits', 512))
-        public_key, private_key = rsa.key.newkeys(nbits=nbits)
-
-        integration_context = {
-            'public_key': public_key.save_pkcs1().decode('utf-8'),
-            'private_key': private_key.save_pkcs1().decode('utf-8'),
-        }
-
-        set_integration_context(integration_context)
-    except Exception as e:
-        raise DemistoException(f'Failed to generate new RSA keys.\n{e}')
-
-    return_results(fileResult('xsoar-public-key', integration_context['public_key'], EntryType.ENTRY_INFO_FILE))
-    return_results('Keys created successfully.')
+    raise DemistoException('Private key is not defined.')
 
 
 def encrypt(text_to_encrypt: str) -> str:
@@ -204,7 +132,6 @@ def encrypt_file(args) -> Dict:
         args:
             - entry_id (str): The entry ID of the file to encrypt.
 
-
     Returns:
         Dict. fileResult object.
     """
@@ -226,8 +153,10 @@ def encrypt_file(args) -> Dict:
             base64_encrypted_content,
             EntryType.ENTRY_INFO_FILE,
         )
+
     except DemistoException:
         raise
+
     except Exception as e:
         raise DemistoException(f'Could not encrypt file.\n{e}')
 
@@ -269,8 +198,10 @@ def decrypt_file(args) -> Union[Dict, str]:
             decrypted_content,
             EntryType.ENTRY_INFO_FILE,
         )
+
     except DemistoException:
         raise
+
     except Exception as e:
         raise DemistoException(f'Could not decrypt file.\n{e}\n{file_content}')
 
@@ -295,28 +226,7 @@ def export_public_key(args):
     )
 
 
-def export_private_key(args):
-    """Exports the private key to file.
-
-    Args:
-        args:
-            - output_file_name (str): The name of the output file.
-
-    Returns:
-        Dict. fileResult object.
-    """
-    private_key = get_private_key()
-
-    output_file_name = args['output_file_name']
-    return fileResult(
-        output_file_name,
-        private_key.save_pkcs1().decode('utf-8'),
-        EntryType.ENTRY_INFO_FILE,
-    )
-
-
 def main() -> None:
-    params = demisto.params()
     args = demisto.args()
 
     commands = {
@@ -325,7 +235,6 @@ def main() -> None:
         'encryption-tools-encrypt-file': encrypt_file,
         'encryption-tools-decrypt-file': decrypt_file,
         'encryption-tools-export-public-key': export_public_key,
-        'encryption-tools-export-private-key': export_private_key,
     }
 
     command = demisto.command()
@@ -334,9 +243,6 @@ def main() -> None:
     try:
         if command == 'test-module':
             test_module()
-
-        if command == 'encryption-tools-create-keys':
-            create_keys(params, args)
 
         elif command in commands:
             return_results(commands[command](args))

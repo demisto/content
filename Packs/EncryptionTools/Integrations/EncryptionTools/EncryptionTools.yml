@@ -18,29 +18,6 @@ description: Encryption Tools - Encrypt and Decrypt text and files.
 script:
   commands:
     - arguments:
-        - default: false
-          description: The number of bits required to store (n = p * q). Default is 512.
-          isArray: false
-          name: nbits
-          required: true
-          secret: false
-        - auto: PREDEFINED
-          default: false
-          defaultValue: "false"
-          description: Whether to override the current generated keys.
-          isArray: false
-          name: override_keys
-          required: false
-          secret: false
-          predefined:
-            - "true"
-            - "false"
-      deprecated: false
-      description: Create new RSA keys.
-      execution: false
-      name: encryption-tools-create-keys
-      outputs: []
-    - arguments:
         - default: true
           description: The text to encrypt.
           isArray: false
@@ -121,16 +98,6 @@ script:
           required: true
           isArray: false
       outputs: []
-    - name: encryption-tools-export-private-key
-      description: Exports the private key to a file.
-      deprecated: false
-      arguments:
-        - name: output_file_name
-          description: The name of the output file.
-          required: true
-          isArray: false
-      outputs: []
-      execution: true
   dockerimage: demisto/btfl-soup:1.0.1.20928
   feed: false
   isfetch: false

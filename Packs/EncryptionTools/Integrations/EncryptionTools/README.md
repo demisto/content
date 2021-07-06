@@ -1,4 +1,4 @@
-Encryption Tools - Encrypt and Decrypt text and files. 
+Encryption Tools - Encrypt and Decrypt text and files.
 
 ## Configure EncryptionTools on Cortex XSOAR
 
@@ -17,34 +17,6 @@ Encryption Tools - Encrypt and Decrypt text and files.
 
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook. After you
 successfully execute a command, a DBot message appears in the War Room with the command details.
-
-### encryption-tools-create-keys
-
-***
-Create new RSA keys.
-
-#### Base Command
-
-`encryption-tools-create-keys`
-
-#### Input
-
-| **Argument Name** | **Description**                                                                                     | **Required** |
-| ----------------- | --------------------------------------------------------------------------------------------------- | ------------ |
-| nbits             | The number of bits required to store (n = p * q). Default is 512.                                   | Required     |
-| override_keys     | Whether to override the current generated keys. Possible values are: true, false. Default is false. | Optional     |
-
-#### Context Output
-
-There is no context output for this command.
-
-#### Command Example
-
-```!encryption-tools-create-keys override_keys=true```
-
-#### Human Readable Output
-
-> Keys created successfully.
 
 ### encryption-tools-encrypt-text
 
@@ -103,9 +75,10 @@ There is no context output for this command.
 > XSOAR
 
 #### Usage Recommendations:
-The output of this command is the decrypted value, which may be sensitive data.
-In order to wrap the output and prevent the data from being printed to the war room you should call the command from a script using the following code:
-`decrypted_content = execute_command('encryption-tools-decrypt-text', {'base64_to_decrypt': <decrypted_striing>'}, True)`
+
+The output of this command is the decrypted value, which may be sensitive data. In order to wrap the output and prevent
+the data from being printed to the war room you should call the command from a script using the following code:
+`decrypted_content = execute_command('encryption-tools-decrypt-text', {'base64_to_decrypt': <decrypted_string>'}, True)`
 
 ### encryption-tools-encrypt-file
 
@@ -118,11 +91,12 @@ Encrypt file.
 
 #### Input
 
-| **Argument Name** | **Description**                                                                               | **Required** |
-| ----------------- | --------------------------------------------------------------------------------------------- | ------------ |
-| entry_id          | The entry ID of the file to encrypt.                                                          | Required     |
-| output_as_file    | Whether to output the decrypted data to file. Default is "true".                              | Optional     |
-| output_file_name  | The name of the output encrypted file. If not provided, the "encrypted" suffix will be added. | Optional     |
+| **Argument Name** | **Description**                                                                               | **
+| Required**       |
+| ---------------- | --------------------------------------------------------------------------------------------- | -------- |
+| entry_id         | The entry ID of the file to encrypt.                                                          | Required |
+| output_as_file   | Whether to output the decrypted data to file. Default is "true".                              | Optional |
+| output_file_name | The name of the output encrypted file. If not provided, the "encrypted" suffix will be added. | Optional |
 
 #### Context Output
 
@@ -134,7 +108,7 @@ There is no context output for this command.
 
 #### Human Readable Output
 
->File Output.
+> File Output.
 
 ### encryption-tools-decrypt-file
 
@@ -147,10 +121,11 @@ Decrypt file.
 
 #### Input
 
-| **Argument Name** | **Description**                                                                               | **Required** |
-| ----------------- | --------------------------------------------------------------------------------------------- | ------------ |
-| entry_id          | The entry ID of the file to decrypt.                                                          | Required     |
-| output_file_name  | The name of the output decrypted file. If not provided, the "decrypted" suffix will be added. | Optional     |
+| **Argument Name** | **Description**                                                                               | **
+| Required**       |
+| ---------------- | --------------------------------------------------------------------------------------------- | -------- |
+| entry_id         | The entry ID of the file to decrypt.                                                          | Required |
+| output_file_name | The name of the output decrypted file. If not provided, the "decrypted" suffix will be added. | Optional |
 
 #### Context Output
 
@@ -162,13 +137,13 @@ There is no context output for this command.
 
 #### Human Readable Output
 
->File Output.
+> File Output.
 
 #### Usage Recommendations:
-The output of this command is the decrypted file, which might include be sensitive data.
-In order to wrap the output and prevent the file from being printed to the war room you should call the command from a script using the following code:
-`decrypted_content = execute_command('encryption-tools-decrypt-file', {'entry_id': <your_entry_id>, 'output_as_file': 'false'}, True)`
 
+The output of this command is the decrypted file, which might include be sensitive data. In order to wrap the output and
+prevent the file from being printed to the war room you should call the command from a script using the following code:
+`decrypted_content = execute_command('encryption-tools-decrypt-file', {'entry_id': <your_entry_id>, 'output_as_file': 'false'}, True)`
 
 ### encryption-tools-export-public-key
 
@@ -195,32 +170,4 @@ There is no context output for this command.
 
 #### Human Readable Output
 
->File Output.
-
-
-### encryption-tools-export-private-key
-
-***
-Exports the private key to a file.
-
-#### Base Command
-
-`encryption-tools-export-private-key`
-
-#### Input
-
-| **Argument Name** | **Description**              | **Required** |
-| ----------------- | ---------------------------- | ------------ |
-| output_file_name  | The name of the output file. | Required     |
-
-#### Context Output
-
-There is no context output for this command.
-
-#### Command Example
-
-```!encryption-tools-export-private-key output_file_name=private_key.txt```
-
-#### Human Readable Output
-
->File Output.
+> File Output.
