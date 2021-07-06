@@ -4,7 +4,7 @@ from http import HTTPStatus
 from intezer_sdk import consts
 from intezer_sdk.api import IntezerApi
 
-from Packs.Intezer.Integrations.IntezerV2.IntezerV2 import analyze_by_hash_command
+from IntezerV2 import analyze_by_hash_command
 
 fake_api_key = str(uuid.uuid4())
 intezer_api = IntezerApi(consts.API_VERSION, fake_api_key, consts.BASE_URL)

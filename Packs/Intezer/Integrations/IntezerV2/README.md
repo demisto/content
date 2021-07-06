@@ -430,6 +430,31 @@ intezer-get-sub-analyses analysis_id=<Root analysis>
 intezer-get-analysis-code-reuse analysis_id=<Root analysis> sub_analysis_id=<Sub Analysis Id>
 ```
 
+#### Context Example
+```
+{
+    "Intezer.Analysis": {
+        "Status": "Done", 
+        "type": "File", 
+        "ID": "675515a1-62e9-4d55-880c-fd46a7963a56",
+        "CodeReuse": {
+            "common_gene_count": 10,
+            "gene_count": 100,
+            "gene_type": "native_windows",
+            "unique_gene_count": 50
+        },
+        "CodeReuseFamilies": [
+            {
+                "family_id": "5be245ca-793c-4991-9329-c42d6365a530",
+                "family_name": "Microsoft Corporation",
+                "family_type": "application",
+                "reused_gene_count": 8
+            }
+        ]
+    }
+}
+```
+
 #### Human Readable Output
 This will show information about the analysis code reuse and families
 
@@ -499,6 +524,31 @@ intezer-get-sub-analyses analysis_id=<Root analysis>
 
 # Use one of the results to get the sub analysis code reuse
 intezer-get-analysis-metadata analysis_id=<Root analysis> sub_analysis_id=<Sub Analysis Id>
+```
+
+#### Context Example
+```
+{
+    "Intezer.Analysis": {
+        "Status": "Done", 
+        "type": "File", 
+        "ID": "675515a1-62e9-4d55-880c-fd46a7963a56",
+        "Metadata": {
+            "sha1": "<sha1>",
+            "sha256": "<sha256>",
+            "md5": "<md5>",
+            "product": "product name",
+            "product_version": "5.4",
+            "ssdeep": "<ssdeep>",
+            "size_in_bytes": 15540,
+            "architecture": "i386",
+            "original_filename": "myfile.exe",
+            "compilation_timestamp": "2019:07:26 18:23:19+00:00",
+            "file_type": "pe",
+            "company": "Microsoft"
+        }
+    }
+}
 ```
 
 #### Human Readable Output
