@@ -46,4 +46,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![Setup Account](./../../doc_files/Rss_create_indicators_playbook_image.png)
+![Setup Account](./../doc_files/Rss_create_indicators_playbook_image.png)
