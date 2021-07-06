@@ -1942,7 +1942,6 @@ tasks:
     nexttasks:
       '#none#':
       - "37"
-      - "108"
     separatecontext: false
     view: |-
       {
@@ -2041,141 +2040,16 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "107":
-    id: "107"
-    taskid: 6fe019cf-47ed-4627-8f53-525a55320c74
-    type: regular
-    task:
-      id: 6fe019cf-47ed-4627-8f53-525a55320c74
-      version: -1
-      name: Block the sender's email address (separate checks, don't use in generic)
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "43"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 2250,
-          "y": 4435
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "108":
-    id: "108"
-    taskid: e163a274-7899-490c-8509-619415198d4c
-    type: condition
-    task:
-      id: e163a274-7899-490c-8509-619415198d4c
-      version: -1
-      name: Should the email of the campaign sender be blocked?
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "43"
-      "yes":
-      - "109"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              complex:
-                root: inputs.BlockSenderEmail
-            iscontext: true
-          right:
-            value:
-              simple: "True"
-          ignorecase: true
-    view: |-
-      {
-        "position": {
-          "x": 1990,
-          "y": 4075
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "109":
-    id: "109"
-    taskid: 67ccba80-40e0-4034-88d2-8de0bd587a8d
-    type: condition
-    task:
-      id: 67ccba80-40e0-4034-88d2-8de0bd587a8d
-      version: -1
-      name: Is the sender using an internal email address?
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "107"
-      "yes":
-      - "43"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              complex:
-                root: Account.Email
-                filters:
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: Account.Email.NetworkType
-                      iscontext: true
-                    right:
-                      value:
-                        simple: Internal
-                    ignorecase: true
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: Account.Email.Address
-                      iscontext: true
-                    right:
-                      value:
-                        simple: EmailCampaign.incidents..emailfrom
-                      iscontext: true
-                    ignorecase: true
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 2250,
-          "y": 4245
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "123":
     id: "123"
-    taskid: 5558ddc6-8906-4ea2-82ff-59e89fa0a1a2
+    taskid: 164f85dc-16f8-4ee8-8ced-20b4d0b4a401
     type: condition
     task:
-      id: 5558ddc6-8906-4ea2-82ff-59e89fa0a1a2
+      id: 164f85dc-16f8-4ee8-8ced-20b4d0b4a401
       version: -1
       name: Was the incident part of a phishing campaign?
+      description: Checks whether the current incident was found to be part of a phishing
+        campaign.
       type: condition
       iscommand: false
       brand: ""
@@ -2250,12 +2124,15 @@ tasks:
     quietmode: 0
   "129":
     id: "129"
-    taskid: 5a98eba4-ec87-4c57-8143-b047248b1a1f
+    taskid: b1566762-b6ff-4cd1-83c9-d77dcd34dd9f
     type: condition
     task:
-      id: 5a98eba4-ec87-4c57-8143-b047248b1a1f
+      id: b1566762-b6ff-4cd1-83c9-d77dcd34dd9f
       version: -1
       name: Manually decide where to search & delete the email
+      description: Allows the analyst to decide where to search for and delete the
+        email from - is it from the mailbox of the recipient, or from all available
+        mailboxes?
       type: condition
       iscommand: false
       brand: ""
@@ -2333,8 +2210,6 @@ tasks:
 view: |-
   {
     "linkLabelsPosition": {
-      "108_109_yes": 0.51,
-      "109_43_yes": 0.12,
       "129_95_Single Mailbox": 0.58,
       "129_96_All Mailboxes": 0.57,
       "15_31_#default#": 0.6,
@@ -2352,7 +2227,7 @@ view: |-
     "paper": {
       "dimensions": {
         "height": 5560,
-        "width": 3772.5,
+        "width": 3172.5,
         "x": -1142.5,
         "y": -90
       }
