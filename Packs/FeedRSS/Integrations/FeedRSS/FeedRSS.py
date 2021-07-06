@@ -105,7 +105,8 @@ class Client(BaseClient):
         return report_content
 
 
-def fetch_indicators(client: Client, feed_response: Response):
+def fetch_indicators(client: Client):
+    feed_response = client.request_feed_url()
     client.parse_feed_data(feed_response)
     parsed_indicators = client.create_indicators_from_response()
     return parsed_indicators
@@ -132,7 +133,8 @@ def get_indicators(client: Client, indicators: list, args: dict) -> CommandResul
     )
 
 
-def check_feed(client: Client, feed_response: Response) -> str:
+def check_feed(client: Client) -> str:
+    feed_response = client.request_feed_url()
     if feed_response and 'html' in feed_response.headers['content-type']:
         raise DemistoException(f'{feed_response.url} is not rss feed url. Try look for a url containing xml format data,'
                                f' that could be found under urls with \'feed\' prefix or suffix.')
@@ -164,17 +166,14 @@ def main():
                         content_max_size=int(params.get('max_size', '45')))
 
         if command == 'test-module':
-            feed_response = client.request_feed_url()
-            return_results(check_feed(client, feed_response))
+            return_results(check_feed(client))
 
         elif command == 'rss-get-indicators':
-            feed_response = client.request_feed_url()
-            parsed_indicators = fetch_indicators(client, feed_response)
+            parsed_indicators = fetch_indicators(client)
             return_results(get_indicators(client, parsed_indicators, demisto.args()))
 
         elif command == 'fetch-indicators':
-            feed_response = client.request_feed_url()
-            parsed_indicators = fetch_indicators(client, feed_response)
+            parsed_indicators = fetch_indicators(client)
             for iter_ in batch(parsed_indicators, batch_size=2000):
                 demisto.createIndicators(iter_)
         else:
