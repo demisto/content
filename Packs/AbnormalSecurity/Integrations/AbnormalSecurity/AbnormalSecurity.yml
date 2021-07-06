@@ -1,6 +1,6 @@
 category: Data Enrichment & Threat Intelligence
 commonfields:
-  id: AbnormalSecurity
+  id: Abnormal Security
   version: -1
 configuration:
 - defaultvalue: https://api.abnormalplatform.com/v1
@@ -23,8 +23,10 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: "Abnormal Security detects the whole spectrum of email attacks, from vendor email compromise and spear-phishing to unwanted email spam and graymail. \
-To stop these advanced attacks, Abnormal leverages the industry’s most advanced behavioral data science to baseline known good behavior and detects anomalies."
+description: "Abnormal Security detects the whole spectrum of email attacks, from\
+  \ vendor email compromise and spear-phishing to unwanted email spam and graymail.\
+  \ To stop these advanced attacks, Abnormal leverages the industry’s most advanced\
+  \ behavioral data science to baseline known good behavior and detects anomalies."
 display: Abnormal Security
 name: Abnormal Security
 script:
@@ -32,7 +34,7 @@ script:
   - arguments:
     - description: A string representing the case
       isArray: false
-      name: caseId
+      name: case_id
       required: true
     - description: A UUID representing the action id for a case
       isArray: false
@@ -43,35 +45,36 @@ script:
       name: mock-data
       required: false
     description: Check the status of an action requested on a case.
-    name: abxcortexxsoar-check-the-status-of-an-action-requested-on-a-case
+    name: abnormal-security-check-case-action-status
     outputs:
     - contextPath: AbnormalSecurity.ActionStatus.status
-      description: ''
+      description: Status of the case after an action is performed
       type: String
-    - contextPath: AbxCortexXSOAR.ActionStatus.description
-      description: ''
+    - contextPath: AbnormalSecurity.ActionStatus.description
+      description: Detailed description of the status
       type: String
   - arguments:
-    - description: A UUID representing the threat.
+    - description: "A UUID representing a threat campaign. Full list of threat IDs \
+        can be obtained by first running the command to list a threat"
       isArray: false
-      name: threatId
+      name: threat_id
       required: true
     - description: A UUID representing the action id for a threat.
       isArray: false
-      name: actionId
+      name: action_id
       required: true
     - description: Returns test data if set to `True`
       isArray: false
       name: mock-data
       required: false
     description: Check the status of an action requested on a threat.
-    name: abxcortexxsoar-check-the-status-of-an-action-requested-on-a-threat
+    name: abnormal-security-check-threat-action-status
     outputs:
-    - contextPath: AbxCortexXSOAR.ActionStatus.status
-      description: ''
+    - contextPath: AbnormalSecurity.ActionStatus.status
+      description: The status of a threat after performing an action on it
       type: String
-    - contextPath: AbxCortexXSOAR.ActionStatus.description
-      description: ''
+    - contextPath: AbnormalSecurity.ActionStatus.description
+      description: The description of the status
       type: String
   - arguments:
     - description: Value must be of the format `filter={FILTER KEY} gte YYYY-MM-DDTHH:MM:SSZ
@@ -82,37 +85,37 @@ script:
       isArray: false
       name: filter
       required: false
-    - description: Number of cases that are on each page. Each page of data will have
-        at most pageSize threats. Has no effect if filter is not specified.
+    - description: "Number of cases that are on each page. Each page of data will have
+        at most page_size threats. Has no effect if filter is not specified."
       isArray: false
-      name: pageSize
+      name: page_size
       required: false
-    - description: 1-indexed page number to get a particular page of cases. Has no
-        effect if filter is not specified.
+    - description: "1-indexed page number to get a particular page of cases. Has no
+        effect if filter is not specified."
       isArray: false
-      name: pageNumber
+      name: page_number
       required: false
     - description: Returns test data if set to `True`
       isArray: false
       name: mock-data
       required: false
     description: Get a list of Abnormal cases identified by Abnormal Security
-    name: abxcortexxsoar-get-a-list-of-abnormal-cases-identified-by-abnormal-security
+    name: abnormal-security-list-abnormal-cases-identified-by-abnormal-security
     outputs:
-    - contextPath: AbxCortexXSOAR.inline_response_200_1.cases.caseId
+    - contextPath: AbnormalSecurity.inline_response_200_1.cases.case_id
       description: A unique identifier for this case.
       type: String
-    - contextPath: AbxCortexXSOAR.inline_response_200_1.cases.severity
+    - contextPath: AbnormalSecurity.inline_response_200_1.cases.severity
       description: Description of the severity level for this case.
       type: String
-    - contextPath: AbxCortexXSOAR.inline_response_200_1.pageNumber
-      description: The current page number. Will not be be in the response if no filter
-        query meter is passed in via the request.
+    - contextPath: AbnormalSecurity.inline_response_200_1.page_number
+      description: "The current page number. Will not be be in the response if no filter
+        query meter is passed in via the request."
       type: Number
-    - contextPath: AbxCortexXSOAR.inline_response_200_1.nextPageNumber
-      description: The next page number. Will not be included in the response if there
+    - contextPath: AbnormalSecurity.inline_response_200_1.nextpage_number
+      description: "The next page number. Will not be included in the response if there
         are no more pages of data or if no filter query meter is passed in via the
-        request
+        request"
       type: Number
   - arguments:
     - description: Value must be of the format `filter={FILTER KEY} gte YYYY-MM-DDTHH:MM:SSZ
@@ -124,14 +127,14 @@ script:
       name: filter
       required: false
     - description: Number of threats that on in each page. Each page of data will
-        have at most pageSize threats. Has no effect if filter is not specified.
+        have at most page_size threats. Has no effect if filter is not specified.
       isArray: false
-      name: pageSize
+      name: page_size
       required: false
     - description: 1-indexed page number to get a particular page of threats. Has
         no effect if filter is not specified.
       isArray: false
-      name: pageNumber
+      name: page_number
       required: false
     - description: Returns test data if set to `True`
       isArray: false
@@ -142,17 +145,17 @@ script:
       name: source
       required: false
     description: Get a list of threats
-    name: abxcortexxsoar-get-a-list-of-threats
+    name: abnormal-security-list-threats
     outputs:
-    - contextPath: AbxCortexXSOAR.inline_response_200.threats.threatId
+    - contextPath: AbnormalSecurity.inline_response_200.threats.threat_id
       description: An id which maps to a threat campaign. A threat campaign might
         be received by multiple users.
       type: String
-    - contextPath: AbxCortexXSOAR.inline_response_200.pageNumber
+    - contextPath: AbnormalSecurity.inline_response_200.page_number
       description: The current page number. Will not be be in the response if no filter
         query  meter is passed in via the request.
       type: Number
-    - contextPath: AbxCortexXSOAR.inline_response_200.nextPageNumber
+    - contextPath: AbnormalSecurity.inline_response_200.nextpage_number
       description: The next page number. Will not be included in the response if there
         are no more pages of data or if no filter query meter is passed in via the
         request
@@ -160,114 +163,114 @@ script:
   - arguments:
     - description: A UUID representing the threat.
       isArray: false
-      name: threatId
+      name: threat_id
       required: true
     - description: Returns test data if set to `True`
       isArray: false
       name: mock-data
       required: false
     description: Get details of a threat
-    name: abxcortexxsoar-get-details-of-a-threat
+    name: abnormal-security-get-threat
     outputs:
-    - contextPath: AbxCortexXSOAR.ThreatDetails.threatId
+    - contextPath: AbnormalSecurity.ThreatDetails.threat_id
       description: An id which maps to a threat campaign. A threat campaign might
         be received by multiple users.
       type: String
-    - contextPath: AbxCortexXSOAR.ThreatDetails.messages.threatId
+    - contextPath: AbnormalSecurity.ThreatDetails.messages.threat_id
       description: An id which maps to a threat campaign. A threat campaign might
         be received by multiple users.
       type: String
-    - contextPath: AbxCortexXSOAR.ThreatDetails.messages.abxMessageId
+    - contextPath: AbnormalSecurity.ThreatDetails.messages.abxMessageId
       description: A unique identifier for an individual message within a threat (i.e
         email campaign).
       type: Number
-    - contextPath: AbxCortexXSOAR.ThreatDetails.messages.abxPortalUrl
+    - contextPath: AbnormalSecurity.ThreatDetails.messages.abxPortalUrl
       description: The URL at which the specific message details are viewable in Abnormal
         Security's Portal web interface.
       type: String
-    - contextPath: AbxCortexXSOAR.ThreatDetails.messages.subject
+    - contextPath: AbnormalSecurity.ThreatDetails.messages.subject
       description: The email subject.
       type: String
-    - contextPath: AbxCortexXSOAR.ThreatDetails.messages.fromAddress
+    - contextPath: AbnormalSecurity.ThreatDetails.messages.fromAddress
       description: The email address of the sender.
       type: String
-    - contextPath: AbxCortexXSOAR.ThreatDetails.messages.fromName
+    - contextPath: AbnormalSecurity.ThreatDetails.messages.fromName
       description: The display name of the sender.
       type: String
-    - contextPath: AbxCortexXSOAR.ThreatDetails.messages.toAddresses
+    - contextPath: AbnormalSecurity.ThreatDetails.messages.toAddresses
       description: All the email addresses to which the message was sent, comma-se
         ted & truncated at 255 chars.
       type: String
-    - contextPath: AbxCortexXSOAR.ThreatDetails.messages.recipientAddress
+    - contextPath: AbnormalSecurity.ThreatDetails.messages.recipientAddress
       description: the email address of the user who actually received the message.
       type: String
-    - contextPath: AbxCortexXSOAR.ThreatDetails.messages.receivedTime
+    - contextPath: AbnormalSecurity.ThreatDetails.messages.receivedTime
       description: The timestamp at which this message arrived.
       type: String
-    - contextPath: AbxCortexXSOAR.ThreatDetails.messages.sentTime
+    - contextPath: AbnormalSecurity.ThreatDetails.messages.sentTime
       description: The timestamp at which this message was sent.
       type: String
-    - contextPath: AbxCortexXSOAR.ThreatDetails.messages.internetMessageId
+    - contextPath: AbnormalSecurity.ThreatDetails.messages.internetMessageId
       description: The internet message ID, per RFC 822
       type: String
-    - contextPath: AbxCortexXSOAR.ThreatDetails.messages.autoRemediated
+    - contextPath: AbnormalSecurity.ThreatDetails.messages.autoRemediated
       description: Abnormal has automatically detected and remediated this message
         from the user's mailbox.
       type: Boolean
-    - contextPath: AbxCortexXSOAR.ThreatDetails.messages.postRemediated
+    - contextPath: AbnormalSecurity.ThreatDetails.messages.postRemediated
       description: Email campaigns that were remediated at a later time, after landing
         in user's mailbox.
       type: Boolean
-    - contextPath: AbxCortexXSOAR.ThreatDetails.messages.attackType
+    - contextPath: AbnormalSecurity.ThreatDetails.messages.attackType
       description: The type of threat the message represents.
       type: String
-    - contextPath: AbxCortexXSOAR.ThreatDetails.messages.attackStrategy
-      description: ''
+    - contextPath: AbnormalSecurity.ThreatDetails.messages.attackStrategy
+      description: The attack strategy identified to be used by a threat campaign
       type: String
-    - contextPath: AbxCortexXSOAR.ThreatDetails.messages.returnPath
-      description: ''
+    - contextPath: AbnormalSecurity.ThreatDetails.messages.returnPath
+      description: The potential path where information is returned to the attacker
       type: String
-    - contextPath: AbxCortexXSOAR.ThreatDetails.messages.senderIpAddress
+    - contextPath: AbnormalSecurity.ThreatDetails.messages.senderIpAddress
       description: IP address of sender.
       type: String
-    - contextPath: AbxCortexXSOAR.ThreatDetails.messages.impersonatedParty
+    - contextPath: AbnormalSecurity.ThreatDetails.messages.impersonatedParty
       description: Impersonated party, if any.
       type: String
-    - contextPath: AbxCortexXSOAR.ThreatDetails.messages.attackVector
+    - contextPath: AbnormalSecurity.ThreatDetails.messages.attackVector
       description: The attack medium.
       type: String
-    - contextPath: AbxCortexXSOAR.ThreatDetails.messages.remediationTimestamp
+    - contextPath: AbnormalSecurity.ThreatDetails.messages.remediationTimestamp
       description: The timestamp at which this message was remediated, or empty if
         it has not been remediated.
       type: String
-    - contextPath: AbxCortexXSOAR.ThreatDetails.messages.isRead
+    - contextPath: AbnormalSecurity.ThreatDetails.messages.isRead
       description: Whether an email has been read
       type: Boolean
-    - contextPath: AbxCortexXSOAR.ThreatDetails.messages.attackedParty
+    - contextPath: AbnormalSecurity.ThreatDetails.messages.attackedParty
       description: The party that was targeted by an attack.
       type: String
   - arguments:
     - description: A string representing the case
       isArray: false
-      name: caseId
+      name: case_id
       required: true
     - description: Returns test data if set to `True`
       isArray: false
       name: mock-data
       required: false
     description: Get details of an Abnormal case
-    name: abxcortexxsoar-get-details-of-an-abnormal-case
+    name: abnormal-security-get-abnormal-case
     outputs:
-    - contextPath: AbxCortexXSOAR.AbnormalCaseDetails.caseId
+    - contextPath: AbnormalSecurity.AbnormalCaseDetails.case_id
       description: A unique identifier for this case.
       type: String
-    - contextPath: AbxCortexXSOAR.AbnormalCaseDetails.severity
+    - contextPath: AbnormalSecurity.AbnormalCaseDetails.severity
       description: Description of the severity level for this case.
       type: String
-    - contextPath: AbxCortexXSOAR.AbnormalCaseDetails.affectedEmployee
+    - contextPath: AbnormalSecurity.AbnormalCaseDetails.affectedEmployee
       description: Which employee this case pertains to.
       type: String
-    - contextPath: AbxCortexXSOAR.AbnormalCaseDetails.firstObserved
+    - contextPath: AbnormalSecurity.AbnormalCaseDetails.firstObserved
       description: First time suspicious behavior was observed.
       type: String
   - arguments:
@@ -276,11 +279,11 @@ script:
       name: mock-data
       required: false
     description: Get the latest threat intel feed.
-    name: abxcortexxsoar-get-the-latest-threat-intel-feed
+    name: abnormal-security-get-latest-threat-intel-feed
   - arguments:
     - description: A UUID representing the threat.
       isArray: false
-      name: threatId
+      name: threat_id
       required: true
     - description: Action to perform on threat
       isArray: false
@@ -291,11 +294,11 @@ script:
       name: mock-data
       required: false
     description: Manage a Threat identified by Abnormal Security
-    name: abxcortexxsoar-manage-a-threat-identified-by-abnormal-security
+    name: abnormal-security-manage-threat-identified-by-abnormal-security
   - arguments:
     - description: A string representing the case
       isArray: false
-      name: caseId
+      name: case_id
       required: true
     - description: Action to perform on case
       isArray: false
@@ -306,18 +309,28 @@ script:
       name: mock-data
       required: false
     description: Manage an Abnormal Case.
-    name: abxcortexxsoar-manage-an-abnormal-case
+    name: abnormal-security-manage-abnormal-case
   - arguments:
     - description: Returns test data if set to `True`
       isArray: false
       name: mock-data
       required: false
+    - description: Email of the reporter
+      isArray: false
+      name: reporter
+      required: true
+    - description: Type of misjudgement reported
+      isArray: false
+      name: report_type
+      required: true
     description: Submit an Inquiry to request a report on misjudgement by Abnormal
       Security
-    name: abxcortexxsoar-submit-an-inquiry-to-request-a-report-on-misjudgement-by-abnormal-security
+    name: abnormal-security-submit-inquiry-to-request-a-report-on-misjudgement-by-abnormal-security
   dockerimage: demisto/python3:3.9.5.21272
   isfetch: false
   script: ''
   subtype: python3
   type: python
 fromversion: 6.0.0
+tests:
+- No tests (auto formatted)

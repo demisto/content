@@ -2,7 +2,7 @@ import pytest
 import demistomock as demisto
 import io
 import json
-from AbxCortexXSOAR import Client, check_the_status_of_an_action_requested_on_a_case_command, \
+from AbnormalSecurity import Client, check_the_status_of_an_action_requested_on_a_case_command, \
     check_the_status_of_an_action_requested_on_a_threat_command, \
     get_a_list_of_abnormal_cases_identified_by_abnormal_security_command, get_a_list_of_threats_command, \
     get_details_of_an_abnormal_case_command, manage_a_threat_identified_by_abnormal_security_command, \
@@ -59,7 +59,7 @@ def test_check_the_status_of_an_action_requested_on_a_case_command(mocker):
     client = mock_client(mocker, util_load_json('test_data/test_check_status_of_action_requested_on_threat.json'))
     results = check_the_status_of_an_action_requested_on_a_case_command(client, {})
     assert results.outputs.get('status') == 'acknowledged'
-    assert results.outputs_prefix == 'AbxCortexXSOAR.ActionStatus'
+    assert results.outputs_prefix == 'AbnormalSecurity.ActionStatus'
 
 
 def test_check_the_status_of_an_action_requested_on_a_threat_command(mocker):
@@ -73,7 +73,7 @@ def test_check_the_status_of_an_action_requested_on_a_threat_command(mocker):
     client = mock_client(mocker, util_load_json('test_data/test_check_status_of_action_requested_on_threat.json'))
     results = check_the_status_of_an_action_requested_on_a_threat_command(client, {})
     assert results.outputs.get('status') == 'acknowledged'
-    assert results.outputs_prefix == 'AbxCortexXSOAR.ActionStatus'
+    assert results.outputs_prefix == 'AbnormalSecurity.ActionStatus'
 
 
 def test_get_a_list_of_abnormal_cases_identified_by_abnormal_security_command(mocker):
@@ -89,7 +89,7 @@ def test_get_a_list_of_abnormal_cases_identified_by_abnormal_security_command(mo
     assert results.outputs.get('cases')[0].get('caseId') == '1234'
     assert results.outputs.get('pageNumber', 0) > 0
     assert results.outputs.get('nextPageNumber') == results.outputs.get('pageNumber', 0) + 1
-    assert results.outputs_prefix == 'AbxCortexXSOAR.inline_response_200_1'
+    assert results.outputs_prefix == 'AbnormalSecurity.inline_response_200_1'
 
 
 def test_get_a_list_of_threats_command(mocker):
@@ -105,7 +105,7 @@ def test_get_a_list_of_threats_command(mocker):
     assert results.outputs.get('threats')[0].get('threatId') == '184712ab-6d8b-47b3-89d3-a314efef79e2'
     assert results.outputs.get('pageNumber', 0) > 0
     assert results.outputs.get('nextPageNumber') == results.outputs.get('pageNumber', 0) + 1
-    assert results.outputs_prefix == 'AbxCortexXSOAR.inline_response_200'
+    assert results.outputs_prefix == 'AbnormalSecurity.inline_response_200'
 
 
 def test_get_details_of_an_abnormal_case_command(mocker):
@@ -120,7 +120,7 @@ def test_get_details_of_an_abnormal_case_command(mocker):
     results = get_details_of_an_abnormal_case_command(client, {})
     assert results.outputs.get('caseId') == '1234'
     assert results.outputs.get('threatIds')[0] == '184712ab-6d8b-47b3-89d3-a314efef79e2'
-    assert results.outputs_prefix == 'AbxCortexXSOAR.AbnormalCaseDetails'
+    assert results.outputs_prefix == 'AbnormalSecurity.AbnormalCaseDetails'
 
 
 def test_manage_a_threat_identified_by_abnormal_security_command_failure(mocker):
@@ -146,7 +146,7 @@ def test_manage_a_threat_identified_by_abnormal_security_command_success(mocker)
     client = mock_client(mocker, util_load_json('test_data/test_manage_threat.json'))
     results = manage_a_threat_identified_by_abnormal_security_command(client, {})
     assert results.outputs.get('action_id') == '61e76395-40d3-4d78-b6a8-8b17634d0f5b'
-    assert results.outputs_prefix == 'AbxCortexXSOAR'
+    assert results.outputs_prefix == 'AbnormalSecurity'
 
 
 def test_manage_an_abnormal_case_command_failure(mocker):
@@ -172,7 +172,7 @@ def test_manage_an_abnormal_case_command_success(mocker):
     client = mock_client(mocker, util_load_json('test_data/test_manage_case.json'))
     results = manage_an_abnormal_case_command(client, {})
     assert results.outputs.get('action_id') == '61e76395-40d3-4d78-b6a8-8b17634d0f5b'
-    assert results.outputs_prefix == 'AbxCortexXSOAR'
+    assert results.outputs_prefix == 'AbnormalSecurity'
 
 
 def test_submit_an_inquiry_to_request_a_report_on_misjudgement_by_abnormal_security_command(mocker):
@@ -183,8 +183,13 @@ def test_submit_an_inquiry_to_request_a_report_on_misjudgement_by_abnormal_secur
             - Assert output prefix data is as expected
     """
     client = mock_client(mocker, "Thank you for your feedback! We have sent your inquiry to our support staff.")
-    results = submit_an_inquiry_to_request_a_report_on_misjudgement_by_abnormal_security_command(client, {})
-    assert results.outputs_prefix == 'AbxCortexXSOAR'
+    args = {
+        "reporter": "abc@def.com",
+        "report_type": "false-positive"
+    }
+
+    results = submit_an_inquiry_to_request_a_report_on_misjudgement_by_abnormal_security_command(client, args)
+    assert results.outputs_prefix == 'AbnormalSecurity'
 
 
 def test_get_the_latest_threat_intel_feed_command(mocker):
@@ -195,5 +200,5 @@ def test_get_the_latest_threat_intel_feed_command(mocker):
             - Assert output prefix data is as expected
     """
     client = mock_client(mocker, util_load_json('test_data/test_get_threat_intel_feed.json'))
-    results = get_the_latest_threat_intel_feed_command(client, {})
-    assert results.outputs_prefix == 'AbxCortexXSOAR'
+    results = get_the_latest_threat_intel_feed_command(client)
+    assert results.outputs_prefix == 'AbnormalSecurity'

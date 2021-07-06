@@ -3,28 +3,29 @@ from CommonServerPython import *
 
 import requests
 
+requests.packages.urllib3.disable_warnings()
+
 
 class Client(BaseClient):
     def __init__(self, server_url, verify, proxy, headers, auth):
         super().__init__(base_url=server_url, verify=verify, proxy=proxy, headers=headers, auth=auth)
 
-    def check_the_status_of_an_action_requested_on_a_case_request(self, caseId, actionId, mock_data):
+    def check_the_status_of_an_action_requested_on_a_case_request(self, case_id, action_id):
         headers = self._headers
 
-        response = self._http_request('get', f'cases/{caseId}/actions/{actionId}', headers=headers)
+        response = self._http_request('get', f'cases/{case_id}/actions/{action_id}', headers=headers)
 
         return response
 
-    def check_the_status_of_an_action_requested_on_a_threat_request(self, threatId, actionId, mock_data):
+    def check_the_status_of_an_action_requested_on_a_threat_request(self, threat_id, action_id):
         headers = self._headers
 
-        response = self._http_request('get', f'threats/{threatId}/actions/{actionId}', headers=headers)
+        response = self._http_request('get', f'threats/{threat_id}/actions/{action_id}', headers=headers)
 
         return response
 
-    def get_a_list_of_abnormal_cases_identified_by_abnormal_security_request(self, filter, pageSize, pageNumber,
-                                                                             mock_data):
-        params = assign_params(filter=filter, pageSize=pageSize, pageNumber=pageNumber)
+    def get_a_list_of_abnormal_cases_identified_by_abnormal_security_request(self, filter_, page_size, page_number):
+        params = assign_params(filter=filter_, pageSize=page_size, pageNumber=page_number)
 
         headers = self._headers
 
@@ -32,8 +33,8 @@ class Client(BaseClient):
 
         return response
 
-    def get_a_list_of_threats_request(self, filter, pageSize, pageNumber, mock_data, source):
-        params = assign_params(filter=filter, pageSize=pageSize, pageNumber=pageNumber, source=source)
+    def get_a_list_of_threats_request(self, filter_, page_size, page_number, source):
+        params = assign_params(filter=filter_, pageSize=page_size, pageNumber=page_number, source=source)
 
         headers = self._headers
 
@@ -41,57 +42,59 @@ class Client(BaseClient):
 
         return response
 
-    def get_details_of_a_threat_request(self, threatId, mock_data):
+    def get_details_of_a_threat_request(self, threat_id):
         headers = self._headers
 
-        response = self._http_request('get', f'threats/{threatId}', headers=headers)
+        response = self._http_request('get', f'threats/{threat_id}', headers=headers)
 
         return response
 
-    def get_details_of_an_abnormal_case_request(self, caseId, mock_data):
+    def get_details_of_an_abnormal_case_request(self, case_id):
         headers = self._headers
 
-        response = self._http_request('get', f'cases/{caseId}', headers=headers)
+        response = self._http_request('get', f'cases/{case_id}', headers=headers)
 
         return response
 
-    def get_the_latest_threat_intel_feed_request(self, mock_data):
+    def get_the_latest_threat_intel_feed_request(self):
 
         headers = self._headers
         response = self._http_request('get', 'threat-intel', headers=headers, timeout=120)
 
         return response
 
-    def manage_a_threat_identified_by_abnormal_security_request(self, threatId, mock_data, action):
+    def manage_a_threat_identified_by_abnormal_security_request(self, threat_id, action):
         headers = self._headers
         json_data = {'action': action}
 
-        response = self._http_request('post', f'threats/{threatId}', json_data=json_data, headers=headers)
+        response = self._http_request('post', f'threats/{threat_id}', json_data=json_data, headers=headers)
 
         return response
 
-    def manage_an_abnormal_case_request(self, caseId, mock_data, action):
+    def manage_an_abnormal_case_request(self, case_id, action):
         headers = self._headers
         json_data = {'action': action}
 
-        response = self._http_request('post', f'cases/{caseId}', json_data=json_data, headers=headers)
+        response = self._http_request('post', f'cases/{case_id}', json_data=json_data, headers=headers)
 
         return response
 
-    def submit_an_inquiry_to_request_a_report_on_misjudgement_by_abnormal_security_request(self, mock_data):
+    def submit_an_inquiry_to_request_a_report_on_misjudgement_by_abnormal_security_request(self, reporter, report_type):
         headers = self._headers
-
-        response = self._http_request('post', 'inquiry', headers=headers)
+        json_data = {
+            'reporter': reporter,
+            'report_type': report_type,
+        }
+        response = self._http_request('post', 'inquiry', json_data=json_data, headers=headers)
 
         return response
 
 
 def check_the_status_of_an_action_requested_on_a_case_command(client, args):
-    caseId = str(args.get('caseId', ''))
-    actionId = str(args.get('actionId', ''))
-    mock_data = str(args.get('mock_data', ''))
+    case_id = str(args.get('case_id', ''))
+    action_id = str(args.get('action_id', ''))
 
-    response = client.check_the_status_of_an_action_requested_on_a_case_request(caseId, actionId, mock_data)
+    response = client.check_the_status_of_an_action_requested_on_a_case_request(case_id, action_id)
     command_results = CommandResults(
         outputs_prefix='AbnormalSecurity.ActionStatus',
         outputs_key_field='',
@@ -103,11 +106,10 @@ def check_the_status_of_an_action_requested_on_a_case_command(client, args):
 
 
 def check_the_status_of_an_action_requested_on_a_threat_command(client, args):
-    threatId = str(args.get('threatId', ''))
-    actionId = str(args.get('actionId', ''))
-    mock_data = str(args.get('mock_data', ''))
+    threat_id = str(args.get('threat_id', ''))
+    action_id = str(args.get('action_id', ''))
 
-    response = client.check_the_status_of_an_action_requested_on_a_threat_request(threatId, actionId, mock_data)
+    response = client.check_the_status_of_an_action_requested_on_a_threat_request(threat_id, action_id)
     command_results = CommandResults(
         outputs_prefix='AbnormalSecurity.ActionStatus',
         outputs_key_field='',
@@ -119,13 +121,11 @@ def check_the_status_of_an_action_requested_on_a_threat_command(client, args):
 
 
 def get_a_list_of_abnormal_cases_identified_by_abnormal_security_command(client, args):
-    filter = str(args.get('filter', ''))
-    pageSize = args.get('pageSize', None)
-    pageNumber = args.get('pageNumber', None)
-    mock_data = str(args.get('mock_data', ''))
+    filter_ = str(args.get('filter', ''))
+    page_size = args.get('page_size', None)
+    page_number = args.get('page_number', None)
 
-    response = client.get_a_list_of_abnormal_cases_identified_by_abnormal_security_request(filter, pageSize, pageNumber,
-                                                                                           mock_data)
+    response = client.get_a_list_of_abnormal_cases_identified_by_abnormal_security_request(filter_, page_size, page_number)
     command_results = CommandResults(
         outputs_prefix='AbnormalSecurity.inline_response_200_1',
         outputs_key_field='',
@@ -137,13 +137,12 @@ def get_a_list_of_abnormal_cases_identified_by_abnormal_security_command(client,
 
 
 def get_a_list_of_threats_command(client, args):
-    filter = str(args.get('filter', ''))
-    pageSize = args.get('pageSize', None)
-    pageNumber = args.get('page_number', None)
-    mock_data = str(args.get('mock_data', ''))
+    filter_ = str(args.get('filter', ''))
+    page_size = args.get('page_size', None)
+    page_number = args.get('page_number', None)
     source = str(args.get('source', ''))
 
-    response = client.get_a_list_of_threats_request(filter, pageSize, pageNumber, mock_data, source)
+    response = client.get_a_list_of_threats_request(filter_, page_size, page_number, source)
     command_results = CommandResults(
         outputs_prefix='AbnormalSecurity.inline_response_200',
         outputs_key_field='',
@@ -154,10 +153,9 @@ def get_a_list_of_threats_command(client, args):
 
 
 def get_details_of_a_threat_command(client, args):
-    threatId = str(args.get('threatId', ''))
-    mock_data = str(args.get('mock_data', ''))
+    threat_id = str(args.get('threat_id', ''))
 
-    response = client.get_details_of_a_threat_request(threatId, mock_data)
+    response = client.get_details_of_a_threat_request(threat_id)
     command_results = CommandResults(
         outputs_prefix='AbnormalSecurity.ThreatDetails',
         outputs_key_field='',
@@ -169,10 +167,9 @@ def get_details_of_a_threat_command(client, args):
 
 
 def get_details_of_an_abnormal_case_command(client, args):
-    caseId = str(args.get('caseId', ''))
-    mock_data = str(args.get('mock_data', ''))
+    case_id = str(args.get('case_id', ''))
 
-    response = client.get_details_of_an_abnormal_case_request(caseId, mock_data)
+    response = client.get_details_of_an_abnormal_case_request(case_id)
     command_results = CommandResults(
         outputs_prefix='AbnormalSecurity.AbnormalCaseDetails',
         outputs_key_field='',
@@ -183,10 +180,9 @@ def get_details_of_an_abnormal_case_command(client, args):
     return command_results
 
 
-def get_the_latest_threat_intel_feed_command(client, args):
-    mock_data = str(args.get('mock_data', ''))
+def get_the_latest_threat_intel_feed_command(client, args=None):
 
-    response = client.get_the_latest_threat_intel_feed_request(mock_data)
+    response = client.get_the_latest_threat_intel_feed_request()
     command_results = CommandResults(
         outputs_prefix='AbnormalSecurity',
         outputs_key_field='',
@@ -198,11 +194,10 @@ def get_the_latest_threat_intel_feed_command(client, args):
 
 
 def manage_a_threat_identified_by_abnormal_security_command(client, args):
-    threatId = str(args.get('threatId', ''))
+    threat_id = str(args.get('threat_id', ''))
     action = str(args.get('action', ''))
-    mock_data = str(args.get('mock_data', ''))
 
-    response = client.manage_a_threat_identified_by_abnormal_security_request(threatId, mock_data, action)
+    response = client.manage_a_threat_identified_by_abnormal_security_request(threat_id, action)
     command_results = CommandResults(
         outputs_prefix='AbnormalSecurity',
         outputs_key_field='',
@@ -214,11 +209,10 @@ def manage_a_threat_identified_by_abnormal_security_command(client, args):
 
 
 def manage_an_abnormal_case_command(client, args):
-    caseId = str(args.get('caseId', ''))
+    case_id = str(args.get('case_id', ''))
     action = str(args.get('action', ''))
-    mock_data = str(args.get('mock_data', ''))
 
-    response = client.manage_an_abnormal_case_request(caseId, mock_data, action)
+    response = client.manage_an_abnormal_case_request(case_id, action)
     command_results = CommandResults(
         outputs_prefix='AbnormalSecurity',
         outputs_key_field='',
@@ -230,9 +224,9 @@ def manage_an_abnormal_case_command(client, args):
 
 
 def submit_an_inquiry_to_request_a_report_on_misjudgement_by_abnormal_security_command(client, args):
-    mock_data = str(args.get('mock_data', ''))
-
-    response = client.submit_an_inquiry_to_request_a_report_on_misjudgement_by_abnormal_security_request(mock_data)
+    reporter = str(args.get('reporter', ''))
+    report_type = str(args.get('report_type', ''))
+    response = client.submit_an_inquiry_to_request_a_report_on_misjudgement_by_abnormal_security_request(reporter, report_type)
     command_results = CommandResults(
         outputs_prefix='AbnormalSecurity',
         outputs_key_field='',
@@ -245,7 +239,7 @@ def submit_an_inquiry_to_request_a_report_on_misjudgement_by_abnormal_security_c
 
 def test_module(client):
     # Run a sample request to retrieve mock data
-    client.get_details_of_a_threat_request('test', None)
+    client.get_details_of_a_threat_request('test')
     demisto.results("ok")
 
 
@@ -266,7 +260,6 @@ def main():
     demisto.debug(f'Command being called is {command}')
 
     try:
-        requests.packages.urllib3.disable_warnings()
         client = Client(urljoin(url, ''), verify_certificate, proxy, headers=headers, auth=None)
 
         commands = {
@@ -296,7 +289,7 @@ def main():
             test_client = Client(urljoin(url, ''), verify_certificate, proxy, headers=headers, auth=None)
             test_module(test_client)
         elif command in commands:
-            return_results(commands[command](client, args))
+            return_results(commands[command](client, args))  # type: ignore
         else:
             raise NotImplementedError(f'{command} command is not implemented.')
 
