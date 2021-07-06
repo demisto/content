@@ -310,7 +310,7 @@ def get_mapping_fields_command():
         "phoneNumbers",
         "urn:scim:schemas:extension:enterprise:1.0"
     ]
-    incident_type_scheme = SchemeTypeMapping(type_name=IAMUserProfile.INDICATOR_TYPE)
+    incident_type_scheme = SchemeTypeMapping(type_name=IAMUserProfile.DEFAULT_INCIDENT_TYPE)
 
     for field in scheme:
         incident_type_scheme.add_field(field, "Field")

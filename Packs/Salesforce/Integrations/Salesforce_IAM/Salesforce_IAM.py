@@ -254,7 +254,8 @@ def update_user_command(client, args, mapper_out, is_command_enabled, is_enable_
             if not user_id:
                 # user doesn't exists
                 if create_if_not_exists:
-                    iam_user_profile = create_user_command(client, args, mapper_out, is_create_user_enabled, False)
+                    iam_user_profile = create_user_command(client, args, mapper_out, is_create_user_enabled,
+                                                           False, False)
                 else:
                     error_code, error_message = IAMErrors.USER_DOES_NOT_EXIST
                     iam_user_profile.set_result(action=IAMActions.UPDATE_USER,
@@ -366,7 +367,7 @@ def get_all_user_attributes(client):
 
 def get_mapping_fields_command(client):
     scheme = get_all_user_attributes(client)
-    incident_type_scheme = SchemeTypeMapping(type_name=IAMUserProfile.INDICATOR_TYPE)
+    incident_type_scheme = SchemeTypeMapping(type_name=IAMUserProfile.DEFAULT_INCIDENT_TYPE)
 
     for field in scheme:
         incident_type_scheme.add_field(field, "Field")

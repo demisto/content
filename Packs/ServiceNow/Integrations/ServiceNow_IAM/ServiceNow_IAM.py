@@ -129,7 +129,7 @@ def test_module(client):
 
 def get_mapping_fields_command(client):
     service_now_fields = client.get_service_now_fields()
-    incident_type_scheme = SchemeTypeMapping(type_name=IAMUserProfile.INDICATOR_TYPE)
+    incident_type_scheme = SchemeTypeMapping(type_name=IAMUserProfile.DEFAULT_INCIDENT_TYPE)
 
     for field, description in service_now_fields.items():
         incident_type_scheme.add_field(field, description)

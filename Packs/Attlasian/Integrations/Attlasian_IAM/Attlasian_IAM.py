@@ -149,7 +149,7 @@ def get_mapping_fields(client: Client) -> GetMappingFieldsResponse:
     :return: (GetMappingFieldsResponse) An object that represents the user schema
     """
     app_fields = client.get_app_fields()
-    incident_type_scheme = SchemeTypeMapping(type_name=IAMUserProfile.INDICATOR_TYPE)
+    incident_type_scheme = SchemeTypeMapping(type_name=IAMUserProfile.DEFAULT_INCIDENT_TYPE)
 
     for field, description in app_fields.items():
         incident_type_scheme.add_field(field, description)
