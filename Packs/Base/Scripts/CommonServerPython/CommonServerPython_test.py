@@ -4372,7 +4372,7 @@ class TestIndicatorsSearcher:
         if not searchAfter:
             searchAfter = 0
 
-        iocs = [{'value': f'mock{searchAfter}'}]
+        iocs = [{'value': 'mock{}'.format(searchAfter)}]
 
         if searchAfter < 6:
             searchAfter += 1
