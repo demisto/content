@@ -916,7 +916,7 @@ tasks:
     task:
       id: 8bba14ac-63f6-41fa-8cf2-0cbb8e8519a8
       version: -1
-      name: Panorama Query Logs
+      name: Panorama Query Logs for Related Threat IDs
       description: 'Query Panorama Logs of types: traffic, threat, url, data-filtering
         and wildfire.'
       playbookName: Panorama Query Logs
