@@ -799,6 +799,11 @@
             "timeout": 300
         },
         {
+            "integrations": "MISP V3",
+            "playbookID": "MISP V3 Test",
+            "timeout": 300
+        },
+        {
             "playbookID": "test-LinkIncidentsWithRetry"
         },
         {

@@ -1,6 +1,6 @@
-id: MISPV3-Test
+id: MISP V3 Test
 version: -1
-name: MISPV3-Test
+name: MISP V3 Test
 fromversion: 5.0.0
 starttaskid: "0"
 tasks:
