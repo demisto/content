@@ -9,7 +9,6 @@ from bs4 import BeautifulSoup
 HTML_TAGS = ['p', 'table', 'ul', 'ol', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6']
 
 INTEGRATION_NAME = 'RSS Feed'
-Response = requests.models.Response
 
 
 class Client(BaseClient):
