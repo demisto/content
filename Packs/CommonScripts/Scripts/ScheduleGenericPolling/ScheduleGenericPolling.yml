@@ -50,4 +50,3 @@ scripttarget: 0
 runonce: false
 tests:
 - No test
-dockerimage: demisto/python:2.7.18.20958
