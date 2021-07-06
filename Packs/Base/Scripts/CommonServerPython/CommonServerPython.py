@@ -6719,6 +6719,12 @@ if 'requests' in sys.modules:
 
             if not verify:
                 skip_cert_verification()
+        
+        def __del__(self):
+            try:
+                self._session.close()
+            except:
+                demisto.debug(traceback.format_exc())
 
         def _implement_retry(self, retries=0,
                              status_list_to_retry=None,
