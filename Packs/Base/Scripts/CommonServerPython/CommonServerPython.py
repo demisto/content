@@ -6723,8 +6723,8 @@ if 'requests' in sys.modules:
         def __del__(self):
             try:
                 self._session.close()
-            except:
-                demisto.debug(traceback.format_exc())
+            except Exception:  # noqa
+                demisto.debug('failed to close BaseClient session with the following error:\n{}'.format(traceback.format_exc()))
 
         def _implement_retry(self, retries=0,
                              status_list_to_retry=None,
