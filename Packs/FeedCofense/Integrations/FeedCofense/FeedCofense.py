@@ -174,7 +174,6 @@ class Client(BaseClient):
                     "rawJSON": block,
                     "fields": {
                         "tags": self.tags,
-                        "name": threat_id,
                         "malwarefamily": malware_family.get("familyName"),
                         "description": malware_family.get("description"),
                         "sourceoriginalseverity": block.get("impact"),
