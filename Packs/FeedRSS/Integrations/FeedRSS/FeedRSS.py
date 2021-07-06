@@ -8,6 +8,8 @@ from bs4 import BeautifulSoup
 
 HTML_TAGS = ['p', 'table', 'ul', 'ol', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6']
 
+INTEGRATION_NAME = 'RSS Feed'
+
 
 class Client(BaseClient):
     """Client for RSS Feed - gets Reports from the website
@@ -120,19 +122,19 @@ def get_indicators(client: Client, indicators: list, args: dict) -> CommandResul
         parsed_for_hr.append({'Article': article_field_hr,
                               'Type': indicator.get('type')})
     headers = ['Article', 'Type']
-    hr_ = tableToMarkdown(name='RSS Feed:', t=parsed_for_hr, headers=headers)
+    hr_ = tableToMarkdown(name=INTEGRATION_NAME, t=parsed_for_hr, headers=headers)
     return CommandResults(
         readable_output=hr_,
         raw_response=client.feed_data
     )
 
 
-def check_feed(client: Client):
+def check_feed(client: Client) -> str:
     if client.feed_response and 'html' in client.feed_response.headers['content-type']:
         raise DemistoException(f'{client._base_url} is not rss feed url. Try look for a url containing xml format data,'
                                f' that could be found under urls with \'feed\' prefix or suffix.')
     else:
-        return_results("ok")
+        return "ok"
 
 
 def main():
@@ -160,7 +162,7 @@ def main():
         client.request_feed_url()
 
         if command == 'test-module':
-            check_feed(client)
+            return_results(check_feed(client))
 
         elif command == 'rss-get-indicators':
             parsed_indicators = fetch_indicators(client)
@@ -178,7 +180,7 @@ def main():
 
     except Exception as err:
         demisto.error(traceback.format_exc())  # print the traceback
-        return_error(f"Failed to execute {command} command.\nError:\n{str(err)}")
+        return_error(f"Failed to execute {INTEGRATION_NAME} with {command} command.\nError:\n{str(err)}")
 
 
 if __name__ in ('builtin__', 'builtins', '__main__'):
