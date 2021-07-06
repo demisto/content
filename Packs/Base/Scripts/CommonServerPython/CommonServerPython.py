@@ -7737,6 +7737,10 @@ class IndicatorsSearcher:
         self.limit = self._original_limit
         return self
 
+    # python2
+    def next(self):
+        self.__next__()
+
     def __next__(self):
         if self._is_search_done():
             raise StopIteration
