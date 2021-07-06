@@ -36,7 +36,7 @@
 
 .clone_and_export_variables: &clone_and_export_variables
   - source .gitlab/helper_functions.sh
-  - git checkout $CI_COMMIT_BRANCH
+  - git checkout -B $CI_COMMIT_BRANCH $CI_COMMIT_SHA
   - git config diff.renameLimit 6000
   - mkdir -p -m 777 $ARTIFACTS_FOLDER/
   - |

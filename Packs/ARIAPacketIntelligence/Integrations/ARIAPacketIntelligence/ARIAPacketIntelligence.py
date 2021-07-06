@@ -93,7 +93,7 @@ class RCS:
         elif rcs == "":
             return None, None, "failed: RD fqn rcs empty"
 
-        rcsp = re.match("^([<][\w_-<>.]+[>])(.*)$", rcs)
+        rcsp = re.match(r"^([<][\w_-<>.]+[>])(.*)$", rcs)
         if rcsp is None:
             return None, None, "failed: RD fqn match none"
         elif rcsp.group(1) is None:
@@ -116,7 +116,7 @@ class RCS:
         elif rcs == "":
             return None, None, "failed: RD sd rcs empty"
 
-        rcsp = re.match("^\^(\w[\w-]*)(.*)$", rcs)
+        rcsp = re.match(r"^\^(\w[\w-]*)(.*)$", rcs)
         if rcsp is None:
             return None, None, "failed: RD sd match none"
         elif rcsp.group(1) is None:
@@ -220,7 +220,7 @@ class RCS:
         elif rcs == "":
             return None, None, "failed: RD rgn asterik rcs empty"
 
-        rcsp = re.match("^\*(.*)$", rcs)
+        rcsp = re.match(r"^\*(.*)$", rcs)
         if rcsp is None:
             return None, None, "failed: RD rgn asterik rcsp none"
 
@@ -260,7 +260,7 @@ class RCS:
                     return None, None, "failed: RD rgn label inclusive empty {0}".format(msg)
                 break
 
-            rcsp = re.match("^\*.*$", rcs)
+            rcsp = re.match(r"^\*.*$", rcs)
             if rcsp is not None:
                 label, rcs, msg = self._parse_RDL_RD_RGN_asterik(rcs)
                 if label is None:
@@ -301,7 +301,7 @@ class RCS:
         elif rcs == "":
             return None, None, "failed: RD rgn region rcs empty {0}".format(msg)
 
-        rcsp = re.match("^\.(.+)$", rcs)
+        rcsp = re.match(r"^\.(.+)$", rcs)
         if rcsp is None:
             return None, None, "failed: RD rgn region rcsp none ."
         elif rcsp.group(1) is None:
@@ -320,7 +320,7 @@ class RCS:
         elif rcs == "":
             return None, None, "failed: RD rgn group rcs empty {0}".format(msg)
 
-        rcsp = re.match("^\.(.+)$", rcs)
+        rcsp = re.match(r"^\.(.+)$", rcs)
         if rcsp is None:
             return None, None, "failed: RD rgn group rcsp none ."
         elif rcsp.group(1) is None:
@@ -372,7 +372,7 @@ class RCS:
                 break
 
             while True:
-                rcsp = re.match("^all\..+$", rcs)
+                rcsp = re.match(r"^all\..+$", rcs)
                 if rcsp is not None:
                     if rcsp.group(0) == "":
                         return None, None, "failure: RGN (all-none)"
@@ -392,7 +392,7 @@ class RCS:
                     rcs = rcsp.group(1)
                     break
 
-                rcsp = re.match("^\^.*$", rcs)
+                rcsp = re.match(r"^\^.*$", rcs)
                 if rcsp is not None:
                     if rcsp.group(0) == "":
                         return None, None, "failure: SD (none)"
@@ -440,7 +440,7 @@ class RCS:
                     RDL.append(RD)
                     break
 
-                rcsp = re.match("^\*\..*$", rcs)
+                rcsp = re.match(r"^\*\..*$", rcs)
                 if rcsp is not None:
                     if rcsp.group(0) == "":
                         return None, None, "failure: RGN (asterik-none)"
@@ -452,7 +452,7 @@ class RCS:
                     RDL.append(RD)
                     break
 
-                rcsp = re.match("^\*(.*)$", rcs)
+                rcsp = re.match(r"^\*(.*)$", rcs)
                 if rcsp is not None:
                     if rcsp.group(0) == "":
                         return None, None, "failure: asterik (empty)"
@@ -464,7 +464,7 @@ class RCS:
                 if rcsp is None:
                     return None, None, "failure: name should be there"
 
-                rcsp = re.match("^\w[\w-]*\..*$", rcs)
+                rcsp = re.match(r"^\w[\w-]*\..*$", rcs)
                 if rcsp is not None:
                     if rcsp.group(0) == "":
                         return None, None, "failure: name RGN (none)"
@@ -534,12 +534,12 @@ class RCS:
         rcs = rcsp.group(1)
         RET = []
 
-        rcsp = re.match("^\$(.+)$", rcs)
+        rcsp = re.match(r"^\$(.+)$", rcs)
         if rcsp is not None:
             rcs = "drop(){0}".format(rcs)
 
         while True:
-            rcsp = re.match("(\w[\w]*)([(].+\$.+)$", rcs)
+            rcsp = re.match(r"(\w[\w]*)([(].+\$.+)$", rcs)
             if rcsp is None:
                 return None, None, "failure: RET obj type none"
             elif rcsp.group(1) is None:
@@ -573,11 +573,11 @@ class RCS:
 
             RET.append(obj)
 
-            rcsp = re.match("^\$(.+)$", rcs)
+            rcsp = re.match(r"^\$(.+)$", rcs)
             if rcsp is not None:
                 break
 
-            rcsp = re.match("^,(\w[\w]*[(].+\$.+)$", rcs)
+            rcsp = re.match(r"^,(\w[\w]*[(].+\$.+)$", rcs)
             if rcsp is None:
                 return None, None, "failure: RET next obj none"
             elif rcsp.group(1) is None:
@@ -592,7 +592,7 @@ class RCS:
         elif rcs == "":
             return None, None, "failure: RET end RCS empty"
 
-        rcsp = re.match("^\$(.+)$", rcs)
+        rcsp = re.match(r"^\$(.+)$", rcs)
         if rcsp is None:
             return None, None, "failure: RET # remove none"
         elif rcsp.group(1) is None:
@@ -633,7 +633,7 @@ class RCS:
         SDL = []
 
         while True:
-            rcsp = re.match("(\w[\w-]*)(.*\$.+)$", rcs)
+            rcsp = re.match(r"(\w[\w-]*)(.*\$.+)$", rcs)
             if rcsp is None:
                 return None, None, "failure: bad SDN"
             elif rcsp.group(1) is None:
@@ -649,11 +649,11 @@ class RCS:
             elif rcs == "":
                 return None, None, "failure: SDN no more RCS empty"
 
-            rcsp = re.match("^\$(.+)$", rcs)
+            rcsp = re.match(r"^\$(.+)$", rcs)
             if rcsp is not None:
                 break
 
-            rcsp = re.match("^,(\w[\w-]*.*\$.+)$", rcs)
+            rcsp = re.match(r"^,(\w[\w-]*.*\$.+)$", rcs)
             if rcsp is None:
                 return None, None, "failure: SDN obj advance none"
             elif rcsp.group(1) is None:
@@ -668,7 +668,7 @@ class RCS:
         elif rcs == "":
             return None, None, "failure: SDL RCS empty"
 
-        rcsp = re.match("^\$(.+)$", rcs)
+        rcsp = re.match(r"^\$(.+)$", rcs)
         if rcsp is None:
             return None, None, "failure: SDL # remove none"
         elif rcsp.group(1) is None:
