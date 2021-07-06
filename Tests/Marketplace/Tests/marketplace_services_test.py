@@ -1250,11 +1250,11 @@ class TestLoadUserMetadata:
        """
         mocker.patch("os.path.exists", return_value=False)
         logging_mock = mocker.patch("Tests.Marketplace.marketplace_services.logging.error")
-        task_status, user_metadata = dummy_pack.load_user_metadata()
+        task_status = dummy_pack.load_user_metadata()
 
         assert logging_mock.call_count == 1
         assert not task_status
-        assert user_metadata == {}
+        assert not dummy_pack.user_metadata
 
 
 class TestSetDependencies:
