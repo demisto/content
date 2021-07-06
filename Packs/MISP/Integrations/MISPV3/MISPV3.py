@@ -277,7 +277,7 @@ def build_generic_object(template_name: str, args: List[dict]) -> GenericObjectG
 
 def convert_timestamp(timestamp: Union[str, int]) -> str:
     """
-        Gets a timestamp from MISP response (1546713469) and converts it to human readable format
+    Gets a timestamp from MISP response (1546713469) and converts it to human readable format
     """
     return datetime.utcfromtimestamp(int(timestamp)).strftime('%Y-%m-%d %H:%M:%S') if timestamp else ""
 

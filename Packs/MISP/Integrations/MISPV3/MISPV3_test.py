@@ -50,12 +50,34 @@ def mock_misp(mocker):
 
 
 def test_convert_timestamp(mocker):
+    """
+
+    Given:
+    - params and args.
+
+    When:
+    - Getting Timestamp of a misp event ot attribute.
+
+    Then:
+    - Ensure timestamp converted successfully to human readable format.
+    """
     mock_misp(mocker)
     from MISPV3 import convert_timestamp
     assert convert_timestamp(1546713469) == "2019-01-05 18:37:49"
 
 
 def test_build_list_from_dict(mocker):
+    """
+
+    Given:
+    - params and args.
+
+    When:
+    - Getting Timestamp of a misp event ot attribute.
+
+    Then:
+    - Ensure timestamp converted successfully to human readable format.
+    """
     mock_misp(mocker)
     from MISPV3 import build_list_from_dict
     lst = build_list_from_dict({'ip': '8.8.8.8', 'domain': 'google.com'})
