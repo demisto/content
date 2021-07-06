@@ -1254,7 +1254,7 @@ class TestLoadUserMetadata:
 
         assert logging_mock.call_count == 1
         assert not task_status
-        assert user_metadata == {}
+        assert dummy_pack.user_metadata == {}
 
 
 class TestSetDependencies:

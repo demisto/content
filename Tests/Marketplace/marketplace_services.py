@@ -317,6 +317,10 @@ class Pack(object):
         """
         return self._uploaded_integration_images
 
+    @property
+    def is_missing_dependencies(self):
+        return self._is_missing_dependencies
+
     def _get_latest_version(self):
         """ Return latest semantic version of the pack.
 
@@ -616,7 +620,7 @@ class Pack(object):
 
         Returns:
             dict: pack id as key and loaded metadata of packs as value.
-            bool: True is returned in pack is missing dependencies.
+            bool: True if the pack is missing dependencies, False otherwise.
 
         """
         dependencies_data_result = {}
@@ -1487,12 +1491,21 @@ class Pack(object):
                     self._server_min_version = get_updated_server_version(self._server_min_version, content_item,
                                                                           self._pack_name)
 
+                    content_item_tags = content_item.get('tags', [])
+
                     if current_directory == PackFolders.SCRIPTS.value:
                         folder_collected_items.append({
                             'name': content_item.get('name', ""),
                             'description': content_item.get('comment', ""),
-                            'tags': content_item.get('tags', [])
+                            'tags': content_item_tags
                         })
+
+                        if not self._contains_transformer and 'transformer' in content_item_tags:
+                            self._contains_transformer = True
+
+                        if not self._contains_filter and 'filter' in content_item_tags:
+                            self._contains_filter = True
+
                     elif current_directory == PackFolders.PLAYBOOKS.value:
                         self.is_feed_pack(content_item, 'Playbook')
                         folder_collected_items.append({
@@ -1582,7 +1595,7 @@ class Pack(object):
         """ Loads user defined metadata and stores part of it's data in defined properties fields.
 
         Returns:
-            dict: user metadata of pack defined in content repo pack (pack_metadata.json)
+            bool: whether the operation succeeded.
 
         """
         task_status = False
@@ -1610,13 +1623,15 @@ class Pack(object):
         except Exception:
             logging.exception(f"Failed in loading {self._pack_name} user metadata.")
         finally:
-            return task_status, user_metadata
+            return task_status
 
     def _collect_pack_tags(self, user_metadata, landing_page_sections, trending_packs):
         tags = set(input_to_list(input_data=user_metadata.get('tags')))
         tags |= self._get_tags_from_landing_page(landing_page_sections)
         tags |= {PackTags.TIM} if self._is_feed else set()
         tags |= {PackTags.USE_CASE} if self._use_cases else set()
+        tags |= {PackTags.TRANSFORMER} if self._contains_transformer else set()
+        tags |= {PackTags.FILTER} if self._contains_filter else set()
 
         if self._create_date:
             days_since_creation = (datetime.utcnow() - datetime.strptime(self._create_date, Metadata.DATE_FORMAT)).days
@@ -1707,14 +1722,12 @@ class Pack(object):
             pack_dependencies_by_download_count
         )
 
-    def format_metadata(self, user_metadata, index_folder_path, packs_dependencies_mapping, build_number, commit_hash,
+    def format_metadata(self, index_folder_path, packs_dependencies_mapping, build_number, commit_hash,
                         pack_was_modified, statistics_handler, pack_names, format_dependencies_only=False):
         """ Re-formats metadata according to marketplace metadata format defined in issue #19786 and writes back
         the result.
 
         Args:
-            user_metadata (dict): user defined pack_metadata, prior the parsing process.
-            public url.
             index_folder_path (str): downloaded index folder directory path.
             packs_dependencies_mapping (dict): all packs dependencies lookup mapping.
             build_number (str): circleCI build number.
@@ -1731,20 +1744,20 @@ class Pack(object):
         task_status = False
 
         try:
-            self.set_pack_dependencies(user_metadata, packs_dependencies_mapping)
-            if 'displayedImages' not in user_metadata:
-                user_metadata['displayedImages'] = packs_dependencies_mapping.get(
+            self.set_pack_dependencies(self.user_metadata, packs_dependencies_mapping)
+            if 'displayedImages' not in self.user_metadata:
+                self.user_metadata['displayedImages'] = packs_dependencies_mapping.get(
                     self._pack_name, {}).get('displayedImages', [])
                 logging.info(f"Adding auto generated display images for {self._pack_name} pack")
-            dependencies_data, is_missing_dependencies = self._load_pack_dependencies(index_folder_path,
-                                                             user_metadata.get('dependencies', {}),
-                                                             user_metadata.get('displayedImages', []), pack_names)
+            dependencies_data, is_missing_dependencies = \
+                self._load_pack_dependencies(index_folder_path, self.user_metadata.get('dependencies', {}),
+                                             self.user_metadata.get('displayedImages', []), pack_names)
 
             self._enhance_pack_attributes(
-                user_metadata, index_folder_path, pack_was_modified, dependencies_data, statistics_handler,
+                self.user_metadata, index_folder_path, pack_was_modified, dependencies_data, statistics_handler,
                 format_dependencies_only
             )
-            formatted_metadata = self._parse_pack_metadata(user_metadata, build_number, commit_hash)
+            formatted_metadata = self._parse_pack_metadata(self.user_metadata, build_number, commit_hash)
             metadata_path = os.path.join(self._pack_path, Pack.METADATA)  # deployed metadata path after parsing
             json_write(metadata_path, formatted_metadata)  # writing back parsed metadata
 
@@ -2324,10 +2337,6 @@ class Pack(object):
             os.path.basename(file_path).startswith('integration'),
             os.path.basename(file_path).endswith('.yml')
         ])
-
-    @property
-    def is_missing_dependencies(self):
-        return self._is_missing_dependencies
 
 
 # HELPER FUNCTIONS
