@@ -32,7 +32,7 @@ FIELD_TYPE_DICT = {
 
 ACCOUNT_STATUS_DICT = {1: 'Active', 2: 'Inactive', 3: 'Locked'}
 
-API_ENDPOINT = demisto.params().get('ApiEndpoint', 'api')
+API_ENDPOINT = demisto.params().get('api_endpoint', 'api')
 
 
 def parser(date_str, date_formats=None, languages=None, locales=None, region=None, settings=None) -> datetime:

@@ -68,9 +68,9 @@ configuration:
   type: 8
 - display: API Endpoint
   hidden: false
-  name: ApiEndpoint
+  name: api_endpoint
   required: false
-  defaultValue: api
+  defaultvalue: api
   type: 0
 description: The RSA Archer GRC Platform provides a common foundation for managing
   policies, controls, risks, assessments, and deficiencies across lines of business.
@@ -221,7 +221,8 @@ script:
       required: true
       secret: false
     - default: false
-      description: The Level ID to use to create the record. If empty, the command will take the first level as default.
+      description: The Level ID to use to create the record. If empty, the command
+        will take the first level as default.
       isArray: false
       name: levelId
       required: false
@@ -266,7 +267,8 @@ script:
       required: true
       secret: false
     - default: false
-      description: The Level ID to use to update the record. If empty, the command will take the first level as default.
+      description: The Level ID to use to update the record. If empty, the command
+        will take the first level as default.
       isArray: false
       name: levelId
       required: false
@@ -531,7 +533,8 @@ script:
       - "false"
       description: Whether to order by descending order.
     - default: false
-      description: The Level ID to use for searching. This argument is relevant when fullData is True. If empty, the command will take the first level as default.
+      description: The Level ID to use for searching. This argument is relevant when
+        fullData is True. If empty, the command will take the first level as default.
       isArray: false
       name: levelId
       required: false
