@@ -1,18 +1,18 @@
-Get details of CircleCI workflows, including details of its last runs, jobs, and retrieve artifact of jobs.
-This integration was integrated and tested with version v2 of CircleCI
+Gets the details of the CircleCI workflows; including the details of the last runs and the jobs, and retrieves the artifacts of the jobs.
+This integration was integrated and tested with version v2 of CircleCI.
 ## Configure CircleCI on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
 2. Search for CircleCI.
-3. Click **Add instance** to create and configure a new integration instance.
+3. Click **Add Instance** to create and configure a new integration instance.
 
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
     | Your server URL |  | True |
-    | API Key | The API Key to use for connection | True |
-    | VC Type | Type of VC. | True |
-    | Organization Name | Name of the organization. | True |
-    | Project Name | Name of the project. | True |
+    | API key | The API key used to connect | True |
+    | Version control system type | Type of version control system | True |
+    | Organization Name | Name of the organization | True |
+    | Project Name | Name of the project | True |
     | Trust any certificate (not secure) |  | True |
     | Use system proxy settings |  | False |
 
@@ -22,7 +22,7 @@ You can execute these commands from the Cortex XSOAR CLI, as part of an automati
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### circleci-workflows-list
 ***
-Get info of workflows.
+Gets information on workflows.
 
 
 #### Base Command
@@ -33,25 +33,25 @@ Get info of workflows.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | limit | Maximum number of workflows to retrieve. Default is 20. | Optional | 
-| vcs_type | VC type of the project. Possible values are: github, bitbucket. Default is github. | Optional | 
-| organization | Organization to retrieve workflows from. Defaults to organization instance parameter if none is given. | Optional | 
-| project | Project to retrieve workflows from. Defaults to project instance parameter if none is given. | Optional | 
+| vcs_type | Version control system type of the project. Possible values: "github" and bitbucket". Default is github. | Optional | 
+| organization | Organization from which to retrieve workflows. Defaults to the organization instance parameter. | Optional | 
+| project | Project from which to retrieve workflows. Defaults to the project instance parameter. | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CircleCI.Workflow.metrics.duration_metrics.max | Number | Max time workflow has run. | 
-| CircleCI.Workflow.metrics.duration_metrics.mean | Number | Mean time workflow has run. | 
-| CircleCI.Workflow.metrics.duration_metrics.median | Number | Median time workflow has run. | 
-| CircleCI.Workflow.metrics.duration_metrics.min | Number | Min time workflow has run. | 
-| CircleCI.Workflow.metrics.duration_metrics.p95 | Number | P95 workflow has run. | 
-| CircleCI.Workflow.metrics.duration_metrics.standard_deviation | Number | Standard deviation workflow has run. | 
+| CircleCI.Workflow.metrics.duration_metrics.max | Number | Maximum workflow run time. | 
+| CircleCI.Workflow.metrics.duration_metrics.mean | Number | Mean workflow run time. | 
+| CircleCI.Workflow.metrics.duration_metrics.median | Number | Median workflow run time. | 
+| CircleCI.Workflow.metrics.duration_metrics.min | Number | Minimum workflow run time. | 
+| CircleCI.Workflow.metrics.duration_metrics.p95 | Number | 95th percentile workflow run time. | 
+| CircleCI.Workflow.metrics.duration_metrics.standard_deviation | Number | The standard deviation of the workflow run time. | 
 | CircleCI.Workflow.metrics.duration_metrics.total_duration | Number | Total duration. | 
-| CircleCI.Workflow.metrics.failed_runs | Number | Number of workflow failed runs. | 
+| CircleCI.Workflow.metrics.failed_runs | Number | Number of failed workflow runs. | 
 | CircleCI.Workflow.metrics.median_credits_used | Number | Median credits used. | 
-| CircleCI.Workflow.metrics.mttr | Number | Mean time to recovery. | 
+| CircleCI.Workflow.metrics.mttr | Number | Mean recovery time. | 
 | CircleCI.Workflow.metrics.success_rate | Number | Success rate. | 
 | CircleCI.Workflow.metrics.successful_runs | Number | Number of successful runs. | 
 | CircleCI.Workflow.metrics.throughput | Number | Throughput. | 
@@ -59,9 +59,9 @@ Get info of workflows.
 | CircleCI.Workflow.metrics.total_recoveries | Number | Total recoveries. | 
 | CircleCI.Workflow.metrics.total_runs | Number | Total runs. | 
 | CircleCI.Workflow.name | String | Workflow name. | 
-| CircleCI.Workflow.project_id | String | Project ID workflow belongs to. | 
-| CircleCI.Workflow.window_end | Date | When workflow has ended. | 
-| CircleCI.Workflow.window_start | Date | When workflow has started. | 
+| CircleCI.Workflow.project_id | String | The project ID that the workflow belongs to. | 
+| CircleCI.Workflow.window_end | Date | When the workflow ended. | 
+| CircleCI.Workflow.window_start | Date | When the workflow started. | 
 
 
 #### Command Example
@@ -112,7 +112,7 @@ Get info of workflows.
 
 ### circleci-artifacts-list
 ***
-Retrieves artifacts list from CircleCI job.
+Retrieves the artifacts list from the CircleCI job.
 
 
 #### Base Command
@@ -122,12 +122,12 @@ Retrieves artifacts list from CircleCI job.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| job_number | Number of the job to retrieve its artifacts, e.g 31263. | Required | 
-| artifact_suffix | Will return only artifact whom suffix corresponds to suffix given, e.g 'test_failures.txt' will retrieve only artifacts whom suffix ends with test_failures.txt. | Optional | 
+| job_number | The number of the job from which to retrieve its artifacts, e.g., 31263. | Required | 
+| artifact_suffix | Returns only the artifacts for which the suffix corresponds to the given suffix, e.g., 'test_failures.txt' will only retrieve the artifacts for which the suffix ends with test_failures.txt. | Optional | 
 | limit | Maximum number of artifacts to retrieve. Default is 20. | Optional | 
-| vcs_type | VC type of the project. Possible values are: github, bitbucket. Default is github. | Optional | 
-| organization | Organization to retrieve artifacts from. Defaults to organization instance parameter if none is given. | Optional | 
-| project | Project to retrieve artifacts from. Defaults to project instance parameter if none is given. | Optional | 
+| vcs_type | The version control system type of the project. Possible values: "github" and "bitbucket". Default is github. | Optional | 
+| organization | Organization from which to retrieve artifacts. Defaults to the organization instance parameter. | Optional | 
+| project | Project from which to retrieve artifacts. Defaults to the project instance parameter. | Optional | 
 
 
 #### Context Output
@@ -173,7 +173,7 @@ Retrieves artifacts list from CircleCI job.
 
 ### circleci-workflow-jobs-list
 ***
-Retrieve jobs list from CircleCI workflow.
+Retrieves the jobs list from the CircleCI workflow.
 
 
 #### Base Command
@@ -183,8 +183,8 @@ Retrieve jobs list from CircleCI workflow.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| workflow_id | Workflow ID to retrieve its jobs, e.g 12zxcase-12za-as51-123zs4sdgf12. | Required | 
-| limit | Maximum number of jobs to retrieve. Default is 20. | Optional | 
+| workflow_id | The workflow ID from which to retrieve its jobs, e.g., 12zxcase-12za-as51-123zs4sdgf12. | Required | 
+| limit | The maximum number of jobs to retrieve. Default is 20. | Optional | 
 
 
 #### Context Output
@@ -194,12 +194,12 @@ Retrieve jobs list from CircleCI workflow.
 | CircleCI.WorkflowJob.id | String | Job ID. | 
 | CircleCI.WorkflowJob.job_number | Number | Job number. | 
 | CircleCI.WorkflowJob.name | String | Job name. | 
-| CircleCI.WorkflowJob.project_slug | String | The job project slug. | 
-| CircleCI.WorkflowJob.started_at | Date | Time job was started. | 
+| CircleCI.WorkflowJob.project_slug | String | Job project slug. | 
+| CircleCI.WorkflowJob.started_at | Date | Time the job started. | 
 | CircleCI.WorkflowJob.status | String | Job status. | 
-| CircleCI.WorkflowJob.stopped_at | Date | Time when job was stopped. | 
+| CircleCI.WorkflowJob.stopped_at | Date | Time the job stopped. | 
 | CircleCI.WorkflowJob.type | String | Job type. | 
-| CircleCI.WorkflowJob.dependencies | String | The job dependencies. | 
+| CircleCI.WorkflowJob.dependencies | String | Job dependencies. | 
 
 
 #### Command Example
@@ -252,7 +252,7 @@ Retrieve jobs list from CircleCI workflow.
 
 ### circleci-workflow-last-runs
 ***
-Retrieve jobs list from CircleCI workflow.
+Retrieves the jobs list from the CircleCI workflow.
 
 
 #### Base Command
@@ -262,11 +262,11 @@ Retrieve jobs list from CircleCI workflow.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| workflow_name | Name of workflow to retrieve its last runs details. | Required | 
+| workflow_name | Name of the workflow from which to retrieve its last runs details. | Required | 
 | limit | Maximum number of workflow runs to retrieve. Default is 20. | Optional | 
-| vcs_type | VC type of the project. Possible values are: github, bitbucket. Default is github. | Optional | 
-| organization | Organization to retrieve workflow last runs from. Defaults to organization instance parameter if none is given. | Optional | 
-| project | Project to retrieve workflow last runs from. Defaults to project instance parameter if none is given. | Optional | 
+| vcs_type | Version control system type of the project. Possible values: "github" and "bitbucket". Default is github. | Optional | 
+| organization | Organization from which to retrieve workflow last runs. Defaults to the organization instance parameter. | Optional | 
+| project | Project from which to retrieve workflow last runs. Defaults to the project instance parameter. | Optional | 
 
 
 #### Context Output
@@ -274,12 +274,12 @@ Retrieve jobs list from CircleCI workflow.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | CircleCI.WorkflowRun.branch | String | Branch name. | 
-| CircleCI.WorkflowRun.created_at | Date | Time run was created. | 
+| CircleCI.WorkflowRun.created_at | Date | Time run created. | 
 | CircleCI.WorkflowRun.credits_used | Number | Credits used. | 
 | CircleCI.WorkflowRun.duration | Number | Duration of run in seconds. | 
 | CircleCI.WorkflowRun.id | String | ID of the run. | 
 | CircleCI.WorkflowRun.status | String | Run status. | 
-| CircleCI.WorkflowRun.stopped_at | Date | Time when run was stopped. | 
+| CircleCI.WorkflowRun.stopped_at | Date | Time run stopped. | 
 
 
 #### Command Example
