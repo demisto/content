@@ -1,5 +1,5 @@
 Abnormal Security detects the whole spectrum of email attacks, from vendor email compromise and spear-phishing to unwanted email spam and graymail. To stop these advanced attacks, Abnormal leverages the industry’s most advanced behavioral data science to baseline known good behavior and detects anomalies.
-This integration was integrated and tested with version xx of Abnormal Security
+This integration was integrated and tested with version 1.3.0 of Abnormal Security
 ## Configure Abnormal Security on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
