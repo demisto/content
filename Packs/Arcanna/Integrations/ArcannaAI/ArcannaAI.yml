@@ -28,7 +28,6 @@ configuration:
   name: default_job_id
   required: false
   type: 0
-defaultclassifier: 'null'
 description: Arcanna integration for using the power of AI in SOC
 display: Arcanna.AI
 name: Arcanna.AI
@@ -41,16 +40,16 @@ script:
     outputs:
     - contextPath: Arcanna.Jobs.job_id
       description: Arcanna Job id
-      type: String
+      type: Number
     - contextPath: Arcanna.Jobs.data_type
       description: Arcanna Job type
-      type: Unknown
+      type: String
     - contextPath: Arcanna.Jobs.title
       description: Arcanna Job title
-      type: Unknown
+      type: String
     - contextPath: Arcanna.Jobs.status
       description: Arcanna job status
-      type: Unknown
+      type: String
   - arguments:
     - default: false
       description: arcanna running job_id
@@ -83,16 +82,16 @@ script:
     outputs:
     - contextPath: Arcanna.Event.event_id
       description: Arcanna event id
-      type: number
+      type: Number
     - contextPath: Arcanna.Event.status
       description: Arcanna ingestion status
-      type: string
+      type: String
     - contextPath: Arcanna.Event.ingest_timestamp
       description: Arcanna ingestion timestamp
       type: date
     - contextPath: Arcanna.Event.error_message
       description: Arcanna error message if any
-      type: Unknown
+      type: String
   - arguments:
     - default: false
       description: Arcanna Job Id
@@ -113,25 +112,25 @@ script:
     outputs:
     - contextPath: Arcanna.Event.event_id
       description: Arcanna event id
-      type: Unknown
+      type: String
     - contextPath: Arcanna.Event.ingest_timestamp
       description: Arcanna ingestion timestamp
-      type: Unknown
+      type: String
     - contextPath: Arcanna.Event.confidence_level
       description: Arcanna ML confidence_level
-      type: Unknown
+      type: Number
     - contextPath: Arcanna.Event.result
       description: Arcanna event  result
-      type: Unknown
+      type: String
     - contextPath: Arcanna.Event.is_duplicated
       description: Arcanna signalling if event is duplicated by another alert
-      type: Unknown
+      type: boolean
     - contextPath: Arcanna.Event.error_message
       description: Arcanna error message if any
-      type: Unknown
+      type: String
     - contextPath: Arcanna.Event.status
-      description: arcanna event status
-      type: Unknown
+      description: Arcanna event status
+      type: String
   - deprecated: false
     description: Retrieves Arcanna Default Job id
     execution: false
@@ -139,7 +138,7 @@ script:
     outputs:
     - contextPath: Arcanna.Default_Job_Id
       description: Arcanna Default Job id
-      type: Number
+      type: String
   - arguments:
     - default: false
       description: job_id

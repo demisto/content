@@ -9,11 +9,11 @@ This integration was integrated and tested with version 1.0 and above of Arcanna
 
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
-    | Server URL (e.g. https://&lt;your arcanna ai api&gt;) | URL of Arcanna API | True |
+    | Server URL | URL of Arcanna API | True |
     | API Key | Api Key for Arcanna API | True |
     | Trust any certificate (not secure) |  | False |
     | Use system proxy settings |  | False |
-    | Default Arcanna Job Id |  | False |
+    | Default Arcanna Job Id | Default Arcanna Job Id | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
@@ -35,10 +35,10 @@ There are no input arguments for this command.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Arcanna.Jobs.job_id | String | Arcanna Job id | 
-| Arcanna.Jobs.data_type | Unknown | Arcanna Job type | 
-| Arcanna.Jobs.title | Unknown | Arcanna Job title | 
-| Arcanna.Jobs.status | Unknown | Arcanna job status | 
+| Arcanna.Jobs.job_id | Int | Arcanna Job id | 
+| Arcanna.Jobs.data_type | String | Arcanna Job type | 
+| Arcanna.Jobs.title | String | Arcanna Job title | 
+| Arcanna.Jobs.status | String | Arcanna job status | 
 
 
 #### Command Example
@@ -90,16 +90,10 @@ Sends a raw event to Arcanna
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Arcanna.Event.event_id | number | Arcanna event id | 
-| Arcanna.Event.status | string | Arcanna ingestion status | 
+| Arcanna.Event.event_id | Number | Arcanna event id | 
+| Arcanna.Event.status | String | Arcanna ingestion status | 
 | Arcanna.Event.ingest_timestamp | date | Arcanna ingestion timestamp | 
-| Arcanna.Event.error_message | Unknown | Arcanna error message if any | 
-
-
-#### Command Example
-``` ```
-
-#### Human Readable Output
+| Arcanna.Event.error_message | String | Arcanna error message if any | 
 
 
 
@@ -123,13 +117,13 @@ Retrieves Arcanna Inference result
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Arcanna.Event.event_id | Unknown | Arcanna event id | 
-| Arcanna.Event.ingest_timestamp | Unknown | Arcanna ingestion timestamp | 
-| Arcanna.Event.confidence_level | Unknown | Arcanna ML confidence_level | 
-| Arcanna.Event.result | Unknown | Arcanna event  result | 
-| Arcanna.Event.is_duplicated | Unknown | Arcanna signalling if event is duplicated by another alert | 
-| Arcanna.Event.error_message | Unknown | Arcanna error message if any | 
-| Arcanna.Event.status | Unknown | arcanna event status | 
+| Arcanna.Event.event_id | String | Arcanna event id | 
+| Arcanna.Event.ingest_timestamp | String | Arcanna ingestion timestamp | 
+| Arcanna.Event.confidence_level | Number | Arcanna ML confidence_level | 
+| Arcanna.Event.result | String | Arcanna event  result | 
+| Arcanna.Event.is_duplicated | boolean | Arcanna signalling if event is duplicated by another alert | 
+| Arcanna.Event.error_message | String | Arcanna error message if any | 
+| Arcanna.Event.status | String | arcanna event status | 
 
 
 #### Command Example
@@ -172,7 +166,7 @@ There are no input arguments for this command.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Arcanna.Default_Job_Id | Number | Arcanna Default Job id | 
+| Arcanna.Default_Job_Id | String | Arcanna Default Job id | 
 
 
 #### Command Example

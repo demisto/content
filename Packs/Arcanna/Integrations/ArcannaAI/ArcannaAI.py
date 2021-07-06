@@ -1,6 +1,5 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-from CommonServerUserPython import *  # noqa: F401
 
 import json
 import urllib3
@@ -114,7 +113,7 @@ def post_event(client: Client, args: Dict[str, Any]) -> CommandResults:
     title = args.get("title")
 
     job_id = args.get("job_id", None)
-    if job_id is None:
+    if not job_id:
         job_id = client.get_default_job_id()
 
     raw_payload = args.get("event_json")
@@ -122,18 +121,17 @@ def post_event(client: Client, args: Dict[str, Any]) -> CommandResults:
 
     response = client.send_raw_event(job_id=job_id, severity=severity, title=title, raw_body=raw_payload)
     readable_output = f'## {response}'
-    event_id = response["event_id"]
     return CommandResults(
         readable_output=readable_output,
         outputs_prefix='Arcanna.Event',
-        outputs_key_field=event_id,
+        outputs_key_field='event_id',
         outputs=response
     )
 
 
 def get_event_status(client: Client, args: Dict[str, Any]) -> CommandResults:
     job_id = args.get("job_id", None)
-    if job_id is None:
+    if not job_id:
         job_id = client.get_default_job_id()
     event_id = args.get("event_id")
     response = client.get_event_status(job_id, event_id)
@@ -142,7 +140,7 @@ def get_event_status(client: Client, args: Dict[str, Any]) -> CommandResults:
     return CommandResults(
         readable_output=readable_output,
         outputs_prefix='Arcanna.Event',
-        outputs_key_field=event_id,
+        outputs_key_field='event_id',
         outputs=response
     )
 
@@ -154,7 +152,6 @@ def get_default_job_id(client: Client) -> CommandResults:
     return CommandResults(
         readable_output=readable_output,
         outputs_prefix='Arcanna.Default_Job_Id',
-        outputs_key_field='',
         outputs=response
     )
 
