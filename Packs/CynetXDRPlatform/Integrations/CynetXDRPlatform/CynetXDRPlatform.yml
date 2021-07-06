@@ -94,7 +94,7 @@ script:
       description: 'Format: mm-dd-yyyy'
       name: fromDate
       required: true
-    description: ' Outdates applications details from Cynet XDR'
+    description: Outdates applications details from Cynet XDR.
     name: cynet-get-outdates-application-details
   - arguments:
     - default: true
