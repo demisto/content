@@ -6719,7 +6719,7 @@ if 'requests' in sys.modules:
 
             if not verify:
                 skip_cert_verification()
-        
+
         def __del__(self):
             try:
                 self._session.close()
