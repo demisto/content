@@ -8,45 +8,45 @@ configuration:
   name: url
   required: true
   type: 0
-- display: API Key
-  additionalinfo: The API Key to use for connection
+- display: The API key
+  additionalinfo: The API key used to connect
   name: api_key
   required: true
   type: 4
-- display: VC Type
+- display: Version control system type
   name: vcs_type
   type: 15
   required: true
   options:
   - github
   - bitbucket
-  additionalinfo: Type of VC.
-- display: Organization Name
+  additionalinfo: Type of version control system
+- display: Organization name
   name: organization
   type: 0
   required: true
-  additionalinfo: Name of the organization.
+  additionalinfo: Name of the organization
 - display: Project Name
   name: project
   type: 0
   required: true
-  additionalinfo: Name of the project.
+  additionalinfo: Name of the project
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
   type: 8
-- display: Use system proxy settings
+- display: Use the system proxy settings
   name: proxy
   required: false
   type: 8
-description: Get details of CircleCI workflows, including details of its last runs, jobs, and retrieve artifact of jobs.
+description: Gets the details of the CircleCI workflows; including the details of the last runs and the jobs, and retrieves the artifacts of the jobs.
 display: CircleCI
 name: CircleCI
 script:
   commands:
   - arguments:
     - default: false
-      description: Maximum number of workflows to retrieve.
+      description: The maximum number of workflows to retrieve.
       defaultValue: '20'
       isArray: false
       name: limit
@@ -54,7 +54,7 @@ script:
       secret: false
     - name: vcs_type
       required: false
-      description: VC type of the project.
+      description: 'The version control system type of the project. Possible values: "github" and "bitbucket".'
       default: true
       auto: PREDEFINED
       predefined:
@@ -62,51 +62,51 @@ script:
       - bitbucket
       defaultValue: github
     - default: false
-      description: Organization to retrieve workflows from. Defaults to organization instance parameter if none is given.
+      description: The organization from which to retrieve workflows. Defaults to the organization instance parameter.
       isArray: false
       name: organization
       required: false
       secret: false
     - default: false
-      description: Project to retrieve workflows from. Defaults to project instance parameter if none is given.
+      description: The project from which to retrieve workflows. Defaults to the project instance parameter.
       isArray: false
       name: project
       required: false
       secret: false
     deprecated: false
-    description: Get info of workflows.
+    description: Gets information on workflows.
     execution: false
     name: circleci-workflows-list
     outputs:
     - contextPath: CircleCI.Workflow.metrics.duration_metrics.max
-      description: Max time workflow has run.
+      description: Maximum workflow run time.
       type: Number
     - contextPath: CircleCI.Workflow.metrics.duration_metrics.mean
-      description: Mean time workflow has run.
+      description: Mean workflow run time.
       type: Number
     - contextPath: CircleCI.Workflow.metrics.duration_metrics.median
-      description: Median time workflow has run.
+      description: Median workflow run time.
       type: Number
     - contextPath: CircleCI.Workflow.metrics.duration_metrics.min
-      description: Min time workflow has run.
+      description: Minimum workflow run time.
       type: Number
     - contextPath: CircleCI.Workflow.metrics.duration_metrics.p95
-      description: P95 workflow has run.
+      description: The 95th percentile workflow run time.
       type: Number
     - contextPath: CircleCI.Workflow.metrics.duration_metrics.standard_deviation
-      description: Standard deviation workflow has run.
+      description: The standard deviation of the workflow run time.
       type: Number
     - contextPath: CircleCI.Workflow.metrics.duration_metrics.total_duration
       description: Total duration.
       type: Number
     - contextPath: CircleCI.Workflow.metrics.failed_runs
-      description: Number of workflow failed runs.
+      description: Number of failed workflow runs.
       type: Number
     - contextPath: CircleCI.Workflow.metrics.median_credits_used
       description: Median credits used.
       type: Number
     - contextPath: CircleCI.Workflow.metrics.mttr
-      description: Mean time to recovery.
+      description: Mean recovery time.
       type: Number
     - contextPath: CircleCI.Workflow.metrics.success_rate
       description: Success rate.
@@ -130,29 +130,29 @@ script:
       description: Workflow name.
       type: String
     - contextPath: CircleCI.Workflow.project_id
-      description: Project ID workflow belongs to.
+      description: The project ID that the workflow belongs to.
       type: String
     - contextPath: CircleCI.Workflow.window_end
-      description: When workflow has ended.
+      description: When the workflow ended.
       type: Date
     - contextPath: CircleCI.Workflow.window_start
-      description: When workflow has started.
+      description: When the workflow started.
       type: Date
   - arguments:
     - default: false
-      description: Number of the job to retrieve its artifacts, e.g 31263.
+      description: The number of the job used to retrieve its artifacts, e.g., 31263.
       isArray: false
       name: job_number
       required: true
       secret: false
     - default: false
-      description: Will return only artifact whom suffix corresponds to suffix given, e.g 'test_failures.txt' will retrieve only artifacts whom suffix ends with test_failures.txt.
+      description: Returns only the artifacts for which the suffix corresponds to the given suffix, e.g., 'test_failures.txt' will only retrieve artifacts for which the suffix ends with test_failures.txt.
       isArray: false
       name: artifact_suffix
       required: false
       secret: false
     - default: false
-      description: Maximum number of artifacts to retrieve.
+      description: The maximum number of artifacts to retrieve.
       defaultValue: '20'
       isArray: false
       name: limit
@@ -160,7 +160,7 @@ script:
       secret: false
     - name: vcs_type
       required: false
-      description: VC type of the project.
+      description: 'The version control system type of the project. Possible values: "github" and "bitbucket".'
       default: true
       auto: PREDEFINED
       predefined:
@@ -168,19 +168,19 @@ script:
         - bitbucket
       defaultValue: github
     - default: false
-      description: Organization to retrieve artifacts from. Defaults to organization instance parameter if none is given.
+      description: The organization from which to retrieve artifacts. Defaults to the organization instance parameter.
       isArray: false
       name: organization
       required: false
       secret: false
     - default: false
-      description: Project to retrieve artifacts from. Defaults to project instance parameter if none is given.
+      description: The project from which to retrieve artifacts. Defaults to the project instance parameter.
       isArray: false
       name: project
       required: false
       secret: false
     deprecated: false
-    description: Retrieves artifacts list from CircleCI job.
+    description: Retrieves the artifacts list from the CircleCI job.
     execution: false
     name: circleci-artifacts-list
     outputs:
@@ -195,20 +195,20 @@ script:
       type: String
   - arguments:
     - default: false
-      description: Workflow ID to retrieve its jobs, e.g 12zxcase-12za-as51-123zs4sdgf12
+      description: The workflow ID from which to retrieve its jobs, e.g., 12zxcase-12za-as51-123zs4sdgf12.
       isArray: false
       name: workflow_id
       required: true
       secret: false
     - default: false
-      description: Maximum number of jobs to retrieve.
+      description: The maximum number of jobs to retrieve.
       defaultValue: '20'
       isArray: false
       name: limit
       required: false
       secret: false
     deprecated: false
-    description: Retrieve jobs list from CircleCI workflow.
+    description: Retrieves the jobs list from the CircleCI workflow.
     execution: false
     name: circleci-workflow-jobs-list
     outputs:
@@ -222,32 +222,32 @@ script:
       description: Job name.
       type: String
     - contextPath: CircleCI.WorkflowJob.project_slug
-      description: The job project slug.
+      description: Job project slug.
       type: String
     - contextPath: CircleCI.WorkflowJob.started_at
-      description: Time job was started.
+      description: Time the job started.
       type: Date
     - contextPath: CircleCI.WorkflowJob.status
       description: Job status.
       type: String
     - contextPath: CircleCI.WorkflowJob.stopped_at
-      description: Time when job was stopped.
+      description: Time the job stopped.
       type: Date
     - contextPath: CircleCI.WorkflowJob.type
       description: Job type.
       type: String
     - contextPath: CircleCI.WorkflowJob.dependencies
-      description: The job dependencies.
+      description: Job dependencies.
       type: String
   - arguments:
     - default: false
-      description: Name of workflow to retrieve its last runs details.
+      description: Name of the workflow from which to retrieve its last runs details.
       isArray: false
       name: workflow_name
       required: true
       secret: false
     - default: false
-      description: Maximum number of workflow runs to retrieve.
+      description: The maximum number of workflow runs to retrieve.
       defaultValue: '20'
       isArray: false
       name: limit
@@ -255,7 +255,7 @@ script:
       secret: false
     - name: vcs_type
       required: false
-      description: VC type of the project.
+      description: 'The version control system type of the project. Possible values: "github" and "bitbucket".'
       default: true
       auto: PREDEFINED
       predefined:
@@ -263,19 +263,19 @@ script:
         - bitbucket
       defaultValue: github
     - default: false
-      description: Organization to retrieve workflow last runs from. Defaults to organization instance parameter if none is given.
+      description: Organization from which to retrieve workflow last runs. Defaults to the organization instance parameter.
       isArray: false
       name: organization
       required: false
       secret: false
     - default: false
-      description: Project to retrieve workflow last runs from. Defaults to project instance parameter if none is given.
+      description: Project from which to retrieve workflow last runs. Defaults to the project instance parameter.
       isArray: false
       name: project
       required: false
       secret: false
     deprecated: false
-    description: Retrieve jobs list from CircleCI workflow.
+    description: Retrieves jobs list from the CircleCI workflow.
     execution: false
     name: circleci-workflow-last-runs
     outputs:
@@ -283,13 +283,13 @@ script:
       description: Branch name.
       type: String
     - contextPath: CircleCI.WorkflowRun.created_at
-      description: Time run was created.
+      description: Time the run was created.
       type: Date
     - contextPath: CircleCI.WorkflowRun.credits_used
       description: Credits used.
       type: Number
     - contextPath: CircleCI.WorkflowRun.duration
-      description: Duration of run in seconds.
+      description: Duration of the run in seconds.
       type: Number
     - contextPath: CircleCI.WorkflowRun.id
       description: ID of the run.
@@ -298,7 +298,7 @@ script:
       description: Run status.
       type: String
     - contextPath: CircleCI.WorkflowRun.stopped_at
-      description: Time when run was stopped.
+      description: Time the run stopped.
       type: Date
   isfetch: false
   runonce: false
@@ -308,4 +308,4 @@ script:
   dockerimage: demisto/python3:3.9.5.21272
 fromversion: 5.5.0
 tests:
-- No tests (auto formatted)
+No tests (auto formatted)
