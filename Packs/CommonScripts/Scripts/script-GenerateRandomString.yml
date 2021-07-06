@@ -92,15 +92,15 @@ args:
   required: true
   auto: PREDEFINED
   predefined:
-  - 'True'
-  - 'False'
+  - "True"
+  - "False"
   description: If the string will include punctuation.
 - name: Lowercase
   required: true
   auto: PREDEFINED
   predefined:
-  - 'True'
-  - 'False'
+  - "True"
+  - "False"
   description: If the string will include letters.
 - name: Uppercase
   description: if uppercase should be included
@@ -125,4 +125,3 @@ runonce: false
 tests:
 - RandomStringGenerateTest
 fromversion: 5.0.0
-dockerimage: demisto/python:2.7.18.20958
