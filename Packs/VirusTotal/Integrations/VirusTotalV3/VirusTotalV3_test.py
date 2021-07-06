@@ -33,7 +33,8 @@ class TestScoreCalculator:
         )
 
     def test_there_are_logs(self):
-        self.score_calculator.file_score('given hash', json.load(open('./TestData/file.json')))
+        with open('./TestData/file.json') as f:
+            self.score_calculator.file_score('given hash', json.load(f))
         assert self.score_calculator.logs
         self.score_calculator.logs = []
 
@@ -168,9 +169,10 @@ def test_create_relationships():
     - Validate that the relationships were created as expected.
     """
     expected_name = ['communicates-with', 'communicates-with', 'related-to', 'related-to']
-    relationships = create_relationships(entity_a='Test', entity_a_type='IP',
-                                         relationships_response=json.load(open('./TestData/relationships.json')),
-                                         reliability='B - Usually reliable')
+    with open('./TestData/relationships.json') as f:
+        relationships = create_relationships(entity_a='Test', entity_a_type='IP',
+                                            relationships_response=json.load(f),
+                                            reliability='B - Usually reliable')
     relation_entry = [relation.to_entry() for relation in relationships]
 
     for relation, expected_relation_name in zip(relation_entry, expected_name):
