@@ -45,8 +45,8 @@ def test_parsed_indicators_from_response(mocker, parse_response, expected_output
     client = mock_client(mocker, parse_response)
 
     mocker.patch.object(Client, 'get_url_content', return_value='test description')
-    client.request_feed_url()
-    indicators = fetch_indicators(client)
+    feed_response = client.request_feed_url()
+    indicators = fetch_indicators(client, feed_response)
     assert indicators == expected_output
 
 

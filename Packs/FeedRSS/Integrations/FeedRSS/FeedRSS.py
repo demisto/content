@@ -9,6 +9,7 @@ from bs4 import BeautifulSoup
 HTML_TAGS = ['p', 'table', 'ul', 'ol', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6']
 
 INTEGRATION_NAME = 'RSS Feed'
+Response = requests.models.Response
 
 
 class Client(BaseClient):
@@ -26,15 +27,17 @@ class Client(BaseClient):
         self.content_max_size = content_max_size * 1000
         self.parsed_indicators = []
         self.feed_data = None
-        self.feed_response = None
         self.reliability = reliability
 
     def request_feed_url(self):
-        self.feed_response = self._http_request(method='GET', resp_type='response')
+        return self._http_request(method='GET', resp_type='response')
 
-    def parse_feed_data(self):
-        if self.feed_response:
-            self.feed_data = feedparser.parse(self.feed_response.text)
+    def parse_feed_data(self, feed_response):
+        try:
+            if feed_response:
+                self.feed_data = feedparser.parse(feed_response.text)
+        except Exception as err:
+            raise DemistoException(f"Failed to parse feed.\nError:\n{str(err)}")
 
     def create_indicators_from_response(self):
         parsed_indicators: list = []
@@ -102,8 +105,8 @@ class Client(BaseClient):
         return report_content
 
 
-def fetch_indicators(client: Client):
-    client.parse_feed_data()
+def fetch_indicators(client: Client, feed_response: Response):
+    client.parse_feed_data(feed_response)
     parsed_indicators = client.create_indicators_from_response()
     return parsed_indicators
 
@@ -129,11 +132,12 @@ def get_indicators(client: Client, indicators: list, args: dict) -> CommandResul
     )
 
 
-def check_feed(client: Client) -> str:
-    if client.feed_response and 'html' in client.feed_response.headers['content-type']:
-        raise DemistoException(f'{client._base_url} is not rss feed url. Try look for a url containing xml format data,'
+def check_feed(client: Client, feed_response: Response) -> str:
+    if feed_response and 'html' in feed_response.headers['content-type']:
+        raise DemistoException(f'{feed_response.url} is not rss feed url. Try look for a url containing xml format data,'
                                f' that could be found under urls with \'feed\' prefix or suffix.')
     else:
+        client.parse_feed_data(feed_response)  # If parse response will raise an error, test will fail.
         return "ok"
 
 
@@ -159,17 +163,18 @@ def main():
                         tlp_color=params.get('tlp_color'),
                         content_max_size=int(params.get('max_size', '45')))
 
-        client.request_feed_url()
-
         if command == 'test-module':
-            return_results(check_feed(client))
+            feed_response = client.request_feed_url()
+            return_results(check_feed(client, feed_response))
 
         elif command == 'rss-get-indicators':
-            parsed_indicators = fetch_indicators(client)
+            feed_response = client.request_feed_url()
+            parsed_indicators = fetch_indicators(client, feed_response)
             return_results(get_indicators(client, parsed_indicators, demisto.args()))
 
         elif command == 'fetch-indicators':
-            parsed_indicators = fetch_indicators(client)
+            feed_response = client.request_feed_url()
+            parsed_indicators = fetch_indicators(client, feed_response)
             for iter_ in batch(parsed_indicators, batch_size=2000):
                 demisto.createIndicators(iter_)
         else:
