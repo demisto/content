@@ -1605,7 +1605,7 @@ class Pack(object):
             user_metadata_path = os.path.join(self._pack_path, Pack.USER_METADATA)  # user metadata path before parsing
             if not os.path.exists(user_metadata_path):
                 logging.error(f"{self._pack_name} pack is missing {Pack.USER_METADATA} file.")
-                return task_status, user_metadata
+                return task_status
 
             with open(user_metadata_path, "r") as user_metadata_file:
                 user_metadata = json.load(user_metadata_file)  # loading user metadata
