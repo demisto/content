@@ -211,7 +211,8 @@ def create_user_command(client, args, mapper_out, is_create_enabled, is_update_e
                                                        is_create_enabled, create_if_not_exists)
 
             else:
-                salesforce_user = iam_user_profile.map_object(mapper_name=mapper_out)
+                salesforce_user = iam_user_profile.map_object(mapper_name=mapper_out,
+                                                              incident_type=IAMUserProfile.CREATE_INCIDENT_TYPE)
                 # Removing empty elements from salesforce_user
                 salesforce_user = {key: value for key, value in salesforce_user.items() if value is not None}
                 salesforce_user = check_and_set_manndatory_fields(salesforce_user, client.demisto_params)
@@ -261,7 +262,8 @@ def update_user_command(client, args, mapper_out, is_command_enabled, is_enable_
                                                 skip=True,
                                                 skip_reason=error_message)
             else:
-                salesforce_user = iam_user_profile.map_object(mapper_name=mapper_out)
+                salesforce_user = iam_user_profile.map_object(mapper_name=mapper_out,
+                                                              incident_type=IAMUserProfile.UPDATE_INCIDENT_TYPE)
                 salesforce_user = {key: value for key, value in salesforce_user.items() if value is not None}
                 if allow_enable and is_enable_enabled:
                     salesforce_user['IsActive'] = True
@@ -308,7 +310,8 @@ def disable_user_command(client, args, mapper_out, is_command_enabled):
                                             skip=True,
                                             skip_reason=error_message)
             else:
-                salesforce_user = iam_user_profile.map_object(mapper_name=mapper_out)
+                salesforce_user = iam_user_profile.map_object(mapper_name=mapper_out,
+                                                              incident_type=IAMUserProfile.UPDATE_INCIDENT_TYPE)
                 salesforce_user['IsActive'] = False
                 salesforce_user = {key: value for key, value in salesforce_user.items() if value is not None}
                 res = client.update_user_profile(user_term=user_id, data=salesforce_user)

@@ -215,7 +215,8 @@ def create_user_command(client, args, mapper_out, is_command_enabled, is_update_
                                                    is_enable_enabled, False, False)
 
             else:
-                service_now_profile = user_profile.map_object(mapper_out)
+                service_now_profile = user_profile.map_object(mapper_out,
+                                                              incident_type=IAMUserProfile.CREATE_INCIDENT_TYPE)
                 created_user = client.create_user(service_now_profile)
                 user_profile.set_result(
                     action=IAMActions.CREATE_USER,
@@ -246,7 +247,8 @@ def update_user_command(client, args, mapper_out, is_command_enabled, is_enable_
             service_now_user = client.get_user(user_profile.get_attribute('email'))
             if service_now_user:
                 user_id = service_now_user.get('sys_id')
-                service_now_profile = user_profile.map_object(mapper_out)
+                service_now_profile = user_profile.map_object(mapper_out,
+                                                              incident_type=IAMUserProfile.UPDATE_INCIDENT_TYPE)
 
                 if allow_enable and is_enable_enabled:
                     service_now_profile['active'] = True
