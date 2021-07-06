@@ -969,7 +969,7 @@ script:
     - contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.TenantId
       description: Security and compliance search action Tenant ID.
       type: String
-  dockerimage: demisto/powershell-ubuntu:7.1.3.22027
+  dockerimage: devdemisto/powershell-ubuntu:7.1.3.22280
   isfetch: false
   longRunning: false
   longRunningPort: false
