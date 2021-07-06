@@ -102,17 +102,17 @@ script:
     description: Get a list of Abnormal cases identified by Abnormal Security
     name: abnormal-security-list-abnormal-cases-identified-by-abnormal-security
     outputs:
-    - contextPath: AbnormalSecurity.inline_response_200_1.cases.case_id
+    - contextPath: AbnormalSecurity.inline_response_200_1.cases.caseId
       description: A unique identifier for this case.
       type: String
     - contextPath: AbnormalSecurity.inline_response_200_1.cases.severity
       description: Description of the severity level for this case.
       type: String
-    - contextPath: AbnormalSecurity.inline_response_200_1.page_number
+    - contextPath: AbnormalSecurity.inline_response_200_1.pageNumber
       description: "The current page number. Will not be be in the response if no filter
         query meter is passed in via the request."
       type: Number
-    - contextPath: AbnormalSecurity.inline_response_200_1.nextpage_number
+    - contextPath: AbnormalSecurity.inline_response_200_1.nextpageNumber
       description: "The next page number. Will not be included in the response if there
         are no more pages of data or if no filter query meter is passed in via the
         request"
@@ -147,21 +147,22 @@ script:
     description: Get a list of threats
     name: abnormal-security-list-threats
     outputs:
-    - contextPath: AbnormalSecurity.inline_response_200.threats.threat_id
+    - contextPath: AbnormalSecurity.inline_response_200.threats.threatId
       description: An id which maps to a threat campaign. A threat campaign might
         be received by multiple users.
       type: String
-    - contextPath: AbnormalSecurity.inline_response_200.page_number
+    - contextPath: AbnormalSecurity.inline_response_200.pageNumber
       description: The current page number. Will not be be in the response if no filter
         query  meter is passed in via the request.
       type: Number
-    - contextPath: AbnormalSecurity.inline_response_200.nextpage_number
+    - contextPath: AbnormalSecurity.inline_response_200.nextpageNumber
       description: The next page number. Will not be included in the response if there
         are no more pages of data or if no filter query meter is passed in via the
         request
       type: Number
   - arguments:
-    - description: A UUID representing the threat.
+    - description: "A UUID representing a threat campaign. Full list of threat IDs \
+        can be obtained by first running the command to list a threat"
       isArray: false
       name: threat_id
       required: true
@@ -172,11 +173,11 @@ script:
     description: Get details of a threat
     name: abnormal-security-get-threat
     outputs:
-    - contextPath: AbnormalSecurity.ThreatDetails.threat_id
+    - contextPath: AbnormalSecurity.ThreatDetails.threatId
       description: An id which maps to a threat campaign. A threat campaign might
         be received by multiple users.
       type: String
-    - contextPath: AbnormalSecurity.ThreatDetails.messages.threat_id
+    - contextPath: AbnormalSecurity.ThreatDetails.messages.threatId
       description: An id which maps to a threat campaign. A threat campaign might
         be received by multiple users.
       type: String
@@ -261,7 +262,7 @@ script:
     description: Get details of an Abnormal case
     name: abnormal-security-get-abnormal-case
     outputs:
-    - contextPath: AbnormalSecurity.AbnormalCaseDetails.case_id
+    - contextPath: AbnormalSecurity.AbnormalCaseDetails.caseId
       description: A unique identifier for this case.
       type: String
     - contextPath: AbnormalSecurity.AbnormalCaseDetails.severity
@@ -281,7 +282,8 @@ script:
     description: Get the latest threat intel feed.
     name: abnormal-security-get-latest-threat-intel-feed
   - arguments:
-    - description: A UUID representing the threat.
+    - description: "A UUID representing a threat campaign. Full list of threat IDs \
+        can be obtained by first running the command to list a threat"
       isArray: false
       name: threat_id
       required: true

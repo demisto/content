@@ -81,6 +81,7 @@ class Client(BaseClient):
 
     def submit_an_inquiry_to_request_a_report_on_misjudgement_by_abnormal_security_request(self, reporter, report_type):
         headers = self._headers
+
         json_data = {
             'reporter': reporter,
             'report_type': report_type,
@@ -126,7 +127,10 @@ def get_a_list_of_abnormal_cases_identified_by_abnormal_security_command(client,
     page_number = args.get('page_number', None)
 
     response = client.get_a_list_of_abnormal_cases_identified_by_abnormal_security_request(filter_, page_size, page_number)
+    markdown = '### List of Cases\n'
+    markdown += tableToMarkdown('Case IDs', response.get('cases', []), headers=['caseId', 'severity'])
     command_results = CommandResults(
+        readable_output=markdown,
         outputs_prefix='AbnormalSecurity.inline_response_200_1',
         outputs_key_field='',
         outputs=response,
@@ -143,7 +147,10 @@ def get_a_list_of_threats_command(client, args):
     source = str(args.get('source', ''))
 
     response = client.get_a_list_of_threats_request(filter_, page_size, page_number, source)
+    markdown = '### List of Threats\n'
+    markdown += tableToMarkdown('Threat IDs', response.get('threats'), headers=['threatId'])
     command_results = CommandResults(
+        readable_output=markdown,
         outputs_prefix='AbnormalSecurity.inline_response_200',
         outputs_key_field='',
         outputs=response,
@@ -156,9 +163,24 @@ def get_details_of_a_threat_command(client, args):
     threat_id = str(args.get('threat_id', ''))
 
     response = client.get_details_of_a_threat_request(threat_id)
+    markdown = '### Threat Details\n'
+    headers = [
+        'subject',
+        'fromAddress',
+        'fromName',
+        'toAddresses',
+        'recipientAddress',
+        'receivedTime',
+        'attackType',
+        'attackStrategy',
+        'returnPath'
+    ]
+    markdown += tableToMarkdown(
+        f"Messages in Threat {response.get('threatId', '')}", response.get('messages', []), headers=headers)
     command_results = CommandResults(
+        readable_output=markdown,
         outputs_prefix='AbnormalSecurity.ThreatDetails',
-        outputs_key_field='',
+        outputs_key_field='threatId',
         outputs=response,
         raw_response=response
     )

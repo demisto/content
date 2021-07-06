@@ -135,10 +135,10 @@ Get a list of Abnormal cases identified by Abnormal Security
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| AbnormalSecurity.inline_response_200_1.cases.case_id | String | A unique identifier for this case. | 
+| AbnormalSecurity.inline_response_200_1.cases.caseId | String | A unique identifier for this case. | 
 | AbnormalSecurity.inline_response_200_1.cases.severity | String | Description of the severity level for this case. | 
-| AbnormalSecurity.inline_response_200_1.page_number | Number | The current page number. Will not be be in the response if no filter query meter is passed in via the request. | 
-| AbnormalSecurity.inline_response_200_1.nextpage_number | Number | The next page number. Will not be included in the response if there are no more pages of data or if no filter query meter is passed in via the request | 
+| AbnormalSecurity.inline_response_200_1.pageNumber | Number | The current page number. Will not be be in the response if no filter query meter is passed in via the request. | 
+| AbnormalSecurity.inline_response_200_1.nextpageNumber | Number | The next page number. Will not be included in the response if there are no more pages of data or if no filter query meter is passed in via the request | 
 
 
 #### Command Example
@@ -164,10 +164,11 @@ Get a list of Abnormal cases identified by Abnormal Security
 
 #### Human Readable Output
 
->### Results
->|cases|nextPageNumber|pageNumber|
->|---|---|---|
->| {'caseId': '1234', 'severity': 'Potential Account Takeover'} | 2 | 1 |
+>### List of Cases
+>### Case IDs
+>|caseId|severity|
+>|---|---|
+>| 1234 | Potential Account Takeover |
 
 
 ### abnormal-security-list-threats
@@ -193,9 +194,9 @@ Get a list of threats
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| AbnormalSecurity.inline_response_200.threats.threat_id | String | An id which maps to a threat campaign. A threat campaign might be received by multiple users. | 
-| AbnormalSecurity.inline_response_200.page_number | Number | The current page number. Will not be be in the response if no filter query  meter is passed in via the request. | 
-| AbnormalSecurity.inline_response_200.nextpage_number | Number | The next page number. Will not be included in the response if there are no more pages of data or if no filter query meter is passed in via the request | 
+| AbnormalSecurity.inline_response_200.threats.threatId | String | An id which maps to a threat campaign. A threat campaign might be received by multiple users. | 
+| AbnormalSecurity.inline_response_200.pageNumber | Number | The current page number. Will not be be in the response if no filter query  meter is passed in via the request. | 
+| AbnormalSecurity.inline_response_200.nextpageNumber | Number | The next page number. Will not be included in the response if there are no more pages of data or if no filter query meter is passed in via the request | 
 
 
 #### Command Example
@@ -220,10 +221,11 @@ Get a list of threats
 
 #### Human Readable Output
 
->### Results
->|nextPageNumber|pageNumber|threats|
->|---|---|---|
->| 2 | 1 | {'threatId': '184712ab-6d8b-47b3-89d3-a314efef79e2'} |
+>### List of Threats
+>### Threat IDs
+>|threatId|
+>|---|
+>| 184712ab-6d8b-47b3-89d3-a314efef79e2 |
 
 
 ### abnormal-security-get-threat
@@ -238,7 +240,7 @@ Get details of a threat
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| threat_id | A UUID representing the threat. | Required | 
+| threat_id | A UUID representing a threat campaign. Full list of threat IDs can be obtained by first running the command to list a threat. | Required | 
 | mock-data | Returns test data if set to `True`. | Optional | 
 
 
@@ -246,8 +248,8 @@ Get details of a threat
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| AbnormalSecurity.ThreatDetails.threat_id | String | An id which maps to a threat campaign. A threat campaign might be received by multiple users. | 
-| AbnormalSecurity.ThreatDetails.messages.threat_id | String | An id which maps to a threat campaign. A threat campaign might be received by multiple users. | 
+| AbnormalSecurity.ThreatDetails.threatId | String | An id which maps to a threat campaign. A threat campaign might be received by multiple users. | 
+| AbnormalSecurity.ThreatDetails.messages.threatId | String | An id which maps to a threat campaign. A threat campaign might be received by multiple users. | 
 | AbnormalSecurity.ThreatDetails.messages.abxMessageId | Number | A unique identifier for an individual message within a threat \(i.e email campaign\). | 
 | AbnormalSecurity.ThreatDetails.messages.abxPortalUrl | String | The URL at which the specific message details are viewable in Abnormal Security's Portal web interface. | 
 | AbnormalSecurity.ThreatDetails.messages.subject | String | The email subject. | 
@@ -330,10 +332,11 @@ Get details of a threat
 
 #### Human Readable Output
 
->### Results
->|messages|threatId|
->|---|---|
->| {'threatId': '184712ab-6d8b-47b3-89d3-a314efef79e2', 'abxMessageId': 4551618356913732000, 'abxPortalUrl': 'https://portal.abnormalsecurity.com/home/threat-center/remediation-history/4551618356913732076', 'subject': 'Phishing Email', 'fromAddress': 'support@secure-reply.org', 'fromName': '', 'toAddresses': 'example@example.com, another@example.com', 'recipientAddress': 'example@example.com', 'receivedTime': '2020-06-09T17:42:59Z', 'sentTime': '2020-06-09T17:42:59Z', 'internetMessageId': '<5edfca1c.1c69fb81.4b055.8fd5@mx.google.com>', 'autoRemediated': True, 'postRemediated': True, 'attackType': 'Extortion', 'attackStrategy': 'Name Impersonation', 'returnPath': 'support@secure-reply.org', 'replyToEmails': ['reply-to@example.com'], 'ccEmails': ['cc@example.com'], 'senderIpAddress': '100.101.102.103', 'impersonatedParty': 'None / Others', 'attackVector': 'Text', 'attachmentNames': ['attachment.pdf'], 'urls': ['https://www.google.com/'], 'summaryInsights': ['Bitcoin Topics', 'Personal Information Theft', 'Unusual Sender'], 'remediationTimestamp': '2020-06-09T17:42:59Z', 'isRead': True, 'attackedParty': 'VIP'} | 184712ab-6d8b-47b3-89d3-a314efef79e2 |
+>### Threat Details
+>### Messages in Threat 184712ab-6d8b-47b3-89d3-a314efef79e2
+>|subject|fromAddress|fromName|toAddresses|recipientAddress|receivedTime|attackType|attackStrategy|returnPath|
+>|---|---|---|---|---|---|---|---|---|
+>| Phishing Email | support@secure-reply.org |  | example@example.com, another@example.com | example@example.com | 2020-06-09T17:42:59Z | Extortion | Name Impersonation | support@secure-reply.org |
 
 
 ### abnormal-security-get-abnormal-case
@@ -356,7 +359,7 @@ Get details of an Abnormal case
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| AbnormalSecurity.AbnormalCaseDetails.case_id | String | A unique identifier for this case. | 
+| AbnormalSecurity.AbnormalCaseDetails.caseId | String | A unique identifier for this case. | 
 | AbnormalSecurity.AbnormalCaseDetails.severity | String | Description of the severity level for this case. | 
 | AbnormalSecurity.AbnormalCaseDetails.affectedEmployee | String | Which employee this case pertains to. | 
 | AbnormalSecurity.AbnormalCaseDetails.firstObserved | String | First time suspicious behavior was observed. | 
@@ -428,7 +431,7 @@ Manage a Threat identified by Abnormal Security
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| threat_id | A UUID representing the threat. | Required | 
+| threat_id | A UUID representing a threat campaign. Full list of threat IDs can be obtained by first running the command to list a threat. | Required | 
 | action | Action to perform on threat. | Required | 
 | mock-data | Returns test data if set to `True`. | Optional | 
 
