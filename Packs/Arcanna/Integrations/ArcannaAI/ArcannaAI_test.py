@@ -86,7 +86,6 @@ def test_arcanna_send_event_command(mocker):
     command_result = post_event(client, command_args)
 
     assert command_result.outputs_prefix == "Arcanna.Event"
-    assert command_result.outputs_key_field == "11018019921461"
     assert command_result.raw_response['event_id'] == "11018019921461"
     assert command_result.raw_response['error_message'] == ""
     assert command_result.raw_response['status'] == "Pending inference"
@@ -101,6 +100,6 @@ def test_arcanna_get_event_status_command(mocker):
     mocker.patch.object(demisto, 'args', return_value=command_args)
     command_result = get_event_status(client, command_args)
     assert command_result.outputs_prefix == "Arcanna.Event"
-    assert command_result.outputs_key_field == "11013867751676"
+    assert command_result.outputs_key_field == "event_id"
     assert command_result.raw_response['status'] == "OK"
     assert command_result.raw_response['result'] == "escalate_alert"
