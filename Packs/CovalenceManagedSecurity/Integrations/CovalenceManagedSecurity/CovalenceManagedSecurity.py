@@ -40,11 +40,6 @@ class Portal():
         BEARER = 'Bearer'
         KEY = 'FieldEffectKey'
 
-    def get_authorization(self, skip_refresh=False):
-        # if not skip_refresh:
-        #     self.refresh_auth()
-        return '{} {}'.format(self.scheme, self.auth['token'])
-
     def try_saved_token(self, token):
         # Return True if this token works, also save this token as the token
         # Return False if this token doesn't work and user will need to auth
@@ -81,7 +76,8 @@ class Portal():
         if headers is not None:
             all_headers.update(headers)
         if self.auth:
-            all_headers.update({'Authorization': self.get_authorization(skip_refresh="refresh_auth_token" in uri)})
+            auth = '{} {}'.format(self.scheme, self.auth['token'])
+            all_headers.update({'Authorization': auth})
 
         url = '{}/{}'.format(self.portal_url, uri if len(kwargs) == 0 else uri.format(**kwargs))
         if remove_subdomain:
@@ -106,13 +102,6 @@ class Portal():
         if r.status_code >= 400:
             raise HTTPError(r.text)
         return r
-
-    def refresh_auth(self):
-        if datetime.now() > self.auth["expires"] - timedelta(minutes=10):
-            r = self.post('refresh_auth_token', json={"refresh_token": self.auth["refresh"]})
-            self.auth["token"] = r.json()['auth_token']
-            self.auth["expires"] = datetime.now() + timedelta(seconds=int(r.json()['seconds_to_expiry']))
-            self.auth["refresh"] = r.json()['refresh_token']
 
     def get_provider_id(self):
         r = self.get('my_providers', auth=self.auth)
