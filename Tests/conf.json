@@ -3412,7 +3412,7 @@
         },
         {
             "integrations": ["OpenCTI Feed", "Demisto REST API"],
-            "playbookID": "OpenCTI Feed Test",
+            "playbookID": "Fetch Test",
             "fromversion": "5.5.0"
         }
     ],
