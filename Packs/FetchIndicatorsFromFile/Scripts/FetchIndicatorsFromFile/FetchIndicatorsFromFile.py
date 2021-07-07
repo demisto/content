@@ -15,7 +15,7 @@ def csv_file_to_indicator_list(file_path, col_num, starting_row, auto_detect, de
     # TODO: add run on all columns functionality
 
     line_index = 0
-    with open(file_path, 'rU') as csv_file:
+    with open(file_path, 'r') as csv_file:
         # csv reader can fail when encountering a NULL byte (\0) - so we go through the file and take out the NUL bytes.
         file_reader = csv.reader(line.replace('\0', '') for line in csv_file)
         for row in file_reader:
