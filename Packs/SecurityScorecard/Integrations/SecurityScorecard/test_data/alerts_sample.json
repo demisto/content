@@ -1,0 +1,129 @@
+{
+	"entries": [{
+		"id": "6c58e041-5875-54d0-8f4a-66b4cdaba317",
+		"username": "kgal@paloaltonetworks.com",
+		"change_type": "score_change",
+		"alert_settings": ["f7763470-cd32-11eb-9d3a-2d2a8c7dca50"],
+		"domain": "google.com",
+		"company_name": "Google",
+		"portfolios": [{
+			"id": "60c78cc2d63162001a68c2b8",
+			"name": "kgal@paloaltonetworks.com"
+		}],
+		"my_scorecard": false,
+		"created_at": "2021-06-27T20:48:07.128Z",
+		"change_data": [{
+			"direction": "drops",
+			"score": 80,
+			"factor": "ip_reputation",
+			"grade_letter": "B",
+			"score_impact": -10
+		}]
+	}, {
+		"id": "4b2ee59a-158d-5942-89dd-4c66f5e17215",
+		"username": "kgal@paloaltonetworks.com",
+		"change_type": "score_change",
+		"alert_settings": ["f7763470-cd32-11eb-9d3a-2d2a8c7dca50"],
+		"domain": "google.co.il",
+		"company_name": "Google",
+		"portfolios": [{
+			"id": "60c8c5f9139e40001908c6a4",
+			"name": "test_portfolio"
+		}],
+		"my_scorecard": false,
+		"created_at": "2021-06-27T20:48:01.096Z",
+		"change_data": [{
+			"direction": "drops",
+			"score": 69,
+			"factor": "ip_reputation",
+			"grade_letter": "D",
+			"score_impact": -3
+		}]
+	}, {
+		"id": "894fe417-8655-5dd0-b54c-2bb64b03fed8",
+		"username": "kgal@paloaltonetworks.com",
+		"change_type": "score_change",
+		"alert_settings": ["f7763470-cd32-11eb-9d3a-2d2a8c7dca50", "0d56d900-cf79-11eb-ab90-a9e968a63734"],
+		"domain": "google.co.il",
+		"company_name": "Google",
+		"portfolios": [{
+			"id": "60c8c5f9139e40001908c6a4",
+			"name": "test_portfolio"
+		}],
+		"my_scorecard": false,
+		"created_at": "2021-06-26T13:20:21.688Z",
+		"change_data": [{
+			"direction": "drops",
+			"score": 79,
+			"factor": "overall",
+			"grade_letter": "C",
+			"score_impact": -1
+		}, {
+			"direction": "drops",
+			"score": 88,
+			"factor": "endpoint_security",
+			"grade_letter": "B",
+			"score_impact": -2
+		}]
+	}, {
+		"id": "21790627-74bb-5ea9-a425-1f96bdd6a71f",
+		"username": "kgal@paloaltonetworks.com",
+		"change_type": "score_change",
+		"alert_settings": ["f7763470-cd32-11eb-9d3a-2d2a8c7dca50"],
+		"domain": "shijigroup.com",
+		"company_name": "Shijigroup",
+		"portfolios": [{
+			"id": "60c8c5f9139e40001908c6a4",
+			"name": "test_portfolio"
+		}],
+		"my_scorecard": false,
+		"created_at": "2021-06-25T21:54:14.783Z",
+		"change_data": [{
+			"direction": "drops",
+			"score": 69,
+			"factor": "application_security",
+			"grade_letter": "D",
+			"score_impact": -1
+		}]
+	}, {
+		"id": "ced46901-fa0f-556c-a1f0-0ff0c00814c2",
+		"username": "kgal@paloaltonetworks.com",
+		"change_type": "score_change",
+		"alert_settings": ["f7763470-cd32-11eb-9d3a-2d2a8c7dca50"],
+		"domain": "fyber.com",
+		"company_name": "Fyber GmbH",
+		"portfolios": [{
+			"id": "60c78cc2d63162001a68c2b8",
+			"name": "kgal@paloaltonetworks.com"
+		}],
+		"my_scorecard": false,
+		"created_at": "2021-06-24T18:30:20.673Z",
+		"change_data": [{
+			"direction": "drops",
+			"score": 88,
+			"factor": "endpoint_security",
+			"grade_letter": "B",
+			"score_impact": -3
+		}]
+	}],
+	"page": 1,
+	"size": 5,
+	"sizes_by_category": {
+		"standard": {
+			"total": 5,
+			"unread": 5
+		},
+		"prioritized": {
+			"total": 0,
+			"unread": 0
+		},
+		"customer_contacts": {
+			"total": 0,
+			"unread": 0
+		},
+		"queued": {
+			"total": 0,
+			"unread": 0
+		}
+	}
+}
