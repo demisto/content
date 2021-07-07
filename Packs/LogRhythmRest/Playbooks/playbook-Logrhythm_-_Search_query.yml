@@ -285,71 +285,71 @@ inputs:
   value:
     simple: "10"
   required: false
-  description: Max log message to query.
+  description: Maximum number of log message to query.
   playbookInputQuery:
 - key: query_timeout
   value:
     simple: "60"
   required: false
-  description: Execute search query to Log Rhythm log database.
+  description: Execute search query to LogRhythm log database.
   playbookInputQuery:
 outputs:
 - contextPath: Logrhythm.Search.Results.TaskStatus
-  description: Task Status
+  description: Task Status.
   type: string
 - contextPath: Logrhythm.Search.Results.TaskID
-  description: Task ID
+  description: Task ID.
   type: string
 - contextPath: Logrhythm.Search.Results.Items.originEntityId
-  description: Entity ID
+  description: Entity ID.
   type: number
 - contextPath: Logrhythm.Search.Results.Items.impactedIp
-  description: Impacted IP
+  description: Impacted IP.
   type: string
 - contextPath: Logrhythm.Search.Results.Items.classificationTypeName
-  description: Classification Name
+  description: Classification Name.
   type: string
 - contextPath: Logrhythm.Search.Results.Items.logSourceName
-  description: Log Source Name
+  description: Log Source Name.
   type: string
 - contextPath: Logrhythm.Search.Results.Items.entityName
-  description: Entity Name
+  description: Entity Name.
   type: string
 - contextPath: Logrhythm.Search.Results.Items.normalDate
-  description: Date
+  description: Date.
   type: date
 - contextPath: Logrhythm.Search.Results.Items.vendorMessageId
-  description: Vendor Log message
+  description: Vendor Log message.
   type: string
 - contextPath: Logrhythm.Search.Results.Items.priority
-  description: Log priority
+  description: Log priority.
   type: number
 - contextPath: Logrhythm.Search.Results.Items.sequenceNumber
-  description: Seq number
+  description: Seq number.
   type: string
 - contextPath: Logrhythm.Search.Results.Items.originHostId
-  description: Origin Host ID
+  description: Origin Host ID.
   type: number
 - contextPath: Logrhythm.Search.Results.Items.mpeRuleId
-  description: Log Rhythm rule ID
+  description: Log Rhythm rule ID.
   type: number
 - contextPath: Logrhythm.Search.Results.Items.originIp
-  description: Origin IP
+  description: Origin IP.
   type: string
 - contextPath: Logrhythm.Search.Results.Items.mpeRuleName
-  description: Log Rhythm rule name
+  description: Log Rhythm rule name.
   type: string
 - contextPath: Logrhythm.Search.Results.Items.logSourceHostId
-  description: Log Source host ID
+  description: Log Source host ID.
   type: number
 - contextPath: Logrhythm.Search.Results.Items.originHost
-  description: Origin Host
+  description: Origin Host.
   type: string
 - contextPath: Logrhythm.Search.Results.Items.logDate
-  description: Log Date
+  description: Log Date.
   type: date
 - contextPath: Logrhythm.Search.Results.Items.classificationName
-  description: Log classification name
+  description: Log classification name.
   type: string
 tests:
 - LogRhythm REST test
