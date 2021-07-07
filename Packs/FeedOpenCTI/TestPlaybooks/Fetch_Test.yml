@@ -1,5 +1,5 @@
 id: 9484b731-9a4e-4ebf-8119-e860516ce9dd
-version: 20
+version: -1
 vcShouldKeepItemLegacyProdMachine: false
 name: Fetch Test
 starttaskid: "0"
@@ -70,10 +70,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: 253681b6-3074-4b18-8392-fdda2fda8201
+    taskid: 3c691c73-42ff-47d6-8faa-a3a2dea74ce8
     type: condition
     task:
-      id: 253681b6-3074-4b18-8392-fdda2fda8201
+      id: 3c691c73-42ff-47d6-8faa-a3a2dea74ce8
       version: -1
       name: Check If Indicators exsist
       type: condition
@@ -129,10 +129,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: 7e6d9ae0-6d9e-4bb0-8fce-2b5988c0d119
+    taskid: d965156c-5b49-4a1d-8c29-2a4e32d30b16
     type: regular
     task:
-      id: 7e6d9ae0-6d9e-4bb0-8fce-2b5988c0d119
+      id: d965156c-5b49-4a1d-8c29-2a4e32d30b16
       version: -1
       name: Wait for fetching indicators
       description: Sleep for X seconds
@@ -145,7 +145,7 @@ tasks:
       - "5"
     scriptarguments:
       seconds:
-        simple: "1"
+        simple: "200"
     separatecontext: false
     view: |-
       {
