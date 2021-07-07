@@ -1,6 +1,6 @@
 {
     "name": "CircleCI",
-    "description": "CircleCI is a modern continuous integration and continuous delivery (CI/CD) platform. CircleCI automates build, test, and deployment of software.",
+    "description": "CircleCI is a modern continuous integration and continuous delivery (CI/CD) platform. CircleCI automates the building, testing, and deployment of software.",
     "support": "xsoar",
     "currentVersion": "1.0.0",
     "author": "Cortex XSOAR",
