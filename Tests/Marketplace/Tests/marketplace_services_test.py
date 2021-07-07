@@ -46,7 +46,7 @@ TEST_METADATA = {
 AGGREGATED_CHANGELOG = {
     "1.0.1": {
         "releaseNotes": "dummy release notes",
-        "displayName": "1.0.0",
+        "displayName": "1.0.0 - 264879",
         "released": "2020-05-05T13:39:33Z"
     },
     "1.0.3": {
@@ -724,7 +724,20 @@ class TestChangelogCreation:
             release_notes_dir, changelog_latest_rn_version, AGGREGATED_CHANGELOG, modified_rn_files)
         assert modified_versions_dict == {'1.0.3': modified_rn_lines}
 
-        def test_update_changelog_entry(self, mocker, )
+    def test_update_changelog_entry(self, dummy_pack):
+        """
+           Given:
+               - Changelog from production bucket, a version that is a key of an entry in the changelog and rn lines
+                to update the entry with.
+           When:
+               - Modifying an exiting rn.
+           Then:
+               - The entry will keep all the other data other than the modified part.
+        """
+        entry = dummy_pack._get_updated_changelog_entry(AGGREGATED_CHANGELOG, '1.0.1', 'updated_rn')
+        assert entry['releaseNotes'] == 'updated_rn'
+        assert entry['displayName'] == AGGREGATED_CHANGELOG['1.0.1']['displayName']
+        assert entry['released'] == AGGREGATED_CHANGELOG['1.0.1']['released']
 
     def test_assert_production_bucket_version_matches_release_notes_version_positive(self, dummy_pack):
         """

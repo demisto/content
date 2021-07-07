@@ -627,15 +627,15 @@ class Pack(object):
 
         return dependencies_data_result
 
-    def _update_changelog_entry(self, changelog: dict, version: str, release_notes: dict = None,
-                                version_display_name: str = None, build_number_with_prefix: str = None,
-                                released_time: str = None):
+    def _get_updated_changelog_entry(self, changelog: dict, version: str, release_notes: str = None,
+                                     version_display_name: str = None, build_number_with_prefix: str = None,
+                                     released_time: str = None):
         """
 
         Args:
             changelog (dict): The changelog from the production bucket.
             version (str): The version that is the key in the changelog of the entry wished to be updated.
-            release_notes (dict): The release notes lines to update the entry with.
+            release_notes (str): The release notes lines to update the entry with.
             version_display_name (str): The version display name to update the entry with.
             build_number_with_prefix(srt): the build number to modify the entry to, including the prefix R (if present).
             released_time: The released time to update the entry with.
@@ -652,7 +652,7 @@ class Pack(object):
         changelog_entry['displayName'] = f'{version_display_name} - {build_number_with_prefix}'
         changelog_entry['released'] = released_time if released_time else changelog_entry['released']
 
-        changelog[version] = changelog_entry
+        return changelog_entry
 
     def _create_changelog_entry(self, release_notes, version_display_name, build_number, pack_was_modified=False,
                                 new_version=True, initial_release=False):
@@ -1339,8 +1339,9 @@ class Pack(object):
                         if modified_release_notes_lines_dict:
                             logging.info("updating changelog entries for modified rn")
                             for version, modified_release_notes_lines in modified_release_notes_lines_dict.items():
-                                self._update_changelog_entry(changelog, version,
-                                                             release_notes=modified_release_notes_lines)
+                                updated_entry = self._get_updated_changelog_entry(
+                                    changelog, version, release_notes=modified_release_notes_lines)
+                                changelog[version] = updated_entry
 
                 else:  # will enter only on initial version and release notes folder still was not created
                     if len(changelog.keys()) > 1 or Pack.PACK_INITIAL_VERSION not in changelog:
