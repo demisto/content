@@ -73,9 +73,6 @@ Get detailed information about a host.
 | Edgescan.HostGet | Unknown | Detailed host information | 
 
 
-#### Command Example
-``` ```
-
 #### Human Readable Output
 
 
@@ -165,9 +162,6 @@ Update a host
 | --- | --- | --- |
 | Edgescan.HostUpdate | Unknown | Information returned after host update | 
 
-
-#### Command Example
-``` ```
 
 #### Human Readable Output
 
@@ -397,9 +391,6 @@ Get asset details
 | Edgescan.AssetGet | Unknown | Detailed information about an asset | 
 
 
-#### Command Example
-``` ```
-
 #### Human Readable Output
 
 
@@ -533,10 +524,6 @@ Create an asset
 | --- | --- | --- |
 | Edgescan.AssetCreate | Unknown | Information about asset creation | 
 
-
-#### Command Example
-``` ```
-
 #### Human Readable Output
 
 
@@ -662,9 +649,6 @@ Delete an asset
 | --- | --- | --- |
 | Edgescan.AssetDelete | Unknown | Information about asset deletion | 
 
-
-#### Command Example
-``` ```
 
 #### Human Readable Output
 
@@ -858,9 +842,6 @@ Query for a user
 | Edgescan.UserGetQuery | Unknown | Result of a user query | 
 
 
-#### Command Example
-``` ```
-
 #### Human Readable Output
 
 
@@ -894,9 +875,6 @@ Create a user
 | Edgescan.UserCreate | Unknown | Information about a created user | 
 
 
-#### Command Example
-``` ```
-
 #### Human Readable Output
 
 
@@ -923,9 +901,6 @@ Delete a user
 | Edgescan.UserDelete | Unknown | Information about a deleted user | 
 
 
-#### Command Example
-``` ```
-
 #### Human Readable Output
 
 
@@ -951,9 +926,6 @@ Reset a user's password
 | --- | --- | --- |
 | Edgescan.UserResetPassword | Unknown | Information about User password reset | 
 
-
-#### Command Example
-``` ```
 
 #### Human Readable Output
 
@@ -1024,9 +996,6 @@ Lock a user
 | --- | --- | --- |
 | Edgescan.UserLockAccount | Unknown | Information about the User lock | 
 
-
-#### Command Example
-``` ```
 
 #### Human Readable Output
 
@@ -4892,9 +4861,6 @@ There are no input arguments for this command.
 | Edgescan.VulnerabilitiesGetExport | Unknown | The vulnerabilities export list | 
 
 
-#### Command Example
-``` ```
-
 #### Human Readable Output
 
 
@@ -5043,9 +5009,6 @@ Run a vulnerability query
 | Edgescan.VulnerabilitiesGetQuery | Unknown | The result of a vulnerability query | 
 
 
-#### Command Example
-``` ```
-
 #### Human Readable Output
 
 
@@ -5071,9 +5034,6 @@ Retest a vulnerability
 | --- | --- | --- |
 | Edgescan.VulnerabilitiesRetest | Unknown | The Vulnerability retest result | 
 
-
-#### Command Example
-``` ```
 
 #### Human Readable Output
 
@@ -5101,9 +5061,6 @@ Rish accept a vulnerability
 | --- | --- | --- |
 | Edgescan.VulnerabilitiesRiskAccept | Unknown | The vulnerability retest result | 
 
-
-#### Command Example
-``` ```
 
 #### Human Readable Output
 
