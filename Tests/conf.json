@@ -3503,7 +3503,8 @@
         "FireEyeNX-Test": "Issue 33216",
         "Microsoft Teams - Test": "Issue 38263",
         "QualysVulnerabilityManagement-Test": "Issue 38640",
-        "test playbook - QRadarCorrelations": "Issue 38639"
+        "test playbook - QRadarCorrelations": "Issue 38639",
+        "EWS Extension: Powershell Online V2 Test": "Issue 39008"
     },
     "skipped_integrations": {
 
@@ -3805,7 +3806,7 @@
                 "memory_threshold": 140
             },
             "demisto/powershell-ubuntu": {
-                "pid_threshold": 40,
+                "pid_threshold": 45,
                 "memory_threshold": 200
             },
             "demisto/boto3": {
