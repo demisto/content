@@ -824,10 +824,10 @@ tasks:
     quietmode: 0
   "27":
     id: "27"
-    taskid: d4ac5b40-0a55-4c19-8457-c11994e18e08
+    taskid: 1f8c40f6-8135-49c2-8379-747dc5318821
     type: regular
     task:
-      id: d4ac5b40-0a55-4c19-8457-c11994e18e08
+      id: 1f8c40f6-8135-49c2-8379-747dc5318821
       version: -1
       name: 'Search XDR incidents for suspicious network behavior '
       description: Search XDR incidents for REvil in the network.
@@ -840,9 +840,16 @@ tasks:
       - "34"
     scriptarguments:
       extend-context:
-        simple: SUNBURSTXDRincidents=
+        simple: REvilXDRincidents=
       query:
-        simple: 'xdralerts.name:"network_ransom1" '
+        simple: 'xdralerts.name:"network_ransom1" OR xdralerts.description: *malicious_dll_dropped_mpsvc.dll.1*
+          OR  xdralerts.description: *malicious_dll_dropped_mpsvc.dll.2* OR  xdralerts.description:
+          *malicious_dll_dropped_mpsvc.dll.3* OR  xdralerts.description: *malicious_dll_dropped_mpsvc.dll.4*
+          OR  xdralerts.description: *malicious_dll_dropped_mpsvc.dll.5* OR xdralerts.description:
+          *sync.malicious_dll_loaded_mpsvc.dll.1* OR xdralerts.description: *sync.malicious_dll_loaded_mpsvc.dll.2*
+          OR xdralerts.description: *sync.malicious_dll_loaded_mpsvc.dll.3* OR xdralerts.description:
+          *sync.malicious_dll_loaded_mpsvc.dll.4* OR xdralerts.description: *sync.malicious_dll_loaded_mpsvc.dll.5*
+          OR xdralerts.description: *msmpeng_hijack* OR xdralerts.name: *msmpeng_hijack*'
     separatecontext: false
     view: |-
       {
@@ -2151,11 +2158,12 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+system: true
 view: |-
   {
     "linkLabelsPosition": {
       "31_27_yes": 0.47,
-      "31_34_#default#": 0.16,
+      "31_34_#default#": 0.18,
       "47_33_Yes": 0.57,
       "49_34_#default#": 0.19,
       "58_63_No": 0.71
