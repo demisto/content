@@ -3,7 +3,7 @@ commonfields:
   id: LogRhythmRest
   version: -1
 configuration:
-- display: Hostname, IP address, or server URL.
+- display: Hostname, IP address, or server URL
   name: url
   required: true
   type: 0
@@ -19,7 +19,7 @@ configuration:
   name: proxy
   required: false
   type: 8
-- display: Search API cluster ID.
+- display: Search API cluster ID
   name: cluster-id
   required: false
   type: 0
@@ -47,7 +47,7 @@ script:
   commands:
   - arguments:
     - default: false
-      description: Filter log messages by this argument.
+      description: The value by which to filter log messages.
       isArray: false
       name: keyword
       required: true
@@ -62,7 +62,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: Custom
-      description: If time_frame is "Custom", specify the start time for the time range.
+      description: 'The time range from which to return log messages. If time_frame is "Custom", specify the start and end time for the time range. Possible values: "Today", "Last2Days", "LastWeek", "LastMonth", and "Custom".'
       isArray: false
       name: time-frame
       predefined:
@@ -86,33 +86,33 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Executes a query for logs that match query parameters.
+    description: Executes a query for logs that match the query parameters.
     execution: false
     name: lr-execute-query
     outputs:
     - contextPath: Logrhythm.Log.Channel
-      description: Channel
+      description: Channel of the log.
       type: string
     - contextPath: Logrhythm.Log.Computer
-      description: Computer
+      description: Computer for the log
       type: string
     - contextPath: Logrhythm.Log.EventData
-      description: Event data
+      description: Event data of the log.
       type: string
     - contextPath: Logrhythm.Log.EventID
-      description: Event ID
+      description: Event ID of the log.
       type: string
     - contextPath: Logrhythm.Log.Keywords
-      description: Keywords
+      description: Keywords of the log.
       type: string
     - contextPath: Logrhythm.Log.Level
-      description: Level
+      description: Log level.
       type: string
     - contextPath: Logrhythm.Log.Opcode
-      description: Opcode
+      description: Opcode of the log.
       type: string
     - contextPath: Logrhythm.Log.Task
-      description: Task
+      description: Task of the log.
       type: string
   - arguments:
     - default: false
@@ -140,13 +140,13 @@ script:
       description: The entity name.
       type: String
     - contextPath: Logrhythm.Host.OS
-      description: The host OS.
+      description: The host operating system.
       type: String
     - contextPath: Logrhythm.Host.ThreatLevel
       description: The host threat level.
       type: String
     - contextPath: Logrhythm.Host.UseEventlogCredentials
-      description: Use event log credentials
+      description: Whether to use the event log credentials.
       type: String
     - contextPath: Logrhythm.Host.Name
       description: The name of the host.
@@ -170,7 +170,7 @@ script:
       description: The unique ID of the host object.
       type: String
     - contextPath: Logrhythm.Host.OSType
-      description: The type of the host OS.
+      description: The type of the host operating system.
       type: String
   - arguments:
     - default: false
@@ -193,22 +193,22 @@ script:
       secret: false
     - default: false
       defaultValue: None
-      description: The short description.
+      description: A short description of the host.
       isArray: false
       name: short-description
       required: false
       secret: false
     - default: false
       defaultValue: None
-      description: The long description.
+      description: A long description of the host.
       isArray: false
       name: long-description
       required: false
       secret: false
     - auto: PREDEFINED
       default: false
-      defaultValue: The host risk level.
-      description: The short description.
+      defaultValue: None
+      description: 'The host risk level. Possible values: "None", "Low-Low", "Low-Medium", "Low-High", "Medium-Low", "Medium-Medium", "Medium-High", "High-Low", "High-Medium", and "High-High".'
       isArray: false
       name: risk-level
       predefined:
@@ -227,7 +227,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: None
-      description: The host threat level.
+      description: 'The host threat level. Possible values: "None", "Low-Low", "Low-Medium", "Low-High", "Medium-Low", "Medium-Medium", "Medium-High", "High-Low", "High-Medium", and "High-High".'
       isArray: false
       name: threat-level
       predefined:
@@ -252,7 +252,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The host status.
+      description: 'The host status. Possible values: "New", "Retired", and "Active".'
       isArray: false
       name: host-status
       predefined:
@@ -263,7 +263,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The host zone.
+      description: 'The host zone. Possible values: "Unknown", "Internal", "DMZ", and "External".'
       isArray: false
       name: host-zone
       predefined:
@@ -274,14 +274,14 @@ script:
       required: true
       secret: false
     - default: false
-      description: The host OS.
+      description: The host operating system.
       isArray: false
       name: os
       required: true
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Use eventlog credentials.
+      description: 'Whether to use the event log credentials. Possible values: "true" and "false".'
       isArray: false
       name: use-eventlog-credentials
       predefined:
@@ -292,7 +292,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: Unknown
-      description: The host OS.
+      description: The host operating system type.
       isArray: false
       name: os-type
       predefined:
@@ -319,19 +319,19 @@ script:
     name: lr-add-host
     outputs:
     - contextPath: Logrhythm.Host.EntityId
-      description: The entity ID.
+      description: The entity ID for the host.
       type: string
     - contextPath: Logrhythm.Host.EntityName
-      description: The entity name.
+      description: The entity name for the host.
       type: string
     - contextPath: Logrhythm.Host.OS
-      description: The host OS.
+      description: The host operating system.
       type: string
     - contextPath: Logrhythm.Host.ThreatLevel
       description: The host threat level.
       type: string
     - contextPath: Logrhythm.Host.UseEventlogCredentials
-      description: Use event log credentials
+      description: Whether to use the event log credentials.
       type: string
     - contextPath: Logrhythm.Host.Name
       description: The name of the host.
@@ -343,7 +343,7 @@ script:
       description: The host zone.
       type: string
     - contextPath: Logrhythm.Host.RiskLevel
-      description: The risk level.
+      description: The risk level of the host.
       type: string
     - contextPath: Logrhythm.Host.Location
       description: The host location.
@@ -355,7 +355,7 @@ script:
       description: The unique ID of the host object.
       type: string
     - contextPath: Logrhythm.Host.OSType
-      description: The type of the host OS.
+      description: The type of the host operating system.
       type: string
   - arguments:
     - default: false
@@ -366,7 +366,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The enumeration status of the host.
+      description: 'The enumeration status of the host. Possible values: "Retired" and "Active".'
       isArray: false
       name: status
       predefined:
@@ -375,24 +375,24 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Updates an host status.
+    description: Updates a host status.
     execution: false
     name: lr-update-host-status
     outputs:
     - contextPath: Logrhythm.Host.EntityId
-      description: The entity ID.
+      description: The entity ID of the host.
       type: string
     - contextPath: Logrhythm.Host.EntityName
-      description: The entity name.
+      description: The entity name of the host.
       type: string
     - contextPath: Logrhythm.Host.OS
-      description: The host OS.
+      description: The host operating system.
       type: string
     - contextPath: Logrhythm.Host.ThreatLevel
       description: The host threat level.
       type: string
     - contextPath: Logrhythm.Host.UseEventlogCredentials
-      description: Use event log credentials
+      description: Whether to use the event log credentials.
       type: string
     - contextPath: Logrhythm.Host.Name
       description: The name of the host.
@@ -404,7 +404,7 @@ script:
       description: The host zone.
       type: string
     - contextPath: Logrhythm.Host.RiskLevel
-      description: The risk level.
+      description: The risk level of the host.
       type: string
     - contextPath: Logrhythm.Host.Location
       description: The host location.
@@ -416,7 +416,7 @@ script:
       description: The unique ID of the host object.
       type: string
     - contextPath: Logrhythm.Host.OSType
-      description: The type of the host OS.
+      description: The type of the host operating system.
       type: string
   - arguments:
     - default: false
@@ -427,13 +427,13 @@ script:
       secret: false
     - default: false
       defaultValue: '30'
-      description: Number of persons to return. Default is 30.
+      description: Number of persons to return. 
       isArray: false
       name: count
       required: false
       secret: false
     deprecated: false
-    description: Retrieves a list of persons.
+    description: Retrieves a list of LogRhythm persons.
     execution: false
     name: lr-get-persons
     outputs:
@@ -441,25 +441,25 @@ script:
       description: Date that the person was updated.
       type: String
     - contextPath: Logrhythm.Person.FirstName
-      description: First name.
+      description: First name of the LogRhythm person.
       type: String
     - contextPath: Logrhythm.Person.LastName
-      description: Last name.
+      description: Last name of the LogRhythm person.
       type: String
     - contextPath: Logrhythm.Person.HostStatus
-      description: Host status.
+      description: Host status of the LogRhythm person.
       type: string
     - contextPath: Logrhythm.Person.ID
-      description: Person ID.
+      description: Logrhythm person ID.
       type: String
     - contextPath: Logrhythm.Person.IsAPIPerson
       description: Whether the API is a person.
       type: Boolean
     - contextPath: Logrhythm.Person.UserID
-      description: User ID.
+      description: User ID of the LogRhythm person.
       type: String
     - contextPath: Logrhythm.Person.UserLogin
-      description: User login.
+      description: User login of the LogRhythm person.
       type: String
   - arguments:
     - default: false
@@ -481,40 +481,40 @@ script:
     name: lr-get-networks
     outputs:
     - contextPath: Logrhythm.Network.BIP
-      description: Began IP address.
+      description: Beginning IP address of the network.
       type: String
     - contextPath: Logrhythm.Network.ThreatLevel
-      description: Threat level.
+      description: Threat level of the network.
       type: String
     - contextPath: Logrhythm.Network.Name
       description: Network name.
       type: String
     - contextPath: Logrhythm.Network.EIP
-      description: End IP address.
+      description: End IP address of the network.
       type: String
     - contextPath: Logrhythm.Network.DateUpdated
-      description: Date updated.
+      description: Date network was updated.
       type: String
     - contextPath: Logrhythm.Network.EntityName
-      description: Entity name.
+      description: Entity name of the network.
       type: String
     - contextPath: Logrhythm.Network.HostZone
-      description: Host zone.
+      description: Host zone of the network.
       type: String
     - contextPath: Logrhythm.Network.RiskLevel
-      description: Risk level.
+      description: Risk level of the network.
       type: String
     - contextPath: Logrhythm.Network.Location
       description: Network location.
       type: String
     - contextPath: Logrhythm.Network.HostStatus
-      description: Host status.
+      description: Host status of the network.
       type: String
     - contextPath: Logrhythm.Network.ID
       description: Network ID.
       type: String
     - contextPath: Logrhythm.Network.EntityId
-      description: Entity ID.
+      description: Entity ID of the network.
       type: String
   - arguments:
     - default: false
@@ -525,7 +525,7 @@ script:
       secret: false
     - default: false
       defaultValue: '30'
-      description: Number of hosts to return. Default is 30.
+      description: Number of hosts to return.
       isArray: false
       name: count
       required: false
@@ -542,13 +542,13 @@ script:
       description: The entity name.
       type: String
     - contextPath: Logrhythm.Host.OS
-      description: The host OS.
+      description: The host operating system.
       type: String
     - contextPath: Logrhythm.Host.ThreatLevel
       description: The host threat level.
       type: String
     - contextPath: Logrhythm.Host.UseEventlogCredentials
-      description: Use event log credentials.
+      description: Whether to use the event log credentials.
       type: String
     - contextPath: Logrhythm.Host.Name
       description: The name of the host.
@@ -560,7 +560,7 @@ script:
       description: The host zone.
       type: String
     - contextPath: Logrhythm.Host.RiskLevel
-      description: The risk level.
+      description: The risk level of the host.
       type: String
     - contextPath: Logrhythm.Host.Location
       description: The host location.
@@ -572,7 +572,7 @@ script:
       description: The unique ID of the host object.
       type: String
     - contextPath: Logrhythm.Host.OSType
-      description: Host OS type.
+      description: Host operating system type.
       type: String
   - arguments:
     - default: false
@@ -629,7 +629,7 @@ script:
       description: Alarm Primary Inspection Field (the original name for "Summary Field").
       type: String
     - contextPath: Logrhythm.Alarm.Summary.DrillDownSummaryLogs
-      description: Drill down summary logs.
+      description: Drilldown summary logs.
       type: String
   - arguments:
     - default: false
@@ -640,13 +640,13 @@ script:
       secret: false
     - default: false
       defaultValue: '10'
-      description: Number of events to return. Default is 10.
+      description: Number of events to return. 
       isArray: false
       name: count
       required: false
       secret: false
     - default: false
-      description: A CSV list of fields (outputs) to return to the context. If empty, all fields are returned.
+      description: A comma-separated list of fields (outputs) to return to the context. If empty, all fields are returned.
       isArray: false
       name: fields
       predefined:
@@ -656,7 +656,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'False'
-      description: Returns the log message from the event.
+      description: 'Whether to return the log message from the event. Possible values: "True" and "False".'
       isArray: false
       name: get-log-message
       predefined:
@@ -676,109 +676,109 @@ script:
       description: The alarm ID.
       type: String
   - name: lr-get-query-result
-    description: Get search query result with task ID output from lr-execute-search-query command
+    description: Get search query result for the specified task ID. The task ID can be retrieved from the lr-execute-search-query command.
     arguments:
       - name: task_id
-        description: Task ID from lr-execute-search-query command output.
+        description: Task ID. The task ID can be retrieved from the lr-execute-search-query command.
         required: true
     outputs:
     - contextPath: Logrhythm.Search.Results.TaskStatus
-      description: Task Status
+      description: Task status.
       type: String
     - contextPath: Logrhythm.Search.Results.TaskID
-      description: Task ID
+      description: Task ID.
       type: String
     - contextPath: Logrhythm.Search.Results.Items.originEntityId
-      description: Entity ID
+      description: Entity ID.
       type: Number
     - contextPath: Logrhythm.Search.Results.Items.impactedIp
-      description: Impacted IP
+      description: Impacted IP.
       type: String
     - contextPath: Logrhythm.Search.Results.Items.classificationTypeName
-      description: Classification Name
+      description: Classification name.
       type: String
     - contextPath: Logrhythm.Search.Results.Items.logSourceName
-      description: Log Source Name
+      description: Log source name.
       type: String
     - contextPath: Logrhythm.Search.Results.Items.entityName
-      description: Entity Name
+      description: Entity name.
       type: String
     - contextPath: Logrhythm.Search.Results.Items.normalDate
-      description: Date
+      description: Date.
       type: Date
     - contextPath: Logrhythm.Search.Results.Items.vendorMessageId
-      description: Vendor Log message
+      description: Vendor log message.
       type: String
     - contextPath: Logrhythm.Search.Results.Items.priority
-      description: Log priority
+      description: Log priority.
       type: Number
     - contextPath: Logrhythm.Search.Results.Items.sequenceNumber
-      description: Seq number
+      description: Sequence number.
       type: String
     - contextPath: Logrhythm.Search.Results.Items.originHostId
-      description: Origin Host ID
+      description: Origin host ID.
       type: Number
     - contextPath: Logrhythm.Search.Results.Items.mpeRuleId
-      description: Log Rhythm rule ID
+      description: Logrhythm rule ID.
       type: Number
     - contextPath: Logrhythm.Search.Results.Items.originIp
-      description: Origin IP
+      description: Origin IP.
       type: String
     - contextPath: Logrhythm.Search.Results.Items.mpeRuleName
-      description: Log Rhythm rule name
+      description: Logrhythm rule name.
       type: String
     - contextPath: Logrhythm.Search.Results.Items.logSourceHostId
-      description: Log Source host ID
+      description: Log source host ID.
       type: Number
     - contextPath: Logrhythm.Search.Results.Items.originHost
-      description: Origin Host
+      description: Origin host.
       type: String
     - contextPath: Logrhythm.Search.Results.Items.logDate
-      description: Log Date
+      description: Log date.
       type: Date
     - contextPath: Logrhythm.Search.Results.Items.classificationName
-      description: Log classification name
+      description: Log classification name.
       type: String
   - arguments:
     - name: case_id
       description: The case ID.
       required: true
-    description: Execute evidence query for a specific case-id
+    description: Execute evidence query for a specific case ID.
     name: lr-get-case-evidence
     outputs:
     - contextPath: Logrhythm.Search.Evidence.status
-      description: Status
+      description: Evidence status.
       type: String
     - contextPath: Logrhythm.Search.Evidence.text
-      description: Evidence Text
+      description: Evidence text.
       type: String
     - contextPath: Logrhythm.Search.Evidence.number
-      description: Evidence ID
+      description: Evidence ID.
       type: Number
     - contextPath: Logrhythm.Search.Evidence.dateCreated
-      description: Created date
+      description: Date the evidence was created.
       type: Date
     - contextPath: Logrhythm.Search.Evidence.pinned
-      description: isPinned
+      description: Whether evidence is pinned.
       type: Boolean
     - contextPath: Logrhythm.Search.Evidence.lastUpdatedBy.name
-      description: Last updated by
+      description: The name of the person who last updated the evidence.
       type: String
     - contextPath: Logrhythm.Search.Evidence.createdBy.name
-      description: Created by
+      description: The name of the person who created the evidence.
       type: String
     - contextPath: Logrhythm.Search.Evidence.dateUpdated
-      description: Date updated
+      description: The date the evidence was last updated.
       type: Date
     - contextPath: Logrhythm.Search.Evidence.type
-      description: Evidence type
+      description: Evidence type.
       type: String
   - arguments:
-    - description: Number of days to search
+    - description: Number of days to search.
       name: number_of_days
       required: true
     - auto: PREDEFINED
-      description: Log source type
+      description: Log source type.
       name: source_type
       predefined:
       - API_-_AWS_CloudTrail
@@ -1737,33 +1737,33 @@ script:
       - UDLA_-_VMWare_vCloud
       - VLS_-_Syslog_-_Infoblox_-_DNS_RPZ
       - VLS_-_Syslog_-_Infoblox_-_Threat_Protection
-    - description: Impacted host name
+    - description: Impacted host name.
       name: host_name
-    - description: Username
+    - description: Username.
       name: username
-    - description: Email Subject
+    - description: Email subject.
       name: subject
-    - description: Email Sender
+    - description: Email sender.
       name: sender
-    - description: Email Recipient
+    - description: Email recipient.
       name: recipient
-    - description: Hash
+    - description: Hash.
       name: hash
-    - description: URL
+    - description: URL.
       name: url
-    - description: Process name
+    - description: Process name.
       name: process_name
-    - description: Log object
+    - description: Log object.
       name: object
-    - description: IP Address
+    - description: IP address.
       name: ip_address
-    - description: Max log message to query
+    - description: Maximum number of log message to query.
       name: max_massage
       defaultValue: "10"
-    - description: Max log message to query
+    - description: The query timeout in seconds.
       name: query_timeout
       defaultValue: "60"
-    description: Execute search query to Log Rhythm log database
+    description: Execute search query to LogRhythm log database.
     name: lr-execute-search-query
     outputs:
     - contextPath: Logrhythm.Search.Task.TaskID
