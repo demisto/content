@@ -2,7 +2,7 @@ Microsoft 365 Defender is a unified pre- and post-breach enterprise defense suit
 prevention, investigation, and response across endpoints, identities, email, and applications to provide integrated
 protection against sophisticated attacks.
 
-## Authentication
+## Authentication Using the Device Code Flow
 Use the [device code flow](https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#device-code-flow)
 to link Microsoft 365 Defender with Cortex XSOAR.
 
@@ -14,12 +14,12 @@ To connect to the Microsoft 365 Defender:
 
 At the end of the process you'll see a message that you've logged in successfully.
 
-#### Cortex XSOAR App
+### Cortex XSOAR App
 
 In order to use the Cortex XSOAR application, use the default application ID.
 ```9093c354-630a-47f1-b087-6768eb9427e6```
 
-#### Self-Deployed Azure App
+### Self-Deployed Application - Device Code Flow
 
 To use a self-configured Azure application, you need to add a new Azure App Registration in the Azure Portal. For more details, follow [Self Deployed Application - Device Code Flow](https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#device-code-flow).
 
@@ -27,26 +27,51 @@ To use a self-configured Azure application, you need to add a new Azure App Regi
  * offline_access - Delegate
  * Incident.Read.All - Application
  * AdvancedHunting.Read.All - Application
- * AdvancedHunting.Read.All - Application
 
-## Configure Microsoft365Defender on Cortex XSOAR
+## Self-Deployed Application - Authorization Code Flow (self-deployed configuration)
+
+Follow these steps for a self-deployed configuration.
+
+1. To use a self-configured Azure application, you need to add a new Azure App Registration in the Azure Portal. To add the registration, refer to the following [Microsoft article](https://docs.microsoft.com/en-us/azure/active-directory/develop/quickstart-register-app).
+2. Copy the following URL and replace the ***TENANT_ID***, ***CLIENT_ID***, and ***REDIRECT_URI*** with your own tenant ID(token), client ID and redirect URI, accordingly.
+```https://login.microsoftonline.com/TENANT_ID/oauth2/v2.0/authorize?response_type=code&scope=https://api.security.microsoft.com/.default&client_id=CLIENT_ID&redirect_uri=REDIRECT_URI```
+3. Enter the link and you will be prompted to grant Cortex XSOAR permissions. You will be automatically redirected to a link with the following structure:
+```REDIRECT_URI?code=AUTH_CODE&session_state=SESSION_STATE```
+4. Copy the ***AUTH_CODE*** (without the “code=” prefix) and paste it in your instance configuration under the **Authorization code** parameter. 
+5. Enter your client(application) ID in the ***Application ID*** parameter. 
+6. Enter your client secret in the ***Client Secret*** parameter.
+7. Enter your tenant ID in the ***Token*** parameter.
+8. Enter your redirect URI in the ***Redirect URI*** parameter.
+
+#### Required Permissions
+ * offline_access - Delegate
+ * AdvancedHunting.Read - Delegate
+ * Incident.ReadWrite - Delegate
+
+## Configure Microsoft 365 Defender on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Microsoft365Defender.
+2. Search for Microsoft 365 Defender.
 3. Click **Add instance** to create and configure a new integration instance.
 
-   | **Parameter** | **Description** | **Required** |
-       | --- | --- | --- |
-   | APP ID | The API Key to use for connection | True |
-   | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) |  | False |
-   | Fetch incidents timeout | The time limit in seconds for fetch incidents to run. Leave this empty to cancel the timeout limit. | False |
-   | Number of incidents for each fetch. | Due to API limitations, the maximum is 100 | False |
-   | Trust any certificate (not secure) |  | False |
-   | Use system proxy settings |  | False |
-   | Incident type |  | False |
-   | Fetch incidents |  | False |
-   
-4. Click **Test** to validate the URLs, token, and connection.
+    | **Parameter** | **Description** | **Required** |
+    | --- | --- | --- |
+    | Application ID | The API key to use to connect. | True |
+    | Endpoint URI | The United States: api-us.security.microsoft.com<br/>Europe: api-eu.security.microsoft.com<br/>The United Kingdom: api-uk.security.microsoft.co | True |
+    | self-deployed | Use a self-deployed Azure application | False |
+    | Token (for self-deployed mode) | Tenant ID | False |
+    | Client Secret (for self-deployed mode) | Encryption key given by the admin | False |
+    | Redirect URI | Application redirect URI (for self-deployed mode) | False |
+    | Authorization code (for self-deployed mode) |  | False |
+    | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) |  | False |
+    | Fetch incidents timeout | The time limit in seconds for fetch incidents to run. Leave this empty to cancel the timeout limit. | False |
+    | Number of incidents for each fetch. | Due to API limitations, the maximum is 100. | False |
+    | Incident type | | False |
+    | isFetch | Fetch incidents | False |
+    | insecure | Trust any certificate (not secure) | False |
+    | proxy | Use system proxy settings | False |
+
+4. Run the !microsoft-365-defender-auth-test command to validate the authentication process.
 
 ## Commands
 
@@ -56,7 +81,8 @@ successfully execute a command, a DBot message appears in the War Room with the 
 ### microsoft-365-defender-auth-start
 
 ***
-Run this command to start the authorization process and follow the instructions in the command results.
+Run this command to start the authorization process and follow the instructions in the command results. (for device-code mode)
+
 
 #### Base Command
 
@@ -86,8 +112,8 @@ There is no context output for this command.
 ### microsoft-365-defender-auth-complete
 
 ***
-Run this command to complete the authorization process. Should be used after running the
-microsoft-365-defender-auth-start command.
+Run this command to complete the authorization process. Should be used after running the microsoft-365-defender-auth-start command. (for device-code mode)
+
 
 #### Base Command
 
@@ -111,9 +137,9 @@ There is no context output for this command.
 
 
 ### microsoft-365-defender-auth-reset
-
 ***
-Run this command if you need to rerun the authentication process.
+Run this command if you need to rerun the authentication process. (for device-code mode)
+
 
 #### Base Command
 
@@ -175,10 +201,12 @@ Get the most recent incidents.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| status | Categorize incidents (as Active,  Resolved or Redirected). Possible values are: Active, Resolved, Redirected. | Optional | 
-| assigned_to | Owner of the incident.	. | Optional | 
-| limit | Number of incidents in the list (Max 100). Default is 100. | Optional | 
-| timeout | The time limit in seconds for the http request to run. Default value is 30| Optional |
+| status | Categorize incidents (as Active, Resolved, or Redirected). Possible values are: Active, Resolved, Redirected. | Optional | 
+| assigned_to | Owner of the incident. | Optional | 
+| limit | Number of incidents in the list. Maximum is 100. Default is 100. | Optional | 
+| offset | Number of entries to skip. | Optional | 
+| timeout | The time limit in seconds for the http request to run. Default value is 30. | Optional | 
+
 
 #### Context Output
 
@@ -271,7 +299,9 @@ Details on how to write queries you can find [here](https://docs.microsoft.com/e
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | query | Advanced hunting query. | Required | 
-| timeout | The time limit in seconds for the http request to run. Default value is 30| Optional |
+| limit | Number of entries.  Enter -1 for unlimited query. Default is 50. | Required | 
+| timeout | The time limit in seconds for the http request to run. Default is 30. | Optional | 
+
 
 #### Context Output
 
