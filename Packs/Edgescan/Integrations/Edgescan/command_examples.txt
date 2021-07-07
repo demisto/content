@@ -1,0 +1,20 @@
+!edgescan-asset-create name="AssetName" authenticatied=false priority=6 type=net
+!edgescan-asset-delete id=163
+!edgescan-asset-get-assets detail_level=5
+!edgescan-asset-get-query id=167 active_licence=null asset_status=onboarding blocked_status=unblocked
+!edgescan-asset-update id=167 name="Edgebank - Juiceshop - Updated" priority=4
+!edgescan-host-get-query os_name=Linux asset_id=5 id=6 
+!edgescan-host-get id=5
+!edgescan-host-get-hosts
+!edgescan-host-get-export
+!edgescan-host-update id=150 label=somelabel
+!edgescan-user-get-users
+!edgescan-user-get id=586
+!edgescan-user-reset-email id=606
+!edgescan-user-get-permissions id=606
+!edgescan-user-get-permissions id=606
+!edgescan-user-unlock-account id=606
+!edgescan-vulnerabilities-get
+!edgescan-vulnerabilities-get-details id=52493
+!edgescan-vulnerabilities-risk-accept id=52496 value=true
+!edgescan-vulnerabilities-retest id=52496

@@ -5,18 +5,7 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 from dateutil import parser
 
-"""
-Palo Alto Networks Professional Services
-Author: Maciej Drobniuch
-Email: mdrobniuch@paloaltonetworks.com
-
-© 2021 Palo Alto Networks, Inc.  All rights reserved.
-Licensed under SCRIPT SOFTWARE AGREEMENT, Palo Alto Networks, Inc.,
-at https://www.paloaltonetworks.com/legal/script-software-license-1-0.pdf
-"""
-
 MAX_INCIDENTS_TO_FETCH = 250
-
 
 class Client(BaseClient):
     def __init__(self, server_url, verify, proxy, headers, auth):
@@ -77,14 +66,14 @@ class Client(BaseClient):
 
     def asset_update_request(self, id, name, priority, type_, authenticatied, tags, location_specifiers):
         data = {"asset": {"authenticatied": authenticatied, "location_specifiers": location_specifiers,
-                          "name": name, "priority": priority, "tags": tags, "type": type}}
+                          "name": name, "priority": priority, "tags": tags, "type": type_}}
         headers = self._headers
         response = self._http_request('PUT', 'api/v1/assets/' + id + '.json', json_data=data, headers=headers)
         return response
 
     def asset_delete_request(self, id, name, priority, type_, authenticatied, tags, location_specifiers):
-        data = {"asset": {"authenticatied": authenticatied, "location_specifiers": location_specifiers,
-                          "name": name, "priority": priority, "tags": tags, "type": type}}
+        data = {"authenticatied": authenticatied, "location_specifiers": location_specifiers,
+                          "name": name, "priority": priority, "tags": tags, "type": type_}
         headers = self._headers
         response = self._http_request('DELETE', 'api/v1/assets/' + id + '.json', json_data=data, headers=headers)
         return response
@@ -198,7 +187,6 @@ def fetch_incidents(client: Client, max_results: int, last_run: Dict[str, int],
                     ) -> Tuple[Dict[str, int], List[dict]]:
 
     # Get the last fetch time, if exists
-    # last_run is a dict with a single key, called last_fetch
     last_fetch = last_run.get('last_fetch', None)
     # Handle first fetch time
     if last_fetch is None:
@@ -230,12 +218,6 @@ def fetch_incidents(client: Client, max_results: int, last_run: Dict[str, int],
         date_opened = alert.get('date_opened', '0')
         dt = parser.parse(date_opened)
         incident_created_time = int(time.mktime(dt.timetuple()))
-
-        # Commenting this block as vulnerabilities can have the same time-stamp:
-        # to prevent duplicates, we are only adding incidents with creation_time > last fetched incident
-        # if last_fetch:
-        #  if incident_created_time <= last_fetch:
-        #        continue
 
         # If no name is present it will throw an exception
         incident_name = alert['name']
@@ -395,14 +377,15 @@ def asset_create_command(client, args):
 
 
 def asset_update_command(client, args):
+    id = args.get('id')
     name = args.get('name')
     priority = args.get('priority')
     type_ = args.get('type')
     authenticatied = args.get('authenticatied')
     tags = args.get('tags')
-    location_secifiers = args.get('location_secifiers')
+    location_specifiers = args.get('location_specifiers')
 
-    response = client.asset_update_request(name, priority, type_, authenticatied, tags, location_secifiers)
+    response = client.asset_update_request(id, name, priority, type_, authenticatied, tags, location_specifiers)['asset']
     command_results = CommandResults(
         outputs_prefix='Edgescan.AssetUpdate',
         outputs_key_field='',
@@ -415,13 +398,14 @@ def asset_update_command(client, args):
 
 def asset_delete_command(client, args):
     name = args.get('name')
+    id = args.get('id')
     priority = args.get('priority')
     type_ = args.get('type')
     authenticatied = args.get('authenticatied')
     tags = args.get('tags')
-    location_secifiers = args.get('location_secifiers')
+    location_specifiers = args.get('location_specifiers')
 
-    response = client.asset_delete_request(name, priority, type_, authenticatied, tags, location_secifiers)
+    response = client.asset_delete_request(id,name, priority, type_, authenticatied, tags, location_specifiers)
     command_results = CommandResults(
         outputs_prefix='Edgescan.AssetDelete',
         outputs_key_field='',
@@ -760,10 +744,8 @@ def main():
                 offset=0
             )
 
-            # saves next_run for the time fetch-incidents is invoked
             demisto.setLastRun(next_run)
-            # fetch-incidents calls ``demisto.incidents()`` to provide the list
-            # of incidents to create
+
             demisto.incidents(incidents)
         elif command in commands:
             return_results(commands[command](client, args))
