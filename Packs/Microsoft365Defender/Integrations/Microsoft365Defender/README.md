@@ -14,6 +14,7 @@ To connect to the Microsoft 365 Defender:
 
 At the end of the process you'll see a message that you've logged in successfully.
 
+*Note: In case of a password change, the `microsoft-365-defender-auth-reset` command should be executed followed by the authentication process described above.*
 ### Cortex XSOAR App
 
 In order to use the Cortex XSOAR application, use the default application ID.
