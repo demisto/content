@@ -940,10 +940,10 @@ def fetch_alerts(client: Client, params: Dict):
     """    
     # Set the query size
 
-    if not params.get("maxIncidents"):
+    if not params.get("max_fetch"):
         max_incidents = 50
     else:
-        max_incidents = params.get("maxIncidents")
+        max_incidents = params.get("max_fetch")
 
 
     # User/email to fetch alerts for

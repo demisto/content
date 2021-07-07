@@ -15,8 +15,7 @@ configuration:
 # Fetch Incident Parameters
 - name: isFetch
   display: Fetch incidents
-  required: true
-  defaultvalue: true
+  required: false
   type: 8
 - name: incidentFetchInterval
   display: Incidents Fetch Interval. SecurityScorecard is updated on a daily basis
@@ -25,11 +24,10 @@ configuration:
   defaultvalue: "1440"
   required: false
   type: 19
-  hidden: true
-- name: maxIncidents
+- name: max_fetch
   display: Fetch Limit
   required: false
-  defaultvalue: 50
+  defaultvalue: '50'
   type: 0
   additionalinfo: Maximum number of alerts per fetch. Default is 50, maximum is 100.
 - name: first_fetch
@@ -39,9 +37,9 @@ configuration:
   type: 0
   additionalinfo: How many days ago to fetch for alerts on initial fetch. The maximum number of days is 7.
 - name: incidentType
-  display: Incident Type
+  display: Incident type
   required: false
-  defaultvalue: None
+  defaultvalue: SecurityScorecard Alert
   type: 13
 - name: insecure
   display: Trust any certificate (not secure)
@@ -51,10 +49,6 @@ configuration:
   display: Use system proxy settings
   required: false
   type: 8
-- display: Incident type
-  name: incidentType
-  required: false
-  type: 13
 fromversion: 6.0.0
 tests:
 - No tests (auto formatted)
