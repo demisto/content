@@ -3409,6 +3409,11 @@
             "memory_threshold": 900,
             "pid_threshold": 12,
             "context_print_dt": "EDLHey"
+        },
+        {
+            "integrations": ["OpenCTI Feed", "Demisto REST API"],
+            "playbookID": "OpenCTI Feed Test",
+            "fromversion": "5.5.0"
         }
     ],
     "skipped_tests": {

@@ -1,0 +1,273 @@
+id: 9484b731-9a4e-4ebf-8119-e860516ce9dd
+version: 20
+vcShouldKeepItemLegacyProdMachine: false
+name: Fetch Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 2d04959b-053b-449c-8504-0bda1fe27354
+    type: start
+    task:
+      id: 2d04959b-053b-449c-8504-0bda1fe27354
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 026f07b0-a7ab-42d5-8cd8-a175d0cf8b57
+    type: regular
+    task:
+      id: 026f07b0-a7ab-42d5-8cd8-a175d0cf8b57
+      version: -1
+      name: findIndicators
+      description: Finds all indicators with given value.
+      script: Builtin|||findIndicators
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      extend-context:
+        simple: Indicators=
+      query:
+        simple: ${serverConfig.response.sysConf.searchquery}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 670
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 253681b6-3074-4b18-8392-fdda2fda8201
+    type: condition
+    task:
+      id: 253681b6-3074-4b18-8392-fdda2fda8201
+      version: -1
+      name: Check If Indicators exsist
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Indicators
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: serverConfig.response.sysConf
+                accessor: searchfield
+                transformers:
+                - operator: splitAndTrim
+                  args:
+                    delimiter:
+                      value:
+                        simple: ','
+                - operator: concat
+                  args:
+                    prefix:
+                      value:
+                        simple: Indicators.
+                    suffix:
+                      value:
+                        simple: serverConfig.response.sysConf.searchfield
+                      iscontext: true
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 40,
+          "y": 840
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 7e6d9ae0-6d9e-4bb0-8fce-2b5988c0d119
+    type: regular
+    task:
+      id: 7e6d9ae0-6d9e-4bb0-8fce-2b5988c0d119
+      version: -1
+      name: Wait for fetching indicators
+      description: Sleep for X seconds
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      seconds:
+        simple: "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 40,
+          "y": 340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 26074e49-6b29-4d6a-8fd9-ded45f989e06
+    type: regular
+    task:
+      id: 26074e49-6b29-4d6a-8fd9-ded45f989e06
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 180
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: fa0852df-201b-43a1-8a6d-b49a2f2d4659
+    type: regular
+    task:
+      id: fa0852df-201b-43a1-8a6d-b49a2f2d4659
+      version: -1
+      name: Get Indicator Field to search
+      description: send HTTP GET requests
+      script: '|||demisto-api-get'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      extend-context:
+        simple: serverConfig=
+      uri:
+        simple: /system/config
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 40,
+          "y": 510
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: db3eb6fa-f009-46b0-87ff-76eb33a13804
+    type: title
+    task:
+      id: db3eb6fa-f009-46b0-87ff-76eb33a13804
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 40,
+          "y": 1060
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1075,
+        "width": 390,
+        "x": 40,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
