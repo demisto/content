@@ -244,7 +244,7 @@ Get the full list of assets
                 "created_at": "2021-04-02T15:35:27.441Z",
                 "current_assessment": null,
                 "host_count": 1,
-                "hostname": "https://stage.auth.api.host, http://stage.api.host, stage.api.host, https://live.host/api.wsdl",
+                "hostname": "https://hostname, http://hostname, hostname, https://live.host/api.wsdl",
                 "id": 165,
                 "last_assessment_date": "2020-10-22T21:00:52.124Z",
                 "last_host_scan": null,
@@ -252,22 +252,22 @@ Get the full list of assets
                 "location_specifiers": [
                     {
                         "id": 194,
-                        "location": "https://stage.auth.api.host",
+                        "location": "https://hostname",
                         "location_type": "url"
                     },
                     {
                         "id": 195,
-                        "location": "http://stage.api.host/",
+                        "location": "http://hostname/",
                         "location_type": "url"
                     },
                     {
                         "id": 196,
-                        "location": "stage.api.host",
+                        "location": "hostname",
                         "location_type": "hostname"
                     },
                     {
                         "id": 197,
-                        "location": "https://live.edgescan.com/api.wsdl",
+                        "location": "https://hostname/api.wsdl",
                         "location_type": "api_descriptor"
                     }
                 ],
@@ -364,7 +364,7 @@ Get the full list of assets
 >|id|name|asset_status|blocked_status|hostname|
 >|---|---|---|---|---|
 >| 164 | Edgescan Internal Server Farm | onboarding | unblocked | 192.168.0.0/24, 10.0.0.0/24, 172.16.0.0/24 |
->| 165 | Edgebank API | onboarding | unblocked | https://stage.auth.api.host, http://stage.api.host/, stage.api.host, https://live.edgescan.com/api.wsdl |
+>| 165 | Edgebank API | onboarding | unblocked | https://hostname, http://hostname/, hostname, https://hostname/api.wsdl |
 >| 166 | Edgeasset | onboarding | unblocked | https://edgeasset.edgescan.com, edgeasset.edgescan.com |
 >| 167 | Edgebank - Juiceshop - Updated | onboarding | unblocked | http://hostname, hostname, https://hostname |
 
@@ -1310,7 +1310,7 @@ There are no input arguments for this command.
                 "label": null,
                 "last_pci_exception": null,
                 "layer": "network",
-                "location": "172.16.0.5",
+                "location": "1.2.3.4",
                 "location_specifier_id": 193,
                 "name": "Jenkins < 2.46.2 / 2.57 and Jenkins Enterprise < 1.625.24.1 / 1.651.24.1 / 1.1.1.1.1 / 1.2.3.4 Multiple Vulnerabilities",
                 "pci_compliance_status": "fail",
@@ -1355,7 +1355,7 @@ There are no input arguments for this command.
                 "label": null,
                 "last_pci_exception": null,
                 "layer": "network",
-                "location": "10.0.0.9",
+                "location": "1.2.4.5",
                 "location_specifier_id": 192,
                 "name": "MySQL 5.6.x < 5.6.39 Multiple Vulnerabilities (January 2018 CPU) (2936)",
                 "pci_compliance_status": "fail",
@@ -1681,7 +1681,7 @@ There are no input arguments for this command.
                 "label": null,
                 "last_pci_exception": null,
                 "layer": "network",
-                "location": "172.16.0.5",
+                "location": "1.2.3.4",
                 "location_specifier_id": 193,
                 "name": "Adobe Flash Player Security Updates(apsb19-46)-Windows",
                 "pci_compliance_status": null,
@@ -2025,7 +2025,7 @@ There are no input arguments for this command.
                 "label": null,
                 "last_pci_exception": null,
                 "layer": "application",
-                "location": "http://api.edgebank/v1/Passwordreset",
+                "location": "http://hostname/v1/Passwordreset",
                 "location_specifier_id": null,
                 "name": "Password field submitted using GET method",
                 "pci_compliance_status": "fail",
