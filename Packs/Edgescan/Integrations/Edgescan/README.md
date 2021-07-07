@@ -1,5 +1,5 @@
 Cloud-based continuous vulnerability management and penetration testing solution.
-This integration was integrated and tested with version xx of Edgescan
+This integration was integrated and tested with version V1.6  of Edgescan
 ## Configure Edgescan on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.

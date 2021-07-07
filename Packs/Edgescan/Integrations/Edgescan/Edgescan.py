@@ -7,6 +7,7 @@ from dateutil import parser
 
 MAX_INCIDENTS_TO_FETCH = 250
 
+
 class Client(BaseClient):
     def __init__(self, server_url, verify, proxy, headers, auth):
         super().__init__(base_url=server_url, verify=verify, proxy=proxy, headers=headers, auth=auth)
@@ -73,7 +74,7 @@ class Client(BaseClient):
 
     def asset_delete_request(self, id, name, priority, type_, authenticatied, tags, location_specifiers):
         data = {"authenticatied": authenticatied, "location_specifiers": location_specifiers,
-                          "name": name, "priority": priority, "tags": tags, "type": type_}
+                "name": name, "priority": priority, "tags": tags, "type": type_}
         headers = self._headers
         response = self._http_request('DELETE', 'api/v1/assets/' + id + '.json', json_data=data, headers=headers)
         return response
@@ -405,7 +406,7 @@ def asset_delete_command(client, args):
     tags = args.get('tags')
     location_specifiers = args.get('location_specifiers')
 
-    response = client.asset_delete_request(id,name, priority, type_, authenticatied, tags, location_specifiers)
+    response = client.asset_delete_request(id, name, priority, type_, authenticatied, tags, location_specifiers)
     command_results = CommandResults(
         outputs_prefix='Edgescan.AssetDelete',
         outputs_key_field='',
