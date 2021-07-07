@@ -19,6 +19,26 @@ configuration:
   name: base_url
   required: true
   type: 0
+- display: Use a self-deployed Azure application
+  name: self_deployed
+  required: false
+  type: 8
+- display: Token (for self-deployed mode - received from the admin consent. See Detailed Instructions (?) section)
+  name: tenant_id
+  required: false
+  type: 4
+- display: Client Secret (for self-deployed mode - received from the admin consent. See Detailed Instructions (?)
+  name: client_secret
+  required: false
+  type: 4
+- display: Application redirect URI (for self-deployed mode)
+  name: redirect_uri
+  required: false
+  type: 0
+- display: Authorization code (for self-deployed mode - received from the authorization step. see Detailed Instructions (?) section)
+  name: auth_code
+  required: false
+  type: 4
 - defaultvalue: 12 hours
   display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
   hidden: false
