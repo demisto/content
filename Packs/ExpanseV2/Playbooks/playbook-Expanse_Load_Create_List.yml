@@ -302,11 +302,6 @@ inputs:
   required: true
   description: If the list does not exist or is empty, it will be created with these values.
   playbookInputQuery:
-- key: ListValues
-  value: {}
-  required: true
-  description: If the list doesn't exist or empty, it will be created with these values.
-  playbookInputQuery:
 outputs:
 - contextPath: ParsedList
   description: Contents of parsed list.

@@ -7,33 +7,11 @@ from typing import Dict, Any
 
 ''' COMMAND FUNCTION '''
 
-def get_comments_from_xpanse(issue_id):
-    comments = demisto.executeCommand(
-        'expanse-get-issue-comments', {'issue_id': issue_id}
-        )
-    return comments
-
-def refresh_comments(args: Dict[str, Any]) -> CommandResults:
-    issue_id = args.get('issue_id', None)
-    original_result = get_comments_from_xpanse(issue_id)
-
-    if original_result is not None and len(original_result) > 0:
-        demisto.executeCommand(
-            'Set',
-            {'key': 'Expanse.IssueComment',
-             'value': original_result[0]['Contents']}
-            )
-        demisto.executeCommand('setIncident', {
-            "comments": original_result[0]['Contents']
-        })
 
 def refresh_issue_assets_command(args: Dict[str, Any]) -> CommandResults:
     incident = demisto.incident()
     custom_fields = incident.get('CustomFields', {})
     assets = custom_fields.get('expanseasset', [])
-    issue_id = {'issue_id': custom_fields.get('expanseissueid', str)}
-
-    refresh_comments(issue_id)
 
     for asset in assets:
         asset_type = asset.get('assettype')
