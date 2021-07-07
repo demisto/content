@@ -4,10 +4,10 @@ This playbook used generic polling to gets query result using the command: lr-ex
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
-* GenericPolling
+GenericPolling
 
 ### Integrations
-* LogRhythmRest
+LogRhythmRest
 
 ### Scripts
 This playbook does not use any scripts.
@@ -25,41 +25,41 @@ This playbook does not use any scripts.
 | source_type | Log source type. |  | Optional |
 | host_name | Impacted host name. |  | Optional |
 | username | Username. |  | Optional |
-| subject | Email Subject. |  | Optional |
-| sender | Email Sender. |  | Optional |
-| recipient | Email Recipient. |  | Optional |
+| subject | Email subject. |  | Optional |
+| sender | Email sender. |  | Optional |
+| recipient | Email recipient. |  | Optional |
 | hash | Hash. |  | Optional |
 | URL | URL. |  | Optional |
 | process_name | Process name. |  | Optional |
 | object | Log object. |  | Optional |
-| ip_address | IP Address. |  | Optional |
-| max_massage | Max log message to query. | 10 | Optional |
-| query_timeout | Execute search query to Log Rhythm log database. | 60 | Optional |
+| ip_address | IP address. |  | Optional |
+| max_massage | Maximum number of log message to query. | 10 | Optional |
+| query_timeout | Execute search query to LogRhythm log database. | 60 | Optional |
 
 ## Playbook Outputs
 ---
 
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
-| Logrhythm.Search.Results.TaskStatus | Task Status | string |
-| Logrhythm.Search.Results.TaskID | Task ID | string |
-| Logrhythm.Search.Results.Items.originEntityId | Entity ID | number |
-| Logrhythm.Search.Results.Items.impactedIp | Impacted IP | string |
-| Logrhythm.Search.Results.Items.classificationTypeName | Classification Name | string |
-| Logrhythm.Search.Results.Items.logSourceName | Log Source Name | string |
-| Logrhythm.Search.Results.Items.entityName | Entity Name | string |
-| Logrhythm.Search.Results.Items.normalDate | Date | date |
-| Logrhythm.Search.Results.Items.vendorMessageId | Vendor Log message | string |
-| Logrhythm.Search.Results.Items.priority | Log priority | number |
-| Logrhythm.Search.Results.Items.sequenceNumber | Seq number | string |
-| Logrhythm.Search.Results.Items.originHostId | Origin Host ID | number |
-| Logrhythm.Search.Results.Items.mpeRuleId | Log Rhythm rule ID | number |
-| Logrhythm.Search.Results.Items.originIp | Origin IP | string |
-| Logrhythm.Search.Results.Items.mpeRuleName | Log Rhythm rule name | string |
-| Logrhythm.Search.Results.Items.logSourceHostId | Log Source host ID | number |
-| Logrhythm.Search.Results.Items.originHost | Origin Host | string |
-| Logrhythm.Search.Results.Items.logDate | Log Date | date |
-| Logrhythm.Search.Results.Items.classificationName | Log classification name | string |
+| Logrhythm.Search.Results.TaskStatus | Task status. | string |
+| Logrhythm.Search.Results.TaskID | Task ID. | string |
+| Logrhythm.Search.Results.Items.originEntityId | Entity ID. | number |
+| Logrhythm.Search.Results.Items.impactedIp | Impacted IP. | string |
+| Logrhythm.Search.Results.Items.classificationTypeName | Classification name. | string |
+| Logrhythm.Search.Results.Items.logSourceName | Log source name. | string |
+| Logrhythm.Search.Results.Items.entityName | Entity .ame. | string |
+| Logrhythm.Search.Results.Items.normalDate | Date. | date |
+| Logrhythm.Search.Results.Items.vendorMessageId | Vendor log message. | string |
+| Logrhythm.Search.Results.Items.priority | Log priority. | number |
+| Logrhythm.Search.Results.Items.sequenceNumber | Sequence number. | string |
+| Logrhythm.Search.Results.Items.originHostId | Origin host ID. | number |
+| Logrhythm.Search.Results.Items.mpeRuleId | LogRhythm rule ID. | number |
+| Logrhythm.Search.Results.Items.originIp | Origin IP. | string |
+| Logrhythm.Search.Results.Items.mpeRuleName | LogRhythm rule name. | string |
+| Logrhythm.Search.Results.Items.logSourceHostId | Log source host ID. | number |
+| Logrhythm.Search.Results.Items.originHost | Origin host. | string |
+| Logrhythm.Search.Results.Items.logDate | Log date. | date |
+| Logrhythm.Search.Results.Items.classificationName | Log classification name. | string |
 
 ## Playbook Image
 ---
