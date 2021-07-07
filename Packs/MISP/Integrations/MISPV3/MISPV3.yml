@@ -1294,6 +1294,129 @@ script:
       required: true
       secret: false
     - default: false
+      description: Tag to remove from the event.
+      isArray: false
+      name: tag
+      required: true
+      secret: false
+    deprecated: false
+    description: Removes a tag from the given UUID event .
+    execution: false
+    name: misp-remove-tag-from-event
+    outputs:
+    - contextPath: MISP.Event.ID
+      description: MISP event ID.
+      type: string
+    - contextPath: MISP.Event.Distribution
+      description: MISP event distribution.
+      type: string
+    - contextPath: MISP.Event.ThreatLevelID
+      description: Threat level of the MISP event (1 High, 2 Medium, 3 Low, 4 Undefined).
+      type: string
+    - contextPath: MISP.Event.PublishTimestamp
+      description: Timestamp of the publish time (if published).
+      type: number
+    - contextPath: MISP.Event.EventCreatorEmail
+      description: Email address of the event creator.
+      type: string
+    - contextPath: MISP.Event.Info
+      description: Event name.
+      type: string
+    - contextPath: MISP.Event.AttributeCount
+      description: Number of attributes of the event.
+      type: string
+    - contextPath: MISP.Event.OrganisationID
+      description: Event organization ID.
+      type: string
+    - contextPath: MISP.Event.Date
+      description: Event creation date.
+      type: date
+    - contextPath: MISP.Event.Locked
+      description: Is the event locked.
+      type: boolean
+    - contextPath: MISP.Event.Organisation.ID
+      description: Organization ID.
+      type: number
+    - contextPath: MISP.Event.Organisation.Name
+      description: Organization name.
+      type: string
+    - contextPath: MISP.Event.Organisation.UUID
+      description: Organization UUID.
+      type: string
+    - contextPath: MISP.Event.Organisation.local
+      description: Is the organization local.
+      type: boolean
+    - contextPath: MISP.Event.OwnerOrganisation.ID
+      description: Owner organization ID.
+      type: number
+    - contextPath: MISP.Event.OwnerOrganisation.Name
+      description: Owner organization name.
+      type: string
+    - contextPath: MISP.Event.OwnerOrganisation.UUID
+      description: Owner organization UUID.
+      type: string
+    - contextPath: MISP.Event.OwnerOrganisation.local
+      description: Is the owner organization local.
+      type: boolean
+    - contextPath: MISP.Event.RelatedEvent.ID
+      description: Event IDs of related events (can be a list).
+      type: string
+    - contextPath: MISP.Event.ProposalEmailLock
+      description: If email lock proposed.
+      type: boolean
+    - contextPath: MISP.Event.Timestamp
+      description: Timestamp of the event.
+      type: string
+    - contextPath: MISP.Event.Galaxy.Description
+      description: Event's galaxy description.
+      type: string
+    - contextPath: MISP.Event.Galaxy.Name
+      description: Galaxy name.
+      type: string
+    - contextPath: MISP.Event.Galaxy.Type
+      description: Galaxy type.
+      type: number
+    - contextPath: MISP.Event.Published
+      description: Is the event published.
+      type: boolean
+    - contextPath: MISP.Event.DisableCorrelation
+      description: Is correlation disabled.
+      type: boolean
+    - contextPath: MISP.Event.UUID
+      description: Event UUID.
+      type: string
+    - contextPath: MISP.Event.Analysis
+      description: Event analysis (0 Initial, 1 Ongoing, 2 Completed).
+      type: string
+    - contextPath: MISP.Event.SharingGroupID
+      description: Event sharing group ID.
+      type: string
+    - contextPath: MISP.Event.Tag.Name
+      description: All tag names in the event.
+      type: string
+    - contextPath: MISP.Event.Tag.is_galaxy
+      description: Is the tag is galaxy.
+      type: boolean
+    - contextPath: MISP.Event.Object.Name
+      description: Name of the object.
+      type: String
+    - contextPath: MISP.Event.Object.Description
+      description: Description of the object.
+      type: String
+    - contextPath: MISP.Event.Object.ID
+      description: ID of the object.
+      type: Number
+    - contextPath: MISP.Event.Object.UUID
+      description: UUID of the object.
+      type: String
+  - arguments:
+    - default: false
+      description: UUID of the event, e.g., 59575300-4be8-4ff6-8767-0037ac110032.
+      isArray: false
+      name: uuid
+      required: true
+      secret: false
+    - default: false
       description: Tag to add to the event.
       isArray: false
       name: tag
@@ -1426,6 +1549,96 @@ script:
     description: Adds a tag to the given UUID attribute .
     execution: false
     name: misp-add-tag-to-attribute
+    outputs:
+    - contextPath: MISP.Attribute.Distribution
+      description: Attribute distribution.
+      type: string
+    - contextPath: MISP.Attribute.Value
+      description: Attribute value.
+      type: string
+    - contextPath: MISP.Attribute.EventID
+      description: Attribute event ID.
+      type: string
+    - contextPath: MISP.Attribute.last_seen
+      description: Attribute last_seen timestamp.
+      type: string
+    - contextPath: MISP.Attribute.first_seen
+      description: Attribute first_seen timestamp.
+      type: string
+    - contextPath: MISP.Attribute.Timestamp
+      description: Attribute timestamp.
+      type: string
+    - contextPath: MISP.Attribute.ObjectID
+      description: Attribute object id.
+      type: string
+    - contextPath: MISP.Attribute.Deleted
+      description: Is the attribute deleted.
+      type: boolean
+    - contextPath: MISP.Attribute.DisableCorrelation
+      description: Is attribute correlation disabled?
+      type: boolean
+    - contextPath: MISP.Attribute.Type
+      description: Attribute type.
+      type: string
+    - contextPath: MISP.Attribute.ID
+      description: Attribute ID.
+      type: string
+    - contextPath: MISP.Attribute.UUID
+      description: Attribute UUID.
+      type: string
+    - contextPath: MISP.Attribute.ToIDs
+      description: Is the Intrusion Detection System flag set.
+      type: boolean
+    - contextPath: MISP.Attribute.Category
+      description: Attribute category.
+      type: string
+    - contextPath: MISP.Attribute.SharingGroupID
+      description: Attribute sharing group ID.
+      type: string
+    - contextPath: MISP.Attribute.Comment
+      description: Attribute comment.
+      type: string
+    - contextPath: MISP.Attribute.Event.ID
+      description: MISP event ID.
+      type: string
+    - contextPath: MISP.Attribute.Event.Distribution
+      description: MISP event distribution.
+      type: string
+    - contextPath: MISP.Attribute.Event.Info
+      description: MISP event name.
+      type: string
+    - contextPath: MISP.Attribute.Event.OrganisationID
+      description: MISP event organisation ID.
+      type: string
+    - contextPath: MISP.Attribute.Event.OwnerOrganisation.ID
+      description: Event owner organization ID.
+      type: string
+    - contextPath: MISP.Attribute.Event.UUID
+      description: MISP event UUID.
+      type: string
+    - contextPath: MISP.Attribute.Tag.Name
+      description: Attribute tag name.
+      type: string
+    - contextPath: MISP.Attribute.Tag.is_galaxy
+      description: Is tag is galexy.
+      type: string
+  - arguments:
+    - default: false
+      description: UUID of the attribute, e.g., 59575300-4be8-4ff6-8767-0037ac110032.
+      isArray: false
+      name: uuid
+      required: true
+      secret: false
+    - default: false
+      description: Tag to remove from the attribute.
+      isArray: false
+      name: tag
+      required: true
+      secret: false
+    deprecated: false
+    description: Removes a tag from the given UUID attribute .
+    execution: false
+    name: misp-remove-tag-from-attribute
     outputs:
     - contextPath: MISP.Attribute.Distribution
       description: Attribute distribution.

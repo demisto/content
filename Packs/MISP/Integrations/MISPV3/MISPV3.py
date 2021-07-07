@@ -986,6 +986,38 @@ def add_tag(demisto_args: dict, is_attribute=False):
     )
 
 
+def remove_tag(demisto_args: dict, is_attribute=False):
+    """
+    Function will remove tag to given UUID of event or attribute.
+    is_attribute (bool): if the given UUID is an attribute's one. Otherwise it's event's.
+    """
+    uuid = demisto_args.get('uuid')
+    tag = demisto_args.get('tag')
+
+    PYMISP.untag(uuid, tag)
+    if is_attribute:
+        response = PYMISP.search(uuid=uuid, controller='attributes')
+        human_readable = f'Tag {tag} has been successfully removed from the attribute {uuid}'
+        return CommandResults(
+            readable_output=human_readable,
+            outputs_prefix='MISP.Attribute',
+            outputs_key_field='ID',
+            outputs=build_attributes_search_response(response),
+            raw_response=response
+        )
+
+    # event's uuid
+    response = PYMISP.search(uuid=uuid)
+    human_readable = f'Tag {tag} has been successfully removed from the event {uuid}'
+    return CommandResults(
+        readable_output=human_readable,
+        outputs_prefix='MISP.Event',
+        outputs_key_field='ID',
+        outputs=build_events_search_response(response),
+        raw_response=response
+    )
+
+
 def add_sighting(demisto_args: dict):
     """Adds sighting to MISP attribute
 
@@ -1254,6 +1286,10 @@ def main():
             return_results(add_tag(args))
         elif command == 'misp-add-tag-to-attribute':
             return_results(add_tag(demisto_args=args, is_attribute=True))
+        elif command == 'misp-remove-tag-from-event':
+            return_results(remove_tag(args))
+        elif command == 'misp-remove-tag-from-attribute':
+            return_results(remove_tag(demisto_args=args, is_attribute=True))
         elif command == 'misp-add-events-from-feed':
             return_results(add_events_from_feed(demisto_args=args, use_ssl=verify, proxies=proxies))
         elif command == 'file':
