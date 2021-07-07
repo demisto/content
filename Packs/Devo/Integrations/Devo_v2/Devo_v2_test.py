@@ -117,7 +117,7 @@ MOCK_MULTI_ARGS = {
     'writeToContext': 'true'
 }
 MOCK_WRITER_ARGS = {
-    'tableName': 'hello.world',
+    'tableName': 'whatever.table',
     'records': [{'foo': 'hello'}, {'foo': 'world'}, {'foo': 'demisto'}]
 }
 MOCK_LOOKUP_WRITER_ARGS = {
@@ -183,7 +183,7 @@ def test_time_range():
 @patch('Devo_v2.FETCH_INCIDENTS_FILTER', MOCK_FETCH_INCIDENTS_FILTER, create=True)
 @patch('Devo_v2.FETCH_INCIDENTS_DEDUPE', MOCK_FETCH_INCIDENTS_DEDUPE, create=True)
 @patch('Devo_v2.ds.Reader.query')
-@patch('Devo_v2.ds.Writer')
+@patch('Devo_v2.Sender')
 def test_command(mock_query_results, mock_write_args):
     mock_query_results.return_value = copy.deepcopy(MOCK_QUERY_RESULTS)
     mock_write_args.return_value = MOCK_WRITER_ARGS
@@ -261,7 +261,7 @@ def test_multi_query(mock_query_types, mock_query_reader, mock_query_results, mo
 @patch('Devo_v2.WRITER_RELAY', MOCK_WRITER_RELAY, create=True)
 @patch('Devo_v2.WRITER_CREDENTIALS', MOCK_WRITER_CREDENTIALS, create=True)
 @patch('Devo_v2.demisto.args')
-@patch('Devo_v2.ds.Writer')
+@patch('Devo_v2.Sender')
 def test_write_devo(mock_load_results, mock_write_args):
     mock_load_results.return_value.load.return_value = MOCK_LINQ_RETURN
     mock_write_args.return_value = MOCK_WRITER_ARGS

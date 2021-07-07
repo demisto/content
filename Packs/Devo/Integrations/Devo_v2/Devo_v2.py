@@ -80,7 +80,7 @@ def alert_to_incident(alert):
     alert_severity = float(1)
     alert_name = alert['context'].split('.')[-1]
     alert_description = None
-    alert_occurred = demisto_ISO(float(alert['eventdate']))
+    alert_occurred = demisto_ISO(float(alert['eventdate']) / 1000)
     alert_labels = []
 
     if demisto.get(alert['extraData'], 'alertPriority'):
@@ -137,7 +137,7 @@ def get_types(self, linq_query, start, ts_format):
     return type_dict
 
 
-def build_link(query, start_ts_milli, end_ts_milli, mode='queryApp', linq_base=None):
+def build_link(query, start_ts_milli, end_ts_milli, mode='loxcope', linq_base=None):
     myb64str = base64.b64encode((json.dumps({
         'query': query,
         'mode': mode,
@@ -163,8 +163,9 @@ def check_configuration():
 
     if WRITER_RELAY and WRITER_CREDENTIALS:
         creds = get_writer_creds()
-        ds.Writer(key=creds['key'].name, crt=creds['crt'].name, chain=creds['chain'].name, relay=WRITER_RELAY)\
-            .load(HEALTHCHECK_WRITER_RECORD, HEALTHCHECK_WRITER_TABLE, historical=False)
+        Sender(SenderConfigSSL(address=(WRITER_RELAY, 443),
+                               key=creds['key'].name, cert=creds['crt'].name, chain=creds['chain'].name))\
+            .send(tag=HEALTHCHECK_WRITER_TABLE, msg=f'{HEALTHCHECK_WRITER_RECORD}')
 
     if FETCH_INCIDENTS_FILTER:
         alert_filters = check_type(FETCH_INCIDENTS_FILTER, dict)
@@ -320,7 +321,8 @@ def fetch_incidents():
 
     # execute the query and get the events
     # reverse the list so that the most recent event timestamp event is taken when de-duping if needed.
-    events = list(ds.Reader(oauth_token=READER_OAUTH_TOKEN, end_point=READER_ENDPOINT, verify=not ALLOW_INSECURE, timeout=TIMEOUT)
+    events = list(ds.Reader(oauth_token=READER_OAUTH_TOKEN, end_point=READER_ENDPOINT,
+                            verify=not ALLOW_INSECURE, timeout=int(TIMEOUT))
                     .query(alert_query, start=float(from_time), stop=float(to_time),
                            output='dict', ts_format='timestamp'))[::-1]
 
@@ -543,9 +545,13 @@ def write_to_table_command():
     linq_base = demisto.args().get('linqLinkBase', None)
 
     creds = get_writer_creds()
+    linq = f"from {table_name}"
 
-    linq = ds.Writer(key=creds['key'].name, crt=creds['crt'].name, chain=creds['chain'].name, relay=WRITER_RELAY)\
-        .load(records, table_name, historical=False, linq_func=(lambda x: x))
+    sender = Sender(SenderConfigSSL(address=(WRITER_RELAY, 443),
+                    key=creds['key'].name, cert=creds['crt'].name, chain=creds['chain'].name))
+
+    for r in records:
+        sender.send(tag=table_name, msg=f"{r}")
 
     querylink = {'DevoTableLink': build_link(linq, int(1000 * time.time()) - 3600000,
                  int(1000 * time.time()), linq_base=linq_base)}
