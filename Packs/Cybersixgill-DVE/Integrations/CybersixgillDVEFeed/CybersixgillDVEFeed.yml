@@ -1,13 +1,15 @@
 category: Data Enrichment & Threat Intelligence
 commonfields:
-  id: Sixgill_Darkfeed
+  id: Sixgill_DVE_Feed v2
   version: -1
 configuration:
-- display: Sixgill API client ID
+- display: Client Id
+  hidden: false
   name: client_id
   required: true
   type: 0
-- display: Sixgill API client secret
+- display: Client Secret
+  hidden: false
   name: client_secret
   required: true
   type: 4
@@ -52,9 +54,8 @@ configuration:
   - WHITE
   required: false
   type: 15
-- defaultvalue: indicatorType
+- display: ''
   name: feedExpirationPolicy
-  display: ""
   options:
   - never
   - interval
@@ -62,8 +63,7 @@ configuration:
   - suddenDeath
   required: false
   type: 17
-- defaultvalue: '20160'
-  display: ""
+- display: ''
   name: feedExpirationInterval
   required: false
   type: 1
@@ -74,6 +74,7 @@ configuration:
   type: 19
 - defaultvalue: '1000'
   display: The maximum number of indicators to fetch.
+  hidden: false
   name: maxIndicators
   required: false
   type: 0
@@ -105,32 +106,37 @@ configuration:
   name: feedTags
   required: false
   type: 0
-description: Leverage the power of Sixgill to supercharge Cortex XSOAR with real-time
-  Threat Intelligence indicators. Get IOCs such as domains, URLs, hashes, and IP addresses
-  straight into the XSOAR platform.
-display: Sixgill DarkFeed Threat Intelligence
-name: Sixgill_Darkfeed
+description: The Cybersixgill Dynamic Vulnerability Exploit (DVE) Score is based on
+  the most comprehensive collection of vulnerability-related threat intelligence and
+  is the only solution that provides users total context and predicts the immediate
+  risks of a vulnerability based on threat actors’ intent. Cortex XSOAR users can
+  track threats stemming from CVEs that most others define as irrelevant and have
+  a higher probability of being exploited via their Cortex XSOAR dashboard.
+display: Cybersixgill DVE Feed Threat Intelligence v2
+name: Sixgill_DVE_Feed v2
 script:
-  script: '-'
   commands:
   - arguments:
     - default: true
-      defaultValue: '50'
-      description: The maximum number of results to return.
+      defaultValue: '5'
+      description: 'The number of records to display in War Room'
       isArray: false
       name: limit
       required: false
       secret: false
     deprecated: false
-    description: Fetching Sixgill DarkFeed indicators
-    execution: true
-    name: sixgill-get-indicators
+    description: Fetching Sixgill DVE Feed indicators
+    execution: false
+    name: cybersixgill-get-indicators
   dockerimage: demisto/sixgill:1.0.0.20925
   feed: true
   isfetch: false
   longRunning: false
   longRunningPort: false
   runonce: false
+  script: '-'
   subtype: python3
   type: python
 fromversion: 5.5.0
+tests:
+- No tests (auto formatted)
