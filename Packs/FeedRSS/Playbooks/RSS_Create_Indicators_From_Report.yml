@@ -1,7 +1,20 @@
 id: RSS Create Indicators From Report
 version: -1
 name: RSS Create Indicators From Report
-description: Extract indicators from report
+description: "The playbook:\n1. Extracts indicators from article content.\n2. Creates
+  relationships between the extracted indicators and the report.\n3. Runs enrich indicators
+  command on the extracted indicators. \n\nCortex XSOAR recommends that you configure
+  a job to run every 12 hours to execute this playbook. \n\n1. Configure a job that
+  will run the *RSS Create Indicators From Report* playbook. \n2. Configure input
+  to the *RSS Create Indicators From Report* playbook:\n   \n    - From the context
+  data input: Tag name - the indicator will be tagged with this value when the playbook
+  finishes processing and all the indicators are extracted and relationships created.\n
+  \  \n    - From the indicators: Create a query to include only new report indicators
+  that were not processed yet. Recommended query: \"type:Report -tags:{Tag name configured
+  from the context data input} -tags:in_process\". \n   The playbook tags all indicators
+  with the \"in_process\" tag when it starts running, and removes the tag when the
+  playbook ends.\n   If you want the playbook to run on a specific instance (a specific
+  feed), add the following filter to the query: *sourceInstances:\"{the selected instance}\"*."
 starttaskid: "0"
 tasks:
   "0":
