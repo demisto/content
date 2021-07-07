@@ -1,0 +1,9 @@
+{
+  "tests": [
+    {
+      "integrations": "Cofense Triage v3",
+      "playbookID": "Cofense Triage v3-Test",
+      "fromversion": "6.0.0"
+    }
+  ]
+}

@@ -1,0 +1,269 @@
+{
+  "data": [
+    {
+      "id": "4",
+      "type": "reports",
+      "links": {
+        "self": "https://triage.example.com/api/public/v2/reports/4"
+      },
+      "attributes": {
+        "location": "Processed",
+        "risk_score": 15,
+        "from_address": null,
+        "subject": "IBM X-Force Exchange Notifications",
+        "received_at": "2019-11-08T17:28:19.000Z",
+        "reported_at": "2019-11-08T17:17:05.000Z",
+        "raw_headers": "dummy_raw_headers",
+        "text_body": "dummy_text_body",
+        "html_body": "dummy_html_body",
+        "md5": "b22ca222a75f9681be55c9d47513f511",
+        "sha256": "123c95564c3131479335d5d118da42118e802a48f4bc91992b8e96f87ec95f6c",
+        "match_priority": 0,
+        "tags": [],
+        "categorization_tags": [
+          "test2",
+          "test1",
+          "c",
+          "b",
+          "a"
+        ],
+        "processed_at": "2021-05-18T05:11:49.555Z",
+        "created_at": "2020-10-21T20:54:23.444Z",
+        "updated_at": "2021-05-18T05:11:51.667Z"
+      },
+      "relationships": {
+        "assignee": {
+          "links": {
+            "self": "https://triage.example.com/api/public/v2/reports/4/relationships/assignee",
+            "related": "https://triage.example.com/api/public/v2/reports/4/assignee"
+          },
+          "data": null
+        },
+        "category": {
+          "links": {
+            "self": "https://triage.example.com/api/public/v2/reports/4/relationships/category",
+            "related": "https://triage.example.com/api/public/v2/reports/4/category"
+          },
+          "data": {
+            "type": "categories",
+            "id": "1"
+          }
+        },
+        "cluster": {
+          "links": {
+            "self": "https://triage.example.com/api/public/v2/reports/4/relationships/cluster",
+            "related": "https://triage.example.com/api/public/v2/reports/4/cluster"
+          },
+          "data": {
+            "type": "clusters",
+            "id": "1"
+          }
+        },
+        "reporter": {
+          "links": {
+            "self": "https://triage.example.com/api/public/v2/reports/4/relationships/reporter",
+            "related": "https://triage.example.com/api/public/v2/reports/4/reporter"
+          },
+          "data": {
+            "type": "reporters",
+            "id": "4"
+          }
+        },
+        "attachment_payloads": {
+          "links": {
+            "self": "https://triage.example.com/api/public/v2/reports/4/relationships/attachment_payloads",
+            "related": "https://triage.example.com/api/public/v2/reports/4/attachment_payloads"
+          }
+        },
+        "attachments": {
+          "links": {
+            "self": "https://triage.example.com/api/public/v2/reports/4/relationships/attachments",
+            "related": "https://triage.example.com/api/public/v2/reports/4/attachments"
+          }
+        },
+        "domains": {
+          "links": {
+            "self": "https://triage.example.com/api/public/v2/reports/4/relationships/domains",
+            "related": "https://triage.example.com/api/public/v2/reports/4/domains"
+          }
+        },
+        "headers": {
+          "links": {
+            "self": "https://triage.example.com/api/public/v2/reports/4/relationships/headers",
+            "related": "https://triage.example.com/api/public/v2/reports/4/headers"
+          }
+        },
+        "hostnames": {
+          "links": {
+            "self": "https://triage.example.com/api/public/v2/reports/4/relationships/hostnames",
+            "related": "https://triage.example.com/api/public/v2/reports/4/hostnames"
+          }
+        },
+        "urls": {
+          "links": {
+            "self": "https://triage.example.com/api/public/v2/reports/4/relationships/urls",
+            "related": "https://triage.example.com/api/public/v2/reports/4/urls"
+          }
+        },
+        "rules": {
+          "links": {
+            "self": "https://triage.example.com/api/public/v2/reports/4/relationships/rules",
+            "related": "https://triage.example.com/api/public/v2/reports/4/rules"
+          }
+        },
+        "threat_indicators": {
+          "links": {
+            "self": "https://triage.example.com/api/public/v2/reports/4/relationships/threat_indicators",
+            "related": "https://triage.example.com/api/public/v2/reports/4/threat_indicators"
+          }
+        },
+        "comments": {
+          "links": {
+            "self": "https://triage.example.com/api/public/v2/reports/4/relationships/comments",
+            "related": "https://triage.example.com/api/public/v2/reports/4/comments"
+          }
+        }
+      },
+      "meta": {
+        "risk_score_summary": {
+          "integrations": 0,
+          "vip": 0,
+          "reporter": 15,
+          "rules": 0
+        }
+      }
+    },
+    {
+      "id": "6",
+      "type": "reports",
+      "links": {
+        "self": "https://triage.example.com/api/public/v2/reports/6"
+      },
+      "attributes": {
+        "location": "Processed",
+        "risk_score": 8,
+        "from_address": null,
+        "subject": "(Hey), Developer!",
+        "received_at": "2019-11-08T20:00:25.000Z",
+        "reported_at": "2019-11-08T19:50:17.000Z",
+        "raw_headers": "dummy_raw_headers",
+        "text_body": "dummy_text_body",
+        "html_body": "dummy_html_body",
+        "md5": "123459f87ce51c42ef80b74e96a3b123",
+        "sha256": "f2d4ff19af66c7e04c5ac512345c961b2e2b0e837ddd33461fa3730e4f5abcd1",
+        "match_priority": 0,
+        "tags": [],
+        "categorization_tags": [],
+        "processed_at": "2021-05-02T08:40:24.654Z",
+        "created_at": "2020-10-21T20:54:25.974Z",
+        "updated_at": "2021-05-02T08:38:57.241Z"
+      },
+      "relationships": {
+        "assignee": {
+          "links": {
+            "self": "https://triage.example.com/api/public/v2/reports/6/relationships/assignee",
+            "related": "https://triage.example.com/api/public/v2/reports/6/assignee"
+          },
+          "data": null
+        },
+        "category": {
+          "links": {
+            "self": "https://triage.example.com/api/public/v2/reports/6/relationships/category",
+            "related": "https://triage.example.com/api/public/v2/reports/6/category"
+          },
+          "data": {
+            "type": "categories",
+            "id": "2"
+          }
+        },
+        "cluster": {
+          "links": {
+            "self": "https://triage.example.com/api/public/v2/reports/6/relationships/cluster",
+            "related": "https://triage.example.com/api/public/v2/reports/6/cluster"
+          },
+          "data": {
+            "type": "clusters",
+            "id": "2"
+          }
+        },
+        "reporter": {
+          "links": {
+            "self": "https://triage.example.com/api/public/v2/reports/6/relationships/reporter",
+            "related": "https://triage.example.com/api/public/v2/reports/6/reporter"
+          },
+          "data": {
+            "type": "reporters",
+            "id": "6"
+          }
+        },
+        "attachment_payloads": {
+          "links": {
+            "self": "https://triage.example.com/api/public/v2/reports/6/relationships/attachment_payloads",
+            "related": "https://triage.example.com/api/public/v2/reports/6/attachment_payloads"
+          }
+        },
+        "attachments": {
+          "links": {
+            "self": "https://triage.example.com/api/public/v2/reports/6/relationships/attachments",
+            "related": "https://triage.example.com/api/public/v2/reports/6/attachments"
+          }
+        },
+        "domains": {
+          "links": {
+            "self": "https://triage.example.com/api/public/v2/reports/6/relationships/domains",
+            "related": "https://triage.example.com/api/public/v2/reports/6/domains"
+          }
+        },
+        "headers": {
+          "links": {
+            "self": "https://triage.example.com/api/public/v2/reports/6/relationships/headers",
+            "related": "https://triage.example.com/api/public/v2/reports/6/headers"
+          }
+        },
+        "hostnames": {
+          "links": {
+            "self": "https://triage.example.com/api/public/v2/reports/6/relationships/hostnames",
+            "related": "https://triage.example.com/api/public/v2/reports/6/hostnames"
+          }
+        },
+        "urls": {
+          "links": {
+            "self": "https://triage.example.com/api/public/v2/reports/6/relationships/urls",
+            "related": "https://triage.example.com/api/public/v2/reports/6/urls"
+          }
+        },
+        "rules": {
+          "links": {
+            "self": "https://triage.example.com/api/public/v2/reports/6/relationships/rules",
+            "related": "https://triage.example.com/api/public/v2/reports/6/rules"
+          }
+        },
+        "threat_indicators": {
+          "links": {
+            "self": "https://triage.example.com/api/public/v2/reports/6/relationships/threat_indicators",
+            "related": "https://triage.example.com/api/public/v2/reports/6/threat_indicators"
+          }
+        },
+        "comments": {
+          "links": {
+            "self": "https://triage.example.com/api/public/v2/reports/6/relationships/comments",
+            "related": "https://triage.example.com/api/public/v2/reports/6/comments"
+          }
+        }
+      },
+      "meta": {
+        "risk_score_summary": {
+          "integrations": 0,
+          "vip": 0,
+          "reporter": 8,
+          "rules": 0
+        }
+      }
+    }
+  ],
+  "links": {
+    "first": "https://triage.example.com/api/public/v2/reports?page%5Bnumber%5D=1&page%5Bsize%5D=2",
+    "next": "https://triage.example.com/api/public/v2/reports?page%5Bnumber%5D=2&page%5Bsize%5D=2",
+    "last": "https://triage.example.com/api/public/v2/reports?page%5Bnumber%5D=246&page%5Bsize%5D=2"
+  }
+}

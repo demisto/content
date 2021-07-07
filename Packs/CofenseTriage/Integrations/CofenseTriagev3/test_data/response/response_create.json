@@ -1,0 +1,32 @@
+{
+  "data": {
+    "id": "62",
+    "type": "responses",
+    "links": {
+      "self": "https://triage.example.com/api/public/v2/responses/64"
+    },
+    "attributes": {
+      "name": "Sample Response",
+      "description": "This is a sample response",
+      "to_reporter": true,
+      "to_other": false,
+      "to_other_address": null,
+      "cc_address": null,
+      "bcc_address": null,
+      "subject": "Sample Subject",
+      "attach_original": false,
+      "body": "Sample Body",
+      "created_at": "2021-05-17T16:33:13.304Z",
+      "updated_at": "2021-05-17T16:33:13.304Z"
+    },
+    "relationships": {
+      "one_clicks": {
+        "links": {
+          "self": "https://triage.example.com/api/public/v2/responses/64/relationships/one_clicks",
+          "related": "https://triage.example.com/api/public/v2/responses/64/one_clicks"
+        }
+      }
+    }
+  }
+}
+
