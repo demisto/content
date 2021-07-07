@@ -2,7 +2,6 @@ name: SecurityScorecard
 display: SecurityScorecard
 category: Vulnerability Management
 description: Provides scorecards for domains.
-isfetch: true
 commonfields:
   id: SecurityScorecard
   version: -1
@@ -20,7 +19,9 @@ configuration:
   defaultvalue: true
   type: 8
 - name: incidentFetchInterval
-  display: Incidents Fetch Interval. SecurityScorecard is updated on a daily basis therefore there's no need to modify this value (24 h * 60 m/h = 1440m). This is hidden from the UI.
+  display: Incidents Fetch Interval. SecurityScorecard is updated on a daily basis
+    therefore there's no need to modify this value (24 h * 60 m/h = 1440m). This is
+    hidden from the UI.
   defaultvalue: "1440"
   required: false
   type: 19
@@ -31,12 +32,12 @@ configuration:
   defaultvalue: 50
   type: 0
   additionalinfo: Maximum number of alerts per fetch. Default is 50, maximum is 100.
-- name: fetchDaysAgo
-  display: First fetch time
+- name: first_fetch
+  display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
+  defaultvalue: 3 days
   required: false
-  defaultvalue: 7
-  additionalinfo: How many days ago to fetch for alerts on initial fetch. The maximum number of days is 7.
   type: 0
+  additionalinfo: How many days ago to fetch for alerts on initial fetch. The maximum number of days is 7.
 - name: incidentType
   display: Incident Type
   required: false
@@ -50,6 +51,10 @@ configuration:
   display: Use system proxy settings
   required: false
   type: 8
+- display: Incident type
+  name: incidentType
+  required: false
+  type: 13
 fromversion: 6.0.0
 tests:
 - No tests (auto formatted)
@@ -59,7 +64,7 @@ script:
   subtype: python3
   isFetchSamples: true
   isfetch: true
-  dockerimage: demisto/python3:3.9.5.20070
+  dockerimage: demisto/python3:3.9.5.21272
   commands:
   - name: securityscorecard-portfolios-list
     description: List all Portfolios
@@ -83,13 +88,13 @@ script:
     description: Lists all companies in Portfolio.
     arguments:
     - name: portfolio_id
-      type: String
-      description: Portfolio ID. A list of Portfolio IDs can be retrieved using the `!securityscorecard-portfolios-list` command.
+      description: Portfolio ID. A list of Portfolio IDs can be retrieved using the
+        `!securityscorecard-portfolios-list` command.
       required: true
       default: false
     - name: grade
-      type: String
-      description: Grade filter. The acceptable values are capitalized letters between A-F, e.g. B.
+      description: Grade filter. The acceptable values are capitalized letters between
+        A-F, e.g. B.
       required: false
       default: false
       auto: PREDEFINED
@@ -101,23 +106,21 @@ script:
       - "E"
       - "F"
     - name: industry
-      type: String
       description: Industry filter, e.g. information_services, technology.
       required: false
       default: false
     - name: vulnerability
-      type: String
       description: Vulnerability filter. TODO NEED TO CHECK POSSIBLE VALUES.
       required: false
       default: false
     - name: issue_type
-      type: String
-      description: Issue type filter. TODO, need to list all possible values, can be found in active findings API.
+      description: Issue type filter. TODO, need to list all possible values, can
+        be found in active findings API.
       required: false
       default: false
     - name: had_breach_within_last_days
-      type: Number
-      description: Domains with breaches in the last X days. Possible values are numbers, e.g. 1000.
+      description: Domains with breaches in the last X days. Possible values are numbers,
+        e.g. 1000.
       required: false
       default: false
     outputs:
@@ -155,8 +158,8 @@ script:
     description: Retrieve company overall score.
     arguments:
     - name: domain
-      type: String
-      description: Company domain, e.g. google.com. The company must first be added to a Portfolio or else the API will return an error code 403.
+      description: Company domain, e.g. google.com. The company must first be added
+        to a Portfolio or else the API will return an error code 403.
       required: true
       default: false
     outputs:
@@ -180,18 +183,18 @@ script:
       type: String
     - contextPath: SecurityScorecard.Company.Score.size
       description: Company size, e.g. 'size_more_than_10000'
-      type: String 
+      type: String
   - name: securityscorecard-company-factor-score-get
     description: Retrieve company factor score.
     arguments:
     - name: domain
-      type: String
       description: Company domain.
       required: true
       default: false
     - name: severity_in
       isArray: true
-      description: Issue severity filter. Optional values can be positive, info, low, medium, high. Can be comma-separated list, e.g. 'medium,high,positive'
+      description: Issue severity filter. Optional values can be positive, info, low,
+        medium, high. Can be comma-separated list, e.g. 'medium,high,positive'
       required: false
     outputs:
     - contextPath: SecurityScorecard.Company.Factor.name
@@ -201,7 +204,7 @@ script:
       description: Factor score in numeric form (55-100)
       type: Number
     - contextPath: SecurityScorecard.Company.Factor.grade
-      description: Factor score in letter grade form (A-F) 
+      description: Factor score in letter grade form (A-F)
       type: String
     - contextPath: SecurityScorecard.Company.Factor.Issue.type
       description: Type of issue found
@@ -225,24 +228,19 @@ script:
     description: Retrieve company historical scores
     arguments:
     - name: domain
-      type: String
       description: Company domain, e.g. `google.com`
       required: true
       default: false
     - name: from
-      type: Date
       description: Initial date for historical data. Value should be in format `YYYY-MM-DD`
       required: false
       default: false
     - name: to
-      type: Date
       description: Initial date for historical data. Value should be in format `YYYY-MM-DD`
       default: false
     - name: timing
-      type: String
       description: Timing granularity. Acceptable values are `weekly` or `daily`
       required: false
-      defaultvalue: daily
       auto: PREDEFINED
       predefined:
       - "daily"
@@ -261,24 +259,20 @@ script:
     description: Retrieve company historical factor scores
     arguments:
     - name: domain
-      type: String
       description: Company domain, e.g. google.com
       required: true
       default: false
     - name: from
-      type: Date
       description: Initial date for historical data. Value should be in format 'YYYY-MM-DD'
       required: false
       default: false
     - name: to
-      type: Date
       description: Initial date for historical data. Value should be in format 'YYYY-MM-DD'
       default: false
     - name: timing
-      type: String
-      description: Timing granularity. Acceptable values are "daily" (default), "weekly" or "monthly"
+      description: Timing granularity. Acceptable values are "daily" (default), "weekly"
+        or "monthly"
       required: false
-      defaultvalue: daily
       auto: PREDEFINED
       predefined:
       - "daily"
@@ -301,7 +295,6 @@ script:
     description: Create alert based on grade
     arguments:
     - name: change_direction
-      type: String
       description: Direction of change. Possible values are 'rises' or 'drops'.
       required: true
       auto: PREDEFINED
@@ -310,11 +303,17 @@ script:
       - "drops"
     - name: score_types
       isArray: true
-      description: Types of risk factors to monitor. Possible values are 'overall', 'any_factor_score', 'network_security', 'dns_health', 'patching_cadence', 'endpoint_security', 'ip_reputation', 'application_security', 'cubit_score', 'hacker_chatter', 'leaked_information', 'social_engineering'. For multiple factors, leaked_information,social_engineering .
+      description: Types of risk factors to monitor. Possible values are 'overall',
+        'any_factor_score', 'network_security', 'dns_health', 'patching_cadence',
+        'endpoint_security', 'ip_reputation', 'application_security', 'cubit_score',
+        'hacker_chatter', 'leaked_information', 'social_engineering'. For multiple
+        factors, leaked_information,social_engineering .
       required: true
     - name: target
       isArray: true
-      description: What do you want to monitor with this alert. It could be one of the following 'my_scorecard', 'any_followed_company' or comma-separated Portfolio IDs, e.g. 60c78cc2d63162001a68c2b8,60c8c5f9139e40001908c6a4 or 60c78cc2d63162001a68c2b8,my_scorecard
+      description: What do you want to monitor with this alert. It could be one of
+        the following 'my_scorecard', 'any_followed_company' or comma-separated Portfolio
+        IDs, e.g. 60c78cc2d63162001a68c2b8,60c8c5f9139e40001908c6a4 or 60c78cc2d63162001a68c2b8,my_scorecard
       required: true
     outputs:
     - contextPath: SecurityScorecard.Alert.id
@@ -324,7 +323,6 @@ script:
     description: Create alert based threshold met
     arguments:
     - name: change_direction
-      type: String
       description: Direction of change.
       required: true
       auto: PREDEFINED
@@ -332,16 +330,20 @@ script:
       - "rises_above"
       - "drops_below"
     - name: threshold
-      type: Number
       description: The numeric score used as the threshold to trigger the alert
       required: true
     - name: score_types
       isArray: true
-      description: Types of risk factors to monitor. Possible values are 'overall', 'any_factor_score', 'network_security', 'dns_health', 'patching_cadence', 'endpoint_security', 'ip_reputation', 'application_security', 'cubit_score', 'hacker_chatter', 'leaked_information', 'social_engineering'. For multiple factors, provide comma-separated list, i.e. leaked_information,social_engineering.
+      description: Types of risk factors to monitor. Possible values are 'overall',
+        'any_factor_score', 'network_security', 'dns_health', 'patching_cadence',
+        'endpoint_security', 'ip_reputation', 'application_security', 'cubit_score',
+        'hacker_chatter', 'leaked_information', 'social_engineering'. For multiple
+        factors, provide comma-separated list, i.e. leaked_information,social_engineering.
       required: true
     - name: target
-      type: String
-      description: What do you want to monitor with this alert. It could be one of the following 'my_scorecard', 'any_followed_company'. This argument is require if the `portfolios` argument is not specified.
+      description: What do you want to monitor with this alert. It could be one of
+        the following 'my_scorecard', 'any_followed_company'. This argument is require
+        if the `portfolios` argument is not specified.
       required: false
       auto: PREDEFINED
       predefined:
@@ -349,7 +351,9 @@ script:
       - "any_followed_company"
     - name: portfolios
       isArray: true
-      description: A comma-separated list of Portfolios (i.e. 60c78cc2d63162001a68c2b8,60c8c5f9139e40001908c6a4) to use as a target for the alert. This argument is require if the `target` argument is not specified.
+      description: A comma-separated list of Portfolios (i.e. 60c78cc2d63162001a68c2b8,60c8c5f9139e40001908c6a4)
+        to use as a target for the alert. This argument is require if the `target`
+        argument is not specified.
       required: false
     outputs:
     - contextPath: SecurityScorecard.Alert.id
@@ -359,11 +363,9 @@ script:
     description: Delete an alert
     arguments:
     - name: alert_id
-      type: String
-      description: Alert ID.  
+      description: Alert ID.
       required: true
     - name: alert_type
-      type: String
       description: Type of Alert to delete.
       required: true
       auto: PREDEFINED
@@ -374,7 +376,6 @@ script:
     description: List alerts triggered in the last week
     arguments:
     - name: portfolio_id
-      type: String
       description: Portfolio ID. Can be retrieved using `!securityscorecard-portfolios-list`
       required: false
     outputs:
@@ -397,7 +398,10 @@ script:
       description: Alert Portfolio ID
       type: array
     - contextPath: SecurityScorecard.Alert.my_scorecard
-      description: Whether the alert was triggered on private scorecard. This depends on whether 'my_scorecard' was added to the optional argument 'target' when creating alerts using the ``!securityscorecard-alert-score-threshold-create`` and ``!securityscorecard-alert-grade-change-create``` commands.
+      description: Whether the alert was triggered on private scorecard. This depends
+        on whether 'my_scorecard' was added to the optional argument 'target' when
+        creating alerts using the ``!securityscorecard-alert-score-threshold-create``
+        and ``!securityscorecard-alert-grade-change-create``` commands.
       type: Boolean
     - contextPath: SecurityScorecard.Alert.created_at
       description: Timestamp of when the alert was triggered
@@ -406,7 +410,6 @@ script:
     description: Retrieve the service providers of a domain
     arguments:
     - name: domain
-      type: String
       description: Company domain
       required: true
     outputs:
@@ -414,7 +417,8 @@ script:
       description: Vendor domain, e.g. Google, Amazon
       type: String
     - contextPath: client_domain
-      description: Client domain. This value is identical to the input of the domain argument
+      description: Client domain. This value is identical to the input of the domain
+        argument
       type: String
     - contextPath: categories
       description: Vendor service provider, e.g. mail_provider, nameserver_provider

@@ -268,15 +268,15 @@ def incidents_to_import(alerts: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
     if demisto.getLastRun().get("last_run"):
         last_run = int(demisto.getLastRun().get("last_run"))
     else:
-        days_ago_arg = demisto.params().get("fetchDaysAgo")
+        days_ago_arg = demisto.params().get("first_fetch")
 
         if not days_ago_arg:
             days_ago_str = "3 days"
         else:
-            days_ago_str = "{0} days".format(days_ago_arg)
+            days_ago_str = days_ago_arg
 
-        fetch_days_ago = arg_to_datetime(days_ago_str, arg_name="fetchDaysAgo", required=False)
-        demisto.debug("Didn't find getLastRun in integration context, using parameter 'fetchDaysAgo' value '{0}' instead".format(days_ago_arg)) 
+        fetch_days_ago = arg_to_datetime(days_ago_str, arg_name="first_fetch", required=False)
+        demisto.debug("Didn't find getLastRun in integration context, using parameter 'first_fetch' value '{0}' instead".format(days_ago_arg)) 
         demisto.debug("{0} => {1}".format(days_ago_str, fetch_days_ago))
 
         last_run = int(fetch_days_ago.timestamp())
