@@ -14,5 +14,11 @@
     "useCases": [
         "Access"
     ],
-    "keywords": []
+    "keywords": [],
+    "dependencies": {
+        "ab": {
+            "mandatory": true,
+            "display_name": "ab"
+        }
+    }
 }
