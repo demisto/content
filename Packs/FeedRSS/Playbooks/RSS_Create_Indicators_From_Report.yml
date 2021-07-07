@@ -348,7 +348,7 @@ inputs:
         fromvalue:
         field: ""
       fromdatelicenseval: 0001-01-01T00:00:00Z
-    runFromLastJobTime: false
+    runFromLastJobTime: true
 - key: tag
   value:
     simple:
