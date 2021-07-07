@@ -1,3 +1,5 @@
+from sklearn import impute
+
 import demistomock as demisto
 from CommonServerPython import *
 import collections
@@ -13,7 +15,6 @@ from urlparse import urlparse
 import pandas as pd
 from sklearn.ensemble import RandomForestClassifier
 from datetime import datetime, timedelta
-from sklearn.preprocessing import Imputer
 
 # disable-secrets-detection-start
 FEATURES_OTHERS_STRING = (
@@ -609,7 +610,7 @@ def filter_features(features, selected_features=FEATURES):
 
 def union_complete_missing_values(df1, df2, keys=None):
     df = pd.concat([df1, df2], keys=keys)
-    imp = Imputer()
+    imp = impute.SimpleImputer()
     return pd.DataFrame(imp.fit_transform(df), columns=df.columns, index=df.index)
 
 

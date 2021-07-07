@@ -36,7 +36,7 @@
 
 .clone_and_export_variables: &clone_and_export_variables
   - source .gitlab/helper_functions.sh
-  - git checkout $CI_COMMIT_BRANCH
+  - git checkout -B $CI_COMMIT_BRANCH $CI_COMMIT_SHA
   - git config diff.renameLimit 6000
   - mkdir -p -m 777 $ARTIFACTS_FOLDER/
   - |
@@ -73,8 +73,8 @@
   - source ./venv/bin/activate
   - |
     if [ -n "${DEMISTO_SDK_NIGHTLY}" ]; then
-      echo "Installing SDK from master branch" | tee --append $ARTIFACTS_FOLDER/logs/installations.log
-      pip3 install git+https://github.com/demisto/demisto-sdk@master >> $ARTIFACTS_FOLDER/logs/installations.log 2>&1
+      echo "Installing SDK from $SDK_REF" | tee --append $ARTIFACTS_FOLDER/logs/installations.log
+      pip3 install "git+https://github.com/demisto/demisto-sdk@${SDK_REF}" >> $ARTIFACTS_FOLDER/logs/installations.log 2>&1
     fi
   - section_end "Installing Virtualenv"
 
