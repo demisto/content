@@ -724,6 +724,8 @@ class TestChangelogCreation:
             release_notes_dir, changelog_latest_rn_version, AGGREGATED_CHANGELOG, modified_rn_files)
         assert modified_versions_dict == {'1.0.3': modified_rn_lines}
 
+        def test_update_changelog_entry(self, mocker, )
+
     def test_assert_production_bucket_version_matches_release_notes_version_positive(self, dummy_pack):
         """
            Given:
