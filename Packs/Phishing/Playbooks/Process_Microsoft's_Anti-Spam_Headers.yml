@@ -1,0 +1,494 @@
+id: Process Microsoft's Anti-Spam Headers
+version: -1
+name: Process Microsoft's Anti-Spam Headers
+description: |-
+  This playbook will return SCL, BCL and PCL scores to the context (if exist).
+  It will also do the following:
+  1) Set the email classification to "spam" if the "SCL" score is equal or higher than 5.
+  2) Set a value of "Medium" to a "MicrosoftHeadersSeverityCheck" field in the context if the PCL or BCL value is higher than 4.
+
+  For further information on SCL/BCL/PCL, please review these documentations from Microsoft:
+
+  https://docs.microsoft.com/en-us/microsoft-365/security/office-365-security/spam-confidence-levels?view=o365-worldwide
+
+  https://docs.microsoft.com/en-us/microsoft-365/security/office-365-security/bulk-complaint-level-values?view=o365-worldwide
+
+  https://docs.microsoft.com/en-us/exchange/antispam-and-antimalware/antispam-protection/antispam-stamps?view=exchserver-2019
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 605fdd42-0a46-460c-8dd7-c36ce8fa26db
+    type: start
+    task:
+      id: 605fdd42-0a46-460c-8dd7-c36ce8fa26db
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+      - "26"
+      - "27"
+      - "28"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 847.5,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: ad4eb847-00ab-48d2-8166-cb97372b069e
+    type: condition
+    task:
+      id: ad4eb847-00ab-48d2-8166-cb97372b069e
+      description: ""
+      version: -1
+      name: Check X-Microsoft-Antispam Header
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "10"
+      "yes":
+      - "5"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: match
+          left:
+            value:
+              complex:
+                root: incident.emailheaders
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: incident.emailheaders.headername
+                      iscontext: true
+                    right:
+                      value:
+                        simple: X-Microsoft-Antispam
+                accessor: headervalue
+            iscontext: true
+          right:
+            value:
+              simple: .*BCL:[4-9];.*
+    view: |-
+      {
+        "position": {
+          "x": -110,
+          "y": 200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: 1fc772ff-2a5f-402c-83be-b13a44a29236
+    type: regular
+    task:
+      id: 1fc772ff-2a5f-402c-83be-b13a44a29236
+      version: -1
+      name: Set BCL score to 4
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "22"
+    scriptarguments:
+      key:
+        simple: BCL
+      value:
+        simple: "4"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -120,
+          "y": 450
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "10":
+    id: "10"
+    taskid: a5ab5409-1255-4a1a-8930-6b218aa07274
+    type: title
+    task:
+      id: a5ab5409-1255-4a1a-8930-6b218aa07274
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 857.5,
+          "y": 960
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "13":
+    id: "13"
+    taskid: c3ac5eb5-9fe5-4b9f-810b-c97ab686dd78
+    type: regular
+    task:
+      id: c3ac5eb5-9fe5-4b9f-810b-c97ab686dd78
+      version: -1
+      name: Set SCL score to 5
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "23"
+    scriptarguments:
+      key:
+        simple: SCL
+      value:
+        simple: "5"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1470,
+          "y": 450
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "20":
+    id: "20"
+    taskid: bb919480-f09a-470f-878f-5d163772aebf
+    type: regular
+    task:
+      id: bb919480-f09a-470f-878f-5d163772aebf
+      version: -1
+      name: Set PCL score to 4
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "22"
+    scriptarguments:
+      key:
+        simple: PCL
+      value:
+        simple: "4"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 537.5,
+          "y": 450
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "22":
+    id: "22"
+    taskid: c1cfb76b-f802-42fb-8fe2-ce6023f76f31
+    type: regular
+    task:
+      id: c1cfb76b-f802-42fb-8fe2-ce6023f76f31
+      version: -1
+      name: Set MicrosoftHeadersSeverityCheck to Medium
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      key:
+        simple: Email.MicrosoftHeadersSeverityCheck
+      value:
+        simple: Medium
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 220,
+          "y": 680
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "23":
+    id: "23"
+    taskid: 21500b48-153f-433b-82e8-7328125a8ace
+    type: regular
+    task:
+      id: 21500b48-153f-433b-82e8-7328125a8ace
+      version: -1
+      name: Set Email Classification to "Spam"
+      description: commands.local.cmd.set.incident
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      emailclassification:
+        simple: Spam
+      phishingsubtype:
+        simple: Automatic
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1470,
+          "y": 660
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "26":
+    id: "26"
+    taskid: 202b821d-15f6-4e32-897c-5825ce5737da
+    type: condition
+    task:
+      id: 202b821d-15f6-4e32-897c-5825ce5737da
+      description: ""
+      version: -1
+      name: Check X-MS-Exchange-Organization-PCL Header
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "10"
+      "yes":
+      - "20"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: match
+          left:
+            value:
+              complex:
+                root: incident.emailheaders
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: incident.emailheaders.headername
+                      iscontext: true
+                    right:
+                      value:
+                        simple: X-MS-Exchange-Organization-PCL
+                accessor: headervalue
+            iscontext: true
+          right:
+            value:
+              simple: '[4-9]'
+    view: |-
+      {
+        "position": {
+          "x": 537.5,
+          "y": 200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "27":
+    id: "27"
+    taskid: 202f9290-216c-4480-8723-ecbaebcb7534
+    type: condition
+    task:
+      id: 202f9290-216c-4480-8723-ecbaebcb7534
+      description: ""
+      version: -1
+      name: Check X-MS-Exchange-Organization-SCL Header
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "10"
+      "yes":
+      - "13"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: match
+          left:
+            value:
+              complex:
+                root: incident.emailheaders
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: incident.emailheaders.headername
+                      iscontext: true
+                    right:
+                      value:
+                        simple: X-MS-Exchange-Organization-SCL
+                accessor: headervalue
+            iscontext: true
+          right:
+            value:
+              simple: '[4-9]'
+    view: |-
+      {
+        "position": {
+          "x": 1167.5,
+          "y": 200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "28":
+    id: "28"
+    taskid: 40ff46c8-5fa8-48d6-8a8f-ba9d3883d6e5
+    type: condition
+    task:
+      id: 40ff46c8-5fa8-48d6-8a8f-ba9d3883d6e5
+      description: ""
+      version: -1
+      name: Check X-Forefront-Antispam-Report Header
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "10"
+      "yes":
+      - "13"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: match
+          left:
+            value:
+              complex:
+                root: incident.emailheaders
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: incident.emailheaders.headername
+                      iscontext: true
+                    right:
+                      value:
+                        simple: X-Forefront-Antispam-Report
+                accessor: headervalue
+            iscontext: true
+          right:
+            value:
+              simple: .*SCL:[4-9];.*
+    view: |-
+      {
+        "position": {
+          "x": 1740,
+          "y": 200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 975,
+        "width": 2240,
+        "x": -120,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs:
+- contextPath: SCL
+  description: |-
+    Possible Values:
+
+    5 - Spam filtering marked the message as Spam or High confidence spam.
+  type: unknown
+- contextPath: BCL
+  description: |-
+    Possible Values:
+
+    4 - The message is from a bulk sender that generates a mixed number of complaints or a high number of complaints.
+  type: unknown
+- contextPath: PCL
+  description: |-
+    Possible Values:
+
+    4 - Likely to be phishing and marked as suspicious content.
+  type: unknown
+- contextPath: Email.MicrosoftHeadersSeverityCheck
+  description: |
+    Possible Values:
+
+    Unknown - there is not enough data to determine the severity.
+
+    Medium - PCL or BCL scores are equal or higher than 4.
+  type: unknown
+tests:
+- No tests (auto formatted)
+fromversion: 6.0.0
