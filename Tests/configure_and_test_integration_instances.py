@@ -1260,7 +1260,7 @@ def test_pack_zip(content_path, target):
             test = test.name
             with open(test_path, 'r') as test_file:
                 if not (test.startswith('playbook-') or test.startswith('script-')):
-                    test_type = find_type(_dict=yaml.safe_load(test_file), file_type='yml').value
+                    test_type = find_type(test_file).value
                     test_file.seek(0)
                     test_target = f'test_pack/TestPlaybooks/{test_type}-{test}'
                 else:
