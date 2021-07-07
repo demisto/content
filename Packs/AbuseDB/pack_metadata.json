@@ -12,11 +12,5 @@
     ],
     "tags": [],
     "useCases": [],
-    "keywords": [],
-    "dependencies": {
-        "aa": {
-            "mandatory": true,
-            "display_name": "aa"
-        }
-    }
+    "keywords": []
 }
