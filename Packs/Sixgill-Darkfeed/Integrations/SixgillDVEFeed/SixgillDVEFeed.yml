@@ -43,7 +43,8 @@ configuration:
   - F - Reliability cannot be judged
   required: true
   type: 15
-- additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed
+- additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators
+    fetched from the feed
   display: Traffic Light Protocol Color
   name: tlp_color
   options:
@@ -77,9 +78,9 @@ configuration:
   name: maxIndicators
   required: false
   type: 0
-- additionalinfo: When selected, the exclusion list is ignored for indicators from this
-    feed. This means that if an indicator from this feed is on the exclusion list, the
-    indicator might still be added to the system.
+- additionalinfo: When selected, the exclusion list is ignored for indicators from
+    this feed. This means that if an indicator from this feed is on the exclusion
+    list, the indicator might still be added to the system.
   display: Bypass exclusion list
   name: feedBypassExclusionList
   required: false
@@ -107,7 +108,7 @@ configuration:
   type: 0
 description: Leverage the power of Sixgill to supercharge Cortex XSOAR with real-time
   Threat Intelligence indicators. Get CVE Feed straight into the XSOAR platform.
-display: Cybersixgill DVE Feed Threat Intelligence
+display: Cybersixgill DVE Feed Threat Intelligence (Deprecated)
 name: Sixgill_DVE_Feed
 script:
   commands:
@@ -122,8 +123,8 @@ script:
     deprecated: false
     description: Fetching Sixgill DVE Feed indicators
     execution: false
-    name: sixgill-get-dve-feed
-  dockerimage: demisto/sixgill:1.0.0.18412
+    name: cybersixgill-get-indicators
+  dockerimage: demisto/sixgill:1.0.0.20925
   feed: true
   isfetch: false
   longRunning: false
