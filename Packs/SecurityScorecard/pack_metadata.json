@@ -10,9 +10,8 @@
         "Vulnerability Management"
     ],
     "tags": [
-        "score",
-        "scorecard",
-        "vulnerability_management"
+        "Alerts",
+        "Security Analytics"
     ],
     "useCases": ["Vulnerability Management"],
     "keywords": ["securityscorecard", "scorecard", "domain"],
