@@ -2,14 +2,14 @@ id: Kaseya VSA  0-day - REvil Ransomware Supply Chain Attack
 version: -1
 name: Kaseya VSA  0-day - REvil Ransomware Supply Chain Attack
 description: "On July 2nd, Kaseya company has experienced an attack against the VSA\
-  \ (Virtual System/Server Administrator) product. Kaseya customers reports pointed\
-  \ out a ransomware outbreak in their environment.\nFurther investigation revealed\
+  \ (Virtual System/Server Administrator) product. Kaseya customers pointed\
+  \ out a ransomware outbreak in their environments.\nFurther investigation revealed\
   \ that REvil group exploited VSA zero-day vulnerabilities for authentication bypass\
   \ and arbitrary command execution. This allowed the attacker to deploy ransomware\
   \ on Kaseya customers' endpoints.\n\nThis playbook should be trigger manually and\
   \ includes the following tasks: \n\n* Collect related known indicators from several\
   \ sources.\n* Indicators, PS commands, Registry changes and known HTTP requests\
-  \ hunting using SIEM products.\n    * Splunk advanced queries can be modified through\
+  \ hunting using PAN-OS, Cortex XDR and SIEM products.\n    * Splunk advanced queries can be modified through\
   \ the playbook inputs.\n* Block indicators automatically or manually.\n* Provide\
   \ advanced hunting and detection capabilities.\n\nMore information:\n[Kaseya Incident\
   \ Overview & Technical Details](https://helpdesk.kaseya.com/hc/en-gb/articles/4403584098961)\n\
