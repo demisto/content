@@ -1,10 +1,11 @@
-On July 2nd, Kaseya company has experienced an attack against the VSA (Virtual System/Server Administrator) product. Kaseya customers reports pointed out a ransomware outbreak in their environment.
+On July 2nd, Kaseya company has experienced an attack against the VSA (Virtual System/Server Administrator) product. Kaseya customers pointed out a ransomware outbreak in their environments.
+
 Further investigation revealed that REvil group exploited VSA zero-day vulnerabilities for authentication bypass and arbitrary command execution. This allowed the attacker to deploy ransomware on Kaseya customers' endpoints.
 
 This playbook should be trigger manually and includes the following tasks: 
 
 * Collect related known indicators from several sources.
-* Indicators, PS commands, Registry changes and known HTTP requests hunting using SIEM products.
+* Indicators, PS commands, Registry changes and known HTTP requests hunting using PAN-OS, Cortex XDR and SIEM products.
     * Splunk advanced queries can be modified through the playbook inputs.
 * Block indicators automatically or manually.
 * Provide advanced hunting and detection capabilities.
