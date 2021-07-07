@@ -1099,7 +1099,13 @@ def add_object(event_id: str, obj: MISPObject):
 def add_file_object(demisto_args: dict = {}):
     entry_id = demisto_args.get('entry_id')
     event_id = demisto_args.get('event_id')
+    should_encode_to_base64 = argToBoolean(demisto_args.get('encode_file', False))
     file_path = demisto.getFilePath(entry_id).get('path')
+    if should_encode_to_base64:
+        with open(file_path, 'rb') as file:
+            encoded_string = base64.b64encode(file.read())
+        with open(file_path, 'wb') as file:
+            file.write(encoded_string)
     obj = FileObject(file_path)
     demisto.debug(f"in add_file_object, obj is: {obj}")
     return add_object(event_id, obj)

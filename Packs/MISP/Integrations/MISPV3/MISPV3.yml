@@ -1,3 +1,4 @@
+beta: false
 category: Data Enrichment & Threat Intelligence
 commonfields:
   id: MISP V3
@@ -45,7 +46,6 @@ configuration:
   - F - Reliability cannot be judged
   required: true
   type: 15
-defaultclassifier: 'null'
 description: Malware information sharing platform and threat sharing.
 display: MISP v3
 name: MISP V3
@@ -1156,15 +1156,15 @@ script:
       required: true
       secret: false
     - default: false
+      defaultValue: other
       description: Attribute type.
       isArray: false
       name: type
-      defaultValue: other
       required: false
       secret: false
     - default: false
-      description: Attribute category.
       defaultValue: External analysis
+      description: Attribute category.
       isArray: false
       name: category
       required: false
@@ -1569,6 +1569,17 @@ script:
       name: event_id
       required: true
       secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'false'
+      description: Whether to endoce the given file to base64 before uploading to MISP.
+      isArray: false
+      name: encode_file
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
     deprecated: false
     description: Adds an file object to the specified event ID.
     execution: false
@@ -1889,8 +1900,8 @@ script:
       required: true
       secret: false
     - default: false
-      description: "Attributes, for example {'description': 'Manager Ferrari', 'make':\
-        \ 'Ferrari', 'model': '308 GTS'}"
+      description: 'Attributes, for example {''description'': ''Manager Ferrari'',
+        ''make'': ''Ferrari'', ''model'': ''308 GTS''}'
       isArray: false
       name: attributes
       required: true
@@ -2386,4 +2397,5 @@ script:
   type: python
 tests:
 - No tests
+defaultclassifier: 'null'
 fromversion: 5.0.0
