@@ -51,4 +51,4 @@ This playbook does not use any integrations.
 
 ## Playbook Image
 ---
-![Calculate Severity - Generic v2](Insert the link to your image here)
+![Calculate Severity - Generic v2](../doc_files/Calculate_Severity_-_Generic_v2.png)

@@ -42,4 +42,4 @@ There are no inputs for this playbook.
 
 ## Playbook Image
 ---
-![Process Microsoft's Anti-Spam Headers](Insert the link to your image here)
+![Process Microsoft's Anti-Spam Headers](../doc_files/Process_Microsoft's_Anti-Spam_Headers.png)

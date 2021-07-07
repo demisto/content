@@ -51,4 +51,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![Phishing Investigation - Generic v2](Insert the link to your image here)
+![Phishing Investigation - Generic v2](../doc_files/Phishing_Investigation_-_Generic_v2.png)
