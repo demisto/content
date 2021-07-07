@@ -4,7 +4,6 @@ import glob
 import sys
 import zipfile
 from time import sleep
-from ruamel import yaml
 from typing import List
 import logging
 

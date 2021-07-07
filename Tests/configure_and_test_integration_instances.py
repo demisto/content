@@ -19,7 +19,6 @@ from typing import List, Tuple
 
 import demisto_client
 from demisto_sdk.commands.test_content.constants import SSH_USER
-from ruamel import yaml
 
 from Tests.Marketplace.search_and_install_packs import search_and_install_packs_and_their_dependencies, \
     install_all_content_packs, upload_zipped_packs, install_all_content_packs_for_nightly
