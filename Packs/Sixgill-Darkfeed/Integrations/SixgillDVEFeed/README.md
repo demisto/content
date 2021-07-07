@@ -1,3 +1,4 @@
+Deprecated. Use the Cybersixgill DVE Feed Threat Intelligence integration instead.
 Powered by the broadest automated collection from the deep and dark web, Cybersixgill’s DVE Score is a feed of common known vulnerabilities, scored by their probability of getting exploited. The DVE Score feed enables Cortex XSOAR users to track threats from vulnerabilities that others define as irrelevant, but have a higher probability of being exploited. It is the only solution that predicts the immediate risks of a vulnerability based on threat actors’ intent. 
 
 DVE Score is also the most comprehensive CVE enrichment solution on the market: Cortex XSOAR users gain unparalleled context and can accelerate threat response and decision making, effectively giving security teams a head start on vulnerability management. 
@@ -30,14 +31,14 @@ To obtain access to Cybersixgill DVE Score feed via Cortex XSOAR, please contact
 ## Commands
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
-### sixgill-get-dve-feed
+### cybersixgill-get-indicators
 ***
 Fetching Sixgill DVE Feed indicators
 
 
 #### Base Command
 
-`sixgill-get-dve-feed`
+`cybersixgill-get-indicators`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
