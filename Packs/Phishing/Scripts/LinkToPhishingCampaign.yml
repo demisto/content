@@ -18,7 +18,8 @@ script: |2
   try:
       context = demisto.executeCommand("getContext", {'id': incident_id})
       campaign_incident_id = demisto.get(context[0], "Contents.context.PartOfCampaign")
-      server_url = demisto.executeCommand('GetServerURL',{})[0]["Contents"]
+      urls = demisto.demistoUrls()
+      server_url = urls.get('server', '')
       if campaign_incident_id and campaign_incident_id != "None":
           html = f"""<div style='text-align:center; padding: 40px; font-size:15px; {BLACK_COLOR};'>This incident is part of a <a href="{server_url}/#/Custom/vvoh19d1ue/{campaign_incident_id}">Phishing Campaign #{campaign_incident_id}</a></div>"""
       else:
