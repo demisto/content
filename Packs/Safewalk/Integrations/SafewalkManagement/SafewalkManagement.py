@@ -1,7 +1,7 @@
 import urllib3
 import json
 from typing import Any, Dict
-from CommonServerPython import *
+
 
 
 urllib3.disable_warnings()
@@ -21,11 +21,11 @@ class Client(BaseClient):
         if locked is not None and locked:
             p_locked = '&locked=%s' % "true"
 
-        return json.loads(self._http_request(
+        return self._http_request(
             method='GET',
             url_suffix='/transactionlog/?page=%s%s%s' % (page, p_search, p_locked),
             resp_type='text'
-        ))
+        )
 
     def get_users(self, page, search, locked) -> Dict[str, Any]:
         if page is None:
@@ -39,11 +39,11 @@ class Client(BaseClient):
         if locked is not None and locked:
             p_locked = '&locked=%s' % "true"
 
-        return json.loads(self._http_request(
+        return self._http_request(
             method='GET',
             url_suffix='/userlist/?page=%s%s%s' % (page, p_search, p_locked),
             resp_type='text'
-        ))
+        )
 
     def get_ldap_users(self, page, search, locked, ldap) -> Dict[str, Any]:
         if page is None:
@@ -57,11 +57,11 @@ class Client(BaseClient):
         if locked is not None and locked:
             p_locked = '&locked=%s' % "true"
 
-        return json.loads(self._http_request(
+        return self._http_request(
             method='GET',
             url_suffix='/userlist/%s/?page=%s%s%s' % (ldap, page, p_search, p_locked),
             resp_type='text'
-        ))
+        )
 
     def get_ldaps(self) -> Dict[str, Any]:
         return json.loads(self._http_request(
@@ -71,11 +71,11 @@ class Client(BaseClient):
         ))
 
     def get_user_personalinformation(self, username) -> Dict[str, Any]:
-        return json.loads(self._http_request(
+        return self._http_request(
             method='GET',
             url_suffix='/user/%s/' % username,
             resp_type='text'
-        ))
+        )
 
     def set_user_personalinformation(self, username, email, mobile_phone) -> Dict[str, Any]:
         post_params = {}
@@ -84,120 +84,120 @@ class Client(BaseClient):
         if mobile_phone:
             post_params['mobile_phone'] = mobile_phone
 
-        return json.loads(self._http_request(
+        return self._http_request(
             method='PUT',
             url_suffix='/user/%s/' % username,
             json_data=post_params,
             resp_type='text'
-        ))
+        )
 
     def get_user_accessattempts(self, username) -> Dict[str, Any]:
-        return json.loads(self._http_request(
+        return self._http_request(
             method='GET',
             url_suffix='/user/%s/access_attempt/' % username,
             resp_type='text'
-        ))
+        )
 
     def delete_user_accessattempts(self, username) -> Dict[str, Any]:
-        return json.loads(self._http_request(
+        return self._http_request(
             method='DELETE',
             url_suffix='/user/%s/access_attempt/' % username,
             resp_type='text'
-        ))
+        )
 
     # Get "params" to generalize all token types.
     # Said argument must be a dictionary or json with the data corresponding to the token to be registered
     def create_user_token(self, username, post_params) -> Dict[str, Any]:
-        return json.loads(self._http_request(
+        return self._http_request(
             method='POST',
             url_suffix='/user/%s/devices/' % username,
             json_data=post_params,
             resp_type='text'
-        ))
+        )
 
     def update_user_token(self, username, token_devicetype, token_serialnumber, post_params) -> Dict[str, Any]:
-        return json.loads(self._http_request(
+        return self._http_request(
             method='PUT',
             url_suffix='/user/%s/devices/%s/%s/' % (username, token_devicetype, token_serialnumber),
             json_data=post_params,
             resp_type='text'
-        ))
+        )
 
     def get_user_tokens(self, username) -> Dict[str, Any]:
-        return json.loads(self._http_request(
+        return self._http_request(
             method='GET',
             url_suffix='/user/%s/devices/' % username,
             resp_type='text'
-        ))
+        )
 
     def delete_user_token(self, username, token_devicetype, token_serialnumber) -> Dict[str, Any]:
-        return json.loads(self._http_request(
+        return self._http_request(
             method='DELETE',
             url_suffix='/user/%s/devices/%s/%s/' % (username, token_devicetype, token_serialnumber),
             resp_type='text'
-        ))
+        )
 
     def send_user_token(self, username, token_devicetype, token_serialnumber) -> Dict[str, Any]:
-        return json.loads(self._http_request(
+        return self._http_request(
             method='POST',
             url_suffix='/user/%s/devices/%s/%s/send/' % (username, token_devicetype, token_serialnumber),
             resp_type='text'
-        ))
+        )
 
     def send_user_virtualtoken(self, username, token_devicetype, token_serialnumber) -> Dict[str, Any]:
-        return json.loads(self._http_request(
+        return self._http_request(
             method='POST',
             url_suffix='/devices/%s/%s/code/' % (token_devicetype, token_serialnumber),
             resp_type='text'
-        ))
+        )
 
     def get_user_settings(self, username) -> Dict[str, Any]:
-        return json.loads(self._http_request(
+        return self._http_request(
             method='GET',
             url_suffix='/user/%s/settings/' % username,
             resp_type='text'
-        ))
+        )
 
     # Get "params" to generalize all configuration items.
     # This argument must be a dictionary or json with the items that you want to modify
     def set_user_settings(self, username, post_params) -> Dict[str, Any]:
-        return json.loads(self._http_request(
+        return self._http_request(
             method='PATCH',
             url_suffix='/user/%s/settings/' % username,
             json_data=post_params,
             resp_type='text'
-        ))
+        )
 
     def get_user_group(self, username) -> Dict[str, Any]:
-        return json.loads(self._http_request(
+        return self._http_request(
             method='GET',
             url_suffix='/user/%s/group/' % username,
             resp_type='text'
-        ))
+        )
 
     def add_user_group(self, username, new_group_name) -> Dict[str, Any]:
         post_params = {'username': username}
 
-        return json.loads(self._http_request(
+        return self._http_request(
             method='POST',
             url_suffix='/group/%s/member/' % new_group_name,
             json_data=post_params,
             resp_type='text'
-        ))
+        )
 
     def remove_user_group(self, username, old_group_name) -> Dict[str, Any]:
-        return json.loads(self._http_request(
+        return self._http_request(
             method='DELETE',
             url_suffix='/group/%s/member/%s/' % (old_group_name, username),
             resp_type='text'
-        ))
+        )
 
     def get_user_registrationcode(self, username) -> Dict[str, Any]:
-        return json.loads(self._http_request(
+        return self._http_request(
             method='GET',
             url_suffix='/user/%s/registrationtoken/' % username,
             resp_type='text'
-        ))
+        )
 
     def set_user_registrationcode(self, username, expiration, attempts_left) -> Dict[str, Any]:
 
@@ -210,45 +210,45 @@ class Client(BaseClient):
             'token': ''
         }
 
-        return json.loads(self._http_request(
+        return self._http_request(
             method='POST',
             url_suffix='/user/%s/registrationtoken/' % username,
             json_data=post_params,
             resp_type='text'
-        ))
+        )
 
     def delete_user_registrationcode(self, username) -> Dict[str, Any]:
-        return json.loads(self._http_request(
+        return self._http_request(
             method='DELETE',
             url_suffix='/user/%s/registrationtoken/' % username,
             resp_type='text'
-        ))
+        )
 
     def send_user_registrationcode(self, username) -> Dict[str, Any]:
-        return json.loads(self._http_request(
+        return self._http_request(
             method='POST',
             url_suffix='/user/%s/registrationtoken/send/' % username,
             resp_type='text'
-        ))
+        )
 
     def create_user(self, username, password, firstname, lastname, mobilephone, email):
 
         post_params = {'username': username, 'password': password, 'first_name': firstname,
                        'last_name': lastname, 'mobile_phone': mobilephone, 'email': email}
 
-        return json.loads(self._http_request(
+        return self._http_request(
             method='POST',
             url_suffix='/user/',
             json_data=post_params,
             resp_type='text'
-        ))
+        )
 
     def delete_user(self, username):
-        return json.loads(self._http_request(
+        return self._http_request(
             method='DELETE',
             url_suffix='/user/%s/' % username,
             resp_type='text'
-        ))
+        )
 
 
 def get_transactionlog(client, args):
@@ -257,9 +257,11 @@ def get_transactionlog(client, args):
     locked = args.get('locked')
 
     result_raw = client.get_transactionlog(page, search, locked)
-
-    result = remove_empty_elements(result_raw)
-
+    if result_raw is not None and result_raw != '':
+        result_raw = json.loads(result_raw)
+        result = remove_empty_elements(result_raw)
+    else:
+        result = {}
     readable_output = tableToMarkdown(
         'Get Transaction Log Results',
         result,
@@ -283,9 +285,11 @@ def get_users(client, args):
     locked = args.get('locked')
 
     result_raw = client.get_users(page, search, locked)
-
-    result = remove_empty_elements(result_raw)
-
+    if result_raw is not None and result_raw != '':
+        result_raw = json.loads(result_raw)
+        result = remove_empty_elements(result_raw)
+    else:
+        result = {}
     readable_output = tableToMarkdown(
         'Get User Results',
         result,
@@ -310,9 +314,11 @@ def get_ldap_users(client, args):
     ldap = args.get('ldap')
 
     result_raw = client.get_ldap_users(page, search, locked, ldap)
-
-    result = remove_empty_elements(result_raw)
-
+    if result_raw is not None and result_raw != '':
+        result_raw = json.loads(result_raw)
+        result = remove_empty_elements(result_raw)
+    else:
+        result = {}
     readable_output = tableToMarkdown(
         'Get Ldap users Results',
         result,
@@ -332,9 +338,11 @@ def get_ldap_users(client, args):
 
 def get_ldaps(client, args):
     result_raw = client.get_ldaps()
-
-    result = remove_empty_elements(result_raw)
-
+    if result_raw is not None and result_raw != '':
+        result_raw = json.loads(result_raw)
+        result = remove_empty_elements(result_raw)
+    else:
+        result = {}
     readable_output = tableToMarkdown(
         'Get Ldaps Results',
         result,
@@ -356,9 +364,11 @@ def get_user_personalinformation(client, args):
     username = args.get('username')
 
     result_raw = client.get_user_personalinformation(username)
-
-    result = remove_empty_elements(result_raw)
-
+    if result_raw is not None and result_raw != '':
+        result_raw = json.loads(result_raw)
+        result = remove_empty_elements(result_raw)
+    else:
+        result = {}
     readable_output = tableToMarkdown(
         'Get User Personal Information Results',
         result,
@@ -382,9 +392,11 @@ def set_user_personalinformation(client, args):
     mobile_phone = args.get('mobile_phone')
 
     result_raw = client.set_user_personalinformation(username, email, mobile_phone)
-
-    result = remove_empty_elements(result_raw)
-
+    if result_raw is not None and result_raw != '':
+        result_raw = json.loads(result_raw)
+        result = remove_empty_elements(result_raw)
+    else:
+        result = {}
     readable_output = tableToMarkdown(
         'Set User Personal Information Results',
         result,
@@ -406,9 +418,11 @@ def get_user_accessattempts(client, args):
     username = args.get('username')
 
     result_raw = client.get_user_accessattempts(username)
-
-    result = remove_empty_elements(result_raw)
-
+    if result_raw is not None and result_raw != '':
+        result_raw = json.loads(result_raw)
+        result = remove_empty_elements(result_raw)
+    else:
+        result = {}
     readable_output = tableToMarkdown(
         'Get User Access Attempts Results',
         result,
@@ -430,9 +444,11 @@ def delete_user_accessattempts(client, args):
     username = args.get('username')
 
     result_raw = client.delete_user_accessattempts(username)
-
-    result = remove_empty_elements(result_raw)
-
+    if result_raw is not None and result_raw != '':
+        result_raw = json.loads(result_raw)
+        result = remove_empty_elements(result_raw)
+    else:
+        result = {}
     readable_output = tableToMarkdown(
         'Delete User Access Attempts Results',
         result,
@@ -458,9 +474,11 @@ def create_user_token_virtual(client, args):
     }
 
     result_raw = client.create_user_token(username, post_params)
-
-    result = remove_empty_elements(result_raw)
-
+    if result_raw is not None and result_raw != '':
+        result_raw = json.loads(result_raw)
+        result = remove_empty_elements(result_raw)
+    else:
+        result = {}
     readable_output = tableToMarkdown(
         'Create User Token Virtual Results',
         result,
@@ -488,9 +506,11 @@ def create_user_token_fastauth(client, args):
     }
 
     result_raw = client.create_user_token(username, post_params)
-
-    result = remove_empty_elements(result_raw)
-
+    if result_raw is not None and result_raw != '':
+        result_raw = json.loads(result_raw)
+        result = remove_empty_elements(result_raw)
+    else:
+        result = {}
     readable_output = tableToMarkdown(
         'Create User Token Fast Auth Results',
         result,
@@ -518,9 +538,11 @@ def create_user_token_totpmobile(client, args):
     }
 
     result_raw = client.create_user_token(username, post_params)
-
-    result = remove_empty_elements(result_raw)
-
+    if result_raw is not None and result_raw != '':
+        result_raw = json.loads(result_raw)
+        result = remove_empty_elements(result_raw)
+    else:
+        result = {}
     readable_output = tableToMarkdown(
         'Create User Token Totp Mobile Results',
         result,
@@ -548,9 +570,11 @@ def create_user_token_totmobilehybrid(client, args):
     }
 
     result_raw = client.create_user_token(username, post_params)
-
-    result = remove_empty_elements(result_raw)
-
+    if result_raw is not None and result_raw != '':
+        result_raw = json.loads(result_raw)
+        result = remove_empty_elements(result_raw)
+    else:
+        result = {}
     readable_output = tableToMarkdown(
         'Create User Token Tot Mobile Hybrid Results',
         result,
@@ -578,9 +602,11 @@ def create_user_token_physical(client, args):
     }
 
     result_raw = client.create_user_token(username, post_params)
-
-    result = remove_empty_elements(result_raw)
-
+    if result_raw is not None and result_raw != '':
+        result_raw = json.loads(result_raw)
+        result = remove_empty_elements(result_raw)
+    else:
+        result = {}
     readable_output = tableToMarkdown(
         'Create User Token Physical Results',
         result,
@@ -611,9 +637,11 @@ def create_user_token_backup(client, args):
     }
 
     result_raw = client.create_user_token(username, post_params)
-
-    result = remove_empty_elements(result_raw)
-
+    if result_raw is not None and result_raw != '':
+        result_raw = json.loads(result_raw)
+        result = remove_empty_elements(result_raw)
+    else:
+        result = {}
     readable_output = tableToMarkdown(
         'Create User Token Backup Results',
         result,
@@ -639,9 +667,11 @@ def update_user_token(client, args):
     post_params = args.get('params')
 
     result_raw = client.update_user_token(username, token_devicetype, token_serialnumber, post_params)
-
-    result = remove_empty_elements(result_raw)
-
+    if result_raw is not None and result_raw != '':
+        result_raw = json.loads(result_raw)
+        result = remove_empty_elements(result_raw)
+    else:
+        result = {}
     readable_output = tableToMarkdown(
         'Update User Token Results',
         result,
@@ -663,9 +693,11 @@ def get_user_tokens(client, args):
     username = args.get('username')
 
     result_raw = client.get_user_tokens(username)
-
-    result = remove_empty_elements(result_raw)
-
+    if result_raw is not None and result_raw != '':
+        result_raw = json.loads(result_raw)
+        result = remove_empty_elements(result_raw)
+    else:
+        result = {}
     readable_output = tableToMarkdown(
         'Get User Tokens Results',
         result,
@@ -689,9 +721,11 @@ def delete_user_token(client, args):
     token_serialnumber = args.get('serialnumber')
 
     result_raw = client.delete_user_token(username, token_devicetype, token_serialnumber)
-
-    result = remove_empty_elements(result_raw)
-
+    if result_raw is not None and result_raw != '':
+        result_raw = json.loads(result_raw)
+        result = remove_empty_elements(result_raw)
+    else:
+        result = {}
     readable_output = tableToMarkdown(
         'Delete User Token Results',
         result,
@@ -715,9 +749,11 @@ def send_user_token(client, args):
     token_serialnumber = args.get('serialnumber')
 
     result_raw = client.send_user_token(username, token_devicetype, token_serialnumber)
-
-    result = remove_empty_elements(result_raw)
-
+    if result_raw is not None and result_raw != '':
+        result_raw = json.loads(result_raw)
+        result = remove_empty_elements(result_raw)
+    else:
+        result = {}
     readable_output = tableToMarkdown(
         'Send User Token Results',
         result,
@@ -741,9 +777,11 @@ def send_user_virtualtoken(client, args):
     token_serialnumber = args.get('serialnumber')
 
     result_raw = client.send_user_virtualtoken(username, token_devicetype, token_serialnumber)
-
-    result = remove_empty_elements(result_raw)
-
+    if result_raw is not None and result_raw != '':
+        result_raw = json.loads(result_raw)
+        result = remove_empty_elements(result_raw)
+    else:
+        result = {}
     readable_output = tableToMarkdown(
         'Send User Virtual Token Results',
         result,
@@ -765,9 +803,11 @@ def get_user_settings(client, args):
     username = args.get('username')
 
     result_raw = client.get_user_settings(username)
-
-    result = remove_empty_elements(result_raw)
-
+    if result_raw is not None and result_raw != '':
+        result_raw = json.loads(result_raw)
+        result = remove_empty_elements(result_raw)
+    else:
+        result = {}
     readable_output = tableToMarkdown(
         'Get User Settings Results',
         result,
@@ -803,9 +843,11 @@ def set_user_backuptoken_settings(client, args):
         params['backuptoken_timeout'] = backuptoken_timeout
 
     result_raw = client.set_user_settings(username, params)
-
-    result = remove_empty_elements(result_raw)
-
+    if result_raw is not None and result_raw != '':
+        result_raw = json.loads(result_raw)
+        result = remove_empty_elements(result_raw)
+    else:
+        result = {}
     readable_output = tableToMarkdown(
         'Set User Backup Token Settings Results',
         result,
@@ -833,9 +875,11 @@ def set_user_general_settings(client, args):
         params['user_storage'] = user_storage
 
     result_raw = client.set_user_settings(username, params)
-
-    result = remove_empty_elements(result_raw)
-
+    if result_raw is not None and result_raw != '':
+        result_raw = json.loads(result_raw)
+        result = remove_empty_elements(result_raw)
+    else:
+        result = {}
     readable_output = tableToMarkdown(
         'Set User General Settings Results',
         result,
@@ -881,9 +925,11 @@ def set_user_hotpauthentication_settings(client, args):
 
     if not hotp_flex_pin_password_required:
         params['hotp_flex_pin_password_required'] = hotp_flex_pin_password_required
-
-    result_raw = client.set_user_settings(username, params)
-
+    if result_raw is not None and result_raw != '':
+        result_raw = json.loads(result_raw)
+        result = remove_empty_elements(result_raw)
+    else:
+        result = {}
     result = remove_empty_elements(result_raw)
 
     readable_output = tableToMarkdown(
@@ -921,9 +967,11 @@ def set_user_sesamiauthentication_settings(client, args):
         params['gaia_ttw_level'] = gaia_ttw_level
 
     result_raw = client.set_user_settings(username, params)
-
-    result = remove_empty_elements(result_raw)
-
+    if result_raw is not None and result_raw != '':
+        result_raw = json.loads(result_raw)
+        result = remove_empty_elements(result_raw)
+    else:
+        result = {}
     readable_output = tableToMarkdown(
         'Set User Sesami Authentication Settings Results',
         result,
@@ -975,9 +1023,11 @@ def set_user_totpauthentication_settings(client, args):
         params['totp_mobile_password_required'] = totp_mobile_password_required
 
     result_raw = client.set_user_settings(username, params)
-
-    result = remove_empty_elements(result_raw)
-
+    if result_raw is not None and result_raw != '':
+        result_raw = json.loads(result_raw)
+        result = remove_empty_elements(result_raw)
+    else:
+        result = {}
     readable_output = tableToMarkdown(
         'Set User Totp Authentication Settings Results',
         result,
@@ -1045,9 +1095,11 @@ def set_user_userauthentication_settings(client, args):
         params['dos_tmp_lockdown_time_in_seconds'] = dos_tmp_lockdown_time_in_seconds
 
     result_raw = client.set_user_settings(username, params)
-
-    result = remove_empty_elements(result_raw)
-
+    if result_raw is not None and result_raw != '':
+        result_raw = json.loads(result_raw)
+        result = remove_empty_elements(result_raw)
+    else:
+        result = {}
     readable_output = tableToMarkdown(
         'Set User User Authentication Settings Results',
         result,
@@ -1079,9 +1131,11 @@ def set_user_virtualauthentication_settings(client, args):
         params['virtual_device_gateways'] = virtual_device_gateways
 
     result_raw = client.set_user_settings(username, params)
-
-    result = remove_empty_elements(result_raw)
-
+    if result_raw is not None and result_raw != '':
+        result_raw = json.loads(result_raw)
+        result = remove_empty_elements(result_raw)
+    else:
+        result = {}
     readable_output = tableToMarkdown(
         'Set User Virtual Authentication Settings Results',
         result,
@@ -1103,9 +1157,11 @@ def get_user_group(client, args):
     username = args.get('username')
 
     result_raw = client.get_user_group(username)
-
-    result = remove_empty_elements(result_raw)
-
+    if result_raw is not None and result_raw != '':
+        result_raw = json.loads(result_raw)
+        result = remove_empty_elements(result_raw)
+    else:
+        result = {}
     readable_output = tableToMarkdown(
         'Get User Group Results',
         result,
@@ -1139,9 +1195,11 @@ def update_user_group(client, args):
         client.add_user_group(username, new_group_name)
 
     result = {'message': 'Successfully updated'}
-
-    result = remove_empty_elements(result_raw)
-
+    if result_raw is not None and result_raw != '':
+        result_raw = json.loads(result_raw)
+        result = remove_empty_elements(result_raw)
+    else:
+        result = {}
     readable_output = tableToMarkdown(
         'Update User Group Results',
         result,
@@ -1164,9 +1222,11 @@ def add_user_group(client, args):
     new_group_name = args.get('new-group-name')
 
     result_raw = client.add_user_group(username, new_group_name)
-
-    result = remove_empty_elements(result_raw)
-
+    if result_raw is not None and result_raw != '':
+        result_raw = json.loads(result_raw)
+        result = remove_empty_elements(result_raw)
+    else:
+        result = {}
     readable_output = tableToMarkdown(
         'Add User Group Results',
         result,
@@ -1189,9 +1249,11 @@ def remove_user_group(client, args):
     old_group_name = args.get('old-group-name')
 
     result_raw = client.remove_user_group(username, old_group_name)
-
-    result = remove_empty_elements(result_raw)
-
+    if result_raw is not None and result_raw != '':
+        result_raw = json.loads(result_raw)
+        result = remove_empty_elements(result_raw)
+    else:
+        result = {}
     readable_output = tableToMarkdown(
         'Remove User Group Results',
         result,
@@ -1213,9 +1275,11 @@ def get_user_registrationcode(client, args):
     username = args.get('username')
 
     result_raw = client.get_user_registrationcode(username)
-
-    result = remove_empty_elements(result_raw)
-
+    if result_raw is not None and result_raw != '':
+        result_raw = json.loads(result_raw)
+        result = remove_empty_elements(result_raw)
+    else:
+        result = {}
     readable_output = tableToMarkdown(
         'Get User Registration Code Results',
         result,
@@ -1240,9 +1304,11 @@ def set_user_registrationcode(client, args):
     attempts_left = args.get('attempts-left')
 
     result_raw = client.set_user_registrationcode(username, expiration, attempts_left)
-
-    result = remove_empty_elements(result_raw)
-
+    if result_raw is not None and result_raw != '':
+        result_raw = json.loads(result_raw)
+        result = remove_empty_elements(result_raw)
+    else:
+        result = {}
     readable_output = tableToMarkdown(
         'Set User Registration Code Results',
         result,
@@ -1264,9 +1330,11 @@ def delete_user_registrationcode(client, args):
     username = args.get('username')
 
     result_raw = client.delete_user_registrationcode(username)
-
-    result = remove_empty_elements(result_raw)
-
+    if result_raw is not None and result_raw != '':
+        result_raw = json.loads(result_raw)
+        result = remove_empty_elements(result_raw)
+    else:
+        result = {}
     readable_output = tableToMarkdown(
         'Delete User Registration Code Results',
         result,
@@ -1288,9 +1356,11 @@ def send_user_registrationcode(client, args):
     username = args.get('username')
 
     result_raw = client.send_user_registrationcode(username)
-
-    result = remove_empty_elements(result_raw)
-
+    if result_raw is not None and result_raw != '':
+        result_raw = json.loads(result_raw)
+        result = remove_empty_elements(result_raw)
+    else:
+        result = {}
     readable_output = tableToMarkdown(
         'Send User Registration Code Results',
         result,
@@ -1317,7 +1387,11 @@ def create_user(client, args):
     email = args.get('email')
 
     result_raw = client.create_user(username, password, firstname, lastname, mobilephone, email)
-    result = remove_empty_elements(result_raw)
+    if result_raw is not None and result_raw != '':
+        result_raw = json.loads(result_raw)
+        result = remove_empty_elements(result_raw)
+    else:
+        result = {}
 
     readable_output = tableToMarkdown(
         'Create User Results',
@@ -1340,8 +1414,11 @@ def delete_user(client, args):
     username = args.get('username')
 
     result_raw = client.delete_user(username)
-
-    result = remove_empty_elements(result_raw)
+    if result_raw is not None and result_raw != '':
+        result_raw = json.loads(result_raw)
+        result = remove_empty_elements(result_raw)
+    else:
+        result = {}
 
     readable_output = tableToMarkdown(
         'Delete User Results',
