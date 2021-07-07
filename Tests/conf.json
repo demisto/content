@@ -3411,7 +3411,7 @@
             "context_print_dt": "EDLHey"
         },
         {
-            "integrations": ["OpenCTI Feed", "Demisto REST API"],
+            "integrations": ["OpenCTI Feed 4.X", "Demisto REST API"],
             "playbookID": "Fetch Test",
             "fromversion": "5.5.0"
         }
