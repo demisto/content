@@ -191,7 +191,7 @@ def get_user_command(client, args, mapper_in):
         return iam_user_profile
 
 
-def create_user_command(client, args, mapper_out, is_create_enabled, is_update_enabled):
+def create_user_command(client, args, mapper_out, is_create_enabled, is_update_enabled, is_enable_enabled):
     try:
         user_profile = args.get("user-profile")
         iam_user_profile = IAMUserProfile(user_profile=user_profile)
@@ -207,7 +207,7 @@ def create_user_command(client, args, mapper_out, is_create_enabled, is_update_e
 
             if user_id:
                 create_if_not_exists = False
-                iam_user_profile = update_user_command(client, args, mapper_out, is_update_enabled,
+                iam_user_profile = update_user_command(client, args, mapper_out, is_update_enabled, is_enable_enabled,
                                                        is_create_enabled, create_if_not_exists)
 
             else:
@@ -236,7 +236,8 @@ def create_user_command(client, args, mapper_out, is_create_enabled, is_update_e
         return iam_user_profile
 
 
-def update_user_command(client, args, mapper_out, is_command_enabled, is_create_user_enabled, create_if_not_exists):
+def update_user_command(client, args, mapper_out, is_command_enabled, is_enable_enabled,
+                        is_create_user_enabled, create_if_not_exists):
     try:
         iam_user_profile = IAMUserProfile(user_profile=args.get('user-profile'))
         allow_enable = args.get('allow-enable') == 'true'
@@ -262,7 +263,7 @@ def update_user_command(client, args, mapper_out, is_command_enabled, is_create_
             else:
                 salesforce_user = iam_user_profile.map_object(mapper_name=mapper_out)
                 salesforce_user = {key: value for key, value in salesforce_user.items() if value is not None}
-                if allow_enable:
+                if allow_enable and is_enable_enabled:
                     salesforce_user['IsActive'] = True
 
                 res = client.update_user(user_term=user_id, data=salesforce_user)
@@ -396,6 +397,7 @@ def main():
     is_create_enabled = params.get("create_user_enabled")
     is_update_enabled = demisto.params().get("update_user_enabled")
     is_disable_enabled = demisto.params().get("disable_user_enabled")
+    is_enable_enabled = demisto.params().get("enable_user_enabled")
     create_if_not_exists = demisto.params().get("create_if_not_exists")
 
     LOG(f'Command being called is {command}')
@@ -421,11 +423,12 @@ def main():
             return_results(user_profile)
 
         elif command == 'iam-create-user':
-            user_profile = create_user_command(client, args, mapper_out, is_create_enabled, is_update_enabled)
+            user_profile = create_user_command(client, args, mapper_out, is_create_enabled, is_update_enabled,
+                                               is_enable_enabled)
             return_results(user_profile)
 
         elif command == 'iam-update-user':
-            user_profile = update_user_command(client, args, mapper_out, is_update_enabled,
+            user_profile = update_user_command(client, args, mapper_out, is_update_enabled, is_enable_enabled,
                                                is_create_enabled, create_if_not_exists)
             return_results(user_profile)
 
