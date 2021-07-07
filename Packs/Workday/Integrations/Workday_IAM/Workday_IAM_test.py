@@ -33,7 +33,7 @@ def test_fetch_incidents(mocker):
     mocker.patch.object(demisto, 'mapObject', return_value=mapped_user)
     client = Client(base_url="", verify="verify", headers={}, proxy=False, ok_codes=(200, 204), auth=None)
 
-    fetch_events = fetch_incidents(client, {}, "", "%m/%d/%Y", LAST_DAY_OF_WORK_FIELD, None, None)
+    fetch_events = fetch_incidents(client, {}, "", "%m/%d/%Y", LAST_DAY_OF_WORK_FIELD, None, None, 1)
     assert fetch_events == EVENT_RESULTS
 
 
@@ -54,7 +54,7 @@ def test_fetch_incidents_email_change(requests_mock, mocker):
     mocker.patch.object(demisto, 'mapObject', return_value=mapped_workday_user)
     client = Client(base_url="", verify="verify", headers={}, proxy=False, ok_codes=(200, 204), auth=None)
 
-    fetch_events = fetch_incidents(client, {}, "https://test.com", "%m/%d/%Y", LAST_DAY_OF_WORK_FIELD, None, None)
+    fetch_events = fetch_incidents(client, {}, "https://test.com", "%m/%d/%Y", LAST_DAY_OF_WORK_FIELD, None, None, 1)
     assert fetch_events == event_data
 
 
@@ -76,7 +76,7 @@ def test_fetch_incidents_employee_id_change(requests_mock, mocker):
     client = Client(base_url="", verify="verify", headers={}, proxy=False,
                     ok_codes=(200, 204), auth=None)
 
-    fetch_events = fetch_incidents(client, {}, "https://test.com", "%m/%d/%Y", LAST_DAY_OF_WORK_FIELD, None, None)
+    fetch_events = fetch_incidents(client, {}, "https://test.com", "%m/%d/%Y", LAST_DAY_OF_WORK_FIELD, None, None, 1)
     assert fetch_events == event_data
 
 
@@ -96,7 +96,7 @@ def test_fetch_incidents_orphan_user(requests_mock, mocker):
     client = Client(base_url="", verify="verify", headers={}, proxy=False,
                     ok_codes=(200, 204), auth=None)
 
-    fetch_events = fetch_incidents(client, {}, "https://test.com", "%m/%d/%Y", LAST_DAY_OF_WORK_FIELD, None, None)
+    fetch_events = fetch_incidents(client, {}, "https://test.com", "%m/%d/%Y", LAST_DAY_OF_WORK_FIELD, None, None, 1)
     assert fetch_events == event_data
 
 
