@@ -1,0 +1,22 @@
+{
+    "name": "SecurityScorecard",
+    "description": "Provides security scorecards and alerts for domains.",
+    "support": "partner",
+    "currentVersion": "1.0.0",
+    "author": "Kobbi Gal",
+    "url": "",
+    "email": "kgal@paloaltonetworks.com",
+    "categories": [
+        "Vulnerability Management"
+    ],
+    "tags": [
+        "score",
+        "scorecard",
+        "vulnerability_management"
+    ],
+    "useCases": ["Vulnerability Management"],
+    "keywords": ["securityscorecard", "scorecard", "domain"],
+    "githubUser": [
+        "kgal-pan"
+    ]
+}
