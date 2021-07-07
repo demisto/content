@@ -1782,17 +1782,6 @@ script:
       name: event_id
       required: true
       secret: false
-    - auto: PREDEFINED
-      default: false
-      defaultValue: 'false'
-      description: Whether to endoce the given file to base64 before uploading to MISP.
-      isArray: false
-      name: encode_file
-      predefined:
-      - 'true'
-      - 'false'
-      required: false
-      secret: false
     deprecated: false
     description: Adds an file object to the specified event ID.
     execution: false
