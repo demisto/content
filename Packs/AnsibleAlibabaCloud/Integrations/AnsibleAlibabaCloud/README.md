@@ -10,7 +10,7 @@ To use this integration you must generate an Access/Secret token for your Aliyun
 4. Navigate to [Permmions > Grants](https://ram.console.aliyun.com/permissions)
 4. Grant the service account principal either `AliyunECSFullAccess` or `AliyunECSReadOnlyAccess` permissions. 
 
-## Configure Alibaba Cloud on Cortex XSOAR
+## Configure Ansible Alibaba Cloud on Cortex XSOAR
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
 2. Search for Ansible Alibaba Cloud.
 3. Click **Add instance** to create and configure a new integration instance.
