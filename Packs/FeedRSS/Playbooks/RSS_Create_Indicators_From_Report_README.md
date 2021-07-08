@@ -5,9 +5,13 @@ The playbook:
 2. Creates relationships between the extracted indicators and the report.
 3. Runs enrich indicators command on the extracted indicators. 
 
-Cortex XSOAR recommends that you configure a job to run every 12 hours to execute this playbook. 
+Cortex XSOAR recommends that you configure a job to execute this playbook. 
 
 1. Configure a job that will run the *RSS Create Indicators From Report* playbook. 
+      1. Select the *Triggered by delta in feed* option.
+      2. Select the feed on which to run the job.
+   
+
 2. Configure input to the *RSS Create Indicators From Report* playbook:
    
     - From the context data input: Tag name - the indicator will be tagged with this value when the playbook finishes processing and all the indicators are extracted and relationships created.
@@ -15,6 +19,8 @@ Cortex XSOAR recommends that you configure a job to run every 12 hours to execut
     - From the indicators: Create a query to include only new report indicators that were not processed yet. Recommended query: "type:Report -tags:{Tag name configured from the context data input} -tags:in_process". 
    The playbook tags all indicators with the "in_process" tag when it starts running, and removes the tag when the playbook ends.
    If you want the playbook to run on a specific instance (a specific feed), add the following filter to the query: *sourceInstances:"{the selected instance}"*.
+
+Note that if you selected the *Triggered by delta in feed* option when configuring the Job, the “Run only on new and modified indicators” playbook option is automatically selected.
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.
