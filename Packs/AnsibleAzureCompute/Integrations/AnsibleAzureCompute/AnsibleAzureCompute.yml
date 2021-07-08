@@ -238,7 +238,6 @@ script:
       - incremental
     - description: 'A hash containing the templates inline. This parameter is mutually
         exclusive with `template_link`.
-
         Either `template` or `template_link` is required if `state=present`.'
       isArray: true
       name: template
