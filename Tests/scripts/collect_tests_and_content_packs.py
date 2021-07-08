@@ -1320,6 +1320,8 @@ def create_filter_envs_file(from_version: str, to_version: str, documentation_ch
         'Server 5.0': is_runnable_in_server_version(from_version, '5.0', to_version),
         'Server 6.0': is_runnable_in_server_version(from_version, '6.0', to_version),
         'Server 6.1': is_runnable_in_server_version(from_version, '6.1', to_version),
+        'Server 6.2': is_runnable_in_server_version(from_version, '6.2', to_version),
+
     }
 
     if documentation_changes_only:
@@ -1330,6 +1332,7 @@ def create_filter_envs_file(from_version: str, to_version: str, documentation_ch
             'Server 5.0': False,
             'Server 6.0': False,
             'Server 6.1': False,
+            'Server 6.2': False,
         }
     # Releases are only relevant for non marketplace server versions, therefore - there is no need to create marketplace
     # server in release branches.
