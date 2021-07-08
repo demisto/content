@@ -152,6 +152,7 @@ tasks:
     type: condition
     task:
       id: ac7309d2-6192-4d90-8cfd-8ae52c088fd0
+      description: ""
       version: -1
       name: Is Google Compute integration enabled?
       type: condition
@@ -236,6 +237,7 @@ tasks:
     type: condition
     task:
       id: ed4f90e6-ec75-4404-857b-842736db14c5
+      description: ""
       version: -1
       name: GCP Firewall found?
       type: condition
@@ -339,6 +341,7 @@ tasks:
     type: regular
     task:
       id: c3513bb0-1f02-436e-829f-5b1d1c3fa910
+      description: ""
       version: -1
       name: Engineer - Fix Firewall Name and rerun
       type: regular
