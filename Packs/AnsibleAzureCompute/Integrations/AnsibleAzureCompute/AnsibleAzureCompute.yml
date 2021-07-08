@@ -218,11 +218,10 @@ script:
       name: resource_group
       required: true
     - defaultValue: ansible-arm
-      description: 'The name of the deployment to be tracked in the resource group
+      description: "The name of the deployment to be tracked in the resource group
         deployment history.
-
         Re-using a deployment name will overwrite the previous value in the resource
-        group''s deployment history.'
+        group's deployment history."
       name: name
     - defaultValue: westus
       description: The geo-locations in which the resource group will be located.
