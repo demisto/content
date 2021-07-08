@@ -1,5 +1,0 @@
-[file:SecurityScorecard.yml]
-ignore:IN124
-
-[file:layoutscontainer-SecurityScorecard_Alert_Layout.json]
-ignore:ST110
