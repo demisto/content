@@ -37,7 +37,7 @@ class Client(BaseClient):
         """Performs basic GET request to check if the API is reachable and authentication is successful.
 
         Returns:
-            Response json.
+            Response json
         """
         return self.query(section='IPv4', argument='8.8.8.8')
 
