@@ -1108,8 +1108,7 @@ class Pack(object):
 
         Args:
             release_notes_dir (str): the path to the release notes dir
-            latest_rn_version (LooseVersion): the last version of release notes in the pack,
-             including the currently changed files
+            latest_rn_version (LooseVersion): the last version of release notes in the pack.
             changelog (dict): the changelog from the production bucket.
             modified_rn_files (list): a list of the rn files that were modified according to the last commit in
              'filename.md' format.
