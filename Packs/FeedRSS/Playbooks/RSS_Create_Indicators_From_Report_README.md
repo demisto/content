@@ -1,7 +1,7 @@
 The RSS Feed integration provides information for the *RSS Create Indicators From Report* playbook.
 
 The playbook:
-1. Extracts indicators from article content.
+1. Extracts indicators from Threat intel reports.
 2. Creates relationships between the extracted indicators and the report.
 3. Runs enrich indicators command on the extracted indicators. 
 
