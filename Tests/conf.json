@@ -3503,7 +3503,8 @@
         "FireEyeNX-Test": "Issue 33216",
         "Microsoft Teams - Test": "Issue 38263",
         "QualysVulnerabilityManagement-Test": "Issue 38640",
-        "test playbook - QRadarCorrelations": "Issue 38639"
+        "test playbook - QRadarCorrelations": "Issue 38639",
+        "EDL Performance Test": "Issue 38979"
     },
     "skipped_integrations": {
 
