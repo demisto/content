@@ -501,7 +501,7 @@ def set_internal_networks():
         }
     )
 
-    r = send_request('PUT', '/rest/v1/internal_networks', target_org=target_org, json=networks)
+    send_request('PUT', '/rest/v1/internal_networks', target_org=target_org, json=networks)
 
     return cidr, notes
 
