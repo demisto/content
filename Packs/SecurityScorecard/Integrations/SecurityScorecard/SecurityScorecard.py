@@ -4,7 +4,7 @@ from CommonServerPython import *
 import requests
 import traceback
 from typing import Dict, Any
-from datetime import datetime, timedelta
+from datetime import datetime
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -36,8 +36,8 @@ class Client(BaseClient):
         )
 
     def get_companies_in_portfolio(
-        self, 
-        portfolio: str, 
+        self,
+        portfolio: str,
         grade: Optional[str],
         industry: Optional[str],
         vulnerability: Optional[str],
@@ -49,16 +49,12 @@ class Client(BaseClient):
 
         if grade:
             request_params['grade'] = grade
-        
         if industry:
             request_params['industry'] = str.upper(industry)
-
         if vulnerability:
             request_params['vulnerability'] = vulnerability
-        
         if issue_type:
             request_params['issue_type'] = issue_type
-        
         if had_breach_within_last_days:
             request_params['had_breach_within_last_days'] = had_breach_within_last_days
 
@@ -108,24 +104,18 @@ class Client(BaseClient):
         return self._http_request(
             'GET',
             url_suffix='companies/{0}/history/score'.format(domain),
-            params=request_params
-        )
-    
+            params=request_params)
+
     def get_company_historical_factor_scores(self, domain: str, _from: str, to: str, timing: str) -> List[Dict[str, Any]]:
 
         request_params: Dict[str, Any] = {}
 
         if _from:
             request_params['from'] = _from
-
         if to:
             request_params['to'] = to
-
         if timing:
             request_params['timing'] = timing
-        # # API by default is set to daily
-        # else:
-        #     request_params['timing'] = 'daily'
 
         return self._http_request(
             'GET',
@@ -133,7 +123,13 @@ class Client(BaseClient):
             params=request_params
         )
 
-    def create_grade_change_alert(self, email: str, change_direction: str, score_types: List[str], target: List[str]) -> List[Dict[str, Any]]:
+    def create_grade_change_alert(
+        self,
+        email: str,
+        change_direction: str,
+        score_types: List[str],
+        target: List[str]
+    ) -> List[Dict[str, Any]]:
 
         payload = {}
         if change_direction:
@@ -150,8 +146,15 @@ class Client(BaseClient):
             url_suffix="users/by-username/{0}/alerts/grade".format(email),
             json_data=payload
         )
-    
-    def create_score_threshold_alert(self, email: str, change_direction: str, threshold: int, score_types: List[str], target: List[str]) -> List[Dict[str, Any]]:
+
+    def create_score_threshold_alert(
+        self,
+        email: str,
+        change_direction: str,
+        threshold: int,
+        score_types: List[str],
+        target: List[str]
+    ) -> List[Dict[str, Any]]:
 
         payload = {}
         if change_direction:
@@ -171,7 +174,7 @@ class Client(BaseClient):
             url_suffix="users/by-username/{0}/alerts/score".format(email),
             json_data=payload
         )
-        
+
     def delete_alert(self, email: str, alert_id: str, alert_type: str) -> List[Dict[str, Any]]:
 
         return self._http_request(
@@ -183,7 +186,7 @@ class Client(BaseClient):
     def get_alerts_last_week(self, email: str, portfolio_id: Optional[str]) -> List[Dict[str, Any]]:
 
         query_params = {}
-        
+
         if portfolio_id:
             query_params["portfolio"] = portfolio_id
 
@@ -201,11 +204,11 @@ class Client(BaseClient):
         )
 
     def fetch_alerts(self, username: str, page_size: int):
-        
+
         query_params = {}
 
         query_params["username"] = username
-        query_params["page_size"] = page_size 
+        query_params["page_size"] = page_size
 
         # Default parameters to sort by descending date
         # ?sort=date&order=desc&
@@ -224,13 +227,19 @@ class Client(BaseClient):
         try:
             json_resp = res.json()
             requested_portfolio = json_resp.get("error").get("data").get("portfoliosRequested")[0]
-            return_error("Portfolio {0} doesn't exist. Please run !securityscorecard-portfolios-list to see available Portfolios and try again.".format(requested_portfolio))
-        except Exception:  
+            error_message = """
+                "Portfolio {0} doesn't exist.
+                 Please run !securityscorecard-portfolios-list to see available Portfolios
+                 and try again.
+            """.format(requested_portfolio)
+
+            return_error(error_message)
+        except Exception:
             raise DemistoException("Response error is invalid JSON.")
 
-        
 
 """ HELPER FUNCTIONS """
+
 
 def is_valid_domain(domain: str):
 
@@ -240,7 +249,7 @@ def is_valid_domain(domain: str):
 
     p = re.compile(regex)
 
-    if domain == None:
+    if domain is None:
         return False
 
     if re.search(p, domain):
@@ -248,16 +257,18 @@ def is_valid_domain(domain: str):
     else:
         return False
 
+
 def is_email_valid(email: str):
 
-    if email == None:
+    if email is None:
         return False
 
     if(re.match(emailRegex, email)):
         return True
- 
+
     else:
         return False
+
 
 def incidents_to_import(alerts: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
 
@@ -267,7 +278,7 @@ def incidents_to_import(alerts: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
     Function will only be called if the SecurityScorecard API returns more than one alert.
 
     :type ``events``: ``List[Dict[str, Any]]``
-    
+
     :return
         Events to import
 
@@ -289,7 +300,7 @@ def incidents_to_import(alerts: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
             days_ago_str = days_ago_arg
 
         fetch_days_ago = arg_to_datetime(days_ago_str, arg_name="first_fetch", required=False)
-        demisto.debug("Didn't find getLastRun in integration context, using parameter 'first_fetch' value '{0}' instead".format(days_ago_arg)) 
+        demisto.debug("getLastRun is None in integration context, using parameter 'first_fetch' value '{0}'".format(days_ago_arg))
         demisto.debug("{0} => {1}".format(days_ago_str, fetch_days_ago))
 
         last_run = int(fetch_days_ago.timestamp())
@@ -303,33 +314,37 @@ def incidents_to_import(alerts: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
     # Check if there are more than 0 alerts
     if alerts_returned > 0:
 
-        # The alerts are sorted by descending date so first alert is the most recent 
+        # The alerts are sorted by descending date so first alert is the most recent
         most_recent_alert = alerts[0]
 
-        most_recent_alert_timestamp = int(datetime.strptime(most_recent_alert.get("created_at"), SECURITYSCORECARD_DATE_FORMAT).timestamp())
+        most_recent_alert_timestamp = \
+            int(datetime.strptime(most_recent_alert.get("created_at"), SECURITYSCORECARD_DATE_FORMAT).timestamp())
         demisto.debug("Setting last runtime as alert most recent timestamp: {0}".format(most_recent_alert_timestamp))
         demisto.setLastRun({
             'last_run': most_recent_alert_timestamp
         })
-        
+
         for alert in alerts:
 
             alert_timestamp = int(datetime.strptime(alert.get("created_at"), SECURITYSCORECARD_DATE_FORMAT).timestamp())
 
             alert_id = alert.get("id")
-            
-            demisto.debug("last_run: {0}, alert_timestamp: {1}, should import alert '{2}'? (last_run < alert_timestamp): {3}".format(last_run, alert_timestamp, alert_id, (last_run < alert_timestamp)))
+
+            debug_msg = """
+            last_run: {0}, alert_timestamp: {1}, should import alert '{2}'? (last_run < alert_timestamp): {3}
+            """.format(last_run, alert_timestamp, alert_id, (last_run < alert_timestamp))
+            demisto.debug(debug_msg)
 
             if alert_timestamp > last_run:
                 incident = {}
                 incident["name"] = "SecurityScorecard '{0}' Incident".format(alert.get("change_type"))
-                incident["occurred"] = datetime.strptime(alert.get("created_at"), SECURITYSCORECARD_DATE_FORMAT).strftime(DATE_FORMAT)
+                incident["occurred"] = \
+                    datetime.strptime(alert.get("created_at"), SECURITYSCORECARD_DATE_FORMAT).strftime(DATE_FORMAT)
                 incident["rawJSON"] = json.dumps(alert)
                 incidents_to_import.append(incident)
     # If there are no alerts then we can't use the most recent alert timestamp
     # So we'll use now as the last run timestamp
     else:
-		
         now = int(datetime.utcnow().timestamp())
         demisto.debug("No alerts retrieved, setting last_run to now ({0})".format(now))
         demisto.setLastRun({
@@ -338,21 +353,25 @@ def incidents_to_import(alerts: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
 
     return incidents_to_import
 
+
 def is_date_valid(date: str):
     """
-    The method checks whether the date supplied is valid. 
+    The method checks whether the date supplied is valid.
     The SecurityScorecard API requires the date to be in YYYY-MM-DD format.
     """
     regex = r'[1-3]\d{3}-(0[1-9]|1[0-2])-(0[1-9]|1[0-9]|2[0-9]|3[0-1])'
 
-    if date == None:
+    if date is None:
         return True
 
     if(re.match(regex, date)):
         return True
     else:
         return False
+
+
 """ COMMAND FUNCTIONS """
+
 
 def test_module(client: Client) -> str:
     """Tests API connectivity and authentication'
@@ -369,13 +388,10 @@ def test_module(client: Client) -> str:
     """
 
     message: str = ''
-
-
     try:
         client.fetch_alerts(
             username=demisto.params().get('username').get("identifier"),
-            page_size=1
-        )
+            page_size=1)
         message = 'ok'
     except DemistoException as e:
         if 'Unauthorized' in str(e):
@@ -384,19 +400,21 @@ def test_module(client: Client) -> str:
             raise e
     return message
 
-#region Methods
-#---------------
+# region Methods
+# ---------------
+
+
 def securityscorecard_portfolios_list_command(client: Client) -> CommandResults:
     """`securityscorecard_portfolios_list_command`: List all Portfolios you have access to.
 
     See https://securityscorecard.readme.io/reference#get_portfolios
-	
-	:type ``client``: ``Client``
-		
-	:return:
-		A ``CommandResults`` object that is passed to ``return_results``
-	:rtype: ``CommandResults``
-	"""
+
+    :type ``client``: ``Client``
+
+    :return:
+        A ``CommandResults`` object that is passed to ``return_results``
+    :rtype: ``CommandResults``
+    """
 
     portfolios = client.get_portfolios()
 
@@ -418,24 +436,28 @@ def securityscorecard_portfolios_list_command(client: Client) -> CommandResults:
 
     return_results(results)
 
+
 def securityscorecard_portfolio_list_companies_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     """`securityscorecard_portfolio_list_companies_command`: Retrieve all companies in portfolio.
-	
+
     https://securityscorecard.readme.io/reference#get_portfolios-portfolio-id-companies
 
-	:type ``client``: ``Client``
-	:type `` args``: ``Dict[str, Any]``
-		``args['portfolio_id']``: Portfolio ID. A list of Portfolio IDs can be retrieved using the `!securityscorecard-portfolios-list` command., type ``String``
-		``args['grade']``: Grade filter. The acceptable values are capitalized letters between A-F, e.g. B., type ``String``
-		``args['industry']``: Industry filter. The acceptable values are capitalized, e.g. INFORMATION_SERVICES, TECHNOLOGY., type ``String``
-		``args['vulnerability']``: Vulnerability filter, type ``String``
-		``args['issue_type']``: Issue type filter. TODO, need to list all possible values, can be found in active findings API., type ``String``
-		``args['had_breach_within_last_days']``: Domains with breaches in the last X days. Possible values are numbers, e.g. 1000., type ``Number``
-		
-	:return:
-		A ``CommandResults`` object that is passed to ``return_results``
-	:rtype: ``CommandResults``
-	"""
+    :type ``client``: ``Client``
+    :type `` args``: ``Dict[str, Any]``
+        ``args['portfolio_id']``: Portfolio ID.
+            A list of Portfolio IDs can be retrieved using the `!securityscorecard-portfolios-list` command., type ``String``
+        ``args['grade']``: Grade filter. The acceptable values are capitalized letters between A-F, e.g. B., type ``String``
+        ``args['industry']``: Industry filter.
+            The acceptable values are capitalized, e.g. INFORMATION_SERVICES, TECHNOLOGY., type ``String``
+        ``args['vulnerability']``: Vulnerability filter, type ``String``
+        ``args['issue_type']``: Issue type filter, type ``String``
+        ``args['had_breach_within_last_days']``:
+            Domains with breaches in the last X days. Possible values are numbers, e.g. 1000., type ``Number``
+
+    :return:
+        A ``CommandResults`` object that is passed to ``return_results``
+    :rtype: ``CommandResults``
+    """
 
     demisto.debug("securityscorecard_portfolio_list_companies_command called with args: {0}".format(args))
 
@@ -455,12 +477,12 @@ def securityscorecard_portfolio_list_companies_command(client: Client, args: Dic
         industry = None
 
     vulnerability = args.get('vulnerability')
-    
+
     issue_type = args.get('issue_type')
 
     had_breach_within_last_days = arg_to_number(
-        arg=args.get('had_breach_within_last_days'), 
-        arg_name='had_breach_within_last_days', 
+        arg=args.get('had_breach_within_last_days'),
+        arg_name='had_breach_within_last_days',
         required=False
     )
 
@@ -473,11 +495,6 @@ def securityscorecard_portfolio_list_companies_command(client: Client, args: Dic
         had_breach_within_last_days=had_breach_within_last_days
     )
 
-
-    # TODO handle 404 when supplied portfolio not found
-    # Error in API call [404] - Not Found
-    # {"error": {"message": "portfolio not found", "statusCode": 404, "data": {"portfoliosRequested": ["60b7e8ea8242c000b8000001"], "portfoliosWithAccess": [], "portfoliosWithoutAccess": [], "portfoliosNotFound": ["60b7e8ea8242c000b8000001"]}}}
-
     # Check if the portfolio has more than 1 company
     # Throw warning to UI if there are no companies
 
@@ -489,7 +506,11 @@ def securityscorecard_portfolio_list_companies_command(client: Client, args: Dic
     companies = response.get('entries')
 
     markdown = "**{0}** companies found in Portfolio {1}\n".format(total_portfolios, portfolio_id)
-    markdown += tableToMarkdown("Companies in Portfolio {0}".format(portfolio_id), companies, headers=['domain', 'name', 'score', 'last30days_score_change', 'industry', 'size'])
+    markdown += tableToMarkdown(
+        "Companies in Portfolio {0}".format(portfolio_id),
+        companies,
+        headers=['domain', 'name', 'score', 'last30days_score_change', 'industry', 'size']
+    )
 
     results = CommandResults(
         "SecurityScorecard.Company",
@@ -499,19 +520,20 @@ def securityscorecard_portfolio_list_companies_command(client: Client, args: Dic
 
     return_results(results)
 
+
 def securityscorecard_company_score_get_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     """securityscorecard_company_score_get_command: Retrieve company overall score.
 
-    See 
-	
-	:type ``client``: ``Client``
-	:type `` args``: ``Dict[str, Any]``
-		``args['domain']``: Company domain, e.g. google.com, type ``String``
-		
-	:return:
-		A ``CommandResults`` object that is passed to ``return_results``
-	:rtype: ``CommandResults``
-	"""
+    See https://securityscorecard.readme.io/reference#get_companies-scorecard-identifier-factors
+
+    :type ``client``: ``Client``
+    :type `` args``: ``Dict[str, Any]``
+        ``args['domain']``: Company domain, e.g. google.com, type ``String``
+
+    :return:
+        A ``CommandResults`` object that is passed to ``return_results``
+    :rtype: ``CommandResults``
+    """
 
     domain = args.get('domain')
 
@@ -519,9 +541,13 @@ def securityscorecard_company_score_get_command(client: Client, args: Dict[str, 
 
         score = client.get_company_score(domain=domain)
         score["domain"] = "[{0}](https://{0})".format(domain)
-        score["industry"] =  score.get("industry").title().replace("_", " ")
+        score["industry"] = score.get("industry").title().replace("_", " ")
 
-        markdown = tableToMarkdown("Domain {0} Scorecard".format(domain), score, headers=['name','domain', 'grade', 'score', 'industry', 'last30day_score_change', 'size'])
+        markdown = tableToMarkdown(
+            "Domain {0} Scorecard".format(domain),
+            score,
+            headers=['name', 'domain', 'grade', 'score', 'industry', 'last30day_score_change', 'size']
+        )
 
         results = CommandResults(
             readable_output=markdown,
@@ -533,28 +559,30 @@ def securityscorecard_company_score_get_command(client: Client, args: Dict[str, 
 
     else:
         return_error("The domain '{0}' is invalid. Please try a different domain, e.g. google.com".format(domain))
-    
+
+
 def securityscorecard_company_factor_score_get_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-    
     """`securityscorecard_company_factor_score_get_command`: Retrieve company factor score and scores
-	
+
     See https://securityscorecard.readme.io/reference#get_companies-scorecard-identifier-factors
 
-	:type ``client``: ``Client``
-	:type `` args``: ``Dict[str, Any]``
-		``args['domain']``: Company domain., type ``String``
-		``args['severity_in']``: Issue severity filter. Optional values can be positive, info, low, medium, high. Can be comma-separated list, e.g. 'medium,high,positive', type ``array``
-		
-	:return:
-		A ``CommandResults`` object that is passed to ``return_results``
-	:rtype: ``CommandResults``
-	"""
+    :type ``client``: ``Client``
+    :type `` args``: ``Dict[str, Any]``
+        ``args['domain']``: Company domain., type ``String``
+        ``args['severity_in']``: Issue severity filter.
+        Optional values can be positive, info, low, medium, high.
+        Can be comma-separated list, e.g. 'medium,high,positive', type ``array``
+
+    :return:
+        A ``CommandResults`` object that is passed to ``return_results``
+    :rtype: ``CommandResults``
+    """
 
     domain = args.get('domain')
     severity_in = args.get('severity_in')
 
     response = client.get_company_factor_score(domain, severity_in)
-    
+
     demisto.debug("factor score response: {0}".format(response))
     entries = response.get('entries')
 
@@ -568,7 +596,11 @@ def securityscorecard_company_factor_score_get_command(client: Client, args: Dic
         score["Issue Details"] = entry.get("issue_summary")
         factor_scores.append(score)
 
-    markdown = tableToMarkdown("Domain [{0}](https://{0}) Scorecard".format(domain), factor_scores, headers=['Name', 'Grade', 'Score', 'Issues'])
+    markdown = tableToMarkdown(
+        "Domain [{0}](https://{0}) Scorecard".format(domain),
+        factor_scores,
+        headers=['Name', 'Grade', 'Score', 'Issues']
+    )
 
     results = CommandResults(
         readable_output=markdown,
@@ -578,24 +610,25 @@ def securityscorecard_company_factor_score_get_command(client: Client, args: Dic
 
     return_results(results)
 
+
 def securityscorecard_company_history_score_get_command(client: Client, args: Dict[str, Any]) -> CommandResults:
 
     """securityscorecard_company_history_score_get_command: Retrieve company historical scores
-	
+
     See https://securityscorecard.readme.io/reference#get_companies-scorecard-identifier-history-score
 
-	:type ``client``: ``Client``
-	:type `` args``: ``Dict[str, Any]``
-		``args['domain']``: Company domain, e.g. google.com, type ``String``.
-		``args['from']``: Initial date for historical data. Value should be in format `YYYY-MM-DD`, type ``Date``.
-		``args['to']``: Initial date for historical data. Value should be in format `YYYY-MM-DD`, type ``Date``.
+    :type ``client``: ``Client``
+    :type `` args``: ``Dict[str, Any]``
+        ``args['domain']``: Company domain, e.g. google.com, type ``String``.
+        ``args['from']``: Initial date for historical data. Value should be in format `YYYY-MM-DD`, type ``Date``.
+        ``args['to']``: Initial date for historical data. Value should be in format `YYYY-MM-DD`, type ``Date``.
             By default, if `from` and `to` are not supplied, the API will return 1 year back.
-		``args['timing']``: Timing granularity. Acceptable values are `weekly` or `daily`, type ``String``, Default: `daily`.
-		
-	:return:
-		A ``CommandResults`` object that is passed to ``return_results``
-	:rtype: ``CommandResults``
-	"""
+        ``args['timing']``: Timing granularity. Acceptable values are `weekly` or `daily`, type ``String``, Default: `daily`.
+
+    :return:
+        A ``CommandResults`` object that is passed to ``return_results``
+    :rtype: ``CommandResults``
+    """
 
     domain = args.get('domain')
 
@@ -605,26 +638,38 @@ def securityscorecard_company_history_score_get_command(client: Client, args: Di
         to = args.get('to')
 
         if not is_date_valid(_from):
-            return_error("Date format for 'from' argument '{0}' is not valid. The valid form is YYYY-MM-DD, e.g. 2021-01-01, 2021-12-31".format(_from))
+            return_error(
+                """
+                Date format for 'from' argument '{0}' is not valid.
+                The valid form is YYYY-MM-DD, e.g. 2021-01-01, 2021-12-31
+                """.format(_from)
+            )
 
         if not is_date_valid(to):
-            return_error("Date format for 'to' argument '{0}' is not valid. The valid form is YYYY-MM-DD, e.g. 2021-01-01, 2021-12-31".format(to))
+            return_error(
+                """
+                Date format for 'to' argument '{0}' is not valid.
+                The valid form is YYYY-MM-DD, e.g. 2021-01-01, 2021-12-31
+                """.format(to)
+            )
 
-        if _from != None and to != None and _from > to:
+        if _from is not None and to is not None and _from > to:
             return_error("Invalid time range. The 'from' date '{0}' is after the 'to' date '{1}'".format(_from, to))
 
         timing = args.get('timing')
 
         demisto.debug("Arguments: {0}".format(args))
         response = client.get_company_historical_scores(domain=domain, _from=_from, to=to, timing=timing)
-        
-        demisto.debug("API response: {0}".format(response))
 
-        
+        demisto.debug("API response: {0}".format(response))
 
         entries = response.get('entries')
 
-        markdown = tableToMarkdown("Historical Scores for Domain [`{0}`](https://{0})".format(domain), entries, headers=['date', 'score'])
+        markdown = tableToMarkdown(
+            "Historical Scores for Domain [`{0}`](https://{0})".format(domain),
+            entries,
+            headers=['date', 'score']
+        )
 
         results = CommandResults(
             readable_output=markdown,
@@ -637,46 +682,60 @@ def securityscorecard_company_history_score_get_command(client: Client, args: Di
     else:
         return_error("The domain '{0}' is invalid. Please try a different domain, e.g. google.com".format(domain))
 
+
 def securityscorecard_company_history_factor_score_get_command(client: Client, args: Dict[str, Any]) -> CommandResults:
 
     """`securityscorecard_company_history_factor_score_get_command`: Retrieve company historical factor scores
-	
+
     See https://securityscorecard.readme.io/reference#get_companies-scorecard-identifier-history-factors-score
 
-	:type ``client``: ``Client``
-	:type `` args``: ``Dict[str, Any]``
-		``args['domain']``: Company domain, e.g. google.com, type ``String``.
-		``args['from']``: Initial date for historical data. Value should be in format `YYYY-MM-DD`, type ``Date``.
-		``args['to']``: Initial date for historical data. Value should be in format `YYYY-MM-DD`, type ``Date``.
+    :type ``client``: ``Client``
+    :type `` args``: ``Dict[str, Any]``
+        ``args['domain']``: Company domain, e.g. google.com, type ``String``.
+        ``args['from']``: Initial date for historical data. Value should be in format `YYYY-MM-DD`, type ``Date``.
+        ``args['to']``: Initial date for historical data. Value should be in format `YYYY-MM-DD`, type ``Date``.
             By default, if `from` and `to` are not supplied, the API will return 1 year back.
-		``args['timing']``: Timing granularity. date granularity, it could be "daily" (default), "weekly" or "monthly", type ``String``, Default: `daily`.
-		
-	:return:
-		A ``CommandResults`` object that is passed to ``return_results``
-	:rtype: ``CommandResults``
-	"""
+        ``args['timing']``: Timing granularity.
+        date granularity, it could be "daily" (default), "weekly" or "monthly", type ``String``, Default: `daily`.
+
+    :return:
+        A ``CommandResults`` object that is passed to ``return_results``
+    :rtype: ``CommandResults``
+    """
 
     domain = args.get('domain')
 
     if is_valid_domain(domain):
-        
+
         _from = args.get('from')
         to = args.get('to')
 
         if not is_date_valid(_from):
-            return_error("Date format for 'from' argument '{0}' is not valid. The valid form is YYYY-MM-DD, e.g. 2021-01-01, 2021-12-31".format(_from))
+            return_error(
+                """
+                Date format for 'from' argument '{0}' is not valid.
+                The valid form is YYYY-MM-DD,
+                e.g. 2021-01-01, 2021-12-31
+                """.format(_from)
+            )
 
         if not is_date_valid(to):
-            return_error("Date format for 'to' argument '{0}' is not valid. The valid form is YYYY-MM-DD, e.g. 2021-01-01, 2021-12-31".format(to))
+            return_error(
+                """
+                Date format for 'to' argument '{0}' is not valid.
+                The valid form is YYYY-MM-DD,
+                e.g. 2021-01-01, 2021-12-31
+                """.format(to)
+            )
 
-        if _from != None and to != None and _from > to:
+        if _from is not None and to is not None and _from > to:
             return_error("Invalid time range. The 'from' date '{0}' is after the 'to' date '{1}'".format(_from, to))
 
         timing = args.get('timing')
 
         demisto.debug("Arguments: {0}".format(args))
         response = client.get_company_historical_factor_scores(domain=domain, _from=_from, to=to, timing=timing)
-        
+
         demisto.debug("API response: {0}".format(response))
 
         entries = response.get('entries')
@@ -694,7 +753,7 @@ def securityscorecard_company_history_factor_score_get_command(client: Client, a
                 factor_score = factor.get("score")
 
                 factor_row = factor_row + "{0}: {1}\n".format(factor_name, factor_score)
-            
+
             f["Factors"] = factor_row
             factor_scores.append(f)
 
@@ -709,25 +768,44 @@ def securityscorecard_company_history_factor_score_get_command(client: Client, a
         )
 
         return_results(results)
-    else: 
+    else:
         return_error("The domain '{0}' is invalid. Please try a different domain, e.g. google.com".format(domain))
 
+
 def securityscorecard_alert_grade_change_create_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-	
+
     """securityscorecard_alert_grade_change_create_command: Create alert based on grade
-	
+
     See https://securityscorecard.readme.io/reference#post_users-by-username-username-alerts-grade
 
-	:type ``client``: ``Client``
-	:type `` args``: ``Dict[str, Any]``
-		``args['change_direction']``: Direction of change. Possible values are 'rises' or 'drops'., type ``String``
-		``args['score_types']``: Types of risk factors to monitor. Possible values are 'overall', 'any_factor_score', 'network_security', 'dns_health', 'patching_cadence', 'endpoint_security', 'ip_reputation', 'application_security', 'cubit_score', 'hacker_chatter', 'leaked_information', 'social_engineering'. For multiple factors, ['leaked_information', 'social_engineering'], type ``array``
-		``args['target']``: What do you want to monitor with this alert. It could be one of the following 'my_scorecard', 'any_followed_company' or an array of portfolio IDs, e.g. ['60c78cc2d63162001a68c2b8', '60c8c5f9139e40001908c6a4'] or ['60c78cc2d63162001a68c2b8', 'my_portfolio'], type ``array``
-		
-	:return:
-		A ``CommandResults`` object that is passed to ``return_results``
-	:rtype: ``CommandResults``
-	"""
+    :type ``client``: ``Client``
+    :type `` args``: ``Dict[str, Any]``
+        ``args['change_direction']``: Direction of change. Possible values are 'rises' or 'drops'., type ``String``
+        ``args['score_types']``: Types of risk factors to monitor.
+        Possible values are:
+        'overall',
+        'any_factor_score',
+        'network_security',
+        'dns_health',
+        'patching_cadence',
+        'endpoint_security',
+        'ip_reputation',
+        'application_security',
+        'cubit_score',
+        'hacker_chatter',
+        'leaked_information',
+        'social_engineering'. For multiple factors, ['leaked_information', 'social_engineering'], type ``array``
+        ``args['target']``: What do you want to monitor with this alert.
+        It could be one of the following:
+        'my_scorecard',
+        'any_followed_company' or an array of portfolio IDs,
+        e.g. ['60c78cc2d63162001a68c2b8', '60c8c5f9139e40001908c6a4'] or
+        ['60c78cc2d63162001a68c2b8', 'my_portfolio'], type ``array``
+
+    :return:
+        A ``CommandResults`` object that is passed to ``return_results``
+    :rtype: ``CommandResults``
+    """
 
     email = demisto.params().get('username').get("identifier")
 
@@ -735,37 +813,64 @@ def securityscorecard_alert_grade_change_create_command(client: Client, args: Di
         change_direction = args.get('change_direction')
         score_types = argToList(args.get('score_types'))
         target = argToList(args.get('target'))
-        
+
         demisto.debug("Attempting to create alert with body {0}".format(args))
-        response = client.create_grade_change_alert(email=email, change_direction=change_direction, score_types=score_types, target=target)
+        response = client.create_grade_change_alert(
+            email=email,
+            change_direction=change_direction,
+            score_types=score_types,
+            target=target
+        )
         demisto.debug("Response received: {0}".format(response))
         alert_id = response.get("id")
 
         markdown = "Alert **{0}** created".format(alert_id)
 
-        results = CommandResults(readable_output=markdown, outputs_prefix="SecurityScorecard.GradeChangeAlert.id", outputs=alert_id)
+        results = CommandResults(
+            readable_output=markdown,
+            outputs_prefix="SecurityScorecard.GradeChangeAlert.id",
+            outputs=alert_id
+        )
 
         return_results(results)
-    
+
     else:
         return_error("Email address '{0}' is invalid. Please try a different email address.".format(email))
+
 
 def securityscorecard_alert_score_threshold_create_command(client: Client, args: Dict[str, Any]) -> CommandResults:
 
     """securityscorecard_alert_score_threshold_create_command: Create alert based threshold met
-	
-	:type ``client``: ``Client``
-	:type `` args``: ``Dict[str, Any]``
-		``args['change_direction']``: Direction of change. Possible values are 'rises_above' or 'drops_below'., type ``String``
-		``args['threshold']``: The numeric score used as the threshold to trigger the alert, type ``Number``
-		``args['score_types']``: Types of risk factors to monitor. Possible values are 'overall', 'any_factor_score', 'network_security', 'dns_health', 'patching_cadence', 'endpoint_security', 'ip_reputation', 'application_security', 'cubit_score', 'hacker_chatter', 'leaked_information', 'social_engineering'. For multiple factors, ['leaked_information', 'social_engineering'], type ``array``
-		``args['target']``: What do you want to monitor with this alert. It could be one of the following 'my_scorecard', 'any_followed_company', type ``str``
-        ``args['portfolios']``: A comma-separated list of Portfolios (i.e. 60c78cc2d63162001a68c2b8,60c8c5f9139e40001908c6a4) to monitor with the alert. The alert will be triggered once any one of the companies within the specified Portfolio meets the set threshold This argument is require if the `target` argument is not specified.
-		
-	:return:
-		A ``CommandResults`` object that is passed to ``return_results``
-	:rtype: ``CommandResults``
-	"""
+
+    :type ``client``: ``Client``
+    :type `` args``: ``Dict[str, Any]``
+        ``args['change_direction']``: Direction of change. Possible values are 'rises_above' or 'drops_below'., type ``String``
+        ``args['threshold']``: The numeric score used as the threshold to trigger the alert, type ``Number``
+        ``args['score_types']``: Types of risk factors to monitor.
+        Possible values are:
+        'overall',
+        'any_factor_score',
+        'network_security',
+        'dns_health',
+        'patching_cadence',
+        'endpoint_security',
+        'ip_reputation',
+        'application_security',
+        'cubit_score',
+        'hacker_chatter',
+        'leaked_information',
+        'social_engineering'. For multiple factors, ['leaked_information', 'social_engineering'], type ``array``
+        ``args['target']``: What do you want to monitor with this alert.
+        It could be one of the following 'my_scorecard', 'any_followed_company', type ``str``
+        ``args['portfolios']``: A comma-separated list of Portfolios
+        (i.e. 60c78cc2d63162001a68c2b8,60c8c5f9139e40001908c6a4) to monitor with the alert.
+        The alert will be triggered once any one of the companies within the specified Portfolio
+        meets the set threshold This argument is require if the `target` argument is not specified.
+
+    :return:
+        A ``CommandResults`` object that is passed to ``return_results``
+    :rtype: ``CommandResults``
+    """
 
     email = demisto.params().get('username').get("identifier")
     if is_email_valid(email=email):
@@ -776,7 +881,7 @@ def securityscorecard_alert_score_threshold_create_command(client: Client, args:
         target_arg = argToList(args.get('target'))
         portfolios = argToList(args.get('portfolios'))
 
-        # Only one argument between portfolios and target should be defined 
+        # Only one argument between portfolios and target should be defined
         # Return error if neither of them is defined or if both are defined
         # Else choose the one that is defined and use it as the target
         if portfolios and target_arg:
@@ -789,33 +894,44 @@ def securityscorecard_alert_score_threshold_create_command(client: Client, args:
             return_error("Either 'portfolio' or 'target' argument has to be speficied")
 
         demisto.debug("Attempting to create alert with body {0}".format(args))
-        response = client.create_score_threshold_alert(email=email, change_direction=change_direction, threshold=threshold, score_types=score_types, target=target)
+        response = client.create_score_threshold_alert(
+            email=email,
+            change_direction=change_direction,
+            threshold=threshold,
+            score_types=score_types,
+            target=target
+        )
         demisto.debug("Response received: {0}".format(response))
         alert_id = response.get("id")
 
         markdown = "Alert **{0}** created".format(alert_id)
 
-        results = CommandResults(readable_output=markdown, outputs_prefix="SecurityScorecard.ScoreThresholdAlert.id", outputs=alert_id)
+        results = CommandResults(
+            readable_output=markdown,
+            outputs_prefix="SecurityScorecard.ScoreThresholdAlert.id",
+            outputs=alert_id
+        )
 
         return_results(results)
     else:
         return_error("Email address '{0}' is invalid. Please try a different email address.".format(email))
 
+
 def securityscorecard_alert_delete_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-	
+
     """`securityscorecard_alert_delete_command`: Delete an alert
     See https://securityscorecard.readme.io/reference#delete_users-by-username-username-alerts-grade-alert
     See https://securityscorecard.readme.io/reference#delete_users-by-username-username-alerts-score-alert
 
-	:type ``client``: ``Client``
-	:type `` args``: ``Dict[str, Any]``
-		``args['alert_id']``: Alert ID, type ``String``
+    :type ``client``: ``Client``
+    :type `` args``: ``Dict[str, Any]``
+        ``args['alert_id']``: Alert ID, type ``String``
         ``args['alert_type']``: Alert type. Can be either `score` or `grade`, type ``String``
-		
-	:return:
-		A ``CommandResults`` object that is passed to ``return_results``
-	:rtype: ``CommandResults``
-	"""
+
+    :return:
+        A ``CommandResults`` object that is passed to ``return_results``
+    :rtype: ``CommandResults``
+    """
 
     email = demisto.params().get('username').get("identifier")
     if is_email_valid(email):
@@ -829,28 +945,29 @@ def securityscorecard_alert_delete_command(client: Client, args: Dict[str, Any])
         results = CommandResults(readable_output=markdown)
 
         return_results(results)
-    else: 
+    else:
         return_error("Email address '{0}' is invalid. Please try a different email address.".format(email))
 
+
 def securityscorecard_alerts_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-	
+
     """`securityscorecard_alerts_list_command`: Retrieve alerts triggered in the last week
 
     See https://securityscorecard.readme.io/reference#get_users-by-username-username-notifications-recent
-	
-	:type ``client``: ``Client``
-	:type `` args``: ``Dict[str, Any]``
-		``args['portfolio_id']``: Portfolio ID. Can be retrieved using `!securityscorecard-portfolios-list`, type ``String``
-		
-	:return:
-		A ``CommandResults`` object that is passed to ``return_results``
-	:rtype: ``CommandResults``
-	"""
+
+    :type ``client``: ``Client``
+    :type `` args``: ``Dict[str, Any]``
+        ``args['portfolio_id']``: Portfolio ID. Can be retrieved using `!securityscorecard-portfolios-list`, type ``String``
+
+    :return:
+        A ``CommandResults`` object that is passed to ``return_results``
+    :rtype: ``CommandResults``
+    """
 
     email = demisto.params().get('username').get("identifier")
     demisto.debug("email: {0}".format(email))
     if is_email_valid(email):
-            
+
         portfolio_id = args.get('portfolio_id')
 
         demisto.debug("Sending request to retrieve alerts with arguments {0}".format(args))
@@ -892,20 +1009,21 @@ def securityscorecard_alerts_list_command(client: Client, args: Dict[str, Any]) 
     else:
         return_error("Email address '{0}' is invalid. Please try a different email address.".format(email))
 
+
 def securityscorecard_company_services_get_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-	
+
     """securityscorecard_company_services_get_command: Retrieve the service providers of a domain
-	
+
     See https://securityscorecard.readme.io/reference#get_companies-domain-services
 
-	:type ``client``: ``Client``
-	:type `` args``: ``Dict[str, Any]``
-		``args['domain']``: Company domain, type ``String``
-		
-	:return:
-		A ``CommandResults`` object that is passed to ``return_results``
-	:rtype: ``CommandResults``
-	"""
+    :type ``client``: ``Client``
+    :type `` args``: ``Dict[str, Any]``
+        ``args['domain']``: Company domain, type ``String``
+
+    :return:
+        A ``CommandResults`` object that is passed to ``return_results``
+    :rtype: ``CommandResults``
+    """
 
     domain = args.get("domain")
 
@@ -934,9 +1052,10 @@ def securityscorecard_company_services_get_command(client: Client, args: Dict[st
         )
 
         return_results(results)
-    
+
     else:
         return_error("The domain '{0}' is invalid. Please try a different domain, e.g. google.com".format(domain))
+
 
 def fetch_alerts(client: Client, params: Dict):
 
@@ -948,20 +1067,19 @@ def fetch_alerts(client: Client, params: Dict):
     The API is updated on a daily basis therefore `incidentFetchInterval` is set to 1440 (minutes per day)
     The API returns all alerts received in the last week.
 
-    Every alert has a `"created_at"` parameter to notify when the alert was triggered. 
+    Every alert has a `"created_at"` parameter to notify when the alert was triggered.
     This method will create incidents only for alerts that occurred on the day the alert was created.
 
-    :return: 
+    :return:
         ``None``
     :rtype: ``None``
-    """    
+    """
     # Set the query size
 
     if not params.get("max_fetch"):
         max_incidents = 50
     else:
         max_incidents = params.get("max_fetch")
-
 
     # User/email to fetch alerts for
     username = demisto.params().get('username').get("identifier")
@@ -989,7 +1107,9 @@ def fetch_alerts(client: Client, params: Dict):
         demisto.debug("API returned no alerts. Returning empty incident list")
         demisto.incidents([])
 
+
 """ MAIN FUNCTION """
+
 
 def main() -> None:
     """main function, parses params and runs command functions
@@ -1049,7 +1169,7 @@ def main() -> None:
             return_results(securityscorecard_alerts_list_command(client, demisto.args()))
         elif demisto.command() == 'securityscorecard-company-services-get':
             return_results(securityscorecard_company_services_get_command(client, demisto.args()))
-        
+
     # Log exceptions and return errors
     except Exception as e:
         demisto.error(traceback.format_exc())  # print the traceback
