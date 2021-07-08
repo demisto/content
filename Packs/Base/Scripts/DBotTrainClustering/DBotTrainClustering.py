@@ -33,8 +33,8 @@ MESSAGE_NO_FIELD_NAME_OR_CLUSTERING = "- Empty or incorrect fieldsForClustering 
                                       "for training OR fieldForClusterName is incorrect."
 
 PREFIXES_TO_REMOVE = ['incident.']
-REGEX_DATE_PATTERN = [re.compile("^(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2}:\d{2})Z"),  # guardrails-disable-line
-                      re.compile("(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2}:\d{2}).*")]  # guardrails-disable-line
+REGEX_DATE_PATTERN = [re.compile(r"^(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2}:\d{2})Z"),  # guardrails-disable-line
+                      re.compile(r"(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2}:\d{2}).*")]  # guardrails-disable-line
 REPLACE_COMMAND_LINE = {"=": " = ", "\\": "/", "[": "", "]": "", '"': "", "'": "", }
 TFIDF_PARAMS = {'analyzer': 'char', 'max_features': 500, 'ngram_range': (2, 4)}
 
@@ -431,7 +431,7 @@ def normalize_json(obj) -> str:  # type: ignore
     my_dict = recursive_filter(obj, REGEX_DATE_PATTERN, "None", "N/A", None, "")
     extracted_values = [x if isinstance(x, str) else str(x) for x in json_extract(my_dict)]
     my_string = ' '.join(extracted_values)  # json.dumps(my_dict)
-    pattern = re.compile('([^\s\w]|_)+')  # guardrails-disable-line
+    pattern = re.compile(r'([^\s\w]|_)+')  # guardrails-disable-line
     my_string = pattern.sub(" ", my_string)
     my_string = my_string.lower()
     return my_string
