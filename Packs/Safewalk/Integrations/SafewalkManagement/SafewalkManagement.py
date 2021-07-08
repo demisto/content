@@ -1,6 +1,4 @@
 import urllib3
-import json
-from typing import Any, Dict
 from CommonServerPython import *
 
 
@@ -925,12 +923,14 @@ def set_user_hotpauthentication_settings(client, args):
 
     if not hotp_flex_pin_password_required:
         params['hotp_flex_pin_password_required'] = hotp_flex_pin_password_required
+
+    result_raw = client.set_user_settings(username, params)
+
     if result_raw:
         result_raw = json.loads(result_raw)
         result = remove_empty_elements(result_raw)
     else:
         result = {}
-    result = remove_empty_elements(result_raw)
 
     readable_output = tableToMarkdown(
         'Set User Hotp Authentication Settings Results',
