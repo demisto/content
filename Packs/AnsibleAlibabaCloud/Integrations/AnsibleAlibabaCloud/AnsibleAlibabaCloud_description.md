@@ -1,4 +1,4 @@
-# Alibaba Cloud
+# Ansible Alibaba Cloud
 Manage Alibaba Cloud Elastic Compute Instances.
 
 To use this integration you must generate an Access/Secret token for your Alibaba tenancy.
