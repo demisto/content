@@ -19,7 +19,7 @@ configuration:
   required: true
   type: 0
 description: Manage Alibaba Cloud Elastic Compute Instances
-display: Alibaba Cloud
+display: Ansible Alibaba Cloud
 fromversion: 6.0.0
 name: AnsibleAlibabaCloud
 script:
