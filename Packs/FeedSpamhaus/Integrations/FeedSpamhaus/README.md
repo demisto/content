@@ -4,7 +4,7 @@
 Use the Spamhaus feed integration to fetch indicators from the feed.
 
 
-## Configure SpamhausFeed on Demisto
+## Configure SpamhausFeed on Cortex XSOAR
 ---
 
 1. Navigate to __Settings__ > __Integrations__ > __Servers & Services__.

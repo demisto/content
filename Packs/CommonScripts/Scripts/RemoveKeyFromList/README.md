@@ -7,7 +7,7 @@ Removes a key in key/value store backed by an XSOAR list.
 | --- | --- |
 | Script Type | python3 |
 | Tags |  |
-| Demisto Version | 5.0.0 |
+| Cortex XSOAR Version | 5.0.0 |
 
 ## Inputs
 ---

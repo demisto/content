@@ -226,19 +226,19 @@ script:
     - contextPath: IPQualityScore.Email.smtp_score
       type: Number
       description: 'Validity score of email server''s SMTP setup. Range: "-1" - "3". Scores above "-1" can be associated with a valid email.
-                                                                                 -1 = invalid email address;
-                                                                                 0 = mail server exists, but is rejecting all mail;
-                                                                                 1 = mail server exists, but is showing a temporary error;
-                                                                                 2 = mail server exists, but accepts all email;
-                                                                                 3 = mail server exists and has verified the email address.'
+                                                                                 -1 = invalid email address
+                                                                                 0 = mail server exists, but is rejecting all mail
+                                                                                 1 = mail server exists, but is showing a temporary error
+                                                                                 2 = mail server exists, but accepts all email
+                                                                                 3 = mail server exists and has verified the email address'
     - contextPath: IPQualityScore.Email.overall_score
       type: Number
       description: 'Overall email validity score. Range: "0" - "4". Scores above "1" can be associated with a valid email.
-                    0 = invalid email address;
-                    1 = dns valid, unreachable mail server;
-                    2 = dns valid, temporary mail rejection error;
-                    3 = dns valid, accepts all mail;
-                    4 = dns valid, verified email exists.'
+                    0 = invalid email address
+                    1 = dns valid, unreachable mail server
+                    2 = dns valid, temporary mail rejection error
+                    3 = dns valid, accepts all mail
+                    4 = dns valid, verified email exists'
     - contextPath: IPQualityScore.Email.first_name
       type: String
       description: 'Suspected first name based on email. Returns "CORPORATE" if the email is suspected of being a generic company email. Returns "UNKNOWN" if the first name was not determinable.'
@@ -286,22 +286,22 @@ script:
       description: 'Was this email address associated with a recent database leak from a third party? Leaked accounts pose a risk as they may have become compromised during a database breach.	'
     - contextPath: IPQualityScore.Email.domain_age.human
       type: Date
-      description: 'A human description of when this domain was registered (E.g. 3 months ago).'
+      description: 'A human description of when this domain was registered. (Ex: 3 months ago)'
     - contextPath: IPQualityScore.Email.domain_age.timestamp
       type: Number
-      description: 'The unix time since epoch when this domain was first registered. (E.g. 1568061634).'
+      description: 'The unix time since epoch when this domain was first registered. (Ex: 1568061634)'
     - contextPath: IPQualityScore.Email.domain_age.iso
       type: Date
-      description: 'The time this domain was registered in ISO8601 format (E.g. 2019-09-09T16:40:34-04:00).'
+      description: 'The time this domain was registered in ISO8601 format (Ex: 2019-09-09T16:40:34-04:00)'
     - contextPath: IPQualityScore.Email.first_seen.human
       type: Date
-      description: 'A human description of the email address age, using an estimation of the email creation date when IPQS first discovered this email address (E.g. 3 months ago).'
+      description: 'A human description of the email address age, using an estimation of the email creation date when IPQS first discovered this email address. (Ex: 3 months ago)'
     - contextPath: IPQualityScore.Email.first_seen.timestamp
       type: Number
-      description: 'The unix time since epoch when this email was first analyzed by IPQS (E.g. 1568061634).'
+      description: 'The unix time since epoch when this email was first analyzed by IPQS. (Ex: 1568061634)'
     - contextPath: IPQualityScore.Email.first_seen.iso
       type: Date
-      description: 'The time this email was first analyzed by IPQS in ISO8601 format (E.g. 2019-09-09T16:40:34-04:00).'
+      description: 'The time this email was first analyzed by IPQS in ISO8601 format (Ex: 2019-09-09T16:40:34-04:00)'
     - contextPath: IPQualityScore.Email.sanitized_email
       type: String
       description: 'Sanitized email address with all aliases and masking removed, such as multiple periods for Gmail.com.'
@@ -397,13 +397,13 @@ script:
       description: 'Is this URL or domain hosting dating or adult content?'
     - contextPath: IPQualityScore.Url.domain_age.human
       type: Date
-      description: 'A human description of when this domain was registered (E.g. 3 months ago).'
+      description: 'A human description of when this domain was registered. (Ex: 3 months ago)'
     - contextPath: IPQualityScore.Url.domain_age.timestamp
       type: Number
-      description: 'The unix time since epoch when this domain was first registered (E.g. 1568061634).'
+      description: 'The unix time since epoch when this domain was first registered. (Ex: 1568061634)'
     - contextPath: IPQualityScore.Url.domain_age.iso
       type: Date
-      description: 'The time this domain was registered in ISO8601 format (E.g. 2019-09-09T16:40:34-04:00).'
+      description: 'The time this domain was registered in ISO8601 format (Ex: 2019-09-09T16:40:34-04:00)'
     - contextPath: DBotScore.Indicator
       type: String
       description: 'The indicator that was tested.'
@@ -422,7 +422,7 @@ script:
     - contextPath: URL.Malicious.Vendor
       description: The vendor reporting the URL as malicious.
       type: String
-  dockerimage: demisto/python3:3.9.4.19537
+  dockerimage: demisto/python3:3.9.5.21272
   feed: false
   isfetch: false
   longRunning: false

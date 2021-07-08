@@ -39,17 +39,18 @@ Unlike `PAN-OS EDL Management`, this integration hosts the EDL on the Cortex XSO
 | XSOAR Indicator Page Size | Internal page size used when querying XSOAR for the EDL. By default, this value shouldn't be changed | False |
 | NGINX Global Directives | NGINX global directives to be passed on the command line using the -g option. Each directive should end with `;`. For example: `worker_processes 4; timer_resolution 100ms;`. Advanced configuration to be used only if instructed by XSOAR Support. | False |
 | NGINX Server Conf | NGINX server configuration. To be used instead of the default `NGINX_SERVER_CONF` used in the integration code. Advanced configuration to be used only if instructed by XSOAR Support. | False |
+| Advanced: Use Legacy Queries | Legacy Queries : When enabled, the integration will query the Server using full queries. Enable this query mode, if you've been instructed by Support, or you've encountered in the log errors of the form: `msgpack: invalid code`. | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 
-### Access the EDL Service by Instance Name (HTTPS)
-**The route will be open without security hardening and might expose you to network risks.**
+### Access the EDL Service via XSOAR Server's HTTPS endpoint
+**Note: The EDL will be open to the same network the XSOAR Server is accessible. Make sure you are aware of the network risks. Enabling strong authentication is highly recommended if the route is open to the public.**
 
-To access the EDL service by instance name, make sure ***Instance execute external*** is enabled.
+To access the EDL service by instance name, make sure ***Instance Execute External*** is enabled.
 
 1. In Cortex XSOAR, go to **Settings > About > Troubleshooting**.
-2. In the **Server Configuration** section, verify that the ***instance.execute.external*** key is set to *true*. If this key does not exist, click **+ Add Server Configuration** and add the *instance.execute.external* and set the value to *true*. See [this documentation](https://xsoar.pan.dev/docs/integrations/long-running#invoking-http-integrations-via-cortex-xsoar-servers-route-handling) for further information.
-3. In a web browser, go to `https://<cortex-xsoar_address>/instance/execute/<instance_name>`.
+2. In the **Server Configuration** section, verify that the `instance.execute.external.<instance_name>` key is set to `true`. If this key does not exist, click **+ Add Server Configuration** and add the `instance.execute.external.<instance_name>` and set the value to `true`. See [this documentation](https://xsoar.pan.dev/docs/reference/articles/long-running-invoke) for further information.
+3. In a web browser, go to `https://<cortex-xsoar_address>/instance/execute/<instance_name>/`.
 
 ### URL Inline Arguments
 Use the following arguments in the URL to change the request:

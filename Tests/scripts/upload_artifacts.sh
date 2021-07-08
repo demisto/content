@@ -22,8 +22,8 @@ if [[ "$BRANCH" =~ pull/[0-9]+ ]]; then
     exit 0
 fi
 
-if [[ -z "$CI_BUILD_ID" ]]; then
-    echo "CI_BUILD_ID not set aborting!"
+if [[ -z "$CI_PIPELINE_ID" ]]; then
+    echo "CI_PIPELINE_ID not set aborting!"
     exit 1
 fi
 
@@ -38,6 +38,6 @@ if [[ ! -f "$GCS_ARTIFACTS_KEY" ]]; then
 fi
 
 gcloud auth activate-service-account --key-file=$GCS_ARTIFACTS_KEY > auth.out 2>&1
-TARGET_PATH="content/$BRANCH/$CI_BUILD_ID"
+TARGET_PATH="content/$BRANCH/$CI_PIPELINE_ID"
 echo "auth loaded. uploading files at: $ARTIFACTS_DIR to target path: $TARGET_PATH ..."
 gsutil -m cp -z html,md,json,log,txt -r "$ARTIFACTS_DIR" "gs://$GCS_ARTIFACTS_BUCKET/$TARGET_PATH"

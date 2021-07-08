@@ -16,8 +16,10 @@ INTEGRATION_NAME = 'WebEx'
 def grab_domains(data):
     domainList: List = []
     for lines in data:
+        if len(lines) < 2:
+            continue
         domains = lines[1].split(' ')
-        cleanDomain = " ".join(re.findall("([\^]*[\*\.]*[a-z0-9]+\.+.*)*", domains[0]))
+        cleanDomain = " ".join(re.findall(r"([\^]*[\*\.]*[a-z0-9]+\.+.*)*", domains[0]))
 
         # Strip Whitespace lines to remove blank values
         cleanDomain = cleanDomain.strip()
@@ -34,7 +36,7 @@ def grab_ips(data):
     for lines in data:
         for line in lines:
             values = line.split(' (CIDR)')
-            cleanCidr = " ".join(re.findall("([0-9]+\.+[0-9]+\.+[0-9]+\.+[0-9]+\/[0-9]+)", values[0]))
+            cleanCidr = " ".join(re.findall(r"([0-9]+\.+[0-9]+\.+[0-9]+\.+[0-9]+\/[0-9]+)", values[0]))
 
             # Strip Whitespace lines to remove blank values
             cleanCidr = cleanCidr.strip()

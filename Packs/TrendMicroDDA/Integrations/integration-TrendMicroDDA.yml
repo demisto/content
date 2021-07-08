@@ -428,7 +428,7 @@ script:
             demisto.results('No results found.')
 
     def build_report(res, threshold, status, verbose):
-        report_json = json.loads(xml2json(res.text))
+        report_json = json.loads(xml2json(res.text.encode('utf-8')))
         reports = report_json['REPORTS']
         #true if list, false if dict
         reports_type_is_list = isinstance(reports['FILE_ANALYZE_REPORT'], list)

@@ -6,7 +6,7 @@
 <li>Get extensive reports on interactions between files, domains, URLs, IP addresses, and hashes.</li>
 <li>Investigate activity of recognized malware.</li>
 </ul>
-<h2>Configure Virus Total - Private API on Demisto</h2>
+<h2>Configure Virus Total - Private API on Cortex XSOAR</h2>
 <ol>
 <li>Navigate to <strong>Settings</strong> &gt; <strong>Integrations</strong> &gt; <strong>Servers &amp; Services</strong>.</li>
 <li>Search for Virus Total - Private API.</li>
@@ -37,7 +37,7 @@
 <li>Click <strong>Test</strong> to validate URLs and connection.</li>
 </ol>
 <h2>Commands</h2>
-<p>You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
+<p>You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
 <ol>
 <li><a href="#h_45334592931731530695733677">Get file dynamic behavioral report: vt-private-check-file-behaviour</a></li>
 <li><a href="#h_18551445133181530695739961">Get a domain report: vt-private-get-domain-report</a></li>

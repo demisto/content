@@ -95,16 +95,10 @@ def handle_filters():
     """
     Handle filters associated with samples
     """
-    id_found = False
-    id_list = ['sha256', 'md5', 'sha1', 'id']
     params = {'api_key': API_KEY}
     for k in demisto.args():
         if demisto.getArg(k):
-            if not id_found and k in id_list:
-                params['q'] = demisto.getArg(k)
-                id_found = True
-            else:
-                params[k] = demisto.getArg(k)
+            params[k] = demisto.getArg(k)
     return params
 
 

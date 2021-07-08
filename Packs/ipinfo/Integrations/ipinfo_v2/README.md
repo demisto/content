@@ -1,16 +1,22 @@
-Use the IPinfo.io API to get data about an IP address. 
+Use the IPinfo.io API to get data about an IP address.
 
-## Configure ipinfo_v2 on Cortex XSOAR
+## Differences from IPinfo (v1)
+
+- The `ip-field` command has been removed on v2: all outputs are available by running `ip`.
+- IPinfo v2 Allows setting source reliability.
+- IPinfo v2 Enriches data with IP-hostname relationships.
+
+## Configure IPinfo v2 on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
 2. Search for ipinfo_v2.
 3. Click **Add instance** to create and configure a new integration instance.
 
    | **Parameter** | **Description** | **Required** |
-       | --- | --- | --- |
+                   | --- | --- | --- |
    | API Token | The API Key to use for connection | True |
    | Source Reliability | Reliability of the source providing the intelligence data. | True |
-   | Base URL |  | False |
+   | Base URL |  | True |
    | Trust any certificate (not secure) |  | False |
    | Use system proxy settings |  | False |
 

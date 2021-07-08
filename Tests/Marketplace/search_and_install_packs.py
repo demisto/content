@@ -504,6 +504,7 @@ def install_all_content_packs(client: demisto_client, host: str, server_version:
             # pack is hidden (deprecated):
             if ('Master' in server_version or LooseVersion(server_version) >= LooseVersion(server_min_version)) and \
                     not hidden:
+                logging.debug(f"Appending pack id {pack_id}")
                 all_packs.append(get_pack_installation_request_data(pack_id, pack_version))
     return install_packs(client, host, all_packs)
 

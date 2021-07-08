@@ -38,7 +38,7 @@ Use Cases
 * Create or modify Active Directory users.
 * Manage user accounts and their status
 
-Configure Active Directory Query v2 on Demisto
+Configure Active Directory Query v2 on Cortex XSOAR
 ----------------------------------------------
 
 2. Navigate to **Settings** > **Integrations** > **Servers & Services**.
