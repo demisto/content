@@ -3366,6 +3366,10 @@
             "nightly": true
         },
         {
+	        "integrations": "Trend Micro Deep Security",
+	        "playbookID": "Trend Micro Deep Security - Test"
+	      },
+        {
             "integrations": "Carbon Black Endpoint Standard",
             "playbookID": "carbonBlackEndpointStandardTestPlaybook",
             "fromversion": "5.5.0",
@@ -3501,6 +3505,7 @@
         "PANW Threat Vault - Signature Search - Test": "Issue 30930",
         "TAXII_Feed_Test": "Issue 37588",
         "FireEyeNX-Test": "Issue 33216",
+        "Trend Micro Deep Security - Test": "outsourced",
         "Microsoft Teams - Test": "Issue 38263",
         "QualysVulnerabilityManagement-Test": "Issue 38640",
         "test playbook - QRadarCorrelations": "Issue 38639"
