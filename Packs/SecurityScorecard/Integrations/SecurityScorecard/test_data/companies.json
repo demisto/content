@@ -1,0 +1,37 @@
+{
+	"entries": [
+	  {
+	    "domain": "domain1.com",
+	    "name": "Domain1",
+	    "score": 63,
+	    "grade": "D",
+	    "grade_url": "https://s3.amazonaws.com/ssc-static/grades/factor_d.svg",
+	    "last30days_score_change": 12,
+	    "industry": "technology",
+	    "size": "size_more_than_10000",
+	    "is_custom_vendor": false
+	  },
+	  {
+	    "domain": "domain2.com",
+	    "name": "Domain2",
+	    "score": 73,
+	    "grade": "C",
+	    "grade_url": "https://s3.amazonaws.com/ssc-static/grades/factor_c.svg",
+	    "last30days_score_change": 8,
+	    "industry": "technology",
+	    "size": "size_more_than_10000",
+	    "is_custom_vendor": false
+	  },
+	  {
+	    "domain": "domain3.com",
+	    "name": "Domain3",
+	    "score": 81,
+	    "grade": "B",
+	    "grade_url": "https://s3.amazonaws.com/ssc-static/grades/factor_b.svg",
+	    "last30days_score_change": 4,
+	    "industry": "technology",
+	    "size": "size_51_to_200",
+	    "is_custom_vendor": false
+	  }
+	]
+}

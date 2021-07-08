@@ -65,7 +65,8 @@ class Client(BaseClient):
         return self._http_request(
             'GET',
             url_suffix='portfolios/{0}/companies'.format(portfolio),
-            params=request_params
+            params=request_params,
+            error_handler=self.company_portfolio_error_handler
         )
 
     def get_company_score(self, domain: str) -> List[Dict[str, Any]]:
@@ -217,6 +218,18 @@ class Client(BaseClient):
             params=query_params
         )
 
+    @staticmethod
+    def company_portfolio_error_handler(res) -> None:
+
+        try:
+            json_resp = res.json()
+            requested_portfolio = json_resp.get("error").get("data").get("portfoliosRequested")[0]
+            return_error("Portfolio {0} doesn't exist. Please run !securityscorecard-portfolios-list to see available Portfolios and try again.".format(requested_portfolio))
+        except Exception:  
+            raise DemistoException("Response error is invalid JSON.")
+
+        
+
 """ HELPER FUNCTIONS """
 
 def is_valid_domain(domain: str):
@@ -339,7 +352,6 @@ def is_date_valid(date: str):
         return True
     else:
         return False
-    
 """ COMMAND FUNCTIONS """
 
 def test_module(client: Client) -> str:
@@ -460,6 +472,11 @@ def securityscorecard_portfolio_list_companies_command(client: Client, args: Dic
         issue_type=issue_type,
         had_breach_within_last_days=had_breach_within_last_days
     )
+
+
+    # TODO handle 404 when supplied portfolio not found
+    # Error in API call [404] - Not Found
+    # {"error": {"message": "portfolio not found", "statusCode": 404, "data": {"portfoliosRequested": ["60b7e8ea8242c000b8000001"], "portfoliosWithAccess": [], "portfoliosWithoutAccess": [], "portfoliosNotFound": ["60b7e8ea8242c000b8000001"]}}}
 
     # Check if the portfolio has more than 1 company
     # Throw warning to UI if there are no companies
