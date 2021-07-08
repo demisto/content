@@ -252,7 +252,6 @@ script:
       name: parameters
     - description: 'Uri of file containing the parameters body. This parameter is
         mutually exclusive with `parameters`.
-
         Either `parameters_link` or `parameters` is required if `state=present`.'
       name: parameters_link
     - defaultValue: 'yes'
