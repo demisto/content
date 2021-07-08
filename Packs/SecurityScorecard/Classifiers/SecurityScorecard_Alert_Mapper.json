@@ -48,7 +48,7 @@
                     },
                     "simple": ""
                 },
-                "Company Name": {
+                "SecurityScorecard Company Name": {
                     "complex": {
                         "accessor": "",
                         "filters": [],
@@ -57,7 +57,7 @@
                     },
                     "simple": ""
                 },
-                "Domain": {
+                "SecurityScorecard Domain": {
                     "complex": {
                         "accessor": "",
                         "filters": [],
@@ -66,7 +66,7 @@
                     },
                     "simple": ""
                 },
-                "Factor": {
+                "SecurityScorecard Factor": {
                     "complex": {
                         "accessor": "factor",
                         "filters": [],
@@ -99,7 +99,7 @@
                     },
                     "simple": ""
                 },
-                "Grade": {
+                "SecurityScorecard Grade": {
                     "complex": {
                         "accessor": "grade_letter",
                         "filters": [],
@@ -108,7 +108,7 @@
                     },
                     "simple": ""
                 },
-                "Score": {
+                "SecurityScorecard Score": {
                     "complex": {
                         "accessor": "score",
                         "filters": [],
@@ -117,7 +117,7 @@
                     },
                     "simple": ""
                 },
-                "Score Impact": {
+                "SecurityScorecard Score Impact": {
                     "complex": {
                         "accessor": "score_impact",
                         "filters": [],
