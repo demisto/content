@@ -401,8 +401,7 @@ script:
     - auto: PREDEFINED
       defaultValue: present
       description: 'Assert the state of the Gallery.
-
-        Use `present` to create or update an Gallery and `absent` to delete it.'
+        Use `present` to create or update a Gallery and `absent` to delete it.'
       name: state
       predefined:
       - absent
