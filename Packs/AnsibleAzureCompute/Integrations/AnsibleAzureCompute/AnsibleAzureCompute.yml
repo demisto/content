@@ -505,8 +505,7 @@ script:
     - auto: PREDEFINED
       defaultValue: present
       description: 'Assert the state of the GalleryImage.
-
-        Use `present` to create or update an GalleryImage and `absent` to delete it.'
+        Use `present` to create or update a GalleryImage and `absent` to delete it.'
       name: state
       predefined:
       - absent
