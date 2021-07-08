@@ -145,9 +145,8 @@ script:
     - auto: PREDEFINED
       defaultValue: present
       description: 'Assert the state of the availability set.
-
-        Use `present` to create or update a availability set and `absent` to delete
-        a availability set.'
+        Use `present` to create or update an availability set and `absent` to delete
+        an availability set.'
       name: state
       predefined:
       - absent
