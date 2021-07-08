@@ -5,20 +5,26 @@ from http import HTTPStatus
 from intezer_sdk import consts
 from intezer_sdk.api import IntezerApi
 
-# from Packs.Base.Scripts.CommonServerPython.CommonServerPython import outputPaths
-# from Packs.Intezer.Integrations.IntezerV2.IntezerV2 import analyze_by_hash_command
-# from Packs.Intezer.Integrations.IntezerV2.IntezerV2 import analyze_by_uploaded_file_command
-# from Packs.Intezer.Integrations.IntezerV2.IntezerV2 import check_analysis_status_and_get_results_command
-# from Packs.Intezer.Integrations.IntezerV2.IntezerV2 import get_analysis_sub_analyses_command
-# from Packs.Intezer.Integrations.IntezerV2.IntezerV2 import get_family_info_command
-# from Packs.Intezer.Integrations.IntezerV2.IntezerV2 import get_latest_result_command
+from Packs.Base.Scripts.CommonServerPython.CommonServerPython import outputPaths
+from Packs.Intezer.Integrations.IntezerV2.IntezerV2 import analyze_by_hash_command
+from Packs.Intezer.Integrations.IntezerV2.IntezerV2 import analyze_by_uploaded_file_command
+from Packs.Intezer.Integrations.IntezerV2.IntezerV2 import check_analysis_status_and_get_results_command
+from Packs.Intezer.Integrations.IntezerV2.IntezerV2 import get_analysis_code_reuse_command
+from Packs.Intezer.Integrations.IntezerV2.IntezerV2 import get_analysis_metadata_command
+from Packs.Intezer.Integrations.IntezerV2.IntezerV2 import get_analysis_sub_analyses_command
+from Packs.Intezer.Integrations.IntezerV2.IntezerV2 import get_family_info_command
+from Packs.Intezer.Integrations.IntezerV2.IntezerV2 import get_latest_result_command
 
+from CommonServerPython import outputPaths
 from IntezerV2 import analyze_by_hash_command
 from IntezerV2 import analyze_by_uploaded_file_command
 from IntezerV2 import check_analysis_status_and_get_results_command
+from IntezerV2 import get_analysis_code_reuse_command
+from IntezerV2 import get_analysis_metadata_command
 from IntezerV2 import get_analysis_sub_analyses_command
 from IntezerV2 import get_family_info_command
 from IntezerV2 import get_latest_result_command
+
 
 fake_api_key = str(uuid.uuid4())
 intezer_api = IntezerApi(consts.API_VERSION, fake_api_key, consts.BASE_URL)
@@ -411,28 +417,177 @@ def test_get_analysis_sub_analyses_command_analysis_doesnt_exist(requests_mock):
 
 # region get_analysis_code_reuse_command
 
+def test_get_analysis_code_reuse_command_success_root(requests_mock):
+    # Arrange
+    analysis_id = 'analysis_id'
+    _setup_access_token(requests_mock)
+    requests_mock.get(
+        f'{full_url}/analyses/{analysis_id}/sub-analyses/root/code-reuse',
+        json={
+            'families': [
+                {
+                    'family_id': '123',
+                    'family_name': 'Name',
+                    'reused_gene_count': 123
+                }
+            ],
+            'unique_gene_count': 0
+        }
+    )
+
+    args = dict(analysis_id=analysis_id)
+
+    # Act
+    command_results = get_analysis_code_reuse_command(intezer_api, args)
+
+    # Assert
+    outputs = command_results.outputs
+    assert outputs['ID'] == analysis_id
+    assert outputs['ComposedAnalysisID'] == analysis_id
+    assert len(outputs['CodeReuseFamilies']) == 1
+    assert 'CodeReuse' in outputs
+
+
 def test_get_analysis_code_reuse_command_success(requests_mock):
-    pass
+    # Arrange
+    analysis_id = 'analysis_id'
+    sub_analysis_id = 'sub_analysis_id'
+    _setup_access_token(requests_mock)
+    requests_mock.get(
+        f'{full_url}/analyses/{analysis_id}/sub-analyses/{sub_analysis_id}/code-reuse',
+        json={
+            'families': [
+                {
+                    'family_id': '123',
+                    'family_name': 'Name',
+                    'reused_gene_count': 123
+                }
+            ],
+            'unique_gene_count': 0
+        }
+    )
+
+    args = dict(analysis_id=analysis_id, sub_analysis_id=sub_analysis_id)
+
+    # Act
+    command_results = get_analysis_code_reuse_command(intezer_api, args)
+
+    # Assert
+    outputs = command_results.outputs
+    assert outputs['ID'] == sub_analysis_id
+    assert outputs['ComposedAnalysisID'] == analysis_id
+    assert len(outputs['CodeReuseFamilies']) == 1
+    assert 'CodeReuse' in outputs
 
 
 def test_get_analysis_code_reuse_command_analysis_doesnt_exist(requests_mock):
-    pass
+    # Arrange
+    analysis_id = 'analysis_id'
+    sub_analysis_id = 'sub_analysis_id'
+    _setup_access_token(requests_mock)
+    requests_mock.get(
+        f'{full_url}/analyses/{analysis_id}/sub-analyses/{sub_analysis_id}/code-reuse',
+        status_code=HTTPStatus.NOT_FOUND
+    )
+
+    args = dict(analysis_id=analysis_id, sub_analysis_id=sub_analysis_id)
+
+    # Act
+    command_results = get_analysis_code_reuse_command(intezer_api, args)
+
+    # Assert
+    assert command_results.readable_output == f'The Analysis {analysis_id} was not found on Intezer Analyze'
 
 
 def test_get_analysis_code_reuse_command_no_code_reuse(requests_mock):
-    pass
+    # Arrange
+    analysis_id = 'analysis_id'
+    sub_analysis_id = 'sub_analysis_id'
+    _setup_access_token(requests_mock)
+    requests_mock.get(
+        f'{full_url}/analyses/{analysis_id}/sub-analyses/{sub_analysis_id}/code-reuse',
+        status_code=HTTPStatus.CONFLICT
+    )
+
+    args = dict(analysis_id=analysis_id, sub_analysis_id=sub_analysis_id)
+
+    # Act
+    command_results = get_analysis_code_reuse_command(intezer_api, args)
+
+    # Assert
+    assert command_results.readable_output == 'No code reuse for this analysis'
 
 
 # endregion
 
 # region get_analysis_metadata_command
 
+def test_get_analysis_metadata_command_success_root(requests_mock):
+    # Arrange
+    analysis_id = 'analysis_id'
+    _setup_access_token(requests_mock)
+    requests_mock.get(
+        f'{full_url}/analyses/{analysis_id}/sub-analyses/root/metadata',
+        json={
+            'sha256': 'sha256',
+            'product_name': 'something'
+        }
+    )
+
+    args = dict(analysis_id=analysis_id)
+
+    # Act
+    command_results = get_analysis_metadata_command(intezer_api, args)
+
+    # Assert
+    outputs = command_results.outputs
+    assert outputs['ID'] == analysis_id
+    assert outputs['ComposedAnalysisID'] == analysis_id
+    assert 'Metadata' in outputs
+
+
 def test_get_analysis_metadata_command_success(requests_mock):
-    pass
+    # Arrange
+    analysis_id = 'analysis_id'
+    sub_analysis_id = 'sub_analysis_id'
+    _setup_access_token(requests_mock)
+    requests_mock.get(
+        f'{full_url}/analyses/{analysis_id}/sub-analyses/{sub_analysis_id}/metadata',
+        json={
+            'sha256': 'sha256',
+            'product_name': 'something'
+        }
+    )
+
+    args = dict(analysis_id=analysis_id, sub_analysis_id=sub_analysis_id)
+
+    # Act
+    command_results = get_analysis_metadata_command(intezer_api, args)
+
+    # Assert
+    outputs = command_results.outputs
+    assert outputs['ID'] == sub_analysis_id
+    assert outputs['ComposedAnalysisID'] == analysis_id
+    assert 'Metadata' in outputs
 
 
 def test_get_analysis_metadata_command_analysis_doesnt_exist(requests_mock):
-    pass
+    # Arrange
+    analysis_id = 'analysis_id'
+    sub_analysis_id = 'sub_analysis_id'
+    _setup_access_token(requests_mock)
+    requests_mock.get(
+        f'{full_url}/analyses/{analysis_id}/sub-analyses/{sub_analysis_id}/metadata',
+        status_code=HTTPStatus.NOT_FOUND
+    )
+
+    args = dict(analysis_id=analysis_id, sub_analysis_id=sub_analysis_id)
+
+    # Act
+    command_results = get_analysis_metadata_command(intezer_api, args)
+
+    # Assert
+    assert command_results.readable_output == f'The Analysis {analysis_id} was not found on Intezer Analyze'
 
 
 # endregion

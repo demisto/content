@@ -244,13 +244,19 @@ def get_analysis_code_reuse_command(intezer_api: IntezerApi, args: dict) -> Comm
     analysis_id = args.get('analysis_id')
     sub_analysis_id = args.get('sub_analysis_id', 'root')
 
-    sub_analysis: SubAnalysis = SubAnalysis(analysis_id=sub_analysis_id,
-                                            composed_analysis_id=analysis_id,
-                                            sha256='',
-                                            source='',
-                                            api=intezer_api)
+    try:
+        sub_analysis: SubAnalysis = SubAnalysis(analysis_id=sub_analysis_id,
+                                                composed_analysis_id=analysis_id,
+                                                sha256='',
+                                                source='',
+                                                api=intezer_api)
 
-    sub_analysis_code_reuse = sub_analysis.code_reuse
+        sub_analysis_code_reuse = sub_analysis.code_reuse
+    except HTTPError as error:
+        if error.response.status_code == HTTPStatus.NOT_FOUND:
+            return _get_missing_analysis_result(analysis_id=analysis_id)
+        elif error.response.status_code == HTTPStatus.CONFLICT:
+            return _get_analysis_running_result(analysis_id=analysis_id)
 
     if not sub_analysis_code_reuse:
         return CommandResults(
@@ -285,13 +291,19 @@ def get_analysis_metadata_command(intezer_api: IntezerApi, args: dict) -> Comman
     analysis_id = args.get('analysis_id')
     sub_analysis_id = args.get('sub_analysis_id', 'root')
 
-    sub_analysis: SubAnalysis = SubAnalysis(analysis_id=sub_analysis_id,
-                                            composed_analysis_id=analysis_id,
-                                            sha256='',
-                                            source='',
-                                            api=intezer_api)
+    try:
+        sub_analysis: SubAnalysis = SubAnalysis(analysis_id=sub_analysis_id,
+                                                composed_analysis_id=analysis_id,
+                                                sha256='',
+                                                source='',
+                                                api=intezer_api)
 
-    sub_analysis_metadata = sub_analysis.metadata
+        sub_analysis_metadata = sub_analysis.metadata
+    except HTTPError as error:
+        if error.response.status_code == HTTPStatus.NOT_FOUND:
+            return _get_missing_analysis_result(analysis_id=analysis_id)
+        elif error.response.status_code == HTTPStatus.CONFLICT:
+            return _get_analysis_running_result(analysis_id=analysis_id)
 
     metadata_table = tableToMarkdown('Analysis Metadata', sub_analysis_metadata)
 
