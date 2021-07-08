@@ -59,9 +59,7 @@ script:
   commands:
   - arguments:
     - description: 'The identifier of the resource to apply autoscale setting.
-
         It could be the resource id string.
-
         It also could be a dict contains the `name`, `subscription_id`, `namespace`,
         `types`, `resource_group` of the resource.'
       name: target
