@@ -102,11 +102,9 @@ script:
       name: tags
     - auto: PREDEFINED
       defaultValue: 'Yes'
-      description: 'Use to control if tags field is canonical or just appends to existing
-        tags.
-
-        When canonical, any tags not found in the tags parameter will be removed from
-        the object''s metadata.'
+      description: "Use to control if tags field is canonical or just appends to existing
+        tags. When canonical, any tags not found in the tags parameter will be removed from
+        the object's metadata."
       name: append_tags
       predefined:
       - 'Yes'
