@@ -998,12 +998,12 @@ inputs:
 - key: raw_content
   value: {}
   required: false
-  description: ""
+  description: "The raw content of an article"
   playbookInputQuery:
 - key: indicator_value
   value: {}
   required: false
-  description: ""
+  description: "Report indicator value"
   playbookInputQuery:
 outputs: []
 tests:
