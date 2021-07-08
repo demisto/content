@@ -172,7 +172,7 @@
                         "y": 6
                     },
                     {
-                        "description": "A snippet from the latest incident, showing what the campaign email looks like. Words in bold are common phishing and spam words that may require special attention.",
+                        "description": "A snippet from the latest incident, showing what the campaign email looks like. Meaningful phishing and spam words are in bold.",
                         "displayType": "ROW",
                         "h": 3,
                         "hideItemTitleOnlyOne": true,
