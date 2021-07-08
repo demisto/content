@@ -15,6 +15,7 @@ from intezer_sdk.analysis import get_latest_analysis
 from intezer_sdk.api import IntezerApi
 from intezer_sdk.errors import AnalysisIsAlreadyRunning
 from intezer_sdk.errors import AnalysisIsStillRunning
+from intezer_sdk.errors import FamilyNotFoundError
 from intezer_sdk.errors import HashDoesNotExistError
 from intezer_sdk.errors import IntezerError
 from intezer_sdk.family import Family
@@ -69,6 +70,12 @@ def _get_missing_file_result(file_hash: str) -> CommandResults:
 def _get_missing_analysis_result(analysis_id: str) -> CommandResults:
     return CommandResults(
         readable_output=f'The Analysis {analysis_id} was not found on Intezer Analyze'
+    )
+
+
+def _get_missing_family_result(family_id: str) -> CommandResults:
+    return CommandResults(
+        readable_output=f'The Family {family_id} was not found on Intezer Analyze'
     )
 
 
@@ -206,7 +213,14 @@ def check_analysis_status_and_get_results_command(intezer_api: IntezerApi, args:
 def get_analysis_sub_analyses_command(intezer_api: IntezerApi, args: dict) -> CommandResults:
     analysis_id = args.get('analysis_id')
 
-    analysis = get_analysis_by_id(analysis_id, api=intezer_api)
+    try:
+        analysis = get_analysis_by_id(analysis_id, api=intezer_api)
+    except HTTPError as error:
+        if error.response.status_code == HTTPStatus.NOT_FOUND:
+            return _get_missing_analysis_result(analysis_id=analysis_id)
+        elif error.response.status_code == HTTPStatus.CONFLICT:
+            return _get_analysis_running_result(analysis_id=analysis_id)
+
     sub_analyses: List[SubAnalysis] = analysis.get_sub_analyses()
 
     all_sub_analyses_ids = [sub.analysis_id for sub in sub_analyses]
@@ -299,7 +313,11 @@ def get_analysis_metadata_command(intezer_api: IntezerApi, args: dict) -> Comman
 def get_family_info_command(intezer_api: IntezerApi, args: dict) -> CommandResults:
     family_id = args.get('family_id')
     family = Family(family_id, api=intezer_api)
-    family.fetch_info()
+
+    try:
+        family.fetch_info()
+    except FamilyNotFoundError:
+        return _get_missing_family_result(family_id)
 
     output = {
         'ID': family_id,
