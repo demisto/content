@@ -1,5 +1,31 @@
-Agentlesss Linux host management over SSH
-This integration was integrated and tested with version xx of AnsibleLinux
+This integration enables the management of Linux hosts directly from XSOAR using Ansible modules. The Ansible engine is self-contained and pre-configured as part of this pack onto your XSOAR server, all you need to do is provide credentials you are ready to use the feature rich commands. This integration functions without any agents or additional software installed on the hosts by utilising SSH combined with Python.
+
+To use this integration, configure an instance of this integration. This will associate a credential to be used to access hosts when commands are run. The commands from this integration will take the Linux host address(es) as an input, and use the saved credential associated to the instance to execute. Create separate instances if multiple credentials are required.
+
+## Requirements
+The Linux host(s) being managed requires Python >= 2.6. Different commands will use different underlying Ansible modules, and may have their own unique package requirements. Refer to the individual command documentation for further information.
+
+## Network Requirements
+By default, TCP port 22 will be used to initiate a SSH connection to the Linux host.
+
+The connection will be initiated from the XSOAR engine/server specified in the instance settings.
+
+## Credentials
+This integration supports a number of methods of authenticating with the Linux Host:
+1. Username & Password entered into the integration
+2. Username & Password credential from the XSOAR credential manager
+3. Username and SSH Key from the XSOAR credential manager
+
+## Permissions
+Whilst un-privileged Linux user privileges can be used, a SuperUser account is recommended as most commands will require elevated permissions to execute.
+
+## Concurrency
+This integration supports execution of commands against multiple hosts concurrently. The `host` parameter accepts a list of addresses, and will run the command in parallel as per the **Concurrency Factor** value.
+
+## Further information
+This integration is powered by Ansible 2.9. Further information can be found on that the following locations:
+* [Ansible Getting Started](https://docs.ansible.com/ansible/latest/user_guide/intro_getting_started.html)
+* [Module Documentation](https://docs.ansible.com/ansible/2.9/modules/list_of_all_modules.html)
 
 ## Configure AnsibleLinux on Cortex XSOAR
 
@@ -14,14 +40,16 @@ This integration was integrated and tested with version xx of AnsibleLinux
     | Default SSH Port | The default port to use if one is not specified in the commands \`host\` argument. | True |
     | Concurrency Factor | If multiple hosts are specified in a command, how many hosts should be interacted with concurrently. | True |
 
-4. Click **Test** to validate the URLs, token, and connection.
+## Testing
+This integration does not support testing from the integration management screen. Instead it is recommended to use the `!linux-gather-facts`command providing an example `host` as the command argument. This command will connect to the specified host with the configured credentials in the integration, and if successful output general information about the host.
+
 ## Commands
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### linux-alternatives
 ***
 Manages alternative programs for common commands
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/alternatives_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/alternatives_module.html
 
 
 #### Base Command
@@ -45,7 +73,7 @@ Manages alternative programs for common commands
 
 
 #### Command Example
-```!linux-alternatives host="192.168.1.125" name="java" path="/usr/lib/jvm/java-1.8.0-openjdk-1.8.0.292.b10-0.el8_3.x86_64/jre/bin/java" ```
+```!linux-alternatives host="123.123.123.123" name="java" path="/usr/lib/jvm/java-1.8.0-openjdk-1.8.0.292.b10-0.el8_3.x86_64/jre/bin/java" ```
 
 #### Context Example
 ```json
@@ -53,7 +81,7 @@ Manages alternative programs for common commands
     "linux": {
         "alternatives": {
             "changed": false,
-            "host": "192.168.1.125",
+            "host": "123.123.123.123",
             "status": "SUCCESS"
         }
     }
@@ -62,14 +90,14 @@ Manages alternative programs for common commands
 
 #### Human Readable Output
 
-># 192.168.1.125 -  SUCCESS 
+># 123.123.123.123 -  SUCCESS 
 >  * changed: False
 
 
 ### linux-at
 ***
 Schedule the execution of a command or script file via the at command
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/at_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/at_module.html
 
 
 #### Base Command
@@ -95,7 +123,7 @@ Schedule the execution of a command or script file via the at command
 
 
 #### Command Example
-```!linux-at host="192.168.1.125" command="ls -d / >/dev/null" count="20" units="minutes" ```
+```!linux-at host="123.123.123.123" command="ls -d / >/dev/null" count="20" units="minutes" ```
 
 #### Context Example
 ```json
@@ -104,7 +132,7 @@ Schedule the execution of a command or script file via the at command
         "at": {
             "changed": true,
             "count": 20,
-            "host": "192.168.1.125",
+            "host": "123.123.123.123",
             "script_file": "/tmp/at248vavr9",
             "state": "present",
             "status": "CHANGED",
@@ -116,7 +144,7 @@ Schedule the execution of a command or script file via the at command
 
 #### Human Readable Output
 
-># 192.168.1.125 -  CHANGED 
+># 123.123.123.123 -  CHANGED 
 >  * changed: True
 >  * count: 20
 >  * script_file: /tmp/at248vavr9
@@ -127,7 +155,7 @@ Schedule the execution of a command or script file via the at command
 ### linux-authorized-key
 ***
 Adds or removes an SSH authorized key
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/authorized_key_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/authorized_key_module.html
 
 
 #### Base Command
@@ -167,7 +195,7 @@ Adds or removes an SSH authorized key
 
 
 #### Command Example
-```!linux-authorized-key host="192.168.1.125" user="charlie" state="present" key="ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQC/...REDACTED..uH04Ef2RICcn1iCtsqQcMZfoqFftRcGi2MyYFyRQrFs= charlie@web01" ```
+```!linux-authorized-key host="123.123.123.123" user="charlie" state="present" key="ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQC/...REDACTED..uH04Ef2RICcn1iCtsqQcMZfoqFftRcGi2MyYFyRQrFs= charlie@web01" ```
 
 #### Context Example
 ```json
@@ -178,7 +206,7 @@ Adds or removes an SSH authorized key
             "comment": null,
             "exclusive": false,
             "follow": false,
-            "host": "192.168.1.125",
+            "host": "123.123.123.123",
             "key": "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQC/...REDACTED..uH04Ef2RICcn1iCtsqQcMZfoqFftRcGi2MyYFyRQrFs= charlie@web01",
             "key_options": null,
             "keyfile": "/home/charlie/.ssh/authorized_keys",
@@ -195,7 +223,7 @@ Adds or removes an SSH authorized key
 
 #### Human Readable Output
 
-># 192.168.1.125 -  CHANGED 
+># 123.123.123.123 -  CHANGED 
 >  * changed: True
 >  * comment: None
 >  * exclusive: False
@@ -213,7 +241,7 @@ Adds or removes an SSH authorized key
 ### linux-capabilities
 ***
 Manage Linux capabilities
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/capabilities_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/capabilities_module.html
 
 
 #### Base Command
@@ -235,17 +263,10 @@ Manage Linux capabilities
 | --- | --- | --- |
 
 
-#### Command Example
-``` ```
-
-#### Human Readable Output
-
-
-
 ### linux-cron
 ***
 Manage cron.d and crontab entries
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/cron_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/cron_module.html
 
 
 #### Base Command
@@ -282,7 +303,7 @@ Manage cron.d and crontab entries
 
 
 #### Command Example
-```!linux-cron host="192.168.1.125" name="check dirs" minute="0" hour="5,2" job="ls -alh > /dev/null" ```
+```!linux-cron host="123.123.123.123" name="check dirs" minute="0" hour="5,2" job="ls -alh > /dev/null" ```
 
 #### Context Example
 ```json
@@ -293,7 +314,7 @@ Manage cron.d and crontab entries
             "envs": [
                 "EMAIL"
             ],
-            "host": "192.168.1.125",
+            "host": "123.123.123.123",
             "jobs": [
                 "check dirs"
             ],
@@ -305,7 +326,7 @@ Manage cron.d and crontab entries
 
 #### Human Readable Output
 
-># 192.168.1.125 -  SUCCESS 
+># 123.123.123.123 -  SUCCESS 
 >  * changed: False
 >  * ## Envs
 >    * 0: EMAIL
@@ -316,7 +337,7 @@ Manage cron.d and crontab entries
 ### linux-cronvar
 ***
 Manage variables in crontabs
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/cronvar_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/cronvar_module.html
 
 
 #### Base Command
@@ -344,7 +365,7 @@ Manage variables in crontabs
 
 
 #### Command Example
-```!linux-cronvar host="192.168.1.125" name="EMAIL" value="doug@ansibmod.con.com" ```
+```!linux-cronvar host="123.123.123.123" name="EMAIL" value="doug@ansibmod.con.com" ```
 
 #### Context Example
 ```json
@@ -352,7 +373,7 @@ Manage variables in crontabs
     "linux": {
         "cronvar": {
             "changed": false,
-            "host": "192.168.1.125",
+            "host": "123.123.123.123",
             "status": "SUCCESS",
             "vars": [
                 "EMAIL"
@@ -364,7 +385,7 @@ Manage variables in crontabs
 
 #### Human Readable Output
 
-># 192.168.1.125 -  SUCCESS 
+># 123.123.123.123 -  SUCCESS 
 >  * changed: False
 >  * ## Vars
 >    * 0: EMAIL
@@ -373,7 +394,7 @@ Manage variables in crontabs
 ### linux-dconf
 ***
 Modify and read dconf database
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/dconf_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/dconf_module.html
 
 
 #### Base Command
@@ -397,7 +418,7 @@ Modify and read dconf database
 
 
 #### Command Example
-```!linux-dconf host="192.168.1.125" key="/org/gnome/desktop/input-sources/sources" value="[('xkb', 'us'), ('xkb', 'se')]" state="present" ```
+```!linux-dconf host="123.123.123.123" key="/org/gnome/desktop/input-sources/sources" value="[('xkb', 'us'), ('xkb', 'se')]" state="present" ```
 
 #### Context Example
 ```json
@@ -405,7 +426,7 @@ Modify and read dconf database
     "linux": {
         "dconf": {
             "changed": false,
-            "host": "192.168.1.125",
+            "host": "123.123.123.123",
             "status": "SUCCESS"
         }
     }
@@ -414,14 +435,14 @@ Modify and read dconf database
 
 #### Human Readable Output
 
-># 192.168.1.125 -  SUCCESS 
+># 123.123.123.123 -  SUCCESS 
 >  * changed: False
 
 
 ### linux-debconf
 ***
 Configure a .deb package
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/debconf_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/debconf_module.html
 
 
 #### Base Command
@@ -445,17 +466,11 @@ Configure a .deb package
 | --- | --- | --- |
 
 
-#### Command Example
-``` ```
-
-#### Human Readable Output
-
-
 
 ### linux-filesystem
 ***
 Makes a filesystem
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/filesystem_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/filesystem_module.html
 
 
 #### Base Command
@@ -480,7 +495,7 @@ Makes a filesystem
 
 
 #### Command Example
-```!linux-filesystem host="192.168.1.125" fstype="ext2" dev="/dev/sdb1" ```
+```!linux-filesystem host="123.123.123.123" fstype="ext2" dev="/dev/sdb1" ```
 
 #### Context Example
 ```json
@@ -488,7 +503,7 @@ Makes a filesystem
     "linux": {
         "filesystem": {
             "changed": false,
-            "host": "192.168.1.125",
+            "host": "123.123.123.123",
             "status": "SUCCESS"
         }
     }
@@ -497,14 +512,14 @@ Makes a filesystem
 
 #### Human Readable Output
 
-># 192.168.1.125 -  SUCCESS 
+># 123.123.123.123 -  SUCCESS 
 >  * changed: False
 
 
 ### linux-firewalld
 ***
 Manage arbitrary ports/services with firewalld
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/firewalld_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/firewalld_module.html
 
 
 #### Base Command
@@ -538,7 +553,7 @@ Manage arbitrary ports/services with firewalld
 
 
 #### Command Example
-```!linux-firewalld host="192.168.1.125" service="https" permanent="True" state="enabled" ```
+```!linux-firewalld host="123.123.123.123" service="https" permanent="True" state="enabled" ```
 
 #### Context Example
 ```json
@@ -546,7 +561,7 @@ Manage arbitrary ports/services with firewalld
     "linux": {
         "firewalld": {
             "changed": false,
-            "host": "192.168.1.125",
+            "host": "123.123.123.123",
             "msg": "Permanent operation",
             "status": "SUCCESS"
         }
@@ -556,7 +571,7 @@ Manage arbitrary ports/services with firewalld
 
 #### Human Readable Output
 
-># 192.168.1.125 -  SUCCESS 
+># 123.123.123.123 -  SUCCESS 
 >  * changed: False
 >  * msg: Permanent operation
 
@@ -564,7 +579,7 @@ Manage arbitrary ports/services with firewalld
 ### linux-gather-facts
 ***
 Gathers facts about remote hosts
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/gather_facts_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/gather_facts_module.html
 
 
 #### Base Command
@@ -585,7 +600,7 @@ Gathers facts about remote hosts
 
 
 #### Command Example
-```!linux-gather-facts host="192.168.1.125"```
+```!linux-gather-facts host="123.123.123.123"```
 
 #### Context Example
 ```json
@@ -593,7 +608,7 @@ Gathers facts about remote hosts
     "linux": {
         "gatherFacts": {
             "all_ipv4_addresses": [
-                "192.168.1.125"
+                "123.123.123.123"
             ],
             "all_ipv6_addresses": [
                 "fd5f:d212:297d:0:f8a1:86b8:e2ee:33f4",
@@ -645,7 +660,7 @@ Gathers facts about remote hosts
                 "year": "2021"
             },
             "default_ipv4": {
-                "address": "192.168.1.125",
+                "address": "123.123.123.123",
                 "alias": "ens192",
                 "broadcast": "192.168.1.255",
                 "gateway": "192.168.1.1",
@@ -936,7 +951,7 @@ Gathers facts about remote hosts
                 },
                 "hw_timestamp_filters": [],
                 "ipv4": {
-                    "address": "192.168.1.125",
+                    "address": "123.123.123.123",
                     "broadcast": "192.168.1.255",
                     "netmask": "255.255.255.0",
                     "network": "192.168.1.0"
@@ -972,7 +987,7 @@ Gathers facts about remote hosts
             "gather_subset": [
                 "all"
             ],
-            "host": "192.168.1.125",
+            "host": "123.123.123.123",
             "hostname": "web01",
             "hostnqn": "",
             "interfaces": [
@@ -1282,7 +1297,7 @@ Gathers facts about remote hosts
 
 #### Human Readable Output
 
-># 192.168.1.125 -  SUCCESS 
+># 123.123.123.123 -  SUCCESS 
 >  * architecture: x86_64
 >  * bios_date: 04/05/2016
 >  * bios_vendor: Phoenix Technologies LTD
@@ -1361,7 +1376,7 @@ Gathers facts about remote hosts
 >  * discovered_interpreter_python: /usr/libexec/platform-python
 >  * module_setup: True
 >  * ## All_Ipv4_Addresses
->    * 0: 192.168.1.125
+>    * 0: 123.123.123.123
 >  * ## All_Ipv6_Addresses
 >    * 0: fd5f:d212:297d:0:f8a1:86b8:e2ee:33f4
 >    * 1: fe80::a291:d0c1:61f2:cb4d
@@ -1395,7 +1410,7 @@ Gathers facts about remote hosts
 >    * weeknumber: 27
 >    * year: 2021
 >  * ## Default_Ipv4
->    * address: 192.168.1.125
+>    * address: 123.123.123.123
 >    * alias: ens192
 >    * broadcast: 192.168.1.255
 >    * gateway: 192.168.1.1
@@ -1639,7 +1654,7 @@ Gathers facts about remote hosts
 >      * vlan_challenged: off [fixed]
 >    * ### Hw_Timestamp_Filters
 >    * ### Ipv4
->      * address: 192.168.1.125
+>      * address: 123.123.123.123
 >      * broadcast: 192.168.1.255
 >      * netmask: 255.255.255.0
 >      * network: 192.168.1.0
@@ -1884,7 +1899,7 @@ Gathers facts about remote hosts
 ### linux-gconftool2
 ***
 Edit GNOME Configurations
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/gconftool2_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/gconftool2_module.html
 
 
 #### Base Command
@@ -1913,7 +1928,7 @@ Edit GNOME Configurations
 
 
 #### Command Example
-```!linux-gconftool2 host="192.168.1.125" key="/desktop/gnome/interface/font_name" value_type="string" value="Serif 12" state=present```
+```!linux-gconftool2 host="123.123.123.123" key="/desktop/gnome/interface/font_name" value_type="string" value="Serif 12" state=present```
 
 #### Context Example
 ```json
@@ -1921,7 +1936,7 @@ Edit GNOME Configurations
     "linux": {
         "gconftool2": {
             "changed": false,
-            "host": "192.168.1.125",
+            "host": "123.123.123.123",
             "status": "SUCCESS"
         }
     }
@@ -1930,14 +1945,14 @@ Edit GNOME Configurations
 
 #### Human Readable Output
 
-># 192.168.1.125 -  SUCCESS 
+># 123.123.123.123 -  SUCCESS 
 >  * changed: False
 
 
 ### linux-getent
 ***
 A wrapper to the unix getent utility
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/getent_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/getent_module.html
 
 
 #### Base Command
@@ -1962,7 +1977,7 @@ A wrapper to the unix getent utility
 
 
 #### Command Example
-```!linux-getent host="192.168.1.125" database="passwd" key="root" ```
+```!linux-getent host="123.123.123.123" database="passwd" key="root" ```
 
 #### Context Example
 ```json
@@ -1970,7 +1985,7 @@ A wrapper to the unix getent utility
     "linux": {
         "getent": {
             "changed": false,
-            "host": "192.168.1.125",
+            "host": "123.123.123.123",
             "status": "SUCCESS"
         }
     }
@@ -1979,14 +1994,14 @@ A wrapper to the unix getent utility
 
 #### Human Readable Output
 
-># 192.168.1.125 -  SUCCESS 
+># 123.123.123.123 -  SUCCESS 
 >  * changed: False
 
 
 ### linux-group
 ***
 Add or remove groups
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/group_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/group_module.html
 
 
 #### Base Command
@@ -2012,7 +2027,7 @@ Add or remove groups
 
 
 #### Command Example
-```!linux-group host="192.168.1.125" name="somegroup" state="present" ```
+```!linux-group host="123.123.123.123" name="somegroup" state="present" ```
 
 #### Context Example
 ```json
@@ -2021,7 +2036,7 @@ Add or remove groups
         "group": {
             "changed": false,
             "gid": 1000,
-            "host": "192.168.1.125",
+            "host": "123.123.123.123",
             "name": "somegroup",
             "state": "present",
             "status": "SUCCESS",
@@ -2033,7 +2048,7 @@ Add or remove groups
 
 #### Human Readable Output
 
-># 192.168.1.125 -  SUCCESS 
+># 123.123.123.123 -  SUCCESS 
 >  * changed: False
 >  * gid: 1000
 >  * name: somegroup
@@ -2044,7 +2059,7 @@ Add or remove groups
 ### linux-hostname
 ***
 Manage hostname
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/hostname_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/hostname_module.html
 
 
 #### Base Command
@@ -2066,7 +2081,7 @@ Manage hostname
 
 
 #### Command Example
-```!linux-hostname host="192.168.1.125" name="web01" ```
+```!linux-hostname host="123.123.123.123" name="web01" ```
 
 #### Context Example
 ```json
@@ -2074,7 +2089,7 @@ Manage hostname
     "linux": {
         "hostname": {
             "changed": false,
-            "host": "192.168.1.125",
+            "host": "123.123.123.123",
             "name": "web01",
             "status": "SUCCESS"
         }
@@ -2084,7 +2099,7 @@ Manage hostname
 
 #### Human Readable Output
 
-># 192.168.1.125 -  SUCCESS 
+># 123.123.123.123 -  SUCCESS 
 >  * changed: False
 >  * name: web01
 
@@ -2092,7 +2107,7 @@ Manage hostname
 ### linux-interfaces-file
 ***
 Tweak settings in /etc/network/interfaces files
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/interfaces_file_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/interfaces_file_module.html
 
 
 #### Base Command
@@ -2129,17 +2144,11 @@ Tweak settings in /etc/network/interfaces files
 | Linux.interfacesFile.ifaces | unknown | interfaces dictionary | 
 
 
-#### Command Example
-``` ```
-
-#### Human Readable Output
-
-
 
 ### linux-iptables
 ***
 Modify iptables rules
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/iptables_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/iptables_module.html
 
 
 #### Base Command
@@ -2199,7 +2208,7 @@ Modify iptables rules
 
 
 #### Command Example
-```!linux-iptables host="192.168.1.125" chain="INPUT" source="8.8.8.8" jump="DROP" ```
+```!linux-iptables host="123.123.123.123" chain="INPUT" source="8.8.8.8" jump="DROP" ```
 
 #### Context Example
 ```json
@@ -2209,7 +2218,7 @@ Modify iptables rules
             "chain": "INPUT",
             "changed": false,
             "flush": false,
-            "host": "192.168.1.125",
+            "host": "123.123.123.123",
             "ip_version": "ipv4",
             "rule": "-s 8.8.8.8 -j DROP",
             "state": "present",
@@ -2222,7 +2231,7 @@ Modify iptables rules
 
 #### Human Readable Output
 
-># 192.168.1.125 -  SUCCESS 
+># 123.123.123.123 -  SUCCESS 
 >  * chain: INPUT
 >  * changed: False
 >  * flush: False
@@ -2235,7 +2244,7 @@ Modify iptables rules
 ### linux-java-cert
 ***
 Uses keytool to import/remove key from java keystore (cacerts)
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/java_cert_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/java_cert_module.html
 
 
 #### Base Command
@@ -2271,7 +2280,7 @@ Uses keytool to import/remove key from java keystore (cacerts)
 
 
 #### Command Example
-```!linux-java-cert host="192.168.1.125" cert_url="google.com" cert_port="443" keystore_path="/usr/lib/jvm/jre-1.8.0/lib/security/cacerts" keystore_pass="changeit" state="present" ```
+```!linux-java-cert host="123.123.123.123" cert_url="google.com" cert_port="443" keystore_path="/usr/lib/jvm/jre-1.8.0/lib/security/cacerts" keystore_pass="changeit" state="present" ```
 
 #### Context Example
 ```json
@@ -2279,7 +2288,7 @@ Uses keytool to import/remove key from java keystore (cacerts)
     "linux": {
         "javaCert": {
             "changed": false,
-            "host": "192.168.1.125",
+            "host": "123.123.123.123",
             "status": "SUCCESS"
         }
     }
@@ -2288,14 +2297,14 @@ Uses keytool to import/remove key from java keystore (cacerts)
 
 #### Human Readable Output
 
-># 192.168.1.125 -  SUCCESS 
+># 123.123.123.123 -  SUCCESS 
 >  * changed: False
 
 
 ### linux-java-keystore
 ***
 Create or delete a Java keystore in JKS format.
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/java_keystore_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/java_keystore_module.html
 
 
 #### Base Command
@@ -2327,7 +2336,7 @@ Create or delete a Java keystore in JKS format.
 
 
 #### Command Example
-```!linux-java-keystore host="192.168.1.125" name="example" certificate="-----BEGIN CERTIFICATE-----\\nMIIB2zCCAYWgAwIBAgIUcVVoq/DBLunkIIzq2QGNVhvLTEIwDQYJKoZIhvcNAQEL\\nBQAwQjELMAkGA1UEBhMCWFgxFTATBgNVBAcMDERlZmF1bHQgQ2l0eTEcMBoGA1UE\\nCgwTRGVmYXVsdCBDb21wYW55IEx0ZDAeFw0yMTA1MjMwODM0NDBaFw0yMjA1MjMw\\nODM0NDBaMEIxCzAJBgNVBAYTAlhYMRUwEwYDVQQHDAxEZWZhdWx0IENpdHkxHDAa\\nBgNVBAoME0RlZmF1bHQgQ29tcGFueSBMdGQwXDANBgkqhkiG9w0BAQEFAANLADBI\\nAkEAy9D3w3+Tkt1lOnH8O20WlYSmkiSdi8Nrz7Av8nOKSedoKiIqoZjg1ZhdGfaZ\\nP0D8nSpuiwYmyQe+L4Uqf3Z1IQIDAQABo1MwUTAdBgNVHQ4EFgQUQ0ZWYYrwI/Lf\\nhgU1LtrAVZ0HVAAwHwYDVR0jBBgwFoAUQ0ZWYYrwI/LfhgU1LtrAVZ0HVAAwDwYD\\nVR0TAQH/BAUwAwEB/zANBgkqhkiG9w0BAQsFAANBAGMYsQDQFP87RUscYUc1lwCn\\nMQaEqtoMidUvTiTV/kLJ2VuhDQ5Hw38WfLCnLiLErboFIU7SiR12l6jQoaDDejA=\\n-----END CERTIFICATE-----" private_key="-----BEGIN PRIVATE KEY-----\\nMIIBVAIBADANBgkqhkiG9w0BAQEFAASCAT4wggE6AgEAAkEAy9D3w3+Tkt1lOnH8\\nO20WlYSmkiSdi8Nrz7Av8nOKSedoKiIqoZjg1ZhdGfaZP0D8nSpuiwYmyQe+L4Uq\\nf3Z1IQIDAQABAkBlMPjyLTL9pcIOhG0wq/acgWGaCWfW7k1mrhkADPFJwyGYILrk\\nPiK8ZLaXtuBo5ILj+RDKCHP9y0ApIm0kD0UJAiEA5U+LF3NBnPgpc99pfUc7PpG7\\nrRU4hYiHQSG+HmCuSXMCIQDjic1CgW6DrwyquWISY0SbcEgOZdp8TZ2RZY+b9ELy\\nGwIhAL03W7Cn/FZIN/xTN7qWUn6YxmJWBmO5etH1w+lRIb+dAiB0/GGjIubOH48U\\nq9GngJBClr0FYgquRD2SBrSKS1CsJwIgBMgtKPpt6XNhpVu1rBh9/jARP8azzaHh\\nYXyNGA56xjg=\\n-----END PRIVATE KEY-----"  dest="/etc/security/keystore.jks" password="changeit"```
+```!linux-java-keystore host="123.123.123.123" name="example" certificate="-----BEGIN CERTIFICATE-----\\nMIIB2zCCAYW...DDejA=\\n-----END CERTIFICATE-----" private_key="-----BEGIN PRIVATE KEY-----\\nMIIBVAIBADANBgkq...NGA56xjg=\\n-----END PRIVATE KEY-----"  dest="/etc/security/keystore.jks" password="changeit"```
 
 #### Context Example
 ```json
@@ -2335,7 +2344,7 @@ Create or delete a Java keystore in JKS format.
     "linux": {
         "javaKeystore": {
             "changed": false,
-            "host": "192.168.1.125",
+            "host": "123.123.123.123",
             "status": "SUCCESS"
         }
     }
@@ -2344,14 +2353,14 @@ Create or delete a Java keystore in JKS format.
 
 #### Human Readable Output
 
-># 192.168.1.125 -  SUCCESS 
+># 123.123.123.123 -  SUCCESS 
 >  * changed: False
 
 
 ### linux-kernel-blacklist
 ***
 Blacklist kernel modules
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/kernel_blacklist_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/kernel_blacklist_module.html
 
 
 #### Base Command
@@ -2374,7 +2383,7 @@ Blacklist kernel modules
 
 
 #### Command Example
-```!linux-kernel-blacklist host="192.168.1.125" name="nouveau" state="present" ```
+```!linux-kernel-blacklist host="123.123.123.123" name="nouveau" state="present" ```
 
 #### Context Example
 ```json
@@ -2382,7 +2391,7 @@ Blacklist kernel modules
     "linux": {
         "kernelBlacklist": {
             "changed": false,
-            "host": "192.168.1.125",
+            "host": "123.123.123.123",
             "name": "nouveau",
             "state": "present",
             "status": "SUCCESS"
@@ -2393,7 +2402,7 @@ Blacklist kernel modules
 
 #### Human Readable Output
 
-># 192.168.1.125 -  SUCCESS 
+># 123.123.123.123 -  SUCCESS 
 >  * changed: False
 >  * name: nouveau
 >  * state: present
@@ -2402,7 +2411,7 @@ Blacklist kernel modules
 ### linux-known-hosts
 ***
 Add or remove a host from the C(known_hosts) file
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/known_hosts_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/known_hosts_module.html
 
 
 #### Base Command
@@ -2427,7 +2436,7 @@ Add or remove a host from the C(known_hosts) file
 
 
 #### Command Example
-```!linux-known-hosts host="192.168.1.125" path="/etc/ssh/ssh_known_hosts" name="host1.example.com" key="host1.example.com,10.9.8.77 ssh-rsa ASDeararAIUHI324324" ```
+```!linux-known-hosts host="123.123.123.123" path="/etc/ssh/ssh_known_hosts" name="host1.example.com" key="host1.example.com,10.9.8.77 ssh-rsa ASDeararAIUHI324324" ```
 
 #### Context Example
 ```json
@@ -2438,7 +2447,7 @@ Add or remove a host from the C(known_hosts) file
             "gid": 0,
             "group": "root",
             "hash_host": false,
-            "host": "192.168.1.125",
+            "host": "123.123.123.123",
             "key": "host1.example.com,10.9.8.77 ssh-rsa ASDeararAIUHI324324",
             "mode": "0644",
             "name": "host1.example.com",
@@ -2456,7 +2465,7 @@ Add or remove a host from the C(known_hosts) file
 
 #### Human Readable Output
 
-># 192.168.1.125 -  SUCCESS 
+># 123.123.123.123 -  SUCCESS 
 >  * changed: False
 >  * gid: 0
 >  * group: root
@@ -2475,7 +2484,7 @@ Add or remove a host from the C(known_hosts) file
 ### linux-listen-ports-facts
 ***
 Gather facts on processes listening on TCP and UDP ports.
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/listen_ports_facts_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/listen_ports_facts_module.html
 
 
 #### Base Command
@@ -2496,7 +2505,7 @@ Gather facts on processes listening on TCP and UDP ports.
 
 
 #### Command Example
-```!linux-listen-ports-facts host="192.168.1.125" ```
+```!linux-listen-ports-facts host="123.123.123.123" ```
 
 #### Context Example
 ```json
@@ -2504,7 +2513,7 @@ Gather facts on processes listening on TCP and UDP ports.
     "linux": {
         "listenPortsFacts": {
             "discovered_interpreter_python": "/usr/libexec/platform-python",
-            "host": "192.168.1.125",
+            "host": "123.123.123.123",
             "status": "SUCCESS",
             "tcp_listen": [
                 {
@@ -2571,7 +2580,7 @@ Gather facts on processes listening on TCP and UDP ports.
 
 #### Human Readable Output
 
-># 192.168.1.125 -  SUCCESS 
+># 123.123.123.123 -  SUCCESS 
 >  * discovered_interpreter_python: /usr/libexec/platform-python
 >  * ## Tcp_Listen
 >  * ## Sshd
@@ -2628,7 +2637,7 @@ Gather facts on processes listening on TCP and UDP ports.
 ### linux-locale-gen
 ***
 Creates or removes locales
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/locale_gen_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/locale_gen_module.html
 
 
 #### Base Command
@@ -2649,17 +2658,10 @@ Creates or removes locales
 | --- | --- | --- |
 
 
-#### Command Example
-``` ```
-
-#### Human Readable Output
-
-
-
 ### linux-modprobe
 ***
 Load or unload kernel modules
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/modprobe_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/modprobe_module.html
 
 
 #### Base Command
@@ -2682,7 +2684,7 @@ Load or unload kernel modules
 
 
 #### Command Example
-```!linux-modprobe host="192.168.1.125" name="8021q" state="present" ```
+```!linux-modprobe host="123.123.123.123" name="8021q" state="present" ```
 
 #### Context Example
 ```json
@@ -2690,7 +2692,7 @@ Load or unload kernel modules
     "linux": {
         "modprobe": {
             "changed": false,
-            "host": "192.168.1.125",
+            "host": "123.123.123.123",
             "name": "8021q",
             "params": "",
             "state": "present",
@@ -2702,7 +2704,7 @@ Load or unload kernel modules
 
 #### Human Readable Output
 
-># 192.168.1.125 -  SUCCESS 
+># 123.123.123.123 -  SUCCESS 
 >  * changed: False
 >  * name: 8021q
 >  * params: 
@@ -2712,7 +2714,7 @@ Load or unload kernel modules
 ### linux-mount
 ***
 Control active and configured mount points
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/mount_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/mount_module.html
 
 
 #### Base Command
@@ -2742,7 +2744,7 @@ Control active and configured mount points
 
 
 #### Command Example
-```!linux-mount host="192.168.1.125" path="/mnt/dvd" src="/dev/sr0" fstype="iso9660" opts="ro,noauto" state="present" ```
+```!linux-mount host="123.123.123.123" path="/mnt/dvd" src="/dev/sr0" fstype="iso9660" opts="ro,noauto" state="present" ```
 
 #### Context Example
 ```json
@@ -2753,7 +2755,7 @@ Control active and configured mount points
             "dump": "0",
             "fstab": "/etc/fstab",
             "fstype": "iso9660",
-            "host": "192.168.1.125",
+            "host": "123.123.123.123",
             "name": "/mnt/dvd",
             "opts": "ro,noauto",
             "passno": "0",
@@ -2766,7 +2768,7 @@ Control active and configured mount points
 
 #### Human Readable Output
 
-># 192.168.1.125 -  SUCCESS 
+># 123.123.123.123 -  SUCCESS 
 >  * changed: False
 >  * dump: 0
 >  * fstab: /etc/fstab
@@ -2780,7 +2782,7 @@ Control active and configured mount points
 ### linux-open-iscsi
 ***
 Manage iSCSI targets with Open-iSCSI
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/open_iscsi_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/open_iscsi_module.html
 
 
 #### Base Command
@@ -2809,17 +2811,11 @@ Manage iSCSI targets with Open-iSCSI
 | --- | --- | --- |
 
 
-#### Command Example
-``` ```
-
-#### Human Readable Output
-
-
 
 ### linux-pam-limits
 ***
 Modify Linux PAM limits
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/pam_limits_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/pam_limits_module.html
 
 
 #### Base Command
@@ -2848,7 +2844,7 @@ Modify Linux PAM limits
 
 
 #### Command Example
-```!linux-pam-limits host="192.168.1.125" domain="joe" limit_type="soft" limit_item="nofile" value="64000" ```
+```!linux-pam-limits host="123.123.123.123" domain="joe" limit_type="soft" limit_item="nofile" value="64000" ```
 
 #### Context Example
 ```json
@@ -2856,7 +2852,7 @@ Modify Linux PAM limits
     "linux": {
         "pamLimits": {
             "changed": false,
-            "host": "192.168.1.125",
+            "host": "123.123.123.123",
             "msg": "joe\tsoft\tnofile\t64000\n",
             "status": "SUCCESS"
         }
@@ -2866,7 +2862,7 @@ Modify Linux PAM limits
 
 #### Human Readable Output
 
-># 192.168.1.125 -  SUCCESS 
+># 123.123.123.123 -  SUCCESS 
 >  * changed: False
 >  * msg: joe	soft	nofile	64000
 >
@@ -2875,7 +2871,7 @@ Modify Linux PAM limits
 ### linux-pamd
 ***
 Manage PAM Modules
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/pamd_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/pamd_module.html
 
 
 #### Base Command
@@ -2912,7 +2908,7 @@ Manage PAM Modules
 
 
 #### Command Example
-```!linux-pamd host="192.168.1.125" name="system-auth" type="auth" control="required" module_path="pam_faillock.so" new_control="sufficient" ```
+```!linux-pamd host="123.123.123.123" name="system-auth" type="auth" control="required" module_path="pam_faillock.so" new_control="sufficient" ```
 
 #### Context Example
 ```json
@@ -2922,7 +2918,7 @@ Manage PAM Modules
             "backupdest": "",
             "change_count": 0,
             "changed": false,
-            "host": "192.168.1.125",
+            "host": "123.123.123.123",
             "status": "SUCCESS"
         }
     }
@@ -2931,7 +2927,7 @@ Manage PAM Modules
 
 #### Human Readable Output
 
-># 192.168.1.125 -  SUCCESS 
+># 123.123.123.123 -  SUCCESS 
 >  * backupdest: 
 >  * change_count: 0
 >  * changed: False
@@ -2940,7 +2936,7 @@ Manage PAM Modules
 ### linux-parted
 ***
 Configure block device partitions
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/parted_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/parted_module.html
 
 
 #### Base Command
@@ -2972,7 +2968,7 @@ Configure block device partitions
 
 
 #### Command Example
-```!linux-parted host="192.168.1.125" device="/dev/sdb" number="1" state="present" ```
+```!linux-parted host="123.123.123.123" device="/dev/sdb" number="1" state="present" ```
 
 #### Context Example
 ```json
@@ -2989,7 +2985,7 @@ Configure block device partitions
                 "table": "msdos",
                 "unit": "kib"
             },
-            "host": "192.168.1.125",
+            "host": "123.123.123.123",
             "partitions": [
                 {
                     "begin": 1024,
@@ -3011,7 +3007,7 @@ Configure block device partitions
 
 #### Human Readable Output
 
-># 192.168.1.125 -  SUCCESS 
+># 123.123.123.123 -  SUCCESS 
 >  * changed: False
 >  * script: 
 >  * ## Disk
@@ -3037,7 +3033,7 @@ Configure block device partitions
 ### linux-pids
 ***
 Retrieves process IDs list if the process is running otherwise return empty list
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/pids_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/pids_module.html
 
 
 #### Base Command
@@ -3059,7 +3055,7 @@ Retrieves process IDs list if the process is running otherwise return empty list
 
 
 #### Command Example
-```!linux-pids host="192.168.1.125" name="python" ```
+```!linux-pids host="123.123.123.123" name="python" ```
 
 #### Context Example
 ```json
@@ -3074,13 +3070,13 @@ Retrieves process IDs list if the process is running otherwise return empty list
 
 #### Human Readable Output
 
-># 192.168.1.125 -  SUCCESS 
+># 123.123.123.123 -  SUCCESS 
 
 
 ### linux-ping
 ***
 Try to connect to host, verify a usable python and return C(pong) on success
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/ping_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/ping_module.html
 
 
 #### Base Command
@@ -3102,7 +3098,7 @@ Try to connect to host, verify a usable python and return C(pong) on success
 
 
 #### Command Example
-```!linux-ping host="192.168.1.125" ```
+```!linux-ping host="123.123.123.123" ```
 
 #### Context Example
 ```json
@@ -3117,13 +3113,13 @@ Try to connect to host, verify a usable python and return C(pong) on success
 
 #### Human Readable Output
 
-># 192.168.1.125 -  SUCCESS 
+># 123.123.123.123 -  SUCCESS 
 
 
 ### linux-python-requirements-info
 ***
 Show python path and assert dependency versions
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/python_requirements_info_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/python_requirements_info_module.html
 
 
 #### Base Command
@@ -3150,7 +3146,7 @@ Show python path and assert dependency versions
 
 
 #### Command Example
-```!linux-python-requirements-info host="192.168.1.125" ```
+```!linux-python-requirements-info host="123.123.123.123" ```
 
 #### Context Example
 ```json
@@ -3158,7 +3154,7 @@ Show python path and assert dependency versions
     "linux": {
         "pythonRequirementsInfo": {
             "changed": false,
-            "host": "192.168.1.125",
+            "host": "123.123.123.123",
             "mismatched": {},
             "not_found": [],
             "python": "/usr/libexec/platform-python",
@@ -3182,7 +3178,7 @@ Show python path and assert dependency versions
 
 #### Human Readable Output
 
-># 192.168.1.125 -  SUCCESS 
+># 123.123.123.123 -  SUCCESS 
 >  * changed: False
 >  * python: /usr/libexec/platform-python
 >  * python_version: 3.6.8 (default, Aug 24 2020, 17:57:11) 
@@ -3204,7 +3200,7 @@ Show python path and assert dependency versions
 ### linux-reboot
 ***
 Reboot a machine
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/reboot_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/reboot_module.html
 
 
 #### Base Command
@@ -3232,17 +3228,11 @@ Reboot a machine
 | Linux.reboot.elapsed | number | The number of seconds that elapsed waiting for the system to be rebooted. | 
 
 
-#### Command Example
-``` ```
-
-#### Human Readable Output
-
-
 
 ### linux-seboolean
 ***
 Toggles SELinux booleans
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/seboolean_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/seboolean_module.html
 
 
 #### Base Command
@@ -3265,17 +3255,11 @@ Toggles SELinux booleans
 | --- | --- | --- |
 
 
-#### Command Example
-``` ```
-
-#### Human Readable Output
-
-
 
 ### linux-sefcontext
 ***
 Manages SELinux file context mapping definitions
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/sefcontext_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/sefcontext_module.html
 
 
 #### Base Command
@@ -3302,17 +3286,11 @@ Manages SELinux file context mapping definitions
 | --- | --- | --- |
 
 
-#### Command Example
-``` ```
-
-#### Human Readable Output
-
-
 
 ### linux-selinux
 ***
 Change policy and state of SELinux
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/selinux_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/selinux_module.html
 
 
 #### Base Command
@@ -3340,7 +3318,7 @@ Change policy and state of SELinux
 
 
 #### Command Example
-```!linux-selinux host="192.168.1.125" policy="targeted" state="enforcing" ```
+```!linux-selinux host="123.123.123.123" policy="targeted" state="enforcing" ```
 
 #### Context Example
 ```json
@@ -3349,7 +3327,7 @@ Change policy and state of SELinux
         "selinux": {
             "changed": false,
             "configfile": "/etc/selinux/config",
-            "host": "192.168.1.125",
+            "host": "123.123.123.123",
             "msg": "",
             "policy": "targeted",
             "reboot_required": false,
@@ -3362,7 +3340,7 @@ Change policy and state of SELinux
 
 #### Human Readable Output
 
-># 192.168.1.125 -  SUCCESS 
+># 123.123.123.123 -  SUCCESS 
 >  * changed: False
 >  * configfile: /etc/selinux/config
 >  * msg: 
@@ -3374,7 +3352,7 @@ Change policy and state of SELinux
 ### linux-selinux-permissive
 ***
 Change permissive domain in SELinux policy
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/selinux_permissive_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/selinux_permissive_module.html
 
 
 #### Base Command
@@ -3397,17 +3375,11 @@ Change permissive domain in SELinux policy
 | --- | --- | --- |
 
 
-#### Command Example
-``` ```
-
-#### Human Readable Output
-
-
 
 ### linux-selogin
 ***
 Manages linux user to SELinux user mapping
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/selogin_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/selogin_module.html
 
 
 #### Base Command
@@ -3432,17 +3404,11 @@ Manages linux user to SELinux user mapping
 | --- | --- | --- |
 
 
-#### Command Example
-``` ```
-
-#### Human Readable Output
-
-
 
 ### linux-seport
 ***
 Manages SELinux network port type definitions
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/seport_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/seport_module.html
 
 
 #### Base Command
@@ -3467,17 +3433,11 @@ Manages SELinux network port type definitions
 | --- | --- | --- |
 
 
-#### Command Example
-``` ```
-
-#### Human Readable Output
-
-
 
 ### linux-service
 ***
 Manage services
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/service_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/service_module.html
 
 
 #### Base Command
@@ -3505,7 +3465,7 @@ Manage services
 
 
 #### Command Example
-```!linux-service host="192.168.1.125" name="httpd" state="started" ```
+```!linux-service host="123.123.123.123" name="httpd" state="started" ```
 
 #### Context Example
 ```json
@@ -3513,7 +3473,7 @@ Manage services
     "linux": {
         "service": {
             "changed": false,
-            "host": "192.168.1.125",
+            "host": "123.123.123.123",
             "name": "httpd",
             "state": "started",
             "status": "SUCCESS"
@@ -3524,7 +3484,7 @@ Manage services
 
 #### Human Readable Output
 
-># 192.168.1.125 -  SUCCESS 
+># 123.123.123.123 -  SUCCESS 
 >  * changed: False
 >  * name: httpd
 >  * state: started
@@ -3754,7 +3714,7 @@ Manage services
 ### linux-service-facts
 ***
 Return service state information as fact data
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/service_facts_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/service_facts_module.html
 
 
 #### Base Command
@@ -3775,7 +3735,7 @@ Return service state information as fact data
 
 
 #### Command Example
-```!linux-service-facts host="192.168.1.125" ```
+```!linux-service-facts host="123.123.123.123" ```
 
 #### Context Example
 ```json
@@ -3783,7 +3743,7 @@ Return service state information as fact data
     "linux": {
         "serviceFacts": {
             "discovered_interpreter_python": "/usr/libexec/platform-python",
-            "host": "192.168.1.125",
+            "host": "123.123.123.123",
             "services": {
                 "NetworkManager-dispatcher.service": {
                     "name": "NetworkManager-dispatcher.service",
@@ -4790,7 +4750,7 @@ Return service state information as fact data
 
 #### Human Readable Output
 
-># 192.168.1.125 -  SUCCESS 
+># 123.123.123.123 -  SUCCESS 
 >  * discovered_interpreter_python: /usr/libexec/platform-python
 >  * ## Services
 >    * ### Networkmanager-Dispatcher.Service
@@ -5628,7 +5588,7 @@ Return service state information as fact data
 ### linux-setup
 ***
 Gathers facts about remote hosts
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/setup_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/setup_module.html
 
 
 #### Base Command
@@ -5651,17 +5611,11 @@ Gathers facts about remote hosts
 | --- | --- | --- |
 
 
-#### Command Example
-``` ```
-
-#### Human Readable Output
-
-
 
 ### linux-sysctl
 ***
 Manage entries in sysctl.conf.
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/sysctl_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/sysctl_module.html
 
 
 #### Base Command
@@ -5688,7 +5642,7 @@ Manage entries in sysctl.conf.
 
 
 #### Command Example
-```!linux-sysctl host="192.168.1.125" name="vm.swappiness" value="5" state="present" ```
+```!linux-sysctl host="123.123.123.123" name="vm.swappiness" value="5" state="present" ```
 
 #### Context Example
 ```json
@@ -5696,7 +5650,7 @@ Manage entries in sysctl.conf.
     "linux": {
         "sysctl": {
             "changed": false,
-            "host": "192.168.1.125",
+            "host": "123.123.123.123",
             "status": "SUCCESS"
         }
     }
@@ -5705,14 +5659,14 @@ Manage entries in sysctl.conf.
 
 #### Human Readable Output
 
-># 192.168.1.125 -  SUCCESS 
+># 123.123.123.123 -  SUCCESS 
 >  * changed: False
 
 
 ### linux-systemd
 ***
 Manage services
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/systemd_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/systemd_module.html
 
 
 #### Base Command
@@ -5743,7 +5697,7 @@ Manage services
 
 
 #### Command Example
-```!linux-systemd host="192.168.1.125" state="started" name="httpd" ```
+```!linux-systemd host="123.123.123.123" state="started" name="httpd" ```
 
 #### Context Example
 ```json
@@ -5751,7 +5705,7 @@ Manage services
     "linux": {
         "systemd": {
             "changed": false,
-            "host": "192.168.1.125",
+            "host": "123.123.123.123",
             "name": "httpd",
             "state": "started",
             "status": "SUCCESS"
@@ -5762,7 +5716,7 @@ Manage services
 
 #### Human Readable Output
 
-># 192.168.1.125 -  SUCCESS 
+># 123.123.123.123 -  SUCCESS 
 >  * changed: False
 >  * name: httpd
 >  * state: started
@@ -5992,7 +5946,7 @@ Manage services
 ### linux-sysvinit
 ***
 Manage SysV services.
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/sysvinit_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/sysvinit_module.html
 
 
 #### Base Command
@@ -6020,17 +5974,11 @@ Manage SysV services.
 | Linux.sysvinit.results | unknown | results from actions taken | 
 
 
-#### Command Example
-``` ```
-
-#### Human Readable Output
-
-
 
 ### linux-timezone
 ***
 Configure timezone setting
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/timezone_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/timezone_module.html
 
 
 #### Base Command
@@ -6053,7 +6001,7 @@ Configure timezone setting
 
 
 #### Command Example
-```!linux-timezone host="192.168.1.125" name="Asia/Tokyo" ```
+```!linux-timezone host="123.123.123.123" name="Asia/Tokyo" ```
 
 #### Context Example
 ```json
@@ -6061,7 +6009,7 @@ Configure timezone setting
     "linux": {
         "timezone": {
             "changed": false,
-            "host": "192.168.1.125",
+            "host": "123.123.123.123",
             "status": "SUCCESS"
         }
     }
@@ -6070,14 +6018,14 @@ Configure timezone setting
 
 #### Human Readable Output
 
-># 192.168.1.125 -  SUCCESS 
+># 123.123.123.123 -  SUCCESS 
 >  * changed: False
 
 
 ### linux-ufw
 ***
 Manage firewall with UFW
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/ufw_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/ufw_module.html
 
 
 #### Base Command
@@ -6114,17 +6062,11 @@ Manage firewall with UFW
 | --- | --- | --- |
 
 
-#### Command Example
-``` ```
-
-#### Human Readable Output
-
-
 
 ### linux-user
 ***
 Manage user accounts
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/user_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/user_module.html
 
 
 #### Base Command
@@ -6195,17 +6137,11 @@ Manage user accounts
 | Linux.user.uid | number | User ID of the user account | 
 
 
-#### Command Example
-``` ```
-
-#### Human Readable Output
-
-
 
 ### linux-xfs-quota
 ***
 Manage quotas on XFS filesystems
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/xfs_quota_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/xfs_quota_module.html
 
 
 #### Base Command
@@ -6240,17 +6176,11 @@ Manage quotas on XFS filesystems
 | Linux.xfsQuota.rtbsoft | number | the current rtbsoft setting in bytes | 
 
 
-#### Command Example
-``` ```
-
-#### Human Readable Output
-
-
 
 ### linux-htpasswd
 ***
 manage user files for basic authentication
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/htpasswd_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/htpasswd_module.html
 
 
 #### Base Command
@@ -6284,17 +6214,11 @@ manage user files for basic authentication
 | --- | --- | --- |
 
 
-#### Command Example
-``` ```
-
-#### Human Readable Output
-
-
 
 ### linux-supervisorctl
 ***
 Manage the state of a program or group of programs running via supervisord
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/supervisorctl_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/supervisorctl_module.html
 
 
 #### Base Command
@@ -6321,17 +6245,11 @@ Manage the state of a program or group of programs running via supervisord
 | --- | --- | --- |
 
 
-#### Command Example
-``` ```
-
-#### Human Readable Output
-
-
 
 ### linux-openssh-cert
 ***
 Generate OpenSSH host or user certificates.
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/openssh_cert_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/openssh_cert_module.html
 
 
 #### Base Command
@@ -6375,17 +6293,11 @@ Generate OpenSSH host or user certificates.
 | Linux.opensshCert.info | unknown | Information about the certificate. Output of \`ssh-keygen -L -f\`. | 
 
 
-#### Command Example
-``` ```
-
-#### Human Readable Output
-
-
 
 ### linux-openssh-keypair
 ***
 Generate OpenSSH private and public keys.
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/openssh_keypair_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/openssh_keypair_module.html
 
 
 #### Base Command
@@ -6426,7 +6338,7 @@ Generate OpenSSH private and public keys.
 
 
 #### Command Example
-```!linux-openssh-keypair host="192.168.1.125" path="/tmp/id_ssh_rsa" ```
+```!linux-openssh-keypair host="123.123.123.123" path="/tmp/id_ssh_rsa" ```
 
 #### Context Example
 ```json
@@ -6437,7 +6349,7 @@ Generate OpenSSH private and public keys.
             "comment": "",
             "filename": "/tmp/id_ssh_rsa",
             "fingerprint": "SHA256:vlhiKW0d9Ud7gFGnUOFCEYl3c3B/XcFtEiz2JggpXnw",
-            "host": "192.168.1.125",
+            "host": "123.123.123.123",
             "public_key": "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQDI5EKvHE4IhXqNA5zgWqbmYXxGdTKLuU0UQ4THQCnvMGR1BnfikSK+kT33Iq9wi3btoKoeqrgE8TMPb4On69akaPNnOgi2Dk+l0OoQBzIvn9m3RqvrtUFUDLTNckt/lrNIeIk3KXu22fcp0qoIgMNJmjYcY6Qbm8pCcVbXp6X3nbqk3glI2sTkM25UxbOLnbbyGrUMfUfAWGWC1wyyQktSc/5j41aZlvUhv/x54DBL8ASa/OeMxn9DboIm2flp+JgqDIm8rZXIucZjT6tool3XYseNJ0UxykQsAx36Gw2HGOXJbukiDlS0X5ifuj412uSh+g+UDvlaEjDhYasW2m7geDlZEJkSduELPar8pDP7RAqN3YIbv+zD+bOfZeSrxSzfIF103hcv+pAVXWqCwMSN1mSVdnuI9FLmTQ6a2TGE9OBwjbn+k2Vlxn0+aMZrT6R+M6rNsfUGLZRQviN+y8tvYDhsXmJhkhHo4XmdYRJmnHzWEETvboakATbTsqUVheyLS3tPgn7guDAQw67RBc/D7zPw6fuf9Xw9IhwqwH/MySskqsz3B7leuiYPqBaijAKw3Wdn1VmhszHC8kJL2RaEmTp4gNmMMp1H4V2zfH1f+jSG4gfwqJe/3xeNlBsKDvKDik5TRt6fzSlNbgvEOfijlABRU3rjg+kEUFvzHPcp1Q==",
             "size": 4096,
             "status": "SUCCESS",
@@ -6449,7 +6361,7 @@ Generate OpenSSH private and public keys.
 
 #### Human Readable Output
 
-># 192.168.1.125 -  SUCCESS 
+># 123.123.123.123 -  SUCCESS 
 >  * changed: False
 >  * comment: 
 >  * filename: /tmp/id_ssh_rsa
@@ -6462,7 +6374,7 @@ Generate OpenSSH private and public keys.
 ### linux-acl
 ***
 Set and retrieve file ACL information.
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/acl_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/acl_module.html
 
 
 #### Base Command
@@ -6493,17 +6405,11 @@ Set and retrieve file ACL information.
 | Linux.acl.acl | unknown | Current ACL on provided path \(after changes, if any\) | 
 
 
-#### Command Example
-``` ```
-
-#### Human Readable Output
-
-
 
 ### linux-archive
 ***
 Creates a compressed archive of one or more files or trees
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/archive_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/archive_module.html
 
 
 #### Base Command
@@ -6543,17 +6449,10 @@ Creates a compressed archive of one or more files or trees
 | Linux.archive.expanded_exclude_paths | unknown | The list of matching exclude paths from the exclude_path argument. | 
 
 
-#### Command Example
-``` ```
-
-#### Human Readable Output
-
-
-
 ### linux-assemble
 ***
 Assemble configuration files from fragments
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/assemble_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/assemble_module.html
 
 
 #### Base Command
@@ -6590,17 +6489,11 @@ Assemble configuration files from fragments
 | --- | --- | --- |
 
 
-#### Command Example
-``` ```
-
-#### Human Readable Output
-
-
 
 ### linux-blockinfile
 ***
 Insert/update/remove a text block surrounded by marker lines
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/blockinfile_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/blockinfile_module.html
 
 
 #### Base Command
@@ -6639,17 +6532,11 @@ Insert/update/remove a text block surrounded by marker lines
 | --- | --- | --- |
 
 
-#### Command Example
-``` ```
-
-#### Human Readable Output
-
-
 
 ### linux-file
 ***
 Manage files and file properties
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/file_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/file_module.html
 
 
 #### Base Command
@@ -6687,17 +6574,11 @@ Manage files and file properties
 | --- | --- | --- |
 
 
-#### Command Example
-``` ```
-
-#### Human Readable Output
-
-
 
 ### linux-find
 ***
 Return a list of files based on specific criteria
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/find_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/find_module.html
 
 
 #### Base Command
@@ -6734,7 +6615,7 @@ Return a list of files based on specific criteria
 
 
 #### Command Example
-```!linux-find host="192.168.1.125" paths="/tmp" age="2d" recurse="True" ```
+```!linux-find host="123.123.123.123" paths="/tmp" age="2d" recurse="True" ```
 
 #### Context Example
 ```json
@@ -6744,7 +6625,7 @@ Return a list of files based on specific criteria
             "changed": false,
             "examined": 18,
             "files": [],
-            "host": "192.168.1.125",
+            "host": "123.123.123.123",
             "matched": 0,
             "msg": "",
             "status": "SUCCESS"
@@ -6755,7 +6636,7 @@ Return a list of files based on specific criteria
 
 #### Human Readable Output
 
-># 192.168.1.125 -  SUCCESS 
+># 123.123.123.123 -  SUCCESS 
 >  * changed: False
 >  * examined: 18
 >  * matched: 0
@@ -6766,7 +6647,7 @@ Return a list of files based on specific criteria
 ### linux-ini-file
 ***
 Tweak settings in INI files
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/ini_file_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/ini_file_module.html
 
 
 #### Base Command
@@ -6804,7 +6685,7 @@ Tweak settings in INI files
 
 
 #### Command Example
-```!linux-ini-file host="192.168.1.125" path="/etc/conf" section="drinks" option="fav" value="lemonade" mode="0600" backup="True" ```
+```!linux-ini-file host="123.123.123.123" path="/etc/conf" section="drinks" option="fav" value="lemonade" mode="0600" backup="True" ```
 
 #### Context Example
 ```json
@@ -6814,7 +6695,7 @@ Tweak settings in INI files
             "changed": false,
             "gid": 0,
             "group": "root",
-            "host": "192.168.1.125",
+            "host": "123.123.123.123",
             "mode": "0600",
             "msg": "OK",
             "owner": "root",
@@ -6831,7 +6712,7 @@ Tweak settings in INI files
 
 #### Human Readable Output
 
-># 192.168.1.125 -  SUCCESS 
+># 123.123.123.123 -  SUCCESS 
 >  * changed: False
 >  * gid: 0
 >  * group: root
@@ -6848,7 +6729,7 @@ Tweak settings in INI files
 ### linux-iso-extract
 ***
 Extract files from an ISO image
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/iso_extract_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/iso_extract_module.html
 
 
 #### Base Command
@@ -6872,17 +6753,11 @@ Extract files from an ISO image
 | --- | --- | --- |
 
 
-#### Command Example
-``` ```
-
-#### Human Readable Output
-
-
 
 ### linux-lineinfile
 ***
 Manage lines in text files
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/lineinfile_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/lineinfile_module.html
 
 
 #### Base Command
@@ -6923,7 +6798,7 @@ Manage lines in text files
 
 
 #### Command Example
-```!linux-lineinfile host="192.168.1.125" path="/etc/selinux/config" regexp="^SELINUX=" line="SELINUX=enforcing" ```
+```!linux-lineinfile host="123.123.123.123" path="/etc/selinux/config" regexp="^SELINUX=" line="SELINUX=enforcing" ```
 
 #### Context Example
 ```json
@@ -6932,7 +6807,7 @@ Manage lines in text files
         "lineinfile": {
             "backup": "",
             "changed": false,
-            "host": "192.168.1.125",
+            "host": "123.123.123.123",
             "msg": "",
             "status": "SUCCESS"
         }
@@ -6942,7 +6817,7 @@ Manage lines in text files
 
 #### Human Readable Output
 
-># 192.168.1.125 -  SUCCESS 
+># 123.123.123.123 -  SUCCESS 
 >  * backup: 
 >  * changed: False
 >  * msg: 
@@ -6951,7 +6826,7 @@ Manage lines in text files
 ### linux-replace
 ***
 Replace all instances of a particular string in a file using a back-referenced regular expression
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/replace_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/replace_module.html
 
 
 #### Base Command
@@ -6989,7 +6864,7 @@ Replace all instances of a particular string in a file using a back-referenced r
 
 
 #### Command Example
-```!linux-replace host="192.168.1.125" path="/etc/hosts" regexp="(\\s+)old\\.host\\.name(\\s+.*)?$" replace="\\1new.host.name\\2" ```
+```!linux-replace host="123.123.123.123" path="/etc/hosts" regexp="(\\s+)old\\.host\\.name(\\s+.*)?$" replace="\\1new.host.name\\2" ```
 
 #### Context Example
 ```json
@@ -6997,7 +6872,7 @@ Replace all instances of a particular string in a file using a back-referenced r
     "linux": {
         "replace": {
             "changed": false,
-            "host": "192.168.1.125",
+            "host": "123.123.123.123",
             "msg": "",
             "status": "SUCCESS"
         }
@@ -7007,7 +6882,7 @@ Replace all instances of a particular string in a file using a back-referenced r
 
 #### Human Readable Output
 
-># 192.168.1.125 -  SUCCESS 
+># 123.123.123.123 -  SUCCESS 
 >  * changed: False
 >  * msg: 
 
@@ -7015,7 +6890,7 @@ Replace all instances of a particular string in a file using a back-referenced r
 ### linux-stat
 ***
 Retrieve file or file system status
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/stat_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/stat_module.html
 
 
 #### Base Command
@@ -7042,7 +6917,7 @@ Retrieve file or file system status
 
 
 #### Command Example
-```!linux-stat host="192.168.1.125" path="/etc/foo.conf" ```
+```!linux-stat host="123.123.123.123" path="/etc/foo.conf" ```
 
 #### Context Example
 ```json
@@ -7050,7 +6925,7 @@ Retrieve file or file system status
     "linux": {
         "stat": {
             "exists": false,
-            "host": "192.168.1.125",
+            "host": "123.123.123.123",
             "status": "SUCCESS"
         }
     }
@@ -7059,14 +6934,14 @@ Retrieve file or file system status
 
 #### Human Readable Output
 
-># 192.168.1.125 -  SUCCESS 
+># 123.123.123.123 -  SUCCESS 
 >  * exists: False
 
 
 ### linux-synchronize
 ***
 A wrapper around rsync to make common tasks in your playbooks quick and easy
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/synchronize_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/synchronize_module.html
 
 
 #### Base Command
@@ -7111,17 +6986,11 @@ A wrapper around rsync to make common tasks in your playbooks quick and easy
 | --- | --- | --- |
 
 
-#### Command Example
-``` ```
-
-#### Human Readable Output
-
-
 
 ### linux-tempfile
 ***
 Creates temporary files and directories
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/tempfile_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/tempfile_module.html
 
 
 #### Base Command
@@ -7146,7 +7015,7 @@ Creates temporary files and directories
 
 
 #### Command Example
-```!linux-tempfile host="192.168.1.125" state="directory" suffix="build" ```
+```!linux-tempfile host="123.123.123.123" state="directory" suffix="build" ```
 
 #### Context Example
 ```json
@@ -7156,7 +7025,7 @@ Creates temporary files and directories
             "changed": true,
             "gid": 0,
             "group": "root",
-            "host": "192.168.1.125",
+            "host": "123.123.123.123",
             "mode": "0700",
             "owner": "root",
             "path": "/tmp/ansible.eehilh3tbuild",
@@ -7172,7 +7041,7 @@ Creates temporary files and directories
 
 #### Human Readable Output
 
-># 192.168.1.125 -  CHANGED 
+># 123.123.123.123 -  CHANGED 
 >  * changed: True
 >  * gid: 0
 >  * group: root
@@ -7188,7 +7057,7 @@ Creates temporary files and directories
 ### linux-unarchive
 ***
 Unpacks an archive after (optionally) copying it from the local machine.
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/unarchive_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/unarchive_module.html
 
 
 #### Base Command
@@ -7227,17 +7096,11 @@ Unpacks an archive after (optionally) copying it from the local machine.
 | --- | --- | --- |
 
 
-#### Command Example
-``` ```
-
-#### Human Readable Output
-
-
 
 ### linux-xml
 ***
 Manage bits and pieces of XML files or strings
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/xml_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/xml_module.html
 
 
 #### Base Command
@@ -7280,17 +7143,11 @@ Manage bits and pieces of XML files or strings
 | Linux.xml.xmlstring | string | An XML string of the resulting output. | 
 
 
-#### Command Example
-``` ```
-
-#### Human Readable Output
-
-
 
 ### linux-expect
 ***
 Executes a command and responds to prompts.
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/expect_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/expect_module.html
 
 
 #### Base Command
@@ -7316,17 +7173,11 @@ Executes a command and responds to prompts.
 | --- | --- | --- |
 
 
-#### Command Example
-``` ```
-
-#### Human Readable Output
-
-
 
 ### linux-bower
 ***
 Manage bower packages with bower
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/bower_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/bower_module.html
 
 
 #### Base Command
@@ -7352,17 +7203,11 @@ Manage bower packages with bower
 | --- | --- | --- |
 
 
-#### Command Example
-``` ```
-
-#### Human Readable Output
-
-
 
 ### linux-bundler
 ***
 Manage Ruby Gem dependencies with Bundler
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/bundler_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/bundler_module.html
 
 
 #### Base Command
@@ -7393,17 +7238,11 @@ Manage Ruby Gem dependencies with Bundler
 | --- | --- | --- |
 
 
-#### Command Example
-``` ```
-
-#### Human Readable Output
-
-
 
 ### linux-composer
 ***
 Dependency Manager for PHP
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/composer_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/composer_module.html
 
 
 #### Base Command
@@ -7436,17 +7275,11 @@ Dependency Manager for PHP
 | --- | --- | --- |
 
 
-#### Command Example
-``` ```
-
-#### Human Readable Output
-
-
 
 ### linux-cpanm
 ***
 Manages Perl library dependencies.
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/cpanm_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/cpanm_module.html
 
 
 #### Base Command
@@ -7475,17 +7308,11 @@ Manages Perl library dependencies.
 | --- | --- | --- |
 
 
-#### Command Example
-``` ```
-
-#### Human Readable Output
-
-
 
 ### linux-gem
 ***
 Manage Ruby gems
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/gem_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/gem_module.html
 
 
 #### Base Command
@@ -7518,17 +7345,11 @@ Manage Ruby gems
 | --- | --- | --- |
 
 
-#### Command Example
-``` ```
-
-#### Human Readable Output
-
-
 
 ### linux-maven-artifact
 ***
 Downloads an Artifact from a Maven Repository
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/maven_artifact_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/maven_artifact_module.html
 
 
 #### Base Command
@@ -7571,17 +7392,11 @@ Downloads an Artifact from a Maven Repository
 | --- | --- | --- |
 
 
-#### Command Example
-``` ```
-
-#### Human Readable Output
-
-
 
 ### linux-npm
 ***
 Manage node.js packages with npm
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/npm_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/npm_module.html
 
 
 #### Base Command
@@ -7611,17 +7426,11 @@ Manage node.js packages with npm
 | --- | --- | --- |
 
 
-#### Command Example
-``` ```
-
-#### Human Readable Output
-
-
 
 ### linux-pear
 ***
 Manage pear/pecl packages
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/pear_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/pear_module.html
 
 
 #### Base Command
@@ -7643,17 +7452,11 @@ Manage pear/pecl packages
 | --- | --- | --- |
 
 
-#### Command Example
-``` ```
-
-#### Human Readable Output
-
-
 
 ### linux-pip
 ***
 Manages Python library dependencies
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/pip_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/pip_module.html
 
 
 #### Base Command
@@ -7691,7 +7494,7 @@ Manages Python library dependencies
 
 
 #### Command Example
-```!linux-pip host="192.168.1.125" name="bottle" ```
+```!linux-pip host="123.123.123.123" name="bottle" ```
 
 #### Context Example
 ```json
@@ -7704,7 +7507,7 @@ Manages Python library dependencies
                 "install",
                 "bottle"
             ],
-            "host": "192.168.1.125",
+            "host": "123.123.123.123",
             "name": [
                 "bottle"
             ],
@@ -7728,7 +7531,7 @@ Manages Python library dependencies
 
 #### Human Readable Output
 
-># 192.168.1.125 -  SUCCESS 
+># 123.123.123.123 -  SUCCESS 
 >  * changed: False
 >  * requirements: None
 >  * state: present
@@ -7753,7 +7556,7 @@ Manages Python library dependencies
 ### linux-pip-package-info
 ***
 pip package information
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/pip_package_info_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/pip_package_info_module.html
 
 
 #### Base Command
@@ -7774,17 +7577,11 @@ pip package information
 | Linux.pipPackageInfo.packages | unknown | a dictionary of installed package data | 
 
 
-#### Command Example
-``` ```
-
-#### Human Readable Output
-
-
 
 ### linux-yarn
 ***
 Manage node.js packages with Yarn
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/yarn_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/yarn_module.html
 
 
 #### Base Command
@@ -7816,17 +7613,11 @@ Manage node.js packages with Yarn
 | Linux.yarn.out | string | Output generated from Yarn with emojis removed. | 
 
 
-#### Command Example
-``` ```
-
-#### Human Readable Output
-
-
 
 ### linux-apk
 ***
 Manages apk packages
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/apk_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/apk_module.html
 
 
 #### Base Command
@@ -7852,17 +7643,11 @@ Manages apk packages
 | Linux.apk.packages | unknown | a list of packages that have been changed | 
 
 
-#### Command Example
-``` ```
-
-#### Human Readable Output
-
-
 
 ### linux-apt
 ***
 Manages apt-packages
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/apt_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/apt_module.html
 
 
 #### Base Command
@@ -7902,17 +7687,11 @@ Manages apt-packages
 | Linux.apt.stderr | string | error output from apt | 
 
 
-#### Command Example
-``` ```
-
-#### Human Readable Output
-
-
 
 ### linux-apt-key
 ***
 Add or remove an apt key
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/apt_key_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/apt_key_module.html
 
 
 #### Base Command
@@ -7939,17 +7718,11 @@ Add or remove an apt key
 | --- | --- | --- |
 
 
-#### Command Example
-``` ```
-
-#### Human Readable Output
-
-
 
 ### linux-apt-repo
 ***
 Manage APT repositories via apt-repo
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/apt_repo_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/apt_repo_module.html
 
 
 #### Base Command
@@ -7972,17 +7745,11 @@ Manage APT repositories via apt-repo
 | --- | --- | --- |
 
 
-#### Command Example
-``` ```
-
-#### Human Readable Output
-
-
 
 ### linux-apt-repository
 ***
 Add and remove APT repositories
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/apt_repository_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/apt_repository_module.html
 
 
 #### Base Command
@@ -8008,17 +7775,11 @@ Add and remove APT repositories
 | --- | --- | --- |
 
 
-#### Command Example
-``` ```
-
-#### Human Readable Output
-
-
 
 ### linux-apt-rpm
 ***
 apt_rpm package manager
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/apt_rpm_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/apt_rpm_module.html
 
 
 #### Base Command
@@ -8040,17 +7801,11 @@ apt_rpm package manager
 | --- | --- | --- |
 
 
-#### Command Example
-``` ```
-
-#### Human Readable Output
-
-
 
 ### linux-dpkg-selections
 ***
 Dpkg package selection selections
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/dpkg_selections_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/dpkg_selections_module.html
 
 
 #### Base Command
@@ -8071,17 +7826,10 @@ Dpkg package selection selections
 | --- | --- | --- |
 
 
-#### Command Example
-``` ```
-
-#### Human Readable Output
-
-
-
 ### linux-flatpak
 ***
 Manage flatpaks
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/flatpak_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/flatpak_module.html
 
 
 #### Base Command
@@ -8110,17 +7858,11 @@ Manage flatpaks
 | Linux.flatpak.stdout | string | Output from flatpak binary | 
 
 
-#### Command Example
-``` ```
-
-#### Human Readable Output
-
-
 
 ### linux-flatpak-remote
 ***
 Manage flatpak repository remotes
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/flatpak_remote_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/flatpak_remote_module.html
 
 
 #### Base Command
@@ -8149,17 +7891,11 @@ Manage flatpak repository remotes
 | Linux.flatpakRemote.stdout | string | Output from flatpak binary | 
 
 
-#### Command Example
-``` ```
-
-#### Human Readable Output
-
-
 
 ### linux-homebrew
 ***
 Package manager for Homebrew
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/homebrew_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/homebrew_module.html
 
 
 #### Base Command
@@ -8184,17 +7920,11 @@ Package manager for Homebrew
 | --- | --- | --- |
 
 
-#### Command Example
-``` ```
-
-#### Human Readable Output
-
-
 
 ### linux-homebrew-cask
 ***
 Install/uninstall homebrew casks.
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/homebrew_cask_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/homebrew_cask_module.html
 
 
 #### Base Command
@@ -8223,17 +7953,11 @@ Install/uninstall homebrew casks.
 | --- | --- | --- |
 
 
-#### Command Example
-``` ```
-
-#### Human Readable Output
-
-
 
 ### linux-homebrew-tap
 ***
 Tap a Homebrew repository.
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/homebrew_tap_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/homebrew_tap_module.html
 
 
 #### Base Command
@@ -8255,17 +7979,11 @@ Tap a Homebrew repository.
 | --- | --- | --- |
 
 
-#### Command Example
-``` ```
-
-#### Human Readable Output
-
-
 
 ### linux-layman
 ***
 Manage Gentoo overlays
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/layman_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/layman_module.html
 
 
 #### Base Command
@@ -8288,17 +8006,11 @@ Manage Gentoo overlays
 | --- | --- | --- |
 
 
-#### Command Example
-``` ```
-
-#### Human Readable Output
-
-
 
 ### linux-package
 ***
 Generic OS package manager
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/package_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/package_module.html
 
 
 #### Base Command
@@ -8320,17 +8032,11 @@ Generic OS package manager
 | --- | --- | --- |
 
 
-#### Command Example
-``` ```
-
-#### Human Readable Output
-
-
 
 ### linux-package-facts
 ***
 package information as facts
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/package_facts_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/package_facts_module.html
 
 
 #### Base Command
@@ -8353,7 +8059,7 @@ package information as facts
 
 
 #### Command Example
-```!linux-package-facts host="192.168.1.125" manager="auto" ```
+```!linux-package-facts host="123.123.123.123" manager="auto" ```
 
 #### Context Example
 ```json
@@ -8361,7 +8067,7 @@ package information as facts
     "linux": {
         "packageFacts": {
             "discovered_interpreter_python": "/usr/libexec/platform-python",
-            "host": "192.168.1.125",
+            "host": "123.123.123.123",
             "packages": {
                 "GConf2": [
                     {
@@ -8392,4556 +8098,6 @@ package information as facts
                         "source": "rpm",
                         "version": "1.22.8"
                     }
-                ],
-                "NetworkManager-team": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": 1,
-                        "name": "NetworkManager-team",
-                        "release": "5.el8_2",
-                        "source": "rpm",
-                        "version": "1.22.8"
-                    }
-                ],
-                "NetworkManager-tui": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": 1,
-                        "name": "NetworkManager-tui",
-                        "release": "5.el8_2",
-                        "source": "rpm",
-                        "version": "1.22.8"
-                    }
-                ],
-                "acl": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "acl",
-                        "release": "1.el8",
-                        "source": "rpm",
-                        "version": "2.2.53"
-                    }
-                ],
-                "apr": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "apr",
-                        "release": "11.el8",
-                        "source": "rpm",
-                        "version": "1.6.3"
-                    }
-                ],
-                "apr-util": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "apr-util",
-                        "release": "6.el8",
-                        "source": "rpm",
-                        "version": "1.6.1"
-                    }
-                ],
-                "apr-util-bdb": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "apr-util-bdb",
-                        "release": "6.el8",
-                        "source": "rpm",
-                        "version": "1.6.1"
-                    }
-                ],
-                "apr-util-openssl": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "apr-util-openssl",
-                        "release": "6.el8",
-                        "source": "rpm",
-                        "version": "1.6.1"
-                    }
-                ],
-                "at": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "at",
-                        "release": "11.el8",
-                        "source": "rpm",
-                        "version": "3.1.20"
-                    }
-                ],
-                "audit": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "audit",
-                        "release": "0.17.20191104git1c2f876.el8",
-                        "source": "rpm",
-                        "version": "3.0"
-                    }
-                ],
-                "audit-libs": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "audit-libs",
-                        "release": "0.17.20191104git1c2f876.el8",
-                        "source": "rpm",
-                        "version": "3.0"
-                    }
-                ],
-                "authselect": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "authselect",
-                        "release": "2.el8",
-                        "source": "rpm",
-                        "version": "1.1"
-                    }
-                ],
-                "authselect-libs": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "authselect-libs",
-                        "release": "2.el8",
-                        "source": "rpm",
-                        "version": "1.1"
-                    }
-                ],
-                "avahi-libs": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "avahi-libs",
-                        "release": "19.el8",
-                        "source": "rpm",
-                        "version": "0.7"
-                    }
-                ],
-                "basesystem": [
-                    {
-                        "arch": "noarch",
-                        "epoch": null,
-                        "name": "basesystem",
-                        "release": "5.el8",
-                        "source": "rpm",
-                        "version": "11"
-                    }
-                ],
-                "bash": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "bash",
-                        "release": "10.el8",
-                        "source": "rpm",
-                        "version": "4.4.19"
-                    }
-                ],
-                "bind-export-libs": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": 32,
-                        "name": "bind-export-libs",
-                        "release": "6.el8_2.1",
-                        "source": "rpm",
-                        "version": "9.11.13"
-                    }
-                ],
-                "binutils": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "binutils",
-                        "release": "79.el8",
-                        "source": "rpm",
-                        "version": "2.30"
-                    }
-                ],
-                "biosdevname": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "biosdevname",
-                        "release": "2.el8",
-                        "source": "rpm",
-                        "version": "0.7.3"
-                    }
-                ],
-                "brotli": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "brotli",
-                        "release": "1.el8",
-                        "source": "rpm",
-                        "version": "1.0.6"
-                    }
-                ],
-                "bzip2-libs": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "bzip2-libs",
-                        "release": "26.el8",
-                        "source": "rpm",
-                        "version": "1.0.6"
-                    }
-                ],
-                "c-ares": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "c-ares",
-                        "release": "5.el8",
-                        "source": "rpm",
-                        "version": "1.13.0"
-                    }
-                ],
-                "ca-certificates": [
-                    {
-                        "arch": "noarch",
-                        "epoch": null,
-                        "name": "ca-certificates",
-                        "release": "80.0.el8_2",
-                        "source": "rpm",
-                        "version": "2020.2.41"
-                    }
-                ],
-                "centos-gpg-keys": [
-                    {
-                        "arch": "noarch",
-                        "epoch": null,
-                        "name": "centos-gpg-keys",
-                        "release": "2.2004.0.2.el8",
-                        "source": "rpm",
-                        "version": "8.2"
-                    }
-                ],
-                "centos-logos-httpd": [
-                    {
-                        "arch": "noarch",
-                        "epoch": null,
-                        "name": "centos-logos-httpd",
-                        "release": "2.el8",
-                        "source": "rpm",
-                        "version": "80.5"
-                    }
-                ],
-                "centos-release": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "centos-release",
-                        "release": "2.2004.0.2.el8",
-                        "source": "rpm",
-                        "version": "8.2"
-                    }
-                ],
-                "centos-repos": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "centos-repos",
-                        "release": "2.2004.0.2.el8",
-                        "source": "rpm",
-                        "version": "8.2"
-                    }
-                ],
-                "chkconfig": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "chkconfig",
-                        "release": "1.el8",
-                        "source": "rpm",
-                        "version": "1.11"
-                    }
-                ],
-                "chrony": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "chrony",
-                        "release": "1.el8",
-                        "source": "rpm",
-                        "version": "3.5"
-                    }
-                ],
-                "copy-jdk-configs": [
-                    {
-                        "arch": "noarch",
-                        "epoch": null,
-                        "name": "copy-jdk-configs",
-                        "release": "4.el8",
-                        "source": "rpm",
-                        "version": "3.7"
-                    }
-                ],
-                "coreutils": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "coreutils",
-                        "release": "7.el8_2.1",
-                        "source": "rpm",
-                        "version": "8.30"
-                    }
-                ],
-                "coreutils-common": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "coreutils-common",
-                        "release": "7.el8_2.1",
-                        "source": "rpm",
-                        "version": "8.30"
-                    }
-                ],
-                "cpio": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "cpio",
-                        "release": "8.el8",
-                        "source": "rpm",
-                        "version": "2.12"
-                    }
-                ],
-                "cpp": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "cpp",
-                        "release": "5.1.el8",
-                        "source": "rpm",
-                        "version": "8.3.1"
-                    }
-                ],
-                "cracklib": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "cracklib",
-                        "release": "15.el8",
-                        "source": "rpm",
-                        "version": "2.9.6"
-                    }
-                ],
-                "cracklib-dicts": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "cracklib-dicts",
-                        "release": "15.el8",
-                        "source": "rpm",
-                        "version": "2.9.6"
-                    }
-                ],
-                "cronie": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "cronie",
-                        "release": "4.el8",
-                        "source": "rpm",
-                        "version": "1.5.2"
-                    }
-                ],
-                "cronie-anacron": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "cronie-anacron",
-                        "release": "4.el8",
-                        "source": "rpm",
-                        "version": "1.5.2"
-                    }
-                ],
-                "crontabs": [
-                    {
-                        "arch": "noarch",
-                        "epoch": null,
-                        "name": "crontabs",
-                        "release": "16.20150630git.el8",
-                        "source": "rpm",
-                        "version": "1.11"
-                    }
-                ],
-                "crypto-policies": [
-                    {
-                        "arch": "noarch",
-                        "epoch": null,
-                        "name": "crypto-policies",
-                        "release": "2.git23e1bf1.el8",
-                        "source": "rpm",
-                        "version": "20191128"
-                    }
-                ],
-                "cryptsetup-libs": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "cryptsetup-libs",
-                        "release": "1.el8",
-                        "source": "rpm",
-                        "version": "2.2.2"
-                    }
-                ],
-                "cups-libs": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": 1,
-                        "name": "cups-libs",
-                        "release": "38.el8",
-                        "source": "rpm",
-                        "version": "2.2.6"
-                    }
-                ],
-                "curl": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "curl",
-                        "release": "12.el8",
-                        "source": "rpm",
-                        "version": "7.61.1"
-                    }
-                ],
-                "cyrus-sasl-lib": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "cyrus-sasl-lib",
-                        "release": "1.el8",
-                        "source": "rpm",
-                        "version": "2.1.27"
-                    }
-                ],
-                "dbus": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": 1,
-                        "name": "dbus",
-                        "release": "10.el8_2",
-                        "source": "rpm",
-                        "version": "1.12.8"
-                    }
-                ],
-                "dbus-common": [
-                    {
-                        "arch": "noarch",
-                        "epoch": 1,
-                        "name": "dbus-common",
-                        "release": "10.el8_2",
-                        "source": "rpm",
-                        "version": "1.12.8"
-                    }
-                ],
-                "dbus-daemon": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": 1,
-                        "name": "dbus-daemon",
-                        "release": "10.el8_2",
-                        "source": "rpm",
-                        "version": "1.12.8"
-                    }
-                ],
-                "dbus-glib": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "dbus-glib",
-                        "release": "2.el8",
-                        "source": "rpm",
-                        "version": "0.110"
-                    }
-                ],
-                "dbus-libs": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": 1,
-                        "name": "dbus-libs",
-                        "release": "10.el8_2",
-                        "source": "rpm",
-                        "version": "1.12.8"
-                    }
-                ],
-                "dbus-tools": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": 1,
-                        "name": "dbus-tools",
-                        "release": "10.el8_2",
-                        "source": "rpm",
-                        "version": "1.12.8"
-                    }
-                ],
-                "dconf": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "dconf",
-                        "release": "3.el8",
-                        "source": "rpm",
-                        "version": "0.28.0"
-                    }
-                ],
-                "device-mapper": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": 8,
-                        "name": "device-mapper",
-                        "release": "3.el8",
-                        "source": "rpm",
-                        "version": "1.02.169"
-                    }
-                ],
-                "device-mapper-event": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": 8,
-                        "name": "device-mapper-event",
-                        "release": "3.el8",
-                        "source": "rpm",
-                        "version": "1.02.169"
-                    }
-                ],
-                "device-mapper-event-libs": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": 8,
-                        "name": "device-mapper-event-libs",
-                        "release": "3.el8",
-                        "source": "rpm",
-                        "version": "1.02.169"
-                    }
-                ],
-                "device-mapper-libs": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": 8,
-                        "name": "device-mapper-libs",
-                        "release": "3.el8",
-                        "source": "rpm",
-                        "version": "1.02.169"
-                    }
-                ],
-                "device-mapper-persistent-data": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "device-mapper-persistent-data",
-                        "release": "3.el8",
-                        "source": "rpm",
-                        "version": "0.8.5"
-                    }
-                ],
-                "dhcp-client": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": 12,
-                        "name": "dhcp-client",
-                        "release": "40.el8",
-                        "source": "rpm",
-                        "version": "4.3.6"
-                    }
-                ],
-                "dhcp-common": [
-                    {
-                        "arch": "noarch",
-                        "epoch": 12,
-                        "name": "dhcp-common",
-                        "release": "40.el8",
-                        "source": "rpm",
-                        "version": "4.3.6"
-                    }
-                ],
-                "dhcp-libs": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": 12,
-                        "name": "dhcp-libs",
-                        "release": "40.el8",
-                        "source": "rpm",
-                        "version": "4.3.6"
-                    }
-                ],
-                "diffutils": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "diffutils",
-                        "release": "6.el8",
-                        "source": "rpm",
-                        "version": "3.6"
-                    }
-                ],
-                "dmidecode": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": 1,
-                        "name": "dmidecode",
-                        "release": "5.el8",
-                        "source": "rpm",
-                        "version": "3.2"
-                    }
-                ],
-                "dnf": [
-                    {
-                        "arch": "noarch",
-                        "epoch": null,
-                        "name": "dnf",
-                        "release": "7.el8_2",
-                        "source": "rpm",
-                        "version": "4.2.17"
-                    }
-                ],
-                "dnf-data": [
-                    {
-                        "arch": "noarch",
-                        "epoch": null,
-                        "name": "dnf-data",
-                        "release": "7.el8_2",
-                        "source": "rpm",
-                        "version": "4.2.17"
-                    }
-                ],
-                "dnf-plugin-spacewalk": [
-                    {
-                        "arch": "noarch",
-                        "epoch": null,
-                        "name": "dnf-plugin-spacewalk",
-                        "release": "11.module_el8.1.0+211+ad6c0bc7",
-                        "source": "rpm",
-                        "version": "2.8.5"
-                    }
-                ],
-                "dnf-plugins-core": [
-                    {
-                        "arch": "noarch",
-                        "epoch": null,
-                        "name": "dnf-plugins-core",
-                        "release": "4.el8_2",
-                        "source": "rpm",
-                        "version": "4.0.12"
-                    }
-                ],
-                "dracut": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "dracut",
-                        "release": "70.git20200228.el8",
-                        "source": "rpm",
-                        "version": "049"
-                    }
-                ],
-                "dracut-config-rescue": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "dracut-config-rescue",
-                        "release": "70.git20200228.el8",
-                        "source": "rpm",
-                        "version": "049"
-                    }
-                ],
-                "dracut-network": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "dracut-network",
-                        "release": "70.git20200228.el8",
-                        "source": "rpm",
-                        "version": "049"
-                    }
-                ],
-                "dracut-squash": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "dracut-squash",
-                        "release": "70.git20200228.el8",
-                        "source": "rpm",
-                        "version": "049"
-                    }
-                ],
-                "e2fsprogs": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "e2fsprogs",
-                        "release": "3.el8",
-                        "source": "rpm",
-                        "version": "1.45.4"
-                    }
-                ],
-                "e2fsprogs-libs": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "e2fsprogs-libs",
-                        "release": "3.el8",
-                        "source": "rpm",
-                        "version": "1.45.4"
-                    }
-                ],
-                "elfutils-debuginfod-client": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "elfutils-debuginfod-client",
-                        "release": "7.el8",
-                        "source": "rpm",
-                        "version": "0.178"
-                    }
-                ],
-                "elfutils-default-yama-scope": [
-                    {
-                        "arch": "noarch",
-                        "epoch": null,
-                        "name": "elfutils-default-yama-scope",
-                        "release": "7.el8",
-                        "source": "rpm",
-                        "version": "0.178"
-                    }
-                ],
-                "elfutils-libelf": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "elfutils-libelf",
-                        "release": "7.el8",
-                        "source": "rpm",
-                        "version": "0.178"
-                    }
-                ],
-                "elfutils-libs": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "elfutils-libs",
-                        "release": "7.el8",
-                        "source": "rpm",
-                        "version": "0.178"
-                    }
-                ],
-                "ethtool": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": 2,
-                        "name": "ethtool",
-                        "release": "2.el8",
-                        "source": "rpm",
-                        "version": "5.0"
-                    }
-                ],
-                "expat": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "expat",
-                        "release": "3.el8",
-                        "source": "rpm",
-                        "version": "2.2.5"
-                    }
-                ],
-                "file": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "file",
-                        "release": "13.el8",
-                        "source": "rpm",
-                        "version": "5.33"
-                    }
-                ],
-                "file-libs": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "file-libs",
-                        "release": "13.el8",
-                        "source": "rpm",
-                        "version": "5.33"
-                    }
-                ],
-                "filesystem": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "filesystem",
-                        "release": "2.el8",
-                        "source": "rpm",
-                        "version": "3.8"
-                    }
-                ],
-                "findutils": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": 1,
-                        "name": "findutils",
-                        "release": "20.el8",
-                        "source": "rpm",
-                        "version": "4.6.0"
-                    }
-                ],
-                "fipscheck": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "fipscheck",
-                        "release": "4.el8",
-                        "source": "rpm",
-                        "version": "1.5.0"
-                    }
-                ],
-                "fipscheck-lib": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "fipscheck-lib",
-                        "release": "4.el8",
-                        "source": "rpm",
-                        "version": "1.5.0"
-                    }
-                ],
-                "firewalld": [
-                    {
-                        "arch": "noarch",
-                        "epoch": null,
-                        "name": "firewalld",
-                        "release": "4.el8",
-                        "source": "rpm",
-                        "version": "0.8.0"
-                    }
-                ],
-                "firewalld-filesystem": [
-                    {
-                        "arch": "noarch",
-                        "epoch": null,
-                        "name": "firewalld-filesystem",
-                        "release": "4.el8",
-                        "source": "rpm",
-                        "version": "0.8.0"
-                    }
-                ],
-                "freetype": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "freetype",
-                        "release": "4.el8",
-                        "source": "rpm",
-                        "version": "2.9.1"
-                    }
-                ],
-                "fuse": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "fuse",
-                        "release": "12.el8",
-                        "source": "rpm",
-                        "version": "2.9.7"
-                    }
-                ],
-                "fuse-common": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "fuse-common",
-                        "release": "12.el8",
-                        "source": "rpm",
-                        "version": "3.2.1"
-                    }
-                ],
-                "fuse-libs": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "fuse-libs",
-                        "release": "12.el8",
-                        "source": "rpm",
-                        "version": "2.9.7"
-                    }
-                ],
-                "gawk": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "gawk",
-                        "release": "1.el8",
-                        "source": "rpm",
-                        "version": "4.2.1"
-                    }
-                ],
-                "gcc": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "gcc",
-                        "release": "5.1.el8",
-                        "source": "rpm",
-                        "version": "8.3.1"
-                    }
-                ],
-                "gdbm": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": 1,
-                        "name": "gdbm",
-                        "release": "1.el8",
-                        "source": "rpm",
-                        "version": "1.18"
-                    }
-                ],
-                "gdbm-libs": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": 1,
-                        "name": "gdbm-libs",
-                        "release": "1.el8",
-                        "source": "rpm",
-                        "version": "1.18"
-                    }
-                ],
-                "geolite2-city": [
-                    {
-                        "arch": "noarch",
-                        "epoch": null,
-                        "name": "geolite2-city",
-                        "release": "1.el8",
-                        "source": "rpm",
-                        "version": "20180605"
-                    }
-                ],
-                "geolite2-country": [
-                    {
-                        "arch": "noarch",
-                        "epoch": null,
-                        "name": "geolite2-country",
-                        "release": "1.el8",
-                        "source": "rpm",
-                        "version": "20180605"
-                    }
-                ],
-                "gettext": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "gettext",
-                        "release": "17.el8",
-                        "source": "rpm",
-                        "version": "0.19.8.1"
-                    }
-                ],
-                "gettext-libs": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "gettext-libs",
-                        "release": "17.el8",
-                        "source": "rpm",
-                        "version": "0.19.8.1"
-                    }
-                ],
-                "glib2": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "glib2",
-                        "release": "8.el8",
-                        "source": "rpm",
-                        "version": "2.56.4"
-                    }
-                ],
-                "glibc": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "glibc",
-                        "release": "127.el8",
-                        "source": "rpm",
-                        "version": "2.28"
-                    }
-                ],
-                "glibc-common": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "glibc-common",
-                        "release": "127.el8",
-                        "source": "rpm",
-                        "version": "2.28"
-                    }
-                ],
-                "glibc-devel": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "glibc-devel",
-                        "release": "127.el8",
-                        "source": "rpm",
-                        "version": "2.28"
-                    }
-                ],
-                "glibc-headers": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "glibc-headers",
-                        "release": "127.el8",
-                        "source": "rpm",
-                        "version": "2.28"
-                    }
-                ],
-                "glibc-langpack-en": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "glibc-langpack-en",
-                        "release": "127.el8",
-                        "source": "rpm",
-                        "version": "2.28"
-                    }
-                ],
-                "gmp": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": 1,
-                        "name": "gmp",
-                        "release": "10.el8",
-                        "source": "rpm",
-                        "version": "6.1.2"
-                    }
-                ],
-                "gnupg2": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "gnupg2",
-                        "release": "1.el8",
-                        "source": "rpm",
-                        "version": "2.2.9"
-                    }
-                ],
-                "gnupg2-smime": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "gnupg2-smime",
-                        "release": "1.el8",
-                        "source": "rpm",
-                        "version": "2.2.9"
-                    }
-                ],
-                "gnutls": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "gnutls",
-                        "release": "11.el8_2",
-                        "source": "rpm",
-                        "version": "3.6.8"
-                    }
-                ],
-                "gobject-introspection": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "gobject-introspection",
-                        "release": "1.el8",
-                        "source": "rpm",
-                        "version": "1.56.1"
-                    }
-                ],
-                "gpg-pubkey": [
-                    {
-                        "arch": null,
-                        "epoch": null,
-                        "name": "gpg-pubkey",
-                        "release": "5ccc5b19",
-                        "source": "rpm",
-                        "version": "8483c65d"
-                    }
-                ],
-                "gpgme": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "gpgme",
-                        "release": "6.el8.0.1",
-                        "source": "rpm",
-                        "version": "1.10.0"
-                    }
-                ],
-                "grep": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "grep",
-                        "release": "6.el8",
-                        "source": "rpm",
-                        "version": "3.1"
-                    }
-                ],
-                "groff-base": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "groff-base",
-                        "release": "18.el8",
-                        "source": "rpm",
-                        "version": "1.22.3"
-                    }
-                ],
-                "grub2-common": [
-                    {
-                        "arch": "noarch",
-                        "epoch": 1,
-                        "name": "grub2-common",
-                        "release": "87.el8_2",
-                        "source": "rpm",
-                        "version": "2.02"
-                    }
-                ],
-                "grub2-pc": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": 1,
-                        "name": "grub2-pc",
-                        "release": "87.el8_2",
-                        "source": "rpm",
-                        "version": "2.02"
-                    }
-                ],
-                "grub2-pc-modules": [
-                    {
-                        "arch": "noarch",
-                        "epoch": 1,
-                        "name": "grub2-pc-modules",
-                        "release": "87.el8_2",
-                        "source": "rpm",
-                        "version": "2.02"
-                    }
-                ],
-                "grub2-tools": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": 1,
-                        "name": "grub2-tools",
-                        "release": "87.el8_2",
-                        "source": "rpm",
-                        "version": "2.02"
-                    }
-                ],
-                "grub2-tools-extra": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": 1,
-                        "name": "grub2-tools-extra",
-                        "release": "87.el8_2",
-                        "source": "rpm",
-                        "version": "2.02"
-                    }
-                ],
-                "grub2-tools-minimal": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": 1,
-                        "name": "grub2-tools-minimal",
-                        "release": "87.el8_2",
-                        "source": "rpm",
-                        "version": "2.02"
-                    }
-                ],
-                "grubby": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "grubby",
-                        "release": "38.el8",
-                        "source": "rpm",
-                        "version": "8.40"
-                    }
-                ],
-                "gzip": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "gzip",
-                        "release": "9.el8",
-                        "source": "rpm",
-                        "version": "1.9"
-                    }
-                ],
-                "hardlink": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": 1,
-                        "name": "hardlink",
-                        "release": "6.el8",
-                        "source": "rpm",
-                        "version": "1.3"
-                    }
-                ],
-                "hdparm": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "hdparm",
-                        "release": "2.el8",
-                        "source": "rpm",
-                        "version": "9.54"
-                    }
-                ],
-                "hostname": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "hostname",
-                        "release": "6.el8",
-                        "source": "rpm",
-                        "version": "3.20"
-                    }
-                ],
-                "httpd": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "httpd",
-                        "release": "30.module_el8.3.0+561+97fdbbcc",
-                        "source": "rpm",
-                        "version": "2.4.37"
-                    }
-                ],
-                "httpd-filesystem": [
-                    {
-                        "arch": "noarch",
-                        "epoch": null,
-                        "name": "httpd-filesystem",
-                        "release": "30.module_el8.3.0+561+97fdbbcc",
-                        "source": "rpm",
-                        "version": "2.4.37"
-                    }
-                ],
-                "httpd-tools": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "httpd-tools",
-                        "release": "30.module_el8.3.0+561+97fdbbcc",
-                        "source": "rpm",
-                        "version": "2.4.37"
-                    }
-                ],
-                "hwdata": [
-                    {
-                        "arch": "noarch",
-                        "epoch": null,
-                        "name": "hwdata",
-                        "release": "8.4.el8",
-                        "source": "rpm",
-                        "version": "0.314"
-                    }
-                ],
-                "ima-evm-utils": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "ima-evm-utils",
-                        "release": "5.el8",
-                        "source": "rpm",
-                        "version": "1.1"
-                    }
-                ],
-                "info": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "info",
-                        "release": "6.el8",
-                        "source": "rpm",
-                        "version": "6.5"
-                    }
-                ],
-                "initscripts": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "initscripts",
-                        "release": "1.el8_2.2",
-                        "source": "rpm",
-                        "version": "10.00.6"
-                    }
-                ],
-                "ipcalc": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "ipcalc",
-                        "release": "4.el8",
-                        "source": "rpm",
-                        "version": "0.2.4"
-                    }
-                ],
-                "iproute": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "iproute",
-                        "release": "1.el8",
-                        "source": "rpm",
-                        "version": "5.3.0"
-                    }
-                ],
-                "iprutils": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "iprutils",
-                        "release": "1.el8",
-                        "source": "rpm",
-                        "version": "2.4.18.1"
-                    }
-                ],
-                "ipset": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "ipset",
-                        "release": "1.el8",
-                        "source": "rpm",
-                        "version": "7.1"
-                    }
-                ],
-                "ipset-libs": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "ipset-libs",
-                        "release": "1.el8",
-                        "source": "rpm",
-                        "version": "7.1"
-                    }
-                ],
-                "iptables": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "iptables",
-                        "release": "15.el8_3.3",
-                        "source": "rpm",
-                        "version": "1.8.4"
-                    }
-                ],
-                "iptables-ebtables": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "iptables-ebtables",
-                        "release": "15.el8_3.3",
-                        "source": "rpm",
-                        "version": "1.8.4"
-                    }
-                ],
-                "iptables-libs": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "iptables-libs",
-                        "release": "15.el8_3.3",
-                        "source": "rpm",
-                        "version": "1.8.4"
-                    }
-                ],
-                "iputils": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "iputils",
-                        "release": "2.el8",
-                        "source": "rpm",
-                        "version": "20180629"
-                    }
-                ],
-                "irqbalance": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": 2,
-                        "name": "irqbalance",
-                        "release": "4.el8",
-                        "source": "rpm",
-                        "version": "1.4.0"
-                    }
-                ],
-                "isl": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "isl",
-                        "release": "6.el8",
-                        "source": "rpm",
-                        "version": "0.16.1"
-                    }
-                ],
-                "iwl100-firmware": [
-                    {
-                        "arch": "noarch",
-                        "epoch": null,
-                        "name": "iwl100-firmware",
-                        "release": "97.el8.1",
-                        "source": "rpm",
-                        "version": "39.31.5.1"
-                    }
-                ],
-                "iwl1000-firmware": [
-                    {
-                        "arch": "noarch",
-                        "epoch": 1,
-                        "name": "iwl1000-firmware",
-                        "release": "97.el8.1",
-                        "source": "rpm",
-                        "version": "39.31.5.1"
-                    }
-                ],
-                "iwl105-firmware": [
-                    {
-                        "arch": "noarch",
-                        "epoch": null,
-                        "name": "iwl105-firmware",
-                        "release": "97.el8.1",
-                        "source": "rpm",
-                        "version": "18.168.6.1"
-                    }
-                ],
-                "iwl135-firmware": [
-                    {
-                        "arch": "noarch",
-                        "epoch": null,
-                        "name": "iwl135-firmware",
-                        "release": "97.el8.1",
-                        "source": "rpm",
-                        "version": "18.168.6.1"
-                    }
-                ],
-                "iwl2000-firmware": [
-                    {
-                        "arch": "noarch",
-                        "epoch": null,
-                        "name": "iwl2000-firmware",
-                        "release": "97.el8.1",
-                        "source": "rpm",
-                        "version": "18.168.6.1"
-                    }
-                ],
-                "iwl2030-firmware": [
-                    {
-                        "arch": "noarch",
-                        "epoch": null,
-                        "name": "iwl2030-firmware",
-                        "release": "97.el8.1",
-                        "source": "rpm",
-                        "version": "18.168.6.1"
-                    }
-                ],
-                "iwl3160-firmware": [
-                    {
-                        "arch": "noarch",
-                        "epoch": 1,
-                        "name": "iwl3160-firmware",
-                        "release": "97.el8.1",
-                        "source": "rpm",
-                        "version": "25.30.13.0"
-                    }
-                ],
-                "iwl3945-firmware": [
-                    {
-                        "arch": "noarch",
-                        "epoch": null,
-                        "name": "iwl3945-firmware",
-                        "release": "97.el8.1",
-                        "source": "rpm",
-                        "version": "15.32.2.9"
-                    }
-                ],
-                "iwl4965-firmware": [
-                    {
-                        "arch": "noarch",
-                        "epoch": null,
-                        "name": "iwl4965-firmware",
-                        "release": "97.el8.1",
-                        "source": "rpm",
-                        "version": "228.61.2.24"
-                    }
-                ],
-                "iwl5000-firmware": [
-                    {
-                        "arch": "noarch",
-                        "epoch": null,
-                        "name": "iwl5000-firmware",
-                        "release": "97.el8.1",
-                        "source": "rpm",
-                        "version": "8.83.5.1_1"
-                    }
-                ],
-                "iwl5150-firmware": [
-                    {
-                        "arch": "noarch",
-                        "epoch": null,
-                        "name": "iwl5150-firmware",
-                        "release": "97.el8.1",
-                        "source": "rpm",
-                        "version": "8.24.2.2"
-                    }
-                ],
-                "iwl6000-firmware": [
-                    {
-                        "arch": "noarch",
-                        "epoch": null,
-                        "name": "iwl6000-firmware",
-                        "release": "97.el8.1",
-                        "source": "rpm",
-                        "version": "9.221.4.1"
-                    }
-                ],
-                "iwl6000g2a-firmware": [
-                    {
-                        "arch": "noarch",
-                        "epoch": null,
-                        "name": "iwl6000g2a-firmware",
-                        "release": "97.el8.1",
-                        "source": "rpm",
-                        "version": "18.168.6.1"
-                    }
-                ],
-                "iwl6050-firmware": [
-                    {
-                        "arch": "noarch",
-                        "epoch": null,
-                        "name": "iwl6050-firmware",
-                        "release": "97.el8.1",
-                        "source": "rpm",
-                        "version": "41.28.5.1"
-                    }
-                ],
-                "iwl7260-firmware": [
-                    {
-                        "arch": "noarch",
-                        "epoch": 1,
-                        "name": "iwl7260-firmware",
-                        "release": "97.el8.1",
-                        "source": "rpm",
-                        "version": "25.30.13.0"
-                    }
-                ],
-                "jansson": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "jansson",
-                        "release": "3.el8",
-                        "source": "rpm",
-                        "version": "2.11"
-                    }
-                ],
-                "java-1.8.0-openjdk-headless": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": 1,
-                        "name": "java-1.8.0-openjdk-headless",
-                        "release": "0.el8_3",
-                        "source": "rpm",
-                        "version": "1.8.0.292.b10"
-                    }
-                ],
-                "javapackages-filesystem": [
-                    {
-                        "arch": "noarch",
-                        "epoch": null,
-                        "name": "javapackages-filesystem",
-                        "release": "1.module_el8.0.0+11+5b8c10bd",
-                        "source": "rpm",
-                        "version": "5.3.0"
-                    }
-                ],
-                "json-c": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "json-c",
-                        "release": "0.2.el8",
-                        "source": "rpm",
-                        "version": "0.13.1"
-                    }
-                ],
-                "kbd": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "kbd",
-                        "release": "8.el8",
-                        "source": "rpm",
-                        "version": "2.0.4"
-                    }
-                ],
-                "kbd-legacy": [
-                    {
-                        "arch": "noarch",
-                        "epoch": null,
-                        "name": "kbd-legacy",
-                        "release": "8.el8",
-                        "source": "rpm",
-                        "version": "2.0.4"
-                    }
-                ],
-                "kbd-misc": [
-                    {
-                        "arch": "noarch",
-                        "epoch": null,
-                        "name": "kbd-misc",
-                        "release": "8.el8",
-                        "source": "rpm",
-                        "version": "2.0.4"
-                    }
-                ],
-                "kernel": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "kernel",
-                        "release": "193.28.1.el8_2",
-                        "source": "rpm",
-                        "version": "4.18.0"
-                    }
-                ],
-                "kernel-core": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "kernel-core",
-                        "release": "193.28.1.el8_2",
-                        "source": "rpm",
-                        "version": "4.18.0"
-                    }
-                ],
-                "kernel-headers": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "kernel-headers",
-                        "release": "240.22.1.el8_3",
-                        "source": "rpm",
-                        "version": "4.18.0"
-                    }
-                ],
-                "kernel-modules": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "kernel-modules",
-                        "release": "193.28.1.el8_2",
-                        "source": "rpm",
-                        "version": "4.18.0"
-                    }
-                ],
-                "kernel-tools": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "kernel-tools",
-                        "release": "193.28.1.el8_2",
-                        "source": "rpm",
-                        "version": "4.18.0"
-                    }
-                ],
-                "kernel-tools-libs": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "kernel-tools-libs",
-                        "release": "193.28.1.el8_2",
-                        "source": "rpm",
-                        "version": "4.18.0"
-                    }
-                ],
-                "kexec-tools": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "kexec-tools",
-                        "release": "14.el8",
-                        "source": "rpm",
-                        "version": "2.0.20"
-                    }
-                ],
-                "keyutils-libs": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "keyutils-libs",
-                        "release": "6.el8",
-                        "source": "rpm",
-                        "version": "1.5.10"
-                    }
-                ],
-                "kmod": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "kmod",
-                        "release": "16.el8",
-                        "source": "rpm",
-                        "version": "25"
-                    }
-                ],
-                "kmod-libs": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "kmod-libs",
-                        "release": "16.el8",
-                        "source": "rpm",
-                        "version": "25"
-                    }
-                ],
-                "kpartx": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "kpartx",
-                        "release": "3.el8_2.3",
-                        "source": "rpm",
-                        "version": "0.8.3"
-                    }
-                ],
-                "krb5-libs": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "krb5-libs",
-                        "release": "18.el8",
-                        "source": "rpm",
-                        "version": "1.17"
-                    }
-                ],
-                "langpacks-en": [
-                    {
-                        "arch": "noarch",
-                        "epoch": null,
-                        "name": "langpacks-en",
-                        "release": "12.el8",
-                        "source": "rpm",
-                        "version": "1.0"
-                    }
-                ],
-                "less": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "less",
-                        "release": "1.el8",
-                        "source": "rpm",
-                        "version": "530"
-                    }
-                ],
-                "libacl": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "libacl",
-                        "release": "1.el8",
-                        "source": "rpm",
-                        "version": "2.2.53"
-                    }
-                ],
-                "libaio": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "libaio",
-                        "release": "1.el8",
-                        "source": "rpm",
-                        "version": "0.3.112"
-                    }
-                ],
-                "libarchive": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "libarchive",
-                        "release": "8.el8_1",
-                        "source": "rpm",
-                        "version": "3.3.2"
-                    }
-                ],
-                "libassuan": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "libassuan",
-                        "release": "3.el8",
-                        "source": "rpm",
-                        "version": "2.5.1"
-                    }
-                ],
-                "libattr": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "libattr",
-                        "release": "3.el8",
-                        "source": "rpm",
-                        "version": "2.4.48"
-                    }
-                ],
-                "libbasicobjects": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "libbasicobjects",
-                        "release": "39.el8",
-                        "source": "rpm",
-                        "version": "0.1.1"
-                    }
-                ],
-                "libblkid": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "libblkid",
-                        "release": "22.el8",
-                        "source": "rpm",
-                        "version": "2.32.1"
-                    }
-                ],
-                "libcap": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "libcap",
-                        "release": "3.el8",
-                        "source": "rpm",
-                        "version": "2.26"
-                    }
-                ],
-                "libcap-ng": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "libcap-ng",
-                        "release": "5.el8",
-                        "source": "rpm",
-                        "version": "0.7.9"
-                    }
-                ],
-                "libcollection": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "libcollection",
-                        "release": "39.el8",
-                        "source": "rpm",
-                        "version": "0.7.0"
-                    }
-                ],
-                "libcom_err": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "libcom_err",
-                        "release": "3.el8",
-                        "source": "rpm",
-                        "version": "1.45.4"
-                    }
-                ],
-                "libcomps": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "libcomps",
-                        "release": "4.el8",
-                        "source": "rpm",
-                        "version": "0.1.11"
-                    }
-                ],
-                "libcroco": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "libcroco",
-                        "release": "4.el8_2.1",
-                        "source": "rpm",
-                        "version": "0.6.12"
-                    }
-                ],
-                "libcurl": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "libcurl",
-                        "release": "12.el8",
-                        "source": "rpm",
-                        "version": "7.61.1"
-                    }
-                ],
-                "libdaemon": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "libdaemon",
-                        "release": "15.el8",
-                        "source": "rpm",
-                        "version": "0.14"
-                    }
-                ],
-                "libdb": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "libdb",
-                        "release": "37.el8",
-                        "source": "rpm",
-                        "version": "5.3.28"
-                    }
-                ],
-                "libdb-utils": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "libdb-utils",
-                        "release": "37.el8",
-                        "source": "rpm",
-                        "version": "5.3.28"
-                    }
-                ],
-                "libdhash": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "libdhash",
-                        "release": "39.el8",
-                        "source": "rpm",
-                        "version": "0.5.0"
-                    }
-                ],
-                "libdnf": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "libdnf",
-                        "release": "6.el8_2",
-                        "source": "rpm",
-                        "version": "0.39.1"
-                    }
-                ],
-                "libdrm": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "libdrm",
-                        "release": "1.el8",
-                        "source": "rpm",
-                        "version": "2.4.100"
-                    }
-                ],
-                "libedit": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "libedit",
-                        "release": "23.20170329cvs.el8",
-                        "source": "rpm",
-                        "version": "3.1"
-                    }
-                ],
-                "libestr": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "libestr",
-                        "release": "1.el8",
-                        "source": "rpm",
-                        "version": "0.1.10"
-                    }
-                ],
-                "libevent": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "libevent",
-                        "release": "5.el8",
-                        "source": "rpm",
-                        "version": "2.1.8"
-                    }
-                ],
-                "libfastjson": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "libfastjson",
-                        "release": "2.el8",
-                        "source": "rpm",
-                        "version": "0.99.8"
-                    }
-                ],
-                "libfdisk": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "libfdisk",
-                        "release": "22.el8",
-                        "source": "rpm",
-                        "version": "2.32.1"
-                    }
-                ],
-                "libffi": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "libffi",
-                        "release": "21.el8",
-                        "source": "rpm",
-                        "version": "3.1"
-                    }
-                ],
-                "libgcc": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "libgcc",
-                        "release": "5.1.el8",
-                        "source": "rpm",
-                        "version": "8.3.1"
-                    }
-                ],
-                "libgcrypt": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "libgcrypt",
-                        "release": "4.el8",
-                        "source": "rpm",
-                        "version": "1.8.3"
-                    }
-                ],
-                "libgomp": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "libgomp",
-                        "release": "5.1.el8",
-                        "source": "rpm",
-                        "version": "8.3.1"
-                    }
-                ],
-                "libgpg-error": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "libgpg-error",
-                        "release": "1.el8",
-                        "source": "rpm",
-                        "version": "1.31"
-                    }
-                ],
-                "libgudev": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "libgudev",
-                        "release": "4.el8",
-                        "source": "rpm",
-                        "version": "232"
-                    }
-                ],
-                "libidn2": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "libidn2",
-                        "release": "1.el8",
-                        "source": "rpm",
-                        "version": "2.2.0"
-                    }
-                ],
-                "libini_config": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "libini_config",
-                        "release": "39.el8",
-                        "source": "rpm",
-                        "version": "1.3.1"
-                    }
-                ],
-                "libjpeg-turbo": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "libjpeg-turbo",
-                        "release": "10.el8",
-                        "source": "rpm",
-                        "version": "1.5.3"
-                    }
-                ],
-                "libkcapi": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "libkcapi",
-                        "release": "16_1.el8",
-                        "source": "rpm",
-                        "version": "1.1.1"
-                    }
-                ],
-                "libkcapi-hmaccalc": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "libkcapi-hmaccalc",
-                        "release": "16_1.el8",
-                        "source": "rpm",
-                        "version": "1.1.1"
-                    }
-                ],
-                "libksba": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "libksba",
-                        "release": "7.el8",
-                        "source": "rpm",
-                        "version": "1.3.5"
-                    }
-                ],
-                "libldb": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "libldb",
-                        "release": "3.el8",
-                        "source": "rpm",
-                        "version": "2.0.7"
-                    }
-                ],
-                "libmaxminddb": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "libmaxminddb",
-                        "release": "7.el8",
-                        "source": "rpm",
-                        "version": "1.2.0"
-                    }
-                ],
-                "libmetalink": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "libmetalink",
-                        "release": "7.el8",
-                        "source": "rpm",
-                        "version": "0.1.3"
-                    }
-                ],
-                "libmnl": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "libmnl",
-                        "release": "6.el8",
-                        "source": "rpm",
-                        "version": "1.0.4"
-                    }
-                ],
-                "libmodulemd1": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "libmodulemd1",
-                        "release": "0.2.8.2.1",
-                        "source": "rpm",
-                        "version": "1.8.16"
-                    }
-                ],
-                "libmount": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "libmount",
-                        "release": "22.el8",
-                        "source": "rpm",
-                        "version": "2.32.1"
-                    }
-                ],
-                "libmpc": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "libmpc",
-                        "release": "9.el8",
-                        "source": "rpm",
-                        "version": "1.0.2"
-                    }
-                ],
-                "libmspack": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "libmspack",
-                        "release": "0.3.alpha.el8.4",
-                        "source": "rpm",
-                        "version": "0.7"
-                    }
-                ],
-                "libndp": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "libndp",
-                        "release": "3.el8",
-                        "source": "rpm",
-                        "version": "1.7"
-                    }
-                ],
-                "libnetfilter_conntrack": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "libnetfilter_conntrack",
-                        "release": "5.el8",
-                        "source": "rpm",
-                        "version": "1.0.6"
-                    }
-                ],
-                "libnfnetlink": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "libnfnetlink",
-                        "release": "13.el8",
-                        "source": "rpm",
-                        "version": "1.0.1"
-                    }
-                ],
-                "libnfsidmap": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": 1,
-                        "name": "libnfsidmap",
-                        "release": "31.el8",
-                        "source": "rpm",
-                        "version": "2.3.3"
-                    }
-                ],
-                "libnftnl": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "libnftnl",
-                        "release": "4.el8",
-                        "source": "rpm",
-                        "version": "1.1.5"
-                    }
-                ],
-                "libnghttp2": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "libnghttp2",
-                        "release": "3.el8_2.1",
-                        "source": "rpm",
-                        "version": "1.33.0"
-                    }
-                ],
-                "libnl3": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "libnl3",
-                        "release": "1.el8",
-                        "source": "rpm",
-                        "version": "3.5.0"
-                    }
-                ],
-                "libnl3-cli": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "libnl3-cli",
-                        "release": "1.el8",
-                        "source": "rpm",
-                        "version": "3.5.0"
-                    }
-                ],
-                "libnsl2": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "libnsl2",
-                        "release": "2.20180605git4a062cf.el8",
-                        "source": "rpm",
-                        "version": "1.2.0"
-                    }
-                ],
-                "libpath_utils": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "libpath_utils",
-                        "release": "39.el8",
-                        "source": "rpm",
-                        "version": "0.2.1"
-                    }
-                ],
-                "libpcap": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": 14,
-                        "name": "libpcap",
-                        "release": "3.el8",
-                        "source": "rpm",
-                        "version": "1.9.0"
-                    }
-                ],
-                "libpciaccess": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "libpciaccess",
-                        "release": "1.el8",
-                        "source": "rpm",
-                        "version": "0.14"
-                    }
-                ],
-                "libpipeline": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "libpipeline",
-                        "release": "2.el8",
-                        "source": "rpm",
-                        "version": "1.5.0"
-                    }
-                ],
-                "libpkgconf": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "libpkgconf",
-                        "release": "1.el8",
-                        "source": "rpm",
-                        "version": "1.4.2"
-                    }
-                ],
-                "libpng": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": 2,
-                        "name": "libpng",
-                        "release": "5.el8",
-                        "source": "rpm",
-                        "version": "1.6.34"
-                    }
-                ],
-                "libpsl": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "libpsl",
-                        "release": "5.el8",
-                        "source": "rpm",
-                        "version": "0.20.2"
-                    }
-                ],
-                "libpwquality": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "libpwquality",
-                        "release": "9.el8",
-                        "source": "rpm",
-                        "version": "1.4.0"
-                    }
-                ],
-                "libref_array": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "libref_array",
-                        "release": "39.el8",
-                        "source": "rpm",
-                        "version": "0.1.5"
-                    }
-                ],
-                "librepo": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "librepo",
-                        "release": "3.el8_2",
-                        "source": "rpm",
-                        "version": "1.11.0"
-                    }
-                ],
-                "libreport-filesystem": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "libreport-filesystem",
-                        "release": "10.el8",
-                        "source": "rpm",
-                        "version": "2.9.5"
-                    }
-                ],
-                "libseccomp": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "libseccomp",
-                        "release": "1.el8",
-                        "source": "rpm",
-                        "version": "2.4.1"
-                    }
-                ],
-                "libsecret": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "libsecret",
-                        "release": "1.el8",
-                        "source": "rpm",
-                        "version": "0.18.6"
-                    }
-                ],
-                "libselinux": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "libselinux",
-                        "release": "3.el8",
-                        "source": "rpm",
-                        "version": "2.9"
-                    }
-                ],
-                "libselinux-utils": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "libselinux-utils",
-                        "release": "3.el8",
-                        "source": "rpm",
-                        "version": "2.9"
-                    }
-                ],
-                "libsemanage": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "libsemanage",
-                        "release": "2.el8",
-                        "source": "rpm",
-                        "version": "2.9"
-                    }
-                ],
-                "libsepol": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "libsepol",
-                        "release": "1.el8",
-                        "source": "rpm",
-                        "version": "2.9"
-                    }
-                ],
-                "libsigsegv": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "libsigsegv",
-                        "release": "5.el8",
-                        "source": "rpm",
-                        "version": "2.11"
-                    }
-                ],
-                "libsmartcols": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "libsmartcols",
-                        "release": "22.el8",
-                        "source": "rpm",
-                        "version": "2.32.1"
-                    }
-                ],
-                "libsolv": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "libsolv",
-                        "release": "1.el8",
-                        "source": "rpm",
-                        "version": "0.7.7"
-                    }
-                ],
-                "libss": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "libss",
-                        "release": "3.el8",
-                        "source": "rpm",
-                        "version": "1.45.4"
-                    }
-                ],
-                "libssh": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "libssh",
-                        "release": "4.el8",
-                        "source": "rpm",
-                        "version": "0.9.0"
-                    }
-                ],
-                "libssh-config": [
-                    {
-                        "arch": "noarch",
-                        "epoch": null,
-                        "name": "libssh-config",
-                        "release": "4.el8",
-                        "source": "rpm",
-                        "version": "0.9.0"
-                    }
-                ],
-                "libsss_autofs": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "libsss_autofs",
-                        "release": "20.el8",
-                        "source": "rpm",
-                        "version": "2.2.3"
-                    }
-                ],
-                "libsss_certmap": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "libsss_certmap",
-                        "release": "20.el8",
-                        "source": "rpm",
-                        "version": "2.2.3"
-                    }
-                ],
-                "libsss_idmap": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "libsss_idmap",
-                        "release": "20.el8",
-                        "source": "rpm",
-                        "version": "2.2.3"
-                    }
-                ],
-                "libsss_nss_idmap": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "libsss_nss_idmap",
-                        "release": "20.el8",
-                        "source": "rpm",
-                        "version": "2.2.3"
-                    }
-                ],
-                "libsss_sudo": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "libsss_sudo",
-                        "release": "20.el8",
-                        "source": "rpm",
-                        "version": "2.2.3"
-                    }
-                ],
-                "libstdc++": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "libstdc++",
-                        "release": "5.el8.0.2",
-                        "source": "rpm",
-                        "version": "8.3.1"
-                    }
-                ],
-                "libsysfs": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "libsysfs",
-                        "release": "24.el8",
-                        "source": "rpm",
-                        "version": "2.1.0"
-                    }
-                ],
-                "libtalloc": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "libtalloc",
-                        "release": "7.el8",
-                        "source": "rpm",
-                        "version": "2.2.0"
-                    }
-                ],
-                "libtasn1": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "libtasn1",
-                        "release": "3.el8",
-                        "source": "rpm",
-                        "version": "4.13"
-                    }
-                ],
-                "libtdb": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "libtdb",
-                        "release": "2.el8",
-                        "source": "rpm",
-                        "version": "1.4.2"
-                    }
-                ],
-                "libteam": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "libteam",
-                        "release": "1.el8_2.2",
-                        "source": "rpm",
-                        "version": "1.29"
-                    }
-                ],
-                "libtevent": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "libtevent",
-                        "release": "2.el8",
-                        "source": "rpm",
-                        "version": "0.10.0"
-                    }
-                ],
-                "libtirpc": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "libtirpc",
-                        "release": "4.el8",
-                        "source": "rpm",
-                        "version": "1.1.4"
-                    }
-                ],
-                "libtool-ltdl": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "libtool-ltdl",
-                        "release": "25.el8",
-                        "source": "rpm",
-                        "version": "2.4.6"
-                    }
-                ],
-                "libunistring": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "libunistring",
-                        "release": "3.el8",
-                        "source": "rpm",
-                        "version": "0.9.9"
-                    }
-                ],
-                "libusbx": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "libusbx",
-                        "release": "1.el8",
-                        "source": "rpm",
-                        "version": "1.0.22"
-                    }
-                ],
-                "libuser": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "libuser",
-                        "release": "23.el8",
-                        "source": "rpm",
-                        "version": "0.62"
-                    }
-                ],
-                "libutempter": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "libutempter",
-                        "release": "14.el8",
-                        "source": "rpm",
-                        "version": "1.1.6"
-                    }
-                ],
-                "libuuid": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "libuuid",
-                        "release": "22.el8",
-                        "source": "rpm",
-                        "version": "2.32.1"
-                    }
-                ],
-                "libverto": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "libverto",
-                        "release": "5.el8",
-                        "source": "rpm",
-                        "version": "0.3.0"
-                    }
-                ],
-                "libxcrypt": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "libxcrypt",
-                        "release": "4.el8",
-                        "source": "rpm",
-                        "version": "4.1.1"
-                    }
-                ],
-                "libxcrypt-devel": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "libxcrypt-devel",
-                        "release": "4.el8",
-                        "source": "rpm",
-                        "version": "4.1.1"
-                    }
-                ],
-                "libxkbcommon": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "libxkbcommon",
-                        "release": "1.el8",
-                        "source": "rpm",
-                        "version": "0.9.1"
-                    }
-                ],
-                "libxml2": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "libxml2",
-                        "release": "7.el8",
-                        "source": "rpm",
-                        "version": "2.9.7"
-                    }
-                ],
-                "libxslt": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "libxslt",
-                        "release": "4.el8",
-                        "source": "rpm",
-                        "version": "1.1.32"
-                    }
-                ],
-                "libyaml": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "libyaml",
-                        "release": "5.el8",
-                        "source": "rpm",
-                        "version": "0.1.7"
-                    }
-                ],
-                "libzstd": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "libzstd",
-                        "release": "2.el8",
-                        "source": "rpm",
-                        "version": "1.4.2"
-                    }
-                ],
-                "linux-firmware": [
-                    {
-                        "arch": "noarch",
-                        "epoch": null,
-                        "name": "linux-firmware",
-                        "release": "97.gite8a0f4c9.el8",
-                        "source": "rpm",
-                        "version": "20191202"
-                    }
-                ],
-                "lksctp-tools": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "lksctp-tools",
-                        "release": "3.el8",
-                        "source": "rpm",
-                        "version": "1.0.18"
-                    }
-                ],
-                "logrotate": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "logrotate",
-                        "release": "3.el8",
-                        "source": "rpm",
-                        "version": "3.14.0"
-                    }
-                ],
-                "lshw": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "lshw",
-                        "release": "23.el8",
-                        "source": "rpm",
-                        "version": "B.02.18"
-                    }
-                ],
-                "lsscsi": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "lsscsi",
-                        "release": "1.el8",
-                        "source": "rpm",
-                        "version": "0.30"
-                    }
-                ],
-                "lua": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "lua",
-                        "release": "11.el8",
-                        "source": "rpm",
-                        "version": "5.3.4"
-                    }
-                ],
-                "lua-libs": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "lua-libs",
-                        "release": "11.el8",
-                        "source": "rpm",
-                        "version": "5.3.4"
-                    }
-                ],
-                "lvm2": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": 8,
-                        "name": "lvm2",
-                        "release": "3.el8",
-                        "source": "rpm",
-                        "version": "2.03.08"
-                    }
-                ],
-                "lvm2-libs": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": 8,
-                        "name": "lvm2-libs",
-                        "release": "3.el8",
-                        "source": "rpm",
-                        "version": "2.03.08"
-                    }
-                ],
-                "lz4-libs": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "lz4-libs",
-                        "release": "4.el8",
-                        "source": "rpm",
-                        "version": "1.8.1.2"
-                    }
-                ],
-                "lzo": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "lzo",
-                        "release": "14.el8",
-                        "source": "rpm",
-                        "version": "2.08"
-                    }
-                ],
-                "mailcap": [
-                    {
-                        "arch": "noarch",
-                        "epoch": null,
-                        "name": "mailcap",
-                        "release": "3.el8",
-                        "source": "rpm",
-                        "version": "2.1.48"
-                    }
-                ],
-                "man-db": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "man-db",
-                        "release": "17.el8",
-                        "source": "rpm",
-                        "version": "2.7.6.1"
-                    }
-                ],
-                "microcode_ctl": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": 4,
-                        "name": "microcode_ctl",
-                        "release": "4.20200609.1.el8_2",
-                        "source": "rpm",
-                        "version": "20191115"
-                    }
-                ],
-                "mod_http2": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "mod_http2",
-                        "release": "2.module_el8.3.0+477+498bb568",
-                        "source": "rpm",
-                        "version": "1.15.7"
-                    }
-                ],
-                "mozjs60": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "mozjs60",
-                        "release": "4.el8",
-                        "source": "rpm",
-                        "version": "60.9.0"
-                    }
-                ],
-                "mpfr": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "mpfr",
-                        "release": "1.el8",
-                        "source": "rpm",
-                        "version": "3.1.6"
-                    }
-                ],
-                "ncurses": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "ncurses",
-                        "release": "7.20180224.el8",
-                        "source": "rpm",
-                        "version": "6.1"
-                    }
-                ],
-                "ncurses-base": [
-                    {
-                        "arch": "noarch",
-                        "epoch": null,
-                        "name": "ncurses-base",
-                        "release": "7.20180224.el8",
-                        "source": "rpm",
-                        "version": "6.1"
-                    }
-                ],
-                "ncurses-libs": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "ncurses-libs",
-                        "release": "7.20180224.el8",
-                        "source": "rpm",
-                        "version": "6.1"
-                    }
-                ],
-                "net-tools": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "net-tools",
-                        "release": "0.52.20160912git.el8",
-                        "source": "rpm",
-                        "version": "2.0"
-                    }
-                ],
-                "nettle": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "nettle",
-                        "release": "1.el8",
-                        "source": "rpm",
-                        "version": "3.4.1"
-                    }
-                ],
-                "newt": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "newt",
-                        "release": "11.el8",
-                        "source": "rpm",
-                        "version": "0.52.20"
-                    }
-                ],
-                "nftables": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": 1,
-                        "name": "nftables",
-                        "release": "12.el8_2.1",
-                        "source": "rpm",
-                        "version": "0.9.3"
-                    }
-                ],
-                "npth": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "npth",
-                        "release": "4.el8",
-                        "source": "rpm",
-                        "version": "1.5"
-                    }
-                ],
-                "nspr": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "nspr",
-                        "release": "2.el8_2",
-                        "source": "rpm",
-                        "version": "4.25.0"
-                    }
-                ],
-                "nss": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "nss",
-                        "release": "17.el8_3",
-                        "source": "rpm",
-                        "version": "3.53.1"
-                    }
-                ],
-                "nss-softokn": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "nss-softokn",
-                        "release": "17.el8_3",
-                        "source": "rpm",
-                        "version": "3.53.1"
-                    }
-                ],
-                "nss-softokn-freebl": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "nss-softokn-freebl",
-                        "release": "17.el8_3",
-                        "source": "rpm",
-                        "version": "3.53.1"
-                    }
-                ],
-                "nss-sysinit": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "nss-sysinit",
-                        "release": "17.el8_3",
-                        "source": "rpm",
-                        "version": "3.53.1"
-                    }
-                ],
-                "nss-util": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "nss-util",
-                        "release": "17.el8_3",
-                        "source": "rpm",
-                        "version": "3.53.1"
-                    }
-                ],
-                "numactl-libs": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "numactl-libs",
-                        "release": "9.el8",
-                        "source": "rpm",
-                        "version": "2.0.12"
-                    }
-                ],
-                "open-vm-tools": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "open-vm-tools",
-                        "release": "3.el8",
-                        "source": "rpm",
-                        "version": "11.0.5"
-                    }
-                ],
-                "openldap": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "openldap",
-                        "release": "11.el8_1",
-                        "source": "rpm",
-                        "version": "2.4.46"
-                    }
-                ],
-                "openssh": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "openssh",
-                        "release": "4.el8_1",
-                        "source": "rpm",
-                        "version": "8.0p1"
-                    }
-                ],
-                "openssh-clients": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "openssh-clients",
-                        "release": "4.el8_1",
-                        "source": "rpm",
-                        "version": "8.0p1"
-                    }
-                ],
-                "openssh-server": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "openssh-server",
-                        "release": "4.el8_1",
-                        "source": "rpm",
-                        "version": "8.0p1"
-                    }
-                ],
-                "openssl": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": 1,
-                        "name": "openssl",
-                        "release": "15.el8",
-                        "source": "rpm",
-                        "version": "1.1.1c"
-                    }
-                ],
-                "openssl-libs": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": 1,
-                        "name": "openssl-libs",
-                        "release": "15.el8",
-                        "source": "rpm",
-                        "version": "1.1.1c"
-                    }
-                ],
-                "openssl-pkcs11": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "openssl-pkcs11",
-                        "release": "2.el8",
-                        "source": "rpm",
-                        "version": "0.4.10"
-                    }
-                ],
-                "os-prober": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "os-prober",
-                        "release": "6.el8",
-                        "source": "rpm",
-                        "version": "1.74"
-                    }
-                ],
-                "p11-kit": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "p11-kit",
-                        "release": "5.el8_0",
-                        "source": "rpm",
-                        "version": "0.23.14"
-                    }
-                ],
-                "p11-kit-trust": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "p11-kit-trust",
-                        "release": "5.el8_0",
-                        "source": "rpm",
-                        "version": "0.23.14"
-                    }
-                ],
-                "pam": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "pam",
-                        "release": "8.el8",
-                        "source": "rpm",
-                        "version": "1.3.1"
-                    }
-                ],
-                "parted": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "parted",
-                        "release": "38.el8",
-                        "source": "rpm",
-                        "version": "3.2"
-                    }
-                ],
-                "passwd": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "passwd",
-                        "release": "3.el8",
-                        "source": "rpm",
-                        "version": "0.80"
-                    }
-                ],
-                "pciutils": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "pciutils",
-                        "release": "4.el8",
-                        "source": "rpm",
-                        "version": "3.5.6"
-                    }
-                ],
-                "pciutils-libs": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "pciutils-libs",
-                        "release": "4.el8",
-                        "source": "rpm",
-                        "version": "3.5.6"
-                    }
-                ],
-                "pcre": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "pcre",
-                        "release": "4.el8",
-                        "source": "rpm",
-                        "version": "8.42"
-                    }
-                ],
-                "pcre2": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "pcre2",
-                        "release": "1.el8",
-                        "source": "rpm",
-                        "version": "10.32"
-                    }
-                ],
-                "pigz": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "pigz",
-                        "release": "4.el8",
-                        "source": "rpm",
-                        "version": "2.4"
-                    }
-                ],
-                "pinentry": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "pinentry",
-                        "release": "2.el8",
-                        "source": "rpm",
-                        "version": "1.1.0"
-                    }
-                ],
-                "pkgconf": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "pkgconf",
-                        "release": "1.el8",
-                        "source": "rpm",
-                        "version": "1.4.2"
-                    }
-                ],
-                "pkgconf-m4": [
-                    {
-                        "arch": "noarch",
-                        "epoch": null,
-                        "name": "pkgconf-m4",
-                        "release": "1.el8",
-                        "source": "rpm",
-                        "version": "1.4.2"
-                    }
-                ],
-                "pkgconf-pkg-config": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "pkgconf-pkg-config",
-                        "release": "1.el8",
-                        "source": "rpm",
-                        "version": "1.4.2"
-                    }
-                ],
-                "platform-python": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "platform-python",
-                        "release": "31.el8",
-                        "source": "rpm",
-                        "version": "3.6.8"
-                    }
-                ],
-                "platform-python-devel": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "platform-python-devel",
-                        "release": "31.el8",
-                        "source": "rpm",
-                        "version": "3.6.8"
-                    }
-                ],
-                "platform-python-pip": [
-                    {
-                        "arch": "noarch",
-                        "epoch": null,
-                        "name": "platform-python-pip",
-                        "release": "18.el8",
-                        "source": "rpm",
-                        "version": "9.0.3"
-                    }
-                ],
-                "platform-python-setuptools": [
-                    {
-                        "arch": "noarch",
-                        "epoch": null,
-                        "name": "platform-python-setuptools",
-                        "release": "6.el8",
-                        "source": "rpm",
-                        "version": "39.2.0"
-                    }
-                ],
-                "plymouth": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "plymouth",
-                        "release": "16.el8",
-                        "source": "rpm",
-                        "version": "0.9.3"
-                    }
-                ],
-                "plymouth-core-libs": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "plymouth-core-libs",
-                        "release": "16.el8",
-                        "source": "rpm",
-                        "version": "0.9.3"
-                    }
-                ],
-                "plymouth-scripts": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "plymouth-scripts",
-                        "release": "16.el8",
-                        "source": "rpm",
-                        "version": "0.9.3"
-                    }
-                ],
-                "policycoreutils": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "policycoreutils",
-                        "release": "9.el8",
-                        "source": "rpm",
-                        "version": "2.9"
-                    }
-                ],
-                "polkit": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "polkit",
-                        "release": "11.el8",
-                        "source": "rpm",
-                        "version": "0.115"
-                    }
-                ],
-                "polkit-libs": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "polkit-libs",
-                        "release": "11.el8",
-                        "source": "rpm",
-                        "version": "0.115"
-                    }
-                ],
-                "polkit-pkla-compat": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "polkit-pkla-compat",
-                        "release": "12.el8",
-                        "source": "rpm",
-                        "version": "0.1"
-                    }
-                ],
-                "popt": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "popt",
-                        "release": "14.el8",
-                        "source": "rpm",
-                        "version": "1.16"
-                    }
-                ],
-                "prefixdevname": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "prefixdevname",
-                        "release": "6.el8",
-                        "source": "rpm",
-                        "version": "0.1.0"
-                    }
-                ],
-                "procps-ng": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "procps-ng",
-                        "release": "1.el8",
-                        "source": "rpm",
-                        "version": "3.3.15"
-                    }
-                ],
-                "psmisc": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "psmisc",
-                        "release": "5.el8",
-                        "source": "rpm",
-                        "version": "23.1"
-                    }
-                ],
-                "publicsuffix-list-dafsa": [
-                    {
-                        "arch": "noarch",
-                        "epoch": null,
-                        "name": "publicsuffix-list-dafsa",
-                        "release": "1.el8",
-                        "source": "rpm",
-                        "version": "20180723"
-                    }
-                ],
-                "python-rpm-macros": [
-                    {
-                        "arch": "noarch",
-                        "epoch": null,
-                        "name": "python-rpm-macros",
-                        "release": "39.el8",
-                        "source": "rpm",
-                        "version": "3"
-                    }
-                ],
-                "python-srpm-macros": [
-                    {
-                        "arch": "noarch",
-                        "epoch": null,
-                        "name": "python-srpm-macros",
-                        "release": "39.el8",
-                        "source": "rpm",
-                        "version": "3"
-                    }
-                ],
-                "python3-asn1crypto": [
-                    {
-                        "arch": "noarch",
-                        "epoch": null,
-                        "name": "python3-asn1crypto",
-                        "release": "3.el8",
-                        "source": "rpm",
-                        "version": "0.24.0"
-                    }
-                ],
-                "python3-cffi": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "python3-cffi",
-                        "release": "5.el8",
-                        "source": "rpm",
-                        "version": "1.11.5"
-                    }
-                ],
-                "python3-configobj": [
-                    {
-                        "arch": "noarch",
-                        "epoch": null,
-                        "name": "python3-configobj",
-                        "release": "11.el8",
-                        "source": "rpm",
-                        "version": "5.0.6"
-                    }
-                ],
-                "python3-cryptography": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "python3-cryptography",
-                        "release": "3.el8",
-                        "source": "rpm",
-                        "version": "2.3"
-                    }
-                ],
-                "python3-dateutil": [
-                    {
-                        "arch": "noarch",
-                        "epoch": 1,
-                        "name": "python3-dateutil",
-                        "release": "6.el8",
-                        "source": "rpm",
-                        "version": "2.6.1"
-                    }
-                ],
-                "python3-dbus": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "python3-dbus",
-                        "release": "15.el8",
-                        "source": "rpm",
-                        "version": "1.2.4"
-                    }
-                ],
-                "python3-decorator": [
-                    {
-                        "arch": "noarch",
-                        "epoch": null,
-                        "name": "python3-decorator",
-                        "release": "2.el8",
-                        "source": "rpm",
-                        "version": "4.2.1"
-                    }
-                ],
-                "python3-dmidecode": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "python3-dmidecode",
-                        "release": "15.el8",
-                        "source": "rpm",
-                        "version": "3.12.2"
-                    }
-                ],
-                "python3-dnf": [
-                    {
-                        "arch": "noarch",
-                        "epoch": null,
-                        "name": "python3-dnf",
-                        "release": "7.el8_2",
-                        "source": "rpm",
-                        "version": "4.2.17"
-                    }
-                ],
-                "python3-dnf-plugin-spacewalk": [
-                    {
-                        "arch": "noarch",
-                        "epoch": null,
-                        "name": "python3-dnf-plugin-spacewalk",
-                        "release": "11.module_el8.1.0+211+ad6c0bc7",
-                        "source": "rpm",
-                        "version": "2.8.5"
-                    }
-                ],
-                "python3-dnf-plugins-core": [
-                    {
-                        "arch": "noarch",
-                        "epoch": null,
-                        "name": "python3-dnf-plugins-core",
-                        "release": "4.el8_2",
-                        "source": "rpm",
-                        "version": "4.0.12"
-                    }
-                ],
-                "python3-firewall": [
-                    {
-                        "arch": "noarch",
-                        "epoch": null,
-                        "name": "python3-firewall",
-                        "release": "4.el8",
-                        "source": "rpm",
-                        "version": "0.8.0"
-                    }
-                ],
-                "python3-gobject-base": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "python3-gobject-base",
-                        "release": "1.el8",
-                        "source": "rpm",
-                        "version": "3.28.3"
-                    }
-                ],
-                "python3-gpg": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "python3-gpg",
-                        "release": "6.el8.0.1",
-                        "source": "rpm",
-                        "version": "1.10.0"
-                    }
-                ],
-                "python3-hawkey": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "python3-hawkey",
-                        "release": "6.el8_2",
-                        "source": "rpm",
-                        "version": "0.39.1"
-                    }
-                ],
-                "python3-hwdata": [
-                    {
-                        "arch": "noarch",
-                        "epoch": null,
-                        "name": "python3-hwdata",
-                        "release": "3.el8",
-                        "source": "rpm",
-                        "version": "2.3.6"
-                    }
-                ],
-                "python3-idna": [
-                    {
-                        "arch": "noarch",
-                        "epoch": null,
-                        "name": "python3-idna",
-                        "release": "5.el8",
-                        "source": "rpm",
-                        "version": "2.5"
-                    }
-                ],
-                "python3-libcomps": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "python3-libcomps",
-                        "release": "4.el8",
-                        "source": "rpm",
-                        "version": "0.1.11"
-                    }
-                ],
-                "python3-libdnf": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "python3-libdnf",
-                        "release": "6.el8_2",
-                        "source": "rpm",
-                        "version": "0.39.1"
-                    }
-                ],
-                "python3-librepo": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "python3-librepo",
-                        "release": "3.el8_2",
-                        "source": "rpm",
-                        "version": "1.11.0"
-                    }
-                ],
-                "python3-libs": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "python3-libs",
-                        "release": "31.el8",
-                        "source": "rpm",
-                        "version": "3.6.8"
-                    }
-                ],
-                "python3-libselinux": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "python3-libselinux",
-                        "release": "3.el8",
-                        "source": "rpm",
-                        "version": "2.9"
-                    }
-                ],
-                "python3-libxml2": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "python3-libxml2",
-                        "release": "7.el8",
-                        "source": "rpm",
-                        "version": "2.9.7"
-                    }
-                ],
-                "python3-linux-procfs": [
-                    {
-                        "arch": "noarch",
-                        "epoch": null,
-                        "name": "python3-linux-procfs",
-                        "release": "7.el8",
-                        "source": "rpm",
-                        "version": "0.6"
-                    }
-                ],
-                "python3-netifaces": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "python3-netifaces",
-                        "release": "4.el8",
-                        "source": "rpm",
-                        "version": "0.10.6"
-                    }
-                ],
-                "python3-newt": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "python3-newt",
-                        "release": "11.el8",
-                        "source": "rpm",
-                        "version": "0.52.20"
-                    }
-                ],
-                "python3-nftables": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": 1,
-                        "name": "python3-nftables",
-                        "release": "12.el8_2.1",
-                        "source": "rpm",
-                        "version": "0.9.3"
-                    }
-                ],
-                "python3-perf": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "python3-perf",
-                        "release": "193.28.1.el8_2",
-                        "source": "rpm",
-                        "version": "4.18.0"
-                    }
-                ],
-                "python3-pip": [
-                    {
-                        "arch": "noarch",
-                        "epoch": null,
-                        "name": "python3-pip",
-                        "release": "18.el8",
-                        "source": "rpm",
-                        "version": "9.0.3"
-                    }
-                ],
-                "python3-pip-wheel": [
-                    {
-                        "arch": "noarch",
-                        "epoch": null,
-                        "name": "python3-pip-wheel",
-                        "release": "16.el8",
-                        "source": "rpm",
-                        "version": "9.0.3"
-                    }
-                ],
-                "python3-ply": [
-                    {
-                        "arch": "noarch",
-                        "epoch": null,
-                        "name": "python3-ply",
-                        "release": "8.el8",
-                        "source": "rpm",
-                        "version": "3.9"
-                    }
-                ],
-                "python3-pyOpenSSL": [
-                    {
-                        "arch": "noarch",
-                        "epoch": null,
-                        "name": "python3-pyOpenSSL",
-                        "release": "1.el8",
-                        "source": "rpm",
-                        "version": "18.0.0"
-                    }
-                ],
-                "python3-pycparser": [
-                    {
-                        "arch": "noarch",
-                        "epoch": null,
-                        "name": "python3-pycparser",
-                        "release": "14.el8",
-                        "source": "rpm",
-                        "version": "2.14"
-                    }
-                ],
-                "python3-pyudev": [
-                    {
-                        "arch": "noarch",
-                        "epoch": null,
-                        "name": "python3-pyudev",
-                        "release": "7.el8",
-                        "source": "rpm",
-                        "version": "0.21.0"
-                    }
-                ],
-                "python3-rhn-client-tools": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "python3-rhn-client-tools",
-                        "release": "13.module_el8.1.0+211+ad6c0bc7",
-                        "source": "rpm",
-                        "version": "2.8.16"
-                    }
-                ],
-                "python3-rhnlib": [
-                    {
-                        "arch": "noarch",
-                        "epoch": null,
-                        "name": "python3-rhnlib",
-                        "release": "8.module_el8.1.0+211+ad6c0bc7",
-                        "source": "rpm",
-                        "version": "2.8.6"
-                    }
-                ],
-                "python3-rpm": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "python3-rpm",
-                        "release": "37.el8",
-                        "source": "rpm",
-                        "version": "4.14.2"
-                    }
-                ],
-                "python3-rpm-generators": [
-                    {
-                        "arch": "noarch",
-                        "epoch": null,
-                        "name": "python3-rpm-generators",
-                        "release": "6.el8",
-                        "source": "rpm",
-                        "version": "5"
-                    }
-                ],
-                "python3-rpm-macros": [
-                    {
-                        "arch": "noarch",
-                        "epoch": null,
-                        "name": "python3-rpm-macros",
-                        "release": "39.el8",
-                        "source": "rpm",
-                        "version": "3"
-                    }
-                ],
-                "python3-schedutils": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "python3-schedutils",
-                        "release": "6.el8",
-                        "source": "rpm",
-                        "version": "0.6"
-                    }
-                ],
-                "python3-setuptools": [
-                    {
-                        "arch": "noarch",
-                        "epoch": null,
-                        "name": "python3-setuptools",
-                        "release": "6.el8",
-                        "source": "rpm",
-                        "version": "39.2.0"
-                    }
-                ],
-                "python3-setuptools-wheel": [
-                    {
-                        "arch": "noarch",
-                        "epoch": null,
-                        "name": "python3-setuptools-wheel",
-                        "release": "5.el8",
-                        "source": "rpm",
-                        "version": "39.2.0"
-                    }
-                ],
-                "python3-six": [
-                    {
-                        "arch": "noarch",
-                        "epoch": null,
-                        "name": "python3-six",
-                        "release": "8.el8",
-                        "source": "rpm",
-                        "version": "1.11.0"
-                    }
-                ],
-                "python3-slip": [
-                    {
-                        "arch": "noarch",
-                        "epoch": null,
-                        "name": "python3-slip",
-                        "release": "11.el8",
-                        "source": "rpm",
-                        "version": "0.6.4"
-                    }
-                ],
-                "python3-slip-dbus": [
-                    {
-                        "arch": "noarch",
-                        "epoch": null,
-                        "name": "python3-slip-dbus",
-                        "release": "11.el8",
-                        "source": "rpm",
-                        "version": "0.6.4"
-                    }
-                ],
-                "python3-syspurpose": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "python3-syspurpose",
-                        "release": "1.el8_2",
-                        "source": "rpm",
-                        "version": "1.26.20"
-                    }
-                ],
-                "python3-unbound": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "python3-unbound",
-                        "release": "11.el8_2",
-                        "source": "rpm",
-                        "version": "1.7.3"
-                    }
-                ],
-                "python3-wheel": [
-                    {
-                        "arch": "noarch",
-                        "epoch": 1,
-                        "name": "python3-wheel",
-                        "release": "2.module_el8.3.0+562+e162826a",
-                        "source": "rpm",
-                        "version": "0.31.1"
-                    }
-                ],
-                "python36": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "python36",
-                        "release": "2.module_el8.3.0+562+e162826a",
-                        "source": "rpm",
-                        "version": "3.6.8"
-                    }
-                ],
-                "python36-devel": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "python36-devel",
-                        "release": "2.module_el8.3.0+562+e162826a",
-                        "source": "rpm",
-                        "version": "3.6.8"
-                    }
-                ],
-                "readline": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "readline",
-                        "release": "10.el8",
-                        "source": "rpm",
-                        "version": "7.0"
-                    }
-                ],
-                "rhn-client-tools": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "rhn-client-tools",
-                        "release": "13.module_el8.1.0+211+ad6c0bc7",
-                        "source": "rpm",
-                        "version": "2.8.16"
-                    }
-                ],
-                "rng-tools": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "rng-tools",
-                        "release": "3.el8",
-                        "source": "rpm",
-                        "version": "6.8"
-                    }
-                ],
-                "rootfiles": [
-                    {
-                        "arch": "noarch",
-                        "epoch": null,
-                        "name": "rootfiles",
-                        "release": "22.el8",
-                        "source": "rpm",
-                        "version": "8.1"
-                    }
-                ],
-                "rpm": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "rpm",
-                        "release": "37.el8",
-                        "source": "rpm",
-                        "version": "4.14.2"
-                    }
-                ],
-                "rpm-build-libs": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "rpm-build-libs",
-                        "release": "37.el8",
-                        "source": "rpm",
-                        "version": "4.14.2"
-                    }
-                ],
-                "rpm-libs": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "rpm-libs",
-                        "release": "37.el8",
-                        "source": "rpm",
-                        "version": "4.14.2"
-                    }
-                ],
-                "rpm-plugin-selinux": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "rpm-plugin-selinux",
-                        "release": "37.el8",
-                        "source": "rpm",
-                        "version": "4.14.2"
-                    }
-                ],
-                "rpm-plugin-systemd-inhibit": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "rpm-plugin-systemd-inhibit",
-                        "release": "37.el8",
-                        "source": "rpm",
-                        "version": "4.14.2"
-                    }
-                ],
-                "rsyslog": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "rsyslog",
-                        "release": "3.el8",
-                        "source": "rpm",
-                        "version": "8.1911.0"
-                    }
-                ],
-                "sed": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "sed",
-                        "release": "1.el8",
-                        "source": "rpm",
-                        "version": "4.5"
-                    }
-                ],
-                "selinux-policy": [
-                    {
-                        "arch": "noarch",
-                        "epoch": null,
-                        "name": "selinux-policy",
-                        "release": "41.el8_2.8",
-                        "source": "rpm",
-                        "version": "3.14.3"
-                    }
-                ],
-                "selinux-policy-targeted": [
-                    {
-                        "arch": "noarch",
-                        "epoch": null,
-                        "name": "selinux-policy-targeted",
-                        "release": "41.el8_2.8",
-                        "source": "rpm",
-                        "version": "3.14.3"
-                    }
-                ],
-                "setup": [
-                    {
-                        "arch": "noarch",
-                        "epoch": null,
-                        "name": "setup",
-                        "release": "5.el8",
-                        "source": "rpm",
-                        "version": "2.12.2"
-                    }
-                ],
-                "sg3_utils": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "sg3_utils",
-                        "release": "5.el8",
-                        "source": "rpm",
-                        "version": "1.44"
-                    }
-                ],
-                "sg3_utils-libs": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "sg3_utils-libs",
-                        "release": "5.el8",
-                        "source": "rpm",
-                        "version": "1.44"
-                    }
-                ],
-                "shadow-utils": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": 2,
-                        "name": "shadow-utils",
-                        "release": "8.el8",
-                        "source": "rpm",
-                        "version": "4.6"
-                    }
-                ],
-                "shared-mime-info": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "shared-mime-info",
-                        "release": "3.el8",
-                        "source": "rpm",
-                        "version": "1.9"
-                    }
-                ],
-                "slang": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "slang",
-                        "release": "3.el8",
-                        "source": "rpm",
-                        "version": "2.3.2"
-                    }
-                ],
-                "snappy": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "snappy",
-                        "release": "5.el8",
-                        "source": "rpm",
-                        "version": "1.1.7"
-                    }
-                ],
-                "sqlite-libs": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "sqlite-libs",
-                        "release": "6.el8",
-                        "source": "rpm",
-                        "version": "3.26.0"
-                    }
-                ],
-                "squashfs-tools": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "squashfs-tools",
-                        "release": "19.el8",
-                        "source": "rpm",
-                        "version": "4.3"
-                    }
-                ],
-                "sssd-client": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "sssd-client",
-                        "release": "20.el8",
-                        "source": "rpm",
-                        "version": "2.2.3"
-                    }
-                ],
-                "sssd-common": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "sssd-common",
-                        "release": "20.el8",
-                        "source": "rpm",
-                        "version": "2.2.3"
-                    }
-                ],
-                "sssd-kcm": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "sssd-kcm",
-                        "release": "20.el8",
-                        "source": "rpm",
-                        "version": "2.2.3"
-                    }
-                ],
-                "sssd-nfs-idmap": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "sssd-nfs-idmap",
-                        "release": "20.el8",
-                        "source": "rpm",
-                        "version": "2.2.3"
-                    }
-                ],
-                "sudo": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "sudo",
-                        "release": "5.el8",
-                        "source": "rpm",
-                        "version": "1.8.29"
-                    }
-                ],
-                "systemd": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "systemd",
-                        "release": "31.el8_2.2",
-                        "source": "rpm",
-                        "version": "239"
-                    }
-                ],
-                "systemd-libs": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "systemd-libs",
-                        "release": "31.el8_2.2",
-                        "source": "rpm",
-                        "version": "239"
-                    }
-                ],
-                "systemd-pam": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "systemd-pam",
-                        "release": "31.el8_2.2",
-                        "source": "rpm",
-                        "version": "239"
-                    }
-                ],
-                "systemd-udev": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "systemd-udev",
-                        "release": "31.el8_2.2",
-                        "source": "rpm",
-                        "version": "239"
-                    }
-                ],
-                "tar": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": 2,
-                        "name": "tar",
-                        "release": "4.el8",
-                        "source": "rpm",
-                        "version": "1.30"
-                    }
-                ],
-                "teamd": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "teamd",
-                        "release": "1.el8_2.2",
-                        "source": "rpm",
-                        "version": "1.29"
-                    }
-                ],
-                "timedatex": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "timedatex",
-                        "release": "3.el8",
-                        "source": "rpm",
-                        "version": "0.5"
-                    }
-                ],
-                "trousers": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "trousers",
-                        "release": "4.el8",
-                        "source": "rpm",
-                        "version": "0.3.14"
-                    }
-                ],
-                "trousers-lib": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "trousers-lib",
-                        "release": "4.el8",
-                        "source": "rpm",
-                        "version": "0.3.14"
-                    }
-                ],
-                "tuned": [
-                    {
-                        "arch": "noarch",
-                        "epoch": null,
-                        "name": "tuned",
-                        "release": "6.el8",
-                        "source": "rpm",
-                        "version": "2.13.0"
-                    }
-                ],
-                "tzdata": [
-                    {
-                        "arch": "noarch",
-                        "epoch": null,
-                        "name": "tzdata",
-                        "release": "1.el8",
-                        "source": "rpm",
-                        "version": "2020d"
-                    }
-                ],
-                "tzdata-java": [
-                    {
-                        "arch": "noarch",
-                        "epoch": null,
-                        "name": "tzdata-java",
-                        "release": "1.el8",
-                        "source": "rpm",
-                        "version": "2021a"
-                    }
-                ],
-                "unbound-libs": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "unbound-libs",
-                        "release": "11.el8_2",
-                        "source": "rpm",
-                        "version": "1.7.3"
-                    }
-                ],
-                "util-linux": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "util-linux",
-                        "release": "22.el8",
-                        "source": "rpm",
-                        "version": "2.32.1"
-                    }
-                ],
-                "vim-minimal": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": 2,
-                        "name": "vim-minimal",
-                        "release": "13.el8",
-                        "source": "rpm",
-                        "version": "8.0.1763"
-                    }
-                ],
-                "virt-what": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "virt-what",
-                        "release": "6.el8",
-                        "source": "rpm",
-                        "version": "1.18"
-                    }
-                ],
-                "which": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "which",
-                        "release": "12.el8",
-                        "source": "rpm",
-                        "version": "2.21"
-                    }
-                ],
-                "xfsprogs": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "xfsprogs",
-                        "release": "2.el8",
-                        "source": "rpm",
-                        "version": "5.0.0"
-                    }
-                ],
-                "xkeyboard-config": [
-                    {
-                        "arch": "noarch",
-                        "epoch": null,
-                        "name": "xkeyboard-config",
-                        "release": "1.el8",
-                        "source": "rpm",
-                        "version": "2.28"
-                    }
-                ],
-                "xmlsec1": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "xmlsec1",
-                        "release": "4.el8",
-                        "source": "rpm",
-                        "version": "1.2.25"
-                    }
-                ],
-                "xmlsec1-openssl": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "xmlsec1-openssl",
-                        "release": "4.el8",
-                        "source": "rpm",
-                        "version": "1.2.25"
-                    }
-                ],
-                "xz": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "xz",
-                        "release": "3.el8",
-                        "source": "rpm",
-                        "version": "5.2.4"
-                    }
-                ],
-                "xz-libs": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "xz-libs",
-                        "release": "3.el8",
-                        "source": "rpm",
-                        "version": "5.2.4"
-                    }
-                ],
-                "yum": [
-                    {
-                        "arch": "noarch",
-                        "epoch": null,
-                        "name": "yum",
-                        "release": "7.el8_2",
-                        "source": "rpm",
-                        "version": "4.2.17"
-                    }
-                ],
-                "zlib": [
-                    {
-                        "arch": "x86_64",
-                        "epoch": null,
-                        "name": "zlib",
-                        "release": "16.el8_2",
-                        "source": "rpm",
-                        "version": "1.2.11"
-                    }
                 ]
             },
             "status": "SUCCESS"
@@ -12952,7 +8108,7 @@ package information as facts
 
 #### Human Readable Output
 
-># 192.168.1.125 -  SUCCESS 
+># 123.123.123.123 -  SUCCESS 
 >  * discovered_interpreter_python: /usr/libexec/platform-python
 >  * ## Packages
 >    * ### Gconf2
@@ -12979,3652 +8135,13 @@ package information as facts
 >      * release: 5.el8_2
 >      * source: rpm
 >      * version: 1.22.8
->    * ### Networkmanager-Team
->    * ### Networkmanager-Team
->      * arch: x86_64
->      * epoch: 1
->      * name: NetworkManager-team
->      * release: 5.el8_2
->      * source: rpm
->      * version: 1.22.8
->    * ### Networkmanager-Tui
->    * ### Networkmanager-Tui
->      * arch: x86_64
->      * epoch: 1
->      * name: NetworkManager-tui
->      * release: 5.el8_2
->      * source: rpm
->      * version: 1.22.8
->    * ### Acl
->    * ### Acl
->      * arch: x86_64
->      * epoch: None
->      * name: acl
->      * release: 1.el8
->      * source: rpm
->      * version: 2.2.53
->    * ### Apr
->    * ### Apr
->      * arch: x86_64
->      * epoch: None
->      * name: apr
->      * release: 11.el8
->      * source: rpm
->      * version: 1.6.3
->    * ### Apr-Util
->    * ### Apr-Util
->      * arch: x86_64
->      * epoch: None
->      * name: apr-util
->      * release: 6.el8
->      * source: rpm
->      * version: 1.6.1
->    * ### Apr-Util-Bdb
->    * ### Apr-Util-Bdb
->      * arch: x86_64
->      * epoch: None
->      * name: apr-util-bdb
->      * release: 6.el8
->      * source: rpm
->      * version: 1.6.1
->    * ### Apr-Util-Openssl
->    * ### Apr-Util-Openssl
->      * arch: x86_64
->      * epoch: None
->      * name: apr-util-openssl
->      * release: 6.el8
->      * source: rpm
->      * version: 1.6.1
->    * ### At
->    * ### At
->      * arch: x86_64
->      * epoch: None
->      * name: at
->      * release: 11.el8
->      * source: rpm
->      * version: 3.1.20
->    * ### Audit
->    * ### Audit
->      * arch: x86_64
->      * epoch: None
->      * name: audit
->      * release: 0.17.20191104git1c2f876.el8
->      * source: rpm
->      * version: 3.0
->    * ### Audit-Libs
->    * ### Audit-Libs
->      * arch: x86_64
->      * epoch: None
->      * name: audit-libs
->      * release: 0.17.20191104git1c2f876.el8
->      * source: rpm
->      * version: 3.0
->    * ### Authselect
->    * ### Authselect
->      * arch: x86_64
->      * epoch: None
->      * name: authselect
->      * release: 2.el8
->      * source: rpm
->      * version: 1.1
->    * ### Authselect-Libs
->    * ### Authselect-Libs
->      * arch: x86_64
->      * epoch: None
->      * name: authselect-libs
->      * release: 2.el8
->      * source: rpm
->      * version: 1.1
->    * ### Avahi-Libs
->    * ### Avahi-Libs
->      * arch: x86_64
->      * epoch: None
->      * name: avahi-libs
->      * release: 19.el8
->      * source: rpm
->      * version: 0.7
->    * ### Basesystem
->    * ### Basesystem
->      * arch: noarch
->      * epoch: None
->      * name: basesystem
->      * release: 5.el8
->      * source: rpm
->      * version: 11
->    * ### Bash
->    * ### Bash
->      * arch: x86_64
->      * epoch: None
->      * name: bash
->      * release: 10.el8
->      * source: rpm
->      * version: 4.4.19
->    * ### Bind-Export-Libs
->    * ### Bind-Export-Libs
->      * arch: x86_64
->      * epoch: 32
->      * name: bind-export-libs
->      * release: 6.el8_2.1
->      * source: rpm
->      * version: 9.11.13
->    * ### Binutils
->    * ### Binutils
->      * arch: x86_64
->      * epoch: None
->      * name: binutils
->      * release: 79.el8
->      * source: rpm
->      * version: 2.30
->    * ### Biosdevname
->    * ### Biosdevname
->      * arch: x86_64
->      * epoch: None
->      * name: biosdevname
->      * release: 2.el8
->      * source: rpm
->      * version: 0.7.3
->    * ### Brotli
->    * ### Brotli
->      * arch: x86_64
->      * epoch: None
->      * name: brotli
->      * release: 1.el8
->      * source: rpm
->      * version: 1.0.6
->    * ### Bzip2-Libs
->    * ### Bzip2-Libs
->      * arch: x86_64
->      * epoch: None
->      * name: bzip2-libs
->      * release: 26.el8
->      * source: rpm
->      * version: 1.0.6
->    * ### C-Ares
->    * ### C-Ares
->      * arch: x86_64
->      * epoch: None
->      * name: c-ares
->      * release: 5.el8
->      * source: rpm
->      * version: 1.13.0
->    * ### Ca-Certificates
->    * ### Ca-Certificates
->      * arch: noarch
->      * epoch: None
->      * name: ca-certificates
->      * release: 80.0.el8_2
->      * source: rpm
->      * version: 2020.2.41
->    * ### Centos-Gpg-Keys
->    * ### Centos-Gpg-Keys
->      * arch: noarch
->      * epoch: None
->      * name: centos-gpg-keys
->      * release: 2.2004.0.2.el8
->      * source: rpm
->      * version: 8.2
->    * ### Centos-Logos-Httpd
->    * ### Centos-Logos-Httpd
->      * arch: noarch
->      * epoch: None
->      * name: centos-logos-httpd
->      * release: 2.el8
->      * source: rpm
->      * version: 80.5
->    * ### Centos-Release
->    * ### Centos-Release
->      * arch: x86_64
->      * epoch: None
->      * name: centos-release
->      * release: 2.2004.0.2.el8
->      * source: rpm
->      * version: 8.2
->    * ### Centos-Repos
->    * ### Centos-Repos
->      * arch: x86_64
->      * epoch: None
->      * name: centos-repos
->      * release: 2.2004.0.2.el8
->      * source: rpm
->      * version: 8.2
->    * ### Chkconfig
->    * ### Chkconfig
->      * arch: x86_64
->      * epoch: None
->      * name: chkconfig
->      * release: 1.el8
->      * source: rpm
->      * version: 1.11
->    * ### Chrony
->    * ### Chrony
->      * arch: x86_64
->      * epoch: None
->      * name: chrony
->      * release: 1.el8
->      * source: rpm
->      * version: 3.5
->    * ### Copy-Jdk-Configs
->    * ### Copy-Jdk-Configs
->      * arch: noarch
->      * epoch: None
->      * name: copy-jdk-configs
->      * release: 4.el8
->      * source: rpm
->      * version: 3.7
->    * ### Coreutils
->    * ### Coreutils
->      * arch: x86_64
->      * epoch: None
->      * name: coreutils
->      * release: 7.el8_2.1
->      * source: rpm
->      * version: 8.30
->    * ### Coreutils-Common
->    * ### Coreutils-Common
->      * arch: x86_64
->      * epoch: None
->      * name: coreutils-common
->      * release: 7.el8_2.1
->      * source: rpm
->      * version: 8.30
->    * ### Cpio
->    * ### Cpio
->      * arch: x86_64
->      * epoch: None
->      * name: cpio
->      * release: 8.el8
->      * source: rpm
->      * version: 2.12
->    * ### Cpp
->    * ### Cpp
->      * arch: x86_64
->      * epoch: None
->      * name: cpp
->      * release: 5.1.el8
->      * source: rpm
->      * version: 8.3.1
->    * ### Cracklib
->    * ### Cracklib
->      * arch: x86_64
->      * epoch: None
->      * name: cracklib
->      * release: 15.el8
->      * source: rpm
->      * version: 2.9.6
->    * ### Cracklib-Dicts
->    * ### Cracklib-Dicts
->      * arch: x86_64
->      * epoch: None
->      * name: cracklib-dicts
->      * release: 15.el8
->      * source: rpm
->      * version: 2.9.6
->    * ### Cronie
->    * ### Cronie
->      * arch: x86_64
->      * epoch: None
->      * name: cronie
->      * release: 4.el8
->      * source: rpm
->      * version: 1.5.2
->    * ### Cronie-Anacron
->    * ### Cronie-Anacron
->      * arch: x86_64
->      * epoch: None
->      * name: cronie-anacron
->      * release: 4.el8
->      * source: rpm
->      * version: 1.5.2
->    * ### Crontabs
->    * ### Crontabs
->      * arch: noarch
->      * epoch: None
->      * name: crontabs
->      * release: 16.20150630git.el8
->      * source: rpm
->      * version: 1.11
->    * ### Crypto-Policies
->    * ### Crypto-Policies
->      * arch: noarch
->      * epoch: None
->      * name: crypto-policies
->      * release: 2.git23e1bf1.el8
->      * source: rpm
->      * version: 20191128
->    * ### Cryptsetup-Libs
->    * ### Cryptsetup-Libs
->      * arch: x86_64
->      * epoch: None
->      * name: cryptsetup-libs
->      * release: 1.el8
->      * source: rpm
->      * version: 2.2.2
->    * ### Cups-Libs
->    * ### Cups-Libs
->      * arch: x86_64
->      * epoch: 1
->      * name: cups-libs
->      * release: 38.el8
->      * source: rpm
->      * version: 2.2.6
->    * ### Curl
->    * ### Curl
->      * arch: x86_64
->      * epoch: None
->      * name: curl
->      * release: 12.el8
->      * source: rpm
->      * version: 7.61.1
->    * ### Cyrus-Sasl-Lib
->    * ### Cyrus-Sasl-Lib
->      * arch: x86_64
->      * epoch: None
->      * name: cyrus-sasl-lib
->      * release: 1.el8
->      * source: rpm
->      * version: 2.1.27
->    * ### Dbus
->    * ### Dbus
->      * arch: x86_64
->      * epoch: 1
->      * name: dbus
->      * release: 10.el8_2
->      * source: rpm
->      * version: 1.12.8
->    * ### Dbus-Common
->    * ### Dbus-Common
->      * arch: noarch
->      * epoch: 1
->      * name: dbus-common
->      * release: 10.el8_2
->      * source: rpm
->      * version: 1.12.8
->    * ### Dbus-Daemon
->    * ### Dbus-Daemon
->      * arch: x86_64
->      * epoch: 1
->      * name: dbus-daemon
->      * release: 10.el8_2
->      * source: rpm
->      * version: 1.12.8
->    * ### Dbus-Glib
->    * ### Dbus-Glib
->      * arch: x86_64
->      * epoch: None
->      * name: dbus-glib
->      * release: 2.el8
->      * source: rpm
->      * version: 0.110
->    * ### Dbus-Libs
->    * ### Dbus-Libs
->      * arch: x86_64
->      * epoch: 1
->      * name: dbus-libs
->      * release: 10.el8_2
->      * source: rpm
->      * version: 1.12.8
->    * ### Dbus-Tools
->    * ### Dbus-Tools
->      * arch: x86_64
->      * epoch: 1
->      * name: dbus-tools
->      * release: 10.el8_2
->      * source: rpm
->      * version: 1.12.8
->    * ### Dconf
->    * ### Dconf
->      * arch: x86_64
->      * epoch: None
->      * name: dconf
->      * release: 3.el8
->      * source: rpm
->      * version: 0.28.0
->    * ### Device-Mapper
->    * ### Device-Mapper
->      * arch: x86_64
->      * epoch: 8
->      * name: device-mapper
->      * release: 3.el8
->      * source: rpm
->      * version: 1.02.169
->    * ### Device-Mapper-Event
->    * ### Device-Mapper-Event
->      * arch: x86_64
->      * epoch: 8
->      * name: device-mapper-event
->      * release: 3.el8
->      * source: rpm
->      * version: 1.02.169
->    * ### Device-Mapper-Event-Libs
->    * ### Device-Mapper-Event-Libs
->      * arch: x86_64
->      * epoch: 8
->      * name: device-mapper-event-libs
->      * release: 3.el8
->      * source: rpm
->      * version: 1.02.169
->    * ### Device-Mapper-Libs
->    * ### Device-Mapper-Libs
->      * arch: x86_64
->      * epoch: 8
->      * name: device-mapper-libs
->      * release: 3.el8
->      * source: rpm
->      * version: 1.02.169
->    * ### Device-Mapper-Persistent-Data
->    * ### Device-Mapper-Persistent-Data
->      * arch: x86_64
->      * epoch: None
->      * name: device-mapper-persistent-data
->      * release: 3.el8
->      * source: rpm
->      * version: 0.8.5
->    * ### Dhcp-Client
->    * ### Dhcp-Client
->      * arch: x86_64
->      * epoch: 12
->      * name: dhcp-client
->      * release: 40.el8
->      * source: rpm
->      * version: 4.3.6
->    * ### Dhcp-Common
->    * ### Dhcp-Common
->      * arch: noarch
->      * epoch: 12
->      * name: dhcp-common
->      * release: 40.el8
->      * source: rpm
->      * version: 4.3.6
->    * ### Dhcp-Libs
->    * ### Dhcp-Libs
->      * arch: x86_64
->      * epoch: 12
->      * name: dhcp-libs
->      * release: 40.el8
->      * source: rpm
->      * version: 4.3.6
->    * ### Diffutils
->    * ### Diffutils
->      * arch: x86_64
->      * epoch: None
->      * name: diffutils
->      * release: 6.el8
->      * source: rpm
->      * version: 3.6
->    * ### Dmidecode
->    * ### Dmidecode
->      * arch: x86_64
->      * epoch: 1
->      * name: dmidecode
->      * release: 5.el8
->      * source: rpm
->      * version: 3.2
->    * ### Dnf
->    * ### Dnf
->      * arch: noarch
->      * epoch: None
->      * name: dnf
->      * release: 7.el8_2
->      * source: rpm
->      * version: 4.2.17
->    * ### Dnf-Data
->    * ### Dnf-Data
->      * arch: noarch
->      * epoch: None
->      * name: dnf-data
->      * release: 7.el8_2
->      * source: rpm
->      * version: 4.2.17
->    * ### Dnf-Plugin-Spacewalk
->    * ### Dnf-Plugin-Spacewalk
->      * arch: noarch
->      * epoch: None
->      * name: dnf-plugin-spacewalk
->      * release: 11.module_el8.1.0+211+ad6c0bc7
->      * source: rpm
->      * version: 2.8.5
->    * ### Dnf-Plugins-Core
->    * ### Dnf-Plugins-Core
->      * arch: noarch
->      * epoch: None
->      * name: dnf-plugins-core
->      * release: 4.el8_2
->      * source: rpm
->      * version: 4.0.12
->    * ### Dracut
->    * ### Dracut
->      * arch: x86_64
->      * epoch: None
->      * name: dracut
->      * release: 70.git20200228.el8
->      * source: rpm
->      * version: 049
->    * ### Dracut-Config-Rescue
->    * ### Dracut-Config-Rescue
->      * arch: x86_64
->      * epoch: None
->      * name: dracut-config-rescue
->      * release: 70.git20200228.el8
->      * source: rpm
->      * version: 049
->    * ### Dracut-Network
->    * ### Dracut-Network
->      * arch: x86_64
->      * epoch: None
->      * name: dracut-network
->      * release: 70.git20200228.el8
->      * source: rpm
->      * version: 049
->    * ### Dracut-Squash
->    * ### Dracut-Squash
->      * arch: x86_64
->      * epoch: None
->      * name: dracut-squash
->      * release: 70.git20200228.el8
->      * source: rpm
->      * version: 049
->    * ### E2Fsprogs
->    * ### E2Fsprogs
->      * arch: x86_64
->      * epoch: None
->      * name: e2fsprogs
->      * release: 3.el8
->      * source: rpm
->      * version: 1.45.4
->    * ### E2Fsprogs-Libs
->    * ### E2Fsprogs-Libs
->      * arch: x86_64
->      * epoch: None
->      * name: e2fsprogs-libs
->      * release: 3.el8
->      * source: rpm
->      * version: 1.45.4
->    * ### Elfutils-Debuginfod-Client
->    * ### Elfutils-Debuginfod-Client
->      * arch: x86_64
->      * epoch: None
->      * name: elfutils-debuginfod-client
->      * release: 7.el8
->      * source: rpm
->      * version: 0.178
->    * ### Elfutils-Default-Yama-Scope
->    * ### Elfutils-Default-Yama-Scope
->      * arch: noarch
->      * epoch: None
->      * name: elfutils-default-yama-scope
->      * release: 7.el8
->      * source: rpm
->      * version: 0.178
->    * ### Elfutils-Libelf
->    * ### Elfutils-Libelf
->      * arch: x86_64
->      * epoch: None
->      * name: elfutils-libelf
->      * release: 7.el8
->      * source: rpm
->      * version: 0.178
->    * ### Elfutils-Libs
->    * ### Elfutils-Libs
->      * arch: x86_64
->      * epoch: None
->      * name: elfutils-libs
->      * release: 7.el8
->      * source: rpm
->      * version: 0.178
->    * ### Ethtool
->    * ### Ethtool
->      * arch: x86_64
->      * epoch: 2
->      * name: ethtool
->      * release: 2.el8
->      * source: rpm
->      * version: 5.0
->    * ### Expat
->    * ### Expat
->      * arch: x86_64
->      * epoch: None
->      * name: expat
->      * release: 3.el8
->      * source: rpm
->      * version: 2.2.5
->    * ### File
->    * ### File
->      * arch: x86_64
->      * epoch: None
->      * name: file
->      * release: 13.el8
->      * source: rpm
->      * version: 5.33
->    * ### File-Libs
->    * ### File-Libs
->      * arch: x86_64
->      * epoch: None
->      * name: file-libs
->      * release: 13.el8
->      * source: rpm
->      * version: 5.33
->    * ### Filesystem
->    * ### Filesystem
->      * arch: x86_64
->      * epoch: None
->      * name: filesystem
->      * release: 2.el8
->      * source: rpm
->      * version: 3.8
->    * ### Findutils
->    * ### Findutils
->      * arch: x86_64
->      * epoch: 1
->      * name: findutils
->      * release: 20.el8
->      * source: rpm
->      * version: 4.6.0
->    * ### Fipscheck
->    * ### Fipscheck
->      * arch: x86_64
->      * epoch: None
->      * name: fipscheck
->      * release: 4.el8
->      * source: rpm
->      * version: 1.5.0
->    * ### Fipscheck-Lib
->    * ### Fipscheck-Lib
->      * arch: x86_64
->      * epoch: None
->      * name: fipscheck-lib
->      * release: 4.el8
->      * source: rpm
->      * version: 1.5.0
->    * ### Firewalld
->    * ### Firewalld
->      * arch: noarch
->      * epoch: None
->      * name: firewalld
->      * release: 4.el8
->      * source: rpm
->      * version: 0.8.0
->    * ### Firewalld-Filesystem
->    * ### Firewalld-Filesystem
->      * arch: noarch
->      * epoch: None
->      * name: firewalld-filesystem
->      * release: 4.el8
->      * source: rpm
->      * version: 0.8.0
->    * ### Freetype
->    * ### Freetype
->      * arch: x86_64
->      * epoch: None
->      * name: freetype
->      * release: 4.el8
->      * source: rpm
->      * version: 2.9.1
->    * ### Fuse
->    * ### Fuse
->      * arch: x86_64
->      * epoch: None
->      * name: fuse
->      * release: 12.el8
->      * source: rpm
->      * version: 2.9.7
->    * ### Fuse-Common
->    * ### Fuse-Common
->      * arch: x86_64
->      * epoch: None
->      * name: fuse-common
->      * release: 12.el8
->      * source: rpm
->      * version: 3.2.1
->    * ### Fuse-Libs
->    * ### Fuse-Libs
->      * arch: x86_64
->      * epoch: None
->      * name: fuse-libs
->      * release: 12.el8
->      * source: rpm
->      * version: 2.9.7
->    * ### Gawk
->    * ### Gawk
->      * arch: x86_64
->      * epoch: None
->      * name: gawk
->      * release: 1.el8
->      * source: rpm
->      * version: 4.2.1
->    * ### Gcc
->    * ### Gcc
->      * arch: x86_64
->      * epoch: None
->      * name: gcc
->      * release: 5.1.el8
->      * source: rpm
->      * version: 8.3.1
->    * ### Gdbm
->    * ### Gdbm
->      * arch: x86_64
->      * epoch: 1
->      * name: gdbm
->      * release: 1.el8
->      * source: rpm
->      * version: 1.18
->    * ### Gdbm-Libs
->    * ### Gdbm-Libs
->      * arch: x86_64
->      * epoch: 1
->      * name: gdbm-libs
->      * release: 1.el8
->      * source: rpm
->      * version: 1.18
->    * ### Geolite2-City
->    * ### Geolite2-City
->      * arch: noarch
->      * epoch: None
->      * name: geolite2-city
->      * release: 1.el8
->      * source: rpm
->      * version: 20180605
->    * ### Geolite2-Country
->    * ### Geolite2-Country
->      * arch: noarch
->      * epoch: None
->      * name: geolite2-country
->      * release: 1.el8
->      * source: rpm
->      * version: 20180605
->    * ### Gettext
->    * ### Gettext
->      * arch: x86_64
->      * epoch: None
->      * name: gettext
->      * release: 17.el8
->      * source: rpm
->      * version: 0.19.8.1
->    * ### Gettext-Libs
->    * ### Gettext-Libs
->      * arch: x86_64
->      * epoch: None
->      * name: gettext-libs
->      * release: 17.el8
->      * source: rpm
->      * version: 0.19.8.1
->    * ### Glib2
->    * ### Glib2
->      * arch: x86_64
->      * epoch: None
->      * name: glib2
->      * release: 8.el8
->      * source: rpm
->      * version: 2.56.4
->    * ### Glibc
->    * ### Glibc
->      * arch: x86_64
->      * epoch: None
->      * name: glibc
->      * release: 127.el8
->      * source: rpm
->      * version: 2.28
->    * ### Glibc-Common
->    * ### Glibc-Common
->      * arch: x86_64
->      * epoch: None
->      * name: glibc-common
->      * release: 127.el8
->      * source: rpm
->      * version: 2.28
->    * ### Glibc-Devel
->    * ### Glibc-Devel
->      * arch: x86_64
->      * epoch: None
->      * name: glibc-devel
->      * release: 127.el8
->      * source: rpm
->      * version: 2.28
->    * ### Glibc-Headers
->    * ### Glibc-Headers
->      * arch: x86_64
->      * epoch: None
->      * name: glibc-headers
->      * release: 127.el8
->      * source: rpm
->      * version: 2.28
->    * ### Glibc-Langpack-En
->    * ### Glibc-Langpack-En
->      * arch: x86_64
->      * epoch: None
->      * name: glibc-langpack-en
->      * release: 127.el8
->      * source: rpm
->      * version: 2.28
->    * ### Gmp
->    * ### Gmp
->      * arch: x86_64
->      * epoch: 1
->      * name: gmp
->      * release: 10.el8
->      * source: rpm
->      * version: 6.1.2
->    * ### Gnupg2
->    * ### Gnupg2
->      * arch: x86_64
->      * epoch: None
->      * name: gnupg2
->      * release: 1.el8
->      * source: rpm
->      * version: 2.2.9
->    * ### Gnupg2-Smime
->    * ### Gnupg2-Smime
->      * arch: x86_64
->      * epoch: None
->      * name: gnupg2-smime
->      * release: 1.el8
->      * source: rpm
->      * version: 2.2.9
->    * ### Gnutls
->    * ### Gnutls
->      * arch: x86_64
->      * epoch: None
->      * name: gnutls
->      * release: 11.el8_2
->      * source: rpm
->      * version: 3.6.8
->    * ### Gobject-Introspection
->    * ### Gobject-Introspection
->      * arch: x86_64
->      * epoch: None
->      * name: gobject-introspection
->      * release: 1.el8
->      * source: rpm
->      * version: 1.56.1
->    * ### Gpg-Pubkey
->    * ### Gpg-Pubkey
->      * arch: None
->      * epoch: None
->      * name: gpg-pubkey
->      * release: 5ccc5b19
->      * source: rpm
->      * version: 8483c65d
->    * ### Gpgme
->    * ### Gpgme
->      * arch: x86_64
->      * epoch: None
->      * name: gpgme
->      * release: 6.el8.0.1
->      * source: rpm
->      * version: 1.10.0
->    * ### Grep
->    * ### Grep
->      * arch: x86_64
->      * epoch: None
->      * name: grep
->      * release: 6.el8
->      * source: rpm
->      * version: 3.1
->    * ### Groff-Base
->    * ### Groff-Base
->      * arch: x86_64
->      * epoch: None
->      * name: groff-base
->      * release: 18.el8
->      * source: rpm
->      * version: 1.22.3
->    * ### Grub2-Common
->    * ### Grub2-Common
->      * arch: noarch
->      * epoch: 1
->      * name: grub2-common
->      * release: 87.el8_2
->      * source: rpm
->      * version: 2.02
->    * ### Grub2-Pc
->    * ### Grub2-Pc
->      * arch: x86_64
->      * epoch: 1
->      * name: grub2-pc
->      * release: 87.el8_2
->      * source: rpm
->      * version: 2.02
->    * ### Grub2-Pc-Modules
->    * ### Grub2-Pc-Modules
->      * arch: noarch
->      * epoch: 1
->      * name: grub2-pc-modules
->      * release: 87.el8_2
->      * source: rpm
->      * version: 2.02
->    * ### Grub2-Tools
->    * ### Grub2-Tools
->      * arch: x86_64
->      * epoch: 1
->      * name: grub2-tools
->      * release: 87.el8_2
->      * source: rpm
->      * version: 2.02
->    * ### Grub2-Tools-Extra
->    * ### Grub2-Tools-Extra
->      * arch: x86_64
->      * epoch: 1
->      * name: grub2-tools-extra
->      * release: 87.el8_2
->      * source: rpm
->      * version: 2.02
->    * ### Grub2-Tools-Minimal
->    * ### Grub2-Tools-Minimal
->      * arch: x86_64
->      * epoch: 1
->      * name: grub2-tools-minimal
->      * release: 87.el8_2
->      * source: rpm
->      * version: 2.02
->    * ### Grubby
->    * ### Grubby
->      * arch: x86_64
->      * epoch: None
->      * name: grubby
->      * release: 38.el8
->      * source: rpm
->      * version: 8.40
->    * ### Gzip
->    * ### Gzip
->      * arch: x86_64
->      * epoch: None
->      * name: gzip
->      * release: 9.el8
->      * source: rpm
->      * version: 1.9
->    * ### Hardlink
->    * ### Hardlink
->      * arch: x86_64
->      * epoch: 1
->      * name: hardlink
->      * release: 6.el8
->      * source: rpm
->      * version: 1.3
->    * ### Hdparm
->    * ### Hdparm
->      * arch: x86_64
->      * epoch: None
->      * name: hdparm
->      * release: 2.el8
->      * source: rpm
->      * version: 9.54
->    * ### Hostname
->    * ### Hostname
->      * arch: x86_64
->      * epoch: None
->      * name: hostname
->      * release: 6.el8
->      * source: rpm
->      * version: 3.20
->    * ### Httpd
->    * ### Httpd
->      * arch: x86_64
->      * epoch: None
->      * name: httpd
->      * release: 30.module_el8.3.0+561+97fdbbcc
->      * source: rpm
->      * version: 2.4.37
->    * ### Httpd-Filesystem
->    * ### Httpd-Filesystem
->      * arch: noarch
->      * epoch: None
->      * name: httpd-filesystem
->      * release: 30.module_el8.3.0+561+97fdbbcc
->      * source: rpm
->      * version: 2.4.37
->    * ### Httpd-Tools
->    * ### Httpd-Tools
->      * arch: x86_64
->      * epoch: None
->      * name: httpd-tools
->      * release: 30.module_el8.3.0+561+97fdbbcc
->      * source: rpm
->      * version: 2.4.37
->    * ### Hwdata
->    * ### Hwdata
->      * arch: noarch
->      * epoch: None
->      * name: hwdata
->      * release: 8.4.el8
->      * source: rpm
->      * version: 0.314
->    * ### Ima-Evm-Utils
->    * ### Ima-Evm-Utils
->      * arch: x86_64
->      * epoch: None
->      * name: ima-evm-utils
->      * release: 5.el8
->      * source: rpm
->      * version: 1.1
->    * ### Info
->    * ### Info
->      * arch: x86_64
->      * epoch: None
->      * name: info
->      * release: 6.el8
->      * source: rpm
->      * version: 6.5
->    * ### Initscripts
->    * ### Initscripts
->      * arch: x86_64
->      * epoch: None
->      * name: initscripts
->      * release: 1.el8_2.2
->      * source: rpm
->      * version: 10.00.6
->    * ### Ipcalc
->    * ### Ipcalc
->      * arch: x86_64
->      * epoch: None
->      * name: ipcalc
->      * release: 4.el8
->      * source: rpm
->      * version: 0.2.4
->    * ### Iproute
->    * ### Iproute
->      * arch: x86_64
->      * epoch: None
->      * name: iproute
->      * release: 1.el8
->      * source: rpm
->      * version: 5.3.0
->    * ### Iprutils
->    * ### Iprutils
->      * arch: x86_64
->      * epoch: None
->      * name: iprutils
->      * release: 1.el8
->      * source: rpm
->      * version: 2.4.18.1
->    * ### Ipset
->    * ### Ipset
->      * arch: x86_64
->      * epoch: None
->      * name: ipset
->      * release: 1.el8
->      * source: rpm
->      * version: 7.1
->    * ### Ipset-Libs
->    * ### Ipset-Libs
->      * arch: x86_64
->      * epoch: None
->      * name: ipset-libs
->      * release: 1.el8
->      * source: rpm
->      * version: 7.1
->    * ### Iptables
->    * ### Iptables
->      * arch: x86_64
->      * epoch: None
->      * name: iptables
->      * release: 15.el8_3.3
->      * source: rpm
->      * version: 1.8.4
->    * ### Iptables-Ebtables
->    * ### Iptables-Ebtables
->      * arch: x86_64
->      * epoch: None
->      * name: iptables-ebtables
->      * release: 15.el8_3.3
->      * source: rpm
->      * version: 1.8.4
->    * ### Iptables-Libs
->    * ### Iptables-Libs
->      * arch: x86_64
->      * epoch: None
->      * name: iptables-libs
->      * release: 15.el8_3.3
->      * source: rpm
->      * version: 1.8.4
->    * ### Iputils
->    * ### Iputils
->      * arch: x86_64
->      * epoch: None
->      * name: iputils
->      * release: 2.el8
->      * source: rpm
->      * version: 20180629
->    * ### Irqbalance
->    * ### Irqbalance
->      * arch: x86_64
->      * epoch: 2
->      * name: irqbalance
->      * release: 4.el8
->      * source: rpm
->      * version: 1.4.0
->    * ### Isl
->    * ### Isl
->      * arch: x86_64
->      * epoch: None
->      * name: isl
->      * release: 6.el8
->      * source: rpm
->      * version: 0.16.1
->    * ### Iwl100-Firmware
->    * ### Iwl100-Firmware
->      * arch: noarch
->      * epoch: None
->      * name: iwl100-firmware
->      * release: 97.el8.1
->      * source: rpm
->      * version: 39.31.5.1
->    * ### Iwl1000-Firmware
->    * ### Iwl1000-Firmware
->      * arch: noarch
->      * epoch: 1
->      * name: iwl1000-firmware
->      * release: 97.el8.1
->      * source: rpm
->      * version: 39.31.5.1
->    * ### Iwl105-Firmware
->    * ### Iwl105-Firmware
->      * arch: noarch
->      * epoch: None
->      * name: iwl105-firmware
->      * release: 97.el8.1
->      * source: rpm
->      * version: 18.168.6.1
->    * ### Iwl135-Firmware
->    * ### Iwl135-Firmware
->      * arch: noarch
->      * epoch: None
->      * name: iwl135-firmware
->      * release: 97.el8.1
->      * source: rpm
->      * version: 18.168.6.1
->    * ### Iwl2000-Firmware
->    * ### Iwl2000-Firmware
->      * arch: noarch
->      * epoch: None
->      * name: iwl2000-firmware
->      * release: 97.el8.1
->      * source: rpm
->      * version: 18.168.6.1
->    * ### Iwl2030-Firmware
->    * ### Iwl2030-Firmware
->      * arch: noarch
->      * epoch: None
->      * name: iwl2030-firmware
->      * release: 97.el8.1
->      * source: rpm
->      * version: 18.168.6.1
->    * ### Iwl3160-Firmware
->    * ### Iwl3160-Firmware
->      * arch: noarch
->      * epoch: 1
->      * name: iwl3160-firmware
->      * release: 97.el8.1
->      * source: rpm
->      * version: 25.30.13.0
->    * ### Iwl3945-Firmware
->    * ### Iwl3945-Firmware
->      * arch: noarch
->      * epoch: None
->      * name: iwl3945-firmware
->      * release: 97.el8.1
->      * source: rpm
->      * version: 15.32.2.9
->    * ### Iwl4965-Firmware
->    * ### Iwl4965-Firmware
->      * arch: noarch
->      * epoch: None
->      * name: iwl4965-firmware
->      * release: 97.el8.1
->      * source: rpm
->      * version: 228.61.2.24
->    * ### Iwl5000-Firmware
->    * ### Iwl5000-Firmware
->      * arch: noarch
->      * epoch: None
->      * name: iwl5000-firmware
->      * release: 97.el8.1
->      * source: rpm
->      * version: 8.83.5.1_1
->    * ### Iwl5150-Firmware
->    * ### Iwl5150-Firmware
->      * arch: noarch
->      * epoch: None
->      * name: iwl5150-firmware
->      * release: 97.el8.1
->      * source: rpm
->      * version: 8.24.2.2
->    * ### Iwl6000-Firmware
->    * ### Iwl6000-Firmware
->      * arch: noarch
->      * epoch: None
->      * name: iwl6000-firmware
->      * release: 97.el8.1
->      * source: rpm
->      * version: 9.221.4.1
->    * ### Iwl6000G2A-Firmware
->    * ### Iwl6000G2A-Firmware
->      * arch: noarch
->      * epoch: None
->      * name: iwl6000g2a-firmware
->      * release: 97.el8.1
->      * source: rpm
->      * version: 18.168.6.1
->    * ### Iwl6050-Firmware
->    * ### Iwl6050-Firmware
->      * arch: noarch
->      * epoch: None
->      * name: iwl6050-firmware
->      * release: 97.el8.1
->      * source: rpm
->      * version: 41.28.5.1
->    * ### Iwl7260-Firmware
->    * ### Iwl7260-Firmware
->      * arch: noarch
->      * epoch: 1
->      * name: iwl7260-firmware
->      * release: 97.el8.1
->      * source: rpm
->      * version: 25.30.13.0
->    * ### Jansson
->    * ### Jansson
->      * arch: x86_64
->      * epoch: None
->      * name: jansson
->      * release: 3.el8
->      * source: rpm
->      * version: 2.11
->    * ### Java-1.8.0-Openjdk-Headless
->    * ### Java-1.8.0-Openjdk-Headless
->      * arch: x86_64
->      * epoch: 1
->      * name: java-1.8.0-openjdk-headless
->      * release: 0.el8_3
->      * source: rpm
->      * version: 1.8.0.292.b10
->    * ### Javapackages-Filesystem
->    * ### Javapackages-Filesystem
->      * arch: noarch
->      * epoch: None
->      * name: javapackages-filesystem
->      * release: 1.module_el8.0.0+11+5b8c10bd
->      * source: rpm
->      * version: 5.3.0
->    * ### Json-C
->    * ### Json-C
->      * arch: x86_64
->      * epoch: None
->      * name: json-c
->      * release: 0.2.el8
->      * source: rpm
->      * version: 0.13.1
->    * ### Kbd
->    * ### Kbd
->      * arch: x86_64
->      * epoch: None
->      * name: kbd
->      * release: 8.el8
->      * source: rpm
->      * version: 2.0.4
->    * ### Kbd-Legacy
->    * ### Kbd-Legacy
->      * arch: noarch
->      * epoch: None
->      * name: kbd-legacy
->      * release: 8.el8
->      * source: rpm
->      * version: 2.0.4
->    * ### Kbd-Misc
->    * ### Kbd-Misc
->      * arch: noarch
->      * epoch: None
->      * name: kbd-misc
->      * release: 8.el8
->      * source: rpm
->      * version: 2.0.4
->    * ### Kernel
->    * ### Kernel
->      * arch: x86_64
->      * epoch: None
->      * name: kernel
->      * release: 193.28.1.el8_2
->      * source: rpm
->      * version: 4.18.0
->    * ### Kernel-Core
->    * ### Kernel-Core
->      * arch: x86_64
->      * epoch: None
->      * name: kernel-core
->      * release: 193.28.1.el8_2
->      * source: rpm
->      * version: 4.18.0
->    * ### Kernel-Headers
->    * ### Kernel-Headers
->      * arch: x86_64
->      * epoch: None
->      * name: kernel-headers
->      * release: 240.22.1.el8_3
->      * source: rpm
->      * version: 4.18.0
->    * ### Kernel-Modules
->    * ### Kernel-Modules
->      * arch: x86_64
->      * epoch: None
->      * name: kernel-modules
->      * release: 193.28.1.el8_2
->      * source: rpm
->      * version: 4.18.0
->    * ### Kernel-Tools
->    * ### Kernel-Tools
->      * arch: x86_64
->      * epoch: None
->      * name: kernel-tools
->      * release: 193.28.1.el8_2
->      * source: rpm
->      * version: 4.18.0
->    * ### Kernel-Tools-Libs
->    * ### Kernel-Tools-Libs
->      * arch: x86_64
->      * epoch: None
->      * name: kernel-tools-libs
->      * release: 193.28.1.el8_2
->      * source: rpm
->      * version: 4.18.0
->    * ### Kexec-Tools
->    * ### Kexec-Tools
->      * arch: x86_64
->      * epoch: None
->      * name: kexec-tools
->      * release: 14.el8
->      * source: rpm
->      * version: 2.0.20
->    * ### Keyutils-Libs
->    * ### Keyutils-Libs
->      * arch: x86_64
->      * epoch: None
->      * name: keyutils-libs
->      * release: 6.el8
->      * source: rpm
->      * version: 1.5.10
->    * ### Kmod
->    * ### Kmod
->      * arch: x86_64
->      * epoch: None
->      * name: kmod
->      * release: 16.el8
->      * source: rpm
->      * version: 25
->    * ### Kmod-Libs
->    * ### Kmod-Libs
->      * arch: x86_64
->      * epoch: None
->      * name: kmod-libs
->      * release: 16.el8
->      * source: rpm
->      * version: 25
->    * ### Kpartx
->    * ### Kpartx
->      * arch: x86_64
->      * epoch: None
->      * name: kpartx
->      * release: 3.el8_2.3
->      * source: rpm
->      * version: 0.8.3
->    * ### Krb5-Libs
->    * ### Krb5-Libs
->      * arch: x86_64
->      * epoch: None
->      * name: krb5-libs
->      * release: 18.el8
->      * source: rpm
->      * version: 1.17
->    * ### Langpacks-En
->    * ### Langpacks-En
->      * arch: noarch
->      * epoch: None
->      * name: langpacks-en
->      * release: 12.el8
->      * source: rpm
->      * version: 1.0
->    * ### Less
->    * ### Less
->      * arch: x86_64
->      * epoch: None
->      * name: less
->      * release: 1.el8
->      * source: rpm
->      * version: 530
->    * ### Libacl
->    * ### Libacl
->      * arch: x86_64
->      * epoch: None
->      * name: libacl
->      * release: 1.el8
->      * source: rpm
->      * version: 2.2.53
->    * ### Libaio
->    * ### Libaio
->      * arch: x86_64
->      * epoch: None
->      * name: libaio
->      * release: 1.el8
->      * source: rpm
->      * version: 0.3.112
->    * ### Libarchive
->    * ### Libarchive
->      * arch: x86_64
->      * epoch: None
->      * name: libarchive
->      * release: 8.el8_1
->      * source: rpm
->      * version: 3.3.2
->    * ### Libassuan
->    * ### Libassuan
->      * arch: x86_64
->      * epoch: None
->      * name: libassuan
->      * release: 3.el8
->      * source: rpm
->      * version: 2.5.1
->    * ### Libattr
->    * ### Libattr
->      * arch: x86_64
->      * epoch: None
->      * name: libattr
->      * release: 3.el8
->      * source: rpm
->      * version: 2.4.48
->    * ### Libbasicobjects
->    * ### Libbasicobjects
->      * arch: x86_64
->      * epoch: None
->      * name: libbasicobjects
->      * release: 39.el8
->      * source: rpm
->      * version: 0.1.1
->    * ### Libblkid
->    * ### Libblkid
->      * arch: x86_64
->      * epoch: None
->      * name: libblkid
->      * release: 22.el8
->      * source: rpm
->      * version: 2.32.1
->    * ### Libcap
->    * ### Libcap
->      * arch: x86_64
->      * epoch: None
->      * name: libcap
->      * release: 3.el8
->      * source: rpm
->      * version: 2.26
->    * ### Libcap-Ng
->    * ### Libcap-Ng
->      * arch: x86_64
->      * epoch: None
->      * name: libcap-ng
->      * release: 5.el8
->      * source: rpm
->      * version: 0.7.9
->    * ### Libcollection
->    * ### Libcollection
->      * arch: x86_64
->      * epoch: None
->      * name: libcollection
->      * release: 39.el8
->      * source: rpm
->      * version: 0.7.0
->    * ### Libcom_Err
->    * ### Libcom_Err
->      * arch: x86_64
->      * epoch: None
->      * name: libcom_err
->      * release: 3.el8
->      * source: rpm
->      * version: 1.45.4
->    * ### Libcomps
->    * ### Libcomps
->      * arch: x86_64
->      * epoch: None
->      * name: libcomps
->      * release: 4.el8
->      * source: rpm
->      * version: 0.1.11
->    * ### Libcroco
->    * ### Libcroco
->      * arch: x86_64
->      * epoch: None
->      * name: libcroco
->      * release: 4.el8_2.1
->      * source: rpm
->      * version: 0.6.12
->    * ### Libcurl
->    * ### Libcurl
->      * arch: x86_64
->      * epoch: None
->      * name: libcurl
->      * release: 12.el8
->      * source: rpm
->      * version: 7.61.1
->    * ### Libdaemon
->    * ### Libdaemon
->      * arch: x86_64
->      * epoch: None
->      * name: libdaemon
->      * release: 15.el8
->      * source: rpm
->      * version: 0.14
->    * ### Libdb
->    * ### Libdb
->      * arch: x86_64
->      * epoch: None
->      * name: libdb
->      * release: 37.el8
->      * source: rpm
->      * version: 5.3.28
->    * ### Libdb-Utils
->    * ### Libdb-Utils
->      * arch: x86_64
->      * epoch: None
->      * name: libdb-utils
->      * release: 37.el8
->      * source: rpm
->      * version: 5.3.28
->    * ### Libdhash
->    * ### Libdhash
->      * arch: x86_64
->      * epoch: None
->      * name: libdhash
->      * release: 39.el8
->      * source: rpm
->      * version: 0.5.0
->    * ### Libdnf
->    * ### Libdnf
->      * arch: x86_64
->      * epoch: None
->      * name: libdnf
->      * release: 6.el8_2
->      * source: rpm
->      * version: 0.39.1
->    * ### Libdrm
->    * ### Libdrm
->      * arch: x86_64
->      * epoch: None
->      * name: libdrm
->      * release: 1.el8
->      * source: rpm
->      * version: 2.4.100
->    * ### Libedit
->    * ### Libedit
->      * arch: x86_64
->      * epoch: None
->      * name: libedit
->      * release: 23.20170329cvs.el8
->      * source: rpm
->      * version: 3.1
->    * ### Libestr
->    * ### Libestr
->      * arch: x86_64
->      * epoch: None
->      * name: libestr
->      * release: 1.el8
->      * source: rpm
->      * version: 0.1.10
->    * ### Libevent
->    * ### Libevent
->      * arch: x86_64
->      * epoch: None
->      * name: libevent
->      * release: 5.el8
->      * source: rpm
->      * version: 2.1.8
->    * ### Libfastjson
->    * ### Libfastjson
->      * arch: x86_64
->      * epoch: None
->      * name: libfastjson
->      * release: 2.el8
->      * source: rpm
->      * version: 0.99.8
->    * ### Libfdisk
->    * ### Libfdisk
->      * arch: x86_64
->      * epoch: None
->      * name: libfdisk
->      * release: 22.el8
->      * source: rpm
->      * version: 2.32.1
->    * ### Libffi
->    * ### Libffi
->      * arch: x86_64
->      * epoch: None
->      * name: libffi
->      * release: 21.el8
->      * source: rpm
->      * version: 3.1
->    * ### Libgcc
->    * ### Libgcc
->      * arch: x86_64
->      * epoch: None
->      * name: libgcc
->      * release: 5.1.el8
->      * source: rpm
->      * version: 8.3.1
->    * ### Libgcrypt
->    * ### Libgcrypt
->      * arch: x86_64
->      * epoch: None
->      * name: libgcrypt
->      * release: 4.el8
->      * source: rpm
->      * version: 1.8.3
->    * ### Libgomp
->    * ### Libgomp
->      * arch: x86_64
->      * epoch: None
->      * name: libgomp
->      * release: 5.1.el8
->      * source: rpm
->      * version: 8.3.1
->    * ### Libgpg-Error
->    * ### Libgpg-Error
->      * arch: x86_64
->      * epoch: None
->      * name: libgpg-error
->      * release: 1.el8
->      * source: rpm
->      * version: 1.31
->    * ### Libgudev
->    * ### Libgudev
->      * arch: x86_64
->      * epoch: None
->      * name: libgudev
->      * release: 4.el8
->      * source: rpm
->      * version: 232
->    * ### Libidn2
->    * ### Libidn2
->      * arch: x86_64
->      * epoch: None
->      * name: libidn2
->      * release: 1.el8
->      * source: rpm
->      * version: 2.2.0
->    * ### Libini_Config
->    * ### Libini_Config
->      * arch: x86_64
->      * epoch: None
->      * name: libini_config
->      * release: 39.el8
->      * source: rpm
->      * version: 1.3.1
->    * ### Libjpeg-Turbo
->    * ### Libjpeg-Turbo
->      * arch: x86_64
->      * epoch: None
->      * name: libjpeg-turbo
->      * release: 10.el8
->      * source: rpm
->      * version: 1.5.3
->    * ### Libkcapi
->    * ### Libkcapi
->      * arch: x86_64
->      * epoch: None
->      * name: libkcapi
->      * release: 16_1.el8
->      * source: rpm
->      * version: 1.1.1
->    * ### Libkcapi-Hmaccalc
->    * ### Libkcapi-Hmaccalc
->      * arch: x86_64
->      * epoch: None
->      * name: libkcapi-hmaccalc
->      * release: 16_1.el8
->      * source: rpm
->      * version: 1.1.1
->    * ### Libksba
->    * ### Libksba
->      * arch: x86_64
->      * epoch: None
->      * name: libksba
->      * release: 7.el8
->      * source: rpm
->      * version: 1.3.5
->    * ### Libldb
->    * ### Libldb
->      * arch: x86_64
->      * epoch: None
->      * name: libldb
->      * release: 3.el8
->      * source: rpm
->      * version: 2.0.7
->    * ### Libmaxminddb
->    * ### Libmaxminddb
->      * arch: x86_64
->      * epoch: None
->      * name: libmaxminddb
->      * release: 7.el8
->      * source: rpm
->      * version: 1.2.0
->    * ### Libmetalink
->    * ### Libmetalink
->      * arch: x86_64
->      * epoch: None
->      * name: libmetalink
->      * release: 7.el8
->      * source: rpm
->      * version: 0.1.3
->    * ### Libmnl
->    * ### Libmnl
->      * arch: x86_64
->      * epoch: None
->      * name: libmnl
->      * release: 6.el8
->      * source: rpm
->      * version: 1.0.4
->    * ### Libmodulemd1
->    * ### Libmodulemd1
->      * arch: x86_64
->      * epoch: None
->      * name: libmodulemd1
->      * release: 0.2.8.2.1
->      * source: rpm
->      * version: 1.8.16
->    * ### Libmount
->    * ### Libmount
->      * arch: x86_64
->      * epoch: None
->      * name: libmount
->      * release: 22.el8
->      * source: rpm
->      * version: 2.32.1
->    * ### Libmpc
->    * ### Libmpc
->      * arch: x86_64
->      * epoch: None
->      * name: libmpc
->      * release: 9.el8
->      * source: rpm
->      * version: 1.0.2
->    * ### Libmspack
->    * ### Libmspack
->      * arch: x86_64
->      * epoch: None
->      * name: libmspack
->      * release: 0.3.alpha.el8.4
->      * source: rpm
->      * version: 0.7
->    * ### Libndp
->    * ### Libndp
->      * arch: x86_64
->      * epoch: None
->      * name: libndp
->      * release: 3.el8
->      * source: rpm
->      * version: 1.7
->    * ### Libnetfilter_Conntrack
->    * ### Libnetfilter_Conntrack
->      * arch: x86_64
->      * epoch: None
->      * name: libnetfilter_conntrack
->      * release: 5.el8
->      * source: rpm
->      * version: 1.0.6
->    * ### Libnfnetlink
->    * ### Libnfnetlink
->      * arch: x86_64
->      * epoch: None
->      * name: libnfnetlink
->      * release: 13.el8
->      * source: rpm
->      * version: 1.0.1
->    * ### Libnfsidmap
->    * ### Libnfsidmap
->      * arch: x86_64
->      * epoch: 1
->      * name: libnfsidmap
->      * release: 31.el8
->      * source: rpm
->      * version: 2.3.3
->    * ### Libnftnl
->    * ### Libnftnl
->      * arch: x86_64
->      * epoch: None
->      * name: libnftnl
->      * release: 4.el8
->      * source: rpm
->      * version: 1.1.5
->    * ### Libnghttp2
->    * ### Libnghttp2
->      * arch: x86_64
->      * epoch: None
->      * name: libnghttp2
->      * release: 3.el8_2.1
->      * source: rpm
->      * version: 1.33.0
->    * ### Libnl3
->    * ### Libnl3
->      * arch: x86_64
->      * epoch: None
->      * name: libnl3
->      * release: 1.el8
->      * source: rpm
->      * version: 3.5.0
->    * ### Libnl3-Cli
->    * ### Libnl3-Cli
->      * arch: x86_64
->      * epoch: None
->      * name: libnl3-cli
->      * release: 1.el8
->      * source: rpm
->      * version: 3.5.0
->    * ### Libnsl2
->    * ### Libnsl2
->      * arch: x86_64
->      * epoch: None
->      * name: libnsl2
->      * release: 2.20180605git4a062cf.el8
->      * source: rpm
->      * version: 1.2.0
->    * ### Libpath_Utils
->    * ### Libpath_Utils
->      * arch: x86_64
->      * epoch: None
->      * name: libpath_utils
->      * release: 39.el8
->      * source: rpm
->      * version: 0.2.1
->    * ### Libpcap
->    * ### Libpcap
->      * arch: x86_64
->      * epoch: 14
->      * name: libpcap
->      * release: 3.el8
->      * source: rpm
->      * version: 1.9.0
->    * ### Libpciaccess
->    * ### Libpciaccess
->      * arch: x86_64
->      * epoch: None
->      * name: libpciaccess
->      * release: 1.el8
->      * source: rpm
->      * version: 0.14
->    * ### Libpipeline
->    * ### Libpipeline
->      * arch: x86_64
->      * epoch: None
->      * name: libpipeline
->      * release: 2.el8
->      * source: rpm
->      * version: 1.5.0
->    * ### Libpkgconf
->    * ### Libpkgconf
->      * arch: x86_64
->      * epoch: None
->      * name: libpkgconf
->      * release: 1.el8
->      * source: rpm
->      * version: 1.4.2
->    * ### Libpng
->    * ### Libpng
->      * arch: x86_64
->      * epoch: 2
->      * name: libpng
->      * release: 5.el8
->      * source: rpm
->      * version: 1.6.34
->    * ### Libpsl
->    * ### Libpsl
->      * arch: x86_64
->      * epoch: None
->      * name: libpsl
->      * release: 5.el8
->      * source: rpm
->      * version: 0.20.2
->    * ### Libpwquality
->    * ### Libpwquality
->      * arch: x86_64
->      * epoch: None
->      * name: libpwquality
->      * release: 9.el8
->      * source: rpm
->      * version: 1.4.0
->    * ### Libref_Array
->    * ### Libref_Array
->      * arch: x86_64
->      * epoch: None
->      * name: libref_array
->      * release: 39.el8
->      * source: rpm
->      * version: 0.1.5
->    * ### Librepo
->    * ### Librepo
->      * arch: x86_64
->      * epoch: None
->      * name: librepo
->      * release: 3.el8_2
->      * source: rpm
->      * version: 1.11.0
->    * ### Libreport-Filesystem
->    * ### Libreport-Filesystem
->      * arch: x86_64
->      * epoch: None
->      * name: libreport-filesystem
->      * release: 10.el8
->      * source: rpm
->      * version: 2.9.5
->    * ### Libseccomp
->    * ### Libseccomp
->      * arch: x86_64
->      * epoch: None
->      * name: libseccomp
->      * release: 1.el8
->      * source: rpm
->      * version: 2.4.1
->    * ### Libsecret
->    * ### Libsecret
->      * arch: x86_64
->      * epoch: None
->      * name: libsecret
->      * release: 1.el8
->      * source: rpm
->      * version: 0.18.6
->    * ### Libselinux
->    * ### Libselinux
->      * arch: x86_64
->      * epoch: None
->      * name: libselinux
->      * release: 3.el8
->      * source: rpm
->      * version: 2.9
->    * ### Libselinux-Utils
->    * ### Libselinux-Utils
->      * arch: x86_64
->      * epoch: None
->      * name: libselinux-utils
->      * release: 3.el8
->      * source: rpm
->      * version: 2.9
->    * ### Libsemanage
->    * ### Libsemanage
->      * arch: x86_64
->      * epoch: None
->      * name: libsemanage
->      * release: 2.el8
->      * source: rpm
->      * version: 2.9
->    * ### Libsepol
->    * ### Libsepol
->      * arch: x86_64
->      * epoch: None
->      * name: libsepol
->      * release: 1.el8
->      * source: rpm
->      * version: 2.9
->    * ### Libsigsegv
->    * ### Libsigsegv
->      * arch: x86_64
->      * epoch: None
->      * name: libsigsegv
->      * release: 5.el8
->      * source: rpm
->      * version: 2.11
->    * ### Libsmartcols
->    * ### Libsmartcols
->      * arch: x86_64
->      * epoch: None
->      * name: libsmartcols
->      * release: 22.el8
->      * source: rpm
->      * version: 2.32.1
->    * ### Libsolv
->    * ### Libsolv
->      * arch: x86_64
->      * epoch: None
->      * name: libsolv
->      * release: 1.el8
->      * source: rpm
->      * version: 0.7.7
->    * ### Libss
->    * ### Libss
->      * arch: x86_64
->      * epoch: None
->      * name: libss
->      * release: 3.el8
->      * source: rpm
->      * version: 1.45.4
->    * ### Libssh
->    * ### Libssh
->      * arch: x86_64
->      * epoch: None
->      * name: libssh
->      * release: 4.el8
->      * source: rpm
->      * version: 0.9.0
->    * ### Libssh-Config
->    * ### Libssh-Config
->      * arch: noarch
->      * epoch: None
->      * name: libssh-config
->      * release: 4.el8
->      * source: rpm
->      * version: 0.9.0
->    * ### Libsss_Autofs
->    * ### Libsss_Autofs
->      * arch: x86_64
->      * epoch: None
->      * name: libsss_autofs
->      * release: 20.el8
->      * source: rpm
->      * version: 2.2.3
->    * ### Libsss_Certmap
->    * ### Libsss_Certmap
->      * arch: x86_64
->      * epoch: None
->      * name: libsss_certmap
->      * release: 20.el8
->      * source: rpm
->      * version: 2.2.3
->    * ### Libsss_Idmap
->    * ### Libsss_Idmap
->      * arch: x86_64
->      * epoch: None
->      * name: libsss_idmap
->      * release: 20.el8
->      * source: rpm
->      * version: 2.2.3
->    * ### Libsss_Nss_Idmap
->    * ### Libsss_Nss_Idmap
->      * arch: x86_64
->      * epoch: None
->      * name: libsss_nss_idmap
->      * release: 20.el8
->      * source: rpm
->      * version: 2.2.3
->    * ### Libsss_Sudo
->    * ### Libsss_Sudo
->      * arch: x86_64
->      * epoch: None
->      * name: libsss_sudo
->      * release: 20.el8
->      * source: rpm
->      * version: 2.2.3
->    * ### Libstdc++
->    * ### Libstdc++
->      * arch: x86_64
->      * epoch: None
->      * name: libstdc++
->      * release: 5.el8.0.2
->      * source: rpm
->      * version: 8.3.1
->    * ### Libsysfs
->    * ### Libsysfs
->      * arch: x86_64
->      * epoch: None
->      * name: libsysfs
->      * release: 24.el8
->      * source: rpm
->      * version: 2.1.0
->    * ### Libtalloc
->    * ### Libtalloc
->      * arch: x86_64
->      * epoch: None
->      * name: libtalloc
->      * release: 7.el8
->      * source: rpm
->      * version: 2.2.0
->    * ### Libtasn1
->    * ### Libtasn1
->      * arch: x86_64
->      * epoch: None
->      * name: libtasn1
->      * release: 3.el8
->      * source: rpm
->      * version: 4.13
->    * ### Libtdb
->    * ### Libtdb
->      * arch: x86_64
->      * epoch: None
->      * name: libtdb
->      * release: 2.el8
->      * source: rpm
->      * version: 1.4.2
->    * ### Libteam
->    * ### Libteam
->      * arch: x86_64
->      * epoch: None
->      * name: libteam
->      * release: 1.el8_2.2
->      * source: rpm
->      * version: 1.29
->    * ### Libtevent
->    * ### Libtevent
->      * arch: x86_64
->      * epoch: None
->      * name: libtevent
->      * release: 2.el8
->      * source: rpm
->      * version: 0.10.0
->    * ### Libtirpc
->    * ### Libtirpc
->      * arch: x86_64
->      * epoch: None
->      * name: libtirpc
->      * release: 4.el8
->      * source: rpm
->      * version: 1.1.4
->    * ### Libtool-Ltdl
->    * ### Libtool-Ltdl
->      * arch: x86_64
->      * epoch: None
->      * name: libtool-ltdl
->      * release: 25.el8
->      * source: rpm
->      * version: 2.4.6
->    * ### Libunistring
->    * ### Libunistring
->      * arch: x86_64
->      * epoch: None
->      * name: libunistring
->      * release: 3.el8
->      * source: rpm
->      * version: 0.9.9
->    * ### Libusbx
->    * ### Libusbx
->      * arch: x86_64
->      * epoch: None
->      * name: libusbx
->      * release: 1.el8
->      * source: rpm
->      * version: 1.0.22
->    * ### Libuser
->    * ### Libuser
->      * arch: x86_64
->      * epoch: None
->      * name: libuser
->      * release: 23.el8
->      * source: rpm
->      * version: 0.62
->    * ### Libutempter
->    * ### Libutempter
->      * arch: x86_64
->      * epoch: None
->      * name: libutempter
->      * release: 14.el8
->      * source: rpm
->      * version: 1.1.6
->    * ### Libuuid
->    * ### Libuuid
->      * arch: x86_64
->      * epoch: None
->      * name: libuuid
->      * release: 22.el8
->      * source: rpm
->      * version: 2.32.1
->    * ### Libverto
->    * ### Libverto
->      * arch: x86_64
->      * epoch: None
->      * name: libverto
->      * release: 5.el8
->      * source: rpm
->      * version: 0.3.0
->    * ### Libxcrypt
->    * ### Libxcrypt
->      * arch: x86_64
->      * epoch: None
->      * name: libxcrypt
->      * release: 4.el8
->      * source: rpm
->      * version: 4.1.1
->    * ### Libxcrypt-Devel
->    * ### Libxcrypt-Devel
->      * arch: x86_64
->      * epoch: None
->      * name: libxcrypt-devel
->      * release: 4.el8
->      * source: rpm
->      * version: 4.1.1
->    * ### Libxkbcommon
->    * ### Libxkbcommon
->      * arch: x86_64
->      * epoch: None
->      * name: libxkbcommon
->      * release: 1.el8
->      * source: rpm
->      * version: 0.9.1
->    * ### Libxml2
->    * ### Libxml2
->      * arch: x86_64
->      * epoch: None
->      * name: libxml2
->      * release: 7.el8
->      * source: rpm
->      * version: 2.9.7
->    * ### Libxslt
->    * ### Libxslt
->      * arch: x86_64
->      * epoch: None
->      * name: libxslt
->      * release: 4.el8
->      * source: rpm
->      * version: 1.1.32
->    * ### Libyaml
->    * ### Libyaml
->      * arch: x86_64
->      * epoch: None
->      * name: libyaml
->      * release: 5.el8
->      * source: rpm
->      * version: 0.1.7
->    * ### Libzstd
->    * ### Libzstd
->      * arch: x86_64
->      * epoch: None
->      * name: libzstd
->      * release: 2.el8
->      * source: rpm
->      * version: 1.4.2
->    * ### Linux-Firmware
->    * ### Linux-Firmware
->      * arch: noarch
->      * epoch: None
->      * name: linux-firmware
->      * release: 97.gite8a0f4c9.el8
->      * source: rpm
->      * version: 20191202
->    * ### Lksctp-Tools
->    * ### Lksctp-Tools
->      * arch: x86_64
->      * epoch: None
->      * name: lksctp-tools
->      * release: 3.el8
->      * source: rpm
->      * version: 1.0.18
->    * ### Logrotate
->    * ### Logrotate
->      * arch: x86_64
->      * epoch: None
->      * name: logrotate
->      * release: 3.el8
->      * source: rpm
->      * version: 3.14.0
->    * ### Lshw
->    * ### Lshw
->      * arch: x86_64
->      * epoch: None
->      * name: lshw
->      * release: 23.el8
->      * source: rpm
->      * version: B.02.18
->    * ### Lsscsi
->    * ### Lsscsi
->      * arch: x86_64
->      * epoch: None
->      * name: lsscsi
->      * release: 1.el8
->      * source: rpm
->      * version: 0.30
->    * ### Lua
->    * ### Lua
->      * arch: x86_64
->      * epoch: None
->      * name: lua
->      * release: 11.el8
->      * source: rpm
->      * version: 5.3.4
->    * ### Lua-Libs
->    * ### Lua-Libs
->      * arch: x86_64
->      * epoch: None
->      * name: lua-libs
->      * release: 11.el8
->      * source: rpm
->      * version: 5.3.4
->    * ### Lvm2
->    * ### Lvm2
->      * arch: x86_64
->      * epoch: 8
->      * name: lvm2
->      * release: 3.el8
->      * source: rpm
->      * version: 2.03.08
->    * ### Lvm2-Libs
->    * ### Lvm2-Libs
->      * arch: x86_64
->      * epoch: 8
->      * name: lvm2-libs
->      * release: 3.el8
->      * source: rpm
->      * version: 2.03.08
->    * ### Lz4-Libs
->    * ### Lz4-Libs
->      * arch: x86_64
->      * epoch: None
->      * name: lz4-libs
->      * release: 4.el8
->      * source: rpm
->      * version: 1.8.1.2
->    * ### Lzo
->    * ### Lzo
->      * arch: x86_64
->      * epoch: None
->      * name: lzo
->      * release: 14.el8
->      * source: rpm
->      * version: 2.08
->    * ### Mailcap
->    * ### Mailcap
->      * arch: noarch
->      * epoch: None
->      * name: mailcap
->      * release: 3.el8
->      * source: rpm
->      * version: 2.1.48
->    * ### Man-Db
->    * ### Man-Db
->      * arch: x86_64
->      * epoch: None
->      * name: man-db
->      * release: 17.el8
->      * source: rpm
->      * version: 2.7.6.1
->    * ### Microcode_Ctl
->    * ### Microcode_Ctl
->      * arch: x86_64
->      * epoch: 4
->      * name: microcode_ctl
->      * release: 4.20200609.1.el8_2
->      * source: rpm
->      * version: 20191115
->    * ### Mod_Http2
->    * ### Mod_Http2
->      * arch: x86_64
->      * epoch: None
->      * name: mod_http2
->      * release: 2.module_el8.3.0+477+498bb568
->      * source: rpm
->      * version: 1.15.7
->    * ### Mozjs60
->    * ### Mozjs60
->      * arch: x86_64
->      * epoch: None
->      * name: mozjs60
->      * release: 4.el8
->      * source: rpm
->      * version: 60.9.0
->    * ### Mpfr
->    * ### Mpfr
->      * arch: x86_64
->      * epoch: None
->      * name: mpfr
->      * release: 1.el8
->      * source: rpm
->      * version: 3.1.6
->    * ### Ncurses
->    * ### Ncurses
->      * arch: x86_64
->      * epoch: None
->      * name: ncurses
->      * release: 7.20180224.el8
->      * source: rpm
->      * version: 6.1
->    * ### Ncurses-Base
->    * ### Ncurses-Base
->      * arch: noarch
->      * epoch: None
->      * name: ncurses-base
->      * release: 7.20180224.el8
->      * source: rpm
->      * version: 6.1
->    * ### Ncurses-Libs
->    * ### Ncurses-Libs
->      * arch: x86_64
->      * epoch: None
->      * name: ncurses-libs
->      * release: 7.20180224.el8
->      * source: rpm
->      * version: 6.1
->    * ### Net-Tools
->    * ### Net-Tools
->      * arch: x86_64
->      * epoch: None
->      * name: net-tools
->      * release: 0.52.20160912git.el8
->      * source: rpm
->      * version: 2.0
->    * ### Nettle
->    * ### Nettle
->      * arch: x86_64
->      * epoch: None
->      * name: nettle
->      * release: 1.el8
->      * source: rpm
->      * version: 3.4.1
->    * ### Newt
->    * ### Newt
->      * arch: x86_64
->      * epoch: None
->      * name: newt
->      * release: 11.el8
->      * source: rpm
->      * version: 0.52.20
->    * ### Nftables
->    * ### Nftables
->      * arch: x86_64
->      * epoch: 1
->      * name: nftables
->      * release: 12.el8_2.1
->      * source: rpm
->      * version: 0.9.3
->    * ### Npth
->    * ### Npth
->      * arch: x86_64
->      * epoch: None
->      * name: npth
->      * release: 4.el8
->      * source: rpm
->      * version: 1.5
->    * ### Nspr
->    * ### Nspr
->      * arch: x86_64
->      * epoch: None
->      * name: nspr
->      * release: 2.el8_2
->      * source: rpm
->      * version: 4.25.0
->    * ### Nss
->    * ### Nss
->      * arch: x86_64
->      * epoch: None
->      * name: nss
->      * release: 17.el8_3
->      * source: rpm
->      * version: 3.53.1
->    * ### Nss-Softokn
->    * ### Nss-Softokn
->      * arch: x86_64
->      * epoch: None
->      * name: nss-softokn
->      * release: 17.el8_3
->      * source: rpm
->      * version: 3.53.1
->    * ### Nss-Softokn-Freebl
->    * ### Nss-Softokn-Freebl
->      * arch: x86_64
->      * epoch: None
->      * name: nss-softokn-freebl
->      * release: 17.el8_3
->      * source: rpm
->      * version: 3.53.1
->    * ### Nss-Sysinit
->    * ### Nss-Sysinit
->      * arch: x86_64
->      * epoch: None
->      * name: nss-sysinit
->      * release: 17.el8_3
->      * source: rpm
->      * version: 3.53.1
->    * ### Nss-Util
->    * ### Nss-Util
->      * arch: x86_64
->      * epoch: None
->      * name: nss-util
->      * release: 17.el8_3
->      * source: rpm
->      * version: 3.53.1
->    * ### Numactl-Libs
->    * ### Numactl-Libs
->      * arch: x86_64
->      * epoch: None
->      * name: numactl-libs
->      * release: 9.el8
->      * source: rpm
->      * version: 2.0.12
->    * ### Open-Vm-Tools
->    * ### Open-Vm-Tools
->      * arch: x86_64
->      * epoch: None
->      * name: open-vm-tools
->      * release: 3.el8
->      * source: rpm
->      * version: 11.0.5
->    * ### Openldap
->    * ### Openldap
->      * arch: x86_64
->      * epoch: None
->      * name: openldap
->      * release: 11.el8_1
->      * source: rpm
->      * version: 2.4.46
->    * ### Openssh
->    * ### Openssh
->      * arch: x86_64
->      * epoch: None
->      * name: openssh
->      * release: 4.el8_1
->      * source: rpm
->      * version: 8.0p1
->    * ### Openssh-Clients
->    * ### Openssh-Clients
->      * arch: x86_64
->      * epoch: None
->      * name: openssh-clients
->      * release: 4.el8_1
->      * source: rpm
->      * version: 8.0p1
->    * ### Openssh-Server
->    * ### Openssh-Server
->      * arch: x86_64
->      * epoch: None
->      * name: openssh-server
->      * release: 4.el8_1
->      * source: rpm
->      * version: 8.0p1
->    * ### Openssl
->    * ### Openssl
->      * arch: x86_64
->      * epoch: 1
->      * name: openssl
->      * release: 15.el8
->      * source: rpm
->      * version: 1.1.1c
->    * ### Openssl-Libs
->    * ### Openssl-Libs
->      * arch: x86_64
->      * epoch: 1
->      * name: openssl-libs
->      * release: 15.el8
->      * source: rpm
->      * version: 1.1.1c
->    * ### Openssl-Pkcs11
->    * ### Openssl-Pkcs11
->      * arch: x86_64
->      * epoch: None
->      * name: openssl-pkcs11
->      * release: 2.el8
->      * source: rpm
->      * version: 0.4.10
->    * ### Os-Prober
->    * ### Os-Prober
->      * arch: x86_64
->      * epoch: None
->      * name: os-prober
->      * release: 6.el8
->      * source: rpm
->      * version: 1.74
->    * ### P11-Kit
->    * ### P11-Kit
->      * arch: x86_64
->      * epoch: None
->      * name: p11-kit
->      * release: 5.el8_0
->      * source: rpm
->      * version: 0.23.14
->    * ### P11-Kit-Trust
->    * ### P11-Kit-Trust
->      * arch: x86_64
->      * epoch: None
->      * name: p11-kit-trust
->      * release: 5.el8_0
->      * source: rpm
->      * version: 0.23.14
->    * ### Pam
->    * ### Pam
->      * arch: x86_64
->      * epoch: None
->      * name: pam
->      * release: 8.el8
->      * source: rpm
->      * version: 1.3.1
->    * ### Parted
->    * ### Parted
->      * arch: x86_64
->      * epoch: None
->      * name: parted
->      * release: 38.el8
->      * source: rpm
->      * version: 3.2
->    * ### Passwd
->    * ### Passwd
->      * arch: x86_64
->      * epoch: None
->      * name: passwd
->      * release: 3.el8
->      * source: rpm
->      * version: 0.80
->    * ### Pciutils
->    * ### Pciutils
->      * arch: x86_64
->      * epoch: None
->      * name: pciutils
->      * release: 4.el8
->      * source: rpm
->      * version: 3.5.6
->    * ### Pciutils-Libs
->    * ### Pciutils-Libs
->      * arch: x86_64
->      * epoch: None
->      * name: pciutils-libs
->      * release: 4.el8
->      * source: rpm
->      * version: 3.5.6
->    * ### Pcre
->    * ### Pcre
->      * arch: x86_64
->      * epoch: None
->      * name: pcre
->      * release: 4.el8
->      * source: rpm
->      * version: 8.42
->    * ### Pcre2
->    * ### Pcre2
->      * arch: x86_64
->      * epoch: None
->      * name: pcre2
->      * release: 1.el8
->      * source: rpm
->      * version: 10.32
->    * ### Pigz
->    * ### Pigz
->      * arch: x86_64
->      * epoch: None
->      * name: pigz
->      * release: 4.el8
->      * source: rpm
->      * version: 2.4
->    * ### Pinentry
->    * ### Pinentry
->      * arch: x86_64
->      * epoch: None
->      * name: pinentry
->      * release: 2.el8
->      * source: rpm
->      * version: 1.1.0
->    * ### Pkgconf
->    * ### Pkgconf
->      * arch: x86_64
->      * epoch: None
->      * name: pkgconf
->      * release: 1.el8
->      * source: rpm
->      * version: 1.4.2
->    * ### Pkgconf-M4
->    * ### Pkgconf-M4
->      * arch: noarch
->      * epoch: None
->      * name: pkgconf-m4
->      * release: 1.el8
->      * source: rpm
->      * version: 1.4.2
->    * ### Pkgconf-Pkg-Config
->    * ### Pkgconf-Pkg-Config
->      * arch: x86_64
->      * epoch: None
->      * name: pkgconf-pkg-config
->      * release: 1.el8
->      * source: rpm
->      * version: 1.4.2
->    * ### Platform-Python
->    * ### Platform-Python
->      * arch: x86_64
->      * epoch: None
->      * name: platform-python
->      * release: 31.el8
->      * source: rpm
->      * version: 3.6.8
->    * ### Platform-Python-Devel
->    * ### Platform-Python-Devel
->      * arch: x86_64
->      * epoch: None
->      * name: platform-python-devel
->      * release: 31.el8
->      * source: rpm
->      * version: 3.6.8
->    * ### Platform-Python-Pip
->    * ### Platform-Python-Pip
->      * arch: noarch
->      * epoch: None
->      * name: platform-python-pip
->      * release: 18.el8
->      * source: rpm
->      * version: 9.0.3
->    * ### Platform-Python-Setuptools
->    * ### Platform-Python-Setuptools
->      * arch: noarch
->      * epoch: None
->      * name: platform-python-setuptools
->      * release: 6.el8
->      * source: rpm
->      * version: 39.2.0
->    * ### Plymouth
->    * ### Plymouth
->      * arch: x86_64
->      * epoch: None
->      * name: plymouth
->      * release: 16.el8
->      * source: rpm
->      * version: 0.9.3
->    * ### Plymouth-Core-Libs
->    * ### Plymouth-Core-Libs
->      * arch: x86_64
->      * epoch: None
->      * name: plymouth-core-libs
->      * release: 16.el8
->      * source: rpm
->      * version: 0.9.3
->    * ### Plymouth-Scripts
->    * ### Plymouth-Scripts
->      * arch: x86_64
->      * epoch: None
->      * name: plymouth-scripts
->      * release: 16.el8
->      * source: rpm
->      * version: 0.9.3
->    * ### Policycoreutils
->    * ### Policycoreutils
->      * arch: x86_64
->      * epoch: None
->      * name: policycoreutils
->      * release: 9.el8
->      * source: rpm
->      * version: 2.9
->    * ### Polkit
->    * ### Polkit
->      * arch: x86_64
->      * epoch: None
->      * name: polkit
->      * release: 11.el8
->      * source: rpm
->      * version: 0.115
->    * ### Polkit-Libs
->    * ### Polkit-Libs
->      * arch: x86_64
->      * epoch: None
->      * name: polkit-libs
->      * release: 11.el8
->      * source: rpm
->      * version: 0.115
->    * ### Polkit-Pkla-Compat
->    * ### Polkit-Pkla-Compat
->      * arch: x86_64
->      * epoch: None
->      * name: polkit-pkla-compat
->      * release: 12.el8
->      * source: rpm
->      * version: 0.1
->    * ### Popt
->    * ### Popt
->      * arch: x86_64
->      * epoch: None
->      * name: popt
->      * release: 14.el8
->      * source: rpm
->      * version: 1.16
->    * ### Prefixdevname
->    * ### Prefixdevname
->      * arch: x86_64
->      * epoch: None
->      * name: prefixdevname
->      * release: 6.el8
->      * source: rpm
->      * version: 0.1.0
->    * ### Procps-Ng
->    * ### Procps-Ng
->      * arch: x86_64
->      * epoch: None
->      * name: procps-ng
->      * release: 1.el8
->      * source: rpm
->      * version: 3.3.15
->    * ### Psmisc
->    * ### Psmisc
->      * arch: x86_64
->      * epoch: None
->      * name: psmisc
->      * release: 5.el8
->      * source: rpm
->      * version: 23.1
->    * ### Publicsuffix-List-Dafsa
->    * ### Publicsuffix-List-Dafsa
->      * arch: noarch
->      * epoch: None
->      * name: publicsuffix-list-dafsa
->      * release: 1.el8
->      * source: rpm
->      * version: 20180723
->    * ### Python-Rpm-Macros
->    * ### Python-Rpm-Macros
->      * arch: noarch
->      * epoch: None
->      * name: python-rpm-macros
->      * release: 39.el8
->      * source: rpm
->      * version: 3
->    * ### Python-Srpm-Macros
->    * ### Python-Srpm-Macros
->      * arch: noarch
->      * epoch: None
->      * name: python-srpm-macros
->      * release: 39.el8
->      * source: rpm
->      * version: 3
->    * ### Python3-Asn1Crypto
->    * ### Python3-Asn1Crypto
->      * arch: noarch
->      * epoch: None
->      * name: python3-asn1crypto
->      * release: 3.el8
->      * source: rpm
->      * version: 0.24.0
->    * ### Python3-Cffi
->    * ### Python3-Cffi
->      * arch: x86_64
->      * epoch: None
->      * name: python3-cffi
->      * release: 5.el8
->      * source: rpm
->      * version: 1.11.5
->    * ### Python3-Configobj
->    * ### Python3-Configobj
->      * arch: noarch
->      * epoch: None
->      * name: python3-configobj
->      * release: 11.el8
->      * source: rpm
->      * version: 5.0.6
->    * ### Python3-Cryptography
->    * ### Python3-Cryptography
->      * arch: x86_64
->      * epoch: None
->      * name: python3-cryptography
->      * release: 3.el8
->      * source: rpm
->      * version: 2.3
->    * ### Python3-Dateutil
->    * ### Python3-Dateutil
->      * arch: noarch
->      * epoch: 1
->      * name: python3-dateutil
->      * release: 6.el8
->      * source: rpm
->      * version: 2.6.1
->    * ### Python3-Dbus
->    * ### Python3-Dbus
->      * arch: x86_64
->      * epoch: None
->      * name: python3-dbus
->      * release: 15.el8
->      * source: rpm
->      * version: 1.2.4
->    * ### Python3-Decorator
->    * ### Python3-Decorator
->      * arch: noarch
->      * epoch: None
->      * name: python3-decorator
->      * release: 2.el8
->      * source: rpm
->      * version: 4.2.1
->    * ### Python3-Dmidecode
->    * ### Python3-Dmidecode
->      * arch: x86_64
->      * epoch: None
->      * name: python3-dmidecode
->      * release: 15.el8
->      * source: rpm
->      * version: 3.12.2
->    * ### Python3-Dnf
->    * ### Python3-Dnf
->      * arch: noarch
->      * epoch: None
->      * name: python3-dnf
->      * release: 7.el8_2
->      * source: rpm
->      * version: 4.2.17
->    * ### Python3-Dnf-Plugin-Spacewalk
->    * ### Python3-Dnf-Plugin-Spacewalk
->      * arch: noarch
->      * epoch: None
->      * name: python3-dnf-plugin-spacewalk
->      * release: 11.module_el8.1.0+211+ad6c0bc7
->      * source: rpm
->      * version: 2.8.5
->    * ### Python3-Dnf-Plugins-Core
->    * ### Python3-Dnf-Plugins-Core
->      * arch: noarch
->      * epoch: None
->      * name: python3-dnf-plugins-core
->      * release: 4.el8_2
->      * source: rpm
->      * version: 4.0.12
->    * ### Python3-Firewall
->    * ### Python3-Firewall
->      * arch: noarch
->      * epoch: None
->      * name: python3-firewall
->      * release: 4.el8
->      * source: rpm
->      * version: 0.8.0
->    * ### Python3-Gobject-Base
->    * ### Python3-Gobject-Base
->      * arch: x86_64
->      * epoch: None
->      * name: python3-gobject-base
->      * release: 1.el8
->      * source: rpm
->      * version: 3.28.3
->    * ### Python3-Gpg
->    * ### Python3-Gpg
->      * arch: x86_64
->      * epoch: None
->      * name: python3-gpg
->      * release: 6.el8.0.1
->      * source: rpm
->      * version: 1.10.0
->    * ### Python3-Hawkey
->    * ### Python3-Hawkey
->      * arch: x86_64
->      * epoch: None
->      * name: python3-hawkey
->      * release: 6.el8_2
->      * source: rpm
->      * version: 0.39.1
->    * ### Python3-Hwdata
->    * ### Python3-Hwdata
->      * arch: noarch
->      * epoch: None
->      * name: python3-hwdata
->      * release: 3.el8
->      * source: rpm
->      * version: 2.3.6
->    * ### Python3-Idna
->    * ### Python3-Idna
->      * arch: noarch
->      * epoch: None
->      * name: python3-idna
->      * release: 5.el8
->      * source: rpm
->      * version: 2.5
->    * ### Python3-Libcomps
->    * ### Python3-Libcomps
->      * arch: x86_64
->      * epoch: None
->      * name: python3-libcomps
->      * release: 4.el8
->      * source: rpm
->      * version: 0.1.11
->    * ### Python3-Libdnf
->    * ### Python3-Libdnf
->      * arch: x86_64
->      * epoch: None
->      * name: python3-libdnf
->      * release: 6.el8_2
->      * source: rpm
->      * version: 0.39.1
->    * ### Python3-Librepo
->    * ### Python3-Librepo
->      * arch: x86_64
->      * epoch: None
->      * name: python3-librepo
->      * release: 3.el8_2
->      * source: rpm
->      * version: 1.11.0
->    * ### Python3-Libs
->    * ### Python3-Libs
->      * arch: x86_64
->      * epoch: None
->      * name: python3-libs
->      * release: 31.el8
->      * source: rpm
->      * version: 3.6.8
->    * ### Python3-Libselinux
->    * ### Python3-Libselinux
->      * arch: x86_64
->      * epoch: None
->      * name: python3-libselinux
->      * release: 3.el8
->      * source: rpm
->      * version: 2.9
->    * ### Python3-Libxml2
->    * ### Python3-Libxml2
->      * arch: x86_64
->      * epoch: None
->      * name: python3-libxml2
->      * release: 7.el8
->      * source: rpm
->      * version: 2.9.7
->    * ### Python3-Linux-Procfs
->    * ### Python3-Linux-Procfs
->      * arch: noarch
->      * epoch: None
->      * name: python3-linux-procfs
->      * release: 7.el8
->      * source: rpm
->      * version: 0.6
->    * ### Python3-Netifaces
->    * ### Python3-Netifaces
->      * arch: x86_64
->      * epoch: None
->      * name: python3-netifaces
->      * release: 4.el8
->      * source: rpm
->      * version: 0.10.6
->    * ### Python3-Newt
->    * ### Python3-Newt
->      * arch: x86_64
->      * epoch: None
->      * name: python3-newt
->      * release: 11.el8
->      * source: rpm
->      * version: 0.52.20
->    * ### Python3-Nftables
->    * ### Python3-Nftables
->      * arch: x86_64
->      * epoch: 1
->      * name: python3-nftables
->      * release: 12.el8_2.1
->      * source: rpm
->      * version: 0.9.3
->    * ### Python3-Perf
->    * ### Python3-Perf
->      * arch: x86_64
->      * epoch: None
->      * name: python3-perf
->      * release: 193.28.1.el8_2
->      * source: rpm
->      * version: 4.18.0
->    * ### Python3-Pip
->    * ### Python3-Pip
->      * arch: noarch
->      * epoch: None
->      * name: python3-pip
->      * release: 18.el8
->      * source: rpm
->      * version: 9.0.3
->    * ### Python3-Pip-Wheel
->    * ### Python3-Pip-Wheel
->      * arch: noarch
->      * epoch: None
->      * name: python3-pip-wheel
->      * release: 16.el8
->      * source: rpm
->      * version: 9.0.3
->    * ### Python3-Ply
->    * ### Python3-Ply
->      * arch: noarch
->      * epoch: None
->      * name: python3-ply
->      * release: 8.el8
->      * source: rpm
->      * version: 3.9
->    * ### Python3-Pyopenssl
->    * ### Python3-Pyopenssl
->      * arch: noarch
->      * epoch: None
->      * name: python3-pyOpenSSL
->      * release: 1.el8
->      * source: rpm
->      * version: 18.0.0
->    * ### Python3-Pycparser
->    * ### Python3-Pycparser
->      * arch: noarch
->      * epoch: None
->      * name: python3-pycparser
->      * release: 14.el8
->      * source: rpm
->      * version: 2.14
->    * ### Python3-Pyudev
->    * ### Python3-Pyudev
->      * arch: noarch
->      * epoch: None
->      * name: python3-pyudev
->      * release: 7.el8
->      * source: rpm
->      * version: 0.21.0
->    * ### Python3-Rhn-Client-Tools
->    * ### Python3-Rhn-Client-Tools
->      * arch: x86_64
->      * epoch: None
->      * name: python3-rhn-client-tools
->      * release: 13.module_el8.1.0+211+ad6c0bc7
->      * source: rpm
->      * version: 2.8.16
->    * ### Python3-Rhnlib
->    * ### Python3-Rhnlib
->      * arch: noarch
->      * epoch: None
->      * name: python3-rhnlib
->      * release: 8.module_el8.1.0+211+ad6c0bc7
->      * source: rpm
->      * version: 2.8.6
->    * ### Python3-Rpm
->    * ### Python3-Rpm
->      * arch: x86_64
->      * epoch: None
->      * name: python3-rpm
->      * release: 37.el8
->      * source: rpm
->      * version: 4.14.2
->    * ### Python3-Rpm-Generators
->    * ### Python3-Rpm-Generators
->      * arch: noarch
->      * epoch: None
->      * name: python3-rpm-generators
->      * release: 6.el8
->      * source: rpm
->      * version: 5
->    * ### Python3-Rpm-Macros
->    * ### Python3-Rpm-Macros
->      * arch: noarch
->      * epoch: None
->      * name: python3-rpm-macros
->      * release: 39.el8
->      * source: rpm
->      * version: 3
->    * ### Python3-Schedutils
->    * ### Python3-Schedutils
->      * arch: x86_64
->      * epoch: None
->      * name: python3-schedutils
->      * release: 6.el8
->      * source: rpm
->      * version: 0.6
->    * ### Python3-Setuptools
->    * ### Python3-Setuptools
->      * arch: noarch
->      * epoch: None
->      * name: python3-setuptools
->      * release: 6.el8
->      * source: rpm
->      * version: 39.2.0
->    * ### Python3-Setuptools-Wheel
->    * ### Python3-Setuptools-Wheel
->      * arch: noarch
->      * epoch: None
->      * name: python3-setuptools-wheel
->      * release: 5.el8
->      * source: rpm
->      * version: 39.2.0
->    * ### Python3-Six
->    * ### Python3-Six
->      * arch: noarch
->      * epoch: None
->      * name: python3-six
->      * release: 8.el8
->      * source: rpm
->      * version: 1.11.0
->    * ### Python3-Slip
->    * ### Python3-Slip
->      * arch: noarch
->      * epoch: None
->      * name: python3-slip
->      * release: 11.el8
->      * source: rpm
->      * version: 0.6.4
->    * ### Python3-Slip-Dbus
->    * ### Python3-Slip-Dbus
->      * arch: noarch
->      * epoch: None
->      * name: python3-slip-dbus
->      * release: 11.el8
->      * source: rpm
->      * version: 0.6.4
->    * ### Python3-Syspurpose
->    * ### Python3-Syspurpose
->      * arch: x86_64
->      * epoch: None
->      * name: python3-syspurpose
->      * release: 1.el8_2
->      * source: rpm
->      * version: 1.26.20
->    * ### Python3-Unbound
->    * ### Python3-Unbound
->      * arch: x86_64
->      * epoch: None
->      * name: python3-unbound
->      * release: 11.el8_2
->      * source: rpm
->      * version: 1.7.3
->    * ### Python3-Wheel
->    * ### Python3-Wheel
->      * arch: noarch
->      * epoch: 1
->      * name: python3-wheel
->      * release: 2.module_el8.3.0+562+e162826a
->      * source: rpm
->      * version: 0.31.1
->    * ### Python36
->    * ### Python36
->      * arch: x86_64
->      * epoch: None
->      * name: python36
->      * release: 2.module_el8.3.0+562+e162826a
->      * source: rpm
->      * version: 3.6.8
->    * ### Python36-Devel
->    * ### Python36-Devel
->      * arch: x86_64
->      * epoch: None
->      * name: python36-devel
->      * release: 2.module_el8.3.0+562+e162826a
->      * source: rpm
->      * version: 3.6.8
->    * ### Readline
->    * ### Readline
->      * arch: x86_64
->      * epoch: None
->      * name: readline
->      * release: 10.el8
->      * source: rpm
->      * version: 7.0
->    * ### Rhn-Client-Tools
->    * ### Rhn-Client-Tools
->      * arch: x86_64
->      * epoch: None
->      * name: rhn-client-tools
->      * release: 13.module_el8.1.0+211+ad6c0bc7
->      * source: rpm
->      * version: 2.8.16
->    * ### Rng-Tools
->    * ### Rng-Tools
->      * arch: x86_64
->      * epoch: None
->      * name: rng-tools
->      * release: 3.el8
->      * source: rpm
->      * version: 6.8
->    * ### Rootfiles
->    * ### Rootfiles
->      * arch: noarch
->      * epoch: None
->      * name: rootfiles
->      * release: 22.el8
->      * source: rpm
->      * version: 8.1
->    * ### Rpm
->    * ### Rpm
->      * arch: x86_64
->      * epoch: None
->      * name: rpm
->      * release: 37.el8
->      * source: rpm
->      * version: 4.14.2
->    * ### Rpm-Build-Libs
->    * ### Rpm-Build-Libs
->      * arch: x86_64
->      * epoch: None
->      * name: rpm-build-libs
->      * release: 37.el8
->      * source: rpm
->      * version: 4.14.2
->    * ### Rpm-Libs
->    * ### Rpm-Libs
->      * arch: x86_64
->      * epoch: None
->      * name: rpm-libs
->      * release: 37.el8
->      * source: rpm
->      * version: 4.14.2
->    * ### Rpm-Plugin-Selinux
->    * ### Rpm-Plugin-Selinux
->      * arch: x86_64
->      * epoch: None
->      * name: rpm-plugin-selinux
->      * release: 37.el8
->      * source: rpm
->      * version: 4.14.2
->    * ### Rpm-Plugin-Systemd-Inhibit
->    * ### Rpm-Plugin-Systemd-Inhibit
->      * arch: x86_64
->      * epoch: None
->      * name: rpm-plugin-systemd-inhibit
->      * release: 37.el8
->      * source: rpm
->      * version: 4.14.2
->    * ### Rsyslog
->    * ### Rsyslog
->      * arch: x86_64
->      * epoch: None
->      * name: rsyslog
->      * release: 3.el8
->      * source: rpm
->      * version: 8.1911.0
->    * ### Sed
->    * ### Sed
->      * arch: x86_64
->      * epoch: None
->      * name: sed
->      * release: 1.el8
->      * source: rpm
->      * version: 4.5
->    * ### Selinux-Policy
->    * ### Selinux-Policy
->      * arch: noarch
->      * epoch: None
->      * name: selinux-policy
->      * release: 41.el8_2.8
->      * source: rpm
->      * version: 3.14.3
->    * ### Selinux-Policy-Targeted
->    * ### Selinux-Policy-Targeted
->      * arch: noarch
->      * epoch: None
->      * name: selinux-policy-targeted
->      * release: 41.el8_2.8
->      * source: rpm
->      * version: 3.14.3
->    * ### Setup
->    * ### Setup
->      * arch: noarch
->      * epoch: None
->      * name: setup
->      * release: 5.el8
->      * source: rpm
->      * version: 2.12.2
->    * ### Sg3_Utils
->    * ### Sg3_Utils
->      * arch: x86_64
->      * epoch: None
->      * name: sg3_utils
->      * release: 5.el8
->      * source: rpm
->      * version: 1.44
->    * ### Sg3_Utils-Libs
->    * ### Sg3_Utils-Libs
->      * arch: x86_64
->      * epoch: None
->      * name: sg3_utils-libs
->      * release: 5.el8
->      * source: rpm
->      * version: 1.44
->    * ### Shadow-Utils
->    * ### Shadow-Utils
->      * arch: x86_64
->      * epoch: 2
->      * name: shadow-utils
->      * release: 8.el8
->      * source: rpm
->      * version: 4.6
->    * ### Shared-Mime-Info
->    * ### Shared-Mime-Info
->      * arch: x86_64
->      * epoch: None
->      * name: shared-mime-info
->      * release: 3.el8
->      * source: rpm
->      * version: 1.9
->    * ### Slang
->    * ### Slang
->      * arch: x86_64
->      * epoch: None
->      * name: slang
->      * release: 3.el8
->      * source: rpm
->      * version: 2.3.2
->    * ### Snappy
->    * ### Snappy
->      * arch: x86_64
->      * epoch: None
->      * name: snappy
->      * release: 5.el8
->      * source: rpm
->      * version: 1.1.7
->    * ### Sqlite-Libs
->    * ### Sqlite-Libs
->      * arch: x86_64
->      * epoch: None
->      * name: sqlite-libs
->      * release: 6.el8
->      * source: rpm
->      * version: 3.26.0
->    * ### Squashfs-Tools
->    * ### Squashfs-Tools
->      * arch: x86_64
->      * epoch: None
->      * name: squashfs-tools
->      * release: 19.el8
->      * source: rpm
->      * version: 4.3
->    * ### Sssd-Client
->    * ### Sssd-Client
->      * arch: x86_64
->      * epoch: None
->      * name: sssd-client
->      * release: 20.el8
->      * source: rpm
->      * version: 2.2.3
->    * ### Sssd-Common
->    * ### Sssd-Common
->      * arch: x86_64
->      * epoch: None
->      * name: sssd-common
->      * release: 20.el8
->      * source: rpm
->      * version: 2.2.3
->    * ### Sssd-Kcm
->    * ### Sssd-Kcm
->      * arch: x86_64
->      * epoch: None
->      * name: sssd-kcm
->      * release: 20.el8
->      * source: rpm
->      * version: 2.2.3
->    * ### Sssd-Nfs-Idmap
->    * ### Sssd-Nfs-Idmap
->      * arch: x86_64
->      * epoch: None
->      * name: sssd-nfs-idmap
->      * release: 20.el8
->      * source: rpm
->      * version: 2.2.3
->    * ### Sudo
->    * ### Sudo
->      * arch: x86_64
->      * epoch: None
->      * name: sudo
->      * release: 5.el8
->      * source: rpm
->      * version: 1.8.29
->    * ### Systemd
->    * ### Systemd
->      * arch: x86_64
->      * epoch: None
->      * name: systemd
->      * release: 31.el8_2.2
->      * source: rpm
->      * version: 239
->    * ### Systemd-Libs
->    * ### Systemd-Libs
->      * arch: x86_64
->      * epoch: None
->      * name: systemd-libs
->      * release: 31.el8_2.2
->      * source: rpm
->      * version: 239
->    * ### Systemd-Pam
->    * ### Systemd-Pam
->      * arch: x86_64
->      * epoch: None
->      * name: systemd-pam
->      * release: 31.el8_2.2
->      * source: rpm
->      * version: 239
->    * ### Systemd-Udev
->    * ### Systemd-Udev
->      * arch: x86_64
->      * epoch: None
->      * name: systemd-udev
->      * release: 31.el8_2.2
->      * source: rpm
->      * version: 239
->    * ### Tar
->    * ### Tar
->      * arch: x86_64
->      * epoch: 2
->      * name: tar
->      * release: 4.el8
->      * source: rpm
->      * version: 1.30
->    * ### Teamd
->    * ### Teamd
->      * arch: x86_64
->      * epoch: None
->      * name: teamd
->      * release: 1.el8_2.2
->      * source: rpm
->      * version: 1.29
->    * ### Timedatex
->    * ### Timedatex
->      * arch: x86_64
->      * epoch: None
->      * name: timedatex
->      * release: 3.el8
->      * source: rpm
->      * version: 0.5
->    * ### Trousers
->    * ### Trousers
->      * arch: x86_64
->      * epoch: None
->      * name: trousers
->      * release: 4.el8
->      * source: rpm
->      * version: 0.3.14
->    * ### Trousers-Lib
->    * ### Trousers-Lib
->      * arch: x86_64
->      * epoch: None
->      * name: trousers-lib
->      * release: 4.el8
->      * source: rpm
->      * version: 0.3.14
->    * ### Tuned
->    * ### Tuned
->      * arch: noarch
->      * epoch: None
->      * name: tuned
->      * release: 6.el8
->      * source: rpm
->      * version: 2.13.0
->    * ### Tzdata
->    * ### Tzdata
->      * arch: noarch
->      * epoch: None
->      * name: tzdata
->      * release: 1.el8
->      * source: rpm
->      * version: 2020d
->    * ### Tzdata-Java
->    * ### Tzdata-Java
->      * arch: noarch
->      * epoch: None
->      * name: tzdata-java
->      * release: 1.el8
->      * source: rpm
->      * version: 2021a
->    * ### Unbound-Libs
->    * ### Unbound-Libs
->      * arch: x86_64
->      * epoch: None
->      * name: unbound-libs
->      * release: 11.el8_2
->      * source: rpm
->      * version: 1.7.3
->    * ### Util-Linux
->    * ### Util-Linux
->      * arch: x86_64
->      * epoch: None
->      * name: util-linux
->      * release: 22.el8
->      * source: rpm
->      * version: 2.32.1
->    * ### Vim-Minimal
->    * ### Vim-Minimal
->      * arch: x86_64
->      * epoch: 2
->      * name: vim-minimal
->      * release: 13.el8
->      * source: rpm
->      * version: 8.0.1763
->    * ### Virt-What
->    * ### Virt-What
->      * arch: x86_64
->      * epoch: None
->      * name: virt-what
->      * release: 6.el8
->      * source: rpm
->      * version: 1.18
->    * ### Which
->    * ### Which
->      * arch: x86_64
->      * epoch: None
->      * name: which
->      * release: 12.el8
->      * source: rpm
->      * version: 2.21
->    * ### Xfsprogs
->    * ### Xfsprogs
->      * arch: x86_64
->      * epoch: None
->      * name: xfsprogs
->      * release: 2.el8
->      * source: rpm
->      * version: 5.0.0
->    * ### Xkeyboard-Config
->    * ### Xkeyboard-Config
->      * arch: noarch
->      * epoch: None
->      * name: xkeyboard-config
->      * release: 1.el8
->      * source: rpm
->      * version: 2.28
->    * ### Xmlsec1
->    * ### Xmlsec1
->      * arch: x86_64
->      * epoch: None
->      * name: xmlsec1
->      * release: 4.el8
->      * source: rpm
->      * version: 1.2.25
->    * ### Xmlsec1-Openssl
->    * ### Xmlsec1-Openssl
->      * arch: x86_64
->      * epoch: None
->      * name: xmlsec1-openssl
->      * release: 4.el8
->      * source: rpm
->      * version: 1.2.25
->    * ### Xz
->    * ### Xz
->      * arch: x86_64
->      * epoch: None
->      * name: xz
->      * release: 3.el8
->      * source: rpm
->      * version: 5.2.4
->    * ### Xz-Libs
->    * ### Xz-Libs
->      * arch: x86_64
->      * epoch: None
->      * name: xz-libs
->      * release: 3.el8
->      * source: rpm
->      * version: 5.2.4
->    * ### Yum
->    * ### Yum
->      * arch: noarch
->      * epoch: None
->      * name: yum
->      * release: 7.el8_2
->      * source: rpm
->      * version: 4.2.17
->    * ### Zlib
->    * ### Zlib
->      * arch: x86_64
->      * epoch: None
->      * name: zlib
->      * release: 16.el8_2
->      * source: rpm
->      * version: 1.2.11
+
 
 
 ### linux-yum
 ***
 Manages packages with the I(yum) package manager
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/yum_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/yum_module.html
 
 
 #### Base Command
@@ -16669,17 +8186,11 @@ Manages packages with the I(yum) package manager
 | --- | --- | --- |
 
 
-#### Command Example
-``` ```
-
-#### Human Readable Output
-
-
 
 ### linux-yum-repository
 ***
 Add or remove YUM repositories
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/yum_repository_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/yum_repository_module.html
 
 
 #### Base Command
@@ -16758,7 +8269,7 @@ Add or remove YUM repositories
 
 
 #### Command Example
-```!linux-yum-repository host="192.168.1.125" name="epel" description="EPEL YUM repo" baseurl="https://download.fedoraproject.org/pub/epel/$releasever/$basearch/" ```
+```!linux-yum-repository host="123.123.123.123" name="epel" description="EPEL YUM repo" baseurl="https://download.fedoraproject.org/pub/epel/$releasever/$basearch/" ```
 
 #### Context Example
 ```json
@@ -16766,7 +8277,7 @@ Add or remove YUM repositories
     "linux": {
         "yumRepository": {
             "changed": false,
-            "host": "192.168.1.125",
+            "host": "123.123.123.123",
             "repo": "epel",
             "state": "present",
             "status": "SUCCESS"
@@ -16777,7 +8288,7 @@ Add or remove YUM repositories
 
 #### Human Readable Output
 
-># 192.168.1.125 -  SUCCESS 
+># 123.123.123.123 -  SUCCESS 
 >  * changed: False
 >  * repo: epel
 >  * state: present
@@ -16786,7 +8297,7 @@ Add or remove YUM repositories
 ### linux-zypper
 ***
 Manage packages on SUSE and openSUSE
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/zypper_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/zypper_module.html
 
 
 #### Base Command
@@ -16815,17 +8326,11 @@ Manage packages on SUSE and openSUSE
 | --- | --- | --- |
 
 
-#### Command Example
-``` ```
-
-#### Human Readable Output
-
-
 
 ### linux-zypper-repository
 ***
 Add and remove Zypper repositories
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/zypper_repository_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/zypper_repository_module.html
 
 
 #### Base Command
@@ -16855,17 +8360,11 @@ Add and remove Zypper repositories
 | --- | --- | --- |
 
 
-#### Command Example
-``` ```
-
-#### Human Readable Output
-
-
 
 ### linux-snap
 ***
 Manages snaps
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/snap_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/snap_module.html
 
 
 #### Base Command
@@ -16893,17 +8392,11 @@ Manages snaps
 | Linux.snap.snaps_removed | unknown | The list of actually removed snaps | 
 
 
-#### Command Example
-``` ```
-
-#### Human Readable Output
-
-
 
 ### linux-redhat-subscription
 ***
 Manage registration and subscriptions to RHSM using the C(subscription-manager) command
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/redhat_subscription_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/redhat_subscription_module.html
 
 
 #### Base Command
@@ -16946,17 +8439,11 @@ Manage registration and subscriptions to RHSM using the C(subscription-manager) 
 | Linux.redhatSubscription.subscribed_pool_ids | unknown | List of pool IDs to which system is now subscribed | 
 
 
-#### Command Example
-``` ```
-
-#### Human Readable Output
-
-
 
 ### linux-rhn-channel
 ***
 Adds or removes Red Hat software channels
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/rhn_channel_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/rhn_channel_module.html
 
 
 #### Base Command
@@ -16981,17 +8468,11 @@ Adds or removes Red Hat software channels
 | --- | --- | --- |
 
 
-#### Command Example
-``` ```
-
-#### Human Readable Output
-
-
 
 ### linux-rhn-register
 ***
 Manage Red Hat Network registration using the C(rhnreg_ks) command
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/rhn_register_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/rhn_register_module.html
 
 
 #### Base Command
@@ -17022,7 +8503,7 @@ Manage Red Hat Network registration using the C(rhnreg_ks) command
 
 
 #### Command Example
-```!linux-rhn-register host="192.168.1.125" state="absent" username="joe_user" password="somepass" ```
+```!linux-rhn-register host="123.123.123.123" state="absent" username="joe_user" password="somepass" ```
 
 #### Context Example
 ```json
@@ -17030,7 +8511,7 @@ Manage Red Hat Network registration using the C(rhnreg_ks) command
     "linux": {
         "rhnRegister": {
             "changed": false,
-            "host": "192.168.1.125",
+            "host": "123.123.123.123",
             "msg": "System already unregistered.",
             "status": "SUCCESS"
         }
@@ -17040,7 +8521,7 @@ Manage Red Hat Network registration using the C(rhnreg_ks) command
 
 #### Human Readable Output
 
-># 192.168.1.125 -  SUCCESS 
+># 123.123.123.123 -  SUCCESS 
 >  * changed: False
 >  * msg: System already unregistered.
 
@@ -17048,7 +8529,7 @@ Manage Red Hat Network registration using the C(rhnreg_ks) command
 ### linux-rhsm-release
 ***
 Set or Unset RHSM Release version
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/rhsm_release_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/rhsm_release_module.html
 
 
 #### Base Command
@@ -17069,17 +8550,11 @@ Set or Unset RHSM Release version
 | Linux.rhsmRelease.current_release | string | The current RHSM release version value | 
 
 
-#### Command Example
-``` ```
-
-#### Human Readable Output
-
-
 
 ### linux-rhsm-repository
 ***
 Manage RHSM repositories using the subscription-manager command
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/rhsm_repository_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/rhsm_repository_module.html
 
 
 #### Base Command
@@ -17103,17 +8578,11 @@ Manage RHSM repositories using the subscription-manager command
 When this module is used to change the repository states, this list contains the updated states after the changes. | 
 
 
-#### Command Example
-``` ```
-
-#### Human Readable Output
-
-
 
 ### linux-rpm-key
 ***
 Adds or removes a gpg key from the rpm db
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/rpm_key_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/rpm_key_module.html
 
 
 #### Base Command
@@ -17136,17 +8605,11 @@ Adds or removes a gpg key from the rpm db
 | --- | --- | --- |
 
 
-#### Command Example
-``` ```
-
-#### Human Readable Output
-
-
 
 ### linux-get-url
 ***
 Downloads files from HTTP, HTTPS, or FTP to node
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/get_url_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/get_url_module.html
 
 
 #### Base Command
@@ -17207,11 +8670,5 @@ Downloads files from HTTP, HTTPS, or FTP to node
 | Linux.getUrl.status_code | number | the HTTP status code from the request | 
 | Linux.getUrl.uid | number | owner id of the file, after execution | 
 | Linux.getUrl.url | string | the actual URL used for the request | 
-
-
-#### Command Example
-``` ```
-
-#### Human Readable Output
 
 
