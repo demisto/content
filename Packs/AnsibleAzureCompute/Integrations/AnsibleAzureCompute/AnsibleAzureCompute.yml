@@ -160,7 +160,6 @@ script:
     - defaultValue: '3'
       description: 'Fault domains define the group of virtual machines that share
         a common power source and network switch.
-
         Should be between `1` and `3`.'
       name: platform_fault_domain_count
     - auto: PREDEFINED
