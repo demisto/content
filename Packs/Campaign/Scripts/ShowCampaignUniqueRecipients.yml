@@ -1,7 +1,6 @@
 commonfields:
-  id: 7c2b2373-9d53-4929-8aa9-a1ff6b4b9941
-  version: 9
-vcShouldKeepItemLegacyProdMachine: false
+  id: ShowCampaignUniqueRecipients
+  version: -1
 name: ShowCampaignUniqueRecipients
 script: |2-
 
@@ -31,7 +30,9 @@ comment: Displays the number of unique recipients of an email campaign.
 enabled: true
 scripttarget: 0
 subtype: python3
-pswd: ""
 runonce: false
-dockerimage: demisto/python3:3.7.3.286
+dockerimage: demisto/python3:3.9.5.21272
 runas: DBotWeakRole
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)
