@@ -66,4 +66,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![Kaseya VSA  0-day - REvil Ransomware Supply Chain Attack](Insert the link to your image here)
+![Kaseya VSA  0-day - REvil Ransomware Supply Chain Attack](https://raw.githubusercontent.com/demisto/content/08597f0802994207eaee97f5e3358db0144434a9/Packs/MajorBreachesInvestigationandResponse/doc_files/Kaseya_VSA__0-day_-_REvil_Ransomware_Supply_Chain_Attack.png)
