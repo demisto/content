@@ -612,7 +612,7 @@ def test_domain_command(mocker, raw_response, expected):
 
 @pytest.mark.parametrize('ip_,raw_response,expected_ec,expected_relationships', [
     ('8.8.88.8', IP_RAW_RESPONSE, IP_EC, []),
-    ('98.136.103.23', IP_RAW_RESPONSE_WITH_RELATIONSHIPS, IP_EC_WITH_RELATIONSHIPS, IP_RELATIONSHIPS),
+    ('98.136.103.23', IP_RAW_RESPONSE_WITH_RELATIONSHIPS, IP_EC_WITH_RELATIONSHIPS, IP_RELATIONSHIPS)
 ])
 def test_ip_command(mocker, ip_, raw_response, expected_ec, expected_relationships):
     """
