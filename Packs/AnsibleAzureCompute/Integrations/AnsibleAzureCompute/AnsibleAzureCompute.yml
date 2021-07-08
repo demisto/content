@@ -264,9 +264,7 @@ script:
     - auto: PREDEFINED
       defaultValue: present
       description: 'If `state=present`, template will be created.
-
         If `state=present` and deployment exists, it will be updated.
-
         If `state=absent`, stack will be removed.'
       name: state
       predefined:
