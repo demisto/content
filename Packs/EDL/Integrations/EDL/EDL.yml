@@ -103,6 +103,14 @@ configuration:
   name: nginx_server_conf
   required: false
   type: 12
+- additionalinfo: "Legacy Queries: When enabled, the integration will query the Server
+    using full queries. Enable this query mode, if you've been instructed by Support,
+    or you've encountered in the log errors of the form: msgpack: invalid code."
+  display: 'Advanced: Use Legacy Queries'
+  hidden: false
+  name: use_legacy_query
+  required: false
+  type: 8
 description: This integration provides External Dynamic List (EDL) as a service for
   the system indicators (Outbound feed).
 display: Palo Alto Networks PAN-OS EDL Service
@@ -180,4 +188,5 @@ script:
   type: python
 tests:
 - Test_EDL
+- EDL Performance Test
 fromversion: 5.5.0

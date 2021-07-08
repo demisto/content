@@ -16,6 +16,7 @@ from sklearn.manifold import TSNE
 import hdbscan
 from datetime import datetime
 from typing import Type, Tuple
+import math
 
 GENERAL_MESSAGE_RESULTS = "#### - We succeeded to group **%s incidents into %s groups**.\n #### - The grouping was based on " \
                           "the **%s** field(s).\n #### - Each group name is based on the majority value of the **%s** field in " \
@@ -32,8 +33,8 @@ MESSAGE_NO_FIELD_NAME_OR_CLUSTERING = "- Empty or incorrect fieldsForClustering 
                                       "for training OR fieldForClusterName is incorrect."
 
 PREFIXES_TO_REMOVE = ['incident.']
-REGEX_DATE_PATTERN = [re.compile("^(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2}:\d{2})Z"),  # guardrails-disable-line
-                      re.compile("(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2}:\d{2}).*")]  # guardrails-disable-line
+REGEX_DATE_PATTERN = [re.compile(r"^(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2}:\d{2})Z"),  # guardrails-disable-line
+                      re.compile(r"(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2}:\d{2}).*")]  # guardrails-disable-line
 REPLACE_COMMAND_LINE = {"=": " = ", "\\": "/", "[": "", "]": "", '"': "", "'": "", }
 TFIDF_PARAMS = {'analyzer': 'char', 'max_features': 500, 'ngram_range': (2, 4)}
 
@@ -430,7 +431,7 @@ def normalize_json(obj) -> str:  # type: ignore
     my_dict = recursive_filter(obj, REGEX_DATE_PATTERN, "None", "N/A", None, "")
     extracted_values = [x if isinstance(x, str) else str(x) for x in json_extract(my_dict)]
     my_string = ' '.join(extracted_values)  # json.dumps(my_dict)
-    pattern = re.compile('([^\s\w]|_)+')  # guardrails-disable-line
+    pattern = re.compile(r'([^\s\w]|_)+')  # guardrails-disable-line
     my_string = pattern.sub(" ", my_string)
     my_string = my_string.lower()
     return my_string
@@ -611,7 +612,7 @@ def remove_fields_not_in_incident(*args, incorrect_fields: List[str]) -> List[st
 
 def get_results(model_processed: Type[PostProcessing]):
     number_of_sample = model_processed.stats["General"]["Nb sample"]
-    number_clusters_selected = len(model_processed.selected_clusters)
+    number_clusters_selected = len(model_processed.selected_clusters) - 1
     number_of_outliers = number_of_sample - model_processed.stats['number_of_clusterized_sample_after_selection']
     return number_of_sample, number_clusters_selected, number_of_outliers
 
@@ -847,7 +848,8 @@ def calculate_range(data):
     min_size = min(all_data_size)
     min_range = max(30, min_size)
     max_range = min_range + max(300, max_size - min_size)
-    return [min_range, max_range], [min(all_x), max(all_x)], [min(all_y), max(all_y)]
+    return [min_range, max_range], [int(math.ceil(min(all_x))), int(math.ceil(max(all_x)))], \
+           [int(math.ceil(min(all_y))), int(math.ceil(max(all_y)))]
 
 
 def main():
