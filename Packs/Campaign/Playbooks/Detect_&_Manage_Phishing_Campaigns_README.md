@@ -16,7 +16,7 @@ This playbook does not use any integrations.
 ### Scripts
 * IsIncidentPartOfCampaign
 * SetByIncidentId
-* FindEmailCampaign_dev_itay
+* FindEmailCampaign
 
 ### Commands
 * investigate
