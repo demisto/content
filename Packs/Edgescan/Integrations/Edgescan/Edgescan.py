@@ -59,8 +59,8 @@ class Client(BaseClient):
         return response
 
     def asset_create_request(self, id_, name, priority, type_, authenticatied, tags, location_specifiers):
-        data = {"asset": {"authenticatied": authenticatied, "id": id, "location_specifiers": location_specifiers,
-                          "name": name, "priority": priority, "tags": tags, "type": type}}
+        data = {"asset": {"authenticatied": authenticatied, "id": id_, "location_specifiers": location_specifiers,
+                          "name": name, "priority": priority, "tags": tags, "type": type_}}
         headers = self._headers
         response = self._http_request('POST', 'api/v1/assets.json', json_data=data, headers=headers)
         return response
@@ -381,7 +381,7 @@ def asset_create_command(client, args):
     tags = args.get('tags')
     location_secifiers = args.get('location_secifiers')
 
-    response = client.asset_create_request(id_, name, priority, type_, authenticatied, tags, location_secifiers)
+    response = client.asset_create_request(id_, name, priority, type_, authenticatied, tags, location_secifiers)['asset']
     command_results = CommandResults(
         outputs_prefix='Edgescan.AssetCreate',
         outputs_key_field='',
@@ -421,7 +421,7 @@ def asset_delete_command(client, args):
     tags = args.get('tags')
     location_specifiers = args.get('location_specifiers')
 
-    response = client.asset_delete_request(id, name, priority, type_, authenticatied, tags, location_specifiers)
+    response = client.asset_delete_request(id, name, priority, type_, authenticatied, tags, location_specifiers)['asset']
     command_results = CommandResults(
         outputs_prefix='Edgescan.AssetDelete',
         outputs_key_field='',
