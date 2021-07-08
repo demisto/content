@@ -58,15 +58,6 @@ class Portal():
     def get(self, uri, query=None, headers=None, remove_subdomain=False, **kwargs):
         return self._request(uri, method='GET', query=query, headers=headers, remove_subdomain=remove_subdomain, **kwargs)
 
-    def delete(self, uri, query=None, headers=None, **kwargs):
-        return self._request(uri, method='DELETE', query=query, headers=headers, **kwargs)
-
-    def put(self, uri, query=None, json=None, data=None, headers=None, files=None, **kwargs):
-        return self._request(uri, method='PUT', query=query, json=json, data=data, headers=headers, files=files, **kwargs)
-
-    def post(self, uri, query=None, json=None, data=None, headers=None, files=None, **kwargs):
-        return self._request(uri, method='POST', query=query, json=json, data=data, files=files, headers=headers, **kwargs)
-
     def _request(self, uri, method='GET', query=None, json=None, data=None, files=None, headers=None,
                  remove_subdomain=False, **kwargs):
         all_headers = {

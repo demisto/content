@@ -5,4 +5,4 @@
 - credentials
    - Your email to connect to the Field Effect Security Portal
 - password
-   - API key to access Field Effect Security Portal
+   - API key to access Field Effect Security Portal, generated from Field Effect Portal

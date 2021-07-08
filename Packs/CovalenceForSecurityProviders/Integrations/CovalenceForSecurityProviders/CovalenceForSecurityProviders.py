@@ -190,19 +190,19 @@ def fetch_incidents(last_run, first_run_time_range):
                     #  Critical: 4
                     severity_from_portal = a['severity']
                     if severity_from_portal == 'Informational':
-                        incident['severity'] = '0.5'
+                        incident['severity'] = 0.5
                     elif severity_from_portal == 'Warning':
-                        incident['severity'] = '1'
+                        incident['severity'] = 1
                     elif severity_from_portal == 'Low':
-                        incident['severity'] = '1'
+                        incident['severity'] = 1
                     elif severity_from_portal == 'Medium':
-                        incident['severity'] = '2'
+                        incident['severity'] = 2
                     elif severity_from_portal == 'High':
-                        incident['severity'] = '3'
+                        incident['severity'] = 3
                     elif severity_from_portal == 'Critical':
-                        incident['severity'] = '4'
+                        incident['severity'] = 4
                 else:
-                    incident['severity'] = '0'
+                    incident['severity'] = 0
                 if a.get('analystDescription', None):
                     incident['details'] = a['analystDescription']
                 incidents.append(incident)
@@ -501,7 +501,9 @@ def set_internal_networks():
         }
     )
 
-    return send_request('PUT', '/rest/v1/internal_networks', target_org=target_org, json=networks)
+    r = send_request('PUT', '/rest/v1/internal_networks', target_org=target_org, json=networks)
+
+    return cidr, notes
 
 
 def list_endpoint_agents():
@@ -760,20 +762,18 @@ def main():
         elif demisto.command() == 'cov-secpr-set-internal-networks':
             r = set_internal_networks()
 
-            if r is True:
-                readable_output = tableToMarkdown('Internal Networks', r, removeNull=True, headerTransform=string_to_table_header)
+            cidr = r[0]
+            notes = r[1]
 
-                r = list_internal_networks()
-                results = CommandResults(
-                    outputs_prefix='Covalence.InternalNetworks',
-                    outputs_key_field='cidr',
-                    outputs=r,
-                    readable_output=readable_output
-                )
-                return_results(results)
-            else:
-                msg = 'Failed to set internal networks'
-                demisto.error(msg)
+            readable_output = f'Internal network set as {cidr} with notes "{notes}"'
+
+            results = CommandResults(
+                outputs_prefix='Covalence.InternalNetworks',
+                outputs_key_field='cidr',
+                outputs=r,
+                readable_output=readable_output
+            )
+            return_results(results)
 
         elif demisto.command() == 'cov-secpr-list-endpoint-agents':
             r = list_endpoint_agents()
@@ -853,9 +853,9 @@ def main():
         elif demisto.command() == 'cov-secpr-list-organizations':
             r = list_org()
             if r:
-                readable_output = tableToMarkdown('Endpoint Software', r, removeNull=True, headerTransform=string_to_table_header)
+                readable_output = tableToMarkdown('Organizations', r, removeNull=True, headerTransform=string_to_table_header)
             else:
-                readable_output = 'No endpoint software found'
+                readable_output = 'No organizations found'
 
             results = CommandResults(
                 outputs_prefix='Covalence.EndpointSoftware',

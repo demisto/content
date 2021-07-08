@@ -1,5 +1,6 @@
 Triggers by triaged alerts from endpoint, cloud, and network security monitoring. Contains event details and easy-to-follow mitigation steps.
 This integration was integrated and tested with version 3.0 of Covalence Managed Security
+
 ## Configure Covalence Managed Security on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
@@ -9,8 +10,13 @@ This integration was integrated and tested with version 3.0 of Covalence Managed
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
     | Credentials |  | True |
+    | Password |  | True |
     | Use system proxy settings |  | False |
     | First run time range | When fetching incidents for the first time, this parameter specifies in days how far the integration looks for incidents. For instance if set to "2", it will pull all alerts in Covalence for the last 2 days and will create corresponding incidents. | False |
+    | Incident type |  | False |
+    | Fetch incidents |  | False |
+    | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) |  | False |
+    | None |  | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
@@ -65,10 +71,49 @@ Query FES Portal for ARO
 
 
 #### Command Example
-``` ```
+```!cov-mgsec-get-aro query="resolution=Unresolved"```
+
+#### Context Example
+```json
+{
+    "FESPortal": {
+        "ARO": [
+            {
+                "organization": {
+                    "ID": "9d4297ea-089e-42bd-884d-51744e31a471",
+                    "email": "foo@bar.com",
+                    "name": "Acme"
+                },
+                "resolution": "Unresolved",
+                "severity": "Critical",
+                "status": "Open",
+                "title": "test2",
+                "type": "Action"
+            },
+            {
+                "organization": {
+                    "ID": "e0e04c8b-d50c-4379-bfd6-5e0f2b1037cd",
+                    "email": "foo@bar.com",
+                    "name": "Capsule Corp"
+                },
+                "resolution": "Unresolved",
+                "severity": "High",
+                "status": "Open",
+                "title": "Vulnerable Software Detected",
+                "type": "Recommendation"
+            }
+        ]
+    }
+}
+```
 
 #### Human Readable Output
 
+>### AROs
+>|Organization|Resolution|Severity|Status|Title|Type|
+>|---|---|---|---|---|---|
+>| ID: 9d4297ea-089e-42bd-884d-51744e31a471<br/>email: foo@bar.com<br/>name: Acme | Unresolved | Critical | Open | test2 | Action |
+>| ID: e0e04c8b-d50c-4379-bfd6-5e0f2b1037cd<br/>email: foo@bar.com<br/>name: Capsule Corp | Unresolved | High | Open | Vulnerable Software Detected | Recommendation |
 
 
 ### cov-mgsec-list-org
@@ -81,7 +126,9 @@ List organizations
 `cov-mgsec-list-org`
 #### Input
 
-There are no input arguments for this command.
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+
 
 #### Context Output
 
@@ -94,8 +141,35 @@ There are no input arguments for this command.
 
 
 #### Command Example
-``` ```
+```!cov-mgsec-list-org```
+
+#### Context Example
+```json
+{
+    "FESPortal": {
+        "Org": [
+            {
+                "ID": "9d4297ea-089e-42bd-884d-51744e31a471",
+                "email": "foo@bar.com",
+                "email_aro_details": false,
+                "name": "Acme"
+            },
+            {
+                "ID": "e0e04c8b-d50c-4379-bfd6-5e0f2b1037cd",
+                "email": "foo@bar.com",
+                "email_aro_details": false,
+                "name": "Capsule Corp"
+            }
+        ]
+    }
+}
+```
 
 #### Human Readable Output
 
+>### Organizations
+>|Id|Email|Email Aro Details|Name|
+>|---|---|---|---|
+>| 9d4297ea-089e-42bd-884d-51744e31a471 | foo@bar.com | false | Acme |
+>| e0e04c8b-d50c-4379-bfd6-5e0f2b1037cd | foo@bar.com | false | Capsule Corp |
 

@@ -1,21 +1,27 @@
-Fetch alerts as incidents and leverage Covalence API
-This integration was integrated and tested with version 3.0 of Covalence
-## Configure Covalence on Cortex XSOAR
+Triggers by any alert from endpoint, cloud, and network security monitoring, with mitigation steps where applicable. Query Covalence for more detail.
+This integration was integrated and tested with version 3.0 of Covalence For Security Providers
+
+## Configure Covalence For Security Providers on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Covalence.
+2. Search for Covalence For Security Providers.
 3. Click **Add instance** to create and configure a new integration instance.
 
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
-    | Broker | Set to true if connections are made through a broker | True |
+    | Broker | Set to true if connections are made through a broker | False |
     | Host | Covalence's host \(IP or domain\) or broker's socket \(ip:port\) if using broker | True |
     | Credentials |  | True |
+    | Password |  | True |
     | Verify SSL | If set to false, will trust any certificate \(not secure\) | False |
     | Timeout | Timeout in seconds | False |
     | First run time range | When fetching incidents for the first time, this parameter specifies in days how far the integration looks for incidents. For instance if set to "2", it will pull all alerts in Covalence for the last 2 days and will create corresponding incidents. | False |
     | Fetch limit | Maximum number of alerts to be fetch per fetch command. It is advised to not fetch more than 200 alerts. | False |
     | Use system proxy settings |  | False |
+    | Fetch incidents |  | False |
+    | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) |  | False |
+    | None |  | False |
+    | Incident type |  | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
@@ -107,10 +113,34 @@ Lists Covalence alerts
 
 
 #### Command Example
-``` ```
+```!cov-secpr-list-alerts```
+
+#### Context Example
+```json
+{
+    "Covalence": {
+        "Alert": [
+            {
+                "acknowledgedStatus": "None",
+                "analystDescription": "We've detected suspicious persistent software, C:\\\\test.ps1, on the following system: DESKTOP-1.",
+                "analystTitle": "Suspicious persistent software detected",
+                "destIp": null,
+                "sourceIp": null,
+                "subType": "Analytic",
+                "title": "Analyst alert",
+                "type": "ANALYST GENERIC"
+            }
+        ]
+    }
+}
+```
 
 #### Human Readable Output
 
+>### Alerts
+>|Acknowledgedstatus|Analystdescription|Analysttitle|Subtype|Title|Type|
+>|---|---|---|---|---|---|
+>| None | We've detected suspicious persistent software, C:\\test.ps1, on the following system: DESKTOP-1 | Suspicious persistent software detected | Analytic | Analyst alert | ANALYST GENERIC |
 
 
 ### cov-secpr-list-sensors
@@ -144,10 +174,35 @@ Lists Covalence sensors
 
 
 #### Command Example
-``` ```
+```!cov-secpr-list-sensors```
+
+#### Context Example
+```json
+{
+    "Covalence": {
+        "Sensors": [
+            {
+                "isAuthorized": false,
+                "isNetflowGenerator": true,
+                "name": "External Sources"
+            },
+            {
+                "isAuthorized": true,
+                "isNetflowGenerator": false,
+                "name": "1.1.1.1"
+            }
+        ]
+    }
+}
+```
 
 #### Human Readable Output
 
+>### Sensors
+>|Isauthorized|Isnetflowgenerator|Name|
+>|---|---|---|
+>| false | true | External Sources |
+>| true | false | 1.1.1.1 |
 
 
 ### cov-secpr-get-sensor
@@ -181,10 +236,34 @@ Get sensor details when provided with the sensor id
 
 
 #### Command Example
-``` ```
+```!cov-secpr-get-sensor sensor_id=94397407-5577-4d14-8f21-9a65ad5ac7fe```
+
+#### Context Example
+```json
+{
+    "Covalence": {
+        "Sensor": {
+            "bytesIn": null,
+            "bytesOut": null,
+            "id": "94397407-5577-4d14-8f21-9a65ad5ac7fe",
+            "isAuthorized": true,
+            "isNetflowGenerator": false,
+            "listeningInterfaces": [
+                "eth0",
+                "eth1"
+            ],
+            "name": "1.1.1.1"
+        }
+    }
+}
+```
 
 #### Human Readable Output
 
+>### Sensor
+>|Id|Isauthorized|Isnetflowgenerator|Listeninginterfaces|Name|
+>|---|---|---|---|---|
+>| 94397407-5577-4d14-8f21-9a65ad5ac7fe | true | false | eth0,<br/>eth1 | 1.1.1.1 |
 
 
 ### cov-secpr-connections-summary-ip
@@ -242,10 +321,35 @@ List summarized connections details by IP Address
 
 
 #### Command Example
-``` ```
+```!cov-secpr-connections-summary-ip source_ip=1.1.1.1 max_count=10```
+
+#### Context Example
+```json
+{
+    "Covalence": {
+        "Connections": [
+            {
+                "averageDuration": 0,
+                "bytesIn": 13360769,
+                "bytesOut": 8645498,
+                "clientServerRelationship": "CLIENT",
+                "destinationIpAddress": "8.8.8.8",
+                "dstDomainName": "dns.google",
+                "serverPorts": "0,53,443",
+                "sourceDomainName": null,
+                "sourceIpAddress": "1.1.1.1"
+            }
+        ]
+    }
+}
+```
 
 #### Human Readable Output
 
+>### Connections
+>|Averageduration|Bytesin|Bytesout|Clientserverrelationship|Destinationipaddress|Dstdomainname|Serverports|Sourceipaddress|
+>|---|---|---|---|---|---|---|---|
+>| 0 | 13360769 | 8645498 | CLIENT | 8.8.8.8 | dns.google | 0,53,443 | 1.1.1.1 |
 
 
 ### cov-secpr-connections-summary-port
@@ -304,10 +408,34 @@ List summarized connections details by Port
 
 
 #### Command Example
-``` ```
+```!cov-secpr-connections-summary-port source_ip=1.1.1.1 max_count=10```
+
+#### Context Example
+```json
+{
+    "Covalence": {
+        "Connections": [
+            {
+                "averageDuration": 44,
+                "bytesIn": 0,
+                "bytesOut": 305837,
+                "destinationIpAddress": "8.8.8.8",
+                "dstDomainName": "dns.google",
+                "serverPort": 0,
+                "sourceDomainName": null,
+                "sourceIpAddress": "1.1.1.1"
+            }
+        ]
+    }
+}
+```
 
 #### Human Readable Output
 
+>### Connections
+>|Averageduration|Bytesin|Bytesout|Destinationipaddress|Dstdomainname|Serverport|Sourceipaddress|
+>|---|---|---|---|---|---|---|
+>| 44 | 0 | 305837 | 8.8.8.8 | dns.google | 0 | 1.1.1.1 |
 
 
 ### cov-secpr-list-dns-resolutions
@@ -351,10 +479,30 @@ List summarized connections details by Port
 
 
 #### Command Example
-``` ```
+```!cov-secpr-list-dns-resolutions max_count=10```
+
+#### Context Example
+```json
+{
+    "Covalence": {
+        "DNSResolutions": [
+            {
+                "domainName": "ntp.ubuntu.com",
+                "requestOriginIp": "1.1.1.1",
+                "requestTime": 1625752183,
+                "resolvedIp": "2001:67c:1560:8003::c7"
+            }
+        ]
+    }
+}
+```
 
 #### Human Readable Output
 
+>### DNS Resolutions
+>|Domainname|Requestoriginip|Requesttime|Resolvedip|
+>|---|---|---|---|
+>| ntp.ubuntu.com | 1.1.1.1 | 1625752183 | 2001:67c:1560:8003::c7 |
 
 
 ### cov-secpr-list-internal-networks
@@ -381,10 +529,26 @@ List internal networks
 
 
 #### Command Example
-``` ```
+```!cov-secpr-list-internal-networks```
+
+#### Context Example
+```json
+{
+    "Covalence": {
+        "InternalNetworks": {
+            "cidr": "'1.1.1.1/24'",
+            "notes": "'update'"
+        }
+    }
+}
+```
 
 #### Human Readable Output
 
+>### Internal Networks
+>|Cidr|Notes|
+>|---|---|
+>| '1.1.1.1/24' | 'update' |
 
 
 ### cov-secpr-set-internal-networks
@@ -413,11 +577,23 @@ Set internal networks
 
 
 #### Command Example
-``` ```
+```!cov-secpr-set-internal-networks cidr='1.2.1.1/24' notes=update```
+
+#### Context Example
+```json
+{
+    "Covalence": {
+        "InternalNetworks": [
+            "'1.2.1.1/24'",
+            "update"
+        ]
+    }
+}
+```
 
 #### Human Readable Output
 
-
+>Internal network set as '1.2.1.1/24' with notes "update"
 
 ### cov-secpr-list-endpoint-agents
 ***
@@ -468,10 +644,43 @@ List endpoint agents
 
 
 #### Command Example
-``` ```
+```!cov-secpr-list-endpoint-agents```
+
+#### Context Example
+```json
+{
+    "Covalence": {
+        "EndpointAgents": [
+            {
+                "hardwareVendor": "VMware, Inc.",
+                "hostName": "DESKTOP-0EENF9N",
+                "ipAddress": "192.168.223.132",
+                "isConnected": false,
+                "lastSessionUser": "jsmith",
+                "operatingSystem": "Windows 10 Home",
+                "serialNumber": "VMware-56 4d 6d cd 58 53 49 e4-73 20 4b 2d b2 15 ca 36"
+            },
+            {
+                "hardwareVendor": "VMware, Inc.",
+                "hostName": "DESKTOP-N0E5EN6",
+                "ipAddress": "192.168.223.130",
+                "isConnected": false,
+                "lastSessionUser": "jdoe",
+                "operatingSystem": "Windows 10 Pro",
+                "serialNumber": "VMware-56 4d 77 78 de 75 22 df-6a c9 62 b2 72 e9 6b 91"
+            }
+        ]
+    }
+}
+```
 
 #### Human Readable Output
 
+>### Endpoint Agents
+>|Hardwarevendor|Hostname|Ipaddress|Isconnected|Lastsessionuser|Operatingsystem|Serialnumber|
+>|---|---|---|---|---|---|---|
+>| VMware, Inc. | DESKTOP-0EENF9N | 192.168.223.132 | false | jsmith | Windows 10 Home | VMware-56 4d 6d cd 58 53 49 e4-73 20 4b 2d b2 15 ca 36 |
+>| VMware, Inc. | DESKTOP-N0E5EN6 | 192.168.223.130 | false | jdoe | Windows 10 Pro | VMware-56 4d 77 78 de 75 22 df-6a c9 62 b2 72 e9 6b 91 |
 
 
 ### cov-secpr-find-endpoint-agents-by-user
@@ -522,10 +731,49 @@ List endpoint agents where the last session user is the one provided as paramete
 
 
 #### Command Example
-``` ```
+```!cov-secpr-find-endpoint-agents-by-user user=jdoe```
+
+#### Context Example
+```json
+{
+    "Covalence": {
+        "EndpointAgents": {
+            "agentUuid": "4dda9c12-b9ec-498b-8e89-1b2bc9078643",
+            "agentVersion": "2.0.1.5",
+            "arch": "X64",
+            "coreArchitecture": "X64",
+            "coreOs": "Windows",
+            "coreVersion": "2.0.1.5",
+            "cpuArchitectureEnum": "X64",
+            "deviceIdentifier": "dff207a9-57e0-417d-b72f-667d1c310a65",
+            "firstSeenTime": "2021-03-08 13:57:39",
+            "hardwareModel": "VMware7,1",
+            "hardwareVendor": "VMware, Inc.",
+            "hostName": "DESKTOP-N0E5EN6",
+            "ipAddress": "192.168.223.130",
+            "ipAddresses": "192.168.223.130",
+            "isConnected": false,
+            "isMobile": false,
+            "kernelVersion": "0.0.0.0",
+            "lastSeenTime": "2021-07-07 14:14:58",
+            "lastSessionUser": "jdoe",
+            "operatingSystem": "Windows 10 Pro",
+            "operatingSystemReleaseId": "2009",
+            "osDistro": "Professional",
+            "osVersion": "10.0.0.19042",
+            "secondaryIpAddress": "",
+            "serialNumber": "VMware-56 4d 77 78 de 75 22 df-6a c9 62 b2 72 e9 6b 91"
+        }
+    }
+}
+```
 
 #### Human Readable Output
 
+>### Endpoint Agents
+>|Agentuuid|Agentversion|Arch|Corearchitecture|Coreos|Coreversion|Cpuarchitectureenum|Deviceidentifier|Firstseentime|Hardwaremodel|Hardwarevendor|Hostname|Ipaddress|Ipaddresses|Isconnected|Ismobile|Kernelversion|Lastseentime|Lastsessionuser|Operatingsystem|Operatingsystemreleaseid|Osdistro|Osversion|Serialnumber|
+>|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+>| 4dda9c12-b9ec-498b-8e89-1b2bc9078643 | 2.0.1.5 | X64 | X64 | Windows | 2.0.1.5 | X64 | dff207a9-57e0-417d-b72f-667d1c310a65 | 2021-03-08 13:57:39 | VMware7,1 | VMware, Inc. | DESKTOP-N0E5EN6 | 192.168.223.130 | 192.168.223.130 | false | false | 0.0.0.0 | 2021-07-07 14:14:58 | jdoe | Windows 10 Pro | 2009 | Professional | 10.0.0.19042 | VMware-56 4d 77 78 de 75 22 df-6a c9 62 b2 72 e9 6b 91 |
 
 
 ### cov-secpr-find-endpoint-agents-by-uuid
@@ -576,10 +824,49 @@ Find the endpoint agent with the UUID provided as parameter
 
 
 #### Command Example
-``` ```
+```!cov-secpr-find-endpoint-agents-by-uuid uuid=4dda9c12-b9ec-498b-8e89-1b2bc9078643```
+
+#### Context Example
+```json
+{
+    "Covalence": {
+        "EndpointAgents": {
+            "agentUuid": "4dda9c12-b9ec-498b-8e89-1b2bc9078643",
+            "agentVersion": "2.0.1.5",
+            "arch": "X64",
+            "coreArchitecture": "X64",
+            "coreOs": "Windows",
+            "coreVersion": "2.0.1.5",
+            "cpuArchitectureEnum": "X64",
+            "deviceIdentifier": "dff207a9-57e0-417d-b72f-667d1c310a65",
+            "firstSeenTime": "2021-03-08 13:57:39",
+            "hardwareModel": "VMware7,1",
+            "hardwareVendor": "VMware, Inc.",
+            "hostName": "DESKTOP-N0E5EN6",
+            "ipAddress": "192.168.223.130",
+            "ipAddresses": "192.168.223.130",
+            "isConnected": false,
+            "isMobile": false,
+            "kernelVersion": "0.0.0.0",
+            "lastSeenTime": "2021-07-07 14:14:58",
+            "lastSessionUser": "jdoe",
+            "operatingSystem": "Windows 10 Pro",
+            "operatingSystemReleaseId": "2009",
+            "osDistro": "Professional",
+            "osVersion": "10.0.0.19042",
+            "secondaryIpAddress": "",
+            "serialNumber": "VMware-56 4d 77 78 de 75 22 df-6a c9 62 b2 72 e9 6b 91"
+        }
+    }
+}
+```
 
 #### Human Readable Output
 
+>### Endpoint Agents
+>|Agentuuid|Agentversion|Arch|Corearchitecture|Coreos|Coreversion|Cpuarchitectureenum|Deviceidentifier|Firstseentime|Hardwaremodel|Hardwarevendor|Hostname|Ipaddress|Ipaddresses|Isconnected|Ismobile|Kernelversion|Lastseentime|Lastsessionuser|Operatingsystem|Operatingsystemreleaseid|Osdistro|Osversion|Serialnumber|
+>|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+>| 4dda9c12-b9ec-498b-8e89-1b2bc9078643 | 2.0.1.5 | X64 | X64 | Windows | 2.0.1.5 | X64 | dff207a9-57e0-417d-b72f-667d1c310a65 | 2021-03-08 13:57:39 | VMware7,1 | VMware, Inc. | DESKTOP-N0E5EN6 | 192.168.223.130 | 192.168.223.130 | false | false | 0.0.0.0 | 2021-07-07 14:14:58 | jdoe | Windows 10 Pro | 2009 | Professional | 10.0.0.19042 | VMware-56 4d 77 78 de 75 22 df-6a c9 62 b2 72 e9 6b 91 |
 
 
 ### cov-secpr-search-endpoint-process
@@ -620,10 +907,39 @@ Search processes by name or advanced filter, at least one parameter is required
 
 
 #### Command Example
-``` ```
+```!cov-secpr-search-endpoint-process name=explorer.exe```
+
+#### Context Example
+```json
+{
+    "Covalence": {
+        "EndpointProcess": [
+            {
+                "commandLine": "C:\\Windows\\Explorer.EXE",
+                "firstSeenTime": "2021-03-08T12:25:54.100Z",
+                "lastSeenTime": "2021-04-08T15:23:10.069Z",
+                "processPath": "C:\\Windows\\explorer.exe",
+                "username": "jdoe"
+            },
+            {
+                "commandLine": "C:\\Windows\\Explorer.EXE",
+                "firstSeenTime": "2021-04-23T07:24:25.570Z",
+                "lastSeenTime": "2021-07-07T09:52:17.352Z",
+                "processPath": "C:\\Windows\\explorer.exe",
+                "username": "jsmith"
+            }
+        ]
+    }
+}
+```
 
 #### Human Readable Output
 
+>### Endpoint Process
+>|Commandline|Firstseentime|Lastseentime|Processpath|Username|
+>|---|---|---|---|---|
+>| C:\Windows\Explorer.EXE | 2021-03-08T12:25:54.100Z | 2021-04-08T15:23:10.069Z | C:\Windows\explorer.exe | jdoe |
+>| C:\Windows\Explorer.EXE | 2021-04-23T07:24:25.570Z | 2021-07-07T09:52:17.352Z | C:\Windows\explorer.exe | jsmith |
 
 
 ### cov-secpr-search-endpoint-installed-software
@@ -668,10 +984,29 @@ Search for endpoint installed software
 
 
 #### Command Example
-``` ```
+```!cov-secpr-search-endpoint-installed-software name=firefox```
+
+#### Context Example
+```json
+{
+    "Covalence": {
+        "EndpointSoftware": {
+            "installTimestamp": "1970-01-01T00:00:00.000Z",
+            "name": "Mozilla Firefox 88.0 (x86 fr)",
+            "uninstallTimestamp": null,
+            "vendor": "Mozilla",
+            "version": "88.0"
+        }
+    }
+}
+```
 
 #### Human Readable Output
 
+>### Endpoint Software
+>|Installtimestamp|Name|Vendor|Version|
+>|---|---|---|---|
+>| 1970-01-01T00:00:00.000Z | Mozilla Firefox 88.0 (x86 fr) | Mozilla | 88.0 |
 
 
 ### cov-secpr-list-organizations
@@ -684,7 +1019,9 @@ List monitored organizations, only available in broker mode
 `cov-secpr-list-organizations`
 #### Input
 
-There are no input arguments for this command.
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+
 
 #### Context Output
 
@@ -694,8 +1031,8 @@ There are no input arguments for this command.
 
 
 #### Command Example
-``` ```
+```!cov-secpr-list-organizations```
 
 #### Human Readable Output
 
-
+>No organizations found
