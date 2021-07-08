@@ -74,10 +74,7 @@ Get detailed information about a host.
 
 
 #### Command Example
-``` ```
-
-#### Human Readable Output
-
+```!edgescan-host-get id=5```
 
 
 ### edgescan-host-get-export
@@ -167,10 +164,7 @@ Update a host
 
 
 #### Command Example
-``` ```
-
-#### Human Readable Output
-
+```!edgescan-host-update id=150 label=somelabel```
 
 
 ### edgescan-asset-get-assets
@@ -1268,10 +1262,25 @@ Reset a user's password
 
 
 #### Command Example
-``` ```
+```!edgescan-user-reset-password id=606```
+
+#### Context Example
+```json
+{
+    "Edgescan": {
+        "UserResetPassword": {
+            "message": "Mail delivered successfully"
+        }
+    }
+}
+```
 
 #### Human Readable Output
 
+>### Results
+>|message|
+>|---|
+>| Mail delivered successfully |
 
 
 ### edgescan-user-reset-email
@@ -9146,10 +9155,7 @@ Retest a vulnerability
 
 
 #### Command Example
-``` ```
-
-#### Human Readable Output
-
+```!edgescan-vulnerabilities-retest id=52496```
 
 
 ### edgescan-vulnerabilities-risk-accept
@@ -9176,8 +9182,6 @@ Rish accept a vulnerability
 
 
 #### Command Example
-``` ```
-
-#### Human Readable Output
+```!edgescan-vulnerabilities-risk-accept id=52496 value=true```
 
 
