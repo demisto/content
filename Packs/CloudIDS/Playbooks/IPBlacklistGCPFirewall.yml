@@ -1,6 +1,5 @@
 id: Cloud IDS-IP Blacklist-GCP Firewall
-version: 9
-vcShouldKeepItemLegacyProdMachine: false
+version: -1
 name: Cloud IDS-IP Blacklist-GCP Firewall
 description: Set a list of IP addresses in GCP firewall.
 starttaskid: "0"
@@ -15,6 +14,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "29"
@@ -31,8 +31,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "13":
     id: "13"
     taskid: b1c02d02-66ac-4276-8887-5bb48b20e08c
@@ -67,8 +65,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "22":
     id: "22"
     taskid: 0fae6d93-1845-4cfc-8d39-184e02d7dfcd
@@ -101,8 +97,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "24":
     id: "24"
     taskid: 9000f85b-601b-4f9a-8cd3-9ee8382e9987
@@ -152,8 +146,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "29":
     id: "29"
     taskid: ac7309d2-6192-4d90-8cfd-8ae52c088fd0
@@ -213,8 +205,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "34":
     id: "34"
     taskid: fe61bea6-7e33-4f8d-88a0-a90b3ca80517
@@ -226,6 +216,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {
@@ -239,8 +230,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "35":
     id: "35"
     taskid: ed4f90e6-ec75-4404-857b-842736db14c5
@@ -282,8 +271,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "36":
     id: "36"
     taskid: b7eecfeb-31ac-4c43-89e9-b3a6f93aa5a0
@@ -318,8 +305,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "37":
     id: "37"
     taskid: 36bcae01-4e52-4b61-8882-7d510ac9d8a7
@@ -331,6 +316,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "38"
@@ -347,8 +333,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "38":
     id: "38"
     taskid: c3513bb0-1f02-436e-829f-5b1d1c3fa910
@@ -373,8 +357,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "43":
     id: "43"
     taskid: c12454f3-4cc4-470a-8996-4fbbfa59c0bb
@@ -409,8 +391,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {
@@ -435,7 +415,7 @@ inputs:
   playbookInputQuery:
     query: ""
     queryEntity: indicators
-    results: null
+    results:
     daterange:
       fromdate: 0001-01-01T00:00:00Z
       todate: 0001-01-01T00:00:00Z
@@ -443,8 +423,8 @@ inputs:
         by: ""
         byto: ""
         byfrom: ""
-        tovalue: null
-        fromvalue: null
+        tovalue:
+        fromvalue:
         field: ""
       fromdatelicenseval: 0001-01-01T00:00:00Z
     runFromLastJobTime: false
@@ -453,5 +433,8 @@ inputs:
     simple: fw-test-ids-cortex
   required: true
   description: Name of the GCP Firewall where the playbook should set the IPs
-  playbookInputQuery: null
+  playbookInputQuery:
 outputs: []
+tests:
+- No tests (auto formatted)
+fromversion: 6.0.0
