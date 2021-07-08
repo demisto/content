@@ -98,13 +98,14 @@ def write_test_pack_zip(tests_file_paths: set, path_to_content: str,
             if not test_path.endswith('.yml'):
                 continue
             test = test.name
+
+            if not (test.startswith('playbook-') or test.startswith('script-')):
+                test_type = find_type(test_path).value
+                test_target = f'test_pack/TestPlaybooks/{test_type}-{test}'
+            else:
+                test_target = f'test_pack/TestPlaybooks/{test}'
+
             with open(test_path, 'r') as test_file:
-                if not (test.startswith('playbook-') or test.startswith('script-')):
-                    test_type = find_type(test_file).value
-                    test_file.seek(0)
-                    test_target = f'test_pack/TestPlaybooks/{test_type}-{test}'
-                else:
-                    test_target = f'test_pack/TestPlaybooks/{test}'
                 zip_file.writestr(test_target, test_file.read())
     return private_content_test_zip
 
