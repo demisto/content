@@ -1,5 +1,6 @@
 description: This playbook test SecurityAndCompliance integration
 id: O365-SecurityAndCompliance-Test
+name: O365-SecurityAndCompliance-Test
 starttaskid: "0"
 tasks:
   "0":
