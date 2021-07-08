@@ -1,5 +1,5 @@
 Abnormal Security detects the whole spectrum of email attacks, from vendor email compromise and spear-phishing to unwanted email spam and graymail. To stop these advanced attacks, Abnormal leverages the industry’s most advanced behavioral data science to baseline known good behavior and detects anomalies.
-This integration was integrated and tested with version 1.3.0 of Abnormal Security
+This integration was integrated and tested with version v1.3.0 of Abnormal Security
 ## Configure Abnormal Security on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
@@ -113,14 +113,14 @@ Check the status of an action requested on a threat.
 >| The request was completed successfully | acknowledged |
 
 
-### abnormal-security-list-abnormal-cases-identified-by-abnormal-security
+### abnormal-security-list-abnormal-cases
 ***
 Get a list of Abnormal cases identified by Abnormal Security
 
 
 #### Base Command
 
-`abnormal-security-list-abnormal-cases-identified-by-abnormal-security`
+`abnormal-security-list-abnormal-cases`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -142,7 +142,7 @@ Get a list of Abnormal cases identified by Abnormal Security
 
 
 #### Command Example
-```!abnormal-security-list-abnormal-cases-identified-by-abnormal-security```
+```!abnormal-security-list-abnormal-cases filter="gte 2020-12-01T01:01:01Z"```
 
 #### Context Example
 ```json
@@ -200,7 +200,7 @@ Get a list of threats
 
 
 #### Command Example
-```!abnormal-security-list-threats```
+```!abnormal-security-list-threats filter="gte 2020-12-01T01:01:01Z"```
 
 #### Context Example
 ```json
@@ -419,14 +419,14 @@ There is no context output for this command.
 
 
 
-### abnormal-security-manage-threat-identified-by-abnormal-security
+### abnormal-security-manage-threat
 ***
 Manage a Threat identified by Abnormal Security
 
 
 #### Base Command
 
-`abnormal-security-manage-threat-identified-by-abnormal-security`
+`abnormal-security-manage-threat`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -441,7 +441,7 @@ Manage a Threat identified by Abnormal Security
 There is no context output for this command.
 
 #### Command Example
-```!abnormal-security-manage-threat-identified-by-abnormal-security threat_id=xwvutsrq-9pon-mlkj-i876-54321hgfedcba action=remediate```
+```!abnormal-security-manage-threat threat_id=xwvutsrq-9pon-mlkj-i876-54321hgfedcba action=remediate```
 
 #### Context Example
 ```json

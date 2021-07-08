@@ -4,7 +4,7 @@ Abnormal Security detects the whole spectrum of email attacks, from vendor email
 
 ##### What does this pack do?
 The integration pack allows:
-• Retrieving email threat data using Cortex XSOAR
+• Retrieving email threat campaign data using Cortex XSOAR
 • Retrieving email anomaly cases using Cortex XSOAR
 
 For more information on Abnormal Security, please visit www.abnormalsecurity.com

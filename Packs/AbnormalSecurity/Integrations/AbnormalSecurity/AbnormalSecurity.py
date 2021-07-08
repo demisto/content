@@ -81,7 +81,6 @@ class Client(BaseClient):
 
     def submit_an_inquiry_to_request_a_report_on_misjudgement_by_abnormal_security_request(self, reporter, report_type):
         headers = self._headers
-
         json_data = {
             'reporter': reporter,
             'report_type': report_type,
@@ -163,7 +162,6 @@ def get_details_of_a_threat_command(client, args):
     threat_id = str(args.get('threat_id', ''))
 
     response = client.get_details_of_a_threat_request(threat_id)
-    markdown = '### Threat Details\n'
     headers = [
         'subject',
         'fromAddress',
@@ -175,7 +173,7 @@ def get_details_of_a_threat_command(client, args):
         'attackStrategy',
         'returnPath'
     ]
-    markdown += tableToMarkdown(
+    markdown = tableToMarkdown(
         f"Messages in Threat {response.get('threatId', '')}", response.get('messages', []), headers=headers)
     command_results = CommandResults(
         readable_output=markdown,
@@ -192,7 +190,17 @@ def get_details_of_an_abnormal_case_command(client, args):
     case_id = str(args.get('case_id', ''))
 
     response = client.get_details_of_an_abnormal_case_request(case_id)
+    headers = [
+        'caseId',
+        'severity',
+        'affectedEmployee',
+        'firstObserved',
+        'threatIds'
+    ]
+    markdown = tableToMarkdown(
+        f"Details of Case {response.get('caseId', '')}", response, headers=headers)
     command_results = CommandResults(
+        readable_output=markdown,
         outputs_prefix='AbnormalSecurity.AbnormalCaseDetails',
         outputs_key_field='',
         outputs=response,
@@ -289,7 +297,7 @@ def main():
                 check_the_status_of_an_action_requested_on_a_case_command,
             'abnormal-security-check-threat-action-status':
                 check_the_status_of_an_action_requested_on_a_threat_command,
-            'abnormal-security-list-abnormal-cases-identified-by-abnormal-security':
+            'abnormal-security-list-abnormal-cases':
                 get_a_list_of_abnormal_cases_identified_by_abnormal_security_command,
             'abnormal-security-list-threats':
                 get_a_list_of_threats_command,
@@ -298,7 +306,7 @@ def main():
             'abnormal-security-get-abnormal-case':
                 get_details_of_an_abnormal_case_command,
             'abnormal-security-get-latest-threat-intel-feed': get_the_latest_threat_intel_feed_command,
-            'abnormal-security-manage-threat-identified-by-abnormal-security':
+            'abnormal-security-manage-threat':
                 manage_a_threat_identified_by_abnormal_security_command,
             'abnormal-security-manage-abnormal-case':
                 manage_an_abnormal_case_command,
