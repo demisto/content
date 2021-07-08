@@ -2104,11 +2104,11 @@ def filter_channels_command():
     is_general = demisto.args().get('is_general')
     is_private = demisto.args().get('is_private')
 
-    is_archived = bool(is_archived) if is_archived else None
-    is_general = bool(is_general) if is_general else None
-    is_private = bool(is_private) if is_private else None
+    is_archived = bool(strtobool(is_archived)) if is_archived else None
+    is_general = bool(strtobool(is_general)) if is_general else None
+    is_private = bool(strtobool(is_private)) if is_private else None
 
-    command_results_list: List[CommandResults] = []
+    command_results_list: list[dict[str, Union[bool, str]]] = []
     filtered_conversations = filter_conversations(
         name=name,
         creator=creator,
@@ -2127,13 +2127,13 @@ def filter_channels_command():
             'IsGeneral': conversation.get('is_general'),
             'IsPrivate': conversation.get('is_private'),
         }
-        command_results_list.append(CommandResults(
+        command_results_list.append(result_conversation)
+
+    return_results(CommandResults(
             outputs_prefix='Slack.Channel',
             outputs_key_field='ID',
-            outputs=result_conversation
+            outputs=command_results_list
         ))
-
-    return_results(command_results_list)
 
 
 def main():
