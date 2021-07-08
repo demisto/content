@@ -12,7 +12,7 @@ To use this integration you must generate an Access/Secret token for your Aliyun
 
 ## Configure Alibaba Cloud on Cortex XSOAR
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Alibaba Cloud.
+2. Search for Ansible Alibaba Cloud.
 3. Click **Add instance** to create and configure a new integration instance.
 
     | **Parameter** | **Description** | **Required** |
@@ -339,4 +339,3 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 >          * primary: True
 >          * private_ip_address: 172.16.0.58
 >    * ### Tags
-
