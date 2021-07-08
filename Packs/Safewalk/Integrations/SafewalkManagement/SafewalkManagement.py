@@ -257,7 +257,7 @@ def get_transactionlog(client, args):
     locked = args.get('locked')
 
     result_raw = client.get_transactionlog(page, search, locked)
-    if result_raw is not None and result_raw != '':
+    if result_raw:
         result_raw = json.loads(result_raw)
         result = remove_empty_elements(result_raw)
     else:
@@ -285,7 +285,7 @@ def get_users(client, args):
     locked = args.get('locked')
 
     result_raw = client.get_users(page, search, locked)
-    if result_raw is not None and result_raw != '':
+    if result_raw:
         result_raw = json.loads(result_raw)
         result = remove_empty_elements(result_raw)
     else:
@@ -314,7 +314,7 @@ def get_ldap_users(client, args):
     ldap = args.get('ldap')
 
     result_raw = client.get_ldap_users(page, search, locked, ldap)
-    if result_raw is not None and result_raw != '':
+    if result_raw:
         result_raw = json.loads(result_raw)
         result = remove_empty_elements(result_raw)
     else:
@@ -338,7 +338,7 @@ def get_ldap_users(client, args):
 
 def get_ldaps(client, args):
     result_raw = client.get_ldaps()
-    if result_raw is not None and result_raw != '':
+    if result_raw:
         result_raw = json.loads(result_raw)
         result = remove_empty_elements(result_raw)
     else:
@@ -364,7 +364,7 @@ def get_user_personalinformation(client, args):
     username = args.get('username')
 
     result_raw = client.get_user_personalinformation(username)
-    if result_raw is not None and result_raw != '':
+    if result_raw:
         result_raw = json.loads(result_raw)
         result = remove_empty_elements(result_raw)
     else:
@@ -392,7 +392,7 @@ def set_user_personalinformation(client, args):
     mobile_phone = args.get('mobile_phone')
 
     result_raw = client.set_user_personalinformation(username, email, mobile_phone)
-    if result_raw is not None and result_raw != '':
+    if result_raw:
         result_raw = json.loads(result_raw)
         result = remove_empty_elements(result_raw)
     else:
@@ -418,7 +418,7 @@ def get_user_accessattempts(client, args):
     username = args.get('username')
 
     result_raw = client.get_user_accessattempts(username)
-    if result_raw is not None and result_raw != '':
+    if result_raw:
         result_raw = json.loads(result_raw)
         result = remove_empty_elements(result_raw)
     else:
@@ -444,7 +444,7 @@ def delete_user_accessattempts(client, args):
     username = args.get('username')
 
     result_raw = client.delete_user_accessattempts(username)
-    if result_raw is not None and result_raw != '':
+    if result_raw:
         result_raw = json.loads(result_raw)
         result = remove_empty_elements(result_raw)
     else:
@@ -474,7 +474,7 @@ def create_user_token_virtual(client, args):
     }
 
     result_raw = client.create_user_token(username, post_params)
-    if result_raw is not None and result_raw != '':
+    if result_raw:
         result_raw = json.loads(result_raw)
         result = remove_empty_elements(result_raw)
     else:
@@ -506,7 +506,7 @@ def create_user_token_fastauth(client, args):
     }
 
     result_raw = client.create_user_token(username, post_params)
-    if result_raw is not None and result_raw != '':
+    if result_raw:
         result_raw = json.loads(result_raw)
         result = remove_empty_elements(result_raw)
     else:
@@ -538,7 +538,7 @@ def create_user_token_totpmobile(client, args):
     }
 
     result_raw = client.create_user_token(username, post_params)
-    if result_raw is not None and result_raw != '':
+    if result_raw:
         result_raw = json.loads(result_raw)
         result = remove_empty_elements(result_raw)
     else:
@@ -570,7 +570,7 @@ def create_user_token_totmobilehybrid(client, args):
     }
 
     result_raw = client.create_user_token(username, post_params)
-    if result_raw is not None and result_raw != '':
+    if result_raw:
         result_raw = json.loads(result_raw)
         result = remove_empty_elements(result_raw)
     else:
@@ -602,7 +602,7 @@ def create_user_token_physical(client, args):
     }
 
     result_raw = client.create_user_token(username, post_params)
-    if result_raw is not None and result_raw != '':
+    if result_raw:
         result_raw = json.loads(result_raw)
         result = remove_empty_elements(result_raw)
     else:
@@ -637,7 +637,7 @@ def create_user_token_backup(client, args):
     }
 
     result_raw = client.create_user_token(username, post_params)
-    if result_raw is not None and result_raw != '':
+    if result_raw:
         result_raw = json.loads(result_raw)
         result = remove_empty_elements(result_raw)
     else:
@@ -667,7 +667,7 @@ def update_user_token(client, args):
     post_params = args.get('params')
 
     result_raw = client.update_user_token(username, token_devicetype, token_serialnumber, post_params)
-    if result_raw is not None and result_raw != '':
+    if result_raw:
         result_raw = json.loads(result_raw)
         result = remove_empty_elements(result_raw)
     else:
@@ -693,7 +693,7 @@ def get_user_tokens(client, args):
     username = args.get('username')
 
     result_raw = client.get_user_tokens(username)
-    if result_raw is not None and result_raw != '':
+    if result_raw:
         result_raw = json.loads(result_raw)
         result = remove_empty_elements(result_raw)
     else:
@@ -721,7 +721,7 @@ def delete_user_token(client, args):
     token_serialnumber = args.get('serialnumber')
 
     result_raw = client.delete_user_token(username, token_devicetype, token_serialnumber)
-    if result_raw is not None and result_raw != '':
+    if result_raw:
         result_raw = json.loads(result_raw)
         result = remove_empty_elements(result_raw)
     else:
@@ -749,7 +749,7 @@ def send_user_token(client, args):
     token_serialnumber = args.get('serialnumber')
 
     result_raw = client.send_user_token(username, token_devicetype, token_serialnumber)
-    if result_raw is not None and result_raw != '':
+    if result_raw:
         result_raw = json.loads(result_raw)
         result = remove_empty_elements(result_raw)
     else:
@@ -777,7 +777,7 @@ def send_user_virtualtoken(client, args):
     token_serialnumber = args.get('serialnumber')
 
     result_raw = client.send_user_virtualtoken(username, token_devicetype, token_serialnumber)
-    if result_raw is not None and result_raw != '':
+    if result_raw:
         result_raw = json.loads(result_raw)
         result = remove_empty_elements(result_raw)
     else:
@@ -803,7 +803,7 @@ def get_user_settings(client, args):
     username = args.get('username')
 
     result_raw = client.get_user_settings(username)
-    if result_raw is not None and result_raw != '':
+    if result_raw:
         result_raw = json.loads(result_raw)
         result = remove_empty_elements(result_raw)
     else:
@@ -843,7 +843,7 @@ def set_user_backuptoken_settings(client, args):
         params['backuptoken_timeout'] = backuptoken_timeout
 
     result_raw = client.set_user_settings(username, params)
-    if result_raw is not None and result_raw != '':
+    if result_raw:
         result_raw = json.loads(result_raw)
         result = remove_empty_elements(result_raw)
     else:
@@ -875,7 +875,7 @@ def set_user_general_settings(client, args):
         params['user_storage'] = user_storage
 
     result_raw = client.set_user_settings(username, params)
-    if result_raw is not None and result_raw != '':
+    if result_raw:
         result_raw = json.loads(result_raw)
         result = remove_empty_elements(result_raw)
     else:
@@ -925,7 +925,7 @@ def set_user_hotpauthentication_settings(client, args):
 
     if not hotp_flex_pin_password_required:
         params['hotp_flex_pin_password_required'] = hotp_flex_pin_password_required
-    if result_raw is not None and result_raw != '':
+    if result_raw:
         result_raw = json.loads(result_raw)
         result = remove_empty_elements(result_raw)
     else:
@@ -967,7 +967,7 @@ def set_user_sesamiauthentication_settings(client, args):
         params['gaia_ttw_level'] = gaia_ttw_level
 
     result_raw = client.set_user_settings(username, params)
-    if result_raw is not None and result_raw != '':
+    if result_raw:
         result_raw = json.loads(result_raw)
         result = remove_empty_elements(result_raw)
     else:
@@ -1023,7 +1023,7 @@ def set_user_totpauthentication_settings(client, args):
         params['totp_mobile_password_required'] = totp_mobile_password_required
 
     result_raw = client.set_user_settings(username, params)
-    if result_raw is not None and result_raw != '':
+    if result_raw:
         result_raw = json.loads(result_raw)
         result = remove_empty_elements(result_raw)
     else:
@@ -1095,7 +1095,7 @@ def set_user_userauthentication_settings(client, args):
         params['dos_tmp_lockdown_time_in_seconds'] = dos_tmp_lockdown_time_in_seconds
 
     result_raw = client.set_user_settings(username, params)
-    if result_raw is not None and result_raw != '':
+    if result_raw:
         result_raw = json.loads(result_raw)
         result = remove_empty_elements(result_raw)
     else:
@@ -1131,7 +1131,7 @@ def set_user_virtualauthentication_settings(client, args):
         params['virtual_device_gateways'] = virtual_device_gateways
 
     result_raw = client.set_user_settings(username, params)
-    if result_raw is not None and result_raw != '':
+    if result_raw:
         result_raw = json.loads(result_raw)
         result = remove_empty_elements(result_raw)
     else:
@@ -1157,7 +1157,7 @@ def get_user_group(client, args):
     username = args.get('username')
 
     result_raw = client.get_user_group(username)
-    if result_raw is not None and result_raw != '':
+    if result_raw:
         result_raw = json.loads(result_raw)
         result = remove_empty_elements(result_raw)
     else:
@@ -1195,7 +1195,7 @@ def update_user_group(client, args):
         client.add_user_group(username, new_group_name)
 
     result = {'message': 'Successfully updated'}
-    if result_raw is not None and result_raw != '':
+    if result_raw:
         result_raw = json.loads(result_raw)
         result = remove_empty_elements(result_raw)
     else:
@@ -1222,7 +1222,7 @@ def add_user_group(client, args):
     new_group_name = args.get('new-group-name')
 
     result_raw = client.add_user_group(username, new_group_name)
-    if result_raw is not None and result_raw != '':
+    if result_raw:
         result_raw = json.loads(result_raw)
         result = remove_empty_elements(result_raw)
     else:
@@ -1249,7 +1249,7 @@ def remove_user_group(client, args):
     old_group_name = args.get('old-group-name')
 
     result_raw = client.remove_user_group(username, old_group_name)
-    if result_raw is not None and result_raw != '':
+    if result_raw:
         result_raw = json.loads(result_raw)
         result = remove_empty_elements(result_raw)
     else:
@@ -1275,7 +1275,7 @@ def get_user_registrationcode(client, args):
     username = args.get('username')
 
     result_raw = client.get_user_registrationcode(username)
-    if result_raw is not None and result_raw != '':
+    if result_raw:
         result_raw = json.loads(result_raw)
         result = remove_empty_elements(result_raw)
     else:
@@ -1304,7 +1304,7 @@ def set_user_registrationcode(client, args):
     attempts_left = args.get('attempts-left')
 
     result_raw = client.set_user_registrationcode(username, expiration, attempts_left)
-    if result_raw is not None and result_raw != '':
+    if result_raw:
         result_raw = json.loads(result_raw)
         result = remove_empty_elements(result_raw)
     else:
@@ -1330,7 +1330,7 @@ def delete_user_registrationcode(client, args):
     username = args.get('username')
 
     result_raw = client.delete_user_registrationcode(username)
-    if result_raw is not None and result_raw != '':
+    if result_raw:
         result_raw = json.loads(result_raw)
         result = remove_empty_elements(result_raw)
     else:
@@ -1356,7 +1356,7 @@ def send_user_registrationcode(client, args):
     username = args.get('username')
 
     result_raw = client.send_user_registrationcode(username)
-    if result_raw is not None and result_raw != '':
+    if result_raw:
         result_raw = json.loads(result_raw)
         result = remove_empty_elements(result_raw)
     else:
@@ -1387,7 +1387,7 @@ def create_user(client, args):
     email = args.get('email')
 
     result_raw = client.create_user(username, password, firstname, lastname, mobilephone, email)
-    if result_raw is not None and result_raw != '':
+    if result_raw:
         result_raw = json.loads(result_raw)
         result = remove_empty_elements(result_raw)
     else:
@@ -1414,7 +1414,7 @@ def delete_user(client, args):
     username = args.get('username')
 
     result_raw = client.delete_user(username)
-    if result_raw is not None and result_raw != '':
+    if result_raw:
         result_raw = json.loads(result_raw)
         result = remove_empty_elements(result_raw)
     else:
