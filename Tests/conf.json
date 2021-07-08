@@ -417,7 +417,8 @@
         {
             "integrations": "Azure Compute v2",
             "playbookID": "Azure Compute - Test",
-            "instance_names": "ms_azure_compute_prod"
+            "instance_names": "ms_azure_compute_prod",
+            "is_mockable": false
         },
         {
             "integrations": "Symantec Data Loss Prevention",
@@ -431,7 +432,8 @@
         {
             "integrations": "Azure Security Center v2",
             "playbookID": "Azure SecurityCenter - Test",
-            "instance_names": "ms_azure_sc_prod"
+            "instance_names": "ms_azure_sc_prod",
+            "is_mockable": false
         },
         {
             "integrations": "Azure Security Center v2",
@@ -468,7 +470,8 @@
         {
             "integrations": "MicrosoftGraphMail",
             "playbookID": "MicrosoftGraphMail-Test_prod",
-            "instance_names": "ms_graph_mail_prod"
+            "instance_names": "ms_graph_mail_prod",
+            "is_mockable": false
         },
         {
             "integrations": "CloudShark",
@@ -1753,7 +1756,8 @@
         {
             "integrations": "Microsoft Defender Advanced Threat Protection",
             "playbookID": "Microsoft Defender Advanced Threat Protection - Test prod",
-            "instance_names": "microsoft_defender_atp_prod"
+            "instance_names": "microsoft_defender_atp_prod",
+            "is_mockable": false
         },
         {
             "integrations": "Microsoft Defender Advanced Threat Protection",
@@ -1791,7 +1795,8 @@
         {
             "integrations": "Microsoft Graph",
             "playbookID": "Microsoft Graph Security Test prod",
-            "instance_names": "ms_graph_security_prod"
+            "instance_names": "ms_graph_security_prod",
+            "is_mockable": false
         },
         {
             "integrations": "Microsoft Graph User",
@@ -1801,7 +1806,8 @@
         {
             "integrations": "Microsoft Graph User",
             "playbookID": "Microsoft Graph User - Test",
-            "instance_names": "ms_graph_user_prod"
+            "instance_names": "ms_graph_user_prod",
+            "is_mockable": false
         },
         {
             "integrations": "Microsoft Graph Groups",
@@ -1811,7 +1817,8 @@
         {
             "integrations": "Microsoft Graph Groups",
             "playbookID": "Microsoft Graph Groups - Test prod",
-            "instance_names": "ms_graph_groups_prod"
+            "instance_names": "ms_graph_groups_prod",
+            "is_mockable": false
         },
         {
             "integrations": "Microsoft_Graph_Files",
@@ -1823,7 +1830,8 @@
             "integrations": "Microsoft_Graph_Files",
             "playbookID": "test_MsGraphFiles prod",
             "instance_names": "ms_graph_files_prod",
-            "fromversion": "5.0.0"
+            "fromversion": "5.0.0",
+            "is_mockable": false
         },
         {
             "integrations": "Microsoft Graph Calendar",
@@ -1833,7 +1841,8 @@
         {
             "integrations": "Microsoft Graph Calendar",
             "playbookID": "Microsoft Graph Calendar - Test prod",
-            "instance_names": "ms_graph_calendar_prod"
+            "instance_names": "ms_graph_calendar_prod",
+            "is_mockable": false
         },
         {
             "integrations": "Microsoft Graph Device Management",
@@ -1845,7 +1854,8 @@
             "integrations": "Microsoft Graph Device Management",
             "playbookID": "MSGraph_DeviceManagement_Test_prod",
             "instance_names": "ms_graph_device_management_oproxy_prod",
-            "fromversion": "5.0.0"
+            "fromversion": "5.0.0",
+            "is_mockable": false
         },
         {
             "integrations": "Microsoft Graph Device Management",
