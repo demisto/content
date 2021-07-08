@@ -927,6 +927,9 @@ class Pack(object):
                         else:
                             logging.debug(f'{modified_file.a_path} is an ignored file')
             task_status = True
+            if pack_was_modified:
+                # Make sure the modification is not only of release notes files, if so count that as not modified
+                pack_was_modified = not all(self.RELEASE_NOTES in path for path in modified_files_paths)
             return
         except Exception:
             logging.exception(f"Failed in detecting modified files of {self._pack_name} pack")
@@ -1314,12 +1317,6 @@ class Pack(object):
                         return task_status, not_updated_build
                     else:
                         if latest_release_notes in changelog:
-                            #  Check if the modified files are not only release notes
-                            #  If the modified files are only release notes, don't change the timestamp of the entry
-                            if pack_was_modified:
-                                # Check if there are modified files that are not under the ReleaseNotes directory.
-                                # This means that there are changes in the pack other than modified release notes.
-                                pack_was_modified = not all(self.RELEASE_NOTES in path for path in modified_files_paths)
                             logging.info(f"Found existing release notes for version: {latest_release_notes}")
                             version_changelog = self._create_changelog_entry(release_notes=release_notes_lines,
                                                                              version_display_name=latest_release_notes,
