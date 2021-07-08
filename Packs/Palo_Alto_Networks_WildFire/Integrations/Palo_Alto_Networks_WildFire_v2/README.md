@@ -24,6 +24,7 @@ Use the Palo Alto Networks Wildfire integration to automatically identify unknow
     | --- | --- |
     | Server base URL (e.g. https://192.168.0.1/publicapi) | True |
     | API Key | True |
+    | Source Reliability | Reliability of the source providing the intelligence data. | B - Usually reliable |    
     | Trust any certificate (not secure) | False |
     | Use system proxy settings | False |
     | Return warning entry for unsupported file types | False |
