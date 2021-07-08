@@ -647,15 +647,11 @@ script:
       name: name
       required: true
     - description: 'OS disk source from the same region.
-
         It can be a virtual machine, OS disk blob URI, managed OS disk, or OS snapshot.
-
         Each type of source except for blob URI can be given as resource id, name
         or a dict contains `resource_group`, `name` and `type`.
-
         If source type is blob URI, the source should be the full URI of the blob
         in string type.
-
         If you specify the `type` in a dict, acceptable value contains `disks`, `virtual_machines`
         and `snapshots`.'
       name: source
