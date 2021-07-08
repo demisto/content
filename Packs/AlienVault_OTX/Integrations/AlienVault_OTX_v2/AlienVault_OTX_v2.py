@@ -212,7 +212,7 @@ def ip_command(client: Client, ip_address: str, ip_version: str) -> List[Command
     for ip_ in ips_list:
         raw_response = client.query(section=ip_version,
                                     argument=ip_)
-        if raw_response:
+        if raw_response and raw_response != 404:
             ip_version = FeedIndicatorType.IP if ip_version == 'IPv4' else FeedIndicatorType.IPv6
             relationships = create_attack_pattern_relationships(client, raw_response=raw_response,
                                                                 entity_a=ip_, entity_a_type=ip_version)
@@ -245,6 +245,9 @@ def ip_command(client: Client, ip_address: str, ip_version: str) -> List[Command
                 raw_response=raw_response,
                 relationships=relationships
             ))
+        else:
+            command_results.append(CommandResults(
+                readable_output=f'IP {ip_} could not be found.'))
 
     if not command_results:
         return [CommandResults(f'{INTEGRATION_NAME} - Could not find any results for given query.')]
