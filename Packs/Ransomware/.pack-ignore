@@ -1,2 +1,5 @@
 [file:playbook-ransomware.yml]
 ignore=BA101,BA110
+
+[file:playbook-Post_Intrusion_Ransomware_Investigation.yml]
+ignore = PB111

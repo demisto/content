@@ -1,2 +1,5 @@
 [file:README.md]
 ignore=RM104
+
+[file:CyberTotal_Auto_Enrichment_-_CyCraft.yml]
+ignore = PB111

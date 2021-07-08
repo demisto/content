@@ -18,3 +18,9 @@ ignore=RM106
 
 [file:playbook-PCAP_Parsing_And_Indicator_Enrichment_README.md]
 ignore=RM106
+
+[file:playbook-PCAP_File_Carving.yml]
+ignore = PB111
+
+[file:playbook-PCAP_Parsing_And_Indicator_Enrichment.yml]
+ignore = PB111

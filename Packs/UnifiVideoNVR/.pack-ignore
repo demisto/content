@@ -3,3 +3,6 @@ ignore=RM104
 
 [file:classifier-mapper-incoming-UnifiVideo.json]
 ignore=BA101
+
+[file:playbook-CCTV_Motion_Detected.yml]
+ignore = PB111

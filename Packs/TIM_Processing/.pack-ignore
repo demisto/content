@@ -54,3 +54,15 @@ ignore=PB114
 
 [file:playbook-TIM_-_Update_Indicators_Organizational_External_IP_Tag.yml]
 ignore=PB114
+
+[file:playbook-TIM_-_Run_Enrichment_For_Domain_Indicators.yml]
+ignore = PB111
+
+[file:playbook-TIM_-_Run_Enrichment_For_Hash_Indicators.yml]
+ignore = PB111
+
+[file:playbook-TIM_-_Run_Enrichment_For_IP_Indicators.yml]
+ignore = PB111
+
+[file:playbook-TIM_-_Run_Enrichment_For_Url_Indicators.yml]
+ignore = PB111

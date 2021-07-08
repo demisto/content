@@ -6,3 +6,15 @@ ignore=PB113,PB115
 
 [file:playbook-RiskIQAsset_Enrichment_-_RiskIQ_Digital_Footprint.yml]
 ignore=PB113
+
+[file:playbook-Add_Unknown_Indicators_To_Inventory_-_RiskIQ_Digital_Footprint.yml]
+ignore = PB111
+
+[file:playbook-Check_IP_Address_For_Whitelisting_-_RiskIQ_Digital_Footprint.yml]
+ignore = PB111
+
+[file:playbook-Enrich_Incident_With_Asset_Details_-_RiskIQ_Digital_Footprint.yml]
+ignore = PB111
+
+[file:playbook-IP_Whitelist_And_Exclusion_-_RiskIQ_Digital_Footprint.yml]
+ignore = PB111

@@ -1,2 +1,5 @@
 [file:layoutscontainer-HIPAA_Breach_Notification.json]
 ignore=BA101
+
+[file:playbook-HIPAA_-_Breach_Notification.yml]
+ignore = PB111

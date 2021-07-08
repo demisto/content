@@ -3,3 +3,6 @@ ignore=BA101
 
 [file:README.md]
 ignore=RM104
+
+[file:playbook-Comprehensive_PAN-OS_Best_Practice_Assessment.yml]
+ignore = PB111

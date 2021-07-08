@@ -14,3 +14,9 @@ ignore=IF100
 
 [file:incidentfield-Expanse_Issue_Type.json]
 ignore=IF100
+
+[file:playbook-Expanse_Unmanaged_Cloud.yml]
+ignore = PB111
+
+[file:playbook-Handle_Expanse_Incident.yml]
+ignore = PB111

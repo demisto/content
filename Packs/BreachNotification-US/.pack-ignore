@@ -1,2 +1,14 @@
 [file:layoutscontainer-US_Breach_Notification.json]
 ignore=BA101
+
+[file:playbook-California_-_Breach_Notification.yml]
+ignore = PB111
+
+[file:playbook-Illinois_-_Breach_Notification.yml]
+ignore = PB111
+
+[file:playbook-New_York_-_Breach_Notification.yml]
+ignore = PB111
+
+[file:playbook-Residents_Notification_-_Breach_Notification.yml]
+ignore = PB111

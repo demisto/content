@@ -1,2 +1,5 @@
 [file:layoutscontainer-Shadow_IT_Layout.json]
 ignore=BA101
+
+[file:playbook-Handle_Shadow_IT_Incident.yml]
+ignore = PB111

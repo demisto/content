@@ -57,3 +57,12 @@ ignore=IF100
 
 [file:playbook-ChronicleAssets_Investigation_And_Remediation_-_Chronicle.yml]
 ignore=PB113
+
+[file:playbook-ChronicleAssets_Investigation_And_Remediation_-_Chronicle.yml]
+ignore = PB111
+
+[file:playbook-Investigate_On_Bad_Domain_Matches_-_Chronicle.yml]
+ignore = PB111
+
+[file:playbook-Threat_Hunting_-_Chronicle.yml]
+ignore = PB111

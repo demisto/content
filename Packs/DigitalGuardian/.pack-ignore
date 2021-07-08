@@ -6,3 +6,6 @@ ignore=RM104
 
 [file:DigitalGuardian_Demo.yml]
 ignore=BA110
+
+[file:DigitalGuardian_Demo.yml]
+ignore = PB111

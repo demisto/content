@@ -51,3 +51,15 @@ ignore=RM106
 
 [file:playbook-Block_Indicators_-_Generic_v2_README.md]
 ignore=RM106
+
+[file:playbook-CVE_Enrichment_-_Generic_v2.yml]
+ignore = PB111
+
+[file:playbook-Convert_file_hash_to_corresponding_hashes.yml]
+ignore = PB111
+
+[file:playbook-Get_endpoint_details_-_Generic.yml]
+ignore = PB111
+
+[file:playbook-Send_Investigation_Summary_Reports.yml]
+ignore = PB111
