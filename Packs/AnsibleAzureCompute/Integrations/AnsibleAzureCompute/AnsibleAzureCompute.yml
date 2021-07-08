@@ -247,7 +247,6 @@ script:
       name: template_link
     - description: 'A hash of all the required template variables for the deployment
         template. This parameter is mutually exclusive with `parameters_link`.
-
         Either `parameters_link` or `parameters` is required if `state=present`.'
       isArray: true
       name: parameters
