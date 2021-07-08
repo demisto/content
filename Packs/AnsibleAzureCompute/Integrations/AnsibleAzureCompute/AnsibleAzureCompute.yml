@@ -173,9 +173,7 @@ script:
       name: subscription_id
     - description: 'Dictionary of string:string pairs to assign as metadata to the
         object.
-
         Metadata tags on the object will be updated with any provided values.
-
         To remove tags set append_tags option to false.'
       isArray: true
       name: tags
