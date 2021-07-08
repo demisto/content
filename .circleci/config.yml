@@ -99,6 +99,9 @@ parameters:
   slack_channel:
     type: string
     default: "dmst-content-team"
+  sdk_ref:
+    type: string
+    default: "master"
 
 references:
   environment: &environment
@@ -113,6 +116,7 @@ references:
       CONTRIB_PACK_NAME: << pipeline.parameters.contrib_pack_name >>
       GCS_MARKET_BUCKET: << pipeline.parameters.gcs_market_bucket >>
       SLACK_CHANNEL: << pipeline.parameters.slack_channel >>
+      SDK_REF: << pipeline.parameters.sdk_ref >>
       # Giving different names to the following pipeline parameters to avoid collision, handling such collision case
       # is done in 'Setup Environment' step.
       TIME_TO_LIVE_PARAMETER: << pipeline.parameters.time_to_live >>
@@ -221,7 +225,7 @@ references:
         fi
 
         echo "========== Build Parameters =========="
-        set | grep -E "^NIGHTLY=|^INSTANCE_TESTS=|^NON_AMI_RUN=|^SERVER_BRANCH_NAME=|^ARTIFACT_BUILD_NUM=|^DEMISTO_SDK_NIGHTLY=|^TIME_TO_LIVE=|^CONTRIB_BRANCH=|^FORCE_PACK_UPLOAD=|^PACKS_TO_UPLOAD=|^BUCKET_UPLOAD=|^GCS_MARKET_BUCKET=|^SLACK_CHANNEL="
+        set | grep -E "^NIGHTLY=|^INSTANCE_TESTS=|^NON_AMI_RUN=|^SERVER_BRANCH_NAME=|^ARTIFACT_BUILD_NUM=|^DEMISTO_SDK_NIGHTLY=|^TIME_TO_LIVE=|^CONTRIB_BRANCH=|^FORCE_PACK_UPLOAD=|^PACKS_TO_UPLOAD=|^BUCKET_UPLOAD=|^GCS_MARKET_BUCKET=|^SLACK_CHANNEL=|^SDK_REF"
         python --version
         python3 --version
         node --version
@@ -393,9 +397,9 @@ references:
         mkdir ./unit-tests
         if [ -n "$SHOULD_LINT_ALL" ]; then
           echo -e  "----------\nLinting all because:\n${SHOULD_LINT_ALL}\n----------"
-          demisto-sdk lint -p 8 -a -q --test-xml ./unit-tests --log-path ./artifacts --failure-report ./artifacts
+          demisto-sdk lint -p 8 -a -q --test-xml ./unit-tests --log-path ./artifacts --failure-report ./artifacts --coverage-report $ARTIFACTS_FOLDER/coverage_report
         else
-          demisto-sdk lint -p 8 -g -v --test-xml ./unit-tests --log-path ./artifacts --failure-report ./artifacts
+          demisto-sdk lint -p 8 -g -v --test-xml ./unit-tests --log-path ./artifacts --failure-report ./artifacts --coverage-report $ARTIFACTS_FOLDER/coverage_report
         fi
 
   infrastructure_testing: &infrastructure_testing
@@ -1189,8 +1193,10 @@ jobs:
             echo "export DEMISTO_BASE_URL=\"https://localhost:$(cat $ENV_RESULTS_PATH | jq -r '.[0].TunnelPort')\"" >> $BASH_ENV
             echo "Server URL: $DEMISTO_BASE_URL"
       - run:
-          name: Install SDK Master
-          command: pip3 install git+https://github.com/demisto/demisto-sdk.git
+          name: Install SDK
+          command: |
+            echo "Installing SDK from $SDK_REF"
+            pip3 install git+https://github.com/demisto/demisto-sdk.git@"$SDK_REF"
       - *wait_until_server_ready
       - run:
           name: Unlock HelloWorld integration and playbook

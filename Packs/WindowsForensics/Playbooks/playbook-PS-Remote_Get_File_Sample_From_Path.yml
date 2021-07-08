@@ -1,0 +1,435 @@
+id: PS Remote Get File Sample From Path
+version: -1
+contentitemexportablefields:
+  contentitemfields: {}
+name: PS Remote Get File Sample From Path
+description: This playbook leverages the Windows built-in PowerShell and WinRM capabilities
+  to connect to a Windows host to acquire a file as forensic evidence for further
+  analysis.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 2e73d06c-0d0e-4db2-8807-3c8bd9eaaae4
+    type: start
+    task:
+      id: 2e73d06c-0d0e-4db2-8807-3c8bd9eaaae4
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 580,
+          "y": 100
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: f4bd4312-f73c-4a13-8855-aef60df18da5
+    type: condition
+    task:
+      id: f4bd4312-f73c-4a13-8855-aef60df18da5
+      version: -1
+      name: Is PowerShell Remoting enabled?
+      description: Returns 'yes' if the integration is available. Otherwise returns
+        'no'.
+      scriptName: IsIntegrationAvailable
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "4"
+    scriptarguments:
+      brandname:
+        simple: PowerShell Remoting
+    results:
+    - brandInstances
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 580,
+          "y": 230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 664de072-ce7b-4c00-8572-87b23b878bd5
+    type: title
+    task:
+      id: 664de072-ce7b-4c00-8572-87b23b878bd5
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 580,
+          "y": 1830
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: 671e520f-dba6-49c5-8f9b-bc06dec5fe5e
+    type: condition
+    task:
+      id: 671e520f-dba6-49c5-8f9b-bc06dec5fe5e
+      version: -1
+      name: Was a host specified?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "9"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.Host
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 330,
+          "y": 410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: 4272bbce-c6b1-43d3-8c21-ef8576e85f8a
+    type: regular
+    task:
+      id: 4272bbce-c6b1-43d3-8c21-ef8576e85f8a
+      version: -1
+      name: PS-Remote download file
+      description: Download a file from the remote endpoint.
+      script: '|||ps-remote-download-file'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      check_hash:
+        simple: "true"
+      host:
+        simple: ${inputs.Host}
+      host_prefix:
+        simple: ${inputs.AddHostNameToFile}
+      ip: {}
+      path:
+        simple: ${inputs.FilePath}
+      zip_file:
+        simple: ${inputs.ZipFile}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 90,
+          "y": 920
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "9":
+    id: "9"
+    taskid: 8553f744-373e-48ee-8980-5485d3bf2b92
+    type: condition
+    task:
+      id: 8553f744-373e-48ee-8980-5485d3bf2b92
+      version: -1
+      name: Was a file path specified?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "7"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.FilePath
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 180,
+          "y": 620
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "11":
+    id: "11"
+    taskid: 6b927889-76d4-455c-8b59-ebd5e03d1635
+    type: condition
+    task:
+      id: 6b927889-76d4-455c-8b59-ebd5e03d1635
+      version: -1
+      name: Was file zipped?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "15"
+      "yes":
+      - "12"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: inputs.ZipFile
+            iscontext: true
+          right:
+            value:
+              simple: "true"
+    view: |-
+      {
+        "position": {
+          "x": 90,
+          "y": 1110
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "12":
+    id: "12"
+    taskid: 8738dd2b-a740-44ee-800e-473c070a11a6
+    type: regular
+    task:
+      id: 8738dd2b-a740-44ee-800e-473c070a11a6
+      version: -1
+      name: Unzip file
+      description: Unzip a file using the fileName or entryID to specify a file. Unzipped
+        files will be loaded to the War Room and names will be put into the context.
+      scriptName: UnzipFile
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      entryID:
+        simple: ${File.EntryID}
+      fileName: {}
+      lastZipFileInWarroom: {}
+      password: {}
+      zipTool: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -130,
+          "y": 1280
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "14":
+    id: "14"
+    taskid: 71dffd59-498c-491d-83e2-663ba0cf2642
+    type: regular
+    task:
+      id: 71dffd59-498c-491d-83e2-663ba0cf2642
+      version: -1
+      name: Set acquired file details
+      description: Set a value in the context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: AcquiredFile
+      stringify: {}
+      value:
+        complex:
+          root: File
+          filters:
+          - - operator: isNotEqualString
+              left:
+                value:
+                  simple: File.Extension
+                iscontext: true
+              right:
+                value:
+                  simple: zip
+            - operator: isEmpty
+              left:
+                value:
+                  simple: File.Extension
+                iscontext: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 90,
+          "y": 1660
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "15":
+    id: "15"
+    taskid: de8f7975-6c09-486e-8dd3-42a456230a19
+    type: regular
+    task:
+      id: de8f7975-6c09-486e-8dd3-42a456230a19
+      version: -1
+      name: Mark and tag Acquired File
+      description: |
+        Adds provided entries to the incident Evidence Board. In a playbook, this can be positioned after a task to add the previous task's entries to the Evidence Board automatically (with no need to provide arguments).
+      scriptName: AddEvidence
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      desc:
+        simple: An acquired file acquired from a host.
+      description:
+        simple: An acquired file acquired from a host.
+      entryIDs: {}
+      occurred: {}
+      tags:
+        simple: Acquired File
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 90,
+          "y": 1485
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+system: true
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1795,
+        "width": 1090,
+        "x": -130,
+        "y": 100
+      }
+    }
+  }
+inputs:
+- key: Host
+  value: {}
+  required: false
+  description: A single hostname or IP address of the machine on which the file is
+    located. For example, testpc01
+  playbookInputQuery:
+- key: FilePath
+  value: {}
+  required: false
+  description: "The path on the host from which to retrieve the file. \nFor example,\
+    \ c:\\tmp\\test.txt.\nIn case you configure the AddHostNameToFile input as true,\
+    \ the file downloaded to XSOAR will contain the hostname."
+  playbookInputQuery:
+- key: ZipFile
+  value:
+    simple: "true"
+  required: false
+  description: Specify true to zip the MFT file before sending it to XSOAR.
+  playbookInputQuery:
+- key: AddHostNameToFile
+  value:
+    simple: "true"
+  required: false
+  description: Specify true for the downloaded file name to be comprised of the host
+    name or false to keep the file name as configured in the FilePath argument.
+  playbookInputQuery:
+outputs:
+- contextPath: AcquiredFile
+  description: The acquired file details.
+  type: string
+- contextPath: File
+  description: The file to sample.
+  type: string
+tests:
+- No tests (auto formatted)
+fromversion: 6.0.0
