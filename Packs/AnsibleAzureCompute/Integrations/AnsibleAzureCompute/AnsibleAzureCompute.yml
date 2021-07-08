@@ -27,7 +27,7 @@ configuration:
     name (as defined by Azure Python SDK, eg, `AzureChinaCloud`, `AzureUSGovernment`),
     or a metadata discovery endpoint URL (required for Azure Stack).
   defaultvalue: AzureCloud
-  display: Azure Cloud Environment
+  display: Ansible Azure Cloud Environment
   name: cloud_environment
   required: true
   type: 0
