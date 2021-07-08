@@ -218,8 +218,8 @@ def get_analysis_sub_analyses_command(intezer_api: IntezerApi, args: dict) -> Co
     except HTTPError as error:
         if error.response.status_code == HTTPStatus.NOT_FOUND:
             return _get_missing_analysis_result(analysis_id=analysis_id)
-        elif error.response.status_code == HTTPStatus.CONFLICT:
-            return _get_analysis_running_result(analysis_id=analysis_id)
+    except AnalysisIsStillRunning:
+        return _get_analysis_running_result(analysis_id=analysis_id)
 
     sub_analyses: List[SubAnalysis] = analysis.get_sub_analyses()
 
