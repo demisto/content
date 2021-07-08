@@ -1,23 +1,23 @@
-id: IP Blacklist - GCP Firewall
-version: -1
-name: IP Blacklist - GCP Firewall
+id: Cloud IDS-IP Blacklist-GCP Firewall
+version: 9
+vcShouldKeepItemLegacyProdMachine: false
+name: Cloud IDS-IP Blacklist-GCP Firewall
 description: Set a list of IP addresses in GCP firewall.
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: d51a7d75-be14-4f93-8519-a2b419baaf56
+    taskid: ab34d979-9a6f-457a-8ffd-4ebdc7b8a801
     type: start
     task:
-      id: d51a7d75-be14-4f93-8519-a2b419baaf56
+      id: ab34d979-9a6f-457a-8ffd-4ebdc7b8a801
       version: -1
       name: ""
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
-      - "3"
+      - "29"
     separatecontext: false
     view: |-
       {
@@ -31,40 +31,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "3":
-    id: "3"
-    taskid: 2529d9b0-ff39-482c-8b5b-a5b1b426fe86
-    type: title
-    task:
-      id: 2529d9b0-ff39-482c-8b5b-a5b1b426fe86
-      version: -1
-      name: Blacklist IPs on GCP (Firewall)
-      type: title
-      iscommand: false
-      brand: ""
-      description: ''
-    nexttasks:
-      '#none#':
-      - "29"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 377.5,
-          "y": 195
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "13":
     id: "13"
-    taskid: ac24597a-5d87-496d-87ec-75a1cda0ad10
+    taskid: b1c02d02-66ac-4276-8887-5bb48b20e08c
     type: regular
     task:
-      id: ac24597a-5d87-496d-87ec-75a1cda0ad10
+      id: b1c02d02-66ac-4276-8887-5bb48b20e08c
       version: -1
       name: Close Incident
       description: commands.local.cmd.close.inv
@@ -76,16 +50,10 @@ tasks:
       '#none#':
       - "34"
     scriptarguments:
-      assetid: {}
-      closeNotes: {}
-      closeReason: {}
-      code42alerttype: {}
-      emailclassification: {}
       id:
         complex:
           root: incident
           accessor: id
-      phishingsubtype: {}
     separatecontext: false
     view: |-
       {
@@ -99,12 +67,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "22":
     id: "22"
-    taskid: bd8df7e2-a56a-4491-8313-587b2b5cdefc
+    taskid: 0fae6d93-1845-4cfc-8d39-184e02d7dfcd
     type: regular
     task:
-      id: bd8df7e2-a56a-4491-8313-587b2b5cdefc
+      id: 0fae6d93-1845-4cfc-8d39-184e02d7dfcd
       version: -1
       name: Get GCP Firewall
       description: Returns the specified firewall.
@@ -131,12 +101,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "24":
     id: "24"
-    taskid: 4b9662e2-1390-408e-8c72-34fbfc836ff3
+    taskid: 9000f85b-601b-4f9a-8cd3-9ee8382e9987
     type: regular
     task:
-      id: 4b9662e2-1390-408e-8c72-34fbfc836ff3
+      id: 9000f85b-601b-4f9a-8cd3-9ee8382e9987
       version: -1
       name: Set and replace IP list on GCP Security Firewall
       description: Updates the specified firewall rule with the data included in the
@@ -149,17 +121,8 @@ tasks:
       '#none#':
       - "13"
     scriptarguments:
-      allowed: {}
-      denied: {}
-      description: {}
-      destinationRanges: {}
-      direction: {}
-      disabled: {}
-      logConfigEnable: {}
       name:
         simple: ${inputs.GCPFirewallName}
-      network: {}
-      priority: {}
       sourceRanges:
         complex:
           root: myRanges
@@ -176,16 +139,12 @@ tasks:
               separator:
                 value:
                   simple: ','
-      sourceServiceAccounts: {}
-      sourceTags: {}
-      targetServiceAccounts: {}
-      targetTags: {}
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 480,
-          "y": 1215
+          "y": 1225
         }
       }
     note: false
@@ -193,15 +152,16 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "29":
     id: "29"
-    taskid: 06d6eb8d-ae65-4dc6-833d-4e3d41fead15
+    taskid: ac7309d2-6192-4d90-8cfd-8ae52c088fd0
     type: condition
     task:
-      id: 06d6eb8d-ae65-4dc6-833d-4e3d41fead15
+      id: ac7309d2-6192-4d90-8cfd-8ae52c088fd0
       version: -1
       name: Is Google Compute integration enabled?
-      description: ""
       type: condition
       iscommand: false
       brand: ""
@@ -253,18 +213,19 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "34":
     id: "34"
-    taskid: f0a64fd4-ce44-42ad-8606-721d432c7cf4
+    taskid: fe61bea6-7e33-4f8d-88a0-a90b3ca80517
     type: title
     task:
-      id: f0a64fd4-ce44-42ad-8606-721d432c7cf4
+      id: fe61bea6-7e33-4f8d-88a0-a90b3ca80517
       version: -1
       name: Done
       type: title
       iscommand: false
       brand: ""
-      description: ''
     separatecontext: false
     view: |-
       {
@@ -278,15 +239,16 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "35":
     id: "35"
-    taskid: c796cea1-6199-4288-80dc-dc4687c04301
+    taskid: ed4f90e6-ec75-4404-857b-842736db14c5
     type: condition
     task:
-      id: c796cea1-6199-4288-80dc-dc4687c04301
+      id: ed4f90e6-ec75-4404-857b-842736db14c5
       version: -1
       name: GCP Firewall found?
-      description: ""
       type: condition
       iscommand: false
       brand: ""
@@ -320,12 +282,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "36":
     id: "36"
-    taskid: ad500697-0dd7-4dc0-8b87-fe3ae331f4b8
+    taskid: b7eecfeb-31ac-4c43-89e9-b3a6f93aa5a0
     type: regular
     task:
-      id: ad500697-0dd7-4dc0-8b87-fe3ae331f4b8
+      id: b7eecfeb-31ac-4c43-89e9-b3a6f93aa5a0
       version: -1
       name: Extract
       description: Loads a json from string input, and returns a json object result
@@ -354,18 +318,19 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "37":
     id: "37"
-    taskid: 49934a26-f7ac-4798-8779-2850008b3085
+    taskid: 36bcae01-4e52-4b61-8882-7d510ac9d8a7
     type: title
     task:
-      id: 49934a26-f7ac-4798-8779-2850008b3085
+      id: 36bcae01-4e52-4b61-8882-7d510ac9d8a7
       version: -1
       name: GCP Firewall Name Not Found
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "38"
@@ -382,15 +347,16 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "38":
     id: "38"
-    taskid: aa69ad2b-9911-439d-8b39-603117c9a2f6
+    taskid: c3513bb0-1f02-436e-829f-5b1d1c3fa910
     type: regular
     task:
-      id: aa69ad2b-9911-439d-8b39-603117c9a2f6
+      id: c3513bb0-1f02-436e-829f-5b1d1c3fa910
       version: -1
       name: Engineer - Fix Firewall Name and rerun
-      description: ""
       type: regular
       iscommand: false
       brand: ""
@@ -407,12 +373,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "43":
     id: "43"
-    taskid: f79fe514-dd09-4a5f-809b-6ea83e038c4f
+    taskid: c12454f3-4cc4-470a-8996-4fbbfa59c0bb
     type: regular
     task:
-      id: f79fe514-dd09-4a5f-809b-6ea83e038c4f
+      id: c12454f3-4cc4-470a-8996-4fbbfa59c0bb
       version: -1
       name: copy-src-ranges
       description: Sets a value into the context with the given context key
@@ -424,10 +392,8 @@ tasks:
       '#none#':
       - "24"
     scriptarguments:
-      append: {}
       key:
         simple: myRanges
-      stringify: {}
       value:
         simple: ${GoogleCloudCompute.Firewalls.sourceRanges}
     separatecontext: false
@@ -443,6 +409,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {
@@ -467,7 +435,7 @@ inputs:
   playbookInputQuery:
     query: ""
     queryEntity: indicators
-    results:
+    results: null
     daterange:
       fromdate: 0001-01-01T00:00:00Z
       todate: 0001-01-01T00:00:00Z
@@ -475,29 +443,15 @@ inputs:
         by: ""
         byto: ""
         byfrom: ""
-        tovalue:
-        fromvalue:
+        tovalue: null
+        fromvalue: null
         field: ""
       fromdatelicenseval: 0001-01-01T00:00:00Z
     runFromLastJobTime: false
-- key: IP
-  value: {}
-  required: true
-  description: IP addresses to blacklist in GCP Firewall
-  playbookInputQuery:
 - key: GCPFirewallName
   value:
     simple: fw-test-ids-cortex
   required: true
   description: Name of the GCP Firewall where the playbook should set the IPs
-  playbookInputQuery:
-- key: IndicatorTagName
-  value:
-    simple: GCP_IP_Blacklist
-  required: true
-  description: Name of the Indicator Tag to apply to any IPs blacklisted by this playbook.
-  playbookInputQuery:
+  playbookInputQuery: null
 outputs: []
-tests:
-- No tests (auto formatted)
-fromversion: 6.0.0

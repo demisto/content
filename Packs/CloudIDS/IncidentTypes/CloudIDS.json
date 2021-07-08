@@ -1,0 +1,42 @@
+[
+	{
+		"id": "Cloud IDS",
+		"version": 15,
+		"modified": "2021-07-08T14:34:09.598121557Z",
+		"sortValues": null,
+		"packID": "",
+		"itemVersion": "",
+		"fromServerVersion": "",
+		"toServerVersion": "",
+		"vcShouldIgnore": false,
+		"vcShouldKeepItemLegacyProdMachine": false,
+		"commitMessage": "",
+		"shouldCommit": false,
+		"locked": false,
+		"name": "Cloud IDS",
+		"prevName": "Cloud IDS",
+		"color": "#F8E7A5",
+		"playbookId": "IP Blacklist - GCP Firewall",
+		"hours": 0,
+		"days": 0,
+		"weeks": 0,
+		"hoursR": 0,
+		"daysR": 0,
+		"weeksR": 0,
+		"system": false,
+		"readonly": false,
+		"default": false,
+		"autorun": false,
+		"preProcessingScript": "",
+		"closureScript": "",
+		"disabled": false,
+		"reputationCalc": 0,
+		"onChangeRepAlg": 0,
+		"layout": "",
+		"detached": false,
+		"extractSettings": {
+			"mode": "Specific",
+			"fieldCliNameToExtractSettings": {}
+		}
+	}
+]
