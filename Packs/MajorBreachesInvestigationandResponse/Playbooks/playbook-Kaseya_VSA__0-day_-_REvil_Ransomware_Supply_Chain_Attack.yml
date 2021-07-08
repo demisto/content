@@ -2,14 +2,14 @@ id: Kaseya VSA  0-day - REvil Ransomware Supply Chain Attack
 version: -1
 name: Kaseya VSA  0-day - REvil Ransomware Supply Chain Attack
 description: "On July 2nd, Kaseya company has experienced an attack against the VSA\
-  \ (Virtual System/Server Administrator) product. Kaseya customers reports pointed\
-  \ out a ransomware outbreak in their environment.\nFurther investigation revealed\
+  \ (Virtual System/Server Administrator) product. Kaseya customers pointed\
+  \ out a ransomware outbreak in their environments.\nFurther investigation revealed\
   \ that REvil group exploited VSA zero-day vulnerabilities for authentication bypass\
   \ and arbitrary command execution. This allowed the attacker to deploy ransomware\
   \ on Kaseya customers' endpoints.\n\nThis playbook should be trigger manually and\
   \ includes the following tasks: \n\n* Collect related known indicators from several\
   \ sources.\n* Indicators, PS commands, Registry changes and known HTTP requests\
-  \ hunting using SIEM products.\n    * Splunk advanced queries can be modified through\
+  \ hunting using PAN-OS, Cortex XDR and SIEM products.\n    * Splunk advanced queries can be modified through\
   \ the playbook inputs.\n* Block indicators automatically or manually.\n* Provide\
   \ advanced hunting and detection capabilities.\n\nMore information:\n[Kaseya Incident\
   \ Overview & Technical Details](https://helpdesk.kaseya.com/hc/en-gb/articles/4403584098961)\n\
@@ -824,10 +824,10 @@ tasks:
     quietmode: 0
   "27":
     id: "27"
-    taskid: d4ac5b40-0a55-4c19-8457-c11994e18e08
+    taskid: 1f8c40f6-8135-49c2-8379-747dc5318821
     type: regular
     task:
-      id: d4ac5b40-0a55-4c19-8457-c11994e18e08
+      id: 1f8c40f6-8135-49c2-8379-747dc5318821
       version: -1
       name: 'Search XDR incidents for suspicious network behavior '
       description: Search XDR incidents for REvil in the network.
@@ -840,9 +840,16 @@ tasks:
       - "34"
     scriptarguments:
       extend-context:
-        simple: SUNBURSTXDRincidents=
+        simple: REvilXDRincidents=
       query:
-        simple: 'xdralerts.name:"network_ransom1" '
+        simple: 'xdralerts.name:"network_ransom1" OR xdralerts.description: *malicious_dll_dropped_mpsvc.dll.1*
+          OR  xdralerts.description: *malicious_dll_dropped_mpsvc.dll.2* OR  xdralerts.description:
+          *malicious_dll_dropped_mpsvc.dll.3* OR  xdralerts.description: *malicious_dll_dropped_mpsvc.dll.4*
+          OR  xdralerts.description: *malicious_dll_dropped_mpsvc.dll.5* OR xdralerts.description:
+          *sync.malicious_dll_loaded_mpsvc.dll.1* OR xdralerts.description: *sync.malicious_dll_loaded_mpsvc.dll.2*
+          OR xdralerts.description: *sync.malicious_dll_loaded_mpsvc.dll.3* OR xdralerts.description:
+          *sync.malicious_dll_loaded_mpsvc.dll.4* OR xdralerts.description: *sync.malicious_dll_loaded_mpsvc.dll.5*
+          OR xdralerts.description: *msmpeng_hijack* OR xdralerts.name: *msmpeng_hijack*'
     separatecontext: false
     view: |-
       {
@@ -2151,11 +2158,12 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+system: true
 view: |-
   {
     "linkLabelsPosition": {
       "31_27_yes": 0.47,
-      "31_34_#default#": 0.16,
+      "31_34_#default#": 0.18,
       "47_33_Yes": 0.57,
       "49_34_#default#": 0.19,
       "58_63_No": 0.71
