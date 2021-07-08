@@ -10,7 +10,7 @@ from cryptography.hazmat.primitives.ciphers.aead import AESGCM
 from typing import Dict, Tuple, List, Optional
 
 
-class Scopes:
+class Scopes:  # todo: what about these addresses?
     graph = 'https://graph.microsoft.com/.default'
     security_center = 'https://api.securitycenter.windows.com/.default'
 
@@ -26,11 +26,19 @@ REFRESH_TOKEN = 'refresh_token'  # guardrails-disable-line
 DEVICE_CODE = 'urn:ietf:params:oauth:grant-type:device_code'
 REGEX_SEARCH_URL = r'(?P<url>https?://[^\s]+)'
 SESSION_STATE = 'session_state'
-AUTH_ENDPOINTS = {
-    'Default (.com)': 'https://login.microsoftonline.com',
-    'GCC High US (.us)': 'https://login.microsoftonline.us',
-    'GCC High Germany (.de)': 'https://login.microsoftonline.de',
-    'GCC High China (.cn)': 'https://login.partner.microsoftonline.cn'
+ENDPOINTS = {
+    'Default Worldwide (.com)': 'com',
+    'GCC High': 'gcc-high',
+    'Department of Defence': 'dod',
+    'Germany (.de)': 'de',
+    'China (.cn)': 'cn'
+}
+TOKEN_RETRIEVAL_ENDPOINTS = {
+    'com': 'https://login.microsoftonline.com',
+    'gcc-high': 'https://login.microsoftonline.us',
+    'dod': 'https://login.microsoftonline.us',
+    'de': 'https://login.microsoftonline.de',
+    'cn': 'https://login.chinacloudapi.cn',
 }
 
 
@@ -42,7 +50,7 @@ class MicrosoftClient(BaseClient):
                  app_name: str = '',
                  refresh_token: str = '',
                  auth_code: str = '',
-                 scope: str = 'https://graph.microsoft.com/.default',
+                 scope: str = 'https://graph.microsoft.com/.default',  # todo: check if this should change
                  grant_type: str = CLIENT_CREDENTIALS,
                  redirect_uri: str = 'https://localhost/myapp',
                  resource: Optional[str] = '',
@@ -51,7 +59,7 @@ class MicrosoftClient(BaseClient):
                  verify: bool = True,
                  self_deployed: bool = False,
                  azure_ad_endpoint: str = '{endpoint}',
-                 auth_endpoint: str = 'Default (.com)',
+                 auth_endpoint: str = 'Default Worldwide (.com)',
                  *args, **kwargs):
         """
         Microsoft Client class that implements logic to authenticate with oproxy or self deployed applications.
@@ -69,7 +77,7 @@ class MicrosoftClient(BaseClient):
             self_deployed: Indicates whether the integration mode is self deployed or oproxy
         """
         super().__init__(verify=verify, *args, **kwargs)  # type: ignore[misc]
-        self.auth_endpoint = AUTH_ENDPOINTS.get(auth_endpoint)
+        self.auth_endpoint = ENDPOINTS.get(auth_endpoint)
         if not self_deployed:
             auth_id_and_token_retrieval_url = auth_id.split('@')
             auth_id = auth_id_and_token_retrieval_url[0]
@@ -85,7 +93,7 @@ class MicrosoftClient(BaseClient):
             self.refresh_token = refresh_token
 
         else:
-            self.token_retrieval_url = token_retrieval_url.format(tenant_id=tenant_id, endpoint=self.auth_endpoint)
+            self.token_retrieval_url = token_retrieval_url.format(tenant_id=tenant_id, endpoint=TOKEN_RETRIEVAL_ENDPOINTS[self.auth_endpoint])
             self.client_id = auth_id
             self.client_secret = enc_key
             self.tenant_id = tenant_id
@@ -97,7 +105,7 @@ class MicrosoftClient(BaseClient):
 
         self.auth_type = SELF_DEPLOYED_AUTH_TYPE if self_deployed else OPROXY_AUTH_TYPE
         self.verify = verify
-        self.azure_ad_endpoint = azure_ad_endpoint.format(endpoint=self.auth_endpoint)
+        self.azure_ad_endpoint = azure_ad_endpoint.format(endpoint=TOKEN_RETRIEVAL_ENDPOINTS[self.auth_endpoint])
 
         self.multi_resource = multi_resource
         if self.multi_resource:

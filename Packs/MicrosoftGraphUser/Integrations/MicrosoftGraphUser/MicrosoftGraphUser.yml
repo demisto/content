@@ -21,14 +21,16 @@ configuration:
   name: enc_key
   required: true
   type: 4
-- display: Authentication Endpoint
+- defaultvalue: Default Worldwide (.com)
+  display: Authentication Endpoint
   hidden: false
   name: auth_endpoint
   options:
-  - Default (.com)
-  - GCC High US (.us)
-  - GCC High Germany (.de)
-  - GCC High China (.cn)
+  - Default Worldwide (.com)
+  - GCC High
+  - Department of Defence
+  - Germany (.de)
+  - China (.cn)
   required: false
   type: 15
 - display: Use a self-deployed Azure application

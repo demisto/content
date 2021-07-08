@@ -367,7 +367,7 @@ def assign_manager_command(client: MsGraphClient, args: Dict):
 
 def main():
     params: dict = demisto.params()
-    url = params.get('host', '').rstrip('/') + '/v1.0/'
+    url = params.get('host', '').rstrip('/') + '/v1.0/'  # todo: check if the base_url should change here too
     tenant = params.get('tenant_id')
     auth_and_token_url = params.get('auth_id', '')
     enc_key = params.get('enc_key')
@@ -376,7 +376,7 @@ def main():
     redirect_uri = params.get('redirect_uri', '')
     auth_code = params.get('auth_code', '')
     proxy = params.get('proxy', False)
-    auth_endpoint = params.get('auth_endpoint', 'Default (.com)')
+    auth_endpoint = params.get('auth_endpoint', 'Default Worldwide (.com)')
 
     commands = {
         'msgraph-user-test': test_function,
