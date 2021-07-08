@@ -3504,7 +3504,8 @@
         "Microsoft Teams - Test": "Issue 38263",
         "QualysVulnerabilityManagement-Test": "Issue 38640",
         "test playbook - QRadarCorrelations": "Issue 38639",
-        "EWS Extension: Powershell Online V2 Test": "Issue 39008"
+        "EWS Extension: Powershell Online V2 Test": "Issue 39008",
+        "O365 - EWS - Extension - Test": "Issue 39008"
     },
     "skipped_integrations": {
 
