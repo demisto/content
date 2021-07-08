@@ -75,7 +75,6 @@ script:
       - 'No'
     - description: 'The collection of automatic scaling profiles that specify different
         scaling parameters for different time periods.
-
         A maximum of 20 profiles can be specified.'
       name: profiles
     - description: The collection of notifications.
