@@ -47,4 +47,4 @@ pswd: ""
 runonce: false
 dockerimage: demisto/python3:3.9.5.20070
 runas: DBotWeakRole
-fromversion: 5.0.0
+fromversion: 6.0.0
