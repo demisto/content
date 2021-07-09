@@ -531,7 +531,7 @@ Submit an Inquiry to request a report on misjudgement by Abnormal Security
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| AbnormalSecurity.SubmitInquiry.detail | String | COnfirmation of successfully sending inquiry | 
+| AbnormalSecurity.SubmitInquiry.detail | String | Confirmation of successfully sending inquiry | 
 
 
 #### Command Example
