@@ -5,20 +5,13 @@ args:
   required: true
 comment: Remove empty items from the array.
 commonfields:
-  id: 31754dd3-9e4b-42f9-89e8-6d801145acc4
+  id: RemoveEmpty
   version: -1
 contentitemexportablefields:
   contentitemfields:
     fromServerVersion: ""
-    itemVersion: ""
-    packID: f79a0e94-6f70-4fa6-8ccc-e08275d7eb0e
-    propagationLabels:
-    - all
-    toServerVersion: ""
 enabled: true
-engineinfo: {}
 name: RemoveEmpty
-pswd: ""
 runas: DBotWeakRole
 runonce: false
 script: ''
@@ -28,3 +21,6 @@ tags:
 - entirelist
 - general
 type: javascript
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)
