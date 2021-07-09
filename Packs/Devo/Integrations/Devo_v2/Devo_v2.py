@@ -491,6 +491,7 @@ def multi_table_query_command():
     search_token = demisto.args()['searchToken']
     timestamp_from = demisto.args()['from']
     timestamp_to = demisto.args().get('to', None)
+    limit = int(demisto.args().get('limit', 50))
     write_context = demisto.args()['writeToContext'].lower()
     query_timeout = int(demisto.args().get('queryTimeout', TIMEOUT))
 
@@ -526,6 +527,11 @@ def multi_table_query_command():
         entry['HumanReadable'] = 'No results found'
         return entry
 
+    if limit == 0:
+        pass
+    else:
+        all_results = all_results[:limit]
+
     headers: Set = set().union(*(r.keys() for r in all_results))
 
     md = tableToMarkdown('Devo query results', all_results, headers)
@@ -551,7 +557,10 @@ def write_to_table_command():
                     key=creds['key'].name, cert=creds['crt'].name, chain=creds['chain'].name))
 
     for r in records:
-        sender.send(tag=table_name, msg=f"{r}")
+        try:
+            sender.send(tag=table_name, msg=json.dumps(r))
+        except TypeError:
+            sender.send(tag=table_name, msg=f"{r}")
 
     querylink = {'DevoTableLink': build_link(linq, int(1000 * time.time()) - 3600000,
                  int(1000 * time.time()), linq_base=linq_base)}

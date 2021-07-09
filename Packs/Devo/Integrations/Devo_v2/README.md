@@ -255,6 +255,7 @@ Thus querying all columns for the search token and returning a union of the give
 | searchToken       | String that you wish to search for in given tables in any column          | Required     |
 | from              | Start time in seconds unix timestamp                                      | Required     |
 | to                | End time in seconds unix timestamp                                        | Optional     |
+| limit             | Number of entries to return to context. Default is 50. 0 sets to no limit | Optional     |
 | queryTimeout      | Query timeout in seconds. Defaults to global which defaults to 60 seconds | Optional     |
 | writeToContext    | write results to context or not                                           | Optional     |
 
