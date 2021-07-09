@@ -3,7 +3,7 @@ import pytest
 import SplunkPy as splunk
 import demistomock as demisto
 from CommonServerPython import *
-from datetime import datetime
+from datetime import datetime, timedelta
 
 
 RETURN_ERROR_TARGET = 'SplunkPy.return_error'
