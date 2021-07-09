@@ -127,7 +127,7 @@ def get_a_list_of_abnormal_cases_identified_by_abnormal_security_command(client,
 
     response = client.get_a_list_of_abnormal_cases_identified_by_abnormal_security_request(filter_, page_size, page_number)
     markdown = '### List of Cases\n'
-    markdown += tableToMarkdown('Case IDs', response.get('cases', []), headers=['caseId', 'severity'])
+    markdown += tableToMarkdown('Case IDs', response.get('cases', []), headers=['caseId', 'description'])
     command_results = CommandResults(
         readable_output=markdown,
         outputs_prefix='AbnormalSecurity.inline_response_200_1',
@@ -269,7 +269,7 @@ def submit_an_inquiry_to_request_a_report_on_misjudgement_by_abnormal_security_c
 
 def test_module(client):
     # Run a sample request to retrieve mock data
-    client.get_details_of_a_threat_request('test')
+    client.get_a_list_of_threats_request(None, None, None, None)
     demisto.results("ok")
 
 
@@ -285,7 +285,6 @@ def main():
         headers['Mock-Data'] = "True"
     headers['Authorization'] = f'Bearer {params["api_key"]}'
     headers['Soar-Integration-Origin'] = "Cortex XSOAR"
-
     command = demisto.command()
     demisto.debug(f'Command being called is {command}')
 
@@ -310,7 +309,7 @@ def main():
                 manage_a_threat_identified_by_abnormal_security_command,
             'abnormal-security-manage-abnormal-case':
                 manage_an_abnormal_case_command,
-            'abnormal-security-submit-inquiry-to-request-a-report-on-misjudgement-by-abnormal-security':
+            'abnormal-security-submit-inquiry-to-request-a-report-on-misjudgement':
                 submit_an_inquiry_to_request_a_report_on_misjudgement_by_abnormal_security_command,
         }
 

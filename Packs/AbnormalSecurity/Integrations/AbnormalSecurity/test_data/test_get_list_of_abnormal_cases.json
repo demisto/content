@@ -2,7 +2,7 @@
     "cases": [
         {
             "caseId": "1234",
-            "severity": "Potential Account Takeover"
+            "description": "Potential Account Takeover"
         }
     ],
     "pageNumber": 1,

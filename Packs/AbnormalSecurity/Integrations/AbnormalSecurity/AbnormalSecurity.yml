@@ -107,7 +107,7 @@ script:
     - contextPath: AbnormalSecurity.inline_response_200_1.cases.caseId
       description: A unique identifier for this case.
       type: String
-    - contextPath: AbnormalSecurity.inline_response_200_1.cases.severity
+    - contextPath: AbnormalSecurity.inline_response_200_1.cases.description
       description: Description of the severity level for this case.
       type: String
     - contextPath: AbnormalSecurity.inline_response_200_1.pageNumber
@@ -299,6 +299,13 @@ script:
       required: false
     description: Manage a Threat identified by Abnormal Security
     name: abnormal-security-manage-threat
+    outputs:
+      - contextPath: AbnormalSecurity.ThreatManageResults.action_id
+        description: ID of the action taken
+        type: String
+      - contextPath: AbnormalSecurity.ThreatManageResults.status_url
+        description: URL of the status of the action
+        type: String
   - arguments:
     - description: "A string representing the email case. Can be retrieved by first running command to list cases"
       isArray: false
@@ -314,6 +321,13 @@ script:
       required: false
     description: Manage an Abnormal Case.
     name: abnormal-security-manage-abnormal-case
+    outputs:
+      - contextPath: AbnormalSecurity.CaseManageResults.action_id
+        description: ID of the action taken
+        type: String
+      - contextPath: AbnormalSecurity.CaseManageResults.status_url
+        description: URL of the status of the action
+        type: String
   - arguments:
     - description: Returns test data if set to `True`
       isArray: false
@@ -329,7 +343,7 @@ script:
       required: true
     description: Submit an Inquiry to request a report on misjudgement by Abnormal
       Security
-    name: abnormal-security-submit-inquiry-to-request-a-report-on-misjudgement-by-abnormal-security
+    name: abnormal-security-submit-inquiry-to-request-a-report-on-misjudgement
   dockerimage: demisto/python3:3.9.5.21272
   isfetch: false
   script: ''

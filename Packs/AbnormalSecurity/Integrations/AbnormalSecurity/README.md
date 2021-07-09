@@ -1,5 +1,5 @@
 Abnormal Security detects the whole spectrum of email attacks, from vendor email compromise and spear-phishing to unwanted email spam and graymail. To stop these advanced attacks, Abnormal leverages the industry’s most advanced behavioral data science to baseline known good behavior and detects anomalies.
-This integration was integrated and tested with version v1.3.0 of Abnormal Security
+This integration was integrated and tested with version xx of Abnormal Security
 ## Configure Abnormal Security on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
@@ -152,7 +152,7 @@ Get a list of Abnormal cases identified by Abnormal Security
             "cases": [
                 {
                     "caseId": "1234",
-                    "severity": "Potential Account Takeover"
+                    "description": "Potential Account Takeover"
                 }
             ],
             "nextPageNumber": 2,
@@ -168,7 +168,7 @@ Get a list of Abnormal cases identified by Abnormal Security
 >### Case IDs
 >|caseId|severity|
 >|---|---|
->| 1234 | Potential Account Takeover |
+>| 1234 |  |
 
 
 ### abnormal-security-list-threats
@@ -332,8 +332,7 @@ Get details of a threat
 
 #### Human Readable Output
 
->### Threat Details
->### Messages in Threat 184712ab-6d8b-47b3-89d3-a314efef79e2
+>### Messages in Threat xwvutsrq-9pon-mlkj-i876-54321hgfedcba
 >|subject|fromAddress|fromName|toAddresses|recipientAddress|receivedTime|attackType|attackStrategy|returnPath|
 >|---|---|---|---|---|---|---|---|---|
 >| Phishing Email | support@secure-reply.org |  | example@example.com, another@example.com | example@example.com | 2020-06-09T17:42:59Z | Extortion | Name Impersonation | support@secure-reply.org |
@@ -366,7 +365,7 @@ Get details of an Abnormal case
 
 
 #### Command Example
-```!abnormal-security-get-abnormal-case case_id=12345```
+```!abnormal-security-get-abnormal-case case_id=1234```
 
 #### Context Example
 ```json
@@ -387,10 +386,10 @@ Get details of an Abnormal case
 
 #### Human Readable Output
 
->### Results
->|affectedEmployee|caseId|firstObserved|severity|threatIds|
+>### Details of Case 1234
+>|caseId|severity|affectedEmployee|firstObserved|threatIds|
 >|---|---|---|---|---|
->| FirstName LastName | 1234 | 2020-06-09T17:42:59Z | Potential Account Takeover | 184712ab-6d8b-47b3-89d3-a314efef79e2 |
+>| 1234 | Potential Account Takeover | FirstName LastName | 2020-06-09T17:42:59Z | 184712ab-6d8b-47b3-89d3-a314efef79e2 |
 
 
 ### abnormal-security-get-latest-threat-intel-feed
@@ -438,7 +437,11 @@ Manage a Threat identified by Abnormal Security
 
 #### Context Output
 
-There is no context output for this command.
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AbnormalSecurity.ThreatManageResults.action_id | String | ID of the action taken | 
+| AbnormalSecurity.ThreatManageResults.status_url | String | URL of the status of the action | 
+
 
 #### Command Example
 ```!abnormal-security-manage-threat threat_id=xwvutsrq-9pon-mlkj-i876-54321hgfedcba action=remediate```
@@ -480,10 +483,14 @@ Manage an Abnormal Case.
 
 #### Context Output
 
-There is no context output for this command.
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AbnormalSecurity.CaseManageResults.action_id | String | ID of the action taken | 
+| AbnormalSecurity.CaseManageResults.status_url | String | URL of the status of the action | 
+
 
 #### Command Example
-```!abnormal-security-manage-abnormal-case case_id=12345 action=action_required```
+```!abnormal-security-manage-abnormal-case case_id=1234 action=action_required```
 
 #### Context Example
 ```json
@@ -503,14 +510,14 @@ There is no context output for this command.
 >| 61e76395-40d3-4d78-b6a8-8b17634d0f5b | https://api.abnormalplatform.com/v1/cases/1234/actions/61e76395-40d3-4d78-b6a8-8b17634d0f5b |
 
 
-### abnormal-security-submit-inquiry-to-request-a-report-on-misjudgement-by-abnormal-security
+### abnormal-security-submit-inquiry-to-request-a-report-on-misjudgement
 ***
 Submit an Inquiry to request a report on misjudgement by Abnormal Security
 
 
 #### Base Command
 
-`abnormal-security-submit-inquiry-to-request-a-report-on-misjudgement-by-abnormal-security`
+`abnormal-security-submit-inquiry-to-request-a-report-on-misjudgement`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -525,7 +532,7 @@ Submit an Inquiry to request a report on misjudgement by Abnormal Security
 There is no context output for this command.
 
 #### Command Example
-```!abnormal-security-submit-inquiry-to-request-a-report-on-misjudgement-by-abnormal-security reporter=abc@def.com report_type=false-positive```
+```!abnormal-security-submit-inquiry-to-request-a-report-on-misjudgement reporter=abc@def.com report_type=false-positive```
 
 #### Context Example
 ```json
