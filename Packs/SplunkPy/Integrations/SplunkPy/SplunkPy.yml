@@ -1,6 +1,6 @@
 category: Analytics & SIEM
 commonfields:
-  id: SplunkPy_post_conflicts
+  id: SplunkPy
   version: -1
 configuration:
 - display: Host - IP (x.x.x.x)
@@ -204,8 +204,8 @@ configuration:
   additionalinfo: Use this parameter to specify a list of coma separated fields, which
     together are a unique identifier for the events you with to fetch
 description: Runs queries on Splunk servers.
-display: SplunkPy_post_conflicts
-name: SplunkPy_post_conflicts
+display: SplunkPy
+name: SplunkPy
 script:
   commands:
   - arguments:
