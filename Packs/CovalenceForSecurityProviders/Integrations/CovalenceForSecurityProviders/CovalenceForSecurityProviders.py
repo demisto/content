@@ -175,7 +175,7 @@ def fetch_incidents(last_run, first_run_time_range):
                     incident_name = f'''[{target_org}] [{a.get('type', 'No alert type')}] {a.get('analystTitle', 'No title')}'''
                 else:
                     incident_name = f'''[{a.get('type', 'No alert type')}] {a.get('analystTitle', 'No title')}'''
-                incident = {
+                incident: Dict[str, Any] = {
                     'name': incident_name,
                     'occured': created_time_str,
                     'rawJSON': json.dumps(a)
