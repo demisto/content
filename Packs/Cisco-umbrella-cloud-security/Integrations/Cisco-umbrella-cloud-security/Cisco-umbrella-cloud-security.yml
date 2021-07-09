@@ -15,6 +15,14 @@ configuration:
   name: apiSecret
   required: false
   type: 4
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
 description: Adds domains to Umbrella block list
 display: Cisco Umbrella Cloud Security
 name: Cisco Umbrella Cloud Security
@@ -23,7 +31,7 @@ script:
   - arguments:
     - description: Organization ID
       name: orgId
-    description: Get's all destination lists in organization
+    description: Gets all destination lists in organization
     name: umbrella-get-destination-lists
     outputs:
     - contextPath: Umbrella.DestinationLists
@@ -40,13 +48,9 @@ script:
       isArray: true
       name: domains
       required: true
-    - default: false
-      defaultValue: Added from XSOAR
+    - defaultValue: Added from XSOAR
       description: Note on what the domain is or why it is being added
-      isArray: false
       name: comment
-      required: false
-      secret: false
     description: Adds domains to given destination list
     name: umbrella-add-domain
   - arguments:
@@ -56,7 +60,7 @@ script:
         to get the list ID
       name: destId
       required: true
-    description: Get's the domains listed in a destination list
+    description: Gets the domains listed in a destination list
     name: umbrella-get-destination-domains
   - arguments:
     - description: Optional organization ID. If not provided, will use the one provided
@@ -69,9 +73,27 @@ script:
       isArray: true
       name: domainIds
       required: true
-    description: Removes domains to given destination list
+    description: Removes domains from given destination list
     name: umbrella-remove-domain
-  dockerimage: demisto/python3:3.9.1.15759
+  - arguments:
+    - description: Optional orgId, by default uses the one set in the instance configuration
+      name: orgId
+    - description: Destination list ID to get domains from. Use umbrella-get-destination-lists
+        to get the list ID
+      name: destId
+      required: true
+    - description: Domain to get from a destination list
+      name: domain
+      required: true
+    description: Gets the domain from a destination list
+    name: umbrella-get-destination-domain
+    outputs:
+    - contextPath: Umbrella.Destination.id
+    - contextPath: Umbrella.Destination.destination
+    - contextPath: Umbrella.Destination.type
+    - contextPath: Umbrella.Destination.createdAt
+    - contextPath: Umbrella.Destination.comment
+  dockerimage: demisto/python3:3.9.5.21272
   runonce: false
   script: ''
   subtype: python3
