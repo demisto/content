@@ -229,7 +229,7 @@ def manage_a_threat_identified_by_abnormal_security_command(client, args):
 
     response = client.manage_a_threat_identified_by_abnormal_security_request(threat_id, action)
     command_results = CommandResults(
-        outputs_prefix='AbnormalSecurity',
+        outputs_prefix='AbnormalSecurity.ThreatManageResults',
         outputs_key_field='',
         outputs=response,
         raw_response=response
@@ -244,7 +244,7 @@ def manage_an_abnormal_case_command(client, args):
 
     response = client.manage_an_abnormal_case_request(case_id, action)
     command_results = CommandResults(
-        outputs_prefix='AbnormalSecurity',
+        outputs_prefix='AbnormalSecurity.CaseManageResults',
         outputs_key_field='',
         outputs=response,
         raw_response=response
@@ -258,7 +258,7 @@ def submit_an_inquiry_to_request_a_report_on_misjudgement_by_abnormal_security_c
     report_type = str(args.get('report_type', ''))
     response = client.submit_an_inquiry_to_request_a_report_on_misjudgement_by_abnormal_security_request(reporter, report_type)
     command_results = CommandResults(
-        outputs_prefix='AbnormalSecurity',
+        outputs_prefix='AbnormalSecurity.SubmitInquiry',
         outputs_key_field='',
         outputs=response,
         raw_response=response

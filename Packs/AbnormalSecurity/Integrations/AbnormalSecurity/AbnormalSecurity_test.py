@@ -146,7 +146,7 @@ def test_manage_a_threat_identified_by_abnormal_security_command_success(mocker)
     client = mock_client(mocker, util_load_json('test_data/test_manage_threat.json'))
     results = manage_a_threat_identified_by_abnormal_security_command(client, {})
     assert results.outputs.get('action_id') == '61e76395-40d3-4d78-b6a8-8b17634d0f5b'
-    assert results.outputs_prefix == 'AbnormalSecurity'
+    assert results.outputs_prefix == 'AbnormalSecurity.ThreatManageResults'
 
 
 def test_manage_an_abnormal_case_command_failure(mocker):
@@ -172,7 +172,7 @@ def test_manage_an_abnormal_case_command_success(mocker):
     client = mock_client(mocker, util_load_json('test_data/test_manage_case.json'))
     results = manage_an_abnormal_case_command(client, {})
     assert results.outputs.get('action_id') == '61e76395-40d3-4d78-b6a8-8b17634d0f5b'
-    assert results.outputs_prefix == 'AbnormalSecurity'
+    assert results.outputs_prefix == 'AbnormalSecurity.CaseManageResults'
 
 
 def test_submit_an_inquiry_to_request_a_report_on_misjudgement_by_abnormal_security_command(mocker):
@@ -189,7 +189,7 @@ def test_submit_an_inquiry_to_request_a_report_on_misjudgement_by_abnormal_secur
     }
 
     results = submit_an_inquiry_to_request_a_report_on_misjudgement_by_abnormal_security_command(client, args)
-    assert results.outputs_prefix == 'AbnormalSecurity'
+    assert results.outputs_prefix == 'AbnormalSecurity.SubmitInquiry'
 
 
 def test_get_the_latest_threat_intel_feed_command(mocker):

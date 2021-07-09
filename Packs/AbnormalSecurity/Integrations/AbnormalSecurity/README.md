@@ -1,5 +1,5 @@
 Abnormal Security detects the whole spectrum of email attacks, from vendor email compromise and spear-phishing to unwanted email spam and graymail. To stop these advanced attacks, Abnormal leverages the industry’s most advanced behavioral data science to baseline known good behavior and detects anomalies.
-This integration was integrated and tested with version xx of Abnormal Security
+This integration was integrated and tested with version 1.3.0 of Abnormal Security
 ## Configure Abnormal Security on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
@@ -136,7 +136,7 @@ Get a list of Abnormal cases identified by Abnormal Security
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | AbnormalSecurity.inline_response_200_1.cases.caseId | String | A unique identifier for this case. | 
-| AbnormalSecurity.inline_response_200_1.cases.severity | String | Description of the severity level for this case. | 
+| AbnormalSecurity.inline_response_200_1.cases.description | String | Description of the severity level for this case. | 
 | AbnormalSecurity.inline_response_200_1.pageNumber | Number | The current page number. Will not be be in the response if no filter query meter is passed in via the request. | 
 | AbnormalSecurity.inline_response_200_1.nextpageNumber | Number | The next page number. Will not be included in the response if there are no more pages of data or if no filter query meter is passed in via the request | 
 
@@ -529,7 +529,10 @@ Submit an Inquiry to request a report on misjudgement by Abnormal Security
 
 #### Context Output
 
-There is no context output for this command.
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AbnormalSecurity.SubmitInquiry.detail | String | COnfirmation of successfully sending inquiry | 
+
 
 #### Command Example
 ```!abnormal-security-submit-inquiry-to-request-a-report-on-misjudgement reporter=abc@def.com report_type=false-positive```
