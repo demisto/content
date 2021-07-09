@@ -7,7 +7,7 @@
         "GraCase": {
             "dontMapEventToLabels": false,
             "internalMapping": {
-                "Gra Case Id": {
+                "GRA Case Id": {
                     "complex": {
                         "accessor": "",
                         "filters": [],
@@ -16,7 +16,7 @@
                     },
                     "simple": ""
                 },
-                "Gra Entity": {
+                "GRA Entity": {
                     "complex": {
                         "accessor": "",
                         "filters": [],
@@ -25,7 +25,7 @@
                     },
                     "simple": ""
                 },
-                "Gra Entity Id": {
+                "GRA Entity Id": {
                     "complex": {
                         "accessor": "",
                         "filters": [],
@@ -34,7 +34,7 @@
                     },
                     "simple": ""
                 },
-                "Gra Entity Type Id": {
+                "GRA Entity Type Id": {
                     "complex": {
                         "accessor": "",
                         "filters": [],
@@ -43,7 +43,7 @@
                     },
                     "simple": ""
                 },
-                "Gra Open Date": {
+                "GRA Open Date": {
                     "complex": {
                         "accessor": "",
                         "filters": [],
@@ -52,7 +52,7 @@
                     },
                     "simple": ""
                 },
-                "Gra Owner Id": {
+                "GRA Owner Id": {
                     "complex": {
                         "accessor": "",
                         "filters": [],
@@ -61,7 +61,7 @@
                     },
                     "simple": ""
                 },
-                "Gra Owner Name": {
+                "GRA Owner Name": {
                     "complex": {
                         "accessor": "",
                         "filters": [],
@@ -70,7 +70,7 @@
                     },
                     "simple": ""
                 },
-                "Gra Owner Type": {
+                "GRA Owner Type": {
                     "complex": {
                         "accessor": "",
                         "filters": [],
@@ -79,7 +79,7 @@
                     },
                     "simple": ""
                 },
-                "Gra Risk Date": {
+                "GRA Risk Date": {
                     "complex": {
                         "accessor": "",
                         "filters": [],
@@ -88,7 +88,7 @@
                     },
                     "simple": ""
                 },
-                "Gra Anomaly Name": {
+                "GRA Anomaly Name": {
                     "complex": {
                         "accessor": "",
                         "filters": [],
@@ -97,7 +97,7 @@
                     },
                     "simple": ""
                 },
-                "Gra Case Status": {
+                "GRA Case Status": {
                     "complex": {
                         "accessor": "",
                         "filters": [],
@@ -106,7 +106,7 @@
                     },
                     "simple": ""
                 },
-                "Gra Anomaly Resource Name": {
+                "GRA Anomaly Resource Name": {
                     "complex": {
                         "accessor": "",
                         "filters": [],
@@ -115,7 +115,7 @@
                     },
                     "simple": ""
                 },
-                "Gra Assignee": {
+                "GRA Assignee": {
                     "complex": {
                         "accessor": "",
                         "filters": [],
@@ -124,7 +124,7 @@
                     },
                     "simple": ""
                 },
-                "Gra Assignee Type": {
+                "GRA Assignee Type": {
                     "complex": {
                         "accessor": "",
                         "filters": [],
@@ -133,7 +133,7 @@
                     },
                     "simple": ""
                 },
-                "Gra Risk Accepted Date": {
+                "GRA Risk Accepted Date": {
                     "complex": {
                         "accessor": "",
                         "filters": [],
@@ -142,7 +142,7 @@
                     },
                     "simple": ""
                 },
-                "Gra Anomaly Risk Score": {
+                "GRA Anomaly Risk Score": {
                     "complex": {
                         "accessor": "",
                         "filters": [],
@@ -151,7 +151,7 @@
                     },
                     "simple": ""
                 },
-                "Gra Anomaly Status": {
+                "GRA Anomaly Status": {
                     "complex": {
                         "accessor": "",
                         "filters": [],
@@ -160,7 +160,7 @@
                     },
                     "simple": ""
                 },
-                "Gra Anomalies": {
+                "GRA Anomalies": {
                     "complex": {
                         "accessor": "",
                         "filters": [],
