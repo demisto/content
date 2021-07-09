@@ -2162,12 +2162,12 @@ tasks:
     quietmode: 0
   "66":
     id: "66"
-    taskid: 54026c0c-c39f-4506-86c0-b708e8632938
+    taskid: 99153956-e33f-4e94-8499-091476683f55
     type: title
     task:
-      id: 54026c0c-c39f-4506-86c0-b708e8632938
+      id: 99153956-e33f-4e94-8499-091476683f55
       version: -1
-      name: Expanse Issues Hunt
+      name: Xpanse Issues Hunt
       description: Retrieve issues
       type: title
       iscommand: false
@@ -2190,13 +2190,13 @@ tasks:
     quietmode: 0
   "67":
     id: "67"
-    taskid: 03460a03-6484-496d-819b-f7acb7ee4a16
+    taskid: 9c2bac4d-e0b3-4623-871b-3bf348210f90
     type: regular
     task:
-      id: 03460a03-6484-496d-819b-f7acb7ee4a16
+      id: 9c2bac4d-e0b3-4623-871b-3bf348210f90
       version: -1
       name: Search for internet facing Kaseya VSA servers using Xpanse
-      description: Retrieve issues related to Kaseya VSA servers
+      description: Retrieve issues related to Kaseya VSA servers from Xpanse
       script: '|||expanse-get-issues'
       type: regular
       iscommand: true
@@ -2222,13 +2222,13 @@ tasks:
     quietmode: 0
   "68":
     id: "68"
-    taskid: 67416145-69dc-49c0-8ce0-e751e3b044b8
+    taskid: b34ada55-674f-4e93-80f8-463720781315
     type: condition
     task:
-      id: 67416145-69dc-49c0-8ce0-e751e3b044b8
+      id: b34ada55-674f-4e93-80f8-463720781315
       version: -1
       name: Is Xpanse Enabled?
-      description: Check if Expanse instance is enabled.
+      description: Check if Xpanse instance is enabled.
       type: condition
       iscommand: false
       brand: ""
@@ -2276,13 +2276,13 @@ tasks:
     quietmode: 0
   "69":
     id: "69"
-    taskid: 675e4acc-e155-4b43-8a7c-5fc9709aa5a7
+    taskid: 29ab3d8e-64f6-4913-8a53-35390f23f1ff
     type: regular
     task:
-      id: 675e4acc-e155-4b43-8a7c-5fc9709aa5a7
+      id: 29ab3d8e-64f6-4913-8a53-35390f23f1ff
       version: -1
       name: Search for related Xpanse incident
-      description: Searches for Expanse related incidents
+      description: Searches for Xpanse related incidents
       scriptName: SearchIncidentsV2
       type: regular
       iscommand: false
@@ -2308,13 +2308,13 @@ tasks:
     quietmode: 0
   "70":
     id: "70"
-    taskid: 1ee00741-7e3a-497d-8136-ccdddf663831
+    taskid: ee274e2c-2f91-46fe-89e6-d07ff902d839
     type: regular
     task:
-      id: 1ee00741-7e3a-497d-8136-ccdddf663831
+      id: ee274e2c-2f91-46fe-89e6-d07ff902d839
       version: -1
       name: Link related incidents
-      description: Link related Expanse and Cortex XDR incident to Kaseya VSA incident,
+      description: Link related Xpanse and Cortex XDR incident to Kaseya VSA incident,
       script: Builtin|||linkIncidents
       type: regular
       iscommand: true
