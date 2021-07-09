@@ -403,7 +403,7 @@ def test_whole_preprocessing_short_incident(mocker):
             json.dump(data, fp=file, indent=4)
         prof.print_stats(sort='cumtime')
     assert len(data['log']['exceptions']) == 0
-    assert len(data['X']) + data['log']['n_timout'] + data['log']['n_short_text_fields'] == 100
+    assert len(data['X']) + data['log']['n_timout'] + data['log']['n_short_text_fields'] == 101
     # check labels order kept as original excluding the short label
     assert Counter(x['closeReason'] for x in data['X']) == Counter(
         [inc['closeReason'] for i, inc in enumerate(incidents) if i != short_text_incident_index])
