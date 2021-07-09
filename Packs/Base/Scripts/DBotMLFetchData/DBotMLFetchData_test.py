@@ -6,6 +6,7 @@ import string
 from bs4 import BeautifulSoup
 import math
 import pandas as pd
+import numpy as np
 
 
 def test_find_label_fields_candidates():
@@ -451,3 +452,22 @@ def test_clean_email_subject():
     assert res == 'someone sent you a file'
     res = clean_email_subject('[POTENTIAL PHISH] [External] someone sent you a file [End]')
     assert res == 'someone sent you a file'
+
+
+def test_bert_features(mocker):
+    mocker.patch('DBotMLFetchData.open', mock_read_func)
+    load_external_resources()
+    text = 'The rapid growth of submissions and the increasing popularity of preprints have caused several problems ' \
+           'to the current ACL reviewing system. To address these problems, the ACL Committee on Reviewing has been ' \
+           'working on two proposals for reforming the reviewing system of ACL-related conferences: short-term and ' \
+           'long-term. The following document presents the short-term proposals: ' \
+           'https://www.aclweb.org/adminwiki/index.php?title=Short-Term_Reform_Propo... It consists of four ' \
+           'complementary actions that can be realistically implemented to improve the ACL review process in the near ' \
+           'future (while the committee continues to investigate changes that require a longer lead time). These ' \
+           'actions address several of the problems identified in the proposal. The ACL Executive Committee has ' \
+           'adopted these proposals. We hope that their implementation will have a quick positive impact on reviewing ' \
+           'at ACL conferences. '
+    res = get_bert_features_for_text(text)
+    expected_res_first_ten = [-3.7959e-01, -4.7554e-02, -5.6070e-03, -1.3525e-01, -1.5419e-01,
+                              -2.7613e-01, 2.5755e-02, 2.5090e-02, -2.2422e-01, -2.5844e-01]
+    np.testing.assert_allclose(res[:10], expected_res_first_ten, rtol=1e-03, atol=1e-05)

@@ -65,6 +65,8 @@ class PackTags(object):
     NEW = "New"
     TIM = "TIM"
     USE_CASE = "Use Case"
+    TRANSFORMER = "Transformer"
+    FILTER = "Filter"
 
 
 class Metadata(object):
