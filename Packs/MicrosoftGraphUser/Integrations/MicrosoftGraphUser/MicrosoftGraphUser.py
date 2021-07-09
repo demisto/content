@@ -12,6 +12,13 @@ BLOCK_ACCOUNT_JSON = '{"accountEnabled": false}'
 UNBLOCK_ACCOUNT_JSON = '{"accountEnabled": true}'
 NO_OUTPUTS: dict = {}
 APP_NAME = 'ms-graph-user'
+GRAPH_ENDPOINTS = {
+    'https://graph.microsoft.com': 'com',
+    'https://graph.microsoft.us': 'gcc-high',
+    'https://dod-graph.microsoft.us': 'dod',
+    'https://graph.microsoft.de': 'de',
+    'https://microsoftgraph.chinacloudapi.cn': 'cn'
+}
 
 
 def camel_case_to_readable(text):
@@ -367,7 +374,9 @@ def assign_manager_command(client: MsGraphClient, args: Dict):
 
 def main():
     params: dict = demisto.params()
-    url = params.get('host', '').rstrip('/') + '/v1.0/'  # todo: check if the base_url should change here too
+    host = params.get('host', '').rstrip('/')
+    url = host + '/v1.0/'
+    auth_endpoint = GRAPH_ENDPOINTS.get(host, 'com')
     tenant = params.get('tenant_id')
     auth_and_token_url = params.get('auth_id', '')
     enc_key = params.get('enc_key')
@@ -376,7 +385,6 @@ def main():
     redirect_uri = params.get('redirect_uri', '')
     auth_code = params.get('auth_code', '')
     proxy = params.get('proxy', False)
-    auth_endpoint = params.get('auth_endpoint', 'Default Worldwide (.com)')
 
     commands = {
         'msgraph-user-test': test_function,

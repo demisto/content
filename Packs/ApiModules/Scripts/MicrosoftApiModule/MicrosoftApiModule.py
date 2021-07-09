@@ -10,7 +10,7 @@ from cryptography.hazmat.primitives.ciphers.aead import AESGCM
 from typing import Dict, Tuple, List, Optional
 
 
-class Scopes:  # todo: what about these addresses?
+class Scopes:
     graph = 'https://graph.microsoft.com/.default'
     security_center = 'https://api.securitycenter.windows.com/.default'
 
@@ -26,19 +26,19 @@ REFRESH_TOKEN = 'refresh_token'  # guardrails-disable-line
 DEVICE_CODE = 'urn:ietf:params:oauth:grant-type:device_code'
 REGEX_SEARCH_URL = r'(?P<url>https?://[^\s]+)'
 SESSION_STATE = 'session_state'
-ENDPOINTS = {
-    'Default Worldwide (.com)': 'com',
-    'GCC High': 'gcc-high',
-    'Department of Defence': 'dod',
-    'Germany (.de)': 'de',
-    'China (.cn)': 'cn'
-}
 TOKEN_RETRIEVAL_ENDPOINTS = {
     'com': 'https://login.microsoftonline.com',
     'gcc-high': 'https://login.microsoftonline.us',
     'dod': 'https://login.microsoftonline.us',
     'de': 'https://login.microsoftonline.de',
     'cn': 'https://login.chinacloudapi.cn',
+}
+GRAPH_ENDPOINTS = {
+    'com': 'https://graph.microsoft.com',
+    'gcc-high': 'https://graph.microsoft.us',
+    'dod': 'https://dod-graph.microsoft.us',
+    'de': 'https://graph.microsoft.de',
+    'cn': 'https://microsoftgraph.chinacloudapi.cn'
 }
 
 
@@ -50,7 +50,7 @@ class MicrosoftClient(BaseClient):
                  app_name: str = '',
                  refresh_token: str = '',
                  auth_code: str = '',
-                 scope: str = 'https://graph.microsoft.com/.default',  # todo: check if this should change
+                 scope: str = '{graph_endpoint}/.default',
                  grant_type: str = CLIENT_CREDENTIALS,
                  redirect_uri: str = 'https://localhost/myapp',
                  resource: Optional[str] = '',
@@ -59,7 +59,7 @@ class MicrosoftClient(BaseClient):
                  verify: bool = True,
                  self_deployed: bool = False,
                  azure_ad_endpoint: str = '{endpoint}',
-                 auth_endpoint: str = 'Default Worldwide (.com)',
+                 endpoint: str = 'com',
                  *args, **kwargs):
         """
         Microsoft Client class that implements logic to authenticate with oproxy or self deployed applications.
@@ -77,7 +77,7 @@ class MicrosoftClient(BaseClient):
             self_deployed: Indicates whether the integration mode is self deployed or oproxy
         """
         super().__init__(verify=verify, *args, **kwargs)  # type: ignore[misc]
-        self.auth_endpoint = ENDPOINTS.get(auth_endpoint)
+        self.endpoint = endpoint
         if not self_deployed:
             auth_id_and_token_retrieval_url = auth_id.split('@')
             auth_id = auth_id_and_token_retrieval_url[0]
@@ -93,19 +93,19 @@ class MicrosoftClient(BaseClient):
             self.refresh_token = refresh_token
 
         else:
-            self.token_retrieval_url = token_retrieval_url.format(tenant_id=tenant_id, endpoint=TOKEN_RETRIEVAL_ENDPOINTS[self.auth_endpoint])
+            self.token_retrieval_url = token_retrieval_url.format(tenant_id=tenant_id, endpoint=TOKEN_RETRIEVAL_ENDPOINTS[self.endpoint])
             self.client_id = auth_id
             self.client_secret = enc_key
             self.tenant_id = tenant_id
             self.auth_code = auth_code
             self.grant_type = grant_type
             self.resource = resource
-            self.scope = scope
+            self.scope = scope.format(graph_endpoint=GRAPH_ENDPOINTS[self.endpoint])
             self.redirect_uri = redirect_uri
 
         self.auth_type = SELF_DEPLOYED_AUTH_TYPE if self_deployed else OPROXY_AUTH_TYPE
         self.verify = verify
-        self.azure_ad_endpoint = azure_ad_endpoint.format(endpoint=TOKEN_RETRIEVAL_ENDPOINTS[self.auth_endpoint])
+        self.azure_ad_endpoint = azure_ad_endpoint.format(endpoint=TOKEN_RETRIEVAL_ENDPOINTS[self.endpoint])
 
         self.multi_resource = multi_resource
         if self.multi_resource:
@@ -257,7 +257,7 @@ class MicrosoftClient(BaseClient):
                 'registration_id': self.auth_id,
                 'encrypted_token': self.get_encrypted(content, self.enc_key),
                 'scope': scope,
-                'auth_endpoint': self.auth_endpoint
+                'auth_endpoint': self.endpoint
             },
             verify=self.verify
         )

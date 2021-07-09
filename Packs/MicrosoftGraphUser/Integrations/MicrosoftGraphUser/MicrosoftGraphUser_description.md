@@ -27,3 +27,6 @@ Follow these steps for a self-deployed configuration.
 7. Enter your client secret in the ***Key*** parameter field.
 8. Enter your tenant ID in the ***Token*** parameter field.
 9. Enter your redirect URI in the ***Redirect URI*** parameter field.
+
+
+todo: add an explanation about the national cloud endpoints - list the endpoint for each cloud

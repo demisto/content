@@ -4,7 +4,8 @@ commonfields:
   version: -1
 configuration:
 - defaultvalue: https://graph.microsoft.com
-  display: Host URL (e.g., https://graph.microsoft.com)
+  display: Host URL (e.g., https://graph.microsoft.com) - see Detailed Instructions
+    (?)
   name: host
   required: true
   type: 0
@@ -21,18 +22,6 @@ configuration:
   name: enc_key
   required: true
   type: 4
-- defaultvalue: Default Worldwide (.com)
-  display: Authentication Endpoint
-  hidden: false
-  name: auth_endpoint
-  options:
-  - Default Worldwide (.com)
-  - GCC High
-  - Department of Defence
-  - Germany (.de)
-  - China (.cn)
-  required: false
-  type: 15
 - display: Use a self-deployed Azure application
   name: self_deployed
   required: false
