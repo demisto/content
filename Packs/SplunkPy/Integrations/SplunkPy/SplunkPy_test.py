@@ -1,11 +1,10 @@
 from copy import deepcopy
 import pytest
-import time
 import SplunkPy as splunk
 import demistomock as demisto
 from CommonServerPython import *
 from datetime import timedelta, datetime
-from freezegun import freeze_time
+
 
 RETURN_ERROR_TARGET = 'SplunkPy.return_error'
 SPLUNK_TIME_FORMAT = "%Y-%m-%dT%H:%M:%S"
@@ -1314,34 +1313,6 @@ def test_fetch_incidents_deduping(mocker):
     splunk.fetch_notables(service)
     incidents = demisto.incidents.call_args[0][0]
     assert len(incidents) == 0
-
-
-@pytest.mark.commands
-@freeze_time(time.ctime(1576009202))
-def test_fetch_incidents_time_relapse(mocker):
-    """
-    Given:
-    - No new incidents were found on a "Fetch Incidents" run.
-    When:
-    - The next run's "last run" values are set.
-    Then:
-    - No incidents are returned.
-    - The next run's start time will be the same as the current run's start time.
-    """
-    splunk.ENABLED_ENRICHMENTS = []
-    mocker.patch.object(demisto, 'incidents')
-    mocker.patch.object(demisto, 'setLastRun')
-    mock_last_run = {'time': '2018-10-24T14:13:20'}
-    mock_params = {'fetchQuery': "something", 'enabled_enrichments': []}
-    mocker.patch('demistomock.getLastRun', return_value=mock_last_run)
-    mocker.patch('demistomock.params', return_value=mock_params)
-    service = mocker.patch('splunklib.client.connect', return_value=None)
-    mocker.patch('splunklib.results.ResultsReader', return_value=[])
-    splunk.fetch_notables(service)
-    next_run = demisto.setLastRun.call_args[0][0]
-    incidents = demisto.incidents.call_args[0][0]
-    assert len(incidents) == 0
-    assert next_run["time"] == '2019-12-10T22:20:02'
 
 
 def test_fetch_incidents_incident_next_run_calculation(mocker):
