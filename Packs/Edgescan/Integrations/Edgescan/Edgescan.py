@@ -22,9 +22,9 @@ class Client(BaseClient):
         response = self._http_request('GET', 'api/v1/hosts/' + id + '.json', headers=headers)
         return response
 
-    def host_get_export_request(self):
+    def host_get_export_request(self, export_format):
         headers = self._headers
-        response = self._http_request('GET', 'api/v1/hosts/export.json', headers=headers)
+        response = self._http_request('GET', 'api/v1/hosts/export.' + export_format, headers=headers, resp_type="Raw")
         return response
 
     def host_get_query_request(self, request):
@@ -138,9 +138,10 @@ class Client(BaseClient):
         response = self._http_request('GET', 'api/v1/vulnerabilities.json', headers=headers)
         return response
 
-    def vulnerabilities_get_export_request(self):
+    def vulnerabilities_get_export_request(self, export_format):
         headers = self._headers
-        response = self._http_request('GET', 'api/v1/vulnerabilities/export.json', headers=headers)
+        response = self._http_request('GET', 'api/v1/vulnerabilities/export.' + export_format, headers=headers,
+                                      resp_type="Raw")
         return response
 
     def vulnerabilities_get_details_request(self, id):
@@ -283,17 +284,12 @@ def host_get_command(client, args):
 
 
 def host_get_export_command(client, args):
-    response = client.host_get_export_request()
-    readable_output = tableToMarkdown('Hosts export', response, ['os_name', 'id', 'location', 'status', 'open_tcp_ports'])
-    command_results = CommandResults(
-        readable_output=readable_output,
-        outputs_prefix='Edgescan.HostGetExport',
-        outputs_key_field='',
-        outputs=response,
-        raw_response=response
-    )
+    export_format = args.get("format", "json")
+    response = client.host_get_export_request(export_format=export_format)
+    filename = response.headers['Content-Disposition'].split("=")[1].replace('"', "")
+    file = fileResult(filename=filename, data=response.content, file_type=EntryType.ENTRY_INFO_FILE)
 
-    return command_results
+    return file
 
 
 def host_get_query_command(client, args):
@@ -603,15 +599,12 @@ def vulnerabilities_get_command(client, args):
 
 
 def vulnerabilities_get_export_command(client, args):
-    response = client.vulnerabilities_get_export_request()
-    command_results = CommandResults(
-        outputs_prefix='Edgescan.VulnerabilitiesGetExport',
-        outputs_key_field='',
-        outputs=response,
-        raw_response=response
-    )
+    export_format = args.get("format", "json")
+    response = client.vulnerabilities_get_export_request(export_format=export_format)
+    filename = response.headers['Content-Disposition'].split("=")[1].replace('"', "")
+    file = fileResult(filename=filename, data=response.content, file_type=EntryType.ENTRY_INFO_FILE)
 
-    return command_results
+    return file
 
 
 def vulnerabilities_get_details_command(client, args):

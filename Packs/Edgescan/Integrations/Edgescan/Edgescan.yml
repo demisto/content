@@ -3,8 +3,7 @@ commonfields:
   id: Edgescan
   version: -1
 configuration:
-- defaultvalue: ''
-  display: Server URL
+- display: Server URL
   name: url
   required: true
   type: 0
@@ -78,12 +77,25 @@ script:
     - contextPath: Edgescan.HostGet
       description: Detailed host information
       type: Unknown
-  - deprecated: false
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      defaultValue: json
+      description: The file format to export
+      isArray: false
+      name: format
+      predefined:
+      - json
+      - csv
+      - xlsx
+      required: true
+      secret: false
+    deprecated: false
     description: Get a list of hosts in export format.
     execution: false
     name: edgescan-host-get-export
     outputs:
-    - contextPath: Edgescan.HostGetExport
+    - contextPath: InfoFile
       description: Export host information
       type: Unknown
   - arguments:
@@ -765,12 +777,25 @@ script:
     - contextPath: EdgeScan.VulnerabilitiesGet
       description: The list of all Vulnerabilities
       type: Unknown
-  - deprecated: false
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      defaultValue: json
+      description: The file format to export
+      isArray: false
+      name: format
+      predefined:
+      - json
+      - csv
+      - xlsx
+      required: true
+      secret: false
+    deprecated: false
     description: Get the full list of vulnerabilities for export
     execution: false
     name: edgescan-vulnerabilities-get-export
     outputs:
-    - contextPath: Edgescan.VulnerabilitiesGetExport
+    - contextPath: InfoFile
       description: The vulnerabilities export list
       type: Unknown
   - arguments:
