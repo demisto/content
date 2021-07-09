@@ -1,7 +1,7 @@
 {
-    "id": "Azure Storage Misconfiguration Incident",
+    "id": "Azure Storage Misconfiguration",
     "group": "incident",
-    "name": "Azure Storage Misconfiguration Incident",
+    "name": "Azure Storage Misconfiguration",
     "version": -1,
     "fromVersion": "6.0.0",
     "detailsV2": {
