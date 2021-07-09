@@ -1326,7 +1326,6 @@ def test_fetch_incidents_incident_next_run_calculation(mocker):
     """
     from SplunkPy import splunk_time_to_datetime
 
-    from datetime import timedelta
     splunk.ENABLED_ENRICHMENTS = []
     mocker.patch.object(demisto, 'incidents')
     mocker.patch.object(demisto, 'setLastRun')
