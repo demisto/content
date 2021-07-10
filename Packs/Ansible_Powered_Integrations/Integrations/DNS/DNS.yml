@@ -19,7 +19,7 @@ configuration:
   name: key_secret
   required: false
   type: 4
-description: Manage DNS records using NSUpdate.  Deprecated. Use Ansible DNS (in the Ansible DNS pack) instead.
+description: Manage DNS records using NSUpdate.  Deprecated. Use Ansible DNS (in the Ansible Linux pack) instead.
 display: Ansible DNS (Deprecated)
 name: DNS
 script:

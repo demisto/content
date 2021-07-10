@@ -29,6 +29,7 @@ This pack enables you to management Linux hosts using Ansible modules. The Ansib
 * NPM
 * Interfaces
 * Interactive CLI applications
+* DNS Records via NSUpdate
 
 In addition to this the Linux Integration can be used to retrieve information about:
 
