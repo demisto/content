@@ -1,0 +1,3 @@
+This pack enables you to manage DNS records using Dynamic DNS updates. This is done using the Ansible NSUpdate module. The Ansible engine is self-contained and pre-configured as part of this pack onto your XSOAR server. The Ansible modules have been exposed as XSOAR commands, and allow you to use them without needing to know Ansible.
+
+This pack allow you to Create, update and remove DNS records using DDNS updates.
