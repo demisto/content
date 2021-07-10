@@ -42,10 +42,10 @@ TOKENNAME=`kubectl -n kube-system get serviceaccount/kubeconfig-sa -o jsonpath='
 ```
 kubectl -n kube-system get secret $TOKENNAME -o jsonpath='{.data.token}' | base64 -d
 ```
-## Configure AnsibleKubernetes on Cortex XSOAR
+## Configure Ansible Kubernetes on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for AnsibleKubernetes.
+2. Search for Ansible Kubernetes.
 3. Click **Add instance** to create and configure a new integration instance.
 
     | **Parameter** | **Description** | **Required** |
