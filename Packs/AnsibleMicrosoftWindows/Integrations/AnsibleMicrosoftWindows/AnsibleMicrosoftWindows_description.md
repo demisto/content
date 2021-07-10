@@ -1,4 +1,4 @@
-# Microsoft Windows
+# Ansible Microsoft Windows
 
 This integration enables the management of Microsoft Windows hosts directly from XSOAR using WinRM.
 

@@ -1,5 +1,5 @@
 {
-    "name": "Kubernetes",
+    "name": "Ansible Kubernetes",
     "description": "Manage and control Kubernetes clusters.",
     "support": "xsoar",
     "currentVersion": "1.0.0",

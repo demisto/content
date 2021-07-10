@@ -1,5 +1,5 @@
 {
-    "name": "Microsoft Windows",
+    "name": "Ansible Microsoft Windows",
     "description": "Manage and control Windows hosts.",
     "support": "xsoar",
     "currentVersion": "1.0.0",

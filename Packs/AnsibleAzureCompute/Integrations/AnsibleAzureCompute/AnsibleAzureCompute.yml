@@ -52,7 +52,7 @@ configuration:
   required: true
   type: 0
 description: Manage Azure Compute resources
-display: Azure Compute
+display: Ansible Azure Compute
 fromversion: 6.0.0
 name: AnsibleAzureCompute
 script:
@@ -580,7 +580,6 @@ script:
     - auto: PREDEFINED
       defaultValue: present
       description: 'Assert the state of the GalleryImageVersion.
-
         Use `present` to create or update an GalleryImageVersion and `absent` to delete
         it.'
       name: state
@@ -591,9 +590,7 @@ script:
       name: subscription_id
     - description: 'Dictionary of string:string pairs to assign as metadata to the
         object.
-
         Metadata tags on the object will be updated with any provided values.
-
         To remove tags set append_tags option to false.'
       isArray: true
       name: tags
@@ -601,7 +598,6 @@ script:
       defaultValue: 'Yes'
       description: 'Use to control if tags field is canonical or just appends to existing
         tags.
-
         When canonical, any tags not found in the tags parameter will be removed from
         the object''s metadata.'
       name: append_tags
@@ -680,9 +676,7 @@ script:
       name: subscription_id
     - description: 'Dictionary of string:string pairs to assign as metadata to the
         object.
-
         Metadata tags on the object will be updated with any provided values.
-
         To remove tags set append_tags option to false.'
       isArray: true
       name: tags
@@ -690,7 +684,6 @@ script:
       defaultValue: 'Yes'
       description: 'Use to control if tags field is canonical or just appends to existing
         tags.
-
         When canonical, any tags not found in the tags parameter will be removed from
         the object''s metadata.'
       name: append_tags
@@ -751,49 +744,37 @@ script:
       name: probes
     - description: 'Defines an external port range for inbound NAT to a single backend
         port on NICs associated with a load balancer.
-
         Inbound NAT rules are created automatically for each NIC associated with the
         Load Balancer using an external port from this range.
-
         Defining an Inbound NAT pool on your Load Balancer is mutually exclusive with
         defining inbound Nat rules.
-
         Inbound NAT pools are referenced from virtual machine scale sets.
-
         NICs that are associated with individual virtual machines cannot reference
         an inbound NAT pool.
-
         They have to reference individual inbound NAT rules.'
       name: inbound_nat_pools
     - description: Object collection representing the load balancing rules Gets the
         provisioning.
       name: load_balancing_rules
     - description: 'Collection of inbound NAT Rules used by a load balancer.
-
         Defining inbound NAT rules on your load balancer is mutually exclusive with
         defining an inbound NAT pool.
-
         Inbound NAT pools are referenced from virtual machine scale sets.
-
         NICs that are associated with individual virtual machines cannot reference
         an Inbound NAT pool.
-
         They have to reference individual inbound NAT rules.'
       name: inbound_nat_rules
     - description: '(deprecated) Name of an existing public IP address object to associate
         with the security group.
-
         This option has been deprecated, and will be removed in 2.9. Use `frontend_ip_configurations`
         instead.'
       name: public_ip_address_name
     - description: '(deprecated) The port that the health probe will use.
-
         This option has been deprecated, and will be removed in 2.9. Use `probes`
         instead.'
       name: probe_port
     - auto: PREDEFINED
       description: '(deprecated) The protocol to use for the health probe.
-
         This option has been deprecated, and will be removed in 2.9. Use `probes`
         instead.'
       name: probe_protocol
@@ -803,27 +784,23 @@ script:
       - Https
     - defaultValue: '15'
       description: '(deprecated) Time (in seconds) between endpoint health probes.
-
         This option has been deprecated, and will be removed in 2.9. Use `probes`
         instead.'
       name: probe_interval
     - defaultValue: '3'
       description: '(deprecated) The amount of probe failures for the load balancer
         to make a health determination.
-
         This option has been deprecated, and will be removed in 2.9. Use `probes`
         instead.'
       name: probe_fail_count
     - description: '(deprecated) The URL that an HTTP probe or HTTPS probe will use
         (only relevant if `probe_protocol=Http` or `probe_protocol=Https`).
-
         This option has been deprecated, and will be removed in 2.9. Use `probes`
         instead.'
       name: probe_request_path
     - auto: PREDEFINED
       description: '(deprecated) The protocol (TCP or UDP) that the load balancer
         will use.
-
         This option has been deprecated, and will be removed in 2.9. Use `load_balancing_rules`
         instead.'
       name: protocol
@@ -833,7 +810,6 @@ script:
     - auto: PREDEFINED
       description: '(deprecated) The type of load distribution that the load balancer
         will employ.
-
         This option has been deprecated, and will be removed in 2.9. Use `load_balancing_rules`
         instead.'
       name: load_distribution
@@ -842,38 +818,31 @@ script:
       - SourceIP
       - SourceIPProtocol
     - description: '(deprecated) Frontend port that will be exposed for the load balancer.
-
         This option has been deprecated, and will be removed in 2.9. Use `load_balancing_rules`
         instead.'
       name: frontend_port
     - description: '(deprecated) Backend port that will be exposed for the load balancer.
-
         This option has been deprecated, and will be removed in 2.9. Use `load_balancing_rules`
         instead.'
       name: backend_port
     - defaultValue: '4'
       description: '(deprecated) Timeout for TCP idle connection in minutes.
-
         This option has been deprecated, and will be removed in 2.9. Use `load_balancing_rules`
         instead.'
       name: idle_timeout
     - description: '(deprecated) Start of the port range for a NAT pool.
-
         This option has been deprecated, and will be removed in 2.9. Use `inbound_nat_pools`
         instead.'
       name: natpool_frontend_port_start
     - description: '(deprecated) End of the port range for a NAT pool.
-
         This option has been deprecated, and will be removed in 2.9. Use `inbound_nat_pools`
         instead.'
       name: natpool_frontend_port_end
     - description: '(deprecated) Backend port used by the NAT pool.
-
         This option has been deprecated, and will be removed in 2.9. Use `inbound_nat_pools`
         instead.'
       name: natpool_backend_port
     - description: '(deprecated) The protocol for the NAT pool.
-
         This option has been deprecated, and will be removed in 2.9. Use `inbound_nat_pools`
         instead.'
       name: natpool_protocol
@@ -881,9 +850,7 @@ script:
       name: subscription_id
     - description: 'Dictionary of string:string pairs to assign as metadata to the
         object.
-
         Metadata tags on the object will be updated with any provided values.
-
         To remove tags set append_tags option to false.'
       isArray: true
       name: tags
@@ -891,7 +858,6 @@ script:
       defaultValue: 'Yes'
       description: 'Use to control if tags field is canonical or just appends to existing
         tags.
-
         When canonical, any tags not found in the tags parameter will be removed from
         the object''s metadata.'
       name: append_tags
@@ -944,18 +910,12 @@ script:
       name: location
     - auto: PREDEFINED
       description: 'Type of storage for the managed disk.
-
         If not specified, the disk is created as `Standard_LRS`.
-
         `Standard_LRS` is for Standard HDD.
-
         `StandardSSD_LRS` (added in 2.8) is for Standard SSD.
-
         `Premium_LRS` is for Premium SSD.
-
         `UltraSSD_LRS` (added in 2.8) is for Ultra SSD, which is in preview mode,
         and only available on select instance types.
-
         See `https://docs.microsoft.com/en-us/azure/virtual-machines/windows/disks-types`
         for more information about disk types.'
       name: storage_account_type
@@ -977,35 +937,27 @@ script:
       name: source_uri
     - auto: PREDEFINED
       description: 'Type of Operating System.
-
         Used when `create_option=copy` or `create_option=import` and the source is
         an OS disk.
-
         If omitted during creation, no value is set.
-
         If omitted during an update, no change is made.
-
         Once set, this value cannot be cleared.'
       name: os_type
       predefined:
       - linux
       - windows
     - description: 'Size in GB of the managed disk to be created.
-
         If `create_option=copy` then the value must be greater than or equal to the
         source''s size.'
       name: disk_size_gb
     - description: 'Name of an existing virtual machine with which the disk is or
         will be associated, this VM should be in the same resource group.
-
         To detach a disk from a vm, explicitly set to ''''.
-
         If this option is unset, the value will not be changed.'
       name: managed_by
     - auto: PREDEFINED
       description: 'Disk caching policy controlled by VM. Will be used when attached
         to the VM defined by `managed_by`.
-
         If this option is different from the current caching policy, the managed disk
         will be deattached and attached with current caching option again.'
       name: attach_caching
@@ -1020,7 +972,6 @@ script:
       name: tags
     - auto: PREDEFINED
       description: 'The Azure managed disk''s zone.
-
         Allowed values are `1`, `2`, `3` and `'' ''`.'
       name: zone
       predefined:
@@ -1034,7 +985,6 @@ script:
       defaultValue: 'Yes'
       description: 'Use to control if tags field is canonical or just appends to existing
         tags.
-
         When canonical, any tags not found in the tags parameter will be removed from
         the object''s metadata.'
       name: append_tags
@@ -1059,7 +1009,6 @@ script:
     - description: Limit results to a specific resource group.
       name: resource_group
     - description: 'Limit results by providing a list of tags.
-
         Format tags as ''key'' or ''key:value''.'
       isArray: true
       name: tags
@@ -1069,7 +1018,6 @@ script:
       defaultValue: 'Yes'
       description: 'Use to control if tags field is canonical or just appends to existing
         tags.
-
         When canonical, any tags not found in the tags parameter will be removed from
         the object''s metadata.'
       name: append_tags
@@ -1090,7 +1038,6 @@ script:
     - description: Provider type, should be specified in no URL is given.
       name: provider
     - description: 'Resource group to be used.
-
         Required if URL is not specified.'
       name: resource_group
     - description: Resource type.
@@ -1111,12 +1058,10 @@ script:
   - arguments:
     - defaultValue: 'no'
       description: 'Remove a resource group and all associated resources.
-
         Use with `state=absent` to delete a resource group that contains resources.'
       name: force_delete_nonempty
     - description: 'Azure location for the resource group. Required when creating
         a new resource group.
-
         Cannot be changed once resource group is created.'
       name: location
     - description: Name of the resource group.
@@ -1126,7 +1071,6 @@ script:
       defaultValue: present
       description: 'Assert the state of the resource group. Use `present` to create
         or update and `absent` to delete.
-
         When `absent` a resource group containing resources will not be removed unless
         the `force` option is used.'
       name: state
@@ -1137,9 +1081,7 @@ script:
       name: subscription_id
     - description: 'Dictionary of string:string pairs to assign as metadata to the
         object.
-
         Metadata tags on the object will be updated with any provided values.
-
         To remove tags set append_tags option to false.'
       isArray: true
       name: tags
@@ -1147,7 +1089,6 @@ script:
       defaultValue: 'Yes'
       description: 'Use to control if tags field is canonical or just appends to existing
         tags.
-
         When canonical, any tags not found in the tags parameter will be removed from
         the object''s metadata.'
       name: append_tags
@@ -1171,7 +1112,6 @@ script:
         or 'key:value'.
       name: tags
     - description: 'List all resources under the resource group.
-
         Note this will cost network overhead for each resource group. Suggest use
         this when `name` set.'
       name: list_resources
@@ -1207,7 +1147,6 @@ script:
     - auto: PREDEFINED
       defaultValue: present
       description: 'Assert the state of the Snapshot.
-
         Use `present` to create or update an Snapshot and `absent` to delete it.'
       name: state
       predefined:
@@ -1217,9 +1156,7 @@ script:
       name: subscription_id
     - description: 'Dictionary of string:string pairs to assign as metadata to the
         object.
-
         Metadata tags on the object will be updated with any provided values.
-
         To remove tags set append_tags option to false.'
       isArray: true
       name: tags
@@ -1227,7 +1164,6 @@ script:
       defaultValue: 'Yes'
       description: 'Use to control if tags field is canonical or just appends to existing
         tags.
-
         When canonical, any tags not found in the tags parameter will be removed from
         the object''s metadata.'
       name: append_tags
@@ -1249,23 +1185,17 @@ script:
       name: name
       required: true
     - description: 'Data made available to the VM and used by `cloud-init`.
-
         Only used on Linux images with `cloud-init` enabled.
-
         Consult `https://docs.microsoft.com/en-us/azure/virtual-machines/linux/using-cloud-init#cloud-init-overview`
         for cloud-init ready images.
-
         To enable cloud-init on a Linux image, follow `https://docs.microsoft.com/en-us/azure/virtual-machines/linux/cloudinit-prepare-custom-image`.'
       name: custom_data
     - auto: PREDEFINED
       defaultValue: present
       description: 'State of the VM.
-
         Set to `present` to create a VM with the configuration specified by other
         options, or to update the configuration of an existing VM.
-
         Set to `absent` to remove a VM.
-
         Does not affect power state. Use `started`/`allocated`/`restarted` parameters
         to change the power state of a VM.'
       name: state
@@ -1275,9 +1205,7 @@ script:
     - auto: PREDEFINED
       defaultValue: 'Yes'
       description: 'Whether the VM is started or stopped.
-
         Set to (true) with `state=present` to start the VM.
-
         Set to `false` to stop the VM.'
       name: started
       predefined:
@@ -1291,9 +1219,7 @@ script:
       - 'Yes'
       - 'No'
     - description: 'Whether the VM is generalized or not.
-
         Set to `true` with `state=present` to generalize the VM.
-
         Generalizing a VM is irreversible.'
       name: generalized
     - description: Set to `true` with `state=present` to restart a running VM.
@@ -1303,29 +1229,23 @@ script:
       name: location
     - description: 'Name assigned internally to the host. On a Linux VM this is the
         name returned by the `hostname` command.
-
         When creating a VM, short_hostname defaults to `name`.'
       name: short_hostname
     - description: 'A valid Azure VM size value. For example, `Standard_D4`.
-
         Choices vary depending on the subscription and location. Check your subscription
         for available choices.
-
         Required when creating a VM.'
       name: vm_size
     - description: 'Admin username used to access the VM after it is created.
-
         Required when creating a VM.'
       name: admin_username
     - description: 'Password for the admin username.
-
         Not required if the `os_type=Linux` and SSH password authentication is disabled
         by setting `ssh_password_enabled=false`.'
       name: admin_password
     - auto: PREDEFINED
       defaultValue: 'Yes'
       description: 'Whether to enable or disable SSH passwords.
-
         When `os_type=Linux`, set to `false` to disable SSH password authentication
         and require use of SSH keys.'
       name: ssh_password_enabled
@@ -1333,23 +1253,17 @@ script:
       - 'Yes'
       - 'No'
     - description: 'For `os_type=Linux` provide a list of SSH keys.
-
         Accepts a list of dicts where each dictionary contains two keys, `path` and
         `key_data`.
-
         Set `path` to the default location of the authorized_keys files. For example,
         `path=/home/<admin username>/.ssh/authorized_keys`.
-
         Set `key_data` to the actual value of the public key.'
       name: ssh_public_keys
     - description: 'The image used to build the VM.
-
         For custom images, the name of the image. To narrow the search to a specific
         resource group, a dict with the keys `name` and `resource_group`.
-
         For Marketplace images, a dict with the keys `publisher`, `offer`, `sku`,
         and `version`.
-
         Set `version=latest` to get the most recent version of a given image.'
       name: image
       required: true
@@ -1357,28 +1271,22 @@ script:
         `availability_set` should be in the same resource group as VM.
       name: availability_set
     - description: 'Name of a storage account that supports creation of VHD blobs.
-
         If not specified for a new VM, a new storage account named <vm name>01 will
         be created using storage type `Standard_LRS`.'
       name: storage_account_name
     - defaultValue: vhds
       description: 'Name of the container to use within the storage account to store
         VHD blobs.
-
         If not specified, a default container will be created.'
       name: storage_container_name
     - description: 'Name of the storage blob used to hold the OS disk image of the
         VM.
-
         Must end with ''.vhd''.
-
         If not specified, defaults to the VM name + ''.vhd''.'
       name: storage_blob_name
     - auto: PREDEFINED
       description: 'Managed OS disk type.
-
         Create OS disk with managed disk if defined.
-
         If not defined, the OS disk will be created with virtual hard disk (VHD).'
       name: managed_disk_type
       predefined:
@@ -1404,18 +1312,14 @@ script:
       - Windows
       - Linux
     - description: 'Describes list of data disks.
-
         Use `azure_rm_mangeddisk` to manage the specific disk.'
       name: data_disks
     - auto: PREDEFINED
       defaultValue: Static
       description: 'Allocation method for the public IP of the VM.
-
         Used only if a network interface is not specified.
-
         When set to `Dynamic`, the public IP address may change any time the VM is
         rebooted or power cycled.
-
         The `Disabled` choice was added in Ansible 2.6.'
       name: public_ip_allocation_method
       predefined:
@@ -1424,20 +1328,14 @@ script:
       - Disabled
     - description: 'List of ports to open in the security group for the VM, when a
         security group and network interface are created with a VM.
-
         For Linux hosts, defaults to allowing inbound TCP connections to port 22.
-
         For Windows hosts, defaults to opening ports 3389 and 5986.'
       name: open_ports
     - description: 'Network interface names to add to the VM.
-
         Can be a string of name or resource ID of the network interface.
-
         Can be a dict containing `resource_group` and `name` of the network interface.
-
         If a network interface name is not provided when the VM is created, a default
         network interface will be created.
-
         To create a new network interface, at least one Virtual Network with one Subnet
         must exist.'
       isArray: true
@@ -1446,33 +1344,25 @@ script:
         group's virtual network.
       name: virtual_network_resource_group
     - description: 'The virtual network to use when creating a VM.
-
         If not specified, a new network interface will be created and assigned to
         the first virtual network found in the resource group.
-
         Use with `virtual_network_resource_group` to place the virtual network in
         another resource group.'
       name: virtual_network_name
     - description: 'Subnet for the VM.
-
         Defaults to the first subnet found in the virtual network or the subnet of
         the `network_interface_name`, if provided.
-
         If the subnet is in another resource group, specify the resource group with
         `virtual_network_resource_group`.'
       name: subnet_name
     - defaultValue: '[''all'']'
       description: 'Associated resources to remove when removing a VM using `state=absent`.
-
         To remove all resources related to the VM being removed, including auto-created
         resources, set to `all`.
-
         To remove only resources that were automatically created while provisioning
         the VM being removed, set to `all_autocreated`.
-
         To remove only specific resources, set to `network_interfaces`, `virtual_storage`
         or `public_ips`.
-
         Any other input will be ignored.'
       isArray: true
       name: remove_on_absent
@@ -1482,10 +1372,8 @@ script:
     - auto: PREDEFINED
       defaultValue: 'No'
       description: 'Accept terms for Marketplace images that require it.
-
         Only Azure service admin/account admin users can purchase images from the
         Marketplace.
-
         Only valid when a `plan` is specified.'
       name: accept_terms
       predefined:
@@ -1496,9 +1384,7 @@ script:
       name: zones
     - auto: PREDEFINED
       description: 'On-premise license for the image or disk.
-
         Only used for images that contain the Windows Server operating system.
-
         To remove all license type settings, set to the string `None`.'
       name: license_type
       predefined:
@@ -1512,16 +1398,13 @@ script:
     - description: List of Windows Remote Management configurations of the VM.
       name: winrm
     - description: 'Manage boot diagnostics settings for a VM.
-
         Boot diagnostics includes a serial console and remote console screenshots.'
       name: boot_diagnostics
     - description: Your Azure subscription Id.
       name: subscription_id
     - description: 'Dictionary of string:string pairs to assign as metadata to the
         object.
-
         Metadata tags on the object will be updated with any provided values.
-
         To remove tags set append_tags option to false.'
       isArray: true
       name: tags
@@ -1529,7 +1412,6 @@ script:
       defaultValue: 'Yes'
       description: 'Use to control if tags field is canonical or just appends to existing
         tags.
-
         When canonical, any tags not found in the tags parameter will be removed from
         the object''s metadata.'
       name: append_tags
@@ -1644,7 +1526,6 @@ script:
   - arguments:
     - description: 'Azure location value, for example `westus`, `eastus`, `eastus2`,
         `northcentralus`, etc.
-
         Supplying only a location value will yield a list of available publishers
         for the location.'
       name: location
@@ -1680,11 +1561,9 @@ script:
     - auto: PREDEFINED
       defaultValue: present
       description: 'Assert the state of the virtual machine scale set.
-
         State `present` will check that the machine exists with the requested configuration.
         If the configuration of the existing machine does not match, the machine will
         be updated.
-
         State `absent` will remove the virtual machine scale set.'
       name: state
       predefined:
@@ -1695,7 +1574,6 @@ script:
     - description: Short host name.
       name: short_hostname
     - description: 'A valid Azure VM size value. For example, `Standard_D4`.
-
         The list of choices varies depending on the subscription and location. Check
         your subscription for available choices.'
       name: vm_size
@@ -1710,7 +1588,6 @@ script:
       - Standard
     - auto: PREDEFINED
       description: 'Upgrade policy.
-
         Required when creating the Azure virtual machine scale sets.'
       name: upgrade_policy
       predefined:
@@ -1720,7 +1597,6 @@ script:
         when creating a VM.
       name: admin_username
     - description: 'Password for the admin username.
-
         Not required if the os_type is Linux and SSH password authentication is disabled
         by setting `ssh_password_enabled=false`.'
       name: admin_password
@@ -1733,28 +1609,21 @@ script:
       - 'Yes'
       - 'No'
     - description: 'For `os_type=Linux` provide a list of SSH keys.
-
         Each item in the list should be a dictionary where the dictionary contains
         two keys, `path` and `key_data`.
-
         Set the `path` to the default location of the authorized_keys files.
-
         On an Enterprise Linux host, for example, the `path=/home/<admin username>/.ssh/authorized_keys`.
         Set `key_data` to the actual value of the public key.'
       name: ssh_public_keys
     - description: 'Specifies the image used to build the VM.
-
         If a string, the image is sourced from a custom image based on the name.
-
         If a dict with the keys `publisher`, `offer`, `sku`, and `version`, the image
         is sourced from a Marketplace image. Note that set `version=latest` to get
         the most recent version of a given image.
-
         If a dict with the keys `name` and `resource_group`, the image is sourced
         from a custom image based on the `name` and `resource_group` set. Note that
         the key `resource_group` is optional and if omitted, all images in the subscription
         will be searched for by `name`.
-
         Custom image support was added in Ansible 2.5.'
       name: image
       required: true
@@ -1782,7 +1651,6 @@ script:
       name: data_disks
     - description: 'When creating a virtual machine, if a specific virtual network
         from another resource group should be used.
-
         Use this parameter to specify the resource group to use.'
       name: virtual_network_resource_group
     - description: Virtual Network name.
@@ -1796,21 +1664,16 @@ script:
     - defaultValue: '[''all'']'
       description: 'When removing a VM using `state=absent`, also remove associated
         resources.
-
         It can be `all` or a list with any of the following [''network_interfaces'',
         ''virtual_storage'', ''public_ips''].
-
         Any other input will be ignored.'
       name: remove_on_absent
     - description: Indicates whether user wants to allow accelerated networking for
         virtual machines in scaleset being created.
       name: enable_accelerated_networking
     - description: 'Existing security group with which to associate the subnet.
-
         It can be the security group name which is in the same resource group.
-
         It can be the resource ID.
-
         It can be a dict which contains `name` and `resource_group` of the security
         group.'
       name: security_group
@@ -1834,10 +1697,8 @@ script:
       name: zones
     - description: 'Data which is made available to the virtual machine and used by
         e.g., `cloud-init`.
-
         Many images in the marketplace are not cloud-init ready. Thus, data sent to
         `custom_data` would be ignored.
-
         If the image you are attempting to use is not listed in `https://docs.microsoft.com/en-us/azure/virtual-machines/linux/using-cloud-init#cloud-init-overview`,
         follow these steps `https://docs.microsoft.com/en-us/azure/virtual-machines/linux/cloudinit-prepare-custom-image`.'
       name: custom_data
@@ -1845,9 +1706,7 @@ script:
       name: subscription_id
     - description: 'Dictionary of string:string pairs to assign as metadata to the
         object.
-
         Metadata tags on the object will be updated with any provided values.
-
         To remove tags set append_tags option to false.'
       isArray: true
       name: tags
@@ -1855,7 +1714,6 @@ script:
       defaultValue: 'Yes'
       description: 'Use to control if tags field is canonical or just appends to existing
         tags.
-
         When canonical, any tags not found in the tags parameter will be removed from
         the object''s metadata.'
       name: append_tags
@@ -1868,7 +1726,6 @@ script:
     outputs:
     - contextPath: AzureCompute.azureRmVirtualmachinescaleset.azure_vmss
       description: 'Facts about the current state of the object.
-
         Note that facts are not part of the registered output but available directly.'
       type: unknown
   - arguments:
@@ -1882,15 +1739,11 @@ script:
     - auto: PREDEFINED
       defaultValue: raw
       description: 'Format of the data returned.
-
         If `raw` is selected information will be returned in raw format from Azure
         Python SDK.
-
         If `curated` is selected the structure will be identical to input parameters
         of `azure_rm_virtualmachinescaleset` module.
-
         In Ansible 2.5 and lower facts are always returned in raw format.
-
         Please note that this option will be deprecated in 2.10 when curated format
         will become the only supported format.'
       name: format
@@ -1926,16 +1779,12 @@ script:
     - description: The type version of the extension handler.
       name: type_handler_version
     - description: 'A dictionary containing extension settings.
-
         Settings depend on extension type.
-
         Refer to `https://docs.microsoft.com/en-us/azure/virtual-machines/extensions/overview`
         for more information.'
       name: settings
     - description: 'A dictionary containing protected extension settings.
-
         Settings depend on extension type.
-
         Refer to `https://docs.microsoft.com/en-us/azure/virtual-machines/extensions/overview`
         for more information.'
       name: protected_settings
@@ -1945,7 +1794,6 @@ script:
     - auto: PREDEFINED
       defaultValue: present
       description: 'Assert the state of the extension.
-
         Use `present` to create or update an extension and `absent` to delete it.'
       name: state
       predefined:
@@ -2049,25 +1897,16 @@ script:
         will be used as default.
       name: location
     - description: 'App service plan. Required for creation.
-
         Can be name of existing app service plan in same resource group as web app.
-
         Can be the resource ID of an existing app service plan. For example /subscriptions/<subs_id>/resourceGroups/<resource_group>/providers/Microsoft.Web/serverFarms/<plan_name>.
-
         Can be a dict containing five parameters, defined below.
-
         `name`, name of app service plan.
-
         `resource_group`, resource group of the app service plan.
-
         `sku`, SKU of app service plan, allowed values listed on `https://azure.microsoft.com/en-us/pricing/details/app-service/linux/`.
-
         `is_linux`, whether or not the app service plan is Linux. defaults to `False`.
-
         `number_of_workers`, number of workers for app service plan.'
       name: plan
     - description: 'Set of run time framework settings. Each setting is a dictionary.
-
         See `https://docs.microsoft.com/en-us/azure/app-service/app-service-web-overview`
         for more info.'
       name: frameworks
@@ -2075,13 +1914,11 @@ script:
       name: container_settings
     - description: 'Repository type of deployment source, for example `LocalGit`,
         `GitHub`.
-
         List of supported values maintained at `https://docs.microsoft.com/en-us/rest/api/appservice/webapps/createorupdate#scmtype`.'
       name: scm_type
     - description: Deployment source for git.
       name: deployment_source
     - description: 'The web''s startup file.
-
         Used only for Linux web apps.'
       name: startup_file
     - auto: PREDEFINED
@@ -2119,7 +1956,6 @@ script:
     - auto: PREDEFINED
       defaultValue: present
       description: 'State of the Web App.
-
         Use `present` to create or update a Web App and `absent` to delete it.'
       name: state
       predefined:
@@ -2129,9 +1965,7 @@ script:
       name: subscription_id
     - description: 'Dictionary of string:string pairs to assign as metadata to the
         object.
-
         Metadata tags on the object will be updated with any provided values.
-
         To remove tags set append_tags option to false.'
       isArray: true
       name: tags
@@ -2139,7 +1973,6 @@ script:
       defaultValue: 'Yes'
       description: 'Use to control if tags field is canonical or just appends to existing
         tags.
-
         When canonical, any tags not found in the tags parameter will be removed from
         the object''s metadata.'
       name: append_tags
@@ -2193,22 +2026,18 @@ script:
       name: configuration_source
     - description: 'Used to configure target slot name to auto swap, or disable auto
         swap.
-
         Set it target slot name to auto swap.
-
         Set it to False to disable auto slot swap.'
       name: auto_swap_slot_name
     - description: Swap deployment slots of a web app.
       name: swap
     - description: 'Set of run time framework settings. Each setting is a dictionary.
-
         See `https://docs.microsoft.com/en-us/azure/app-service/app-service-web-overview`
         for more info.'
       name: frameworks
     - description: Web app slot container settings.
       name: container_settings
     - description: 'The slot startup file.
-
         This only applies for Linux web app slot.'
       name: startup_file
     - description: Configure web app slot application settings. Suboptions are in
@@ -2230,7 +2059,6 @@ script:
     - auto: PREDEFINED
       defaultValue: present
       description: 'State of the Web App deployment slot.
-
         Use `present` to create or update a  slot and `absent` to delete it.'
       name: state
       predefined:
@@ -2240,9 +2068,7 @@ script:
       name: subscription_id
     - description: 'Dictionary of string:string pairs to assign as metadata to the
         object.
-
         Metadata tags on the object will be updated with any provided values.
-
         To remove tags set append_tags option to false.'
       isArray: true
       name: tags
@@ -2250,7 +2076,6 @@ script:
       defaultValue: 'Yes'
       description: 'Use to control if tags field is canonical or just appends to existing
         tags.
-
         When canonical, any tags not found in the tags parameter will be removed from
         the object''s metadata.'
       name: append_tags

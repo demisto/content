@@ -1,4 +1,4 @@
-# Hetzner Cloud
+# Ansible Hetzner Cloud
 Manage Hetzner Cloud resources.
 
 # Authorize Cortex XSOAR for Hetzner Cloud

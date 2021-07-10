@@ -1,5 +1,5 @@
 {
-    "name": "Hetzner Cloud",
+    "name": "Ansible Hetzner Cloud",
     "description": "Manage and control Hetzner Cloud services.",
     "support": "xsoar",
     "currentVersion": "1.0.0",

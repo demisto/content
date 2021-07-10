@@ -1,4 +1,4 @@
-# Azure Compute
+# Ansible Azure Compute
 Manage Azure Compute Compute services.
 
 To use this integration you must generate a Service Principal for your Azure subscription. Follow [Microsoft's guide](https://docs.microsoft.com/en-us/azure/azure-resource-manager/resource-group-create-service-principal-portal) on how to create a Azure AD application and associated service principal.
