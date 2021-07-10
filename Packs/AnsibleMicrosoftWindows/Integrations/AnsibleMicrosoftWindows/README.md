@@ -32,8 +32,10 @@ This integration is powered by Ansible 2.9. Further information can be found on 
 * [Ansible Windows Guide](https://docs.ansible.com/ansible/2.9/user_guide/windows_setup.html)
 * [Windows Module Index](https://docs.ansible.com/ansible/2.9/modules/list_of_windows_modules.html)
 
+
+## Configure Ansible Microsoft Windows on Cortex XSOAR
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for AnsibleMicrosoftWindows.
+2. Search for Ansible Microsoft Windows.
 3. Click **Add instance** to create and configure a new integration instance.
 
     | **Parameter** | **Description** | **Required** |
@@ -51,7 +53,7 @@ After you successfully execute a command, a DBot message appears in the War Room
 ### win-gather-facts
 ***
 Gathers facts about remote hosts
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/gather_facts_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/gather_facts_module.html
 
 
 #### Base Command
@@ -74,7 +76,7 @@ Gathers facts about remote hosts
 ### win-acl
 ***
 Set file/directory/registry permissions for a system user or group
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_acl_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_acl_module.html
 
 
 #### Base Command
@@ -125,7 +127,7 @@ Set file/directory/registry permissions for a system user or group
 ### win-acl-inheritance
 ***
 Change ACL inheritance
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_acl_inheritance_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_acl_inheritance_module.html
 
 
 #### Base Command
@@ -172,7 +174,7 @@ Change ACL inheritance
 ### win-audit-policy-system
 ***
 Used to make changes to the system wide Audit Policy
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_audit_policy_system_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_audit_policy_system_module.html
 
 
 #### Base Command
@@ -225,7 +227,7 @@ Used to make changes to the system wide Audit Policy
 ### win-audit-rule
 ***
 Adds an audit rule to files, folders, or registry keys
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_audit_rule_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_audit_rule_module.html
 
 
 #### Base Command
@@ -297,7 +299,7 @@ Will be one of file, directory, registry. |
 ### win-certificate-store
 ***
 Manages the certificate store
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_certificate_store_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_certificate_store_module.html
 
 
 #### Base Command
@@ -356,7 +358,7 @@ Manages the certificate store
 ### win-chocolatey
 ***
 Manage packages using chocolatey
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_chocolatey_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_chocolatey_module.html
 
 
 #### Base Command
@@ -427,7 +429,7 @@ Manage packages using chocolatey
 ### win-chocolatey-config
 ***
 Manages Chocolatey config settings
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_chocolatey_config_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_chocolatey_config_module.html
 
 
 #### Base Command
@@ -474,7 +476,7 @@ Manages Chocolatey config settings
 ### win-chocolatey-facts
 ***
 Create a facts collection for Chocolatey
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_chocolatey_facts_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_chocolatey_facts_module.html
 
 
 #### Base Command
@@ -827,7 +829,7 @@ Create a facts collection for Chocolatey
 ### win-chocolatey-feature
 ***
 Manages Chocolatey features
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_chocolatey_feature_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_chocolatey_feature_module.html
 
 
 #### Base Command
@@ -873,7 +875,7 @@ Manages Chocolatey features
 ### win-chocolatey-source
 ***
 Manages Chocolatey sources
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_chocolatey_source_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_chocolatey_source_module.html
 
 
 #### Base Command
@@ -929,7 +931,7 @@ Manages Chocolatey sources
 ### win-copy
 ***
 Copies files to remote locations on windows hosts
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_copy_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_copy_module.html
 
 
 #### Base Command
@@ -1000,7 +1002,7 @@ Copies files to remote locations on windows hosts
 ### win-credential
 ***
 Manages Windows Credentials in the Credential Manager
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_credential_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_credential_module.html
 
 
 #### Base Command
@@ -1033,7 +1035,7 @@ Manages Windows Credentials in the Credential Manager
 ### win-defrag
 ***
 Consolidate fragmented files on local volumes
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_defrag_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_defrag_module.html
 
 
 #### Base Command
@@ -1290,7 +1292,7 @@ Consolidate fragmented files on local volumes
 ### win-disk-facts
 ***
 Show the attached disks and disk information of the target host
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_disk_facts_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_disk_facts_module.html
 
 
 #### Base Command
@@ -1950,7 +1952,7 @@ Show the attached disks and disk information of the target host
 ### win-disk-image
 ***
 Manage ISO/VHD/VHDX mounts on Windows hosts
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_disk_image_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_disk_image_module.html
 
 
 #### Base Command
@@ -2003,7 +2005,7 @@ Manage ISO/VHD/VHDX mounts on Windows hosts
 ### win-dns-client
 ***
 Configures DNS lookup on Windows hosts
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_dns_client_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_dns_client_module.html
 
 
 #### Base Command
@@ -2029,7 +2031,7 @@ Configures DNS lookup on Windows hosts
 ### win-dns-record
 ***
 Manage Windows Server DNS records
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_dns_record_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_dns_record_module.html
 
 
 #### Base Command
@@ -2060,7 +2062,7 @@ Manage Windows Server DNS records
 ### win-domain
 ***
 Ensures the existence of a Windows domain
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_domain_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_domain_module.html
 
 
 #### Base Command
@@ -2115,7 +2117,7 @@ Ensures the existence of a Windows domain
 ### win-domain-computer
 ***
 Manage computers in Active Directory
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_domain_computer_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_domain_computer_module.html
 
 
 #### Base Command
@@ -2149,7 +2151,7 @@ Manage computers in Active Directory
 ### win-domain-controller
 ***
 Manage domain controller/member server state for a Windows host
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_domain_controller_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_domain_controller_module.html
 
 
 #### Base Command
@@ -2184,7 +2186,7 @@ Manage domain controller/member server state for a Windows host
 ### win-domain-group
 ***
 Creates, modifies or removes domain groups
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_domain_group_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_domain_group_module.html
 
 
 #### Base Command
@@ -2235,7 +2237,7 @@ Creates, modifies or removes domain groups
 ### win-domain-group-membership
 ***
 Manage Windows domain group membership
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_domain_group_membership_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_domain_group_membership_module.html
 
 
 #### Base Command
@@ -2269,7 +2271,7 @@ Manage Windows domain group membership
 ### win-domain-membership
 ***
 Manage domain/workgroup membership for a Windows host
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_domain_membership_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_domain_membership_module.html
 
 
 #### Base Command
@@ -2301,7 +2303,7 @@ Manage domain/workgroup membership for a Windows host
 ### win-domain-user
 ***
 Manages Windows Active Directory user accounts
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_domain_user_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_domain_user_module.html
 
 
 #### Base Command
@@ -2376,7 +2378,7 @@ Manages Windows Active Directory user accounts
 ### win-dotnet-ngen
 ***
 Runs ngen to recompile DLLs after .NET  updates
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_dotnet_ngen_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_dotnet_ngen_module.html
 
 
 #### Base Command
@@ -2408,7 +2410,7 @@ Runs ngen to recompile DLLs after .NET  updates
 ### win-dsc
 ***
 Invokes a PowerShell DSC configuration
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_dsc_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_dsc_module.html
 
 
 #### Base Command
@@ -2439,7 +2441,7 @@ Invokes a PowerShell DSC configuration
 ### win-environment
 ***
 Modify environment variables on windows hosts
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_environment_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_environment_module.html
 
 
 #### Base Command
@@ -2505,7 +2507,7 @@ Modify environment variables on windows hosts
 ### win-eventlog
 ***
 Manage Windows event logs
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_eventlog_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_eventlog_module.html
 
 
 #### Base Command
@@ -2589,7 +2591,7 @@ Manage Windows event logs
 ### win-eventlog-entry
 ***
 Write entries to Windows event logs
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_eventlog_entry_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_eventlog_entry_module.html
 
 
 #### Base Command
@@ -2642,7 +2644,7 @@ Write entries to Windows event logs
 ### win-feature
 ***
 Installs and uninstalls Windows Features on Windows Server
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_feature_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_feature_module.html
 
 
 #### Base Command
@@ -2702,7 +2704,7 @@ Installs and uninstalls Windows Features on Windows Server
 ### win-file
 ***
 Creates, touches or removes files or directories
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_file_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_file_module.html
 
 
 #### Base Command
@@ -2748,7 +2750,7 @@ Creates, touches or removes files or directories
 ### win-file-version
 ***
 Get DLL or EXE file build version
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_file_version_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_file_version_module.html
 
 
 #### Base Command
@@ -2812,7 +2814,7 @@ Get DLL or EXE file build version
 ### win-find
 ***
 Return a list of files based on specific criteria
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_find_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_find_module.html
 
 
 #### Base Command
@@ -2929,7 +2931,7 @@ Return a list of files based on specific criteria
 ### win-firewall
 ***
 Enable or disable the Windows Firewall
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_firewall_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_firewall_module.html
 
 
 #### Base Command
@@ -3016,7 +3018,7 @@ Enable or disable the Windows Firewall
 ### win-firewall-rule
 ***
 Windows firewall automation
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_firewall_rule_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_firewall_rule_module.html
 
 
 #### Base Command
@@ -3077,7 +3079,7 @@ Windows firewall automation
 ### win-format
 ***
 Formats an existing volume or a new volume on an existing partition on Windows
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_format_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_format_module.html
 
 
 #### Base Command
@@ -3132,7 +3134,7 @@ Formats an existing volume or a new volume on an existing partition on Windows
 ### win-get-url
 ***
 Downloads file from HTTP, HTTPS, or FTP to node
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_get_url_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_get_url_module.html
 
 
 #### Base Command
@@ -3224,7 +3226,7 @@ Downloads file from HTTP, HTTPS, or FTP to node
 ### win-group
 ***
 Add and remove local groups
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_group_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_group_module.html
 
 
 #### Base Command
@@ -3271,7 +3273,7 @@ Add and remove local groups
 ### win-group-membership
 ***
 Manage Windows local group membership
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_group_membership_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_group_membership_module.html
 
 
 #### Base Command
@@ -3334,7 +3336,7 @@ Manage Windows local group membership
 ### win-hostname
 ***
 Manages local Windows computer name
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_hostname_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_hostname_module.html
 
 
 #### Base Command
@@ -3385,7 +3387,7 @@ Manages local Windows computer name
 ### win-hosts
 ***
 Manages hosts file entries on Windows.
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_hosts_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_hosts_module.html
 
 
 #### Base Command
@@ -3434,7 +3436,7 @@ Manages hosts file entries on Windows.
 ### win-hotfix
 ***
 Install and uninstalls Windows hotfixes
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_hotfix_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_hotfix_module.html
 
 
 #### Base Command
@@ -3465,7 +3467,7 @@ Install and uninstalls Windows hotfixes
 ### win-http-proxy
 ***
 Manages proxy settings for WinHTTP
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_http_proxy_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_http_proxy_module.html
 
 
 #### Base Command
@@ -3512,7 +3514,7 @@ Manages proxy settings for WinHTTP
 ### win-iis-virtualdirectory
 ***
 Configures a virtual directory in IIS
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_iis_virtualdirectory_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_iis_virtualdirectory_module.html
 
 
 #### Base Command
@@ -3541,7 +3543,7 @@ Configures a virtual directory in IIS
 ### win-iis-webapplication
 ***
 Configures IIS web applications
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_iis_webapplication_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_iis_webapplication_module.html
 
 
 #### Base Command
@@ -3572,7 +3574,7 @@ Configures IIS web applications
 ### win-iis-webapppool
 ***
 Configure IIS Web Application Pools
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_iis_webapppool_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_iis_webapppool_module.html
 
 
 #### Base Command
@@ -3601,7 +3603,7 @@ Configure IIS Web Application Pools
 ### win-iis-webbinding
 ***
 Configures a IIS Web site binding
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_iis_webbinding_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_iis_webbinding_module.html
 
 
 #### Base Command
@@ -3639,7 +3641,7 @@ Can be removed, updated, matched, or added |
 ### win-iis-website
 ***
 Configures a IIS Web site
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_iis_website_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_iis_website_module.html
 
 
 #### Base Command
@@ -3673,7 +3675,7 @@ Configures a IIS Web site
 ### win-inet-proxy
 ***
 Manages proxy settings for WinINet and Internet Explorer
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_inet_proxy_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_inet_proxy_module.html
 
 
 #### Base Command
@@ -3722,7 +3724,7 @@ Manages proxy settings for WinINet and Internet Explorer
 ### win-lineinfile
 ***
 Ensure a particular line is in a file, or replace an existing line using a back-referenced regular expression
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_lineinfile_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_lineinfile_module.html
 
 
 #### Base Command
@@ -3787,7 +3789,7 @@ This is now deprecated, use \`backup_file\` instead. |
 ### win-mapped-drive
 ***
 Map network drives for users
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_mapped_drive_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_mapped_drive_module.html
 
 
 #### Base Command
@@ -3816,7 +3818,7 @@ Map network drives for users
 ### win-msg
 ***
 Sends a message to logged in users on Windows hosts
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_msg_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_msg_module.html
 
 
 #### Base Command
@@ -3882,7 +3884,7 @@ Sends a message to logged in users on Windows hosts
 ### win-netbios
 ***
 Manage NetBIOS over TCP/IP settings on Windows.
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_netbios_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_netbios_module.html
 
 
 #### Base Command
@@ -3931,7 +3933,7 @@ Manage NetBIOS over TCP/IP settings on Windows.
 ### win-nssm
 ***
 Install a service using NSSM
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_nssm_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_nssm_module.html
 
 
 #### Base Command
@@ -3992,7 +3994,7 @@ Install a service using NSSM
 ### win-optional-feature
 ***
 Manage optional Windows features
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_optional_feature_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_optional_feature_module.html
 
 
 #### Base Command
@@ -4043,7 +4045,7 @@ Manage optional Windows features
 ### win-owner
 ***
 Set owner
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_owner_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_owner_module.html
 
 
 #### Base Command
@@ -4090,7 +4092,7 @@ Set owner
 ### win-package
 ***
 Installs/uninstalls an installable package
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_package_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_package_module.html
 
 
 #### Base Command
@@ -4132,7 +4134,7 @@ Installs/uninstalls an installable package
 ### win-pagefile
 ***
 Query or change pagefile configuration
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_pagefile_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_pagefile_module.html
 
 
 #### Base Command
@@ -4191,7 +4193,7 @@ Query or change pagefile configuration
 ### win-partition
 ***
 Creates, changes and removes partitions on Windows Server
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_partition_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_partition_module.html
 
 
 #### Base Command
@@ -4245,7 +4247,7 @@ Creates, changes and removes partitions on Windows Server
 ### win-path
 ***
 Manage Windows path environment variables
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_path_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_path_module.html
 
 
 #### Base Command
@@ -4295,7 +4297,7 @@ Manage Windows path environment variables
 ### win-pester
 ***
 Run Pester tests on Windows hosts
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_pester_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_pester_module.html
 
 
 #### Base Command
@@ -4325,7 +4327,7 @@ Run Pester tests on Windows hosts
 ### win-ping
 ***
 A windows version of the classic ping module
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_ping_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_ping_module.html
 
 
 #### Base Command
@@ -4373,7 +4375,7 @@ A windows version of the classic ping module
 ### win-power-plan
 ***
 Changes the power plan of a Windows system
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_power_plan_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_power_plan_module.html
 
 
 #### Base Command
@@ -4434,7 +4436,7 @@ Changes the power plan of a Windows system
 ### win-product-facts
 ***
 Provides Windows product and license information
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_product_facts_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_product_facts_module.html
 
 
 #### Base Command
@@ -4487,7 +4489,7 @@ Provides Windows product and license information
 ### win-psexec
 ***
 Runs commands (remotely) as another (privileged) user
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_psexec_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_psexec_module.html
 
 
 #### Base Command
@@ -4590,7 +4592,7 @@ Runs commands (remotely) as another (privileged) user
 ### win-psmodule
 ***
 Adds or removes a Windows PowerShell module
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_psmodule_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_psmodule_module.html
 
 
 #### Base Command
@@ -4653,7 +4655,7 @@ Adds or removes a Windows PowerShell module
 ### win-psrepository
 ***
 Adds, removes or updates a Windows PowerShell repository.
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_psrepository_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_psrepository_module.html
 
 
 #### Base Command
@@ -4701,7 +4703,7 @@ Adds, removes or updates a Windows PowerShell repository.
 ### win-rabbitmq-plugin
 ***
 Manage RabbitMQ plugins
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_rabbitmq_plugin_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_rabbitmq_plugin_module.html
 
 
 #### Base Command
@@ -4731,7 +4733,7 @@ Manage RabbitMQ plugins
 ### win-rds-cap
 ***
 Manage Connection Authorization Policies (CAP) on a Remote Desktop Gateway server
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_rds_cap_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_rds_cap_module.html
 
 
 #### Base Command
@@ -4770,7 +4772,7 @@ Manage Connection Authorization Policies (CAP) on a Remote Desktop Gateway serve
 ### win-rds-rap
 ***
 Manage Resource Authorization Policies (RAP) on a Remote Desktop Gateway server
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_rds_rap_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_rds_rap_module.html
 
 
 #### Base Command
@@ -4801,7 +4803,7 @@ Manage Resource Authorization Policies (RAP) on a Remote Desktop Gateway server
 ### win-rds-settings
 ***
 Manage main settings of a Remote Desktop Gateway server
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_rds_settings_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_rds_settings_module.html
 
 
 #### Base Command
@@ -4829,7 +4831,7 @@ Manage main settings of a Remote Desktop Gateway server
 ### win-reboot
 ***
 Reboot a windows machine
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_reboot_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_reboot_module.html
 
 
 #### Base Command
@@ -4881,7 +4883,7 @@ Reboot a windows machine
 ### win-reg-stat
 ***
 Get information about Windows registry keys
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_reg_stat_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_reg_stat_module.html
 
 
 #### Base Command
@@ -5287,7 +5289,7 @@ Get information about Windows registry keys
 ### win-regedit
 ***
 Add, change, or remove registry keys and values
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_regedit_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_regedit_module.html
 
 
 #### Base Command
@@ -5344,7 +5346,7 @@ Add, change, or remove registry keys and values
 ### win-region
 ***
 Set the region and format settings
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_region_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_region_module.html
 
 
 #### Base Command
@@ -5395,7 +5397,7 @@ Set the region and format settings
 ### win-regmerge
 ***
 Merges the contents of a registry file into the Windows registry
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_regmerge_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_regmerge_module.html
 
 
 #### Base Command
@@ -5446,7 +5448,7 @@ Merges the contents of a registry file into the Windows registry
 ### win-robocopy
 ***
 Synchronizes the contents of two directories using Robocopy
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_robocopy_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_robocopy_module.html
 
 
 #### Base Command
@@ -5619,7 +5621,7 @@ Synchronizes the contents of two directories using Robocopy
 ### win-route
 ***
 Add or remove a static route
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_route_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_route_module.html
 
 
 #### Base Command
@@ -5670,7 +5672,7 @@ Add or remove a static route
 ### win-say
 ***
 Text to speech module for Windows to speak messages and optionally play sounds
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_say_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_say_module.html
 
 
 #### Base Command
@@ -5727,7 +5729,7 @@ Text to speech module for Windows to speak messages and optionally play sounds
 ### win-scheduled-task
 ***
 Manage scheduled tasks
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_scheduled_task_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_scheduled_task_module.html
 
 
 #### Base Command
@@ -5790,7 +5792,7 @@ Manage scheduled tasks
 ### win-scheduled-task-stat
 ***
 Get information about Windows Scheduled Tasks
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_scheduled_task_stat_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_scheduled_task_stat_module.html
 
 
 #### Base Command
@@ -5848,7 +5850,7 @@ Get information about Windows Scheduled Tasks
 ### win-security-policy
 ***
 Change local security policy settings
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_security_policy_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_security_policy_module.html
 
 
 #### Base Command
@@ -5908,7 +5910,7 @@ Change local security policy settings
 ### win-service
 ***
 Manage and query Windows services
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_service_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_service_module.html
 
 
 #### Base Command
@@ -6005,7 +6007,7 @@ Manage and query Windows services
 ### win-share
 ***
 Manage Windows shares
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_share_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_share_module.html
 
 
 #### Base Command
@@ -6078,7 +6080,7 @@ Manage Windows shares
 ### win-shortcut
 ***
 Manage shortcuts on Windows
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_shortcut_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_shortcut_module.html
 
 
 #### Base Command
@@ -6150,7 +6152,7 @@ Manage shortcuts on Windows
 ### win-snmp
 ***
 Configures the Windows SNMP service
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_snmp_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_snmp_module.html
 
 
 #### Base Command
@@ -6179,7 +6181,7 @@ Configures the Windows SNMP service
 ### win-stat
 ***
 Get information about Windows files
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_stat_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_stat_module.html
 
 
 #### Base Command
@@ -6276,7 +6278,7 @@ Get information about Windows files
 ### win-tempfile
 ***
 Creates temporary files and directories
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_tempfile_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_tempfile_module.html
 
 
 #### Base Command
@@ -6329,7 +6331,7 @@ Creates temporary files and directories
 ### win-template
 ***
 Template a file out to a remote server
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_template_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_template_module.html
 
 
 #### Base Command
@@ -6371,7 +6373,7 @@ Template a file out to a remote server
 ### win-timezone
 ***
 Sets Windows machine timezone
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_timezone_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_timezone_module.html
 
 
 #### Base Command
@@ -6422,7 +6424,7 @@ Sets Windows machine timezone
 ### win-toast
 ***
 Sends Toast windows notification to logged in users on Windows 10 or later hosts
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_toast_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_toast_module.html
 
 
 #### Base Command
@@ -6487,7 +6489,7 @@ Sends Toast windows notification to logged in users on Windows 10 or later hosts
 ### win-unzip
 ***
 Unzips compressed files and archives on the Windows node
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_unzip_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_unzip_module.html
 
 
 #### Base Command
@@ -6545,7 +6547,7 @@ Unzips compressed files and archives on the Windows node
 ### win-updates
 ***
 Download and install Windows updates
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_updates_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_updates_module.html
 
 
 #### Base Command
@@ -6685,7 +6687,7 @@ Download and install Windows updates
 ### win-uri
 ***
 Interacts with webservices
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_uri_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_uri_module.html
 
 
 #### Base Command
@@ -6858,7 +6860,7 @@ Interacts with webservices
 ### win-user
 ***
 Manages local Windows user accounts
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_user_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_user_module.html
 
 
 #### Base Command
@@ -6958,7 +6960,7 @@ Manages local Windows user accounts
 ### win-user-profile
 ***
 Manages the Windows user profiles.
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_user_profile_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_user_profile_module.html
 
 
 #### Base Command
@@ -7009,7 +7011,7 @@ Manages the Windows user profiles.
 ### win-user-right
 ***
 Manage Windows User Rights
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_user_right_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_user_right_module.html
 
 
 #### Base Command
@@ -7065,7 +7067,7 @@ Manage Windows User Rights
 ### win-wait-for
 ***
 Waits for a condition before continuing
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_wait_for_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_wait_for_module.html
 
 
 #### Base Command
@@ -7125,7 +7127,7 @@ Waits for a condition before continuing
 ### win-wait-for-process
 ***
 Waits for a process to exist or not exist before continuing.
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_wait_for_process_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_wait_for_process_module.html
 
 
 #### Base Command
@@ -7185,7 +7187,7 @@ Waits for a process to exist or not exist before continuing.
 ### win-wakeonlan
 ***
 Send a magic Wake-on-LAN (WoL) broadcast packet
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_wakeonlan_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_wakeonlan_module.html
 
 
 #### Base Command
@@ -7232,7 +7234,7 @@ Send a magic Wake-on-LAN (WoL) broadcast packet
 ### win-webpicmd
 ***
 Installs packages using Web Platform Installer command-line
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_webpicmd_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_webpicmd_module.html
 
 
 #### Base Command
@@ -7257,7 +7259,7 @@ Installs packages using Web Platform Installer command-line
 ### win-whoami
 ***
 Get information about the current user and process
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_whoami_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_whoami_module.html
 
 
 #### Base Command
@@ -7646,7 +7648,7 @@ Get information about the current user and process
 ### win-xml
 ***
 Manages XML file content on Windows hosts
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_xml_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_xml_module.html
 
 
 #### Base Command

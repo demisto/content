@@ -11,10 +11,10 @@ After stepping through the guide you will have:
 * Your Secret key, generated when you created the application. You cannot show the key after creation. If you lost the key, you must create a new one in the “Configure” page of your application.
 * And finally, a tenant ID. It’s a UUID (e.g. ABCDEFGH-1234-ABCD-1234-ABCDEFGHIJKL) pointing to the AD containing your application. You will find it in the URL from within the Azure portal, or in the “view endpoints” of any given URL.
 
-## Configure AnsibleAzureCompute on Cortex XSOAR
+## Configure Ansible Azure Compute on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for AnsibleAzureCompute.
+2. Search for Ansible Azure Compute.
 3. Click **Add instance** to create and configure a new integration instance.
 
     | **Parameter** | **Description** | **Required** |
@@ -48,7 +48,7 @@ After you successfully execute a command, a DBot message appears in the War Room
 ### azure-rm-autoscale
 ***
 Manage Azure autoscale setting
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/azure_rm_autoscale_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/azure_rm_autoscale_module.html
 
 
 #### Base Command
@@ -151,7 +151,7 @@ Manage Azure autoscale setting
 ### azure-rm-autoscale-info
 ***
 Get Azure Auto Scale Setting facts
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/azure_rm_autoscale_info_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/azure_rm_autoscale_info_module.html
 
 
 #### Base Command
@@ -253,7 +253,7 @@ Get Azure Auto Scale Setting facts
 ### azure-rm-availabilityset
 ***
 Manage Azure Availability Set
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/azure_rm_availabilityset_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/azure_rm_availabilityset_module.html
 
 
 #### Base Command
@@ -326,7 +326,7 @@ Manage Azure Availability Set
 ### azure-rm-availabilityset-info
 ***
 Get Azure Availability Set facts
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/azure_rm_availabilityset_info_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/azure_rm_availabilityset_info_module.html
 
 
 #### Base Command
@@ -380,7 +380,7 @@ Get Azure Availability Set facts
 ### azure-rm-deployment
 ***
 Create or destroy Azure Resource Manager template deployments
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/azure_rm_deployment_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/azure_rm_deployment_module.html
 
 
 #### Base Command
@@ -503,7 +503,7 @@ Create or destroy Azure Resource Manager template deployments
 ### azure-rm-deployment-info
 ***
 Get Azure Deployment facts
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/azure_rm_deployment_info_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/azure_rm_deployment_info_module.html
 
 
 #### Base Command
@@ -739,7 +739,7 @@ Get Azure Deployment facts
 ### azure-rm-functionapp
 ***
 Manage Azure Function Apps
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/azure_rm_functionapp_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/azure_rm_functionapp_module.html
 
 
 #### Base Command
@@ -797,7 +797,7 @@ Manage Azure Function Apps
 ### azure-rm-functionapp-info
 ***
 Get Azure Function App facts
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/azure_rm_functionapp_info_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/azure_rm_functionapp_info_module.html
 
 
 #### Base Command
@@ -851,7 +851,7 @@ Get Azure Function App facts
 ### azure-rm-gallery
 ***
 Manage Azure Shared Image Gallery instance.
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/azure_rm_gallery_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/azure_rm_gallery_module.html
 
 
 #### Base Command
@@ -906,7 +906,7 @@ Manage Azure Shared Image Gallery instance.
 ### azure-rm-gallery-info
 ***
 Get Azure Shared Image Gallery info.
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/azure_rm_gallery_info_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/azure_rm_gallery_info_module.html
 
 
 #### Base Command
@@ -972,7 +972,7 @@ Get Azure Shared Image Gallery info.
 ### azure-rm-galleryimage
 ***
 Manage Azure SIG Image instance.
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/azure_rm_galleryimage_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/azure_rm_galleryimage_module.html
 
 
 #### Base Command
@@ -1038,7 +1038,7 @@ Manage Azure SIG Image instance.
 ### azure-rm-galleryimage-info
 ***
 Get Azure SIG Image info.
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/azure_rm_galleryimage_info_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/azure_rm_galleryimage_info_module.html
 
 
 #### Base Command
@@ -1114,7 +1114,7 @@ Get Azure SIG Image info.
 ### azure-rm-galleryimageversion
 ***
 Manage Azure SIG Image Version instance.
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/azure_rm_galleryimageversion_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/azure_rm_galleryimageversion_module.html
 
 
 #### Base Command
@@ -1171,7 +1171,7 @@ Manage Azure SIG Image Version instance.
 ### azure-rm-galleryimageversion-info
 ***
 Get Azure SIG Image Version info.
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/azure_rm_galleryimageversion_info_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/azure_rm_galleryimageversion_info_module.html
 
 
 #### Base Command
@@ -1270,7 +1270,7 @@ Get Azure SIG Image Version info.
 ### azure-rm-image
 ***
 Manage Azure image
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/azure_rm_image_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/azure_rm_image_module.html
 
 
 #### Base Command
@@ -1328,7 +1328,7 @@ Manage Azure image
 ### azure-rm-image-info
 ***
 Get facts about azure custom images
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/azure_rm_image_info_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/azure_rm_image_info_module.html
 
 
 #### Base Command
@@ -1411,7 +1411,7 @@ Get facts about azure custom images
 ### azure-rm-loadbalancer
 ***
 Manage Azure load balancers
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/azure_rm_loadbalancer_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/azure_rm_loadbalancer_module.html
 
 
 #### Base Command
@@ -1685,7 +1685,7 @@ Manage Azure load balancers
 ### azure-rm-loadbalancer-info
 ***
 Get load balancer facts
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/azure_rm_loadbalancer_info_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/azure_rm_loadbalancer_info_module.html
 
 
 #### Base Command
@@ -1957,7 +1957,7 @@ Get load balancer facts
 ### azure-rm-manageddisk
 ***
 Manage Azure Manage Disks
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/azure_rm_manageddisk_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/azure_rm_manageddisk_module.html
 
 
 #### Base Command
@@ -2044,7 +2044,7 @@ Manage Azure Manage Disks
 ### azure-rm-manageddisk-info
 ***
 Get managed disk facts
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/azure_rm_manageddisk_info_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/azure_rm_manageddisk_info_module.html
 
 
 #### Base Command
@@ -2125,7 +2125,7 @@ Get managed disk facts
 ### azure-rm-resource-info
 ***
 Generic facts of Azure resources
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/azure_rm_resource_info_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/azure_rm_resource_info_module.html
 
 
 #### Base Command
@@ -2328,7 +2328,7 @@ Generic facts of Azure resources
 ### azure-rm-resourcegroup
 ***
 Manage Azure resource groups
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/azure_rm_resourcegroup_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/azure_rm_resourcegroup_module.html
 
 
 #### Base Command
@@ -2401,7 +2401,7 @@ Manage Azure resource groups
 ### azure-rm-resourcegroup-info
 ***
 Get resource group facts
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/azure_rm_resourcegroup_info_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/azure_rm_resourcegroup_info_module.html
 
 
 #### Base Command
@@ -2474,7 +2474,7 @@ Get resource group facts
 ### azure-rm-snapshot
 ***
 Manage Azure Snapshot instance.
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/azure_rm_snapshot_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/azure_rm_snapshot_module.html
 
 
 #### Base Command
@@ -2532,7 +2532,7 @@ Manage Azure Snapshot instance.
 ### azure-rm-virtualmachine
 ***
 Manage Azure virtual machines
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/azure_rm_virtualmachine_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/azure_rm_virtualmachine_module.html
 
 
 #### Base Command
@@ -2626,7 +2626,7 @@ Manage Azure virtual machines
 ### azure-rm-virtualmachine-info
 ***
 Get virtual machine facts
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/azure_rm_virtualmachine_info_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/azure_rm_virtualmachine_info_module.html
 
 
 #### Base Command
@@ -2793,7 +2793,7 @@ Get virtual machine facts
 ### azure-rm-virtualmachineextension
 ***
 Managed Azure Virtual Machine extension
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/azure_rm_virtualmachineextension_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/azure_rm_virtualmachineextension_module.html
 
 
 #### Base Command
@@ -2875,7 +2875,7 @@ Managed Azure Virtual Machine extension
 ### azure-rm-virtualmachineextension-info
 ***
 Get Azure Virtual Machine Extension facts
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/azure_rm_virtualmachineextension_info_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/azure_rm_virtualmachineextension_info_module.html
 
 
 #### Base Command
@@ -2956,7 +2956,7 @@ Get Azure Virtual Machine Extension facts
 ### azure-rm-virtualmachineimage-info
 ***
 Get virtual machine image facts
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/azure_rm_virtualmachineimage_info_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/azure_rm_virtualmachineimage_info_module.html
 
 
 #### Base Command
@@ -3036,7 +3036,7 @@ Get virtual machine image facts
 ### azure-rm-virtualmachinescaleset
 ***
 Manage Azure virtual machine scale sets
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/azure_rm_virtualmachinescaleset_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/azure_rm_virtualmachinescaleset_module.html
 
 
 #### Base Command
@@ -3115,7 +3115,7 @@ Note that facts are not part of the registered output but available directly. |
 ### azure-rm-virtualmachinescaleset-info
 ***
 Get Virtual Machine Scale Set facts
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/azure_rm_virtualmachinescaleset_info_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/azure_rm_virtualmachinescaleset_info_module.html
 
 
 #### Base Command
@@ -3224,7 +3224,7 @@ Get Virtual Machine Scale Set facts
 ### azure-rm-virtualmachinescalesetextension
 ***
 Manage Azure Virtual Machine Scale Set (VMSS) extensions
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/azure_rm_virtualmachinescalesetextension_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/azure_rm_virtualmachinescalesetextension_module.html
 
 
 #### Base Command
@@ -3285,7 +3285,7 @@ Manage Azure Virtual Machine Scale Set (VMSS) extensions
 ### azure-rm-virtualmachinescalesetextension-info
 ***
 Get Azure Virtual Machine Scale Set Extension facts
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/azure_rm_virtualmachinescalesetextension_info_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/azure_rm_virtualmachinescalesetextension_info_module.html
 
 
 #### Base Command
@@ -3361,7 +3361,7 @@ Get Azure Virtual Machine Scale Set Extension facts
 ### azure-rm-virtualmachinescalesetinstance
 ***
 Get Azure Virtual Machine Scale Set Instance facts
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/azure_rm_virtualmachinescalesetinstance_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/azure_rm_virtualmachinescalesetinstance_module.html
 
 
 #### Base Command
@@ -3415,7 +3415,7 @@ Get Azure Virtual Machine Scale Set Instance facts
 ### azure-rm-virtualmachinescalesetinstance-info
 ***
 Get Azure Virtual Machine Scale Set Instance facts
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/azure_rm_virtualmachinescalesetinstance_info_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/azure_rm_virtualmachinescalesetinstance_info_module.html
 
 
 #### Base Command
@@ -3536,7 +3536,7 @@ Get Azure Virtual Machine Scale Set Instance facts
 ### azure-rm-webapp
 ***
 Manage Web App instances
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/azure_rm_webapp_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/azure_rm_webapp_module.html
 
 
 #### Base Command
@@ -3586,7 +3586,7 @@ Manage Web App instances
 ### azure-rm-webapp-info
 ***
 Get Azure web app facts
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/azure_rm_webapp_info_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/azure_rm_webapp_info_module.html
 
 
 #### Base Command
@@ -3638,7 +3638,7 @@ Get Azure web app facts
 ### azure-rm-webappslot
 ***
 Manage Azure Web App slot
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/azure_rm_webappslot_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/azure_rm_webappslot_module.html
 
 
 #### Base Command

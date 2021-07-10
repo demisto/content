@@ -9,10 +9,10 @@ To use this integration you must generate an API token for your HCloud project.
 3. Navigate to **Security** > **API Tokens** and generate an API token with Read & Write
 4. Provide this token when you add a configure a Instance of this integration in XSOAR.
 
-## Configure AnsibleHCloud on Cortex XSOAR
+## Configure Ansible HCloud on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for AnsibleHCloud.
+2. Search for Ansible HCloud.
 3. Click **Add instance** to create and configure a new integration instance.
 
     | **Parameter** | **Description** | **Required** |
@@ -43,7 +43,7 @@ After you successfully execute a command, a DBot message appears in the War Room
 ### hcloud-datacenter-info
 ***
 Gather info about the Hetzner Cloud datacenters.
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/hcloud_datacenter_info_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/hcloud_datacenter_info_module.html
 
 
 #### Base Command
@@ -121,7 +121,7 @@ This module was called \`hcloud_datacenter_facts\` before Ansible 2.9, returning
 ### hcloud-floating-ip-info
 ***
 Gather infos about the Hetzner Cloud Floating IPs.
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/hcloud_floating_ip_info_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/hcloud_floating_ip_info_module.html
 
 
 #### Base Command
@@ -164,7 +164,7 @@ Gather infos about the Hetzner Cloud Floating IPs.
 ### hcloud-image-info
 ***
 Gather infos about your Hetzner Cloud images.
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/hcloud_image_info_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/hcloud_image_info_module.html
 
 
 #### Base Command
@@ -362,7 +362,7 @@ Gather infos about your Hetzner Cloud images.
 ### hcloud-location-info
 ***
 Gather infos about your Hetzner Cloud locations.
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/hcloud_location_info_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/hcloud_location_info_module.html
 
 
 #### Base Command
@@ -445,7 +445,7 @@ Gather infos about your Hetzner Cloud locations.
 ### hcloud-network
 ***
 Create and manage cloud Networks on the Hetzner Cloud.
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/hcloud_network_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/hcloud_network_module.html
 
 
 #### Base Command
@@ -503,7 +503,7 @@ Create and manage cloud Networks on the Hetzner Cloud.
 ### hcloud-network-info
 ***
 Gather info about your Hetzner Cloud networks.
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/hcloud_network_info_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/hcloud_network_info_module.html
 
 
 #### Base Command
@@ -567,7 +567,7 @@ Gather info about your Hetzner Cloud networks.
 ### hcloud-rdns
 ***
 Create and manage reverse DNS entries on the Hetzner Cloud.
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/hcloud_rdns_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/hcloud_rdns_module.html
 
 
 #### Base Command
@@ -621,7 +621,7 @@ Create and manage reverse DNS entries on the Hetzner Cloud.
 ### hcloud-route
 ***
 Create and delete cloud routes on the Hetzner Cloud.
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/hcloud_route_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/hcloud_route_module.html
 
 
 #### Base Command
@@ -674,7 +674,7 @@ Create and delete cloud routes on the Hetzner Cloud.
 ### hcloud-server
 ***
 Create and manage cloud servers on the Hetzner Cloud.
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/hcloud_server_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/hcloud_server_module.html
 
 
 #### Base Command
@@ -759,7 +759,7 @@ Create and manage cloud servers on the Hetzner Cloud.
 ### hcloud-server-info
 ***
 Gather infos about your Hetzner Cloud servers.
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/hcloud_server_info_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/hcloud_server_info_module.html
 
 
 #### Base Command
@@ -835,7 +835,7 @@ Gather infos about your Hetzner Cloud servers.
 ### hcloud-server-network
 ***
 Manage the relationship between Hetzner Cloud Networks and servers
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/hcloud_server_network_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/hcloud_server_network_module.html
 
 
 #### Base Command
@@ -890,7 +890,7 @@ Manage the relationship between Hetzner Cloud Networks and servers
 ### hcloud-server-type-info
 ***
 Gather infos about the Hetzner Cloud server types.
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/hcloud_server_type_info_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/hcloud_server_type_info_module.html
 
 
 #### Base Command
@@ -1428,7 +1428,7 @@ Gather infos about the Hetzner Cloud server types.
 ### hcloud-ssh-key
 ***
 Create and manage ssh keys on the Hetzner Cloud.
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/hcloud_ssh_key_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/hcloud_ssh_key_module.html
 
 
 #### Base Command
@@ -1487,7 +1487,7 @@ Create and manage ssh keys on the Hetzner Cloud.
 ### hcloud-ssh-key-info
 ***
 Gather infos about your Hetzner Cloud ssh_keys.
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/hcloud_ssh_key_info_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/hcloud_ssh_key_info_module.html
 
 
 #### Base Command
@@ -1546,7 +1546,7 @@ Gather infos about your Hetzner Cloud ssh_keys.
 ### hcloud-subnetwork
 ***
 Manage cloud subnetworks on the Hetzner Cloud.
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/hcloud_subnetwork_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/hcloud_subnetwork_module.html
 
 
 #### Base Command
@@ -1606,7 +1606,7 @@ Manage cloud subnetworks on the Hetzner Cloud.
 ### hcloud-volume
 ***
 Create and manage block volumes on the Hetzner Cloud.
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/hcloud_volume_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/hcloud_volume_module.html
 
 
 #### Base Command
@@ -1674,7 +1674,7 @@ Create and manage block volumes on the Hetzner Cloud.
 ### hcloud-volume-info
 ***
 Gather infos about your Hetzner Cloud volumes.
- Further documentation available at https://docs.ansible.com/ansible/2.9/modules/hcloud_volume_info_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/hcloud_volume_info_module.html
 
 
 #### Base Command
