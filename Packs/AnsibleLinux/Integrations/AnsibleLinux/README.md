@@ -27,10 +27,10 @@ This integration is powered by Ansible 2.9. Further information can be found on 
 * [Ansible Getting Started](https://docs.ansible.com/ansible/latest/user_guide/intro_getting_started.html)
 * [Module Documentation](https://docs.ansible.com/ansible/2.9/modules/list_of_all_modules.html)
 
-## Configure AnsibleLinux on Cortex XSOAR
+## Configure Ansible Linux on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for AnsibleLinux.
+2. Search for Ansible Linux.
 3. Click **Add instance** to create and configure a new integration instance.
 
     | **Parameter** | **Description** | **Required** |
@@ -43,6 +43,18 @@ This integration is powered by Ansible 2.9. Further information can be found on 
 ## Testing
 This integration does not support testing from the integration management screen. Instead it is recommended to use the `!linux-gather-facts`command providing an example `host` as the command argument. This command will connect to the specified host with the configured credentials in the integration, and if successful output general information about the host.
 
+## Idempotence
+The action commands in this integration are idempotent. This means that the result of performing it once is exactly the same as the result of performing it repeatedly without any intervening actions.
+
+## State Arguement
+Some of the commands in this integration take a state argument. These define the desired end state of the object being managed. As a result these commands are able to perform multiple management operations depending on the desired state value. Common state values are:
+| **State** | **Result** |
+| --- | --- |
+| present | Object should exist. If not present, the object will be created with the provided parameters. If present but not with correct parameters, it will be modified to met provided parameters. |
+| running | Object should be running not stopped. |
+| stopped | Object should be stopped not running. |
+| restarted | Object will be restarted. |
+| absent | Object should not exist. If it it exists it will be deleted. |
 ## Commands
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.

@@ -38,9 +38,7 @@ script:
       required: true
     - auto: PREDEFINED
       description: 'The state of the account, to be identified by its account key.
-
         If the state is `absent`, the account will either not exist or be deactivated.
-
         If the state is `changed_key`, the account must exist. The account key will
         be changed; no other information will be touched.'
       name: state
@@ -57,11 +55,8 @@ script:
       - 'Yes'
       - 'No'
     - description: 'A list of contact URLs.
-
         Email addresses must be prefixed with `mailto:`.
-
         See `https://tools.ietf.org/html/rfc8555#section-7.3` for what is allowed.
-
         Must be specified when state is `present`. Will be ignored if state is `absent`
         or `changed_key`.'
       isArray: true
@@ -69,7 +64,6 @@ script:
     - auto: PREDEFINED
       defaultValue: 'No'
       description: 'Boolean indicating whether you agree to the terms of service document.
-
         ACME servers can require this to be true.'
       name: terms_agreed
       predefined:
@@ -77,31 +71,22 @@ script:
       - 'No'
     - description: 'Path to a file containing the ACME account RSA or Elliptic Curve
         key to change to.
-
         Same restrictions apply as to `account_key_src`.
-
         Mutually exclusive with `new_account_key_content`.
-
         Required if `new_account_key_content` is not used and state is `changed_key`.'
       name: new_account_key_src
     - description: 'Content of the ACME account RSA or Elliptic Curve key to change
         to.
-
         Same restrictions apply as to `account_key_content`.
-
         Mutually exclusive with `new_account_key_src`.
-
         Required if `new_account_key_src` is not used and state is `changed_key`.'
       name: new_account_key_content
     - description: 'Path to a file containing the ACME account RSA or Elliptic Curve
         key.
-
         RSA keys can be created with `openssl genrsa ...`. Elliptic curve keys can
         be created with `openssl ecparam -genkey ...`. Any other tool creating private
         keys in PEM format can be used as well.
-
         Mutually exclusive with `account_key_content`.
-
         Required if `account_key_content` is not used.'
       name: account_key_src
     - description: "Content of the ACME account RSA or Elliptic Curve key.\nMutually\
@@ -121,7 +106,6 @@ script:
     - auto: PREDEFINED
       defaultValue: '1'
       description: 'The ACME version of the endpoint.
-
         Must be 1 for the classic Let''s Encrypt and Buypass ACME endpoints, or 2
         for standardized ACME v2 endpoints.'
       name: acme_version
@@ -131,19 +115,14 @@ script:
     - defaultValue: https://acme-staging.api.letsencrypt.org/directory
       description: 'The ACME directory to use. This is the entry point URL to access
         CA server API.
-
         For safety reasons the default is set to the Let''s Encrypt staging server
         (for the ACME v1 protocol). This will create technically correct, but untrusted
         certificates.
-
         For Let''s Encrypt, all staging endpoints can be found here: `https://letsencrypt.org/docs/staging-environment/`.
         For Buypass, all endpoints can be found here: `https://community.buypass.com/t/63d4ay/buypass-go-ssl-endpoints`
-
         For Let''s Encrypt, the production directory URL for ACME v1 is `https://acme-v01.api.letsencrypt.org/directory`,
         and the production directory URL for ACME v2 is `https://acme-v02.api.letsencrypt.org/directory`.
-
         For Buypass, the production directory URL for ACME v2 and v1 is `https://api.buypass.com/acme/directory`.
-
         `Warning`: So far, the module has only been tested against Let''s Encrypt
         (staging and production), Buypass (staging and production), and `Pebble testing
         server,https://github.com/letsencrypt/Pebble`.'
@@ -151,7 +130,6 @@ script:
     - auto: PREDEFINED
       defaultValue: 'Yes'
       description: 'Whether calls to the ACME directory will validate TLS certificates.
-
         `Warning`: Should `only ever` be set to `no` for testing purposes, for example
         when testing against a local Pebble server.'
       name: validate_certs
@@ -161,12 +139,9 @@ script:
     - auto: PREDEFINED
       defaultValue: auto
       description: 'Determines which crypto backend to use.
-
         The default choice is `auto`, which tries to use `cryptography` if available,
         and falls back to `openssl`.
-
         If set to `openssl`, will try to use the `openssl` binary.
-
         If set to `cryptography`, will try to use the `cryptography,https://cryptography.io/`
         library.'
       name: select_crypto_backend
@@ -192,9 +167,7 @@ script:
       defaultValue: ignore
       description: 'Whether to retrieve the list of order URLs or order objects, if
         provided by the ACME server.
-
         A value of `ignore` will not fetch the list of orders.
-
         Currently, Let''s Encrypt does not return orders, so the `orders` result will
         always be empty.'
       name: retrieve_orders
@@ -204,13 +177,10 @@ script:
       - object_list
     - description: 'Path to a file containing the ACME account RSA or Elliptic Curve
         key.
-
         RSA keys can be created with `openssl genrsa ...`. Elliptic curve keys can
         be created with `openssl ecparam -genkey ...`. Any other tool creating private
         keys in PEM format can be used as well.
-
         Mutually exclusive with `account_key_content`.
-
         Required if `account_key_content` is not used.'
       name: account_key_src
     - description: "Content of the ACME account RSA or Elliptic Curve key.\nMutually\
@@ -230,7 +200,6 @@ script:
     - auto: PREDEFINED
       defaultValue: '1'
       description: 'The ACME version of the endpoint.
-
         Must be 1 for the classic Let''s Encrypt and Buypass ACME endpoints, or 2
         for standardized ACME v2 endpoints.'
       name: acme_version
@@ -240,19 +209,14 @@ script:
     - defaultValue: https://acme-staging.api.letsencrypt.org/directory
       description: 'The ACME directory to use. This is the entry point URL to access
         CA server API.
-
         For safety reasons the default is set to the Let''s Encrypt staging server
         (for the ACME v1 protocol). This will create technically correct, but untrusted
         certificates.
-
         For Let''s Encrypt, all staging endpoints can be found here: `https://letsencrypt.org/docs/staging-environment/`.
         For Buypass, all endpoints can be found here: `https://community.buypass.com/t/63d4ay/buypass-go-ssl-endpoints`
-
         For Let''s Encrypt, the production directory URL for ACME v1 is `https://acme-v01.api.letsencrypt.org/directory`,
         and the production directory URL for ACME v2 is `https://acme-v02.api.letsencrypt.org/directory`.
-
         For Buypass, the production directory URL for ACME v2 and v1 is `https://api.buypass.com/acme/directory`.
-
         `Warning`: So far, the module has only been tested against Let''s Encrypt
         (staging and production), Buypass (staging and production), and `Pebble testing
         server,https://github.com/letsencrypt/Pebble`.'
@@ -260,7 +224,6 @@ script:
     - auto: PREDEFINED
       defaultValue: 'Yes'
       description: 'Whether calls to the ACME directory will validate TLS certificates.
-
         `Warning`: Should `only ever` be set to `no` for testing purposes, for example
         when testing against a local Pebble server.'
       name: validate_certs
@@ -270,12 +233,9 @@ script:
     - auto: PREDEFINED
       defaultValue: auto
       description: 'Determines which crypto backend to use.
-
         The default choice is `auto`, which tries to use `cryptography` if available,
         and falls back to `openssl`.
-
         If set to `openssl`, will try to use the `openssl` binary.
-
         If set to `cryptography`, will try to use the `cryptography,https://cryptography.io/`
         library.'
       name: select_crypto_backend
@@ -298,9 +258,7 @@ script:
       type: unknown
     - contextPath: ACME.acmeAccountInfo.orders
       description: 'The list of orders.
-
         If `retrieve_orders` is `url_list`, this will be a list of URLs.
-
         If `retrieve_orders` is `object_list`, this will be a list of objects.'
       type: unknown
   - arguments:
@@ -311,9 +269,7 @@ script:
       name: host
       required: true
     - description: 'The email address associated with this account.
-
         It will be used for certificate expiration warnings.
-
         Note that when `modify_account` is not set to `no` and you also used the `acme_account`
         module to specify more than one contact for your account, this module will
         update your account and restrict it to the (at most one) contact email address
@@ -321,17 +277,13 @@ script:
       name: account_email
     - description: 'URI to a terms of service document you agree to when using the
         ACME v1 service at `acme_directory`.
-
         Default is latest gathered from `acme_directory` URL.
-
         This option will only be used when `acme_version` is 1.'
       name: agreement
     - auto: PREDEFINED
       defaultValue: 'No'
       description: 'Boolean indicating whether you agree to the terms of service document.
-
         ACME servers can require this to be true.
-
         This option will only be used when `acme_version` is not 1.'
       name: terms_agreed
       predefined:
@@ -341,11 +293,9 @@ script:
       defaultValue: 'Yes'
       description: 'Boolean indicating whether the module should create the account
         if necessary, and update its contact data.
-
         Set to `no` if you want to use the `acme_account` module to manage your account
         instead, and to avoid accidental creation of a new account using an old key
         if you changed the account key with `acme_account`.
-
         If set to `no`, `terms_agreed` and `account_email` are ignored.'
       name: modify_account
       predefined:
@@ -360,12 +310,9 @@ script:
       - dns-01
       - tls-alpn-01
     - description: 'File containing the CSR for the new certificate.
-
         Can be created with `openssl req ...`.
-
         The CSR may contain multiple Subject Alternate Names, but each one will lead
         to an individual challenge that must be fulfilled for the CSR to be signed.
-
         `Note`: the private key used to create the CSR `must not` be the account key.
         This is a bad idea from a security point of view, and the CA should not accept
         the CSR. The ACME server should return an error in this case.'
@@ -373,14 +320,11 @@ script:
       required: true
     - description: 'The data to validate ongoing challenges. This must be specified
         for the second run of the module only.
-
         The value that must be used here will be provided by a previous use of this
         module. See the examples for more details.
-
         Note that for ACME v2, only the `order_uri` entry of `data` will be used.
         For ACME v1, `data` must be non-empty to indicate the second stage is active;
         all needed data will be taken from the CSR.
-
         `Note`: the `data` option was marked as `no_log` up to Ansible 2.5. From Ansible
         2.6 on, it is no longer marked this way as it causes error messages to be
         come unusable, and `data` does not contain any information which can be used
@@ -388,12 +332,10 @@ script:
       isArray: true
       name: data
     - description: 'The destination file for the certificate.
-
         Required if `fullchain_dest` is not specified.'
       name: dest
     - description: 'The destination file for the full chain (i.e. certificate followed
         by chain of intermediate certificates).
-
         Required if `dest` is not specified.'
       name: fullchain_dest
     - description: If specified, the intermediate certificate will be written to this
@@ -403,7 +345,6 @@ script:
       description: 'The number of days the certificate must have left being valid.
         If `cert_days < remaining_days`, then it will be renewed. If the certificate
         is not renewed, module return values will not include `challenge_data`.
-
         To make sure that the certificate is renewed in any case, you can use the
         `force` option.'
       name: remaining_days
@@ -411,7 +352,6 @@ script:
       defaultValue: 'No'
       description: 'Deactivate authentication objects (authz) after issuing a certificate,
         or when issuing the certificate failed.
-
         Authentication objects are bound to an account key and remain valid for a
         certain amount of time, and can be used to issue certificates without having
         to re-authenticate the domain. This can be a security concern.'
@@ -423,7 +363,6 @@ script:
       defaultValue: 'No'
       description: 'Enforces the execution of the challenge and validation, even if
         an existing certificate is still valid for more than `remaining_days`.
-
         This is especially helpful when having an updated CSR e.g. with additional
         domains for which a new certificate is desired.'
       name: force
@@ -442,13 +381,10 @@ script:
       - 'No'
     - description: 'Path to a file containing the ACME account RSA or Elliptic Curve
         key.
-
         RSA keys can be created with `openssl genrsa ...`. Elliptic curve keys can
         be created with `openssl ecparam -genkey ...`. Any other tool creating private
         keys in PEM format can be used as well.
-
         Mutually exclusive with `account_key_content`.
-
         Required if `account_key_content` is not used.'
       name: account_key_src
     - description: "Content of the ACME account RSA or Elliptic Curve key.\nMutually\
@@ -468,7 +404,6 @@ script:
     - auto: PREDEFINED
       defaultValue: '1'
       description: 'The ACME version of the endpoint.
-
         Must be 1 for the classic Let''s Encrypt and Buypass ACME endpoints, or 2
         for standardized ACME v2 endpoints.'
       name: acme_version
@@ -478,19 +413,14 @@ script:
     - defaultValue: https://acme-staging.api.letsencrypt.org/directory
       description: 'The ACME directory to use. This is the entry point URL to access
         CA server API.
-
         For safety reasons the default is set to the Let''s Encrypt staging server
         (for the ACME v1 protocol). This will create technically correct, but untrusted
         certificates.
-
         For Let''s Encrypt, all staging endpoints can be found here: `https://letsencrypt.org/docs/staging-environment/`.
         For Buypass, all endpoints can be found here: `https://community.buypass.com/t/63d4ay/buypass-go-ssl-endpoints`
-
         For Let''s Encrypt, the production directory URL for ACME v1 is `https://acme-v01.api.letsencrypt.org/directory`,
         and the production directory URL for ACME v2 is `https://acme-v02.api.letsencrypt.org/directory`.
-
         For Buypass, the production directory URL for ACME v2 and v1 is `https://api.buypass.com/acme/directory`.
-
         `Warning`: So far, the module has only been tested against Let''s Encrypt
         (staging and production), Buypass (staging and production), and `Pebble testing
         server,https://github.com/letsencrypt/Pebble`.'
@@ -498,7 +428,6 @@ script:
     - auto: PREDEFINED
       defaultValue: 'Yes'
       description: 'Whether calls to the ACME directory will validate TLS certificates.
-
         `Warning`: Should `only ever` be set to `no` for testing purposes, for example
         when testing against a local Pebble server.'
       name: validate_certs
@@ -508,12 +437,9 @@ script:
     - auto: PREDEFINED
       defaultValue: auto
       description: 'Determines which crypto backend to use.
-
         The default choice is `auto`, which tries to use `cryptography` if available,
         and falls back to `openssl`.
-
         If set to `openssl`, will try to use the `openssl` binary.
-
         If set to `cryptography`, will try to use the `cryptography,https://cryptography.io/`
         library.'
       name: select_crypto_backend
@@ -530,17 +456,14 @@ script:
       type: number
     - contextPath: ACME.acmeCertificate.challenge_data
       description: 'Per identifier / challenge type challenge data.
-
         Since Ansible 2.8.5, only challenges which are not yet valid are returned.'
       type: unknown
     - contextPath: ACME.acmeCertificate.challenge_data_dns
       description: 'List of TXT values per DNS record, in case challenge is `dns-01`.
-
         Since Ansible 2.8.5, only challenges which are not yet valid are returned.'
       type: unknown
     - contextPath: ACME.acmeCertificate.authorizations
       description: 'ACME authorization data.
-
         Maps an identifier to ACME authorization objects. See `https://tools.ietf.org/html/rfc8555#section-7.1.4`.'
       type: unknown
     - contextPath: ACME.acmeCertificate.order_uri
@@ -557,7 +480,6 @@ script:
         query the ACME server for alternate chains. This return value will contain
         a list of all chains returned, the first entry being the main chain returned
         by the server.
-
         See `Section 7.4.2 of RFC8555,https://tools.ietf.org/html/rfc8555#section-7.4.2`
         for details.'
       type: unknown
@@ -573,13 +495,10 @@ script:
       required: true
     - description: 'Path to a file containing the ACME account RSA or Elliptic Curve
         key.
-
         RSA keys can be created with `openssl rsa ...`. Elliptic curve keys can be
         created with `openssl ecparam -genkey ...`. Any other tool creating private
         keys in PEM format can be used as well.
-
         Mutually exclusive with `account_key_content`.
-
         Required if `account_key_content` is not used.'
       name: account_key_src
     - description: "Content of the ACME account RSA or Elliptic Curve key.\nNote that\
@@ -594,7 +513,6 @@ script:
         \ module with its argument to the node where it is executed."
       name: account_key_content
     - description: 'Path to the certificate''s private key.
-
         Note that exactly one of `account_key_src`, `account_key_content`, `private_key_src`
         or `private_key_content` must be specified.'
       name: private_key_src
@@ -611,7 +529,6 @@ script:
       name: private_key_content
     - description: 'One of the revocation reasonCodes defined in `Section 5.3.1 of
         RFC5280,https://tools.ietf.org/html/rfc5280#section-5.3.1`.
-
         Possible values are `0` (unspecified), `1` (keyCompromise), `2` (cACompromise),
         `3` (affiliationChanged), `4` (superseded), `5` (cessationOfOperation), `6`
         (certificateHold), `8` (removeFromCRL), `9` (privilegeWithdrawn), `10` (aACompromise)'
@@ -623,7 +540,6 @@ script:
     - auto: PREDEFINED
       defaultValue: '1'
       description: 'The ACME version of the endpoint.
-
         Must be 1 for the classic Let''s Encrypt and Buypass ACME endpoints, or 2
         for standardized ACME v2 endpoints.'
       name: acme_version
@@ -633,19 +549,14 @@ script:
     - defaultValue: https://acme-staging.api.letsencrypt.org/directory
       description: 'The ACME directory to use. This is the entry point URL to access
         CA server API.
-
         For safety reasons the default is set to the Let''s Encrypt staging server
         (for the ACME v1 protocol). This will create technically correct, but untrusted
         certificates.
-
         For Let''s Encrypt, all staging endpoints can be found here: `https://letsencrypt.org/docs/staging-environment/`.
         For Buypass, all endpoints can be found here: `https://community.buypass.com/t/63d4ay/buypass-go-ssl-endpoints`
-
         For Let''s Encrypt, the production directory URL for ACME v1 is `https://acme-v01.api.letsencrypt.org/directory`,
         and the production directory URL for ACME v2 is `https://acme-v02.api.letsencrypt.org/directory`.
-
         For Buypass, the production directory URL for ACME v2 and v1 is `https://api.buypass.com/acme/directory`.
-
         `Warning`: So far, the module has only been tested against Let''s Encrypt
         (staging and production), Buypass (staging and production), and `Pebble testing
         server,https://github.com/letsencrypt/Pebble`.'
@@ -653,7 +564,6 @@ script:
     - auto: PREDEFINED
       defaultValue: 'Yes'
       description: 'Whether calls to the ACME directory will validate TLS certificates.
-
         `Warning`: Should `only ever` be set to `no` for testing purposes, for example
         when testing against a local Pebble server.'
       name: validate_certs
@@ -663,12 +573,9 @@ script:
     - auto: PREDEFINED
       defaultValue: auto
       description: 'Determines which crypto backend to use.
-
         The default choice is `auto`, which tries to use `cryptography` if available,
         and falls back to `openssl`.
-
         If set to `openssl`, will try to use the `openssl` binary.
-
         If set to `cryptography`, will try to use the `cryptography,https://cryptography.io/`
         library.'
       name: select_crypto_backend
@@ -700,11 +607,9 @@ script:
       required: true
     - description: 'Path to a file containing the private key file to use for this
         challenge certificate.
-
         Mutually exclusive with `private_key_content`.'
       name: private_key_src
     - description: 'Content of the private key to use for this challenge certificate.
-
         Mutually exclusive with `private_key_src`.'
       name: private_key_content
     description: "Prepare certificates required for ACME challenges such as C(tls-alpn-01)\n\
@@ -728,7 +633,6 @@ script:
       type: string
     - contextPath: ACME.acmeChallengeCertHelper.regular_certificate
       description: 'A self-signed certificate for the challenge domain.
-
         If no existing certificate exists, can be used to set-up https in the first
         place if that is needed for providing the challenge.'
       type: string
@@ -740,19 +644,15 @@ script:
       name: host
       required: true
     - description: 'The URL to send the request to.
-
         Must be specified if `method` is not `directory-only`.'
       name: url
     - auto: PREDEFINED
       defaultValue: get
       description: 'The method to use to access the given URL on the ACME server.
-
         The value `post` executes an authenticated POST request. The content must
         be specified in the `content` option.
-
         The value `get` executes an authenticated POST-as-GET request for ACME v2,
         and a regular GET request for ACME v1.
-
         The value `directory-only` only retrieves the directory, without doing a request.'
       name: method
       predefined:
@@ -761,7 +661,6 @@ script:
       - directory-only
     - description: 'An encoded JSON object which will be sent as the content if `method`
         is `post`.
-
         Required when `method` is `post`, and not allowed otherwise.'
       name: content
     - auto: PREDEFINED
@@ -774,13 +673,10 @@ script:
       - 'No'
     - description: 'Path to a file containing the ACME account RSA or Elliptic Curve
         key.
-
         RSA keys can be created with `openssl genrsa ...`. Elliptic curve keys can
         be created with `openssl ecparam -genkey ...`. Any other tool creating private
         keys in PEM format can be used as well.
-
         Mutually exclusive with `account_key_content`.
-
         Required if `account_key_content` is not used.'
       name: account_key_src
     - description: "Content of the ACME account RSA or Elliptic Curve key.\nMutually\
@@ -800,7 +696,6 @@ script:
     - auto: PREDEFINED
       defaultValue: '1'
       description: 'The ACME version of the endpoint.
-
         Must be 1 for the classic Let''s Encrypt and Buypass ACME endpoints, or 2
         for standardized ACME v2 endpoints.'
       name: acme_version
@@ -810,19 +705,14 @@ script:
     - defaultValue: https://acme-staging.api.letsencrypt.org/directory
       description: 'The ACME directory to use. This is the entry point URL to access
         CA server API.
-
         For safety reasons the default is set to the Let''s Encrypt staging server
         (for the ACME v1 protocol). This will create technically correct, but untrusted
         certificates.
-
         For Let''s Encrypt, all staging endpoints can be found here: `https://letsencrypt.org/docs/staging-environment/`.
         For Buypass, all endpoints can be found here: `https://community.buypass.com/t/63d4ay/buypass-go-ssl-endpoints`
-
         For Let''s Encrypt, the production directory URL for ACME v1 is `https://acme-v01.api.letsencrypt.org/directory`,
         and the production directory URL for ACME v2 is `https://acme-v02.api.letsencrypt.org/directory`.
-
         For Buypass, the production directory URL for ACME v2 and v1 is `https://api.buypass.com/acme/directory`.
-
         `Warning`: So far, the module has only been tested against Let''s Encrypt
         (staging and production), Buypass (staging and production), and `Pebble testing
         server,https://github.com/letsencrypt/Pebble`.'
@@ -830,7 +720,6 @@ script:
     - auto: PREDEFINED
       defaultValue: 'Yes'
       description: 'Whether calls to the ACME directory will validate TLS certificates.
-
         `Warning`: Should `only ever` be set to `no` for testing purposes, for example
         when testing against a local Pebble server.'
       name: validate_certs
@@ -840,12 +729,9 @@ script:
     - auto: PREDEFINED
       defaultValue: auto
       description: 'Determines which crypto backend to use.
-
         The default choice is `auto`, which tries to use `cryptography` if available,
         and falls back to `openssl`.
-
         If set to `openssl`, will try to use the `openssl` binary.
-
         If set to `cryptography`, will try to use the `cryptography,https://cryptography.io/`
         library.'
       name: select_crypto_backend

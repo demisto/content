@@ -1,6 +1,6 @@
-# Ansible Linux
+# Ansible OpenSSL
 
-This integration enables the management of Linux hosts directly from XSOAR using SSH and Python.
+This integration enables the management of certificates on Linux hosts directly from XSOAR using SSH and Python.
 
 # Requirements
 The Linux host(s) being managed requires Python >= 2.6. Different commands will use different underlying Ansible modules, and may have their own unique package requirements. Refer to the individual command documentation for further information.
@@ -24,4 +24,4 @@ Whilst un-privileged Linux user privileges can be used, a SuperUser account is r
 
 ## Testing
 
-This integration does not support testing from the integration management screen. Instead it is recommended to use the `!linux-gather-facts`command providing an example `host` as the command argument. This command will connect to the specified host with the configured credentials in the integration, and if successful output general information about the host.
+This integration does not support testing from the integration management screen. Instead it is recommended to use the `!openssl-certificate-info` command providing an example `host` and `path` to a certificate as the command argument. This command will connect to the specified host with the configured credentials in the integration, and if successful output information about the certificate at the path.
