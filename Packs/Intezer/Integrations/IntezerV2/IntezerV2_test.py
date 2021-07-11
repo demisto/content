@@ -293,7 +293,7 @@ def test_check_analysis_status_and_get_results_command_multiple_analyses(request
                 'sha256': sha256_2,
                 'verdict': 'trusted',
                 'analysis_url': 'bla'
-            }
+            },
             'status': 'succeeded'
         }
     )
