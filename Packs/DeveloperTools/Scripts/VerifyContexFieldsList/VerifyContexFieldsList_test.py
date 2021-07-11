@@ -1,4 +1,4 @@
-from Packs.DeveloperTools.Scripts.VerifyContexFieldsList.VerifyContexFieldsList import check_fields
+from VerifyContexFieldsList import check_fields
 import pytest
 CONTEXT1 = {'FirstField': {'SecondField': {'ThirdField': 1}}}
 CONTEXT2 = {'FirstField': [{'SecondField': [{'ThirdField': 1, 'FourthField': 3}, {'ThirdField': 2, 'FourthField': 4}]}]}

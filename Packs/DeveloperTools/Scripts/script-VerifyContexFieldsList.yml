@@ -7,7 +7,7 @@ args:
   required: true
   description: Map to search fields in
   isArray: true
-comment: Receives names of fields and map. Checks if this map contains these fields.
+comment: Receive fields and context. Verifies that these field exists in context.
 commonfields:
   id: VerifyContexFieldsList
   version: -1
