@@ -192,7 +192,7 @@ def test_create_user_iam(mocker):
     args = {"user-profile": json.dumps({"email": "test@paloaltonetworks.com", "username": "test",
                                         "locationregion": "Americas"})}
 
-    mocker.patch('Active_Directory_Query.check_if_user_exists_by_samaccountname', return_value=False)
+    mocker.patch('Active_Directory_Query.check_if_user_exists_by_attribute', return_value=False)
     mocker.patch.object(IAMUserProfile, 'map_object', return_value={'cn': 'test', 'mail': 'test@paloaltonetworks.com',
                                                                     'samaccountname': 'test',
                                                                     'userPrincipalName': 'test',
@@ -236,7 +236,7 @@ def test_unseccsseful_create_user_iam_missing_ou(mocker):
     args = {"user-profile": json.dumps({"email": "test@paloaltonetworks.com", "username": "test",
                                         "locationregion": "Americas"})}
 
-    mocker.patch('Active_Directory_Query.check_if_user_exists_by_samaccountname', return_value=False)
+    mocker.patch('Active_Directory_Query.check_if_user_exists_by_attribute', return_value=False)
     mocker.patch.object(IAMUserProfile, 'map_object', return_value={'cn': 'test', 'mail': 'test@paloaltonetworks.com',
                                                                     'samaccountname': 'test',
                                                                     'userPrincipalName': 'test'})
@@ -279,7 +279,7 @@ def test_unseccsseful_create_user_iam_missing_samaccountname(mocker):
     args = {"user-profile": json.dumps({"email": "test@paloaltonetworks.com", "username": "test",
                                         "locationregion": "Americas"})}
 
-    mocker.patch('Active_Directory_Query.check_if_user_exists_by_samaccountname', return_value=False)
+    mocker.patch('Active_Directory_Query.check_if_user_exists_by_attribute', return_value=False)
     mocker.patch.object(IAMUserProfile, 'map_object', return_value={'cn': 'test', 'mail': 'test@paloaltonetworks.com',
                                                                     "ou": "OU=Americas,OU=Demisto",
                                                                     'userPrincipalName': 'test'})
