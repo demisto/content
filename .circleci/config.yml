@@ -1014,6 +1014,64 @@ jobs:
             - *destroy_instances
             - *store_artifacts
 
+  Server 6_2:
+    <<: *container_config
+    resource_class: medium
+    <<: *environment
+    steps:
+      - when:
+          condition:
+            or:
+              - << pipeline.parameters.contrib_branch >>
+              - << pipeline.parameters.non_ami_run >>
+          steps:
+            - run:
+                name: Not running this job
+                when: always
+                command: |
+                  echo "Not running this job when triggered with one of contrib_branch or non_ami_run"
+      - unless:
+          condition:
+            or:
+              - << pipeline.parameters.contrib_branch >>
+              - << pipeline.parameters.non_ami_run >>
+          steps:
+            - *attach_workspace
+            - *add_ssh_keys
+            - *prepare_environment
+            - set-instance-role-env-variable:
+                instance_role: Server 6.2
+            - *check_if_instance_was_created
+            - start-tunnel
+            - *wait_until_server_ready
+            - *install_content_and_configure_integrations_on_server
+            - run:
+                name: Run Tests - Server 6.2
+                shell: /bin/bash
+                when: always
+                no_output_timeout: 5h
+                command: |
+                  if [ -z $INSTANCE_WAS_CREATED ];
+                    then
+                      echo "Skipping - instance was not created"
+                      exit 0
+                  fi
+                  ./Tests/scripts/run_tests.sh "$INSTANCE_ROLE"
+                  export RETVAL=$?
+                  if [ -f ./Tests/failed_tests.txt ];
+                    then
+                      cp ./Tests/failed_tests.txt $CIRCLE_ARTIFACTS/failed_tests.txt
+                  fi
+                  exit $RETVAL
+            - run:
+                name: Slack Notifier
+                shell: /bin/bash
+                command: |
+                  ./Tests/scripts/slack_notifier.sh 'test_playbooks' $ENV_RESULTS_PATH
+                when: always
+            - *destroy_instances
+            - *store_artifacts
+
   Server 6_1:
     <<: *container_config
     resource_class: medium
