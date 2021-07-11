@@ -679,8 +679,7 @@ def test_eml_contains_html_and_text(mocker):
     results = demisto.results.call_args[0]
     assert len(results) == 1
     assert results[0]['Type'] == entryTypes['note']
-    expected_output = "<html> hello </html>"
-    assert results[0]['EntryContext']['Email']['HTML'] == expected_output
+    assert "<p class=\"MsoNormal\"><span style='font-size:10.0pt;font-family:\"PKO Bank Polski\",sans-serif;color:black'>żółć<o:p></o:p>" in results[0]['EntryContext']['Email']['HTML']
 
 
 def test_eml_base64_header_comment_although_string(mocker):
