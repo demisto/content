@@ -194,8 +194,7 @@ def fetch_incidents(client: Client, last_run: Dict[str, Any]) -> List:
         incident = {
             "name": incident_name,
             "occurred": json_data.get("first_reported_date"),
-            "rawJSON": json_data,
-            'type': 'Ironscales'
+            "rawJSON": json.dumps(json_data),
         }
 
         incidents_to_create.append(incident)
