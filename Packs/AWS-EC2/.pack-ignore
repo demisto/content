@@ -5,4 +5,4 @@ ignore=BA108,BA109
 ignore=RM106
 
 [file:playbook-IP_Whitelist_-_AWS_Security_Group.yml]
-ignore=PB113
+ignore=PB114
