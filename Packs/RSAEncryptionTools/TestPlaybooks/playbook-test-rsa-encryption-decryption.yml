@@ -1,14 +1,15 @@
-id: playbook-test-encryption-decryption
+id: playbook-test-rsa-encryption-decryption
 version: -1
-name: playbook-test-encryption-decryption
+name: playbook-test-rsa-encryption-decryption
+description: Test playbook for Encryption Tools pack.
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: e8109a66-5183-437c-8d65-bae99d031abc
+    taskid: 15c7bdaa-f7fa-4565-8b4d-64e76289e220
     type: start
     task:
-      id: e8109a66-5183-437c-8d65-bae99d031abc
+      id: 15c7bdaa-f7fa-4565-8b4d-64e76289e220
       version: -1
       name: ""
       iscommand: false
@@ -16,7 +17,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "2"
+      - "9"
     separatecontext: false
     view: |-
       {
@@ -30,50 +31,16 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "2":
-    id: "2"
-    taskid: 7c68adb8-9f13-44dc-8997-3b670f4b4d52
-    type: regular
-    task:
-      id: 7c68adb8-9f13-44dc-8997-3b670f4b4d52
-      version: -1
-      name: Create Keys with Override
-      description: Create new RSA keys.
-      script: '|||encryption-tools-create-keys'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "9"
-    scriptarguments:
-      nbits:
-        simple: "512"
-      override_keys:
-        simple: "true"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 195
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "3":
     id: "3"
-    taskid: 6e9ec731-8b14-4103-8b48-3725ab74b99c
+    taskid: ec476c0d-7218-44b4-8974-ca4e0afb1d90
     type: regular
     task:
-      id: 6e9ec731-8b14-4103-8b48-3725ab74b99c
+      id: ec476c0d-7218-44b4-8974-ca4e0afb1d90
       version: -1
       name: Encrypt Text
       description: Encrypt text.
-      script: '|||encryption-tools-encrypt-text'
+      script: '|||rsa-encryption-tools-encrypt-text'
       type: regular
       iscommand: true
       brand: ""
@@ -88,7 +55,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 515
+          "y": 340
         }
       }
     note: false
@@ -98,14 +65,14 @@ tasks:
     quietmode: 0
   "5":
     id: "5"
-    taskid: a0ce222f-4b41-4384-8e02-19efbffa62d1
+    taskid: 2fcda5bf-811f-439a-8657-b06657ac466f
     type: regular
     task:
-      id: a0ce222f-4b41-4384-8e02-19efbffa62d1
+      id: 2fcda5bf-811f-439a-8657-b06657ac466f
       version: -1
       name: Decrypt Text
       description: Decrypt text.
-      script: '|||encryption-tools-decrypt-text'
+      script: '|||rsa-encryption-tools-decrypt-text'
       type: regular
       iscommand: true
       brand: ""
@@ -120,7 +87,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 690
+          "y": 515
         }
       }
     note: false
@@ -130,10 +97,10 @@ tasks:
     quietmode: 0
   "6":
     id: "6"
-    taskid: 1bb768c8-0ba1-4693-8fa0-228d5591732b
+    taskid: b99de020-05f4-4867-8783-09248c4a03aa
     type: regular
     task:
-      id: 1bb768c8-0ba1-4693-8fa0-228d5591732b
+      id: b99de020-05f4-4867-8783-09248c4a03aa
       version: -1
       name: Decrypted Value to Context
       description: "Takes the comments of a given entry ID and stores them in the\
@@ -160,7 +127,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 865
+          "y": 690
         }
       }
     note: false
@@ -170,10 +137,10 @@ tasks:
     quietmode: 0
   "7":
     id: "7"
-    taskid: 5e884c51-151a-4240-8610-d992f51c049a
+    taskid: 449aed3e-9044-450b-8973-79544e9c9549
     type: condition
     task:
-      id: 5e884c51-151a-4240-8610-d992f51c049a
+      id: 449aed3e-9044-450b-8973-79544e9c9549
       version: -1
       name: Verify Text
       type: condition
@@ -198,7 +165,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1040
+          "y": 865
         }
       }
     note: false
@@ -208,10 +175,10 @@ tasks:
     quietmode: 0
   "8":
     id: "8"
-    taskid: ec3e79e5-11d8-48b4-8303-3d0cb183e7c1
+    taskid: 80963e0b-a35b-47c7-8e7b-77d7cf7ca658
     type: title
     task:
-      id: ec3e79e5-11d8-48b4-8303-3d0cb183e7c1
+      id: 80963e0b-a35b-47c7-8e7b-77d7cf7ca658
       version: -1
       name: File Testing
       type: title
@@ -226,7 +193,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1215
+          "y": 1040
         }
       }
     note: false
@@ -236,10 +203,10 @@ tasks:
     quietmode: 0
   "9":
     id: "9"
-    taskid: d17a0eae-0265-402a-84b5-ad820b27b5df
+    taskid: fe2d0bca-644d-4df6-8289-98a86671c2ad
     type: title
     task:
-      id: d17a0eae-0265-402a-84b5-ad820b27b5df
+      id: fe2d0bca-644d-4df6-8289-98a86671c2ad
       version: -1
       name: Text Testing
       type: title
@@ -254,7 +221,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 370
+          "y": 195
         }
       }
     note: false
@@ -264,10 +231,10 @@ tasks:
     quietmode: 0
   "10":
     id: "10"
-    taskid: 6eae44a3-ce4d-405f-87bd-acc1aa317cb0
+    taskid: c7754449-dd69-4600-8a24-be0f23f56d7f
     type: regular
     task:
-      id: 6eae44a3-ce4d-405f-87bd-acc1aa317cb0
+      id: c7754449-dd69-4600-8a24-be0f23f56d7f
       version: -1
       name: FileCreateAndUpload
       description: |
@@ -289,7 +256,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1360
+          "y": 1185
         }
       }
     note: false
@@ -299,14 +266,14 @@ tasks:
     quietmode: 0
   "11":
     id: "11"
-    taskid: 41ff6b0b-5841-444a-8cc8-74319a7209da
+    taskid: 2fd32c3f-1400-4130-8395-119d99b6b1b1
     type: regular
     task:
-      id: 41ff6b0b-5841-444a-8cc8-74319a7209da
+      id: 2fd32c3f-1400-4130-8395-119d99b6b1b1
       version: -1
       name: Encrypt File
       description: Encrypt file.
-      script: '|||encryption-tools-encrypt-file'
+      script: '|||rsa-encryption-tools-encrypt-file'
       type: regular
       iscommand: true
       brand: ""
@@ -322,7 +289,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1535
+          "y": 1360
         }
       }
     note: false
@@ -332,14 +299,14 @@ tasks:
     quietmode: 0
   "12":
     id: "12"
-    taskid: 819fc9ee-df3d-4c5d-855d-5cf2c294aa7f
+    taskid: 5a485384-9b21-4e95-8c36-5af9a0183c81
     type: regular
     task:
-      id: 819fc9ee-df3d-4c5d-855d-5cf2c294aa7f
+      id: 5a485384-9b21-4e95-8c36-5af9a0183c81
       version: -1
       name: Decrypt File
       description: Decrypt file.
-      script: '|||encryption-tools-decrypt-file'
+      script: '|||rsa-encryption-tools-decrypt-file'
       type: regular
       iscommand: true
       brand: ""
@@ -355,7 +322,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1710
+          "y": 1535
         }
       }
     note: false
@@ -365,10 +332,10 @@ tasks:
     quietmode: 0
   "13":
     id: "13"
-    taskid: 30d3bf8a-c154-40f2-8d39-c02ee73e696f
+    taskid: f2b3b45b-7350-4c89-8d58-4bb2e5fc333a
     type: condition
     task:
-      id: 30d3bf8a-c154-40f2-8d39-c02ee73e696f
+      id: f2b3b45b-7350-4c89-8d58-4bb2e5fc333a
       version: -1
       name: Verify File Content
       type: condition
@@ -393,7 +360,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2060
+          "y": 1885
         }
       }
     note: false
@@ -403,10 +370,10 @@ tasks:
     quietmode: 0
   "14":
     id: "14"
-    taskid: 3a08b14b-2002-47f9-834a-660c6d7041e0
+    taskid: 0fcf99b8-74b7-40fc-8f36-8e605c7c9ed4
     type: regular
     task:
-      id: 3a08b14b-2002-47f9-834a-660c6d7041e0
+      id: 0fcf99b8-74b7-40fc-8f36-8e605c7c9ed4
       version: -1
       name: ReadFile
       description: Load the contents of a file into context.
@@ -426,7 +393,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1885
+          "y": 1710
         }
       }
     note: false
@@ -436,10 +403,10 @@ tasks:
     quietmode: 0
   "15":
     id: "15"
-    taskid: fc92850a-b2b5-472b-8497-c981644bfbb0
+    taskid: 17aa3ee7-431e-45ff-88e4-d739cecdc323
     type: title
     task:
-      id: fc92850a-b2b5-472b-8497-c981644bfbb0
+      id: 17aa3ee7-431e-45ff-88e4-d739cecdc323
       version: -1
       name: Test Exports
       type: title
@@ -448,45 +415,13 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "16"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 2235
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "16":
-    id: "16"
-    taskid: 3031f5f1-f86a-4103-87a9-3b1c1b16f845
-    type: regular
-    task:
-      id: 3031f5f1-f86a-4103-87a9-3b1c1b16f845
-      version: -1
-      name: Export Private Key
-      description: Exports the private key to a file.
-      script: '|||encryption-tools-export-private-key'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
       - "17"
-    scriptarguments:
-      output_file_name:
-        simple: private_key
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 2380
+          "y": 2060
         }
       }
     note: false
@@ -496,14 +431,14 @@ tasks:
     quietmode: 0
   "17":
     id: "17"
-    taskid: 756fc21c-c607-4699-818c-dc6bbdad1f44
+    taskid: ccba8d55-d9d8-4224-8bf1-a6e190b566b1
     type: regular
     task:
-      id: 756fc21c-c607-4699-818c-dc6bbdad1f44
+      id: ccba8d55-d9d8-4224-8bf1-a6e190b566b1
       version: -1
       name: Export Public Key
-      description: Exports the private key to a file.
-      script: '|||encryption-tools-export-private-key'
+      description: Exports the public key to a file.
+      script: '|||rsa-encryption-tools-export-public-key'
       type: regular
       iscommand: true
       brand: ""
@@ -512,13 +447,13 @@ tasks:
       - "18"
     scriptarguments:
       output_file_name:
-        simple: public_key
+        simple: public.key
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 2555
+          "y": 2205
         }
       }
     note: false
@@ -528,10 +463,10 @@ tasks:
     quietmode: 0
   "18":
     id: "18"
-    taskid: 6589face-6034-47c6-8965-184c8e1de2b1
+    taskid: 50f7fba6-8dab-4055-88c0-6bc8d3cae1ca
     type: condition
     task:
-      id: 6589face-6034-47c6-8965-184c8e1de2b1
+      id: 50f7fba6-8dab-4055-88c0-6bc8d3cae1ca
       version: -1
       name: Verify exported files
       type: condition
@@ -551,20 +486,12 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: private_key
-      - - operator: containsGeneral
-          left:
-            value:
-              simple: InfoFile.Name
-            iscontext: true
-          right:
-            value:
-              simple: public_key
+              simple: public.key
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 2730
+          "y": 2380
         }
       }
     note: false
@@ -574,10 +501,10 @@ tasks:
     quietmode: 0
   "19":
     id: "19"
-    taskid: c729eaf4-b6c7-4112-87c3-bee283896d2f
+    taskid: f85aa5f7-adba-47f5-8f11-6d9069222224
     type: title
     task:
-      id: c729eaf4-b6c7-4112-87c3-bee283896d2f
+      id: f85aa5f7-adba-47f5-8f11-6d9069222224
       version: -1
       name: DONE
       type: title
@@ -589,7 +516,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2905
+          "y": 2555
         }
       }
     note: false
@@ -602,7 +529,7 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 2920,
+        "height": 2570,
         "width": 380,
         "x": 50,
         "y": 50
@@ -612,4 +539,3 @@ view: |-
 inputs: []
 outputs: []
 fromversion: 6.0.0
-description: Test playbook for Encryption Tools pack.

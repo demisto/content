@@ -1,5 +1,0 @@
-encryption-tools-create-keys nbits=512 override_keys=true
-encryption-tools-encrypt-text text_to_encrypt=XSOAR
-encryption-tools-decrypt-text base64_to_decrypt=ZKlCN+D4ugXLNlkpuXoproRiqWsjFqp809PtV3kv0wfH1HqhoNQ9OhSxCoZndKFHj/rnlcmpN0DASPS45PWvWg==
-encryption-tools-encrypt-file entry_id=136@105 output_file_name=encrypted_file.txt
-encryption-tools-decrypt-file entry_id=137@105 output_file_name=decrypted_file.txt

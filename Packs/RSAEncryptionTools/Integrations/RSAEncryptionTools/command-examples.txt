@@ -1,0 +1,5 @@
+rsa-encryption-tools-encrypt-text text_to_encrypt=XSOAR
+rsa-encryption-tools-decrypt-text base64_to_decrypt=ZKlCN+D4ugXLNlkpuXoproRiqWsjFqp809PtV3kv0wfH1HqhoNQ9OhSxCoZndKFHj/rnlcmpN0DASPS45PWvWg==
+rsa-encryption-tools-encrypt-file entry_id=136@105 output_file_name=encrypted_file.txt
+rsa-encryption-tools-decrypt-file entry_id=137@105 output_file_name=decrypted_file.txt
+rsa-encryption-tools-export-public-key output_file_name=public.key

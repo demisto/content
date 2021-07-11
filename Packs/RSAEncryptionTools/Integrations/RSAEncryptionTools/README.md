@@ -1,9 +1,9 @@
-Encryption Tools - Encrypt and Decrypt text and files.
+RSA Encryption Tools - Encrypt and Decrypt text and files using RSA encryption.
 
 ## Configure EncryptionTools on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for EncryptionTools.
+2. Search for RSA Encryption Tools.
 3. Click **Add instance** to create and configure a new integration instance.
 
    | **Parameter** | **Required** |
@@ -18,14 +18,14 @@ Encryption Tools - Encrypt and Decrypt text and files.
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook. After you
 successfully execute a command, a DBot message appears in the War Room with the command details.
 
-### encryption-tools-encrypt-text
+### rsa-encryption-tools-encrypt-text
 
 ***
 Encrypt text.
 
 #### Base Command
 
-`encryption-tools-encrypt-text`
+`rsa-encryption-tools-encrypt-text`
 
 #### Input
 
@@ -41,20 +41,20 @@ Encrypt text.
 
 #### Command Example
 
-```!encryption-tools-encrypt-text text_to_encrypt=XSOAR```
+```!rsa-encryption-tools-encrypt-text text_to_encrypt=XSOAR```
 
 #### Human Readable Output
 
 > NuWPMIT006wgl9QqGQ+aMdj0Wjmf8no9ga29I0AuWeCDVjSXtsrEq1Y0l/F0COqZKNIUFusah+nZ9QNE2p2sjA==
 
-### encryption-tools-decrypt-text
+### rsa-encryption-tools-decrypt-text
 
 ***
 Decrypt text.
 
 #### Base Command
 
-`encryption-tools-decrypt-text`
+`rsa-encryption-tools-decrypt-text`
 
 #### Input
 
@@ -68,7 +68,7 @@ There is no context output for this command.
 
 #### Command Example
 
-```!encryption-tools-decrypt-text base64_to_decrypt=NuWPMIT006wgl9QqGQ+aMdj0Wjmf8no9ga29I0AuWeCDVjSXtsrEq1Y0l/F0COqZKNIUFusah+nZ9QNE2p2sjA==```
+```!rsa-encryption-tools-decrypt-text base64_to_decrypt=NuWPMIT006wgl9QqGQ+aMdj0Wjmf8no9ga29I0AuWeCDVjSXtsrEq1Y0l/F0COqZKNIUFusah+nZ9QNE2p2sjA==```
 
 #### Human Readable Output
 
@@ -78,16 +78,16 @@ There is no context output for this command.
 
 The output of this command is the decrypted value, which may be sensitive data. In order to wrap the output and prevent
 the data from being printed to the war room you should call the command from a script using the following code:
-`decrypted_content = execute_command('encryption-tools-decrypt-text', {'base64_to_decrypt': <decrypted_string>'}, True)`
+`decrypted_content = execute_command('rsa-encryption-tools-decrypt-text', {'base64_to_decrypt': <decrypted_string>'}, True)`
 
-### encryption-tools-encrypt-file
+### rsa-encryption-tools-encrypt-file
 
 ***
 Encrypt file.
 
 #### Base Command
 
-`encryption-tools-encrypt-file`
+`rsa-encryption-tools-encrypt-file`
 
 #### Input
 
@@ -104,20 +104,20 @@ There is no context output for this command.
 
 #### Command Example
 
-```!encryption-tools-encrypt-file entry_id=136@105 output_file_name=encrypted_file.txt```
+```!rsa-encryption-tools-encrypt-file entry_id=136@105 output_file_name=encrypted_file.txt```
 
 #### Human Readable Output
 
 > File Output.
 
-### encryption-tools-decrypt-file
+### rsa-encryption-tools-decrypt-file
 
 ***
 Decrypt file.
 
 #### Base Command
 
-`encryption-tools-decrypt-file`
+`rsa-encryption-tools-decrypt-file`
 
 #### Input
 
@@ -133,7 +133,7 @@ There is no context output for this command.
 
 #### Command Example
 
-```!encryption-tools-decrypt-file entry_id=137@105 output_file_name=decrypted_file.txt```
+```!rsa-encryption-tools-decrypt-file entry_id=137@105 output_file_name=decrypted_file.txt```
 
 #### Human Readable Output
 
@@ -143,16 +143,16 @@ There is no context output for this command.
 
 The output of this command is the decrypted file, which might include be sensitive data. In order to wrap the output and
 prevent the file from being printed to the war room you should call the command from a script using the following code:
-`decrypted_content = execute_command('encryption-tools-decrypt-file', {'entry_id': <your_entry_id>, 'output_as_file': 'false'}, True)`
+`decrypted_content = execute_command('rsa-encryption-tools-decrypt-file', {'entry_id': <your_entry_id>, 'output_as_file': 'false'}, True)`
 
-### encryption-tools-export-public-key
+### rsa-encryption-tools-export-public-key
 
 ***
 Exports the public key to a file.
 
 #### Base Command
 
-`encryption-tools-export-public-key`
+`rsa-encryption-tools-export-public-key`
 
 #### Input
 
@@ -166,7 +166,7 @@ There is no context output for this command.
 
 #### Command Example
 
-```!encryption-tools-export-public-key output_file_name=public_key.txt```
+```!rsa-encryption-tools-export-public-key output_file_name=public_key.txt```
 
 #### Human Readable Output
 

@@ -6,6 +6,9 @@ import rsa
 from CommonServerPython import *
 import demistomock as demisto
 
+PREFIX = '-----BEGIN RSA PRIVATE KEY-----'
+SUFFIX = '-----END RSA PRIVATE KEY-----'
+
 
 def test_module():
     try:
@@ -42,7 +45,12 @@ def get_private_key() -> rsa.PrivateKey:
     params_private_key = params.get('private_key')
 
     if params_private_key:
-        return rsa.PrivateKey.load_pkcs1(params_private_key)
+        base64value = params_private_key.replace(PREFIX, '').replace(SUFFIX, '')
+        base64value = base64value.replace(' ', '\n')
+    
+        private_key = f'{PREFIX}\n{base64value}\n{SUFFIX}'
+
+        return rsa.PrivateKey.load_pkcs1(private_key.encode('utf-8'))
 
     raise DemistoException('Private key is not defined.')
 
@@ -230,11 +238,11 @@ def main() -> None:
     args = demisto.args()
 
     commands = {
-        'encryption-tools-encrypt-text': encrypt_text,
-        'encryption-tools-decrypt-text': decrypt_text,
-        'encryption-tools-encrypt-file': encrypt_file,
-        'encryption-tools-decrypt-file': decrypt_file,
-        'encryption-tools-export-public-key': export_public_key,
+        'rsa-encryption-tools-encrypt-text': encrypt_text,
+        'rsa-encryption-tools-decrypt-text': decrypt_text,
+        'rsa-encryption-tools-encrypt-file': encrypt_file,
+        'rsa-encryption-tools-decrypt-file': decrypt_file,
+        'rsa-encryption-tools-export-public-key': export_public_key,
     }
 
     command = demisto.command()
@@ -242,7 +250,7 @@ def main() -> None:
 
     try:
         if command == 'test-module':
-            test_module()
+            return_results(test_module())
 
         elif command in commands:
             return_results(commands[command](args))
