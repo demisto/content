@@ -1239,7 +1239,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: "12"
+              simple: "18"
     view: |-
       {
         "position": {
@@ -1401,7 +1401,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: "8"
+              simple: "18"
     view: |-
       {
         "position": {
