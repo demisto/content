@@ -47,7 +47,7 @@ def get_private_key() -> rsa.PrivateKey:
     if params_private_key:
         base64value = params_private_key.replace(PREFIX, '').replace(SUFFIX, '')
         base64value = base64value.replace(' ', '\n')
-    
+
         private_key = f'{PREFIX}\n{base64value}\n{SUFFIX}'
 
         return rsa.PrivateKey.load_pkcs1(private_key.encode('utf-8'))
