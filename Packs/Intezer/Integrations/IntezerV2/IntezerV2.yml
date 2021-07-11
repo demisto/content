@@ -251,7 +251,7 @@ script:
         - contextPath: Intezer.Analysis.ComposedAnalysisID
           description: The Composed analysis id
           type: string
-  dockerimage: demisto/intezer:1.0.0.22125
+  dockerimage: demisto/intezer:1.0.0.22419
   isfetch: false
   runonce: false
   script: '-'
