@@ -136,6 +136,7 @@ def main():
     content_repo: Repository = github_client.get_repo(f'{org_name}/{repo_name}')
     pr: PullRequest = content_repo.get_pull(int(pr_number))
 
+    print(pr.title)
     if '[Marketplace Contribution]' in pr.title:
         print(f'PR {pr_number} was detected as Marketplace Contribution. Skipping validation.')
         sys.exit(exit_status)
