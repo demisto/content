@@ -27,7 +27,6 @@ if not demisto.params()['proxy']:
 
 ''' GLOBAL VARS '''
 SERVER = demisto.params()['server'][:-1] if demisto.params()['server'].endswith('/') else demisto.params()['server']
-PORT = demisto.params()['port']
 ORG_NAME = demisto.params()['org']
 USERNAME = demisto.params().get('credentials', {}).get('identifier')
 PASSWORD = demisto.params().get('credentials', {}).get('password')
@@ -85,7 +84,6 @@ NIST_ID_DICT = {
 }
 
 SEVERITY_CODE_DICT = {
-    4: 'CRITICAL',
     50: 'Low',
     51: 'Medium',
     52: 'High'
@@ -124,7 +122,7 @@ def prettify_incidents(incidents):
     phases = get_phases()['entities']
     for incident in incidents:
         incident['id'] = str(incident['id'])
-        if isinstance(incident['description'], str):
+        if isinstance(incident['description'], unicode):
             incident['description'] = incident['description'].replace('<div>', '').replace('</div>', '')
         incident['discovered_date'] = normalize_timestamp(incident['discovered_date'])
         incident['created_date'] = normalize_timestamp(incident['create_date'])
@@ -959,7 +957,7 @@ def fetch_incidents():
                 attachments = incident_attachments(str(incident.get('id', '')))
                 if attachments:
                     incident['attachments'] = attachments
-                if isinstance(incident.get('description'), str):
+                if isinstance(incident.get('description'), unicode):
                     incident['description'] = incident['description'].replace('<div>', '').replace('</div>', '')
 
                 incident['discovered_date'] = normalize_timestamp(incident.get('discovered_date'))
@@ -1004,8 +1002,7 @@ def get_client():
     opts_dict = {
         'host': SERVER,
         'cafile': os.environ.get('SSL_CERT_FILE') if USE_SSL else 'false',
-        'org': ORG_NAME,
-        'port': PORT
+        'org': ORG_NAME
     }
     if USERNAME and PASSWORD:
         opts_dict.update({
