@@ -532,8 +532,6 @@ def main() -> None:
     tenant_id = params.get('tenant_id')
     self_deployed = params.get('self_deployed', False)
     enc_key = params.get('enc_key')
-    redirect_uri = params.get('redirect_uri')
-    auth_code = params.get('auth_code')
 
     first_fetch_time = params.get('first_fetch', '3 days').strip()
     fetch_limit = params.get('max_fetch', 10)
