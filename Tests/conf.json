@@ -3395,14 +3395,6 @@
             "playbookID": "CarbonBlackLiveResponseCloud-Test",
             "fromversion": "5.5.0",
             "is_mockable": false
-        },
-        {
-            "integrations": "EncryptionTools",
-            "playbookID": "playbook-test-encryption-decryption"
-        },
-        {
-            "integrations": "RSA encryption Tools",
-            "playbookID": "playbook-test-rsa-encryption-decryption"
         }
     ],
     "skipped_tests": {
