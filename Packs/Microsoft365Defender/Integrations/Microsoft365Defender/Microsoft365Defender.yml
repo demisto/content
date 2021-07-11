@@ -23,21 +23,12 @@ configuration:
   name: self_deployed
   required: false
   type: 8
-- display: Token (for self-deployed mode)
+- display: Tenant ID/Token (for self-deployed mode)
   name: tenant_id
   required: false
   type: 4
 - display: Client Secret (for self-deployed mode)
-  name: client_secret
-  required: false
-  type: 4
-- defaultvalue: https://localhost/myapp
-  display: Application redirect URI (for self-deployed mode)
-  name: redirect_uri
-  required: false
-  type: 0
-- display: Authorization code (for self-deployed mode)
-  name: auth_code
+  name: enc_key
   required: false
   type: 4
 - defaultvalue: 12 hours

@@ -23,7 +23,7 @@ BASE_URL = "https://api.security.microsoft.com"
 class Client:
     @logger
     def __init__(self, app_id: str, verify: bool, proxy: bool, base_url: str = BASE_URL, tenant_id: str = None,
-                 auth_code: str = None, enc_key: str = None, redirect_uri: str = None, self_deployed: bool = None):
+                 enc_key: str = None, self_deployed: bool = None):
         if '@' in app_id:
             app_id, refresh_token = app_id.split('@')
             integration_context = get_integration_context()
@@ -38,15 +38,13 @@ class Client:
             tenant_id=tenant_id,
             auth_id=app_id,
             token_retrieval_url='https://login.windows.net/organizations/oauth2/v2.0/token' if not self_deployed else None,
-            grant_type=AUTHORIZATION_CODE if self_deployed else DEVICE_CODE,
+            grant_type=CLIENT_CREDENTIALS if self_deployed else DEVICE_CODE,
             base_url=base_url,
             verify=verify,
             proxy=proxy,
             scope='offline_access https://security.microsoft.com/mtp/.default',
             ok_codes=(200, 201, 202, 204),
             resource='https://api.security.microsoft.com' if not self_deployed else None,
-            auth_code=auth_code,
-            redirect_uri=redirect_uri,
             enc_key=enc_key,
         )
         self.ms_client = MicrosoftClient(**client_args)  # type: ignore
@@ -185,7 +183,7 @@ def test_context_for_token(client: Client) -> None:
 
     """
     if client.self_deployed:
-        pass
+        return
     if not (get_integration_context().get('access_token') or get_integration_context().get('current_refresh_token')):
         raise DemistoException(
             "This integration does not have a test module. Please run !microsoft-365-defender-auth-start and "
@@ -533,7 +531,7 @@ def main() -> None:
 
     tenant_id = params.get('tenant_id')
     self_deployed = params.get('self_deployed', False)
-    enc_key = params.get('client_secret')
+    enc_key = params.get('enc_key')
     redirect_uri = params.get('redirect_uri')
     auth_code = params.get('auth_code')
 
@@ -553,9 +551,8 @@ def main() -> None:
             proxy=proxy,
             tenant_id=tenant_id,
             enc_key=enc_key,
-            redirect_uri=redirect_uri,
-            auth_code=auth_code,
-            self_deployed=self_deployed, )
+            self_deployed=self_deployed,
+        )
         if demisto.command() == 'test-module':
             # This is the call made when pressing the integration Test button.
             return_results(test_module(client))

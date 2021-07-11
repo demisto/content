@@ -29,25 +29,20 @@ To use a self-configured Azure application, you need to add a new Azure App Regi
  * Incident.Read.All - Application
  * AdvancedHunting.Read.All - Application
 
-## Self-Deployed Application - Authorization Code Flow (self-deployed configuration)
+## Self-Deployed Application - Client Credentials Flow
 
 Follow these steps for a self-deployed configuration.
 
-1. To use a self-configured Azure application, you need to add a new Azure App Registration in the Azure Portal. To add the registration, refer to the following [Microsoft article](https://docs.microsoft.com/en-us/azure/active-directory/develop/quickstart-register-app).
-2. Copy the following URL and replace the ***TENANT_ID***, ***CLIENT_ID***, and ***REDIRECT_URI*** with your own tenant ID(token), client ID and redirect URI, accordingly.
-```https://login.microsoftonline.com/TENANT_ID/oauth2/v2.0/authorize?response_type=code&scope=https://api.security.microsoft.com/.default&client_id=CLIENT_ID&redirect_uri=REDIRECT_URI```
-3. Enter the link and you will be prompted to grant Cortex XSOAR permissions. You will be automatically redirected to a link with the following structure:
-```REDIRECT_URI?code=AUTH_CODE&session_state=SESSION_STATE```
-4. Copy the ***AUTH_CODE*** (without the “code=” prefix) and paste it in your instance configuration under the **Authorization code** parameter. 
-5. Enter your client(application) ID in the ***Application ID*** parameter. 
-6. Enter your client secret in the ***Client Secret*** parameter.
-7. Enter your tenant ID in the ***Token*** parameter.
-8. Enter your redirect URI in the ***Redirect URI*** parameter.
+1. To use a self-configured Azure application, you need to add a new Azure App Registration in the Azure Portal. To add the registration, refer to the following [Microsoft article](https://docs.microsoft.com/en-us/microsoft-365/security/defender/api-create-app-web?view=o365-worldwide#create-an-app) steps 1-8.
+2. Select the ***self-deployed*** button.
+2. Enter your Client/Application ID in the ***Application ID*** parameter. 
+3. Enter your Client Secret in the ***Client Secret*** parameter.
+4. Enter your Tenant ID in the ***Tenant ID/Token*** parameter.
 
 #### Required Permissions
- * offline_access - Delegate
- * AdvancedHunting.Read - Delegate
- * Incident.ReadWrite - Delegate
+ * AdvancedHunting.Read.All - Application
+ * AdvancedHunting.Read.All - Application
+ * Incident.ReadWrite.All - Application
 
 ## Configure Microsoft 365 Defender on Cortex XSOAR
 
@@ -60,10 +55,8 @@ Follow these steps for a self-deployed configuration.
     | Application ID | The API key to use to connect. | True |
     | Endpoint URI | The United States: api-us.security.microsoft.com<br/>Europe: api-eu.security.microsoft.com<br/>The United Kingdom: api-uk.security.microsoft.co | True |
     | self-deployed | Use a self-deployed Azure application | False |
-    | Token (for self-deployed mode) | Tenant ID | False |
+    | Tenant ID/Token (for self-deployed mode) | Tenant ID | False |
     | Client Secret (for self-deployed mode) | Encryption key given by the admin | False |
-    | Redirect URI | Application redirect URI (for self-deployed mode) | False |
-    | Authorization code (for self-deployed mode) |  | False |
     | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) |  | False |
     | Fetch incidents timeout | The time limit in seconds for fetch incidents to run. Leave this empty to cancel the timeout limit. | False |
     | Number of incidents for each fetch. | Due to API limitations, the maximum is 100. | False |
