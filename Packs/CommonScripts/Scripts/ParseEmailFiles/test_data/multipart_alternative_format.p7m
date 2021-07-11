@@ -32,7 +32,7 @@ content=3D"Microsoft Word 15 (filtered medium)"><style><!--
 	{font-family:Calibri;
 	panose-1:2 15 5 2 2 2 4 3 2 4;}
 @font-face
-	{font-family:"PKO Bank Polski";
+	{font-family:"xxxx";
 	panose-1:2 11 6 4 2 2 2 2 2 4;}
 /* Style Definitions */
 p.MsoNormal, li.MsoNormal, div.MsoNormal
@@ -51,7 +51,7 @@ a:visited, span.MsoHyperlinkFollowed
 	text-decoration:underline;}
 span.Stylwiadomocie-mail17
 	{mso-style-type:personal-compose;
-	font-family:"PKO Bank Polski",sans-serif;
+	font-family:"xxxx",sans-serif;
 	color:black;
 	font-weight:normal;
 	font-style:normal;
@@ -72,10 +72,8 @@ div.WordSection1
 <o:idmap v:ext=3D"edit" data=3D"1" />
 </o:shapelayout></xml><![endif]--></head><body lang=3D"PL" =
 link=3D"#0563C1" vlink=3D"#954F72"><div id=3D"BodyTopText"><p =
-style=3D"font-family:PKO Bank =
-Polski;font-size:15px;color:#0098d4">Wewn=EAtrzne</p></div><div =
+style=3D"font-family:xxxx;font-size:15px;color:#0098d4">Wewn=EAtrzne</p></div><div =
 class=3D"WordSection1"><p class=3D"MsoNormal"><span =
-style=3D'font-size:10.0pt;font-family:"PKO Bank =
-Polski",sans-serif;color:black'>=BF=F3=B3=E6<o:p></o:p></span></p></div><=
+style=3D'font-size:10.0pt;font-family:"xxxxx",sans-serif;color:black'>=BF=F3=B3=E6<o:p></o:p></span></p></div><=
 /body></html>
 ------=_NextPart_000_0608_01D771AF.7B9FE190--
