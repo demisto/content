@@ -1,0 +1,28 @@
+args:
+- name: fields_to_search
+  required: true
+  description: Fields to search if there are exsist in map
+  isArray: true
+- name: context
+  required: true
+  description: Map to search fields in
+  isArray: true
+comment: Receives names of fields and map. Checks if this map contains these fields.
+commonfields:
+  id: test
+  version: -1
+enabled: false
+name: test
+outputs:
+- contextPath: FieldsExists
+  description: Return true or fasle.
+  type: boolean
+script: '-'
+system: false
+tags:
+- basescript
+timeout: '0'
+type: python
+subtype: python3
+dockerimage: demisto/python3:3.9.5.21272
+fromversion: 5.5.0
