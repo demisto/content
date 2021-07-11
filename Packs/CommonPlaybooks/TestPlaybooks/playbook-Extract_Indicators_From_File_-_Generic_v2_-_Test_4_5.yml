@@ -133,7 +133,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: http://www.docxtesturl.com
+              simple: http://www.msn.com
       - - operator: isExists
           left:
             value:
