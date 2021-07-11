@@ -1,0 +1,15 @@
+{
+    "threat_status": "MALICIOUS",
+    "trust_factor": 5,
+    "threat_level": 5,
+    "first_seen": "2021-04-28T23:26:12Z",
+    "last_seen": "2021-06-14T11:25:05Z",
+    "threat_name": "Win32.Trojan.Graftor",
+    "classification_reason": "CLOUD",
+    "classification_origin": null,
+    "cloud_last_lookup": "2021-06-14T11:29:33Z",
+    "data_source": "LOCAL",
+    "sha1": "277d75e0593937034e12ed185c91b6bb9bbdc3c5",
+    "sha256": "4f5401cb5e64806c21175632eda4382a55551961f4986439fc9e48fa76dd452f",
+    "md5": "b44251a2f532cc8835f6ad164491ebae"
+}
