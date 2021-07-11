@@ -40,8 +40,9 @@ class TestCommandsFunctions:
     def test_fetch_incidents_command_1(self, client, datadir, requests_mock):
         """Test - No last time exsits and event available"""
         from Akamai_SIEM import fetch_incidents_command
-        requests_mock.get(f'{BASE_URL}/50170?limit=5&from=1575966002',
-                          text=datadir['sec_events.txt'].open('r').read())
+        with open(datadir['sec_events.txt'], 'r') as f:
+            requests_mock.get(f'{BASE_URL}/50170?limit=5&from=1575966002',
+                              text=f.read())
         tested_incidents, tested_last_run = fetch_incidents_command(client=client,
                                                                     fetch_time='12 hours',
                                                                     fetch_limit=5,
@@ -56,8 +57,9 @@ class TestCommandsFunctions:
     def test_fetch_incidents_command_2(self, client, datadir, requests_mock):
         """Test - Last time exsits and events available"""
         from Akamai_SIEM import fetch_incidents_command
-        requests_mock.get(f'{BASE_URL}/50170?offset=318d8&limit=5',
-                          text=datadir['sec_events.txt'].open('r').read())
+        with open(datadir['sec_events.txt'], 'r') as f:
+            requests_mock.get(f'{BASE_URL}/50170?offset=318d8&limit=5',
+                              text=f.read())
         tested_incidents, tested_last_run = fetch_incidents_command(client=client,
                                                                     fetch_time='12 hours',
                                                                     fetch_limit='5',
@@ -72,8 +74,9 @@ class TestCommandsFunctions:
     def test_fetch_incidents_command_3(self, client, datadir, requests_mock):
         """Test - Last time exsits and no available data"""
         from Akamai_SIEM import fetch_incidents_command
-        requests_mock.get(f'{BASE_URL}/50170?offset=318d8&limit=5',
-                          text=datadir['sec_events_empty.txt'].open('r').read())
+        with open(datadir['sec_events_empty.txt'], 'r') as f:
+            requests_mock.get(f'{BASE_URL}/50170?offset=318d8&limit=5',
+                              text=f.read())
         tested_incidents, tested_last_run = fetch_incidents_command(client=client,
                                                                     fetch_time='12 hours',
                                                                     fetch_limit=5,
@@ -88,8 +91,9 @@ class TestCommandsFunctions:
     def test_fetch_incidents_command_4(self, client, datadir, requests_mock):
         """Test - No last time exsits and no available data"""
         from Akamai_SIEM import fetch_incidents_command
-        requests_mock.get(f'{BASE_URL}/50170?from=1575966002&limit=5',
-                          text=datadir['sec_events_empty.txt'].open('r').read())
+        with open(datadir['sec_events_empty.txt'], 'r') as f:
+            requests_mock.get(f'{BASE_URL}/50170?from=1575966002&limit=5',
+                              text=f.read())
         tested_incidents, tested_last_run = fetch_incidents_command(client=client,
                                                                     fetch_time='12 hours',
                                                                     fetch_limit=5,
@@ -104,8 +108,9 @@ class TestCommandsFunctions:
     def test_get_events_command_1(self, client, datadir, requests_mock):
         """Test query response without security events - check only enrty context"""
         from Akamai_SIEM import get_events_command
-        requests_mock.get(f'{BASE_URL}/50170?from=1575966002&limit=5',
-                          text=datadir['sec_events_empty.txt'].open('r').read())
+        with open(datadir['sec_events_empty.txt'], 'r') as f:
+            requests_mock.get(f'{BASE_URL}/50170?from=1575966002&limit=5',
+                              text=f.read())
         # About the drop some mean regex right now disable-secrets-detection-start
         human_readable, entry_context_tested, raw_response = get_events_command(client=client,
                                                                                 config_ids='50170',
@@ -120,8 +125,9 @@ class TestCommandsFunctions:
         """Test query response with security events - check only entry context"""
         from Akamai_SIEM import get_events_command
         # About the drop some mean regex right now disable-secrets-detection-start
-        requests_mock.get(f'{BASE_URL}/50170?from=1575966002&limit=5',
-                          text=datadir['sec_events.txt'].open('r').read())
+        with open(datadir['sec_events.txt'], 'r') as f:
+            requests_mock.get(f'{BASE_URL}/50170?from=1575966002&limit=5',
+                              text=f.read())
         human_readable, entry_context_tested, raw_response = get_events_command(client=client,
                                                                                 config_ids='50170',
                                                                                 from_epoch='1575966002',
