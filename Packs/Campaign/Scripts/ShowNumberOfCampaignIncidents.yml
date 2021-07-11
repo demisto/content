@@ -30,6 +30,7 @@ script: |2-
 type: python
 tags:
 - dynamic-section
+comment: Displays the number of phishing incidents that make up the phishing campaign.
 enabled: true
 scripttarget: 0
 subtype: python3
