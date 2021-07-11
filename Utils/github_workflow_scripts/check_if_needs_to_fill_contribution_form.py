@@ -136,6 +136,7 @@ def main():
     content_repo: Repository = github_client.get_repo(f'{org_name}/{repo_name}')
     pr: PullRequest = content_repo.get_pull(int(pr_number))
     pr_files = pr.get_files()
+    print('wow')
 
     for pack_name in get_pack_names_from_pr(pr_files):
         if pr_metadata_filename := get_metadata_filename_from_pr(pr_files, pack_name):
