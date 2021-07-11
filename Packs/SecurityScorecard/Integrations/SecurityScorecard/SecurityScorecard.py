@@ -227,10 +227,8 @@ class Client(BaseClient):
         try:
             json_resp = res.json()
             requested_portfolio = json_resp.get("error").get("data").get("portfoliosRequested")[0]
-            error_message = """
-                "Portfolio {0} doesn't exist.
-                 Please run !securityscorecard-portfolios-list to see available Portfolios
-                 and try again.
+            error_message = """Portfolio '{0}' doesn't exist.
+Please run !securityscorecard-portfolios-list to see available Portfolios and try again.
             """.format(requested_portfolio)
 
             return_error(error_message)

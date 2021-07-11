@@ -2,17 +2,17 @@ from SecurityScorecard import Client, \
     is_valid_domain, \
     is_email_valid, \
     is_date_valid
-    # incidents_to_import, \
-    # securityscorecard_portfolios_list_command, \
-    # securityscorecard_portfolio_list_companies_command, \
-    # securityscorecard_company_factor_score_get_command,  \
-    # securityscorecard_company_history_score_get_command,  \
-    # securityscorecard_company_services_get_command,  \
-    # securityscorecard_company_score_get_command,  \
-    # securityscorecard_company_history_factor_score_get_command,  \
-    # securityscorecard_alert_grade_change_create_command, \
-    # securityscorecard_alert_score_threshold_create_command, \
-    # securityscorecard_alerts_list_command, \
+# incidents_to_import, \
+# securityscorecard_portfolios_list_command, \
+# securityscorecard_portfolio_list_companies_command, \
+# securityscorecard_company_factor_score_get_command,  \
+# securityscorecard_company_history_score_get_command,  \
+# securityscorecard_company_services_get_command,  \
+# securityscorecard_company_score_get_command,  \
+# securityscorecard_company_history_factor_score_get_command,  \
+# securityscorecard_alert_grade_change_create_command, \
+# securityscorecard_alert_score_threshold_create_command, \
+# securityscorecard_alerts_list_command, \
 
 # import requests_mock
 import json
