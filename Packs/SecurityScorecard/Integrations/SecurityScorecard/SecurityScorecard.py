@@ -151,12 +151,12 @@ class Client(BaseClient):
         self,
         email: str,
         change_direction: str,
-        threshold: str,
+        threshold: int,
         score_types: List[str],
         target: List[str]
     ) -> List[Dict[str, Any]]:
 
-        payload = {}
+        payload: Dict[str, Any] = {}
         if change_direction:
             payload["change_direction"] = change_direction
 
@@ -205,7 +205,7 @@ class Client(BaseClient):
 
     def fetch_alerts(self, username: str, page_size: int):
 
-        query_params = {}
+        query_params: Dict[str, Any] = {}
 
         query_params["username"] = username
         query_params["page_size"] = page_size
@@ -234,8 +234,6 @@ Please run !securityscorecard-portfolios-list to see available Portfolios and tr
             raise DemistoException("Response error is invalid JSON.")
 
         raise DemistoException(error_message, exception=None, res=None)
-
-        
 
 
 """ HELPER FUNCTIONS """
@@ -644,13 +642,11 @@ def securityscorecard_company_history_score_get_command(client: Client, args: Di
 
         if not is_date_valid(_from):
             raise DemistoException("""Date format for 'from' argument '{0}' is not valid.
-            The valid form is YYYY-MM-DD, e.g. 2021-01-01, 2021-12-31""".format(_from)
-            )
+            The valid form is YYYY-MM-DD, e.g. 2021-01-01, 2021-12-31""".format(_from))
 
         if not is_date_valid(to):
             raise DemistoException("""Date format for 'to' argument '{0}' is not valid.
-            The valid form is YYYY-MM-DD, e.g. 2021-01-01, 2021-12-31""".format(to)
-            )
+            The valid form is YYYY-MM-DD, e.g. 2021-01-01, 2021-12-31""".format(to))
 
         if _from is not None and to is not None and _from > to:
             raise DemistoException("Invalid time range. The 'from' date '{0}' is after the 'to' date '{1}'".format(_from, to))
@@ -884,7 +880,8 @@ def securityscorecard_alert_score_threshold_create_command(client: Client, args:
         # Return error if neither of them is defined or if both are defined
         # Else choose the one that is defined and use it as the target
         if portfolios and target_arg:
-            raise DemistoException("Both 'portfolio' and 'target' argument have been set. Please remove one of them and try again.")
+            raise DemistoException("""Both 'portfolio' and 'target' argument have been set.
+            Please remove one of them and try again.""")
         elif target_arg and not portfolios:
             target = target_arg
         elif portfolios and not target_arg:
