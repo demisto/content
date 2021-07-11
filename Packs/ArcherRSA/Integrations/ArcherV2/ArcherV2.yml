@@ -3,9 +3,15 @@ commonfields:
   id: RSA Archer v2
   version: -1
 configuration:
-- display: Server URL (e.g., https://192.168.0.1/rsaarcher/)
+- display: Server URL (e.g., https://192.168.0.1/)
   name: url
   required: true
+  type: 0
+- display: API Endpoint
+  hidden: false
+  name: api_endpoint
+  required: false
+  defaultvalue: rsaarcher/api
   type: 0
 - display: Instance name
   hidden: false
@@ -66,12 +72,6 @@ configuration:
   name: proxy
   required: false
   type: 8
-- display: API Endpoint
-  hidden: false
-  name: api_endpoint
-  required: false
-  defaultvalue: api
-  type: 0
 description: The RSA Archer GRC Platform provides a common foundation for managing
   policies, controls, risks, assessments, and deficiencies across lines of business.
 display: RSA Archer v2
