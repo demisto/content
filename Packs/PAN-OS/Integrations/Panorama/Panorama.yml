@@ -48,6 +48,15 @@ configuration:
   name: additional_malicious
   required: false
   type: 12
+- display: Incident Type
+  name: incident_type
+  required: false
+  type: 13
+- display: Query to fetch logs
+  name: query
+  required: false
+  type: 0
+  additionalinfo: Define a query to determine which logs to fetch. e.g,
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
@@ -4657,8 +4666,11 @@ script:
   dockerimage: demisto/python3:3.9.5.21272
   feed: false
   isfetch: false
-  longRunning: false
+  isremotesyncin: true
+  longRunning: true
   longRunningPort: false
+  isFetchSamples: true
+  ismappable: true
   runonce: false
   script: '-'
   subtype: python3
