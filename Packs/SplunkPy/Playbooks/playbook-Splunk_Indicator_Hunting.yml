@@ -702,7 +702,7 @@ tasks:
                       iscontext: true
                     right:
                       value:
-                        simple: SplunkPy
+                        simple: SplunkPyPreRelease
                 - - operator: isEqualString
                     left:
                       value:

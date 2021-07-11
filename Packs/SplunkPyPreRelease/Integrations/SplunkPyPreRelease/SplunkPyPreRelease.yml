@@ -1,6 +1,6 @@
 category: Analytics & SIEM
 commonfields:
-  id: SplunkPy_pre_release
+  id: SplunkPyPreRelease
   version: -1
 configuration:
 - display: Host - IP (x.x.x.x)
@@ -204,8 +204,8 @@ configuration:
   additionalinfo: Use this parameter to specify a list of comma separated fields, which
     together are a unique identifier for the events you with to fetch.
 description: Runs queries on Splunk servers.
-display: SplunkPy Pre Release
-name: SplunkPy_pre_release
+display: SplunkPyPreRelease
+name: SplunkPyPreRelease
 script:
   commands:
   - arguments:
@@ -806,6 +806,6 @@ script:
   type: python
 tests:
 - No tests (auto formatted)
-defaultclassifier: SplunkPy
-defaultmapperin: SplunkPy-mapper
+defaultclassifier: SplunkPyPreRelease
+defaultmapperin: SplunkPyPreRelease-mapper
 fromversion: 5.0.0

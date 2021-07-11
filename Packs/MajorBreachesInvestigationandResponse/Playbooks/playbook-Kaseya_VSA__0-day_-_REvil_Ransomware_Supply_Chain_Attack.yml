@@ -1412,10 +1412,10 @@ tasks:
       name: Splunk Search Related Activity Based on Files and Registry
       description: Searches Splunk for events related to REvil Kaseya breach file
         names and registry hives.
-      script: SplunkPy|||splunk-search
+      script: SplunkPyPreRelease|||splunk-search
       type: regular
       iscommand: true
-      brand: SplunkPy
+      brand: SplunkPyPreRelease
     nexttasks:
       '#none#':
       - "34"
@@ -1480,10 +1480,10 @@ tasks:
       name: Splunk Search Related Activity Based on Powershell Command Lines
       description: Searches Splunk for events related to REvil Kaseya breach Powershell
         command lines.
-      script: SplunkPy|||splunk-search
+      script: SplunkPyPreRelease|||splunk-search
       type: regular
       iscommand: true
-      brand: SplunkPy
+      brand: SplunkPyPreRelease
     nexttasks:
       '#none#':
       - "34"
@@ -1594,7 +1594,7 @@ tasks:
                       iscontext: true
                     right:
                       value:
-                        simple: SplunkPy
+                        simple: SplunkPyPreRelease
                 - - operator: isEqualString
                     left:
                       value:
@@ -2130,10 +2130,10 @@ tasks:
       name: Splunk Search Related Activity Based on web logs
       description: Searches Splunk for events related to REvil Kaseya breach Powershell
         command lines.
-      script: SplunkPy|||splunk-search
+      script: SplunkPyPreRelease|||splunk-search
       type: regular
       iscommand: true
-      brand: SplunkPy
+      brand: SplunkPyPreRelease
     nexttasks:
       '#none#':
       - "34"

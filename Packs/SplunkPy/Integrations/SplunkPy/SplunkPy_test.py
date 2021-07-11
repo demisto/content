@@ -5,7 +5,7 @@ import demistomock as demisto
 from CommonServerPython import *
 from datetime import timedelta, datetime
 
-RETURN_ERROR_TARGET = 'SplunkPy.return_error'
+RETURN_ERROR_TARGET = 'SplunkPyPreRelease.return_error'
 
 DICT_RAW_RESPONSE = '"1528755951, search_name="NG_SIEM_UC25- High number of hits against ' \
                     'unknown website from same subnet", action="allowed", dest="bb.bbb.bb.bbb , cc.ccc.ccc.cc , ' \
@@ -334,7 +334,7 @@ data_test_build_kv_store_query = [
 
 @pytest.mark.parametrize('args, expected_query', data_test_build_kv_store_query)
 def test_build_kv_store_query(args, expected_query, mocker):
-    mocker.patch('SplunkPy.get_key_type', return_value=None)
+    mocker.patch('SplunkPyPreRelease.get_key_type', return_value=None)
     output = splunk.build_kv_store_query(None, args)
     assert output == expected_query, 'build_kv_store_query({})\n\treturns: {}\n\tinstead: {}'.format(args, output,
                                                                                                      expected_query)
@@ -349,7 +349,7 @@ data_test_build_kv_store_query_with_key_val = [
 
 @pytest.mark.parametrize('args, _type, expected_query', data_test_build_kv_store_query_with_key_val)
 def test_build_kv_store_query_with_key_val(args, _type, expected_query, mocker):
-    mocker.patch('SplunkPy.get_key_type', return_value=_type)
+    mocker.patch('SplunkPyPreRelease.get_key_type', return_value=_type)
     output = splunk.build_kv_store_query(None, args)
     assert output == expected_query, 'build_kv_store_query({})\n\treturns: {}\n\tinstead: {}'.format(args, output,
                                                                                                      expected_query)
@@ -365,7 +365,7 @@ def test_build_kv_store_query_with_key_val(args, _type, expected_query, mocker):
 
     @pytest.mark.parametrize('keys_and_types, expected_type', test_test_get_key_type)
     def test_get_key_type(keys_and_types, expected_type, mocker):
-        mocker.patch('SplunkPy.get_keys_and_types', return_value=keys_and_types)
+        mocker.patch('SplunkPyPreRelease.get_keys_and_types', return_value=keys_and_types)
 
         output = splunk.get_key_type(None, 'key')
         assert output == expected_type, 'get_key_type(kv_store, key)\n\treturns: {}\n\tinstead: {}'.format(output,
@@ -418,7 +418,7 @@ def test_get_kv_store_config(fields, expected_output, mocker):
         def __init__(self):
             self.name = 'name'
 
-    mocker.patch('SplunkPy.get_keys_and_types', return_value=fields)
+    mocker.patch('SplunkPyPreRelease.get_keys_and_types', return_value=fields)
     output = splunk.get_kv_store_config(Name())
     expected_output = '{}{}'.format(START_OUTPUT, expected_output)
     assert output == expected_output
@@ -536,8 +536,8 @@ def test_reset_enriching_fetch_mechanism(mocker):
         splunk.INCIDENTS: ['i1', 'i2'],
         'wow': 'wow'
     }
-    mocker.patch('SplunkPy.get_integration_context', return_value=integration_context)
-    mocker.patch('SplunkPy.set_integration_context')
+    mocker.patch('SplunkPyPreRelease.get_integration_context', return_value=integration_context)
+    mocker.patch('SplunkPyPreRelease.set_integration_context')
     splunk.reset_enriching_fetch_mechanism()
     assert integration_context == {'wow': 'wow'}
 
@@ -753,7 +753,7 @@ def test_get_remote_data_command(mocker):
     mocker.patch.object(demisto, 'params', return_value={'timezone': '0'})
     mocker.patch.object(demisto, 'debug')
     mocker.patch.object(demisto, 'info')
-    mocker.patch('SplunkPy.results.ResultsReader', return_value=[updated_notable])
+    mocker.patch('SplunkPyPreRelease.results.ResultsReader', return_value=[updated_notable])
     mocker.patch.object(demisto, 'results')
     splunk.get_remote_data_command(Service(), args, close_incident=False)
     results = demisto.results.call_args[0][0]
@@ -776,7 +776,7 @@ def test_get_remote_data_command_close_incident(mocker):
     mocker.patch.object(demisto, 'params', return_value={'timezone': '0'})
     mocker.patch.object(demisto, 'debug')
     mocker.patch.object(demisto, 'info')
-    mocker.patch('SplunkPy.results.ResultsReader', return_value=[updated_notable])
+    mocker.patch('SplunkPyPreRelease.results.ResultsReader', return_value=[updated_notable])
     mocker.patch.object(demisto, 'results')
     splunk.get_remote_data_command(Service(), args, close_incident=True)
     results = demisto.results.call_args[0][0]
@@ -807,7 +807,7 @@ def test_get_modified_remote_data_command(mocker):
     args = {'lastUpdate': '2021-02-09T16:41:30.589575+02:00'}
     mocker.patch.object(demisto, 'params', return_value={'timezone': '0'})
     mocker.patch.object(demisto, 'debug')
-    mocker.patch('SplunkPy.results.ResultsReader', return_value=[updated_incidet_review])
+    mocker.patch('SplunkPyPreRelease.results.ResultsReader', return_value=[updated_incidet_review])
     mocker.patch.object(demisto, 'results')
     splunk.get_modified_remote_data_command(Service(), args)
     results = demisto.results.call_args[0][0]['Contents']
@@ -1019,7 +1019,7 @@ def test_build_search_human_readable(mocker):
             * support commas and spaces inside header values (if surrounded with parenthesis)
 
     """
-    func_patch = mocker.patch('SplunkPy.update_headers_from_field_names')
+    func_patch = mocker.patch('SplunkPyPreRelease.update_headers_from_field_names')
     results = [
         {'ID': 1, 'Header with space': 'h1', 'header3': 1, 'header_without_space': '1234'},
         {'ID': 2, 'Header with space': 'h2', 'header3': 2, 'header_without_space': '1234'},

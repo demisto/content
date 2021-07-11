@@ -931,8 +931,8 @@ def get_tests(build: Build) -> List[str]:
                 "fromversion": "5.0.0"
             },
             {
-                "integrations": "SplunkPy",
-                "playbookID": "SplunkPy-Test-V2",
+                "integrations": "SplunkPyPreRelease",
+                "playbookID": "SplunkPyPreRelease-Test-V2",
                 "memory_threshold": 500,
                 "instance_names": "use_default_handler"
             }
@@ -971,7 +971,7 @@ def get_pack_ids_to_install():
     else:
         # START CHANGE ON LOCAL RUN #
         return [
-            'SplunkPy'
+            'SplunkPyPreRelease'
         ]
         #  END CHANGE ON LOCAL RUN  #
 

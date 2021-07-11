@@ -2198,7 +2198,7 @@ def main():
             raise
 
     if service is None:
-        demisto.error("Could not connect to SplunkPy")
+        demisto.error("Could not connect to SplunkPyPreRelease")
 
     # The command command holds the command sent from the user.
     if command == 'test-module':

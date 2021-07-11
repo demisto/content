@@ -1,6 +1,6 @@
 category: Analytics & SIEM
 commonfields:
-  id: SplunkPy
+  id: SplunkPyPreRelease
   version: -1
 configuration:
 - display: Host - IP (x.x.x.x)
@@ -186,8 +186,8 @@ configuration:
     types (Drilldown, Asset, and Identity). To retrieve all events, enter "0" (not
     recommended).
 description: Runs queries on Splunk servers.
-display: SplunkPy
-name: SplunkPy
+display: SplunkPyPreRelease
+name: SplunkPyPreRelease
 script:
   commands:
   - arguments:
@@ -787,9 +787,9 @@ script:
   subtype: python2
   type: python
 tests:
-- SplunkPy-Test-V2
-- SplunkPy KV commands
-- SplunkPy parse-raw - Test
-defaultclassifier: SplunkPy
-defaultmapperin: SplunkPy-mapper
+- SplunkPyPreRelease-Test-V2
+- SplunkPyPreRelease KV commands
+- SplunkPyPreRelease parse-raw - Test
+defaultclassifier: SplunkPyPreRelease
+defaultmapperin: SplunkPyPreRelease-mapper
 fromversion: 5.0.0

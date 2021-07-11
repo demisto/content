@@ -315,10 +315,10 @@ tasks:
       version: -1
       name: Splunk Search for Other Machines with Similar Payloads
       description: Searches Splunk for events.
-      script: SplunkPy|||splunk-search
+      script: SplunkPyPreRelease|||splunk-search
       type: regular
       iscommand: true
-      brand: SplunkPy
+      brand: SplunkPyPreRelease
     nexttasks:
       '#none#':
       - "9"
