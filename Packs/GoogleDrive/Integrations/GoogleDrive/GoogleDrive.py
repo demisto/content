@@ -1,5 +1,6 @@
 from CommonServerPython import *
 import demistomock as demisto
+from GSuiteApiModule import *  # noqa: E402
 
 ''' IMPORTS '''
 
@@ -135,7 +136,7 @@ OUTPUT_PREFIX: Dict[str, str] = {
 
     'DRIVES_LIST_PAGE_TOKEN': 'GoogleDrive.PageToken',
 
-    'FILES_LIST': 'GoogleDrive.Files',
+    'FILES_LIST': 'GoogleDrive.File',
     'FILES_LIST_PAGE_TOKEN': 'GoogleDrive.PageToken',
     'FILE': 'GoogleDrive.File',
 
@@ -349,24 +350,6 @@ def copy_dict_value(source_dict: Dict[str, Any], dest_dict: Dict[str, Any], sour
             dest_dict[dest_dict_key] = param_value
         else:
             dest_dict[source_dict_key] = param_value
-
-
-def get_value_from_list_of_dicts(key: str, list_of_dicts: List[Dict], default_value: str) -> Optional[str]:
-    # Sanity check, that we have enough data to work with
-    if not key or not list_of_dicts:
-        if default_value:
-            return default_value
-        else:
-            return None
-
-    for current_list in list_of_dicts:
-        if (key in current_list):
-            return current_list[key]
-
-    if default_value:
-        return default_value
-    else:
-        return None
 
 
 def prepare_drive_activity_output(activity: Dict[str, Any]) -> Dict[str, Any]:
@@ -901,7 +884,7 @@ def handle_response_drive_list(response: Dict[str, Any]) -> CommandResults:
         OUTPUT_PREFIX['DRIVE']: outputs_context
     }
     if response.get('nextPageToken', ''):
-        outputs[OUTPUT_PREFIX['DRIVES_LIST_PAGE_TOKEN']] = {'nextPageToken': response['nextPageToken']}
+        outputs[OUTPUT_PREFIX['DRIVES_LIST_PAGE_TOKEN']] = response['nextPageToken']
         readable_hr += NEXT_PAGE_TOKEN.format(response.get('nextPageToken'))
     outputs = GSuiteClient.remove_empty_entities(outputs)
     readable_hr += drives_hr if response.get('drives', '') \
@@ -915,8 +898,6 @@ def handle_response_drive_list(response: Dict[str, Any]) -> CommandResults:
 
 
 def handle_response_single_drive(response: Dict[str, Any], args: Dict[str, str]):
-    # demisto.info('\n\n*** response: ' + str(response) + '\n\n')
-
     drive_context = set_true_for_empty_dict(response)
     outputs_context = GSuiteClient.remove_empty_entities(drive_context)
 
@@ -1058,7 +1039,7 @@ def handle_response_files_list(response: Dict[str, Any]) -> CommandResults:
         OUTPUT_PREFIX['FILES_LIST']: outputs_context
     }
     if response.get('nextPageToken', ''):
-        outputs[OUTPUT_PREFIX['FILES_LIST_PAGE_TOKEN']] = {'nextPageToken': response['nextPageToken']}
+        outputs[OUTPUT_PREFIX['FILES_LIST_PAGE_TOKEN']] = response['nextPageToken']
         readable_hr += NEXT_PAGE_TOKEN.format(response.get('nextPageToken'))
     outputs = GSuiteClient.remove_empty_entities(outputs)
     readable_hr += files_hr if response.get('files', '') \
@@ -1072,9 +1053,6 @@ def handle_response_files_list(response: Dict[str, Any]) -> CommandResults:
 
 
 def handle_response_single_file(response: Dict[str, Any], args: Dict[str, str]):
-
-    demisto.info('\n\n*** response: ' + str(response) + '\n\n')
-
     outputs_context = prepare_single_file_output(response)
 
     file_hr = prepare_single_file_human_readable(outputs_context, args)
@@ -1357,8 +1335,6 @@ def prepare_file_single_output(file_single: Dict[str, Any]) -> Dict[str, Any]:
     :return: Context output.
     """
 
-    demisto.info('\n\n*** file_single: ' + str(file_single) + '\n\n')
-
     if not 'drive#file' == file_single.get('kind', ''):
         return {}
 
@@ -1554,7 +1530,7 @@ def handle_response_permissions_list(response: Dict[str, Any], args: Dict[str, s
         OUTPUT_PREFIX['FILE_PERMISSION']: outputs_context
     }
     if response.get('nextPageToken', ''):
-        outputs[OUTPUT_PREFIX['FILE_PERMISSIONS_LIST_PAGE_TOKEN']] = {'nextPageToken': response['nextPageToken']}
+        outputs[OUTPUT_PREFIX['FILE_PERMISSIONS_LIST_PAGE_TOKEN']] = response['nextPageToken']
         readable_hr += NEXT_PAGE_TOKEN.format(response.get('nextPageToken'))
     outputs = GSuiteClient.remove_empty_entities(outputs)
     readable_hr += files_hr if response.get('permissions', '') \
@@ -1649,7 +1625,7 @@ def prepare_permission_human_readable(outputs_context: Dict[str, Any], args: Dic
     file_hr = outputs_context
     file_hr = GSuiteClient.remove_empty_entities(file_hr)
 
-    table_hr_md = tableToMarkdown(HR_MESSAGES['LIST_COMMAND_SUCCESS'].format('permission(s)', 1),
+    table_hr_md = tableToMarkdown(HR_MESSAGES['LIST_COMMAND_SUCCESS'].format('Permission(s)', 1),
                                   file_hr,
                                   ['id', 'type', 'role', 'domain', 'emailAddress', 'displayName', 'deleted'],
                                   removeNull=False,
@@ -1834,8 +1810,6 @@ def main() -> None:
         demisto.error(traceback.format_exc())
         return_error(f'Error: {str(e)}')
 
-
-from GSuiteApiModule import *  # noqa: E402
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()

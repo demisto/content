@@ -2161,20 +2161,20 @@ script:
       required: false
       secret: false
     outputs:
-    - contextPath: GoogleDrive.Files.id
+    - contextPath: GoogleDrive.File.id
       description: The ID of the file.
       type: String
-    - contextPath: GoogleDrive.Files.kind
+    - contextPath: GoogleDrive.File.kind
       description: Identifies what kind of resource this is. Value is the fixed string
         "drive#file".
       type: String
-    - contextPath: GoogleDrive.Files.mimeType
+    - contextPath: GoogleDrive.File.mimeType
       description: The MIME type of the file.
       type: String
-    - contextPath: GoogleDrive.Files.name
+    - contextPath: GoogleDrive.File.name
       description: The name of the file. This is not necessarily unique within a folder.
       type: String
-    - contextPath: GoogleDrive.Files.resourceKey
+    - contextPath: GoogleDrive.File.resourceKey
       description: A key needed to access the item via a shared link.
       type: String
   - name: google-drive-file-get
