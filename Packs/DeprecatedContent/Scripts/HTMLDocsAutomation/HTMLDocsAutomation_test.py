@@ -138,14 +138,6 @@ There are no context output for this command.
 </p>
 
 <h5>Human Readable Output</h5>
-<p>
-
-<!-- remove the following comments to manually add an image: -->
-<!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- -->
-</p>
 
 <h3 id="non-deprecated-cmd2">2. non-deprecated-cmd2</h3>
 <hr>
@@ -173,14 +165,6 @@ There are no context output for this command.
 </p>
 
 <h5>Human Readable Output</h5>
-<p>
-
-<!-- remove the following comments to manually add an image: -->
-<!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- -->
-</p>
 '''
 
     assert section == expected_section

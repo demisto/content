@@ -80,11 +80,6 @@ SINGLE_COMMAND: str = '''<h3 id="{command_hr}">{index}. {command_hr}</h3>
 <h5>Human Readable Output</h5>
 <p>
 {hr_example}
-<!-- remove the following comments to manually add an image: -->
-<!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- -->
 </p>
 '''
 
