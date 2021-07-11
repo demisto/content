@@ -305,10 +305,10 @@ tasks:
       version: -1
       name: VirusTotal upload file
       description: Submits a file for scanning.
-      script: '|||file-scan'
+      script: 'VirusTotal|||file-scan'
       type: regular
       iscommand: true
-      brand: ""
+      brand: "VirusTotal"
     nexttasks:
       '#none#':
       - "2"
