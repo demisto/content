@@ -1594,7 +1594,7 @@ tasks:
                       iscontext: true
                     right:
                       value:
-                        simple: SplunkPyPreRelease
+                        simple: SplunkPy
                 - - operator: isEqualString
                     left:
                       value:

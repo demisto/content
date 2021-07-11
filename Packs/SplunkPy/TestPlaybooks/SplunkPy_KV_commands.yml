@@ -1,6 +1,6 @@
-id: SplunkPyPreRelease KV commands
+id: SplunkPy KV commands
 version: -1
-name: SplunkPyPreRelease KV commands
+name: SplunkPy KV commands
 starttaskid: "0"
 fromversion: '5.0.0'
 description: testing splunk Kv commands
@@ -781,7 +781,7 @@ tasks:
       script: 'splunk-kv-store-collection-add-entries'
       type: regular
       iscommand: true
-      brand: SplunkPyPreRelease
+      brand: SplunkPy
     nexttasks:
       '#none#':
       - "4"

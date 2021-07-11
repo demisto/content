@@ -1,6 +1,6 @@
-id: SplunkPyPreRelease parse-raw - Test
+id: SplunkPy parse-raw - Test
 version: -1
-name: SplunkPyPreRelease parse-raw - Test
+name: SplunkPy parse-raw - Test
 starttaskid: "0"
 tasks:
   "0":

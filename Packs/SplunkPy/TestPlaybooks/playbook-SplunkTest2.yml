@@ -38,10 +38,10 @@ tasks:
       version: -1
       name: splunk-search
       description: Search Splunk for events
-      script: SplunkPyPreRelease|||splunk-search
+      script: SplunkPy|||splunk-search
       type: regular
       iscommand: true
-      brand: SplunkPyPreRelease
+      brand: SplunkPy
     nexttasks:
       '#none#':
       - "2"
@@ -106,10 +106,10 @@ tasks:
       id: ce01df98-6628-4495-8fcf-ee3d2486b57a
       version: -1
       name: Get indexes names
-      script: SplunkPyPreRelease|||splunk-get-indexes
+      script: SplunkPy|||splunk-get-indexes
       type: regular
       iscommand: true
-      brand: SplunkPyPreRelease
+      brand: SplunkPy
     nexttasks:
       '#none#':
       - "6"
@@ -175,10 +175,10 @@ tasks:
       id: b64295eb-01b7-4e5a-80a8-9e1a996a3804
       version: -1
       name: Create new Splunk event
-      script: SplunkPyPreRelease|||splunk-submit-event
+      script: SplunkPy|||splunk-submit-event
       type: regular
       iscommand: true
-      brand: SplunkPyPreRelease
+      brand: SplunkPy
     nexttasks:
       '#none#':
       - "8"
@@ -275,10 +275,10 @@ tasks:
       id: 580024aa-5504-4eef-8caa-873072011b9a
       version: -1
       name: Test eventcount query
-      script: SplunkPyPreRelease|||splunk-search
+      script: SplunkPy|||splunk-search
       type: regular
       iscommand: true
-      brand: SplunkPyPreRelease
+      brand: SplunkPy
     nexttasks:
       '#none#':
       - "9"
@@ -431,10 +431,10 @@ tasks:
       id: db31ecdc-b2d2-4dae-8aa6-5700fc8180e3
       version: -1
       name: Parse Raw
-      script: SplunkPyPreRelease|||splunk-parse-raw
+      script: SplunkPy|||splunk-parse-raw
       type: regular
       iscommand: true
-      brand: SplunkPyPreRelease
+      brand: SplunkPy
     nexttasks:
       '#none#':
       - "14"
@@ -528,10 +528,10 @@ tasks:
       id: d08c0ab1-e702-4a89-8562-efe6d6c647c2
       version: -1
       name: Parse Raw example
-      script: SplunkPyPreRelease|||splunk-parse-raw
+      script: SplunkPy|||splunk-parse-raw
       type: regular
       iscommand: true
-      brand: SplunkPyPreRelease
+      brand: SplunkPy
     nexttasks:
       '#none#':
       - "17"

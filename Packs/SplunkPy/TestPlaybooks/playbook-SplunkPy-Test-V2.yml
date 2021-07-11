@@ -1,8 +1,8 @@
-id: SplunkPyPreRelease-Test-V2
+id: SplunkPy-Test-V2
 version: -1
 contentitemfields:
   propagationLabels: []
-name: SplunkPyPreRelease-Test-V2
+name: SplunkPy-Test-V2
 starttaskid: "0"
 tasks:
   "0":
@@ -553,10 +553,10 @@ tasks:
       version: -1
       name: splunk-job-status
       description: checking the status of a job
-      script: SplunkPyPreRelease|||splunk-job-status
+      script: SplunkPy|||splunk-job-status
       type: regular
       iscommand: true
-      brand: SplunkPyPreRelease
+      brand: SplunkPy
     nexttasks:
       '#none#':
       - "8"
