@@ -395,3 +395,21 @@ def test_multiple_incidents_word_difference(mocker):
     assert duplicated_incidents_found(existing_incidents_list[0])
     duplicate_ids_found = [res['id'] for res in RESULTS['EntryContext']['allDuplicateIncidents']]
     assert all(inc['id'] in duplicate_ids_found for inc in existing_incidents_list)
+
+
+def test_empty_query(mocker):
+    """
+
+    Given:
+        - Query argument as empty string
+
+    When:
+        - Parsing the query
+
+    Then:
+        - Assert that parsing the final query ignores the empty string
+    """
+    mocker.patch.object(demisto, 'executeCommand',
+                        side_effect=lambda function_name, args: [{'Contents': json.dumps(args), 'Type': -1}])
+    res = get_existing_incidents({'query': ''}, "Phishing")
+    assert '()' not in res['query']

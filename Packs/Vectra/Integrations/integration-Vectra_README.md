@@ -11,7 +11,7 @@
 </ol>
 <p class="wysiwyg-indent4">For more information on Cortex XSOAR engines see:<br> <a href="https://support.demisto.com/hc/en-us/articles/226274727-Settings-Integrations-Engines">https://demisto.zendesk.com/hc/en-us/articles/226274727-Settings-Integrations-Engines</a><br> Require users to enter additional password: Select whether you’d like an additional step where users are required to authenticate themselves with a password.</p>
 <ol start="4">
-<li>Press the ‘Test’ button to validate connection.<br> If you are experiencing issues with the service configuration, please contact Cortex XSOAR support at<a href="mailto:support@demisto.com"> support@demisto.com</a>
+<li>Press the ‘Test’ button to validate connection.<br>
 </li>
 <li>After completing the test successfully, press the ‘Done’ button.</li>
 </ol>

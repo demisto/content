@@ -1,0 +1,449 @@
+{
+    "rl": {
+        "sample": {
+            "sha1": "21841b32c6165b27dddbd4d6eb3a672defe54271",
+            "first_seen_on": "2015-05-30T22:04:00",
+            "last_scanned_on": "2021-06-17T14:17:00",
+            "last_seen_on": "2021-06-17T14:17:00",
+            "single_scan": false,
+            "first_scanned_on": "2015-05-30T22:04:00",
+            "sample_type": "PE32 executable (GUI) Intel 80386 (stripped to external PDB), for MS Windows, UPX compressed",
+            "sample_size": 636416,
+            "xref": [
+                {
+                    "scanner_match": 41,
+                    "scanner_count": 47,
+                    "scanners": [
+                        {
+                            "timestamp": "2021-06-17T11:40:00",
+                            "version": "ahnscan-console.zip",
+                            "name": "ahnlab"
+                        },
+                        {
+                            "timestamp": "2021-06-17T12:45:00",
+                            "version": "vdf_fusebundle.zip",
+                            "name": "antivir"
+                        },
+                        {
+                            "timestamp": "2021-06-17T13:25:00",
+                            "version": "avast_stream.zip",
+                            "name": "avast"
+                        },
+                        {
+                            "timestamp": "2021-06-17T12:20:00",
+                            "version": "bdc.zip",
+                            "name": "bitdefender"
+                        },
+                        {
+                            "timestamp": "2021-06-17T14:15:00",
+                            "version": "carbonblack.exe",
+                            "name": "carbonblack"
+                        },
+                        {
+                            "timestamp": "2021-06-16T12:45:00",
+                            "version": "daily.cvd",
+                            "name": "clamav"
+                        },
+                        {
+                            "timestamp": "2021-06-17T11:45:00",
+                            "version": "antivir-v2-z-202106171027.zip",
+                            "name": "command"
+                        },
+                        {
+                            "timestamp": "2021-06-17T11:45:00",
+                            "version": "antivir-v2-z-202106171027.zip",
+                            "name": "command_online"
+                        },
+                        {
+                            "timestamp": "2021-06-17T14:15:00",
+                            "version": "crowdstrike_v1.exe",
+                            "name": "crowdstrike"
+                        },
+                        {
+                            "timestamp": "2021-06-17T14:16:00",
+                            "version": "crowdstrike_scan_result_lookup.exe",
+                            "name": "crowdstrike_online"
+                        },
+                        {
+                            "timestamp": "2021-06-17T13:15:00",
+                            "version": "drweb-500-wcl.zip",
+                            "name": "drweb"
+                        },
+                        {
+                            "timestamp": "2021-06-17T14:15:00",
+                            "version": "endgame.exe",
+                            "name": "endgame"
+                        },
+                        {
+                            "timestamp": "2021-06-17T14:16:00",
+                            "version": "ensilo.exe",
+                            "name": "ensilo"
+                        },
+                        {
+                            "timestamp": "2021-06-17T11:45:00",
+                            "version": "antivir.def",
+                            "name": "f_prot"
+                        },
+                        {
+                            "timestamp": "2021-06-17T14:16:00",
+                            "version": "ffri.exe",
+                            "name": "ffri"
+                        },
+                        {
+                            "timestamp": "2021-06-17T13:10:00",
+                            "version": "fireeye_pack.rar",
+                            "name": "fireeye_online"
+                        },
+                        {
+                            "timestamp": "2021-06-17T13:10:00",
+                            "version": "vir_high",
+                            "name": "fortinet"
+                        },
+                        {
+                            "timestamp": "2021-06-17T12:55:00",
+                            "version": "bd.zip",
+                            "name": "gdata"
+                        },
+                        {
+                            "timestamp": "2021-06-17T12:45:00",
+                            "version": "t3sigs.vdb",
+                            "name": "ikarus"
+                        },
+                        {
+                            "timestamp": "2021-06-17T12:05:00",
+                            "version": "K7Cmdline.zip",
+                            "name": "k7computing"
+                        },
+                        {
+                            "timestamp": "2021-06-17T13:20:00",
+                            "version": "database.zip",
+                            "name": "kaspersky"
+                        },
+                        {
+                            "timestamp": "2021-06-17T13:20:00",
+                            "version": "database.zip",
+                            "name": "kaspersky_online"
+                        },
+                        {
+                            "timestamp": "2021-06-17T14:16:00",
+                            "version": "mbbr.exe",
+                            "name": "malwarebytes"
+                        },
+                        {
+                            "timestamp": "2021-06-16T21:00:00",
+                            "version": "avvdat-10017.zip",
+                            "name": "mcafee"
+                        },
+                        {
+                            "timestamp": "2021-06-17T13:15:00",
+                            "version": "avvwin_netware_betadat.zip",
+                            "name": "mcafee_beta"
+                        },
+                        {
+                            "timestamp": "2021-06-16T21:00:00",
+                            "version": "avvdat-10017.zip",
+                            "name": "mcafee_online"
+                        },
+                        {
+                            "timestamp": "2021-06-17T03:05:00",
+                            "version": "mfegw-cmd-scanner-windows.zip",
+                            "name": "mcafeegwedition_online"
+                        },
+                        {
+                            "timestamp": "2021-06-17T10:35:00",
+                            "version": "mpam-fe.exe",
+                            "name": "microsoft"
+                        },
+                        {
+                            "timestamp": "2021-06-17T10:35:00",
+                            "version": "mpam-fe.exe",
+                            "name": "microsoft_online"
+                        },
+                        {
+                            "timestamp": "2021-06-17T11:30:00",
+                            "version": "panda_pack.rar",
+                            "name": "panda"
+                        },
+                        {
+                            "timestamp": "2021-06-17T11:30:00",
+                            "version": "panda_pack.rar",
+                            "name": "panda_online"
+                        },
+                        {
+                            "timestamp": "2021-06-17T11:25:00",
+                            "version": "qhadvdef.zip",
+                            "name": "quickheal"
+                        },
+                        {
+                            "timestamp": "2021-06-17T09:30:00",
+                            "version": "rame.zip",
+                            "name": "rising"
+                        },
+                        {
+                            "timestamp": "2021-06-17T09:30:00",
+                            "version": "rame.zip",
+                            "name": "rising_online"
+                        },
+                        {
+                            "timestamp": "2021-06-17T14:16:00",
+                            "version": "sentinelone.exe",
+                            "name": "sentinelone"
+                        },
+                        {
+                            "timestamp": "2021-06-17T14:16:00",
+                            "version": "sonicwall.exe",
+                            "name": "sonicwall"
+                        },
+                        {
+                            "timestamp": "2021-06-17T07:45:00",
+                            "version": "ide_5.84.zip",
+                            "name": "sophos"
+                        },
+                        {
+                            "timestamp": "2021-06-17T07:45:00",
+                            "version": "ide_5.84.zip",
+                            "name": "sophos_online"
+                        },
+                        {
+                            "timestamp": "2021-06-17T14:16:00",
+                            "version": "susicli.exe",
+                            "name": "sophos_susi"
+                        },
+                        {
+                            "timestamp": "2021-06-17T12:35:00",
+                            "version": "CSE39VT-EN-93362-F.sbr.sgn",
+                            "name": "sunbelt"
+                        },
+                        {
+                            "timestamp": "2021-06-17T13:25:00",
+                            "version": "streamset.zip",
+                            "name": "symantec"
+                        },
+                        {
+                            "timestamp": "2021-06-17T12:00:00",
+                            "version": "symrapidreleasedefscore15-v5i32.exe",
+                            "name": "symantec_beta"
+                        },
+                        {
+                            "timestamp": "2021-06-17T13:25:00",
+                            "version": "streamset.zip",
+                            "name": "symantec_online"
+                        },
+                        {
+                            "timestamp": "2021-06-17T06:20:00",
+                            "version": "ioth1678500.zip",
+                            "name": "trendmicro"
+                        },
+                        {
+                            "timestamp": "2021-06-16T17:20:00",
+                            "version": "hcoth1678395.zip",
+                            "name": "trendmicro_consumer"
+                        },
+                        {
+                            "timestamp": "2021-06-17T08:55:00",
+                            "version": "vba32w-latest.7z",
+                            "name": "vba32"
+                        },
+                        {
+                            "timestamp": "2021-06-17T14:16:00",
+                            "version": "WWHS64.exe",
+                            "name": "watchguard"
+                        }
+                    ],
+                    "scanned_on": "2021-06-17T14:17:00",
+                    "results": [
+                        {
+                            "scanner": "ahnlab",
+                            "result": "[TROJAN] Trojan/Win32.Toxic.R150440"
+                        },
+                        {
+                            "scanner": "antivir",
+                            "result": "detected"
+                        },
+                        {
+                            "scanner": "avast",
+                            "result": "Win32:Malware-gen"
+                        },
+                        {
+                            "scanner": "bitdefender",
+                            "result": "Generic.Ransom.WCryG.7651CF3C"
+                        },
+                        {
+                            "scanner": "carbonblack",
+                            "result": "trojan"
+                        },
+                        {
+                            "scanner": "clamav",
+                            "result": "PUA.Win.Packer.Upx-49"
+                        },
+                        {
+                            "scanner": "command",
+                            "result": "W32/Filecoder.JKUY-0927"
+                        },
+                        {
+                            "scanner": "command_online",
+                            "result": "W32/Filecoder.JKUY-0927"
+                        },
+                        {
+                            "scanner": "crowdstrike",
+                            "result": "win/malicious_confidence_100"
+                        },
+                        {
+                            "scanner": "crowdstrike_online",
+                            "result": "malware.confidence_100"
+                        },
+                        {
+                            "scanner": "endgame",
+                            "result": "malicious (moderate confidence)"
+                        },
+                        {
+                            "scanner": "ensilo",
+                            "result": "Malicious-High"
+                        },
+                        {
+                            "scanner": "f_prot",
+                            "result": "W32/Filecoder.E"
+                        },
+                        {
+                            "scanner": "ffri",
+                            "result": "Detected"
+                        },
+                        {
+                            "scanner": "fireeye_online",
+                            "result": "Generic.mg.3133c2231fcee5d6"
+                        },
+                        {
+                            "scanner": "fortinet",
+                            "result": "W32/ToxKrypt.A!tr"
+                        },
+                        {
+                            "scanner": "gdata",
+                            "result": "Generic.Ransom.WCryG.7651CF3C"
+                        },
+                        {
+                            "scanner": "ikarus",
+                            "result": "Trojan.Win32.Filecoder"
+                        },
+                        {
+                            "scanner": "k7computing",
+                            "result": "Trojan (0055e3ef1)"
+                        },
+                        {
+                            "scanner": "kaspersky",
+                            "result": "detected"
+                        },
+                        {
+                            "scanner": "kaspersky_online",
+                            "result": "detected"
+                        },
+                        {
+                            "scanner": "malwarebytes",
+                            "result": ""
+                        },
+                        {
+                            "scanner": "mcafee",
+                            "result": "Ransom-Tox!11B48E409D96 (trojan)"
+                        },
+                        {
+                            "scanner": "mcafee_beta",
+                            "result": "Ransom-Tox!11B48E409D96 (trojan)"
+                        },
+                        {
+                            "scanner": "mcafee_online",
+                            "result": "Artemis!3133C2231FCE (trojan)"
+                        },
+                        {
+                            "scanner": "mcafeegwedition_online",
+                            "result": "BehavesLike.Win32.Mytob.jc"
+                        },
+                        {
+                            "scanner": "microsoft",
+                            "result": "Ransom:Win32/Tocrypt.B"
+                        },
+                        {
+                            "scanner": "microsoft_online",
+                            "result": "Ransom:Win32/Tocrypt.B"
+                        },
+                        {
+                            "scanner": "panda",
+                            "result": "Trj/Genetic.gen"
+                        },
+                        {
+                            "scanner": "panda_online",
+                            "result": "Trj/Genetic.gen"
+                        },
+                        {
+                            "scanner": "quickheal",
+                            "result": ""
+                        },
+                        {
+                            "scanner": "rising",
+                            "result": ""
+                        },
+                        {
+                            "scanner": "rising_online",
+                            "result": ""
+                        },
+                        {
+                            "scanner": "sentinelone",
+                            "result": "DFI - Suspicious PE"
+                        },
+                        {
+                            "scanner": "sonicwall",
+                            "result": ""
+                        },
+                        {
+                            "scanner": "sophos",
+                            "result": "Troj/ToxKrypt-A"
+                        },
+                        {
+                            "scanner": "sophos_online",
+                            "result": "Troj/ToxKrypt-A"
+                        },
+                        {
+                            "scanner": "sophos_susi",
+                            "result": "Troj/ToxKrypt-A"
+                        },
+                        {
+                            "scanner": "sunbelt",
+                            "result": "Trojan.Win32.Generic!BT"
+                        },
+                        {
+                            "scanner": "symantec",
+                            "result": "Trojan.Gen.2"
+                        },
+                        {
+                            "scanner": "symantec_beta",
+                            "result": "Trojan.Gen.2"
+                        },
+                        {
+                            "scanner": "symantec_online",
+                            "result": "Trojan.Gen.2"
+                        },
+                        {
+                            "scanner": "trendmicro",
+                            "result": "TROJ_CRYPTOX.T"
+                        },
+                        {
+                            "scanner": "trendmicro_consumer",
+                            "result": "TROJ_CRYPTOX.T"
+                        },
+                        {
+                            "scanner": "vba32",
+                            "result": "SScope.Malware-Cryptor.Toxic"
+                        },
+                        {
+                            "scanner": "watchguard",
+                            "result": "AboveThreshold563.008318"
+                        }
+                    ]
+                }
+            ],
+            "sha384": "e0b7bf0ad928500ee1dc06f8cbe035e663eaf546bb4b5217706706ba12c50ab6a24e1e858dae9a5ce0f7673bdb5621be",
+            "sha256": "2f6edf41016e97c58f9de01aa4cc66c9c7fe7dae23fe72e50a69cbd221f55346",
+            "sha512": "205ece960784bff6fdbd0d5a1ebad4fddeab6751728d5be2e0b5d91742d520df0c5d04fd3b9e67372c35cb0859d794b7d22ea78786669a4bd5725e814548143f",
+            "ripemd160": "d26f686b6af13b9073f77a1ba5a7b610934dc625",
+            "md5": "3133c2231fcee5d6b0b4c988a5201da1"
+        }
+    }
+}

@@ -1,6 +1,7 @@
 
 <!-- HTML_DOC -->
 <p>
+    Deprecated. Use IBM QRadar v2 or IBM QRadar v3 instead.
     This integration was integrated and tested with <strong>QRadar v7.3.1</strong> and <strong>API versions - 8.0, 8.1, and 9.0</strong>.
     The <strong>QRadar</strong> integration is deprecated from <strong>QRadar v7.3.2 Patch 2</strong>. If you're using a later version of QRadar, make sure you use the <strong>QRadar v2</strong> integration.
 </p>

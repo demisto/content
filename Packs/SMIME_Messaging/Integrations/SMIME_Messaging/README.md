@@ -183,11 +183,6 @@ fRciC1z2msLtmgPUH81DqLx+B+pY
 
 ------5DAD2A4AC7C108E6B3D263AADB9D2BDB--
 </p>
-<!-- remove the following comments to manually add an image: -->
-<!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- -->
 </p>
 
 <h3>2. smime-encrypt-email-body</h3>
@@ -350,11 +345,6 @@ There are no context output for this command.
 The signature verified
 b'a sign of our times'
 </p>
-<!-- remove the following comments to manually add an image: -->
-<!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- -->
 </p>
 
 <h3>4. smime-decrypt-email-body</h3>
@@ -439,11 +429,6 @@ b'a sign of our times'
 The decrypted message is: 
 Hello World
 </p>
-<!-- remove the following comments to manually add an image: -->
-<!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- -->
 </p>
 
 <h3>5. smime-sign-and-encrypt</h3>
