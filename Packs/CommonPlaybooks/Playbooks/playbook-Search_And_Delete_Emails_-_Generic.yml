@@ -4,7 +4,7 @@ contentitemexportablefields:
   contentitemfields: {}
 name: Search And Delete Emails - Generic
 description: This playbook searches and delete emails with similar attributes of a
-  malicious email.
+  malicious email using EWS or Office 365.
 starttaskid: "0"
 tasks:
   "0":
