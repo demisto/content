@@ -37,7 +37,7 @@
    "required": false,
    "script": "",
    "selectValues": null,
-   "type": "shortText",
+   "type": "url",
    "width": 208
   },
   {
