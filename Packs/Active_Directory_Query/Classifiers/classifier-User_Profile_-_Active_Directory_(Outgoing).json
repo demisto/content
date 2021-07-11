@@ -154,34 +154,24 @@
     "cn": {
      "complex": {
       "accessor": "",
-      "filters": [
-
-      ],
-      "root": "email",
+      "filters": [],
+      "root": "givenname",
       "transformers": [
        {
         "args": {
-         "delimiter": {
+         "prefix": {
+          "isContext": false,
+          "value": null
+         },
+         "suffix": {
           "isContext": false,
           "value": {
            "complex": null,
-           "simple": "@"
+           "simple": "${surname}"
           }
          }
         },
-        "operator": "split"
-       },
-       {
-        "args": {
-         "index": {
-          "isContext": false,
-          "value": {
-           "complex": null,
-           "simple": "0"
-          }
-         }
-        },
-        "operator": "atIndex"
+        "operator": "concat"
        }
       ]
      },
@@ -278,6 +268,10 @@
     "userPrincipalName": {
      "complex": null,
      "simple": "username"
+    },
+    "manageremail": {
+     "complex": null,
+     "simple": "manageremail"
     },
     "ou":{
      "complex": null,
