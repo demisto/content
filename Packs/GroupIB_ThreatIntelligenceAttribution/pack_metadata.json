@@ -9,6 +9,9 @@
     "categories": [
         "Data Enrichment & Threat Intelligence"
     ],
+    "itemPrefix": [
+        "GIB"
+    ],
     "tags": [
         "Alerts",
         "Attack",
