@@ -30,4 +30,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![Search_And_Delete_Emails_Generic](../doc_files/Search_And_Delete_Emails_-_Generic.png)
+![Search_And_Delete_Emails_Generic](https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Search_And_Delete_Emails_Generic.png)
