@@ -1,5 +1,4 @@
-from typing import Dict, Optional, List
-import demistomock as demisto
+from typing import Dict
 
 import urllib3
 
