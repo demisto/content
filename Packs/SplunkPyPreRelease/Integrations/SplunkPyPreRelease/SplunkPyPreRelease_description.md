@@ -1,5 +1,7 @@
 ## SplunkPy
-Use the SplunkPy integration to fetch incidents from Splunk ES, and query results by SID.
+Use the SplunkPy Pre Release integration to fetch incidents from Splunk ES, and query results by SID.
+This is a pre-release version, that should be used mainly for fetching incidents at this point (July 2021).
+The changes in this version will be added to the official release in a few months.
 ***
 
 To use Splunk token authentication, enter the text: *_token* in the **Username** field and your token value in the **Password** field.

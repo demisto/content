@@ -1,6 +1,6 @@
 {
-    "name": "SplunkPy_pre_release",
-    "description": "Run queries on Splunk servers.",
+    "name": "Splunk Prerelease",
+    "description": "Run queries on Splunk servers - pre release version.",
     "support": "xsoar",
     "currentVersion": "1.0.0",
     "author": "Cortex XSOAR",

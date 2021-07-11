@@ -2,7 +2,7 @@ When a query or alert triggers a notable event (incident) in Splunk, the notable
 
 ## What does this pack do?
 
-This pack is a pre -release version of the SplunkPy pack.
+This pack is a pre-release version of the SplunkPy pack.
 It is meant to release updates for customers to test, before those updates become a part of the official integration.
 Currently (July 2021), please only use this integration to fetch incidents.
 
