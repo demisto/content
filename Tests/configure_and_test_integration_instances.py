@@ -18,7 +18,13 @@ from time import sleep
 from typing import List, Tuple
 
 import demisto_client
+from demisto_sdk.commands.common.constants import FileType
+from demisto_sdk.commands.common.tools import run_threads_list, run_command, get_yaml, \
+    str2bool, format_version, find_type
 from demisto_sdk.commands.test_content.constants import SSH_USER
+from demisto_sdk.commands.test_content.mock_server import MITMProxy, run_with_mock, RESULT
+from demisto_sdk.commands.test_content.tools import update_server_configuration, is_redhat_instance
+from demisto_sdk.commands.validate.validate_manager import ValidateManager
 from ruamel import yaml
 
 from Tests.Marketplace.search_and_install_packs import search_and_install_packs_and_their_dependencies, \
@@ -28,12 +34,6 @@ from Tests.test_content import extract_filtered_tests, get_server_numeric_versio
 from Tests.test_integration import __get_integration_config, __test_integration_instance, disable_all_integrations
 from Tests.tools import run_with_proxy_configured
 from Tests.update_content_data import update_content
-from demisto_sdk.commands.common.constants import FileType
-from demisto_sdk.commands.common.tools import run_threads_list, run_command, get_yaml, \
-    str2bool, format_version, find_type
-from demisto_sdk.commands.test_content.mock_server import MITMProxy, run_with_mock, RESULT
-from demisto_sdk.commands.test_content.tools import update_server_configuration, is_redhat_instance
-from demisto_sdk.commands.validate.validate_manager import ValidateManager
 
 MARKET_PLACE_MACHINES = ('master',)
 SKIPPED_PACKS = ['NonSupported', 'ApiModules']
@@ -931,8 +931,8 @@ def get_tests(build: Build) -> List[str]:
                 "fromversion": "5.0.0"
             },
             {
-                "integrations": "SplunkPyPreRelease",
-                "playbookID": "SplunkPyPreRelease-Test-V2",
+                "integrations": "SplunkPy",
+                "playbookID": "SplunkPy-Test-V2",
                 "memory_threshold": 500,
                 "instance_names": "use_default_handler"
             }
@@ -971,7 +971,7 @@ def get_pack_ids_to_install():
     else:
         # START CHANGE ON LOCAL RUN #
         return [
-            'SplunkPyPreRelease'
+            'SplunkPy'
         ]
         #  END CHANGE ON LOCAL RUN  #
 
