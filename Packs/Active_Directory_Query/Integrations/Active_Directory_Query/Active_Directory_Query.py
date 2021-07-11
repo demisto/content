@@ -870,7 +870,8 @@ def create_user_iam(default_base_dn, args, mapper_out, disabled_users_group_cn):
 
 def get_old_samaccountname(old_user_data, mapper_out):
     iam_old_user_profile = IAMUserProfile(user_profile=old_user_data)
-    ad_old_user = iam_old_user_profile.map_object(mapper_name=mapper_out)
+    ad_old_user = iam_old_user_profile.map_object(mapper_name=mapper_out,
+                                                  incident_type=IAMUserProfile.UPDATE_INCIDENT_TYPE)
     return ad_old_user.get("samaccountname")
 
 
