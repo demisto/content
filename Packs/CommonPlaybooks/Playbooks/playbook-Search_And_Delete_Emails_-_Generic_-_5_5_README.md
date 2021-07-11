@@ -39,4 +39,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![Search_And_Delete_Emails_Generic](../doc_files/Search_And_Delete_Emails_-_Generic_5_5.png)
+![Search_And_Delete_Emails_Generic](../doc_files/Search_And_Delete_Emails_-_Generic_-_5_5.png)
