@@ -485,10 +485,13 @@ def panorama_command(args: dict):
 
 
 @logger
-def panorama_commit():
+def panorama_commit(args):
+    command: str = ''
+    if device_group := args.get('device-group'):
+        command += f'<device-group><entry name="{device_group}"/></device-group>'
     params = {
         'type': 'commit',
-        'cmd': '<commit></commit>',
+        'cmd': f'<commit>{command}</commit>',
         'key': API_KEY
     }
     result = http_request(
@@ -500,17 +503,18 @@ def panorama_commit():
     return result
 
 
-def panorama_commit_command():
+def panorama_commit_command(args: dict):
     """
-    Commit and show message in warroom
+    Commit and show message in the war room
     """
-    result = panorama_commit()
+    result = panorama_commit(args)
 
     if 'result' in result['response']:
         # commit has been given a jobid
         commit_output = {
             'JobID': result['response']['result']['job'],
-            'Status': 'Pending'
+            'Status': 'Pending',
+            'Description': args.get('description')
         }
         return_results({
             'Type': entryTypes['note'],
@@ -531,7 +535,7 @@ def panorama_commit_command():
 def panorama_commit_status(args: dict):
     params = {
         'type': 'op',
-        'cmd': '<show><jobs><id>' + args['job_id'] + '</id></jobs></show>',
+        'cmd': f'<show><jobs><id>{args.get("job_id")}</id></jobs></show>',
         'key': API_KEY
     }
     result = http_request(
@@ -586,14 +590,24 @@ def panorama_commit_status_command(args: dict):
 
 
 @logger
-def panorama_push_to_device_group():
+def panorama_push_to_device_group(args: dict):
+    command: str = ''
+    command += f'<device-group><entry name="{DEVICE_GROUP}"/></device-group>'
+
+    if argToBoolean(args.get('validate-only', 'false')):
+        command += '<validate-only>yes</validate-only>'
+    if not argToBoolean(args.get('include-template', 'true')):
+        command += '<include-template>no</include-template>'
+    if description := args.get('description'):
+        command += f'<description>{description}</description>'
+
     params = {
         'type': 'commit',
         'action': 'all',
-        'cmd': '<commit-all><shared-policy><device-group><entry name=\"' + DEVICE_GROUP
-               + '\"/></device-group></shared-policy></commit-all>',
+        'cmd': f'<commit-all><shared-policy>{command}</shared-policy></commit-all>',
         'key': API_KEY
     }
+
     result = http_request(
         URL,
         'POST',
@@ -603,14 +617,15 @@ def panorama_push_to_device_group():
     return result
 
 
-def panorama_push_to_device_group_command():
+def panorama_push_to_device_group_command(args: dict):
     """
     Push Panorama configuration and show message in warroom
     """
+
     if not DEVICE_GROUP:
         raise Exception("The 'panorama-push-to-device-group' command is relevant for a Palo Alto Panorama instance.")
 
-    result = panorama_push_to_device_group()
+    result = panorama_push_to_device_group(args)
     if 'result' in result['response']:
         # commit has been given a jobid
         push_output = {
@@ -638,7 +653,7 @@ def panorama_push_to_device_group_command():
 def panorama_push_status(job_id: str):
     params = {
         'type': 'op',
-        'cmd': '<show><jobs><id>' + job_id + '</id></jobs></show>',
+        'cmd': f'<show><jobs><id>{job_id}</id></jobs></show>',
         'key': API_KEY
     }
     result = http_request(
@@ -669,8 +684,8 @@ def panorama_push_status_command(job_id: str):
     """
     result = panorama_push_status(job_id)
     job = result.get('response', {}).get('result', {}).get('job', {})
-    if job.get('type', '') != 'CommitAll':
-        raise Exception('JobID given is not of a Push.')
+    if job.get('type', '') not in ('CommitAll', 'ValidateAll'):
+        raise Exception('JobID given is not of a Push neither of a validate.')
 
     push_status_output = {'JobID': job.get('id')}
     if job.get('status', '') == 'FIN':
@@ -692,12 +707,16 @@ def panorama_push_status_command(job_id: str):
 
     # WARNINGS - Job warnings
     status_warnings = []  # type: ignore
+    status_errors = []   # type: ignore
     devices = safeget(result, ["response", "result", "job", "devices", "entry"])
     if devices:
         for device in devices:
             device_warnings = safeget(device, ["details", "msg", "warnings", "line"])
             status_warnings.extend([] if not device_warnings else device_warnings)
+            status_errors = safeget(device, ["details", "msg", "errors", "line"])
+            status_errors.extend([] if not status_errors else status_errors)
     push_status_output["Warnings"] = status_warnings
+    push_status_output["Errors"] = status_errors
 
     return_results({
         'Type': entryTypes['note'],
@@ -705,7 +724,7 @@ def panorama_push_status_command(job_id: str):
         'Contents': result,
         'ReadableContentsFormat': formats['markdown'],
         'HumanReadable': tableToMarkdown('Push to Device Group status:', push_status_output,
-                                         ['JobID', 'Status', 'Details', 'Warnings'], removeNull=True),
+                                         ['JobID', 'Status', 'Details', 'Errors', 'Warnings'], removeNull=True),
         'EntryContext': {"Panorama.Push(val.JobID == obj.JobID)": push_status_output}
     })
 
@@ -7030,13 +7049,13 @@ def main():
             panorama_command(args)
 
         elif demisto.command() == 'panorama-commit':
-            panorama_commit_command()
+            panorama_commit_command(args)
 
         elif demisto.command() == 'panorama-commit-status':
             panorama_commit_status_command(args)
 
         elif demisto.command() == 'panorama-push-to-device-group':
-            panorama_push_to_device_group_command()
+            panorama_push_to_device_group_command(args)
 
         elif demisto.command() == 'panorama-push-status':
             panorama_push_status_command(**args)
