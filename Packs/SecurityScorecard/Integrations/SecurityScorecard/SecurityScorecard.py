@@ -319,9 +319,13 @@ def incidents_to_import(alerts: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
 
         # The alerts are sorted by descending date so first alert is the most recent
         most_recent_alert = alerts[0]
+        
+        # casting to str to prevent mypy error: 
+        # Argument 1 to "strptime" of "datetime" has incompatible type "Optional[Any]"; expected "str"
+        most_recent_alert_created_date = str(most_recent_alert.get("created_at"))
 
         most_recent_alert_timestamp = \
-            int(datetime.strptime(most_recent_alert.get("created_at"), SECURITYSCORECARD_DATE_FORMAT).timestamp())
+            int(datetime.strptime(most_recent_alert_created_date, SECURITYSCORECARD_DATE_FORMAT).timestamp())
         demisto.debug("Setting last runtime as alert most recent timestamp: {0}".format(most_recent_alert_timestamp))
         demisto.setLastRun({
             'last_run': most_recent_alert_timestamp
@@ -329,7 +333,9 @@ def incidents_to_import(alerts: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
 
         for alert in alerts:
 
-            alert_timestamp = int(datetime.strptime(alert.get("created_at"), SECURITYSCORECARD_DATE_FORMAT).timestamp())
+            alert_created_at = str(alert.get("created_at"))
+            
+            alert_timestamp = int(datetime.strptime(alert_created_at, SECURITYSCORECARD_DATE_FORMAT).timestamp())
 
             alert_id = alert.get("id")
 
@@ -342,7 +348,7 @@ def incidents_to_import(alerts: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
                 incident = {}
                 incident["name"] = "SecurityScorecard '{0}' Incident".format(alert.get("change_type"))
                 incident["occurred"] = \
-                    datetime.strptime(alert.get("created_at"), SECURITYSCORECARD_DATE_FORMAT).strftime(DATE_FORMAT)
+                    datetime.strptime(alert_created_at, SECURITYSCORECARD_DATE_FORMAT).strftime(DATE_FORMAT)
                 incident["rawJSON"] = json.dumps(alert)
                 incidents_to_import.append(incident)
     # If there are no alerts then we can't use the most recent alert timestamp
