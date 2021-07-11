@@ -54,7 +54,7 @@ script:
   - arguments:
     - default: true
       description: The IP address to query.
-      isArray: false
+      isArray: true
       name: ip
       required: true
       secret: false
