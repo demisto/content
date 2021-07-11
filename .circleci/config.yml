@@ -397,7 +397,7 @@ references:
         mkdir ./unit-tests
         if [ -n "$SHOULD_LINT_ALL" ]; then
           echo -e  "----------\nLinting all because:\n${SHOULD_LINT_ALL}\n----------"
-          demisto-sdk lint -p 8 -a -q --no-bandit --no-flake8 --no-xsoar-linter --no-vulture --no-pylint --no-test --no-pwsh-analyze -no-pwsh-test --test-xml ./unit-tests --log-path ./artifacts --failure-report ./artifacts --coverage-report $ARTIFACTS_FOLDER/coverage_report
+          demisto-sdk lint -p 8 -a -q --no-bandit --no-flake8 --no-xsoar-linter --no-vulture --no-pylint --no-test --no-pwsh-analyze --no-pwsh-test --test-xml ./unit-tests --log-path ./artifacts --failure-report ./artifacts --coverage-report $ARTIFACTS_FOLDER/coverage_report
         else
           demisto-sdk lint -p 8 -g -v --test-xml ./unit-tests --log-path ./artifacts --failure-report ./artifacts --coverage-report $ARTIFACTS_FOLDER/coverage_report
         fi
