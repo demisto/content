@@ -17,7 +17,7 @@ args:
   - CVE
   - DomainGlob
   - Email
-  - FILE
+  - File
   - Host
   - CIDR
   - IPv6
@@ -55,7 +55,7 @@ args:
   - CVE
   - DomainGlob
   - Email
-  - FILE
+  - File
   - Host
   - CIDR
   - IPv6
