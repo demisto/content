@@ -294,6 +294,7 @@ def test_check_analysis_status_and_get_results_command_multiple_analyses(request
                 'verdict': 'trusted',
                 'analysis_url': 'bla'
             }
+            'status': 'succeeded'
         }
     )
 

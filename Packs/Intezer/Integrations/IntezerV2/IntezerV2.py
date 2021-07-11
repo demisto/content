@@ -430,9 +430,10 @@ def main():
 
         intezer_api_key = demisto.getParam('APIKey')
         intezer_base_url_param = demisto.getParam('AnalyzeBaseURL')
+        should_use_ssl = not demisto.params().get('insecure', False)
         analyze_base_url = intezer_base_url_param or consts.BASE_URL
 
-        intezer_api = IntezerApi(consts.API_VERSION, intezer_api_key, analyze_base_url)
+        intezer_api = IntezerApi(consts.API_VERSION, intezer_api_key, analyze_base_url, should_use_ssl)
 
         command_handlers: Dict[str, Callable[[IntezerApi, dict], Union[List[CommandResults], CommandResults, str]]] = {
             'test-module': check_is_available,
