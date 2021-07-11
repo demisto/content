@@ -9,7 +9,7 @@ contentitemexportablefields:
 id: Ironscales-Classify-Incident-Playbook
 inputs: []
 name: Ironscales-Classify-Incident-Playbook
-description: "description"
+description: "Classify an Ironscales incident"
 outputs: []
 starttaskid: "0"
 tasks:

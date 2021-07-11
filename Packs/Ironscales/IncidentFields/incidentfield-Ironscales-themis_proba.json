@@ -1,5 +1,8 @@
 {
     "associatedToAll": false,
+    "associatedTypes": [
+        "Ironscales"
+    ],
     "caseInsensitive": true,
     "cliName": "ironscalesthemisproba",
     "closeForm": false,

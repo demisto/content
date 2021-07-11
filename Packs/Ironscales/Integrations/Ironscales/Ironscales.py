@@ -172,10 +172,10 @@ def test_module(client: Client, api_key, scopes) -> str:
     return "ok"
 
 
-def fetch_incidents(client: Client, last_run: Dict[str, Any], first_fetch: set, api_key: str, scopes: list) -> List:
+def fetch_incidents(client: Client, last_run: Dict[str, Any]) -> List:
     last_run = last_run.get("data", None)
     if last_run is None:
-        last_run = first_fetch
+        last_run = set()
     else:
         last_run = set(last_run)
 
@@ -221,7 +221,6 @@ def main():
 
     demisto.debug(f"Command being called is {demisto.command()}")
 
-    first_fetch = set()
 
     try:
         client = Client(
@@ -251,9 +250,6 @@ def main():
                 next_run, incidents = fetch_incidents(
                     client=client,
                     last_run=demisto.getLastRun(),
-                    first_fetch=first_fetch,
-                    api_key=api_key,
-                    scopes=scopes,
                 )
                 demisto.setLastRun({"data": next_run})
                 demisto.incidents(incidents)
