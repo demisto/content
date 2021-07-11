@@ -19,14 +19,15 @@ except Exception:
     # client with no co3 instance should pass this exception
     pass
 
-if not demisto.params()['proxy']:
-    del os.environ['HTTP_PROXY']
-    del os.environ['HTTPS_PROXY']
-    del os.environ['http_proxy']
-    del os.environ['https_proxy']
+# if not demisto.params()['proxy']:
+#     del os.environ['HTTP_PROXY']
+#     del os.environ['HTTPS_PROXY']
+#     del os.environ['http_proxy']
+#     del os.environ['https_proxy']
 
 ''' GLOBAL VARS '''
 SERVER = demisto.params()['server'][:-1] if demisto.params()['server'].endswith('/') else demisto.params()['server']
+PORT = demisto.params()['port']
 ORG_NAME = demisto.params()['org']
 USERNAME = demisto.params().get('credentials', {}).get('identifier')
 PASSWORD = demisto.params().get('credentials', {}).get('password')
@@ -84,9 +85,9 @@ NIST_ID_DICT = {
 }
 
 SEVERITY_CODE_DICT = {
-    50: 'Low',
-    51: 'Medium',
-    52: 'High'
+    4: 'Low',
+    5: 'Medium',
+    6: 'High'
 }
 
 RESOLUTION_DICT = {
@@ -122,7 +123,7 @@ def prettify_incidents(incidents):
     phases = get_phases()['entities']
     for incident in incidents:
         incident['id'] = str(incident['id'])
-        if isinstance(incident['description'], unicode):
+        if isinstance(incident['description'], str):
             incident['description'] = incident['description'].replace('<div>', '').replace('</div>', '')
         incident['discovered_date'] = normalize_timestamp(incident['discovered_date'])
         incident['created_date'] = normalize_timestamp(incident['create_date'])
@@ -349,11 +350,11 @@ def update_incident_command(args):
         old_value = incident['severity_code']
         severity = args['severity']
         if severity == 'Low':
-            new_value = 50
+            new_value = 4
         elif severity == 'Medium':
-            new_value = 51
+            new_value = 5
         elif severity == 'High':
-            new_value = 52
+            new_value = 6
         changes.append({
             'field': 'severity_code',
             'old_value': {
@@ -957,7 +958,7 @@ def fetch_incidents():
                 attachments = incident_attachments(str(incident.get('id', '')))
                 if attachments:
                     incident['attachments'] = attachments
-                if isinstance(incident.get('description'), unicode):
+                if isinstance(incident.get('description'), str):
                     incident['description'] = incident['description'].replace('<div>', '').replace('</div>', '')
 
                 incident['discovered_date'] = normalize_timestamp(incident.get('discovered_date'))
@@ -1001,6 +1002,7 @@ def test():
 def get_client():
     opts_dict = {
         'host': SERVER,
+        'port': PORT,
         'cafile': os.environ.get('SSL_CERT_FILE') if USE_SSL else 'false',
         'org': ORG_NAME
     }
