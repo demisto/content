@@ -38,13 +38,6 @@ This is the command which will isolate an endpoint from the Stealth Network
 
 There is no context output for this command.
 
-#### Command Example
-``` ```
-
-#### Human Readable Output
-
-
-
 ### stealth-unisolate-machine
 ***
 This is the command which will un-isolate an endpoint from Stealth Network
@@ -64,13 +57,6 @@ This is the command which will un-isolate an endpoint from Stealth Network
 
 There is no context output for this command.
 
-#### Command Example
-``` ```
-
-#### Human Readable Output
-
-
-
 ### stealth-get-stealth-roles
 ***
 Retrieve roles from Stealth Network
@@ -81,20 +67,11 @@ Retrieve roles from Stealth Network
 `stealth-get-stealth-roles`
 #### Input
 
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-
+There are no input arguments for this command.
 
 #### Context Output
 
 There is no context output for this command.
-
-#### Command Example
-``` ```
-
-#### Human Readable Output
-
-
 
 ### stealth-isolate-user
 ***
@@ -115,13 +92,6 @@ This is the command which will isolate an user from the Stealth Network
 
 There is no context output for this command.
 
-#### Command Example
-``` ```
-
-#### Human Readable Output
-
-
-
 ### stealth-unisolate-user
 ***
 This is the command which will un-isolate an user from Stealth Network
@@ -140,13 +110,6 @@ This is the command which will un-isolate an user from Stealth Network
 #### Context Output
 
 There is no context output for this command.
-
-#### Command Example
-``` ```
-
-#### Human Readable Output
-
-
 
 ### stealth-isolate-machine-and-user
 ***
@@ -168,13 +131,6 @@ This is the command which will isolate an endpoint and user from the Stealth Net
 
 There is no context output for this command.
 
-#### Command Example
-``` ```
-
-#### Human Readable Output
-
-
-
 ### stealth-unisolate-machine-and-user
 ***
 This is the command which will un-isolate an endpoint and user from Stealth Network
@@ -194,10 +150,3 @@ This is the command which will un-isolate an endpoint and user from Stealth Netw
 #### Context Output
 
 There is no context output for this command.
-
-#### Command Example
-``` ```
-
-#### Human Readable Output
-
-
