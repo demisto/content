@@ -384,7 +384,7 @@ def test_whole_preprocessing(mocker):
             json.dump(data, fp=file, indent=4)
         prof.print_stats(sort='cumtime')
     assert len(data['log']['exceptions']) == 0
-    assert len(data['X']) == 30
+    assert len(data['X']) == len(incidents)
 
 
 def test_whole_preprocessing_short_incident(mocker):
@@ -399,18 +399,18 @@ def test_whole_preprocessing_short_incident(mocker):
                            'created': '2020-05-10T18:39:04+03:00',
                            'attachment': []}
     short_text_incident_index = 17
-    incidents = incidents[:short_text_incident_index] + [short_text_incident] + incidents[short_text_incident_index:]
+    merged_incidents = incidents[:short_text_incident_index] + [short_text_incident] + incidents[
+                                                                                       short_text_incident_index:]
     prof = cProfile.Profile()
-    data = prof.runcall(extract_data_from_incidents, incidents=incidents)
+    data = prof.runcall(extract_data_from_incidents, incidents=merged_incidents)
     if debug:
         with open('output.txt', 'w') as file:
             json.dump(data, fp=file, indent=4)
         prof.print_stats(sort='cumtime')
     assert len(data['log']['exceptions']) == 0
-    assert len(data['X']) == 30
+    assert len(data['X']) == len(incidents)
     # check labels order kept as original excluding the short label
-    assert Counter(x['closeReason'] for x in data['X']) == Counter(
-        [inc['closeReason'] for i, inc in enumerate(incidents) if i != short_text_incident_index])
+    assert Counter(x['closeReason'] for x in data['X']) == Counter([inc['closeReason'] for inc in incidents])
 
 
 def test_whole_preprocessing_incdient_without_label(mocker):
@@ -423,18 +423,17 @@ def test_whole_preprocessing_incdient_without_label(mocker):
     incident_without_label = {'closeReason': '', 'emailbody': 'short text',
                               'created': '2020-05-10T18:39:04+03:00', 'attachment': []}
     no_label_idx = 17
-    incidents = incidents[:no_label_idx] + [incident_without_label] + incidents[no_label_idx:]
+    merged_incidents = incidents[:no_label_idx] + [incident_without_label] + incidents[no_label_idx:]
     prof = cProfile.Profile()
-    data = prof.runcall(extract_data_from_incidents, incidents=incidents)
+    data = prof.runcall(extract_data_from_incidents, incidents=merged_incidents)
     if debug:
         with open('output.txt', 'w') as file:
             json.dump(data, fp=file, indent=4)
         prof.print_stats(sort='cumtime')
     assert len(data['log']['exceptions']) == 0
-    assert len(data['X']) == 30
+    assert len(data['X']) == len(incidents)
     # check labels order kept as original excluding the short label
-    assert Counter(x['closeReason'] for x in data['X']) == Counter(
-        [inc['closeReason'] for i, inc in enumerate(incidents) if i != no_label_idx])
+    assert Counter(x['closeReason'] for x in data['X']) == Counter([inc['closeReason'] for inc in incidents])
 
 
 def test_find_forwarded_features():
