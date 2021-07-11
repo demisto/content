@@ -24,7 +24,7 @@ configuration:
   required: true
   type: 0
 description: Cisco NX-OS Platform management over SSH
-display: Cisco NXOS
+display: Ansible Cisco NXOS
 fromversion: 6.0.0
 name: AnsibleCiscoNXOS
 script:
@@ -375,28 +375,23 @@ script:
       name: host
       required: true
     - description: 'Loopback interface used for echo frames.
-
         Valid values are loopback interface name or ''deleted''.
-
         Not supported on N5K/N6K'
       name: echo_interface
     - description: BFD Echo receive interval in milliseconds.
       name: echo_rx_interval
     - description: 'BFD interval timer values.
-
         Value must be a dict defining values for keys (tx, min_rx, and multiplier)'
       isArray: true
       name: interval
     - description: BFD slow rate timer in milliseconds.
       name: slow_timer
     - description: 'BFD delayed startup timer in seconds.
-
         Not supported on N5K/N6K/N7K'
       name: startup_timer
     - description: BFD IPv4 session echo receive interval in milliseconds.
       name: ipv4_echo_rx_interval
     - description: 'BFD IPv4 interval timer values.
-
         Value must be a dict defining values for keys (tx, min_rx, and multiplier).'
       isArray: true
       name: ipv4_interval
@@ -405,14 +400,12 @@ script:
     - description: BFD IPv6 session echo receive interval in milliseconds.
       name: ipv6_echo_rx_interval
     - description: 'BFD IPv6 interval timer values.
-
         Value must be a dict defining values for keys (tx, min_rx, and multiplier).'
       isArray: true
       name: ipv6_interval
     - description: BFD IPv6 slow rate timer in milliseconds.
       name: ipv6_slow_timer
     - description: 'BFD fabricpath interval timer values.
-
         Value must be a dict defining values for keys (tx, min_rx, and multiplier).'
       isArray: true
       name: fabricpath_interval
@@ -765,7 +758,6 @@ script:
       name: description
     - auto: PREDEFINED
       description: 'Enables/Disables BFD for a given neighbor.
-
         Dependency: ''feature bfd'''
       name: bfd
       predefined:
@@ -1022,7 +1014,6 @@ script:
         output from the command is returned.  If the `wait_for` argument is provided,
         the module is not returned until the condition is satisfied or the number
         of retires as expired.
-
         The `commands` argument also accepts an alternative form that allows for complex
         values that specify the command to run and the output format to return.   This
         can be done on a command by command basis.  The complex argument supports
@@ -1176,14 +1167,11 @@ script:
       defaultValue: startup
       description: 'When using the `ansible-playbook --diff` command line argument
         the module can generate diffs against different sources.
-
         When this option is configure as `startup`, the module will return the diff
         of the running-config against the startup-config.
-
         When this option is configured as `intended`, the module will return the diff
         of the running-config against the configuration provided in the `intended_config`
         argument.
-
         When this option is configured as `running`, the module will return the before
         and after diff of the running-config with respect to any changes made to the
         device configuration.'
@@ -1764,13 +1752,10 @@ script:
       defaultValue: 'no'
       description: 'Upgrade using In Service Software Upgrade (ISSU). (Supported on
         N5k, N7k, N9k platforms)
-
         Selecting ''required'' or ''yes'' means that upgrades will only proceed if
         the switch is capable of ISSU.
-
         Selecting ''desired'' means that upgrades will use ISSU if possible but will
         fall back to disruptive upgrade if needed.
-
         Selecting ''no'' means do not use ISSU. Forced disruptive.'
       name: issu
       predefined:
@@ -1806,9 +1791,7 @@ script:
     - auto: PREDEFINED
       description: 'Enables bfd at interface level. This overrides the bfd variable
         set at the ospf router level.
-
         Valid values are ''enable'', ''disable'' or ''default''.
-
         Dependency: ''feature bfd'''
       name: bfd
       predefined:
@@ -2514,7 +2497,6 @@ script:
       name: auto_cost
     - auto: PREDEFINED
       description: 'Enables BFD on all OSPF interfaces.
-
         Dependency: ''feature bfd'''
       name: bfd
       predefined:
@@ -2562,7 +2544,6 @@ script:
       required: true
     - auto: PREDEFINED
       description: 'Enables BFD on all PIM interfaces.
-
         Dependency: ''feature bfd'''
       name: bfd
       predefined:
@@ -2602,9 +2583,7 @@ script:
     - auto: PREDEFINED
       description: 'Enables BFD for PIM at the interface level. This overrides the
         bfd variable set at the pim global level.
-
         Valid values are ''enable'', ''disable'' or ''default''.
-
         Dependency: ''feature bfd'''
       name: bfd
       predefined:
@@ -3475,14 +3454,11 @@ script:
     - description: Source IP address used for peer keepalive link
       name: pkl_src
     - description: 'Destination (remote) IP address used for peer keepalive link
-
         pkl_dest is required whenever pkl options are used.'
       name: pkl_dest
     - defaultValue: management
       description: 'VRF used for peer keepalive link
-
         The VRF must exist on the device before using pkl_vrf.
-
         (Note) ''default'' is an overloaded term: Default vrf context for pkl_vrf
         is ''management''; ''pkl_vrf: default'' refers to the literal ''default''
         rib.'
@@ -3490,25 +3466,20 @@ script:
     - description: Enables/Disables peer gateway
       name: peer_gw
     - description: 'Enables/Disables auto recovery on platforms that support disable
-
         timers are not modifiable with this attribute
-
         mutually exclusive with auto_recovery_reload_delay'
       name: auto_recovery
     - description: 'Manages auto-recovery reload-delay timer in seconds
-
         mutually exclusive with auto_recovery'
       name: auto_recovery_reload_delay
     - description: manages delay restore command and config value in seconds
       name: delay_restore
     - description: 'manages delay restore interface-vlan command and config value
         in seconds
-
         not supported on all platforms'
       name: delay_restore_interface_vlan
     - description: 'manages delay restore orphan-port command and config value in
         seconds
-
         not supported on all platforms'
       name: delay_restore_orphan_port
     - auto: PREDEFINED
