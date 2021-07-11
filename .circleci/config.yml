@@ -1097,12 +1097,6 @@ jobs:
             - run:
                 name: Download packs from GCP
                 command: |
-                  if [[ $GCS_MARKET_BUCKET != "marketplace-dist" ]]; then //TODO CHANGE TO TESTING BUCKET
-                    $PACKS_SRC="gs://$GCS_MARKET_BUCKET/upload-flow/builds/$CIRCLE_BRANCH/$CI_PIPELINE_ID/content/packs"
-                  else
-                    $PACKS_SRC="gs://$GCS_MARKET_BUCKET/$STORAGE_BASE_PATH"
-                  fi
-                  TODO: SHOULD REMOVE
                   $PACKS_SRC="gs://marketplace-dist-dev/upload-flow/builds/$CIRCLE_BRANCH/$CI_PIPELINE_ID/content/packs"
                   ZIP_FOLDER=$(mktemp -d)
                   gsutil -m cp -r $PACKS_SRC $ZIP_FOLDER
