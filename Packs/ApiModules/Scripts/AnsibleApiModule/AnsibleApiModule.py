@@ -177,6 +177,7 @@ def generate_ansible_inventory(args: Dict[str, Any], int_params: Dict[str, Any],
                     new_host['ansible_network_os'] = 'ios'
                     new_host['ansible_become'] = 'yes'
                     new_host['ansible_become_method'] = 'enable'
+                    new_host['ansible_become_password'] = int_params.get('enable_password')
                     inventory['all']['hosts'][host] = new_host
 
                 # nxos specific
