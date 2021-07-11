@@ -3333,7 +3333,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: Serial number of the target firewall.
+      description: Target number of the firewall. Use only on a Panorama instance.
       isArray: false
       name: target
       required: false
