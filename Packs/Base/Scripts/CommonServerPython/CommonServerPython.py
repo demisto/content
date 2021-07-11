@@ -7682,7 +7682,7 @@ class TableOrListWidget(BaseWidget):
 
 class IndicatorsSearcher:
     """Used in order to search indicators by the paging or serachAfter param
-    :type page: ``Optional[int]``
+    :type page: ``int``
     :param page: the number of page from which we start search indicators from. (will be updated via iter)
 
     :type filter_fields: ``Optional[str]``
