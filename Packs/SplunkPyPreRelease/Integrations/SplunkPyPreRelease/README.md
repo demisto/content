@@ -46,8 +46,11 @@ This integration was integrated and tested with Splunk v7.2.
 | close_incident | When selected, closing the Splunk notable event is mirrored in Cortex XSOAR. | False |
 | close_notable | When selected, closing the XSOAR incident is mirrored in Splunk. | False |
 | enabled_enrichments | The possible types of enrichment are: Drilldown, Asset, and Identity | False |
-| num_enrichment_events | The maximal number of event to retrieve per enrichment type. Default to 20. | False | 
-| enrichment_timeout | The maximal time for an enrichment to be processed. Default to 5min. When the selected timeout was reached, notable events that were not enriched will be saved without the enrichment. | False
+| num_enrichment_events | The maximal number of event to retrieve per enrichment type. Default to 20. | False |
+| extensive_logs | Extensive logging (for debugging purposes) - Please use this option unless advised otherwise. | False
+| occurrence_look_behind |The fetch time range will be at least of the size specified here. This will support events that have a gap between their occurrence time and their index time in Splunk. | False
+| unique_id_fields | Use this parameter to specify a list of comma separated fields, which together are a unique identifier for the events you with to fetch. | False
+
 
 The (!) *Earliest time to fetch* and *Latest time to fetch* are search parameters options. The search uses *All Time* as the default time range when you run a search from the CLI. Time ranges can be specified using one of the CLI search parameters, such as *earliest_time*, *index_earliest*, or *latest_time*.
 

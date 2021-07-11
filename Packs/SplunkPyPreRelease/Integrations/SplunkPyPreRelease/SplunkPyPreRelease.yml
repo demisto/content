@@ -204,7 +204,7 @@ configuration:
   additionalinfo: Use this parameter to specify a list of comma separated fields, which
     together are a unique identifier for the events you with to fetch.
 description: Runs queries on Splunk servers.
-display: SplunkPyPreRelease
+display: SplunkPy Prerelease (Beta)
 name: SplunkPyPreRelease
 script:
   commands:
