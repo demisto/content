@@ -28,7 +28,7 @@ class Client(BaseClient):
     For this  implementation, no special attributes defined
     """
 
-    def get_portfolios(self) -> List[Dict[str, Any]]:
+    def get_portfolios(self) -> Dict[str, Any]:
 
         return self._http_request(
             'GET',
@@ -427,8 +427,15 @@ def securityscorecard_portfolios_list_command(client: Client) -> CommandResults:
 
     portfolios = client.get_portfolios()
 
+    # For mypy
+    # error: Argument 1 to "int" has incompatible type "Optional[Any]"; 
+    # expected "Union[str, bytes, SupportsInt, _SupportsIndex]"
+    portfolios_total = portfolios.get("total")
+    assert portfolios_total is not None
+    portfolios_count = int(portfolios_total)
+
     # Check that API returned more than 0 portfolios
-    if portfolios.get('total') and not int(portfolios.get('total')) > 0:
+    if portfolios_count == 0:
         return_warning("No Portfolios were found in your account. Please create a new one and try again.", exit=True)
 
     # API response is a dict with 'entries'
