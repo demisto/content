@@ -28,7 +28,7 @@ configuration:
   required: true
   type: 0
 description: Cisco IOS Platform management over SSH
-display: Cisco IOS
+display: Ansible Cisco IOS
 fromversion: 6.0.0
 name: AnsibleCiscoIOS
 script:
