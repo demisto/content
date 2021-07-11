@@ -9,10 +9,10 @@ args:
   isArray: true
 comment: Receives names of fields and map. Checks if this map contains these fields.
 commonfields:
-  id: test
+  id: VerifyContexFieldsList
   version: -1
 enabled: false
-name: test
+name: VerifyContexFieldsList
 outputs:
 - contextPath: FieldsExists
   description: Return true or fasle.
