@@ -35,13 +35,13 @@ This integration was integrated and tested with API versions 10.1-14.0 on QRadar
 | Offenses (Read) | Offenses |
 | References (Create/Update) | Admin |
 | References (Read) | View Reference Data |
-## Mapping limitations for XSOAR users below 6.0.0
-* For XSOAR users below 6.0.0 version, using 'Pull from instance' option when creating a new mapper is not supported.
-## Creating classifier using `Pull from instance` feature.
-QRadar fetching incidents is done by long-running execution. As a result, when choosing `Pull from instance` to pull incidents from QRadar service to create a classifier, it does not fetch offenses in real time, but uses samples to support `Pull from instance` feature. This will result in seeing the latest sample stored, and not the latest offense that have been fetched.  
-## Important note regarding `Query to fetch offenses` parameter
-Query to fetch offenses is a way for the user to define a specific query for offenses to be retrieved, e.g **'status = OPEN and id = 5'**. QRadar integration also keeps track of IDs that have already been fetched in order to avoid duplicate fetching. 
-**Changing Query to fetch offenses will not re-fetch offenses that have already been fetched**. In order to retrieve such behaviour, use `qradar-reset-last-run` command. **Caution**: Using this command will reset QRadar track of IDs and duplicate offenses could be re-fetched, depending on the user query.
+## Mapping limitations for XSOAR versions below 6.0.0
+The *Pull from instance* option to create a new mapper is not supported in XSOAR versions below 6.0.0. 
+## Creating classifier using *Pull from instance* feature
+QRadar fetches incidents using a long-running execution. As a result, when you select the *Pull from instance* option to pull incidents from the QRadar service to create a classifier, it does not fetch offenses in real time, but uses samples to support the *Pull from instance* feature. This results in seeing the latest sample stored, and not the latest offense that was fetched.  
+## Important note regarding the *Query to fetch offenses* parameter
+The *Query to fetch offenses* feature enables you to define a specific query for offenses to be retrieved, e.g., **'status = OPEN and id = 5'**. The QRadar integration keeps track of IDs that have already been fetched in order to avoid duplicate fetching. 
+IIf you change the *Query to fetch offenses* value, it will not re-fetch offenses that have already been fetched. To re-fetch those offences, run the ***qradar-reset-last-run*** command. However, note that the list of QRadar IDs that had already been fetched will be reset and duplicate offenses could be re-fetched, depending on the user query.
 ## Migration from QRadar v2 to QRadar v3
 Every command and playbook that runs in QRadar v2 also runs in QRadar v3. No adjustments are required.
 ## Additions and changes between QRadar v3 and QRadar v2
