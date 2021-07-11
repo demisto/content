@@ -7,8 +7,9 @@ import logging
 from zipfile import ZipFile
 from Tests.Marketplace.marketplace_constants import IGNORED_FILES, PACKS_FULL_PATH
 from Tests.scripts.utils.log_util import install_logging
-from demisto_sdk.commands.common.tools import LooseVersion, str2bool
+from demisto_sdk.commands.common.tools import LooseVersion, str2bool, get_files_in_dir
 from Tests.Marketplace.marketplace_constants import GCPConfig
+
 import subprocess
 from pathlib import Path
 
@@ -105,22 +106,6 @@ def remove_test_playbooks_from_signatures(path, filenames):
         logging.warning(f'Could not find signatures in the pack {os.path.basename(os.path.dirname(path))}')
 
 
-def get_pack_files(entry_path): # TODO: replace with existing function
-    """
-    Creates a list with all paths of files inside a directory and it's subdirectories.
-    Args:
-        entry_path: The directory path
-    Returns:
-        A list with paths of all files in the directory and subdirectories.
-    """
-    pack_files = []
-    for root, dirnames, filenames in os.walk(entry_path):
-        # going over pack directory, saves all filenames
-        for filename in filenames:
-            pack_files.append(os.path.join(root, filename))
-    return pack_files
-
-
 def get_zipped_packs_names(zip_path):
     """
     Creates a list of dictionaries containing a pack name as key and the latest zip file path of the pack as value.
@@ -140,7 +125,7 @@ def get_zipped_packs_names(zip_path):
         entry_path = os.path.join(zip_path, entry)
         if entry not in IGNORED_FILES and entry in packs_list and os.path.isdir(entry_path):
             # This is a pack directory, should keep only most recent release zip
-            pack_files = get_pack_files(entry_path)
+            pack_files = get_files_in_dir(entry_path, ['zip'])
             latest_zip = get_latest_pack_zip_from_pack_files(entry, pack_files)
             if not latest_zip:
                 logging.warning(f'Failed to get the zip of the pack {entry} from GCP')
