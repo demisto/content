@@ -28,9 +28,6 @@ def option_handler():
     parser.add_argument('-a', '--artifacts_path', help="Path of the CircleCI artifacts to save the zip file in",
                         required=False)
     parser.add_argument('-z', '--zip_path', help="Full path of folder to zip packs in", required=True)
-    parser.add_argument('-b', '--bucket_name', help="Storage bucket name", required=True)
-    parser.add_argument('-sbp', '--storage_base_path', help="Storage base path of the directory to download from.",
-                        required=False)
     parser.add_argument('-s', '--service_account',
                         help=("Path to gcloud service account, is for circleCI usage. "
                               "For local development use your personal account and "
@@ -138,20 +135,6 @@ def get_zipped_packs_names(zip_path):
     return zipped_packs
 
 
-def download_packs_from_gcp(storage_bucket_name, dest_path):  # TODO: move to build process itself
-    """
-    Copies all content in the gcp path to destination_path
-    Args:
-        storage_bucket_name: The name of the GCP bucket to download from.
-        dest_path: The path to download the packs to.
-    """
-    src_path = os.path.join('gs://', storage_bucket_name, GCPConfig.STORAGE_BASE_PATH)
-
-    process = subprocess.check_output(['gsutil', '-m', 'cp', '-r', src_path, dest_path])
-    if process:
-        logging.info(f"gsutil cp command output: {process}")
-
-
 def copy_zipped_packs_to_artifacts(zipped_packs, artifacts_path):
     """
     Copies zip files if needed
@@ -204,15 +187,10 @@ def get_latest_pack_zip_from_pack_files(pack, pack_files):
 def main():
     install_logging('Zip_Content_Packs_From_GCS.log')
     option = option_handler()
-    storage_bucket_name = option.bucket_name
     zip_path = option.zip_path
     artifacts_path = option.artifacts_path
-    storage_base_path = option.storage_base_path
 
     private_build = option.private
-
-    if storage_base_path:
-        GCPConfig.STORAGE_BASE_PATH = storage_base_path # TODO: change to env var
 
     if private_build:
         packs_dir = '/home/runner/work/content-private/content-private/content/artifacts/packs'
@@ -226,12 +204,6 @@ def main():
 
     zipped_packs = {}
     success = True
-    try:
-        download_packs_from_gcp(storage_bucket_name, zip_path)
-    except Exception as e:
-        logging.exception(f"Failed to run download_packs_from_gcp, Error:{e}")
-        success = False
-
     try:
         zipped_packs = get_zipped_packs_names(zip_path)
     except Exception as e:

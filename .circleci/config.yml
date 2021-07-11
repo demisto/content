@@ -1093,23 +1093,14 @@ jobs:
             - run:
                 name: Download packs from GCP
                 command: |
-                  if [[ $GCS_MARKET_BUCKET != "marketplace-dist" ]]; then //TODO CHANGE TO TESTING BUCKET
-                    $PACKS_SRC="gs://$GCS_MARKET_BUCKET/upload-flow/builds/$CIRCLE_BRANCH/$CI_PIPELINE_ID/content/packs"
-                  else
-                    $PACKS_SRC="gs://$GCS_MARKET_BUCKET/$STORAGE_BASE_PATH"
-                  fi
-
+                  $PACKS_SRC="gs://marketplace-dist-dev/upload-flow/builds/$CIRCLE_BRANCH/$CI_PIPELINE_ID/content/packs"
                   ZIP_FOLDER=$(mktemp -d)
                   gsutil -m cp -r $PACKS_SRC $ZIP_FOLDER
                 when: always
             - run:
                 name: Zip Content Packs From GCS
                 command: |
-                  if [[ $GCS_MARKET_BUCKET != "marketplace-dist" ]]; then
-                    STORAGE_BASE_PATH="upload-flow/builds/$CIRCLE_BRANCH/$CI_PIPELINE_ID/content/packs"
-                  fi //TODO SHOULD REMOVE
-
-                  python3 ./Tests/Marketplace/zip_packs.py -b $GCS_MARKET_BUCKET -z $ZIP_FOLDER -a $CIRCLE_ARTIFACTS -s $GCS_MARKET_KEY -sbp "${STORAGE_BASE_PATH}"
+                  python3 ./Tests/Marketplace/zip_packs.py -z $ZIP_FOLDER -a $CIRCLE_ARTIFACTS -s $GCS_MARKET_KEY
                 when: always
             - run:
                 name: Validate Premium Packs
