@@ -135,6 +135,11 @@ def main():
     github_client: Github = Github(github_token, verify=False)
     content_repo: Repository = github_client.get_repo(f'{org_name}/{repo_name}')
     pr: PullRequest = content_repo.get_pull(int(pr_number))
+
+    if '[Marketplace Contribution]' in pr.title:
+        print(f'PR {pr_number} was detected as Marketplace Contribution. Skipping validation.')
+        sys.exit(exit_status)
+
     pr_files = pr.get_files()
 
     for pack_name in get_pack_names_from_pr(pr_files):
