@@ -398,9 +398,8 @@ def test_whole_preprocessing_short_incident(mocker):
     short_text_incident = {'closeReason': 'shortText', 'emailbody': 'short text',
                            'created': '2020-05-10T18:39:04+03:00',
                            'attachment': []}
-    short_text_incident_index = 17
-    merged_incidents = incidents[:short_text_incident_index] + [short_text_incident] + incidents[
-                                                                                       short_text_incident_index:]
+    short_text_index = 17
+    merged_incidents = incidents[:short_text_index] + [short_text_incident] + incidents[short_text_index:]
     prof = cProfile.Profile()
     data = prof.runcall(extract_data_from_incidents, incidents=merged_incidents)
     if debug:
