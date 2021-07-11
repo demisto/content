@@ -1228,7 +1228,7 @@ script:
     - contextPath: File.Extension
       description: The extension of the file.
       type: String
-  dockerimage: devdemisto/py-ews:1.0.0.22347
+  dockerimage: devdemisto/py-ews:1.0.0.22389
   feed: false
   isfetch: true
   longRunning: false
