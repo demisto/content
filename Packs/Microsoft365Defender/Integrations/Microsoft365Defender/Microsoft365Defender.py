@@ -22,7 +22,7 @@ BASE_URL = "https://api.security.microsoft.com"
 class Client:
     @logger
     def __init__(self, app_id: str, verify: bool, proxy: bool, base_url: str = BASE_URL, tenant_id: str = None,
-                 enc_key: str = None, self_deployed: bool = None):
+                 enc_key: str = None, self_deployed: bool = False):
         if '@' in app_id:
             app_id, refresh_token = app_id.split('@')
             integration_context = get_integration_context()

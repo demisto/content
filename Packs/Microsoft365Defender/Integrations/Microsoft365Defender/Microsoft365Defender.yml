@@ -23,7 +23,7 @@ configuration:
   name: self_deployed
   required: false
   type: 8
-- display: Tenant ID/Token (for self-deployed mode)
+- display: Tenant ID (for self-deployed mode)
   name: tenant_id
   required: false
   type: 4
