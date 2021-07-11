@@ -288,7 +288,7 @@ class Client(BaseClient):
             'Password': self.password
         }
         try:
-            res = self._http_request('POST', f'/core/security/login', json_data=body)
+            res = self._http_request('POST', '/core/security/login', json_data=body)
         except DemistoException as e:
             if '<html>' in str(e):
                 raise DemistoException(f"Check the given URL, it can be a redirect issue. Failed with error: {str(e)}")
@@ -735,13 +735,13 @@ def test_module(client: Client, params: dict) -> str:
 
         return 'ok'
 
-    return 'ok' if client.do_request('GET', f'/core/system/application') else 'Connection failed.'
+    return 'ok' if client.do_request('GET', '/core/system/application') else 'Connection failed.'
 
 
 def search_applications_command(client: Client, args: Dict[str, str]):
     app_id = args.get('applicationId')
     limit = args.get('limit')
-    endpoint_url = f'/core/system/application/'
+    endpoint_url = '/core/system/application/'
 
     if app_id:
         endpoint_url = f'/core/system/application/{app_id}'
@@ -863,7 +863,7 @@ def create_record_command(client: Client, args: Dict[str, str]):
 
     body = {'Content': {'LevelId': level_data['level'], 'FieldContents': field_contents}}
 
-    res = client.do_request('Post', f'/core/content', data=body)
+    res = client.do_request('Post', '/core/content', data=body)
 
     errors = get_errors_from_res(res)
     if errors:
@@ -894,7 +894,7 @@ def update_record_command(client: Client, args: Dict[str, str]):
     field_contents = generate_field_contents(client, fields_values, level_data['mapping'])
 
     body = {'Content': {'Id': record_id, 'LevelId': level_data['level'], 'FieldContents': field_contents}}
-    res = client.do_request('Put', f'/core/content', data=body)
+    res = client.do_request('Put', '/core/content', data=body)
 
     errors = get_errors_from_res(res)
     if errors:
@@ -967,7 +967,7 @@ def upload_file_command(client: Client, args: Dict[str, str]) -> str:
     file_name, file_bytes = get_file(entry_id)
     body = {'AttachmentName': file_name, 'AttachmentBytes': file_bytes}
 
-    res = client.do_request('POST', f'/core/content/attachment', data=body)
+    res = client.do_request('POST', '/core/content/attachment', data=body)
 
     errors = get_errors_from_res(res)
     if errors:
@@ -1023,7 +1023,7 @@ def list_users_command(client: Client, args: Dict[str, str]):
     if user_id:
         res = client.do_request('GET', f'/core/system/user/{user_id}')
     else:
-        res = client.do_request('GET', f'/core/system/user')
+        res = client.do_request('GET', '/core/system/user')
 
     errors = get_errors_from_res(res)
     if errors:
