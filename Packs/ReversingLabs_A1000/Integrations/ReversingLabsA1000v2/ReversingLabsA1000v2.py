@@ -1,4 +1,3 @@
-import demistomock as demisto
 from CommonServerPython import *
 from ReversingLabs.SDK.a1000 import A1000
 
