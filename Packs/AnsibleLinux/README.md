@@ -1,4 +1,4 @@
-This pack enables you to management Linux hosts using Ansible modules. The Ansible engine is self-contained and pre-configured as part of this pack onto your XSOAR server. The Ansible modules have been exposed as XSOAR commands, and allow you to use them without needing to know Ansible.
+This pack enables you to manage Linux hosts using Ansible modules. The Ansible engine is self-contained and pre-configured as part of this pack onto your XSOAR server. The Ansible modules have been exposed as XSOAR commands, and allow you to use them without needing to know Ansible.
 
 # What does this pack allow you to manage?
 
