@@ -138,6 +138,9 @@ There are no context output for this command.
 </p>
 
 <h5>Human Readable Output</h5>
+<p>
+
+</p>
 
 <h3 id="non-deprecated-cmd2">2. non-deprecated-cmd2</h3>
 <hr>
@@ -165,6 +168,9 @@ There are no context output for this command.
 </p>
 
 <h5>Human Readable Output</h5>
+<p>
+
+</p>
 '''
 
     assert section == expected_section
