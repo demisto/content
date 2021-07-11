@@ -3423,6 +3423,10 @@
             "memory_threshold": 900,
             "pid_threshold": 12,
             "context_print_dt": "EDLHey"
+        },
+        {
+            "integrations": "RSA encryption Tools",
+            "playbookID": "playbook-test-rsa-encryption-decryption"
         }
     ],
     "skipped_tests": {
