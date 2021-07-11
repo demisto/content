@@ -280,7 +280,8 @@ def test_check_analysis_status_and_get_results_command_multiple_analyses(request
                 'sha256': sha256_1,
                 'verdict': 'trusted',
                 'analysis_url': 'bla'
-            }
+            },
+            'status': 'succeeded'
         }
     )
     requests_mock.get(
@@ -292,8 +293,7 @@ def test_check_analysis_status_and_get_results_command_multiple_analyses(request
                 'sha256': sha256_2,
                 'verdict': 'trusted',
                 'analysis_url': 'bla'
-            },
-            'status': 'succeeded'
+            }
         }
     )
 
@@ -372,7 +372,8 @@ def test_get_analysis_sub_analyses_command_success(requests_mock):
                 'sha256': sha256,
                 'verdict': 'trusted',
                 'analysis_url': 'bla'
-            }
+            },
+            'status': 'succeeded'
         }
     )
     requests_mock.get(
@@ -384,8 +385,7 @@ def test_get_analysis_sub_analyses_command_success(requests_mock):
                     'source': 'dynamic',
                     'sha256': 'sha256',
                 }
-            ],
-            'status': 'succeeded'
+            ]
         }
     )
 
