@@ -406,7 +406,7 @@ def disable_user_command(client, args, is_command_enabled):
                     action=IAMActions.DISABLE_USER,
                     success=True,
                     active=False,
-                    iden=okta_user.get('id'),Packs/Slack/ReleaseNotes/1_4_0.md
+                    iden=okta_user.get('id'),
                     email=okta_user.get('profile', {}).get('email'),
                     username=okta_user.get('profile', {}).get('login'),
                     details=okta_user
