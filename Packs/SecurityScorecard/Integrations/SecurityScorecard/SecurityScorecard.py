@@ -298,10 +298,15 @@ def incidents_to_import(alerts: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
             days_ago_str = days_ago_arg
 
         fetch_days_ago = arg_to_datetime(days_ago_str, arg_name="first_fetch", required=False)
-        demisto.debug("getLastRun is None in integration context, using parameter 'first_fetch' value '{0}'".format(days_ago_arg))
-        demisto.debug("{0} => {1}".format(days_ago_str, fetch_days_ago))
+        
+        # to prevent mypy incompatible assignment
+        assert fetch_days_ago is not None
+        valid_fetch_days_ago: datetime = fetch_days_ago
 
-        last_run = int(fetch_days_ago.timestamp())
+        demisto.debug("getLastRun is None in integration context, using parameter 'first_fetch' value '{0}'".format(days_ago_arg))
+        demisto.debug("{0} => {1}".format(days_ago_str, valid_fetch_days_ago))
+
+        last_run = int(valid_fetch_days_ago.timestamp())
 
     demisto.debug("Last run timestamp: {0}".format(last_run))
 
