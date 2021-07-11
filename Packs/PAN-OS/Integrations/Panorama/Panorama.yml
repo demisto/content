@@ -3332,6 +3332,12 @@ script:
       name: source-user
       required: false
       secret: false
+    - default: false
+      description: Serial number of the target firewall.
+      isArray: false
+      name: target
+      required: false
+      secret: false
     deprecated: false
     description: Checks whether a session matches a specified security policy. This
       command is only available on Firewall instances.
