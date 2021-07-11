@@ -809,3 +809,4 @@ tests:
 defaultclassifier: SplunkPyPreRelease
 defaultmapperin: SplunkPyPreRelease-mapper
 fromversion: 5.0.0
+beta: true
