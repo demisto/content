@@ -14,4 +14,3 @@ CONTEXT2 = {'FirstField': [{'SecondField': [{'ThirdField': 1, 'FourthField': 3},
 def test_check_fields(fields_to_search, context, expected_result):
     fields = fields_to_search.split(',')
     assert check_fields(fields, context) == expected_result
-
