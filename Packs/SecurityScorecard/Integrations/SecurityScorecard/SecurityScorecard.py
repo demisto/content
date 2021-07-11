@@ -131,7 +131,7 @@ class Client(BaseClient):
         target: List[str]
     ) -> List[Dict[str, Any]]:
 
-        payload = {}
+        payload: Dict[str, Any] = {}
         if change_direction:
             payload["change_direction"] = change_direction
 
@@ -151,7 +151,7 @@ class Client(BaseClient):
         self,
         email: str,
         change_direction: str,
-        threshold: int,
+        threshold: str,
         score_types: List[str],
         target: List[str]
     ) -> List[Dict[str, Any]]:
@@ -160,8 +160,8 @@ class Client(BaseClient):
         if change_direction:
             payload["change_direction"] = change_direction
 
-        threshold = arg_to_number(arg=threshold, arg_name=threshold, required=True)
-        payload["threshold"] = threshold
+        threshold_arg = arg_to_number(arg=threshold, arg_name='threshold', required=True)
+        payload["threshold"] = threshold_arg
 
         if len(score_types) > 0:
             payload["score_types"] = score_types

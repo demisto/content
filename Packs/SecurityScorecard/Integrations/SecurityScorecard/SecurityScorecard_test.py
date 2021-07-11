@@ -1,5 +1,20 @@
-from SecurityScorecard import Client, securityscorecard_portfolios_list_command, securityscorecard_portfolio_list_companies_command, securityscorecard_company_factor_score_get_command,  securityscorecard_company_history_score_get_command,  securityscorecard_company_services_get_command,  securityscorecard_company_score_get_command,  securityscorecard_company_history_factor_score_get_command,  securityscorecard_alert_grade_change_create_command, securityscorecard_alert_score_threshold_create_command, securityscorecard_alerts_list_command, is_valid_domain, is_email_valid, incidents_to_import, is_date_valid
-import requests_mock
+from SecurityScorecard import Client, \
+    is_valid_domain, \
+    is_email_valid, \
+    is_date_valid
+    # incidents_to_import, \
+    # securityscorecard_portfolios_list_command, \
+    # securityscorecard_portfolio_list_companies_command, \
+    # securityscorecard_company_factor_score_get_command,  \
+    # securityscorecard_company_history_score_get_command,  \
+    # securityscorecard_company_services_get_command,  \
+    # securityscorecard_company_score_get_command,  \
+    # securityscorecard_company_history_factor_score_get_command,  \
+    # securityscorecard_alert_grade_change_create_command, \
+    # securityscorecard_alert_score_threshold_create_command, \
+    # securityscorecard_alerts_list_command, \
+
+# import requests_mock
 import json
 import io
 
@@ -11,22 +26,27 @@ client = Client(
     proxy=False
 )
 
+
 def util_load_json(path):
     with io.open(path, mode='r', encoding='utf-8') as f:
         return json.loads(f.read())
+
 
 def test_is_valid_domain():
     assert is_valid_domain("google.com")
     assert not is_valid_domain("sometestdomain")
 
+
 def test_is_email_valid():
     assert is_email_valid("someuser@somedomain.com")
     assert not is_email_valid("someuser.com")
+
 
 def test_is_date_valid():
     assert is_date_valid("2021-12-31")
     assert not is_date_valid("2021-13-31")
     assert not is_date_valid("202-12-31")
+
 
 def test_securityscorecard_portfolios_list(mocker):
 
@@ -77,7 +97,7 @@ def test_securityscorecard_portfolios_list(mocker):
 
 #     print(response_portfolio_not_exist)
 
-#     # asset 
+#     # asset
 
 
 # def test_securityscorecard_company_factor_score_get():

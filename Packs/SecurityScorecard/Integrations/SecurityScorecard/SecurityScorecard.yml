@@ -19,8 +19,7 @@ configuration:
   type: 8
 - name: incidentFetchInterval
   display: Incidents Fetch Interval. SecurityScorecard is updated on a daily basis
-    therefore there's no need to modify this value (24 h * 60 m/h = 1440m). This is
-    hidden from the UI.
+    therefore there's no need to modify this value.
   defaultvalue: "1440"
   required: false
   type: 19
