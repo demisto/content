@@ -22,7 +22,7 @@ from zipfile import ZipFile, ZIP_DEFLATED
 from typing import Tuple, Any, Union
 
 from Tests.Marketplace.marketplace_constants import PackFolders, Metadata, GCPConfig, BucketUploadFlow, PACKS_FOLDER, \
-    PackTags, PackIgnored
+    PackTags, PackIgnored, Changelog
 import Tests.Marketplace.marketplace_statistics as mp_statistics
 
 from Utils.release_notes_generator import aggregate_release_notes_for_marketplace
@@ -643,16 +643,17 @@ class Pack(object):
             released_time: The released time to update the entry with.
 
         """
-
-        changelog_entry = changelog[version]
+        changelog_entry = changelog.get(version)
+        if not changelog_entry:
+            raise Exception('The given version is not a key in the changelog')
         version_display_name = \
-            version_display_name if version_display_name else changelog_entry['displayName'].split('-')[0]
+            version_display_name if version_display_name else changelog_entry[Changelog.DISPLAY_NAME].split('-')[0]
         build_number_with_prefix = \
-            build_number_with_prefix if build_number_with_prefix else changelog_entry['displayName'].split('-')[1]
+            build_number_with_prefix if build_number_with_prefix else changelog_entry[Changelog.DISPLAY_NAME].split('-')[1]
 
-        changelog_entry['releaseNotes'] = release_notes if release_notes else changelog_entry['releaseNotes']
-        changelog_entry['displayName'] = f'{version_display_name} - {build_number_with_prefix}'
-        changelog_entry['released'] = released_time if released_time else changelog_entry['released']
+        changelog_entry[Changelog.RELEASE_NOTES] = release_notes if release_notes else changelog_entry[Changelog.RELEASE_NOTES]
+        changelog_entry[Changelog.DISPLAY_NAME] = f'{version_display_name} - {build_number_with_prefix}'
+        changelog_entry[Changelog.RELEASED] = released_time if released_time else changelog_entry[Changelog.RELEASED]
 
         return changelog_entry
 
@@ -673,19 +674,19 @@ class Pack(object):
 
         """
         if new_version:
-            return {'releaseNotes': release_notes,
-                    'displayName': f'{version_display_name} - {build_number}',
-                    'released': datetime.utcnow().strftime(Metadata.DATE_FORMAT)}
+            return {Changelog.RELEASE_NOTES: release_notes,
+                    Changelog.DISPLAY_NAME: f'{version_display_name} - {build_number}',
+                    Changelog.RELEASED: datetime.utcnow().strftime(Metadata.DATE_FORMAT)}
 
         elif initial_release:
-            return {'releaseNotes': release_notes,
-                    'displayName': f'{version_display_name} - {build_number}',
-                    'released': self._create_date}
+            return {Changelog.RELEASE_NOTES: release_notes,
+                    Changelog.DISPLAY_NAME: f'{version_display_name} - {build_number}',
+                    Changelog.RELEASED: self._create_date}
 
         elif pack_was_modified:
-            return {'releaseNotes': release_notes,
-                    'displayName': f'{version_display_name} - R{build_number}',
-                    'released': datetime.utcnow().strftime(Metadata.DATE_FORMAT)}
+            return {Changelog.RELEASE_NOTES: release_notes,
+                    Changelog.DISPLAY_NAME: f'{version_display_name} - R{build_number}',
+                    Changelog.RELEASED: datetime.utcnow().strftime(Metadata.DATE_FORMAT)}
 
         return {}
 
