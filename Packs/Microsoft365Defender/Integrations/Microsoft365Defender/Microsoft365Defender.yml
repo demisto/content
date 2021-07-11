@@ -19,7 +19,7 @@ configuration:
   name: base_url
   required: true
   type: 0
-- display: self-deployed
+- display: Use a self-deployed Azure application
   name: self_deployed
   required: false
   type: 8
