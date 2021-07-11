@@ -278,8 +278,8 @@ class TestArcherV2:
         assert field_id == '6969'
 
     def test_get_level_by_app_id(self, requests_mock):
-        requests_mock.post(BASE_URL + 'core/security/login', json={'RequestedObject': {'SessionToken': 'session-id',
-                                                                                           }, 'IsSuccessful': True})
+        requests_mock.post(BASE_URL + 'core/security/login',
+                           json={'RequestedObject': {'SessionToken': 'session-id'}, 'IsSuccessful': True})
         requests_mock.get(BASE_URL + 'core/system/level/module/1', json=GET_LEVEL_RES)
         requests_mock.get(BASE_URL + 'core/system/fielddefinition/level/123', json=FIELD_DEFINITION_RES)
         client = Client(BASE_URL, '', '', '', '')
