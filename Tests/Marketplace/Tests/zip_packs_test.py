@@ -43,17 +43,17 @@ class TestZipPacks:
         When:
             There is a valid pack which should be stored in the created dictionary
         Then:
-            Create a list which has one dictionary of the found pack
+            Create a dict which has one dictionary of the found pack
         """
         from Tests.Marketplace import zip_packs
         list_dir_result = ['Slack', 'ApiModules', 'python_file.py']
         pack_files = TestZipPacks.BLOB_NAMES
-        mocker.patch.object(zip_packs, 'get_pack_files', return_value=pack_files)
+        mocker.patch.object(zip_packs, 'get_files_in_dir', return_value=pack_files)
         mocker.patch('os.listdir', return_value=list_dir_result)
         mocker.patch('os.path.isdir', return_value=True)
         zipped_packs = get_zipped_packs_names('content')
 
-        assert zipped_packs == [{'Slack': 'content/packs/Slack/1.0.2/Slack.zip'}]
+        assert zipped_packs == {'Slack': 'content/packs/Slack/1.0.2/Slack.zip'}
 
     def test_get_zipped_packs_name_no_zipped_packs(self, mocker):
         """
@@ -68,7 +68,7 @@ class TestZipPacks:
             from Tests.Marketplace import zip_packs
             list_dir_result = ['ApiModules', 'python_file.py']
             pack_files = TestZipPacks.BLOB_NAMES
-            mocker.patch.object(zip_packs, 'get_pack_files', return_value=pack_files)
+            mocker.patch.object(zip_packs, 'get_files_in_dir', return_value=pack_files)
             mocker.patch('os.listdir', return_value=list_dir_result)
             mocker.patch('os.path.isdir', return_value=True)
             get_zipped_packs_names('content')
@@ -86,7 +86,7 @@ class TestZipPacks:
             from Tests.Marketplace import zip_packs
             list_dir_result = ['Slack', 'ApiModules', 'python_file.py']
             pack_files = TestZipPacks.BLOB_NAMES_NO_ZIP
-            mocker.patch.object(zip_packs, 'get_pack_files', return_value=pack_files)
+            mocker.patch.object(zip_packs, 'get_files_in_dir', return_value=pack_files)
             mocker.patch('os.listdir', return_value=list_dir_result)
             mocker.patch('os.path.isdir', return_value=True)
             get_zipped_packs_names('content')
@@ -94,14 +94,14 @@ class TestZipPacks:
     def test_copy_zipped_packs_to_artifacts(self, mocker):
         """
         Given:
-            A list containing information about a single pack
+            A dict containing information about a single pack
         When:
             The information is valid
         Then:
             make a single call to the copy function
         """
         import shutil
-        zipped_packs = [{'Slack': 'content/packs/Slack/1.0.1/Slack.zip'}]
+        zipped_packs = {'Slack': 'content/packs/Slack/1.0.1/Slack.zip'}
         artifacts_path = 'dummy_path'
         mocker.patch.object(shutil, 'copy', side_effect=None)
         mocker.patch('os.path.exists', return_value=True)
@@ -113,14 +113,14 @@ class TestZipPacks:
     def test_copy_zipped_packs_to_artifacts_no_zipped_packs(self, mocker):
         """
         Given:
-            A list containing no information about packs
+            A dict containing no information about packs
         When:
             There are no packs to copy
         Then:
             make no calls to the copy function
         """
         import shutil
-        zipped_packs = []
+        zipped_packs = {}
         artifacts_path = 'dummy_path'
         mocker.patch.object(shutil, 'copy', side_effect=None)
         mocker.patch('os.path.exists', return_value=True)
@@ -145,7 +145,7 @@ class TestZipPacks:
         mocker.patch.object(ZipFile, '__init__', return_value=None)
         mocker.patch.object(ZipFile, 'write')
         mocker.patch.object(ZipFile, 'close')
-        packs = [{'Slack': 'path/Slack.zip'}]
+        packs = {'Slack': 'path/Slack.zip'}
 
         zip_packs(packs, 'oklol')
 
