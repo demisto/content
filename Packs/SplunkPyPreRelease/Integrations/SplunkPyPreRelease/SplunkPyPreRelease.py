@@ -290,7 +290,8 @@ def fetch_notables(service, cache_object=None, enrich_notables=False):
         last_run_fetched_ids[incident_id] = current_epoch_time
     extensive_log('[SplunkPyPreRelease] Size of last_run_fetched_ids after adding new IDs: {}'.format(len(last_run_fetched_ids)))
     last_run_fetched_ids = remove_old_incident_ids(last_run_fetched_ids, current_epoch_time, occurred_look_behind)
-    extensive_log('[SplunkPyPreRelease] Size of last_run_fetched_ids after removing old IDs: {}'.format(len(last_run_fetched_ids)))
+    extensive_log('[SplunkPyPreRelease] Size of last_run_fetched_ids after '
+                  'removing old IDs: {}'.format(len(last_run_fetched_ids)))
     extensive_log('[SplunkPyPreRelease] SplunkPyPreRelease - incidents fetched on last run = {}'.format(last_run_fetched_ids))
 
     debug_message = 'SplunkPyPreRelease - total number of incidents found: from {}\n to {}\n with the ' \
@@ -325,7 +326,8 @@ def fetch_notables(service, cache_object=None, enrich_notables=False):
             'found_incidents_ids': last_run_fetched_ids
         }
     else:
-        extensive_log('[SplunkPyPreRelease] SplunkPyPreRelease - Next run time with too many incidents:  {}'.format(last_run_time))
+        extensive_log('[SplunkPyPreRelease] SplunkPyPreRelease - '
+                      'Next run time with too many incidents:  {}'.format(last_run_time))
         new_last_run = {
             'time': last_run_time,
             'offset': search_offset + FETCH_LIMIT,

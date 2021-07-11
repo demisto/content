@@ -1034,4 +1034,3 @@ def test_build_search_human_readable(mocker):
     splunk.build_search_human_readable(args, results)
     headers = func_patch.call_args[0][1]
     assert headers == expected_headers
-{"mode":"full","isActive":false}
