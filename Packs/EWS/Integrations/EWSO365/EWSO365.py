@@ -2207,9 +2207,9 @@ def fetch_last_emails(
     if since_datetime:
         qs = qs.filter(datetime_received__gte=since_datetime)
     else:
-        tz = EWSTimeZone.timezone('UTC')
+        tz = EWSTimeZone('UTC')
         first_fetch_datetime = dateparser.parse(FETCH_TIME)
-        first_fetch_ews_datetime = EWSDateTime.from_datetime(tz.localize(first_fetch_datetime))
+        first_fetch_ews_datetime = EWSDateTime.from_datetime(first_fetch_datetime.replace(tzinfo=tz))
         qs = qs.filter(last_modified_time__gte=first_fetch_ews_datetime)
     qs = qs.filter().only(*[x.name for x in Message.FIELDS])
     qs = qs.filter().order_by("datetime_received")
