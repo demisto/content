@@ -52,7 +52,7 @@ configuration:
   required: true
   type: 0
 description: Manage Azure Networking resources
-display: Azure Networking
+display: Ansible Azure Networking
 fromversion: 6.0.0
 name: AnsibleAzureNetworking
 script:
@@ -81,7 +81,6 @@ script:
     - auto: PREDEFINED
       defaultValue: present
       description: 'Assert the state of the AzureFirewall.
-
         Use `present` to create or update an AzureFirewall and `absent` to delete
         it.'
       name: state
@@ -92,9 +91,7 @@ script:
       name: subscription_id
     - description: 'Dictionary of string:string pairs to assign as metadata to the
         object.
-
         Metadata tags on the object will be updated with any provided values.
-
         To remove tags set append_tags option to false.'
       isArray: true
       name: tags
@@ -102,7 +99,6 @@ script:
       defaultValue: 'Yes'
       description: 'Use to control if tags field is canonical or just appends to existing
         tags.
-
         When canonical, any tags not found in the tags parameter will be removed from
         the object''s metadata.'
       name: append_tags
@@ -136,16 +132,12 @@ script:
       required: true
     - description: 'List of IPv4 address ranges where each is formatted using CIDR
         notation.
-
         Required when creating a new virtual network or using `purge_address_prefixes`.'
       name: address_prefixes_cidr
     - description: 'Custom list of DNS servers. Maximum length of two.
-
         The first server in the list will be treated as the Primary server. This is
         an explicit list.
-
         Existing DNS servers will be replaced with the specified list.
-
         Use the `purge_dns_servers` option to remove all custom DNS servers and revert
         to default Azure servers.'
       name: dns_servers
@@ -157,8 +149,7 @@ script:
     - defaultValue: 'no'
       description: Use with `state=present` to remove any existing `address_prefixes`.
       name: purge_address_prefixes
-    - defaultValue: 'no'
-      description: Use with `state=present` to remove existing DNS servers, reverting
+    - description: Use with `state=present` to remove existing DNS servers, reverting
         to default Azure servers. Mutually exclusive with DNS servers.
       name: purge_dns_servers
     - auto: PREDEFINED
@@ -173,9 +164,7 @@ script:
       name: subscription_id
     - description: 'Dictionary of string:string pairs to assign as metadata to the
         object.
-
         Metadata tags on the object will be updated with any provided values.
-
         To remove tags set append_tags option to false.'
       isArray: true
       name: tags
@@ -183,7 +172,6 @@ script:
       defaultValue: 'Yes'
       description: 'Use to control if tags field is canonical or just appends to existing
         tags.
-
         When canonical, any tags not found in the tags parameter will be removed from
         the object''s metadata.'
       name: append_tags
@@ -236,15 +224,10 @@ script:
       name: location
     - description: 'An existing virtual network with which the VPN Gateway will be
         associated.
-
         Required when creating a VPN Gateway.
-
         Can be the name of the virtual network.
-
         Must be in the same resource group as VPN gateway when specified by name.
-
         Can be the resource ID of the virtual network.
-
         Can be a dict which contains `name` and `resource_group` of the virtual network.'
       name: virtual_network
       required: true
@@ -286,9 +269,7 @@ script:
       name: subscription_id
     - description: 'Dictionary of string:string pairs to assign as metadata to the
         object.
-
         Metadata tags on the object will be updated with any provided values.
-
         To remove tags set append_tags option to false.'
       isArray: true
       name: tags
@@ -296,7 +277,6 @@ script:
       defaultValue: 'Yes'
       description: 'Use to control if tags field is canonical or just appends to existing
         tags.
-
         When canonical, any tags not found in the tags parameter will be removed from
         the object''s metadata.'
       name: append_tags
@@ -321,14 +301,10 @@ script:
       name: virtual_network
       required: true
     - description: 'Remote virtual network to be peered.
-
         It can be name of remote virtual network in same resource group.
-
         It can be remote virtual network resource ID.
-
         It can be a dict which contains `name` and `resource_group` of remote virtual
         network.
-
         Required when creating.'
       name: remote_virtual_network
     - auto: PREDEFINED
@@ -356,7 +332,6 @@ script:
       defaultValue: 'No'
       description: 'Allows VNet to use the remote VNet''s gateway. Remote VNet gateway
         must have --allow-gateway-transit enabled for remote peering.
-
         Only 1 peering can have this flag enabled. Cannot be set if the VNet already
         has a gateway.'
       name: allow_gateway_transit
@@ -409,11 +384,8 @@ script:
         within the context of the virtual network.
       name: address_prefix_cidr
     - description: 'Existing security group with which to associate the subnet.
-
         It can be the security group name which is in the same resource group.
-
         Can be the resource ID of the security group.
-
         Can be a dict containing the `name` and `resource_group` of the security group.'
       name: security_group
     - auto: PREDEFINED
@@ -429,9 +401,7 @@ script:
       name: virtual_network_name
       required: true
     - description: 'The reference of the RouteTable resource.
-
         Can be the name or resource ID of the route table.
-
         Can be a dict containing the `name` and `resource_group` of the route table.'
       name: route_table
     - description: An array of service endpoints.
@@ -482,7 +452,6 @@ script:
       - nested_endpoints
       required: true
     - description: 'The Azure Resource URI of the of the endpoint.
-
         Not applicable to endpoints of `type=external_endpoints`.'
       name: target_resource_id
     - description: The fully-qualified DNS name of the endpoint.
@@ -496,16 +465,12 @@ script:
       - 'No'
     - description: 'The weight of this endpoint when traffic manager profile has routing_method
         of `weighted`.
-
         Possible values are from 1 to 1000.'
       name: weight
     - description: 'The priority of this endpoint when traffic manager profile has
         routing_method of `priority`.
-
         Possible values are from 1 to 1000, lower values represent higher priority.
-
         This is an optional parameter. If specified, it must be specified on all endpoints.
-
         No two endpoints can share the same priority value.'
       name: priority
     - description: Specifies the location of the external or nested endpoints when
@@ -513,7 +478,6 @@ script:
       name: location
     - description: 'The minimum number of endpoints that must be available in the
         child profile in order for the parent profile to be considered available.
-
         Only applicable to endpoint of `type=nested_endpoints`.'
       name: min_child_endpoints
     - description: The list of countries/regions mapped to this endpoint when traffic
@@ -581,7 +545,6 @@ script:
     - defaultValue: global
       description: 'Valid Azure location. Defaults to `global` because in default
         public Azure cloud, Traffic Manager profile can only be deployed globally.
-
         Reference `https://docs.microsoft.com/en-us/azure/traffic-manager/quickstart-create-traffic-manager-profile#create-a-traffic-manager-profile`.'
       name: location
     - auto: PREDEFINED
@@ -609,9 +572,7 @@ script:
       name: subscription_id
     - description: 'Dictionary of string:string pairs to assign as metadata to the
         object.
-
         Metadata tags on the object will be updated with any provided values.
-
         To remove tags set append_tags option to false.'
       isArray: true
       name: tags
@@ -619,7 +580,6 @@ script:
       defaultValue: 'Yes'
       description: 'Use to control if tags field is canonical or just appends to existing
         tags.
-
         When canonical, any tags not found in the tags parameter will be removed from
         the object''s metadata.'
       name: append_tags
@@ -673,33 +633,25 @@ script:
       name: location
     - description: 'An existing virtual network with which the network interface will
         be associated. Required when creating a network interface.
-
         It can be the virtual network''s name.
-
         Make sure your virtual network is in the same resource group as NIC when you
         give only the name.
-
         It can be the virtual network''s resource id.
-
         It can be a dict which contains `name` and `resource_group` of the virtual
         network.'
       name: virtual_network
       required: true
     - description: 'Name of an existing subnet within the specified virtual network.
         Required when creating a network interface.
-
         Use the `virtual_network`''s resource group.'
       name: subnet_name
       required: true
     - auto: PREDEFINED
       defaultValue: Linux
       description: 'Determines any rules to be added to a default security group.
-
         When creating a network interface, if no security group name is provided,
         a default security group will be created.
-
         If the `os_type=Windows`, a rule allowing RDP access will be added.
-
         If the `os_type=Linux`, a rule allowing SSH access will be added.'
       name: os_type
       predefined:
@@ -707,19 +659,15 @@ script:
       - Linux
     - description: '(Deprecate) Valid IPv4 address that falls within the specified
         subnet.
-
         This option will be deprecated in 2.9, use `ip_configurations` instead.'
       name: private_ip_address
     - auto: PREDEFINED
       defaultValue: Dynamic
       description: '(Deprecate) Whether or not the assigned IP address is permanent.
-
         When creating a network interface, if you specify `private_ip_address=Static`,
         you must provide a value for `private_ip_address`.
-
         You can update the allocation method to `Static` after a dynamic private IP
         address has been assigned.
-
         This option will be deprecated in 2.9, use `ip_configurations` instead.'
       name: private_ip_allocation_method
       predefined:
@@ -728,24 +676,19 @@ script:
     - defaultValue: 'yes'
       description: '(Deprecate) When creating a network interface, if no public IP
         address name is provided a default public IP address will be created.
-
         Set to `false` if you do not want a public IP address automatically created.
-
         This option will be deprecated in 2.9, use `ip_configurations` instead.'
       name: public_ip
     - description: '(Deprecate) Name of an existing public IP address object to associate
         with the security group.
-
         This option will be deprecated in 2.9, use `ip_configurations` instead.'
       name: public_ip_address_name
     - auto: PREDEFINED
       defaultValue: Dynamic
       description: '(Deprecate) If a `public_ip_address_name` is not provided, a default
         public IP address will be created.
-
         The allocation method determines whether or not the public IP address assigned
         to the network interface is permanent.
-
         This option will be deprecated in 2.9, use `ip_configurations` instead.'
       name: public_ip_allocation_method
       predefined:
@@ -766,7 +709,6 @@ script:
     - auto: PREDEFINED
       defaultValue: 'Yes'
       description: 'Whether a security group should be be created with the NIC.
-
         If this flag set to `True` and no `security_group` set, a default security
         group will be created.'
       name: create_with_security_group
@@ -775,16 +717,11 @@ script:
       - 'No'
     - description: 'An existing security group with which to associate the network
         interface.
-
         If not provided, a default security group will be created when `create_with_security_group=true`.
-
         It can be the name of security group.
-
         Make sure the security group is in the same resource group when you only give
         its name.
-
         It can be the resource id.
-
         It can be a dict contains security_group''s `name` and `resource_group`.'
       name: security_group
     - description: When a default security group is created for a Linux host a rule
@@ -801,7 +738,6 @@ script:
       - 'Yes'
       - 'No'
     - description: 'Which DNS servers should the NIC lookup.
-
         List of IP addresses.'
       isArray: true
       name: dns_servers
@@ -809,9 +745,7 @@ script:
       name: subscription_id
     - description: 'Dictionary of string:string pairs to assign as metadata to the
         object.
-
         Metadata tags on the object will be updated with any provided values.
-
         To remove tags set append_tags option to false.'
       isArray: true
       name: tags
@@ -819,7 +753,6 @@ script:
       defaultValue: 'Yes'
       description: 'Use to control if tags field is canonical or just appends to existing
         tags.
-
         When canonical, any tags not found in the tags parameter will be removed from
         the object''s metadata.'
       name: append_tags
@@ -863,7 +796,6 @@ script:
       defaultValue: dynamic
       description: 'Control whether the assigned Public IP remains permanently assigned
         to the object.
-
         If not set to `Static`, the IP address my changed anytime an associated virtual
         machine is power cycled.'
       name: allocation_method
@@ -874,7 +806,6 @@ script:
       - Dynamic
     - description: 'The customizable portion of the FQDN assigned to public IP address.
         This is an explicit setting.
-
         If no value is provided, any existing value will be removed on an existing
         public IP.'
       name: domain_name
@@ -900,7 +831,6 @@ script:
       - Basic
       - Standard
     - description: 'List of IpTag associated with the public IP address.
-
         Each element should contain type:value pair.'
       name: ip_tags
     - description: Idle timeout in minutes.
@@ -916,9 +846,7 @@ script:
       name: subscription_id
     - description: 'Dictionary of string:string pairs to assign as metadata to the
         object.
-
         Metadata tags on the object will be updated with any provided values.
-
         To remove tags set append_tags option to false.'
       isArray: true
       name: tags
@@ -926,7 +854,6 @@ script:
       defaultValue: 'Yes'
       description: 'Use to control if tags field is canonical or just appends to existing
         tags.
-
         When canonical, any tags not found in the tags parameter will be removed from
         the object''s metadata.'
       name: append_tags
@@ -955,15 +882,12 @@ script:
     outputs:
     - contextPath: AzureNetworking.azureRmPublicipaddressInfo.azure_publicipaddresses
       description: 'List of public IP address dicts.
-
         Please note that this option will be deprecated in 2.10 when curated format
         will become the only supported format.'
       type: unknown
     - contextPath: AzureNetworking.azureRmPublicipaddressInfo.publicipaddresses
       description: 'List of publicipaddress.
-
         Contains the detail which matches azure_rm_publicipaddress parameters.
-
         Returned when the format parameter set to curated.'
       type: unknown
   - arguments:
@@ -994,7 +918,6 @@ script:
       - virtual_appliance
       - none
     - description: 'The IP address packets should be forwarded to.
-
         Next hop values are only allowed in routes where the next hop type is VirtualAppliance.'
       name: next_hop_ip_address
     - description: The name of the route table.
@@ -1004,9 +927,7 @@ script:
       name: subscription_id
     - description: 'Dictionary of string:string pairs to assign as metadata to the
         object.
-
         Metadata tags on the object will be updated with any provided values.
-
         To remove tags set append_tags option to false.'
       isArray: true
       name: tags
@@ -1014,7 +935,6 @@ script:
       defaultValue: 'Yes'
       description: 'Use to control if tags field is canonical or just appends to existing
         tags.
-
         When canonical, any tags not found in the tags parameter will be removed from
         the object''s metadata.'
       name: append_tags
@@ -1052,16 +972,13 @@ script:
       - 'Yes'
       - 'No'
     - description: 'Region of the resource.
-
         Derived from `resource_group` if not specified.'
       name: location
     - description: Your Azure subscription Id.
       name: subscription_id
     - description: 'Dictionary of string:string pairs to assign as metadata to the
         object.
-
         Metadata tags on the object will be updated with any provided values.
-
         To remove tags set append_tags option to false.'
       isArray: true
       name: tags
@@ -1069,7 +986,6 @@ script:
       defaultValue: 'Yes'
       description: 'Use to control if tags field is canonical or just appends to existing
         tags.
-
         When canonical, any tags not found in the tags parameter will be removed from
         the object''s metadata.'
       name: append_tags
@@ -1120,10 +1036,8 @@ script:
   - arguments:
     - description: 'The set of default rules automatically added to a security group
         at creation.
-
         In general default rules will not be modified. Modify rules to shape the flow
         of traffic to or from a subnet or NIC.
-
         See rules below for the makeup of a rule dict.'
       name: default_rules
     - description: Valid azure location. Defaults to location of the resource group.
@@ -1156,9 +1070,7 @@ script:
       name: subscription_id
     - description: 'Dictionary of string:string pairs to assign as metadata to the
         object.
-
         Metadata tags on the object will be updated with any provided values.
-
         To remove tags set append_tags option to false.'
       isArray: true
       name: tags
@@ -1166,7 +1078,6 @@ script:
       defaultValue: 'Yes'
       description: 'Use to control if tags field is canonical or just appends to existing
         tags.
-
         When canonical, any tags not found in the tags parameter will be removed from
         the object''s metadata.'
       name: append_tags
@@ -1247,9 +1158,7 @@ script:
       name: subscription_id
     - description: 'Dictionary of string:string pairs to assign as metadata to the
         object.
-
         Metadata tags on the object will be updated with any provided values.
-
         To remove tags set append_tags option to false.'
       isArray: true
       name: tags
@@ -1257,7 +1166,6 @@ script:
       defaultValue: 'Yes'
       description: 'Use to control if tags field is canonical or just appends to existing
         tags.
-
         When canonical, any tags not found in the tags parameter will be removed from
         the object''s metadata.'
       name: append_tags
@@ -1287,9 +1195,7 @@ script:
       name: subscription_id
     - description: 'Dictionary of string:string pairs to assign as metadata to the
         object.
-
         Metadata tags on the object will be updated with any provided values.
-
         To remove tags set append_tags option to false.'
       isArray: true
       name: tags
@@ -1297,7 +1203,6 @@ script:
       defaultValue: 'Yes'
       description: 'Use to control if tags field is canonical or just appends to existing
         tags.
-
         When canonical, any tags not found in the tags parameter will be removed from
         the object''s metadata.'
       name: append_tags
@@ -1337,18 +1242,14 @@ script:
       - private
     - description: 'A list of references to virtual networks that register hostnames
         in this DNS zone.
-
         This is a only when `type=private`.
-
         Each element can be the name or resource id, or a dict contains `name`, `resource_group`
         information of the virtual network.'
       isArray: true
       name: registration_virtual_networks
     - description: 'A list of references to virtual networks that resolve records
         in this DNS zone.
-
         This is a only when `type=private`.
-
         Each element can be the name or resource id, or a dict contains `name`, `resource_group`
         information of the virtual network.'
       isArray: true
@@ -1357,9 +1258,7 @@ script:
       name: subscription_id
     - description: 'Dictionary of string:string pairs to assign as metadata to the
         object.
-
         Metadata tags on the object will be updated with any provided values.
-
         To remove tags set append_tags option to false.'
       isArray: true
       name: tags
@@ -1367,7 +1266,6 @@ script:
       defaultValue: 'Yes'
       description: 'Use to control if tags field is canonical or just appends to existing
         tags.
-
         When canonical, any tags not found in the tags parameter will be removed from
         the object''s metadata.'
       name: append_tags
@@ -1395,7 +1293,6 @@ script:
       defaultValue: 'Yes'
       description: 'Use to control if tags field is canonical or just appends to existing
         tags.
-
         When canonical, any tags not found in the tags parameter will be removed from
         the object''s metadata.'
       name: append_tags
