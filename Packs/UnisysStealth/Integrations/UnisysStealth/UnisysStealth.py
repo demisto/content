@@ -1,16 +1,5 @@
-import base64
 import json
-import logging
 import os
-import re
-import socket
-import sys
-import time
-import traceback
-import xml
-import xml.etree.cElementTree as ET
-from collections import OrderedDict
-from datetime import datetime, timedelta
 
 import demistomock as demisto  # noqa: F401
 import requests
