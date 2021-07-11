@@ -1,4 +1,4 @@
-## SplunkPy
+## SplunkPy Pre Release
 Use the SplunkPy Pre Release integration to fetch incidents from Splunk ES, and query results by SID.
 This is a pre-release version, that should be used mainly for fetching incidents at this point (July 2021).
 The changes in this version will be added to the official release in a few months.
@@ -75,3 +75,5 @@ Users who wish to enrich or mirror fetched notables and have already used the in
 ```
 search `notable` | eval rule_name=if(isnull(rule_name),source,rule_name) | eval rule_title=if(isnull(rule_title),rule_name,rule_title) | `get_urgency` | `risk_correlation` | eval rule_description=if(isnull(rule_description),source,rule_description) | eval security_domain=if(isnull(security_domain),source,security_domain)
 ```
+
+Note: This is a beta Integration, which lets you implement and test pre-release software. Since the integration is beta, it might contain bugs. Updates to the integration during the beta phase might include non-backward compatible features. We appreciate your feedback on the quality and usability of the integration to help us identify issues, fix them, and continually improve.
