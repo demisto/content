@@ -882,13 +882,13 @@ There are no input arguments for this command.
             {
                 "account_locked": false,
                 "created_at": "2021-03-10T13:56:59.307Z",
-                "email": "pierreb@starsgroup.com",
+                "email": "user2@example.com",
                 "email_confirmed": true,
-                "first_name": "Pierre",
+                "first_name": "John",
                 "id": 586,
                 "is_super": true,
                 "last_login_time": "2021-06-01T15:26:51.525Z",
-                "last_name": "Buckleigh",
+                "last_name": "Doe",
                 "last_password_reset_time": "2021-03-10T14:47:28.853Z",
                 "lock_reason": null,
                 "lock_time": null,
@@ -897,27 +897,27 @@ There are no input arguments for this command.
                 "phone_number": "",
                 "phone_number_confirmed": false,
                 "updated_at": "2021-06-01T15:26:51.530Z",
-                "username": "pierreb@starsgroup.com.8494"
+                "username": "user2@example.com.8494"
             },
             {
                 "account_locked": true,
                 "created_at": "2021-06-01T14:46:49.429Z",
-                "email": "mdrobniuch@paloaltonetworks.com",
+                "email": "user1@example.com",
                 "email_confirmed": true,
-                "first_name": "Maciej",
+                "first_name": "John",
                 "id": 606,
                 "is_super": false,
                 "last_login_time": null,
-                "last_name": "Drobniuch",
+                "last_name": "Doe",
                 "last_password_reset_time": "2021-06-01T14:47:09.192Z",
                 "lock_reason": "Manual",
                 "lock_time": "2021-07-08T04:38:56.846Z",
                 "mfa_enabled": true,
                 "mfa_method": "sms",
-                "phone_number": "0048696894057",
+                "phone_number": "00480700772772",
                 "phone_number_confirmed": true,
                 "updated_at": "2021-07-08T04:38:56.850Z",
-                "username": "mdrobniuch@paloaltonetworks.com.0938"
+                "username": "user1@example.com.0938"
             },
             {
                 "account_locked": false,
@@ -969,8 +969,8 @@ There are no input arguments for this command.
 >### Users
 >|id|username|email|phone_number|mfa_enabled|
 >|---|---|---|---|---|
->| 586 | pierreb@starsgroup.com.8494 | pierreb@starsgroup.com |  | false |
->| 606 | mdrobniuch@paloaltonetworks.com.0938 | mdrobniuch@paloaltonetworks.com | 0048696894057 | true |
+>| 586 | user2@example.com.8494 | user2@example.com |  | false |
+>| 606 | user1@example.com.0938 | user1@example.com | 00480700772772 | true |
 >| 613 | test.5477 | test@example.com | +48123123123 | true |
 >| 614 | test.7119 | test@example.com | +48123123123 | true |
 
@@ -1007,13 +1007,13 @@ Get user details
         "UserGet": {
             "account_locked": false,
             "created_at": "2021-03-10T13:56:59.307Z",
-            "email": "pierreb@starsgroup.com",
+            "email": "user2@example.com",
             "email_confirmed": true,
-            "first_name": "Pierre",
+            "first_name": "John",
             "id": 586,
             "is_super": true,
             "last_login_time": "2021-06-01T15:26:51.525Z",
-            "last_name": "Buckleigh",
+            "last_name": "Doe",
             "last_password_reset_time": "2021-03-10T14:47:28.853Z",
             "lock_reason": null,
             "lock_time": null,
@@ -1028,7 +1028,7 @@ Get user details
             "phone_number": "",
             "phone_number_confirmed": false,
             "updated_at": "2021-06-01T15:26:51.530Z",
-            "username": "pierreb@starsgroup.com.8494"
+            "username": "user2@example.com.8494"
         }
     }
 }
@@ -1039,7 +1039,7 @@ Get user details
 >### User
 >|id|username|email|phone_number|mfa_enabled|
 >|---|---|---|---|---|
->| 586 | pierreb@starsgroup.com.8494 | pierreb@starsgroup.com |  | false |
+>| 586 | user2@example.com.8494 | user2@example.com |  | false |
 
 
 ### edgescan-user-get-query
@@ -1083,7 +1083,7 @@ Query for a user
 
 
 #### Command Example
-```!edgescan-user-get-query account_locked=false email=mdrobniuch@paloaltonetworks.com email_confirmed=true first_name=Maciej last_name=Drobniuch mfa_enabled=true mfa_method=sms phone_number=0048696894057```
+```!edgescan-user-get-query account_locked=false email=user1@example.com email_confirmed=true first_name=John last_name=Doe mfa_enabled=true mfa_method=sms phone_number=00480700772772```
 
 #### Context Example
 ```json
@@ -1093,22 +1093,22 @@ Query for a user
             {
                 "account_locked": false,
                 "created_at": "2021-06-01T14:46:49.429Z",
-                "email": "mdrobniuch@paloaltonetworks.com",
+                "email": "user1@example.com",
                 "email_confirmed": true,
-                "first_name": "Maciej",
+                "first_name": "John",
                 "id": 606,
                 "is_super": false,
                 "last_login_time": null,
-                "last_name": "Drobniuch",
+                "last_name": "Doe",
                 "last_password_reset_time": "2021-06-01T14:47:09.192Z",
                 "lock_reason": null,
                 "lock_time": null,
                 "mfa_enabled": true,
                 "mfa_method": "sms",
-                "phone_number": "0048696894057",
+                "phone_number": "00480700772772",
                 "phone_number_confirmed": true,
                 "updated_at": "2021-07-08T04:42:49.462Z",
-                "username": "mdrobniuch@paloaltonetworks.com.0938"
+                "username": "user1@example.com.0938"
             }
         ]
     }
@@ -1120,7 +1120,7 @@ Query for a user
 >### User query
 >|id|username|email|phone_number|mfa_enabled|
 >|---|---|---|---|---|
->| 606 | mdrobniuch@paloaltonetworks.com.0938 | mdrobniuch@paloaltonetworks.com | 0048696894057 | true |
+>| 606 | user1@example.com.0938 | user1@example.com | 00480700772772 | true |
 
 
 ### edgescan-user-create
@@ -1372,22 +1372,22 @@ Lock a user
         "UserLockAccount": {
             "account_locked": true,
             "created_at": "2021-06-01T14:46:49.429Z",
-            "email": "mdrobniuch@paloaltonetworks.com",
+            "email": "user1@example.com",
             "email_confirmed": true,
-            "first_name": "Maciej",
+            "first_name": "John",
             "id": 606,
             "is_super": false,
             "last_login_time": null,
-            "last_name": "Drobniuch",
+            "last_name": "Doe",
             "last_password_reset_time": "2021-06-01T14:47:09.192Z",
             "lock_reason": "Manual",
             "lock_time": "2021-07-08T04:44:33.435Z",
             "mfa_enabled": true,
             "mfa_method": "sms",
-            "phone_number": "0048696894057",
+            "phone_number": "00480700772772",
             "phone_number_confirmed": true,
             "updated_at": "2021-07-08T04:44:33.438Z",
-            "username": "mdrobniuch@paloaltonetworks.com.0938"
+            "username": "user1@example.com.0938"
         }
     }
 }
@@ -1398,7 +1398,7 @@ Lock a user
 >### User locked
 >|account_locked|created_at|email|email_confirmed|first_name|id|is_super|last_login_time|last_name|last_password_reset_time|lock_reason|lock_time|mfa_enabled|mfa_method|phone_number|phone_number_confirmed|updated_at|username|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
->| true | 2021-06-01T14:46:49.429Z | mdrobniuch@paloaltonetworks.com | true | Maciej | 606 | false |  | Drobniuch | 2021-06-01T14:47:09.192Z | Manual | 2021-07-08T04:44:33.435Z | true | sms | 0048696894057 | true | 2021-07-08T04:44:33.438Z | mdrobniuch@paloaltonetworks.com.0938 |
+>| true | 2021-06-01T14:46:49.429Z | user1@example.com | true | John | 606 | false |  | Doe | 2021-06-01T14:47:09.192Z | Manual | 2021-07-08T04:44:33.435Z | true | sms | 00480700772772 | true | 2021-07-08T04:44:33.438Z | user1@example.com.0938 |
 
 
 ### edgescan-user-unlock-account
@@ -1433,22 +1433,22 @@ Unlock a user
         "UserUnlockAccount": {
             "account_locked": false,
             "created_at": "2021-06-01T14:46:49.429Z",
-            "email": "mdrobniuch@paloaltonetworks.com",
+            "email": "user1@example.com",
             "email_confirmed": true,
-            "first_name": "Maciej",
+            "first_name": "John",
             "id": 606,
             "is_super": false,
             "last_login_time": null,
-            "last_name": "Drobniuch",
+            "last_name": "Doe",
             "last_password_reset_time": "2021-06-01T14:47:09.192Z",
             "lock_reason": null,
             "lock_time": null,
             "mfa_enabled": true,
             "mfa_method": "sms",
-            "phone_number": "0048696894057",
+            "phone_number": "00480700772772",
             "phone_number_confirmed": true,
             "updated_at": "2021-07-08T04:42:49.462Z",
-            "username": "mdrobniuch@paloaltonetworks.com.0938"
+            "username": "user1@example.com.0938"
         }
     }
 }
@@ -1459,7 +1459,7 @@ Unlock a user
 >### User unlocked
 >|account_locked|created_at|email|email_confirmed|first_name|id|is_super|last_login_time|last_name|last_password_reset_time|lock_reason|lock_time|mfa_enabled|mfa_method|phone_number|phone_number_confirmed|updated_at|username|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
->| false | 2021-06-01T14:46:49.429Z | mdrobniuch@paloaltonetworks.com | true | Maciej | 606 | false |  | Drobniuch | 2021-06-01T14:47:09.192Z |  |  | true | sms | 0048696894057 | true | 2021-07-08T04:42:49.462Z | mdrobniuch@paloaltonetworks.com.0938 |
+>| false | 2021-06-01T14:46:49.429Z | user1@example.com | true | John | 606 | false |  | Doe | 2021-06-01T14:47:09.192Z |  |  | true | sms | 00480700772772 | true | 2021-07-08T04:42:49.462Z | user1@example.com.0938 |
 
 
 ### edgescan-user-get-permissions

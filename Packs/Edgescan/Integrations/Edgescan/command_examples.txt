@@ -22,7 +22,7 @@
 !edgescan-user-create username=test email=test@example.com first_name=John is_super=false last_name=Doe mfa_enabled=true phone_number=+48123123123 mfa_method=sms
 !edgescan-user-delete id=613
 !edgescan-user-get id=606
-!edgescan-user-get-query account_locked=false email=mdrobniuch@paloaltonetworks.com email_confirmed=true first_name=Maciej last_name=Drobniuch mfa_enabled=true mfa_method=sms phone_number=0048696894057
+!edgescan-user-get-query account_locked=false email=user1@example.com email_confirmed=true first_name=John last_name=Doe mfa_enabled=true mfa_method=sms phone_number=00480700772772
 !edgescan-user-lock-account id=606
 !edgescan-vulnerabilities-get-export
 !edgescan-vulnerabilities-get-query id=52517 asset_id=165 severity=3 cvss_score=6.8 location=api.edgebank.com threat=3 asset_name="Edgebank API" risk=3 status=open
