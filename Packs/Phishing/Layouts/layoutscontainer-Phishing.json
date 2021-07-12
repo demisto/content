@@ -967,7 +967,7 @@
                         "items": [
                             {
                                 "endCol": 2,
-                                "fieldId": "pclscore",
+                                "fieldId": "phishingpclscore",
                                 "height": 22,
                                 "id": "a3463530-e2fe-11eb-b6a6-f11ed369de67",
                                 "index": 0,
@@ -976,7 +976,7 @@
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "sclscore",
+                                "fieldId": "phishingsclscore",
                                 "height": 22,
                                 "id": "a7599a90-e2fe-11eb-b6a6-f11ed369de67",
                                 "index": 1,
@@ -985,7 +985,7 @@
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "bclscore",
+                                "fieldId": "phishingbclscore",
                                 "height": 22,
                                 "id": "aab39b00-e2fe-11eb-b6a6-f11ed369de67",
                                 "index": 2,
