@@ -1,6 +1,8 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
+from content.Packs.Base.Scripts.CommonServerPython.CommonServerPython import tableToMarkdown, CommandResults, return_results, string_to_table_header, return_error, DemistoException
+
 """Lookout CASB Integration for Cortex XSOAR (aka Demisto)
     Last updated: 2020-10-27
 
@@ -635,10 +637,13 @@ def main() -> None:
                 max_results=max_results
             )
 
+            readable_output = tableToMarkdown('Violations', violations, removeNull=True, headerTransform=string_to_table_header)
+
             cmd_result = CommandResults(
                 outputs_prefix='CipherCloud.Violation',
                 outputs_key_field=['eventId'],
-                outputs=violations
+                outputs=violations,
+                readable_output=readable_output
             )
 
             return_results(cmd_result)
@@ -652,10 +657,14 @@ def main() -> None:
                 end_time=end_time,
                 max_results=max_results
             )
+
+            readable_output = tableToMarkdown('Anomalies', anomalies, removeNull=True, headerTransform=string_to_table_header)
+
             cmd_result = CommandResults(
                 outputs_prefix='CipherCloud.Anomaly',
                 outputs_key_field=['currEventId'],
-                outputs=anomalies
+                outputs=anomalies,
+                readable_output=readable_output
             )
 
             return_results(cmd_result)
@@ -669,10 +678,14 @@ def main() -> None:
                 end_time=end_time,
                 max_results=max_results
             )
+
+            readable_output = tableToMarkdown('Activities', activities, removeNull=True, headerTransform=string_to_table_header)
+
             cmd_result = CommandResults(
                 outputs_prefix='CipherCloud.Activity',
                 outputs_key_field=['eventId'],
-                outputs=activities
+                outputs=activities,
+                readable_output=readable_output
             )
 
             return_results(cmd_result)
@@ -687,10 +700,13 @@ def main() -> None:
                 end_time=end_time
             )
 
+            readable_output = tableToMarkdown('Information', information, removeNull=True, headerTransform=string_to_table_header)
+
             cmd_result = CommandResults(
                 outputs_prefix='CipherCloud.Info',
                 outputs_key_field=[entity_type],
-                outputs=information
+                outputs=information,
+                readable_output=readable_output
             )
             return_results(cmd_result)
 
@@ -701,10 +717,14 @@ def main() -> None:
                 user_risk_rating=user_risk_rating,
                 action='Get'
             )
+
+            readable_output = tableToMarkdown('User Details', res, removeNull=True, headerTransform=string_to_table_header)
+
             cmd_result = CommandResults(
                 outputs_prefix='CipherCloud.UserProfile',
                 outputs_key_field=['userEmail'],
-                outputs=res
+                outputs=res,
+                readable_output=readable_output
             )
             return_results(cmd_result)
 
@@ -715,10 +735,14 @@ def main() -> None:
                 user_risk_rating=user_risk_rating,
                 action='Update'
             )
+
+            readable_output = tableToMarkdown('User Details', res, removeNull=True, headerTransform=string_to_table_header)
+
             cmd_result = CommandResults(
                 outputs_prefix='CipherCloud.UserProfile',
                 outputs_key_field=['userEmail'],
-                outputs=res
+                outputs=res,
+                readable_output=readable_output
             )
             return_results(cmd_result)
 
@@ -729,10 +753,14 @@ def main() -> None:
                 user_risk_rating=user_risk_rating,
                 action='Delete'
             )
+
+            readable_output = tableToMarkdown('User Details', res, removeNull=True, headerTransform=string_to_table_header)
+
             cmd_result = CommandResults(
                 outputs_prefix='CipherCloud.UserProfile',
                 outputs_key_field=['userEmail'],
-                outputs=res
+                outputs=res,
+                readable_output=readable_output
             )
             return_results(cmd_result)
 
