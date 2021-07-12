@@ -605,7 +605,7 @@ def get_users():
 
 
 def add_notes(incident_id, comment):
-    body = {'text': {'content': comment}}
+    body = {'text': {'format': 'text', 'content': comment}}
     response = client.post('/incidents/' + str(incident_id) + '/comments', body)
     # demisto.results(response.text)
     return response
@@ -1091,10 +1091,10 @@ try:
     elif demisto.command() == 'rs-related-incidents':
         demisto.results(related_incidents_command(demisto.args()['incident-id']))
     elif demisto.command() == 'rs-add-notes':
-        demisto.results(add_notes(demisto.args()['incident_id'], demisto.args()['comment']))
+        demisto.results(add_notes(demisto.args()['incident-id'], demisto.args()['comment']))
     elif demisto.command() == 'rs-add-artifact':
-        demisto.results(add_incident_artifact(demisto.args()['incident_id'], demisto.args()[
-                        'artifact_type'], demisto.args()['artifact_value'], demisto.args()['artifact_description']))
+        demisto.results(add_incident_artifact(demisto.args()['incident-id'], demisto.args()[
+                        'artifact-type'], demisto.args()['artifact-value'], demisto.args()['artifact-description']))
 
 except Exception as e:
     LOG(e.message)
