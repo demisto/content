@@ -16,9 +16,10 @@ For more information, refer to the [Identity Lifecycle Management article](https
 | apitoken | API Token \(see Detailed Instructions\) | True |
 | insecure | Trust any certificate \(not secure\) | False |
 | proxy | Use system proxy settings | False |
-| create-user-enabled | `iam-create-user` Command Enabled | False |
-| update-user-enabled | `iam-update-user` Command Enabled | False |
-| disable-user-enabled | `iam-disable-user` Command Enabled | False |
+| create-user-enabled | Allow creating users | False |
+| update-user-enabled | Allow updating users | False |
+| enable-user-enabled | Allow enabling users | False |
+| disable-user-enabled | Allow disabling users | False |
 | create-if-not-exists | Automatically create user if not found in update command | False |
 | mapper-in | Incoming Mapper | True |
 | mapper-out | Outgoing Mapper | True |
