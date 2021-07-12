@@ -43,7 +43,7 @@ class Client(BaseClient):
         vulnerability: Optional[str],
         issue_type: Optional[str],
         had_breach_within_last_days: Optional[int]
-    ) -> List[Dict[str, Any]]:
+    ) -> Dict[str, Any]:
 
         request_params: Dict[str, Any] = {}
 
@@ -477,7 +477,7 @@ def securityscorecard_portfolio_list_companies_command(client: Client, args: Dic
 
     demisto.debug("securityscorecard_portfolio_list_companies_command called with args: {0}".format(args))
 
-    portfolio_id = args.get('portfolio_id')
+    portfolio_id = str(args.get('portfolio_id'))
 
     # Validate grade argument
     if 'grade' in args:
@@ -487,10 +487,12 @@ def securityscorecard_portfolio_list_companies_command(client: Client, args: Dic
 
     # Validate and transform industry
     # We need to capitalize the industry to conform to API
+    industry = None
     if 'industry' in args:
-        industry = str.upper(args.get('industry'))
-    else:
-        industry = None
+        industry_arg = str(args.get('industry'))
+        industry = str.upper(industry_arg)
+    # else:
+    #     industry = None
 
     vulnerability = args.get('vulnerability')
 
@@ -513,17 +515,17 @@ def securityscorecard_portfolio_list_companies_command(client: Client, args: Dic
 
     # Check if the portfolio has more than 1 company
     # Throw warning to UI if there are no companies
-
-    total_portfolios = int(response.get('total'))
+    # str cast for mypy type incompatiblity
+    total_portfolios = int(str(response.get('total')))
 
     if not total_portfolios > 0:
         return_warning("No companies found in Portfolio {0}. Please add a company to it and retry.".format(portfolio_id))
 
     companies = response.get('entries')
 
-    markdown = "**{0}** companies found in Portfolio {1}\n".format(total_portfolios, portfolio_id)
-    markdown += tableToMarkdown(
-        "Companies in Portfolio {0}".format(portfolio_id),
+    title = "**{0}** companies found in Portfolio {1}\n".format(total_portfolios, portfolio_id)
+    markdown = tableToMarkdown(
+        title,
         companies,
         headers=['domain', 'name', 'score', 'last30days_score_change', 'industry', 'size']
     )
