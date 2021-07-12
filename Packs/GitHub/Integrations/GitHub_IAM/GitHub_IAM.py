@@ -178,7 +178,8 @@ def create_user_command(client, args, mapper_out, is_create_enabled, is_update_e
                                                        is_create_enabled, create_if_not_exists)
 
             else:
-                github_user = iam_user_profile.map_object(mapper_name=mapper_out)
+                github_user = iam_user_profile.map_object(mapper_name=mapper_out,
+                                                          incident_type=IAMUserProfile.CREATE_INCIDENT_TYPE)
                 # make sure the email is transformer to a list
                 emails = github_user.get("emails")
                 if not isinstance(emails, list):
@@ -231,7 +232,8 @@ def update_user_command(client, args, mapper_out, is_update_enabled, is_create_e
                                                 skip=True,
                                                 skip_reason=error_message)
             else:
-                github_user = iam_user_profile.map_object(mapper_name=mapper_out)
+                github_user = iam_user_profile.map_object(mapper_name=mapper_out,
+                                                          incident_type=IAMUserProfile.UPDATE_INCIDENT_TYPE)
                 emails = github_user.get("emails")
                 if not isinstance(emails, list):
                     github_user["emails"] = [emails]
@@ -308,7 +310,7 @@ def get_mapping_fields_command():
         "phoneNumbers",
         "urn:scim:schemas:extension:enterprise:1.0"
     ]
-    incident_type_scheme = SchemeTypeMapping(type_name=IAMUserProfile.INDICATOR_TYPE)
+    incident_type_scheme = SchemeTypeMapping(type_name=IAMUserProfile.DEFAULT_INCIDENT_TYPE)
 
     for field in scheme:
         incident_type_scheme.add_field(field, "Field")

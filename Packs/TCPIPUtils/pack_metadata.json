@@ -2,7 +2,7 @@
     "name": "TCPIPUtils (Deprecated)",
     "description": "Deprecated. Use the TCPIPUtils.com API to get data about an IP address",
     "support": "xsoar",
-    "currentVersion": "1.0.1",
+    "currentVersion": "1.0.2",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
