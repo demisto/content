@@ -85,7 +85,7 @@ class Client(BaseClient):
             params=request_params
         )
 
-    def get_company_historical_scores(self, domain: str, _from: str, to: str, timing: str) -> List[Dict[str, Any]]:
+    def get_company_historical_scores(self, domain: str, _from: str, to: str, timing: str) -> Dict[str, Any]:
 
         request_params: Dict[str, Any] = {}
 
@@ -363,19 +363,25 @@ def incidents_to_import(alerts: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
     return incidents_to_import
 
 
-def is_date_valid(date: str):
+def is_date_valid(date):
     """
     The method checks whether the date supplied is valid.
     The SecurityScorecard API requires the date to be in YYYY-MM-DD format.
     """
     regex = r'[1-3]\d{3}-(0[1-9]|1[0-2])-(0[1-9]|1[0-9]|2[0-9]|3[0-1])'
 
+    demisto.debug("is_date_valid(date={0})".format(date))
+    # Since the date is optional, an empty date is considered valid
     if date is None:
+        demisto.debug("date is None, returning True")
         return True
 
-    if(re.match(regex, date)):
+    elif(re.match(regex, date)):
+        demisto.debug("date matches regex, returning True")
         return True
+
     else:
+        demisto.debug("date doesn't match regex, returning False")
         return False
 
 
@@ -656,7 +662,7 @@ def securityscorecard_company_history_score_get_command(client: Client, args: Di
     :rtype: ``CommandResults``
     """
 
-    domain = args.get('domain')
+    domain = str(args.get('domain'))
 
     if is_valid_domain(domain):
 
@@ -674,10 +680,10 @@ def securityscorecard_company_history_score_get_command(client: Client, args: Di
         if _from is not None and to is not None and _from > to:
             raise DemistoException("Invalid time range. The 'from' date '{0}' is after the 'to' date '{1}'".format(_from, to))
 
-        timing = args.get('timing')
+        timing = str(args.get('timing'))
 
         demisto.debug("Arguments: {0}".format(args))
-        response = client.get_company_historical_scores(domain=domain, _from=_from, to=to, timing=timing)
+        response = client.get_company_historical_scores(domain=domain, _from=_from, to=to, timing=timing) # type: ignore
 
         demisto.debug("API response: {0}".format(response))
 
