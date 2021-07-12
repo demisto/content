@@ -8,6 +8,17 @@
   variables:
     GCS_PRODUCTION_BUCKET: "marketplace-dist-dev" # remove this after testing period
 
+.bucket-upload-rule-always:
+  rules:
+    - if: '$GCS_MARKET_BUCKET == "marketplace-dist"' # remove this after testing period
+      when: never # remove this after testing period
+    - if: '$CI_COMMIT_BRANCH =~ /pull\/[0-9]+/'
+      when: never
+    - if: '$BUCKET_UPLOAD == "true"'
+      when: always
+  variables:
+    GCS_PRODUCTION_BUCKET: "marketplace-dist-dev" # remove this after testing period
+
 
 .check_user_permissions_to_upload_packs: &check_user_permissions_to_upload_packs
   - section_start "Check User Permissions to Upload Packs" # if bucket upload and uploading to marketplace-dist
@@ -172,21 +183,22 @@ force-pack-upload:
     - python3 ./Tests/Marketplace/copy_and_upload_packs.py -a $PACK_ARTIFACTS -e $EXTRACT_FOLDER -pb "$GCS_MARKET_BUCKET" -bb "$GCS_BUILD_BUCKET" -s $GCS_MARKET_KEY -n $CI_PIPELINE_ID -c $CI_COMMIT_BRANCH -p "${PACKS_TO_UPLOAD}" -pbp "${STORAGE_BASE_PATH}"
 
 
-slack-notify-bucket-upload:
+fan-in-bucket-upload:
+  stage: fan-in
   extends:
-    - .trigger-slack-notification
-  rules:
-    - if: '$GCS_MARKET_BUCKET == "marketplace-dist"' # remove this after testing period
-      when: never # remove this after testing period
-    - if: '$CI_COMMIT_BRANCH =~ /pull\/[0-9]+/'
-      when: never
-    - if: '$BUCKET_UPLOAD == "true"'
-      when: always
+    - .bucket-upload-rule-always
+  script:
+    - echo "fan in"
+
+
+slack-notify-bucket-upload:
   variables:
     PIPELINE_TO_QUERY: $CI_PIPELINE_ID
     WORKFLOW: 'Upload Packs to Marketplace Storage'
-    JOB_NAME: 'upload-packs-to-marketplace'
+    JOB_NAME: 'fan-in-bucket-upload'
     # Passes the environment variable from the parent pipeline to the child which can be useful for cases
     # when triggering pipeline with alternate env variable value passed in the API call
-    SLACK_CHANNEL: '$SLACK_CHANNEL'
-    GCS_PRODUCTION_BUCKET: "marketplace-dist-dev" # remove this after testing period
+    SLACK_CHANNEL: $SLACK_CHANNEL
+  extends:
+    - .trigger-slack-notification
+    - .bucket-upload-rule-always

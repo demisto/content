@@ -1,0 +1,20 @@
+args:
+- description: Define the thresholds
+  name: Thresholds
+comment: Analyze large investigation for the whole previous month
+commonfields:
+  id: HealthCheckAnalyzeLargeInvestigations
+  version: -1
+dockerimage: demisto/python3:3.9.5.21272
+enabled: true
+name: HealthCheckAnalyzeLargeInvestigations
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags: []
+type: python
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)

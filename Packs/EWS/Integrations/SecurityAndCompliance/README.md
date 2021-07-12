@@ -25,9 +25,7 @@ To access the Security & Compliance Center, you need to be a global administrato
 
    ![side-menu](../../doc_imgs/security-and-compliance-side-menu.png)
 
-2. Search for and select the **Compliance Administrator** role.
-
-   ![image-20201129135216851](../../doc_imgs/security-and-compliance-roles.png)
+2. Search for and select the **Data Investigator** role.
 
 3. Click **Edit role group**. 
 
@@ -1106,9 +1104,10 @@ Gets compliance search action from the Security & Compliance Center.
 
 ## Known Limitations
 
-* Security and compliance integrations do not support Security and compliance on-premise .
+* Security and compliance integrations do not support Security and compliance on-premise.
 * Each security and compliance command creates a PSSession (PowerShell session). The security and compliance PowerShell limits the number of concurrent sessions to 3. Since this affects the behavior of multiple playbooks running concurrently it we recommend that you retry failed tasks when using the integration commands in playbooks.
 * Proxies are not supported due to a Microsoft [limitation](https://github.com/PowerShell/PowerShell/issues/9721).
+* Due to a Microsoft limitation, you can perform a search and purge operation on a maximum of 50,000 mailboxes. To work around this limitation, configure multiple instances of the integration each with different permission filtering so that the number of mailboxes in each instance does not exceed 50,000.
 
 
 

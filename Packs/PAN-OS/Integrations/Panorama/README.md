@@ -266,7 +266,9 @@ Commits a configuration to Palo Alto Firewall or Panorama, but does not validate
 `panorama-commit`
 #### Input
 
-There are no input arguments for this command.
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| description | Commit description. | Optional | 
 
 #### Context Output
 
@@ -311,7 +313,10 @@ Pushes rules from PAN-OS to the configured device group.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| device-group | The device group for which to return addresses (Panorama instances). | Optional | 
+| device-group | The device group for which to return addresses (Panorama instances). | Optional |
+| validate-only | Pre policy validation. | Optional. |
+| include-template | Whether to include template changes. | Optional. |
+| description | Push description. | Optional |
 
 
 #### Context Output

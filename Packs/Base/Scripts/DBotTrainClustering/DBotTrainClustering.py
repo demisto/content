@@ -16,6 +16,7 @@ from sklearn.manifold import TSNE
 import hdbscan
 from datetime import datetime
 from typing import Type, Tuple
+import math
 
 GENERAL_MESSAGE_RESULTS = "#### - We succeeded to group **%s incidents into %s groups**.\n #### - The grouping was based on " \
                           "the **%s** field(s).\n #### - Each group name is based on the majority value of the **%s** field in " \
@@ -32,8 +33,8 @@ MESSAGE_NO_FIELD_NAME_OR_CLUSTERING = "- Empty or incorrect fieldsForClustering 
                                       "for training OR fieldForClusterName is incorrect."
 
 PREFIXES_TO_REMOVE = ['incident.']
-REGEX_DATE_PATTERN = [re.compile("^(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2}:\d{2})Z"),  # guardrails-disable-line
-                      re.compile("(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2}:\d{2}).*")]  # guardrails-disable-line
+REGEX_DATE_PATTERN = [re.compile(r"^(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2}:\d{2})Z"),  # guardrails-disable-line
+                      re.compile(r"(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2}:\d{2}).*")]  # guardrails-disable-line
 REPLACE_COMMAND_LINE = {"=": " = ", "\\": "/", "[": "", "]": "", '"': "", "'": "", }
 TFIDF_PARAMS = {'analyzer': 'char', 'max_features': 500, 'ngram_range': (2, 4)}
 
@@ -166,7 +167,7 @@ class Clustering(object):
         for cluster_ in range(self.number_clusters):  # type: ignore
             center = np.mean(self.data[self.model.labels_ == cluster_], axis=0)  # type: ignore
             if center.isnull().values.any():  # type: ignore
-                self.centers[cluster_] = center.fillna(0)   # type: ignore
+                self.centers[cluster_] = center.fillna(0)  # type: ignore
             else:
                 self.centers[cluster_] = center
 
@@ -318,9 +319,10 @@ def get_args():  # type: ignore
     model_expiration = float(demisto.args().get('modelExpiration'))
     model_hidden = demisto.args().get('model_hidden', 'False') == 'True'
 
-    return fields_for_clustering, field_for_cluster_name, display_fields, from_date, to_date, limit, query, incident_type, \
-        min_number_of_incident_in_cluster, model_name, store_model, min_homogeneity_cluster, model_override, \
-        max_percentage_of_missing_value, debug, force_retrain, model_expiration, model_hidden, number_feature_per_field
+    return fields_for_clustering, field_for_cluster_name, display_fields, from_date, to_date, limit, query, \
+        incident_type, min_number_of_incident_in_cluster, model_name, store_model, min_homogeneity_cluster, \
+        model_override, max_percentage_of_missing_value, debug, force_retrain, model_expiration, model_hidden, \
+        number_feature_per_field
 
 
 def get_all_incidents_for_time_window_and_type(populate_fields: List[str], from_date: str, to_date: str,
@@ -331,7 +333,7 @@ def get_all_incidents_for_time_window_and_type(populate_fields: List[str], from_
     :param from_date: from_date
     :param to_date: to_date
     :param query_sup: additional criteria for the query
-    :param limit: maximun number of incident to fetch
+    :param limit: maximum number of incident to fetch
     :param incident_type: type of incident to fetch
     :return: list of incident
     """
@@ -429,7 +431,7 @@ def normalize_json(obj) -> str:  # type: ignore
     my_dict = recursive_filter(obj, REGEX_DATE_PATTERN, "None", "N/A", None, "")
     extracted_values = [x if isinstance(x, str) else str(x) for x in json_extract(my_dict)]
     my_string = ' '.join(extracted_values)  # json.dumps(my_dict)
-    pattern = re.compile('([^\s\w]|_)+')  # guardrails-disable-line
+    pattern = re.compile(r'([^\s\w]|_)+')  # guardrails-disable-line
     my_string = pattern.sub(" ", my_string)
     my_string = my_string.lower()
     return my_string
@@ -519,8 +521,8 @@ def store_model_in_demisto(model: Type[PostProcessing], model_name: str, model_o
                                                    'modelName': model_name,
                                                    'modelOverride': model_override,
                                                    'modelHidden': model_hidden,
-                                                   'modelExtraInfo': {'modelSummaryMarkdown':
-                                                                      model.summary_description}  # type:ignore
+                                                   'modelExtraInfo': {
+                                                       'modelSummaryMarkdown': model.summary_description}  # type:ignore
                                                    })
     if is_error(res):
         return_error(get_error(res))
@@ -610,7 +612,7 @@ def remove_fields_not_in_incident(*args, incorrect_fields: List[str]) -> List[st
 
 def get_results(model_processed: Type[PostProcessing]):
     number_of_sample = model_processed.stats["General"]["Nb sample"]
-    number_clusters_selected = len(model_processed.selected_clusters)
+    number_clusters_selected = len(model_processed.selected_clusters) - 1
     number_of_outliers = number_of_sample - model_processed.stats['number_of_clusterized_sample_after_selection']
     return number_of_sample, number_clusters_selected, number_of_outliers
 
@@ -634,9 +636,10 @@ def create_summary(model_processed: Type[PostProcessing], fields_for_clustering:
     summary = {
         'Total number of samples ': str(number_of_sample),
         'Percentage of clusterized samples after selection (after Phase 1 and Phase 2)': "%s  (%s/%s)"
-                                                                                         % (str(percentage_selected_samples),
-                                                                                            str(nb_clusterized_after_selection),
-                                                                                            str(number_of_sample)),
+                                                                                         % (
+                                                                                             str(percentage_selected_samples),
+                                                                                             str(nb_clusterized_after_selection),
+                                                                                             str(number_of_sample)),
         'Percentage of clusterized samples (after Phase 1)': "%s  (%s/%s)" %
                                                              (str(percentage_clusterized_samples),
                                                               str(number_of_clusterized),
@@ -698,9 +701,14 @@ def fill_nested_fields(incidents_df: pd.DataFrame, incidents: List, *list_of_fie
                 if isinstance(incidents, list):
                     value_list = [wrapped_list(demisto.dt(incident, field)) for incident in incidents]
                     if not keep_unique_value:
-                        value_list = [' '.join(set(list(filter(lambda x: x not in ['None', None, 'N/A'], x))))  # type: ignore
-                                      # type: ignore
-                                      for x in value_list]  # type: ignore
+                        value_list = [' '.join(  # type: ignore
+                            set(
+                                list(
+                                    filter(lambda x: x not in ['None', None, 'N/A'], x)
+                                )
+                            )
+                        )
+                            for x in value_list]
                     else:
                         value_list = [most_frequent(list(filter(lambda x: x not in ['None', None, 'N/A'], x)))
                                       for x in value_list]
@@ -840,7 +848,8 @@ def calculate_range(data):
     min_size = min(all_data_size)
     min_range = max(30, min_size)
     max_range = min_range + max(300, max_size - min_size)
-    return [min_range, max_range], [min(all_x), max(all_x)], [min(all_y), max(all_y)]
+    return [min_range, max_range], [int(math.ceil(min(all_x))), int(math.ceil(max(all_x)))], \
+           [int(math.ceil(min(all_y))), int(math.ceil(max(all_y)))]
 
 
 def main():
@@ -867,11 +876,16 @@ def main():
 
     if not retrain:
         if debug:
-            return_outputs(readable_output=global_msg + tableToMarkdown("Summary", model_processed.summary))
-        data_clusters_json = model_processed.json
+            return_outputs(
+                readable_output=global_msg + tableToMarkdown(
+                    "Summary",
+                    model_processed.summary  # pylint: disable=E1101
+                )
+            )
+        data_clusters_json = model_processed.json  # pylint: disable=E1101
         search_query = demisto.args().get('searchQuery')
         if search_query:
-            data_clusters = json.loads(model_processed.json)
+            data_clusters = json.loads(model_processed.json)  # pylint: disable=E1101
             filtered_clusters_data = []
             for row in data_clusters['data']:
                 if row['pivot'] in search_query.split(" "):
@@ -880,7 +894,7 @@ def main():
             data_clusters_json = json.dumps(data_clusters)
 
         return_entry_clustering(output_clustering=data_clusters_json, tag="trained")
-        return model_processed, model_processed.json, ""
+        return model_processed, model_processed.json, ""  # pylint: disable=E1101
     else:
         # Check if user gave a field for cluster name - if not use generic cluster name
         if not field_for_cluster_name:
@@ -889,7 +903,8 @@ def main():
         # Get all the incidents from query, date and field similarity and field family
         populate_fields = fields_for_clustering + field_for_cluster_name + display_fields
         populate_high_level_fields = keep_high_level_field(populate_fields)
-        incidents, msg = get_all_incidents_for_time_window_and_type(populate_high_level_fields, from_date, to_date, query,
+        incidents, msg = get_all_incidents_for_time_window_and_type(populate_high_level_fields, from_date, to_date,
+                                                                    query,
                                                                     # type: ignore
                                                                     limit, incident_type)  # type: ignore
         global_msg += "%s \n" % msg
@@ -968,7 +983,8 @@ def main():
             training_date = str(model_processed.date_training)
             msg = GENERAL_MESSAGE_RESULTS % (number_of_sample, number_clusters_selected,
                                              field_clustering, field_name, number_of_outliers, training_date)
-            return_outputs(readable_output='## General results \n {}'.format(msg) + '## Warning \n {}'.format(global_msg))
+            return_outputs(
+                readable_output='## General results \n {}'.format(msg) + '## Warning \n {}'.format(global_msg))
             model_processed.summary_description = msg
 
         # return Entry and summary
