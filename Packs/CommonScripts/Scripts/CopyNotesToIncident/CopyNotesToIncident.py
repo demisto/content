@@ -1,5 +1,3 @@
-from time import sleep
-
 import demistomock as demisto  # noqa # pylint: disable=unused-wildcard-import
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 from CommonServerUserPython import *  # noqa # pylint: disable=unused-wildcard-import
@@ -8,6 +6,11 @@ from typing import Dict, Any, List
 import traceback
 
 ''' STANDALONE FUNCTION '''
+
+
+def remove_id_and_version_from_entry(entry):
+    del entry['ID']
+    del entry['Version']
 
 
 def copy_notes_to_target_incident(args: Dict[str, Any]) -> CommandResults:
@@ -26,14 +29,12 @@ def copy_notes_to_target_incident(args: Dict[str, Any]) -> CommandResults:
     if isinstance(entries, list) and len(entries) > 0:
         for entry in entries:
             if entry.get('Note') is True:
+                remove_id_and_version_from_entry(entry)
                 note_entries.append(entry)
 
         if len(note_entries) > 0:
-            result = demisto.executeCommand("addEntries", {"id": target_incident, "entries": note_entries})
-            if result and not isError(result):
-                md = f'## {len(note_entries)} notes copied'
-            else:
-                raise DemistoException('Something went wrong with addEntries command, please try again.')
+            demisto.executeCommand("addEntries", {"id": target_incident, "entries": note_entries})
+            md = f'## {len(note_entries)} notes copied'
         else:
             md = '## No notes found'
     else:
