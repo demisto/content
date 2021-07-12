@@ -5072,3 +5072,51 @@ def test_smart_get_dict():
     assert s.get('t1', 2) == 2
     assert s.get('t2') == 1
     assert s.get('t3') is None
+
+
+class TestCustomIndicator:
+    def test_custom_indicator_init_success(self):
+        from CommonServerPython import Common, DBotScoreType
+        dbot_score = Common.DBotScore(
+            'test',
+            DBotScoreType.CUSTOM,
+            'VirusTotal',
+            score=Common.DBotScore.BAD,
+            malicious_description='malicious!'
+        )
+        indicator = Common.CustomIndicator('test', 'test_value', dbot_score, {'param': 'value'}, 'prefix')
+        assert indicator.CONTEXT_PATH == 'prefix(val.value && val.value == obj.value)'
+        assert indicator.param == 'value'
+        assert indicator.value == 'test_value'
+
+    def test_custom_indicator_init_no_prefix(self):
+        with pytest.raises(ValueError):
+            from CommonServerPython import Common, DBotScoreType
+            dbot_score = Common.DBotScore(
+                'test',
+                DBotScoreType.CUSTOM,
+                'VirusTotal',
+                score=Common.DBotScore.BAD,
+                malicious_description='malicious!'
+            )
+            Common.CustomIndicator('test', 'test_value', dbot_score, {'param': 'value'}, None)
+
+    def test_custom_indicator_init_no_dbot_score(self):
+        with pytest.raises(ValueError):
+            from CommonServerPython import Common
+            dbot_score = ''
+            Common.CustomIndicator('test', 'test_value', dbot_score, {'param': 'value'}, 'prefix')
+
+    def test_custom_indicator_to_context(self):
+        from CommonServerPython import Common, DBotScoreType
+        dbot_score = Common.DBotScore(
+            'test',
+            DBotScoreType.CUSTOM,
+            'VirusTotal',
+            score=Common.DBotScore.BAD,
+            malicious_description='malicious!'
+        )
+        indicator = Common.CustomIndicator('test', 'test_value', dbot_score, {'param': 'value'}, 'prefix')
+        context = indicator.to_context()
+        assert context['DBotScore']['Indicator'] == 'test'
+        assert context['prefix(val.value && val.value == obj.value)']['Value'] == 'test_value'
