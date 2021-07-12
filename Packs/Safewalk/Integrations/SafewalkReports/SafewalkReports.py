@@ -398,14 +398,26 @@ def test_module(client, is_fetch, last_run, first_fetch_str, fetch_limit):
 
     if argToBoolean(is_fetch):
         results, next_run = fetch_incidents(client, last_run, first_fetch_str, fetch_limit)
+        if results and len(results) > 0:
+            results = results[0].get('rawJSON')
+            if results:
+                results = json.loads(results)
+                if results.get('reason_detail') == 'Invalid credentials':
+                    return 'Failed to run test, invalid credentials.'
+            else:
+                return 'ok'
     else:
-        results = client.list_incidents(None, None, None, None).get('results')
+        results = client.list_incidents(None, None, None, None)
 
     if results:
-        return 'ok'
+        results = results.get('results')
+        if results and len(results) > 0:
+            if results[0].get('reason_detail') == 'Invalid credentials':
+                return 'Failed to run test, invalid credentials.'
+            else:
+                return 'ok'
     else:
-        return 'Failed to run the test'
-
+        return 'Failed to run test.'
 
 def fetch_incidents(client, last_run, first_fetch_str, fetch_limit, query_filter=None):
     incidents = []
@@ -453,15 +465,16 @@ def main():
     command = demisto.command()
     args = demisto.args()
     base_url = params.get('url')
-    base_url = base_url + '/api/v1/admin/'
+    if base_url:
+        base_url = base_url + '/api/v1/admin/'
     demisto.info(f'BASE_URL: {base_url}')
     verify_certificate = not params.get('insecure', False)
     auth_access_token = params.get('apikey')
     proxy = params.get('proxy', False)
 
-    is_fetch = params.get('isFetch')
-    fetch_limit = params.get('max_fetch')
-    first_fetch_str = params.get('first_fetch')
+    is_fetch = params.get('isFetch', False)
+    fetch_limit = params.get('max_fetch', 50)
+    first_fetch_str = params.get('first_fetch', '0')
     fetch_query_filter = params.get('fetch_query_filter')
 
     demisto.debug(f'Command being called is {command}')

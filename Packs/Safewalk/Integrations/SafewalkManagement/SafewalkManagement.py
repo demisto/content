@@ -1,3 +1,5 @@
+import json
+
 import urllib3
 from CommonServerPython import *
 
@@ -1438,12 +1440,17 @@ def delete_user(client, args):
 
 
 def test_module(client):
-    results = client.get_transactionlog(None, None, None).get('results')
+    results = client.get_transactionlog(None, None, None)
 
-    if results is not None:
-        return 'ok'
+    if results:
+        results = json.loads(results).get('results')
+        if results and len(results) > 0:
+            if results[0].get('reason_detail') == 'Invalid credentials':
+                return 'Failed to run test, invalid credentials.'
+            else:
+                return 'ok'
     else:
-        return 'Failed to run the test'
+        return 'Failed to run test.'
 
 
 def main():
