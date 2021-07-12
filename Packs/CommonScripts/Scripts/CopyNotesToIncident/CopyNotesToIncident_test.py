@@ -144,16 +144,9 @@ def test_copy_tagged_note_entries(mocker):
 
 def test_copy_notes_when_add_entries_doesnt_work(mocker):
     mock_source_entries = load_test_data("test_data/entries.json")
-    mock_target_entries = [
-        e for e in mock_source_entries if (
-                isinstance(e, dict)
-                and 'Note' in e
-                and e['Note'] is True
-                and 'Tags' in e
-                and isinstance(e['Tags'], list)
-                and MOCK_TAG in e['Tags']
-        )
-    ]
+    mock_target_entries = [e for e in mock_source_entries if (isinstance(e, dict) and 'Note' in e and e['Note'] is True
+                                                              and 'Tags' in e and isinstance(e['Tags'], list)
+                                                              and MOCK_TAG in e['Tags'])]
 
     def execute_command(name, args):
         if name == 'getEntries':
