@@ -51,8 +51,8 @@ CONST_PARAMETERS_INDICATORS_SCRIPT = {'threshold': '0',
 KEYS_ARGS_INDICATORS = ['indicatorsTypes', 'maxIncidentsInIndicatorsForWhiteList', 'minNumberOfIndicators',
                         'incidentId']
 
-REGEX_DATE_PATTERN = [re.compile("^(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2}:\d{2})Z"),
-                      re.compile("(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2}:\d{2}).*")]
+REGEX_DATE_PATTERN = [re.compile(r"^(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2}:\d{2})Z"),
+                      re.compile(r"(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2}:\d{2}).*")]
 REGEX_IP = re.compile(
     r'(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])')
 REPLACE_COMMAND_LINE = {"=": " = ", "\\": "/", "[": "", "]": "", '"': "", "'": "", }
@@ -160,7 +160,7 @@ def normalize_json(obj) -> str:  # type: ignore
         return " "
     my_dict = recursive_filter(obj, REGEX_DATE_PATTERN, "None", "N/A", None, "")
     my_string = json.dumps(my_dict)
-    pattern = re.compile('([^\s\w]|_)+')
+    pattern = re.compile(r'([^\s\w]|_)+')
     my_string = pattern.sub(" ", my_string)
     my_string = my_string.lower()
     return my_string
