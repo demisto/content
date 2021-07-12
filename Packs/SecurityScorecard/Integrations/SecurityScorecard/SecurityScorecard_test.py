@@ -14,13 +14,13 @@ from SecurityScorecard import Client, \
 # securityscorecard_alert_score_threshold_create_command, \
 # securityscorecard_alerts_list_command, \
 
-# import requests_mock
+import requests
 import json
 import io
 import demistomock as demisto
 import datetime
 
-MOCK_URL = "http://securityscorecard-mock-url"
+MOCK_URL = "mock://securityscorecard-mock-url"
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 
 client = Client(
@@ -87,7 +87,7 @@ def test_incidents_to_import(mocker):
 
 def test_securityscorecard_portfolios_list(mocker):
 
-    raw_response = util_load_json("./test_data/portfolios.json")
+    raw_response = util_load_json("./test_data/portfolios/portfolios.json")
     mocker.patch.object(client, "get_portfolios", return_value=raw_response)
 
     response = client.get_portfolios()
@@ -106,35 +106,37 @@ def test_securityscorecard_portfolios_list(mocker):
     return entries
 
 
-# def test_securityscorecard_portfolio_list_companies(mocker):
+def test_securityscorecard_portfolio_list_companies(mocker):
 
-#     """
-#         Checks cases where the portfolio exists and doesn't exist
-#     """
+    """
+        Checks cases where the portfolio exists and doesn't exist
+    """
 
-#     portfolios = test_securityscorecard_portfolios_list(mocker)
+    portfolios = test_securityscorecard_portfolios_list(mocker)
 
-#     # 1. Check with portfolio that exists
-#     portfolio_exists = portfolios[0]
+    # 1. Portfolio that exists
+    portfolio_exists = portfolios[0]
 
-#     raw_response = util_load_json("./test_data/companies.json")
-#     mocker.patch.object(client, "get_companies_in_portfolio", return_value=raw_response)
-#     response_portfolio = client.get_companies_in_portfolio(portfolio_exists)
-#     # print(response_portfolio)
+    raw_response = util_load_json("./test_data/portfolios/companies.json")
+    mocker.patch.object(client, "get_companies_in_portfolio", return_value=raw_response)
+    response_portfolio = client.get_companies_in_portfolio(portfolio_exists)
 
-#     assert response_portfolio.get("entries")
+    assert response_portfolio.get("entries")
 
-#     companies = response_portfolio.get("entries")
+    companies = response_portfolio.get("entries")
 
-#     assert len(companies) == 3
+    assert len(companies) == 3
 
-#     # 2. Check with portfolio that doesn't exist
-#     portfolio_not_exists = "portfolio4"
-#     response_portfolio_not_exist = client.get_companies_in_portfolio(portfolio_not_exists)
+    # 2. Portfolio doesn't exist
+    non_exist_portfolio = "portfolio4"
+    url = "{0}/portfolios/{1}/companies".format(MOCK_URL, non_exist_portfolio)
+    portfolio_not_exist_raw_response = util_load_json("./test_data/portfolios/portfolio_not_found.json")
 
-#     print(response_portfolio_not_exist)
+    with requests_mock.mock() as mocker2:
+        mocker2.get(url, json=portfolio_not_exist_raw_response)
+        portfolio_not_exist_response = requests.get(url)
 
-#     # asset
+        assert portfolio_not_exist_response.json()["error"]["message"] == "portfolio not found"
 
 
 # def test_securityscorecard_company_factor_score_get():
@@ -152,6 +154,7 @@ def test_securityscorecard_portfolios_list(mocker):
 # def test_securityscorecard_company_score_get():
 
 # def test_securityscorecard_company_history_factor_score_get():
+
 
 def main() -> None:
     pass
