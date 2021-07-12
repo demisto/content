@@ -548,7 +548,7 @@ tasks:
       {
         "position": {
           "x": 1200,
-          "y": 2410
+          "y": 2770
         }
       }
     note: false
@@ -573,7 +573,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "15"
+      - "20"
     scriptarguments:
       append: {}
       errorUnfinished: {}
@@ -754,6 +754,95 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+  "20":
+    id: "20"
+    taskid: a705c222-b75c-4ed3-89d5-2e6047d71ce0
+    type: condition
+    task:
+      id: a705c222-b75c-4ed3-89d5-2e6047d71ce0
+      version: -1
+      name: Can the found incidents be closed?
+      description: Checks whether the Phishing incidents that were detected can be
+        automatically closed. If the IncludeSelf parameter is set to True - then the
+        current incident will be closed as well.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "15"
+      "yes":
+      - "21"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.AutomaticallyCloseIncidents
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+          ignorecase: true
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "21":
+    id: "21"
+    taskid: d5a6c069-de9f-4129-83ec-3273aa2431e2
+    type: regular
+    task:
+      id: d5a6c069-de9f-4129-83ec-3273aa2431e2
+      version: -1
+      name: Close all found phishing incidents
+      description: Closes all the phishing incidents that were found to be part of
+        the campaign.
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      assetid: {}
+      closeNotes: {}
+      closeReason:
+        simple: Part of a phishing campaign.
+      emailclassification: {}
+      id:
+        complex:
+          root: EmailCampaign.incidents
+          accessor: id
+          transformers:
+          - operator: uniq
+      phishingsubtype: {}
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
 view: |-
   {
     "linkLabelsPosition": {
@@ -764,7 +853,7 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 2425,
+        "height": 2785,
         "width": 1460,
         "x": 120,
         "y": 50
@@ -878,6 +967,13 @@ inputs:
   description: |-
     A comma-seperated list of fields to display. An example is "emailclassification,closereason". If a list of fields is provided, and a campaign is detected, these incidents fields will be displayed.
     Note - removing the "emailfrom", "recipients" or "severity" fields from this list will affect dynamic sections displayed in the campaign layout and render them useless.
+  playbookInputQuery:
+- key: AutomaticallyCloseIncidents
+  value:
+    simple: "False"
+  required: false
+  description: Whether to automatically close the incidents that make up the campaign.
+    Can be True or False.
   playbookInputQuery:
 outputs: []
 tests:
