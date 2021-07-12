@@ -1,13 +1,11 @@
 #!/usr/bin/env python3
 import argparse
 import os
-import shutil
-import sys
-from subprocess import Popen
-from typing import List
+from typing import Iterable, List
+from urllib.parse import urljoin
 
 import requests
-from demisto_sdk.commands.common.tools import run_command, print_error, print_success
+from demisto_sdk.commands.common.tools import print_success
 
 
 def main():
@@ -15,59 +13,29 @@ def main():
     parser.add_argument('-p', '--pr_number', help='Contrib PR number')
     parser.add_argument('-b', '--branch', help='The contrib branch')
     parser.add_argument('-c', '--contrib_repo', help='The contrib repo')
-    parser.add_argument('-t', '--github_token', help='github token (used to fetch from forked repositories).')
     args = parser.parse_args()
 
     pr_number = args.pr_number
     repo = args.contrib_repo
     branch = args.branch
-    token = args.github_token
-    packs_dir_names = get_pack_dir(branch, pr_number, repo)
-    if not packs_dir_names:
-        print_error('Did not find a pack in the PR')
-        sys.exit(1)
-    print(f'Copy changes from the contributor branch {repo}/{branch} '
-          f'in the following packs: ' + '\n'.join(packs_dir_names))
 
-    try:
-        for pack_dir in packs_dir_names:
-            if os.path.isdir(f'Packs/{pack_dir}'):
-                # Remove existing pack
-                shutil.rmtree(f'Packs/{pack_dir}')
-        # if packs_dir_names = ['pack_a', 'pack_b', 'pack_c'],
-        # string_dir_names will be 'Packs/pack_a Packs/pack_b Packs/pack_c'
-        string_dir_names = f'Packs/{" Packs/".join(packs_dir_names)}'
-
-        try:
-            with open('/dev/null', 'w') as dev_null:
-                Popen(f'git fetch https://{token}@github.com/{repo}/content.git :{repo}/{branch}'.split(), stdout=dev_null)
-        except SystemExit:
-            pass
-        command = f'git checkout {repo}/{branch} -- {string_dir_names}'
-        print(f'Running command {command}')
-        run_command(command)
-    except Exception as e:
-        print_error(f'Failed to deploy contributed pack to base branch: {e}')
-        sys.exit(1)
-
-    print_success(f'Successfully updated the base branch with the following contrib packs: '
-                  f'{", ".join(packs_dir_names)}')
+    packs_dir_names = get_files_from_github(repo, branch, pr_number)
+    if packs_dir_names:
+        print_success(f'Successfully updated the base branch with the following contrib packs: Packs/'
+                    f'{", Packs/".join(packs_dir_names)}')
 
 
-def get_pack_dir(branch: str, pr_number: str, repo: str) -> List[str]:
+def get_pr_files(pr_number: str) -> Iterable[str]:
     """
-    Get packs dir names from a contribution pull request changed files.
+    Get changed files names from a contribution pull request.
     Args:
-        branch: The contrib branch
         pr_number: The contrib PR
-        repo: The contrib repo
 
     Returns:
-        A list of packs dir names, if found.
+        A list of changed file names (under the Packs dir), if found.
     """
 
     page = 1
-    list_packs_dir_names = []
     while True:
         response = requests.get(f'https://api.github.com/repos/demisto/content/pulls/{pr_number}/files',
                                 params={'page': str(page)})
@@ -77,12 +45,37 @@ def get_pack_dir(branch: str, pr_number: str, repo: str) -> List[str]:
             break
         for pr_file in files:
             if pr_file['filename'].startswith('Packs/'):
-                pack_dir_name = pr_file['filename'].split('/')[1]
-                if pack_dir_name not in list_packs_dir_names:
-                    list_packs_dir_names.append(pack_dir_name)
+                yield pr_file['filename']
         page += 1
-    return list_packs_dir_names
 
 
+def get_files_from_github(username: str, branch: str, pr_number: str) -> List[str]:
+    """
+    Write the changed files content repo
+    Args:
+        username: The username of the contributor (e.g. demisto / xsoar-bot)
+        branch: The contributor branch
+        pr_number: The contrib PR
+    Returns:
+        A list of packs names, if found.
+    """
+    content_path = os.getcwd()
+    files_list = set()
+    chunk_size = 1024 * 500     # 500 Kb
+    base_url = f'https://raw.githubusercontent.com/{username}/content/{branch}'
+    for file_path in get_pr_files(pr_number):
+        file_path_parts = file_path.split('/')
+        file_dir = os.path.sep.join(file_path_parts[:-1])
+        abs_dir = os.path.join(content_path, file_dir)
+        if not os.path.isdir(abs_dir):
+            os.makedirs(abs_dir)
+        with open(os.path.join(content_path, file_path), 'wb') as changed_file:
+            with requests.get(urljoin(base_url, file_path), stream=True) as file_content:
+                for data in file_content.iter_content(chunk_size=chunk_size):
+                    changed_file.write(data)
+        
+        files_list.add(file_path_parts[1])
+    return list(files_list)
+    
 if __name__ == '__main__':
     main()
