@@ -2128,7 +2128,7 @@ def filter_channels_command():
             'IsPrivate': conversation.get('is_private'),
         }
         command_results_list.append(result_conversation)
-                                            
+
     context = {
         'Channel': command_results_list
     }
