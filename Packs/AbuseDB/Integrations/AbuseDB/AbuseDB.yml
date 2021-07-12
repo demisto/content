@@ -60,7 +60,7 @@ script:
       description: The IP address to check (CSV supported).
       isArray: true
       name: ip
-      required: true
+      required: false
     - defaultValue: '30'
       description: The time range to return reports (in days). Default is 30.
       name: days
@@ -133,6 +133,12 @@ script:
     - contextPath: AbuseIPDB.IP.ISP
       description: The internet service provider of the IP.
       type: String
+    - contextPath: AbuseIPDB.IP.UsageType
+      description: Usage type of the IP.
+      type: String
+    - contextPath: AbuseIPDB.IP.Domain
+      description: Domain of the IP.
+      type: String
   - arguments:
     - description: IPv4 Address Block in CIDR notation.
       name: network
@@ -200,6 +206,12 @@ script:
       type: String
     - contextPath: AbuseIPDB.IP.ISP
       description: The internet service provider of the IP.
+      type: String
+    - contextPath: AbuseIPDB.IP.UsageType
+      description: Usage type of the IP.
+      type: String
+    - contextPath: AbuseIPDB.IP.Domain
+      description: Domain of the IP.
       type: String
   - arguments:
     - description: The IP address to report.
