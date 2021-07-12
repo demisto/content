@@ -9,8 +9,8 @@ import traceback
 
 
 def remove_id_and_version_from_entry(entry):
-    del entry['ID']
-    del entry['Version']
+    entry.pop('ID', None)
+    entry.pop('Version', None)
 
 
 def copy_notes_to_target_incident(args: Dict[str, Any]) -> CommandResults:
