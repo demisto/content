@@ -6,7 +6,7 @@
     "name": "Lookout CASB Violation",
     "prevName": "Lookout CASB Violation",
     "color": "#9575CD",
-    "playbookId": "Lookout-CASB-User-Risk-PlayBook",
+    "playbookId": "Lookout-CASB-User-Risk",
     "hours": 0,
     "days": 0,
     "weeks": 0,

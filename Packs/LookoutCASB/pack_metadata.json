@@ -1,6 +1,6 @@
 {
     "name": "Lookout CASB",
-    "description": "Lookout CASB provides advanced capabilities for CASB like: Advanced Data Loss Prevention, Security Posture Management, Dynamic Zero Trust Network Access (ZTNA), Integrated endpoint + SASE solution.",
+    "description": "Lookout CASB provides advanced capabilities for CASB like: Advanced Data Loss Prevention, Security Posture Management.",
     "support": "partner",
     "currentVersion": "1.0.0",
     "author": "Dhiraj Gupta",
