@@ -18,6 +18,8 @@ def check_components(components: list, context: Any):
                 return
         else:
             context = context[component]
+            if not context:
+                raise ValueError
 
 
 def check_fields(fields_to_search_array: list, context_json) -> bool:
