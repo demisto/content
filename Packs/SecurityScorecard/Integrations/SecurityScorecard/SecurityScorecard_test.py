@@ -14,6 +14,7 @@ from SecurityScorecard import Client, \
 # securityscorecard_alert_score_threshold_create_command, \
 # securityscorecard_alerts_list_command, \
 
+import requests_mock
 import requests
 import json
 import io
