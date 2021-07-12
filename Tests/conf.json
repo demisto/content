@@ -3485,7 +3485,6 @@
         "Test Playbook McAfee ATD": "Issue 33409",
         "Detonate Remote File From URL -McAfee-ATD - Test": "Issue 33407",
         "Test Playbook McAfee ATD Upload File": "Issue 33408",
-        "Extract Indicators From File - Generic v2 - Test": "Issue 30071",
         "Kenna Test": "Missing data",
         "Trend Micro Apex - Test": "Issue 27280",
         "palo_alto_panorama_test_pb": "Issue 34371",
@@ -3513,7 +3512,6 @@
         "get_original_email_-_ews-_test": "Issue 27571",
         "PANW Threat Vault - Signature Search - Test": "Issue 30930",
         "TAXII_Feed_Test": "Issue 37588",
-        "FireEyeNX-Test": "Issue 33216",
         "Trend Micro Deep Security - Test": "outsourced",
         "Microsoft Teams - Test": "Issue 38263",
         "QualysVulnerabilityManagement-Test": "Issue 38640",
@@ -3725,6 +3723,7 @@
         "MISP V2": "Cleanup process isn't performed as expected.",
         "Azure Network Security Groups": "Has a command that sends parameters in the path",
         "GitHub": "Cannot use proxy",
+        "LogRhythm": "Cannot use proxy",
         "Create-Mock-Feed-Relationships": "recording is redundant for this integration"
     },
     "parallel_integrations": [
