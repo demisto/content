@@ -17,4 +17,4 @@ As part of this pack, you will also get out-of-the-box phishing incident views, 
 
 _For more information, visit our [Cortex XSOAR Developer Docs](https://xsoar.pan.dev/docs/reference/playbooks/phishing-investigation---generic-v2)_
 
-![Phishing Investigation - Generic v2](./doc_files/Phishing_Investigation_-_Generic_v2.png)
+![Phishing Investigation - Generic v2](https://raw.githubusercontent.com/demisto/content/b0814e6dc0e18f677f4f0d31b1bbe4b38e14c81d/Packs/Phishing/doc_files/Phishing_Investigation_-_Generic_v2.png)
