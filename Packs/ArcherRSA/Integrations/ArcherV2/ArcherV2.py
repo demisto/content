@@ -271,7 +271,7 @@ class Client(BaseClient):
             self.update_session()
 
         res = self._http_request(method, url_suffix, headers=REQUEST_HEADERS, json_data=data, params=params,
-                                 resp_type='response', ok_codes=(200, 401))
+                                 resp_type='response', ok_codes=(200, 401), timeout=15)
 
         if res.status_code == 401:
             self.update_session()
