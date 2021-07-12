@@ -3,7 +3,8 @@ from CommonServerPython import *  # noqa: F401
 
 # from content.Packs.Base.Scripts.CommonServerPython.CommonServerPython import tableToMarkdown, CommandResults, return_results, \
 #     string_to_table_header, return_error, DemistoException
-
+# from content.Packs.Base.Scripts.CommonServerPython.CommonServerPython import DemistoException
+#
 """Lookout CASB Integration for Cortex XSOAR (aka Demisto)
     Last updated: 2020-10-27
 
@@ -13,7 +14,6 @@ from CommonServerPython import *  # noqa: F401
 # from CommonServerPython import *
 # from CommonServerUserPython import *
 
-import datetime
 import json
 import traceback
 from typing import Any, Dict, List, Optional, Tuple, cast
@@ -69,7 +69,7 @@ def epoch_to_iso(epoch: int) -> str:
     :rtype: ``str``
     """
 
-    dt = datetime.datetime.fromtimestamp(epoch, datetime.timezone.utc)
+    dt = datetime.fromtimestamp(epoch, datetime.timezone.utc)
     return dt.isoformat()
 
 
@@ -80,7 +80,7 @@ def current_time() -> str:
     :rtype: ``str``
     """
 
-    return datetime.datetime.utcnow().replace(microsecond=0).replace(tzinfo=datetime.timezone.utc).isoformat()
+    return datetime.utcnow().replace(microsecond=0).replace(tzinfo=datetime.timezone.utc).isoformat()
 
 
 def epoch_seconds() -> int:
@@ -90,7 +90,7 @@ def epoch_seconds() -> int:
     :rtype: ``int``
     """
 
-    return int(datetime.datetime.utcnow().timestamp())
+    return int(datetime.utcnow().timestamp())
 
 
 def arg_to_int(arg: Any, arg_name: str, required: bool = False) -> Optional[int]:
@@ -181,11 +181,14 @@ def arg_to_timestamp(arg: Any, arg_name: str, required: bool = False) -> Optiona
     raise ValueError(f'Invalid date: "{arg_name}"')
 
 
-def get_argument_str(args, param, default: str) -> str:
+def get_argument_str(args, param, default: Optional[str]) -> str:
     if param in args:
         return args[param]
     else:
-        return default
+        if default is None:
+            raise DemistoException("get_argument_str: Missing value")
+        else:
+            return default
 
 
 def get_argument_int(args, param: str, default: int) -> int:
@@ -297,9 +300,7 @@ def fetch_events(client: Client,
     :param max_results: Maximum results to fetch.
     :return: List of events
     """
-    request_params = {
-        'eventType': event_type
-    }
+    request_params: Dict[str, Any] = {'eventType': event_type}
 
     if start_time is not None:
         request_params['startTime'] = start_time
@@ -318,7 +319,7 @@ def fetch_events(client: Client,
 
     demisto.debug(f'RECORDS {records}')
 
-    violations = []
+    violations = [str]
 
     if 'data' not in records:
         demisto.results(f'NO {event_type} FOUND')
@@ -339,7 +340,7 @@ def incidents_api_call(client: Client,
                        start_time: str,
                        end_time: str,
                        max_results: int
-                       ) -> str:
+                       ) -> List[Any]:
     """ Fetches given event occurred between start_time and end_time limited by max_results.
 
     :param client: client to use
@@ -352,9 +353,7 @@ def incidents_api_call(client: Client,
 
     violations = []
 
-    request_params = {
-        'eventType': event_type
-    }
+    request_params: Dict[str, Any] = {'eventType': event_type}
 
     if start_time is not None:
         request_params['startTime'] = start_time
@@ -478,6 +477,8 @@ def user_profile(client: Client,
             err_msg = 'Error in fetching user profile. Response: {}'.format(records)
             raise DemistoException(err_msg)
 
+    raise DemistoException("Unsupported action")
+
 
 def fetch_incidents(client: Client, max_results: int, last_run: Dict[str, int],
                     first_fetch_time: Optional[int]
@@ -506,7 +507,12 @@ def fetch_incidents(client: Client, max_results: int, last_run: Dict[str, int],
 
     incidents: List[Dict[str, Any]] = []
 
-    last_fetch_str = epoch_to_iso(last_fetch)
+    if last_fetch is None:
+        raise DemistoException("Missing last_fetch value")
+
+    last_fetch_int: int = last_fetch
+
+    last_fetch_str = epoch_to_iso(last_fetch_int)
 
     alerts = incidents_api_call(
         client=client,
