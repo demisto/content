@@ -4512,8 +4512,8 @@ def panorama_security_policy_match(application: Optional[str] = None, category: 
                                    destination: Optional[str] = None, destination_port: Optional[str] = None,
                                    from_: Optional[str] = None, to_: Optional[str] = None,
                                    protocol: Optional[str] = None, source: Optional[str] = None,
-                                   source_user: Optional[str] = None):
-    params = {'type': 'op', 'key': API_KEY,
+                                   source_user: Optional[str] = None, target: Optional[str] = None):
+    params = {'type': 'op', 'key': API_KEY, 'target': target,
               'cmd': build_policy_match_query(application, category, destination, destination_port, from_, to_,
                                               protocol, source, source_user)}
 
@@ -4580,8 +4580,11 @@ def prettify_query_fields(application: Optional[str] = None, category: Optional[
 
 
 def panorama_security_policy_match_command(args: dict):
-    if not VSYS:
-        raise Exception("The 'panorama-security-policy-match' command is only relevant for a Firewall instance.")
+    target = args.get('target')
+    if not VSYS and not target:
+        err_msg = "The 'panorama-security-policy-match' command is relevant for a Firewall instance " \
+                  "or for a Panorama instance, to be used with the target argument."
+        raise DemistoException(err_msg)
 
     application = args.get('application')
     category = args.get('category')
@@ -4594,7 +4597,7 @@ def panorama_security_policy_match_command(args: dict):
     source_user = args.get('source-user')
 
     matching_rules = panorama_security_policy_match(application, category, destination, destination_port, from_, to_,
-                                                    protocol, source, source_user)
+                                                    protocol, source, source_user, target)
     if not matching_rules:
         return_results('The query did not match a Security policy.')
     else:
