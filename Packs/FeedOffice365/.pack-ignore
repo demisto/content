@@ -2,4 +2,4 @@
 ignore=RM104
 
 [file:playbook-TIM_-_Process_Office365_indicators.yml]
-ignore=PB114
+ignore=PB115

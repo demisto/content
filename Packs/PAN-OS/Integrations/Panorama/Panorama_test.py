@@ -1,5 +1,6 @@
 import pytest
 import demistomock as demisto
+from CommonServerPython import DemistoException
 
 integration_params = {
     'port': '443',
@@ -215,6 +216,16 @@ def test_prettify_logs():
 
 
 def test_build_policy_match_query():
+    """
+    Given:
+     - a valid arguments for policy match query generation
+
+    When:
+     - running the build_policy_match_query utility function
+
+    Then:
+     - a proper xml is generated
+    """
     from Panorama import build_policy_match_query
     source = '1.1.1.1'
     destination = '6.7.8.9'
@@ -224,6 +235,24 @@ def test_build_policy_match_query():
     expected = '<test><security-policy-match><source>1.1.1.1</source><destination>6.7.8.9</destination>' \
                '<protocol>1</protocol><application>gmail-base</application></security-policy-match></test>'
     assert response == expected
+
+
+def test_panorama_security_policy_match_command_no_target():
+    """
+    Given:
+     - a Panorama instance(mocked parameter) without the target argument
+
+    When:
+     - running the panorama-security-policy-match command
+
+    Then:
+     - Validate a proper error is raised
+    """
+    from Panorama import panorama_security_policy_match_command
+    err_msg = "The 'panorama-security-policy-match' command is relevant for a Firewall instance " \
+              "or for a Panorama instance, to be used with the target argument."
+    with pytest.raises(DemistoException, match=err_msg):
+        panorama_security_policy_match_command(demisto.args())
 
 
 def test_prettify_matching_rule():
