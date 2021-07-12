@@ -5,9 +5,11 @@ commonfields:
   version: -1
 configuration:
 - name: bot_token
+  display: Bot Token
   required: false
   type: 4
 - name: app_token
+  display: App Token
   required: false
   type: 4
 - display: Dedicated Slack channel to receive notifications

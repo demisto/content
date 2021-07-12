@@ -403,7 +403,6 @@ def invite_users_to_conversation(conversation_id: str, users_to_invite: list):
         conversation_id: The slack conversation ID to invite the users to.
         users_to_invite: The user slack IDs to invite.
     """
-    demisto.info(users_to_invite)
     for user in users_to_invite:
         try:
             body = {
@@ -470,13 +469,11 @@ def mirror_investigation():
         conversations = json.loads(integration_context['conversations'])
 
     investigation_id = investigation.get('id')
-    demisto.info(f"inv id is: {investigation_id}")
     send_first_message = False
     current_mirror = list(filter(lambda m: m['investigation_id'] == investigation_id, mirrors))
     channel_filter: list = []
     if channel_name:
         channel_filter = list(filter(lambda m: m['channel_name'] == channel_name, mirrors))
-    demisto.info(f"channel_filter is: {channel_filter}")
     if not current_mirror:
         channel_name = channel_name or f'incident-{investigation_id}'
 
@@ -603,7 +600,7 @@ def long_running_loop():
             error = f'An error occurred: {str(e)}'
         finally:
             loop = asyncio.get_running_loop()
-            demisto.info(f'loop info: {loop_info(loop)}')
+            demisto.info(f'Loop info: {loop_info(loop)}')
             demisto.updateModuleHealth('')
             if error:
                 demisto.error(error)
@@ -789,10 +786,26 @@ def extract_entitlement(entitlement: str, text: str) -> Tuple[str, str, str, str
     return content, guid, incident_id, task_id
 
 
+class SlackLogger:
+    def __init__(self):
+        self.level = logging.DEBUG
+
+    def info(self, message):
+        demisto.info(message)
+
+    def error(self, message):
+        demisto.error(message)
+
+    def debug(self, message):
+        demisto.debug(message)
+
+
 async def slack_loop():
+    slack_logger = SlackLogger()
     client = SocketModeClient(
         app_token=APP_TOKEN,
-        web_client=ASYNC_CLIENT
+        web_client=ASYNC_CLIENT,
+        logger=slack_logger
     )
     client.socket_mode_request_listeners.append(listen)
     await client.connect()
@@ -1090,7 +1103,6 @@ async def get_user_by_id_async(client: SocketModeClient, user_id: str) -> dict:
     Returns:
         The slack user.
     """
-    demisto.info((f"User info is {user_id}"))
     user: dict = {}
     users: list = []
     integration_context = get_integration_context(SYNC_CONTEXT)
@@ -1260,8 +1272,6 @@ def slack_send():
     entry_object = args.get('entryObject')  # From server, available from demisto v6.1 and above
     entitlement = ''
 
-    demisto.info(f"Args are {args}")
-
     if message_type == MIRROR_TYPE and original_message.find(MESSAGE_FOOTER) != -1:
         # return so there will not be a loop of messages
         return
@@ -1411,6 +1421,28 @@ def slack_send_file():
         demisto.results('Could not send the file to Slack.')
 
 
+def handle_tags_in_message_sync(message: str) -> str:
+    """
+    Handles user tags in a slack send message
+
+    Args:
+        message: The slack message
+
+    Returns:
+        The tagged slack message
+    """
+    matches = re.findall(USER_TAG_EXPRESSION, message)
+    message = re.sub(USER_TAG_EXPRESSION, r'\1', message)
+    for match in matches:
+        slack_user = get_user_by_name(match)
+        if slack_user:
+            message = message.replace(match, f"<@{slack_user.get('id')}>")
+
+    resolved_message = re.sub(URL_EXPRESSION, r'\1', message)
+
+    return resolved_message
+
+
 def send_message(destinations: list, entry: str, ignore_add_url: bool, integration_context: dict, message: str,
                  thread_id: str, blocks: str):
     """
@@ -1483,7 +1515,8 @@ def send_message_to_destinations(destinations: list, message: str, thread_id: st
     body: dict = {}
 
     if message:
-        body['text'] = message
+        clean_message = handle_tags_in_message_sync(message)
+        body['text'] = clean_message
     if blocks:
         block_list = json.loads(blocks, strict=False)
         body['blocks'] = block_list
