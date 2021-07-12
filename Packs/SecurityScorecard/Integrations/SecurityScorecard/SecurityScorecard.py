@@ -65,7 +65,7 @@ class Client(BaseClient):
             error_handler=self.company_portfolio_error_handler
         )
 
-    def get_company_score(self, domain: str) -> List[Dict[str, Any]]:
+    def get_company_score(self, domain: str) -> Dict[str, Any]:
 
         return self._http_request(
             'GET',
@@ -553,13 +553,16 @@ def securityscorecard_company_score_get_command(client: Client, args: Dict[str, 
     :rtype: ``CommandResults``
     """
 
-    domain = args.get('domain')
+    # str cast for mypy compatibility
+    domain = str(args.get('domain'))
 
     if is_valid_domain(domain):
 
         score = client.get_company_score(domain=domain)
         score["domain"] = "[{0}](https://{0})".format(domain)
-        score["industry"] = score.get("industry").title().replace("_", " ")
+
+        industry = str(score.get("industry")).title().replace("_", " ")
+        score["industry"] = industry
 
         markdown = tableToMarkdown(
             "Domain {0} Scorecard".format(domain),
