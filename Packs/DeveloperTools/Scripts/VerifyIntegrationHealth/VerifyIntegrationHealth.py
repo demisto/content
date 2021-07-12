@@ -22,7 +22,7 @@ def health_check_command(args: Dict[str, Any]) -> CommandResults:
     raw_result = demisto.executeCommand(
         "demisto-api-post",
         {
-            "uri": f"/settings/integration/search",
+            "uri": "/settings/integration/search",
             "body": {
                 "size": 10,
                 "query": "name:" + integration_name

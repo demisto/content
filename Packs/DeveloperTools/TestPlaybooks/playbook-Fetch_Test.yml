@@ -278,7 +278,7 @@ tasks:
       PollingCommandName:
         simple: VerifyEnoughIndicators
       Timeout:
-        simple: "10"
+        simple: "5"
       dt:
         simple: IndicatorsCheck(val.ConditionMet !== true).Query
     separatecontext: true
@@ -391,7 +391,7 @@ tasks:
       - "18"
     scriptarguments:
       integration_name:
-        simple: ${serverConfig.response.sysConf.sourcebrands}
+        simple: ${serverConfig.response.sysConf.sourcebrand}
     separatecontext: false
     view: |-
       {
@@ -464,7 +464,7 @@ tasks:
       key:
         simple: searchQuery
       value:
-        simple: sourceBrands:"${serverConfig.response.sysConf.sourcebrands}"
+        simple: sourceBrands:"${serverConfig.response.sysConf.sourcebrand}"
     separatecontext: false
     view: |-
       {
