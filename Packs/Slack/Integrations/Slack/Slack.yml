@@ -1,22 +1,17 @@
+beta: true
 category: Messaging
 commonfields:
   id: SlackV3
   version: -1
 configuration:
 - display: ""
-  displaypassword: Slack API access token
-  name: access_token
-  type: 9
-  required: false
-  hiddenusername: true
-- display: ""
-  displaypassword: Slack API bot token
+  displaypassword: Bot Token
   name: bot_token
   type: 9
   required: false
   hiddenusername: true
 - display: ""
-  displaypassword: Slack API app token
+  displaypassword: App Token
   name: app_token
   type: 9
   required: false
@@ -65,11 +60,13 @@ configuration:
   name: longRunning
   required: false
   type: 8
-- display: Bot display name in Slack (Cortex XSOAR by default)
+- defaultvalue: Cortex XSOAR
+  display: Bot display name in Slack
   name: bot_name
   required: false
   type: 0
-- display: Bot icon in Slack - Image URL (Cortex XSOAR icon by default)
+- defaultvalue: https://avatars.slack-edge.com/2020-05-24/1142885630851_5529c7f034d9b96ec39c_512.png
+  display: Bot icon in Slack - Image URL (Cortex XSOAR icon by default)
   name: bot_icon
   required: false
   type: 0
@@ -93,8 +90,13 @@ configuration:
   name: filtered_tags
   required: false
   type: 0
+- display: Enable DMs to the bot
+  hidden: false
+  name: enable_dm
+  required: false
+  type: 8
 description: Send messages and notifications to your Slack team.
-display: Slack v3
+display: Slack v3 (beta)
 name: SlackV3
 script:
   commands:
@@ -538,6 +540,11 @@ script:
     - contextPath: Slack.User.Email
       description: The email address of the user.
       type: String
+  - arguments: [ ]
+    name: slack-get-integration-context
+    description: Returns the integration context as a file. Use this command for debug purposes only.
+    execution: false
+    hidden: true
   dockerimage: demisto/slackv3:1.0.0.21206
   feed: false
   isfetch: false
@@ -547,4 +554,4 @@ script:
   script: '-'
   subtype: python3
   type: python
-fromversion: 5.0.0
+fromversion: 5.5.0
