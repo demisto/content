@@ -1744,6 +1744,7 @@ class Pack(object):
         task_status = False
 
         try:
+            logging.info(f'pack displayedImages: {packs_dependencies_mapping.get(self._pack_name, {}).get("displayedImages", [])}')
             self.set_pack_dependencies(self.user_metadata, packs_dependencies_mapping)
             if 'displayedImages' not in self.user_metadata:
                 self.user_metadata['displayedImages'] = packs_dependencies_mapping.get(
