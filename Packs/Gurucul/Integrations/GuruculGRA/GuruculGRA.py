@@ -124,7 +124,7 @@ def fetch_incidents_open_cases(client: Client, max_results: int, last_run: Dict[
                                first_fetch_time: Optional[int]
                                ) -> Tuple[Dict[str, int], List[dict]]:
     last_fetch = last_run.get('last_fetch', None)
-    case_anomaly = demisto.params().get('fetch_incident_cases', 'Case Per Anomaly')
+    case_anomaly = demisto.params().get('fetch_incident_cases') or 'Case Per Anomaly'
 
     if last_fetch is None:
         last_fetch = first_fetch_time
