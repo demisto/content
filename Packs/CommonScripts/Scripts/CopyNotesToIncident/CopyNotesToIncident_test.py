@@ -1,10 +1,7 @@
-import pytest
 from CopyNotesToIncident import copy_notes_to_target_incident
 import demistomock as demisto  # noqa # pylint: disable=unused-wildcard-import
 from typing import List, Dict, Any
 import json
-
-from CommonServerPython import DemistoException
 
 MOCK_TARGET_INCIDENT_ID = '99'
 MOCK_TAG = 'Tag1'
