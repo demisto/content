@@ -143,7 +143,7 @@ if os.path.isfile('./artifacts/id_set.json'):
         ID_SET = json.load(conf_file)
 
 if os.path.isfile('./artifacts/conf.json'):
-    with open('./Tests/conf.json', 'r') as conf_file:
+    with open('./artifacts/conf.json', 'r') as conf_file:
         CONF = TestConf(json.load(conf_file))
 
 

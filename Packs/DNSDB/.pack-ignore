@@ -3,3 +3,6 @@ ignore=IN136,BA108,BA109
 
 [file:README.md]
 ignore=RM102
+
+[file:playbook-DNSDB-Hostname_from_IP.yml]
+ignore=PB114
