@@ -2,7 +2,7 @@ Send messages and notifications to your Slack team.
 This integration was integrated and tested with Slack.
 ## Configure SlackV3 on Cortex XSOAR
 
-Slack V3 utilizes "Socket Mode" to enable the integration to communicate directly with Slack for mirroring. This will require a dedicated Slack app to be created for the XSOAR integration.
+Slack V3 utilizes "Socket Mode" to enable the integration to communicate directly with Slack for mirroring. This requires a dedicated Slack app to be created for the XSOAR integration.
 
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
@@ -11,69 +11,80 @@ Slack V3 utilizes "Socket Mode" to enable the integration to communicate directl
 
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
-    | `bot_token` | Slack API bot token | False |
-    | `app_token` | Slack API app token | False |
-    | `incidentNotificationChannel` | Dedicated Slack channel to receive notifications | False |
-    | `notify_incidents` | Send notifications about incidents to the dedicated channel | False |
-    | `min_severity` | Minimum incident severity to send messages to slack by | False |
-    | `incidentType` | Type of incidents created in Slack | False |
-    | `allow_incidents` | Allow external users to create incidents via DM | False |
-    | `proxy` | Use system proxy settings | False |
-    | `unsecure` | Trust any certificate (not secure) | False |
+    | `bot_token` | Slack API bot token. | False |
+    | `app_token` | Slack API app token. | False |
+    | `incidentNotificationChannel` | Dedicated Slack channel to receive notifications. | False |
+    | `notify_incidents` | Send notifications about incidents to the dedicated channel. | False |
+    | `min_severity` | Minimum incident severity to send messages to Slack by. | False |
+    | `incidentType` | Type of incidents created in Slack. | False |
+    | `allow_incidents` | Allow external users to create incidents via direct messages. | False |
+    | `proxy` | Use system proxy settings. | False |
+    | `unsecure` | Trust any certificate (not secure). | False |
     | `longRunning` | Long running instance. Required for investigation mirroring and direct messages. | False |
-    | `bot_name` | Bot display name in Slack (Cortex XSOAR by default) | False |
-    | `bot_icon` | Bot icon in Slack - Image URL (Cortex XSOAR icon by default) | False |
-    | `max_limit_time` | Maximum time to wait for a rate limiting call in seconds | False |
-    | `paginated_count` | Number of objects to return in each paginated call | False |
-    | `proxy_url` | Proxy URL to use in Slack API calls | False |
-    | `filtered_tags` | Comma separated list of tags To filter the messages sent from XSOAR. Only supported in Demisto V6.1 and above. | False |
+    | `bot_name` | Bot display name in Slack (Cortex XSOAR by default). | False |
+    | `bot_icon` | Bot icon in Slack - Image URL (Cortex XSOAR icon by default). | False |
+    | `max_limit_time` | Maximum time to wait for a rate limiting call in seconds. | False |
+    | `paginated_count` | Number of objects to return in each paginated call. | False |
+    | `proxy_url` | Proxy URL to use in Slack API calls. | False |
+    | `filtered_tags` | Comma-separated list of tags by which to filter the messages sent from XSOAR. Only supported in Cortex XSOAR V6.1 and above. | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 
 ### Creating a Custom App
-In order to create a custom app, first navigate to the following [link](https://api.slack.com/apps/) and click "Create New App".
-Next click "From Scratch" and enter an *App Name*, select the workspace your app will reside and lastly click "Create App". 
- 
-Afterwards, click "Socket Mode" found on the left-hand side of the menu. Then click "Enable Socket Mode". This will create an app level token with the required scope for connecting. A *Token Name* is required, lastly, click "Generate".
+1. Navigate to the following [link](https://api.slack.com/apps/).
+ 2. Click **Create an App**.
+ 3. Click **From scratch**.
+ 4. Enter an *App Name* and select the workspace in which your app will reside.
+ 5. Click **Create App**. 
+ 6. Click **Socket Mode** found on the left-hand side of the menu. 
+ 7. Click **Enable Socket Mode**. This will create an app level token with the required scope for connecting. 
+ 8. Enter a name for the token.
+ 9. Click **Generate**.
 
-You will be given a token starting with `xapp`. Please copy this token and apply it to the `app_token` parameter.
+You will receive a token starting with `xapp`. Copy this token and use it for the `app_token` parameter when creating an instance of the integration.
 
 ### Defining Events
-For Slack V3 to be able to mirror incidents, we must enable the Events feature. To do so, please navigate to "Event Subscriptions" found under the Features menu. Enable Events by clicking the toggle switch.
-
-Enabling the Events API will present various events which the app may subscribe to. Currently, Slack V3 only requires the following scopes:
+For Slack V3 to be able to mirror incidents, you must enable the Events feature. 
+1. Navigate to *Event Subscriptions* found under the Features menu. 
+2. Enable Events by clicking the toggle switch.
+ 
+Enabling the Events API will present various events that the app may subscribe to. Currently, Slack V3 only uses the following message events:
+ 
+ | Event Name | What it's used for |
+ | --- | --- |
+ | `message.channel` | Allows the app to receive 
 
 | **Event Name** | **What it's used for** |
 | --- | --- |
-| `message.channel` | Allows the App to receive messages which were posted in a channel. Used for Mirror In |
-| `message.mpim` | Allows the App to receive messages which were posted to a group. Used for Mirror In |
-| `message.groups` | Allows the App to receive messages which were posted to a private channel. Used for Mirror In |
-| `message.im` | Allows the App to receive Direct Messages |
+| `message.channel` | Allows the app to receive messages which were posted in a channel. Used for Mirror In. |
+| `message.mpim` | Allows the app to receive messages which were posted to a group. Used for Mirror In. |
+| `message.groups` | Allows the app to receive messages which were posted to a private channel. Used for Mirror In. |
+| `message.im` | Allows the app to receive direct messages. |
 
-These permissions are available for both "Bot Events" and "Events on behalf of users". In order to use mirroring and handle bot questions, we recommend enabling these event scopes for both bot and user events.
+These message events are available for both "Bot Events" and "Events on behalf of users". In order to use mirroring and handle bot questions, Cortex XSOAR recommends enabling these event scopes for both bot and user events.
 
 ### OAuth Scopes
 
-In order to utilize the full functionality of the Slack integration, we recommend the following OAuth scopes for the Bot token:
+In order to utilize the full functionality of the Slack integration, Cortex XSOAR recommends the following OAuth scopes for the bot token:
 
 | **OAuth Scope** | **Description** |
 | --- | --- |
-| `channels:history` | View messages and other content in public channels that the app has been added to |
-| `channels:read` | View basic information about public channels in a workspace |
-| `chat:write` | Send messages as the bot |
-| `files:write` | Upload, edit, and delete files as the bot |
-| `groups:history` | View messages and other content in private channels that the bot has been added to |
-| `groups:read` | View basic information about private channels that the bot has been added to |
-| `im:history` | View messages and other content in direct messages that the bot has been added to |
-| `im:read` | View basic information about direct messages that the bot has been added to |
-| `mpim:history` | View messages and other content in group direct messages that the bot has been added to |
+| `channels:history` | View messages and other content in public channels that the app has been added to. |
+| `channels:read` | View basic information about public channels in a workspace. |
+| `chat:write` | Send messages as the bot. |
+| `files:write` | Upload, edit, and delete files as the bot. |
+| `groups:history` | View messages and other content in private channels that the bot has been added to. |
+| `groups:read` | View basic information about private channels that the bot has been added to. |
+| `im:history` | View messages and other content in direct messages that the bot has been added to. |
+| `im:read` | View basic information about direct messages that the bot has been added to. |
+| `mpim:history` | View messages and other content in group direct messages that the bot has been added to. |
 | `mpim:read` | View basic information about group direct messages that the bot has been added to |
-| `users:read` | View people in a workspace |
+| `users:read` | View people in a workspace. |
 
-The App token requires the `connections:write` scope in order to open the socket connection and is required for the Events and Questions functionality. It's important to note that when configuring Socket Mode, this scope will automatically be created for you.
+The app token requires the `connections:write` scope in order to open the socket connection and is required for the Events and Questions functionality. It's important to note that when configuring Socket Mode, this scope will automatically be created for you.
 
 ## Backwards Compatibility with Slack V2
-Slack V3 currently contains improvements to enhance the stability of the integration as well as the circumvention of OProxy. This version is intended to provide customers with more granular control over the Slack integration by enabling the Bring-Your-Own-App model and customizable scope based authentication.
+Slack V3 currently contains improvements to enhance the stability of the integration as well as the circumvention of OProxy. This version is intended to provide customers with more granular control over the Slack integration by enabling the Bring-Your-Own-App model and customizable scope-based authentication.
 
 All commands are fully compatible with Slack V2 playbooks as their inputs and outputs have remained the same. As a customer, you should notice no significant change in the behavior of the Slack integration with your existing playbooks.
 
@@ -82,7 +93,7 @@ You can execute these commands from the Cortex XSOAR CLI, as part of an automati
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### mirror-investigation
 ***
-Mirrors the investigation between Slack and the Demisto War Room.
+Mirrors the investigation between Slack and the Cortex XSOAR War Room.
 
 
 #### Base Command
@@ -93,9 +104,9 @@ Mirrors the investigation between Slack and the Demisto War Room.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | type | The mirroring type. Can be "all", which mirrors everything, "chat", which mirrors only chats (not commands), or "none", which stops all mirroring. Possible values are: all, chat, none. Default is all. | Optional | 
-| autoclose | Whether the channel is auto-closed when an investigation is closed. Can be "true" or "false". Default is "true". Possible values are: true, false. Default is true. | Optional | 
-| direction | The mirroring direction. Can be "FromDemisto", "ToDemisto", or "Both". Default value is "Both". Possible values are: Both, FromDemisto, ToDemisto. Default is both. | Optional | 
-| mirrorTo | The channel type. Can be "channel" or "group". The default value is "group". Possible values are: channel, group. Default is group. | Optional | 
+| autoclose | Whether the channel is auto-closed when an investigation is closed. Can be "true" or "false". Default is "true". | Optional | 
+| direction | The mirroring direction. Can be "FromDemisto", "ToDemisto", or "Both". Default value is "Both". | Optional | 
+| mirrorTo | The channel type. Can be "channel" or "group". The default value is "group". | Optional | 
 | channelName | The name of the channel. The default is "incident-&lt;incidentID&gt;". | Optional | 
 | channelTopic | The topic of the channel. | Optional | 
 | kickAdmin | Whether to remove the Slack administrator (channel creator) from the mirrored channel. Possible values are: true, false. Default is false. | Optional | 
@@ -126,12 +137,12 @@ Sends a message to a user, group, or channel.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| message | The message content. When mentioning another slack user, make sure to do so in the following format: &lt;@user_name&gt;. | Optional | 
+| message | The message content. When mentioning another Slack user, make sure to do so in the following format: &lt;@user_name&gt;. | Optional | 
 | to | The user to whom to send the message. Can be either the username or email address. | Optional | 
 | channel | The name of the Slack channel to which to send the message. | Optional | 
 | entry | An entry ID to send as a link. | Optional | 
-| ignoreAddURL | Whether to include a URL to the relevant component in Demisto. Can be "true" or "false". Default value is "false". Possible values are: true, false. Default is false. | Optional | 
-| threadID | The ID of the thread to which to reply - can be retrieved from a previous send-notification command. | Optional | 
+| ignoreAddURL | Whether to include a URL to the relevant component in Cortex XSOAR. Can be "true" or "false". Default value is "false". | Optional | 
+| threadID | The ID of the thread to which to reply. Can be retrieved from a previous send-notification command. | Optional | 
 | blocks | A JSON string of Slack blocks to send in the message. | Optional | 
 
 
@@ -205,7 +216,7 @@ Sends a file to a user, channel, or group. If not specified, the file is sent to
 | to | The user to whom to send the file. Can be the username or the email address. | Optional | 
 | group | The name of the Slack group (private channel) to which to send the file. | Optional | 
 | channel | The name of the Slack channel to which to send the file. | Optional | 
-| threadID | The ID of the thread to which to reply - can be retrieved from a previous send-notification command. | Optional | 
+| threadID | The ID of the thread to which to reply. Can be retrieved from a previous send-notification command. | Optional | 
 | comment | A comment to add to the file. | Optional | 
 
 
@@ -263,7 +274,7 @@ Creates a channel in Slack.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| type | The channel type. Can be "private" or "public". Possible values are: private, public. Default is private. | Optional | 
+| type | The channel type. Can be "private" or "public". Default is private. | Optional | 
 | name | The name of the channel. | Required | 
 | users | A CSV list of user names or email addresses to invite to the channel. For example: "user1, user2...". | Optional | 
 
