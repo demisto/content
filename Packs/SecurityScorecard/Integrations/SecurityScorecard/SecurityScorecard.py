@@ -154,7 +154,7 @@ class Client(BaseClient):
         threshold: int,
         score_types: List[str],
         target: List[str]
-    ) -> List[Dict[str, Any]]:
+    ) -> Dict[str, Any]:
 
         payload: Dict[str, Any] = {}
         if change_direction:
@@ -898,8 +898,8 @@ def securityscorecard_alert_score_threshold_create_command(client: Client, args:
     email = demisto.params().get('username').get("identifier")
     if is_email_valid(email=email):
 
-        change_direction = args.get('change_direction')
-        threshold = args.get('threshold')
+        change_direction = str(args.get('change_direction'))
+        threshold = arg_to_number(args.get('threshold'))  # type: ignore
         score_types = argToList(args.get('score_types'))
         target_arg = argToList(args.get('target'))
         portfolios = argToList(args.get('portfolios'))
@@ -921,7 +921,7 @@ def securityscorecard_alert_score_threshold_create_command(client: Client, args:
         response = client.create_score_threshold_alert(
             email=email,
             change_direction=change_direction,
-            threshold=threshold,
+            threshold=threshold,  # type: ignore
             score_types=score_types,
             target=target
         )
