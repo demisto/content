@@ -50,10 +50,6 @@ tasks:
       '#none#':
       - "28"
     scriptarguments:
-      branch_name:
-        simple: ${inputs.branch_name}
-      config_data:
-        simple: ${GitHub.Config.Data}
       configuration_file_entry_id:
         complex:
           root: File
@@ -67,8 +63,6 @@ tasks:
                 value:
                   simple: xsoar_config.json
           accessor: EntryID
-      configuration_file_repo_path:
-        simple: ${inputs.config_file_path}
     separatecontext: false
     view: |-
       {
@@ -524,13 +518,11 @@ tasks:
       - "27"
     scriptarguments:
       branch_name:
-        simple: ${inputs.branch_name}
+        simple: ${incident.branchname}
       create_file_from_content:
         simple: "true"
       file_path:
-        simple: ${inputs.config_file_path}
-      path:
-        simple: ${inputs.config_file_path}
+        simple: ${incident.configfilepath}
     separatecontext: false
     view: |-
       {
@@ -612,10 +604,6 @@ tasks:
       '#none#':
       - "28"
     scriptarguments:
-      branch_name:
-        simple: ${inputs.branch_name}
-      config_data:
-        simple: ${GitHub.Config.Data}
       configuration_file_entry_id:
         complex:
           root: InfoFile
@@ -629,8 +617,6 @@ tasks:
                 value:
                   simple: xsoar_config.json
           accessor: EntryID
-      configuration_file_repo_path:
-        simple: ${inputs.config_file_path}
     separatecontext: false
     view: |-
       {
