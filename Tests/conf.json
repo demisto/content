@@ -3427,7 +3427,7 @@
         {
             "integrations": ["OpenCTI Feed 4.X", "Demisto REST API"],
             "playbookID": "Fetch Test",
-            "fromversion": "5.5.0",
+            "fromversion": "6.0.0",
             "timeout": 1200
         }
     ],
