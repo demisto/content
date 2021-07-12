@@ -132,12 +132,3 @@ ignore=BA101
 
 [file:FindDuplicateEmailIncidents.yml]
 ignore=SC105
-
-[file:incidentfield-bclscore.json]
-ignore=IF113
-
-[file:incidentfield-sclscore.json]
-ignore=IF113
-
-[file:incidentfield-pclscore.json]
-ignore=IF113
