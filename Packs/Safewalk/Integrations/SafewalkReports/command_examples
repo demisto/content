@@ -1,0 +1,12 @@
+!safewalk-get-associated-users devicetype="Backup"
+!safewalk-get-authentication-methods-distribution
+!safewalk-get-authentication-rate-per-device
+!safewalk-get-least-active-users sincedate="2021-03-01"
+!safewalk-get-licenses-inventory
+!safewalk-get-licenses-usage begindate="2021-04-01" enddate="2021-04-05"
+!safewalk-get-most-active-users days="10" limit="10" userinformation="email"
+!safewalk-get-physical-tokens-inventory
+!safewalk-get-registered-devices-distribution
+!safewalk-get-registered-devices-distribution
+!safewalk-get-registration begindate="2021-04-01" enddate="2021-04-05" userinformation="email"
+!safewalk-get-users-associations-indicators
