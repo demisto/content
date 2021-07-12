@@ -579,8 +579,8 @@
             "integrations": "SlackV3",
             "playbookID": "SlackV3 TestPB",
             "timeout": 400,
-            "pid_threshold": 5,
-            "fromversion": "5.0.0"
+            "pid_threshold": 8,
+            "fromversion": "5.5.0"
         },
         {
             "integrations": "Cortex XDR - IR",
