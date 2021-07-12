@@ -15,7 +15,8 @@ class TestGetPublicKey:
     @staticmethod
     def test_get_from_params(mocker):
         mocker.patch.object(demisto, 'params', return_value={
-            'public_key': '-----BEGIN RSA PUBLIC KEY-----\nMAoCAwCCbQIDAQAB\n-----END RSA PUBLIC KEY-----\n',
+            'public_key': '-----BEGIN RSA PUBLIC KEY-----\nMAoCAwCCbQIDAQAB'  # guardrails-disable-line
+                          '\n-----END RSA PUBLIC KEY-----\n',  # guardrails-disable-line
         })
 
         public_key = get_public_key()
@@ -32,8 +33,9 @@ class TestGetPrivateKey:
     @staticmethod
     def test_get_from_params(mocker):
         mocker.patch.object(demisto, 'params', return_value={
-            'private_key': '-----BEGIN RSA PRIVATE KEY-----\nMCICAQACAwCLNwIDAQABAgJ+iQICAOMCAgCdAgFLAgFlAgFr'
-                           '\n-----END RSA PRIVATE KEY-----\n',
+            'private_key': '-----BEGIN RSA PRIVATE KEY-----\n' # guardrails-disable-line
+                           'MCICAQACAwCLNwIDAQABAgJ+iQICAOMCAgCdAgFLAgFlAgFr'  # guardrails-disable-line
+                           '\n-----END RSA PRIVATE KEY-----\n',  # guardrails-disable-line
         })
 
         private_key = get_private_key()
