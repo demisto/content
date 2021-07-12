@@ -23,10 +23,14 @@ PRE_POST = ''
 
 XPATH_SECURITY_RULES = ''
 DEVICE_GROUP = ''
-
 XPATH_OBJECTS = ''
-
 XPATH_RULEBASE = ''
+
+''' FETCH INCIDENTS GLOBALS '''
+RESET_KEY = 'reset'
+SAMPLE_SIZE = 10  # number of samples to store in integration context
+FETCH_SLEEP = 120  # sleep between fetches
+LAST_FETCH_KEY = 'TimeGenerated'
 
 # Security rule arguments for output handling
 SECURITY_RULE_ARGS = {
@@ -3960,7 +3964,15 @@ def panorama_query_traffic_logs_command(args: dict):
 
 
 @logger
-def panorama_get_traffic_logs(job_id: str):
+def panorama_get_logs(job_id: str):
+    """Getting the queried logs by sending a GET request containing the job ID.
+
+    Args:
+        job_id: job_id of the logs generation.
+
+    Returns:
+        a dictionary containing the logs.
+    """
     params = {
         'action': 'get',
         'type': 'log',
@@ -3974,27 +3986,28 @@ def panorama_get_traffic_logs(job_id: str):
         params=params,
     )
 
+    # validate response
+    if result['response']['@status'] == 'error':
+        if 'msg' in result['response'] and 'line' in result['response']['msg']:
+            message = f'Reason is: {result["response"]["msg"]["line"]}'
+            raise DemistoException(f'Query logs failed. {message}')
+        else:
+            raise DemistoException('Query logs failed.')
+    if 'response' not in result or 'result' not in result['response'] or 'job' not in result['response']['result'] \
+            or 'status' not in result['response']['result']['job']:
+        raise DemistoException('Missing JobID status in response.')
+
     return result
 
 
 def panorama_check_traffic_logs_status_command(job_id: str):
-    result = panorama_get_traffic_logs(job_id)
-
-    if result['response']['@status'] == 'error':
-        if 'msg' in result['response'] and 'line' in result['response']['msg']:
-            message = '. Reason is: ' + result['response']['msg']['line']
-            raise Exception('Query traffic logs failed' + message)
-        else:
-            raise Exception('Query traffic logs failed.')
+    result = panorama_get_logs(job_id)
 
     query_traffic_status_output = {
         'JobID': job_id,
         'Status': 'Pending'
     }
 
-    if 'response' not in result or 'result' not in result['response'] or 'job' not in result['response']['result'] \
-            or 'status' not in result['response']['result']['job']:
-        raise Exception('Missing JobID status in response.')
     if result['response']['result']['job']['status'] == 'FIN':
         query_traffic_status_output['Status'] = 'Completed'
 
@@ -4057,23 +4070,12 @@ def prettify_traffic_logs(traffic_logs: List[dict]):
 
 
 def panorama_get_traffic_logs_command(job_id: str):
-    result = panorama_get_traffic_logs(job_id)
-
-    if result['response']['@status'] == 'error':
-        if 'msg' in result['response'] and 'line' in result['response']['msg']:
-            message = '. Reason is: ' + result['response']['msg']['line']
-            raise Exception('Query traffic logs failed' + message)
-        else:
-            raise Exception('Query traffic logs failed.')
+    result = panorama_get_logs(job_id)
 
     query_traffic_logs_output = {
         'JobID': job_id,
         'Status': 'Pending'
     }
-
-    if 'response' not in result or 'result' not in result['response'] or 'job' not in result['response']['result'] \
-            or 'status' not in result['response']['result']['job']:
-        raise Exception('Missing JobID status in response.')
 
     if result['response']['result']['job']['status'] != 'FIN':
         return_results({
@@ -4184,29 +4186,14 @@ def build_logs_query(address_src: Optional[str], address_dst: Optional[str], ip_
 
 
 @logger
-def panorama_query_logs(log_type: str, number_of_logs: str, query: str, address_src: str, address_dst: str, ip_: str,
-                        zone_src: str, zone_dst: str, time_generated: str, action: str,
-                        port_dst: str, rule: str, url: str, filedigest: str):
+def panorama_query_logs(log_type: str, number_of_logs: str, query: str):
     params = {
         'type': 'log',
         'log-type': log_type,
-        'key': API_KEY
+        'key': API_KEY,
+        'query': query,
     }
 
-    if filedigest and log_type != 'wildfire':
-        raise Exception('The filedigest argument is only relevant to wildfire log type.')
-    if url and log_type == 'traffic':
-        raise Exception('The url argument is not relevant to traffic log type.')
-
-    if query:
-        params['query'] = query
-    else:
-        if ip_ and (address_src or address_dst):
-            raise Exception(
-                'The ip argument cannot be used with the address-source or the address-destination arguments.')
-        params['query'] = build_logs_query(address_src, address_dst, ip_,
-                                           zone_src, zone_dst, time_generated, action,
-                                           port_dst, rule, url, filedigest)
     if number_of_logs:
         params['nlogs'] = number_of_logs
 
@@ -4215,6 +4202,14 @@ def panorama_query_logs(log_type: str, number_of_logs: str, query: str, address_
         'GET',
         params=params,
     )
+    if result['response']['@status'] == 'error':
+        if 'msg' in result['response'] and 'line' in result['response']['msg']:
+            message = f'. Reason is: {result["response"]["msg"]["line"]}'
+            raise Exception(f'Query logs failed {message}')
+        else:
+            raise Exception('Query logs failed.')
+    if 'response' not in result or 'result' not in result['response'] or 'job' not in result['response']['result']:
+        raise Exception('Missing JobID in response.')
 
     return result
 
@@ -4240,23 +4235,21 @@ def panorama_query_logs_command(args: dict):
     if url and url[-1] != '/':
         url += '/'
 
+    # validate query logs args
     if query and (address_src or address_dst or zone_src or zone_dst
                   or time_generated or action or port_dst or rule or url or filedigest):
         raise Exception('Use the free query argument or the fixed search parameters arguments to build your query.')
+    if filedigest and log_type != 'wildfire':
+        raise Exception('The filedigest argument is only relevant to wildfire log type.')
+    if url and log_type == 'traffic':
+        raise Exception('The url argument is not relevant to traffic log type.')
+    if ip_ and (address_src or address_dst):
+        raise Exception('The ip argument cannot be used with the address-source or the address-destination arguments.')
 
-    result = panorama_query_logs(log_type, number_of_logs, query, address_src, address_dst, ip_,
-                                 zone_src, zone_dst, time_generated, action,
-                                 port_dst, rule, url, filedigest)
+    query = query if query else build_logs_query(address_src, address_dst, ip_, zone_src, zone_dst,
+                                                 time_generated, action, port_dst, rule, url, filedigest)
 
-    if result['response']['@status'] == 'error':
-        if 'msg' in result['response'] and 'line' in result['response']['msg']:
-            message = '. Reason is: ' + result['response']['msg']['line']
-            raise Exception('Query logs failed' + message)
-        else:
-            raise Exception('Query logs failed.')
-
-    if 'response' not in result or 'result' not in result['response'] or 'job' not in result['response']['result']:
-        raise Exception('Missing JobID in response.')
+    result = panorama_query_logs(log_type, number_of_logs, query)
 
     query_logs_output = {
         'JobID': result['response']['result']['job'],
@@ -4281,23 +4274,13 @@ def panorama_check_logs_status_command(job_id: str):
     """
     job_ids = argToList(job_id)
     for job_id in job_ids:
-        result = panorama_get_traffic_logs(job_id)
-
-        if result['response']['@status'] == 'error':
-            if 'msg' in result['response'] and 'line' in result['response']['msg']:
-                message = '. Reason is: ' + result['response']['msg']['line']
-                raise Exception('Query logs failed' + message)
-            else:
-                raise Exception('Query logs failed.')
+        result = panorama_get_logs(job_id)
 
         query_logs_status_output = {
             'JobID': job_id,
             'Status': 'Pending'
         }
 
-        if 'response' not in result or 'result' not in result['response'] or 'job' not in result['response']['result'] \
-                or 'status' not in result['response']['result']['job']:
-            raise Exception('Missing JobID status in response.')
         if result['response']['result']['job']['status'] == 'FIN':
             query_logs_status_output['Status'] = 'Completed'
 
@@ -4415,28 +4398,17 @@ def panorama_get_logs_command(args: dict):
     ignore_auto_extract = args.get('ignore_auto_extract') == 'true'
     job_ids = argToList(args.get('job_id'))
     for job_id in job_ids:
-        result = panorama_get_traffic_logs(job_id)
+        result = panorama_get_logs(job_id)
         log_type_dt = demisto.dt(demisto.context(), f'Panorama.Monitor(val.JobID === "{job_id}").LogType')
         if isinstance(log_type_dt, list):
             log_type = log_type_dt[0]
         else:
             log_type = log_type_dt
 
-        if result['response']['@status'] == 'error':
-            if 'msg' in result['response'] and 'line' in result['response']['msg']:
-                message = '. Reason is: ' + result['response']['msg']['line']
-                raise Exception('Query logs failed' + message)
-            else:
-                raise Exception('Query logs failed.')
-
         query_logs_output = {
             'JobID': job_id,
             'Status': 'Pending'
         }
-
-        if 'response' not in result or 'result' not in result['response'] or 'job' not in result['response']['result'] \
-                or 'status' not in result['response']['result']['job']:
-            raise Exception('Missing JobID status in response.')
 
         if result['response']['result']['job']['status'] != 'FIN':
             return_results({
@@ -7033,6 +7005,133 @@ def panorama_install_file_content_update_command(args: dict):
         return_results(result['response']['msg'])
 
 
+def is_reset_triggered(handle_reset: bool = False):
+    """
+    Checks if reset of integration context have been made by the user.
+    Because fetch is long running execution, user communicates with us
+    by calling 'panorama-reset-last-run' command which sets reset flag in
+    context.
+    Args:
+        handle_reset (bool): Whether the reset should be handled by the caller.
+
+    Returns:
+        (bool):
+        - True if reset flag was set. If 'handle_reset' is true, also resets integration context.
+        - False if reset flag was not found in integration context.
+    """
+    ctx = get_integration_context()
+    if ctx and RESET_KEY in ctx:
+        if handle_reset:
+            demisto.debug('Reset fetch-incidents in PAN-OS.')
+            set_integration_context({'samples': ctx.get('samples', [])})
+        return True
+    return False
+
+
+def parse_logs_to_incidents(logs: dict, incident_type: str) -> Tuple[Optional[List[Dict]], Optional[str]]:
+    """parses logs from PAN-OS, and transforms them to incidents in a long running execution.
+
+    Args:
+        logs: Dictionary containing the logs.
+        incident_type: Incident type.
+
+    Returns:
+        (List[Dict], int): List of the incidents, and the new latest time generated logs for the next fetch.
+        (None, None): if reset was triggered
+    """
+    if logs['response']['result']['job']['status'] != 'FIN':  # if fetch is not over, keep the context as is
+        demisto.debug('Querying the logs job is in progress to fetch PAN-OS logs as incidents.')
+        return None, get_integration_context()[LAST_FETCH_KEY]
+
+    if 'response' not in logs or 'result' not in logs['response'] or 'log' not in logs['response']['result']\
+            or 'logs' not in logs['response']['result']['log']:
+        # if no logs, querying the logs failed for an unknown reason
+        raise DemistoException('Missing logs in response.')
+
+    logs_dict = logs['response']['result']['log']['logs']
+    if logs_dict['@count'] == '0':  # fetch is over, no new logs found, keep the context as is
+        demisto.debug('Querying the logs job to fetch PAN-OS logs as incidents did not find any new logs.')
+        return None, get_integration_context()[LAST_FETCH_KEY]
+
+    raw_logs = logs_dict['entry']
+    demisto.debug(f'Creating {len(raw_logs)} PAN_OS logs as incidents')
+    incidents = [{
+        'name': f'{raw_log.get("TimeGenerated")} PAN-OS log',
+        'rawJSON': json.dumps(raw_log),
+        'occurred': raw_log.get("TimeGenerated"),
+        'type': incident_type
+    } for raw_log in raw_logs]
+
+    if is_reset_triggered(handle_reset=True):
+        return None, None
+
+    return incidents, incidents[-1].get("TimeGenerated")
+
+
+def long_running_execution_command(params: dict):
+    """
+    Long running execution of fetching incidents from PAN-OS.
+    Will continue to fetch in an infinite loop logs from PAN-OS,
+    according to the query given in the integration params.
+    transforming the logs into incidents.
+    Args:
+        params (Dict): instance params.
+
+    """
+    query = str(params.get('query', ''))
+    number_of_logs = int(params.get('max_fetch', '50'))
+    log_type = str(params.get('log_type', ''))
+    incident_type = str(params.get('incident_type', ''))
+
+    submitted_job = panorama_query_logs(log_type=log_type, number_of_logs=number_of_logs, query=query)
+    job_id = submitted_job['response']['result']['job']  # get the job id
+
+    while True:
+        try:
+            is_reset_triggered(handle_reset=True)
+            ctx = get_integration_context()
+            demisto.debug(f'Starting fetch loop. With log-type: {log_type} and query {query}.')
+            logs = panorama_get_logs(job_id=job_id)
+            incidents, latest_occurred_log = parse_logs_to_incidents(logs=logs, incident_type=incident_type)
+            # Reset was called during execution, skip creating incidents.
+            if not incidents and not latest_occurred_log:
+                continue
+
+            incident_batch_for_sample = incidents[:SAMPLE_SIZE] if incidents else ctx.get('samples', [])
+            set_integration_context({LAST_FETCH_KEY: latest_occurred_log, 'samples': incident_batch_for_sample})
+
+            demisto.createIncidents(incidents)
+
+        except Exception as err:
+            demisto.error(str(err))
+
+        finally:
+            time.sleep(FETCH_SLEEP)
+
+
+def fetch_incidents_command() -> List[Dict]:
+    """
+    Fetch incidents implemented, for mapping purposes only.
+    Returns list of samples saved by long running execution.
+
+    Returns:
+        (List[Dict]): List of incidents samples.
+    """
+    return get_integration_context().get('samples', [])
+
+
+def panorama_reset_last_run_command() -> CommandResults:
+    """
+    Puts the reset flag inside integration context.
+    Returns:
+        (str): 'fetch-incidents was reset successfully'.
+    """
+    ctx = get_integration_context()
+    ctx[RESET_KEY] = True
+    set_integration_context(ctx)
+    CommandResults('fetch-incidents was reset successfully.')
+
+
 def main():
     try:
         args = demisto.args()
@@ -7401,13 +7500,14 @@ def main():
             panorama_install_file_content_update_command(args)
 
         # Fetch
+        elif command == 'long-running-execution':
+            long_running_execution_command(params)
+
         elif command == 'fetch-incidents':
             demisto.incidents(fetch_incidents_command())
 
-        elif command == 'long-running-execution':
-            long_running_execution_command(client, params)
-
         elif command == 'panorama-reset-last-run':
+            long_running_execution_command(params)  # to remove
             return_results(panorama_reset_last_run_command())
         
         else:

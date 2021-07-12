@@ -52,11 +52,27 @@ configuration:
   name: incident_type
   required: false
   type: 13
+- defaultvalue: 'threat'
+  display: Log type to fetch
+  name: log_type
+  options:
+  - 'threat'
+  - 'traffic'
+  - 'wildfire'
+  - 'url'
+  - 'data'
+  required: false
+  type: 15
 - display: Query to fetch logs
   name: query
   required: false
   type: 0
   additionalinfo: Define a query to determine which logs to fetch. e.g,
+- defaultvalue: '50'
+  display: Max incidents to fetch
+  name: max_fetch
+  required: false
+  type: 0
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
@@ -4669,6 +4685,8 @@ script:
       description: Installation status.
       type: string
     description: Installs specific content update file.
+  - name: panorama-reset-last-run
+    description: Resets the fetch incidents last run value, which resets the fetch to its initial fetch state.
   dockerimage: demisto/python3:3.9.5.21272
   feed: false
   isfetch: false
