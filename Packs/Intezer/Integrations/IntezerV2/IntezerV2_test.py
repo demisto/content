@@ -2,19 +2,6 @@ import tempfile
 import uuid
 from http import HTTPStatus
 
-from intezer_sdk import consts
-from intezer_sdk.api import IntezerApi
-
-# from Packs.Base.Scripts.CommonServerPython.CommonServerPython import outputPaths
-# from Packs.Intezer.Integrations.IntezerV2.IntezerV2 import analyze_by_hash_command
-# from Packs.Intezer.Integrations.IntezerV2.IntezerV2 import analyze_by_uploaded_file_command
-# from Packs.Intezer.Integrations.IntezerV2.IntezerV2 import check_analysis_status_and_get_results_command
-# from Packs.Intezer.Integrations.IntezerV2.IntezerV2 import get_analysis_code_reuse_command
-# from Packs.Intezer.Integrations.IntezerV2.IntezerV2 import get_analysis_metadata_command
-# from Packs.Intezer.Integrations.IntezerV2.IntezerV2 import get_analysis_sub_analyses_command
-# from Packs.Intezer.Integrations.IntezerV2.IntezerV2 import get_family_info_command
-# from Packs.Intezer.Integrations.IntezerV2.IntezerV2 import get_latest_result_command
-
 from CommonServerPython import outputPaths
 from IntezerV2 import analyze_by_hash_command
 from IntezerV2 import analyze_by_uploaded_file_command
@@ -24,7 +11,8 @@ from IntezerV2 import get_analysis_metadata_command
 from IntezerV2 import get_analysis_sub_analyses_command
 from IntezerV2 import get_family_info_command
 from IntezerV2 import get_latest_result_command
-
+from intezer_sdk import consts
+from intezer_sdk.api import IntezerApi
 
 fake_api_key = str(uuid.uuid4())
 intezer_api = IntezerApi(consts.API_VERSION, fake_api_key, consts.BASE_URL)
