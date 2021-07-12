@@ -72,7 +72,7 @@ class Client(BaseClient):
             url_suffix='companies/{0}'.format(domain)
         )
 
-    def get_company_factor_score(self, domain: str, severity_in: Optional[List[str]]) -> List[Dict[str, Any]]:
+    def get_company_factor_score(self, domain: str, severity_in: Optional[List[str]]) -> Dict[str, Any]:
 
         request_params: Dict[str, Any] = {}
 
@@ -599,7 +599,7 @@ def securityscorecard_company_factor_score_get_command(client: Client, args: Dic
     :rtype: ``CommandResults``
     """
 
-    domain = args.get('domain')
+    domain = str(args.get('domain'))
 
     if is_valid_domain(domain):
 
@@ -608,7 +608,7 @@ def securityscorecard_company_factor_score_get_command(client: Client, args: Dic
         response = client.get_company_factor_score(domain, severity_in)
 
         demisto.debug("factor score response: {0}".format(response))
-        entries = response.get('entries')
+        entries = response['entries']
 
         factor_scores = []
         for entry in entries:
