@@ -106,7 +106,7 @@ class Client(BaseClient):
             url_suffix='companies/{0}/history/score'.format(domain),
             params=request_params)
 
-    def get_company_historical_factor_scores(self, domain: str, _from: str, to: str, timing: str) -> List[Dict[str, Any]]:
+    def get_company_historical_factor_scores(self, domain: str, _from: str, to: str, timing: str) -> Dict[str, Any]:
 
         request_params: Dict[str, Any] = {}
 
@@ -298,7 +298,7 @@ def incidents_to_import(alerts: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
             days_ago_str = days_ago_arg
 
         fetch_days_ago = arg_to_datetime(days_ago_str, arg_name="first_fetch", required=False)
-        
+
         # to prevent mypy incompatible assignment
         assert fetch_days_ago is not None
         valid_fetch_days_ago: datetime = fetch_days_ago
@@ -319,8 +319,8 @@ def incidents_to_import(alerts: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
 
         # The alerts are sorted by descending date so first alert is the most recent
         most_recent_alert = alerts[0]
-        
-        # casting to str to prevent mypy error: 
+
+        # casting to str to prevent mypy error:
         # Argument 1 to "strptime" of "datetime" has incompatible type "Optional[Any]"; expected "str"
         most_recent_alert_created_date = str(most_recent_alert.get("created_at"))
 
@@ -334,7 +334,6 @@ def incidents_to_import(alerts: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
         for alert in alerts:
 
             alert_created_at = str(alert.get("created_at"))
-            
             alert_timestamp = int(datetime.strptime(alert_created_at, SECURITYSCORECARD_DATE_FORMAT).timestamp())
 
             alert_id = alert.get("id")
@@ -434,7 +433,7 @@ def securityscorecard_portfolios_list_command(client: Client) -> CommandResults:
     portfolios = client.get_portfolios()
 
     # For mypy
-    # error: Argument 1 to "int" has incompatible type "Optional[Any]"; 
+    # error: Argument 1 to "int" has incompatible type "Optional[Any]";
     # expected "Union[str, bytes, SupportsInt, _SupportsIndex]"
     portfolios_total = portfolios.get("total")
     assert portfolios_total is not None
@@ -683,7 +682,7 @@ def securityscorecard_company_history_score_get_command(client: Client, args: Di
         timing = str(args.get('timing'))
 
         demisto.debug("Arguments: {0}".format(args))
-        response = client.get_company_historical_scores(domain=domain, _from=_from, to=to, timing=timing) # type: ignore
+        response = client.get_company_historical_scores(domain=domain, _from=_from, to=to, timing=timing)  # type: ignore
 
         demisto.debug("API response: {0}".format(response))
 
@@ -727,7 +726,7 @@ def securityscorecard_company_history_factor_score_get_command(client: Client, a
     :rtype: ``CommandResults``
     """
 
-    domain = args.get('domain')
+    domain = str(args.get('domain'))
 
     if is_valid_domain(domain):
 
@@ -755,14 +754,14 @@ def securityscorecard_company_history_factor_score_get_command(client: Client, a
         if _from is not None and to is not None and _from > to:
             raise DemistoException("Invalid time range. The 'from' date '{0}' is after the 'to' date '{1}'".format(_from, to))
 
-        timing = args.get('timing')
+        timing = str(args.get('timing'))
 
         demisto.debug("Arguments: {0}".format(args))
-        response = client.get_company_historical_factor_scores(domain=domain, _from=_from, to=to, timing=timing)
+        response = client.get_company_historical_factor_scores(domain=domain, _from=_from, to=to, timing=timing)  # type: ignore
 
         demisto.debug("API response: {0}".format(response))
 
-        entries = response.get('entries')
+        entries = response['entries']
 
         factor_scores = []
 
