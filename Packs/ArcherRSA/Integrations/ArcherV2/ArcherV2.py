@@ -288,7 +288,7 @@ class Client(BaseClient):
             'Password': self.password
         }
         try:
-            res = self._http_request('POST', '/core/security/login', json_data=body)
+            res = self._http_request('POST', '/core/security/login', json_data=body, timeout=15)
         except DemistoException as e:
             if '<html>' in str(e):
                 raise DemistoException(f"Check the given URL, it can be a redirect issue. Failed with error: {str(e)}")
