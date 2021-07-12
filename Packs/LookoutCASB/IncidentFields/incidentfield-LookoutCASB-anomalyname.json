@@ -2,7 +2,7 @@
     "id": "incident_anomalyname",
     "version": -1,
     "modified": "2020-11-09T22:06:52.421698278-08:00",
-    "name": "Anomaly Name",
+    "name": "Lookout CASB Anomaly Name",
     "ownerOnly": false,
     "cliName": "anomalyname",
     "type": "shortText",

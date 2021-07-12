@@ -2,7 +2,7 @@
     "id": "incident_currenteventid",
     "version": -1,
     "modified": "2020-11-09T22:06:53.895033179-08:00",
-    "name": "Current Event Id",
+    "name": "Lookout CASB Current Event Id",
     "ownerOnly": false,
     "cliName": "currenteventid",
     "type": "shortText",

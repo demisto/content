@@ -2,7 +2,7 @@
     "id": "incident_cloudname",
     "version": -1,
     "modified": "2020-11-09T22:06:53.239733962-08:00",
-    "name": "Cloud Name",
+    "name": "Lookout CASB Cloud Name",
     "ownerOnly": false,
     "cliName": "cloudname",
     "type": "shortText",

@@ -2,7 +2,7 @@
     "id": "incident_anomalytype",
     "version": -1,
     "modified": "2020-11-09T22:06:52.603453004-08:00",
-    "name": "Anomaly Type",
+    "name": "Lookout CASB Anomaly Type",
     "ownerOnly": false,
     "description": "Anomaly Type from CipherCloud integration",
     "cliName": "anomalytype",

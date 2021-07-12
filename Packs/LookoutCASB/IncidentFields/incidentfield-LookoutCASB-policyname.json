@@ -2,7 +2,7 @@
     "id": "incident_policyname",
     "version": -1,
     "modified": "2020-11-09T22:06:54.615326468-08:00",
-    "name": "Policy Name",
+    "name": "Lookout CASB Policy Name",
     "ownerOnly": false,
     "cliName": "policyname",
     "type": "shortText",

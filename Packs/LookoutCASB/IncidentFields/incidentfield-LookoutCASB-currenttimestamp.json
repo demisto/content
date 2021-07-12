@@ -2,7 +2,7 @@
     "id": "incident_currenttimestamp",
     "version": -1,
     "modified": "2020-11-09T22:06:54.061565959-08:00",
-    "name": "Current Timestamp",
+    "name": "Lookout CASB Current Timestamp",
     "ownerOnly": false,
     "cliName": "currenttimestamp",
     "type": "shortText",

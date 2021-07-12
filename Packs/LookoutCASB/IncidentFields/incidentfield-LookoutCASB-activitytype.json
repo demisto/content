@@ -2,7 +2,7 @@
     "id": "incident_activitytype",
     "version": -1,
     "modified": "2020-11-09T22:06:52.228251678-08:00",
-    "name": "Activity Type",
+    "name": "Lookout CASB Activity Type",
     "ownerOnly": false,
     "cliName": "activitytype",
     "type": "shortText",

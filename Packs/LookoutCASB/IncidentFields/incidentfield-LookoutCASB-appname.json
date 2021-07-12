@@ -2,7 +2,7 @@
     "id": "incident_appname",
     "version": -1,
     "modified": "2020-11-09T22:06:52.941642844-08:00",
-    "name": "App Name",
+    "name": "Lookout CASB App Name",
     "ownerOnly": false,
     "description": "Application Name",
     "cliName": "appname",

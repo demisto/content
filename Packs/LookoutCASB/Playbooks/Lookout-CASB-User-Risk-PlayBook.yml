@@ -1,6 +1,6 @@
-id: Lookout-CASB-User-Risk-PlayBook
+id: Lookout-CASB-User-Risk
 version: -1
-name: Lookout-CASB-User-Risk-PlayBook
+name: Lookout-CASB-User-Risk
 starttaskid: "0"
 tasks:
   "0":

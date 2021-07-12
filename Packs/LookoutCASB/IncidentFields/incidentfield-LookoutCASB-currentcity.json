@@ -2,7 +2,7 @@
     "id": "incident_currentcity",
     "version": -1,
     "modified": "2020-11-09T22:06:53.732553507-08:00",
-    "name": "Current City",
+    "name": "Lookout CASB Current City",
     "ownerOnly": false,
     "cliName": "currentcity",
     "type": "shortText",

@@ -2,7 +2,7 @@
     "id": "incident_useremail",
     "version": -1,
     "modified": "2020-11-09T22:06:55.751410563-08:00",
-    "name": "User Email",
+    "name": "Lookout CASB User Email",
     "ownerOnly": false,
     "cliName": "useremail",
     "type": "shortText",
