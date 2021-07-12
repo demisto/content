@@ -183,7 +183,7 @@ class Client(BaseClient):
             return_empty_response=True
         )
 
-    def get_alerts_last_week(self, email: str, portfolio_id: Optional[str]) -> List[Dict[str, Any]]:
+    def get_alerts_last_week(self, email: str, portfolio_id: Optional[str]) -> Dict[str, Any]:
 
         query_params = {}
 
@@ -998,7 +998,7 @@ def securityscorecard_alerts_list_command(client: Client, args: Dict[str, Any]) 
 
         response = client.get_alerts_last_week(email=email, portfolio_id=portfolio_id)
 
-        entries = response.get("entries")
+        entries = response["entries"]
 
         # Retrieve the alert metadata (direction, score, factor, grade_letter, score_impact)
         alerts = []
