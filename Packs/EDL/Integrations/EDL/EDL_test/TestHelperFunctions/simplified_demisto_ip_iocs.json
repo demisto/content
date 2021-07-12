@@ -1,0 +1,14 @@
+[
+  {
+      "indicator_type": "IP",
+      "value": "1.1.1.1"
+  },
+  {
+      "indicator_type": "IP",
+      "value": "1.1.1.2"
+  },
+  {
+      "indicator_type": "IP",
+      "value": "1.1.1.3"
+  }
+]
