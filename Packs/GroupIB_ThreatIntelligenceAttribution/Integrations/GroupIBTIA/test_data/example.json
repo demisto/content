@@ -407,5 +407,25 @@
             "isAPT": false,
             "name": "FRK48"
         }
+    },
+    "compromised/breached": {
+        "addInfo": {
+            "address": [
+                ""
+            ]
+        },
+        "email": [
+            "some@gmail.com"
+        ],
+        "id": [
+            "277c4112d348c91f6dabe9467f0d11dd"
+        ],
+        "leakName": "some.com",
+        "password": [
+            "CD91C480FDE9D7ACB8AC4B78310EA2ED",
+            "1390DDDFA28AE085D23518A035707231"
+        ],
+        "updateTime": "2021-06-12T03:02:00",
+        "uploadTime": "2021-06-12T03:02:00"
     }
 }

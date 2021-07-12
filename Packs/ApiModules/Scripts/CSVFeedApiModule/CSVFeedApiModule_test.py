@@ -1,6 +1,7 @@
 import requests_mock
 from CSVFeedApiModule import *
 import io
+import pytest
 
 
 def test_get_indicators_1():
@@ -150,12 +151,20 @@ def test_get_feed_content():
             assert client.get_feed_content_divided_to_lines(url, raw_response) == expected_output
 
 
-def test_date_format_parsing():
-    formatted_date = date_format_parsing('2020-02-01 12:13:14')
-    assert formatted_date == '2020-02-01T12:13:14Z'
-
-    formatted_date = date_format_parsing('2020-02-01 12:13:14.11111')
-    assert formatted_date == '2020-02-01T12:13:14Z'
+@pytest.mark.parametrize('date_string,expected_result', [
+    ("2020-02-10 13:39:14", '2020-02-10T13:39:14Z'), ("2020-02-10T13:39:14", '2020-02-10T13:39:14Z'),
+    ("2020-02-10 13:39:14.123", '2020-02-10T13:39:14Z'), ("2020-02-10T13:39:14.123", '2020-02-10T13:39:14Z'),
+    ("2020-02-10T13:39:14Z", '2020-02-10T13:39:14Z'), ("2020-11-01T04:16:13-04:00", '2020-11-01T08:16:13Z')])
+def test_date_format_parsing(date_string, expected_result):
+    """
+    Given
+    - A string represting a date.
+    When
+    - running date_format_parsing on the date.
+    Then
+    - Ensure the datestring is converted to the ISO-8601 format.
+    """
+    assert expected_result == date_format_parsing(date_string)
 
 
 class TestTagsParam:
