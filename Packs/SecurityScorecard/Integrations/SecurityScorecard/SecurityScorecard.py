@@ -175,7 +175,7 @@ class Client(BaseClient):
             json_data=payload
         )
 
-    def delete_alert(self, email: str, alert_id: str, alert_type: str) -> List[Dict[str, Any]]:
+    def delete_alert(self, email: str, alert_id: str, alert_type: str) -> None:
 
         return self._http_request(
             "DELETE",
@@ -960,8 +960,8 @@ def securityscorecard_alert_delete_command(client: Client, args: Dict[str, Any])
     email = demisto.params().get('username').get("identifier")
     if is_email_valid(email):
 
-        alert_id = args.get("alert_id")
-        alert_type = args.get("alert_type")
+        alert_id = str(args.get("alert_id"))
+        alert_type = str(args.get("alert_type"))
         client.delete_alert(email=email, alert_id=alert_id, alert_type=alert_type)
 
         markdown = "{0} alert **{1}** deleted".format(str.capitalize(alert_type), alert_id)
