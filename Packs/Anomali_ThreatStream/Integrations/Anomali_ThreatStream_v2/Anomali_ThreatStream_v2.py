@@ -2,6 +2,12 @@ import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
 
+GOOD_SCORE = 1
+
+SUSPICIOUS_SCORE = 2
+
+MALICIOUS_SCORE = 3
+
 ''' IMPORTS '''
 
 import json
@@ -19,7 +25,8 @@ SERVER = demisto.params().get('url', '').strip('/')
 USE_SSL = not demisto.params().get('insecure', False)
 BASE_URL = SERVER + '/api/'
 DEFAULT_THRESHOLD = demisto.params().get('default_threshold', 'high')
-
+DEFAULT_MALICIOUS_THRESHOLD = 65
+DEFAULT_SUSPICIOUS_THRESHOLD = 25
 HEADERS = {
     'Content-Type': 'application/json'
 }
@@ -34,6 +41,13 @@ DBOT_SCORE = {
     'medium': 2,
     'high': 3,
     'very-high': 3
+}
+
+DEFAULT_THRESHOLDS = {
+    'url': arg_to_number(demisto.params().get('url_threshold')),
+    'ip': arg_to_number(demisto.params().get('ip_threshold')),
+    'file': arg_to_number(demisto.params().get('file_threshold')),
+    'domain': arg_to_number(demisto.params().get('domain_threshold'))
 }
 
 SEVERITY_SCORE = {
@@ -156,7 +170,7 @@ def build_params(**params):
     return params
 
 
-def get_dbot_context(indicator, threshold, mapping=None):
+def get_dbot_context(indicator, mapping=None):
     """
          Builds and returns dictionary with Indicator, Type, Vendor and Score keys
          and values from the indicator that will be returned to context.
@@ -164,22 +178,32 @@ def get_dbot_context(indicator, threshold, mapping=None):
     if not mapping:
         mapping = DBOT_MAPPING
     dbot_context = {mapping[k]: v for (k, v) in indicator.items() if k in mapping.keys()}
-    indicator_score = DBOT_SCORE[indicator.get('meta', {}).get('severity', 'low')]
-    # the indicator will be considered as malicious in case it's score is greater or equal to threshold
-    dbot_context['Score'] = 3 if indicator_score >= DBOT_SCORE[threshold] else indicator_score
+    confidence = indicator['confidence']
+    defined_threshold = DEFAULT_THRESHOLDS.get(indicator.get('type'))
+    if defined_threshold:
+        indicator_score = MALICIOUS_SCORE if confidence > defined_threshold else GOOD_SCORE
+    else:
+        if confidence > DEFAULT_MALICIOUS_THRESHOLD:
+            indicator_score = MALICIOUS_SCORE
+        elif confidence > DEFAULT_SUSPICIOUS_THRESHOLD:
+            indicator_score = SUSPICIOUS_SCORE
+        else:
+            indicator_score = GOOD_SCORE
+
+    dbot_context['Score'] = indicator_score
     dbot_context['Vendor'] = 'ThreatStream'
 
     return dbot_context
 
 
-def mark_as_malicious(indicator, threshold, context):
+def mark_as_malicious(indicator, context):
     """
-        Marks indicator as malicious if severity of indicator is greater/equals to threshold and
+        Marks indicator as malicious if confidence of indicator is greater to threshold and
         adds Malicious key to returned dictionary (context) in such case.
     """
-    severity = indicator.get('meta', {}).get('severity', 'low')
-
-    if SEVERITY_SCORE[severity] >= SEVERITY_SCORE[threshold]:
+    confidence = indicator['confidence']
+    threshold = DEFAULT_THRESHOLDS.get(indicator.get('type')) or DEFAULT_MALICIOUS_THRESHOLD
+    if confidence > threshold:
         context['Malicious'] = {
             'Vendor': 'ThreatStream'
         }
@@ -214,7 +238,7 @@ def get_ip_context(indicator, threshold):
     if indicator_tags:
         ip_context['Tags'] = [str(tag.get('name', '')) for tag in indicator_tags]
 
-    mark_as_malicious(indicator, threshold, ip_context)
+    mark_as_malicious(indicator, ip_context)
 
     return ip_context
 
@@ -243,7 +267,7 @@ def get_domain_context(indicator, threshold):
     if indicator_tags:
         domain_context['Tags'] = [str(tag.get('name', '')) for tag in indicator_tags]
 
-    mark_as_malicious(indicator, threshold, domain_context)
+    mark_as_malicious(indicator, domain_context)
 
     return domain_context
 
@@ -269,7 +293,7 @@ def get_file_context(indicator, threshold):
     if indicator_tags:
         file_context['Tags'] = [str(tag.get('name', '')) for tag in indicator_tags]
 
-    mark_as_malicious(indicator, threshold, file_context)
+    mark_as_malicious(indicator, file_context)
 
     return file_context
 
@@ -283,7 +307,7 @@ def get_url_context(indicator, threshold):
     if indicator_tags:
         url_context['Tags'] = [str(tag.get('name', '')) for tag in indicator_tags]
 
-    mark_as_malicious(indicator, threshold, url_context)
+    mark_as_malicious(indicator, url_context)
 
     return url_context
 
@@ -452,7 +476,7 @@ def get_ip_reputation(ip, threshold=None, status="active,inactive"):
         return
 
     threshold = threshold or DEFAULT_THRESHOLD
-    dbot_context = get_dbot_context(indicator, threshold)
+    dbot_context = get_dbot_context(indicator)
     ip_context = get_ip_context(indicator, threshold)
     threat_ip_context = get_threat_generic_context(indicator)
     threat_ip_tags = threat_ip_context.pop('Tags', [])
@@ -492,7 +516,7 @@ def get_domain_reputation(domain, threshold=None, status="active,inactive"):
         return
 
     threshold = threshold or DEFAULT_THRESHOLD
-    dbot_context = get_dbot_context(indicator, threshold)
+    dbot_context = get_dbot_context(indicator)
     domain_context = get_domain_context(indicator, threshold)
     threat_domain_context = get_threat_generic_context(indicator)
     threat_domain_tags = threat_domain_context.pop('Tags', [])
@@ -537,11 +561,10 @@ def get_file_reputation(file, threshold=None, status="active,inactive"):
         'subtype': 'Type',
         'source': 'Vendor',
     }
-    dbot_context = get_dbot_context(indicator, threshold, file_dbot_mapping)
+    dbot_context = get_dbot_context(indicator, file_dbot_mapping)
     file_type = get_file_type(indicator)
     file_context = get_file_context(indicator, threshold)
     file_indicator_mapping = get_file_mapping()
-
     threat_file_context = get_threat_generic_context(indicator, file_indicator_mapping)
     threat_file_context[file_type] = threat_file_context.pop('Address')
     threat_file_context.pop("ASN", None)
@@ -552,6 +575,7 @@ def get_file_reputation(file, threshold=None, status="active,inactive"):
         # Convert the tags objects into s string for the human readable and then override it with the original objects
         # for the context.
         threat_file_context['Tags'] = ', '.join(str(tag.get('name', '')) for tag in threat_file_tags)
+
     human_readable = tableToMarkdown(F"{file_type} reputation for: {file}", threat_file_context)
     threat_file_context['Tags'] = threat_file_tags
 
@@ -583,8 +607,7 @@ def get_url_reputation(url, threshold=None, status="active,inactive"):
     if not indicator:
         return
 
-    threshold = threshold or DEFAULT_THRESHOLD
-    dbot_context = get_dbot_context(indicator, threshold)
+    dbot_context = get_dbot_context(indicator)
     domain_context = get_url_context(indicator, threshold)
     threat_url_context = get_threat_generic_context(indicator)
     del threat_url_context['ASN']
@@ -615,8 +638,7 @@ def get_email_reputation(email, threshold=None, status="active,inactive"):
     if not indicator:
         return
 
-    threshold = threshold or DEFAULT_THRESHOLD
-    dbot_context = get_dbot_context(indicator, threshold)
+    dbot_context = get_dbot_context(indicator)
     threat_email_context = get_threat_generic_context(indicator)
     threat_email_context['Email'] = threat_email_context.pop('Address')
     threat_email_context.pop("ASN", None)

@@ -16,16 +16,22 @@ configuration:
   name: apikey
   required: true
   type: 4
-- defaultvalue: high
-  display: Threshold of the indicator.
-  name: default_threshold
-  options:
-  - low
-  - medium
-  - high
-  - very-high
-  required: true
-  type: 15
+- display: URL threshold
+  name: url_threshold
+  required: false
+  type: 0
+- display: IP threshold
+  name: ip_threshold
+  required: false
+  type: 0
+- display: Domain threshold
+  name: domain_threshold
+  required: false
+  type: 0
+- display: File threshold
+  name: file_threshold
+  required: false
+  type: 0
 - defaultvalue: 'false'
   display: Trust any certificate (not secure)
   name: insecure
