@@ -324,7 +324,6 @@ class DBotScoreReliability(object):
             return DBotScoreReliability.F
         raise Exception("Please use supported reliability only.")
 
-# TODO: should add custom somehow here
 INDICATOR_TYPE_TO_CONTEXT_KEY = {
     'ip': 'Address',
     'email': 'Address',
@@ -2413,7 +2412,7 @@ class Common(object):
             :param value: Value of the indicator
 
             :type dbot_score: ``DBotScore``
-            :param dbot_score: If IP has a score then create and set a DBotScore object.
+            :param dbot_score: If custom indicator has a score then create and set a DBotScore object.
 
             :type params: ``Dict(Str,Any)``
             :param params: A dictionary containing all the param names and their values
@@ -2437,6 +2436,7 @@ class Common(object):
             self.dbot_score = dbot_score
 
             DBotScoreType.set_custom_name(indicator_name)
+            INDICATOR_TYPE_TO_CONTEXT_KEY[indicator_name] = indicator_name
 
             for key in params:
                 setattr(self, key, params[key])
