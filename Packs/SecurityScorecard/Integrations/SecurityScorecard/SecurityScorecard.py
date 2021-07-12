@@ -129,7 +129,7 @@ class Client(BaseClient):
         change_direction: str,
         score_types: List[str],
         target: List[str]
-    ) -> List[Dict[str, Any]]:
+    ) -> Dict[str, Any]:
 
         payload: Dict[str, Any] = {}
         if change_direction:
@@ -833,7 +833,7 @@ def securityscorecard_alert_grade_change_create_command(client: Client, args: Di
     email = demisto.params().get('username').get("identifier")
 
     if is_email_valid(email=email):
-        change_direction = args.get('change_direction')
+        change_direction = str(args.get('change_direction'))
         score_types = argToList(args.get('score_types'))
         target = argToList(args.get('target'))
 

@@ -303,10 +303,13 @@ script:
         factors, leaked_information,social_engineering .
       required: true
     - name: target
-      isArray: true
       description: What do you want to monitor with this alert. It could be one of
-        the following 'my_scorecard', 'any_followed_company' or comma-separated Portfolio
-        IDs, e.g. 60c78cc2d63162001a68c2b8,60c8c5f9139e40001908c6a4 or 60c78cc2d63162001a68c2b8,my_scorecard
+        the following 'my_scorecard', 'any_followed_company'. This argument is require
+        if the `portfolios` argument is not specified.
+      auto: PREDEFINED
+      predefined:
+      - "my_scorecard"
+      - "any_followed_company"
       required: true
     outputs:
     - contextPath: SecurityScorecard.Alert.id
