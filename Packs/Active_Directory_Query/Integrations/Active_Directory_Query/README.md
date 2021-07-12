@@ -544,6 +544,7 @@ Retrieves detailed information about a user account. The user can be specified b
 | custom-field-type | Query users by this custom field type. | Optional |
 | custom-field-data | Query users by this custom field data (relevant only if the custom-field-type argument is provided). | Optional |
 | username | Query users by the samAccountName attribute | Optional |
+| samAccountName | Query users by the samAccountName attribute | Optional |
 | limit | Maximum number of objects to return (default is 20). | Optional |
 | email | Query by the user’s email address. | Optional |
 | user-account-control-out | Include verbose translation for UserAccountControl flags. | Optional |
