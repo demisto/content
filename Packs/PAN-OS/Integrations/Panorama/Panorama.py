@@ -7129,7 +7129,7 @@ def panorama_reset_last_run_command() -> CommandResults:
     ctx = get_integration_context()
     ctx[RESET_KEY] = True
     set_integration_context(ctx)
-    CommandResults('fetch-incidents was reset successfully.')
+    return CommandResults('fetch-incidents was reset successfully.')
 
 
 def main():
