@@ -33,7 +33,7 @@ class TestGetPrivateKey:
     @staticmethod
     def test_get_from_params(mocker):
         mocker.patch.object(demisto, 'params', return_value={
-            'private_key': '-----BEGIN RSA PRIVATE KEY-----\n' # guardrails-disable-line
+            'private_key': '-----BEGIN RSA PRIVATE KEY-----\n'  # guardrails-disable-line
                            'MCICAQACAwCLNwIDAQABAgJ+iQICAOMCAgCdAgFLAgFlAgFr'  # guardrails-disable-line
                            '\n-----END RSA PRIVATE KEY-----\n',  # guardrails-disable-line
         })

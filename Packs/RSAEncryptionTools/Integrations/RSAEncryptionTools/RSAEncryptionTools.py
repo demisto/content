@@ -6,8 +6,8 @@ import rsa
 from CommonServerPython import *
 import demistomock as demisto
 
-PREFIX = '-----BEGIN RSA PRIVATE KEY-----'
-SUFFIX = '-----END RSA PRIVATE KEY-----'
+PREFIX = '-----BEGIN RSA PRIVATE KEY-----'  # guardrails-disable-line
+SUFFIX = '-----END RSA PRIVATE KEY-----'  # guardrails-disable-line
 
 
 def test_module():
