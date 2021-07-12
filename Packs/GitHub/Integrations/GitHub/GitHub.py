@@ -1257,14 +1257,14 @@ def add_issue_to_project_board_command():
 
     post_url = "%s/projects/columns/%s/cards" % (BASE_URL, column_id)
     post_data = {"content_id": content_id,
-                 "content_type": "Issue",
+                 "content_type": content_type,
                  }
     response = requests.post(url=post_url,
                              headers=header,
                              verify=USE_SSL,
                              data=json.dumps(post_data)
                              )
-    demisto.results("Post result %s, %s" % (response, response.text))
+    return_results("Post result %s, %s" % (response, response.text))
 
 
 def list_all_command():
@@ -1383,9 +1383,6 @@ def search_issue(query, limit, page=1):
     response = http_request(method='GET',
                             url_suffix='/search/issues',
                             params=params)
-    demisto.results("len response %d, type:%s" % (len(response), type(response)))
-    demisto.results("response %s" % json.dumps(response))
-    demisto.results(response)
     if len(response["items"]) == MAX_FETCH_PAGE_RESULTS:
         next_res = search_issue(query=query, limit=limit, page=page + 1)
         response["items"] = response["items"] + next_res["items"]
