@@ -2,17 +2,18 @@ id: Kaseya VSA  0-day - REvil Ransomware Supply Chain Attack
 version: -1
 name: Kaseya VSA  0-day - REvil Ransomware Supply Chain Attack
 description: "On July 2nd, Kaseya company has experienced an attack against the VSA\
-  \ (Virtual System/Server Administrator) product. Kaseya customers pointed\
-  \ out a ransomware outbreak in their environments.\nFurther investigation revealed\
-  \ that REvil group exploited VSA zero-day vulnerabilities for authentication bypass\
-  \ and arbitrary command execution. This allowed the attacker to deploy ransomware\
-  \ on Kaseya customers' endpoints.\n\nThis playbook should be trigger manually and\
-  \ includes the following tasks: \n\n* Collect related known indicators from several\
-  \ sources.\n* Indicators, PS commands, Registry changes and known HTTP requests\
-  \ hunting using PAN-OS, Cortex XDR and SIEM products.\n    * Splunk advanced queries can be modified through\
-  \ the playbook inputs.\n* Block indicators automatically or manually.\n* Provide\
-  \ advanced hunting and detection capabilities.\n\nMore information:\n[Kaseya Incident\
-  \ Overview & Technical Details](https://helpdesk.kaseya.com/hc/en-gb/articles/4403584098961)\n\
+  \ (Virtual System/Server Administrator) product. Kaseya customers pointed out a\
+  \ ransomware outbreak in their environments.\nFurther investigation revealed that\
+  \ REvil group exploited VSA zero-day vulnerabilities for authentication bypass and\
+  \ arbitrary command execution. This allowed the attacker to deploy ransomware on\
+  \ Kaseya customers' endpoints.\n\nThis playbook should be trigger manually and includes\
+  \ the following tasks: \n\n* Collect related known indicators from several sources.\n\
+  * Indicators, PS commands, Registry changes and known HTTP requests hunting using\
+  \ PAN-OS, Cortex XDR and SIEM products.\n    * Splunk advanced queries can be modified\
+  \ through the playbook inputs.\n* Search for internet facing Kaseya VSA servers\
+  \ using Xpanse.\n* Block indicators automatically or manually.\n* Provide advanced\
+  \ hunting and detection capabilities.\n\nMore information:\n[Kaseya Incident Overview\
+  \ & Technical Details](https://helpdesk.kaseya.com/hc/en-gb/articles/4403584098961)\n\
   \nNote: This is a beta playbook, which lets you implement and test pre-release software.\
   \ Since the playbook is beta, it might contain bugs. Updates to the pack during\
   \ the beta phase might include non-backward compatible features. We appreciate your\
@@ -22,10 +23,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 2a71bd33-61e9-4bea-87b3-d0848f4f4481
+    taskid: b1456b56-c87f-4e3f-8b46-faef70124644
     type: start
     task:
-      id: 2a71bd33-61e9-4bea-87b3-d0848f4f4481
+      id: b1456b56-c87f-4e3f-8b46-faef70124644
       version: -1
       name: ""
       iscommand: false
@@ -49,10 +50,10 @@ tasks:
     quietmode: 0
   "1":
     id: "1"
-    taskid: c399f363-f8a0-430b-8370-fab978c55e5b
+    taskid: 61125b81-8b5e-41fd-8e4b-ec95218b7e63
     type: title
     task:
-      id: c399f363-f8a0-430b-8370-fab978c55e5b
+      id: 61125b81-8b5e-41fd-8e4b-ec95218b7e63
       version: -1
       name: Collect Indicators
       type: title
@@ -82,10 +83,10 @@ tasks:
     quietmode: 0
   "2":
     id: "2"
-    taskid: e2cf2675-e033-4dd1-82d1-1e4520452953
+    taskid: 1a6037b1-bf8a-495f-81e5-24b0f5f39edd
     type: regular
     task:
-      id: e2cf2675-e033-4dd1-82d1-1e4520452953
+      id: 1a6037b1-bf8a-495f-81e5-24b0f5f39edd
       version: -1
       name: Collect Hash indicators from cado-security
       description: This script will extract indicators from HTML and will handle bad
@@ -120,10 +121,10 @@ tasks:
     quietmode: 0
   "3":
     id: "3"
-    taskid: d5bf378e-50a1-4ce1-806f-5839f6ec383e
+    taskid: 8e48e9c6-9926-403a-8648-2246c62de21d
     type: regular
     task:
-      id: d5bf378e-50a1-4ce1-806f-5839f6ec383e
+      id: 8e48e9c6-9926-403a-8648-2246c62de21d
       version: -1
       name: Collect Domain indicators from cado-security
       description: This script will extract indicators from HTML and will handle bad
@@ -158,10 +159,10 @@ tasks:
     quietmode: 0
   "4":
     id: "4"
-    taskid: a1788d1e-97f9-4dbb-80fa-af7c12d49bc7
+    taskid: f8f70408-7f0d-4e37-86ae-4426c353bb12
     type: title
     task:
-      id: a1788d1e-97f9-4dbb-80fa-af7c12d49bc7
+      id: f8f70408-7f0d-4e37-86ae-4426c353bb12
       version: -1
       name: Extract Indicators
       type: title
@@ -186,10 +187,10 @@ tasks:
     quietmode: 0
   "5":
     id: "5"
-    taskid: d96748f0-cc2c-4d76-854e-0c61d347f1a8
+    taskid: fa871faa-ccc3-4fcb-8f76-af4565ec4f9a
     type: regular
     task:
-      id: d96748f0-cc2c-4d76-854e-0c61d347f1a8
+      id: fa871faa-ccc3-4fcb-8f76-af4565ec4f9a
       version: -1
       name: Extract Indicators From Data Collected
       description: commands.local.cmd.extract.indicators
@@ -219,10 +220,10 @@ tasks:
     quietmode: 0
   "6":
     id: "6"
-    taskid: 0ad38713-2e7e-4ff7-827b-9bf36ccbbc53
+    taskid: 50c0c1a7-3eb2-4942-89a1-3f236b29dcb5
     type: regular
     task:
-      id: 0ad38713-2e7e-4ff7-827b-9bf36ccbbc53
+      id: 50c0c1a7-3eb2-4942-89a1-3f236b29dcb5
       version: -1
       name: Download Yara Rules
       description: Download Yara Rules
@@ -258,10 +259,10 @@ tasks:
     quietmode: 0
   "7":
     id: "7"
-    taskid: 2def6960-4d4e-459a-8e3e-8c5c43555bc9
+    taskid: 919c345d-323b-4adf-8270-b0d6cfdbb3af
     type: title
     task:
-      id: 2def6960-4d4e-459a-8e3e-8c5c43555bc9
+      id: 919c345d-323b-4adf-8270-b0d6cfdbb3af
       version: -1
       name: Threat Hunting
       type: title
@@ -274,6 +275,7 @@ tasks:
       - "8"
       - "26"
       - "45"
+      - "66"
     separatecontext: false
     view: |-
       {
@@ -289,10 +291,10 @@ tasks:
     quietmode: 0
   "8":
     id: "8"
-    taskid: bdf114ed-c60d-4886-8638-561f53501fb3
+    taskid: b823846f-ea23-4564-8910-b2e5e31818fb
     type: title
     task:
-      id: bdf114ed-c60d-4886-8638-561f53501fb3
+      id: b823846f-ea23-4564-8910-b2e5e31818fb
       version: -1
       name: SIEM Hunting
       type: title
@@ -307,8 +309,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -80,
-          "y": 1520
+          "x": -580,
+          "y": 1500
         }
       }
     note: false
@@ -318,10 +320,10 @@ tasks:
     quietmode: 0
   "10":
     id: "10"
-    taskid: 44ff2343-825e-4f99-874e-35c41b17b746
+    taskid: 4bb5fade-9dff-48d8-828e-991a5f04eecf
     type: title
     task:
-      id: 44ff2343-825e-4f99-874e-35c41b17b746
+      id: 4bb5fade-9dff-48d8-828e-991a5f04eecf
       version: -1
       name: Palo Alto Networks Hunting
       type: title
@@ -336,8 +338,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 950,
-          "y": 1520
+          "x": 450,
+          "y": 1500
         }
       }
     note: false
@@ -347,10 +349,10 @@ tasks:
     quietmode: 0
   "12":
     id: "12"
-    taskid: 93acc433-02b1-497c-8fc1-9ee616aa0dea
+    taskid: 89eaa9f9-f8d0-44c1-8690-8a9e413f6089
     type: playbook
     task:
-      id: 93acc433-02b1-497c-8fc1-9ee616aa0dea
+      id: 89eaa9f9-f8d0-44c1-8690-8a9e413f6089
       version: -1
       name: Palo Alto Networks - Hunting And Threat Detection
       description: "This is a multipurpose playbook used for hunting and threat detection.\
@@ -449,8 +451,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1180,
-          "y": 1700
+          "x": 680,
+          "y": 1680
         }
       }
     note: false
@@ -460,10 +462,10 @@ tasks:
     quietmode: 0
   "13":
     id: "13"
-    taskid: d9347099-5a0c-4a28-86aa-d6b9b5894b22
+    taskid: 6291ed6c-545c-416e-82f9-3c84f4619d81
     type: playbook
     task:
-      id: d9347099-5a0c-4a28-86aa-d6b9b5894b22
+      id: 6291ed6c-545c-416e-82f9-3c84f4619d81
       version: -1
       name: Splunk Indicator Hunting
       description: This playbook queries Splunk for indicators such as file hashes,
@@ -580,8 +582,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 170,
-          "y": 1700
+          "x": -330,
+          "y": 1680
         }
       }
     note: false
@@ -591,10 +593,10 @@ tasks:
     quietmode: 0
   "24":
     id: "24"
-    taskid: 9bffbaa8-6f4f-4577-86a9-34efc060b919
+    taskid: 76a9af3d-2bc8-438f-8481-22e7a977f77a
     type: playbook
     task:
-      id: 9bffbaa8-6f4f-4577-86a9-34efc060b919
+      id: 76a9af3d-2bc8-438f-8481-22e7a977f77a
       version: -1
       name: QRadar Indicator Hunting V2
       description: 'The Playbook queries QRadar SIEM for indicators such as file hashes,
@@ -688,8 +690,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -300,
-          "y": 1700
+          "x": -800,
+          "y": 1680
         }
       }
     note: false
@@ -699,10 +701,10 @@ tasks:
     quietmode: 0
   "25":
     id: "25"
-    taskid: 93e74207-b703-4ea6-81a1-84355bbee4d6
+    taskid: 73c70889-e300-4363-8fb7-21d5ce04cfc7
     type: playbook
     task:
-      id: 93e74207-b703-4ea6-81a1-84355bbee4d6
+      id: 73c70889-e300-4363-8fb7-21d5ce04cfc7
       version: -1
       name: Search Endpoints By Hash - Generic V2
       description: Hunt using available tools
@@ -784,8 +786,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2320,
-          "y": 1700
+          "x": 1240,
+          "y": 1680
         }
       }
     note: false
@@ -795,10 +797,10 @@ tasks:
     quietmode: 0
   "26":
     id: "26"
-    taskid: 79ccd633-e2bc-43bd-8417-470090d03f3e
+    taskid: f1cff7ba-fe5a-4bf1-861f-d1a4278ad692
     type: title
     task:
-      id: 79ccd633-e2bc-43bd-8417-470090d03f3e
+      id: f1cff7ba-fe5a-4bf1-861f-d1a4278ad692
       version: -1
       name: Hunting REvil Known Samples on Endpoints
       type: title
@@ -813,8 +815,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2110,
-          "y": 1520
+          "x": 1450,
+          "y": 1500
         }
       }
     note: false
@@ -824,10 +826,10 @@ tasks:
     quietmode: 0
   "27":
     id: "27"
-    taskid: 1f8c40f6-8135-49c2-8379-747dc5318821
+    taskid: 59418814-acc1-4153-81d1-f8c6eecd7278
     type: regular
     task:
-      id: 1f8c40f6-8135-49c2-8379-747dc5318821
+      id: 59418814-acc1-4153-81d1-f8c6eecd7278
       version: -1
       name: 'Search XDR incidents for suspicious network behavior '
       description: Search XDR incidents for REvil in the network.
@@ -838,6 +840,7 @@ tasks:
     nexttasks:
       '#none#':
       - "34"
+      - "70"
     scriptarguments:
       extend-context:
         simple: REvilXDRincidents=
@@ -854,7 +857,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1540,
+          "x": 1810,
           "y": 1870
         }
       }
@@ -865,10 +868,10 @@ tasks:
     quietmode: 0
   "31":
     id: "31"
-    taskid: dcb24ec4-4e8c-465b-80bd-c0f682f4c1e2
+    taskid: a290aeb4-21ad-41a8-8bef-a4777ef45d73
     type: condition
     task:
-      id: dcb24ec4-4e8c-465b-80bd-c0f682f4c1e2
+      id: a290aeb4-21ad-41a8-8bef-a4777ef45d73
       version: -1
       name: 'Is Cortex XDR enabled? '
       description: Checks if the Cortex XDR instance is enabled.
@@ -907,8 +910,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1900,
-          "y": 1700
+          "x": 1660,
+          "y": 1680
         }
       }
     note: false
@@ -918,12 +921,12 @@ tasks:
     quietmode: 0
   "32":
     id: "32"
-    taskid: 8bba14ac-63f6-41fa-8cf2-0cbb8e8519a8
+    taskid: 3722321a-b4c7-4592-8183-dc500289e5f1
     type: playbook
     task:
-      id: 8bba14ac-63f6-41fa-8cf2-0cbb8e8519a8
+      id: 3722321a-b4c7-4592-8183-dc500289e5f1
       version: -1
-      name: Panorama Query Logs for Related Threat IDs
+      name: Panorama Query Logs
       description: 'Query Panorama Logs of types: traffic, threat, url, data-filtering
         and wildfire.'
       playbookName: Panorama Query Logs
@@ -949,8 +952,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 740,
-          "y": 1700
+          "x": 240,
+          "y": 1680
         }
       }
     note: false
@@ -960,10 +963,10 @@ tasks:
     quietmode: 0
   "33":
     id: "33"
-    taskid: 5f687a93-79c6-4e58-8913-ca71ce7c453b
+    taskid: aa41e117-b09e-469b-8f42-f21135ab8bc2
     type: playbook
     task:
-      id: 5f687a93-79c6-4e58-8913-ca71ce7c453b
+      id: aa41e117-b09e-469b-8f42-f21135ab8bc2
       version: -1
       name: Post Intrusion Ransomware Investigation
       description: |+
@@ -1006,8 +1009,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1330,
-          "y": 3310
+          "x": 1770,
+          "y": 3340
         }
       }
     note: false
@@ -1017,10 +1020,10 @@ tasks:
     quietmode: 0
   "34":
     id: "34"
-    taskid: 95c8f7da-ffa5-43cc-8611-050b101df9c8
+    taskid: 1d99ab7e-0944-4599-8a9a-4e4ecd365546
     type: title
     task:
-      id: 95c8f7da-ffa5-43cc-8611-050b101df9c8
+      id: 1d99ab7e-0944-4599-8a9a-4e4ecd365546
       version: -1
       name: Remediation
       type: title
@@ -1045,10 +1048,10 @@ tasks:
     quietmode: 0
   "36":
     id: "36"
-    taskid: f1005e51-238b-44e6-873d-f45d9c892f99
+    taskid: 33746266-07f6-4d65-80c2-806a53c0c151
     type: regular
     task:
-      id: f1005e51-238b-44e6-873d-f45d9c892f99
+      id: 33746266-07f6-4d65-80c2-806a53c0c151
       version: -1
       name: Deploy YARA rules
       description: Yara rules file has been downloaded as YaraRules.yar and is available
@@ -1063,8 +1066,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 230,
-          "y": 3090
+          "x": -290,
+          "y": 3170
         }
       }
     note: false
@@ -1074,10 +1077,10 @@ tasks:
     quietmode: 0
   "37":
     id: "37"
-    taskid: 57daf372-cd65-4259-8ff9-992a49996d7f
+    taskid: b38bd13d-29cc-471e-8343-7c432d70ba44
     type: regular
     task:
-      id: 57daf372-cd65-4259-8ff9-992a49996d7f
+      id: b38bd13d-29cc-471e-8343-7c432d70ba44
       version: -1
       name: Deploy Sigma rules
       description: Sigma rules file has been downloaded as SigmaRules.yml and is available
@@ -1092,8 +1095,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -230,
-          "y": 3090
+          "x": -710,
+          "y": 3170
         }
       }
     note: false
@@ -1103,10 +1106,10 @@ tasks:
     quietmode: 0
   "39":
     id: "39"
-    taskid: ab031fb6-c999-4cf6-81fa-c7c9103e0a3e
+    taskid: 9460aea4-8a44-4514-8b84-ef691ef7e785
     type: regular
     task:
-      id: ab031fb6-c999-4cf6-81fa-c7c9103e0a3e
+      id: 9460aea4-8a44-4514-8b84-ef691ef7e785
       version: -1
       name: Download Sigma Rules
       description: Download Sigma Rules
@@ -1142,10 +1145,10 @@ tasks:
     quietmode: 0
   "40":
     id: "40"
-    taskid: 8f77a413-0db4-4cda-85d0-759121367170
+    taskid: e3279015-09f7-43d2-8d1f-f4b6024afaa3
     type: title
     task:
-      id: 8f77a413-0db4-4cda-85d0-759121367170
+      id: e3279015-09f7-43d2-8d1f-f4b6024afaa3
       version: -1
       name: Advanced Hunting and Detection Procedures
       type: title
@@ -1154,10 +1157,9 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "37"
-      - "36"
-      - "51"
-      - "47"
+      - "71"
+      - "73"
+      - "72"
     separatecontext: false
     view: |-
       {
@@ -1173,10 +1175,10 @@ tasks:
     quietmode: 0
   "41":
     id: "41"
-    taskid: 4b5f22a5-7480-45ba-8e39-3785f1dec293
+    taskid: 9f57f175-65c9-4b3f-8c32-224f6655ae98
     type: playbook
     task:
-      id: 4b5f22a5-7480-45ba-8e39-3785f1dec293
+      id: 9f57f175-65c9-4b3f-8c32-224f6655ae98
       version: -1
       name: Block Indicators - Generic v2
       description: |+
@@ -1329,10 +1331,10 @@ tasks:
     quietmode: 0
   "42":
     id: "42"
-    taskid: 1ed09db1-8f43-4b38-8088-bef17bd22516
+    taskid: fd34b606-d8dc-4518-8479-3ce2894c48e3
     type: condition
     task:
-      id: 1ed09db1-8f43-4b38-8088-bef17bd22516
+      id: fd34b606-d8dc-4518-8479-3ce2894c48e3
       version: -1
       name: Block indicators automatically?
       description: Checks whether IOCs associated with the incident can be blocked
@@ -1374,10 +1376,10 @@ tasks:
     quietmode: 0
   "43":
     id: "43"
-    taskid: c0501f66-9ea9-4502-8742-b11a08766506
+    taskid: da4c90ee-d423-453e-8800-4c264632363e
     type: regular
     task:
-      id: c0501f66-9ea9-4502-8742-b11a08766506
+      id: da4c90ee-d423-453e-8800-4c264632363e
       version: -1
       name: Block indicators manually
       description: Manually block the IOCs in the relevant systems.
@@ -1402,10 +1404,10 @@ tasks:
     quietmode: 0
   "44":
     id: "44"
-    taskid: 9b0ac5e4-faef-42ad-822d-1d035c4546e0
+    taskid: 935ff8ec-2911-4332-8c2d-b4013a8330c3
     type: regular
     task:
-      id: 9b0ac5e4-faef-42ad-822d-1d035c4546e0
+      id: 935ff8ec-2911-4332-8c2d-b4013a8330c3
       version: -1
       name: Splunk Search Related Activity Based on Files and Registry
       description: Searches Splunk for events related to REvil Kaseya breach file
@@ -1431,8 +1433,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -740,
-          "y": 1910
+          "x": -1240,
+          "y": 1890
         }
       }
     note: false
@@ -1442,10 +1444,10 @@ tasks:
     quietmode: 0
   "45":
     id: "45"
-    taskid: abf2ff97-f2f2-41a4-8a5d-0f76bfd4e24a
+    taskid: 1dcae98f-0c09-4b14-864e-fb8e315c6c9d
     type: title
     task:
-      id: abf2ff97-f2f2-41a4-8a5d-0f76bfd4e24a
+      id: 1dcae98f-0c09-4b14-864e-fb8e315c6c9d
       version: -1
       name: Splunk Advanced Hunting
       type: title
@@ -1459,8 +1461,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -1100,
-          "y": 1520
+          "x": -1600,
+          "y": 1500
         }
       }
     note: false
@@ -1470,10 +1472,10 @@ tasks:
     quietmode: 0
   "46":
     id: "46"
-    taskid: 005d3285-1647-433f-85fc-d10a928d7e9e
+    taskid: 2e596d4a-b8d3-41fb-8788-ce68718a070a
     type: regular
     task:
-      id: 005d3285-1647-433f-85fc-d10a928d7e9e
+      id: 2e596d4a-b8d3-41fb-8788-ce68718a070a
       version: -1
       name: Splunk Search Related Activity Based on Powershell Command Lines
       description: Searches Splunk for events related to REvil Kaseya breach Powershell
@@ -1499,8 +1501,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -1340,
-          "y": 2035
+          "x": -1840,
+          "y": 2015
         }
       }
     note: false
@@ -1510,10 +1512,10 @@ tasks:
     quietmode: 0
   "47":
     id: "47"
-    taskid: fd4aba17-c3e4-4bcc-82c7-393a1c172124
+    taskid: e595f557-b29a-499a-86bc-5c9fc4128e94
     type: condition
     task:
-      id: fd4aba17-c3e4-4bcc-82c7-393a1c172124
+      id: e595f557-b29a-499a-86bc-5c9fc4128e94
       version: -1
       name: Should Initiate Ransomware Investigation playbook?
       description: Ask the analyst if a Ransomware Investigation playbook should be
@@ -1530,8 +1532,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1140,
-          "y": 3090
+          "x": 1430,
+          "y": 3170
         }
       }
     note: false
@@ -1558,10 +1560,10 @@ tasks:
     quietmode: 0
   "49":
     id: "49"
-    taskid: 8baf4590-b7a4-4248-8129-ddf549e4335d
+    taskid: 1f206f64-6fea-46d5-846f-846441904959
     type: condition
     task:
-      id: 8baf4590-b7a4-4248-8129-ddf549e4335d
+      id: 1f206f64-6fea-46d5-846f-846441904959
       version: -1
       name: Is Splunk Enabled?
       description: Check if Splunk instance is enabled.
@@ -1605,8 +1607,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -1340,
-          "y": 1700
+          "x": -1840,
+          "y": 1680
         }
       }
     note: false
@@ -1616,16 +1618,16 @@ tasks:
     quietmode: 0
   "51":
     id: "51"
-    taskid: b9ae3ab8-c78e-445a-8d58-f7b2df1a0a13
+    taskid: 380e2011-412e-46af-844a-759bc78d5179
     type: regular
     task:
-      id: b9ae3ab8-c78e-445a-8d58-f7b2df1a0a13
+      id: 380e2011-412e-46af-844a-759bc78d5179
       version: -1
-      name: Download Kaseya Compromise Detection Tools
+      name: Run Kaseya Patch Release Preparation for VSA On-Premises
       description: |
-        This tool analyzes a system (either VSA server or managed endpoint) and determines whether any indicators of compromise (IoC) are present.
+        For Kaseya VSA On-Premises customers, Kaseya has published a runbook of the changes to make to your on-premises environment in order to be prepared for the patch release.
 
-        [Kaseya VSA Detection Tool](https://kaseya.app.box.com/s/0ysvgss7w48nxh8k1xt7fqhbcjxhas40)
+        [Kaseya VSA On-Premises Runbook](https://helpdesk.kaseya.com/hc/en-gb/articles/4403709150993)
       type: regular
       iscommand: false
       brand: ""
@@ -1636,8 +1638,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 670,
-          "y": 3090
+          "x": 220,
+          "y": 3180
         }
       }
     note: false
@@ -1647,10 +1649,10 @@ tasks:
     quietmode: 0
   "52":
     id: "52"
-    taskid: cdeb8071-08da-4ea9-8af8-3ec537511e54
+    taskid: 3f999433-2c45-4484-8323-f477c6cb2296
     type: title
     task:
-      id: cdeb8071-08da-4ea9-8af8-3ec537511e54
+      id: 3f999433-2c45-4484-8323-f477c6cb2296
       version: -1
       name: Tag Indicators
       type: title
@@ -1678,10 +1680,10 @@ tasks:
     quietmode: 0
   "53":
     id: "53"
-    taskid: 38f6fad6-3e3b-4269-8193-028542cbb4b5
+    taskid: d53694df-e157-4ee0-8203-2bea3b034b32
     type: regular
     task:
-      id: 38f6fad6-3e3b-4269-8193-028542cbb4b5
+      id: d53694df-e157-4ee0-8203-2bea3b034b32
       version: -1
       name: Tag File indicators
       description: commands.local.cmd.set.indicators
@@ -1720,10 +1722,10 @@ tasks:
     quietmode: 0
   "54":
     id: "54"
-    taskid: b8fd517f-6149-456a-8ee8-6f785ad648e1
+    taskid: 643163ae-df9f-44f6-8ad7-f41f3efabc8c
     type: regular
     task:
-      id: b8fd517f-6149-456a-8ee8-6f785ad648e1
+      id: 643163ae-df9f-44f6-8ad7-f41f3efabc8c
       version: -1
       name: Tag IP indicators
       description: commands.local.cmd.set.indicators
@@ -1762,10 +1764,10 @@ tasks:
     quietmode: 0
   "55":
     id: "55"
-    taskid: c06e7e54-00c2-4638-8e77-b96ebadca064
+    taskid: 82022a62-3af8-445e-83d2-d6ecfeb76585
     type: regular
     task:
-      id: c06e7e54-00c2-4638-8e77-b96ebadca064
+      id: 82022a62-3af8-445e-83d2-d6ecfeb76585
       version: -1
       name: Tag Domain indicators
       description: commands.local.cmd.set.indicators
@@ -1804,10 +1806,10 @@ tasks:
     quietmode: 0
   "56":
     id: "56"
-    taskid: 4c96c784-2dd3-4e2c-8720-be57ca0a5979
+    taskid: f1329125-2d16-470d-8c0b-b0beb68de53f
     type: regular
     task:
-      id: 4c96c784-2dd3-4e2c-8720-be57ca0a5979
+      id: f1329125-2d16-470d-8c0b-b0beb68de53f
       version: -1
       name: Tag URL indicators
       description: commands.local.cmd.set.indicators
@@ -1846,10 +1848,10 @@ tasks:
     quietmode: 0
   "57":
     id: "57"
-    taskid: 5c31e7a3-0e9d-438c-8c0e-449c77de17d1
+    taskid: 77ada63b-2d2a-44d7-8434-c54fe08d105c
     type: title
     task:
-      id: 5c31e7a3-0e9d-438c-8c0e-449c77de17d1
+      id: 77ada63b-2d2a-44d7-8434-c54fe08d105c
       version: -1
       name: Resolution
       type: title
@@ -1874,10 +1876,10 @@ tasks:
     quietmode: 0
   "58":
     id: "58"
-    taskid: c2fb494a-1b68-4926-8c5d-c2d4a6948d7a
+    taskid: 14d490de-7d8f-4e31-8a94-1949f50ef561
     type: condition
     task:
-      id: c2fb494a-1b68-4926-8c5d-c2d4a6948d7a
+      id: 14d490de-7d8f-4e31-8a94-1949f50ef561
       version: -1
       name: Analysis resolution - Should continue with the investigation?
       description: Check with the analyst whether to continue with the investigation.
@@ -1920,10 +1922,10 @@ tasks:
     quietmode: 0
   "59":
     id: "59"
-    taskid: 3c14df55-0ab7-4793-822f-a34660515175
+    taskid: a6d91ed9-25a4-48e2-8a0c-f7e67b82bd6b
     type: title
     task:
-      id: 3c14df55-0ab7-4793-822f-a34660515175
+      id: a6d91ed9-25a4-48e2-8a0c-f7e67b82bd6b
       version: -1
       name: Done
       type: title
@@ -1945,10 +1947,10 @@ tasks:
     quietmode: 0
   "60":
     id: "60"
-    taskid: 2bf5f08a-5e77-4cfe-8162-f371f647b681
+    taskid: dbb015b0-7999-4e96-8692-722e2aec2fcd
     type: regular
     task:
-      id: 2bf5f08a-5e77-4cfe-8162-f371f647b681
+      id: dbb015b0-7999-4e96-8692-722e2aec2fcd
       version: -1
       name: Collect indicators from HUNTRESS
       description: This script will extract indicators from HTML and will handle bad
@@ -1981,10 +1983,10 @@ tasks:
     quietmode: 0
   "61":
     id: "61"
-    taskid: 589312d1-7538-454f-8cfe-8c28bf8bee65
+    taskid: d491a1e5-06e6-49ea-8980-2a47bc41fdfe
     type: regular
     task:
-      id: 589312d1-7538-454f-8cfe-8c28bf8bee65
+      id: d491a1e5-06e6-49ea-8980-2a47bc41fdfe
       version: -1
       name: Investigate Further
       description: Manual step for further incident investigation.
@@ -2009,10 +2011,10 @@ tasks:
     quietmode: 0
   "62":
     id: "62"
-    taskid: 60568bff-7c89-426e-8633-cf56e42db02b
+    taskid: 44a22166-b68e-4924-8566-b33cfa6b2099
     type: playbook
     task:
-      id: 60568bff-7c89-426e-8633-cf56e42db02b
+      id: 44a22166-b68e-4924-8566-b33cfa6b2099
       version: -1
       name: PAN-OS - Block Domain - External Dynamic List
       playbookName: PAN-OS - Block Domain - External Dynamic List
@@ -2055,10 +2057,10 @@ tasks:
     quietmode: 0
   "63":
     id: "63"
-    taskid: 45e38fb8-ad1b-4d74-8654-9dc11b934559
+    taskid: c7cd2f06-8310-44d3-8e04-e743d87eea37
     type: regular
     task:
-      id: 45e38fb8-ad1b-4d74-8654-9dc11b934559
+      id: c7cd2f06-8310-44d3-8e04-e743d87eea37
       version: -1
       name: Close Investigation
       description: Close the current incident
@@ -2087,10 +2089,10 @@ tasks:
     quietmode: 0
   "64":
     id: "64"
-    taskid: 04fa6703-f320-4170-8772-f3dc0f785566
+    taskid: 59d45916-7373-47a4-8b63-fe33e49adc1b
     type: regular
     task:
-      id: 04fa6703-f320-4170-8772-f3dc0f785566
+      id: 59d45916-7373-47a4-8b63-fe33e49adc1b
       version: -1
       name: Collect indicators from Kaseya advisory
       description: This script will extract indicators from HTML and will handle bad
@@ -2120,10 +2122,10 @@ tasks:
     quietmode: 0
   "65":
     id: "65"
-    taskid: 6ad099f6-c268-4c04-89c1-801b9cc2c87e
+    taskid: a8d19bc2-2f1c-43cb-8329-31bf3554051e
     type: regular
     task:
-      id: 6ad099f6-c268-4c04-89c1-801b9cc2c87e
+      id: a8d19bc2-2f1c-43cb-8329-31bf3554051e
       version: -1
       name: Splunk Search Related Activity Based on web logs
       description: Searches Splunk for events related to REvil Kaseya breach Powershell
@@ -2149,8 +2151,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -1860,
-          "y": 1910
+          "x": -2360,
+          "y": 1890
         }
       }
     note: false
@@ -2158,21 +2160,351 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-system: true
+  "66":
+    id: "66"
+    taskid: 99153956-e33f-4e94-8499-091476683f55
+    type: title
+    task:
+      id: 99153956-e33f-4e94-8499-091476683f55
+      version: -1
+      name: Xpanse Issues Hunt
+      description: Retrieve issues
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "68"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2550,
+          "y": 1500
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "67":
+    id: "67"
+    taskid: 9c2bac4d-e0b3-4623-871b-3bf348210f90
+    type: regular
+    task:
+      id: 9c2bac4d-e0b3-4623-871b-3bf348210f90
+      version: -1
+      name: Search for internet facing Kaseya VSA servers using Xpanse
+      description: Retrieve issues related to Kaseya VSA servers from Xpanse
+      script: '|||expanse-get-issues'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "34"
+    scriptarguments:
+      issue_type:
+        simple: Kaseya VSA
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2910,
+          "y": 1890
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+  "68":
+    id: "68"
+    taskid: b34ada55-674f-4e93-80f8-463720781315
+    type: condition
+    task:
+      id: b34ada55-674f-4e93-80f8-463720781315
+      version: -1
+      name: Is Xpanse Enabled?
+      description: Check if Xpanse instance is enabled.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "34"
+      "yes":
+      - "67"
+      - "69"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: ExpanseV2
+                accessor: state
+            iscontext: true
+          right:
+            value:
+              simple: active
+          ignorecase: true
+    view: |-
+      {
+        "position": {
+          "x": 2550,
+          "y": 1680
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "69":
+    id: "69"
+    taskid: 29ab3d8e-64f6-4913-8a53-35390f23f1ff
+    type: regular
+    task:
+      id: 29ab3d8e-64f6-4913-8a53-35390f23f1ff
+      version: -1
+      name: Search for related Xpanse incident
+      description: Searches for Xpanse related incidents
+      scriptName: SearchIncidentsV2
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "70"
+    scriptarguments:
+      query:
+        simple: type:"Expanse Issue" and name:Kaseya VSA
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2280,
+          "y": 1870
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+  "70":
+    id: "70"
+    taskid: ee274e2c-2f91-46fe-89e6-d07ff902d839
+    type: regular
+    task:
+      id: ee274e2c-2f91-46fe-89e6-d07ff902d839
+      version: -1
+      name: Link related incidents
+      description: Link related Xpanse and Cortex XDR incident to Kaseya VSA incident,
+      script: Builtin|||linkIncidents
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "34"
+    scriptarguments:
+      linkedIncidentIDs:
+        complex:
+          root: foundIncidents
+          accessor: id
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2040,
+          "y": 2040
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "71":
+    id: "71"
+    taskid: 619a0c19-86ce-44e2-8533-4cb8d065daba
+    type: title
+    task:
+      id: 619a0c19-86ce-44e2-8533-4cb8d065daba
+      version: -1
+      name: Kaseya Detection and Mitigation
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "51"
+      - "74"
+      - "75"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 3030
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "72":
+    id: "72"
+    taskid: 9c1bf13a-6e3f-4be8-8e82-0fde0686d462
+    type: title
+    task:
+      id: 9c1bf13a-6e3f-4be8-8e82-0fde0686d462
+      version: -1
+      name: Deploy Detection Rules
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "37"
+      - "36"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -490,
+          "y": 3030
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "73":
+    id: "73"
+    taskid: 8b1edaab-7b54-42f9-827d-a83b099caebf
+    type: title
+    task:
+      id: 8b1edaab-7b54-42f9-827d-a83b099caebf
+      version: -1
+      name: Ransomware Remediation
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "47"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1430,
+          "y": 3030
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "74":
+    id: "74"
+    taskid: f9e958ca-c533-41d4-8ed3-994c31464349
+    type: regular
+    task:
+      id: f9e958ca-c533-41d4-8ed3-994c31464349
+      version: -1
+      name: Run Kaseya Patch Release Preparation for VSA SaaS
+      description: |
+        For Kaseya VSA SaaS customers, Kaseya has published a runbook of the changes to make to your on-premises environment in order to be prepared for the patch release.
+
+        [Kaseya VSA SaaS Runbook](https://helpdesk.kaseya.com/hc/en-gb/articles/4403709476369)
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "57"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 680,
+          "y": 3180
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "75":
+    id: "75"
+    taskid: aa9500a4-01b3-4005-8b5b-8a93f66827e8
+    type: regular
+    task:
+      id: aa9500a4-01b3-4005-8b5b-8a93f66827e8
+      version: -1
+      name: Download Kaseya Compromise Detection Tools
+      description: |
+        This tool analyzes a system (either VSA server or managed endpoint) and determines whether any indicators of compromise (IoC) are present.
+
+        [Kaseya VSA Detection Tool](https://kaseya.app.box.com/s/0ysvgss7w48nxh8k1xt7fqhbcjxhas40)
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "57"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 3340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
 view: |-
   {
     "linkLabelsPosition": {
       "31_27_yes": 0.47,
-      "31_34_#default#": 0.18,
+      "31_34_#default#": 0.26,
       "47_33_Yes": 0.57,
-      "49_34_#default#": 0.19,
-      "58_63_No": 0.71
+      "49_34_#default#": 0.15,
+      "58_63_No": 0.71,
+      "68_34_#default#": 0.14,
+      "68_67_yes": 0.55
     },
     "paper": {
       "dimensions": {
         "height": 4355,
-        "width": 4560,
-        "x": -1860,
+        "width": 5650,
+        "x": -2360,
         "y": -170
       }
     }

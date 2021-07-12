@@ -354,11 +354,6 @@ The following permissions are required for all commands:
   </tbody>
 </table>
 
-<!-- remove the following comments to manually add an image: -->
-<!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- -->
 </p>
 
 <h3 id="send-mail">2. send-mail</h3>
@@ -589,11 +584,6 @@ The following permissions are required for all commands:
   </tbody>
 </table>
 
-<!-- remove the following comments to manually add an image: -->
-<!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- -->
 </p>
 <p>
   <h5>Sending mails with embedded images</h5>
@@ -665,11 +655,6 @@ There are no context output for this command.
 <h5>Human Readable Output</h5>
 <p>
 <h3>Replied to: test@demistodev.onmicrosoft.com with comment: Reply message</h3>
-<!-- remove the following comments to manually add an image: -->
-<!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- -->
 </p>
 
 <h3 id="msgraph-mail-send-draft">4. msgraph-mail-send-draft</h3>
@@ -723,11 +708,6 @@ There are no context output for this command.
 <h5>Human Readable Output</h5>
 <p>
 <h3>Draft with: message_id id was sent successfully.</h3>
-<!-- remove the following comments to manually add an image: -->
-<!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- -->
 </p>
 
 <h3 id="msgraph-mail-test">5. msgraph-mail-test</h3>

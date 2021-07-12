@@ -152,7 +152,7 @@
 <h5> Example:</h5>
 <pre>&lt;html&gt;
   &lt;body&gt;
-    &lt;img src="cid:radomimagecid"/&gt;
+    &lt;img src=\"cid:radomimagecid\"/&gt;
   &lt;/body&gt;
 &lt;/html&gt;</pre>
 <h3>CID Limitations</h3>
