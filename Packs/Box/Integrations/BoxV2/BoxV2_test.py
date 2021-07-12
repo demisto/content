@@ -1,6 +1,5 @@
 import json
 import io
-
 import demistomock as demisto
 from BoxV2 import Client
 
@@ -16,7 +15,7 @@ def util_load_json(path):
         return json.loads(f.read())
 
 
-class TestBox:
+class ClientTestBox:
     """
     Test class to handle the client.
     """
@@ -71,7 +70,7 @@ def test_find_file_folder_by_share_link(requests_mock, mocker):
         'password': 'some_pass',
         'as_user': '1234567'
     }
-    client = TestBox(mocker).client
+    client = ClientTestBox(mocker).client
     response = find_file_folder_by_share_link_command(client, args)
 
     assert requests_mock.request_history[0].headers.get(
@@ -165,7 +164,7 @@ def test_create_update_file_share_link(requests_mock, mocker):
         'https://api.box.com/2.0/files/742246263170/?fields=shared_link',
         json=mock_response)
 
-    client = TestBox(mocker).client
+    client = ClientTestBox(mocker).client
 
     args = {
         'file_id': '742246263170',
@@ -208,7 +207,7 @@ def test_remove_file_share_link_command(requests_mock, mocker):
         'https://api.box.com/2.0/files/742246263170/?fields=shared_link',
         json=mock_response)
 
-    client = TestBox(mocker).client
+    client = ClientTestBox(mocker).client
 
     args = {
         'file_id': '742246263170',
@@ -251,7 +250,7 @@ def test_get_shared_link_for_file_command(requests_mock, mocker):
         'https://api.box.com/2.0/files/742246263170/',
         json=mock_response)
 
-    client = TestBox(mocker).client
+    client = ClientTestBox(mocker).client
 
     args = {
         'file_id': '742246263170',
@@ -291,7 +290,7 @@ def test_create_update_folder_share_link_command(requests_mock, mocker):
         'https://api.box.com/2.0/folders/742246263170/',
         json=mock_response)
 
-    client = TestBox(mocker).client
+    client = ClientTestBox(mocker).client
 
     args = {
         'access': 'open',
@@ -335,7 +334,7 @@ def test_remove_folder_share_link_command(requests_mock, mocker):
         'https://api.box.com/2.0/folders/742246263170/',
         json=mock_response)
 
-    client = TestBox(mocker).client
+    client = ClientTestBox(mocker).client
 
     args = {
         'folder_id': '742246263170',
@@ -375,7 +374,7 @@ def test_get_folder_command(requests_mock, mocker):
         'https://api.box.com/2.0/folders/0/',
         json=mock_response)
 
-    client = TestBox(mocker).client
+    client = ClientTestBox(mocker).client
 
     args = {
         'folder_id': '0',
@@ -415,7 +414,7 @@ def test_list_folder_items_command(requests_mock, mocker):
         'https://api.box.com/2.0/folders/0/',
         json=mock_response)
 
-    client = TestBox(mocker).client
+    client = ClientTestBox(mocker).client
 
     args = {
         'folder_id': '0',
@@ -458,7 +457,7 @@ def test_folder_create_command(requests_mock, mocker):
         'https://api.box.com/2.0/folders/',
         json=mock_response)
 
-    client = TestBox(mocker).client
+    client = ClientTestBox(mocker).client
 
     args = {
         'parent_id': '0',
@@ -499,7 +498,7 @@ def test_file_delete_command(requests_mock, mocker):
         'https://api.box.com/2.0/files/12345',
         status_code=successful_file_deletion_status_code)
 
-    client = TestBox(mocker).client
+    client = ClientTestBox(mocker).client
 
     args = {
         'as_user': '1234567',
@@ -538,7 +537,7 @@ def test_list_users_command(requests_mock, mocker):
         'https://api.box.com/2.0/users/',
         json=mock_response)
 
-    client = TestBox(mocker).client
+    client = ClientTestBox(mocker).client
 
     args = {
         'fields': 'name',
@@ -622,7 +621,7 @@ def test_upload_file_command_with_chunks(requests_mock, mocker):
         json=session_commit_response
     )
 
-    client = TestBox(mocker).client
+    client = ClientTestBox(mocker).client
 
     args = {
         'entry_id': '123@123',
@@ -691,7 +690,7 @@ def test_test_upload_file_command_small_file(requests_mock, mocker):
     # Mock for the request to open an upload session.
     requests_mock.post('https://upload.box.com/api/2.0/files/content', json=session_response)
 
-    client = TestBox(mocker).client
+    client = ClientTestBox(mocker).client
 
     args = {
         'entry_id': '123@123',
@@ -733,7 +732,7 @@ def test_get_current_user_command(requests_mock, mocker):
 
     mock_response = util_load_json('test_data/get_current_user.json')
 
-    client = TestBox(mocker).client
+    client = ClientTestBox(mocker).client
 
     args = {
         'as_user': 'sample_current_user'
@@ -776,7 +775,7 @@ def test_create_user_command(requests_mock, mocker):
 
     mock_response = util_load_json('test_data/create_user.json')
 
-    client = TestBox(mocker).client
+    client = ClientTestBox(mocker).client
 
     args = {
         'as_user': 'sample_current_user',
@@ -843,7 +842,7 @@ def test_update_user_command(requests_mock, mocker):
 
     mock_response = util_load_json('test_data/create_user.json')
 
-    client = TestBox(mocker).client
+    client = ClientTestBox(mocker).client
 
     args = {
         'as_user': 'sample_current_user',
@@ -908,7 +907,7 @@ def test_delete_user_command(requests_mock, mocker):
      """
     from BoxV2 import delete_user_command
 
-    client = TestBox(mocker).client
+    client = ClientTestBox(mocker).client
 
     args = {
         'as_user': 'sample_current_user',
@@ -952,7 +951,7 @@ def test_fetch_incidents(requests_mock, mocker):
      """
     from BoxV2 import fetch_incidents
 
-    client = TestBox(mocker).client
+    client = ClientTestBox(mocker).client
 
     as_user = 'sample_current_user'
     max_results = 10
@@ -997,7 +996,7 @@ def test_list_user_events_command(requests_mock, mocker):
      """
     from BoxV2 import list_user_events_command
 
-    client = TestBox(mocker).client
+    client = ClientTestBox(mocker).client
 
     args = {
         'as_user': 'sample_current_user',
@@ -1037,7 +1036,7 @@ def test_list_enterprise_events_command(requests_mock, mocker):
      """
     from BoxV2 import list_enterprise_events_command
 
-    client = TestBox(mocker).client
+    client = ClientTestBox(mocker).client
 
     args = {
         'as_user': 'sample_current_user',
@@ -1078,7 +1077,7 @@ def test_move_folder_command(requests_mock, mocker):
      """
     from BoxV2 import move_folder_command
 
-    client = TestBox(mocker).client
+    client = ClientTestBox(mocker).client
 
     args = {
         'from_user_id': '123456',
