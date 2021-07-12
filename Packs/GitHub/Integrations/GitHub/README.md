@@ -2293,3 +2293,34 @@ Returns events corresponding to the given issue.
 >| login: tomneeman151293<br/>id: 70005542<br/>node_id: MDQ6VXNlcjcwMDA1NTQy<br/>avatar_url: https://avatars.githubusercontent.com/u/70005542?v=4<br/>gravatar_id: <br/>url: https://api.github.com/users/tomneeman151293<br/>html_url: https://github.com/tomneeman151293<br/>followers_url: https://api.github.com/users/tomneeman151293/followers<br/>following_url: https://api.github.com/users/tomneeman151293/following{/other_user}<br/>gists_url: https://api.github.com/users/tomneeman151293/gists{/gist_id}<br/>starred_url: https://api.github.com/users/tomneeman151293/starred{/owner}{/repo}<br/>subscriptions_url: https://api.github.com/users/tomneeman151293/subscriptions<br/>organizations_url: https://api.github.com/users/tomneeman151293/orgs<br/>repos_url: https://api.github.com/users/tomneeman151293/repos<br/>events_url: https://api.github.com/users/tomneeman151293/events{/privacy}<br/>received_events_url: https://api.github.com/users/tomneeman151293/received_events<br/>type: User<br/>site_admin: false |  |  | 2021-01-28T13:00:26Z | labeled | 4260960414 | name: bug<br/>color: d73a4a | MDEyOkxhYmVsZWRFdmVudDQyNjA5NjA0MTQ= |  | https://api.github.com/repos/demisto/demisto-sdk/issues/events/4260960414 |
 >| login: tomneeman151293<br/>id: 70005542<br/>node_id: MDQ6VXNlcjcwMDA1NTQy<br/>avatar_url: https://avatars.githubusercontent.com/u/70005542?v=4<br/>gravatar_id: <br/>url: https://api.github.com/users/tomneeman151293<br/>html_url: https://github.com/tomneeman151293<br/>followers_url: https://api.github.com/users/tomneeman151293/followers<br/>following_url: https://api.github.com/users/tomneeman151293/following{/other_user}<br/>gists_url: https://api.github.com/users/tomneeman151293/gists{/gist_id}<br/>starred_url: https://api.github.com/users/tomneeman151293/starred{/owner}{/repo}<br/>subscriptions_url: https://api.github.com/users/tomneeman151293/subscriptions<br/>organizations_url: https://api.github.com/users/tomneeman151293/orgs<br/>repos_url: https://api.github.com/users/tomneeman151293/repos<br/>events_url: https://api.github.com/users/tomneeman151293/events{/privacy}<br/>received_events_url: https://api.github.com/users/tomneeman151293/received_events<br/>type: User<br/>site_admin: false |  |  | 2021-01-28T15:20:27Z | closed | 4261648354 |  | MDExOkNsb3NlZEV2ZW50NDI2MTY0ODM1NA== |  | https://api.github.com/repos/demisto/demisto-sdk/issues/events/4261648354 |
 
+### GitHub-list-all-projects
+
+***
+List all project boards a user can see.
+
+#### Base Command
+
+`GitHub-list-all-projects`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| project_filter | Only list projects with the following numbers (Ids) | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GitHub.Projects.name | String | The name of the project board. | 
+| GitHub.Projects.proj_id | Number | The ID of the  project board. | 
+| GitHub.Projects.proj_number | Number | Project board number. | 
+| GitHub.Projects.columns.name | String | Column Name. | 
+| GitHub.Projects.columns.column_id | Number | The ID of the column. | 
+| GitHub.Projects.columns.cards.card_id | Number | The ID of the card. | 
+| GitHub.Projects.columns.cards.content_number | Number | The content number of this card, usually this is the issue number. | 
+| GitHub.Projects.all_issues | List | List of all issue numbers that are in this project board. | 
+            
+#### Command Example
+
+```!GitHub-list-all-projects project_filter="1,2,3"```
