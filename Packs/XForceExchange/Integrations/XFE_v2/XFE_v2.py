@@ -173,8 +173,8 @@ def ip_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, Any]:
         outputs = {'Address': report['ip'],
                    'Score': report.get('score'),
                    'Geo': {'Country': report.get('geo', {}).get('country', '')}}
-        additional_info = {string_to_context_key(field): report[field] for field in
-                           ['reason', 'reasonDescription', 'subnets']}
+        additional_info: dict = {string_to_context_key(field): report.get(field) for field in
+                                 ['reason', 'reasonDescription', 'subnets']}
         dbot_score = {'Indicator': report['ip'], 'Type': 'ip', 'Vendor': 'XFE',
                       'Score': calculate_score(report['score'], threshold), 'Reliability': client.reliability}
 
@@ -185,9 +185,13 @@ def ip_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, Any]:
         context[f'XFE.{outputPaths["ip"]}'].append(additional_info)
         context[DBOT_SCORE_KEY].append(dbot_score)
 
+        reason = f'{additional_info["Reason"]}:\n{additional_info["Reasondescription"]}' \
+            if additional_info["Reason"] else 'Reason not found.'
+        subnets = additional_info.get('Subnets', [])
+        subnets_list = [subnet.get('subnet') for subnet in subnets]
         table = {'Score': report['score'],
-                 'Reason': f'{additional_info["Reason"]}:\n{additional_info["Reasondescription"]}',
-                 'Subnets': ', '.join(subnet.get('subnet') for subnet in additional_info['Subnets'])}
+                 'Reason': reason,
+                 'Subnets': ', '.join(subnets_list)}
         markdown += tableToMarkdown(f'X-Force IP Reputation for: {report["ip"]}\n'
                                     f'{XFORCE_URL}/ip/{report["ip"]}', table, removeNull=True)
         reports.append(report)
@@ -525,7 +529,7 @@ def main():
         if command == 'test-module':
             return_results(test_module(client))
         elif command == 'file':
-            return_results(*commands[command](client, demisto.args()))
+            return_results(commands[command](client, demisto.args()))
         elif command in commands:
             return_outputs(*commands[command](client, demisto.args()))
         else:

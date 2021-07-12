@@ -1,12 +1,14 @@
 from CommonServerPython import *
 
-MAJESTIC_MILLION_URL = 'http://downloads.majestic.com/majestic_million.csv'
-
 
 def main():
     try:
+        params = {k: v for k, v in demisto.params().items() if v is not None}
+        use_https = argToBoolean(params.get('use_https', False)) or False
+        protocol = 'https://' if use_https else 'http://'
+        majestic_million_url = f'{protocol}downloads.majestic.com/majestic_million.csv'
         feed_url_to_config = {
-            MAJESTIC_MILLION_URL: {
+            majestic_million_url: {
                 'fieldnames': ['GlobalRank', 'TldRank', 'Domain', 'TLD', 'RefSubNets', 'RefIPs', 'IDN_Domain',
                                'IDN_TLD',
                                'PrevGlobalRank', 'PrevTldRank', 'PrevRefSubNets', 'PrevRefIPs'],
@@ -19,10 +21,9 @@ def main():
                 }
             }
         }
-        params = {k: v for k, v in demisto.params().items() if v is not None}
         params['feed_url_to_config'] = feed_url_to_config
         params['value_field'] = 'Domain'
-        params['url'] = MAJESTIC_MILLION_URL
+        params['url'] = majestic_million_url
         params['ignore_regex'] = r'^GlobalRank'  # ignore the first line
         params['delimiter'] = ','
         params['limit'] = int(params.get('limit', 100000))
