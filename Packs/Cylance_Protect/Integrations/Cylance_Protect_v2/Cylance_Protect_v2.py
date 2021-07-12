@@ -315,10 +315,10 @@ def get_device_request(device_id):
 def get_device_by_hostname():
     hostname_id = demisto.args()['hostname']
     device = get_hostname_request(hostname_id)
-    hr = []
     title = 'Cylance Protect Device ' + hostname_id
     if device:
         device_context = {
+            'AgentVersion': device['agent_version'],
             'IPAddress': device['ip_addresses'],
             'MACAdress': device['mac_addresses'],
             'Hostname': device['host_name'],

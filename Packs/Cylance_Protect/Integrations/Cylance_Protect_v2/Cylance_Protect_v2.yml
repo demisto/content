@@ -174,13 +174,28 @@ script:
     outputs:
     - contextPath: CylanceProtect.Device.AgentVersion
       description: The CylancePROTECT Agent version installed on the device.
-      type: date
-    - contextPath: CylanceProtect.Device.DateFirstRegistered
-      description: The date and time (in UTC) when the device record was created.
-      type: date
+      type: String
+    - contextPath: CylanceProtect.Device.IPAddress
+      description: The list of IP addresses for the device.
+      type: Unknown
+    - contextPath: CylanceProtect.Device.MACAddress
+      description: The list of MAC addresses for the device.
+      type: Unknown
+    - contextPath: CylanceProtect.Device.Hostname
+      description: The hostname for the device.
+      type: string
+    - contextPath: CylanceProtect.Device.OSVersion
+      description: Device OS version.
+      type: string
+    - contextPath: CylanceProtect.Device.UpdateAvailable
+      description: If true, there is available update for the device.
+      type: boolean
     - contextPath: CylanceProtect.Device.BackgroundDetection
       description: If true, the Agent is currently running.
       type: boolean
+    - contextPath: CylanceProtect.Device.DateFirstRegistered
+      description: The date and time (in UTC) when the device record was created.
+      type: date
     - contextPath: CylanceProtect.Device.DateLastModified
       description: The date and time (in UTC) when the device record was last modified.
       type: date
@@ -188,26 +203,29 @@ script:
       description: The date and time (in UTC) when the device last communicated with
         the Console.
       type: date
-    - contextPath: CylanceProtect.Device.Hostname
-      description: The hostname for the device.
+    - contextPath: CylanceProtect.Device.IsSafe
+      description: If true, there are no outstanding threats.
+      type: boolean
+    - contextPath: CylanceProtect.Device.LastLoggedInUser
+      description: Last logged in user.
+      type: string
+    - contextPath: CylanceProtect.Device.State
+      description: Machine state.
       type: string
     - contextPath: CylanceProtect.Device.ID
       description: The unique identifier for the device.
       type: string
-    - contextPath: CylanceProtect.Device.IPAddress
-      description: The list of IP addresses for the device.
-      type: Unknown
-    - contextPath: CylanceProtect.Device.MACAddress
-      description: The list of MAC addresses for the device.
-      type: Unknown
-    - contextPath: CylanceProtect.Device.IsSafe
-      description: If true, there are no outstanding threats.
-      type: boolean
-    - contextPath: CylanceProtect.Device.UpdateAvailable
-      description: If true, there is available update for the device.
-      type: boolean
-    - contextPath: CylanceProtect.Device.State
-      description: Machine state.
+    - contextPath: CylanceProtect.Device.Name
+      description: Device name.
+      type: string
+    - contextPath: CylanceProtect.Device.UpdateType
+      description: Device update type.
+      type: string
+    - contextPath: CylanceProtect.Device.Policy.ID
+      description: Device policy ID.
+      type: string
+    - contextPath: CylanceProtect.Device.Policy.Name
+      description: Device policy name.
       type: string
     - contextPath: Endpoint.Hostname
       description: Device hostname.
@@ -220,12 +238,6 @@ script:
       type: Unknown
     - contextPath: Endpoint.OSVersion
       description: Device OS version.
-      type: string
-    - contextPath: CylanceProtect.Device.OSVersion
-      description: Device OS version.
-      type: string
-    - contextPath: CylanceProtect.Device.Name
-      description: Device name.
       type: string
   - arguments:
     - default: true
