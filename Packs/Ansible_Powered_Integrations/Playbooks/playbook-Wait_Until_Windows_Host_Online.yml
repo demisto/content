@@ -189,5 +189,5 @@ view: |-
 tests:
 - No tests (auto formatted)
 fromversion: 6.0.0
-description: Deprecated. Use "Wait Until Windows Host Online" from the Ansible Microsoft Windows Pack instead.
+description: Deprecated. Use "Wait Until Windows Host Online" playbook from the Ansible Microsoft Windows Pack instead.
 deprecated: true

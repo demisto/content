@@ -690,6 +690,5 @@ view: |-
 tests:
 - No tests (auto formatted)
 fromversion: 6.0.0
-description: This playbook helps an operator install Windows applications to workstations
-  using the Chocolatey package manager.
+description: Deprecated. Use "Windows Application Deployment" playbook from the Ansible Microsoft Windows Pack instead.
 deprecated: true
