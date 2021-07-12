@@ -19,11 +19,11 @@ except Exception:
     # client with no co3 instance should pass this exception
     pass
 
-# if not demisto.params()['proxy']:
-#     del os.environ['HTTP_PROXY']
-#     del os.environ['HTTPS_PROXY']
-#     del os.environ['http_proxy']
-#     del os.environ['https_proxy']
+if not demisto.params()['proxy']:
+    del os.environ['HTTP_PROXY']
+    del os.environ['HTTPS_PROXY']
+    del os.environ['http_proxy']
+    del os.environ['https_proxy']
 
 ''' GLOBAL VARS '''
 URL = demisto.params()['server'][:-1] if demisto.params()['server'].endswith('/') else demisto.params()['server']
@@ -126,13 +126,13 @@ def prettify_incidents(incidents):
     phases = get_phases()['entities']
     for incident in incidents:
         incident['id'] = str(incident['id'])
-        if isinstance(incident['description'], str):
+        if isinstance(incident['description'], unicode):
             incident['description'] = incident['description'].replace('<div>', '').replace('</div>', '')
         incident['discovered_date'] = normalize_timestamp(incident['discovered_date'])
         incident['created_date'] = normalize_timestamp(incident['create_date'])
         incident.pop('create_date', None)
         incident.pop('inc_training', None)
-        #incident.pop('plan_status', None)
+        incident.pop('plan_status', None)
         for user in users:
             if incident['owner_id'] == user['id']:
                 incident['owner'] = user['fname'] + ' ' + user['lname']
@@ -476,6 +476,18 @@ def update_incident_command(args):
                 'text': new_name
             }
         })
+    for field_name, field_value in json.loads(args['other-fields']).items():
+        old_value = incident[field_name]
+        new_value = field_value
+        changes.append({
+            'field': field_name,
+            'old_value': {
+                'text': old_value
+            },
+            'new_value': {
+                'text': new_value
+            }
+        })
     data = {
         'changes': changes
     }
@@ -494,7 +506,7 @@ def get_incident_command(incident_id):
     wanted_keys = ['create_date', 'discovered_date', 'description', 'due_date', 'id', 'name', 'owner_id',
                    'phase_id', 'severity_code', 'confirmed', 'employee_involved', 'negative_pr_likely',
                    'confirmed', 'start_date', 'due_date', 'negative_pr_likely', 'reporter', 'exposure_type_id',
-                   'nist_attack_vectors', 'plan_status', 'properties']
+                   'nist_attack_vectors']
     pretty_incident = dict((k, incident[k]) for k in wanted_keys if k in incident)
     if incident['resolution_id']:
         pretty_incident['resolution'] = RESOLUTION_DICT[incident['resolution_id']]
@@ -601,13 +613,6 @@ def get_users_command():
 
 def get_users():
     response = client.get('/users')
-    return response
-
-
-def add_notes(incident_id, comment):
-    body = {'text': {'format': 'text', 'content': comment}}
-    response = client.post('/incidents/' + str(incident_id) + '/comments', body)
-    # demisto.results(response.text)
     return response
 
 
@@ -830,29 +835,9 @@ def incident_artifacts_command(incident_id):
         return 'No artifacts found.'
 
 
-def add_incident_artifact(incident_id, artifact_type, artifact_value, artifact_description):
-    artifact_types = get_artifact_types()
-    atypeint = -1
-
-    for atype in artifact_types:
-        if atype['name'] == artifact_type:
-            atypeint = atype['id']
-            break
-
-    body = {'type': atypeint, 'value': artifact_value, 'description': {'format': 'text', 'content': artifact_description}}
-    response = client.post('/incidents/' + str(incident_id) + '/artifacts', body)
-
-    return response
-
-
 def incident_artifacts(incident_id):
     response = client.get('/incidents/' + incident_id + '/artifacts')
     return response
-
-
-def get_artifact_types():
-    response = client.get('/artifact_types/')
-    return response['entities']
 
 
 def get_artifact_type(artifact_id):
@@ -988,7 +973,7 @@ def fetch_incidents():
                 attachments = incident_attachments(str(incident.get('id', '')))
                 if attachments:
                     incident['attachments'] = attachments
-                if isinstance(incident.get('description'), str):
+                if isinstance(incident.get('description'), unicode):
                     incident['description'] = incident['description'].replace('<div>', '').replace('</div>', '')
 
                 incident['discovered_date'] = normalize_timestamp(incident.get('discovered_date'))
@@ -1024,6 +1009,20 @@ def test():
             return_error('There is something wrong with the fetch date. Error: {}'.format(error))
 
     demisto.results('ok')
+
+
+def add_notes(incident_id, comment):
+    body = {'text': {'format': 'text', 'content': comment}}
+    client.post('/incidents/'+str(incident_id)+'/comments', body)
+    return 'The note was added successfully.'
+
+
+def add_incident_artifact(incident_id, artifact_type, artifact_value, artifact_description):
+    body = {'type': artifact_type, 'value': artifact_value, 'description': {'format': 'text',
+                                                                            'content': artifact_description}}
+    client.post('/incidents/'+str(incident_id)+'/artifacts', body)
+
+    return 'The artifact was added successfully.'
 
 
 ''' EXECUTION CODE '''
@@ -1095,7 +1094,6 @@ try:
     elif demisto.command() == 'rs-add-artifact':
         demisto.results(add_incident_artifact(demisto.args()['incident-id'], demisto.args()[
                         'artifact-type'], demisto.args()['artifact-value'], demisto.args()['artifact-description']))
-
 except Exception as e:
     LOG(e.message)
     LOG.print_log()
