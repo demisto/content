@@ -549,7 +549,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: True, False, or None to ignore
+      description: Specify True to include only archived channels, False to include only unarchived channels, or leave blank for no effect
       isArray: false
       name: is_archived
       predefined:
@@ -559,7 +559,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: True, False, or None to ignore
+      description: Specify True to find the general channel (if other filters also match), False to exclude the general channel, or leave blank for no effect
       isArray: false
       name: is_general
       predefined:
@@ -569,7 +569,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: True, False, or None to ignore
+      description: Specify True to include only private channels, False to include only public channels, or leave blank for no effect
       isArray: false
       name: is_private
       predefined:
