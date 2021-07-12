@@ -1,8 +1,8 @@
 from SecurityScorecard import Client, \
     is_valid_domain, \
     is_email_valid, \
-    is_date_valid
-# incidents_to_import, \
+    is_date_valid, \
+    incidents_to_import
 # securityscorecard_portfolios_list_command, \
 # securityscorecard_portfolio_list_companies_command, \
 # securityscorecard_company_factor_score_get_command,  \
@@ -17,8 +17,11 @@ from SecurityScorecard import Client, \
 # import requests_mock
 import json
 import io
+import demistomock as demisto
+import datetime
 
 MOCK_URL = "http://securityscorecard-mock-url"
+DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 
 client = Client(
     base_url=MOCK_URL,
@@ -46,6 +49,40 @@ def test_is_date_valid():
     assert is_date_valid("2021-12-31")
     assert not is_date_valid("2021-13-31")
     assert not is_date_valid("202-12-31")
+
+
+def test_incidents_to_import(mocker):
+
+    raw_response = util_load_json('./test_data/alerts.json')
+    mocker.patch.object(client, "get_alerts_last_week", return_value=raw_response)
+
+    response = client.get_alerts_last_week(email="some@email.com")
+
+    assert response.get('entries')
+
+    entries = response.get('entries')
+
+    assert len(entries) == 9
+
+    # 3 day in seconds
+    seconds_ago = 3 * 86400
+
+    # Set runtime
+    now = int(datetime.datetime(2021, 7, 12).timestamp()) - seconds_ago
+    demisto.setLastRun({
+        'last_run': now
+    })
+
+    incidents = incidents_to_import(entries)
+
+    assert len(incidents) == 6
+
+    # Iterate over each incident and ensure they
+    # were supposed to be imported
+    for incident in incidents:
+        incident_time = incident["occurred"]
+        incident_timestamp = int(datetime.datetime.strptime(incident_time, DATE_FORMAT).timestamp())
+        assert incident_timestamp > now
 
 
 def test_securityscorecard_portfolios_list(mocker):
