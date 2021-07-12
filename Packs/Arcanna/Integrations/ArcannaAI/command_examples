@@ -1,0 +1,5 @@
+!arcanna-get-default-job-id
+!arcanna-set-default-job-id job_id=1102
+!arcanna-send_event job_id="1120" event_json="{\"offset\": 1739561255, \"destination\": {\"address\": \"8.8.8.8\", \"port\": 80, \"bytes\": 170, \"ip\": \"8.8.8.2\", \"domain\": \"metadata.google.internal\", \"packets\": 3}, \"rule\": {\"name\": \"ET POLICY Python-urllib/ Suspicious User Agent\", \"id\": \"2013031\", \"category\": \"Attempted Information Leak\"}, \"source\": {\"address\": \"10.128.0.6\", \"port\": 34768, \"bytes\": 494, \"ip\": \"10.128.0.6\}}"
+!arcanna-get-event-status job_id="1102" event_id="11021484171024"
+!arcanna-get-jobs

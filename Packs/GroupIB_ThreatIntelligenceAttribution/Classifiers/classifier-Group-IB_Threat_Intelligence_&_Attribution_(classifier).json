@@ -6,6 +6,7 @@
         "bp/phishing": "GIB Brand Protection Phishing",
         "bp/phishing_kit": "GIB Brand Protection Phishing Kit",
         "compromised/account": "GIB Compromised Account",
+        "compromised/breached": "GIB Data Breach",
         "compromised/card": "GIB Compromised Card",
         "malware/targeted_malware": "GIB Targeted Malware",
         "osi/git_leak": "GIB OSI Git Leak",
