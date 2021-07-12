@@ -3408,6 +3408,31 @@ script:
       name: project_filter
     description: Lists all issues that the user has access to view.
     name: GitHub-list-all-projects
+    outputs:
+    - contextPath: GitHub.Projects.name
+      description: The name of the project board.
+      type: String
+    - contextPath: GitHub.Projects.proj_id
+      description: The ID of the project board.
+      type: Number
+    - contextPath: GitHub.Projects.proj_number
+      description: Project board number.
+      type: Number
+    - contextPath: GitHub.Projects.columns.name
+      description: Column Name.
+      type: String
+    - contextPath: GitHub.Projects.columns.column_id
+      description: The ID of the column.
+      type: Number
+    - contextPath: GitHub.Projects.columns.cards.card_id
+      description: The ID of the card.
+      type: Number
+    - contextPath: GitHub.Projects.columns.cards.content_number
+      description: The content number of this card, usually this is the issue number.
+      type: Number
+    - contextPath: GitHub.Projects.all_issues
+      description: List of all issue numbers that are in this project board.
+      type: Unknown
   - arguments:
     - description: 'Column unique id '
       name: column_id
