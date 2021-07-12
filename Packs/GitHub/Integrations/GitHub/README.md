@@ -2324,3 +2324,25 @@ List all project boards a user can see.
 #### Command Example
 
 ```!GitHub-list-all-projects project_filter="1,2,3"```
+
+### GitHub-move-issue-to-project-board
+
+***
+Move an issue in the project board to a different column.
+
+#### Base Command
+
+`GitHub-move-issue-to-project-board`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| column_id | Destination column ID | Required | 
+| card_id | Card ID to move | Required | 
+| position | The position of the card in the new column | Optional | 
+
+           
+#### Command Example
+
+```!GitHub-move-issue-to-project-board card_id=1111 column_id=1234 position="top"```
