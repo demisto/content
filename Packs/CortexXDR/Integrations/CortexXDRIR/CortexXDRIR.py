@@ -123,7 +123,15 @@ class Client(BaseClient):
             Performs basic get request to get item samples
         """
         last_one_day, _ = parse_date_range(first_fetch_time, TIME_FORMAT)
-        self.get_incidents(lte_creation_time=last_one_day, limit=1)
+        try:
+            self.get_incidents(lte_creation_time=last_one_day, limit=1)
+        except Exception as err:
+            if 'API request Unauthorized' in str(err):
+                # this error is received from the XDR server when the client clock is not in sync to the server
+                raise DemistoException(f'{str(err)} please validate that your both '
+                                       f'XSOAR and XDR server clocks are in sync')
+            else:
+                raise
 
     def get_incidents(self, incident_id_list=None, lte_modification_time=None, gte_modification_time=None,
                       lte_creation_time=None, gte_creation_time=None, status=None, sort_by_modification_time=None,

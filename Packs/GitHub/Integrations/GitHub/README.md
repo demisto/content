@@ -6,19 +6,20 @@ Integration to GitHub API.
 2. Search for GitHub.
 3. Click **Add instance** to create and configure a new integration instance.
 
-   | **Parameter** | **Required** |
-   | --- | --- |
-   | Fetch incidents | False |
-   | API Token | False |
-   | Credentials | False |
-   | Username of the repository owner, for example: github.com/repos/{_owner_}/{repo}/issues | False |
-   | The name of the requested repository | False |
-   | First fetch interval (in days) | False |
-   | Use system proxy settings | False |
-   | Trust any certificate (not secure) | False |
-   | Incident type | False |
-   | GitHub app integration ID | False |
-   | GitHub app installation ID | False |
+    | **Parameter** | **Required** |
+    | --- | --- |
+    | Fetch incidents | False |
+    | Select an Issue or Pull requests to Fetch | False |
+    | API Token | False |
+    | Credentials | False |
+    | Username of the repository owner, for example: github.com/repos/{_owner_}/{repo}/issues | False |
+    | The name of the requested repository | False |
+    | First fetch interval (in days) | False |
+    | Use system proxy settings | False |
+    | Trust any certificate (not secure) | False |
+    | Incident type | False |
+    | GitHub app integration ID | False |
+    | GitHub app installation ID | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 
@@ -2119,4 +2120,176 @@ Create a release.
 ```
 
 #### Human Readable Output
-Release 1.0.0 created successfully for repo sdk: https://github.com/demisto/sdk/releases/tag/1.0.0
+> Release 1.0.0 created successfully for repo sdk: https:<span>//github</span>.com/demisto/sdk/releases/tag/1.0.0
+
+
+### Github-list-issue-events
+***
+Returns events corresponding to the given issue.
+
+
+#### Base Command
+
+`Github-list-issue-events`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| issue_number | The issue number for which to retrieve events. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GitHub.IssueEvent.id | Number | Event ID. | 
+| GitHub.IssueEvent.node_id | String | Event node ID. | 
+| GitHub.IssueEvent.url | String | Event URL. | 
+| GitHub.IssueEvent.actor.login | String | Event actor login username. | 
+| GitHub.IssueEvent.actor.id | Number | Event actor ID. | 
+| GitHub.IssueEvent.actor.node_id | String | Event actor node ID. | 
+| GitHub.IssueEvent.actor.avatar_url | String | Event actor avatar URL. | 
+| GitHub.IssueEvent.actor.gravatar_id | String | Event actor gravatar ID. | 
+| GitHub.IssueEvent.actor.url | String | Event actor URL. | 
+| GitHub.IssueEvent.actor.html_url | String | Event actor HTML URL. | 
+| GitHub.IssueEvent.actor.followers_url | String | Event actor followers URL. | 
+| GitHub.IssueEvent.actor.following_url | String | Event actor following URL. | 
+| GitHub.IssueEvent.actor.gists_url | String | Event actor gists URL. | 
+| GitHub.IssueEvent.actor.starred_url | String | Event actor starred URL. | 
+| GitHub.IssueEvent.actor.subscriptions_url | String | Event actor subscriptions URL. | 
+| GitHub.IssueEvent.actor.organizations_url | String | Event actor organizations URL. | 
+| GitHub.IssueEvent.actor.repos_url | String | Event actor repos URL. | 
+| GitHub.IssueEvent.actor.events_url | String | Event actor events URL. | 
+| GitHub.IssueEvent.actor.received_events_url | String | Event actor received events URL. | 
+| GitHub.IssueEvent.actor.type | String | Event actor type. | 
+| GitHub.IssueEvent.actor.site_admin | Boolean | Indicates whether the event actor is site admin. | 
+| GitHub.IssueEvent.event | String | Issue event type, e.g labeled, closed. | 
+| GitHub.IssueEvent.commit_id | Unknown | Event commit ID. | 
+| GitHub.IssueEvent.commit_url | Unknown | Event commit URL. | 
+| GitHub.IssueEvent.created_at | Date | Event created time. | 
+| GitHub.IssueEvent.label.name | String | Event label name. | 
+| GitHub.IssueEvent.label.color | String | Event label color | 
+| GitHub.IssueEvent.performed_via_github_app | Unknown | Indicates whether event was performed via GitHub application. | 
+| GitHub.IssueEvent.assignee.login | String | Assignee login username. | 
+| GitHub.IssueEvent.assignee.id | Number | Assignee ID. | 
+| GitHub.IssueEvent.assignee.node_id | String | Assignee node ID. | 
+| GitHub.IssueEvent.assignee.avatar_url | String | Assignee avatar URL. | 
+| GitHub.IssueEvent.assignee.gravatar_id | String | Assignee gravatar ID. | 
+| GitHub.IssueEvent.assignee.url | String | Assignee URL. | 
+| GitHub.IssueEvent.assignee.html_url | String | Assignee HTML URL. | 
+| GitHub.IssueEvent.assignee.followers_url | String | Assignee followers URL. | 
+| GitHub.IssueEvent.assignee.following_url | String | Assignee following URL. | 
+| GitHub.IssueEvent.assignee.gists_url | String | Assignee gists URL. | 
+| GitHub.IssueEvent.assignee.starred_url | String | Assignee starred URL. | 
+| GitHub.IssueEvent.assignee.subscriptions_url | String | Assignee subscriptions URL. | 
+| GitHub.IssueEvent.assignee.organizations_url | String | Assignee organizations URL. | 
+| GitHub.IssueEvent.assignee.repos_url | String | Assignee repos URL. | 
+| GitHub.IssueEvent.assignee.events_url | String | Assignee events URL. | 
+| GitHub.IssueEvent.assignee.received_events_url | String | Assignee received events URL. | 
+| GitHub.IssueEvent.assignee.type | String | Assignee type. | 
+| GitHub.IssueEvent.assignee.site_admin | Boolean | Indicates whether the assignee is site admin. | 
+| GitHub.IssueEvent.assigner.login | String | Assigner login username. | 
+| GitHub.IssueEvent.assigner.id | Number | Assigner ID. | 
+| GitHub.IssueEvent.assigner.node_id | String | Assigner node ID. | 
+| GitHub.IssueEvent.assigner.avatar_url | String | Assigner avatar URL. | 
+| GitHub.IssueEvent.assigner.gravatar_id | String | Assigner gravatar ID. | 
+| GitHub.IssueEvent.assigner.url | String | Assigner URL. | 
+| GitHub.IssueEvent.assigner.html_url | String | Assigner HTML URL. | 
+| GitHub.IssueEvent.assigner.followers_url | String | Assigner followers URL. | 
+| GitHub.IssueEvent.assigner.following_url | String | Assigner following URL. | 
+| GitHub.IssueEvent.assigner.gists_url | String | Assigner gists URL. | 
+| GitHub.IssueEvent.assigner.starred_url | String | Assigner starred URL. | 
+| GitHub.IssueEvent.assigner.subscriptions_url | String | Assigner subscriptions URL. | 
+| GitHub.IssueEvent.assigner.organizations_url | String | Assigner organizations URL. | 
+| GitHub.IssueEvent.assigner.repos_url | String | Assigner repos URL. | 
+| GitHub.IssueEvent.assigner.events_url | String | Assigner events URL. | 
+| GitHub.IssueEvent.assigner.received_events_url | String | Assigner received events URL. | 
+| GitHub.IssueEvent.assigner.type | String | Assigner type. | 
+| GitHub.IssueEvent.assigner.site_admin | Boolean | Indicates whether the assignee is site admin. | 
+
+
+#### Command Example
+```!Github-list-issue-events issue_number=1079```
+
+#### Context Example
+```json
+{
+    "GitHub": {
+        "IssueEvent": [
+            {
+                "actor": {
+                    "avatar_url": "https://avatars.githubusercontent.com/u/70005542?v=4",
+                    "events_url": "https://api.github.com/users/tomneeman151293/events{/privacy}",
+                    "followers_url": "https://api.github.com/users/tomneeman151293/followers",
+                    "following_url": "https://api.github.com/users/tomneeman151293/following{/other_user}",
+                    "gists_url": "https://api.github.com/users/tomneeman151293/gists{/gist_id}",
+                    "gravatar_id": "",
+                    "html_url": "https://github.com/tomneeman151293",
+                    "id": 70005542,
+                    "login": "tomneeman151293",
+                    "node_id": "MDQ6VXNlcjcwMDA1NTQy",
+                    "organizations_url": "https://api.github.com/users/tomneeman151293/orgs",
+                    "received_events_url": "https://api.github.com/users/tomneeman151293/received_events",
+                    "repos_url": "https://api.github.com/users/tomneeman151293/repos",
+                    "site_admin": false,
+                    "starred_url": "https://api.github.com/users/tomneeman151293/starred{/owner}{/repo}",
+                    "subscriptions_url": "https://api.github.com/users/tomneeman151293/subscriptions",
+                    "type": "User",
+                    "url": "https://api.github.com/users/tomneeman151293"
+                },
+                "commit_id": null,
+                "commit_url": null,
+                "created_at": "2021-01-28T13:00:26Z",
+                "event": "labeled",
+                "id": 4260960414,
+                "label": {
+                    "color": "d73a4a",
+                    "name": "bug"
+                },
+                "node_id": "MDEyOkxhYmVsZWRFdmVudDQyNjA5NjA0MTQ=",
+                "performed_via_github_app": null,
+                "url": "https://api.github.com/repos/demisto/demisto-sdk/issues/events/4260960414"
+            },
+            {
+                "actor": {
+                    "avatar_url": "https://avatars.githubusercontent.com/u/70005542?v=4",
+                    "events_url": "https://api.github.com/users/tomneeman151293/events{/privacy}",
+                    "followers_url": "https://api.github.com/users/tomneeman151293/followers",
+                    "following_url": "https://api.github.com/users/tomneeman151293/following{/other_user}",
+                    "gists_url": "https://api.github.com/users/tomneeman151293/gists{/gist_id}",
+                    "gravatar_id": "",
+                    "html_url": "https://github.com/tomneeman151293",
+                    "id": 70005542,
+                    "login": "tomneeman151293",
+                    "node_id": "MDQ6VXNlcjcwMDA1NTQy",
+                    "organizations_url": "https://api.github.com/users/tomneeman151293/orgs",
+                    "received_events_url": "https://api.github.com/users/tomneeman151293/received_events",
+                    "repos_url": "https://api.github.com/users/tomneeman151293/repos",
+                    "site_admin": false,
+                    "starred_url": "https://api.github.com/users/tomneeman151293/starred{/owner}{/repo}",
+                    "subscriptions_url": "https://api.github.com/users/tomneeman151293/subscriptions",
+                    "type": "User",
+                    "url": "https://api.github.com/users/tomneeman151293"
+                },
+                "commit_id": null,
+                "commit_url": null,
+                "created_at": "2021-01-28T15:20:27Z",
+                "event": "closed",
+                "id": 4261648354,
+                "node_id": "MDExOkNsb3NlZEV2ZW50NDI2MTY0ODM1NA==",
+                "performed_via_github_app": null,
+                "url": "https://api.github.com/repos/demisto/demisto-sdk/issues/events/4261648354"
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### GitHub Issue Events For Issue 1079
+>|actor|commit_id|commit_url|created_at|event|id|label|node_id|performed_via_github_app|url|
+>|---|---|---|---|---|---|---|---|---|---|
+>| login: tomneeman151293<br/>id: 70005542<br/>node_id: MDQ6VXNlcjcwMDA1NTQy<br/>avatar_url: https://avatars.githubusercontent.com/u/70005542?v=4<br/>gravatar_id: <br/>url: https://api.github.com/users/tomneeman151293<br/>html_url: https://github.com/tomneeman151293<br/>followers_url: https://api.github.com/users/tomneeman151293/followers<br/>following_url: https://api.github.com/users/tomneeman151293/following{/other_user}<br/>gists_url: https://api.github.com/users/tomneeman151293/gists{/gist_id}<br/>starred_url: https://api.github.com/users/tomneeman151293/starred{/owner}{/repo}<br/>subscriptions_url: https://api.github.com/users/tomneeman151293/subscriptions<br/>organizations_url: https://api.github.com/users/tomneeman151293/orgs<br/>repos_url: https://api.github.com/users/tomneeman151293/repos<br/>events_url: https://api.github.com/users/tomneeman151293/events{/privacy}<br/>received_events_url: https://api.github.com/users/tomneeman151293/received_events<br/>type: User<br/>site_admin: false |  |  | 2021-01-28T13:00:26Z | labeled | 4260960414 | name: bug<br/>color: d73a4a | MDEyOkxhYmVsZWRFdmVudDQyNjA5NjA0MTQ= |  | https://api.github.com/repos/demisto/demisto-sdk/issues/events/4260960414 |
+>| login: tomneeman151293<br/>id: 70005542<br/>node_id: MDQ6VXNlcjcwMDA1NTQy<br/>avatar_url: https://avatars.githubusercontent.com/u/70005542?v=4<br/>gravatar_id: <br/>url: https://api.github.com/users/tomneeman151293<br/>html_url: https://github.com/tomneeman151293<br/>followers_url: https://api.github.com/users/tomneeman151293/followers<br/>following_url: https://api.github.com/users/tomneeman151293/following{/other_user}<br/>gists_url: https://api.github.com/users/tomneeman151293/gists{/gist_id}<br/>starred_url: https://api.github.com/users/tomneeman151293/starred{/owner}{/repo}<br/>subscriptions_url: https://api.github.com/users/tomneeman151293/subscriptions<br/>organizations_url: https://api.github.com/users/tomneeman151293/orgs<br/>repos_url: https://api.github.com/users/tomneeman151293/repos<br/>events_url: https://api.github.com/users/tomneeman151293/events{/privacy}<br/>received_events_url: https://api.github.com/users/tomneeman151293/received_events<br/>type: User<br/>site_admin: false |  |  | 2021-01-28T15:20:27Z | closed | 4261648354 |  | MDExOkNsb3NlZEV2ZW50NDI2MTY0ODM1NA== |  | https://api.github.com/repos/demisto/demisto-sdk/issues/events/4261648354 |
+
