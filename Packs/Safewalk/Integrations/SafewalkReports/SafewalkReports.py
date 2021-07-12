@@ -419,6 +419,7 @@ def test_module(client, is_fetch, last_run, first_fetch_str, fetch_limit):
     else:
         return 'Failed to run test.'
 
+
 def fetch_incidents(client, last_run, first_fetch_str, fetch_limit, query_filter=None):
     incidents = []
 
