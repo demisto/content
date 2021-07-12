@@ -35,32 +35,38 @@ def format_dict_keys(data: List[Dict[str, Any]]) -> List:
 def main(args):
     thresholds = args.get('Thresholds', THRESHOLDS)
     prev_month = datetime.today() + dateutil.relativedelta.relativedelta(months=-1)
-
+    current_month = datetime.today()
     res = execute_command('GetLargestInvestigations', {
         'from': prev_month.strftime('%Y-%m-%d'),
-        'to': prev_month.strftime('%Y-%m-%d'),
+        'to': current_month.strftime('%Y-%m-%d'),
         'table_result': 'true',
     })
 
-    res_data = format_dict_keys(res['data'])
-    incidentsbiggerthan1mb = res_data
-    numberofincidentsbiggerthan1mb = res['total']
+    incidentsbiggerthan1mb = []
+    incidentsbiggerthan10mb = []
+    incidentswithmorethan500entries = []
+    for incident in res['data']:
+        if incident['AmountOfEntries'] >= 500:
+            incidentswithmorethan500entries.append(incident)
+        if round(incident['Size(MB)']) >= 10:
+            incidentsbiggerthan10mb.append(incident)
+        else:
+            incidentsbiggerthan1mb.append(incident)
+    incidentsbiggerthan1mb = format_dict_keys(incidentsbiggerthan1mb)
+    incidentsbiggerthan10mb = format_dict_keys(incidentsbiggerthan10mb)
+    incidentswithmorethan500entries = format_dict_keys(incidentswithmorethan500entries)
 
-    incidentsbiggerthan10mb = [incident for incident in res_data if int(incident['size'].split()[0]) > 10]
+    numberofincidentsbiggerthan1mb = len(incidentsbiggerthan1mb)
     numberofincidentsbiggerthan10mb = len(incidentsbiggerthan10mb)
-
-    incidentswithmorethan500entries = [incident for incident in res_data if incident['amountofentries'] > 500]
     numberofincidentswithmorethan500entries = len(incidentswithmorethan500entries)
 
     analyze_fields = {
         'healthcheckinvestigationsbiggerthan1mb': incidentsbiggerthan1mb,
         'healthcheckinvestigationsbiggerthan10mb': incidentsbiggerthan10mb,
-        'healthcheckinvestigationswithmorethan500entries': incidentswithmorethan500entries,
         'healthchecknumberofinvestigationsbiggerthan1mb': numberofincidentsbiggerthan1mb,
         'healthchecknumberofinvestigationsbiggerthan10mb': numberofincidentsbiggerthan10mb,
         'healthchecknumberofinvestigationswithmorethan500entries': numberofincidentswithmorethan500entries,
     }
-
     execute_command('setIncident', analyze_fields)
 
     action_items = []

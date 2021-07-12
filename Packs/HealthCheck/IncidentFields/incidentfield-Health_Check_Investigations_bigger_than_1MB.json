@@ -40,7 +40,7 @@
             "required": false,
             "script": "",
             "selectValues": null,
-            "type": "number",
+            "type": "shortText",
             "width": 130
         },
         {
@@ -57,9 +57,6 @@
         }
     ],
     "content": true,
-    "defaultRows": [
-        {}
-    ],
     "editForm": true,
     "group": 0,
     "hidden": false,
