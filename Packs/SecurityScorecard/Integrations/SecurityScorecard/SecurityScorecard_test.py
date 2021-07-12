@@ -3,19 +3,7 @@ from SecurityScorecard import Client, \
     is_email_valid, \
     is_date_valid, \
     incidents_to_import
-# securityscorecard_portfolios_list_command, \
-# securityscorecard_portfolio_list_companies_command, \
-# securityscorecard_company_factor_score_get_command,  \
-# securityscorecard_company_history_score_get_command,  \
-# securityscorecard_company_services_get_command,  \
-# securityscorecard_company_score_get_command,  \
-# securityscorecard_company_history_factor_score_get_command,  \
-# securityscorecard_alert_grade_change_create_command, \
-# securityscorecard_alert_score_threshold_create_command, \
-# securityscorecard_alerts_list_command, \
 
-import requests_mock
-import requests
 import json
 import io
 import demistomock as demisto
@@ -130,14 +118,12 @@ def test_securityscorecard_portfolio_list_companies(mocker):
 
     # 2. Portfolio doesn't exist
     non_exist_portfolio = "portfolio4"
-    url = "{0}/portfolios/{1}/companies".format(MOCK_URL, non_exist_portfolio)
     portfolio_not_exist_raw_response = util_load_json("./test_data/portfolios/portfolio_not_found.json")
 
-    with requests_mock.mock() as mocker2:
-        mocker2.get(url, json=portfolio_not_exist_raw_response)
-        portfolio_not_exist_response = requests.get(url)
+    mocker.patch.object(client, "get_companies_in_portfolio", return_value=portfolio_not_exist_raw_response)
+    portfolio_not_exist_response = client.get_companies_in_portfolio(non_exist_portfolio)
 
-        assert portfolio_not_exist_response.json()["error"]["message"] == "portfolio not found"
+    assert portfolio_not_exist_response["error"]["message"] == "portfolio not found"
 
 
 # def test_securityscorecard_company_factor_score_get():
