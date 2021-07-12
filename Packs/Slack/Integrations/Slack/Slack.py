@@ -2134,7 +2134,7 @@ def filter_channels_command():
     }
 
     return_results(CommandResults(
-        outputs_prefix='Slack.Channel',
+        outputs_prefix='Slack',
         outputs_key_field='ID',
         outputs=context
     ))
