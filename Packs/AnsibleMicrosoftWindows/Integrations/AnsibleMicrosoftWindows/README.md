@@ -518,22 +518,6 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
                     "webRequestTimeoutSeconds": 30
                 },
                 "feature": {
-                    "   at Alphaleonis.Win32.Filesystem.Directory.CreateDirectory(String path)": false,
-                    "   at Alphaleonis.Win32.Filesystem.Directory.CreateDirectoryCore(KernelTransaction transaction, String path, String templatePath, ObjectSecurity directorySecurity, Boolean compress, PathFormat pathFormat)": false,
-                    "   at Alphaleonis.Win32.NativeError.ThrowException(UInt32 errorCode, String readPath, String writePath)": false,
-                    "   at chocolatey.infrastructure.filesystem.DotNetFileSystem.<>c__DisplayClass64.<create_directory>b__63()": false,
-                    "   at chocolatey.infrastructure.filesystem.DotNetFileSystem.create_directory(String directoryPath)": false,
-                    "   at chocolatey.infrastructure.filesystem.DotNetFileSystem.create_directory_if_not_exists(String directoryPath, Boolean ignoreError)": false,
-                    "   at chocolatey.infrastructure.tolerance.FaultTolerance.<>c__DisplayClass1.<retry>b__0()": false,
-                    "   at chocolatey.infrastructure.tolerance.FaultTolerance.retry[T](Int32 numberOfTries, Func`1 function, Int32 waitDurationMilliseconds, Int32 increaseRetryByMilliseconds, Boolean isSilent)": false,
-                    " (3) The system cannot find the path specified: [\\\\?\\D:\\chocolatey_temp]": false,
-                    " Error converted to warning:": false,
-                    "Cannot create directory \"D:\\chocolatey_temp\". Error was:": false,
-                    "Could not create cache location / temp directory at 'D:\\chocolatey_temp':": false,
-                    "Maximum tries of 3 reached. Throwing error.": false,
-                    "System.IO.DirectoryNotFoundException: (3) The system cannot find the path specified: [\\\\?\\D:\\chocolatey_temp]": false,
-                    "This is try 1/3. Retrying after 300 milliseconds.": false,
-                    "This is try 2/3. Retrying after 400 milliseconds.": false,
                     "allowEmptyChecksums": false,
                     "allowEmptyChecksumsSecure": true,
                     "allowGlobalConfirmation": false,
@@ -563,82 +547,6 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
                     "virusCheck": false
                 },
                 "packages": [
-                    {
-                        "package": "This is try 1/3. Retrying after 300 milliseconds.",
-                        "version": null
-                    },
-                    {
-                        "package": " Error converted to warning:",
-                        "version": null
-                    },
-                    {
-                        "package": " (3) The system cannot find the path specified: [\\\\?\\D:\\chocolatey_temp]",
-                        "version": null
-                    },
-                    {
-                        "package": "This is try 2/3. Retrying after 400 milliseconds.",
-                        "version": null
-                    },
-                    {
-                        "package": " Error converted to warning:",
-                        "version": null
-                    },
-                    {
-                        "package": " (3) The system cannot find the path specified: [\\\\?\\D:\\chocolatey_temp]",
-                        "version": null
-                    },
-                    {
-                        "package": "Maximum tries of 3 reached. Throwing error.",
-                        "version": null
-                    },
-                    {
-                        "package": "Cannot create directory \"D:\\chocolatey_temp\". Error was:",
-                        "version": null
-                    },
-                    {
-                        "package": "System.IO.DirectoryNotFoundException: (3) The system cannot find the path specified: [\\\\?\\D:\\chocolatey_temp]",
-                        "version": null
-                    },
-                    {
-                        "package": "   at Alphaleonis.Win32.NativeError.ThrowException(UInt32 errorCode, String readPath, String writePath)",
-                        "version": null
-                    },
-                    {
-                        "package": "   at Alphaleonis.Win32.Filesystem.Directory.CreateDirectoryCore(KernelTransaction transaction, String path, String templatePath, ObjectSecurity directorySecurity, Boolean compress, PathFormat pathFormat)",
-                        "version": null
-                    },
-                    {
-                        "package": "   at Alphaleonis.Win32.Filesystem.Directory.CreateDirectory(String path)",
-                        "version": null
-                    },
-                    {
-                        "package": "   at chocolatey.infrastructure.filesystem.DotNetFileSystem.<>c__DisplayClass64.<create_directory>b__63()",
-                        "version": null
-                    },
-                    {
-                        "package": "   at chocolatey.infrastructure.tolerance.FaultTolerance.<>c__DisplayClass1.<retry>b__0()",
-                        "version": null
-                    },
-                    {
-                        "package": "   at chocolatey.infrastructure.tolerance.FaultTolerance.retry[T](Int32 numberOfTries, Func`1 function, Int32 waitDurationMilliseconds, Int32 increaseRetryByMilliseconds, Boolean isSilent)",
-                        "version": null
-                    },
-                    {
-                        "package": "   at chocolatey.infrastructure.filesystem.DotNetFileSystem.create_directory(String directoryPath)",
-                        "version": null
-                    },
-                    {
-                        "package": "   at chocolatey.infrastructure.filesystem.DotNetFileSystem.create_directory_if_not_exists(String directoryPath, Boolean ignoreError)",
-                        "version": null
-                    },
-                    {
-                        "package": "Could not create cache location / temp directory at 'D:\\chocolatey_temp':",
-                        "version": null
-                    },
-                    {
-                        "package": " (3) The system cannot find the path specified: [\\\\?\\D:\\chocolatey_temp]",
-                        "version": null
-                    },
                     {
                         "package": "chocolatey",
                         "version": "0.10.15"
@@ -697,22 +605,6 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 >      * upgradeAllExceptions: 
 >      * webRequestTimeoutSeconds: 30
 >    * ### Feature
->      *    at Alphaleonis.Win32.Filesystem.Directory.CreateDirectory(String path): False
->      *    at Alphaleonis.Win32.Filesystem.Directory.CreateDirectoryCore(KernelTransaction transaction, String path, String templatePath, ObjectSecurity directorySecurity, Boolean compress, PathFormat pathFormat): False
->      *    at Alphaleonis.Win32.NativeError.ThrowException(UInt32 errorCode, String readPath, String writePath): False
->      *    at chocolatey.infrastructure.filesystem.DotNetFileSystem.<>c__DisplayClass64.<create_directory>b__63(): False
->      *    at chocolatey.infrastructure.filesystem.DotNetFileSystem.create_directory(String directoryPath): False
->      *    at chocolatey.infrastructure.filesystem.DotNetFileSystem.create_directory_if_not_exists(String directoryPath, Boolean ignoreError): False
->      *    at chocolatey.infrastructure.tolerance.FaultTolerance.<>c__DisplayClass1.<retry>b__0(): False
->      *    at chocolatey.infrastructure.tolerance.FaultTolerance.retry[T](Int32 numberOfTries, Func`1 function, Int32 waitDurationMilliseconds, Int32 increaseRetryByMilliseconds, Boolean isSilent): False
->      *  (3) The system cannot find the path specified: [\\?\D:\chocolatey_temp]: False
->      *  Error converted to warning:: False
->      * Cannot create directory "D:\chocolatey_temp". Error was:: False
->      * Could not create cache location / temp directory at 'D:\chocolatey_temp':: False
->      * Maximum tries of 3 reached. Throwing error.: False
->      * System.IO.DirectoryNotFoundException: (3) The system cannot find the path specified: [\\?\D:\chocolatey_temp]: False
->      * This is try 1/3. Retrying after 300 milliseconds.: False
->      * This is try 2/3. Retrying after 400 milliseconds.: False
 >      * allowEmptyChecksums: False
 >      * allowEmptyChecksumsSecure: True
 >      * allowGlobalConfirmation: False
@@ -741,63 +633,6 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 >      * useRememberedArgumentsForUpgrades: False
 >      * virusCheck: False
 >    * ### Packages
->    * ### List
->      * package: This is try 1/3. Retrying after 300 milliseconds.
->      * version: None
->    * ### List
->      * package:  Error converted to warning:
->      * version: None
->    * ### List
->      * package:  (3) The system cannot find the path specified: [\\?\D:\chocolatey_temp]
->      * version: None
->    * ### List
->      * package: This is try 2/3. Retrying after 400 milliseconds.
->      * version: None
->    * ### List
->      * package:  Error converted to warning:
->      * version: None
->    * ### List
->      * package:  (3) The system cannot find the path specified: [\\?\D:\chocolatey_temp]
->      * version: None
->    * ### List
->      * package: Maximum tries of 3 reached. Throwing error.
->      * version: None
->    * ### List
->      * package: Cannot create directory "D:\chocolatey_temp". Error was:
->      * version: None
->    * ### List
->      * package: System.IO.DirectoryNotFoundException: (3) The system cannot find the path specified: [\\?\D:\chocolatey_temp]
->      * version: None
->    * ### List
->      * package:    at Alphaleonis.Win32.NativeError.ThrowException(UInt32 errorCode, String readPath, String writePath)
->      * version: None
->    * ### List
->      * package:    at Alphaleonis.Win32.Filesystem.Directory.CreateDirectoryCore(KernelTransaction transaction, String path, String templatePath, ObjectSecurity directorySecurity, Boolean compress, PathFormat pathFormat)
->      * version: None
->    * ### List
->      * package:    at Alphaleonis.Win32.Filesystem.Directory.CreateDirectory(String path)
->      * version: None
->    * ### List
->      * package:    at chocolatey.infrastructure.filesystem.DotNetFileSystem.<>c__DisplayClass64.<create_directory>b__63()
->      * version: None
->    * ### List
->      * package:    at chocolatey.infrastructure.tolerance.FaultTolerance.<>c__DisplayClass1.<retry>b__0()
->      * version: None
->    * ### List
->      * package:    at chocolatey.infrastructure.tolerance.FaultTolerance.retry[T](Int32 numberOfTries, Func`1 function, Int32 waitDurationMilliseconds, Int32 increaseRetryByMilliseconds, Boolean isSilent)
->      * version: None
->    * ### List
->      * package:    at chocolatey.infrastructure.filesystem.DotNetFileSystem.create_directory(String directoryPath)
->      * version: None
->    * ### List
->      * package:    at chocolatey.infrastructure.filesystem.DotNetFileSystem.create_directory_if_not_exists(String directoryPath, Boolean ignoreError)
->      * version: None
->    * ### List
->      * package: Could not create cache location / temp directory at 'D:\chocolatey_temp':
->      * version: None
->    * ### List
->      * package:  (3) The system cannot find the path specified: [\\?\D:\chocolatey_temp]
->      * version: None
 >    * ### List
 >      * package: chocolatey
 >      * version: 0.10.15
