@@ -196,7 +196,7 @@ class Client(BaseClient):
             params=query_params
         )
 
-    def get_domain_services(self, domain: str) -> List[Dict[str, Any]]:
+    def get_domain_services(self, domain: str) -> Dict[str, Any]:
 
         return self._http_request(
             'GET',
@@ -1049,13 +1049,13 @@ def securityscorecard_company_services_get_command(client: Client, args: Dict[st
     :rtype: ``CommandResults``
     """
 
-    domain = args.get("domain")
+    domain = str(args.get("domain"))
 
     if is_valid_domain(domain):
 
         response = client.get_domain_services(domain=domain)
 
-        entries = response.get("entries")
+        entries = response["entries"]
 
         services = []
 
@@ -1103,7 +1103,7 @@ def fetch_alerts(client: Client, params: Dict):
     if not params.get("max_fetch"):
         max_incidents = 50
     else:
-        max_incidents = params.get("max_fetch")
+        max_incidents = arg_to_number(params.get("max_fetch"))  # type: ignore
 
     # User/email to fetch alerts for
     username = demisto.params().get('username').get("identifier")
