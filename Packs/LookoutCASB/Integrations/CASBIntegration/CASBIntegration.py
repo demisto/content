@@ -13,7 +13,7 @@ from CommonServerPython import *  # noqa: F401
 import datetime
 import json
 import traceback
-from typing import Any, Dict, List, Optional, Tuple, Union, cast
+from typing import Any, Dict, List, Optional, Tuple, cast
 
 import dateparser
 import requests
@@ -274,7 +274,7 @@ def test_module(client: Client, event_type: str) -> str:
     :return: 'ok' if test passed, anything else will fail the test.
     :rtype: ``str``
     """
-    test_results = fetch_events(client, event_type, None, None, 1)
+    test_results = fetch_events(client, event_type, EPOCH_STRING, '2021-01-01T00:00:01.000Z', 1)
     demisto.info(f'test_module result: {test_results}')
     return 'ok'
 
@@ -394,7 +394,9 @@ def get_information(client: Client,
     :param end_time: End time is ISO 8601 format.
     :param result_type:
     :return: Returns
-            {'status': 'Success', 'statusCode': 200, 'message': 'Success', 'data': {'userRiskRating': 'Low', 'Location': [{'name': 'Brooklyn', 'count': '6060', 'percentage': '82.832149'},
+            {'status': 'Success', 'statusCode': 200, 'message': 'Success',
+                'data': {'userRiskRating': 'Low',
+                'Location': [{'name': 'Brooklyn', 'count': '6060', 'percentage': '82.832149'},
             {'name': 'Raipur', 'count': '483', 'percentage': '6.601968'}}]}}
     """
 
@@ -574,7 +576,6 @@ def main() -> None:
     result_type = get_argument_str(args, 'result_type', 'User')
     user_email = get_argument_str(args, 'email', 'Content')
     user_risk_rating = get_argument_str(args, 'risk_rating', 'NA')
-    action = get_argument_str(args, 'action', 'Get')
     start_time = get_argument_str(args, 'start_time', None)
     end_time = get_argument_str(args, 'end_time', None)
     max_results = get_argument_int(args, 'max_results', MAX_INCIDENTS_TO_FETCH)
