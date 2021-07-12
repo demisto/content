@@ -858,7 +858,7 @@ Channel renamed successfully.
 </pre>
 <h5>Human Readable Output</h5>
 <p>
-<h3>Details for Slack channel: general</h3>
+<h3>Results</h3>
 <table style="width:750px" border="2" cellpadding="6">
   <thead>
     <tr>
