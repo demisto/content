@@ -1,7 +1,10 @@
+import pytest
 from CopyNotesToIncident import copy_notes_to_target_incident
 import demistomock as demisto  # noqa # pylint: disable=unused-wildcard-import
 from typing import List, Dict, Any
 import json
+
+from CommonServerPython import DemistoException
 
 MOCK_TARGET_INCIDENT_ID = '99'
 MOCK_TAG = 'Tag1'
@@ -137,3 +140,28 @@ def test_copy_tagged_note_entries(mocker):
     assert len(mocked_ec.call_args_list) == 2
     assert mocked_ec.call_args_list[1][0][0] == 'addEntries'
     assert mocked_ec.call_args_list[1][0][1]['entries'] == mock_target_entries
+
+
+def test_copy_notes_when_add_entries_doesnt_work(mocker):
+    mock_source_entries = load_test_data("test_data/entries.json")
+    mock_target_entries = [
+        e for e in mock_source_entries if (
+                isinstance(e, dict)
+                and 'Note' in e
+                and e['Note'] is True
+                and 'Tags' in e
+                and isinstance(e['Tags'], list)
+                and MOCK_TAG in e['Tags']
+        )
+    ]
+
+    def execute_command(name, args):
+        if name == 'getEntries':
+            return mock_target_entries
+        elif name == 'addEntries':
+            return []
+        raise ValueError(f"Error: Unknown command or command/argument pair: {name} {args!r}")
+    mocker.patch.object(demisto, 'executeCommand', side_effect=execute_command)
+    err_msg = "Something went wrong with addEntries command, please try again."
+    with pytest.raises(DemistoException, match=err_msg):
+        copy_notes_to_target_incident({'target_incident': MOCK_TARGET_INCIDENT_ID})

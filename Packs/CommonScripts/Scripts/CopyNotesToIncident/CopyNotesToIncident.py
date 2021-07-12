@@ -1,3 +1,5 @@
+from time import sleep
+
 import demistomock as demisto  # noqa # pylint: disable=unused-wildcard-import
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 from CommonServerUserPython import *  # noqa # pylint: disable=unused-wildcard-import
@@ -27,8 +29,19 @@ def copy_notes_to_target_incident(args: Dict[str, Any]) -> CommandResults:
                 note_entries.append(entry)
 
         if len(note_entries) > 0:
-            demisto.executeCommand("addEntries", {"id": target_incident, "entries": note_entries})
-            md = f'## {len(note_entries)} notes copied'
+            result = []
+            retries = 3
+            sleep_time = 1
+            for i in range(retries):
+                result = demisto.executeCommand("addEntries", {"id": target_incident, "entries": note_entries})
+                if result:
+                    break
+                sleep(sleep_time)
+                sleep_time += 1
+            if result:
+                md = f'## {len(note_entries)} notes copied'
+            else:
+                raise DemistoException('Something went wrong with addEntries command, please try again.')
         else:
             md = '## No notes found'
     else:
