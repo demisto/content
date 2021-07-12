@@ -10,6 +10,7 @@ description: |-
   - Critical assets
   - Email authenticity
   - Current incident severity
+  - Microsoft Headers
 starttaskid: "0"
 tasks:
   "0":
@@ -202,10 +203,10 @@ tasks:
     quietmode: 0
   "15":
     id: "15"
-    taskid: a449464e-9876-4331-8e47-773e7601037d
+    taskid: be9c8f44-63bb-4ba0-873b-2168cdb2ab06
     type: condition
     task:
-      id: a449464e-9876-4331-8e47-773e7601037d
+      id: be9c8f44-63bb-4ba0-873b-2168cdb2ab06
       version: -1
       name: Determine incident severity
       description: Determines the severity level based on the highest result of all
@@ -270,6 +271,14 @@ tasks:
                       value:
                         simple: "4"
                     ignorecase: true
+                  - operator: isEqualString
+                    left:
+                      value:
+                        simple: Severities.MicrosoftHeadersSeverityCheck
+                      iscontext: true
+                    right:
+                      value:
+                        simple: "4"
             iscontext: true
     - label: High
       condition:
@@ -315,6 +324,14 @@ tasks:
                       value:
                         simple: "3"
                     ignorecase: true
+                  - operator: isEqualString
+                    left:
+                      value:
+                        simple: Severities.MicrosoftHeadersSeverityCheck
+                      iscontext: true
+                    right:
+                      value:
+                        simple: "3"
             iscontext: true
     - label: Medium
       condition:
@@ -366,7 +383,7 @@ tasks:
                       iscontext: true
                     right:
                       value:
-                        simple: Medium
+                        simple: "2"
             iscontext: true
           ignorecase: true
     - label: Low
@@ -413,6 +430,14 @@ tasks:
                       value:
                         simple: "1"
                     ignorecase: true
+                  - operator: isEqualString
+                    left:
+                      value:
+                        simple: Severities.MicrosoftHeadersSeverityCheck
+                      iscontext: true
+                    right:
+                      value:
+                        simple: "1"
             iscontext: true
     view: |-
       {
@@ -769,6 +794,6 @@ outputs:
 - contextPath: CriticalAssets.CriticalUserGroups
   description: Critical user-groups involved in the incident.
   type: unknown
-fromversion: 5.0.0
 tests:
 - Calculate Severity - Generic v2 - Test
+fromversion: 5.0.0

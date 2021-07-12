@@ -4,7 +4,7 @@ Calculate and assign the incident severity based on the highest returned severit
 - Critical assets
 - Email authenticity
 - Current incident severity
-- Microsoft's headers
+- Microsoft Headers
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.
@@ -18,8 +18,8 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 This playbook does not use any integrations.
 
 ### Scripts
-* SetAndHandleEmpty
 * Set
+* SetAndHandleEmpty
 
 ### Commands
 * setIncident
