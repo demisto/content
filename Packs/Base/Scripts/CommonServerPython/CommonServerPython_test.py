@@ -5076,6 +5076,11 @@ def test_smart_get_dict():
 
 class TestCustomIndicator:
     def test_custom_indicator_init_success(self):
+        """
+        Given: Data needed for creating a custom indicator
+        When: Data is valid
+        Then: Create a valid custom indicator
+        """
         from CommonServerPython import Common, DBotScoreType
         dbot_score = Common.DBotScore(
             'test',
@@ -5090,6 +5095,11 @@ class TestCustomIndicator:
         assert indicator.value == 'test_value'
 
     def test_custom_indicator_init_no_prefix(self):
+        """
+        Given: Data needed for Custom indicator
+        When: Prefix provided is None
+        Then: Raise ValueError
+        """
         with pytest.raises(ValueError):
             from CommonServerPython import Common, DBotScoreType
             dbot_score = Common.DBotScore(
@@ -5102,12 +5112,22 @@ class TestCustomIndicator:
             Common.CustomIndicator('test', 'test_value', dbot_score, {'param': 'value'}, None)
 
     def test_custom_indicator_init_no_dbot_score(self):
+        """
+        Given: Data needed for Custom indicator
+        When: Dbotscore is not a DBotScore object
+        Then: Raise ValueError
+        """
         with pytest.raises(ValueError):
             from CommonServerPython import Common
             dbot_score = ''
             Common.CustomIndicator('test', 'test_value', dbot_score, {'param': 'value'}, 'prefix')
 
     def test_custom_indicator_to_context(self):
+        """
+        Given: Data needed for Custom indicator
+        When: Dbotscore is not a DBotScore object
+        Then: Raise ValueError
+        """
         from CommonServerPython import Common, DBotScoreType
         dbot_score = Common.DBotScore(
             'test',
