@@ -15,11 +15,9 @@ script: >-
       for zz in range(0,l2):
           for sz in range(0,l1):
               if s1[sz] == s2[zz]:
-                  matrix[zz+1][sz+1] = min(matrix[zz+1][sz] + 1, matrix[zz][sz+1]
-  + 1, matrix[zz][sz])
+                  matrix[zz+1][sz+1] = min(matrix[zz+1][sz] + 1, matrix[zz][sz+1] + 1, matrix[zz][sz])
               else:
-                  matrix[zz+1][sz+1] = min(matrix[zz+1][sz] + 1, matrix[zz][sz+1]
-  + 1, matrix[zz][sz] + 1)
+                  matrix[zz+1][sz+1] = min(matrix[zz+1][sz] + 1, matrix[zz][sz+1] + 1, matrix[zz][sz] + 1)
       return matrix[l2][l1]
 
   res = []
@@ -35,8 +33,7 @@ script: >-
   compare_string = argToList(demisto.get(demisto.args(), 'compareString'))
 
   if not compare_string:
-      res.append({'Type': entryTypes['error'], 'ContentsFormat': formats['text'],
-  'Contents': 'Unable to extract compareString from arguments'})
+      res.append({'Type': entryTypes['error'], 'ContentsFormat': formats['text'], 'Contents': 'Unable to extract compareString from arguments'})
   else:
       input_string = demisto.get(demisto.args(), 'inputString')
       if input_string:
@@ -48,8 +45,7 @@ script: >-
                       'StringA' : input_string,
                       'StringB' : cur_string,
                       'LevenshteinDistance' : levenshtein_distance,
-                      'TooClose' : levenshtein_distance > 0 and levenshtein_distance
-  < close_distance_int
+                      'TooClose' : levenshtein_distance > 0 and levenshtein_distance < close_distance_int
                   })
           res.append(
               {
@@ -75,15 +71,13 @@ tags:
 - server
 - phishing
 - Condition
-comment: Get the string distance between inputString and compareString (could be a
-  comma separated list) based on Levenshtein Distance algorithm.
+comment: Get the string distance between inputString and compareString (could be a comma separated list) based on Levenshtein Distance algorithm.
 system: true
 args:
 - name: compareString
   required: true
   default: true
-  description: The string(s) to compare with the input string. (could be multiple
-    strings with a comma separator)
+  description: The string(s) to compare with the input string. (could be multiple strings with a comma separator)
 - name: inputString
   required: true
   description: The input string to compare
