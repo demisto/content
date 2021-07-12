@@ -4676,7 +4676,7 @@ script:
   longRunning: true
   longRunningPort: false
   isFetchSamples: true
-  ismappable: true
+  ismappable: false
   runonce: false
   script: '-'
   subtype: python3
