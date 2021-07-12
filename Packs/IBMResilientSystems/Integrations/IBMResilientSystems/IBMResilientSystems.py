@@ -27,8 +27,10 @@ except Exception:
 
 ''' GLOBAL VARS '''
 URL = demisto.params()['server'][:-1] if demisto.params()['server'].endswith('/') else demisto.params()['server']
-DOMAIN = URL.replace('http://', '').replace('https://', '')  # remove the http/s from the url
-SERVER, PORT = DOMAIN.rsplit(":", 1)  # Split the URL into two parts hostname & port
+# Remove the http/s from the url (It's added automatically later)
+DOMAIN = URL.replace('http://', '').replace('https://', '')
+# Split the URL into two parts hostname & port
+SERVER, PORT = DOMAIN.rsplit(":", 1)
 ORG_NAME = demisto.params()['org']
 USERNAME = demisto.params().get('credentials', {}).get('identifier')
 PASSWORD = demisto.params().get('credentials', {}).get('password')
@@ -130,7 +132,7 @@ def prettify_incidents(incidents):
         incident['created_date'] = normalize_timestamp(incident['create_date'])
         incident.pop('create_date', None)
         incident.pop('inc_training', None)
-        incident.pop('plan_status', None)
+        #incident.pop('plan_status', None)
         for user in users:
             if incident['owner_id'] == user['id']:
                 incident['owner'] = user['fname'] + ' ' + user['lname']
@@ -492,7 +494,7 @@ def get_incident_command(incident_id):
     wanted_keys = ['create_date', 'discovered_date', 'description', 'due_date', 'id', 'name', 'owner_id',
                    'phase_id', 'severity_code', 'confirmed', 'employee_involved', 'negative_pr_likely',
                    'confirmed', 'start_date', 'due_date', 'negative_pr_likely', 'reporter', 'exposure_type_id',
-                   'nist_attack_vectors']
+                   'nist_attack_vectors', 'plan_status', 'properties']
     pretty_incident = dict((k, incident[k]) for k in wanted_keys if k in incident)
     if incident['resolution_id']:
         pretty_incident['resolution'] = RESOLUTION_DICT[incident['resolution_id']]
@@ -599,6 +601,13 @@ def get_users_command():
 
 def get_users():
     response = client.get('/users')
+    return response
+
+
+def add_notes(incident_id, comment):
+    body = {'text': {'content': comment}}
+    response = client.post('/incidents/' + str(incident_id) + '/comments', body)
+    # demisto.results(response.text)
     return response
 
 
@@ -821,9 +830,29 @@ def incident_artifacts_command(incident_id):
         return 'No artifacts found.'
 
 
+def add_incident_artifact(incident_id, artifact_type, artifact_value, artifact_description):
+    artifact_types = get_artifact_types()
+    atypeint = -1
+
+    for atype in artifact_types:
+        if atype['name'] == artifact_type:
+            atypeint = atype['id']
+            break
+
+    body = {'type': atypeint, 'value': artifact_value, 'description': {'format': 'text', 'content': artifact_description}}
+    response = client.post('/incidents/' + str(incident_id) + '/artifacts', body)
+
+    return response
+
+
 def incident_artifacts(incident_id):
     response = client.get('/incidents/' + incident_id + '/artifacts')
     return response
+
+
+def get_artifact_types():
+    response = client.get('/artifact_types/')
+    return response['entities']
 
 
 def get_artifact_type(artifact_id):
@@ -1061,6 +1090,11 @@ try:
         demisto.results(incident_attachments_command(demisto.args()['incident-id']))
     elif demisto.command() == 'rs-related-incidents':
         demisto.results(related_incidents_command(demisto.args()['incident-id']))
+    elif demisto.command() == 'rs-add-notes':
+        demisto.results(add_notes(demisto.args()['incident_id'], demisto.args()['comment']))
+    elif demisto.command() == 'rs-add-artifact':
+        demisto.results(add_incident_artifact(demisto.args()['incident_id'], demisto.args()[
+                        'artifact_type'], demisto.args()['artifact_value'], demisto.args()['artifact_description']))
 
 except Exception as e:
     LOG(e.message)
