@@ -905,10 +905,10 @@ script:
     execution: false
     name: infoblox-get-object-fields
     outputs:
-    - contextPath: Infoblox.ObjectFields.ObjectType
+    - contextPath: Infoblox.GenericFields.ObjectType
       description: The Infoblox object type.
       type: string
-    - contextPath: Infoblox.ObjectFields.SupportedFields
+    - contextPath: Infoblox.GenericFields.SupportedFields
       description: The list of supported fields for this object.
       type: string
   - arguments:
