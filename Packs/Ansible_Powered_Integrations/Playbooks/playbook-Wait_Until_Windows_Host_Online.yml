@@ -189,5 +189,5 @@ view: |-
 tests:
 - No tests (auto formatted)
 fromversion: 6.0.0
-description: Pauses execution until the Windows host responds to a ping over WinRM.
+description: Deprecated. Use "Wait Until Windows Host Online" from the Ansible Microsoft Windows Pack instead.
 deprecated: true
