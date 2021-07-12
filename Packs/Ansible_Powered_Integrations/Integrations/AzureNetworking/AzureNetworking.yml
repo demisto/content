@@ -51,7 +51,7 @@ configuration:
   name: api_profile
   required: true
   type: 0
-description: Manage Azure Networking resources. Deprecated. Use Ansible Azure Networking (from the Ansible Azure Networking pack) instead.
+description: Manage Azure Networking resources. Deprecated. Use Ansible Azure (from the Ansible Azure pack) instead.
 display: Ansible Azure Networking (Deprecated)
 name: AzureNetworking
 script:

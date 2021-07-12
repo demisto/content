@@ -1,6 +1,6 @@
 {
-    "name": "Ansible Azure Networking",
-    "description": "Manage and control Azure Networking services.",
+    "name": "Ansible Azure",
+    "description": "Manage and control Azure services.",
     "support": "xsoar",
     "currentVersion": "1.0.0",
     "author": "Cortex XSOAR",
@@ -9,7 +9,7 @@
     "categories": [
         "IT Services"
     ],
-    "tags": ["IT", "Network"],
-    "useCases": ["IT Services", "Asset Management", "Network Security"],
+    "tags": ["IT"],
+    "useCases": ["IT Services", "Asset Management"],
     "keywords": []
 }

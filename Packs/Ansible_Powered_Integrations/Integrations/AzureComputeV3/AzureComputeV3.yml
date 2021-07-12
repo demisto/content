@@ -51,7 +51,7 @@ configuration:
   name: api_profile
   required: true
   type: 0
-description: Manage Azure Compute resources. Deprecated. Use Ansible Azure Compute (from the Ansible Azure Compute pack) instead.
+description: Manage Azure Compute resources. Deprecated. Use Ansible Azure (from the Ansible Azure pack) instead.
 display: Ansible Azure Compute (Deprecated)
 name: AzureComputeV3
 script:
