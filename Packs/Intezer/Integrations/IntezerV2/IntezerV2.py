@@ -217,9 +217,9 @@ def get_analysis_sub_analyses_command(intezer_api: IntezerApi, args: dict) -> Co
         analysis = get_analysis_by_id(analysis_id, api=intezer_api)
     except HTTPError as error:
         if error.response.status_code == HTTPStatus.NOT_FOUND:
-            return _get_missing_analysis_result(analysis_id=analysis_id)
+            return _get_missing_analysis_result(analysis_id=str(analysis_id))
     except AnalysisIsStillRunning:
-        return _get_analysis_running_result(analysis_id=analysis_id)
+        return _get_analysis_running_result(analysis_id=str(analysis_id))
 
     sub_analyses: List[SubAnalysis] = analysis.get_sub_analyses()
 
@@ -254,9 +254,9 @@ def get_analysis_code_reuse_command(intezer_api: IntezerApi, args: dict) -> Comm
         sub_analysis_code_reuse = sub_analysis.code_reuse
     except HTTPError as error:
         if error.response.status_code == HTTPStatus.NOT_FOUND:
-            return _get_missing_analysis_result(analysis_id=analysis_id)
+            return _get_missing_analysis_result(analysis_id=str(analysis_id))
         elif error.response.status_code == HTTPStatus.CONFLICT:
-            return _get_analysis_running_result(analysis_id=analysis_id)
+            return _get_analysis_running_result(analysis_id=str(analysis_id))
 
     if not sub_analysis_code_reuse:
         return CommandResults(
@@ -301,9 +301,9 @@ def get_analysis_metadata_command(intezer_api: IntezerApi, args: dict) -> Comman
         sub_analysis_metadata = sub_analysis.metadata
     except HTTPError as error:
         if error.response.status_code == HTTPStatus.NOT_FOUND:
-            return _get_missing_analysis_result(analysis_id=analysis_id)
+            return _get_missing_analysis_result(analysis_id=str(analysis_id))
         elif error.response.status_code == HTTPStatus.CONFLICT:
-            return _get_analysis_running_result(analysis_id=analysis_id)
+            return _get_analysis_running_result(analysis_id=str(analysis_id))
 
     metadata_table = tableToMarkdown('Analysis Metadata', sub_analysis_metadata)
 
@@ -329,7 +329,7 @@ def get_family_info_command(intezer_api: IntezerApi, args: dict) -> CommandResul
     try:
         family.fetch_info()
     except FamilyNotFoundError:
-        return _get_missing_family_result(family_id)
+        return _get_missing_family_result(str(family_id))
 
     output = {
         'ID': family_id,

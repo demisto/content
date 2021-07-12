@@ -173,7 +173,6 @@ def test_analyze_by_uploaded_file_command_success(requests_mock, mocker):
 
 def test_analyze_by_uploaded_file_command_analysis_already_running(requests_mock, mocker):
     # Arrange
-    analysis_id = 'analysis-id'
 
     _setup_access_token(requests_mock)
     requests_mock.post(
@@ -318,7 +317,6 @@ def test_check_analysis_status_and_get_results_command_multiple_analyses_one_fai
     sha256_1 = 'sha256'
     analysis_id_1 = 'analysis_id'
 
-    sha256_2 = 'sha256foo'
     analysis_id_2 = 'analysis_id-2'
 
     _setup_access_token(requests_mock)
@@ -401,7 +399,6 @@ def test_get_analysis_sub_analyses_command_success(requests_mock):
 
 def test_get_analysis_sub_analyses_command_analysis_doesnt_exist(requests_mock):
     # Arrange
-    sha256 = 'sha256'
     analysis_id = 'analysis_id'
     _setup_access_token(requests_mock)
     requests_mock.get(
