@@ -888,4 +888,6 @@ script:
   script: ''
   subtype: python2
   type: python
-sourcemoduleid: Cylance Protect v2
+tests:
+- Cylance Protect v2 Test
+fromversion: 5.0.0

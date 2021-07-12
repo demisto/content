@@ -316,6 +316,7 @@ def get_device_by_hostname():
     hostname_id = demisto.args()['hostname']
     device = get_hostname_request(hostname_id)
     hr = []
+    title = 'Cylance Protect Device ' + hostname_id
     if device:
         device_context = {
             'IPAddress': device['ip_addresses'],
@@ -358,19 +359,18 @@ def get_device_by_hostname():
         current_device['ip_addresses'] = ', '.join(current_device['ip_addresses'])
         current_device['mac_addresses'] = ', '.join(current_device['mac_addresses'])
         current_device['policy'] = current_device['policy']['name']
-        hr.append(current_device)
+        hr = tableToMarkdown(title, [current_device], headerTransform=underscoreToCamelCase, removeNull=True)
 
     else:
         ec = {}
-
-    title = 'Cylance Protect Device ' + hostname_id
+        hr = '### Device For Hostname ' + hostname_id + ' Was Not Found'
 
     entry = {
         'Type': entryTypes['note'],
         'Contents': device,
         'ContentsFormat': formats['json'],
         'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown(title, hr, headerTransform=underscoreToCamelCase, removeNull=True),
+        'HumanReadable': hr,
         'EntryContext': ec
     }
 
@@ -385,6 +385,8 @@ def get_hostname_request(hostname):
     }
     uri = '%s/%s' % (URI_HOSTNAME, hostname)
     res = api_call(uri=uri, method='get', headers=headers)
+    if not res:
+        return None
     return res[0]
 
 
