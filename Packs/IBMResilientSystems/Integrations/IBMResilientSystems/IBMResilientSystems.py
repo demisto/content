@@ -26,8 +26,9 @@ except Exception:
 #     del os.environ['https_proxy']
 
 ''' GLOBAL VARS '''
-SERVER = demisto.params()['server'][:-1] if demisto.params()['server'].endswith('/') else demisto.params()['server']
-PORT = demisto.params()['port']
+URL = demisto.params()['server'][:-1] if demisto.params()['server'].endswith('/') else demisto.params()['server']
+DOMAIN = URL.replace('http://', '').replace('https://', '')  # remove the http/s from the url
+SERVER, PORT = DOMAIN.rsplit(":", 1)  # Split the URL into two parts hostname & port
 ORG_NAME = demisto.params()['org']
 USERNAME = demisto.params().get('credentials', {}).get('identifier')
 PASSWORD = demisto.params().get('credentials', {}).get('password')
