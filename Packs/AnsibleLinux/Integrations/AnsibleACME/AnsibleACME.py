@@ -34,17 +34,17 @@ def main() -> None:
                            Please refer to the documentation for details on how to perform \
                            configuration tests.')
         elif command == 'acme-account':
-            return_results(generic_ansible('acme', 'acme_account', args, int_params, host_type))
+            return_results(generic_ansible('ACME', 'acme_account', args, int_params, host_type))
         elif command == 'acme-account-info':
-            return_results(generic_ansible('acme', 'acme_account_info', args, int_params, host_type))
+            return_results(generic_ansible('ACME', 'acme_account_info', args, int_params, host_type))
         elif command == 'acme-certificate':
-            return_results(generic_ansible('acme', 'acme_certificate', args, int_params, host_type))
+            return_results(generic_ansible('ACME', 'acme_certificate', args, int_params, host_type))
         elif command == 'acme-certificate-revoke':
-            return_results(generic_ansible('acme', 'acme_certificate_revoke', args, int_params, host_type))
+            return_results(generic_ansible('ACME', 'acme_certificate_revoke', args, int_params, host_type))
         elif command == 'acme-challenge-cert-helper':
-            return_results(generic_ansible('acme', 'acme_challenge_cert_helper', args, int_params, host_type))
+            return_results(generic_ansible('ACME', 'acme_challenge_cert_helper', args, int_params, host_type))
         elif command == 'acme-inspect':
-            return_results(generic_ansible('acme', 'acme_inspect', args, int_params, host_type))
+            return_results(generic_ansible('ACME', 'acme_inspect', args, int_params, host_type))
     # Log exceptions and return errors
     except Exception as e:
         demisto.error(traceback.format_exc())  # print the traceback

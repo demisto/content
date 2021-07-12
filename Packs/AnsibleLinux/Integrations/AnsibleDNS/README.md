@@ -103,7 +103,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Context Example
 ```json
 {
-    "dns": {
+    "DNS": {
         "nsupdate": [
             {
                 "changed": true,

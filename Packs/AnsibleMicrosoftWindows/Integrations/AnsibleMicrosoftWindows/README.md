@@ -108,7 +108,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Context Example
 ```json
 {
-    "microsoftwindows": {
+    "MicrosoftWindows": {
         "winAcl": {
             "changed": true,
             "host": "123.123.123.123",
@@ -155,7 +155,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Context Example
 ```json
 {
-    "microsoftwindows": {
+    "MicrosoftWindows": {
         "winAclInheritance": {
             "changed": true,
             "host": "123.123.123.123",
@@ -203,7 +203,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Context Example
 ```json
 {
-    "microsoftwindows": {
+    "MicrosoftWindows": {
         "winAuditPolicySystem": {
             "changed": false,
             "current_audit_policy": {
@@ -263,7 +263,7 @@ Will be one of file, directory, registry. |
 #### Context Example
 ```json
 {
-    "microsoftwindows": {
+    "MicrosoftWindows": {
         "winAuditRule": {
             "changed": true,
             "current_audit_rules": {
@@ -334,7 +334,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Context Example
 ```json
 {
-    "microsoftwindows": {
+    "MicrosoftWindows": {
         "winCertificateStore": {
             "changed": true,
             "host": "123.123.123.123",
@@ -408,7 +408,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Context Example
 ```json
 {
-    "microsoftwindows": {
+    "MicrosoftWindows": {
         "winChocolatey": {
             "changed": true,
             "host": "123.123.123.123",
@@ -457,7 +457,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Context Example
 ```json
 {
-    "microsoftwindows": {
+    "MicrosoftWindows": {
         "winChocolateyConfig": {
             "changed": true,
             "host": "123.123.123.123",
@@ -502,7 +502,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Context Example
 ```json
 {
-    "microsoftwindows": {
+    "MicrosoftWindows": {
         "winChocolateyFacts": {
             "chocolatey": {
                 "config": {
@@ -691,7 +691,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Context Example
 ```json
 {
-    "microsoftwindows": {
+    "MicrosoftWindows": {
         "winChocolateyFeature": {
             "changed": true,
             "host": "123.123.123.123",
@@ -747,7 +747,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Context Example
 ```json
 {
-    "microsoftwindows": {
+    "MicrosoftWindows": {
         "winChocolateySource": {
             "changed": false,
             "host": "123.123.123.123",
@@ -806,7 +806,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Context Example
 ```json
 {
-    "microsoftwindows": {
+    "MicrosoftWindows": {
         "winCopy": {
             "changed": true,
             "checksum": "4a2446ee9651d90ac6c5613bddf416df197f6401",
@@ -906,7 +906,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Context Example
 ```json
 {
-    "microsoftwindows": {
+    "MicrosoftWindows": {
         "winDefrag": {
             "changed": true,
             "cmd": "defrag.exe /C /M /V",
@@ -1153,7 +1153,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Context Example
 ```json
 {
-    "microsoftwindows": {
+    "MicrosoftWindows": {
         "winDiskFacts": {
             "disks": [
                 {
@@ -1816,7 +1816,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Context Example
 ```json
 {
-    "microsoftwindows": {
+    "MicrosoftWindows": {
         "winDiskImage": {
             "changed": true,
             "host": "123.123.123.123",
@@ -1931,7 +1931,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Context Example
 ```json
 {
-    "microsoftwindows": {
+    "MicrosoftWindows": {
         "winDomain": {
             "changed": true,
             "host": "123.123.123.123",
@@ -2307,7 +2307,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Context Example
 ```json
 {
-    "microsoftwindows": {
+    "MicrosoftWindows": {
         "winEnvironment": {
             "before_value": "Test value",
             "changed": false,
@@ -2384,7 +2384,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Context Example
 ```json
 {
-    "microsoftwindows": {
+    "MicrosoftWindows": {
         "winEventlog": {
             "changed": false,
             "entries": 0,
@@ -2458,7 +2458,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Context Example
 ```json
 {
-    "microsoftwindows": {
+    "MicrosoftWindows": {
         "winEventlogEntry": {
             "changed": true,
             "host": "123.123.123.123",
@@ -2512,7 +2512,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Context Example
 ```json
 {
-    "microsoftwindows": {
+    "MicrosoftWindows": {
         "winFeature": {
             "changed": false,
             "exitcode": "NoChangeNeeded",
@@ -2566,7 +2566,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Context Example
 ```json
 {
-    "microsoftwindows": {
+    "MicrosoftWindows": {
         "winFile": {
             "changed": true,
             "host": "123.123.123.123",
@@ -2618,7 +2618,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Context Example
 ```json
 {
-    "microsoftwindows": {
+    "MicrosoftWindows": {
         "winFileVersion": {
             "file_build_part": "14393",
             "file_major_part": "10",
@@ -2689,7 +2689,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Context Example
 ```json
 {
-    "microsoftwindows": {
+    "MicrosoftWindows": {
         "winFind": {
             "changed": false,
             "examined": 2,
@@ -2796,7 +2796,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Context Example
 ```json
 {
-    "microsoftwindows": {
+    "MicrosoftWindows": {
         "winFirewall": {
             "Domain": {
                 "considered": false,
@@ -2893,7 +2893,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Context Example
 ```json
 {
-    "microsoftwindows": {
+    "MicrosoftWindows": {
         "winFirewallRule": {
             "changed": false,
             "host": "123.123.123.123",
@@ -2950,7 +2950,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Context Example
 ```json
 {
-    "microsoftwindows": {
+    "MicrosoftWindows": {
         "winFormat": {
             "changed": false,
             "host": "123.123.123.123",
@@ -3026,7 +3026,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Context Example
 ```json
 {
-    "microsoftwindows": {
+    "MicrosoftWindows": {
         "winGetUrl": {
             "changed": true,
             "checksum_dest": "40c7d97574e7c791d649582912620f7d816829e4",
@@ -3089,7 +3089,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Context Example
 ```json
 {
-    "microsoftwindows": {
+    "MicrosoftWindows": {
         "winGroup": {
             "changed": false,
             "host": "123.123.123.123",
@@ -3140,7 +3140,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Context Example
 ```json
 {
-    "microsoftwindows": {
+    "MicrosoftWindows": {
         "winGroupMembership": {
             "added": [
                 "WIN-U425UI0HPP7\\fed-phil"
@@ -3199,7 +3199,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Context Example
 ```json
 {
-    "microsoftwindows": {
+    "MicrosoftWindows": {
         "winHostname": {
             "changed": true,
             "host": "123.123.123.123",
@@ -3252,7 +3252,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Context Example
 ```json
 {
-    "microsoftwindows": {
+    "MicrosoftWindows": {
         "winHosts": {
             "changed": false,
             "host": "123.123.123.123",
@@ -3330,7 +3330,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Context Example
 ```json
 {
-    "microsoftwindows": {
+    "MicrosoftWindows": {
         "winHttpProxy": {
             "changed": false,
             "host": "123.123.123.123",
@@ -3540,7 +3540,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Context Example
 ```json
 {
-    "microsoftwindows": {
+    "MicrosoftWindows": {
         "winInetProxy": {
             "changed": false,
             "host": "123.123.123.123",
@@ -3599,7 +3599,7 @@ This is now deprecated, use \`backup_file\` instead. |
 #### Context Example
 ```json
 {
-    "microsoftwindows": {
+    "MicrosoftWindows": {
         "winLineinfile": {
             "backup": "",
             "changed": true,
@@ -3688,7 +3688,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Context Example
 ```json
 {
-    "microsoftwindows": {
+    "MicrosoftWindows": {
         "winMsg": {
             "changed": true,
             "display_seconds": 60,
@@ -3747,7 +3747,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Context Example
 ```json
 {
-    "microsoftwindows": {
+    "MicrosoftWindows": {
         "winNetbios": {
             "changed": false,
             "host": "123.123.123.123",
@@ -3808,7 +3808,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Context Example
 ```json
 {
-    "microsoftwindows": {
+    "MicrosoftWindows": {
         "winNssm": {
             "changed": true,
             "changed_by": "AppRotateBytes",
@@ -3859,7 +3859,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Context Example
 ```json
 {
-    "microsoftwindows": {
+    "MicrosoftWindows": {
         "winOptionalFeature": {
             "changed": false,
             "host": "123.123.123.123",
@@ -3908,7 +3908,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Context Example
 ```json
 {
-    "microsoftwindows": {
+    "MicrosoftWindows": {
         "winOwner": {
             "changed": true,
             "host": "123.123.123.123",
@@ -4005,7 +4005,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Context Example
 ```json
 {
-    "microsoftwindows": {
+    "MicrosoftWindows": {
         "winPagefile": {
             "automatic_managed_pagefiles": true,
             "changed": false,
@@ -4064,7 +4064,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Context Example
 ```json
 {
-    "microsoftwindows": {
+    "MicrosoftWindows": {
         "winPartition": {
             "changed": true,
             "host": "123.123.123.123",
@@ -4111,7 +4111,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Context Example
 ```json
 {
-    "microsoftwindows": {
+    "MicrosoftWindows": {
         "winPath": {
             "changed": false,
             "host": "123.123.123.123",
@@ -4189,7 +4189,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Context Example
 ```json
 {
-    "microsoftwindows": {
+    "MicrosoftWindows": {
         "winPing": {
             "changed": false,
             "host": "123.123.123.123",
@@ -4239,7 +4239,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Context Example
 ```json
 {
-    "microsoftwindows": {
+    "MicrosoftWindows": {
         "winPowerPlan": {
             "all_available_plans": {
                 "Balanced": false,
@@ -4297,7 +4297,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Context Example
 ```json
 {
-    "microsoftwindows": {
+    "MicrosoftWindows": {
         "winProductFacts": {
             "host": "123.123.123.123",
             "os_license_channel": "Retail:TB:Eval",
@@ -4371,7 +4371,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Context Example
 ```json
 {
-    "microsoftwindows": {
+    "MicrosoftWindows": {
         "winPsexec": {
             "changed": true,
             "delta": "0:00:01.375000",
@@ -4465,7 +4465,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Context Example
 ```json
 {
-    "microsoftwindows": {
+    "MicrosoftWindows": {
         "winPsmodule": {
             "changed": false,
             "host": "123.123.123.123",
@@ -4519,7 +4519,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Context Example
 ```json
 {
-    "microsoftwindows": {
+    "MicrosoftWindows": {
         "winPsrepository": {
             "changed": false,
             "host": "123.123.123.123",
@@ -4700,7 +4700,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Context Example
 ```json
 {
-    "microsoftwindows": {
+    "MicrosoftWindows": {
         "winPsrepository": {
             "changed": false,
             "host": "123.123.123.123",
@@ -4752,7 +4752,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Context Example
 ```json
 {
-    "microsoftwindows": {
+    "MicrosoftWindows": {
         "winRegStat": {
             "changed": false,
             "exists": true,
@@ -5158,7 +5158,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Context Example
 ```json
 {
-    "microsoftwindows": {
+    "MicrosoftWindows": {
         "winRegedit": {
             "changed": false,
             "data_changed": false,
@@ -5211,7 +5211,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Context Example
 ```json
 {
-    "microsoftwindows": {
+    "MicrosoftWindows": {
         "winRegion": {
             "changed": false,
             "host": "123.123.123.123",
@@ -5262,7 +5262,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Context Example
 ```json
 {
-    "microsoftwindows": {
+    "MicrosoftWindows": {
         "winRegmerge": {
             "changed": true,
             "compared": false,
@@ -5322,7 +5322,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Context Example
 ```json
 {
-    "microsoftwindows": {
+    "MicrosoftWindows": {
         "winRobocopy": {
             "changed": true,
             "cmd": " C:/temp C:/temp2",
@@ -5486,7 +5486,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Context Example
 ```json
 {
-    "microsoftwindows": {
+    "MicrosoftWindows": {
         "winRoute": {
             "changed": false,
             "host": "123.123.123.123",
@@ -5541,7 +5541,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Context Example
 ```json
 {
-    "microsoftwindows": {
+    "MicrosoftWindows": {
         "winSay": {
             "changed": false,
             "host": "123.123.123.123",
@@ -5664,7 +5664,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Context Example
 ```json
 {
-    "microsoftwindows": {
+    "MicrosoftWindows": {
         "winScheduledTaskStat": {
             "changed": false,
             "folder_exists": false,
@@ -5720,7 +5720,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Context Example
 ```json
 {
-    "microsoftwindows": {
+    "MicrosoftWindows": {
         "winSecurityPolicy": {
             "changed": false,
             "host": "123.123.123.123",
@@ -5794,7 +5794,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Context Example
 ```json
 {
-    "microsoftwindows": {
+    "MicrosoftWindows": {
         "winService": {
             "can_pause_and_continue": false,
             "changed": true,
@@ -5879,7 +5879,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Context Example
 ```json
 {
-    "microsoftwindows": {
+    "MicrosoftWindows": {
         "winShare": {
             "actions": [
                 "New-SmbShare -Name internal -Path C:\\temp",
@@ -5950,7 +5950,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Context Example
 ```json
 {
-    "microsoftwindows": {
+    "MicrosoftWindows": {
         "winShortcut": {
             "args": "",
             "changed": false,
@@ -6048,7 +6048,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Context Example
 ```json
 {
-    "microsoftwindows": {
+    "MicrosoftWindows": {
         "winStat": {
             "changed": false,
             "host": "123.123.123.123",
@@ -6143,7 +6143,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Context Example
 ```json
 {
-    "microsoftwindows": {
+    "MicrosoftWindows": {
         "winTempfile": {
             "changed": true,
             "host": "123.123.123.123",
@@ -6236,7 +6236,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Context Example
 ```json
 {
-    "microsoftwindows": {
+    "MicrosoftWindows": {
         "winTimezone": {
             "changed": false,
             "host": "123.123.123.123",
@@ -6295,7 +6295,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Context Example
 ```json
 {
-    "microsoftwindows": {
+    "MicrosoftWindows": {
         "winToast": {
             "changed": false,
             "expire_at": "6/29/2021 5:21:50 AM",
@@ -6357,7 +6357,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Context Example
 ```json
 {
-    "microsoftwindows": {
+    "MicrosoftWindows": {
         "winUnzip": {
             "changed": true,
             "dest": "C:/temp/OldLogs",
@@ -6422,7 +6422,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Context Example
 ```json
 {
-    "microsoftwindows": {
+    "MicrosoftWindows": {
         "winUpdates": {
             "changed": false,
             "filtered_updates": {
@@ -6580,7 +6580,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Context Example
 ```json
 {
-    "microsoftwindows": {
+    "MicrosoftWindows": {
         "winUri": {
             "accept_ranges": "none",
             "cache_control": "private, max-age=0",
@@ -6744,7 +6744,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Context Example
 ```json
 {
-    "microsoftwindows": {
+    "MicrosoftWindows": {
         "winUser": {
             "account_disabled": false,
             "account_locked": false,
@@ -6825,7 +6825,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Context Example
 ```json
 {
-    "microsoftwindows": {
+    "MicrosoftWindows": {
         "winUserProfile": {
             "changed": true,
             "host": "123.123.123.123",
@@ -6876,7 +6876,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Context Example
 ```json
 {
-    "microsoftwindows": {
+    "MicrosoftWindows": {
         "winUserRight": {
             "added": [
                 "WIN-U425UI0HPP7\\Guest"
@@ -6939,7 +6939,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Context Example
 ```json
 {
-    "microsoftwindows": {
+    "MicrosoftWindows": {
         "winWaitFor": {
             "changed": false,
             "elapsed": 10.031336099999999,
@@ -6999,7 +6999,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Context Example
 ```json
 {
-    "microsoftwindows": {
+    "MicrosoftWindows": {
         "winWaitForProcess": {
             "changed": false,
             "elapsed": 0.0468785,
@@ -7050,7 +7050,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Context Example
 ```json
 {
-    "microsoftwindows": {
+    "MicrosoftWindows": {
         "winWakeonlan": {
             "changed": true,
             "host": "123.123.123.123",
@@ -7135,7 +7135,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Context Example
 ```json
 {
-    "microsoftwindows": {
+    "MicrosoftWindows": {
         "winWhoami": {
             "account": {
                 "account_name": "Administrator",

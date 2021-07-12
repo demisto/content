@@ -34,7 +34,7 @@ def main() -> None:
                            Please refer to the documentation for details on how to perform \
                            configuration tests.')
         elif command == 'dns-nsupdate':
-            return_results(generic_ansible('dns', 'nsupdate', args, int_params, host_type))
+            return_results(generic_ansible('DNS', 'nsupdate', args, int_params, host_type))
     # Log exceptions and return errors
     except Exception as e:
         demisto.error(traceback.format_exc())  # print the traceback

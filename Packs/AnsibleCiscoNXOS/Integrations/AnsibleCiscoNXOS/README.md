@@ -84,7 +84,7 @@ Manages AAA server global configuration.
 #### Context Example
 ```json
 {
-    "cisconxos": {
+    "CiscoNXOS": {
         "nxosAaaServer": {
             "changed": true,
             "commands": [
@@ -151,7 +151,7 @@ Manages AAA server host-specific configuration.
 #### Context Example
 ```json
 {
-    "cisconxos": {
+    "CiscoNXOS": {
         "nxosAaaServerHost": {
             "changed": true,
             "end_state": {
@@ -255,7 +255,7 @@ Manages access list entries for ACLs.
 #### Context Example
 ```json
 {
-    "cisconxos": {
+    "CiscoNXOS": {
         "nxosAcl": {
             "changed": true,
             "commands": [
@@ -312,7 +312,7 @@ Manages applying ACLs to interfaces.
 #### Context Example
 ```json
 {
-    "cisconxos": {
+    "CiscoNXOS": {
         "nxosAclInterface": {
             "changed": true,
             "commands": [
@@ -366,7 +366,7 @@ Manage multiline banners on Cisco NXOS devices
 #### Context Example
 ```json
 {
-    "cisconxos": {
+    "CiscoNXOS": {
         "nxosBanner": {
             "changed": true,
             "commands": [
@@ -432,7 +432,7 @@ Bidirectional Forwarding Detection (BFD) global-level configuration
 #### Context Example
 ```json
 {
-    "cisconxos": {
+    "CiscoNXOS": {
         "nxosBfdGlobal": {
             "changed": false,
             "check_mode": false,
@@ -484,7 +484,7 @@ Manages BFD attributes of nxos interfaces.
 #### Context Example
 ```json
 {
-    "cisconxos": {
+    "CiscoNXOS": {
         "nxosBfdInterfaces": {
             "before": [
                 {
@@ -1159,7 +1159,7 @@ Manages BGP configuration.
 #### Context Example
 ```json
 {
-    "cisconxos": {
+    "CiscoNXOS": {
         "nxosBgp": {
             "changed": false,
             "commands": [],
@@ -1285,7 +1285,7 @@ Manages BGP neighbors configurations.
 #### Context Example
 ```json
 {
-    "cisconxos": {
+    "CiscoNXOS": {
         "nxosBgpNeighbor": {
             "changed": true,
             "commands": [
@@ -1381,7 +1381,7 @@ Manages BGP address-family's neighbors configuration.
 #### Context Example
 ```json
 {
-    "cisconxos": {
+    "CiscoNXOS": {
         "nxosBgpNeighborAf": {
             "changed": true,
             "commands": [
@@ -1442,7 +1442,7 @@ Run arbitrary command on Cisco NXOS devices
 #### Context Example
 ```json
 {
-    "cisconxos": {
+    "CiscoNXOS": {
         "nxosCommand": {
             "changed": false,
             "host": "192.168.1.19",
@@ -1633,7 +1633,7 @@ Manage Cisco NXOS configuration sections
 #### Context Example
 ```json
 {
-    "cisconxos": {
+    "CiscoNXOS": {
         "nxosConfig": {
             "backup_path": "./backup/192.168.1.19_config.2021-07-11@00:43:34",
             "changed": true,
@@ -1698,7 +1698,7 @@ Handles the EVPN control plane for VXLAN.
 #### Context Example
 ```json
 {
-    "cisconxos": {
+    "CiscoNXOS": {
         "nxosEvpnGlobal": {
             "changed": true,
             "commands": [
@@ -1805,7 +1805,7 @@ Gets facts about NX-OS switches
 #### Context Example
 ```json
 {
-    "cisconxos": {
+    "CiscoNXOS": {
         "nxosFacts": {
             "discovered_interpreter_python": "/usr/local/bin/python",
             "host": "192.168.1.19",
@@ -3510,7 +3510,7 @@ Manage features in NX-OS switches.
 #### Context Example
 ```json
 {
-    "cisconxos": {
+    "CiscoNXOS": {
         "nxosFeature": {
             "changed": true,
             "commands": [
@@ -3570,7 +3570,7 @@ Trigger a graceful removal or insertion (GIR) of the switch.
 #### Context Example
 ```json
 {
-    "cisconxos": {
+    "CiscoNXOS": {
         "nxosGir": {
             "changed": true,
             "host": "192.168.1.19",
@@ -3622,7 +3622,7 @@ Create a maintenance-mode or normal-mode profile for GIR.
 #### Context Example
 ```json
 {
-    "cisconxos": {
+    "CiscoNXOS": {
         "nxosGirProfileManagement": {
             "changed": true,
             "host": "192.168.1.19",
@@ -3703,7 +3703,7 @@ Manages IGMP global configuration.
 #### Context Example
 ```json
 {
-    "cisconxos": {
+    "CiscoNXOS": {
         "nxosIgmp": {
             "changed": false,
             "host": "192.168.1.19",
@@ -3803,7 +3803,7 @@ Manages IGMP snooping global configuration.
 #### Context Example
 ```json
 {
-    "cisconxos": {
+    "CiscoNXOS": {
         "nxosIgmpSnooping": {
             "changed": false,
             "commands": [],
@@ -3919,7 +3919,7 @@ Manages interface attributes of NX-OS Interfaces
 #### Context Example
 ```json
 {
-    "cisconxos": {
+    "CiscoNXOS": {
         "nxosInterfaces": {
             "before": [
                 {
@@ -4004,7 +4004,7 @@ Manages Layer-2 Interfaces attributes of NX-OS Interfaces
 #### Context Example
 ```json
 {
-    "cisconxos": {
+    "CiscoNXOS": {
         "nxosL2Interfaces": {
             "before": [
                 {
@@ -4129,7 +4129,7 @@ Manage Global Link Aggregation Control Protocol (LACP) on Cisco NX-OS devices.
 #### Context Example
 ```json
 {
-    "cisconxos": {
+    "CiscoNXOS": {
         "nxosLacp": {
             "after": {
                 "system": {
@@ -4230,7 +4230,7 @@ Manages link aggregation groups of NX-OS Interfaces
 #### Context Example
 ```json
 {
-    "cisconxos": {
+    "CiscoNXOS": {
         "nxosLagInterfaces": {
             "after": [
                 {
@@ -4301,7 +4301,7 @@ Manage LLDP configuration on Cisco NXOS network devices.
 #### Context Example
 ```json
 {
-    "cisconxos": {
+    "CiscoNXOS": {
         "nxosLldp": {
             "changed": true,
             "commands": [
@@ -4357,7 +4357,7 @@ Configure and manage Link Layer Discovery Protocol(LLDP) attributes on NX-OS pla
 #### Context Example
 ```json
 {
-    "cisconxos": {
+    "CiscoNXOS": {
         "nxosLldpGlobal": {
             "after": {
                 "holdtime": 100,
@@ -4470,7 +4470,7 @@ Manages core NTP configuration.
 #### Context Example
 ```json
 {
-    "cisconxos": {
+    "CiscoNXOS": {
         "nxosNtp": {
             "changed": true,
             "end_state": {
@@ -4554,7 +4554,7 @@ Manages NTP authentication.
 #### Context Example
 ```json
 {
-    "cisconxos": {
+    "CiscoNXOS": {
         "nxosNtpAuth": {
             "changed": true,
             "end_state": {
@@ -4639,7 +4639,7 @@ Manages NTP options.
 #### Context Example
 ```json
 {
-    "cisconxos": {
+    "CiscoNXOS": {
         "nxosNtpOptions": {
             "changed": true,
             "commands": [
@@ -4708,7 +4708,7 @@ Manage NXAPI configuration on an NXOS device.
 #### Context Example
 ```json
 {
-    "cisconxos": {
+    "CiscoNXOS": {
         "nxosNxapi": {
             "changed": false,
             "commands": [],
@@ -4756,7 +4756,7 @@ Manages configuration of an ospf instance.
 #### Context Example
 ```json
 {
-    "cisconxos": {
+    "CiscoNXOS": {
         "nxosOspf": {
             "changed": false,
             "commands": [],
@@ -4818,7 +4818,7 @@ Manages a VRF for an OSPF router.
 #### Context Example
 ```json
 {
-    "cisconxos": {
+    "CiscoNXOS": {
         "nxosOspfVrf": {
             "changed": false,
             "commands": [],
@@ -4865,7 +4865,7 @@ Configures anycast gateway MAC of the switch.
 #### Context Example
 ```json
 {
-    "cisconxos": {
+    "CiscoNXOS": {
         "nxosOverlayGlobal": {
             "changed": true,
             "commands": [
@@ -4917,7 +4917,7 @@ Manages configuration of a PIM instance.
 #### Context Example
 ```json
 {
-    "cisconxos": {
+    "CiscoNXOS": {
         "nxosPim": {
             "changed": false,
             "commands": [],
@@ -5007,7 +5007,7 @@ Manages configuration of an PIM static RP address instance.
 #### Context Example
 ```json
 {
-    "cisconxos": {
+    "CiscoNXOS": {
         "nxosPimRpAddress": {
             "changed": false,
             "commands": [],
@@ -5062,7 +5062,7 @@ Tests reachability using ping from Nexus switch.
 #### Context Example
 ```json
 {
-    "cisconxos": {
+    "CiscoNXOS": {
         "nxosPing": {
             "changed": false,
             "commands": [
@@ -5128,7 +5128,7 @@ Reboot a network device.
 #### Context Example
 ```json
 {
-    "cisconxos": {
+    "CiscoNXOS": {
         "nxosReboot": {
             "changed": true,
             "host": "192.168.1.19",
@@ -5176,7 +5176,7 @@ Set a checkpoint or rollback to a checkpoint.
 #### Context Example
 ```json
 {
-    "cisconxos": {
+    "CiscoNXOS": {
         "nxosRollback": {
             "changed": true,
             "filename": "backup.cfg",
@@ -5291,7 +5291,7 @@ Manage snapshots of the running states of selected features.
 #### Context Example
 ```json
 {
-    "cisconxos": {
+    "CiscoNXOS": {
         "nxosSnapshot": {
             "changed": false,
             "commands": [],
@@ -5342,7 +5342,7 @@ Manages SNMP community configs.
 #### Context Example
 ```json
 {
-    "cisconxos": {
+    "CiscoNXOS": {
         "nxosSnmpCommunity": {
             "changed": false,
             "commands": [],
@@ -5390,7 +5390,7 @@ Manages SNMP contact info.
 #### Context Example
 ```json
 {
-    "cisconxos": {
+    "CiscoNXOS": {
         "nxosSnmpContact": {
             "changed": true,
             "commands": [
@@ -5449,7 +5449,7 @@ Manages SNMP host configuration.
 #### Context Example
 ```json
 {
-    "cisconxos": {
+    "CiscoNXOS": {
         "nxosSnmpHost": {
             "changed": true,
             "commands": [
@@ -5502,7 +5502,7 @@ Manages SNMP location information.
 #### Context Example
 ```json
 {
-    "cisconxos": {
+    "CiscoNXOS": {
         "nxosSnmpLocation": {
             "changed": true,
             "commands": [
@@ -5584,7 +5584,7 @@ Manages SNMP users for monitoring.
 #### Context Example
 ```json
 {
-    "cisconxos": {
+    "CiscoNXOS": {
         "nxosSnmpUser": {
             "changed": true,
             "commands": [
@@ -5643,7 +5643,7 @@ Manages static route configuration
 #### Context Example
 ```json
 {
-    "cisconxos": {
+    "CiscoNXOS": {
         "nxosStaticRoute": {
             "changed": false,
             "commands": [],
@@ -5696,7 +5696,7 @@ Manage the system attributes on Cisco NXOS devices
 #### Context Example
 ```json
 {
-    "cisconxos": {
+    "CiscoNXOS": {
         "nxosSystem": {
             "changed": true,
             "commands": [
@@ -5750,7 +5750,7 @@ Telemetry Monitoring Service (TMS) configuration
 #### Context Example
 ```json
 {
-    "cisconxos": {
+    "CiscoNXOS": {
         "nxosTelemetry": {
             "before": {},
             "changed": false,
@@ -5872,7 +5872,7 @@ Manage the collection of local users on Nexus devices
 #### Context Example
 ```json
 {
-    "cisconxos": {
+    "CiscoNXOS": {
         "nxosUser": {
             "changed": true,
             "commands": [
@@ -6028,7 +6028,7 @@ Manages global VRF configuration.
 #### Context Example
 ```json
 {
-    "cisconxos": {
+    "CiscoNXOS": {
         "nxosVrf": {
             "changed": true,
             "commands": [

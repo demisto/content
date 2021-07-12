@@ -97,7 +97,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Context Example
 ```json
 {
-    "alibabacloud": {
+    "AlibabaCloud": {
         "aliInstance": [
             {
                 "changed": true,
@@ -149,7 +149,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Context Example
 ```json
 {
-    "alibabacloud": {
+    "AlibabaCloud": {
         "aliInstanceInfo": [
             {
                 "changed": false,

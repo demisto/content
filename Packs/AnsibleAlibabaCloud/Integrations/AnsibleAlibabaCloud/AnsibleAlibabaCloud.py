@@ -38,9 +38,9 @@ def main() -> None:
                 return_results(result)
 
         elif command == 'ali-instance':
-            return_results(generic_ansible('alibabacloud', 'ali_instance', args, int_params, host_type))
+            return_results(generic_ansible('AlibabaCloud', 'ali_instance', args, int_params, host_type))
         elif command == 'ali-instance-info':
-            return_results(generic_ansible('alibabacloud', 'ali_instance_info', args, int_params, host_type))
+            return_results(generic_ansible('AlibabaCloud', 'ali_instance_info', args, int_params, host_type))
     # Log exceptions and return errors
     except Exception as e:
         demisto.error(traceback.format_exc())  # print the traceback

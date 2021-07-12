@@ -71,7 +71,7 @@ This module was called \`hcloud_datacenter_facts\` before Ansible 2.9, returning
 #### Context Example
 ```json
 {
-    "hcloud": {
+    "HCloud": {
         "hcloudDatacenterInfo": [
             [
                 {
@@ -148,7 +148,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Context Example
 ```json
 {
-    "hcloud": {
+    "HCloud": {
         "hcloudFloatingIpInfo": [
             []
         ]
@@ -193,7 +193,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Context Example
 ```json
 {
-    "hcloud": {
+    "HCloud": {
         "hcloudImageInfo": [
             [
                 {
@@ -389,7 +389,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Context Example
 ```json
 {
-    "hcloud": {
+    "HCloud": {
         "hcloudLocationInfo": [
             [
                 {
@@ -475,7 +475,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Context Example
 ```json
 {
-    "hcloud": {
+    "HCloud": {
         "hcloudNetwork": [
             {
                 "delete_protection": false,
@@ -531,7 +531,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Context Example
 ```json
 {
-    "hcloud": {
+    "HCloud": {
         "hcloudNetworkInfo": [
             [
                 {
@@ -596,7 +596,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Context Example
 ```json
 {
-    "hcloud": {
+    "HCloud": {
         "hcloudRdns": [
             {
                 "dns_ptr": "example.com",
@@ -650,7 +650,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Context Example
 ```json
 {
-    "hcloud": {
+    "HCloud": {
         "hcloudRoute": [
             {
                 "destination": "10.100.1.0/24",
@@ -714,7 +714,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Context Example
 ```json
 {
-    "hcloud": {
+    "HCloud": {
         "hcloudServer": [
             {
                 "backup_window": "None",
@@ -787,7 +787,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Context Example
 ```json
 {
-    "hcloud": {
+    "HCloud": {
         "hcloudServerInfo": [
             [
                 {
@@ -865,7 +865,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Context Example
 ```json
 {
-    "hcloud": {
+    "HCloud": {
         "hcloudServerNetwork": [
             {
                 "alias_ips": [],
@@ -917,7 +917,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Context Example
 ```json
 {
-    "hcloud": {
+    "HCloud": {
         "hcloudServerTypeInfo": [
             [
                 {
@@ -1459,7 +1459,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Context Example
 ```json
 {
-    "hcloud": {
+    "HCloud": {
         "hcloudSshKey": [
             {
                 "fingerprint": "ae:b8:98:53:30:0f:13:78:97:a5:35:38:51:0e:6e:b0",
@@ -1516,7 +1516,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Context Example
 ```json
 {
-    "hcloud": {
+    "HCloud": {
         "hcloudSshKeyInfo": [
             [
                 {
@@ -1576,7 +1576,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Context Example
 ```json
 {
-    "hcloud": {
+    "HCloud": {
         "hcloudSubnetwork": [
             {
                 "gateway": "10.0.0.1",
@@ -1640,7 +1640,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Context Example
 ```json
 {
-    "hcloud": {
+    "HCloud": {
         "hcloudVolume": [
             {
                 "delete_protection": false,
@@ -1702,7 +1702,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Context Example
 ```json
 {
-    "hcloud": {
+    "HCloud": {
         "hcloudVolumeInfo": [
             [
                 {

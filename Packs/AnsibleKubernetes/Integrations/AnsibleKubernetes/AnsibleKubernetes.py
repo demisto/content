@@ -34,13 +34,13 @@ def main() -> None:
                            Please refer to the documentation for details on how to perform \
                            configuration tests.')
         elif command == 'k8s-k8s':
-            return_results(generic_ansible('kubernetes', 'k8s', args, int_params, host_type))
+            return_results(generic_ansible('Kubernetes', 'k8s', args, int_params, host_type))
         elif command == 'k8s-info':
-            return_results(generic_ansible('kubernetes', 'k8s_info', args, int_params, host_type))
+            return_results(generic_ansible('Kubernetes', 'k8s_info', args, int_params, host_type))
         elif command == 'k8s-scale':
-            return_results(generic_ansible('kubernetes', 'k8s_scale', args, int_params, host_type))
+            return_results(generic_ansible('Kubernetes', 'k8s_scale', args, int_params, host_type))
         elif command == 'k8s-service':
-            return_results(generic_ansible('kubernetes', 'k8s_service', args, int_params, host_type))
+            return_results(generic_ansible('Kubernetes', 'k8s_service', args, int_params, host_type))
     # Log exceptions and return errors
     except Exception as e:
         demisto.error(traceback.format_exc())  # print the traceback

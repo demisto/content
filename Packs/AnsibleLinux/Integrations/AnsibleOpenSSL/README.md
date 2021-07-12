@@ -139,7 +139,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Context Example
 ```json
 {
-    "openssl": {
+    "OpenSSL": {
         "opensslCertificate": {
             "changed": false,
             "csr": "/etc/ssl/csr/www.ansible.com.csr",
@@ -236,7 +236,7 @@ Is \`none\` if the \`AuthorityKeyIdentifier\` extension is not present. |
 #### Context Example
 ```json
 {
-    "openssl": {
+    "OpenSSL": {
         "opensslCertificateInfo": {
             "authority_cert_issuer": null,
             "authority_cert_serial_number": null,
@@ -503,7 +503,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Context Example
 ```json
 {
-    "openssl": {
+    "OpenSSL": {
         "opensslCsr": {
             "basicConstraints": null,
             "changed": false,
@@ -609,7 +609,7 @@ Is \`none\` if the \`AuthorityKeyIdentifier\` extension is not present. |
 #### Context Example
 ```json
 {
-    "openssl": {
+    "OpenSSL": {
         "opensslCsrInfo": {
             "authority_cert_issuer": null,
             "authority_cert_serial_number": null,
@@ -831,7 +831,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Context Example
 ```json
 {
-    "openssl": {
+    "OpenSSL": {
         "opensslPkcs12": {
             "changed": false,
             "filename": "/opt/certs/ansible.p12",
@@ -907,7 +907,7 @@ The PyOpenSSL backend requires PyOpenSSL &gt;= 16.0 for meaningful output. |
 #### Context Example
 ```json
 {
-    "openssl": {
+    "OpenSSL": {
         "opensslPrivatekey": {
             "changed": false,
             "filename": "/etc/ssl/private/ansible.com.pem",
@@ -1049,7 +1049,7 @@ Requires PyOpenSSL &gt;= 16.0 for meaningful output. |
 #### Context Example
 ```json
 {
-    "openssl": {
+    "OpenSSL": {
         "opensslPublickey": {
             "changed": false,
             "filename": "/etc/ssl/public/ansible.com.pem",

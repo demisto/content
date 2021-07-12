@@ -103,7 +103,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Context Example
 ```json
 {
-    "acme": {
+    "ACME": {
         "acmeAccount": {
             "account_uri": "https://acme-staging-v02.api.letsencrypt.org/acme/acct/12345678",
             "changed": false,
@@ -161,7 +161,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Context Example
 ```json
 {
-    "acme": {
+    "ACME": {
         "acmeAccountInfo": {
             "account": {
                 "contact": [
@@ -270,7 +270,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Context Example
 ```json
 {
-    "acme": {
+    "ACME": {
         "acmeCertificate": {
             "account_uri": "https://acme-v02.api.letsencrypt.org/acme/acct/123456789",
             "authorizations": {
@@ -494,7 +494,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Context Example
 ```json
 {
-    "acme": {
+    "ACME": {
         "acmeInspect": {
             "changed": false,
             "directory": {

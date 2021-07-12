@@ -90,7 +90,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Context Example
 ```json
 {
-    "linux": {
+    "Linux": {
         "alternatives": {
             "changed": false,
             "host": "123.123.123.123",
@@ -140,7 +140,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Context Example
 ```json
 {
-    "linux": {
+    "Linux": {
         "at": {
             "changed": true,
             "count": 20,
@@ -212,7 +212,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Context Example
 ```json
 {
-    "linux": {
+    "Linux": {
         "authorizedKey": {
             "changed": true,
             "comment": null,
@@ -320,7 +320,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Context Example
 ```json
 {
-    "linux": {
+    "Linux": {
         "cron": {
             "changed": false,
             "envs": [
@@ -382,7 +382,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Context Example
 ```json
 {
-    "linux": {
+    "Linux": {
         "cronvar": {
             "changed": false,
             "host": "123.123.123.123",
@@ -435,7 +435,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Context Example
 ```json
 {
-    "linux": {
+    "Linux": {
         "dconf": {
             "changed": false,
             "host": "123.123.123.123",
@@ -512,7 +512,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Context Example
 ```json
 {
-    "linux": {
+    "Linux": {
         "filesystem": {
             "changed": false,
             "host": "123.123.123.123",
@@ -570,7 +570,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Context Example
 ```json
 {
-    "linux": {
+    "Linux": {
         "firewalld": {
             "changed": false,
             "host": "123.123.123.123",
@@ -617,7 +617,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Context Example
 ```json
 {
-    "linux": {
+    "Linux": {
         "gatherFacts": {
             "all_ipv4_addresses": [
                 "123.123.123.123"
@@ -1945,7 +1945,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Context Example
 ```json
 {
-    "linux": {
+    "Linux": {
         "gconftool2": {
             "changed": false,
             "host": "123.123.123.123",
@@ -1994,7 +1994,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Context Example
 ```json
 {
-    "linux": {
+    "Linux": {
         "getent": {
             "changed": false,
             "host": "123.123.123.123",
@@ -2044,7 +2044,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Context Example
 ```json
 {
-    "linux": {
+    "Linux": {
         "group": {
             "changed": false,
             "gid": 1000,
@@ -2098,7 +2098,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Context Example
 ```json
 {
-    "linux": {
+    "Linux": {
         "hostname": {
             "changed": false,
             "host": "123.123.123.123",
@@ -2225,7 +2225,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Context Example
 ```json
 {
-    "linux": {
+    "Linux": {
         "iptables": {
             "chain": "INPUT",
             "changed": false,
@@ -2297,7 +2297,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Context Example
 ```json
 {
-    "linux": {
+    "Linux": {
         "javaCert": {
             "changed": false,
             "host": "123.123.123.123",
@@ -2353,7 +2353,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Context Example
 ```json
 {
-    "linux": {
+    "Linux": {
         "javaKeystore": {
             "changed": false,
             "host": "123.123.123.123",
@@ -2400,7 +2400,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Context Example
 ```json
 {
-    "linux": {
+    "Linux": {
         "kernelBlacklist": {
             "changed": false,
             "host": "123.123.123.123",
@@ -2453,7 +2453,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Context Example
 ```json
 {
-    "linux": {
+    "Linux": {
         "knownHosts": {
             "changed": false,
             "gid": 0,
@@ -2522,7 +2522,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Context Example
 ```json
 {
-    "linux": {
+    "Linux": {
         "listenPortsFacts": {
             "discovered_interpreter_python": "/usr/libexec/platform-python",
             "host": "123.123.123.123",
@@ -2701,7 +2701,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Context Example
 ```json
 {
-    "linux": {
+    "Linux": {
         "modprobe": {
             "changed": false,
             "host": "123.123.123.123",
@@ -2761,7 +2761,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Context Example
 ```json
 {
-    "linux": {
+    "Linux": {
         "mount": {
             "changed": false,
             "dump": "0",
@@ -2861,7 +2861,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Context Example
 ```json
 {
-    "linux": {
+    "Linux": {
         "pamLimits": {
             "changed": false,
             "host": "123.123.123.123",
@@ -2925,7 +2925,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Context Example
 ```json
 {
-    "linux": {
+    "Linux": {
         "pamd": {
             "backupdest": "",
             "change_count": 0,
@@ -2985,7 +2985,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Context Example
 ```json
 {
-    "linux": {
+    "Linux": {
         "parted": {
             "changed": false,
             "disk": {
@@ -3072,7 +3072,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Context Example
 ```json
 {
-    "linux": {
+    "Linux": {
         "pids": [
             []
         ]
@@ -3115,7 +3115,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Context Example
 ```json
 {
-    "linux": {
+    "Linux": {
         "ping": [
             "pong"
         ]
@@ -3163,7 +3163,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Context Example
 ```json
 {
-    "linux": {
+    "Linux": {
         "pythonRequirementsInfo": {
             "changed": false,
             "host": "123.123.123.123",
@@ -3335,7 +3335,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Context Example
 ```json
 {
-    "linux": {
+    "Linux": {
         "selinux": {
             "changed": false,
             "configfile": "/etc/selinux/config",
@@ -3482,7 +3482,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Context Example
 ```json
 {
-    "linux": {
+    "Linux": {
         "service": {
             "changed": false,
             "host": "123.123.123.123",
@@ -3752,7 +3752,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Context Example
 ```json
 {
-    "linux": {
+    "Linux": {
         "serviceFacts": {
             "discovered_interpreter_python": "/usr/libexec/platform-python",
             "host": "123.123.123.123",
@@ -5659,7 +5659,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Context Example
 ```json
 {
-    "linux": {
+    "Linux": {
         "sysctl": {
             "changed": false,
             "host": "123.123.123.123",
@@ -5714,7 +5714,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Context Example
 ```json
 {
-    "linux": {
+    "Linux": {
         "systemd": {
             "changed": false,
             "host": "123.123.123.123",
@@ -6018,7 +6018,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Context Example
 ```json
 {
-    "linux": {
+    "Linux": {
         "timezone": {
             "changed": false,
             "host": "123.123.123.123",
@@ -6355,7 +6355,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Context Example
 ```json
 {
-    "linux": {
+    "Linux": {
         "opensshKeypair": {
             "changed": false,
             "comment": "",
@@ -6632,7 +6632,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Context Example
 ```json
 {
-    "linux": {
+    "Linux": {
         "find": {
             "changed": false,
             "examined": 18,
@@ -6702,7 +6702,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Context Example
 ```json
 {
-    "linux": {
+    "Linux": {
         "iniFile": {
             "changed": false,
             "gid": 0,
@@ -6815,7 +6815,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Context Example
 ```json
 {
-    "linux": {
+    "Linux": {
         "lineinfile": {
             "backup": "",
             "changed": false,
@@ -6881,7 +6881,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Context Example
 ```json
 {
-    "linux": {
+    "Linux": {
         "replace": {
             "changed": false,
             "host": "123.123.123.123",
@@ -6934,7 +6934,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Context Example
 ```json
 {
-    "linux": {
+    "Linux": {
         "stat": {
             "exists": false,
             "host": "123.123.123.123",
@@ -7032,7 +7032,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Context Example
 ```json
 {
-    "linux": {
+    "Linux": {
         "tempfile": {
             "changed": true,
             "gid": 0,
@@ -7511,7 +7511,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Context Example
 ```json
 {
-    "linux": {
+    "Linux": {
         "pip": {
             "changed": false,
             "cmd": [
@@ -8076,7 +8076,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Context Example
 ```json
 {
-    "linux": {
+    "Linux": {
         "packageFacts": {
             "discovered_interpreter_python": "/usr/libexec/platform-python",
             "host": "123.123.123.123",
@@ -8286,7 +8286,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Context Example
 ```json
 {
-    "linux": {
+    "Linux": {
         "yumRepository": {
             "changed": false,
             "host": "123.123.123.123",
@@ -8520,7 +8520,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Context Example
 ```json
 {
-    "linux": {
+    "Linux": {
         "rhnRegister": {
             "changed": false,
             "host": "123.123.123.123",

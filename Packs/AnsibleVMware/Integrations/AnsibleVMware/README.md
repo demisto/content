@@ -67,7 +67,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Context Example
 ```json
 {
-    "vmware": {
+    "VMware": {
         "vmwareAboutInfo": [
             {
                 "about_info": {
@@ -202,7 +202,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Context Example
 ```json
 {
-    "vmware": {
+    "VMware": {
         "vmwareCfgBackup": [
             {
                 "changed": true,
@@ -270,7 +270,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Context Example
 ```json
 {
-    "vmware": {
+    "VMware": {
         "vmwareCluster": [
             {
                 "changed": false,
@@ -322,7 +322,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Context Example
 ```json
 {
-    "vmware": {
+    "VMware": {
         "vmwareClusterDrs": [
             {
                 "changed": false,
@@ -382,7 +382,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Context Example
 ```json
 {
-    "vmware": {
+    "VMware": {
         "vmwareClusterHa": [
             {
                 "changed": false,
@@ -432,7 +432,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Context Example
 ```json
 {
-    "vmware": {
+    "VMware": {
         "vmwareClusterInfo": [
             {
                 "changed": false,
@@ -689,7 +689,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Context Example
 ```json
 {
-    "vmware": {
+    "VMware": {
         "vmwareDatacenter": [
             {
                 "changed": false,
@@ -738,7 +738,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Context Example
 ```json
 {
-    "vmware": {
+    "VMware": {
         "vmwareDatastoreCluster": [
             {
                 "changed": true,
@@ -790,7 +790,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Context Example
 ```json
 {
-    "vmware": {
+    "VMware": {
         "vmwareDatastoreInfo": [
             {
                 "changed": false,
@@ -867,7 +867,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Context Example
 ```json
 {
-    "vmware": {
+    "VMware": {
         "vmwareDatastoreMaintenancemode": [
             {
                 "changed": true,
@@ -919,7 +919,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Context Example
 ```json
 {
-    "vmware": {
+    "VMware": {
         "vmwareDnsConfig": [
             {
                 "changed": false,
@@ -969,7 +969,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Context Example
 ```json
 {
-    "vmware": {
+    "VMware": {
         "vmwareDrsGroup": [
             {
                 "changed": false,
@@ -1036,7 +1036,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Context Example
 ```json
 {
-    "vmware": {
+    "VMware": {
         "vmwareDrsGroupInfo": [
             {
                 "changed": false,
@@ -1100,7 +1100,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Context Example
 ```json
 {
-    "vmware": {
+    "VMware": {
         "vmwareDrsRuleInfo": [
             {
                 "changed": false,
@@ -1187,7 +1187,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Context Example
 ```json
 {
-    "vmware": {
+    "VMware": {
         "vmwareDvsPortgroup": [
             {
                 "changed": true,
@@ -1237,7 +1237,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Context Example
 ```json
 {
-    "vmware": {
+    "VMware": {
         "vmwareDvsPortgroupFind": [
             {
                 "changed": false,
@@ -1317,7 +1317,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Context Example
 ```json
 {
-    "vmware": {
+    "VMware": {
         "vmwareDvsPortgroupInfo": [
             {
                 "changed": false,
@@ -1506,7 +1506,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Context Example
 ```json
 {
-    "vmware": {
+    "VMware": {
         "vmwareDvswitch": [
             {
                 "changed": true,
@@ -1555,7 +1555,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Context Example
 ```json
 {
-    "vmware": {
+    "VMware": {
         "vmwareDvswitchLacp": [
             {
                 "changed": true,
@@ -1614,7 +1614,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Context Example
 ```json
 {
-    "vmware": {
+    "VMware": {
         "vmwareDvswitchNioc": [
             {
                 "changed": true,
@@ -1702,7 +1702,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Context Example
 ```json
 {
-    "vmware": {
+    "VMware": {
         "vmwareDvswitchUplinkPg": [
             {
                 "adv_block_ports": true,
@@ -1781,7 +1781,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Context Example
 ```json
 {
-    "vmware": {
+    "VMware": {
         "vmwareEvcMode": [
             {
                 "changed": false,
@@ -1830,7 +1830,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Context Example
 ```json
 {
-    "vmware": {
+    "VMware": {
         "vmwareFolderInfo": [
             {
                 "changed": false,
@@ -2100,7 +2100,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Context Example
 ```json
 {
-    "vmware": {
+    "VMware": {
         "vmwareGuestCustomAttributeDefs": [
             {
                 "changed": true,
@@ -2191,7 +2191,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Context Example
 ```json
 {
-    "vmware": {
+    "VMware": {
         "vmwareGuestCustomizationInfo": [
             {
                 "changed": false,
@@ -2275,7 +2275,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Context Example
 ```json
 {
-    "vmware": {
+    "VMware": {
         "vmwareGuestDiskInfo": [
             {
                 "changed": false,
@@ -2366,7 +2366,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Context Example
 ```json
 {
-    "vmware": {
+    "VMware": {
         "vmwareGuestFind": [
             {
                 "changed": false,
@@ -2426,7 +2426,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Context Example
 ```json
 {
-    "vmware": {
+    "VMware": {
         "vmwareGuestInfo": [
             {
                 "changed": false,
@@ -2576,7 +2576,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Context Example
 ```json
 {
-    "vmware": {
+    "VMware": {
         "vmwareGuestMove": [
             {
                 "changed": false,
@@ -2869,7 +2869,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Context Example
 ```json
 {
-    "vmware": {
+    "VMware": {
         "vmwareGuestSnapshot": [
             {
                 "changed": true,
@@ -3082,7 +3082,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Context Example
 ```json
 {
-    "vmware": {
+    "VMware": {
         "vmwareGuestVnc": [
             {
                 "changed": true,
@@ -3275,7 +3275,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Context Example
 ```json
 {
-    "vmware": {
+    "VMware": {
         "vmwareHost": [
             {
                 "changed": false,
@@ -3326,7 +3326,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Context Example
 ```json
 {
-    "vmware": {
+    "VMware": {
         "vmwareHostAcceptance": [
             {
                 "changed": true,
@@ -3413,7 +3413,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Context Example
 ```json
 {
-    "vmware": {
+    "VMware": {
         "vmwareHostCapabilityInfo": [
             {
                 "changed": false,
@@ -3697,7 +3697,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Context Example
 ```json
 {
-    "vmware": {
+    "VMware": {
         "vmwareHostConfigInfo": [
             {
                 "changed": false,
@@ -6000,7 +6000,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Context Example
 ```json
 {
-    "vmware": {
+    "VMware": {
         "vmwareHostConfigManager": [
             {
                 "changed": false,
@@ -6056,7 +6056,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Context Example
 ```json
 {
-    "vmware": {
+    "VMware": {
         "vmwareHostDatastore": [
             {
                 "changed": false,
@@ -6102,7 +6102,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Context Example
 ```json
 {
-    "vmware": {
+    "VMware": {
         "vmwareHostDnsInfo": [
             {
                 "changed": false,
@@ -6196,7 +6196,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Context Example
 ```json
 {
-    "vmware": {
+    "VMware": {
         "vmwareHostFeatureInfo": [
             {
                 "changed": false,
@@ -7140,7 +7140,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Context Example
 ```json
 {
-    "vmware": {
+    "VMware": {
         "vmwareHostFirewallInfo": [
             {
                 "changed": false,
@@ -9306,7 +9306,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Context Example
 ```json
 {
-    "vmware": {
+    "VMware": {
         "vmwareHostFirewallManager": [
             {
                 "changed": true,
@@ -9390,7 +9390,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Context Example
 ```json
 {
-    "vmware": {
+    "VMware": {
         "vmwareHostHyperthreading": [
             {
                 "changed": true,
@@ -9452,7 +9452,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Context Example
 ```json
 {
-    "vmware": {
+    "VMware": {
         "vmwareHostIpv6": [
             {
                 "changed": false,
@@ -9509,7 +9509,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Context Example
 ```json
 {
-    "vmware": {
+    "VMware": {
         "vmwareHostKernelManager": [
             {
                 "changed": true,
@@ -9571,7 +9571,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Context Example
 ```json
 {
-    "vmware": {
+    "VMware": {
         "vmwareHostLockdown": [
             {
                 "changed": true,
@@ -9633,7 +9633,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Context Example
 ```json
 {
-    "vmware": {
+    "VMware": {
         "vmwareHostNtp": [
             {
                 "changed": false,
@@ -9694,7 +9694,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Context Example
 ```json
 {
-    "vmware": {
+    "VMware": {
         "vmwareHostNtpInfo": [
             {
                 "changed": false,
@@ -9765,7 +9765,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Context Example
 ```json
 {
-    "vmware": {
+    "VMware": {
         "vmwareHostPackageInfo": [
             {
                 "changed": false,
@@ -12263,7 +12263,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Context Example
 ```json
 {
-    "vmware": {
+    "VMware": {
         "vmwareHostPowermgmtPolicy": [
             {
                 "changed": true,
@@ -12356,7 +12356,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Context Example
 ```json
 {
-    "vmware": {
+    "VMware": {
         "vmwareHostScanhba": [
             {
                 "changed": true,
@@ -12413,7 +12413,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Context Example
 ```json
 {
-    "vmware": {
+    "VMware": {
         "vmwareHostServiceInfo": [
             {
                 "changed": false,
@@ -12696,7 +12696,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Context Example
 ```json
 {
-    "vmware": {
+    "VMware": {
         "vmwareHostServiceManager": [
             {
                 "changed": true,
@@ -12795,7 +12795,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Context Example
 ```json
 {
-    "vmware": {
+    "VMware": {
         "vmwareHostSslInfo": [
             {
                 "changed": false,
@@ -12854,7 +12854,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Context Example
 ```json
 {
-    "vmware": {
+    "VMware": {
         "vmwareHostVmhbaInfo": [
             {
                 "changed": false,
@@ -12970,7 +12970,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Context Example
 ```json
 {
-    "vmware": {
+    "VMware": {
         "vmwareHostVmnicInfo": [
             {
                 "changed": false,
@@ -13099,7 +13099,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Context Example
 ```json
 {
-    "vmware": {
+    "VMware": {
         "vmwareLocalRoleInfo": [
             {
                 "changed": false,
@@ -15101,7 +15101,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Context Example
 ```json
 {
-    "vmware": {
+    "VMware": {
         "vmwareLocalRoleManager": [
             {
                 "changed": true,
@@ -15219,7 +15219,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Context Example
 ```json
 {
-    "vmware": {
+    "VMware": {
         "vmwareMaintenancemode": [
             {
                 "changed": true,
@@ -15340,7 +15340,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Context Example
 ```json
 {
-    "vmware": {
+    "VMware": {
         "vmwarePortgroup": [
             {
                 "changed": true,
@@ -15478,7 +15478,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Context Example
 ```json
 {
-    "vmware": {
+    "VMware": {
         "vmwareResourcePoolInfo": [
             {
                 "changed": false,
@@ -15670,7 +15670,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Context Example
 ```json
 {
-    "vmware": {
+    "VMware": {
         "vmwareTargetCanonicalInfo": [
             {
                 "canonical": "",
@@ -15751,7 +15751,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Context Example
 ```json
 {
-    "vmware": {
+    "VMware": {
         "vmwareVcenterStatistics": [
             {
                 "changed": false,
@@ -15866,7 +15866,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Context Example
 ```json
 {
-    "vmware": {
+    "VMware": {
         "vmwareVmInfo": [
             {
                 "changed": false,
@@ -16019,7 +16019,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Context Example
 ```json
 {
-    "vmware": {
+    "VMware": {
         "vmwareVmStoragePolicyInfo": [
             {
                 "changed": false,
@@ -16259,7 +16259,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Context Example
 ```json
 {
-    "vmware": {
+    "VMware": {
         "vmwareVmkernelInfo": [
             {
                 "changed": false,
@@ -16395,7 +16395,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Context Example
 ```json
 {
-    "vmware": {
+    "VMware": {
         "vmwareVsanCluster": [
             {
                 "changed": true,
@@ -16490,7 +16490,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Context Example
 ```json
 {
-    "vmware": {
+    "VMware": {
         "vmwareVswitch": [
             {
                 "changed": false,
@@ -16539,7 +16539,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Context Example
 ```json
 {
-    "vmware": {
+    "VMware": {
         "vmwareVswitchInfo": [
             {
                 "changed": false,
@@ -16679,7 +16679,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Context Example
 ```json
 {
-    "vmware": {
+    "VMware": {
         "vcenterExtensionInfo": [
             {
                 "changed": false,
@@ -17036,7 +17036,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Context Example
 ```json
 {
-    "vmware": {
+    "VMware": {
         "vcenterFolder": [
             {
                 "changed": false,

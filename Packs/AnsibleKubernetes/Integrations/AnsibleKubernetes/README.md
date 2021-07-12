@@ -117,7 +117,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Context Example
 ```json
 {
-    "kubernetes": {
+    "Kubernetes": {
         "k8S": [
             {
                 "changed": false,
@@ -147,7 +147,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
                     },
                     "spec": {
                         "finalizers": [
-                            "kubernetes"
+                            "Kubernetes"
                         ]
                     },
                     "status": {
@@ -225,7 +225,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Context Example
 ```json
 {
-    "kubernetes": {
+    "Kubernetes": {
         "k8SInfo": [
             {
                 "changed": false,
@@ -255,7 +255,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
                         },
                         "spec": {
                             "finalizers": [
-                                "kubernetes"
+                                "Kubernetes"
                             ]
                         },
                         "status": {
@@ -338,7 +338,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Context Example
 ```json
 {
-    "kubernetes": {
+    "Kubernetes": {
         "k8SScale": [
             {
                 "changed": true,
@@ -755,7 +755,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Context Example
 ```json
 {
-    "kubernetes": {
+    "Kubernetes": {
         "k8SService": [
             {
                 "changed": true,

@@ -80,7 +80,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Context Example
 ```json
 {
-    "ciscoios": {
+    "CiscoIOS": {
         "iosBanner": {
             "changed": true,
             "commands": [
@@ -134,7 +134,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Context Example
 ```json
 {
-    "ciscoios": {
+    "CiscoIOS": {
         "iosBgp": {
             "changed": false,
             "commands": [],
@@ -188,7 +188,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Context Example
 ```json
 {
-    "ciscoios": {
+    "CiscoIOS": {
         "iosCommand": {
             "changed": false,
             "host": "123.123.123.123",
@@ -394,7 +394,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Context Example
 ```json
 {
-    "ciscoios": {
+    "CiscoIOS": {
         "iosConfig": {
             "backup_path": "./backup/123.123.123.123_config.2021-07-11@09:08:02",
             "changed": true,
@@ -471,7 +471,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Context Example
 ```json
 {
-    "ciscoios": {
+    "CiscoIOS": {
         "iosFacts": {
             "discovered_interpreter_python": "/usr/local/bin/python",
             "host": "123.123.123.123",
@@ -910,7 +910,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Context Example
 ```json
 {
-    "ciscoios": {
+    "CiscoIOS": {
         "iosInterfaces": {
             "before": [
                 {
@@ -1049,7 +1049,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Context Example
 ```json
 {
-    "ciscoios": {
+    "CiscoIOS": {
         "iosL3Interfaces": {
             "after": [
                 {
@@ -1324,7 +1324,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Context Example
 ```json
 {
-    "ciscoios": {
+    "CiscoIOS": {
         "iosLldp": {
             "changed": false,
             "commands": [],
@@ -1375,7 +1375,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Context Example
 ```json
 {
-    "ciscoios": {
+    "CiscoIOS": {
         "iosLldpGlobal": {
             "before": {
                 "enabled": true,
@@ -1437,7 +1437,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Context Example
 ```json
 {
-    "ciscoios": {
+    "CiscoIOS": {
         "iosLldpInterfaces": {
             "before": [
                 {
@@ -1539,7 +1539,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Context Example
 ```json
 {
-    "ciscoios": {
+    "CiscoIOS": {
         "iosLogging": {
             "changed": false,
             "commands": [],
@@ -1594,7 +1594,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Context Example
 ```json
 {
-    "ciscoios": {
+    "CiscoIOS": {
         "iosNtp": {
             "changed": true,
             "commands": [
@@ -1688,7 +1688,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Context Example
 ```json
 {
-    "ciscoios": {
+    "CiscoIOS": {
         "iosStaticRoute": {
             "changed": false,
             "commands": [],
@@ -1742,7 +1742,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Context Example
 ```json
 {
-    "ciscoios": {
+    "CiscoIOS": {
         "iosSystem": {
             "changed": true,
             "commands": [
@@ -1804,7 +1804,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Context Example
 ```json
 {
-    "ciscoios": {
+    "CiscoIOS": {
         "iosUser": {
             "changed": true,
             "commands": [
