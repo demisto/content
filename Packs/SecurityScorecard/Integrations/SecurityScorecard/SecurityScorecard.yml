@@ -347,9 +347,9 @@ script:
       - "any_followed_company"
     - name: portfolios
       isArray: true
-      description: A comma-separated list of Portfolios (i.e. 60c78cc2d63162001a68c2b8,60c8c5f9139e40001908c6a4)
+      description: A comma-separated list of Portfolios (i.e. xxxxxxxxxxxxxxxxxx,xxxxxxxxxxxxxxxxxy)
         to use as a target for the alert. This argument is require if the `target`
-        argument is not specified.
+        argument is not specified. You can get a list of portfolios by running `!securityscorecard-portfolios-list`
       required: false
     outputs:
     - contextPath: SecurityScorecard.Alert.id
