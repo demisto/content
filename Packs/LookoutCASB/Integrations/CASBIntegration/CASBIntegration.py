@@ -14,6 +14,7 @@ from CommonServerPython import *  # noqa: F401
 # from CommonServerPython import *
 # from CommonServerUserPython import *
 
+from datetime import datetime, timezone
 import json
 import traceback
 from typing import Any, Dict, List, Optional, Tuple, cast
@@ -69,7 +70,7 @@ def epoch_to_iso(epoch: int) -> str:
     :rtype: ``str``
     """
 
-    dt = datetime.fromtimestamp(epoch, datetime.timezone.utc)
+    dt = datetime.fromtimestamp(epoch, timezone.utc)
     return dt.isoformat()
 
 
@@ -80,7 +81,7 @@ def current_time() -> str:
     :rtype: ``str``
     """
 
-    return datetime.utcnow().replace(microsecond=0).replace(tzinfo=datetime.timezone.utc).isoformat()
+    return datetime.utcnow().replace(microsecond=0).replace(tzinfo=timezone.utc).isoformat()
 
 
 def epoch_seconds() -> int:
