@@ -3640,6 +3640,31 @@ def test_slack_send_filter_no_entry_tags(mocker):
     assert demisto.results.mock_calls == []
 
 
+def test_clean_message(mocker):
+    from SlackV3 import handle_tags_in_message_sync
+
+    # Set
+    def api_call(method: str, http_verb: str = 'POST', file: str = None, params=None, json=None, data=None):
+        if method == 'users.list':
+            return {'members': js.loads(USERS)}
+        return None
+
+    mocker.patch.object(demisto, 'getIntegrationContext', side_effect=get_integration_context)
+    mocker.patch.object(demisto, 'setIntegrationContext', side_effect=set_integration_context)
+    mocker.patch.object(slack_sdk.WebClient, 'api_call', side_effect=api_call)
+
+    user_exists_message = 'Hello <@spengler>!'
+    user_doesnt_exist_message = 'Goodbye <@PetahTikva>!'
+
+    user_message_exists_result = handle_tags_in_message_sync(user_exists_message)
+    user_message_doesnt_exist_result = handle_tags_in_message_sync(user_doesnt_exist_message)
+
+    # Assert
+
+    assert user_message_exists_result == 'Hello <@U012A3CDE>!'
+    assert user_message_doesnt_exist_result == 'Goodbye PetahTikva!'
+
+
 def test_send_message_to_destinations_non_strict():
     """
     Given:
@@ -3684,3 +3709,18 @@ def test_send_message_to_destinations_non_strict():
                   }
               ]"""
     send_message_to_destinations([], "", "", blocks=blocks)  # No destinations, no response
+
+
+@pytest.mark.parametrize('sent, expected_minutes', [(None, 1), ('2019-09-26 18:37:25', 1), ('2019-09-26 18:10:25', 2),
+                                                    ('2019-09-26 17:38:24', 5), ('2019-09-25 18:10:25', 5)])
+def test_get_poll_minutes(sent, expected_minutes):
+    from SlackV3 import get_poll_minutes
+
+    # Set
+    current = datetime.datetime(2019, 9, 26, 18, 38, 25)
+
+    # Arrange
+    minutes = get_poll_minutes(current, sent)
+
+    # Assert
+    assert minutes == expected_minutes

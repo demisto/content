@@ -788,7 +788,8 @@ def extract_entitlement(entitlement: str, text: str) -> Tuple[str, str, str, str
 
 class SlackLogger:
     def __init__(self):
-        self.level = logging.DEBUG
+        if is_debug_mode():
+            self.level = logging.DEBUG
 
     def info(self, message):
         demisto.info(message)
