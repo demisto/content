@@ -4,14 +4,18 @@ commonfields:
   id: SlackV3
   version: -1
 configuration:
-- name: bot_token
-  display: Bot Token
+- display: ""
+  displaypassword: Bot Token
+  name: bot_token
+  type: 9
   required: false
-  type: 4
-- name: app_token
-  display: App Token
+  hiddenusername: true
+- display: ""
+  displaypassword: App Token
+  name: app_token
+  type: 9
   required: false
-  type: 4
+  hiddenusername: true
 - display: Dedicated Slack channel to receive notifications
   name: incidentNotificationChannel
   required: false
