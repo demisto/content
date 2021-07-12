@@ -9,10 +9,10 @@ args:
   isArray: true
 comment: Receive fields and context. Verifies that these field exists in context.
 commonfields:
-  id: VerifyContexFieldsList
+  id: VerifyContextFieldsList
   version: -1
 enabled: false
-name: VerifyContexFieldsList
+name: VerifyContextFieldsList
 outputs:
 - contextPath: FieldsExists
   description: Return true or fasle.
