@@ -23,6 +23,38 @@ configuration:
   name: concurrency
   required: true
   type: 0
+- display: Escalate Privileges
+  additionalinfo: |
+    Ansible allows you to ‘become’ another user, different from the user that
+    logged into the machine (remote user).
+  name: become
+  required: true
+  type: 15
+  options:
+  - "Yes"
+  - "No"
+  defaultvalue: 'Yes'
+- display: Privilege Escalation Method
+  additionalinfo: Which privilege escalation method should be used.
+  name: become_method
+  required: true
+  type: 15
+  options:
+  - "sudo"
+  - "su"
+  - "doas"
+  defaultvalue: 'sudo'
+- display: Privilege Escalation User
+  additionalinfo: Set the user you become through privilege escalation
+  name: become_user
+  required: false
+  type: 0
+  defaultvalue: 'root'
+- display: Privileges Escalation Password
+  additionalinfo: Set the privilege escalation password. If not set, will use the same as SSH password.
+  name: become_password
+  required: false
+  type: 4
 description: Control OpenSSL on a remote Linux hosts
 display: Ansible OpenSSL
 fromversion: 6.0.0

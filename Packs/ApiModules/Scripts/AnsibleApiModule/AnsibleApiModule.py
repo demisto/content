@@ -171,6 +171,15 @@ def generate_ansible_inventory(args: Dict[str, Any], int_params: Dict[str, Any],
                     new_host['ansible_user'] = username
                     new_host['ansible_password'] = password
 
+                # ssh specific become options
+                if host_type == 'ssh':
+                    new_host['ansible_become'] = int_params.get('become')
+                    new_host['ansible_become_method'] = int_params.get('become_method')
+                    if int_params.get('become_user'):
+                        new_host['ansible_become_user'] = int_params.get('become_user')
+                    if int_params.get('become_password'):
+                        new_host['ansible_become_pass'] = int_params.get('become_password')
+
                 # ios specific
                 if host_type == 'ios':
                     new_host['ansible_connection'] = 'network_cli'

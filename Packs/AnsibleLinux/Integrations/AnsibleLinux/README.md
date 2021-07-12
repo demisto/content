@@ -19,6 +19,9 @@ This integration supports a number of methods of authenticating with the Linux H
 ## Permissions
 Whilst un-privileged Linux user privileges can be used, a SuperUser account is recommended as most commands will require elevated permissions to execute.
 
+## Privilege Escalation
+Ansible can use existing privilege escalation systems to allow a user to execute tasks as another. Different from the user that logged into the machine (remote user). This is done using existing privilege escalation tools, which you probably already use or have configured, like sudo, su, or doas. Unless you are remoting into the system as root (uid 0) you will need to escalate your privileges to a super user. Use the Integration parameters `Escalate Privileges`, `Privilege Escalation Method`, `Privilege Escalation User`, `Privileges Escalation Password` to configure this.
+
 ## Concurrency
 This integration supports execution of commands against multiple hosts concurrently. The `host` parameter accepts a list of addresses, and will run the command in parallel as per the **Concurrency Factor** value.
 
@@ -39,6 +42,10 @@ This integration is powered by Ansible 2.9. Further information can be found on 
     | Password |  | True |
     | Default SSH Port | The default port to use if one is not specified in the commands \`host\` argument. | True |
     | Concurrency Factor | If multiple hosts are specified in a command, how many hosts should be interacted with concurrently. | True |
+    | Escalate Privileges | Ansible allows you to ‘become’ another user, different from the user that<br/>logged into the machine \(remote user\).<br/> | True |
+    | Privilege Escalation Method | Which privilege escalation method should be used. | True |
+    | Privilege Escalation User | Set the user you become through privilege escalation | False |
+    | Privilege Escalation Password | Set the privilege escalation password. | False |
 
 ## Testing
 This integration does not support testing from the integration management screen. Instead it is recommended to use the `!linux-gather-facts`command providing an example `host` as the command argument. This command will connect to the specified host with the configured credentials in the integration, and if successful output general information about the host.
