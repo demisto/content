@@ -10,3 +10,13 @@ elif [[ $CI_COMMIT_BRANCH =~ pull/[0-9]+ ]]; then
 else
     demisto-sdk validate -g --post-commit --id-set --id-set-path "$ARTIFACTS_FOLDER/unified_id_set.json"
 fi
+
+if [[ -n "${SDK_LINT_FILES_CHANGED}" ]]; then
+    echo "lint files changed running lint"
+    
+    # python file (CommonServerPython lint is runnit over python 3 and 2)
+    demisto-sdk lint -i ./Packs/Base/Scripts/CommonServerPython
+
+    # ps file
+    demisto-sdk lint -i ./Packs/Base/Scripts/CommonServerPowerShell
+fi
