@@ -2,7 +2,7 @@ This integration enables the management of Alibaba Cloud Elastic Compute Service
 
 To use this integration, configure an instance of this integration. This will associate a credential to be used to manage a Alibaba tenancy. Create separate instances for each region being managed.
 
-# Authorize Cortex XSOAR for Alibaba Cloud
+## Authorize Cortex XSOAR for Alibaba Cloud
 To use this integration you must generate an Access/Secret token for your Aliyun tenancy.
 1. Navigate to the [Resource Access Management](https://ram.console.aliyun.com/users)
 2. Create a service account dedicated for XSOAR with Programmatic Access enabled
@@ -23,10 +23,10 @@ To use this integration you must generate an Access/Secret token for your Aliyun
 
 4. Click **Test** to validate the URLs, token, and connection.
 
-# Idempotence
+## Idempotence
 The action commands in this integration are idempotent. This means that the result of performing it once is exactly the same as the result of performing it repeatedly without any intervening actions.
 
-# State Arguement
+## State Arguement
 Some of the commands in this integration take a state argument. These define the desired end state of the object being managed. As a result these commands are able to perform multiple management operations depending on the desired state value. Common state values are:
 | **State** | **Result** |
 | --- | --- |
@@ -35,6 +35,12 @@ Some of the commands in this integration take a state argument. These define the
 | stopped | Object should be stopped not running. |
 | restarted | Object will be restarted. |
 | absent | Object should not exist. If it it exists it will be deleted. |
+
+
+## Complex Command Inputs
+Some commands may require structured input arguments such as `lists` or `dictionary`, these can be provided in standard JSON notation wrapped in double curly braces. For example a argument called `dns_servers` that accepts a list of server IPs 8.8.8.8 and 8.8.4.4 would be entered as `dns_servers="{{ ['8.8.8.8', '8.8.4.4'] }}"`.
+
+Other more advanced data manipulation tools such as [Ansible](https://docs.ansible.com/ansible/2.9/user_guide/playbooks_filters.html)/[Jinja2 filters](https://jinja.palletsprojects.com/en/3.0.x/templates/#builtin-filters) can also be used in-line. For example to get a [random number](https://docs.ansible.com/ansible/2.9/user_guide/playbooks_filters.html#random-number-filter) between 0 and 60 you can use `{{ 60 | random }}`.
 
 ## Commands
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
