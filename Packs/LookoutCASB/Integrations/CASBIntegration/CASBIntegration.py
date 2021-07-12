@@ -1,7 +1,8 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
-from content.Packs.Base.Scripts.CommonServerPython.CommonServerPython import tableToMarkdown, CommandResults, return_results, string_to_table_header, return_error, DemistoException
+# from content.Packs.Base.Scripts.CommonServerPython.CommonServerPython import tableToMarkdown, CommandResults, return_results, \
+#     string_to_table_header, return_error, DemistoException
 
 """Lookout CASB Integration for Cortex XSOAR (aka Demisto)
     Last updated: 2020-10-27
