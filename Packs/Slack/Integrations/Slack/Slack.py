@@ -2108,7 +2108,7 @@ def filter_channels_command():
     is_general = bool(strtobool(is_general)) if is_general else None
     is_private = bool(strtobool(is_private)) if is_private else None
 
-    command_results_list: list[dict[str, Union[bool, str]]] = []
+    command_results_list: List[Dict[str, Union[bool, str]]] = []
     filtered_conversations = filter_conversations(
         name=name,
         creator=creator,
@@ -2130,10 +2130,10 @@ def filter_channels_command():
         command_results_list.append(result_conversation)
 
     return_results(CommandResults(
-            outputs_prefix='Slack.Channel',
-            outputs_key_field='ID',
-            outputs=command_results_list
-        ))
+        outputs_prefix='Slack.Channel',
+        outputs_key_field='ID',
+        outputs=command_results_list
+    ))
 
 
 def main():
