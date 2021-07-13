@@ -1185,7 +1185,7 @@ def get_cards(url, header, page=1):
     column_issues = []
     for card in cards:
         if "content_url" in card:
-            column_issues.append(int(card["content_url"].rsplit('/', 1)[1]))
+            column_issues.append({"card_id" :card["id"] ,"content_number": int(card["content_url"].rsplit('/', 1)[1])})
     if len(cards) == MAX_FETCH_PAGE_RESULTS:
         return column_issues + get_cards(url=url, header=header, page=page + 1)
     else:
@@ -1204,7 +1204,8 @@ def get_project_details(project, header):
         columns_data[column["name"]] = {'name': column["name"],
                                         'column_id': column["id"],
                                         'cards': cards}
-        all_project_issues += cards
+        for card in cards:
+            all_project_issues.append(card["content_number"])
     return {'name': project["name"],
             'proj_id': project["id"],
             'proj_number': project["number"],
