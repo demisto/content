@@ -129,6 +129,7 @@ client = Client(
     proxy=False
 )
 
+
 def test_securityscorecard_portfolios_list(mocker):
 
     mocker.patch.object(client, "get_portfolios", return_value=portfolios_mock)
