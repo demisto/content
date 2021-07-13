@@ -983,7 +983,7 @@ def get_iocs_command():
                     ssdeep=hashes.get('SSDeep'),
                     file_type=object.get('MIMEType')
                 )
-            elif dbot_score_type is not None:
+            elif dbot_score_type is not None and indicator_class:
                 # Generic handling for IOCs which have a corresponding Indicator type in XSOAR
                 dbot_score = Common.DBotScore(
                     indicator=key_value,
