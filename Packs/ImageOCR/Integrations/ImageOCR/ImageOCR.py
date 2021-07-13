@@ -85,8 +85,7 @@ def main() -> None:
     except subprocess.CalledProcessError as cpe:
         return_error("Failed {} execution. Return status: {}.\nError:\n{}".format(cpe.cmd, cpe.returncode, cpe.stderr))
     except Exception as err:
-        demisto.error(traceback.format_exc())  # print the traceback
-        return_error(str(err), err)
+        return_error("Failed with error: {}\n\nTrace:\n{}".format(str(err), traceback.format_exc()))
 
 
 # python2 uses __builtin__ python3 uses builtins
