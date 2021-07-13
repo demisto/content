@@ -2376,54 +2376,6 @@ List all project boards a user can see.
         ],
         "name": "XSOAR Data"
       }
-    }
-      "XSOAR More Data": {
-        "proj_number": 25,
-        "proj_id": 1,
-        "columns": {
-          "In progress": {
-            "cards": [
-              {
-                "card_id": 55555,
-                "content_number": 33883
-              },
-              {
-                "card_id": 66666,
-                "content_number": 34852
-              },
-            ],
-            "name": "In progress",
-            "column_id": 13241511
-          },
-          "Done": {
-            "cards": [
-              {
-                "card_id": 61858005,
-                "content_number": 37480
-              },
-              {
-                "card_id": 60428728,
-                "content_number": 36608
-              },
-            ],
-            "name": "Done",
-            "column_id": 13437971
-          },
-          "Icebox/Backlog": {
-            "cards": [],
-            "name": "Icebox/Backlog",
-            "column_id": 1366966
-          },
-        },
-        "all_issues": [
-          33883,
-          34852,
-          37480,
-          36608
-        ],
-        "name": "XSOAR More Data"
-      }
-    }
   }
 }
 ```
