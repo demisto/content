@@ -1,6 +1,6 @@
 [
 	{
-		"id": "Cloud IDS",
+		"id": "google cloud IDS",
 		"version": 15,
 		"modified": "2021-07-08T14:34:09.598121557Z",
 		"sortValues": null,
@@ -13,10 +13,10 @@
 		"commitMessage": "",
 		"shouldCommit": false,
 		"locked": false,
-		"name": "Cloud IDS",
-		"prevName": "Cloud IDS",
+		"name": "google cloud IDS",
+		"prevName": "google cloud IDS",
 		"color": "#F8E7A5",
-		"playbookId": "IP Blacklist - GCP Firewall",
+		"playbookId": "google cloud IDS - GCP Firewall - IP Blacklist",
 		"hours": 0,
 		"days": 0,
 		"weeks": 0,

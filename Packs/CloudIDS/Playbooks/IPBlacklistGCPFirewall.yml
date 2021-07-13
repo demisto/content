@@ -1,6 +1,6 @@
-id: Cloud IDS-IP Blacklist-GCP Firewall
+id: google cloud IDS - GCP Firewall - IP Blacklist
 version: -1
-name: Cloud IDS-IP Blacklist-GCP Firewall
+name: google cloud IDS - GCP Firewall - IP Blacklist
 description: Set a list of IP addresses in GCP firewall.
 starttaskid: "0"
 tasks:
