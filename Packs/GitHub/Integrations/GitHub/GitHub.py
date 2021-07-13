@@ -1202,16 +1202,15 @@ def get_project_details(project, header):
     all_project_issues = []
     for column in json_column:
         cards = get_cards(url=column["cards_url"], header=header)
-        columns_data[column["name"]] = {'name': column["name"],
-                                        'column_id': column["id"],
-                                        'cards': cards}
-        for card in cards:
-            all_project_issues.append(card["content_number"])
-    return {'name': project["name"],
-            'proj_id': project["id"],
-            'proj_number': project["number"],
-            'columns': columns_data,
-            'all_issues': all_project_issues,
+        columns_data[column["name"]] = {'Name': column["name"],
+                                        'ColumnID': column["id"],
+                                        'Cards': cards}
+        all_project_issues += cards
+    return {'Name': project["name"],
+            'ID': project["id"],
+            'Number': project["number"],
+            'Columns': columns_data,
+            'Issues': all_project_issues,
             }
 
 
