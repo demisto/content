@@ -43,7 +43,9 @@ tags:
 - Utility
 timeout: '0'
 type: python
-runas: DBotWeakRole
+runas: DBotRole
 runonce: false
 subtype: python2
 fromversion: 5.0.0
+tests:
+- CopyContextToFieldTest
