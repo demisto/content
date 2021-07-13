@@ -84,7 +84,41 @@ def test_incidents_to_import(mocker):
         assert incident_timestamp > now
 
 
+""" TEST CONSTANTS """
+
+
+USERNAME = "user@domain.com"
+PORTFOLIO_ID = "1"
+PORTFOLIO_ID_NE = "2"
+DOMAIN = "domain1.com"
+ALERT_ID = "2dd66f12-37f0-5a9c-929d-1255b05053c3"
+
+
+""" Endpoints """
+
+PORTFOLIO_ROOT_EP = "/portfolios"
+PORTFOLIO_FOUND_EP = "{0}/1/companies".format(PORTFOLIO_ROOT_EP)
+PORTFOLIO_FOUND_EP = "{0}/2/companies".format(PORTFOLIO_ROOT_EP)
+
+COMPANIES_ROOT_EP = "/companies"
+COMPANIES_SCORE_EP = "{0}/{1}".format(COMPANIES_ROOT_EP, DOMAIN)
+COMPANIES_FACTOR_SCORE_EP = "{0}/{1}/factors".format(COMPANIES_ROOT_EP, DOMAIN)
+COMPANIES_HISTORY_SCORE_EP = "{0}/{1}/history/score".format(COMPANIES_ROOT_EP, DOMAIN)
+COMPANIES_HISTORY_FACTOR_SCORE_EP = "{0}/{1}/history/factor/score".format(COMPANIES_ROOT_EP, DOMAIN)
+COMPANIES_SERVICES_EP = "{0}/{1}/services".format(COMPANIES_ROOT_EP, DOMAIN)
+
+ALERTS_ROOT_EP = "/users/by-username/{0}/alerts".format(USERNAME)
+ALERTS_TYPE_SCORE = "score"
+ALERTS_TYPE_GRADE = "grade"
+ALERTS_GRADE_EP = "{0}/grade".format(ALERTS_ROOT_EP)
+ALERTS_SCORE_EP = "{0}/score".format(ALERTS_ROOT_EP)
+ALERTS_DELETE_SCORE_EP = "{0}/{1}/{2}".format(ALERTS_ROOT_EP, ALERTS_TYPE_SCORE, ALERT_ID)
+ALERTS_DELETE_GRADE_EP = "{0}/{1}/{2}".format(ALERTS_ROOT_EP, ALERTS_TYPE_GRADE, ALERT_ID)
+NOTIFICATIONS_ROOT_EP = "/users/by-username/{0}/notifications/recent".format(USERNAME)
+
+
 """ Client Unit Tests """
+
 
 MOCK_URL = "mock://securityscorecard-mock-url"
 
