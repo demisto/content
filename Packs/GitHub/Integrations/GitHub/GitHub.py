@@ -35,6 +35,7 @@ BASE_URL = 'https://api.github.com'
 RELEASE_HEADERS = ['ID', 'Name', 'Download_count', 'Body', 'Created_at', 'Published_at']
 ISSUE_HEADERS = ['ID', 'Repository', 'Organization', 'Title', 'State', 'Body', 'Created_at', 'Updated_at', 'Closed_at',
                  'Closed_by', 'Assignees', 'Labels']
+PROJECT_HEADERS = ['Name', 'ID', 'Number', 'Columns']
 FILE_HEADERS = ['Name', 'Path', 'Type', 'Size', 'SHA', 'DownloadUrl']
 
 # Headers to be sent in requests
@@ -1215,10 +1216,10 @@ def get_project_details(project, header):
 
 
 def list_all_projects_command():
-    project_filter = False
-    if 'project_filter' in demisto.args():
-        project_filter = True
-        project_f = demisto.args().get('project_filter').split(",")
+
+    project_f = demisto.args().get('project_filter', [])
+    if project_f:
+        project_f = project_f.split(",")
 
     header = HEADERS
     header.update({'Accept': PROJECTS_PREVIEW})
@@ -1231,15 +1232,27 @@ def list_all_projects_command():
     projects = resp_projects.json()
     projects_obj = {}
     for proj in projects:
-        if project_filter:
+        if project_f:
             if str(proj["number"]) in project_f:
                 projects_obj[proj["name"]] = get_project_details(project=proj, header=header)
         else:
             projects_obj[proj["name"]] = get_project_details(project=proj, header=header)
+
+    human_readable_projects = [{'Name': projects_obj[proj]['Name'], 'ID': projects_obj[proj]['ID'],
+                                'Number': projects_obj[proj]['Number'], 'Columns':
+                                    [str(column) for column in projects_obj[proj]['Columns']]} for proj in projects_obj]
+
+    if human_readable_projects:
+        human_readable = tableToMarkdown('Projects:', t=human_readable_projects, headers=PROJECT_HEADERS, removeNull=True)
+                                     
+    else:
+        human_readable = f'Not found projects with number - {"".join(project_f)}.'
+
     command_results = CommandResults(
         outputs_prefix='GitHub.Projects',
         outputs_key_field='name',
-        outputs=projects_obj
+        outputs=projects_obj,
+        readable_output=human_readable
     )
     return_results(command_results)
 
