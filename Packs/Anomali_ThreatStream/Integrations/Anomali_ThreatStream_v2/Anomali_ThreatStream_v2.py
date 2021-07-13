@@ -1,18 +1,13 @@
+import json
+import requests
+from requests.exceptions import MissingSchema, ConnectionError
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
 
 GOOD_SCORE = 1
-
 SUSPICIOUS_SCORE = 2
-
 MALICIOUS_SCORE = 3
-
-''' IMPORTS '''
-
-import json
-import requests
-from requests.exceptions import MissingSchema, ConnectionError
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -22,6 +17,7 @@ requests.packages.urllib3.disable_warnings()
 USERNAME = demisto.params().get('username')
 API_KEY = demisto.params().get('apikey')
 SERVER = demisto.params().get('url', '').strip('/')
+DEFAULT_INCLUDE_INACTIVE = demisto.params().get('include_inactive', False)
 USE_SSL = not demisto.params().get('insecure', False)
 BASE_URL = SERVER + '/api/'
 DEFAULT_THRESHOLD = demisto.params().get('default_threshold', 'high')
@@ -43,7 +39,7 @@ DBOT_SCORE = {
     'very-high': 3
 }
 
-DEFAULT_THRESHOLDS = {
+THRESHOLDS_FROM_PARAMS = {
     'url': arg_to_number(demisto.params().get('url_threshold')),
     'ip': arg_to_number(demisto.params().get('ip_threshold')),
     'file': arg_to_number(demisto.params().get('file_threshold')),
@@ -146,9 +142,11 @@ def find_worst_indicator(indicators):
 def prepare_args(args):
     # removing empty keys that can be passed from playbook input
     args = {k: v for (k, v) in args.items() if v}
-    if 'include_inactive' in args:
-        # special handling for ip, domain, file, url and threatstream-email-reputation commands
-        args['status'] = "active,inactive" if args.pop('include_inactive') == 'True' else "active"
+
+    # special handling for ip, domain, file, url and threatstream-email-reputation commands
+    if demisto.command() in ['ip', 'domain', 'file', 'url', 'threatstream-email-reputation']:
+        include_inactive = argToBoolean(args.pop('include_inactive', DEFAULT_INCLUDE_INACTIVE))
+        args['status'] = "active,inactive" if include_inactive else "active"
     if 'indicator_severity' in args:
         # special handling for threatstream-get-indicators
         args['meta.severity'] = args.pop('indicator_severity', None)
@@ -179,7 +177,9 @@ def get_dbot_context(indicator, mapping=None):
         mapping = DBOT_MAPPING
     dbot_context = {mapping[k]: v for (k, v) in indicator.items() if k in mapping.keys()}
     confidence = indicator['confidence']
-    defined_threshold = DEFAULT_THRESHOLDS.get(indicator.get('type'))
+    # in case threshold was defined in the instance we have only two scores levels malicious or good
+    # if threshold wasn't defined we have three score levels malicious suspicious and good
+    defined_threshold = THRESHOLDS_FROM_PARAMS.get(indicator.get('type'))
     if defined_threshold:
         indicator_score = MALICIOUS_SCORE if confidence > defined_threshold else GOOD_SCORE
     else:
@@ -202,7 +202,7 @@ def mark_as_malicious(indicator, context):
         adds Malicious key to returned dictionary (context) in such case.
     """
     confidence = indicator['confidence']
-    threshold = DEFAULT_THRESHOLDS.get(indicator.get('type')) or DEFAULT_MALICIOUS_THRESHOLD
+    threshold = THRESHOLDS_FROM_PARAMS.get(indicator.get('type')) or DEFAULT_MALICIOUS_THRESHOLD
     if confidence > threshold:
         context['Malicious'] = {
             'Vendor': 'ThreatStream'
@@ -459,13 +459,13 @@ def test_module():
     demisto.results('ok')
 
 
-def ips_reputation_command(ip, threshold=None, status="active,inactive"):
+def ips_reputation_command(ip, threshold=None, status="active"):
     ips = argToList(ip, ',')
     for single_ip in ips:
         get_ip_reputation(single_ip, threshold, status)
 
 
-def get_ip_reputation(ip, threshold=None, status="active,inactive"):
+def get_ip_reputation(ip, threshold=None, status="active"):
     """
         Checks the reputation of given ip from ThreatStream and
         returns the indicator with highest severity score.
@@ -496,7 +496,7 @@ def get_ip_reputation(ip, threshold=None, status="active,inactive"):
     return_outputs(human_readable, ec, indicator)
 
 
-def domains_reputation_command(domain, threshold=None, status="active,inactive"):
+def domains_reputation_command(domain, threshold=None, status="active"):
     """
         Wrapper function for get_domain_reputation.
     """
@@ -505,7 +505,7 @@ def domains_reputation_command(domain, threshold=None, status="active,inactive")
         get_domain_reputation(single_domain, threshold, status)
 
 
-def get_domain_reputation(domain, threshold=None, status="active,inactive"):
+def get_domain_reputation(domain, threshold=None, status="active"):
     """
         Checks the reputation of given domain from ThreatStream and
         returns the indicator with highest severity score.
@@ -536,7 +536,7 @@ def get_domain_reputation(domain, threshold=None, status="active,inactive"):
     return_outputs(human_readable, ec, indicator)
 
 
-def files_reputation_command(file, threshold=None, status="active,inactive"):
+def files_reputation_command(file, threshold=None, status="active"):
     """
         Wrapper function for get_file_reputation.
     """
@@ -545,7 +545,7 @@ def files_reputation_command(file, threshold=None, status="active,inactive"):
         get_file_reputation(single_file, threshold, status)
 
 
-def get_file_reputation(file, threshold=None, status="active,inactive"):
+def get_file_reputation(file, threshold=None, status="active"):
     """
         Checks the reputation of given hash of the file from ThreatStream and
         returns the indicator with highest severity score.
@@ -588,7 +588,7 @@ def get_file_reputation(file, threshold=None, status="active,inactive"):
     return_outputs(human_readable, ec, indicator)
 
 
-def urls_reputation_command(url, threshold=None, status="active,inactive"):
+def urls_reputation_command(url, threshold=None, status="active"):
     """
         Wrapper function for get_url_reputation.
     """
@@ -597,7 +597,7 @@ def urls_reputation_command(url, threshold=None, status="active,inactive"):
         get_url_reputation(single_url, threshold, status)
 
 
-def get_url_reputation(url, threshold=None, status="active,inactive"):
+def get_url_reputation(url, threshold=None, status="active"):
     """
         Checks the reputation of given url address from ThreatStream and
         returns the indicator with highest severity score.
@@ -628,7 +628,7 @@ def get_url_reputation(url, threshold=None, status="active,inactive"):
     return_outputs(human_readable, ec, indicator)
 
 
-def get_email_reputation(email, threshold=None, status="active,inactive"):
+def get_email_reputation(email, threshold=None, status="active"):
     """
         Checks the reputation of given email address from ThreatStream and
         returns the indicator with highest severity score.
