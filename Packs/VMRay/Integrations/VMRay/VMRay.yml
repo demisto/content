@@ -798,6 +798,9 @@ script:
     - contextPath: VMRay.Sample.IOC.File.MIMEType
       description: The MIME type of the file.
       type: String
+    - contextPath: VMRay.Sample.IOC.File.Name
+      description: Same as Filename.
+      type: String
     - contextPath: VMRay.Sample.IOC.File.NormFilename
       description: Normalized name of the file.
       type: String
@@ -856,6 +859,9 @@ script:
       type: Boolean
     - contextPath: VMRay.Sample.IOC.IP.IOCType
       description: Type of IOC.
+      type: String
+    - contextPath: VMRay.Sample.IOC.IP.Operation
+      description: Deprecated, always empty.
       type: String
     - contextPath: VMRay.Sample.IOC.IP.ParentProcesses
       description: Full commandline of processes where the IP address was referenced.
@@ -1034,6 +1040,9 @@ script:
       type: String
     - contextPath: VMRay.Sample.IOC.URL.Methods
       description: Methods of HTTP requests directed at this URL.
+      type: String
+    - contextPath: VMRay.Sample.IOC.URL.Operation
+      description: Deprecated, always empty.
       type: String
     - contextPath: VMRay.Sample.IOC.URL.OriginalURLs
       description: The origin URLs the malware used in the artifact operation.

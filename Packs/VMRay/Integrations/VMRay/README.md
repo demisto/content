@@ -861,6 +861,7 @@ Retrieves Indicators of Compromise for a specified sample.
 | VMRay.Sample.IOC.File.IsIOC | Boolean | Whether this artifact is an Indicator of Compromise \(IOC\). | 
 | VMRay.Sample.IOC.File.IOCType | String | Type of IOC. | 
 | VMRay.Sample.IOC.File.MIMEType | String | The MIME type of the file. | 
+| VMRay.Sample.IOC.File.Name | String | Same as Filename. | 
 | VMRay.Sample.IOC.File.NormFilename | String | Normalized name of the file. | 
 | VMRay.Sample.IOC.File.Operation | String | Same as Operations, left in for backwards compatibility. | 
 | VMRay.Sample.IOC.File.Operations | String | The file operations which were performed, e.g., access, create, read, write, and delete. | 
@@ -880,6 +881,7 @@ Retrieves Indicators of Compromise for a specified sample.
 | VMRay.Sample.IOC.IP.ID | Number | ID of the IP address. \(deprecated; is always 0\) | 
 | VMRay.Sample.IOC.IP.IsIOC | Boolean | Whether this artifact is an Indicator of Compromise \(IOC\). | 
 | VMRay.Sample.IOC.IP.IOCType | String | Type of IOC. | 
+| VMRay.Sample.IOC.IP.Operation | String | Deprecated, always empty. | 
 | VMRay.Sample.IOC.IP.ParentProcesses | String | Full commandline of processes where the IP address was referenced. | 
 | VMRay.Sample.IOC.IP.ParentProcessesNames | String | Names of processes where the IP address was referenced. | 
 | VMRay.Sample.IOC.IP.Protocols | String | Protocols used in communication with this IP. | 
@@ -937,6 +939,7 @@ Retrieves Indicators of Compromise for a specified sample.
 | VMRay.Sample.IOC.URL.ID | Number | ID of the URL. \(deprecated; is always 0\) | 
 | VMRay.Sample.IOC.URL.IPAddresses | String | IP addresses associated with the URL. | 
 | VMRay.Sample.IOC.URL.Methods | String | Methods of HTTP requests directed at this URL. | 
+| VMRay.Sample.IOC.URL.Operation | String | Deprecated, always empty. | 
 | VMRay.Sample.IOC.URL.OriginalURLs | String | The origin URLs the malware used in the artifact operation. | 
 | VMRay.Sample.IOC.URL.ParentFiles | String | Names of files where the URL was referenced. | 
 | VMRay.Sample.IOC.URL.ParentProcesses | String | Full commandline of processes where the URL was referenced. | 

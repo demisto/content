@@ -1109,6 +1109,7 @@ def get_iocs_command():
         'IsIOC': file.get('ioc'),
         'IOCType': file.get('ioc_type'),
         'MIMEType': file.get('mime_type'),
+        'Name': file.get('filename'),  # for backwards compatibility
         'NormFilename': file.get('norm_filename'),
         'Operation': file.get('operations'),  # typo
         'Operations': file.get('operations'),
@@ -1132,6 +1133,7 @@ def get_iocs_command():
         'ID': 0,  # deprecated
         'IsIOC': ip.get('ioc'),
         'IOCType': ip.get('ioc_type'),
+        'Operation': None,  # deprecated
         'ParentProcesses': ip.get('parent_processes'),
         'ParentProcessesNames': ip.get('parent_processes_names'),
         'Protocols': ip.get('protocols'),
@@ -1205,6 +1207,7 @@ def get_iocs_command():
         'ID': 0,  # deprecated
         'IPAddresses': url.get('ip_addresses'),
         'Methods': url.get('methods'),
+        'Operation': None,  # deprecated
         'OriginalURLs': url.get('original_urls'),
         'ParentFiles': url.get('parent_files'),
         'ParentProcesses': url.get('parent_processes'),
