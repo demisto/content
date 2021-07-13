@@ -134,7 +134,7 @@ tasks:
       {
         "position": {
           "x": -897.5,
-          "y": 5220
+          "y": 4590
         }
       }
     note: false
@@ -537,10 +537,10 @@ tasks:
     quietmode: 0
   "28":
     id: "28"
-    taskid: acf50cc6-74b1-4d6d-817a-8fd088a4929e
+    taskid: 8d14541c-c937-475f-87dd-9ba980d197f9
     type: playbook
     task:
-      id: acf50cc6-74b1-4d6d-817a-8fd088a4929e
+      id: 8d14541c-c937-475f-87dd-9ba980d197f9
       version: -1
       name: Search And Delete Emails - Generic
       description: This playbook searches and delete emails with similar attributes
@@ -572,7 +572,7 @@ tasks:
         simple: Search for potential phishing
       O365ExchangeLocation:
         complex:
-          root: ExchangeLocation
+          root: inputs.O365ExchangeLocation
       O365ExchangeLocationExclusion:
         complex:
           root: inputs.O365ExchangeLocationExclusion
@@ -585,6 +585,10 @@ tasks:
         complex:
           root: incident
           accessor: emailsubject
+      To:
+        complex:
+          root: incident
+          accessor: emailto
     separatecontext: true
     loop:
       iscommand: false
@@ -595,7 +599,7 @@ tasks:
       {
         "position": {
           "x": 352.5,
-          "y": 4800
+          "y": 4175
         }
       }
     note: false
@@ -620,7 +624,7 @@ tasks:
       {
         "position": {
           "x": -897.5,
-          "y": 5405
+          "y": 4775
         }
       }
     note: false
@@ -737,7 +741,7 @@ tasks:
       {
         "position": {
           "x": -657.5,
-          "y": 4075
+          "y": 3970
         }
       }
     note: false
@@ -747,10 +751,10 @@ tasks:
     quietmode: 0
   "36":
     id: "36"
-    taskid: 066083c3-5517-473e-86b1-43c7d046349e
+    taskid: 7047c1ab-98bf-4a58-805b-7788d6e8a96a
     type: condition
     task:
-      id: 066083c3-5517-473e-86b1-43c7d046349e
+      id: 7047c1ab-98bf-4a58-805b-7788d6e8a96a
       version: -1
       name: Should emails be searched and deleted?
       description: Checks whether the "SearchAndDelete" playbook input is set to True.
@@ -760,13 +764,11 @@ tasks:
     nexttasks:
       '#default#':
       - "43"
-      Yes, use EWS:
+      "Yes":
       - "28"
-      Yes, use O365:
-      - "94"
     separatecontext: false
     conditions:
-    - label: Yes, use EWS
+    - label: "Yes"
       condition:
       - - operator: isEqualString
           left:
@@ -776,41 +778,12 @@ tasks:
           right:
             value:
               simple: "True"
-          ignorecase: true
-      - - operator: isEqualString
-          left:
-            value:
-              simple: inputs.SearchAndDeleteIntegration
-            iscontext: true
-          right:
-            value:
-              simple: EWS
-          ignorecase: true
-    - label: Yes, use O365
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              simple: inputs.SearchAndDelete
-            iscontext: true
-          right:
-            value:
-              simple: "True"
-          ignorecase: true
-      - - operator: isEqualString
-          left:
-            value:
-              simple: inputs.SearchAndDeleteIntegration
-            iscontext: true
-          right:
-            value:
-              simple: O365
           ignorecase: true
     view: |-
       {
         "position": {
           "x": 352.5,
-          "y": 3960
+          "y": 3980
         }
       }
     note: false
@@ -820,10 +793,10 @@ tasks:
     quietmode: 0
   "37":
     id: "37"
-    taskid: 7fd08a0b-6da3-45d1-8b49-7d1a8eaa450f
+    taskid: d8d3a1c3-6d94-4359-8bda-0e0be77c2f71
     type: condition
     task:
-      id: 7fd08a0b-6da3-45d1-8b49-7d1a8eaa450f
+      id: d8d3a1c3-6d94-4359-8bda-0e0be77c2f71
       version: -1
       name: Should indicators be blocked automatically?
       description: Checks whether the "BlockIndicators" playbook input is set to True.
@@ -858,8 +831,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1450,
-          "y": 4065
+          "x": 1000,
+          "y": 3980
         }
       }
     note: false
@@ -917,8 +890,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 570,
-          "y": 5070
+          "x": 690,
+          "y": 4440
         }
       }
     note: false
@@ -1754,8 +1727,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1450,
-          "y": 4435
+          "x": 1000,
+          "y": 4175
         }
       }
     note: false
@@ -1792,141 +1765,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "94":
-    id: "94"
-    taskid: 9c58851e-57e0-4ef8-804f-8ab3f9281695
-    type: condition
-    task:
-      id: 9c58851e-57e0-4ef8-804f-8ab3f9281695
-      version: -1
-      name: From where should emails be searched and deleted?
-      description: Checks from where to search for and delete emails from. Determined
-        by the O365DeleteTarget playbook input.
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "129"
-      All mailboxes:
-      - "96"
-      Single Mailbox:
-      - "95"
-    separatecontext: false
-    conditions:
-    - label: All mailboxes
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              complex:
-                root: inputs.O365DeleteTarget
-            iscontext: true
-          right:
-            value:
-              simple: All
-          ignorecase: true
-    - label: Single Mailbox
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              complex:
-                root: inputs.O365DeleteTarget
-            iscontext: true
-          right:
-            value:
-              simple: SingleMailbox
-          ignorecase: true
-    view: |-
-      {
-        "position": {
-          "x": -120,
-          "y": 4140
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "95":
-    id: "95"
-    taskid: e5d59615-b66c-46bc-8a8c-f060c0a9a5e1
-    type: regular
-    task:
-      id: e5d59615-b66c-46bc-8a8c-f060c0a9a5e1
-      version: -1
-      name: Set the "email to" as the mailbox to search
-      description: Sets the email address of the person who received the phishing
-        email in a context key which determines from where to search and delete emails.
-      scriptName: Set
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "28"
-    scriptarguments:
-      append: {}
-      key:
-        simple: ExchangeLocation
-      stringify: {}
-      value:
-        complex:
-          root: incident
-          accessor: emailto
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 150,
-          "y": 4560
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "96":
-    id: "96"
-    taskid: c79ebb23-21c7-4450-8ff2-0b9d3c02599c
-    type: regular
-    task:
-      id: c79ebb23-21c7-4450-8ff2-0b9d3c02599c
-      version: -1
-      name: Set all mailboxes to be searched
-      description: Sets the value of "All" in a context key which determines from
-        where to search and delete emails.
-      scriptName: Set
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "28"
-    scriptarguments:
-      append: {}
-      key:
-        simple: ExchangeLocation
-      stringify: {}
-      value:
-        simple: All
-    reputationcalc: 1
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": -400,
-          "y": 4560
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "97":
     id: "97"
     taskid: 646e672b-9f6c-4147-8e4b-4afc3b57321b
@@ -1946,8 +1784,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1450,
-          "y": 3820
+          "x": 1000,
+          "y": 3830
         }
       }
     note: false
@@ -2122,38 +1960,6 @@ tasks:
     ignoreworker: false
     skipunavailable: true
     quietmode: 0
-  "129":
-    id: "129"
-    taskid: b1566762-b6ff-4cd1-83c9-d77dcd34dd9f
-    type: condition
-    task:
-      id: b1566762-b6ff-4cd1-83c9-d77dcd34dd9f
-      version: -1
-      name: Manually decide where to search & delete the email
-      description: Allows the analyst to decide where to search for and delete the
-        email from - is it from the mailbox of the recipient, or from all available
-        mailboxes?
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      All Mailboxes:
-      - "96"
-      Single Mailbox:
-      - "95"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": -120,
-          "y": 4340
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "130":
     id: "130"
     taskid: 2334647e-4ced-466e-8c05-0ae6b76adc28
@@ -2210,23 +2016,19 @@ tasks:
 view: |-
   {
     "linkLabelsPosition": {
-      "129_95_Single Mailbox": 0.58,
-      "129_96_All Mailboxes": 0.57,
       "15_31_#default#": 0.6,
       "33_16_No": 0.64,
-      "36_28_Yes, use EWS": 0.37,
-      "36_43_#default#": 0.2,
-      "37_43_#default#": 0.27,
+      "36_28_Yes": 0.5,
+      "36_43_#default#": 0.57,
+      "37_43_#default#": 0.5,
+      "37_91_yes": 0.57,
       "79_84_#default#": 0.3,
       "90_56_#default#": 0.3,
-      "90_89_yes": 0.48,
-      "94_129_#default#": 0.59,
-      "94_95_Single Mailbox": 0.84,
-      "94_96_All mailboxes": 0.83
+      "90_89_yes": 0.48
     },
     "paper": {
       "dimensions": {
-        "height": 5560,
+        "height": 4930,
         "width": 3172.5,
         "x": -1142.5,
         "y": -90
@@ -2301,7 +2103,7 @@ inputs:
   playbookInputQuery:
 - key: O365AllowNotFoundSearchLocations
   value:
-    simple: "true"
+    simple: "false"
   required: false
   description: Used only when searching and deleting emails in O365. Whether to include
     mailboxes other than regular user mailboxes in the compliance search. Default
@@ -2315,6 +2117,6 @@ inputs:
     for the O365ExchangeLocation input.
   playbookInputQuery:
 outputs: []
-fromversion: 6.0.0
 tests:
 - Phishing v2 - Test - Incident Starter
+fromversion: 6.0.0
