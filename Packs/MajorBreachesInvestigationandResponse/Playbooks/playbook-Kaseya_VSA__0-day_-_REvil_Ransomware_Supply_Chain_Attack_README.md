@@ -1,5 +1,4 @@
 On July 2nd, Kaseya company has experienced an attack against the VSA (Virtual System/Server Administrator) product. Kaseya customers pointed out a ransomware outbreak in their environments.
-
 Further investigation revealed that REvil group exploited VSA zero-day vulnerabilities for authentication bypass and arbitrary command execution. This allowed the attacker to deploy ransomware on Kaseya customers' endpoints.
 
 This playbook should be trigger manually and includes the following tasks: 
@@ -7,6 +6,7 @@ This playbook should be trigger manually and includes the following tasks:
 * Collect related known indicators from several sources.
 * Indicators, PS commands, Registry changes and known HTTP requests hunting using PAN-OS, Cortex XDR and SIEM products.
     * Splunk advanced queries can be modified through the playbook inputs.
+* Search for internet facing Kaseya VSA servers using Xpanse.
 * Block indicators automatically or manually.
 * Provide advanced hunting and detection capabilities.
 
@@ -19,28 +19,30 @@ Note: This is a beta playbook, which lets you implement and test pre-release sof
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
-* QRadar Indicator Hunting V2
+* Palo Alto Networks - Hunting And Threat Detection
 * Search Endpoints By Hash - Generic V2
+* Panorama Query Logs
 * Post Intrusion Ransomware Investigation
+* Splunk Indicator Hunting
+* QRadar Indicator Hunting V2
 * Block Indicators - Generic v2
 * PAN-OS - Block Domain - External Dynamic List
-* Palo Alto Networks - Hunting And Threat Detection
-* Splunk Indicator Hunting
-* Panorama Query Logs
 
 ### Integrations
 * SplunkPy
 
 ### Scripts
-* SearchIncidentsV2
 * http
 * ParseHTMLIndicators
+* SearchIncidentsV2
 
 ### Commands
+* linkIncidents
 * extractIndicators
+* expanse-get-issues
+* setIndicators
 * closeInvestigation
 * splunk-search
-* setIndicators
 
 ## Playbook Inputs
 ---
@@ -64,4 +66,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![Kaseya VSA  0-day - REvil Ransomware Supply Chain Attack](https://raw.githubusercontent.com/demisto/content/d12cfdb5eb52f963dc020c91abe4e72bb9e958f8/Packs/MajorBreachesInvestigationandResponse/doc_files/Kaseya_VSA__0-day_-_REvil_Ransomware_Supply_Chain_Attack.png)
+![Kaseya VSA  0-day - REvil Ransomware Supply Chain Attack](https://raw.githubusercontent.com/demisto/content/49919f59cddb6151a840a479a0820784ca931b59/Packs/MajorBreachesInvestigationandResponse/doc_files/Kaseya_VSA__0-day_-_REvil_Ransomware_Supply_Chain_Attack.png)
