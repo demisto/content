@@ -1,4 +1,6 @@
-from SecurityScorecard import Client, \
+from SecurityScorecard import \
+    Client, \
+    DATE_FORMAT, \
     is_valid_domain, \
     is_email_valid, \
     is_date_valid, \
@@ -8,42 +10,50 @@ import json
 import io
 import demistomock as demisto
 import datetime
-
-MOCK_URL = "mock://securityscorecard-mock-url"
-DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
-
-client = Client(
-    base_url=MOCK_URL,
-    verify=False,
-    proxy=False
-)
+import pytest  # type: ignore
 
 
-def util_load_json(path):
+"""Test Data"""
+
+
+def load_json(path):
     with io.open(path, mode='r', encoding='utf-8') as f:
         return json.loads(f.read())
 
 
-def test_is_valid_domain():
-    assert is_valid_domain("google.com")
-    assert not is_valid_domain("sometestdomain")
+domain_test_data = [("google.com", True), ("sometestdomain", False)]
+date_test_data = [("2021-12-31", True), ("2021-13-31", False), ("202-12-31", False)]
+email_test_data = [("username@domain.com", True), ("username.com", False), ("username@", False)]
+alerts_mock = load_json("./test_data/alerts/alerts.json")
+portfolios_mock = load_json("./test_data/portfolios/portfolios.json")
+companies_mock = load_json("./test_data/portfolios/companies.json")
+portfolio_not_found = load_json("./test_data/portfolios/portfolio_not_found.json")
 
 
-def test_is_email_valid():
-    assert is_email_valid("someuser@somedomain.com")
-    assert not is_email_valid("someuser.com")
+""" Helper Functions Unit Tests"""
 
 
-def test_is_date_valid():
-    assert is_date_valid("2021-12-31")
-    assert not is_date_valid("2021-13-31")
-    assert not is_date_valid("202-12-31")
+@pytest.mark.parametrize("domain,result", domain_test_data)
+def test_is_valid_domain(domain, result):
+    for domain, result in domain_test_data:
+        assert is_valid_domain(domain) == result
+
+
+@pytest.mark.parametrize("date,result", date_test_data)
+def test_is_date_valid(date, result):
+    for date, result in date_test_data:
+        assert is_date_valid(date) == result
+
+
+@pytest.mark.parametrize("email,result", email_test_data)
+def test_is_email_valid(email, result):
+    for email, result in email_test_data:
+        assert is_email_valid(email) == result
 
 
 def test_incidents_to_import(mocker):
 
-    raw_response = util_load_json('./test_data/alerts.json')
-    mocker.patch.object(client, "get_alerts_last_week", return_value=raw_response)
+    mocker.patch.object(client, "get_alerts_last_week", return_value=alerts_mock)
 
     response = client.get_alerts_last_week(email="some@email.com")
 
@@ -64,7 +74,7 @@ def test_incidents_to_import(mocker):
 
     incidents = incidents_to_import(entries)
 
-    assert len(incidents) == 6
+    assert len(incidents) == 4
 
     # Iterate over each incident and ensure they
     # were supposed to be imported
@@ -74,10 +84,20 @@ def test_incidents_to_import(mocker):
         assert incident_timestamp > now
 
 
+""" Client Unit Tests """
+
+MOCK_URL = "mock://securityscorecard-mock-url"
+
+client = Client(
+    base_url=MOCK_URL,
+    verify=False,
+    proxy=False
+)
+
+
 def test_securityscorecard_portfolios_list(mocker):
 
-    raw_response = util_load_json("./test_data/portfolios/portfolios.json")
-    mocker.patch.object(client, "get_portfolios", return_value=raw_response)
+    mocker.patch.object(client, "get_portfolios", return_value=portfolios_mock)
 
     response = client.get_portfolios()
 
@@ -92,55 +112,36 @@ def test_securityscorecard_portfolios_list(mocker):
     assert first_entry.get('privacy') == 'private'
     assert first_entry.get('read_only') == 'true'
 
-    return entries
 
+# def test_securityscorecard_portfolio_list_companies(mocker):
 
-def test_securityscorecard_portfolio_list_companies(mocker):
+    # """
+    #     Checks cases where the portfolio exists and doesn't exist
+    # """
 
-    """
-        Checks cases where the portfolio exists and doesn't exist
-    """
+    # portfolios = test_securityscorecard_portfolios_list(mocker)
 
-    portfolios = test_securityscorecard_portfolios_list(mocker)
+    # # 1. Portfolio that exists
+    # portfolio_exists = portfolios[0]
 
-    # 1. Portfolio that exists
-    portfolio_exists = portfolios[0]
+    # raw_response = util_load_json("./test_data/portfolios/companies.json")
+    # mocker.patch.object(client, "get_companies_in_portfolio", return_value=raw_response)
+    # response_portfolio = client.get_companies_in_portfolio(portfolio_exists)
 
-    raw_response = util_load_json("./test_data/portfolios/companies.json")
-    mocker.patch.object(client, "get_companies_in_portfolio", return_value=raw_response)
-    response_portfolio = client.get_companies_in_portfolio(portfolio_exists)
+    # assert response_portfolio.get("entries")
 
-    assert response_portfolio.get("entries")
+    # companies = response_portfolio.get("entries")
 
-    companies = response_portfolio.get("entries")
+    # assert len(companies) == 3
 
-    assert len(companies) == 3
+    # # 2. Portfolio doesn't exist
+    # non_exist_portfolio = "portfolio4"
+    # portfolio_not_exist_raw_response = util_load_json("./test_data/portfolios/portfolio_not_found.json")
 
-    # 2. Portfolio doesn't exist
-    non_exist_portfolio = "portfolio4"
-    portfolio_not_exist_raw_response = util_load_json("./test_data/portfolios/portfolio_not_found.json")
+    # mocker.patch.object(client, "get_companies_in_portfolio", return_value=portfolio_not_exist_raw_response)
+    # portfolio_not_exist_response = client.get_companies_in_portfolio(non_exist_portfolio)
 
-    mocker.patch.object(client, "get_companies_in_portfolio", return_value=portfolio_not_exist_raw_response)
-    portfolio_not_exist_response = client.get_companies_in_portfolio(non_exist_portfolio)
-
-    assert portfolio_not_exist_response["error"]["message"] == "portfolio not found"
-
-
-# def test_securityscorecard_company_factor_score_get():
-
-# def test_securityscorecard_company_history_score_get():
-
-# def test_securityscorecard_alert_grade_change_create():
-
-# def test_securityscorecard_alert_score_threshold_create():
-
-# def test_securityscorecard_alerts_list():
-
-# def test_securityscorecard_company_services_get():
-
-# def test_securityscorecard_company_score_get():
-
-# def test_securityscorecard_company_history_factor_score_get():
+    # assert portfolio_not_exist_response["error"]["message"] == "portfolio not found"
 
 
 def main() -> None:
