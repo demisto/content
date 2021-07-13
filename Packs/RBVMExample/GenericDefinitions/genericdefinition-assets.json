@@ -1,0 +1,11 @@
+{
+    "version": -1,
+    "locked": false,
+    "system": false,
+    "fromVersion": "6.5.0",
+    "id": "assets",
+    "name": "Assets",
+    "partitioned": true,
+    "auditable": false,
+    "rbacSupport": true
+}
