@@ -449,6 +449,14 @@ def get_mitre_value_from_id(client, args):
                 Filter("external_references.external_id", "=", attack_id),
                 Filter("type", "=", "attack-pattern")
             ])[0]['name']
+
+            if len(attack_id) > 5:  # sub-technique
+                parent_name = tc_source.query([
+                    Filter("external_references.external_id", "=", attack_id[:5]),
+                    Filter("type", "=", "attack-pattern")
+                ])[0]['name']
+                attack_pattern_name = f'{parent_name}: {attack_pattern_name}'
+
             if attack_pattern_name:
                 attack_values.append({'id': attack_id, 'value': attack_pattern_name})
                 break
@@ -485,7 +493,7 @@ def main():
         if demisto.command() == 'mitre-get-indicators':
             get_indicators_command(client, args)
 
-        if demisto.command() == 'mitre-get-attack-pattern-value':
+        elif demisto.command() == 'mitre-get-attack-pattern-value':
             return_results(get_mitre_value_from_id(client, args))
 
         elif demisto.command() == 'attack-pattern':
