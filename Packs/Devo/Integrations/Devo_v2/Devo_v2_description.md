@@ -42,7 +42,7 @@ If writing back to Devo make sure to also create a set of TLS credentials.
   }
   ```
 6. Devo base domain
-  - This is the base web UI URL that you use to interact with Devo. If you login to `us.devo.com` -> `https://us.devo.com/welcome`
+  - This is the base web UI URL that you use to interact with Devo. If you login to `us.devo.com` -> `https://us.devo.com`
 7. Fetches incidents
   - Check this box if you would like for the plugin to pull in Devo alerts as incidents. Please refer to `Fetch incident alert filter` and
     `Deduplication parameters JSON` for advanced configuration
@@ -72,5 +72,9 @@ If writing back to Devo make sure to also create a set of TLS credentials.
   ```
   - Uses the `context` column to group all alerts so all alerts that get processed by this will share the same cooldown.
   - This is a Beta feature so please use with caution as we will make usability enhancements.
-11. Use system proxy settings
+11. Global query default timeout
+  - Global read timeout for all requests hitting Devo API for reading data out of Devo. By default if unset will be 60 seconds.
+12. Trust any certificate (not secure)
+  - If your Devo instance you are making requests to does not have a valid SSL certificate attached to the domain check this box.
+13. Use system proxy settings
   - Uses the proxy on the system.

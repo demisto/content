@@ -134,12 +134,14 @@ Please refer to to the Devo documentation for building a query with LINQ
 `devo-run-query`
 ##### Input
 
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| query | A LINQ Query to run | Required |
-| from | Start datetime for specified query. Unix timestamp in seconds expected (Decimal milliseconds okay) | Required |
-| to | End datetime for specified query. Unix timestamp in seconds expected (Decimal milliseconds okay) | Optional |
-| writeToContext | Whether to write results to context or not | Optional |
+| **Argument Name** | **Description**                                                                                    | **Required** |
+|-------------------|----------------------------------------------------------------------------------------------------|--------------|
+| query             | A LINQ Query to run                                                                                | Required     |
+| from              | Start datetime for specified query. Unix timestamp in seconds expected (Decimal milliseconds okay) | Required     |
+| to                | End datetime for specified query. Unix timestamp in seconds expected (Decimal milliseconds okay)   | Optional     |
+| queryTimeout      | Query timeout in seconds. Defaults to global which defaults to 60 seconds                          | Optional     |
+| writeToContext    | Whether to write results to context or not                                                         | Optional     |
+| linqLinkBase      | Overrides the global link base so is able to be set at run time                                    | Optional     |
 
 #####__from__ and __to__ time note:
 This integration allows for the following formats. Note that when __from__ and __to__ times
@@ -192,12 +194,14 @@ that are allowed.
 `devo-get-alerts`
 ##### Input
 
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| from | Start datetime for alerts to fetch | Required |
-| to | End datetime for alerts to fetch | Optional |
-| filters | key value filter to apply to retrieve specified alerts. refer to docs | Optional |
-| writeToContext | write results to context or not | Optional |
+| **Argument Name** | **Description**                                                           | **Required** |
+|-------------------|---------------------------------------------------------------------------|--------------|
+| from              | Start datetime for alerts to fetch                                        | Required     |
+| to                | End datetime for alerts to fetch                                          | Optional     |
+| filters           | key value filter to apply to retrieve specified alerts. refer to docs     | Optional     |
+| queryTimeout      | Query timeout in seconds. Defaults to global which defaults to 60 seconds | Optional     |
+| writeToContext    | write results to context or not                                           | Optional     |
+| linqLinkBase      | Overrides the global link base so is able to be set at run time           | Optional     |
 
 #####__from__ and __to__ time note:
 This integration allows for the following formats. Note that when __from__ and __to__ times
@@ -245,13 +249,15 @@ Thus querying all columns for the search token and returning a union of the give
 `devo-multi-table-query`
 ##### Input
 
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| tables | List of table names to check for searchToken | Required |
-| searchToken | String that you wish to search for in given tables in any column | Required |
-| from | Start time in seconds unix timestamp | Required |
-| to | End time in seconds unix timestamp | Optional |
-| writeToContext | write results to context or not | Optional |
+| **Argument Name** | **Description**                                                           | **Required** |
+|-------------------|---------------------------------------------------------------------------|--------------|
+| tables            | List of table names to check for searchToken                              | Required     |
+| searchToken       | String that you wish to search for in given tables in any column          | Required     |
+| from              | Start time in seconds unix timestamp                                      | Required     |
+| to                | End time in seconds unix timestamp                                        | Optional     |
+| limit             | Number of entries to return to context. Default is 50. 0 sets to no limit | Optional     |
+| queryTimeout      | Query timeout in seconds. Defaults to global which defaults to 60 seconds | Optional     |
+| writeToContext    | write results to context or not                                           | Optional     |
 
 #####__from__ and __to__ time note:
 This integration allows for the following formats. Note that when __from__ and __to__ times
@@ -304,10 +310,11 @@ For more information on the way we write to a table please refer to this documen
 `devo-write-to-table`
 ##### Input
 
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| tableName | Table name to write to | Required |
-| records | Records to write to given tableName | Required |
+| **Argument Name** | **Description**                                                 | **Required** |
+|-------------------|-----------------------------------------------------------------|--------------|
+| tableName         | Table name to write to                                          | Required     |
+| records           | Records to write to given tableName                             | Required     |
+| linqLinkBase      | Overrides the global link base so is able to be set at run time | Optional     |
 
 
 ##### Context Output
