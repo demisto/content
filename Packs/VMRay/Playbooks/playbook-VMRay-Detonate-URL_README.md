@@ -1,4 +1,4 @@
-Detonates a file with VMRay.
+Detonates a URL using the VMRay sandbox integration.
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.
@@ -13,27 +13,21 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 This playbook does not use any scripts.
 
 ### Commands
-* vmray-get-submission
-* vmray-get-sample
-* vmray-upload-sample
-* vmray-get-iocs
 * vmray-get-analysis-by-sample
+* vmray-upload-url
+* vmray-get-sample
 * vmray-get-threat-indicators
+* vmray-get-iocs
+* vmray-get-submission
 
 ## Playbook Inputs
 ---
 
 | **Name** | **Description** | **Default Value** | **Required** |
-| --- | --- | --- | --- | 
-| File | The file to detonate. | ${File} | Optional |
-| interval | The frequency in which to poll for results \(minutes\). | 1 | Optional |
-| timeout | The amount of time to wait before giving up waiting for results \(minutes\). | 10 | Optional |
-| document_password | The password if the file is a password-protected document. |  | Optional |
-| archive_password | The password if the file is a password-protected archive. |  | Optional |
-| sample_type | The sample type. |  | Optional |
-| shareable | Whether to make the file shareable. |  | Optional |
-| max_jobs | The  maximum jobs to create in VMRay. |  | Optional |
-| tags | The tags of the file \(comma-separated\). |  | Optional |
+| --- | --- | --- | --- |
+| URL | The URL to detonate. | URL.Data | Optional |
+| interval | How often to poll for results \(minutes\). | 1 | Optional |
+| timeout | How long to wait before giving up waiting for results \(minutes\). | 10 | Optional |
 
 ## Playbook Outputs
 ---
@@ -104,4 +98,4 @@ This playbook does not use any scripts.
 
 ## Playbook Image
 ---
-![VMRay-Detonate-File](https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/VMRay-Detonate-File.png) 
+![Detonate URL - VMRay](Insert the link to your image here)
