@@ -112,37 +112,36 @@ def http_request(method, url_suffix, params=None, data=None, headers=None, is_ra
     if res.status_code >= 400:
         try:
             json_res = res.json()
-            # add message from GitHub if available
-            err_msg = json_res.get('message', '')
-            if err_msg and 'documentation_url' in json_res:
-                err_msg += f' see: {json_res["documentation_url"]}'
+
             if json_res.get('errors') is None:
-                err_msg = f'Error in API call to the GitHub Integration [{res.status_code}] {res.reason}. {err_msg}'
+                return_error('Error in API call to the GitHub Integration [%d] - %s' % (res.status_code, res.reason))
+
             else:
                 error_code = json_res.get('errors')[0].get('code')
                 if error_code == 'missing_field':
-                    err_msg = f'Error: the field: "{json_res.get("errors")[0].get("field")}" requires a value. ' \
-                              f'{err_msg}'
+                    return_error(
+                        'Error: the field: "{}" requires a value'.format(json_res.get('errors')[0].get('field')))
+
                 elif error_code == 'invalid':
                     field = json_res.get('errors')[0].get('field')
                     if field == 'q':
-                        err_msg = f'Error: invalid query - {json_res.get("errors")[0].get("message")}. {err_msg}'
+                        return_error('Error: invalid query - {}'.format(json_res.get('errors')[0].get('message')))
+
                     else:
-                        err_msg = f'Error: the field: "{field}" has an invalid value. {err_msg}'
+                        return_error('Error: the field: "{}" has an invalid value'.format(field))
 
                 elif error_code == 'missing':
-                    err_msg = f"Error: {json_res.get('errors')[0].get('resource')} does not exist. {err_msg}"
+                    return_error('Error: {} does not exist'.format(json_res.get('errors')[0].get('resource')))
 
                 elif error_code == 'already_exists':
-                    err_msg = f"Error: the field {json_res.get('errors')[0].get('field')} must be unique. {err_msg}"
+                    return_error('Error: the field {} must be unique'.format(json_res.get('errors')[0].get('field')))
 
                 else:
-                    err_msg = f'Error in API call to the GitHub Integration [{res.status_code}] - {res.reason}. ' \
-                              f'{err_msg}'
-            raise DemistoException(err_msg)
+                    return_error(
+                        'Error in API call to the GitHub Integration [%d] - %s' % (res.status_code, res.reason))
 
         except ValueError:
-            raise DemistoException(f'Error in API call to GitHub Integration [{res.status_code}] - {res.reason}'
+            return_error('Error in API call to GitHub Integration [%d] - %s' % (res.status_code, res.reason))
 
     try:
         if res.status_code == 204:
