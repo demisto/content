@@ -29,6 +29,7 @@ portfolios_mock = load_json("./test_data/portfolios/portfolios.json")
 companies_mock = load_json("./test_data/portfolios/companies.json")
 portfolio_not_found = load_json("./test_data/portfolios/portfolio_not_found.json")
 score_mock = load_json("./test_data/companies/score.json")
+factor_score_mock = load_json("./test_data/companies/factor_score.json")
 
 """ Helper Functions Unit Tests"""
 
@@ -176,7 +177,19 @@ def test_get_company_score(mocker):
 
 
 def test_get_company_factor_score(mocker):
-    pass
+    
+    mocker.patch.object(client, "get_company_factor_score", return_value=factor_score_mock)
+
+    response_factor_score = client.get_company_factor_score(domain=DOMAIN)
+
+    assert response_factor_score == factor_score_mock
+
+    assert response_factor_score["total"] == len(response_factor_score["entries"])
+
+    sample_factor = response_factor_score["entries"][0]
+
+    assert isinstance(sample_factor["score"], int)
+    assert re.match("[A-F]", sample_factor["grade"])
 
 
 def test_get_company_historical_scores(mocker):
