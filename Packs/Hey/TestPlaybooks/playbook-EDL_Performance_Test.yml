@@ -1151,7 +1151,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: "12"
+              simple: "18"
     view: |-
       {
         "position": {
@@ -1239,7 +1239,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: "12"
+              simple: "18"
     view: |-
       {
         "position": {
@@ -1401,7 +1401,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: "8"
+              simple: "18"
     view: |-
       {
         "position": {
@@ -2297,7 +2297,7 @@ inputs:
   playbookInputQuery: null
 - key: iocs_in_xsoar
   value:
-    simple: "333000"
+    simple: "100000"
   required: false
   description: Expected number of indicators in the system.
   playbookInputQuery: null
