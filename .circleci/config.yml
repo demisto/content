@@ -551,8 +551,8 @@ references:
   nightly_jobs: &nightly_jobs
     - Setup Environment:
         context: nightly_env
-    - Create Instances:
-        context: nightly_env
+#    - Create Instances:
+#        context: nightly_env
     - Run Unit Testing And Lint:
         context: nightly_env
         requires:
