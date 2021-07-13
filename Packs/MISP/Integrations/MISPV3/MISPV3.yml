@@ -53,6 +53,24 @@ script:
   commands:
   - arguments:
     - default: false
+      description: Search for events that include the specified attribute type. Use any valid MISP attribute type.
+      isArray: false
+      name: type
+      required: false
+      secret: false
+    - default: false
+      description: Search for events that include the specified attribute value.
+      isArray: false
+      name: value
+      required: false
+      secret: false
+    - default: false
+      description: Search for events that include the specified attribute category. Use any valid MISP attribute category.
+      isArray: false
+      name: category
+      required: false
+      secret: false
+    - default: false
       description: Search by creator organization by supplying the organization ID.
       isArray: false
       name: org
