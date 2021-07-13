@@ -13,7 +13,7 @@ import datetime
 import pytest  # type: ignore
 
 
-"""Test Data"""
+""" Helper Functions Test Data"""
 
 
 def load_json(path):
@@ -91,8 +91,9 @@ USERNAME = "user@domain.com"
 PORTFOLIO_ID = "1"
 PORTFOLIO_ID_NE = "2"
 DOMAIN = "domain1.com"
-ALERT_ID = "2dd66f12-37f0-5a9c-929d-1255b05053c3"
-
+DOMAIN_NE = "domain2.com"
+ALERT_ID = "1"
+ALERT_ID_NE = "2"
 
 """ Endpoints """
 
@@ -128,23 +129,13 @@ client = Client(
     proxy=False
 )
 
-
 def test_securityscorecard_portfolios_list(mocker):
 
     mocker.patch.object(client, "get_portfolios", return_value=portfolios_mock)
 
     response = client.get_portfolios()
 
-    assert response.get('entries')
-
-    entries = response.get('entries')
-
-    assert len(entries) == 3
-    first_entry = entries[0]
-    assert first_entry.get('id') == '1'
-    assert first_entry.get('name') == 'portfolio_1'
-    assert first_entry.get('privacy') == 'private'
-    assert first_entry.get('read_only') == 'true'
+    assert response == portfolios_mock
 
 
 # def test_securityscorecard_portfolio_list_companies(mocker):
