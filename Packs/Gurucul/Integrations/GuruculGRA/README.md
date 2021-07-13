@@ -14,6 +14,7 @@ Please make sure you look at the integration source code and comments.
 | isFetch | Fetch incidents | False |
 | incidentType | Incident type | False |
 | max_fetch | Maximum number of incidents per fetch | False |
+| fetch_incident_cases | Fetch Incident Cases | False |
 | apikey | API Key | True |
 | threshold_ip | Score threshold for ip reputation command \(0\-100\) | False |
 | threshold_domain | Score threshold for domain reputation command \(0\-100\) | False |
@@ -796,7 +797,7 @@ get details of the user.
 | Gra.Cases.ownerName | String | Owner Name. | 
 | Gra.Cases.riskDate | Date | Risk Risk. | 
 | Gra.Cases.status | String | Case Status . | 
-
+| Gra.Cases.anomalies | String | Anomalies . | 
 
 #### Command Example
 ```!gra-cases status="OPEN" page=1 max=25```
