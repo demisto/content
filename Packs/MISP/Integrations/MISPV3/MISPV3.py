@@ -797,7 +797,7 @@ def search_attributes(demisto_args: dict) -> CommandResults:
     # Set the controller to attributes to search for attributes and not events
     args['controller'] = 'attributes'
     response = PYMISP.search(**args)
-    return_only_values = argToBoolean(demisto_args.get('compact', True))
+    return_only_values = argToBoolean(demisto_args.get('compact', False))
     include_correlations = argToBoolean(demisto_args.get('include_correlations', False))
     limit = demisto_args.get('limit', 50)
     page = demisto_args.get('page')

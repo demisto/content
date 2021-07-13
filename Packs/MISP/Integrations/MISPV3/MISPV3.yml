@@ -2500,11 +2500,12 @@ script:
       required: false
       secret: false
     - auto: PREDEFINED
-      default: true
+      default: false
       description: Whether return only the attribute's values that match the search
-        query. Default is true. In case you want to get the full attributes data,
+        query. In case you want to get the full attributes data,
         please set this argument to false.
       isArray: false
+      defaultValue: 'false'
       name: compact
       predefined:
       - 'true'
