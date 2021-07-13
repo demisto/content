@@ -3430,7 +3430,7 @@ script:
     - contextPath: GitHub.Project.Columns.Cards.ContentNumber
       description: The content number of this card, usually this is the issue number.
       type: Number
-    - contextPath: GitHub.Project.AllIssues
+    - contextPath: GitHub.Project.Issues
       description: List of all issue numbers that are in this project board.
       type: Unknown
   - arguments:
