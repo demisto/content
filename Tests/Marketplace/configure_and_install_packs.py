@@ -19,12 +19,7 @@ def options_handler():
     parser.add_argument('-s', '--secret', help='Path to secret conf file')
     parser.add_argument('--branch', help='GitHub branch name', required=True)
     parser.add_argument('--build_number', help='CI job number where the instances were created', required=True)
-    parser.add_argument('--service_account', help="Path to gcloud service account, is for circleCI usage. For local "
-                                                  "development use your personal account and authenticate using Google "
-                                                  "Cloud SDK by running: `gcloud auth application-default login` and "
-                                                  "leave this parameter blank. For more information go to: "
-                                                  "https://googleapis.dev/python/google-api-core/latest/auth.html",
-                        required=True)
+    parser.add_argument('--service_account', help="Path to gcloud service account", required=True)
     parser.add_argument('-e', '--extract_path', help=f'Full path of folder to extract the {GCPConfig.INDEX_NAME}.zip '
                                                      f'to', required=True)
 
@@ -61,7 +56,8 @@ def main():
         server_host: str = server.client.api_client.configuration.host
         success_flag = install_all_content_packs_from_build_bucket(
             client=server.client, host=server_host, server_version=server_version,
-            bucket_packs_root_path=GCPConfig.BUILD_BUCKET_PACKS_ROOT_PATH.format(branch_name, build_number),
+            bucket_packs_root_path=GCPConfig.BUILD_BUCKET_PACKS_ROOT_PATH.format(branch=branch_name,
+                                                                                 build=build_number),
             service_account=options.service_account, extract_destination_path=options.extract_path
         )
 
