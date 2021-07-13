@@ -26,9 +26,10 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: ReversingLabs Data provides malware status of the sample
-display: ReversingLabs TitaniumCloud
+description: Deprecated. Use the ReversingLabs TitaniumCloud v2 integration instead.
+display: ReversingLabs TitaniumCloud (Deprecated)
 name: ReversingLabs Titanium Cloud
+deprecated: true
 script:
   commands:
   - arguments:
@@ -49,7 +50,7 @@ script:
       - 'false'
       required: false
       secret: false
-    deprecated: false
+    deprecated: true
     description: Retrieve Malware Presence Status from ReversingLabs
     execution: false
     name: file
@@ -92,6 +93,7 @@ script:
   script: ''
   subtype: python2
   type: python
+  dockerimage: demisto/python:2.7.18.20958
 tests:
 - ReversingLabsTCTest
 fromversion: 5.0.0

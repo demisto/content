@@ -5,10 +5,4 @@ ignore=RM104
 ignore=RM106
 
 [file:playbook-PAN-OS_EDL_Service_Configuration.yml]
-ignore=PB115
-
-[file:playbook-EDL_Indicator_Performance_Test.yml]
-ignore=auto-test
-
-[file:playbook-EDL_Performance_Test_-_Concurrency.yml]
-ignore=auto-test
+ignore=PB116

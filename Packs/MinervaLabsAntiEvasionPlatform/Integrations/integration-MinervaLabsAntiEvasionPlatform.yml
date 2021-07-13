@@ -745,6 +745,7 @@ script:
     description: Moves all the events from Archive state to New event state.
   isfetch: true
   runonce: false
+  dockerimage: demisto/python:2.7.18.20958
 tests:
 - Minerva Test playbook
 fromversion: 5.0.0

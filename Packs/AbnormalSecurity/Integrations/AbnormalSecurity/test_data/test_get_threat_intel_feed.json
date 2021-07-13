@@ -1,0 +1,43 @@
+{
+    "type": "bundle",
+    "id": "bundle--601cee35-6b16-4e68-a3e7-9ec7d755b4c3",
+    "objects": [
+        {
+            "type": "indicator",
+            "spec_version": "2.1",
+            "id": "indicator--9299f726-ce06-492e-8472-2b52ccb53191",
+            "created_by_ref": "identity--39012926-a052-44c4-ae48-caaf4a10ee6e",
+            "created": "2017-02-27T13:57:10.515Z",
+            "modified": "2017-02-27T13:57:10.515Z",
+            "name": "Malicious URL",
+            "description": "This URL is potentially associated with malicious activity and is listed on several blacklist sites.",
+            "indicator_types": [
+                "malicious-activity"
+            ],
+            "pattern": "[url:value = '']",
+            "pattern_type": "stix",
+            "valid_from": "2015-06-29T09:10:15.915Z"
+        },
+        {
+            "type": "identity",
+            "spec_version": "2.1",
+            "id": "identity--733c5838-34d9-4fbf-949c-62aba761184c",
+            "created": "2016-08-23T18:05:49.307Z",
+            "modified": "2016-08-23T18:05:49.307Z",
+            "name": "Disco Team",
+            "description": "Disco Team is the name of an organized threat actor crime-syndicate.",
+            "identity_class": "organization",
+            "contact_information": "disco-team@stealthemail.com"
+        },
+        {
+            "type": "relationship",
+            "spec_version": "2.1",
+            "id": "relationship--a2e3efb5-351d-4d46-97a0-6897ee7c77a0",
+            "created": "2020-02-29T18:01:28.577Z",
+            "modified": "2020-02-29T18:01:28.577Z",
+            "relationship_type": "attributed-to",
+            "source_ref": "threat-actor--dfaa8d77-07e2-4e28-b2c8-92e9f7b04428",
+            "target_ref": "identity--733c5838-34d9-4fbf-949c-62aba761184c"
+        }
+    ]
+}

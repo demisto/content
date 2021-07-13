@@ -197,6 +197,7 @@ DOMAIN_EC = {
         'Name': 'otx.alienvault.com', 'Alexa': 'http://www.alexa.com/siteinfo/otx.alienvault.com',
         'Whois': 'http://whois.domaintools.com/otx.alienvault.com'}
 }
+IP_404_RAW_RESPONSE = 404
 
 IP_RAW_RESPONSE = {
     "accuracy_radius": 1000,
@@ -635,3 +636,22 @@ def test_ip_command(mocker, ip_, raw_response, expected_ec, expected_relationshi
 
     relations = all_context['Relationships']
     assert expected_relationships == relations
+
+
+@pytest.mark.parametrize('ip_,raw_response,expected', [
+    ('8.8.88.8', IP_404_RAW_RESPONSE, 'IP 8.8.88.8 could not be found.'),
+])
+def test_ip_command_on_404(mocker, ip_, raw_response, expected):
+    """
+        Given
+        - An IPv4 address.
+
+        When
+        - Running ip_command with the IP.
+
+        Then
+        - Validate that the CommandResult created correctly when the api returns 404
+        """
+    mocker.patch.object(client, 'query', side_effect=[raw_response])
+    command_results = ip_command(client, ip_, 'IPv4')
+    assert command_results[0].readable_output == expected
