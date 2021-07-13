@@ -1,0 +1,1 @@
+Add limitation regarding the fact that urls/emails are not guaranteed to be correctly auto extract from images.
