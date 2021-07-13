@@ -1099,7 +1099,7 @@ class Pack(object):
 
         return changelog, changelog_latest_rn_version, changelog_latest_rn
 
-    def get_modified_release_notes_lines(self, release_notes_dir: str, latest_rn_version: LooseVersion,
+    def get_modified_release_notes_lines(self, release_notes_dir: str, latest_release_notes_versions: list,
                                          changelog: dict, modified_rn_files: list):
         """
         In the case where an rn file was changed, this function returns the new content
@@ -1112,7 +1112,8 @@ class Pack(object):
 
         Args:
             release_notes_dir (str): the path to the release notes dir
-            latest_rn_version (LooseVersion): the last version of release notes in the pack.
+            latest_release_notes_versions (list): a list of the last versions of release notes in the pack since the
+             last upload. This means they were handled priorly, and aggregated if needed.
             changelog (dict): the changelog from the production bucket.
             modified_rn_files (list): a list of the rn files that were modified according to the last commit in
              'filename.md' format.
@@ -1129,7 +1130,7 @@ class Pack(object):
         for rn_filename in modified_rn_files:
             version = release_notes_file_to_version(rn_filename)
             # Should only apply on modified files that are not the last rn file
-            if LooseVersion(version) >= latest_rn_version:
+            if version in latest_release_notes_versions:
                 continue
             # The case where the version is a key in the changelog file,
             # and the value is not an aggregated release note
@@ -1182,7 +1183,7 @@ class Pack(object):
         return same_block_versions_dict, higher_nearest_version.vstring
 
     def get_release_notes_lines(self, release_notes_dir: str, changelog_latest_rn_version: LooseVersion,
-                                changelog_latest_rn: str) -> Tuple[str, str]:
+                                changelog_latest_rn: str) -> Tuple[str, str, list]:
         """
         Prepares the release notes contents for the new release notes entry
         Args:
@@ -1228,8 +1229,9 @@ class Pack(object):
             # We should take the release notes from the index as it has might been aggregated
             logging.info(f'No new RN file was detected for pack {self._pack_name}, taking latest RN from the index')
             release_notes_lines = changelog_latest_rn
+        latest_aggregated_release_notes_versions = list(pack_versions_dict.keys())
 
-        return release_notes_lines, latest_release_notes_version_str
+        return release_notes_lines, latest_release_notes_version_str, latest_aggregated_release_notes_versions
 
     def assert_upload_bucket_version_matches_release_notes_version(self,
                                                                    changelog: dict,
@@ -1301,14 +1303,14 @@ class Pack(object):
 
                 if os.path.exists(release_notes_dir):
                     # Handling latest release notes files
-                    release_notes_lines, latest_release_notes = self.get_release_notes_lines(
+                    release_notes_lines, latest_release_notes, latest_aggregated_release_notes_versions = self.get_release_notes_lines(
                         release_notes_dir, changelog_latest_rn_version, changelog_latest_rn)
                     self.assert_upload_bucket_version_matches_release_notes_version(changelog, latest_release_notes)
 
                     # Handling modified old release notes files, if there are any
                     rn_files_names = self.get_rn_files_names(modified_files_paths)
                     modified_release_notes_lines_dict = self.get_modified_release_notes_lines(
-                        release_notes_dir, LooseVersion(latest_release_notes), changelog, rn_files_names)
+                        release_notes_dir, latest_aggregated_release_notes_versions, changelog, rn_files_names)
 
                     if self._current_version != latest_release_notes:
                         # TODO Need to implement support for pre-release versions
