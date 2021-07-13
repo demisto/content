@@ -1,11 +1,11 @@
 args:
 - default: false
-  description: Define the thresholds
+  description: Define the thresholds.
   isArray: false
   name: Thresholds
   required: false
   secret: false
-comment: Analyze large investigation frommo previuos month until current month
+comment: Analyze large investigation from previous month until current month.
 commonfields:
   id: HealthCheckAnalyzeLargeInvestigations
   version: -1

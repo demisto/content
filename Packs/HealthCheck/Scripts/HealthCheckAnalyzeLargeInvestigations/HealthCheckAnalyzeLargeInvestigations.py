@@ -18,18 +18,15 @@ RESOLUTION = [
 ]
 
 
-def format_dict_keys(data: List[Dict[str, Any]]) -> List:
-    formated_data = []
-    for entry in data:
-        new_entry = {}
-        for key, value in entry.items():
-            if key == 'Size(MB)':
-                new_entry['size'] = f'{value} MB'
-            else:
-                new_entry[key.lower()] = value
+def format_dict_keys(entry: Dict[str, Any]) -> Dict:
+    new_entry = {}
+    for key, value in entry.items():
+        if key == 'Size(MB)':
+            new_entry['size'] = f'{value} MB'
+        else:
+            new_entry[key.lower()] = value
 
-        formated_data.append(new_entry)
-    return formated_data
+    return new_entry
 
 
 def main(args):
@@ -46,15 +43,13 @@ def main(args):
     incidentsbiggerthan10mb = []
     incidentswithmorethan500entries = []
     for incident in res['data']:
+        formatted_incident = format_dict_keys(incident)
         if incident['AmountOfEntries'] >= 500:
-            incidentswithmorethan500entries.append(incident)
+            incidentswithmorethan500entries.append(formatted_incident)
         if round(incident['Size(MB)']) >= 10:
-            incidentsbiggerthan10mb.append(incident)
+            incidentsbiggerthan10mb.append(formatted_incident)
         else:
-            incidentsbiggerthan1mb.append(incident)
-    incidentsbiggerthan1mb = format_dict_keys(incidentsbiggerthan1mb)
-    incidentsbiggerthan10mb = format_dict_keys(incidentsbiggerthan10mb)
-    incidentswithmorethan500entries = format_dict_keys(incidentswithmorethan500entries)
+            incidentsbiggerthan1mb.append(formatted_incident)
 
     numberofincidentsbiggerthan1mb = len(incidentsbiggerthan1mb)
     numberofincidentsbiggerthan10mb = len(incidentsbiggerthan10mb)
