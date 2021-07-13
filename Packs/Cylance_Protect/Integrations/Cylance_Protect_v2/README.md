@@ -1767,7 +1767,7 @@ Allows a caller to request a specific device resource belonging to a Tenant by h
             "Hostname": "WIN-5HMOGIEG6M5",
             "ID": "b4eceeb0-8699-4d42-b853-155513042d6e",
             "IPAddress": [
-                "172.31.28.228"
+                "127.0.0.1"
             ],
             "IsSafe": true,
             "LastLoggedInUser": "",
@@ -1787,7 +1787,7 @@ Allows a caller to request a specific device resource belonging to a Tenant by h
     "Endpoint": {
         "Hostname": "WIN-5HMOGIEG6M5",
         "IPAddress": [
-            "172.31.28.228"
+            "127.0.0.1"
         ],
         "MACAdress": [
             "02-76-91-6B-0A-BB"
@@ -1802,4 +1802,4 @@ Allows a caller to request a specific device resource belonging to a Tenant by h
 >### Cylance Protect Device WIN-5HMOGIEG6M5
 >|AgentVersion|BackgroundDetection|DateFirstRegistered|DateOffline|DlcmStatus|HostName|Id|IpAddresses|IsSafe|MacAddresses|Name|OsKernelVersion|OsVersion|Policy|Products|State|UpdateAvailable|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
->| 1.2.1418 | false | 2017-12-29T04:07:56 | 2020-02-07T02:25:34.151 | Unknown | WIN-5HMOGIEG6M5 | b4eceeb0-8699-4d42-b853-155513042d6e | 172.31.28.228 | true | 02-76-91-6B-0A-BB | WIN-5HMOGIEG6M5 | 6.3.0 | Microsoft Windows Server 2012 R2 Standard | Default | {u'status': u'Offline', u'version': u'1.2.1418', u'name': u'protect'} | Offline | false |
+>| 1.2.1418 | false | 2017-12-29T04:07:56 | 2020-02-07T02:25:34.151 | Unknown | WIN-5HMOGIEG6M5 | b4eceeb0-8699-4d42-b853-155513042d6e | 127.0.0.1 | true | 02-76-91-6B-0A-BB | WIN-5HMOGIEG6M5 | 6.3.0 | Microsoft Windows Server 2012 R2 Standard | Default | {u'status': u'Offline', u'version': u'1.2.1418', u'name': u'protect'} | Offline | false |
