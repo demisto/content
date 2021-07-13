@@ -420,14 +420,16 @@ class Actions():
     def __init__(self, rf_client: Client):
         self.client = rf_client
 
-    def lookup_command(self, entities: List[str], entity_type: str) -> List[CommandResults]:
+    def lookup_command(
+        self, entities: List[str], entity_type: str
+    ) -> List[CommandResults]:
         """Entity lookup command."""
         entity_data = self.client.entity_lookup(entities, entity_type)
-        command_results = self.build_rep_context(entity_data, entity_type)
+        command_results = self.__build_rep_markdown(entity_data, entity_type)
         return command_results
 
 
-    def build_rep_markdown(
+    def __build_rep_markdown(
         self, ent: Dict[str, Any], entity_type: str
     ) -> str:
         """Build Reputation Markdown."""
@@ -489,7 +491,7 @@ class Actions():
         return "\n".join(markdown)
 
 
-    def build_rep_context(
+    def __build_rep_context(
         self, entity_data: Dict[str, Any], entity_type: str
     ) -> List[CommandResults]:
         """Build Reputation Context."""
@@ -575,20 +577,20 @@ class Actions():
         context_data = self.client.get_triage(entities, context)
         entities = [e for e in context_data["entities"] if include_score(e["score"])]  # type: ignore
         context_data["entities"] = entities
-        output_context, command_results = self.build_triage_context(context_data)
+        output_context, command_results = self.__build_triage_context(context_data)
         command_results.append(
             CommandResults(
                 outputs_prefix="RecordedFuture",
                 outputs=output_context,
                 raw_response=context_data,
-                readable_output=self.build_triage_markdown(context_data, context),
+                readable_output=self.__build_triage_markdown(context_data, context),
                 outputs_key_field="verdict",
             )
         )
         return command_results
 
 
-    def build_triage_markdown(
+    def __build_triage_markdown(
         self, context_data: Dict[str, Any], context: str
     ) -> str:
         """Build Auto Triage output."""
@@ -646,7 +648,7 @@ class Actions():
         return "\n".join(tables)
 
 
-    def build_triage_context(
+    def __build_triage_context(
         self, context_data: Dict[str, Any]
     ) -> Tuple[Dict[str, Any], List]:
         """Build Auto Triage output."""
@@ -692,8 +694,8 @@ class Actions():
         """Enrich command."""
         try:
             entity_data = self.client.entity_enrich(entity, entity_type, related, risky, profile)
-            markdown = self.build_intel_markdown(entity_data, entity_type)
-            return self.build_intel_context(entity, entity_data, entity_type, markdown)
+            markdown = self.__build_intel_markdown(entity_data, entity_type)
+            return self.__build_intel_context(entity, entity_data, entity_type, markdown)
         except DemistoException as err:
             if "404" in str(err):
                 return [CommandResults(
@@ -879,7 +881,7 @@ class Actions():
             return "No records found"
 
 
-    def build_intel_context(
+    def __build_intel_context(
         self, entity: str, entity_data: Dict[str, Any], entity_type: str, markdown: str
     ) -> List[CommandResults]:
         """Build Intelligence context."""
@@ -959,7 +961,7 @@ class Actions():
         return command_results
 
 
-    def handle_related_entities(
+    def __handle_related_entities(
         data: List[Dict[str, Any]]
     ) -> List[Dict[str, Any]]:
         return_data = []
@@ -1015,7 +1017,7 @@ class Actions():
         }
 
 
-    def document_formatting(self, data):
+    def __document_formatting(self, data):
         title = data['title']
 
         def move_fragment_to_entity(entity, reference):
@@ -1074,7 +1076,7 @@ class Actions():
         }
 
 
-    def entity_formatting(self, data):
+    def __entity_formatting(self, data):
         entities = []
         evidences = {}  # name: list
         # evidence part of risk.
@@ -1143,8 +1145,8 @@ class Actions():
         try:
             has_entity = all([entity.get('entity') for entity in data['entities']])
             if has_entity:
-                    return self.entity_formatting(data)
-                return self.document_formatting(data)
+                return self.__entity_formatting(data)
+            return self.__document_formatting(data)
         except Exception:
             msg = 'This alert rule currently does not support a human readable format, ' \
                 'please let us know if you want it to be supported'
