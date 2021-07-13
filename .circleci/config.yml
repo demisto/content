@@ -560,9 +560,9 @@ references:
     - Run Validations:
         requires:
           - Setup Environment
-    - Server Master:
-        requires:
-          - Create Instances
+#    - Server Master:
+#        requires:
+#          - Create Instances
         context: nightly_env
 
   bucket_upload_jobs: &bucket_upload_jobs
