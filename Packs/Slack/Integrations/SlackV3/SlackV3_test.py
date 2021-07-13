@@ -3640,7 +3640,7 @@ def test_slack_send_filter_no_entry_tags(mocker):
     assert demisto.results.mock_calls == []
 
 
-def test_clean_message(mocker):
+def test_handle_tags_in_message_sync(mocker):
     from SlackV3 import handle_tags_in_message_sync
 
     # Set
