@@ -61,9 +61,9 @@ configuration:
   type: 16
 - additionalinfo: 'A custom filter by which to filter the returned files. If you pass
     the custom_filter argument it will override the other filters from the integration
-    instance configuration. An example of a Custom Filter is: {"severity":{"eq":2}}. Note
-    that for filtering by "entity.policy", you should use the ID of the policy. For
-    example, for retrieving the policy: {"policyType": "ANOMALY_DETECTION", "id":
+    instance configuration. An example of a Custom Filter is: {"severity":{"eq":2}}.
+    Note that for filtering by "entity.policy", you should use the ID of the policy.
+    For example, for retrieving the policy: {"policyType": "ANOMALY_DETECTION", "id":
     "1234", "label": "Impossible travel", "type": "policyRule"}" please query on {"entity.policy":{"eq":1234}}.
     For more information about filter syntax, refer to https://docs.microsoft.com/en-us/cloud-app-security/api-alerts#filters.'
   display: Custom Filter
@@ -105,8 +105,8 @@ script:
       required: false
       secret: false
     deprecated: true
-    description: Deprecated. Use one of the alert-close commands instead.
-      Dismisses multiple alerts (bulk dismiss) that match the specified filters.
+    description: Deprecated. Use one of the alert-close commands instead. Dismisses
+      multiple alerts (bulk dismiss) that match the specified filters.
     execution: false
     name: microsoft-cas-alert-dismiss-bulk
   - arguments:
@@ -316,10 +316,10 @@ script:
       required: false
       secret: false
     deprecated: true
-    description: Deprecated. Use one of the alert-close commands instead.
-      Resolves multiple alerts (bulk resolve) that match the specified filters.
-      Filters include origin IP address, IP subnet category, action taken
-      on the activity, source type, or a custom filter.
+    description: Deprecated. Use one of the alert-close commands instead. Resolves
+      multiple alerts (bulk resolve) that match the specified filters. Filters include
+      origin IP address, IP subnet category, action taken on the activity, source
+      type, or a custom filter.
     execution: false
     name: microsoft-cas-alert-resolve-bulk
   - arguments:
@@ -357,16 +357,17 @@ script:
       isArray: false
       name: reason
       predefined:
-        - Actual severity is lower
-        - Other
-        - Confirmed with end user
-        - Triggered by test
+      - Actual severity is lower
+      - Other
+      - Confirmed with end user
+      - Triggered by test
       required: false
       secret: false
     - auto: PREDEFINED
       default: false
       defaultValue: 'false'
-      description: 'Whether feedback about this alert is provided. Possible values: "false" and "true".'
+      description: 'Whether feedback about this alert is provided. Possible values:
+        "false" and "true".'
       isArray: false
       name: sendFeedback
       predefined:
@@ -383,8 +384,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'false'
-      description: 'Whether consent to contact the user is
-        provided. Possible values: "false" and "true".'
+      description: 'Whether consent to contact the user is provided. Possible values:
+        "false" and "true".'
       isArray: false
       name: allowContact
       predefined:
@@ -430,7 +431,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'false'
-      description: 'Whether feedback about this alert is provided. Possible values: "false" and "true".'
+      description: 'Whether feedback about this alert is provided. Possible values:
+        "false" and "true".'
       isArray: false
       name: sendFeedback
       predefined:
@@ -447,8 +449,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'false'
-      description: 'Whether consent to contact the user is
-        provided. Possible values: "false" and "true".'
+      description: 'Whether consent to contact the user is provided. Possible values:
+        "false" and "true".'
       isArray: false
       name: allowContact
       predefined:
@@ -512,7 +514,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'false'
-      description: 'Whether feedback about this alert is provided. Possible values: "false" and "true".'
+      description: 'Whether feedback about this alert is provided. Possible values:
+        "false" and "true".'
       isArray: false
       name: sendFeedback
       predefined:
@@ -529,8 +532,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'false'
-      description: 'Whether consent to contact the user is
-        provided. Possible values: "false" and "true".'
+      description: 'Whether consent to contact the user is provided. Possible values:
+        "false" and "true".'
       isArray: false
       name: allowContact
       predefined:
@@ -602,7 +605,6 @@ script:
       - encryptionFailed
       - protect
       - verify
-      - 
       required: false
       secret: false
     - auto: PREDEFINED
@@ -1108,7 +1110,7 @@ script:
     - contextPath: MicrosoftCloudAppSecurity.UsersAccounts.userGroups.usersCount
       description: The number of users in the user group.
       type: Number
-  dockerimage: demisto/python3:3.9.5.21272
+  dockerimage: demisto/python3:3.9.5.22569
   feed: false
   isfetch: true
   longRunning: false
