@@ -519,8 +519,9 @@ def install_all_content_packs_from_build_bucket(client: demisto_client, host: st
                 logging.debug(f"Appending pack id {pack_id}")
                 all_packs.append(get_pack_installation_request_data(pack_id, pack_version))
             else:
-                logging.debug(f'{pack_id} pack in version {pack_version} will not be installed on {host}. Pack is '
-                              f'{"not" if not hidden else ""} hidden. Pack min server version is {server_min_version}')
+                reason = 'Is hidden' if hidden else f'min server version is {server_min_version}'
+                logging.debug(f'Pack: {pack_id} with version: {pack_version} will not be installed on {host}. '
+                              f'Pack {reason}.')
     return install_packs(client, host, all_packs)
 
 
