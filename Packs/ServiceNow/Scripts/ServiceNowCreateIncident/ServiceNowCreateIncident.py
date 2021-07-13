@@ -1,4 +1,5 @@
-from CommonServerPython import *
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 
 """
 This script is used to wrap the generic create-record command in ServiceNow.
@@ -17,7 +18,8 @@ Mapping of severity display names to their corresponding values in the API
 TICKET_SEVERITY = {
     '1 - High': '1',
     '2 - Medium': '2',
-    '3 - Low': '3'
+    '3 - Low': '3',
+    'Genish': 'test'
 }
 
 """
