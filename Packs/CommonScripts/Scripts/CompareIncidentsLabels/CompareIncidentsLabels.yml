@@ -27,3 +27,5 @@ subtype: python2
 runas: DBotRole
 runonce: false
 fromversion: 5.0.0
+tests:
+- CompareIncidentsLabels-test-playbook
