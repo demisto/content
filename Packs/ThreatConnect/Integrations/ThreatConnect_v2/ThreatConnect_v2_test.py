@@ -241,7 +241,6 @@ data_test_create_context = [
 def test_create_context(indicators, expected_output, params, mocker):
     mocker.patch.object(demisto, 'params', return_value=params)
     output = create_context(indicators)
-    print(output)
     assert output == expected_output, f'expected_output({indicators})\n\treturns: ' \
                                       f'{output}\n\tinstead: {expected_output}'
 

@@ -1157,7 +1157,6 @@ Returns indicators that are related to a specific incident.
 | File.SHA256 | string | The SHA256 hash of the file. | 
 | File.Malicious.Vendor | string | For malicious files, the vendor that made the decision. | 
 | File.Malicious.Description | string | For malicious files, the full description. | 
-| TC.Indicator.WebLink | string | The web link of the indicator. |
 
 
 #### Command Example
@@ -1322,6 +1321,7 @@ Removes a tag from a specified indicator.
 | File.SHA256 | string | The SHA256 hash of the file. | 
 | File.Malicious.Vendor | string | For malicious files, the vendor that made the decision. | 
 | File.Malicious.Description | string | For malicious files, the full description. | 
+| TC.Indicator.WebLink | string | The web link of the indicator. |
 
 
 #### Command Example
