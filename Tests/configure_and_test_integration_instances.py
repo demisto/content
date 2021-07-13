@@ -22,7 +22,7 @@ from demisto_sdk.commands.test_content.constants import SSH_USER
 from ruamel import yaml
 
 from Tests.Marketplace.search_and_install_packs import search_and_install_packs_and_their_dependencies, \
-    install_all_content_packs, upload_zipped_packs, install_all_content_packs_for_nightly
+    upload_zipped_packs, install_all_content_packs_for_nightly
 from Tests.scripts.utils.log_util import install_logging
 from Tests.test_content import extract_filtered_tests, get_server_numeric_version
 from Tests.test_integration import __get_integration_config, __test_integration_instance, disable_all_integrations
@@ -983,8 +983,11 @@ def get_pack_ids_to_install():
         #  END CHANGE ON LOCAL RUN  #
 
 
-def nightly_install_packs(build, install_method=install_all_content_packs, pack_path=None, service_account=None):
+def nightly_install_packs(build, install_method=None, pack_path=None, service_account=None):
     threads_list = []
+
+    if not install_method:
+        raise Exception('Install method was not provided.')
 
     # For each server url we install pack/ packs
     for thread_index, server in enumerate(build.servers):
