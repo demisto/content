@@ -17,8 +17,8 @@ def test_list_languages():
     """
     res = list_languages()
     assert len(res) >= 16
-    assert "eng" in res
-    assert "pol" in res
+    assert "eng" in res  # english
+    assert "pol" in res  # polish
 
 
 @pytest.mark.parametrize('image,expected_text,langs', [
@@ -107,10 +107,11 @@ def test_run_test_module_bad(mocker):
      - Running the test-module command
 
     Then:
-     - A proper error is raised
+     - A proper error is presented
     """
     mocker.patch.object(demisto, 'params', return_value={'langs': 'valyrian'})
     mocker.patch.object(demisto, 'command', return_value='test-module')
+    mocker.patch.object(demisto, 'results')
     return_error_mock = mocker.patch(RETURN_ERROR_TARGET)
     # validate our mocks are good
     assert demisto.command() == 'test-module'

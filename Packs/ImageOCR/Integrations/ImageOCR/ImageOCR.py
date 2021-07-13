@@ -63,10 +63,10 @@ def run_test_module(instance_languages: list) -> CommandResults:
         if instance_languages:
             for language in instance_languages:
                 if language not in supported_langs:
-                    return CommandResults('Unsupported language configured: {}'.format(language))
+                    raise DemistoException('Unsupported language configured: {}'.format(language))
         return CommandResults('ok')
     except Exception as exception:
-        return CommandResults('Failed testing {}: {}'.format(TESSERACT_EXE, str(exception)))
+        raise Exception('Failed testing {}: {}'.format(TESSERACT_EXE, str(exception)))
 
 
 def main() -> None:
