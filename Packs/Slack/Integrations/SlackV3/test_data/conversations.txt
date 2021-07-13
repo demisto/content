@@ -1,0 +1,66 @@
+[{
+    "id": "C012AB3CD",
+    "name": "general",
+    "is_channel": true,
+    "is_group": false,
+    "is_im": false,
+    "created": 1449252889,
+    "creator": "U012A3CDE",
+    "is_archived": false,
+    "is_general": true,
+    "unlinked": 0,
+    "name_normalized": "general",
+    "is_shared": false,
+    "is_ext_shared": false,
+    "is_org_shared": false,
+    "pending_shared": [],
+    "is_pending_ext_shared": false,
+    "is_member": true,
+    "is_private": false,
+    "is_mpim": false,
+    "topic": {
+        "value": "Company-wide announcements and work-based matters",
+        "creator": "",
+        "last_set": 0
+    },
+    "purpose": {
+        "value": "This channel is for team-wide communication and announcements. All team members are in this channel.",
+        "creator": "",
+        "last_set": 0
+    },
+    "previous_names": [],
+    "num_members": 4
+},
+{
+    "id": "C061EG9T2",
+    "name": "random",
+    "is_channel": true,
+    "is_group": false,
+    "is_im": false,
+    "created": 1449252889,
+    "creator": "U061F7AUR",
+    "is_archived": false,
+    "is_general": false,
+    "unlinked": 0,
+    "name_normalized": "random",
+    "is_shared": false,
+    "is_ext_shared": false,
+    "is_org_shared": false,
+    "pending_shared": [],
+    "is_pending_ext_shared": false,
+    "is_member": true,
+    "is_private": false,
+    "is_mpim": false,
+    "topic": {
+        "value": "Non-work banter and water cooler conversation",
+        "creator": "",
+        "last_set": 0
+    },
+    "purpose": {
+        "value": "A place for non-work-related flimflam.",
+        "creator": "",
+        "last_set": 0
+    },
+    "previous_names": [],
+    "num_members": 4
+}]
