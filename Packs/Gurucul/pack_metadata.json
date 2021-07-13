@@ -23,5 +23,8 @@
             "mandatory": true,
             "display_name": "Common Playbooks"
         }
-    }
+    },
+    "itemPrefix": [
+        "Gra"
+    ]
 }
