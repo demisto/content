@@ -2,5 +2,6 @@
     "version": -1,
     "fromVersion": "6.5.0",
     "id": "asset",
-    "name": "Asset"
+    "name": "Asset",
+    "auditable": false
 }
