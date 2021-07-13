@@ -480,7 +480,7 @@ tasks:
       registrarname: {}
       reportedby: {}
       reputation: {}
-      riskrules:
+      recordedfutureriskrules:
         simple: ${RecordedFuture.File.concatRules}
       service: {}
       sha1: {}
