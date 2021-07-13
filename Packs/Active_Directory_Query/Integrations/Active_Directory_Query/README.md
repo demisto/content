@@ -410,6 +410,9 @@ Enables a previously disabled Active Directory account.
 
 `ad-enable-account`
 
+##### Required Permissions
+Requires `Read userAccountControl` and `write userAccountControl` permissions.
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
