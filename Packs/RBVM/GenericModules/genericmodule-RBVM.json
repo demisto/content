@@ -3,16 +3,7 @@
     "version": -1,
     "name": "Risk Based Vulnerability Management",
     "fromVersion": "6.5.0",
-    "definitions": [
-        {
-            "id": "asset",
-            "name": "Asset"
-        }, 
-        {
-            "id": "assetGroup",
-            "name": "Asset Group"
-        }
-    ],
+    "definitionIds": ["asset", "assetGroup"],
     "views": [{
         "icon": "icon-widget-infinity-24-s",
         "name": "RBVM",

@@ -5,7 +5,7 @@
     ],
     "caseInsensitive": true,
     "cliName": "operatingsystem",
-    "id": "asset_operatingsystem",
+    "id": "generic_asset_operatingsystem",
     "name": "Operating System",
     "closeForm": false,
     "content": true,
