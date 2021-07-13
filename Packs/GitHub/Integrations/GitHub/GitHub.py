@@ -142,7 +142,7 @@ def http_request(method, url_suffix, params=None, data=None, headers=None, is_ra
             raise DemistoException(err_msg)
 
         except ValueError:
-            raise DemistoException(f'Error in API call to GitHub Integration [{res.status_code}] - {res.reason}'
+            raise DemistoException(f'Error in API call to GitHub Integration [{res.status_code}] - {res.reason}')
 
     try:
         if res.status_code == 204:
