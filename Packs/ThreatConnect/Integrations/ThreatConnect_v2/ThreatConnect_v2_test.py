@@ -54,7 +54,8 @@ URL_CONTEXT = (
             'LastModified': '2020-05-14T09:07:29Z',
             'Rating': 0,
             'Confidence': 0,
-            'WebLink': 'https://sandbox.threatconnect.com/auth/indicators/details/url.xhtml?orgid=113283093&owner=Demisto+Inc'
+            'WebLink': 'https://sandbox.threatconnect.com/auth/indicators/details/url.xhtml?'
+                       'orgid=113283093&owner=Demisto+Inc'
         }]
     },
     [{
@@ -66,7 +67,8 @@ URL_CONTEXT = (
         'LastModified': '2020-05-14T09:07:29Z',
         'Rating': 0,
         'Confidence': 0,
-        'WebLink': 'https://sandbox.threatconnect.com/auth/indicators/details/url.xhtml?orgid=113283093&owner=Demisto+Inc'
+        'WebLink': 'https://sandbox.threatconnect.com/auth/indicators/details/url.xhtml?'
+                   'orgid=113283093&owner=Demisto+Inc'
     }]
 )
 
@@ -79,7 +81,8 @@ IP_INDICATOR = [{
     'confidence': 50,
     'threatAssessRating': 3.0,
     'threatAssessConfidence': 53.0,
-    'webLink': 'https://sandbox.threatconnect.com/auth/indicators/details/address.xhtml?address=88.88.88.88&owner=Demisto+Inc',
+    'webLink': 'https://sandbox.threatconnect.com/auth/indicators/details/address.xhtml?'
+               'address=88.88.88.88&owner=Demisto+Inc',
     'ip': '88.88.88.88',
     'type': 'Address'
 }]
@@ -97,7 +100,8 @@ IP_CONTEXT = (
                 'LastModified': '2020-05-14T13:16:32Z',
                 'Rating': 2,
                 'Confidence': 50,
-                'WebLink': 'https://sandbox.threatconnect.com/auth/indicators/details/address.xhtml?address=88.88.88.88&owner=Demisto+Inc'
+                'WebLink': 'https://sandbox.threatconnect.com/auth/indicators/details/address.xhtml?'
+                           'address=88.88.88.88&owner=Demisto+Inc'
             }]},
     [{
         'ID': 113286420,
@@ -108,7 +112,8 @@ IP_CONTEXT = (
         'LastModified': '2020-05-14T13:16:32Z',
         'Rating': 2,
         'Confidence': 50,
-        'WebLink': 'https://sandbox.threatconnect.com/auth/indicators/details/address.xhtml?address=88.88.88.88&owner=Demisto+Inc'
+        'WebLink': 'https://sandbox.threatconnect.com/auth/indicators/details/address.xhtml?'
+                   'address=88.88.88.88&owner=Demisto+Inc'
     }]
 )
 
@@ -121,7 +126,8 @@ DOMAIN_INDICATOR = [{
     'confidence': 0,
     'threatAssessRating': 0.0,
     'threatAssessConfidence': 0.0,
-    'webLink': 'https://sandbox.threatconnect.com/auth/indicators/details/host.xhtml?host=domain.info&owner=Demisto+Inc',
+    'webLink': 'https://sandbox.threatconnect.com/auth/indicators/details/host.xhtml?'
+               'host=domain.info&owner=Demisto+Inc',
     'hostName': 'domain.info',
     'dnsActive': 'false',
     'whoisActive': 'false',
@@ -141,7 +147,8 @@ DOMAIN_CONTEXT = (
              'LastModified': '2020-05-14T13:24:35Z',
              'Rating': 0,
              'Confidence': 0,
-             'WebLink': 'https://sandbox.threatconnect.com/auth/indicators/details/host.xhtml?host=domain.info&owner=Demisto+Inc',
+             'WebLink': 'https://sandbox.threatconnect.com/auth/indicators/details/host.xhtml?'
+                        'host=domain.info&owner=Demisto+Inc',
              'Active': 'false'}]},
     [{
         'ID': 112618314,
@@ -152,7 +159,8 @@ DOMAIN_CONTEXT = (
         'LastModified': '2020-05-14T13:24:35Z',
         'Rating': 0,
         'Confidence': 0,
-        'WebLink': 'https://sandbox.threatconnect.com/auth/indicators/details/host.xhtml?host=domain.info&owner=Demisto+Inc',
+        'WebLink': 'https://sandbox.threatconnect.com/auth/indicators/details/host.xhtml?'
+                   'host=domain.info&owner=Demisto+Inc',
         'Active': 'false'}])
 
 FILE_INDICATOR = [{
@@ -188,7 +196,8 @@ FILE_CONTEXT = (
             'LastModified': '2020-05-14T13:22:49Z',
             'Rating': 4,
             'Confidence': 20,
-            'WebLink': 'https://sandbox.threatconnect.com/auth/indicators/details/file.xhtml?file=49456A40536940A1304A506D7278F6B19FC7F71BE545810F7CAFEAA35A086229&owner=Demisto+Inc.',
+            'WebLink': 'https://sandbox.threatconnect.com/auth/indicators/details/file.xhtml?file=49456'
+                       'A40536940A1304A506D7278F6B19FC7F71BE545810F7CAFEAA35A086229&owner=Demisto+Inc.',
             'File': {
                 'SHA256': '49456A40536940A1304A506D7278F6B19FC7F71BE545810F7CAFEAA35A086229'
             }}]},
@@ -200,9 +209,10 @@ FILE_CONTEXT = (
         'LastModified': '2020-05-14T13:22:49Z',
         'Rating': 4,
         'Confidence': 20,
-        'WebLink': 'https://sandbox.threatconnect.com/auth/indicators/details/file.xhtml?file=49456A40536940A1304A506D7278F6B19FC7F71BE545810F7CAFEAA35A086229&owner=Demisto+Inc.',
-        'File': {'SHA256': '49456A40536940A1304A506D7278F6B19FC7F71BE545810F7CAFEAA35A086229'}}
-    ])
+        'WebLink': 'https://sandbox.threatconnect.com/auth/indicators/details/file.xhtml?file=49456A40536940A1304'
+                   'A506D7278F6B19FC7F71BE545810F7CAFEAA35A086229&owner=Demisto+Inc.',
+        'File': {'SHA256': '49456A40536940A1304A506D7278F6B19FC7F71BE545810F7CAFEAA35A086229'}}]
+)
 
 GET_XINDAPI_OWNER1 = [{'id': 1, 'owner': 'Demisto Inc.', 'dateAdded': '2020-08-26T10:14:55Z',
                        'lastModified': '2020-08-26T10:14:55Z', 'rating': 0.0, 'confidence': 0,
