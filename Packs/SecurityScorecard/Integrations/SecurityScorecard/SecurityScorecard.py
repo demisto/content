@@ -239,7 +239,7 @@ Please run !securityscorecard-portfolios-list to see available Portfolios and tr
 """ HELPER FUNCTIONS """
 
 
-def is_valid_domain(domain: str):
+def is_domain_valid(domain: str):
 
     regex = "^((?!-)[A-Za-z0-9-]" + \
             "{1,63}(?<!-)\\.)" + \
@@ -561,7 +561,7 @@ def securityscorecard_company_score_get_command(client: Client, args: Dict[str, 
     # str cast for mypy compatibility
     domain = str(args.get('domain'))
 
-    if is_valid_domain(domain):
+    if is_domain_valid(domain):
 
         score = client.get_company_score(domain=domain)
         score["domain"] = "[{0}](https://{0})".format(domain)
@@ -606,7 +606,7 @@ def securityscorecard_company_factor_score_get_command(client: Client, args: Dic
 
     domain = str(args.get('domain'))
 
-    if is_valid_domain(domain):
+    if is_domain_valid(domain):
 
         severity_in = args.get('severity_in')
 
@@ -663,7 +663,7 @@ def securityscorecard_company_history_score_get_command(client: Client, args: Di
 
     domain = str(args.get('domain'))
 
-    if is_valid_domain(domain):
+    if is_domain_valid(domain):
 
         _from = args.get('from')
         to = args.get('to')
@@ -728,7 +728,7 @@ def securityscorecard_company_history_factor_score_get_command(client: Client, a
 
     domain = str(args.get('domain'))
 
-    if is_valid_domain(domain):
+    if is_domain_valid(domain):
 
         _from = args.get('from')
         to = args.get('to')
@@ -1051,7 +1051,7 @@ def securityscorecard_company_services_get_command(client: Client, args: Dict[st
 
     domain = str(args.get("domain"))
 
-    if is_valid_domain(domain):
+    if is_domain_valid(domain):
 
         response = client.get_domain_services(domain=domain)
 

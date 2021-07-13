@@ -1,7 +1,7 @@
 from SecurityScorecard import \
     Client, \
     DATE_FORMAT, \
-    is_valid_domain, \
+    is_domain_valid, \
     is_email_valid, \
     is_date_valid, \
     incidents_to_import
@@ -34,9 +34,9 @@ portfolio_not_found = load_json("./test_data/portfolios/portfolio_not_found.json
 
 
 @pytest.mark.parametrize("domain,result", domain_test_data)
-def test_is_valid_domain(domain, result):
+def test_is_domain_valid(domain, result):
     for domain, result in domain_test_data:
-        assert is_valid_domain(domain) == result
+        assert is_domain_valid(domain) == result
 
 
 @pytest.mark.parametrize("date,result", date_test_data)
@@ -130,7 +130,7 @@ client = Client(
 )
 
 
-def test_securityscorecard_portfolios_list(mocker):
+def test_portfolios_list(mocker):
 
     mocker.patch.object(client, "get_portfolios", return_value=portfolios_mock)
 
@@ -139,35 +139,71 @@ def test_securityscorecard_portfolios_list(mocker):
     assert response == portfolios_mock
 
 
-# def test_securityscorecard_portfolio_list_companies(mocker):
+def test_portfolio_list_companies(mocker):
 
-    # """
-    #     Checks cases where the portfolio exists and doesn't exist
-    # """
+    """
+        Checks cases where the portfolio exists and doesn't exist
+    """
 
-    # portfolios = test_securityscorecard_portfolios_list(mocker)
+    # 1. Exiting Portfolio
+    mocker.patch.object(client, "get_companies_in_portfolio", return_value=companies_mock)
+    response_portfolio = client.get_companies_in_portfolio(PORTFOLIO_ID)
 
-    # # 1. Portfolio that exists
-    # portfolio_exists = portfolios[0]
+    assert response_portfolio.get("entries")
 
-    # raw_response = util_load_json("./test_data/portfolios/companies.json")
-    # mocker.patch.object(client, "get_companies_in_portfolio", return_value=raw_response)
-    # response_portfolio = client.get_companies_in_portfolio(portfolio_exists)
+    companies = response_portfolio.get("entries")
 
-    # assert response_portfolio.get("entries")
+    assert len(companies) == 3
 
-    # companies = response_portfolio.get("entries")
+    # 2. Portfolio doesn't exist
+    mocker.patch.object(client, "get_companies_in_portfolio", return_value=portfolio_not_found)
+    portfolio_not_exist_response = client.get_companies_in_portfolio(PORTFOLIO_ID_NE)
 
-    # assert len(companies) == 3
+    assert portfolio_not_exist_response["error"]["message"] == "portfolio not found"
 
-    # # 2. Portfolio doesn't exist
-    # non_exist_portfolio = "portfolio4"
-    # portfolio_not_exist_raw_response = util_load_json("./test_data/portfolios/portfolio_not_found.json")
 
-    # mocker.patch.object(client, "get_companies_in_portfolio", return_value=portfolio_not_exist_raw_response)
-    # portfolio_not_exist_response = client.get_companies_in_portfolio(non_exist_portfolio)
+def test_get_company_score(mocker):
+    pass
 
-    # assert portfolio_not_exist_response["error"]["message"] == "portfolio not found"
+
+def test_get_company_factor_score(mocker):
+    pass
+
+
+def test_get_company_historical_scores(mocker):
+    pass
+
+
+def test_get_company_historical_factor_scores(mocker):
+    pass
+
+
+def test_create_grade_change_alert(mocker):
+    pass
+
+
+def test_create_score_threshold_alert(mocker):
+    pass
+
+
+def test_delete_alert(mocker):
+    pass
+
+
+def test_get_alerts_last_week(mocker):
+    pass
+
+
+def test_get_domain_services(mocker):
+    pass
+
+
+def test_fetch_alerts(mocker):
+    pass
+
+
+def test_test_module(mocker):
+    pass
 
 
 def main() -> None:
