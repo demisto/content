@@ -694,6 +694,10 @@ class Actions():
         """Enrich command."""
         try:
             entity_data = self.client.entity_enrich(entity, entity_type, related, risky, profile)
+            if entity_data.get('data', {}).get('relatedEntities'):
+                    entity_data['data']['relatedEntities'] = self.__handle_related_entities(
+                        entity_data['data'].pop('relatedEntities')
+                    )
             markdown = self.__build_intel_markdown(entity_data, entity_type)
             return self.__build_intel_context(entity, entity_data, entity_type, markdown)
         except DemistoException as err:
@@ -876,6 +880,17 @@ class Actions():
                     ["Threat List Name", "Description"],
                 )
             )
+            if data.get("relatedEntities"):
+                related_entities = data.get("relatedEntities")
+                table_values = {key: [value['name'] for value in values] for key, values in related_entities.items()}
+                markdown.append(
+                    tableToMarkdown(
+                        "Related Entities",
+                        table_values,
+                        related_entities.keys()
+                    )
+                )
+
             return "\n".join(markdown)
         else:
             return "No records found"
@@ -961,12 +976,10 @@ class Actions():
         return command_results
 
 
-    def __handle_related_entities(
-        data: List[Dict[str, Any]]
-    ) -> List[Dict[str, Any]]:
-        return_data = []
+    def __handle_related_entities(self, data: List[Dict[str, Any]]) -> Dict[str, List[Dict[str, Any]]]:
+        return_data = {}
         for related in data:
-            return_data.append(
+            return_data.update(
                 {
                     related["type"]: [
                         {
@@ -1159,7 +1172,9 @@ class Actions():
             )
 
 
-    def get_alerts_command(self, params: Dict[str, str]) -> Dict[str, Any]:
+    def get_alerts_command(
+        self, params: Dict[str, str]
+    ) -> Dict[str, Any]:
         """Get Alerts Command."""
         resp = self.client.get_alerts(params)
         headers = ["Alert ID", "Rule", "Alert Title", "Triggered", "Status", "Assignee"]
