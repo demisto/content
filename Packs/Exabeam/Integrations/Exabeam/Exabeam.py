@@ -30,6 +30,7 @@ class Client(BaseClient):
     def __del__(self):
         if self.username != TOKEN_INPUT_IDENTIFIER:
             self._logout()
+        super().__del__()
 
     def _login(self):
         """

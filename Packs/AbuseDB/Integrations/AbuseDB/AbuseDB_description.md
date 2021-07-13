@@ -8,3 +8,6 @@
   
   
   - [Report Categories](https://www.abuseipdb.com/categories).
+
+---
+[View Integration Documentation](https://xsoar.pan.dev/docs/reference/integrations/abuse-ipdb)
