@@ -2,7 +2,7 @@ import pytest
 
 import demistomock as demisto
 from CommonServerPython import entryTypes
-from ImageOCR import list_languages, extract_text, main
+from ImageOCR import list_languages, extract_text, run_test_module, main
 
 RETURN_ERROR_TARGET = 'ImageOCR.return_error'
 
@@ -96,6 +96,21 @@ def test_extract_text_command_bad(mocker):
     err_msg = return_error_mock.call_args[0][0]
     assert 'Error:' in err_msg
     assert 'bad' in err_msg
+
+
+def test_run_test_module():
+    """
+    Given:
+     - A param with the supported swedish language
+
+    When:
+     - Running the test-module command
+
+    Then:
+     - An ok is returned
+    """
+    res = run_test_module(['swe'])
+    assert res == 'ok'
 
 
 def test_run_test_module_bad(mocker):

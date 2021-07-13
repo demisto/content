@@ -57,14 +57,14 @@ def extract_text_command(args: dict, instance_languages: list) -> CommandResults
     )
 
 
-def run_test_module(instance_languages: list) -> CommandResults:
+def run_test_module(instance_languages: list) -> str:
     try:
         supported_langs = list_languages()
         if instance_languages:
             for language in instance_languages:
                 if language not in supported_langs:
                     raise DemistoException('Unsupported language configured: {}'.format(language))
-        return CommandResults('ok')
+        return 'ok'
     except Exception as exception:
         raise Exception('Failed testing {}: {}'.format(TESSERACT_EXE, str(exception)))
 
