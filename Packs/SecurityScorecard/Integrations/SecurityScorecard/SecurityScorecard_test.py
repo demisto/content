@@ -177,7 +177,7 @@ def test_get_company_score(mocker):
 
 
 def test_get_company_factor_score(mocker):
-    
+
     mocker.patch.object(client, "get_company_factor_score", return_value=factor_score_mock)
 
     response_factor_score = client.get_company_factor_score(domain=DOMAIN)
