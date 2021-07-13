@@ -16,7 +16,7 @@
 		"name": "google cloud IDS",
 		"prevName": "google cloud IDS",
 		"color": "#F8E7A5",
-		"playbookId": "google cloud IDS - GCP Firewall - IP Blacklist",
+		"playbookId": "GCP Firewall - Blacklist IP",
 		"hours": 0,
 		"days": 0,
 		"weeks": 0,
