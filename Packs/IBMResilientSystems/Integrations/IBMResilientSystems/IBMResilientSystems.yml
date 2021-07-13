@@ -297,7 +297,7 @@ script:
       secret: false
     - default: false
       description: The custom fields (fields that are not in the regular arguments)
-        for example {"reporter", "Jon Due"}.
+        for example {"reporter", "Jon Due"}. (in case of conflicts, refer to 'other-fields')
       isArray: false
       name: other-fields
       required: false
