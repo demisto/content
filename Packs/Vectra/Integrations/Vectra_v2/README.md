@@ -427,12 +427,6 @@ Vectra API is available for administrators and developers to integrate Vectra's 
     </tr>
   </tbody>
 </table>
-
-<!-- remove the following comments to manually add an image: -->
-<!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- -->
 </p>
 
 <h3>2. vectra-get-hosts</h3>
@@ -728,12 +722,6 @@ Vectra API is available for administrators and developers to integrate Vectra's 
     </tr>
   </tbody>
 </table>
-
-<!-- remove the following comments to manually add an image: -->
-<!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- -->
 </p>
 
 <h3>3. vectra-triage</h3>
@@ -860,11 +848,6 @@ No output examples
 <p>
 Couldn't find any results
 </p>
-<!-- remove the following comments to manually add an image: -->
-<!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- -->
 </p>
 
 <h3>4. vectra-get-host-by-id</h3>
@@ -948,12 +931,6 @@ There are no context output for this command.
     </tr>
   </tbody>
 </table>
-
-<!-- remove the following comments to manually add an image: -->
-<!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- -->
 </p>
 
 <h3>5. vectra-get-detection-by-id</h3>
@@ -989,12 +966,6 @@ There are no context output for this command.
 </table>
 
 <p>&nbsp;</p>
-
-<!-- remove the following comments to manually add an image: -->
-<!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- -->
 </p>
 
 <h3>6. vectra-get-users</h3>
@@ -1057,13 +1028,6 @@ There are no context output for this command.
 <p>
   <code>!vectra-get-users</code>
 </p>
-
-
-<!-- remove the following comments to manually add an image: -->
-<!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- -->
 </p>
 
 <h3>7. vectra-get-proxies</h3>
@@ -1157,11 +1121,6 @@ There are no context output for this command.
 <p>
 Couldn't find any results
 </p>
-<!-- remove the following comments to manually add an image: -->
-<!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- -->
 </p>
 
 <h3>8. vectra-get-threatfeed</h3>
@@ -1291,12 +1250,6 @@ Couldn't find any results
     </tr>
   </tbody>
 </table>
-
-<!-- remove the following comments to manually add an image: -->
-<!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- -->
 </p>
 
 <h3>9. vectra-search</h3>
