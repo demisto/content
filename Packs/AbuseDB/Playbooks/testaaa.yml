@@ -1,0 +1,79 @@
+id: db2e16c3-ef1e-4b4f-8f1f-489c0fae303e
+version: 3
+vcShouldKeepItemLegacyProdMachine: false
+name: testaaa
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 73a968d7-5511-47fa-87cb-ce3cc38e6a5e
+    type: start
+    task:
+      id: 73a968d7-5511-47fa-87cb-ce3cc38e6a5e
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 7b18e2b5-b5e0-4390-87e9-c29017f179e6
+    type: regular
+    task:
+      id: 7b18e2b5-b5e0-4390-87e9-c29017f179e6
+      version: -1
+      name: domain
+      description: Checks the reputation of a domain.
+      script: aaa|||domain
+      type: regular
+      iscommand: true
+      brand: aaa
+    scriptarguments:
+      domain:
+        simple: google.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 275,
+        "width": 380,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []

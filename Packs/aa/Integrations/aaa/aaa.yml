@@ -1,6 +1,6 @@
 category: Data Enrichment & Threat Intelligence
 commonfields:
-  id: aaaa
+  id: aaa
   version: -1
 configuration:
 - additionalinfo: Reliability of the source providing the intelligence data.
@@ -37,8 +37,8 @@ configuration:
   required: false
   type: 8
 description: Alexa provides website ranking information that can be useful in determining if the domain in question has a strong web presence.
-display: aaaa
-name: aaaa
+display: aaa
+name: aaa
 script:
   commands:
   - arguments:

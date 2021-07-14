@@ -1,7 +1,7 @@
 {
     "associatedToAll": true,
     "caseInsensitive": true,
-    "cliName": "aaa",
+    "cliName": "aaincident_aaaa",
     "closeForm": false,
     "content": true,
     "editForm": true,
@@ -10,7 +10,7 @@
     "id": "incident_aaa",
     "isReadOnly": false,
     "locked": false,
-    "name": "aaa",
+    "name": "incident_aaa",
     "neverSetAsRequired": false,
     "ownerOnly": false,
     "required": false,
