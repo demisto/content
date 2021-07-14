@@ -2307,6 +2307,7 @@ List all project boards a user can see.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | project_filter | Only list projects with the following numbers (Ids) | Optional | 
+| limit | The number of projects to return. Default is 20. Maximum is 100. | Optional |
 
 #### Context Output
 
@@ -2329,52 +2330,47 @@ List all project boards a user can see.
 ```json
 {
   "GitHub": {
-    "Projects": {
+    "Project": {
        "XSOAR Data": {
-        "proj_number": 23,
-        "proj_id": 2,
-        "columns": {
+        "Number": 23,
+        "ID": 2,
+        "Columns": {
           "In progress": {
-            "cards": [
+            "Cards": [
               {
-                "card_id": 55555,
-                "content_number": 33883
+                "CardID": 55555,
+                "ContentNumber": 33883
               },
               {
-                "card_id": 66666,
-                "content_number": 34852
+                "CardID": 66666,
+                "ContentNumber": 34852
               },
             ],
-            "name": "In progress",
-            "column_id": 13241511
+            "Name": "In progress",
+            "ColumnID": 13241511
           },
           "Done": {
-            "cards": [
+            "Cards": [
               {
-                "card_id": 61858005,
-                "content_number": 37480
+                "CardID": 61858005,
+                "ContentNumber": 37480
               },
               {
-                "card_id": 60428728,
-                "content_number": 36608
+                "CardID": 60428728,
+                "ContentNumber": 36608
               },
             ],
-            "name": "Done",
-            "column_id": 13437971
-          },
-          "Icebox/Backlog": {
-            "cards": [],
-            "name": "Icebox/Backlog",
-            "column_id": 1366966
-          },
+            "Name": "Done",
+            "ColumnID": 13437971
+          }
         },
-        "all_issues": [
+        "Issues": [
           33883,
           34852,
           37480,
           36608
         ],
-        "name": "XSOAR Data"
+        "Name": "XSOAR Data"
       }
   }
 }
