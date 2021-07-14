@@ -437,7 +437,7 @@ def main():
     bucket_upload = options.bucket_upload
     ci_artifacts_path = options.ci_artifacts
     job_name = options.job_name
-    slack_channel = options.slack_channel or CONTENT_CHANNEL
+    slack_channel = 'tom-test'#options.slack_channel or CONTENT_CHANNEL
     gitlab_server = options.gitlab_server
     if nightly:
         slack_notifier(url, slack, test_type, env_results_file_name)
