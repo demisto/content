@@ -40,6 +40,7 @@ class McAfeeESMClient(BaseClient):
 
     def __del__(self):
         self.__logout()
+        super().__del__()
 
     def _is_status_code_valid(self, *_other):  # noqa
         return True
