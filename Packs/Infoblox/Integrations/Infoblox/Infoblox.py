@@ -429,7 +429,7 @@ def list_response_policy_zone_rules_command(client: Client, args: Dict) -> Tuple
                 'NextPageID': new_next_page_id}
         })
     human_readable = tableToMarkdown(title, fixed_keys_rule_list,
-                                     headerTransform=pascalToSpace)
+                                     headerTransform=pascalToSpace, removeNull=True)
     return human_readable, context, raw_response
 
 
@@ -522,7 +522,8 @@ def create_rpz_rule_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict
     view = args.get('view')
 
     # need to append 'rp_zone' or else this error is returned: "'<name>'. FQDN must belong to zone '<rp_zone>'."
-    name = f'{name}.{rp_zone}'
+    if not name.endswith(f'.{rp_zone}'):
+        name = f'{name}.{rp_zone}'
 
     if rule_type == 'Substitute (domain name)' and not substitute_name:
         raise DemistoException('Substitute (domain name) rules requires a substitute name argument')
@@ -533,7 +534,7 @@ def create_rpz_rule_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict
     title = f'{INTEGRATION_NAME} - Response Policy Zone rule: {name} has been created:'
     context = {
         f'{INTEGRATION_CONTEXT_NAME}.ModifiedResponsePolicyZoneRules(val.Name && val.Name === obj.Name)': fixed_keys_rule_res}
-    human_readable = tableToMarkdown(title, fixed_keys_rule_res, headerTransform=pascalToSpace)
+    human_readable = tableToMarkdown(title, fixed_keys_rule_res, headerTransform=pascalToSpace, removeNull=True)
     return human_readable, context, raw_response
 
 
