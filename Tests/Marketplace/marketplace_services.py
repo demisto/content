@@ -668,7 +668,6 @@ class Pack(object):
             pack_was_modified (bool): whether the pack was modified.
             new_version (bool): whether the entry is new or not. If not new, R letter will be appended to build number.
             initial_release (bool): whether the entry is an initial release or not.
-            initial_entry_time (datetime): the time the entry was first created.
         Returns:
             dict: release notes entry of changelog
 
