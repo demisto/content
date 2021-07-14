@@ -1191,7 +1191,8 @@ class Pack(object):
             changelog_latest_rn_version (LooseVersion): the last version of release notes in the changelog.json file
             changelog_latest_rn (str): the last release notes in the changelog.json file
 
-        Returns: The release notes contents and the latest release notes version (in the release notes directory)
+        Returns: The release notes contents, the latest release notes version (in the release notes directory),
+        and a list of the versions aggregated that are included in this version
 
         """
         found_versions: list = list()
@@ -1229,9 +1230,10 @@ class Pack(object):
             # We should take the release notes from the index as it has might been aggregated
             logging.info(f'No new RN file was detected for pack {self._pack_name}, taking latest RN from the index')
             release_notes_lines = changelog_latest_rn
-        latest_aggregated_release_notes_versions = list(pack_versions_dict.keys())
+        latest_versions_including_aggregated = list(pack_versions_dict.keys()) if pack_versions_dict\
+            else [latest_release_notes_version]
 
-        return release_notes_lines, latest_release_notes_version_str, latest_aggregated_release_notes_versions
+        return release_notes_lines, latest_release_notes_version_str, latest_versions_including_aggregated
 
     def assert_upload_bucket_version_matches_release_notes_version(self,
                                                                    changelog: dict,

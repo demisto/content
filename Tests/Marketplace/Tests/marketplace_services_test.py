@@ -1668,7 +1668,7 @@ class TestReleaseNotes:
             dummy_pack.get_release_notes_lines('rn_dir_fake_path', LooseVersion('1.0.1'), rn)
         assert latest_rn == '1.0.1'
         assert rn_lines == rn
-        assert aggregated_versions == []
+        assert aggregated_versions == ['1.0.1']
 
     def test_get_release_notes_lines_no_rn(self, mocker, dummy_pack):
         """
@@ -1691,7 +1691,7 @@ class TestReleaseNotes:
             dummy_pack.get_release_notes_lines('wow', LooseVersion('1.0.1'), changelog_latest_rn)
         assert latest_rn == '1.0.1'
         assert rn_lines == changelog_latest_rn
-        assert aggregated_versions == []
+        assert aggregated_versions == ['1.0.1']
 
     FAILED_PACKS_DICT = {
         'TestPack': {'status': 'wow1'},
