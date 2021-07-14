@@ -7,7 +7,7 @@ from botocore.parsers import ResponseParserError
 import urllib3.util
 from datetime import datetime, date
 
-# Disable insecure warnings
+# Disable     insecure warnings
 urllib3.disable_warnings()
 
 AWS_DEFAULT_REGION = demisto.params()['defaultRegion']
