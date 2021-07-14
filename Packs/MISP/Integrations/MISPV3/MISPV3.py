@@ -142,6 +142,25 @@ DOMAIN_REGEX = (
     "|html)$)(?:[a-z¡-\uffff-]{2,63}|xn--[a-z0-9]{1,59})(?<!-)\\.?$"
     "|localhost)"
 )
+MISP_SEARCH_ARGUMENTS = [
+    'value',
+    'type',
+    'category',
+    'org',
+    'tags',
+    'from',
+    'to',
+    'event_id',
+    'uuid',
+    'to_ids',
+    'last',
+    'include_decay_score',
+    'include_sightings',
+    'include_correlations',
+    'limit',
+    'page',
+    'enforceWarninglist',
+]
 
 EVENT_FIELDS = [
     'id',
@@ -711,31 +730,11 @@ def build_misp_complex_filter(demisto_query: str) -> str:
 
 
 def prepare_args_to_search():
-    search_args = [
-        'value',
-        'type',
-        'category',
-        'org',
-        'tags',
-        'from',
-        'to',
-        'event_id',
-        'uuid',
-        'to_ids',
-        'last',
-        'include_decay_score',
-        'include_sightings',
-        'include_correlations',
-        'limit',
-        'page',
-        'enforceWarninglist',
-    ]
     d_args = demisto.args()
-
     # List of all applicable search arguments
     args = dict()
     # Create dict to pass into the search
-    for arg in search_args:
+    for arg in MISP_SEARCH_ARGUMENTS:
         if arg in d_args:
             args[arg] = d_args[arg]
     # Replacing keys and values from Demisto to Misp's keys
@@ -766,7 +765,6 @@ def prepare_args_to_search():
     # build MISP complex filter
     if 'tags' in args:
         args['tags'] = build_misp_complex_filter(args['tags'])
-
     demisto.debug(f"args for request search command are {args}")
     return args
 
