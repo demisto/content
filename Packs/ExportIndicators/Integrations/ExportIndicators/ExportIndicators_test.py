@@ -579,13 +579,22 @@ class TestHelperFunctions:
         ('lastSeen', 'desc', '188.166.23.215'),
     ])
     def test_sort_iocs(self, mocker, sort_field, sort_order, expected_first_result):
-        """Test IoCs sorting"""
+        """Unit test
+        Given
+        - finding IOCs with an asc/desc order
+        When
+        - mock the IOCs response.
+        - mock the limit to be 10, even though there are 39 IOCs.
+        Then
+        - Validate that the sorting is being performed on the entire 39 IOCs
+        """
         import ExportIndicators as ei
         from ExportIndicators import refresh_outbound_context, RequestArguments
         with open('ExportIndicators_test/TestHelperFunctions/demisto_iocs.json', 'r') as iocs_json_f:
             iocs_json = json.loads(iocs_json_f.read())
             mocker.patch.object(ei, 'find_indicators_with_limit', return_value=iocs_json)
-            request_args = RequestArguments(query='', out_format='text', sort_field=sort_field, sort_order=sort_order)
+            request_args = RequestArguments(query='', out_format='text', sort_field=sort_field, sort_order=sort_order,
+                                            limit=10)
             ei_vals = refresh_outbound_context(request_args)
 
             assert ei_vals.split('\n', 1)[0] == expected_first_result

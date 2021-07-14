@@ -41,7 +41,8 @@ configuration:
   name: csv_text
   required: false
   type: 8
-- defaultvalue: '10000'
+- additionalinfo: The maximum number of indicators that will be pulled. This list will be sorted and ordered by further arguments, if given.
+  defaultvalue: '10000'
   display: List Size
   name: list_size
   required: true

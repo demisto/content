@@ -13,6 +13,7 @@ import dateparser
 
 ''' GLOBAL VARIABLES '''
 INTEGRATION_NAME: str = 'Export Indicators Service'
+INITIAL_LIMIT: int = 10000
 PAGE_SIZE: int = 200
 APP: Flask = Flask('demisto-export_iocs')
 CTX_VALUES_KEY: str = 'dmst_export_iocs_values'
@@ -71,7 +72,8 @@ _BROAD_PATTERN = re.compile(r'^(?:\*\.)+[a-zA-Z]+(?::[0-9]+)?$')
 
 
 class RequestArguments:
-    def __init__(self, query: str, out_format: str = FORMAT_TEXT, limit: int = 10000, offset: int = 0,
+    def __init__(self, query: str, out_format: str = FORMAT_TEXT, param_limit: int = INITIAL_LIMIT,
+                 limit: int = INITIAL_LIMIT, offset: int = 0,
                  mwg_type: str = 'string', strip_port: bool = False, drop_invalids: bool = False,
                  category_default: str = 'bc_category', category_attribute: str = '',
                  collapse_ips: str = DONT_COLLAPSE, csv_text: bool = False, sort_field: str = '',
@@ -79,6 +81,7 @@ class RequestArguments:
 
         self.query = query
         self.out_format = out_format
+        self.param_limit = param_limit
         self.limit = limit
         self.offset = offset
         self.mwg_type = mwg_type
@@ -181,8 +184,13 @@ def refresh_outbound_context(request_args: RequestArguments, on_demand: bool = F
     """
     now = datetime.now()
     # poll indicators into list from demisto
-    iocs = find_indicators_with_limit(request_args.query, request_args.limit, request_args.offset)
+
+    # pulling an initial larger amount of indicators so if sorting will occur,
+    # changes will apply not only on the limited pulled indicators, but the integration parameter limit
+    iocs = find_indicators_with_limit(request_args.query, request_args.param_limit, request_args.offset)
     iocs = sort_iocs(request_args, iocs)
+    # trimming the sorted indicators to the limit, if applicable.
+    iocs = iocs[:request_args.limit-1]
     out_dict, actual_indicator_amount = create_values_for_returned_dict(iocs, request_args)
 
     # if in CSV format - the "indicator" header
@@ -658,7 +666,8 @@ def validate_basic_authentication(headers: dict, username: str, password: str) -
 
 
 def get_request_args(params):
-    limit = try_parse_integer(request.args.get('n', params.get('list_size', 10000)), CTX_LIMIT_ERR_MSG)
+    param_limit = try_parse_integer(params.get('list_size', INITIAL_LIMIT), CTX_LIMIT_ERR_MSG)
+    limit = try_parse_integer(request.args.get('n', params.get('list_size', INITIAL_LIMIT)), CTX_LIMIT_ERR_MSG)
     offset = try_parse_integer(request.args.get('s', 0), CTX_OFFSET_ERR_MSG)
     out_format = request.args.get('v', params.get('format', 'text'))
     query = request.args.get('q', params.get('indicators_query'))
@@ -728,8 +737,8 @@ def get_request_args(params):
         if mwg_type not in MWG_TYPE_OPTIONS:
             raise DemistoException(CTX_MWG_TYPE_ERR_MSG)
 
-    return RequestArguments(query, out_format, limit, offset, mwg_type, strip_port, drop_invalids, category_default,
-                            category_attribute, collapse_ips, csv_text, sort_field, sort_order)
+    return RequestArguments(query, out_format, param_limit, limit, offset, mwg_type, strip_port, drop_invalids,
+                            category_default, category_attribute, collapse_ips, csv_text, sort_field, sort_order)
 
 
 @APP.route('/', methods=['GET'])
@@ -845,6 +854,7 @@ def update_outbound_command(args, params):
     if not on_demand:
         raise DemistoException(
             '"Update exported IOCs On Demand" is off. If you want to update manually please toggle it on.')
+    param_limit = try_parse_integer(params.get('list_size', INITIAL_LIMIT), CTX_LIMIT_ERR_MSG)
     limit = try_parse_integer(args.get('list_size', params.get('list_size')), CTX_LIMIT_ERR_MSG)
     print_indicators = args.get('print_indicators')
 
@@ -865,8 +875,9 @@ def update_outbound_command(args, params):
     sort_field = args.get('sort_field')
     sort_order = args.get('sort_order')
 
-    request_args = RequestArguments(query, out_format, limit, offset, mwg_type, strip_port, drop_invalids,
-                                    category_default, category_attribute, collapse_ips, csv_text, sort_field, sort_order)
+    request_args = RequestArguments(query, out_format, param_limit, limit, offset, mwg_type, strip_port, drop_invalids,
+                                    category_default, category_attribute, collapse_ips, csv_text, sort_field,
+                                    sort_order)
 
     indicators = refresh_outbound_context(request_args, on_demand=on_demand)
     if indicators:
