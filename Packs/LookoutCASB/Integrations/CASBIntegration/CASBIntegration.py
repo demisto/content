@@ -1,5 +1,5 @@
-import demistomock as demisto  # noqa: F401
-from CommonServerPython import *  # noqa: F401
+# import demistomock as demisto  # noqa: F401
+# from CommonServerPython import *  # noqa: F401
 
 # from content.Packs.Base.Scripts.CommonServerPython.CommonServerPython import tableToMarkdown, CommandResults, return_results, \
 #     string_to_table_header, return_error, DemistoException
@@ -182,14 +182,18 @@ def arg_to_timestamp(arg: Any, arg_name: str, required: bool = False) -> Optiona
     raise ValueError(f'Invalid date: "{arg_name}"')
 
 
-def get_argument_str(args, param, default: Optional[str]) -> str:
+def get_argument_str(args, param, default: str) -> str:
     if param in args:
         return args[param]
     else:
-        if default is None:
-            raise DemistoException("get_argument_str: Missing value")
-        else:
-            return default
+        return default
+
+
+def get_argument_time(args, param, default: Optional[str]) -> Optional[str]:
+    if param in args:
+        return args[param]
+    else:
+        return default
 
 
 def get_argument_int(args, param: str, default: int) -> int:
@@ -288,8 +292,8 @@ def test_module(client: Client, event_type: str) -> str:
 
 def fetch_events(client: Client,
                  event_type: str,
-                 start_time: str,
-                 end_time: str,
+                 start_time: Optional[str],
+                 end_time: Optional[str],
                  max_results: int
                  ) -> List:
     """ Fetched given event occurred betnween start_time and end_time limited by max_results.
@@ -338,8 +342,8 @@ def fetch_events(client: Client,
 
 def incidents_api_call(client: Client,
                        event_type: str,
-                       start_time: str,
-                       end_time: str,
+                       start_time: Optional[str],
+                       end_time: Optional[str],
                        max_results: int
                        ) -> List[Any]:
     """ Fetches given event occurred between start_time and end_time limited by max_results.
@@ -385,8 +389,8 @@ def get_information(client: Client,
                     entity_id: str,
                     entity_type: str,
                     result_type: str,
-                    start_time: str,
-                    end_time: str
+                    start_time: Optional[str],
+                    end_time: Optional[str],
                     ) -> str:
     """ Fetches given event occurred between start_time and end_time limited by max_results.
 
@@ -586,8 +590,8 @@ def main() -> None:
     result_type = get_argument_str(args, 'result_type', 'User')
     user_email = get_argument_str(args, 'email', 'Content')
     user_risk_rating = get_argument_str(args, 'risk_rating', 'NA')
-    start_time = get_argument_str(args, 'start_time', None)
-    end_time = get_argument_str(args, 'end_time', None)
+    start_time = get_argument_time(args, 'start_time', None)
+    end_time = get_argument_time(args, 'end_time', None)
     max_results = get_argument_int(args, 'max_results', MAX_INCIDENTS_TO_FETCH)
 
     if max_results > MAX_INCIDENTS_TO_FETCH:

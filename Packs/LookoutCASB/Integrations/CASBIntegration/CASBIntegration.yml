@@ -178,7 +178,7 @@ script:
       required: true
       description: Email
     description: Delete user profile.
-  dockerimage: demisto/python3:3.9.5.21272
+  dockerimage: demisto/python3:3.9.5.22569
   isfetch: true
   runonce: false
   subtype: python3
