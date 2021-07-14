@@ -477,15 +477,12 @@ def update_incident_command(args):
             }
         })
     if args.get('other-fields'):
-        for field_name, field_values in json.loads(args['other-fields']).items():
-            if not isinstance(field_values, list):
-                field_values = [field_values]
-            for field_value in field_values:
-                changes.append({
-                    'field': field_name,
-                    'old_value': str(incident[field_name]),
-                    'new_value': field_value
-                })
+        for field_name, field_value in json.loads(args['other-fields']).items():
+            changes.append({
+                'field': field_name,
+                'old_value': incident.get(field_name),
+                'new_value': field_value
+            })
     data = {
         'changes': changes
     }
