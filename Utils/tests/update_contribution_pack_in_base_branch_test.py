@@ -1,4 +1,5 @@
 from Utils.update_contribution_pack_in_base_branch import get_pr_files
+import os
 
 github_response_1 = [
     {
@@ -84,6 +85,10 @@ github_response_3 = [
 github_response_4 = []
 
 
+def pack_names(files):
+    return list(set(map(lambda x: x.split(os.path.sep)[1], files)))
+
+
 def test_get_pr_files(requests_mock):
     """
        Scenario: Get a pack dir name from pull request files
@@ -106,7 +111,7 @@ def test_get_pr_files(requests_mock):
          {'json': github_response_4, 'status_code': 200}]
     )
 
-    pack_dir = list(get_pr_files(pr_number))
+    pack_dir = pack_names(get_pr_files(pr_number))
 
     assert pack_dir == ['Slack']
 
@@ -134,7 +139,7 @@ def test_get_multiple_pr_files(requests_mock):
          {'json': github_response_4, 'status_code': 200}]
     )
 
-    pack_dir = list(get_pr_files(pr_number))
+    pack_dir = pack_names(get_pr_files(pr_number))
 
     assert pack_dir == ['Slack', 'AnotherPackName']
 
@@ -161,6 +166,6 @@ def test_get_pr_files_no_pack(requests_mock):
          {'json': github_response_4, 'status_code': 200}]
     )
 
-    pack_dir = list(get_pr_files(pr_number))
+    pack_dir = pack_names(get_pr_files(pr_number))
 
     assert pack_dir == []
