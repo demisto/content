@@ -76,7 +76,21 @@
           "UUID": "56c42374-fdb8-4544-a218-41ffc0a8ab16",
           "local": false
         }
-      }
+      },
+      "Tag": [
+        {
+          "ID": "247",
+          "Name": "passivetotal:class=suspicious"
+        },
+        {
+          "ID": "278",
+          "Name": "misp-galaxy:mitre-attack-pattern=T1210"
+        },
+        {
+          "ID": "2",
+          "Name": "tlp:white"
+        }
+      ]
     },
     {
       "ID": "71741",
@@ -123,7 +137,17 @@
           "UUID": "56c42374-fdb8-4544-a218-41ffc0a8ab16",
           "local": false
         }
-      }
+      },
+      "Tag": [
+        {
+          "ID": "2",
+          "Name": "tlp:white"
+        },
+        {
+          "ID": "280",
+          "Name": "misp-galaxy:mitre-attack-pattern=T1103"
+        }
+      ]
     }
   ],
   "Event": {

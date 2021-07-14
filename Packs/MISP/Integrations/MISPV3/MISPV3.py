@@ -302,13 +302,20 @@ def replace_keys(obj_to_build: Union[dict, list, str]) -> Union[dict, list, str]
     return obj_to_build
 
 
-def reputation_command_to_human_readable(outputs, score):
+def reputation_command_to_human_readable(outputs, score, events_to_human_readable):
+    found_tag_id, found_tag_name = "", ""
+    for event in events_to_human_readable:
+        found_tag_id = event.pop('Tag_ID')
+        found_tag_name = event.pop('Tag_Name')
     return {
         'Attribute Type': outputs.get('Type'),
         'Dbot Score': score,
         'Attribute Value': outputs.get('Value'),
         'Attribute Category': outputs.get('Category'),
-        'Timestamp': convert_timestamp(outputs.get('Timestamp'))
+        'Timestamp': convert_timestamp(outputs.get('Timestamp')),
+        'Related Events': events_to_human_readable,
+        'Scored Tag ID': found_tag_id,
+        'Scored Tag Name': found_tag_name,
     }
 
 
@@ -344,19 +351,20 @@ def parse_response_reputation_command(response, malicious_tag_ids, suspicious_ta
     if attribute_related_events:
         for event in attribute_related_events:
             if event.get('Event'):
-                event['Event'] = related_events[event.get('event_id')]
+                event['Event'] = related_events[event.get('event_id')].get('Event', {})
+                event['Tag'] = related_events[event.get('event_id')].get('Tag', [])
     first_attribute['Event']['Tag'], first_attribute_event_tags = limit_tag_output(first_attribute.get('Event'), True)
     event_tag_ids.update(first_attribute_event_tags)
 
     first_attribute['Tag'], first_attribute_tags = limit_tag_output(first_attribute, False)
     attributes_tag_ids.update(first_attribute_tags)
 
-    score = get_score_by_tags(attribute_tags_ids=attributes_tag_ids, event_tags_ids=event_tag_ids,
-                              malicious_tag_ids=malicious_tag_ids, suspicious_tag_ids=suspicious_tag_ids)
+    score, found_tag = get_score_by_tags(attribute_tags_ids=attributes_tag_ids, event_tags_ids=event_tag_ids,
+                                         malicious_tag_ids=malicious_tag_ids, suspicious_tag_ids=suspicious_tag_ids)
 
     first_attribute = replace_keys(first_attribute)  # this is the outputs (Attribute)
 
-    return first_attribute, score
+    return first_attribute, score, found_tag
 
 
 def get_full_related_event_objects(attributes_list):
@@ -368,35 +376,38 @@ def get_full_related_event_objects(attributes_list):
     for attribute in attributes_list:
         event = attribute.get('Event')
         attribute_tag_list = attribute.get('Tag')
+        attribute_tags = []
+        if attribute_tag_list:
+            attribute_tags, current_attribute_tags = limit_tag_output(attribute, False)
+            attributes_tag_set_ids.update(current_attribute_tags)
         if event:
             if event.get('Tag'):
                 event['Tag'], current_event_tags = limit_tag_output(event, True)
                 event_tag_set_ids.update(current_event_tags)
-            related_events[event.get('id')] = event
-        if attribute_tag_list:
-            attribute_tags, current_attribute_tags = limit_tag_output(attribute, False)
-            attributes_tag_set_ids.update(current_attribute_tags)
+            related_events[event.get('id')] = {"Event": event, "Tag": attribute_tags}
+
     return related_events, attributes_tag_set_ids, event_tag_set_ids
 
 
 def get_score_by_tags(attribute_tags_ids, event_tags_ids, malicious_tag_ids, suspicious_tag_ids):
-    is_attribute_tag_malicious = any(tag in attribute_tags_ids for tag in malicious_tag_ids)
+    found_tag = None
+    is_attribute_tag_malicious = any((found_tag := tag) in attribute_tags_ids for tag in malicious_tag_ids)
     if is_attribute_tag_malicious:
-        return Common.DBotScore.BAD
+        return Common.DBotScore.BAD, found_tag
 
-    is_attribute_tag_suspicious = any(tag in attribute_tags_ids for tag in suspicious_tag_ids)
+    is_attribute_tag_suspicious = any((found_tag := tag) in attribute_tags_ids for tag in suspicious_tag_ids)
     if is_attribute_tag_suspicious:
-        return Common.DBotScore.SUSPICIOUS
+        return Common.DBotScore.SUSPICIOUS, found_tag
 
-    is_event_tag_malicious = any(tag in event_tags_ids for tag in malicious_tag_ids)
+    is_event_tag_malicious = any((found_tag := tag) in event_tags_ids for tag in malicious_tag_ids)
     if is_event_tag_malicious:
-        return Common.DBotScore.BAD
+        return Common.DBotScore.BAD, found_tag
 
-    is_event_tag_suspicious = any(tag in event_tags_ids for tag in suspicious_tag_ids)
+    is_event_tag_suspicious = any((found_tag := tag) in event_tags_ids for tag in suspicious_tag_ids)
     if is_event_tag_suspicious:
-        return Common.DBotScore.SUSPICIOUS
+        return Common.DBotScore.SUSPICIOUS, found_tag
 
-    return Common.DBotScore.NONE
+    return Common.DBotScore.NONE, None
 
 
 def get_time_now():
@@ -556,15 +567,17 @@ def check_reputation_object(value, dbot_type, malicious_tag_ids, suspicious_tag_
     indicator_type = DBOT_SCORE_TYPE_MAP[dbot_type]
     is_indicator_found = misp_response and misp_response.get('Attribute')
     if is_indicator_found:
-        outputs, score = parse_response_reputation_command(copy.deepcopy(misp_response), malicious_tag_ids,
-                                                           suspicious_tag_ids)
+        outputs, score, found_tag = parse_response_reputation_command(copy.deepcopy(misp_response), malicious_tag_ids,
+                                                                      suspicious_tag_ids)
         demisto.debug(f"in check_reputation_object, outputs are: {outputs}")
         demisto.debug(f"in check_reputation_object, score is: {score}")
         dbot = Common.DBotScore(indicator=value, indicator_type=indicator_type,
                                 integration_name=INTEGRATION_NAME,
                                 score=score, reliability=reliability, malicious_description="Match found in MISP")
         indicator = get_dbot_indicator(dbot_type, dbot, value)
-        attribute_highlights = reputation_command_to_human_readable(outputs, score)
+
+        events_to_human_readable = get_events_related_to_scored_tag(outputs, found_tag)
+        attribute_highlights = reputation_command_to_human_readable(outputs, score, events_to_human_readable)
         readable_output = tableToMarkdown(f'Results found in MISP for value: {value}', attribute_highlights)
         return CommandResults(indicator=indicator,
                               raw_response=misp_response,
@@ -579,6 +592,31 @@ def check_reputation_object(value, dbot_type, malicious_tag_ids, suspicious_tag_
     indicator = get_dbot_indicator(dbot_type, dbot, value)
     return CommandResults(indicator=indicator,
                           readable_output=f"No attributes found in MISP for value: {value}")
+
+
+def get_events_related_to_scored_tag(reputation_outputs, found_tag):
+    related_events = []
+    attribute_event = reputation_outputs.get('Event', {})
+    event_name = attribute_event.get('Info')
+    related_events.extend(get_event_to_tag(attribute_event, found_tag, event_name))  # attribute_event_tags
+    related_events.extend(get_event_to_tag(reputation_outputs, found_tag, event_name))  # attribute_tags
+    for event in reputation_outputs.get('RelatedAttribute', []):
+        event_object = event.get('Event')
+        event_name = event_object.get('Info')
+        related_events.extend(get_event_to_tag(event_object, found_tag, event_name))  # attribute_event_tags
+        related_events.extend(get_event_to_tag(event, found_tag, event_name))  # event_tags
+    return related_events
+
+
+def get_event_to_tag(data_dict, found_tag, event_name):
+    related_events = []
+    for tag in data_dict.get('Tag', []):
+        if tag.get('ID') == found_tag:
+            event_id = data_dict.get('EventID')
+            tag_name = tag.get('Name')
+            related_events.append({'Event_ID': event_id, 'Event_Name': event_name,
+                                   'Tag_Name': tag_name, 'Tag_ID': tag.get('ID')})
+    return related_events
 
 
 def get_dbot_indicator(dbot_type, dbot_score, value):

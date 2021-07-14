@@ -17,11 +17,11 @@ REPUTATION_COMMANDS_ERROR_LIST = [
     ("EMAIL", "invalid_email", "Error: The given invalid_email address: example is not valid"),  # invalid EMAIL,
 ]
 
-CASE_OF_MALICIOUS_ATTRIBUTE = (['1'], ['2'], ['1'], ['4'], Common.DBotScore.BAD)
-CASE_OF_SUSPICIOUS_ATTRIBUTE = (['1'], ['2'], ['2'], ['1'], Common.DBotScore.SUSPICIOUS)
-CASE_OF_MALICIOUS_EVENT = (['8'], ['2'], ['2'], ['1'], Common.DBotScore.BAD)
-CASE_OF_SUSPICIOUS_EVENT = (['8'], ['2'], ['3'], ['2'], Common.DBotScore.SUSPICIOUS)
-CASE_OF_UNKNOWN = (['1'], ['2'], ['3'], ['4'], Common.DBotScore.NONE)
+CASE_OF_MALICIOUS_ATTRIBUTE = (['1'], ['2'], ['1'], ['4'], Common.DBotScore.BAD, '1')
+CASE_OF_SUSPICIOUS_ATTRIBUTE = (['1'], ['2'], ['2'], ['1'], Common.DBotScore.SUSPICIOUS, '1')
+CASE_OF_MALICIOUS_EVENT = (['8'], ['2'], ['2'], ['1'], Common.DBotScore.BAD, '2')
+CASE_OF_SUSPICIOUS_EVENT = (['8'], ['2'], ['3'], ['2'], Common.DBotScore.SUSPICIOUS, '2')
+CASE_OF_UNKNOWN = (['1'], ['2'], ['3'], ['4'], Common.DBotScore.NONE, None)
 TEST_TAG_SCORES = [CASE_OF_MALICIOUS_ATTRIBUTE, CASE_OF_SUSPICIOUS_ATTRIBUTE, CASE_OF_MALICIOUS_EVENT,
                    CASE_OF_SUSPICIOUS_EVENT, CASE_OF_UNKNOWN]
 
@@ -439,10 +439,10 @@ def test_limit_tag_output(mocker, is_event_level, expected_output, expected_tag_
     assert tag_list_id == expected_tag_list_ids
 
 
-@pytest.mark.parametrize('attribute_tags_ids, event_tags_ids, malicious_tag_ids, suspicious_tag_ids, expected_score',
-                         TEST_TAG_SCORES)
+@pytest.mark.parametrize('attribute_tags_ids, event_tags_ids, malicious_tag_ids, suspicious_tag_ids, '
+                         'expected_score, found_tag', TEST_TAG_SCORES)
 def test_get_score_by_tags(mocker, attribute_tags_ids, event_tags_ids, malicious_tag_ids, suspicious_tag_ids,
-                           expected_score):
+                           expected_score, found_tag):
     """
 
     Given:
@@ -456,12 +456,14 @@ def test_get_score_by_tags(mocker, attribute_tags_ids, event_tags_ids, malicious
     - Running a reputation command and want to get the dbot score.
 
     Then:
-    - Check that the returned score match the expected one, depends on the given lists.
+    - Check that the returned score matches the expected one, depends on the given lists.
+    - Check that the tag id matched the expected one to be identified, depends on the given lists.
     """
     mock_misp(mocker)
     from MISPV3 import get_score_by_tags
-    assert get_score_by_tags(attribute_tags_ids, event_tags_ids, malicious_tag_ids,
-                             suspicious_tag_ids) == expected_score
+    score, tag = get_score_by_tags(attribute_tags_ids, event_tags_ids, malicious_tag_ids, suspicious_tag_ids)
+    assert score == expected_score
+    assert tag == found_tag
 
 
 def test_event_response_to_markdown_table(mocker):
@@ -539,7 +541,7 @@ def test_parse_response_reputation_command(mocker):
     reputation_expected = util_load_json("test_data/reputation_command_outputs.json")
     malicious_tag_ids = ['279', '131']
     suspicious_tag_ids = ['104']
-    outputs, _ = parse_response_reputation_command(reputation_response, malicious_tag_ids, suspicious_tag_ids)
+    outputs, _, _ = parse_response_reputation_command(reputation_response, malicious_tag_ids, suspicious_tag_ids)
     assert outputs == reputation_expected
 
 
