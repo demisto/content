@@ -1,6 +1,6 @@
 {
     "name": "Dig",
-    "description": "Run Dig automation to get 'A' and 'PTR' records. For the CommonScripts Packs. ",
+    "description": "Run Dig automation to get 'A' and 'PTR' records.",
     "support": "community",
     "currentVersion": "1.0.0",
     "author": "Anil Agrawal",

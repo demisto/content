@@ -37,12 +37,8 @@ def dig_result(server: str, name: str):
 
             return {"name": name, "resolvedaddresses": resolved_addresses, "nameserver": dns_server}
 
-    except Exception as e:
-        if isinstance(e, subprocess.CalledProcessError):
-            msg = e.output  # pylint: disable=no-member
-        else:
-            msg = str(e)
-        return_error(msg)
+    except subprocess.CalledProcessError as e:
+        return_error(e.output)
 
 
 # Run Dig command on the server and get PTR record for the specified IP
@@ -73,12 +69,8 @@ def reverse_dig_result(server: str, name: str):
 
             return {"name": name, "resolveddomain": resolved_addresses, "nameserver": dns_server}
 
-    except Exception as e:
-        if isinstance(e, subprocess.CalledProcessError):
-            msg = e.output  # pylint: disable=no-member
-        else:
-            msg = str(e)
-        return_error(msg)
+    except subprocess.CalledProcessError as e:
+        return_error(e.output)
 
 
 def regex_result(dig_output: str, reverse_lookup: bool):
@@ -109,7 +101,7 @@ def dig_command(args: Dict[str, Any]) -> CommandResults:
 
     server = args.get('server', None)
     name = args.get('name', None)
-    reverse_lookup = True if args.get("reverseLookup") == "True" else False
+    reverse_lookup = argToBoolean(args.get("reverseLookup"))
 
     if reverse_lookup:
         result = reverse_dig_result(server, name)
@@ -131,7 +123,7 @@ def main():
         return_results(dig_command(demisto.args()))
     except Exception as ex:
         demisto.error(traceback.format_exc())  # print the traceback
-        return_error(f'Failed to execute BaseScript. Error: {str(ex)}')
+        return_error(f'Failed to execute Dig. Error: {str(ex)}')
 
 
 ''' ENTRY POINT '''
