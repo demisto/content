@@ -2,6 +2,7 @@ import demistomock as demisto  # noqa: F401
 from CSVFeedApiModule import *
 from CommonServerPython import *  # noqa: F401
 
+a = 2
 # disable insecure warnings
 urllib3.disable_warnings()
 
