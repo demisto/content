@@ -11,7 +11,7 @@ from html.parser import HTMLParser
 from html import unescape
 from re import compile as _Re
 import pandas as pd
-from langdetect import detect
+from langdetect import detect, detect_langs
 
 
 def hash_word(word, hash_seed):
@@ -359,6 +359,8 @@ def remove_foreign_language(data, text_field, language):
 
 
 def is_text_in_input_language(text, input_language):
+    if '<html' in text:
+        text = clean_html_from_text(text)
     actual_language = detect(text)
     is_correct_lang = actual_language in CODES_TO_LANGUAGES and CODES_TO_LANGUAGES[actual_language] == input_language
     return is_correct_lang, actual_language
