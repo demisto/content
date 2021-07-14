@@ -522,7 +522,7 @@ def create_rpz_rule_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict
     view = args.get('view')
 
     # need to append 'rp_zone' or else this error is returned: "'<name>'. FQDN must belong to zone '<rp_zone>'."
-    if not name.endswith(f'.{rp_zone}'):
+    if name and not name.endswith(f'.{rp_zone}'):
         name = f'{name}.{rp_zone}'
 
     if rule_type == 'Substitute (domain name)' and not substitute_name:
