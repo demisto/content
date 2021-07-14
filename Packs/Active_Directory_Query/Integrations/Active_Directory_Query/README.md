@@ -381,6 +381,9 @@ Disables an Active Directory user account.
 
 `ad-disable-account`
 
+##### Required Permissions
+Requires `Read userAccountControl` and `write userAccountControl` permissions.
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
