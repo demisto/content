@@ -259,12 +259,6 @@
     </tr>
   </tbody>
 </table>
-
-<!-- remove the following comments to manually add an image: -->
-<!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- -->
 </p>
 
 <h3>2. domain</h3>
@@ -453,12 +447,6 @@
     </tr>
   </tbody>
 </table>
-
-<!-- remove the following comments to manually add an image: -->
-<!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- -->
 </p>
 
 <h3>3. slashnext-host-reputation</h3>
@@ -702,12 +690,6 @@
     </tr>
   </tbody>
 </table>
-
-<!-- remove the following comments to manually add an image: -->
-<!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- -->
 </p>
 
 <h3>4. slashnext-host-report</h3>
@@ -1013,11 +995,6 @@ Forensics: Webpage Screenshot for the Scanned URL = http://www.google.com/wasif<
 Forensics: Webpage HTML for the Scanned URL = http://www.google.com/wasif<br>
 Forensics: Webpage Rendered Text for the Scanned URL = http://www.google.com/wasif<br>
 </p>
-<!-- remove the following comments to manually add an image: -->
-<!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- -->
 </p>
 
 <h3>5. slashnext-host-urls</h3>
@@ -1689,12 +1666,6 @@ Forensics: Webpage Rendered Text for the Scanned URL = http://www.google.com/was
     </tr>
   </tbody>
 </table>
-
-<!-- remove the following comments to manually add an image: -->
-<!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- -->
 </p>
 
 <h3>6. slashnext-url-scan</h3>
@@ -1985,12 +1956,6 @@ Forensics: Webpage Rendered Text for the Scanned URL = http://www.google.com/was
     </tr>
   </tbody>
 </table>
-
-<!-- remove the following comments to manually add an image: -->
-<!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- -->
 </p>
 
 <h3>7. slashnext-url-scan-sync</h3>
@@ -2286,12 +2251,6 @@ Forensics: Webpage Rendered Text for the Scanned URL = http://www.google.com/was
     </tr>
   </tbody>
 </table>
-
-<!-- remove the following comments to manually add an image: -->
-<!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- -->
 </p>
 
 <h3>8. slashnext-scan-report</h3>
@@ -2582,12 +2541,6 @@ Forensics: Webpage Rendered Text for the Scanned URL = http://www.google.com/was
     </tr>
   </tbody>
 </table>
-
-<!-- remove the following comments to manually add an image: -->
-<!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- -->
 </p>
 
 <h3>9. slashnext-download-screenshot</h3>
@@ -2641,11 +2594,6 @@ There are no context output for this command.
 <p>
 Forensics: Webpage Screenshot for URL Scan ID = 48ae7b06-5915-4633-bc51-2cfaa0036742
 </p>
-<!-- remove the following comments to manually add an image: -->
-<!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- -->
 </p>
 
 <h3>10. slashnext-download-html</h3>
@@ -2694,11 +2642,6 @@ There are no context output for this command.
 <p>
 Forensics: Webpage HTML for URL Scan ID = 48ae7b06-5915-4633-bc51-2cfaa0036742
 </p>
-<!-- remove the following comments to manually add an image: -->
-<!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- -->
 </p>
 
 <h3>11. slashnext-download-text</h3>
@@ -2747,11 +2690,6 @@ There are no context output for this command.
 <p>
 Forensics: Webpage Rendered Text for URL Scan ID = 48ae7b06-5915-4633-bc51-2cfaa0036742
 </p>
-<!-- remove the following comments to manually add an image: -->
-<!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- -->
 </p>
 
 <h3>12. slashnext-api-quota</h3>
@@ -2801,12 +2739,6 @@ No input parameter is required.
     </tr>
   </tbody>
 </table>
-
-<!-- remove the following comments to manually add an image: -->
-<!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- -->
 </p>
 
 <h2>Additional Information</h2><h2>Known Limitations</h2><h2>Troubleshooting</h2>

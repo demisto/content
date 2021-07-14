@@ -218,6 +218,11 @@ demisto_mapping: Dict[str, Dict[str, Any]] = {
     'darkfeed_021': {'name': FeedIndicatorType.File, 'pipeline': []},
     'darkfeed_022': {'name': FeedIndicatorType.IP, 'pipeline': []},
     'darkfeed_023': {'name': FeedIndicatorType.URL, 'pipeline': [url_to_rfc3986, clean_url]},
+    'darkfeed_024': {'name': FeedIndicatorType.IP, 'pipeline': []},
+    'darkfeed_025': {'name': FeedIndicatorType.File, 'pipeline': []},
+    'darkfeed_026': {'name': FeedIndicatorType.URL, 'pipeline': [url_to_rfc3986, clean_url]},
+    'darkfeed_027': {'name': FeedIndicatorType.IP, 'pipeline': []},
+    'darkfeed_028': {'name': FeedIndicatorType.IP, 'pipeline': []},
 }
 
 
