@@ -137,11 +137,6 @@ CloudShark with upload, info, download, and delete permissions enabled on it</li
 <p>
 [Open Capture in CloudShark]($CLOUDSHARK_URL/captures/5277a3a64076)
 </p>
-<!-- remove the following comments to manually add an image: -->
-<!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- -->
 </p>
 
 <h3>2. cloudshark-info</h3>
@@ -312,12 +307,6 @@ CloudShark with upload, info, download, and delete permissions enabled on it</li
     </tr>
   </tbody>
 </table>
-
-<!-- remove the following comments to manually add an image: -->
-<!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- -->
 </p>
 
 <h3>3. cloudshark-download</h3>
@@ -384,14 +373,6 @@ CloudShark with upload, info, download, and delete permissions enabled on it</li
 </p>
 
 <h5>Human Readable Output</h5>
-<p>
-
-<!-- remove the following comments to manually add an image: -->
-<!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- -->
-</p>
 
 <h3>4. cloudshark-delete</h3>
 <hr>
@@ -482,11 +463,5 @@ CloudShark with upload, info, download, and delete permissions enabled on it</li
     </tr>
   </tbody>
 </table>
-
-<!-- remove the following comments to manually add an image: -->
-<!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- -->
 </p>
 <!-- <h2>Additional Information</h2><h2>Known Limitations</h2><h2>Troubleshooting</h2> -->

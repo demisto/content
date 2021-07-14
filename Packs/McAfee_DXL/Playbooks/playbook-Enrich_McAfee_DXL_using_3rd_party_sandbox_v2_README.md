@@ -25,6 +25,3 @@ There are no inputs for this playbook.
 ---
 There are no outputs for this playbook.
 
-## Playbook Image
----
-![Enrich McAfee DXL using 3rd party sandbox v2](Insert the link to your image here)
