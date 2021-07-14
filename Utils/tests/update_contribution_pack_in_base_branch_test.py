@@ -1,4 +1,4 @@
-from Utils.update_contribution_pack_in_base_branch import get_pack_dir
+from Utils.update_contribution_pack_in_base_branch import get_pr_files
 
 github_response_1 = [
     {
@@ -84,7 +84,7 @@ github_response_3 = [
 github_response_4 = []
 
 
-def test_get_pack_dir(requests_mock):
+def test_get_pr_files(requests_mock):
     """
        Scenario: Get a pack dir name from pull request files
 
@@ -98,9 +98,7 @@ def test_get_pack_dir(requests_mock):
        Then
        - Ensure the pack dir name is returned correctly
     """
-    branch = 'contrib_branch'
     pr_number = '1'
-    repo = 'contrib_repo'
     requests_mock.get(
         'https://api.github.com/repos/demisto/content/pulls/1/files',
         [{'json': github_response_1, 'status_code': 200},
@@ -108,12 +106,12 @@ def test_get_pack_dir(requests_mock):
          {'json': github_response_4, 'status_code': 200}]
     )
 
-    pack_dir = get_pack_dir(branch, pr_number, repo)
+    pack_dir = list(get_pr_files(pr_number))
 
     assert pack_dir == ['Slack']
 
 
-def test_get_multiple_packs_dirs(requests_mock):
+def test_get_multiple_pr_files(requests_mock):
     """
        Scenario: Get a list of pack dir names from pull request files
 
@@ -127,9 +125,7 @@ def test_get_multiple_packs_dirs(requests_mock):
        Then
        - Ensure pack dir names are returned correctly
     """
-    branch = 'contrib_branch'
     pr_number = '1'
-    repo = 'contrib_repo'
     requests_mock.get(
         'https://api.github.com/repos/demisto/content/pulls/1/files',
         [{'json': github_response_1, 'status_code': 200},
@@ -138,12 +134,12 @@ def test_get_multiple_packs_dirs(requests_mock):
          {'json': github_response_4, 'status_code': 200}]
     )
 
-    pack_dir = get_pack_dir(branch, pr_number, repo)
+    pack_dir = list(get_pr_files(pr_number))
 
     assert pack_dir == ['Slack', 'AnotherPackName']
 
 
-def test_get_pack_dir_no_pack(requests_mock):
+def test_get_pr_files_no_pack(requests_mock):
     """
        Scenario: Get a pack dir name from pull request files
 
@@ -157,9 +153,7 @@ def test_get_pack_dir_no_pack(requests_mock):
        Then
        - Ensure the pack dir name is empty
     """
-    branch = 'contrib_branch'
     pr_number = '1'
-    repo = 'contrib_repo'
 
     requests_mock.get(
         'https://api.github.com/repos/demisto/content/pulls/1/files',
@@ -167,6 +161,6 @@ def test_get_pack_dir_no_pack(requests_mock):
          {'json': github_response_4, 'status_code': 200}]
     )
 
-    pack_dir = get_pack_dir(branch, pr_number, repo)
+    pack_dir = list(get_pr_files(pr_number))
 
     assert pack_dir == []
