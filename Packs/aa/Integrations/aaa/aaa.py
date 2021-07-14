@@ -119,7 +119,7 @@ try:
     if demisto.command() == 'test-module':
         test_result = test_module_command(instance_params['use_ssl'], instance_params['proxies'])
         demisto.results(test_result)
-    if demisto.command() == 'domain':
+    if demisto.command() == 'aaa-get':
         domain = demisto.args().get('domain')
         alexa_domain_command(domain, **instance_params)
 except Exception as e:

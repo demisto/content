@@ -1,5 +1,5 @@
 id: db2e16c3-ef1e-4b4f-8f1f-489c0fae303e
-version: 3
+version: 4
 vcShouldKeepItemLegacyProdMachine: false
 name: testaaa
 starttaskid: "0"
@@ -16,7 +16,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "1"
+      - "2"
     separatecontext: false
     view: |-
       {
@@ -32,28 +32,26 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "1":
-    id: "1"
-    taskid: 7b18e2b5-b5e0-4390-87e9-c29017f179e6
+  "2":
+    id: "2"
+    taskid: 28ac16b6-5fbf-48c5-8cc9-25f97f8e28b9
     type: regular
     task:
-      id: 7b18e2b5-b5e0-4390-87e9-c29017f179e6
+      id: 28ac16b6-5fbf-48c5-8cc9-25f97f8e28b9
       version: -1
-      name: domain
-      description: Checks the reputation of a domain.
-      script: aaa|||domain
+      name: aaa-get
+      description: Retrieves all blocked senders, URLs, and SHA-1 hash values that
+        have been configured to quarantine Exchange Online email messages.
+      script: TrendMicro Cloud App Security|||trendmicro-cas-blocked-lists-get
       type: regular
       iscommand: true
       brand: aaa
-    scriptarguments:
-      domain:
-        simple: google.com
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 450,
-          "y": 230
+          "y": 210
         }
       }
     note: false
@@ -68,7 +66,7 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 275,
+        "height": 255,
         "width": 380,
         "x": 450,
         "y": 50
