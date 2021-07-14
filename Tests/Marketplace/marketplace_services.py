@@ -399,6 +399,8 @@ class Pack(object):
         """
         dependencies_integration_images_dict = {}
         additional_dependencies_data = {k: v for k, v in dependencies_data.items() if k in display_dependencies_images}
+        logging.info(f'dependencies_data: {dependencies_data}_+_+_+')
+        logging.info(f'display_dependencies_images: {display_dependencies_images}_+_+_+')
 
         for dependency_data in additional_dependencies_data.values():
             for dep_int_img in dependency_data.get('integrations', []):
@@ -407,6 +409,7 @@ class Pack(object):
                 dep_pack_name = os.path.basename(os.path.dirname(dep_int_img_gcs_path))
 
                 if dep_pack_name not in display_dependencies_images:
+                    logging.info(f'dep_pack_name {dep_pack_name} not in display_dependencies_images_+_+_+')
                     continue  # skip if integration image is not part of displayed images of the given pack
 
                 if dep_int_img not in pack_integration_images:  # avoid duplicates in list
