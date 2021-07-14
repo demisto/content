@@ -74,17 +74,18 @@ def reverse_dig_result(server: str, name: str):
 
 
 def regex_result(dig_output: str, reverse_lookup: bool):
+    # regex phrase to catch a number between 0 to 255
+    num_0_255 = r'(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])'
     try:
         if not reverse_lookup:
-            regex_results_ip = re.findall(
-                r"\b(?:(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])(?:\[\.\]|\.)){3}(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])\b", dig_output)
+            regex_results_ip = re.findall(rf'\b(?:{num_0_255}(?:\[\.\]|\.)){{3}}{num_0_255}\b", dig_output)
             if not regex_results_ip:
                 raise ValueError("Couldn't find results:\n")
             resolved_addresses = regex_results_ip[::2]
             dns_server = regex_results_ip[1]
         else:
             regex_results_domain = re.findall(
-                r"\b^[\S]+|(?:(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])(?:\[\.\]|\.)){3}(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])\b", dig_output)
+                rf'\b^[\S]+|(?:{num_0_255}(?:\[\.\]|\.)){{3}}{num_0_255}\b', dig_output)
             if not regex_results_domain:
                 raise ValueError("Couldn't find results:\n")
             resolved_addresses = regex_results_domain[0]
