@@ -15,7 +15,7 @@ def get_report_list(args: Dict[str, Any]) -> list:
     """
 
     # Fetch reports based on from_address
-    filter_by = "{\"from_address\":\"" + args.get('email') + "\"}"
+    filter_by = "{\"from_address\":\"" + args.get('email', '') + "\"}"
     reports = execute_command('cofense-report-list', {'filter_by': filter_by}, extract_contents=False)
 
     # Populate response
