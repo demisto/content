@@ -96,6 +96,7 @@ create-instances:
     - !reference [.open-ssh-tunnel]
     - python3 ./Tests/scripts/wait_until_server_ready.py "$INSTANCE_ROLE"
     - ./Tests/scripts/install_content_and_test_integrations.sh "$INSTANCE_ROLE" || EXIT_CODE=$?
+    - cp -f $ARTIFACTS_FOLDER/conf.json Tests/conf.json
     - ./Tests/scripts/run_tests.sh "$INSTANCE_ROLE" || EXIT_CODE=$?
     - |
       if [ -f ./Tests/failed_tests.txt ]; then
