@@ -459,7 +459,7 @@ class Pack(object):
         for dependency_id, dependency_data in dependencies_data.items():
             parsed_result[dependency_id] = {
                 "mandatory": first_level_dependencies.get(dependency_id, {}).get('mandatory', True),
-                "minVersion": dependency_data.get('currentVersion', Pack.PACK_INITIAL_VERSION),
+                "minVersion": dependency_data.get(Metadata.CURRENT_VERSION, Pack.PACK_INITIAL_VERSION),
                 "author": dependency_data.get('author', ''),
                 "name": dependency_data.get('name') if dependency_data.get('name') else dependency_id,
                 "certification": dependency_data.get('certification', 'certified')
@@ -582,8 +582,8 @@ class Pack(object):
             'authorImage': self._author_image,
             'certification': self._certification,
             'price': self._price,
-            'serverMinVersion': user_metadata.get('serverMinVersion') or self.server_min_version,
-            'currentVersion': user_metadata.get('currentVersion', ''),
+            Metadata.SERVER_MIN_VERSION: user_metadata.get(Metadata.SERVER_MIN_VERSION) or self.server_min_version,
+            Metadata.CURRENT_VERSION: user_metadata.get(Metadata.CURRENT_VERSION, ''),
             'versionInfo': build_number,
             'commit': commit_hash,
             'downloads': self._downloads_count,
@@ -1613,8 +1613,8 @@ class Pack(object):
                 user_metadata = {} if isinstance(user_metadata, list) else user_metadata
             # store important user metadata fields
             self.support_type = user_metadata.get('support', Metadata.XSOAR_SUPPORT)
-            self.current_version = user_metadata.get('currentVersion', '')
-            self.hidden = user_metadata.get('hidden', False)
+            self.current_version = user_metadata.get(Metadata.CURRENT_VERSION, '')
+            self.hidden = user_metadata.get(Metadata.HIDDEN, False)
             self.description = user_metadata.get('description', False)
             self.display_name = user_metadata.get('name', '')
             self._user_metadata = user_metadata
