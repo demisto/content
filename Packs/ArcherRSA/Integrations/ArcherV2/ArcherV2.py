@@ -32,6 +32,8 @@ FIELD_TYPE_DICT = {
 
 ACCOUNT_STATUS_DICT = {1: 'Active', 2: 'Inactive', 3: 'Locked'}
 
+API_ENDPOINT = demisto.params().get('api_endpoint', 'rsaarcher/api').replace('rsaarcher', '')
+
 
 def parser(date_str, date_formats=None, languages=None, locales=None, region=None, settings=None) -> datetime:
     """Wrapper of dateparser.parse to support return type value
@@ -288,7 +290,7 @@ class Client(BaseClient):
             'Password': self.password
         }
         try:
-            res = self._http_request('POST', '/core/security/login', json_data=body, timeout=15)
+            res = self._http_request('POST', f'{API_ENDPOINT}/core/security/login', json_data=body, timeout=15)
         except DemistoException as e:
             if '<html>' in str(e):
                 raise DemistoException(f"Check the given URL, it can be a redirect issue. Failed with error: {str(e)}")
@@ -332,13 +334,13 @@ class Client(BaseClient):
         if cache.get(app_id):
             levels = cache[app_id]
         else:
-            all_levels_res = self.do_request('GET', f'/core/system/level/module/{app_id}')
+            all_levels_res = self.do_request('GET', f'{API_ENDPOINT}/core/system/level/module/{app_id}')
             for level in all_levels_res:
                 if level.get('RequestedObject') and level.get('IsSuccessful'):
                     level_id = level.get('RequestedObject').get('Id')
 
                     fields = {}
-                    level_res = self.do_request('GET', f'/core/system/fielddefinition/level/{level_id}')
+                    level_res = self.do_request('GET', f'{API_ENDPOINT}/core/system/fielddefinition/level/{level_id}')
                     for field in level_res:
                         if field.get('RequestedObject') and field.get('IsSuccessful'):
                             field_item = field.get('RequestedObject')
@@ -366,7 +368,7 @@ class Client(BaseClient):
         return level_data
 
     def get_record(self, app_id, record_id):
-        res = self.do_request('GET', f'/core/content/{record_id}')
+        res = self.do_request('GET', f'{API_ENDPOINT}/core/content/{record_id}')
 
         if not isinstance(res, dict):
             res = res.json()
@@ -531,7 +533,7 @@ class Client(BaseClient):
         if cache['fieldValueList'].get(field_id):
             return cache.get('fieldValueList').get(field_id)
 
-        res = self.do_request('GET', f'/core/system/fielddefinition/{field_id}')
+        res = self.do_request('GET', f'{API_ENDPOINT}/core/system/fielddefinition/{field_id}')
 
         errors = get_errors_from_res(res)
         if errors:
@@ -539,7 +541,7 @@ class Client(BaseClient):
 
         if res.get('RequestedObject') and res.get('IsSuccessful'):
             list_id = res['RequestedObject']['RelatedValuesListId']
-            values_list_res = self.do_request('GET', f'/core/system/valueslistvalue/valueslist/{list_id}')
+            values_list_res = self.do_request('GET', f'{API_ENDPOINT}/core/system/valueslistvalue/valueslist/{list_id}')
             if values_list_res.get('RequestedObject') and values_list_res.get('IsSuccessful'):
                 values_list = []
                 for value in values_list_res['RequestedObject'].get('Children'):
@@ -584,7 +586,7 @@ class Client(BaseClient):
         Returns:
             fields, raw response
         """
-        res = self.do_request('GET', f'/core/system/fielddefinition/application/{app_id}')
+        res = self.do_request('GET', f'{API_ENDPOINT}/core/system/fielddefinition/application/{app_id}')
 
         fields = []
         for field in res:
@@ -735,16 +737,16 @@ def test_module(client: Client, params: dict) -> str:
 
         return 'ok'
 
-    return 'ok' if client.do_request('GET', '/core/system/application') else 'Connection failed.'
+    return 'ok' if client.do_request('GET', f'{API_ENDPOINT}/core/system/application') else 'Connection failed.'
 
 
 def search_applications_command(client: Client, args: Dict[str, str]):
     app_id = args.get('applicationId')
     limit = args.get('limit')
-    endpoint_url = '/core/system/application/'
+    endpoint_url = f'{API_ENDPOINT}/core/system/application/'
 
     if app_id:
-        endpoint_url = f'/core/system/application/{app_id}'
+        endpoint_url = f'{API_ENDPOINT}/core/system/application/{app_id}'
         res = client.do_request('GET', endpoint_url)
     elif limit:
         res = client.do_request('GET', endpoint_url, params={"$top": limit})
@@ -785,7 +787,7 @@ def get_application_fields_command(client: Client, args: Dict[str, str]):
 def get_field_command(client: Client, args: Dict[str, str]):
     field_id = args.get('fieldID')
 
-    res = client.do_request('GET', f'/core/system/fielddefinition/{field_id}')
+    res = client.do_request('GET', f'{API_ENDPOINT}/core/system/fielddefinition/{field_id}')
 
     errors = get_errors_from_res(res)
     if errors:
@@ -812,7 +814,7 @@ def get_field_command(client: Client, args: Dict[str, str]):
 def get_mapping_by_level_command(client: Client, args: Dict[str, str]):
     level = args.get('level')
 
-    res = client.do_request('GET', f'/core/system/fielddefinition/level/{level}')
+    res = client.do_request('GET', f'{API_ENDPOINT}/core/system/fielddefinition/level/{level}')
 
     items = []
     for item in res:
@@ -863,7 +865,7 @@ def create_record_command(client: Client, args: Dict[str, str]):
 
     body = {'Content': {'LevelId': level_data['level'], 'FieldContents': field_contents}}
 
-    res = client.do_request('Post', '/core/content', data=body)
+    res = client.do_request('Post', f'{API_ENDPOINT}/core/content', data=body)
 
     errors = get_errors_from_res(res)
     if errors:
@@ -876,7 +878,7 @@ def create_record_command(client: Client, args: Dict[str, str]):
 
 def delete_record_command(client: Client, args: Dict[str, str]):
     record_id = args.get('contentId')
-    res = client.do_request('Delete', f'/core/content/{record_id}')
+    res = client.do_request('Delete', f'{API_ENDPOINT}/core/content/{record_id}')
 
     errors = get_errors_from_res(res)
     if errors:
@@ -894,7 +896,7 @@ def update_record_command(client: Client, args: Dict[str, str]):
     field_contents = generate_field_contents(client, fields_values, level_data['mapping'])
 
     body = {'Content': {'Id': record_id, 'LevelId': level_data['level'], 'FieldContents': field_contents}}
-    res = client.do_request('Put', '/core/content', data=body)
+    res = client.do_request('Put', f'{API_ENDPOINT}/core/content', data=body)
 
     errors = get_errors_from_res(res)
     if errors:
@@ -967,7 +969,7 @@ def upload_file_command(client: Client, args: Dict[str, str]) -> str:
     file_name, file_bytes = get_file(entry_id)
     body = {'AttachmentName': file_name, 'AttachmentBytes': file_bytes}
 
-    res = client.do_request('POST', '/core/content/attachment', data=body)
+    res = client.do_request('POST', f'{API_ENDPOINT}/core/content/attachment', data=body)
 
     errors = get_errors_from_res(res)
     if errors:
@@ -1004,7 +1006,7 @@ def upload_and_associate_command(client: Client, args: Dict[str, str]):
 
 def download_file_command(client: Client, args: Dict[str, str]):
     attachment_id = args.get('fileId')
-    res = client.do_request('GET', f'/core/content/attachment/{attachment_id}')
+    res = client.do_request('GET', f'{API_ENDPOINT}/core/content/attachment/{attachment_id}')
 
     errors = get_errors_from_res(res)
     if errors:
@@ -1021,9 +1023,9 @@ def download_file_command(client: Client, args: Dict[str, str]):
 def list_users_command(client: Client, args: Dict[str, str]):
     user_id = args.get('userId')
     if user_id:
-        res = client.do_request('GET', f'/core/system/user/{user_id}')
+        res = client.do_request('GET', f'{API_ENDPOINT}/core/system/user/{user_id}')
     else:
-        res = client.do_request('GET', '/core/system/user')
+        res = client.do_request('GET', f'{API_ENDPOINT}/core/system/user')
 
     errors = get_errors_from_res(res)
     if errors:
@@ -1122,7 +1124,7 @@ def search_records_by_report_command(client: Client, args: Dict[str, str]):
         else:
             level_id = raw_records['Records']['Record']['@levelId']
 
-        level_res = client.do_request('GET', f'/core/system/fielddefinition/level/{level_id}')
+        level_res = client.do_request('GET', f'{API_ENDPOINT}/core/system/fielddefinition/level/{level_id}')
         fields = {}
         for field in level_res:
             if field.get('RequestedObject') and field.get('IsSuccessful'):
@@ -1258,7 +1260,8 @@ def main():
     credentials = params.get('credentials')
     base_url = params.get('url').strip('/').replace('rsaarcher', '')
     api_endpoint = params.get('api_endpoint') or 'rsaarcher/api'
-    base_url = urljoin(base_url, api_endpoint)
+    if 'rsaarcher' in api_endpoint:
+        base_url = urljoin(base_url, 'rsaarcher')
 
     cache = get_integration_context()
     if not cache.get('fieldValueList'):
