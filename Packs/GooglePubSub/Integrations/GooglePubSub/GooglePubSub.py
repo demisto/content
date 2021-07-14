@@ -1330,7 +1330,7 @@ def fetch_incidents(
 
     # Pull unique messages if available
     msgs, msg_ids, acknowledges, max_publish_time = try_pull_unique_messages(
-        client, sub_name, last_run_fetched_ids, last_run_time, retry_times=1
+        client, sub_name, last_run_fetched_ids, last_run_time, retry_times=1, ack_incidents=ack_incidents
     )
 
     # Handle fetch results
@@ -1377,7 +1377,7 @@ def setup_subscription_last_run(
 
 
 def try_pull_unique_messages(
-    client, sub_name, previous_msg_ids, last_run_time, retry_times=0
+    client, sub_name, previous_msg_ids, last_run_time, retry_times=0, ack_incident=None
 ):
     """
     Tries to pull unique messages for the subscription
@@ -1386,6 +1386,7 @@ def try_pull_unique_messages(
     :param previous_msg_ids: Previous message ids set
     :param last_run_time: previous run time
     :param retry_times: How many times to retry pulling
+    :param ack_incident: is ack_incident expected to happen
     :return:
         1. Unique list of messages
         2. Unique  set of message ids
@@ -1399,8 +1400,9 @@ def try_pull_unique_messages(
     raw_msgs = client.pull_messages(sub_name, client.default_max_msgs)
     if "receivedMessages" in raw_msgs:
         res_acks, msgs = extract_acks_and_msgs(raw_msgs)
-        # set the deadline to 0 to handle reset to last run
-        client.subscription_reset_ack_deadline(sub_name, res_acks)
+        if not ack_incident:
+            # set the deadline to 0 to handle reset to last run
+            client.subscription_reset_ack_deadline(sub_name, res_acks)
         # continue only if messages were extracted successfully
         if msgs:
             msg_ids, max_publish_time = get_messages_ids_and_max_publish_time(msgs)
@@ -1414,7 +1416,7 @@ def try_pull_unique_messages(
                     f"GCP_PUBSUB_MSG Duplicates with max_publish_time: {max_publish_time}"
                 )
                 return try_pull_unique_messages(
-                    client, sub_name, previous_msg_ids, retry_times - 1
+                    client, sub_name, previous_msg_ids, retry_times - 1, ack_incident=ack_incident
                 )
             # clean non-unique ids from raw_msgs
             else:
