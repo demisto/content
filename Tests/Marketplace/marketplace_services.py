@@ -1305,7 +1305,7 @@ class Pack(object):
                     # Handling latest release notes files
                     release_notes_lines, latest_release_notes, latest_aggregated_release_notes_versions = \
                         self.get_release_notes_lines(
-                        release_notes_dir, changelog_latest_rn_version, changelog_latest_rn)
+                            release_notes_dir, changelog_latest_rn_version, changelog_latest_rn)
                     self.assert_upload_bucket_version_matches_release_notes_version(changelog, latest_release_notes)
 
                     # Handling modified old release notes files, if there are any
