@@ -381,6 +381,9 @@ Disables an Active Directory user account.
 
 `ad-disable-account`
 
+##### Required Permissions
+Requires `Read userAccountControl` and `write userAccountControl` permissions.
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -409,6 +412,9 @@ Enables a previously disabled Active Directory account.
 ##### Base Command
 
 `ad-enable-account`
+
+##### Required Permissions
+Requires `Read userAccountControl` and `write userAccountControl` permissions.
 
 ##### Input
 
