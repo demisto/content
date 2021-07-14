@@ -1708,23 +1708,20 @@ class Pack(object):
                 # Since premium packs cannot be legacy, we directly set this attribute to false.
                 self._legacy = False
 
-            # ===== Pack Statistics Attributes =====
-            if not self._is_private_pack and statistics_handler:  # Public Content case
-                self._pack_statistics_handler = mp_statistics.PackStatisticsHandler(
-                    self._pack_name, statistics_handler.packs_statistics_df, statistics_handler.packs_download_count_desc,
-                    displayed_dependencies
-                )
-                self._downloads_count = self._pack_statistics_handler.download_count
-                trending_packs = statistics_handler.trending_packs
-                pack_dependencies_by_download_count = self._pack_statistics_handler.displayed_dependencies_sorted
-
-            self._tags = self._collect_pack_tags(user_metadata, landing_page_sections, trending_packs)
-            self._search_rank = mp_statistics.PackStatisticsHandler.calculate_search_rank(
-                tags=self._tags, certification=self._certification, content_items=self._content_items
+        # ===== Pack Statistics Attributes =====
+        if not self._is_private_pack and statistics_handler:  # Public Content case
+            self._pack_statistics_handler = mp_statistics.PackStatisticsHandler(
+                self._pack_name, statistics_handler.packs_statistics_df, statistics_handler.packs_download_count_desc,
+                displayed_dependencies
             )
-
-        if not self._is_private_pack and statistics_handler and format_dependencies_only:  # Public Content case and reformat for dependencies
+            self._downloads_count = self._pack_statistics_handler.download_count
+            trending_packs = statistics_handler.trending_packs
             pack_dependencies_by_download_count = self._pack_statistics_handler.displayed_dependencies_sorted
+
+        self._tags = self._collect_pack_tags(user_metadata, landing_page_sections, trending_packs)
+        self._search_rank = mp_statistics.PackStatisticsHandler.calculate_search_rank(
+            tags=self._tags, certification=self._certification, content_items=self._content_items
+        )
 
         self._related_integration_images = self._get_all_pack_images(
             self._displayed_integration_images, displayed_dependencies, dependencies_data,
