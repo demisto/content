@@ -38,6 +38,11 @@ TEST_PREPARE_ARGS = [({'type': '1', 'to_ids': 0, 'from': '2', 'to': '3', 'event_
                      ({}, {'limit': '50'})  # default value
                      ]
 
+TEST_EVENTS_INCLUDE_DETECTED_TAG = [("2", ['149', '145', '144']),  # 3 events include the detected tag
+                                    ("278", ['145']),  # 1 event includes the detected attribute's tag
+                                    (None, []),  # no tag was detected, no event returns
+                                    ("104", ['149'])]  # 1 event includes the detected event's tag
+
 
 def util_load_json(path):
     with io.open(path, mode="r", encoding="utf-8") as f:
@@ -521,6 +526,28 @@ def test_attribute_response_to_markdown_table(mocker):
     assert md['Event Organisation ID'] == '1'
     assert md['Event Distribution'] == '0'
     assert md['Event UUID'] == '5e6b322a-9f80-4e2f-9f2a-3cab0a123456'
+
+
+@pytest.mark.parametrize('detected_tag, expected_related_events', TEST_EVENTS_INCLUDE_DETECTED_TAG)
+def test_get_events_related_to_scored_tag(mocker, detected_tag, expected_related_events):
+    """
+
+    Given:
+    - detected_tag - a tag id that was detected as malicious or suspicious.
+    - expected_related_events - All events that include detected_tag.
+
+    When:
+    - After running a reputation command
+
+    Then:
+    - Ensure that the returned list includes only the events that has detected_tag.
+    """
+    mock_misp(mocker)
+    from MISPV3 import get_events_related_to_scored_tag
+    reputation_command_outputs = util_load_json("test_data/reputation_command_outputs.json")
+    events_to_human_readable = get_events_related_to_scored_tag(reputation_command_outputs, detected_tag)
+    all_event_ids_found = [event.get('Event_ID') for event in events_to_human_readable]
+    assert all_event_ids_found == expected_related_events
 
 
 def test_parse_response_reputation_command(mocker):

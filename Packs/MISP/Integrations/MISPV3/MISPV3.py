@@ -575,7 +575,6 @@ def check_reputation_object(value, dbot_type, malicious_tag_ids, suspicious_tag_
                                 integration_name=INTEGRATION_NAME,
                                 score=score, reliability=reliability, malicious_description="Match found in MISP")
         indicator = get_dbot_indicator(dbot_type, dbot, value)
-
         events_to_human_readable = get_events_related_to_scored_tag(outputs, found_tag)
         attribute_highlights = reputation_command_to_human_readable(outputs, score, events_to_human_readable)
         readable_output = tableToMarkdown(f'Results found in MISP for value: {value}', attribute_highlights)
@@ -605,14 +604,22 @@ def get_events_related_to_scored_tag(reputation_outputs, found_tag):
         event_name = event_object.get('Info')
         related_events.extend(get_event_to_tag(event_object, found_tag, event_name))  # attribute_event_tags
         related_events.extend(get_event_to_tag(event, found_tag, event_name))  # event_tags
-    return related_events
+    return remove_duplicated_related_events(related_events)
+
+
+def remove_duplicated_related_events(related_events):
+    related_events_no_duplicates = []
+    for i in range(len(related_events)):
+        if related_events[i] not in related_events[i + 1:]:
+            related_events_no_duplicates.append(related_events[i])
+    return related_events_no_duplicates
 
 
 def get_event_to_tag(data_dict, found_tag, event_name):
     related_events = []
     for tag in data_dict.get('Tag', []):
         if tag.get('ID') == found_tag:
-            event_id = data_dict.get('EventID')
+            event_id = data_dict.get('EventID') if data_dict.get('EventID') else data_dict.get('ID')
             tag_name = tag.get('Name')
             related_events.append({'Event_ID': event_id, 'Event_Name': event_name,
                                    'Tag_Name': tag_name, 'Tag_ID': tag.get('ID')})
