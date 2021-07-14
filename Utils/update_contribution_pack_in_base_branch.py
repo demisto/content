@@ -22,7 +22,7 @@ def main():
     packs_dir_names = get_files_from_github(repo, branch, pr_number)
     if packs_dir_names:
         print_success(f'Successfully updated the base branch with the following contrib packs: Packs/'
-                    f'{", Packs/".join(packs_dir_names)}')
+                      f'{", Packs/".join(packs_dir_names)}')
 
 
 def get_pr_files(pr_number: str) -> Iterable[str]:
@@ -73,9 +73,10 @@ def get_files_from_github(username: str, branch: str, pr_number: str) -> List[st
             with requests.get(urljoin(base_url, file_path), stream=True) as file_content:
                 for data in file_content.iter_content(chunk_size=chunk_size):
                     changed_file.write(data)
-        
+
         files_list.add(file_path_parts[1])
     return list(files_list)
-    
+
+
 if __name__ == '__main__':
     main()
