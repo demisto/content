@@ -13,3 +13,5 @@ subtype: python2
 runonce: false
 runas: DBotWeakRole
 fromversion: 5.0.0
+tests:
+- No tests (auto formatted)
