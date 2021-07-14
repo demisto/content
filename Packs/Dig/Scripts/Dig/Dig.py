@@ -78,7 +78,7 @@ def regex_result(dig_output: str, reverse_lookup: bool):
     num_0_255 = r'(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])'
     try:
         if not reverse_lookup:
-            regex_results_ip = re.findall(rf'\b(?:{num_0_255}(?:\[\.\]|\.)){{3}}{num_0_255}\b", dig_output)
+            regex_results_ip = re.findall(rf'\b(?:{num_0_255}(?:\[\.\]|\.)){{3}}{num_0_255}\b', dig_output)
             if not regex_results_ip:
                 raise ValueError("Couldn't find results:\n")
             resolved_addresses = regex_results_ip[::2]
