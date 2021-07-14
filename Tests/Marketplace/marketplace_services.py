@@ -1303,7 +1303,8 @@ class Pack(object):
 
                 if os.path.exists(release_notes_dir):
                     # Handling latest release notes files
-                    release_notes_lines, latest_release_notes, latest_aggregated_release_notes_versions = self.get_release_notes_lines(
+                    release_notes_lines, latest_release_notes, latest_aggregated_release_notes_versions = \
+                        self.get_release_notes_lines(
                         release_notes_dir, changelog_latest_rn_version, changelog_latest_rn)
                     self.assert_upload_bucket_version_matches_release_notes_version(changelog, latest_release_notes)
 
