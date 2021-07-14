@@ -595,15 +595,18 @@ def check_reputation_object(value, dbot_type, malicious_tag_ids, suspicious_tag_
 
 def get_events_related_to_scored_tag(reputation_outputs, found_tag):
     related_events = []
-    attribute_event = reputation_outputs.get('Event', {})
-    event_name = attribute_event.get('Info')
-    related_events.extend(get_event_to_tag(attribute_event, found_tag, event_name))  # attribute_event_tags
-    related_events.extend(get_event_to_tag(reputation_outputs, found_tag, event_name))  # attribute_tags
-    for event in reputation_outputs.get('RelatedAttribute', []):
-        event_object = event.get('Event')
-        event_name = event_object.get('Info')
-        related_events.extend(get_event_to_tag(event_object, found_tag, event_name))  # attribute_event_tags
-        related_events.extend(get_event_to_tag(event, found_tag, event_name))  # event_tags
+    if found_tag:
+        attribute_event = reputation_outputs.get('Event', {})
+        event_name = attribute_event.get('Info')
+        related_events.extend(get_event_to_tag(attribute_event, found_tag, event_name))  # attribute_event_tags
+        related_events.extend(get_event_to_tag(reputation_outputs, found_tag, event_name))  # attribute_tags
+        related_events_from_outputs = reputation_outputs.get('RelatedAttribute')
+        if related_events_from_outputs:
+            for event in related_events_from_outputs:
+                event_object = event.get('Event')
+                event_name = event_object.get('Info')
+                related_events.extend(get_event_to_tag(event_object, found_tag, event_name))  # attribute_event_tags
+                related_events.extend(get_event_to_tag(event, found_tag, event_name))  # event_tags
     return remove_duplicated_related_events(related_events)
 
 
