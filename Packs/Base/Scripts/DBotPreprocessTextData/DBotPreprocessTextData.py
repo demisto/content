@@ -11,7 +11,7 @@ from html.parser import HTMLParser
 from html import unescape
 from re import compile as _Re
 import pandas as pd
-from langdetect import detect, detect_langs
+from langdetect import detect
 
 
 def hash_word(word, hash_seed):
