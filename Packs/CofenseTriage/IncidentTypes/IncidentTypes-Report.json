@@ -6,6 +6,7 @@
     "name": "Cofense Triage Report",
     "prevName": "Cofense Triage Report",
     "color": "#EDFE41",
+    "playbookId": "Report Categorization - Cofense Triage v3",
     "hours": 0,
     "days": 0,
     "weeks": 0,

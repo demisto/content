@@ -1,5 +1,5 @@
 The integration uses the Cofense Triage v2 API that allows users to ingest phishing reports as incident alerts and execute commands such as threat indicators, reporters, categorize reports, and more.
-This integration was integrated and tested with version 1.23.0rc3 of Cofense Triage v3.
+This integration was integrated and tested with version 1.22.0 of Cofense Triage.
 ## Configure Cofense Triage v3 on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
@@ -9,8 +9,7 @@ This integration was integrated and tested with version 1.23.0rc3 of Cofense Tri
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
     | Server URL | Server URL to connect to Cofense Triage. | True |
-    | Client ID | Client ID associated with the Server URL to connect to Cofense Triage. | True |
-    | Client Secret | Client Secret associated with the Client ID to connect to Cofense Triage. | True |
+    | Client ID | Client ID and Client Secret associated with the Server URL to connect to Cofense Triage. | True |
     | Maximum number of incidents per fetch | The maximum limit is 200. | False |
     | First fetch time interval | Date or relative timestamp to start fetching incidents from. \(Formats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ, etc\) | False |
     | Report Location | Fetches the report based on the location within Cofense Triage. If not specified, it fetches all the reports. | False |
@@ -43,7 +42,7 @@ If Categorization tags are provided in fetch incident parameters:
 - The Report Location must be Processed.
 
 If Tags are provided in fetch incident parameters:
-- The Report Location can be Inbox or Reconnaissance.
+- The Report Location must be Reconnaissance.
 
 ## Filtering
 For all the list commands provided filter_by argument to filter list by attribute values.
@@ -94,7 +93,10 @@ comparison operators:
 - `none`: Returns results when a resource is not tagged with any of the specified tags.
 
 ## Mirroring Integration Feature
-- All users with 6.0.0 and higher would be able to get the updated reports from Cofense Triage (called Mirroring Integration feature). Users with a version less than 6.0.0 would not get the updated reports once pulled from Cofense Triage via fetch incident.
+- All users with 6.0.0 and higher would be able to get the updated reports from Cofense Triage (called Mirroring Integration feature).
+- The integration imports reported emails as incidents. It allows to mirror incidents from Cofense Triage to Cortex SOAR. This can be made possible by enabling the following option:
+    - Can sync mirror in
+    ![Mirroring Configuration](./../../doc_files/mirroring_configuration.png)
 
 ## Commands
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
@@ -695,9 +697,7 @@ Categorizes a report into a specific category provided by the user.
 | --- | --- | --- |
 | id | Specify the ID of the report to be categorized. Note: To retrieve id, execute cofense-report-list command. | Required | 
 | category_id | Specify the ID of the category in which report is to be categorized. Note: To retrieve category_id, execute cofense-category-list command. | Required | 
-| categorization_tags | Specify the tags that are to be assigned to the report. | Optional | 
-| response_id | Specify the ID of the response. Note: To retrieve response_id, execute cofense-response-list command. | Optional | 
-
+| categorization_tags | Specify the tags that are to be assigned to the report. | Optional |
 
 #### Context Output
 
@@ -1442,217 +1442,6 @@ Reporters are employees of an organization who send, or report, suspicious email
 >|---|---|---|---|---|---|---|---|
 >| 4 | no-reply@xyz.com | 10 | 8 | false | 2020-12-11T05:46:39.000Z | 2020-10-21T20:54:23.383Z | 2021-05-30T11:51:00.170Z |
 >| 6 | devcomm@xyz.com | 2 | -5 | true | 2020-05-05T18:44:01.000Z | 2020-10-21T20:54:25.915Z | 2020-12-03T10:51:25.482Z |
-
-
-### cofense-response-create
-***
-Creates a response based on the values provided in the command arguments.
-Responses provide feedback (acknowledgment) to reporters about emails they reported.
-
-
-#### Base Command
-
-`cofense-response-create`
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| name | Specify the name of the response. | Required | 
-| description | Specify the description of response. | Optional | 
-| to_reporter | Specify whether to add the reporter to the response recipient list or not. Note: Either to_reporter or to_other, or both, must be enabled. Possible values are: true, false. Default is true. | Optional | 
-| to_other | Specify whether to add the addresses specified in to_other_address to the response recipient list or not. Note: If true, specify one or more values in to_other_address. Either to_reporter or to_other, or both, must be enabled. Possible values are: true, false. Default is false. | Optional | 
-| to_other_address | Specify the comma-separated list of email addresses to send the response to. Note: Works with to_other. | Optional | 
-| cc_address | Specify the comma-separated list of email addresses to CC the response to. | Optional | 
-| bcc_address | Specify the comma-separated list of email addresses to BCC the response to. | Optional | 
-| subject | Specify the subject of response. | Required | 
-| attach_original | Specify whether to attach the original email to the response or not. Possible values are: true, false. Default is false. | Optional | 
-| body | Specify the body of response. | Required | 
-
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| Cofense.Response.id | String | Unique identifier of the response. | 
-| Cofense.Response.type | String | Type of the resource of Cofense Triage. | 
-| Cofense.Response.links.self | String | Link of the resource. | 
-| Cofense.Response.attributes.name | String | Short display name of the response sent to individuals when a report is categorized. | 
-| Cofense.Response.attributes.description | String | Expanded name or description of the response. | 
-| Cofense.Response.attributes.to_reporter | Boolean | Whether to add the reporter to the response recipient list \(true\) or not \(false\). The default is true. | 
-| Cofense.Response.attributes.to_other | Boolean | Whether to add the addresses specified in to_other_address to the response recipient list \(true\) or not \(false\). The default is false. | 
-| Cofense.Response.attributes.to_other_address | String | Comma-separated list of email addresses to send the response to. | 
-| Cofense.Response.attributes.cc_address | String | Comma-separated list of email addresses to CC the response to. | 
-| Cofense.Response.attributes.bcc_address | String | Comma-separated list of email addresses to BCC the response to. | 
-| Cofense.Response.attributes.subject | String | Subject of the response. | 
-| Cofense.Response.attributes.attach_original | Boolean | Whether to attach the original email to the response \(true\) or not \(false\). The default is false. | 
-| Cofense.Response.attributes.body | String | HTML or plain-text body of the email. | 
-| Cofense.Response.attributes.created_at | Date | Date and time, in ISO 8601 format, when the resource was created. | 
-| Cofense.Response.attributes.updated_at | Date | Date and time, in ISO 8601 format, when the resource was last updated. | 
-| Cofense.Response.relationships.one_clicks.links.self | String | Link to retrieve the one-click categorizations that send the response when processing reports.  | 
-| Cofense.Response.relationships.one_clicks.links.related | String | Link to retrieve the detailed information of the one-click categorizations that send the response when processing reports. | 
-
-
-#### Command Example
-```!cofense-response-create body="Sample body" name="Sample name" subject="Sample subject"```
-
-#### Context Example
-```json
-{
-    "Cofense": {
-        "Response": {
-            "attributes": {
-                "attach_original": false,
-                "body": "Sample body",
-                "created_at": "2021-06-22T06:07:25.240Z",
-                "name": "Sample name",
-                "subject": "Sample subject",
-                "to_other": false,
-                "to_reporter": true,
-                "updated_at": "2021-06-22T06:07:25.240Z"
-            },
-            "id": "165",
-            "links": {
-                "self": "https://triage.example.com/api/public/v2/responses/165"
-            },
-            "relationships": {
-                "one_clicks": {
-                    "links": {
-                        "related": "https://triage.example.com/api/public/v2/responses/165/one_clicks",
-                        "self": "https://triage.example.com/api/public/v2/responses/165/relationships/one_clicks"
-                    }
-                }
-            },
-            "type": "responses"
-        }
-    }
-}
-```
-
-#### Human Readable Output
-
->### Response(s)
->|Response ID|Name|Subject|Attach Original|Created At|Updated At|
->|---|---|---|---|---|---|
->| 165 | Sample name | Sample subject | false | 2021-06-22T06:07:25.240Z | 2021-06-22T06:07:25.240Z |
-
-
-### cofense-response-list
-***
-Retrieves responses based on the values provided in the command arguments. 
-Responses provide feedback (acknowledgment) to reporters about emails they reported.
-
-
-#### Base Command
-
-`cofense-response-list`
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| id | Specify the ID of the response to retrieve a specific response. Note: If 'id' argument is provided, then apart from 'fields_to_retrieve', all arguments will be neglected. | Optional | 
-| page_size | Specify the number of responses to retrieve per page. Note: Possible values are between 1 and 200. Default is 20. | Optional | 
-| page_number | Specify a page number to retrieve the responses. Default is 1. | Optional | 
-| sort_by | Specify the attributes to sort the responses. Note: The default sort order for an attribute is ascending. Prefix the attributes with a hyphen to sort in descending order. For example: name, -description. | Optional | 
-| filter_by | Specify the filters to filter the list of responses by attribute values. Note: Enter values in key-value JSON format. To separate multiple values of a single attribute, use commas. Add backslash(\\) before quotes. Format accepted: {\\"attribute1_operator \\": \\"value1, value2\\", \\"attribute2_operator\\" : \\"value3, value4\\"} For example: {\\"name_eq\\":\\"hello,default\\", \\"updated_at_gt\\":\\"2020-10-26T10:48:16.834Z\\"}. | Optional | 
-| fields_to_retrieve | Specify the fields to retrieve the mentioned attributes only. For example: name, body. | Optional | 
-| name | Specify the name of the response to retrieve the response. | Optional | 
-| created_at | Specify the date and time of creation, from when to retrieve the responses. Formats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ, etc. | Optional | 
-| updated_at | Specify the date and time of updation, from when to retrieve the responses. Formats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ, etc. | Optional | 
-
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| Cofense.Response.id | String | Unique identifier of the response. | 
-| Cofense.Response.type | String | Type of the resource of Cofense Triage. | 
-| Cofense.Response.links.self | String | Link of the resource. | 
-| Cofense.Response.attributes.name | String | Short display name of the response sent to individuals when a report is categorized. | 
-| Cofense.Response.attributes.description | String | Expanded name or description of the response. | 
-| Cofense.Response.attributes.to_reporter | Boolean | Whether to add the reporter to the response recipient list \(true\) or not \(false\). The default is true. | 
-| Cofense.Response.attributes.to_other | Boolean | Whether to add the addresses specified in to_other_address to the response recipient list \(true\) or not \(false\). The default is false. | 
-| Cofense.Response.attributes.to_other_address | String | Comma-separated list of email addresses to send the response to. | 
-| Cofense.Response.attributes.cc_address | String | Comma-separated list of email addresses to CC the response to. | 
-| Cofense.Response.attributes.bcc_address | String | Comma-separated list of email addresses to BCC the response to. | 
-| Cofense.Response.attributes.subject | String | Subject of the response. Supports variables. | 
-| Cofense.Response.attributes.attach_original | Boolean | Whether to attach the original email to the response \(true\) or not \(false\). The default is false. | 
-| Cofense.Response.attributes.body | String | HTML or plain-text body of the email. | 
-| Cofense.Response.attributes.created_at | Date | Date and time, in ISO 8601 format, when the resource was created. | 
-| Cofense.Response.attributes.updated_at | Date | Date and time, in ISO 8601 format, when the resource was last updated. | 
-| Cofense.Response.relationships.one_clicks.links.self | String | Link to retrieve the one-click categorizations that send the response when processing reports.  | 
-| Cofense.Response.relationships.one_clicks.links.related | String | Link to retrieve the detailed information of the one-click categorizations that send the response when processing reports. | 
-
-
-#### Command Example
-```!cofense-response-list page_size=2```
-
-#### Context Example
-```json
-{
-    "Cofense": {
-        "Response": [
-            {
-                "attributes": {
-                    "attach_original": false,
-                    "body": "Sample body",
-                    "created_at": "2020-10-21T15:30:57.000Z",
-                    "name": "test_update2",
-                    "subject": "Email [SUBJECT] reported [REPORT_DATE] is SAFE",
-                    "to_other": false,
-                    "to_reporter": true,
-                    "updated_at": "2021-06-01T16:51:17.425Z"
-                },
-                "id": "1",
-                "links": {
-                    "self": "https://triage.example.com/api/public/v2/responses/1"
-                },
-                "relationships": {
-                    "one_clicks": {
-                        "links": {
-                            "related": "https://triage.example.com/api/public/v2/responses/1/one_clicks",
-                            "self": "https://triage.example.com/api/public/v2/responses/1/relationships/one_clicks"
-                        }
-                    }
-                },
-                "type": "responses"
-            },
-            {
-                "attributes": {
-                    "attach_original": false,
-                    "body": "Sample body",
-                    "created_at": "2020-10-21T15:30:57.000Z",
-                    "name": "External Email - Safe to Interact With",
-                    "subject": "Email [SUBJECT] reported [REPORT_DATE] is SAFE",
-                    "to_other": false,
-                    "to_reporter": true,
-                    "updated_at": "2021-06-01T16:51:17.428Z"
-                },
-                "id": "2",
-                "links": {
-                    "self": "https://triage.example.com/api/public/v2/responses/2"
-                },
-                "relationships": {
-                    "one_clicks": {
-                        "links": {
-                            "related": "https://triage.example.com/api/public/v2/responses/2/one_clicks",
-                            "self": "https://triage.example.com/api/public/v2/responses/2/relationships/one_clicks"
-                        }
-                    }
-                },
-                "type": "responses"
-            }
-        ]
-    }
-}
-```
-
-#### Human Readable Output
-
->### Response(s)
->|Response ID|Name|Subject|Attach Original|Created At|Updated At|
->|---|---|---|---|---|---|
->| 1 | test_update2 | Email [SUBJECT] reported [REPORT_DATE] is SAFE | false | 2020-10-21T15:30:57.000Z | 2021-06-01T16:51:17.425Z |
->| 2 | External Email - Safe to Interact With | Email [SUBJECT] reported [REPORT_DATE] is SAFE | false | 2020-10-21T15:30:57.000Z | 2021-06-01T16:51:17.428Z |
 
 
 ### cofense-integration-submission-get

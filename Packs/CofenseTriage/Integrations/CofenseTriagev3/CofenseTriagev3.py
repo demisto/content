@@ -31,7 +31,6 @@ URL_SUFFIX = {
     "REPORTERS": "api/public/v2/reporters",
     "INTEGRATION_SUBMISSION": "/api/public/v2/{}/{}/integration_submissions",
     "ATTACHMENT_PAYLOAD": "api/public/v2/attachment_payloads",
-    "RESPONSE": "api/public/v2/responses",
     "COMMENTS": "api/public/v2/comments/",
     "REPORT_ID": "api/public/v2/reports/{}",
     "CLUSTER": "api/public/v2/clusters"
@@ -44,7 +43,6 @@ OUTPUT_PREFIX = {
     "URL": "Cofense.Url",
     "RULE": "Cofense.Rule",
     "REPORTER": "Cofense.Reporter",
-    "RESPONSE": "Cofense.Response",
     "ATTACHMENT_PAYLOAD": "Cofense.AttachmentPayload",
     "INTEGRATION_SUBMISSION": "Cofense.IntegrationSubmission",
     "COMMENT": "Cofense.Comment",
@@ -67,7 +65,7 @@ MESSAGES = {
     "INVALID_LOCATION_FOR_CATEGORIZATION_TAGS": "If Categorization Tags are provided in fetch incident parameters, "
                                                 "the Report Location cannot be 'Inbox' or 'Reconnaissance'.",
     "INVALID_LOCATION_FOR_TAGS": "If Tags are provided in fetch incident parameters, the Report Location "
-                                 "cannot be 'Processed'.",
+                                 "must be 'Reconnaissance'.",
     "BODY_FORMAT": "Invalid value for body format. Body format must be text or json.",
     "INTEGRATION_SUBMISSION_TYPE": "Invalid value for integration submission type. Type must be urls or "
                                    "attachment_payloads.",
@@ -178,7 +176,7 @@ class Client(BaseClient):
         raise DemistoException(err_msg)
 
     @staticmethod
-    def set_integration_context(resp) -> dict:
+    def set_integration_context(resp) -> Any:
         """
         set API token and expiry time in integration configuration context.
         Will raise value error if api-token is not found.
@@ -187,14 +185,14 @@ class Client(BaseClient):
         :return: integration context
         """
 
-        integration_context = demisto.getIntegrationContext()
+        integration_context = {}
         api_token = resp.get('access_token')
         if api_token:
             integration_context['api_token'] = "Bearer " + api_token
             integration_context['valid_until'] = int(time.time() + resp.get("expires_in", TOKEN_EXPIRY_TIMEOUT))
         else:
             raise ValueError(MESSAGES["API_TOKEN"])
-        demisto.setIntegrationContext(integration_context)
+        set_integration_context(integration_context)
         return integration_context.get('api_token')
 
     @staticmethod
@@ -203,7 +201,7 @@ class Client(BaseClient):
         Retrieve API token from integration context.
         if API token is not found or expired it will return false
         """
-        integration_context = demisto.getIntegrationContext()
+        integration_context = get_integration_context()
         api_token = integration_context.get('api_token')
         valid_until = integration_context.get('valid_until')
 
@@ -512,35 +510,6 @@ def prepare_hr_for_clusters(clusters: List[Dict[str, Any]]) -> str:
                                                    CREATED_AT, UPDATED_AT], removeNull=True)
 
 
-def prepare_hr_for_responses(responses: List[Dict[str, Any]]) -> str:
-    """
-    Prepare human readable for create response command.
-    :param responses:The response data.
-    :return: Human readable.
-    """
-    hr_list = []
-    for response in responses:
-        hr_record = {
-            'Response ID': response.get('id', ''),
-        }
-        attributes = response.get('attributes')
-        if attributes:
-            hr_record['Name'] = attributes.get('name', '')
-            hr_record['Description'] = attributes.get('description', '')
-            hr_record['Subject'] = attributes.get('subject', '')
-            hr_record['Attach Original'] = attributes.get('attach_original', '')
-            hr_record['CC Addresses'] = attributes.get('cc_address', '')
-            hr_record['BCC Addresses'] = attributes.get('bcc_address', '')
-            hr_record[CREATED_AT] = attributes.get('created_at', '')
-            hr_record[UPDATED_AT] = attributes.get('updated_at', '')
-
-        hr_list.append(hr_record)
-
-    return tableToMarkdown('Response(s)', hr_list, ['Response ID', 'Name', 'Description', 'Subject', 'Attach Original',
-                                                    'CC Addresses', 'BCC Addresses', CREATED_AT, UPDATED_AT],
-                           removeNull=True)
-
-
 def prepare_hr_for_rules(rules: List[Dict[str, Any]]) -> str:
     """
     Prepare human readable for list rules command.
@@ -829,79 +798,6 @@ def validate_list_rule_args(args: Dict[str, str]) -> Dict[str, Any]:
     return params
 
 
-def validate_list_response_args(args: Dict[str, str]) -> Dict[str, Any]:
-    """
-    Validate arguments for cofense-response-list command, raise ValueError on invalid arguments.
-
-    :type args: ``Dict[str, str]``
-    :param args: The command arguments provided by the user.
-
-    :return: Parameters to send in request
-    :rtype: ``Dict[str, str]``
-    """
-    params, custom_args = validate_list_command_args(args, "responses")
-
-    names = retrieve_fields(args.get("name", ""))
-    if names:
-        custom_args.append("name")
-        params["filter[name]"] = names
-
-    params.update(validate_filter_by_argument(args, custom_args))
-
-    remove_nulls_from_dictionary(params)
-
-    return params
-
-
-def validate_create_response_args(args: Dict[str, str]) -> Dict[str, Any]:
-    """
-    Validate arguments for cofense-response-create command, raise ValueError on invalid arguments.
-
-    :type args: ``Dict[str, str]``
-    :param args: The command arguments provided by the user.
-
-    :return: Parameters to send in request
-    :rtype: ``Dict[str, str]``
-    """
-
-    required_args = ["name", "subject", "body"]
-    arguments = ["to_other_address", "cc_address", "bcc_address"]
-
-    # validate boolean arguments
-    to_reporter = args.get("to_reporter", "True")
-    if to_reporter:
-        to_reporter = "true" if argToBoolean(to_reporter) else "false"
-
-    to_other = args.get("to_other", "False")
-    if to_other:
-        to_other = "true" if argToBoolean(to_other) else "false"
-
-    attach_original = args.get("attach_original", "False")
-    if attach_original:
-        attach_original = "true" if argToBoolean(attach_original) else "false"
-
-    params = {
-        "to_reporter": to_reporter,
-        "to_other": to_other,
-        "attach_original": attach_original,
-        "description": args.get("description", "")
-    }
-
-    # validate required arguments
-    for arg in required_args:
-        if not args.get(arg, ""):
-            raise ValueError(MESSAGES["REQUIRED_ARGUMENT"].format(arg))
-        params[arg] = args.get(arg, "")
-
-    for arg in arguments:
-        value = retrieve_fields(args.get(arg, ""))
-        params[arg] = value
-
-    remove_nulls_from_dictionary(params)
-
-    return params
-
-
 def validate_create_threat_indicator_args(args: Dict[str, str]) -> Dict[str, Any]:
     """
     Validate arguments for cofense-threat-indicator-create command, raise ValueError on invalid arguments.
@@ -1024,8 +920,6 @@ def validate_categorize_report_args(args: Dict[str, str]) -> Dict[str, Any]:
     categorization_tags = retrieve_fields(args.get("categorization_tags", ""))
     if categorization_tags:
         params["categorization_tags"] = categorization_tags.split(",")  # type: ignore
-    if args.get("response_id"):
-        params["response_id"] = args["response_id"]
 
     return params
 
@@ -1281,7 +1175,7 @@ def test_module(client: Client, params: dict) -> str:
     client.http_request(URL_SUFFIX["SYSTEM_STATUS"])
     is_fetch = params.get("isFetch")
     if is_fetch:
-        fetch_incidents(client, {}, params, True)
+        fetch_incidents(client, {}, params)
     return 'ok'
 
 
@@ -1355,9 +1249,9 @@ def cofense_report_list_command(client, args: Dict[str, str]) -> CommandResults:
     if report_id:
         url_suffix = f"{URL_SUFFIX['REPORTS']}/{report_id}"
     elif category_id:
-        url_suffix = f"{URL_SUFFIX['REPORTS_BY_CATEGORY'].format(category_id)}"
+        url_suffix = URL_SUFFIX['REPORTS_BY_CATEGORY'].format(category_id)
     elif cluster_id:
-        url_suffix = f"{URL_SUFFIX['REPORTS_BY_CLUSTER'].format(cluster_id)}"
+        url_suffix = URL_SUFFIX['REPORTS_BY_CLUSTER'].format(cluster_id)
 
     params = validate_list_report_args(args)
 
@@ -1451,7 +1345,7 @@ def cofense_report_image_download_command(client: Client, args: Dict[str, str]) 
     return fileResult(filename, data=raw_response, file_type=entryTypes["image"])
 
 
-def fetch_incidents(client: Client, last_run: dict, params: Dict, is_test=False) -> Tuple[dict, list]:
+def fetch_incidents(client: Client, last_run: dict, params: Dict) -> Tuple[dict, list]:
     """Fetches incidents from Cofense API.
 
     :type client: ``Client``
@@ -1462,9 +1356,6 @@ def fetch_incidents(client: Client, last_run: dict, params: Dict, is_test=False)
 
     :type params: ``Dict[str, str]``
     :param params: arguments for fetch-incident.
-
-    :type is_test: ``Boolean``
-    :param is_test: whether this is a test function call or not.
 
     :rtype: ``Tuple``
     :return: tuple of dictionary of next run and list of fetched incidents
@@ -1500,9 +1391,6 @@ def fetch_incidents(client: Client, last_run: dict, params: Dict, is_test=False)
 
     if results:
         next_run['id'] = results[-1].get('id')
-
-    if is_test:
-        return {}, []
 
     return next_run, incidents
 
@@ -1656,95 +1544,6 @@ def cofense_url_list_command(client: Client, args: Dict[str, str]) -> CommandRes
                           readable_output=hr_response,
                           raw_response=response
                           )
-
-
-def cofense_response_create_command(client: Client, args: Dict[str, str]) -> CommandResults:
-    """
-    Creates a response based on the values provided in the command arguments.
-    Responses provide feedback (acknowledgment) to reporters about emails they reported.
-
-
-    :type client: ``Client``
-    :param client: Client object to be used.
-
-    :type args: ``Dict[str, str]``
-    :param args: The command arguments provided by the user.
-
-    :return: Standard command result.
-    :rtype: ``CommandResults``
-    """
-
-    params = validate_create_response_args(args)
-
-    response = client.http_request(URL_SUFFIX['RESPONSE'], method="POST",
-                                   headers={'Content-Type': TYPE_HEADER},
-                                   json_data={
-                                       "data": {
-                                           "type": "responses",
-                                           "attributes": params
-                                       }})
-
-    total_records = response.get('data', [])
-
-    if isinstance(total_records, dict):
-        total_records = [total_records]
-
-    # Creating entry context
-    context = remove_empty_elements(total_records)
-
-    # Creating human-readable
-    readable_hr = prepare_hr_for_responses(total_records)
-
-    return CommandResults(
-        outputs_prefix=OUTPUT_PREFIX["RESPONSE"],
-        outputs_key_field='id',
-        outputs=context,
-        readable_output=readable_hr,
-        raw_response=response
-    )
-
-
-def cofense_response_list_command(client: Client, args: Dict[str, str]) -> CommandResults:
-    """
-    List responses from Cofense Triage.
-
-    :type client: ``Client``
-    :param client: Client object to be used.
-
-    :type args: ``Dict[str, str]``
-    :param args: The command arguments provided by the user.
-
-    :return: Standard command result.
-    :rtype: ``CommandResults``
-    """
-    response_id = args.get('id')
-    url_suffix = f"{URL_SUFFIX['RESPONSE']}/{response_id}" if response_id else URL_SUFFIX['RESPONSE']
-
-    params = validate_list_response_args(args)
-
-    response = client.http_request(url_suffix, params=params)
-
-    total_records = response.get('data', [])
-
-    if not total_records:
-        return CommandResults(readable_output=MESSAGES['NO_RECORDS_FOUND'].format('response(s)'))
-
-    if isinstance(total_records, dict):
-        total_records = [total_records]
-
-    # Creating entry context
-    context = remove_empty_elements(total_records)
-
-    # Creating human-readable
-    readable_hr = prepare_hr_for_responses(total_records)
-
-    return CommandResults(
-        outputs_prefix=OUTPUT_PREFIX["RESPONSE"],
-        outputs_key_field='id',
-        outputs=context,
-        readable_output=readable_hr,
-        raw_response=response
-    )
 
 
 def cofense_threat_indicator_create_command(client: Client, args: Dict[str, str]) -> CommandResults:
@@ -2156,10 +1955,8 @@ def main() -> None:
         'cofense-rule-list': cofense_rule_list_command,
         'cofense-threat-indicator-create': cofense_threat_indicator_create_command,
         'cofense-reporter-list': cofense_reporter_list_command,
-        'cofense-response-create': cofense_response_create_command,
         'cofense-attachment-payload-list': cofense_attachment_payload_list_command,
         'cofense-integration-submission-get': cofense_integration_submission_get_command,
-        'cofense-response-list': cofense_response_list_command,
         'cofense-comment-list': cofense_comment_list_command,
         'cofense-cluster-list': cofense_cluster_list_command,
         'cofense-threat-indicator-update': cofense_threat_indicator_update_command,
@@ -2174,8 +1971,10 @@ def main() -> None:
     base_url = params.get('url')
     verify_certificate = not params.get('insecure', False)
     proxy = params.get('proxy', False)
-    client_id = params.get('client_id')
-    client_secret = params.get('client_secret')
+
+    credentials = params.get("credentials", {})
+    client_id = credentials.get('identifier').strip()
+    client_secret = credentials.get('password')
 
     try:
 

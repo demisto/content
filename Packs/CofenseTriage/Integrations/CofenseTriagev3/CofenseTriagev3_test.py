@@ -486,7 +486,7 @@ def test_fetch_incidents_when_valid_response_is_returned(mocker_http_request, cl
 
     params = {'max_fetch': '2', 'first_fetch': '1 year'}
 
-    _, incidents = fetch_incidents(client, {}, params, is_test=False)
+    _, incidents = fetch_incidents(client, {}, params)
 
     assert incidents == context_output["incidents"]
 
@@ -726,74 +726,6 @@ def test_cofense_integration_submission_get_command_when_invalid_args_are_provid
     assert str(err.value) == err_msg
 
 
-@patch(MOCKER_HTTP_METHOD)
-def test_cofense_response_create_command_when_valid_response_is_returned(mocker_http_request, client):
-    """Test case scenario for successful execution of cofense-response-create command."""
-    from CofenseTriagev3 import cofense_response_create_command
-
-    with open('test_data/response/response_create.json') as data:
-        mock_response = json.load(data)
-
-    with open('test_data/response/response_create_context.json') as data:
-        expected_res = json.load(data)
-
-    with open('test_data/response/response_create.md') as data:
-        expected_hr = data.read()
-
-    mocker_http_request.return_value = mock_response
-    args = {
-        'name': 'Sample Response',
-        'body': 'Sample Body',
-        'subject': 'Sample Subject'
-    }
-
-    result = cofense_response_create_command(client, args)
-
-    assert result.raw_response == mock_response
-    assert result.outputs == expected_res
-    assert result.readable_output == expected_hr
-
-
-@pytest.mark.parametrize("args, err_msg", input_data.create_response_cmd_arg)
-def test_validate_create_response_args_when_invalid_args_are_provided(args, err_msg):
-    """Test case scenario when the arguments provided are not valid."""
-
-    from CofenseTriagev3 import validate_create_response_args
-    with pytest.raises(ValueError) as err:
-        validate_create_response_args(args)
-    assert str(err.value) == err_msg
-
-
-def test_validate_create_response_args_when_valid_args_are_provided():
-    """Test case scenario when the arguments provided are valid."""
-
-    from CofenseTriagev3 import validate_create_response_args
-    # Arguments to be passed
-    args = {
-        "name": "Sample name",
-        "body": "Sample body",
-        "subject": "Sample subject",
-        "to_reporter": "TRUE",
-        "to_other": "FALSE",
-        "description": "dummy description",
-        "cc_address": "dummy cc address",
-        "bcc_address": "dummy bcc address"
-    }
-    # Expected response
-    params = {
-        "attach_original": "false",
-        "name": "Sample name",
-        "body": "Sample body",
-        "subject": "Sample subject",
-        "to_reporter": "true",
-        "to_other": "false",
-        "description": "dummy description",
-        "cc_address": "dummy cc address",
-        "bcc_address": "dummy bcc address"
-    }
-    assert validate_create_response_args(args) == params
-
-
 def test_cofense_reporter_list_command_when_valid_response_is_returned(mocked_client):
     """Test case scenario for successful execution of cofense-reporter-list command."""
 
@@ -848,62 +780,6 @@ def test_validate_list_reporter_args_when_invalid_args_are_provided(args, err_ms
         validate_list_reporter_args(args)
 
     assert str(err.value) == err_msg
-
-
-@patch(MOCKER_HTTP_METHOD)
-def test_cofense_response_list_command_when_valid_response_is_returned(mocker_http_request, client):
-    """Test case scenario for successful execution of cofense-response-list command."""
-    from CofenseTriagev3 import cofense_response_list_command
-
-    with open('test_data/response/response_create.json') as data:
-        mock_response = json.load(data)
-
-    with open('test_data/response/response_create_context.json') as data:
-        expected_res = json.load(data)
-
-    with open('test_data/response/response_create.md') as data:
-        expected_hr = data.read()
-
-    mocker_http_request.return_value = mock_response
-    args = {
-        'id': '62'
-    }
-
-    result = cofense_response_list_command(client, args)
-
-    assert result.raw_response == mock_response
-    assert result.outputs == expected_res
-    assert result.readable_output == expected_hr
-
-
-@patch(MOCKER_HTTP_METHOD)
-def test_cofense_response_list_command_when_empty_response_is_returned(mocker_http_request, client):
-    """Test case scenario for successful execution of cofense-response-list command with an empty response."""
-    from CofenseTriagev3 import cofense_response_list_command
-    mocker_http_request.return_value = {}
-
-    args = {'page_size': '2'}
-
-    result = cofense_response_list_command(client, args)
-
-    assert result.readable_output == "No response(s) were found for the given argument(s)."
-
-
-def test_validate_list_response_args_when_valid_args_are_provided():
-    """Test case scenario when the arguments provided are valid."""
-
-    from CofenseTriagev3 import validate_list_response_args
-    # Arguments to be passed
-    args = {
-        "name": "Sample Response",
-        "filter_by": '{"name_eq":"default", "subject":"sample"}'
-    }
-    # Expected response
-    params = {
-        "filter[name]": "Sample Response",
-        "filter[subject]": "sample"
-    }
-    assert validate_list_response_args(args) == params
 
 
 def test_cofense_attachment_payload_list_command_when_valid_response_is_returned(mocked_client):

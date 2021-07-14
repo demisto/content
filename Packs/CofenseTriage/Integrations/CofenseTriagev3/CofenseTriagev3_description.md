@@ -2,7 +2,7 @@
 
 
 - Cofense Triage provides an API that superuser and operator accounts can use to extract data programmatically from Cofense Triage in JSON format.
-- This integration is tested with Cofense Triage version 1.23.0rc3.
+- This integration is tested with Cofense Triage version 1.22.0.
 - [Contact Us](https://cofense.com/contact-support/) if you don't have a Cofense account.
 
 
@@ -24,4 +24,4 @@ If Categorization tags are provided in fetch incident parameters:
 - The Report Location must be Processed.
 
 If Tags are provided in fetch incident parameters:
-- The Report Location can be Inbox or Reconnaissance. 
+- The Report Location must be Reconnaissance. 

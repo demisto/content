@@ -1,7 +1,7 @@
 commonfields:
-  id: CofenseTriageReportDownloadScript
+  id: CofenseTriageReportDownload
   version: -1
-name: CofenseTriageReportDownloadScript
+name: CofenseTriageReportDownload
 script: '-'
 type: python
 tags:
@@ -20,7 +20,7 @@ dependson:
   - '|||cofense-report-list'
   - '|||cofense-report-download'
 runonce: false
-dockerimage: demisto/python3:3.9.5.21272
+dockerimage: demisto/python3:3.9.5.22569
 runas: DBotWeakRole
 fromversion: 6.0.0
 tests:

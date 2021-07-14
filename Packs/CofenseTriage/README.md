@@ -16,10 +16,11 @@ Configuration with Cofense Triage allows for continuous API polling for new thre
 
 ### Playbooks
 
-Users would be able to run the playbook in 5.5.0 or higher version as it requires commands to execute the task.
-- Report Categorization - Cofense Triage v3
-- Send Indicators - Cofense Triage v3
-- Cluster Report Categorization - Cofense Triage v3
+Users are only able to run the playbook in v6.0.0 or higher as it requires commands to execute the task.
+This content pack includes the following playbooks: 
+1. Report Categorization - Cofense Triage v3
+2. Send Indicators - Cofense Triage v3
+3. Cluster Report Categorization - Cofense Triage v3
 
 #### Report Categorization - Cofense Triage v3
 Report Categorization playbook investigates reports that are unprocessed or uncategorized on Cofense Triage as incident alerts in XSOAR and categorizes them based on the severity of the incident.
@@ -34,15 +35,16 @@ Cluster Report Categorization playbook is used to retrieve the reports of specif
 ![Cluster Report Categorization - Cofense Triage v3](./doc_files/Cluster_Report_Categorization_-_Cofense_Triage_v3.png)
 
 ### Automation Scripts
-- Cofense Triage Report Download Script
-- Cofense Triage Threat Enrichment Script
+This content pack includes the following scripts: 
+1. Cofense Triage Report Download
+2. Cofense Triage Threat Enrichment
 
-#### Cofense Triage Report Download Script
+#### Cofense Triage Report Download
 This automation script helps to download all reports associated with the email address.
-![Cofense Triage Report Download Script](./doc_files/CofenseTriageReportDownloadScript.png)
+![Cofense Triage Report Download](./doc_files/CofenseTriageReportDownloadScript.png)
 
-#### Cofense Triage Threat Enrichment Script
+#### Cofense Triage Threat Enrichment
 This automation script helps to enrich the threat indicator value from Cofense Triage.
-![Cofense Triage Threat Enrichment Script](./doc_files/CofenseTriageThreatEnrichmentScript.png)
+![Cofense Triage Threat Enrichment](./doc_files/CofenseTriageThreatEnrichmentScript.png)
 
 _For more information about Cofense Triage and the integration with Cortex XSOAR, please visit: [https://cofense.com/wp-content/uploads/2019/12/Demisto-and-Cofense_Solution-Brief.pdf](https://cofense.com/wp-content/uploads/2019/12/Demisto-and-Cofense_Solution-Brief.pdf) and [https://cofense.com/product-services/cofense-triage/](https://cofense.com/product-services/cofense-triage/)._

@@ -8,17 +8,13 @@ configuration:
   name: url
   required: true
   type: 0
-- additionalinfo: Client ID associated with the Server URL to connect to Cofense Triage.
+- additionalinfo: Client ID and Client Secret associated with the Server URL to connect
+    to Cofense Triage.
   display: Client ID
-  name: client_id
+  displaypassword: Client Secret
+  name: credentials
+  type: 9
   required: true
-  type: 4
-- additionalinfo: Client Secret associated with the Client ID to connect to Cofense
-    Triage.
-  display: Client Secret
-  name: client_secret
-  required: true
-  type: 4
 - additionalinfo: The maximum limit is 200.
   defaultvalue: '15'
   display: Maximum number of incidents per fetch
@@ -67,7 +63,7 @@ configuration:
   type: 0
 - additionalinfo: "Fetches reports based on the tags associated with the reports.\
     \ If not specified, it fetches all the reports.\nSupports comma separated values.\
-    \ \nNote: Tags are associated with reports which are in Inbox or Recon."
+    \ \nNote: Tags are associated with reports which are in Reconnaissance."
   display: Tags
   name: tags
   required: false
@@ -648,14 +644,6 @@ script:
       description: Specify the tags that are to be assigned to the report.
       isArray: false
       name: categorization_tags
-      required: false
-      secret: false
-    - default: false
-      description: |-
-        Specify the ID of the response.
-        Note: To retrieve response_id, execute cofense-response-list command.
-      isArray: false
-      name: response_id
       required: false
       secret: false
     deprecated: false
@@ -1429,289 +1417,6 @@ script:
     - contextPath: Cofense.Reporter.relationships.reports.links.related
       description: Link to retrieve the detailed information of the reports the individual
         reported.
-      type: String
-  - arguments:
-    - default: false
-      description: Specify the name of the response.
-      isArray: false
-      name: name
-      required: true
-      secret: false
-    - default: false
-      description: Specify the description of response.
-      isArray: false
-      name: description
-      required: false
-      secret: false
-    - auto: PREDEFINED
-      default: false
-      defaultValue: 'true'
-      description: 'Specify whether to add the reporter to the response recipient
-        list or not. Note: Either to_reporter or to_other, or both, must be enabled.
-        Possible values are: true, false.'
-      isArray: false
-      name: to_reporter
-      predefined:
-      - 'true'
-      - 'false'
-      required: false
-      secret: false
-    - auto: PREDEFINED
-      default: false
-      defaultValue: 'false'
-      description: 'Specify whether to add the addresses specified in to_other_address
-        to the response recipient list or not. Note: If true, specify one or more
-        values in to_other_address. Either to_reporter or to_other, or both, must
-        be enabled. Possible values are: true, false.'
-      isArray: false
-      name: to_other
-      predefined:
-      - 'true'
-      - 'false'
-      required: false
-      secret: false
-    - default: false
-      description: 'Specify the comma-separated list of email addresses to send the
-        response to. Note: Works with to_other.'
-      isArray: true
-      name: to_other_address
-      required: false
-      secret: false
-    - default: false
-      description: Specify the comma-separated list of email addresses to CC the response
-        to.
-      isArray: true
-      name: cc_address
-      required: false
-      secret: false
-    - default: false
-      description: Specify the comma-separated list of email addresses to BCC the
-        response to.
-      isArray: true
-      name: bcc_address
-      required: false
-      secret: false
-    - default: false
-      description: Specify the subject of response.
-      isArray: false
-      name: subject
-      required: true
-      secret: false
-    - auto: PREDEFINED
-      default: false
-      defaultValue: 'false'
-      description: 'Specify whether to attach the original email to the response or
-        not. Possible values are: true, false.'
-      isArray: false
-      name: attach_original
-      predefined:
-      - 'true'
-      - 'false'
-      required: false
-      secret: false
-    - default: false
-      description: Specify the body of response.
-      isArray: false
-      name: body
-      required: true
-      secret: false
-    deprecated: false
-    description: |-
-      Creates a response based on the values provided in the command arguments.
-      Responses provide feedback (acknowledgment) to reporters about emails they reported.
-    execution: false
-    name: cofense-response-create
-    outputs:
-    - contextPath: Cofense.Response.id
-      description: Unique identifier of the response.
-      type: String
-    - contextPath: Cofense.Response.type
-      description: Type of the resource of Cofense Triage.
-      type: String
-    - contextPath: Cofense.Response.links.self
-      description: Link of the resource.
-      type: String
-    - contextPath: Cofense.Response.attributes.name
-      description: Short display name of the response sent to individuals when a report
-        is categorized.
-      type: String
-    - contextPath: Cofense.Response.attributes.description
-      description: Expanded name or description of the response.
-      type: String
-    - contextPath: Cofense.Response.attributes.to_reporter
-      description: Whether to add the reporter to the response recipient list (true)
-        or not (false). The default is true.
-      type: Boolean
-    - contextPath: Cofense.Response.attributes.to_other
-      description: Whether to add the addresses specified in to_other_address to the
-        response recipient list (true) or not (false). The default is false.
-      type: Boolean
-    - contextPath: Cofense.Response.attributes.to_other_address
-      description: Comma-separated list of email addresses to send the response to.
-      type: String
-    - contextPath: Cofense.Response.attributes.cc_address
-      description: Comma-separated list of email addresses to CC the response to.
-      type: String
-    - contextPath: Cofense.Response.attributes.bcc_address
-      description: Comma-separated list of email addresses to BCC the response to.
-      type: String
-    - contextPath: Cofense.Response.attributes.subject
-      description: Subject of the response.
-      type: String
-    - contextPath: Cofense.Response.attributes.attach_original
-      description: Whether to attach the original email to the response (true) or
-        not (false). The default is false.
-      type: Boolean
-    - contextPath: Cofense.Response.attributes.body
-      description: HTML or plain-text body of the email.
-      type: String
-    - contextPath: Cofense.Response.attributes.created_at
-      description: Date and time, in ISO 8601 format, when the resource was created.
-      type: Date
-    - contextPath: Cofense.Response.attributes.updated_at
-      description: Date and time, in ISO 8601 format, when the resource was last updated.
-      type: Date
-    - contextPath: Cofense.Response.relationships.one_clicks.links.self
-      description: 'Link to retrieve the one-click categorizations that send the response
-        when processing reports. '
-      type: String
-    - contextPath: Cofense.Response.relationships.one_clicks.links.related
-      description: Link to retrieve the detailed information of the one-click categorizations
-        that send the response when processing reports.
-      type: String
-  - arguments:
-    - default: false
-      description: |-
-        Specify the ID of the response to retrieve a specific response.
-        Note: If 'id' argument is provided, then apart from 'fields_to_retrieve', all arguments will be neglected.
-      isArray: false
-      name: id
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '20'
-      description: 'Specify the number of responses to retrieve per page. Note: Possible
-        values are between 1 and 200.'
-      isArray: false
-      name: page_size
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '1'
-      description: Specify a page number to retrieve the responses.
-      isArray: false
-      name: page_number
-      required: false
-      secret: false
-    - default: false
-      description: 'Specify the attributes to sort the responses. Note: The default
-        sort order for an attribute is ascending. Prefix the attributes with a hyphen
-        to sort in descending order. For example: name, -description'
-      isArray: true
-      name: sort_by
-      required: false
-      secret: false
-    - default: false
-      description: |-
-        Specify the filters to filter the list of responses by attribute values. Note: Enter values in key-value JSON format. To separate multiple values of a single attribute, use commas. Add backslash(\) before quotes.
-        Format accepted: {\"attribute1_operator \": \"value1, value2\", \"attribute2_operator\" : \"value3, value4\"}
-        For example: {\"name_eq\":\"hello,default\", \"updated_at_gt\":\"2020-10-26T10:48:16.834Z\"}
-      isArray: false
-      name: filter_by
-      required: false
-      secret: false
-    - default: false
-      description: 'Specify the fields to retrieve the mentioned attributes only.
-        For example: name, body'
-      isArray: true
-      name: fields_to_retrieve
-      required: false
-      secret: false
-    - default: false
-      description: Specify the name of the response to retrieve the response.
-      isArray: true
-      name: name
-      required: false
-      secret: false
-    - default: false
-      description: 'Specify the date and time of creation, from when to retrieve the
-        responses. Formats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months,
-        2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ, etc.'
-      isArray: false
-      name: created_at
-      required: false
-      secret: false
-    - default: false
-      description: 'Specify the date and time of updation, from when to retrieve the
-        responses. Formats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months,
-        2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ, etc.'
-      isArray: false
-      name: updated_at
-      required: false
-      secret: false
-    deprecated: false
-    description: "Retrieves responses based on the values provided in the command\
-      \ arguments. \nResponses provide feedback (acknowledgment) to reporters about\
-      \ emails they reported."
-    execution: false
-    name: cofense-response-list
-    outputs:
-    - contextPath: Cofense.Response.id
-      description: Unique identifier of the response.
-      type: String
-    - contextPath: Cofense.Response.type
-      description: Type of the resource of Cofense Triage.
-      type: String
-    - contextPath: Cofense.Response.links.self
-      description: Link of the resource.
-      type: String
-    - contextPath: Cofense.Response.attributes.name
-      description: Short display name of the response sent to individuals when a report
-        is categorized.
-      type: String
-    - contextPath: Cofense.Response.attributes.description
-      description: Expanded name or description of the response.
-      type: String
-    - contextPath: Cofense.Response.attributes.to_reporter
-      description: Whether to add the reporter to the response recipient list (true)
-        or not (false). The default is true.
-      type: Boolean
-    - contextPath: Cofense.Response.attributes.to_other
-      description: Whether to add the addresses specified in to_other_address to the
-        response recipient list (true) or not (false). The default is false.
-      type: Boolean
-    - contextPath: Cofense.Response.attributes.to_other_address
-      description: Comma-separated list of email addresses to send the response to.
-      type: String
-    - contextPath: Cofense.Response.attributes.cc_address
-      description: Comma-separated list of email addresses to CC the response to.
-      type: String
-    - contextPath: Cofense.Response.attributes.bcc_address
-      description: Comma-separated list of email addresses to BCC the response to.
-      type: String
-    - contextPath: Cofense.Response.attributes.subject
-      description: Subject of the response. Supports variables.
-      type: String
-    - contextPath: Cofense.Response.attributes.attach_original
-      description: Whether to attach the original email to the response (true) or
-        not (false). The default is false.
-      type: Boolean
-    - contextPath: Cofense.Response.attributes.body
-      description: HTML or plain-text body of the email.
-      type: String
-    - contextPath: Cofense.Response.attributes.created_at
-      description: Date and time, in ISO 8601 format, when the resource was created.
-      type: Date
-    - contextPath: Cofense.Response.attributes.updated_at
-      description: Date and time, in ISO 8601 format, when the resource was last updated.
-      type: Date
-    - contextPath: Cofense.Response.relationships.one_clicks.links.self
-      description: 'Link to retrieve the one-click categorizations that send the response
-        when processing reports. '
-      type: String
-    - contextPath: Cofense.Response.relationships.one_clicks.links.related
-      description: Link to retrieve the detailed information of the one-click categorizations
-        that send the response when processing reports.
       type: String
   - arguments:
     - default: false
@@ -2663,7 +2368,7 @@ script:
     - contextPath: InfoFile.Extension
       description: File extension.
       type: String
-  dockerimage: demisto/python3:3.9.5.21272
+  dockerimage: demisto/python3:3.9.5.22569
   feed: false
   isfetch: true
   isremotesyncin: true
@@ -2675,4 +2380,6 @@ script:
   type: python
 tests:
 - No tests (auto formatted)
+defaultmapperin: Cofense Triage Report - Incoming Mapper
+defaultclassifier: Cofense Triage - Classifier
 fromversion: 6.0.0

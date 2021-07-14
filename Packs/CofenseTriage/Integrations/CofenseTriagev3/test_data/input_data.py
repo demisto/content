@@ -17,7 +17,7 @@ MESSAGES = {
     "INVALID_LOCATION_FOR_CATEGORIZATION_TAGS": "If Categorization Tags are provided in fetch incident parameters, "
                                                 "the Report Location cannot be 'Inbox' or 'Reconnaissance'.",
     "INVALID_LOCATION_FOR_TAGS": "If Tags are provided in fetch incident parameters, the Report Location "
-                                 "cannot be 'Processed'.",
+                                 "must be 'Reconnaissance'.",
     "BODY_FORMAT": "Invalid value for body format. Body format must be text or json.",
     "INTEGRATION_SUBMISSION_TYPE": "Invalid value for integration submission type. Type must be urls or "
                                    "attachment_payloads.",
@@ -53,7 +53,7 @@ invalid_args_for_threat_indicator_list = [
     ({"filter_by": '{"threat_level_eq":'}),
     ({"filter_by": "123"}),
     ({"filter_by": ':"12"}'})
-    ]
+]
 
 list_report_cmd_arg = [
     ({"match_priority": "ab"}, "\"ab\" is not a valid number"),
@@ -80,18 +80,6 @@ list_rule_cmd_arg = [
 list_cluster_cmd_arg = [
     ({"match_priority": "test"}, "\"test\" is not a valid number"),
     ({"total_reports_count": "a"}, "\"a\" is not a valid number")
-]
-
-create_response_cmd_arg = [
-    ({"subject": "dummy subject one"}, MESSAGES["REQUIRED_ARGUMENT"].format("name")),
-    ({"name": "dummy name one"}, MESSAGES["REQUIRED_ARGUMENT"].format("subject")),
-    ({"name": "dummy name two", "subject": "dummy subject two"}, MESSAGES["REQUIRED_ARGUMENT"].format("body")),
-    ({"name": "dummy name three", "subject": "dummy subject three", "body": "dummy body one", "to_reporter": "invalid"},
-     MESSAGES["INVALID_BOOLEAN"]),
-    ({"name": "dummy name four", "subject": "dummy subject four", "body": "dummy body two", "to_other": "invalid"},
-     MESSAGES["INVALID_BOOLEAN"]),
-    ({"name": "dummy name", "subject": "dummy subject five", "body": "dummy body three", "attach_original": "invalid"},
-     MESSAGES["INVALID_BOOLEAN"]),
 ]
 
 # To be used for testing all the scenarios of the function get_token

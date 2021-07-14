@@ -6,7 +6,7 @@ Enhancement automation for type indicator, to enrich the value from Cofense Tria
 | --- | --- |
 | Script Type | python3 |
 | Tags | enhancement |
-| Demisto Version | 6.0.0 |
+| Version | 6.0.0 |
 
 ## Dependencies
 This script uses the following commands and scripts.

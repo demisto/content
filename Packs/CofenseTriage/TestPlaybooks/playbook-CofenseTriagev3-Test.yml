@@ -7,10 +7,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 076eb455-1428-4ab9-85fc-35c75389db79
+    taskid: 2c6be862-cf01-4e8e-8a1a-28524ee5391a
     type: start
     task:
-      id: 076eb455-1428-4ab9-85fc-35c75389db79
+      id: 2c6be862-cf01-4e8e-8a1a-28524ee5391a
       version: -1
       name: ""
       iscommand: false
@@ -34,10 +34,10 @@ tasks:
     quietmode: 0
   "1":
     id: "1"
-    taskid: 96895a83-85d2-42f6-8926-25290e7f8520
+    taskid: 7b410444-e2e0-4056-826a-9735fbc5f6e9
     type: regular
     task:
-      id: 96895a83-85d2-42f6-8926-25290e7f8520
+      id: 7b410444-e2e0-4056-826a-9735fbc5f6e9
       version: -1
       name: DeleteContext
       scriptName: DeleteContext
@@ -69,10 +69,10 @@ tasks:
     quietmode: 0
   "2":
     id: "2"
-    taskid: adde8a0e-29bb-4a39-884e-97ce34b11020
+    taskid: 15381aad-ee9f-4e0c-8d3c-bf008dd93e9c
     type: regular
     task:
-      id: adde8a0e-29bb-4a39-884e-97ce34b11020
+      id: 15381aad-ee9f-4e0c-8d3c-bf008dd93e9c
       version: -1
       name: cofense-threat-indicator-list
       script: '|||cofense-threat-indicator-list'
@@ -108,10 +108,10 @@ tasks:
     quietmode: 0
   "3":
     id: "3"
-    taskid: 0f12988d-cc07-47b3-84fe-1b49cf75c071
+    taskid: 98c05067-a56a-41d3-865f-190c5ad85898
     type: condition
     task:
-      id: 0f12988d-cc07-47b3-84fe-1b49cf75c071
+      id: 98c05067-a56a-41d3-865f-190c5ad85898
       version: -1
       name: Verify Outputs
       type: condition
@@ -257,10 +257,10 @@ tasks:
     quietmode: 0
   "4":
     id: "4"
-    taskid: 4c0ed290-cd5f-485b-8708-ad52afe90c7a
+    taskid: edc8e762-eb7c-4d87-820c-2db936d529fb
     type: regular
     task:
-      id: 4c0ed290-cd5f-485b-8708-ad52afe90c7a
+      id: edc8e762-eb7c-4d87-820c-2db936d529fb
       version: -1
       name: cofense-report-list
       script: '|||cofense-report-list'
@@ -285,10 +285,10 @@ tasks:
     quietmode: 0
   "5":
     id: "5"
-    taskid: 8e638c42-3764-4b68-8f88-e9c7fa274ac6
+    taskid: 6dc84382-9b00-498b-855f-2f0dba5289cb
     type: condition
     task:
-      id: 8e638c42-3764-4b68-8f88-e9c7fa274ac6
+      id: 6dc84382-9b00-498b-855f-2f0dba5289cb
       version: -1
       name: Verify Outputs
       type: condition
@@ -644,10 +644,10 @@ tasks:
     quietmode: 0
   "6":
     id: "6"
-    taskid: 37c73f9e-eb32-40ed-8256-8b5fb856750f
+    taskid: a3a1e6ac-1998-470f-8fd6-6b54cbf0e6da
     type: regular
     task:
-      id: 37c73f9e-eb32-40ed-8256-8b5fb856750f
+      id: a3a1e6ac-1998-470f-8fd6-6b54cbf0e6da
       version: -1
       name: cofense-report-download
       script: '|||cofense-report-download'
@@ -677,10 +677,10 @@ tasks:
     quietmode: 0
   "7":
     id: "7"
-    taskid: 89a74bc4-b77b-4554-8ca9-2598a5bfd835
+    taskid: 7ebabc36-e981-4916-8066-a6b77ea5f628
     type: condition
     task:
-      id: 89a74bc4-b77b-4554-8ca9-2598a5bfd835
+      id: 7ebabc36-e981-4916-8066-a6b77ea5f628
       version: -1
       name: Verify Outputs
       type: condition
@@ -777,10 +777,10 @@ tasks:
     quietmode: 0
   "9":
     id: "9"
-    taskid: 6e887b5f-cd13-4dc5-8767-c5280c463a51
+    taskid: 6948208a-bb67-42fc-85cf-90c649150269
     type: regular
     task:
-      id: 6e887b5f-cd13-4dc5-8767-c5280c463a51
+      id: 6948208a-bb67-42fc-85cf-90c649150269
       version: -1
       name: cofense-category-list
       script: '|||cofense-category-list'
@@ -815,10 +815,10 @@ tasks:
     quietmode: 0
   "10":
     id: "10"
-    taskid: 8e653314-b019-464a-8fa4-ce975ee25420
+    taskid: d9af5e50-3776-4eda-8126-f5182b9e160e
     type: condition
     task:
-      id: 8e653314-b019-464a-8fa4-ce975ee25420
+      id: d9af5e50-3776-4eda-8126-f5182b9e160e
       version: -1
       name: Verify Outputs
       type: condition
@@ -929,10 +929,10 @@ tasks:
     quietmode: 0
   "11":
     id: "11"
-    taskid: 9515f941-d565-4fd8-86e5-cccca413c524
+    taskid: bd4b92e8-db54-4eb8-80d6-f8f16aa80ff6
     type: regular
     task:
-      id: 9515f941-d565-4fd8-86e5-cccca413c524
+      id: bd4b92e8-db54-4eb8-80d6-f8f16aa80ff6
       version: -1
       name: cofense-rule-list
       script: '|||cofense-rule-list'
@@ -957,10 +957,10 @@ tasks:
     quietmode: 0
   "12":
     id: "12"
-    taskid: 6b2c3b01-1346-45d9-87ac-3792c4fe0a86
+    taskid: ca6e0c49-656d-4c7e-8769-e8bf9f8dd830
     type: condition
     task:
-      id: 6b2c3b01-1346-45d9-87ac-3792c4fe0a86
+      id: ca6e0c49-656d-4c7e-8769-e8bf9f8dd830
       version: -1
       name: Verify Outputs
       type: condition
@@ -1155,10 +1155,10 @@ tasks:
     quietmode: 0
   "13":
     id: "13"
-    taskid: cc1b65b7-73ae-4a4e-8e2f-160976e72f76
+    taskid: 5fc3fd42-ec18-4086-8d6d-ad969e82be42
     type: regular
     task:
-      id: cc1b65b7-73ae-4a4e-8e2f-160976e72f76
+      id: 5fc3fd42-ec18-4086-8d6d-ad969e82be42
       version: -1
       name: cofense-url-list
       script: '|||cofense-url-list'
@@ -1183,10 +1183,10 @@ tasks:
     quietmode: 0
   "14":
     id: "14"
-    taskid: f5b472d8-239e-4a62-88e4-37ed2c3c5fc0
+    taskid: 5254ad31-6e6d-4be3-84db-e26cf51b81ee
     type: condition
     task:
-      id: f5b472d8-239e-4a62-88e4-37ed2c3c5fc0
+      id: 5254ad31-6e6d-4be3-84db-e26cf51b81ee
       version: -1
       name: Verify Outputs
       type: condition
@@ -1325,10 +1325,10 @@ tasks:
     quietmode: 0
   "17":
     id: "17"
-    taskid: aacf6e0c-44be-4d47-802d-c777608a01c8
+    taskid: edb70664-3991-4687-833d-3ce7e227d27e
     type: regular
     task:
-      id: aacf6e0c-44be-4d47-802d-c777608a01c8
+      id: edb70664-3991-4687-833d-3ce7e227d27e
       version: -1
       name: cofense-reporter-list
       script: '|||cofense-reporter-list'
@@ -1363,10 +1363,10 @@ tasks:
     quietmode: 0
   "18":
     id: "18"
-    taskid: 43600397-eed7-4050-800f-9c972a5e5a68
+    taskid: aa65b6c4-a5db-4e5e-8950-55369f20275a
     type: condition
     task:
-      id: 43600397-eed7-4050-800f-9c972a5e5a68
+      id: aa65b6c4-a5db-4e5e-8950-55369f20275a
       version: -1
       name: Verify Outputs
       type: condition
@@ -1489,197 +1489,12 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "21":
-    id: "21"
-    taskid: 2c069bf2-3c3c-430c-8b09-a574584f4a06
-    type: regular
-    task:
-      id: 2c069bf2-3c3c-430c-8b09-a574584f4a06
-      version: -1
-      name: cofense-response-list
-      script: '|||cofense-response-list'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "22"
-    scriptarguments:
-      fields_to_retrieve: {}
-      filter_by: {}
-      id: {}
-      name: {}
-      page_number: {}
-      page_size: {}
-      sort_by: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 4770
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "22":
-    id: "22"
-    taskid: ff5b0491-8846-4fa5-8ed5-f4596739c252
-    type: condition
-    task:
-      id: ff5b0491-8846-4fa5-8ed5-f4596739c252
-      version: -1
-      name: Verify Outputs
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "35"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              complex:
-                root: Cofense.Response
-                accessor: id
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              complex:
-                root: Cofense.Response
-                accessor: type
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              complex:
-                root: Cofense.Response.links
-                accessor: self
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              complex:
-                root: Cofense.Response.attributes
-                accessor: name
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              complex:
-                root: Cofense.Response.attributes
-                accessor: description
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              complex:
-                root: Cofense.Response.attributes
-                accessor: to_reporter
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              complex:
-                root: Cofense.Response.attributes
-                accessor: to_other
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              complex:
-                root: Cofense.Response.attributes
-                accessor: to_other_address
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              complex:
-                root: Cofense.Response.attributes
-                accessor: cc_address
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              complex:
-                root: Cofense.Response.attributes
-                accessor: bcc_address
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              complex:
-                root: Cofense.Response.attributes
-                accessor: subject
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              complex:
-                root: Cofense.Response.attributes
-                accessor: attach_original
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              complex:
-                root: Cofense.Response.attributes
-                accessor: body
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              complex:
-                root: Cofense.Response.attributes
-                accessor: created_at
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              complex:
-                root: Cofense.Response.attributes
-                accessor: updated_at
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              complex:
-                root: Cofense.Response.relationships.one_clicks.links
-                accessor: self
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              complex:
-                root: Cofense.Response.relationships.one_clicks.links
-                accessor: related
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 4970
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "25":
     id: "25"
-    taskid: 0c0cfca1-cac6-476a-8e6e-f0e67adab607
+    taskid: 5baea661-1481-43e2-8c3b-7ae14d1dbab6
     type: regular
     task:
-      id: 0c0cfca1-cac6-476a-8e6e-f0e67adab607
+      id: 5baea661-1481-43e2-8c3b-7ae14d1dbab6
       version: -1
       name: cofense-attachment-payload-list
       script: '|||cofense-attachment-payload-list'
@@ -1712,10 +1527,10 @@ tasks:
     quietmode: 0
   "26":
     id: "26"
-    taskid: f1e4307e-50d1-46c4-84ff-178820b33213
+    taskid: d246e323-43c7-46de-8c9c-449367039787
     type: condition
     task:
-      id: f1e4307e-50d1-46c4-84ff-178820b33213
+      id: d246e323-43c7-46de-8c9c-449367039787
       version: -1
       name: Verify Outputs
       type: condition
@@ -1854,10 +1669,10 @@ tasks:
     quietmode: 0
   "27":
     id: "27"
-    taskid: 6e05e6b4-e4cc-4684-8bed-6da1fe9faac2
+    taskid: bafcd503-3f43-4280-859a-6bcd3745cf78
     type: regular
     task:
-      id: 6e05e6b4-e4cc-4684-8bed-6da1fe9faac2
+      id: bafcd503-3f43-4280-859a-6bcd3745cf78
       version: -1
       name: cofense-comment-list
       script: '|||cofense-comment-list'
@@ -1872,7 +1687,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 5380
+          "y": 4720
         }
       }
     note: false
@@ -1882,10 +1697,10 @@ tasks:
     quietmode: 0
   "28":
     id: "28"
-    taskid: d93830ac-d833-4662-8419-1e016cb044e0
+    taskid: b27c3c05-4dfd-41f0-8d26-c599ddb02cc5
     type: condition
     task:
-      id: d93830ac-d833-4662-8419-1e016cb044e0
+      id: b27c3c05-4dfd-41f0-8d26-c599ddb02cc5
       version: -1
       name: Verify Outputs
       type: condition
@@ -2294,7 +2109,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 5590
+          "y": 4890
         }
       }
     note: false
@@ -2304,10 +2119,10 @@ tasks:
     quietmode: 0
   "29":
     id: "29"
-    taskid: 855d476a-7a3c-40f2-830d-55373869b3a2
+    taskid: cabbbd0b-9cec-4339-8bf3-2e6a86b52990
     type: title
     task:
-      id: 855d476a-7a3c-40f2-830d-55373869b3a2
+      id: cabbbd0b-9cec-4339-8bf3-2e6a86b52990
       version: -1
       name: Test Done
       type: title
@@ -2319,7 +2134,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 6580
+          "y": 5900
         }
       }
     note: false
@@ -2329,10 +2144,10 @@ tasks:
     quietmode: 0
   "30":
     id: "30"
-    taskid: 77448aa3-a7ec-426d-8ae9-7940c1cfee89
+    taskid: 192d18b3-284e-4918-8fd0-e1b897bdd89a
     type: regular
     task:
-      id: 77448aa3-a7ec-426d-8ae9-7940c1cfee89
+      id: 192d18b3-284e-4918-8fd0-e1b897bdd89a
       version: -1
       name: DeleteContext
       scriptName: DeleteContext
@@ -2364,10 +2179,10 @@ tasks:
     quietmode: 0
   "31":
     id: "31"
-    taskid: 725d5270-08a2-4823-81f8-524a1a7760bb
+    taskid: 6afdc75f-95ec-4ff4-8bd1-06502775a5c7
     type: regular
     task:
-      id: 725d5270-08a2-4823-81f8-524a1a7760bb
+      id: 6afdc75f-95ec-4ff4-8bd1-06502775a5c7
       version: -1
       name: DeleteContext
       script: DeleteContext
@@ -2395,10 +2210,10 @@ tasks:
     quietmode: 0
   "32":
     id: "32"
-    taskid: 620ae112-8907-48fa-8e51-b612d32a57ba
+    taskid: e274faa5-d76c-4bc5-8e36-fd058f8e9ac7
     type: regular
     task:
-      id: 620ae112-8907-48fa-8e51-b612d32a57ba
+      id: e274faa5-d76c-4bc5-8e36-fd058f8e9ac7
       version: -1
       name: DeleteContext
       script: DeleteContext
@@ -2426,10 +2241,10 @@ tasks:
     quietmode: 0
   "33":
     id: "33"
-    taskid: 876ee5cd-4cbe-4b43-8463-891f0826b73f
+    taskid: 5185f095-f852-4106-8310-b26765870c6e
     type: regular
     task:
-      id: 876ee5cd-4cbe-4b43-8463-891f0826b73f
+      id: 5185f095-f852-4106-8310-b26765870c6e
       version: -1
       name: DeleteContext
       script: DeleteContext
@@ -2457,41 +2272,10 @@ tasks:
     quietmode: 0
   "34":
     id: "34"
-    taskid: 83b21cf7-b4de-414d-8f68-6285074931ae
+    taskid: 42bfedd2-ab9d-47d6-8bea-49a641416432
     type: regular
     task:
-      id: 83b21cf7-b4de-414d-8f68-6285074931ae
-      version: -1
-      name: DeleteContext
-      script: DeleteContext
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "21"
-    scriptarguments:
-      all:
-        simple: "yes"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 4550
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "35":
-    id: "35"
-    taskid: fc70fa06-0d4b-477d-8734-3411dcd742f1
-    type: regular
-    task:
-      id: fc70fa06-0d4b-477d-8734-3411dcd742f1
+      id: 42bfedd2-ab9d-47d6-8bea-49a641416432
       version: -1
       name: DeleteContext
       script: DeleteContext
@@ -2509,7 +2293,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 5190
+          "y": 4550
         }
       }
     note: false
@@ -2519,10 +2303,10 @@ tasks:
     quietmode: 0
   "36":
     id: "36"
-    taskid: 4b6e8f8b-7751-41d5-8eb7-80f5a05888cb
+    taskid: 7ae2702f-10ab-4fe7-856a-d461b243d9c8
     type: regular
     task:
-      id: 4b6e8f8b-7751-41d5-8eb7-80f5a05888cb
+      id: 7ae2702f-10ab-4fe7-856a-d461b243d9c8
       version: -1
       name: DeleteContext
       script: DeleteContext
@@ -2540,7 +2324,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 5820
+          "y": 5150
         }
       }
     note: false
@@ -2550,10 +2334,10 @@ tasks:
     quietmode: 0
   "37":
     id: "37"
-    taskid: 4876d1ff-dc9c-468c-8c4d-f18d76983525
+    taskid: 2995966b-f2a4-4326-8c6d-9f7d276064b0
     type: regular
     task:
-      id: 4876d1ff-dc9c-468c-8c4d-f18d76983525
+      id: 2995966b-f2a4-4326-8c6d-9f7d276064b0
       version: -1
       name: DeleteContext
       script: DeleteContext
@@ -2581,10 +2365,10 @@ tasks:
     quietmode: 0
   "38":
     id: "38"
-    taskid: 6d192aab-4c92-48ca-8d56-5054b065a5f2
+    taskid: d3d24a7d-09bb-47af-8bc4-8b991ff5febd
     type: regular
     task:
-      id: 6d192aab-4c92-48ca-8d56-5054b065a5f2
+      id: d3d24a7d-09bb-47af-8bc4-8b991ff5febd
       version: -1
       name: DeleteContext
       scriptName: DeleteContext
@@ -2616,10 +2400,10 @@ tasks:
     quietmode: 0
   "39":
     id: "39"
-    taskid: d3ecff7e-e636-438f-8d74-e9577a47c827
+    taskid: dd3610c9-ca15-401b-8c6e-1d58c064de4b
     type: regular
     task:
-      id: d3ecff7e-e636-438f-8d74-e9577a47c827
+      id: dd3610c9-ca15-401b-8c6e-1d58c064de4b
       version: -1
       name: cofense-cluster-list
       description: Retrieves clusters based on the filter values provided in the command
@@ -2648,7 +2432,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 6010
+          "y": 5320
         }
       }
     note: false
@@ -2658,10 +2442,10 @@ tasks:
     quietmode: 0
   "40":
     id: "40"
-    taskid: f56b2191-a278-4c1f-8dfb-053d98d6e8b3
+    taskid: 6ee948f1-8ae4-467f-83a4-ae5155347c8c
     type: condition
     task:
-      id: f56b2191-a278-4c1f-8dfb-053d98d6e8b3
+      id: 6ee948f1-8ae4-467f-83a4-ae5155347c8c
       version: -1
       name: Verify Outputs
       type: condition
@@ -2923,7 +2707,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 6170
+          "y": 5510
         }
       }
     note: false
@@ -2933,10 +2717,10 @@ tasks:
     quietmode: 0
   "41":
     id: "41"
-    taskid: a85f1529-3801-40fc-8b5d-ae8c44278a19
+    taskid: 09240715-c587-46a8-8946-99cbfa12c267
     type: regular
     task:
-      id: a85f1529-3801-40fc-8b5d-ae8c44278a19
+      id: 09240715-c587-46a8-8946-99cbfa12c267
       version: -1
       name: DeleteContext
       script: DeleteContext
@@ -2954,7 +2738,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 6370
+          "y": 5710
         }
       }
     note: false
@@ -2964,10 +2748,10 @@ tasks:
     quietmode: 0
   "42":
     id: "42"
-    taskid: ee4ce247-0deb-4f7c-8bd4-82c2fd8d8b6b
+    taskid: cde554ec-0d72-4c18-8179-5156c910219f
     type: regular
     task:
-      id: ee4ce247-0deb-4f7c-8bd4-82c2fd8d8b6b
+      id: cde554ec-0d72-4c18-8179-5156c910219f
       version: -1
       name: cofense-report-image-download
       description: Downloads the image of the report that matches the specified report
@@ -3000,10 +2784,10 @@ tasks:
     quietmode: 0
   "43":
     id: "43"
-    taskid: 0faf9bb7-61a6-4982-84d4-074d1ccc629e
+    taskid: bce0e7ad-34cb-4b0d-8f05-5ff299b2ef0b
     type: condition
     task:
-      id: 0faf9bb7-61a6-4982-84d4-074d1ccc629e
+      id: bce0e7ad-34cb-4b0d-8f05-5ff299b2ef0b
       version: -1
       name: Verify Outputs
       type: condition
@@ -3072,10 +2856,13 @@ tasks:
     quietmode: 0
 view: |-
   {
-    "linkLabelsPosition": {},
+    "linkLabelsPosition": {
+      "28_36_yes": 0.53,
+      "40_41_yes": 0.57
+    },
     "paper": {
       "dimensions": {
-        "height": 7165,
+        "height": 6485,
         "width": 380,
         "x": 50,
         "y": -520

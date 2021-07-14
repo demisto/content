@@ -6,67 +6,67 @@
         "Cofense Triage Report": {
             "dontMapEventToLabels": true,
             "internalMapping": {
-                "Cofense Report Categorization Tags": {
+                "Cofense Triage Report Categorization Tags": {
                     "complex": null,
                     "simple": "attributes.categorization_tags"
                 },
-                "Cofense Report Category ID": {
+                "Cofense Triage Report Category ID": {
                     "complex": null,
                     "simple": "relationships.category.data.id"
                 },
-                "Cofense Report Created At": {
+                "Cofense Triage Report Created At": {
                     "complex": null,
                     "simple": "attributes.created_at"
                 },
-                "Cofense Report From Address": {
+                "Cofense Triage Report From Address": {
                     "complex": null,
                     "simple": "attributes.from_address"
                 },
-                "Cofense Report ID": {
+                "Cofense Triage Report ID": {
                     "complex": null,
                     "simple": "id"
                 },
-                "Cofense Report Location": {
+                "Cofense Triage Report Location": {
                     "complex": null,
                     "simple": "attributes.location"
                 },
-                "Cofense Report MD5": {
+                "Cofense Triage Report MD5": {
                     "complex": null,
                     "simple": "attributes.md5"
                 },
-                "Cofense Report Match Priority": {
+                "Cofense Triage Report Match Priority": {
                     "complex": null,
                     "simple": "attributes.match_priority"
                 },
-                "Cofense Report Processed At": {
+                "Cofense Triage Report Processed At": {
                     "complex": null,
                     "simple": "attributes.processed_at"
                 },
-                "Cofense Report Received At": {
+                "Cofense Triage Report Received At": {
                     "complex": null,
                     "simple": "attributes.received_at"
                 },
-                "Cofense Report Reported At": {
+                "Cofense Triage Report Reported At": {
                     "complex": null,
                     "simple": "attributes.reported_at"
                 },
-                "Cofense Report Risk Score": {
+                "Cofense Triage Report Risk Score": {
                     "complex": null,
                     "simple": "attributes.risk_score"
                 },
-                "Cofense Report SHA256": {
+                "Cofense Triage Report SHA256": {
                     "complex": null,
                     "simple": "attributes.sha256"
                 },
-                "Cofense Report Subject": {
+                "Cofense Triage Report Subject": {
                     "complex": null,
                     "simple": "attributes.subject"
                 },
-                "Cofense Report Tags": {
+                "Cofense Triage Report Tags": {
                     "complex": null,
                     "simple": "attributes.tags"
                 },
-                "Cofense Report Updated At": {
+                "Cofense Triage Report Updated At": {
                     "complex": null,
                     "simple": "attributes.updated_at"
                 }

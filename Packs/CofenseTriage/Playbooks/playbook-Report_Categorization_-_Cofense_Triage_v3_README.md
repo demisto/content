@@ -1,7 +1,6 @@
 Report Categorization playbook investigates reports that are unprocessed or uncategorized on Cofense Triage as incident alerts in XSOAR and categorizes them based on the severity of the incident.
 
-Users would be able to run the playbook in 5.5.0 or higher version as it requires commands to execute the task.
-
+Users are only able to run the playbook in v6.0.0 or higher as it requires commands to execute the task.
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
@@ -20,7 +19,6 @@ This playbook does not use any integrations.
 ### Commands
 * extractIndicators
 * rasterize-email
-* cofense-response-create
 * cofense-category-list
 * cofense-report-download
 * rasterize-image
@@ -32,11 +30,11 @@ This playbook does not use any integrations.
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
 | OnCall | Set to true to assign only user that is currently on shift. Requires Cortex XSOAR v5.5 or later. | false | Optional |
-| ReportID | Requires report ID to investigate and categorize the report that is pulled from Cofense Triage. | incident.cofensereportid | Required |
+| ReportID | Requires report ID to investigate and categorize the report that is pulled from Cofense Triage. | incident.cofensetriagereportid | Required |
 | AutoCategorize | Whether the user wants to categorize the report automatically or not. | False | Optional |
 | MaliciousCategory | The category to be assigned to the report if it is malicious. |  | Optional |
 | NonMaliciousCategory | The category to be assigned to the report if it is non-malicious. |  | Optional |
-| ResponseID | ID of the response that is to be provided when the report is categorized. |  | Optional |
+
 
 ## Playbook Outputs
 ---

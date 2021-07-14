@@ -1,7 +1,6 @@
 Send Indicators playbook is used to create or update threat indicators in Cofense Triage as a result of the analysis.
 
-Users would be able to run the playbook in 5.5.0 or higher version as it requires commands to execute the task.
-
+Users are only able to run the playbook in v6.0.0 or higher as it requires commands to execute the task.
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.
 

@@ -1,7 +1,5 @@
 id: Report Categorization - Cofense Triage v3
 version: -1
-contentitemexportablefields:
-  contentitemfields: {}
 name: Report Categorization - Cofense Triage v3
 description: Report Categorization playbook investigates reports that are unprocessed
   or uncategorized on Cofense Triage as incident alerts in XSOAR and categorizes them
@@ -10,10 +8,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 22595278-30c5-4a76-8b17-a6f130b81395
+    taskid: fa70b0a8-e58b-4d39-879c-7797e0fb856f
     type: start
     task:
-      id: 22595278-30c5-4a76-8b17-a6f130b81395
+      id: fa70b0a8-e58b-4d39-879c-7797e0fb856f
       version: -1
       name: ""
       iscommand: false
@@ -37,10 +35,10 @@ tasks:
     quietmode: 0
   "2":
     id: "2"
-    taskid: 50913f26-188a-43e2-83a4-5da5072f94e7
+    taskid: 6d6f800f-c69b-446b-8fd9-8bfd78d2d0a9
     type: regular
     task:
-      id: 50913f26-188a-43e2-83a4-5da5072f94e7
+      id: 6d6f800f-c69b-446b-8fd9-8bfd78d2d0a9
       version: -1
       name: Assign analyst to incident
       description: Assigns a random analyst to the incident.
@@ -76,10 +74,10 @@ tasks:
     quietmode: 0
   "9":
     id: "9"
-    taskid: f6d059f4-2aa7-4b3b-86c9-482aa7f7cdfd
+    taskid: 0e1a922f-f085-4733-84e9-69a22a551b25
     type: regular
     task:
-      id: f6d059f4-2aa7-4b3b-86c9-482aa7f7cdfd
+      id: 0e1a922f-f085-4733-84e9-69a22a551b25
       version: -1
       name: Extract indicators from incident
       description: Extract all indicators according to server indicators configuration.
@@ -113,10 +111,10 @@ tasks:
     quietmode: 0
   "11":
     id: "11"
-    taskid: 35d93726-d8e9-4e31-86ec-d59185a07382
+    taskid: 117c744c-c946-4a63-81eb-ed5e1f7c75c5
     type: playbook
     task:
-      id: 35d93726-d8e9-4e31-86ec-d59185a07382
+      id: 117c744c-c946-4a63-81eb-ed5e1f7c75c5
       version: -1
       name: Calculate Severity - Generic v2
       description: |-
@@ -179,10 +177,10 @@ tasks:
     quietmode: 0
   "12":
     id: "12"
-    taskid: c748d799-cf43-4131-8bbf-c69000bd251a
+    taskid: 00259e72-803d-4d79-8ea2-67e4c3fea1aa
     type: title
     task:
-      id: c748d799-cf43-4131-8bbf-c69000bd251a
+      id: 00259e72-803d-4d79-8ea2-67e4c3fea1aa
       version: -1
       name: Done
       type: title
@@ -204,10 +202,10 @@ tasks:
     quietmode: 0
   "13":
     id: "13"
-    taskid: ab3c2d0f-33c3-4cce-8dd3-ce3856c29267
+    taskid: 5ccf9ed4-364f-45b2-8741-6db47ffe994a
     type: regular
     task:
-      id: ab3c2d0f-33c3-4cce-8dd3-ce3856c29267
+      id: 5ccf9ed4-364f-45b2-8741-6db47ffe994a
       version: -1
       name: Report Download
       description: Downloads the raw email for the report that matches the specified
@@ -239,10 +237,10 @@ tasks:
     quietmode: 0
   "14":
     id: "14"
-    taskid: 5535b09f-2db4-4efb-83ee-c4d9bc7e5eaf
+    taskid: b8efccf3-4bed-4e13-88c1-0f43af53294b
     type: regular
     task:
-      id: 5535b09f-2db4-4efb-83ee-c4d9bc7e5eaf
+      id: b8efccf3-4bed-4e13-88c1-0f43af53294b
       version: -1
       name: Parse Email
       description: Parse an email from an eml or msg file and populate all relevant
@@ -284,10 +282,10 @@ tasks:
     quietmode: 0
   "15":
     id: "15"
-    taskid: 593061d5-869d-4566-87c2-c8d285220926
+    taskid: 2d835181-4995-4a2c-8f78-5125b50a9d61
     type: regular
     task:
-      id: 593061d5-869d-4566-87c2-c8d285220926
+      id: 2d835181-4995-4a2c-8f78-5125b50a9d61
       version: -1
       name: Rasterize Email
       description: Converts the body of an email to an image file or a PDF file.
@@ -323,10 +321,10 @@ tasks:
     quietmode: 0
   "22":
     id: "22"
-    taskid: 2c9cf115-6eb2-4cd0-8e10-3745aad23b46
+    taskid: 1421088a-874c-4301-867b-587171500fbd
     type: regular
     task:
-      id: 2c9cf115-6eb2-4cd0-8e10-3745aad23b46
+      id: 1421088a-874c-4301-867b-587171500fbd
       version: -1
       name: Rasterize Attachments
       description: Converts an image file to a PDF file.
@@ -360,10 +358,10 @@ tasks:
     quietmode: 0
   "23":
     id: "23"
-    taskid: d476de9d-d340-42b9-8939-dafaf6915a84
+    taskid: 57ec32b2-f472-433a-8cec-7e8863875457
     type: regular
     task:
-      id: d476de9d-d340-42b9-8939-dafaf6915a84
+      id: 57ec32b2-f472-433a-8cec-7e8863875457
       version: -1
       name: Check Email Authenticity
       description: Checks the authenticity of an email based on the email's SPF, DMARC,
@@ -421,10 +419,10 @@ tasks:
     quietmode: 0
   "30":
     id: "30"
-    taskid: 79258231-4d15-4961-8620-e6bfc1db9a13
+    taskid: bbcb1539-5127-438d-8565-38a0e7fbed83
     type: playbook
     task:
-      id: 79258231-4d15-4961-8620-e6bfc1db9a13
+      id: bbcb1539-5127-438d-8565-38a0e7fbed83
       version: -1
       name: Send Indicators - Cofense Triage v3
       playbookName: Send Indicators - Cofense Triage v3
@@ -491,10 +489,10 @@ tasks:
     quietmode: 0
   "31":
     id: "31"
-    taskid: 3a58d774-2501-4a83-83c0-5a4a9cd6d1ac
+    taskid: 4a3ff395-00b9-42c2-8366-78aed832934c
     type: condition
     task:
-      id: 3a58d774-2501-4a83-83c0-5a4a9cd6d1ac
+      id: 4a3ff395-00b9-42c2-8366-78aed832934c
       version: -1
       name: Is Category ID empty?
       description: Whether the provided category exists or not.
@@ -505,7 +503,7 @@ tasks:
       '#default#':
       - "12"
       "no":
-      - "45"
+      - "32"
     separatecontext: false
     conditions:
     - label: "no"
@@ -531,10 +529,10 @@ tasks:
     quietmode: 0
   "32":
     id: "32"
-    taskid: 2c7301ec-178a-4d85-8d2e-855e7b82c8fa
+    taskid: c9492bfe-a30d-4ad3-8e9d-5bb864aa88b2
     type: regular
     task:
-      id: 2c7301ec-178a-4d85-8d2e-855e7b82c8fa
+      id: c9492bfe-a30d-4ad3-8e9d-5bb864aa88b2
       version: -1
       name: Categorize Report
       description: Categorizes a report into a specific category provided by the user.
@@ -562,103 +560,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 520,
-          "y": 2850
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "33":
-    id: "33"
-    taskid: 7523e56a-3206-4cf8-84f5-4da0c860f5f4
-    type: regular
-    task:
-      id: 7523e56a-3206-4cf8-84f5-4da0c860f5f4
-      version: -1
-      name: Create Response
-      description: |-
-        Creates a response based on the values provided in the command arguments.
-        Responses provide feedback (acknowledgment) to reporters about emails they reported.
-      script: '|||cofense-response-create'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "34"
-    scriptarguments:
-      attach_original: {}
-      bcc_address: {}
-      body:
-        complex:
-          root: Create Response.Answers
-          accessor: "2"
-      cc_address: {}
-      description: {}
-      name:
-        complex:
-          root: Create Response.Answers
-          accessor: "0"
-      subject:
-        complex:
-          root: Create Response.Answers
-          accessor: "1"
-      to_other: {}
-      to_other_address: {}
-      to_reporter: {}
-    reputationcalc: 1
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 1160,
-          "y": 3055
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "34":
-    id: "34"
-    taskid: bf81a302-593b-4bd4-88f0-8d8277af3e78
-    type: regular
-    task:
-      id: bf81a302-593b-4bd4-88f0-8d8277af3e78
-      version: -1
-      name: Categorize Report
-      description: Categorizes a report into a specific category provided by the user.
-      script: '|||cofense-report-categorize'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "12"
-    scriptarguments:
-      categorization_tags: {}
-      category_id:
-        complex:
-          root: Cofense.Category
-          accessor: id
-      id:
-        complex:
-          root: inputs.ReportID
-      response_id:
-        complex:
-          root: Cofense.Response
-          accessor: id
-    reputationcalc: 1
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 1160,
-          "y": 3220
+          "x": 510,
+          "y": 2590
         }
       }
     note: false
@@ -668,10 +571,10 @@ tasks:
     quietmode: 0
   "35":
     id: "35"
-    taskid: 533d9923-2e37-490e-899c-d71e2ace9f2a
+    taskid: 3eb17d07-8ced-4c45-8495-604bdc9d931d
     type: condition
     task:
-      id: 533d9923-2e37-490e-899c-d71e2ace9f2a
+      id: 3eb17d07-8ced-4c45-8495-604bdc9d931d
       version: -1
       name: Is AutoCategorize true?
       description: Whether the report should be automatically categorized.
@@ -716,10 +619,10 @@ tasks:
     quietmode: 0
   "36":
     id: "36"
-    taskid: f1bc3480-2907-4475-8f46-af85b853d918
+    taskid: 35d93f11-338e-4865-897f-a1a3e259167e
     type: condition
     task:
-      id: f1bc3480-2907-4475-8f46-af85b853d918
+      id: 35d93f11-338e-4865-897f-a1a3e259167e
       version: -1
       name: Is Email Malicious or Non-Malicious?
       description: Whether the reported email is malicious or not.
@@ -769,10 +672,10 @@ tasks:
     quietmode: 0
   "37":
     id: "37"
-    taskid: 96fd0e84-a2d0-4112-8054-72042509ebcb
+    taskid: 8a0891b7-6f6c-4ce5-8869-354ad2d73821
     type: regular
     task:
-      id: 96fd0e84-a2d0-4112-8054-72042509ebcb
+      id: 8a0891b7-6f6c-4ce5-8869-354ad2d73821
       version: -1
       name: Get Category ID
       description: |-
@@ -815,10 +718,10 @@ tasks:
     quietmode: 0
   "38":
     id: "38"
-    taskid: b7feaf29-32eb-4282-844c-74b4ef70c6c1
+    taskid: 201bc07b-f29b-4033-8a1d-f1bf46436fd4
     type: collection
     task:
-      id: b7feaf29-32eb-4282-844c-74b4ef70c6c1
+      id: 201bc07b-f29b-4033-8a1d-f1bf46436fd4
       version: -1
       name: Provide a category to categorize a report as malicious
       description: Gets the category name to categorize the report.
@@ -882,10 +785,10 @@ tasks:
     quietmode: 0
   "39":
     id: "39"
-    taskid: d63b9f50-9376-4f55-8996-3f933dfa910b
+    taskid: d665705a-7825-408e-8477-38d1788e5019
     type: regular
     task:
-      id: d63b9f50-9376-4f55-8996-3f933dfa910b
+      id: d665705a-7825-408e-8477-38d1788e5019
       version: -1
       name: Get Category ID
       description: |-
@@ -931,10 +834,10 @@ tasks:
     quietmode: 0
   "41":
     id: "41"
-    taskid: 05bff058-d505-4113-8818-380ed660fe76
+    taskid: c164ab13-2ee2-4a5e-85fe-911fda04413c
     type: regular
     task:
-      id: 05bff058-d505-4113-8818-380ed660fe76
+      id: c164ab13-2ee2-4a5e-85fe-911fda04413c
       version: -1
       name: Get Category ID
       description: |-
@@ -977,10 +880,10 @@ tasks:
     quietmode: 0
   "42":
     id: "42"
-    taskid: 414df273-e76b-4dcb-85dc-1071a8ce7de1
+    taskid: fe88490c-f7b7-466c-8d6a-63344f96625d
     type: collection
     task:
-      id: 414df273-e76b-4dcb-85dc-1071a8ce7de1
+      id: fe88490c-f7b7-466c-8d6a-63344f96625d
       version: -1
       name: Provide a category to categorize a report as non-malicious
       description: Gets the category name to categorize the report.
@@ -1042,112 +945,12 @@ tasks:
       totalanswers: 0
     skipunavailable: false
     quietmode: 0
-  "43":
-    id: "43"
-    taskid: e6118462-d434-41c1-83ca-48bc0067ba9b
-    type: collection
-    task:
-      id: e6118462-d434-41c1-83ca-48bc0067ba9b
-      version: -1
-      name: Provide response details to create a response
-      description: Creates a response based on the values provided in the command
-        arguments.
-      type: collection
-      iscommand: false
-      brand: Cofense Triage v3
-    nexttasks:
-      '#none#':
-      - "33"
-    scriptarguments:
-      category_id:
-        simple: "2"
-      id:
-        complex:
-          root: inputs.Report ID
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 1160,
-          "y": 2850
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    message:
-      to:
-      subject:
-      body:
-      methods: []
-      format: ""
-      bcc:
-      cc:
-      timings:
-        retriescount: 2
-        retriesinterval: 360
-        completeafterreplies: 1
-    form:
-      questions:
-      - id: "0"
-        label: ""
-        labelarg:
-          simple: Specify the name of the response.
-        required: true
-        gridcolumns: []
-        defaultrows: []
-        type: shortText
-        options: []
-        optionsarg: []
-        fieldassociated: ""
-        placeholder: ""
-        tooltip: ""
-        readonly: false
-      - id: "1"
-        label: ""
-        labelarg:
-          simple: |+
-            Specify the subject of response.
-
-        required: true
-        gridcolumns: []
-        defaultrows: []
-        type: shortText
-        options: []
-        optionsarg: []
-        fieldassociated: ""
-        placeholder: ""
-        tooltip: ""
-        readonly: false
-      - id: "2"
-        label: ""
-        labelarg:
-          simple: Specify the body of response.
-        required: true
-        gridcolumns: []
-        defaultrows: []
-        type: shortText
-        options: []
-        optionsarg: []
-        fieldassociated: ""
-        placeholder: ""
-        tooltip: ""
-        readonly: false
-      title: Create Response
-      description: |-
-        Creates a response based on the values provided in the command arguments.
-        Responses provide feedback (acknowledgment) to reporters about emails they reported.
-      sender: ""
-      expired: false
-      totalanswers: 0
-    skipunavailable: false
-    quietmode: 0
   "44":
     id: "44"
-    taskid: 2c9dfafd-6212-42cc-8666-aab4f50e108a
+    taskid: 696707a9-0c99-4abb-87be-b3ea991be0cf
     type: condition
     task:
-      id: 2c9dfafd-6212-42cc-8666-aab4f50e108a
+      id: 696707a9-0c99-4abb-87be-b3ea991be0cf
       version: -1
       name: Is AutoCategorize true?
       description: Whether the report should be automatically categorized.
@@ -1190,51 +993,12 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "45":
-    id: "45"
-    taskid: fbffd1bf-ba0b-4e99-8e08-d0673acfcf72
-    type: condition
-    task:
-      id: fbffd1bf-ba0b-4e99-8e08-d0673acfcf72
-      version: -1
-      name: Is Response ID defined in input?
-      description: Whether Response ID is provided in input or not.
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "43"
-      "yes":
-      - "32"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              complex:
-                root: inputs.ResponseID
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 807.5,
-          "y": 2610
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "46":
     id: "46"
-    taskid: a2cb6f70-cc4f-4759-8c7d-5252c17eba76
+    taskid: 0130b75f-7dc2-4427-8e7e-45830661a0eb
     type: condition
     task:
-      id: a2cb6f70-cc4f-4759-8c7d-5252c17eba76
+      id: 0130b75f-7dc2-4427-8e7e-45830661a0eb
       version: -1
       name: Is Cofense Triage v3 Integration Enable?
       description: 'Whether Cofense Triage v3 integration is enabled or not. '
@@ -1288,10 +1052,10 @@ tasks:
     quietmode: 0
   "47":
     id: "47"
-    taskid: 482ce3af-c89f-4467-8f23-e5cedaf23e32
+    taskid: dfc2a789-041a-49ca-819b-a3aad91db618
     type: condition
     task:
-      id: 482ce3af-c89f-4467-8f23-e5cedaf23e32
+      id: dfc2a789-041a-49ca-819b-a3aad91db618
       version: -1
       name: Is Rasterize Integration Enable?
       description: Whether Rasterize integration is enabled or not.
@@ -1368,7 +1132,7 @@ inputs:
   value:
     complex:
       root: incident
-      accessor: cofensereportid
+      accessor: cofensetriagereportid
   required: true
   description: Requires report ID to investigate and categorize the report that is
     pulled from Cofense Triage.
@@ -1388,11 +1152,6 @@ inputs:
   value: {}
   required: false
   description: The category to be assigned to the report if it is non-malicious.
-  playbookInputQuery:
-- key: ResponseID
-  value: {}
-  required: false
-  description: ID of the response that is to be provided when the report is categorized.
   playbookInputQuery:
 outputs: []
 tests:

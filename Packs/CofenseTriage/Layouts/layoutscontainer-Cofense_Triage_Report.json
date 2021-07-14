@@ -348,7 +348,7 @@
                         "items": [
                             {
                                 "endCol": 2,
-                                "fieldId": "cofensereportid",
+                                "fieldId": "cofensetriagereportid",
                                 "height": 22,
                                 "id": "b9a3d230-c759-11eb-98e1-ed8c6a150346",
                                 "index": 0,
@@ -357,7 +357,7 @@
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "cofensereportlocation",
+                                "fieldId": "cofensetriagereportlocation",
                                 "height": 22,
                                 "id": "bfe22de0-c759-11eb-98e1-ed8c6a150346",
                                 "index": 1,
@@ -366,7 +366,7 @@
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "cofensereportmatchpriority",
+                                "fieldId": "cofensetriagereportmatchpriority",
                                 "height": 22,
                                 "id": "c1ebb980-c759-11eb-98e1-ed8c6a150346",
                                 "index": 2,
@@ -375,7 +375,7 @@
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "cofensereportriskscore",
+                                "fieldId": "cofensetriagereportriskscore",
                                 "height": 22,
                                 "id": "c5637b20-c759-11eb-98e1-ed8c6a150346",
                                 "index": 3,
@@ -384,7 +384,7 @@
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "cofensereportcategoryid",
+                                "fieldId": "cofensetriagereportcategoryid",
                                 "height": 22,
                                 "id": "d09f2700-c759-11eb-98e1-ed8c6a150346",
                                 "index": 4,
@@ -444,7 +444,7 @@
                         "items": [
                             {
                                 "endCol": 2,
-                                "fieldId": "cofensereporttags",
+                                "fieldId": "cofensetriagereporttags",
                                 "height": 53,
                                 "id": "f7eb6030-c439-11eb-abed-c9810bb6a8e6",
                                 "index": 0,
@@ -453,7 +453,7 @@
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "cofensereportcategorizationtags",
+                                "fieldId": "cofensetriagereportcategorizationtags",
                                 "height": 53,
                                 "id": "ff9ea8a0-c439-11eb-abed-c9810bb6a8e6",
                                 "index": 1,
@@ -480,7 +480,7 @@
                         "items": [
                             {
                                 "endCol": 2,
-                                "fieldId": "cofensereportcreatedat",
+                                "fieldId": "cofensetriagereportcreatedat",
                                 "height": 22,
                                 "id": "b86f4080-c43d-11eb-abed-c9810bb6a8e6",
                                 "index": 0,
@@ -489,7 +489,7 @@
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "cofensereportreportedat",
+                                "fieldId": "cofensetriagereportreportedat",
                                 "height": 22,
                                 "id": "bc8257c0-c43d-11eb-abed-c9810bb6a8e6",
                                 "index": 1,
@@ -498,7 +498,7 @@
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "cofensereportreceivedat",
+                                "fieldId": "cofensetriagereportreceivedat",
                                 "height": 22,
                                 "id": "bf1a8ed0-c43d-11eb-abed-c9810bb6a8e6",
                                 "index": 2,
@@ -507,7 +507,7 @@
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "cofensereportprocessedat",
+                                "fieldId": "cofensetriagereportprocessedat",
                                 "height": 22,
                                 "id": "c1a0eb90-c43d-11eb-abed-c9810bb6a8e6",
                                 "index": 4,
@@ -516,7 +516,7 @@
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "cofensereportupdatedat",
+                                "fieldId": "cofensetriagereportupdatedat",
                                 "height": 22,
                                 "id": "c5447820-c43d-11eb-abed-c9810bb6a8e6",
                                 "index": 5,
@@ -543,7 +543,7 @@
                         "items": [
                             {
                                 "endCol": 2,
-                                "fieldId": "cofensereportmd5",
+                                "fieldId": "cofensetriagereportmd5",
                                 "height": 22,
                                 "id": "14edb030-c43e-11eb-abed-c9810bb6a8e6",
                                 "index": 0,
@@ -552,7 +552,7 @@
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "cofensereportsha256",
+                                "fieldId": "cofensetriagereportsha256",
                                 "height": 22,
                                 "id": "19867230-c43e-11eb-abed-c9810bb6a8e6",
                                 "index": 1,
@@ -579,7 +579,7 @@
                         "items": [
                             {
                                 "endCol": 2,
-                                "fieldId": "cofensereportfromaddress",
+                                "fieldId": "cofensetriagereportfromaddress",
                                 "height": 22,
                                 "id": "b59ac3c0-c43d-11eb-abed-c9810bb6a8e6",
                                 "index": 0,
@@ -589,7 +589,7 @@
                             {
                                 "dropEffect": "move",
                                 "endCol": 2,
-                                "fieldId": "cofensereportsubject",
+                                "fieldId": "cofensetriagereportsubject",
                                 "height": 22,
                                 "id": "34d81b10-c439-11eb-abed-c9810bb6a8e6",
                                 "index": 1,
@@ -617,7 +617,7 @@
                         "items": [
                             {
                                 "endCol": 2,
-                                "fieldId": "cofensereportid",
+                                "fieldId": "cofensetriagereportid",
                                 "height": 22,
                                 "id": "a4f1b6d0-c769-11eb-afde-edee6a221182",
                                 "index": 0,
@@ -626,7 +626,7 @@
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "cofensereportlocation",
+                                "fieldId": "cofensetriagereportlocation",
                                 "height": 22,
                                 "id": "ac2dfa80-c769-11eb-afde-edee6a221182",
                                 "index": 1,
@@ -635,7 +635,7 @@
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "cofensereportmatchpriority",
+                                "fieldId": "cofensetriagereportmatchpriority",
                                 "height": 22,
                                 "id": "adc2a440-c769-11eb-afde-edee6a221182",
                                 "index": 2,
@@ -644,7 +644,7 @@
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "cofensereportriskscore",
+                                "fieldId": "cofensetriagereportriskscore",
                                 "height": 22,
                                 "id": "c31d6870-c769-11eb-afde-edee6a221182",
                                 "index": 3,
@@ -653,7 +653,7 @@
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "cofensereportcategoryid",
+                                "fieldId": "cofensetriagereportcategoryid",
                                 "height": 22,
                                 "id": "ca261900-c769-11eb-afde-edee6a221182",
                                 "index": 4,
