@@ -15,7 +15,7 @@ Use the Export Indicators Service integration to provide an endpoint with a list
     * __Indicator Query__: The query to run to update its list. To view expected results, you can run the following command from the Cortex XSOAR CLI
     `!findIndicators query=<your query>`
     * __Outbound Format__: The default format of the entries in the service. Supported formats: text, json, json-seq, csv, XSOAR json, XSOAR json-seq, XSOAR csv, PAN-OS URL, Symantec ProxySG and McAfee Web Gateway.
-    * __List Size__: Max amount of entries in the service instance.
+    * __List Size__: Max amount of entries in the service instance. This list will be sorted and ordered by further arguments, if given.
     * __Update On Demand Only__: When set to true, will only update the service indicators via **eis-update** command.
     * __Refresh Rate__: How often to refresh the export indicators list (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days, 3
     months, 1 year)
@@ -60,7 +60,7 @@ Use the following arguments in the URL to change the request:
 
 | **Argument Name** | **Description** | **Example** |
 | --- | --- | --- |
-| n | The maximum number of entries in the output. If no value is provided, will use the value specified in the List Size parameter configured in the instance configuration. | `https://{server_host}/instance/execute/{instance_name}?n=50` |
+| n | The maximum number of entries in the output. If no value is provided, will use the value specified in the List Size parameter configured in the instance configuration. In any case, up to *List Size* indicators will be retrieved and sorted(if specified) before presenting the first n.| `https://{server_host}/instance/execute/{instance_name}?n=50` |
 | s | The starting entry index from which to export the indicators. | `https://{server_host}/instance/execute/{instance_name}?s=10&n=50` |
 | v | The output format. Supports `text`, `csv`, `json`, `json-seq`,`xsoar-json`, `xsoar-seq`, `xsoar-csv`, `mwg`, `panosurl` and `proxysg` (alias: `bluecoat`). | `https://{server_host}/instance/execute/{instance_name}?v=json` |
 | q | The query used to retrieve indicators from the system. | `https://{server_host}/instance/execute/{instance_name}?q="type:ip and sourceBrand:my_source"` |
