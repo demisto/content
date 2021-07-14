@@ -63,9 +63,6 @@ parameters:
   nightly:
     type: string
     default: ""
-  legacy_nightly:
-    type: string
-    default: ""
   instance_tests:
     type: string
     default: ""
@@ -125,7 +122,6 @@ references:
       TIME_TO_LIVE_PARAMETER: << pipeline.parameters.time_to_live >>
       PULL_REQUEST_NUMBER: << pipeline.parameters.pr_number >>
       NIGHTLY_PARAMETER: << pipeline.parameters.nightly >>
-      LEGACY_NIGHTLY_PARAMETER: << pipeline.parameters.legacy_nightly >>
       INSTANCE_TESTS_PARAMETER: << pipeline.parameters.instance_tests >>
       DEMISTO_SDK_NIGHTLY_PARAMETER: << pipeline.parameters.demisto_sdk_nightly >>
       FORCE_PACK_UPLOAD_PARAMETER: << pipeline.parameters.force_pack_upload >>
@@ -172,7 +168,7 @@ references:
         echo 'source /home/circleci/project/.circleci/content_release_vars.sh' >> $BASH_ENV
         chmod +x .circleci/gitlab-ci-env-variables.sh
         ./.circleci/gitlab-ci-env-variables.sh
-        if [ -n "${NIGHTLY_PARAMETER}" ] || [ -n "{LEGACY_NIGHTLY_PARAMETER}" ];
+        if [ -n "${NIGHTLY_PARAMETER}" ];
         then
             echo 'export NIGHTLY=true' >> $BASH_ENV
         fi
@@ -553,17 +549,6 @@ references:
           - Create Instances
 
   nightly_jobs: &nightly_jobs
-    - Setup Environment:
-        context: nightly_env
-    - Run Unit Testing And Lint:
-        context: nightly_env
-        requires:
-          - Setup Environment
-    - Run Validations:
-        requires:
-          - Setup Environment
-
-  legacy_nightly_jobs: &legacy_nightly_jobs
     - Setup Environment:
         context: nightly_env
     - Create Instances:
@@ -1316,7 +1301,6 @@ workflows:
           - << pipeline.parameters.force_pack_upload >>
           - << pipeline.parameters.bucket_upload >>
           - << pipeline.parameters.demisto_sdk_nightly >>
-          - << pipeline.parameters.legacy_nightly >>
           - << pipeline.parameters.nightly >>
           - << pipeline.parameters.instance_tests >>
     jobs:
@@ -1377,14 +1361,6 @@ workflows:
     when: << pipeline.parameters.nightly >>
     jobs:
       *nightly_jobs
-
-  legacy_nightly_trigger:
-    # considered legacy since we now run the nightly (test playbooks against live xsoar instances) in gitlab
-    # use to trigger a fullblown nightly in circle including the jobs to test against xsoar instances
-    # will initiate when using the trigger script with the appropriate option.
-    when: << pipeline.parameters.legacy_nightly >>
-    jobs:
-      *legacy_nightly_jobs
 
   sdk_nightly:
     triggers:
