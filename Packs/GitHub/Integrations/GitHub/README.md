@@ -2312,14 +2312,14 @@ List all project boards a user can see.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| GitHub.Projects.name | String | The name of the project board. | 
-| GitHub.Projects.proj_id | Number | The ID of the  project board. | 
-| GitHub.Projects.proj_number | Number | Project board number. | 
-| GitHub.Projects.columns.name | String | Column Name. | 
-| GitHub.Projects.columns.column_id | Number | The ID of the column. | 
-| GitHub.Projects.columns.cards.card_id | Number | The ID of the card. | 
-| GitHub.Projects.columns.cards.content_number | Number | The content number of this card, usually this is the issue number. | 
-| GitHub.Projects.all_issues | List | List of all issue numbers that are in this project board. | 
+| GitHub.Project.Name | String | The name of the project board. | 
+| GitHub.Project.ID | Number | The ID of the  project board. | 
+| GitHub.Project.Number | Number | Project board number. | 
+| GitHub.Project.Columns.Name | String | Column Name. | 
+| GitHub.Project.Columns.ColumnID | Number | The ID of the column. | 
+| GitHub.Project.Columns.Cards.CardID | Number | The ID of the card. | 
+| GitHub.Project.Columns.Cards.ContentNumber | Number | The content number of this card, usually this is the issue number. | 
+| GitHub.Project.Issues | List | List of all issue numbers that are in this project board. | 
             
 #### Command Example
 
