@@ -2023,10 +2023,6 @@
             "fromversion": "4.1.0"
         },
         {
-            "integrations": "Qualys",
-            "playbookID": "Qualys-Test"
-        },
-        {
             "integrations": "Whois",
             "playbookID": "whois_test",
             "fromversion": "4.1.0"
