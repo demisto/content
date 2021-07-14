@@ -481,8 +481,7 @@ def get_full_report_command(client, mapper_in, report_url, workday_date_format):
     results = CommandResults(
         outputs_prefix='WorkdayIAM.ReportEntry',
         outputs_key_field=EMPLOYEE_ID_FIELD,
-        outputs=outputs,
-        raw_response=report_entries
+        outputs=outputs
     )
     return results
 

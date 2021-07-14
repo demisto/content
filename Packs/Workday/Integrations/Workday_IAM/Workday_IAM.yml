@@ -98,6 +98,7 @@ name: Workday IAM
 script:
   commands:
   - deprecated: false
+    description: Gets the report entries from Workday.
     execution: false
     name: workday-iam-get-full-report
     outputs:
