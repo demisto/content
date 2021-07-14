@@ -351,8 +351,8 @@ def remove_foreign_language(data, text_field, language):
     dropped_count = len(data) - len(filtered_data)
     if dropped_count > 0:
         lang_counter = Counter(inc[LANGUAGE_KEY] for inc in data).most_common()
-        description += "Dropped %d samples detected in foreign languages. " % (dropped_count)
-        description += 'Found languages count: {}'.format(', '.join(['{}:{}'.format(lang, count) for lang, count
+        description += "Dropped %d sample(s) that were detected as being in foreign languages. " % dropped_count
+        description += 'Found language counts: {}'.format(', '.join(['{}:{}'.format(lang, count) for lang, count
                                                                      in lang_counter]))
         description += "\n"
     return filtered_data, description
@@ -417,7 +417,7 @@ def main():
         input_str = clean_text_of_single_text(input_str, remove_html_tags)
         is_correct_lang, actual_language = is_text_in_input_language(input_str, language)
         if not is_correct_lang:
-            return_error("Input text was detected as a different language than {} ('{}' found)."
+            return_error("Input text was detected as as being in a different language from {} ('{}' found)."
                          .format(language, actual_language))
         res = pre_process_single_text(raw_text=input_str,
                                       hash_seed=hash_seed, pre_process_type=pre_process_type)
