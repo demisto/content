@@ -361,7 +361,9 @@ class Pack(object):
             list: list of sorted integration images
 
         """
-
+        logging.info(f'pack_integration_images: {pack_integration_images}==')
+        logging.info(f'pack_dependencies_integration_images_dict: {pack_dependencies_integration_images_dict}==')
+        logging.info(f'pack_dependencies_by_download_count: {pack_dependencies_by_download_count}==')
         def sort_by_name(integration_image: dict):
             return integration_image.get('name', '')
 
@@ -378,6 +380,7 @@ class Pack(object):
                     if dep_int_img not in all_dep_int_imgs:  # avoid duplicates
                         all_dep_int_imgs.append(dep_int_img)
 
+        logging.info(f'all_dep_int_imgs:{all_dep_int_imgs}==')
         return all_dep_int_imgs
 
     @staticmethod
@@ -415,8 +418,11 @@ class Pack(object):
                 if dep_int_img not in pack_integration_images:  # avoid duplicates in list
                     if dep_pack_name in dependencies_integration_images_dict:
                         dependencies_integration_images_dict[dep_pack_name].append(dep_int_img)
+                        logging.info('=1=')
                     else:
                         dependencies_integration_images_dict[dep_pack_name] = [dep_int_img]
+                        logging.info('=2=')
+
 
         return Pack.organize_integration_images(
             pack_integration_images, dependencies_integration_images_dict, pack_dependencies_by_download_count
