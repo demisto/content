@@ -29,7 +29,7 @@ def test_fetch_incidents(mocker):
     mapped_user = util_load_json('test_data/mapped_user.json')
 
     mocker.patch.object(Client, 'get_full_report', return_value=client_response.get('Report_Entry'))
-    mocker.patch('Workday_IAM.get_all_user_profiles', return_value=({}, {}))
+    mocker.patch('Workday_IAM.get_all_user_profiles', return_value=({}, {}, {}))
     mocker.patch.object(demisto, 'mapObject', return_value=mapped_user)
     client = Client(base_url="", verify="verify", headers={}, proxy=False, ok_codes=(200, 204), auth=None)
 
@@ -50,7 +50,8 @@ def test_fetch_incidents_email_change(requests_mock, mocker):
         employee_id_to_user_profile, email_to_user_profile, event_data
 
     requests_mock.get('https://test.com', json=full_report)
-    mocker.patch('Workday_IAM.get_all_user_profiles', return_value=(employee_id_to_user_profile, email_to_user_profile))
+    mocker.patch('Workday_IAM.get_all_user_profiles', return_value=({}, employee_id_to_user_profile,
+                                                                    email_to_user_profile))
     mocker.patch.object(demisto, 'mapObject', return_value=mapped_workday_user)
     client = Client(base_url="", verify="verify", headers={}, proxy=False, ok_codes=(200, 204), auth=None)
 
@@ -71,7 +72,8 @@ def test_fetch_incidents_employee_id_change(requests_mock, mocker):
         employee_id_to_user_profile, email_to_user_profile, event_data
 
     requests_mock.get('https://test.com', json=full_report)
-    mocker.patch('Workday_IAM.get_all_user_profiles', return_value=(employee_id_to_user_profile, email_to_user_profile))
+    mocker.patch('Workday_IAM.get_all_user_profiles', return_value=({}, employee_id_to_user_profile,
+                                                                    email_to_user_profile))
     mocker.patch.object(demisto, 'mapObject', return_value=mapped_workday_user)
     client = Client(base_url="", verify="verify", headers={}, proxy=False,
                     ok_codes=(200, 204), auth=None)
@@ -92,7 +94,7 @@ def test_fetch_incidents_orphan_user(requests_mock, mocker):
     from test_data.fetch_incidents_orphan_user_mock_data import full_report, email_to_user_profile, event_data
 
     requests_mock.get('https://test.com', json=full_report)
-    mocker.patch('Workday_IAM.get_all_user_profiles', return_value=({}, email_to_user_profile))
+    mocker.patch('Workday_IAM.get_all_user_profiles', return_value=({}, {}, email_to_user_profile))
     client = Client(base_url="", verify="verify", headers={}, proxy=False,
                     ok_codes=(200, 204), auth=None)
 
