@@ -164,8 +164,11 @@ def get_failed_unit_tests_attachment(build_url: str, is_sdk_build: bool = False)
     Returns:
         (List[Dict]) Dict wrapped inside a list containing failed unit tests attachment.
     """
-    artifact_data: List[str] = get_artifact_data('failed_lint_report.txt').split('\n')
-    unittests_fields: List[Dict] = get_entities_fields('Failed Unittests', artifact_data)
+    if artifact_data := get_artifact_data('failed_lint_report.txt'):
+        artifact_data = artifact_data.split('\n')
+        unittests_fields: Optional[List[Dict]] = get_entities_fields('Failed Unittests', artifact_data)
+    else:
+        unittests_fields = None
     color: str = 'good' if not unittests_fields else 'danger'
     build_type: str = 'SDK' if is_sdk_build else 'Content'
     status = 'Success' if unittests_fields else 'Failure'
