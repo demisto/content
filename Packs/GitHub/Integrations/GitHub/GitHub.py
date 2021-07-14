@@ -1217,12 +1217,17 @@ def get_project_details(project, header):
 def list_all_projects_command():
 
     project_f = demisto.args().get('project_filter', [])
+    limit = demisto.args().get('limit', MAX_FETCH_PAGE_RESULTS)
+
+    if int(limit) > MAX_FETCH_PAGE_RESULTS:
+        limit = MAX_FETCH_PAGE_RESULTS
+
     if project_f:
         project_f = project_f.split(",")
 
     header = HEADERS
     header.update({'Accept': PROJECTS_PREVIEW})
-    params = {'per_page': MAX_FETCH_PAGE_RESULTS}
+    params = {'per_page': limit}
     resp_projects = requests.get(url=BASE_URL + PROJECT_SUFFIX,
                                  headers=header,
                                  verify=USE_SSL,
