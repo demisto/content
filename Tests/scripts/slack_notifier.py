@@ -196,9 +196,9 @@ def get_coverage_attachment(build_url: str) -> Dict:
     # TODO handle case if no exists
     coverage_percent: float = float(coverage_dict_data.get('coverage', dict()).get('@line-rate')) * 100.0
     return {
-        'fallback': f'Coverage Report Content: {coverage_percent:.2f}% Total Coverage. Itay Yeshaya Coverage Percent: 0%',
+        'fallback': f'Coverage Report Content: {coverage_percent:.2f}% Total Coverage',
         'color': 'good',
-        'title': f'Coverage Report Content: {coverage_percent:.2f}% Total Coverage. Itay Yeshaya Coverage Percent: 0%',
+        'title': f'Coverage Report Content: {coverage_percent:.2f}% Total Coverage',
         'title_link': build_url,
         'fields': []
     }
