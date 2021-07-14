@@ -1,6 +1,3 @@
-from CommonServerPython import *
-import pytest
-from unittest import mock
 from unittest.mock import patch
 import json
 
