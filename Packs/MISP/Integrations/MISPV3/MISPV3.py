@@ -313,7 +313,7 @@ def reputation_command_to_human_readable(outputs, score, events_to_human_readabl
         'Attribute Value': outputs.get('Value'),
         'Attribute Category': outputs.get('Category'),
         'Timestamp': convert_timestamp(outputs.get('Timestamp')),
-        'Related Events': events_to_human_readable,
+        'Events with the scored tag': events_to_human_readable,
         'Scored Tag ID': found_tag_id,
         'Scored Tag Name': found_tag_name,
     }
