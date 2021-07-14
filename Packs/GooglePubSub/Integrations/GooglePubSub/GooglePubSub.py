@@ -441,6 +441,19 @@ class PubSubClient(BaseGoogleClient):
             .execute()
         )
 
+    def subscription_reset_ack_deadline(self, subscription_name, acks):
+        """
+        Sets the AckDeadline of current subscription to 0
+        :return: None
+        """
+        body = assign_params(ackDeadlineSeconds=0, ackIds=acks)
+        return (
+            self.service.projects()
+                .subscriptions()
+                .modifyAckDeadline(subscription=subscription_name, body=body)
+                .execute()
+        )
+
     def get_topic_snapshots_list(self, topic_name, page_size, page_token=None):
         """
         Get snapshots list
@@ -1386,6 +1399,8 @@ def try_pull_unique_messages(
     raw_msgs = client.pull_messages(sub_name, client.default_max_msgs)
     if "receivedMessages" in raw_msgs:
         res_acks, msgs = extract_acks_and_msgs(raw_msgs)
+        # set the deadline to 0 to handle reset to last run
+        client.subscription_reset_ack_deadline(sub_name, res_acks)
         # continue only if messages were extracted successfully
         if msgs:
             msg_ids, max_publish_time = get_messages_ids_and_max_publish_time(msgs)
