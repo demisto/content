@@ -101,7 +101,7 @@ parameters:
     default: "dmst-content-team"
   sdk_ref:
     type: string
-    default: "master"
+    default: "support-generic-objects-in-id-set"
 
 references:
   environment: &environment
@@ -221,7 +221,7 @@ references:
         git config diff.renameLimit 6000
 
         if [ -n "${DEMISTO_SDK_NIGHTLY}" ]; then
-          pip3 install git+https://github.com/demisto/demisto-sdk.git@"$SDK_REF"
+          pip3 install git+https://github.com/demisto/demisto-sdk.git@support-generic-objects-in-id-set
         fi
 
         echo "========== Build Parameters =========="
