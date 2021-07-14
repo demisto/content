@@ -5140,3 +5140,5 @@ class TestCustomIndicator:
         context = indicator.to_context()
         assert context['DBotScore']['Indicator'] == 'test'
         assert context['prefix(val.value && val.value == obj.value)']['Value'] == 'test_value'
+
+class TestDBotScoreType:

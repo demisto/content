@@ -226,7 +226,7 @@ class DBotScoreType(object):
     DBotScoreType.ACCOUNT
     DBotScoreType.CRYPTOCURRENCY
     DBotScoreType.EMAIL
-    DBotScoreType.CUSTOM
+
     :return: None
     :rtype: ``None``
     """
@@ -241,7 +241,6 @@ class DBotScoreType(object):
     CERTIFICATE = 'certificate'
     CRYPTOCURRENCY = 'cryptocurrency'
     EMAIL = 'email'
-    CUSTOM = 'custom'
 
     def __init__(self):
         # required to create __init__ for create_server_docs.py purpose
@@ -250,25 +249,13 @@ class DBotScoreType(object):
     @classmethod
     def is_valid_type(cls, _type):
         # type: (str) -> bool
-
-        return _type in (
-            DBotScoreType.IP,
-            DBotScoreType.FILE,
-            DBotScoreType.DOMAIN,
-            DBotScoreType.URL,
-            DBotScoreType.CVE,
-            DBotScoreType.ACCOUNT,
-            DBotScoreType.CIDR,
-            DBotScoreType.DOMAINGLOB,
-            DBotScoreType.CERTIFICATE,
-            DBotScoreType.CRYPTOCURRENCY,
-            DBotScoreType.EMAIL,
-            DBotScoreType.CUSTOM,
-        )
+        # TODO: should test it with custom and non-custom
+        return _type in vars(object)
 
     @classmethod
     def set_custom_name(cls, name):
-        DBotScoreType.CUSTOM = name
+        # TODO: what happens if the attribute name is updated?
+        cls.__setattr__(object, name=name.upper(), value=name.lower())
 
 
 class DBotScoreReliability(object):
@@ -2441,14 +2428,19 @@ class Common(object):
             """
             :type indicator_name: ``Str``
             :param indicator_name: name of the indicator
+
             :type value: ``Any``
             :param value: Value of the indicator
+
             :type dbot_score: ``DBotScore``
             :param dbot_score: If custom indicator has a score then create and set a DBotScore object.
+
             :type params: ``Dict(Str,Any)``
             :param params: A dictionary containing all the param names and their values
+
             :type prefix_str: ``Str``
             :param prefix_str: Will be used as the context path prefix
+
             :return: None
             :rtype: ``None``
             """
@@ -2475,8 +2467,7 @@ class Common(object):
                 'Value': self.value
             }
 
-            for attr, value in self.__dict__.items():
-                custom_context[attr] = value
+            custom_context.update(self.__dict__)
 
             ret_value = {
                 self.CONTEXT_PATH: custom_context
