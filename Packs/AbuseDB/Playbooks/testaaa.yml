@@ -42,7 +42,7 @@ tasks:
       name: aaa-get
       description: Retrieves all blocked senders, URLs, and SHA-1 hash values that
         have been configured to quarantine Exchange Online email messages.
-      script: TrendMicro Cloud App Security|||trendmicro-cas-blocked-lists-get
+      script: aaa|||aaa-get
       type: regular
       iscommand: true
       brand: aaa
