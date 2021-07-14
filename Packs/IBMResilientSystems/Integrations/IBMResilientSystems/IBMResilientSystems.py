@@ -480,7 +480,7 @@ def update_incident_command(args):
         for field_name, field_value in json.loads(args['other-fields']).items():
             changes.append({
                 'field': field_name,
-                'old_value': incident.get(field_name),
+                'old_value': None,
                 'new_value': field_value
             })
     data = {
