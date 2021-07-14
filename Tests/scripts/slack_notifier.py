@@ -171,7 +171,7 @@ def get_failed_unit_tests_attachment(build_url: str, is_sdk_build: bool = False)
         unittests_fields = None
     color: str = 'good' if not unittests_fields else 'danger'
     build_type: str = 'SDK' if is_sdk_build else 'Content'
-    status = 'Success' if unittests_fields else 'Failure'
+    status = 'Success' if not unittests_fields else 'Failure'
     title: str = f'{build_type} Nightly Unit Tests - {status}'
     return [{
         'fallback': title,
