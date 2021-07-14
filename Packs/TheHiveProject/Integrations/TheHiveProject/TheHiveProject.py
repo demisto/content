@@ -808,12 +808,21 @@ def main() -> None:
     params = demisto.params()
     args = demisto.args()
     api_key = params['apiKey']
-    url = params.get('url')
-    base_url = f'{url}/api'
-    verify_certificate = not demisto.params().get('insecure', False)
-    proxy = demisto.params().get('proxy', False)
-    mirroring = params.get('mirroring', None).title() if params.get('mirroring', None) else None
+    base_url = urljoin(params['url'], '/api')
+    verify_certificate = not params.get('insecure', False)
+    proxy = params.get('proxy', False)
+    mirroring = params.get('mirror').title()
     mirroring = None if mirroring == 'Disabled' else mirroring
+
+    headers = {'Authorization': f'Bearer {api_key}'}
+
+    client = Client(
+        base_url=base_url,
+        verify=verify_certificate,
+        headers=headers,
+        proxy=proxy,
+        mirroring=mirroring
+    )
 
     command = demisto.command()
 
@@ -840,15 +849,7 @@ def main() -> None:
         'thehive-get-version': get_version_command
     }
     demisto.debug(f'Command being called is {command}')
-    headers = {'Authorization': f'Bearer {api_key}'}
     try:
-        client = Client(
-            base_url=base_url,
-            verify=verify_certificate,
-            headers=headers,
-            proxy=proxy,
-            mirroring=mirroring
-        )
 
         if command == 'test-module':
             # This is the call made when pressing the integration Test button.
