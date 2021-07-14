@@ -86,7 +86,7 @@ github_response_4 = []
 
 
 def pack_names(files):
-    return list(set(map(lambda x: x.split(os.path.sep)[1], files)))
+    return set(map(lambda x: x.split(os.path.sep)[1], files))
 
 
 def test_get_pr_files(requests_mock):
@@ -113,7 +113,7 @@ def test_get_pr_files(requests_mock):
 
     pack_dir = pack_names(get_pr_files(pr_number))
 
-    assert pack_dir == ['Slack']
+    assert pack_dir == {'Slack'}
 
 
 def test_get_multiple_pr_files(requests_mock):
@@ -141,7 +141,7 @@ def test_get_multiple_pr_files(requests_mock):
 
     pack_dir = pack_names(get_pr_files(pr_number))
 
-    assert pack_dir == ['Slack', 'AnotherPackName']
+    assert pack_dir == {'Slack', 'AnotherPackName'}
 
 
 def test_get_pr_files_no_pack(requests_mock):
@@ -168,4 +168,4 @@ def test_get_pr_files_no_pack(requests_mock):
 
     pack_dir = pack_names(get_pr_files(pr_number))
 
-    assert pack_dir == []
+    assert pack_dir == set()
