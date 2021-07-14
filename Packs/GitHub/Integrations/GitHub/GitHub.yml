@@ -3406,6 +3406,9 @@ script:
     - description: Only list projects with the following numbers
       isArray: true
       name: project_filter
+    - defaultValue: '20'
+      description: The number of projects to return. Default is 20. Maximum is 100.
+      name: limit
     description: Lists all issues that the user has access to view.
     name: GitHub-list-all-projects
     outputs:
