@@ -261,6 +261,5 @@ inputs:
   playbookInputQuery:
 outputs: []
 tests:
-- Qualys-Test
 - QualysVulnerabilityManagement-Test
 fromversion: 5.5.0
