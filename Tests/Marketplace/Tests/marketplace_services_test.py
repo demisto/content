@@ -1642,11 +1642,11 @@ class TestReleaseNotes:
         open_mocker['rn_dir_fake_path/1_1_0.md'].read_data = rn_one
         open_mocker['rn_dir_fake_path/2_0_0.md'].read_data = rn_two
         mocker.patch('builtins.open', open_mocker)
-        rn_lines, latest_rn, aggregated_versions =\
+        rn_lines, latest_rn, new_versions =\
             dummy_pack.get_release_notes_lines('rn_dir_fake_path', LooseVersion('1.0.0'), '')
         assert latest_rn == '2.0.0'
         assert rn_lines == aggregated_rn
-        assert aggregated_versions == ['1.1.0', '2.0.0']
+        assert new_versions == ['1.1.0', '2.0.0']
 
     def test_get_release_notes_lines_updated_rn(self, mocker, dummy_pack):
         """
@@ -1664,11 +1664,11 @@ class TestReleaseNotes:
         '''
         mocker.patch('builtins.open', mock_open(read_data=rn))
         mocker.patch('os.listdir', return_value=['1_0_0.md', '1_0_1.md'])
-        rn_lines, latest_rn, aggregated_versions =\
+        rn_lines, latest_rn, new_versions =\
             dummy_pack.get_release_notes_lines('rn_dir_fake_path', LooseVersion('1.0.1'), rn)
         assert latest_rn == '1.0.1'
         assert rn_lines == rn
-        assert aggregated_versions == ['1.0.1']
+        assert new_versions == []
 
     def test_get_release_notes_lines_no_rn(self, mocker, dummy_pack):
         """
@@ -1687,11 +1687,11 @@ class TestReleaseNotes:
         '''
 
         mocker.patch('os.listdir', return_value=['1_0_0.md', '1_0_1.md'])
-        rn_lines, latest_rn, aggregated_versions =\
+        rn_lines, latest_rn, new_versions =\
             dummy_pack.get_release_notes_lines('wow', LooseVersion('1.0.1'), changelog_latest_rn)
         assert latest_rn == '1.0.1'
         assert rn_lines == changelog_latest_rn
-        assert aggregated_versions == ['1.0.1']
+        assert new_versions == []
 
     FAILED_PACKS_DICT = {
         'TestPack': {'status': 'wow1'},
