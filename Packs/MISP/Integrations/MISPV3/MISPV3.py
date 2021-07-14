@@ -324,6 +324,7 @@ def replace_keys(obj_to_build: Union[dict, list, str]) -> Union[dict, list, str]
 def reputation_command_to_human_readable(outputs, score, events_to_human_readable):
     found_tag_id, found_tag_name = "", ""
     for event in events_to_human_readable:
+        # removing those fields as they are shared by the events
         found_tag_id = event.pop('Tag_ID')
         found_tag_name = event.pop('Tag_Name')
     return {
@@ -347,7 +348,7 @@ def limit_tag_output(attribute_dict, is_event_level):
     tag_set_ids = set()
     tags_list = attribute_dict.get('Tag', [])
     for tag in tags_list:
-        is_event_tag = tag.get('inherited', 0)
+        is_event_tag = tag.get('inherited', 0)  # field doesn't exist when this is an attribute level, default is '0'
         tag_id = tag.get('id')
         if is_event_level:
             tag_set_ids.add(tag_id)
@@ -1085,7 +1086,6 @@ def add_sighting(demisto_args: dict):
     att_id = attribute_id or attribute_uuid
     if not att_id:
         return_error('ID or UUID not specified')
-
     sighting_args = {
         'id': attribute_id,
         'uuid': attribute_uuid,
