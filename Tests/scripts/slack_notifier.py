@@ -432,7 +432,7 @@ def slack_notifier(build_url, slack_token, test_type, env_results_file_name=None
 def main():
     install_logging('Slack_Notifier.log')
     options = options_handler()
-    nightly = True #options.nightly
+    nightly = options.nightly
     url = options.url
     slack = options.slack
     test_type = options.test_type
@@ -440,7 +440,7 @@ def main():
     bucket_upload = options.bucket_upload
     ci_artifacts_path = options.ci_artifacts
     job_name = options.job_name
-    slack_channel = 'tom-test'#options.slack_channel or CONTENT_CHANNEL
+    slack_channel = options.slack_channel or CONTENT_CHANNEL
     gitlab_server = options.gitlab_server
     if nightly:
         slack_notifier(url, slack, test_type, env_results_file_name)
