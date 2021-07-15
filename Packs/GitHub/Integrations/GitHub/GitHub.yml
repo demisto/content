@@ -3809,9 +3809,12 @@ script:
     description: 'Add an Issue as a card in column of a spesific project  '
     name: GitHub-add-issue-to-project-board
   dockerimage: demisto/pyjwt3:1.0.0.19327
+  feed: false
   isfetch: true
+  longRunning: false
+  longRunningPort: false
   runonce: false
-  script: ''
+  script: '-'
   subtype: python3
   type: python
 fromversion: 5.0.0
