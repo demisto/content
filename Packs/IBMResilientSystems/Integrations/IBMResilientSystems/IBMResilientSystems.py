@@ -19,11 +19,11 @@ except Exception:
     # client with no co3 instance should pass this exception
     pass
 
-if not demisto.params()['proxy']:
-    del os.environ['HTTP_PROXY']
-    del os.environ['HTTPS_PROXY']
-    del os.environ['http_proxy']
-    del os.environ['https_proxy']
+# if not demisto.params()['proxy']:
+#     del os.environ['HTTP_PROXY']
+#     del os.environ['HTTPS_PROXY']
+#     del os.environ['http_proxy']
+#     del os.environ['https_proxy']
 
 ''' GLOBAL VARS '''
 URL = demisto.params()['server'][:-1] if demisto.params()['server'].endswith('/') else demisto.params()['server']
@@ -478,11 +478,14 @@ def update_incident_command(args):
         })
     if args.get('other-fields'):
         for field_name, field_value in json.loads(args['other-fields']).items():
-            changes.append({
-                'field': field_name,
-                'old_value': None,
-                'new_value': field_value
-            })
+            changes.append(
+                # {
+                #     'field': {'name': field_name},
+                #     'old_value': {'object': {None: None}},
+                #     'new_value': {'object': field_value}
+                # }
+                {"field": {"name": field_name}, "old_value": {}, "new_value": field_value}
+            )
     data = {
         'changes': changes
     }
