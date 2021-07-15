@@ -1,7 +1,7 @@
 beta: false
 category: Endpoint
 commonfields:
-  id: Tanium Threat Response
+  id: Tanium Threat Response v2
   version: -1
 configuration:
 - display: Fetch incidents
@@ -47,8 +47,8 @@ configuration:
   type: 16
 description: Use the Tanium Threat Response integration to manage endpoints processes,
   evidence, alerts, files, snapshots, and connections.
-display: Tanium Threat Response
-name: Tanium Threat Response
+display: Tanium Threat Response v2
+name: Tanium Threat Response v2
 script:
   commands:
   - arguments:
@@ -102,6 +102,36 @@ script:
       description: The offset number to begin listing intel documents.
       isArray: false
       name: offset
+      required: false
+      secret: false
+    - default: false
+      description: The name of the intel document to show.
+      isArray: false
+      name: name
+      required: false
+      secret: false
+    - default: false
+      description: The description of the intel document to show.
+      isArray: false
+      name: description
+      required: false
+      secret: false
+    - default: false
+      description: The type of the intel document to show.
+      isArray: false
+      name: type
+      required: false
+      secret: false
+    - default: false
+      description: The label Id of the intel document to show.
+      isArray: false
+      name: label_id
+      required: false
+      secret: false
+    - default: false
+      description: The mitre technique Id of the intel document to show.
+      isArray: false
+      name: mitre_technique_id
       required: false
       secret: false
     deprecated: false
@@ -1717,6 +1747,211 @@ script:
     - contextPath: Tanium.DownloadFile.Downloaded
       description: The date of the download request.
       type: Date
+  - arguments:
+    - default: false
+      description: List the label IDs for the intel document with this ID.
+      isArray: false
+      name: intel-doc-id
+      required: true
+      secret: false
+    deprecated: false
+    description: List all labels for the identified intel document.
+    execution: false
+    hidden: false
+    name: tanium-tr-intel-docs-labels-list
+    outputs:
+    - contextPath: Tanium.IntelDocLabels.ID
+      description: The unique identifier for this label.
+      type: Number
+    - contextPath: Tanium.IntelDocLabels.Name
+      description: The display name of the label.
+      type: String
+    - contextPath: Tanium.IntelDocLabels.Description
+      description: An extended description of the label.
+      type: String
+    - contextPath: Tanium.IntelDocLabels.IndicatorCount
+      description: The number of indicator-based intel documents associated with this
+        label, not including Tanium Signals.
+      type: Number
+    - contextPath: Tanium.IntelDocLabels.SignalCount
+      description: The number of Tanium Signal documents associated with this label.
+      type: Number
+    - contextPath: Tanium.IntelDocLabels.CreatedAt
+      description: The date this label was created.
+      type: Date
+    - contextPath: Tanium.IntelDocLabels.UpdatedAt
+      description: The date this label was last updated, not including the intel and
+        signal counts.
+      type: Date
+  - arguments:
+    - default: false
+      description: Associate the new label with the intel document with this ID.
+      isArray: false
+      name: intel-doc-id
+      required: true
+      secret: false
+    - default: false
+      description: The ID of the new label to associate with the target intel document.
+      isArray: false
+      name: label-id
+      required: true
+      secret: false
+    deprecated: false
+    description: Create a new label association for the identified intel document.
+    execution: false
+    hidden: false
+    name: tanium-tr-intel-docs-add-label
+    outputs:
+    - contextPath: Tanium.IntelDocLabels.ID
+      description: The unique identifier for this label.
+      type: Number
+    - contextPath: Tanium.IntelDocLabels.Name
+      description: The display name of the label.
+      type: String
+    - contextPath: Tanium.IntelDocLabels.Description
+      description: An extended description of the label.
+      type: String
+    - contextPath: Tanium.IntelDocLabels.IndicatorCount
+      description: The number of indicator-based intel documents associated with this
+        label, not including Tanium Signals.
+      type: Number
+    - contextPath: Tanium.IntelDocLabels.SignalCount
+      description: The number of Tanium Signal documents associated with this label.
+      type: Number
+    - contextPath: Tanium.IntelDocLabels.CreatedAt
+      description: The date this label was created.
+      type: Date
+    - contextPath: Tanium.IntelDocLabels.UpdatedAt
+      description: The date this label was last updated, not including the intel and
+        signal counts.
+      type: Date
+  - arguments:
+    - default: false
+      description: Remove the label from the intel document with this ID.
+      isArray: false
+      name: intel-doc-id
+      required: true
+      secret: false
+    - default: false
+      description: The ID of the label to disassociate from the target intel document.
+      isArray: false
+      name: label-id
+      required: true
+      secret: false
+    deprecated: false
+    description: Delete a label association for the identified intel document.
+    execution: false
+    hidden: false
+    name: tanium-tr-intel-docs-remove-label
+  - arguments:
+    - default: false
+      description: The text of the intel document.
+      isArray: false
+      name: intel-doc-text
+      required: true
+      secret: false
+    deprecated: false
+    description: Add a new intel document to the system by providing its document
+      contents.
+    execution: false
+    hidden: false
+    name: tanium-tr-intel-doc-create
+    outputs:
+    - contextPath: Tanium.IntelDoc.AlertCount
+      description: The number of alerts that currently exist for this intel.
+      type: Number
+    - contextPath: Tanium.IntelDoc.CreatedAt
+      description: The date at which this intel was first added to the system.
+      type: Date
+    - contextPath: Tanium.IntelDoc.Description
+      description: The description of the intel, as declared in the document or as
+        updated by a user.
+      type: String
+    - contextPath: Tanium.IntelDoc.ID
+      description: The unique identifier for this intel in this instance of the system.
+      type: Number
+    - contextPath: Tanium.IntelDoc.LabelIds
+      description: The IDs of all labels applied to this intel.
+      type: Number
+    - contextPath: Tanium.IntelDoc.Name
+      description: The name of the intel, as declared in the document or as updated
+        by a user.
+      type: String
+    - contextPath: Tanium.IntelDoc.UnresolvedAlertCount
+      description: The number of unresolved alerts that currently exist for this intel.
+      type: Number
+    - contextPath: Tanium.IntelDoc.UpdatedAt
+      description: The date when this intel was last updated.
+      type: Date
+  - arguments:
+    - default: false
+      description: The ID of the intel document to update.
+      isArray: false
+      name: intel-doc-id
+      required: true
+      secret: false
+    - default: false
+      description: The updated text of the intel document.
+      isArray: false
+      name: intel-doc-text
+      required: true
+      secret: false
+    deprecated: false
+    description: Update the contents of an existing intel document by providing the
+      document contents.
+    execution: false
+    hidden: false
+    name: tanium-tr-intel-doc-update
+    outputs:
+    - contextPath: Tanium.IntelDoc.AlertCount
+      description: The number of alerts that currently exist for this intel.
+      type: Number
+    - contextPath: Tanium.IntelDoc.CreatedAt
+      description: The date at which this intel was first added to the system.
+      type: Date
+    - contextPath: Tanium.IntelDoc.Description
+      description: The description of the intel, as declared in the document or as
+        updated by a user.
+      type: String
+    - contextPath: Tanium.IntelDoc.ID
+      description: The unique identifier for this intel in this instance of the system.
+      type: Number
+    - contextPath: Tanium.IntelDoc.LabelIds
+      description: The IDs of all labels applied to this intel.
+      type: Number
+    - contextPath: Tanium.IntelDoc.Name
+      description: The name of the intel, as declared in the document or as updated
+        by a user.
+      type: String
+    - contextPath: Tanium.IntelDoc.UnresolvedAlertCount
+      description: The number of unresolved alerts that currently exist for this intel.
+      type: Number
+    - contextPath: Tanium.IntelDoc.UpdatedAt
+      description: The date when this intel was last updated.
+      type: Date
+  - deprecated: false
+    description: Deploys intel using the service account context.
+    execution: false
+    hidden: false
+    name: tanium-tr-intel-deploy
+  - deprecated: false
+    description: Displays status of last intel deployment.
+    execution: false
+    hidden: false
+    name: tanium-tr-intel-deploy-status
+    outputs:
+    - contextPath: Tanium.IntelDeployStatus.CreatedAt
+      description: The creation date of the last intel deployment.
+      type: Date
+    - contextPath: Tanium.IntelDeployStatus.ModifiedAt
+      description: The modification date of the last intel deployment.
+      type: Date
+    - contextPath: Tanium.IntelDeployStatus.CurrentRevision
+      description: Revision number, incremented each time the intel is modified
+      type: Number
+    - contextPath: Tanium.IntelDeployStatus.CurrentSize
+      description: The size of the intel document contents, in bytes.
+      type: Number
   dockerimage: demisto/python3:3.9.5.21272
   feed: false
   isfetch: true
@@ -1727,5 +1962,5 @@ script:
   subtype: python3
   type: python
 tests:
-- Tanium Threat Response Test
+- Tanium Threat Response v2 Test
 fromversion: 5.0.0
