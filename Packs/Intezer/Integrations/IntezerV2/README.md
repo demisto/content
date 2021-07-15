@@ -303,7 +303,7 @@ Get a list of the analysis sub analyses
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | Intezer.Analysis.ID | string | Intezer analysis id | 
-| Intezer.Analysis.SubAnalyses | Unknown | List of all sub analyses of the give analysis | 
+| Intezer.Analysis.SubAnalysesIDs | Unknown | List of all sub analyses of the give analysis | 
 
 
 #### Command Example
@@ -318,7 +318,7 @@ intezer-get-sub-analyses analysis_id=006c54ba-3159-43a0-98a0-1c5032145f47
         "Status": "Done", 
         "type": "File", 
         "ID": "675515a1-62e9-4d55-880c-fd46a7963a56",
-        "SubAnalyses": [
+        "SubAnalysesIDs": [
             "2bf5baa9-6964-4171-b060-5e3d8de8741f"
         ]
     }
@@ -413,9 +413,9 @@ and got the sub analysis `456`, you need to specify both in the command
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | Intezer.Analysis.ID | string | The composed analysis ID | 
-| Intezer.Analysis.CodeReuse | Unknown | General Code Reuse of the analysis | 
-| Intezer.Analysis.CodeReuseFamilies | Unknown | List of the families appearing in the code reuse | 
-| Intezer.Analysis.ComposedAnalysisID | string | The Composed analysis id | 
+| Intezer.Analysis.SubAnalyses.CodeReuse | Unknown | General Code Reuse of the analysis | 
+| Intezer.Analysis.SubAnalyses.CodeReuseFamilies | Unknown | List of the families appearing in the code reuse | 
+| Intezer.Analysis.RootAnalysis | string | The Composed analysis id | 
 
 
 #### Command Example
@@ -437,18 +437,24 @@ intezer-get-analysis-code-reuse analysis_id=<Root analysis> sub_analysis_id=<Sub
         "Status": "Done", 
         "type": "File", 
         "ID": "675515a1-62e9-4d55-880c-fd46a7963a56",
-        "CodeReuse": {
-            "common_gene_count": 10,
-            "gene_count": 100,
-            "gene_type": "native_windows",
-            "unique_gene_count": 50
-        },
-        "CodeReuseFamilies": [
+        "SubAnalyses": [
             {
-                "family_id": "5be245ca-793c-4991-9329-c42d6365a530",
-                "family_name": "Microsoft Corporation",
-                "family_type": "application",
-                "reused_gene_count": 8
+                "ID": "Some sub analysis id",
+                "RootAnalysis": "675515a1-62e9-4d55-880c-fd46a7963a56",
+                "CodeReuse": {
+                    "common_gene_count": 10,
+                    "gene_count": 100,
+                    "gene_type": "native_windows",
+                    "unique_gene_count": 50
+                },
+                "CodeReuseFamilies": [
+                    {
+                        "family_id": "5be245ca-793c-4991-9329-c42d6365a530",
+                        "family_name": "Microsoft Corporation",
+                        "family_type": "application",
+                        "reused_gene_count": 8
+                    }
+                ]
             }
         ]
     }
@@ -511,8 +517,7 @@ and got the sub analysis `456`, you need to specify both in the command
 | --- | --- | --- |
 | Intezer.Analysis.ID | string | The composed analysis ID | 
 | Intezer.Analysis.Metadata | Unknown | The Analysis metadata | 
-| Intezer.Analysis.ComposedAnalysisID | string | The Composed analysis id | 
-
+| Intezer.Analysis.SubAnalyses.Metdata | Unknown | The Sub Analysis metadata | 
 
 #### Command Example
 ``` 
@@ -533,20 +538,26 @@ intezer-get-analysis-metadata analysis_id=<Root analysis> sub_analysis_id=<Sub A
         "Status": "Done", 
         "type": "File", 
         "ID": "675515a1-62e9-4d55-880c-fd46a7963a56",
-        "Metadata": {
-            "sha1": "<sha1>",
-            "sha256": "<sha256>",
-            "md5": "<md5>",
-            "product": "product name",
-            "product_version": "5.4",
-            "ssdeep": "<ssdeep>",
-            "size_in_bytes": 15540,
-            "architecture": "i386",
-            "original_filename": "myfile.exe",
-            "compilation_timestamp": "2019:07:26 18:23:19+00:00",
-            "file_type": "pe",
-            "company": "Microsoft"
-        }
+        "SubAnalyses": [
+            {
+                "ID": "some sub analyses id",
+                "RootAnalysis": "675515a1-62e9-4d55-880c-fd46a7963a56",
+                "Metadata": {
+                    "sha1": "<sha1>",
+                    "sha256": "<sha256>",
+                    "md5": "<md5>",
+                    "product": "product name",
+                    "product_version": "5.4",
+                    "ssdeep": "<ssdeep>",
+                    "size_in_bytes": 15540,
+                    "architecture": "i386",
+                    "original_filename": "myfile.exe",
+                    "compilation_timestamp": "2019:07:26 18:23:19+00:00",
+                    "file_type": "pe",
+                    "company": "Microsoft"
+                }
+            }
+        ]
     }
 }
 ```

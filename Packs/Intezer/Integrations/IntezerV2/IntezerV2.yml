@@ -175,7 +175,7 @@ script:
         - contextPath: Intezer.Analysis.ID
           description: Intezer analysis id
           type: string
-        - contextPath: Intezer.Analysis.SubAnalyses
+        - contextPath: Intezer.Analysis.SubAnalysesIDs
           description: List of all sub analyses of the give analysis
           type: Unknown
     - name: intezer-get-family-info
@@ -209,7 +209,7 @@ script:
           required: false
           secret: false
       deprecated: false
-      description: Get All code reuse report for an analysis or sub analysis
+      description: Get All code reuse report for an analysis. To get a sub analysis code-reuse you need to specify an analysis_id and a sub_analysis id!
       execution: false
       outputs:
         - contextPath: Intezer.Analysis.ID
@@ -221,7 +221,13 @@ script:
         - contextPath: Intezer.Analysis.CodeReuseFamilies
           description: List of the families appearing in the code reuse
           type: Unknown
-        - contextPath: Intezer.Analysis.ComposedAnalysisID
+        - contextPath: Intezer.Analysis.SubAnalyses.CodeReuse
+          description: General Code Reuse of the analysis
+          type: Unknown
+        - contextPath: Intezer.Analysis.SubAnalyses.CodeReuseFamilies
+          description: List of the families appearing in the code reuse
+          type: Unknown
+        - contextPath: Intezer.Analysis.SubAnalyses.RootAnalysis
           description: The Composed analysis id
           type: string
     - name: intezer-get-analysis-metadata
@@ -239,7 +245,7 @@ script:
           required: false
           secret: false
       deprecated: false
-      description: Get analysis metadata
+      description: Get analysis metadata. To get a sub analysis metadata you need to specify an analysis_id and a sub_analysis id!
       execution: false
       outputs:
         - contextPath: Intezer.Analysis.ID
@@ -248,9 +254,9 @@ script:
         - contextPath: Intezer.Analysis.Metadata
           description: The Analysis metadata
           type: Unknown
-        - contextPath: Intezer.Analysis.ComposedAnalysisID
-          description: The Composed analysis id
-          type: string
+        - contextPath: Intezer.Analysis.SubAnalyses.Metdata
+          description: A Sub Analysis metadata
+          type: Unknown
   dockerimage: demisto/intezer:1.0.0.22419
   isfetch: false
   runonce: false

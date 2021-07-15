@@ -382,7 +382,7 @@ def test_get_analysis_sub_analyses_command_success(requests_mock):
     command_results = get_analysis_sub_analyses_command(intezer_api, args)
 
     # Assert
-    assert len(command_results.outputs['SubAnalyses']) == 1
+    assert len(command_results.outputs['SubAnalysesIDs']) == 1
 
 
 def test_get_analysis_sub_analyses_command_analysis_doesnt_exist(requests_mock):
@@ -431,9 +431,8 @@ def test_get_analysis_code_reuse_command_success_root(requests_mock):
     command_results = get_analysis_code_reuse_command(intezer_api, args)
 
     # Assert
-    outputs = command_results.outputs
+    outputs = command_results.outputs['Intezer.Analysis(obj.ID == val.ID)']
     assert outputs['ID'] == analysis_id
-    assert outputs['ComposedAnalysisID'] == analysis_id
     assert len(outputs['CodeReuseFamilies']) == 1
     assert 'CodeReuse' in outputs
 
@@ -463,9 +462,9 @@ def test_get_analysis_code_reuse_command_success(requests_mock):
     command_results = get_analysis_code_reuse_command(intezer_api, args)
 
     # Assert
-    outputs = command_results.outputs
+    outputs = command_results.outputs['Intezer.Analysis(obj.RootAnalysis == val.ID).SubAnalyses(obj.ID == val.ID)']
     assert outputs['ID'] == sub_analysis_id
-    assert outputs['ComposedAnalysisID'] == analysis_id
+    assert outputs['RootAnalysis'] == analysis_id
     assert len(outputs['CodeReuseFamilies']) == 1
     assert 'CodeReuse' in outputs
 
@@ -530,9 +529,8 @@ def test_get_analysis_metadata_command_success_root(requests_mock):
     command_results = get_analysis_metadata_command(intezer_api, args)
 
     # Assert
-    outputs = command_results.outputs
+    outputs = command_results.outputs['Intezer.Analysis(obj.ID == val.ID)']
     assert outputs['ID'] == analysis_id
-    assert outputs['ComposedAnalysisID'] == analysis_id
     assert 'Metadata' in outputs
 
 
@@ -555,9 +553,9 @@ def test_get_analysis_metadata_command_success(requests_mock):
     command_results = get_analysis_metadata_command(intezer_api, args)
 
     # Assert
-    outputs = command_results.outputs
+    outputs = command_results.outputs['Intezer.Analysis(obj.RootAnalysis == val.ID).SubAnalyses(obj.ID == val.ID)']
     assert outputs['ID'] == sub_analysis_id
-    assert outputs['ComposedAnalysisID'] == analysis_id
+    assert outputs['RootAnalysis'] == analysis_id
     assert 'Metadata' in outputs
 
 

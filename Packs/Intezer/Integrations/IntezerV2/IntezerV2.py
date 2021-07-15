@@ -17,7 +17,7 @@ from intezer_sdk.errors import AnalysisIsAlreadyRunning
 from intezer_sdk.errors import AnalysisIsStillRunning
 from intezer_sdk.errors import FamilyNotFoundError
 from intezer_sdk.errors import HashDoesNotExistError
-from intezer_sdk.errors import IntezerError
+from intezer_sdk.errors import InvalidApiKey
 from intezer_sdk.family import Family
 from intezer_sdk.sub_analysis import SubAnalysis
 from requests import HTTPError
@@ -27,18 +27,6 @@ from requests import HTTPError
 requests.packages.urllib3.disable_warnings()
 
 IS_AVAILABLE_URL = 'is-available'
-ERROR_PREFIX = 'Error from Intezer:'
-ACCEPTABLE_HTTP_CODES = {200, 201, 202}
-
-http_status_to_error_massage = {
-    400: '400 Bad Request - Wrong or invalid parameters',
-    401: '401 Unauthorized - Wrong or invalid api key',
-    403: '403 Forbidden - The account is not allowed to preform this task',
-    404: '404 Not Found - Analysis was not found',
-    410: '410 Gone - Analysis no longer exists in the service',
-    500: '500 Internal Server Error - Internal error',
-    503: '503 Service Unavailable'
-}
 
 dbot_score_by_verdict = {
     'malicious': 3,
@@ -67,9 +55,14 @@ def _get_missing_file_result(file_hash: str) -> CommandResults:
     )
 
 
-def _get_missing_analysis_result(analysis_id: str) -> CommandResults:
+def _get_missing_analysis_result(analysis_id: str, sub_analysis_id: str = None) -> CommandResults:
+    if not sub_analysis_id:
+        output = f'The Analysis {analysis_id} was not found on Intezer Analyze'
+    else:
+        output = f'Could not find the analysis \'{analysis_id}\' or the sub analysis \'{sub_analysis_id}\''
+
     return CommandResults(
-        readable_output=f'The Analysis {analysis_id} was not found on Intezer Analyze'
+        readable_output=output
     )
 
 
@@ -103,8 +96,12 @@ def check_is_available(intezer_api: IntezerApi, args: dict) -> str:
     try:
         response = intezer_api.get_url_result(f'/{IS_AVAILABLE_URL}')
         return 'ok' if response else 'Empty response from intezer service'
-    except (IntezerError, HTTPError) as error:
-        return str(error)
+    except InvalidApiKey as error:
+        return f'Invalid API key received.\n{error}'
+    except HTTPError as error:
+        return f'Error occurred when reaching Intezer Analyze. Please check Analyze Base URL. \n{error}'
+    except ConnectionError as error:
+        return f'Error connecting to Analyze Base url.\n{error}'
 
 
 def analyze_by_hash_command(intezer_api: IntezerApi, args: Dict[str, str]) -> CommandResults:
@@ -228,7 +225,7 @@ def get_analysis_sub_analyses_command(intezer_api: IntezerApi, args: dict) -> Co
 
     context_json = {
         'ID': analysis.analysis_id,
-        'SubAnalyses': all_sub_analyses_ids
+        'SubAnalysesIDs': all_sub_analyses_ids
     }
 
     return CommandResults(
@@ -271,16 +268,27 @@ def get_analysis_code_reuse_command(intezer_api: IntezerApi, args: dict) -> Comm
         readable_output += '\nFamilies:\n'
         readable_output += '\n'.join(tableToMarkdown(family['family_name'], family) for family in families)
 
-    context_json = {
-        'ID': analysis_id if sub_analysis_id == 'root' else sub_analysis_id,
-        'ComposedAnalysisID': analysis_id,
-        'CodeReuse': sub_analysis_code_reuse,
-        'CodeReuseFamilies': families
-    }
+    is_root = sub_analysis_id == 'root'
+
+    if is_root:
+        context_json = {
+            'Intezer.Analysis(obj.ID == val.ID)': {
+                'ID': analysis_id,
+                'CodeReuse': sub_analysis_code_reuse,
+                'CodeReuseFamilies': families
+            }
+        }
+    else:
+        context_json = {
+            'Intezer.Analysis(obj.RootAnalysis == val.ID).SubAnalyses(obj.ID == val.ID)': {
+                'ID': sub_analysis_id,
+                'RootAnalysis': analysis_id,
+                'CodeReuse': sub_analysis_code_reuse,
+                'CodeReuseFamilies': families
+            }
+        }
 
     return CommandResults(
-        outputs_prefix='Intezer.Analysis',
-        outputs_key_field='ID',
         readable_output=readable_output,
         outputs=context_json,
         raw_response=sub_analysis.code_reuse
@@ -307,15 +315,25 @@ def get_analysis_metadata_command(intezer_api: IntezerApi, args: dict) -> Comman
 
     metadata_table = tableToMarkdown('Analysis Metadata', sub_analysis_metadata)
 
-    context_json = {
-        'ID': analysis_id if sub_analysis_id == 'root' else sub_analysis_id,
-        'ComposedAnalysisID': analysis_id,
-        'Metadata': sub_analysis_metadata
-    }
+    is_root = sub_analysis_id == 'root'
+
+    if is_root:
+        context_json = {
+            'Intezer.Analysis(obj.ID == val.ID)': {
+                'ID': analysis_id,
+                'Metadata': sub_analysis_metadata
+            }
+        }
+    else:
+        context_json = {
+            'Intezer.Analysis(obj.RootAnalysis == val.ID).SubAnalyses(obj.ID == val.ID)': {
+                'ID': sub_analysis_id,
+                'RootAnalysis': analysis_id,
+                'Metadata': sub_analysis_metadata
+            }
+        }
 
     return CommandResults(
-        outputs_prefix='Intezer.Analysis',
-        outputs_key_field='ID',
         readable_output=metadata_table,
         outputs=context_json,
         raw_response=sub_analysis_metadata
@@ -425,15 +443,17 @@ def enrich_dbot_and_display_endpoint_analysis_results(intezer_result, indicator_
 
 
 def main():
+    command = None
+
     try:
         handle_proxy()
 
         intezer_api_key = demisto.getParam('APIKey')
         intezer_base_url_param = demisto.getParam('AnalyzeBaseURL')
-        should_use_ssl = not demisto.params().get('insecure', False)
+        use_ssl = not demisto.params().get('insecure', False)
         analyze_base_url = intezer_base_url_param or consts.BASE_URL
 
-        intezer_api = IntezerApi(consts.API_VERSION, intezer_api_key, analyze_base_url, should_use_ssl)
+        intezer_api = IntezerApi(consts.API_VERSION, intezer_api_key, analyze_base_url, use_ssl)
 
         command_handlers: Dict[str, Callable[[IntezerApi, dict], Union[List[CommandResults], CommandResults, str]]] = {
             'test-module': check_is_available,
@@ -456,6 +476,6 @@ def main():
         return_error(f'Failed to execute {command} command. Error: {str(e)}')
 
 
-# python2 uses __builtin__ python3 uses builtins yo
+# python2 uses __builtin__ python3 uses builtins
 if __name__ == "__builtin__" or __name__ == "builtins":
     main()
