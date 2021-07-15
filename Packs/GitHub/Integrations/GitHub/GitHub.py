@@ -1187,9 +1187,9 @@ def get_cards(url, header, page=1):
     column_issues = []
     for card in cards:
         if "content_url" in card:
-            column_issues.append({"CardID":card["id"],"ContentNumber": int(card["content_url"].rsplit('/', 1)[1])})
+            column_issues.append({"CardID": card["id"], "ContentNumber": int(card["content_url"].rsplit('/', 1)[1])})
     if len(cards) == MAX_FETCH_PAGE_RESULTS:
-        return column_issues + get_cards(url=url, header=header, page=page+1)
+        return column_issues + get_cards(url=url, header=header, page=page + 1)
     else:
         return column_issues
 
@@ -1202,7 +1202,7 @@ def get_project_details(project, header):
     json_column = resp_column.json()
     columns_data = {}
     all_project_issues = []
-                                     
+          
     for column in json_column:
         cards = get_cards(url=column["cards_url"], header=header)
         columns_data[column["name"]] = {'Name': column["name"],
@@ -1248,7 +1248,7 @@ def list_all_projects_command():
             projects_obj.append(get_project_details(project=proj, header=header))
 
     human_readable_projects = [{'Name': proj['Name'], 'ID': proj['ID'], 'Number': proj['Number'], 'Columns':
-        [column for column in proj['Columns']]} for proj in projects_obj]
+                                [column for column in proj['Columns']]} for proj in projects_obj]
 
     if projects_obj:
         human_readable = tableToMarkdown('Projects:', t=human_readable_projects, headers=PROJECT_HEADERS,
@@ -1288,8 +1288,9 @@ def add_issue_to_project_board_command():
                              )
 
     if response.status_code >= 400:
-        return_error(f"Post result {response}\nMessage: "
-                     f"{response.json().get('message', f'Failed to add the issue with ID {content_id} to column with ID {column_id}')}")
+        message = response.json().get('message', f'Failed to add the issue with ID {content_id} to column with ID '
+                                                 f'{column_id}')
+        return_error(f"Post result {response}\nMessage: {message}")
 
     return_results(f"The issue was successfully added to column ID {column_id}.")
 
