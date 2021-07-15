@@ -15,3 +15,6 @@ ignore=auto-test
 
 [file:SplunkPy_KV_commands.yml]
 ignore=auto-test
+
+[file:playbook-SplunkTest2.yml]
+ignore=auto-test
