@@ -130,5 +130,5 @@ tests:
 - no test - Untestable
 dependson:
   must:
-  - send-notification
+  - SlackV3|||send-notification
 fromversion: 5.5.0
