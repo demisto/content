@@ -1544,7 +1544,7 @@
         },
         {
             "integrations": "SplunkPy",
-            "playbookID": "SplunkPy-Test-V2",
+            "playbookID": "SplunkPy-Test-V2_default_handler",
             "memory_threshold": 500,
             "instance_names": "use_default_handler"
         },
@@ -1573,7 +1573,7 @@
         },
         {
             "integrations": "SplunkPy",
-            "playbookID": "SplunkPy-Test-V2",
+            "playbookID": "SplunkPy-Test-V2_requests_handler",
             "memory_threshold": 500,
             "instance_names": "use_python_requests_handler"
         },
