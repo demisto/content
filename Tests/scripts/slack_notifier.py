@@ -212,7 +212,7 @@ def get_coverage_attachment(build_url: str) -> Optional[Dict]:
     if not xml_coverage_data:
         return None
     coverage_dict_data: OrderedDict = xmltodict.parse(xml_coverage_data)
-    coverage_percent: float = 41.2#float(coverage_dict_data.get('coverage', dict()).get('@line-rate')) * 100.0
+    coverage_percent: float = float(coverage_dict_data.get('coverage', dict()).get('@line-rate')) * 100.0
     return {
         'fallback': f'Coverage Report Content: {coverage_percent:.2f}% Total Coverage',
         'color': get_coverage_color(coverage_percent),
@@ -404,7 +404,6 @@ def get_fields():
 
 def slack_notifier(build_url, slack_token, test_type, env_results_file_name=None, packs_results_file=None,
                    job_name="", slack_channel=CONTENT_CHANNEL, gitlab_server=None):
-    slack_channel = 'tom-test'
     branches = run_command("git branch")
     branch_name_reg = re.search(r'\* (.*)', branches)
     branch_name = branch_name_reg.group(1)

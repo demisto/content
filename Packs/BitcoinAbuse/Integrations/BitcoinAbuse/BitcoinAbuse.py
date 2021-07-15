@@ -5,7 +5,6 @@ from CommonServerPython import *  # noqa: F401
 # disable insecure warnings
 urllib3.disable_warnings()
 
-a = 2
 ''' CONSTANTS '''
 SERVER_URL = 'https://www.bitcoinabuse.com/api/'
 ABUSE_TYPE_ID_TO_NAME: Dict[str, str] = {
