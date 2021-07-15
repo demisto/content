@@ -31,7 +31,8 @@ score_mock = load_json("./test_data/companies/score.json")
 factor_score_mock = load_json("./test_data/companies/factor_score.json")
 historical_score_mock = load_json("./test_data/companies/historical_score.json")
 historical_factor_score_mock = load_json("./test_data/companies/historical_factor_score.json")
-
+create_grade_alert_mock = load_json("./test_data/alerts/create_grade_alert.json")
+create_score_alert_mock = load_json("./test_data/alerts/create_score_alert.json")
 
 """ Helper Functions Unit Tests"""
 
@@ -226,11 +227,32 @@ def test_get_company_historical_factor_scores(mocker):
 
 
 def test_create_grade_change_alert(mocker):
-    pass
+
+    mocker.patch.object(client, "create_grade_change_alert", return_value=create_grade_alert_mock)
+
+    response = client.create_grade_change_alert(
+        email=USERNAME,
+        change_direction="drops",
+        score_types="application_security",
+        target="any_followed_company"
+    )
+
+    assert response == create_grade_alert_mock
 
 
 def test_create_score_threshold_alert(mocker):
-    pass
+
+    mocker.patch.object(client, "create_score_threshold_alert", return_value=create_score_alert_mock)
+
+    response = client.create_score_threshold_alert(
+        email=USERNAME,
+        change_direction="drops_below",
+        threshold=70,
+        score_types="application_security",
+        target="any_followed_company"
+    )
+
+    assert response == create_score_alert_mock
 
 
 def test_delete_alert(mocker):
