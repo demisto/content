@@ -2450,7 +2450,7 @@ class Common(object):
             if not prefix_str:
                 raise ValueError('prefix_str is mandatory for creating the indicator')
 
-            self.CONTEXT_PATH = f"{prefix_str}(val.value && val.value == obj.value)"
+            self.CONTEXT_PATH = '{prefix_str}(val.value && val.value == obj.value)'.format(prefix_str=prefix_str)
 
             self.value = value
             if not isinstance(dbot_score, Common.DBotScore):
