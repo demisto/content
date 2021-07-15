@@ -259,6 +259,7 @@ script:
       description: The query results
     description: Perform a query.
   runonce: false
+  dockerimage: demisto/python:2.7.18.20958
 tests:
 - No tests
 fromversion: 5.0.0
