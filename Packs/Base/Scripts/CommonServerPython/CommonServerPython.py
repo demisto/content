@@ -246,16 +246,15 @@ class DBotScoreType(object):
         # required to create __init__ for create_server_docs.py purpose
         pass
 
-    @classmethod
-    def is_valid_type(cls, _type):
+    def is_valid_type(self, _type):
         # type: (str) -> bool
-        # TODO: should test it with custom and non-custom
-        return _type in vars(object)
+        try:
+            return self.__getattribute__(_type.upper()) is not None
+        except AttributeError:
+            return False
 
-    @classmethod
-    def set_custom_name(cls, name):
-        # TODO: what happens if the attribute name is updated?
-        cls.__setattr__(object, name=name.upper(), value=name.lower())
+    def add_custom_type(self, _type):
+        self.__setattr__(_type.upper(), _type.lower())
 
 
 class DBotScoreReliability(object):
@@ -2424,16 +2423,19 @@ class Common(object):
 
     class CustomIndicator(Indicator):
 
-        def __init__(self, indicator_name, value, dbot_score, params, prefix_str):
+        def __init__(self, indicator_type, value, dbot_score, dbot_score_type, params, prefix_str):
             """
-            :type indicator_name: ``Str``
-            :param indicator_name: name of the indicator
+            :type indicator_type: ``Str``
+            :param indicator_type: type name of the indicator
 
             :type value: ``Any``
             :param value: Value of the indicator
 
             :type dbot_score: ``DBotScore``
             :param dbot_score: If custom indicator has a score then create and set a DBotScore object.
+
+            :type dbot_score_type: ``DBotScoreType``
+            :param dbot_score: DBotScoreType instance to hold the created type
 
             :type params: ``Dict(Str,Any)``
             :param params: A dictionary containing all the param names and their values
@@ -2456,8 +2458,8 @@ class Common(object):
 
             self.dbot_score = dbot_score
 
-            DBotScoreType.set_custom_name(indicator_name)
-            INDICATOR_TYPE_TO_CONTEXT_KEY[indicator_name] = indicator_name
+            dbot_score_type.add_custom_type(indicator_type)
+            INDICATOR_TYPE_TO_CONTEXT_KEY[indicator_type.lower()] = indicator_type.capitalize()
 
             for key in params:
                 setattr(self, key, params[key])

@@ -5141,4 +5141,33 @@ class TestCustomIndicator:
         assert context['DBotScore']['Indicator'] == 'test'
         assert context['prefix(val.value && val.value == obj.value)']['Value'] == 'test_value'
 
+
 class TestDBotScoreType:
+    def test_is_valid_type_fail(self):
+        from CommonServerPython import DBotScoreType
+        dbot = DBotScoreType()
+        assert dbot.is_valid_type('fake_type') is False
+
+    def test_is_valid_type_success(self):
+        from CommonServerPython import DBotScoreType
+        dbot = DBotScoreType()
+        assert dbot.is_valid_type(DBotScoreType.IP) is True
+
+    def test_add_custom_type(self):
+        from CommonServerPython import DBotScoreType
+        dbot = DBotScoreType()
+        dbot.add_custom_type('custom_name')
+        assert dbot.__getattribute__('CUSTOM_NAME') == 'custom_name'
+
+    def test_add_existing_custom_type(self):
+        from CommonServerPython import DBotScoreType
+        dbot = DBotScoreType()
+        dbot.add_custom_type('custom_name')
+        dbot.add_custom_type('custom_name')
+        assert dbot.__getattribute__('CUSTOM_NAME') == 'custom_name'
+
+    def test_is_valid_type_success_custom_name(self):
+        from CommonServerPython import DBotScoreType
+        dbot = DBotScoreType()
+        dbot.add_custom_type('custom_name')
+        assert dbot.is_valid_type('custom_name') is True
