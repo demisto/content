@@ -7,7 +7,7 @@ def util_load_json(path):
         return json.loads(f.read())
 
 
-def test_f5_get_md5_command(mocker):
+def test_ironscales_fetch_incident(mocker):
     last_run = {"data":[0]}
     mocked_client = mocker.Mock()
     mocked_client.get_open_incidents.return_value = {"incident_ids" : [0,1]}
