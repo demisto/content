@@ -138,3 +138,60 @@ def test_get_issue_events_command(mocker):
     assert result.outputs == mock_response
     assert result.outputs_key_field == 'id'
     assert result.outputs_prefix == 'GitHub.IssueEvent'
+
+
+PROJECTS_TEST = [
+    {
+        "number": 22,
+        "Number": 22,
+        "Columns": {},
+        "Issues": [],
+        "ID": 11111111,
+        "Name": "Project_1"
+    },
+    {
+        "number": 23,
+        "Number": 23,
+        "Columns": {},
+        "Issues": [],
+        "ID": 2222222,
+        "Name": "Project_2"
+    },
+    {
+        "number": 24,
+        "Number": 24,
+        "Columns": {},
+        "Issues": [],
+        "ID": 3333333,
+        "Name": "Project_2"
+    }
+]
+
+
+def get_project_d(project=None, header=None):
+    return project
+
+
+def test_list_all_projects_command(mocker, requests_mock):
+    """
+    Given:
+        'project_filter': Numbers of projects to filter.
+    When:
+        Running the list_all_projects_command function.
+    Then:
+        Assert that only the filtered projects are returned.
+    """
+    mocker.patch.object(demisto, 'args', return_value={'project_filter': '22,24'})
+    requests_mock.get(f'{BASE_URL}/projects?per_page=100', json=PROJECTS_TEST)
+    mocker.patch('GitHub.get_project_details', side_effect=get_project_d)
+    mocker_output = mocker.patch('GitHub.return_results')
+
+    import GitHub
+    GitHub.PROJECT_SUFFIX = '/projects'
+
+    GitHub.list_all_projects_command()
+    result: CommandResults = mocker_output.call_args[0][0]
+    
+    assert len(result.outputs) == 2
+    assert result.outputs[0]['Number'] == 22
+    assert result.outputs[1]['Number'] == 24
