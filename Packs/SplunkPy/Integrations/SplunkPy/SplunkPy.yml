@@ -790,7 +790,8 @@ tests:
 - SplunkPySearch_Test_default_handler
 - SplunkPySearch_Test_requests_handler
 - SplunkPy-Test-V2
-- SplunkPy KV commands
+- SplunkPy_KV_commands_default_handler
+- SplunkPy_KV_commands_requests_handler
 - SplunkPy parse-raw - Test
 defaultclassifier: SplunkPy
 defaultmapperin: SplunkPy-mapper

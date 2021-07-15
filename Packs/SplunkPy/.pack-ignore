@@ -12,3 +12,6 @@ ignore=BA101
 
 [file:playbook-SplunkPySearch_Test.yml]
 ignore=auto-test
+
+[file:SplunkPy_KV_commands.yml]
+ignore=auto-test
