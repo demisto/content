@@ -33,6 +33,7 @@ historical_score_mock = load_json("./test_data/companies/historical_score.json")
 historical_factor_score_mock = load_json("./test_data/companies/historical_factor_score.json")
 create_grade_alert_mock = load_json("./test_data/alerts/create_grade_alert.json")
 create_score_alert_mock = load_json("./test_data/alerts/create_score_alert.json")
+services_mock = load_json("./test_data/companies/services.json")
 
 """ Helper Functions Unit Tests"""
 
@@ -267,22 +268,37 @@ def test_get_alerts_last_week(mocker):
     assert isinstance(response["entries"][0]["my_scorecard"], bool)
 
 
-
 def test_get_domain_services(mocker):
-    pass
+
+    mocker.patch.object(client, "get_domain_services", return_value=services_mock)
+
+    response = client.get_domain_services(domain=DOMAIN)
+
+    assert response == services_mock
+    assert response["total"] == len(response["entries"])
+    for entry in response["entries"]:
+        assert is_domain_valid(entry["vendor_domain"])
+        assert is_domain_valid(entry["client_domain"])
 
 
 def test_fetch_alerts(mocker):
-    pass
+
+    mocker.patch.object(client, "fetch_alerts", return_value=alerts_mock)
+
+    response = client.fetch_alerts(
+        username=USERNAME
+    )
+
+    assert response == alerts_mock
+    assert response["size"] == 9
+    assert is_domain_valid(response["entries"][0]["domain"])
+    assert isinstance(response["entries"][0]["my_scorecard"], bool)
 
 
-def test_test_module(mocker):
-    pass
+# def test_test_module(mocker):
 
+#     mocker.patch.object(client, "fetch_alerts", return_value=alerts_mock)
 
-def main() -> None:
-    pass
+#     response = test_module(client)
 
-
-if __name__ == "builtins":
-    main()
+#     assert response == "ok"

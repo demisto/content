@@ -401,17 +401,22 @@ def test_module(client: Client) -> str:
     :rtype: ``str``
     """
 
+    username_input = demisto.params().get('username').get("identifier")
+
     message: str = ''
-    try:
-        client.fetch_alerts(
-            username=demisto.params().get('username').get("identifier"),
-            page_size=1)
-        message = 'ok'
-    except DemistoException as e:
-        if 'Unauthorized' in str(e):
-            message = 'Authorization Error: make sure API Key is correctly set'
-        else:
-            raise e
+    if not is_email_valid(username_input):
+        message = "Username/Email address '{}' is invalid".format(username_input)
+    else:
+        try:
+            client.fetch_alerts(
+                username=username_input,
+                page_size=1)
+            message = 'ok'
+        except DemistoException as e:
+            if 'Unauthorized' in str(e):
+                message = 'Authorization Error: make sure API Key is correctly set'
+            else:
+                raise e
     return message
 
 # region Methods
