@@ -10,7 +10,7 @@ parallel=8
 
 old_IFS="$IFS"
 pack_dirs=()
-while IFS='' read -r line; do pack_dirs+=("$line"); done < <(cat "$ARTIFACTS_FOLDER/pack_dirs_list.txt")
+while IFS='' read -r line; do pack_dirs+=("$line"); done < <(uniq <(cat "$ARTIFACTS_FOLDER/pack_dirs_list.txt"))
 IFS="$old_IFS"
 
 total=${#pack_dirs[@]}
