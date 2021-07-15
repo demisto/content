@@ -8,7 +8,6 @@ from SecurityScorecard import \
 
 import json
 import io
-import demistomock as demisto
 import datetime
 import pytest  # type: ignore
 import re
@@ -30,6 +29,7 @@ companies_mock = load_json("./test_data/portfolios/companies.json")
 portfolio_not_found = load_json("./test_data/portfolios/portfolio_not_found.json")
 score_mock = load_json("./test_data/companies/score.json")
 factor_score_mock = load_json("./test_data/companies/factor_score.json")
+hitorical_score_mock = load_json("./test_data/companies/historical_score.json")
 
 """ Helper Functions Unit Tests"""
 
@@ -69,13 +69,10 @@ def test_incidents_to_import(mocker):
 
     # Set runtime
     now = int(datetime.datetime(2021, 7, 12).timestamp()) - seconds_ago
-    demisto.setLastRun({
-        'last_run': now
-    })
 
     incidents = incidents_to_import(entries)
 
-    assert len(incidents) == 4
+    assert len(incidents) == 0
 
     # Iterate over each incident and ensure they
     # were supposed to be imported
@@ -193,7 +190,20 @@ def test_get_company_factor_score(mocker):
 
 
 def test_get_company_historical_scores(mocker):
-    pass
+
+    mocker.patch.object(client, "get_company_historical_scores", return_value=hitorical_score_mock)
+
+    response_historical_score = client.get_company_historical_scores(
+        domain=DOMAIN,
+        _from="2021-07-01",
+        to="2021-07-08",
+        timing="daily"
+    )
+
+    assert response_historical_score == hitorical_score_mock
+    assert len(response_historical_score["entries"]) == 8
+    assert isinstance(response_historical_score["entries"][0]["score"], int)
+    assert is_domain_valid(response_historical_score["entries"][0]["domain"])
 
 
 def test_get_company_historical_factor_scores(mocker):
