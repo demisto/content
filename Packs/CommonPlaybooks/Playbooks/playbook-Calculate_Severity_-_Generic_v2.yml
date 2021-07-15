@@ -775,8 +775,8 @@ inputs:
 - key: MicrosoftHeadersSeverityCheck
   value: {}
   required: false
-  description: This value is being set by the "Process Microsoft's Anti-Spam Headers"
-    Playbook. It will be "Medium" when BCL or PCL score is equal or higher than 4.
+  description: This value is being set by the "Process Microsoft's Anti-Spam Headers" Playbook.
+    It will represent the calculated severity after processing PCL, BCL and PCL values inside Microsoft's headers.
   playbookInputQuery:
 outputs:
 - contextPath: CriticalAssets
