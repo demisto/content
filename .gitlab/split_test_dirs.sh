@@ -7,12 +7,7 @@ find Packs -name '*_test.py' | grep -E '^Packs/.*?/' --only-matching | uniq -c |
 
 group=0
 parallel=8
-
-old_IFS="$IFS"
-pack_dirs=()
-while IFS='' read -r line; do pack_dirs+=("$line"); done < <(cat "$ARTIFACTS_FOLDER"/pack_dirs_list.txt)
-IFS="$old_IFS"
-
+pack_dirs=($(cat "$ARTIFACTS_FOLDER"/pack_dirs_list.txt))
 total=${#pack_dirs[@]}
 echo "total=$total"
 per_parallel_runner=$((total / parallel))
