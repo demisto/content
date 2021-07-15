@@ -684,6 +684,23 @@ def test_eml_contains_html_and_text(mocker):
            "\"xxxxx\",sans-serif;color:black'>żółć<o:p></o:p>" in results[0]['EntryContext']['Email']['HTML']
 
 
+def test_eml_format_multipart_mix(mocker):
+    mocker.patch.object(demisto, 'args', return_value={'entryid': 'test'})
+    mocker.patch.object(demisto, 'executeCommand',
+                        side_effect=exec_command_for_file('multipart_mixed_format.p7m',
+                                                          info="multipart/mixed"))
+    mocker.patch.object(demisto, 'results')
+    # validate our mocks are good
+    assert demisto.args()['entryid'] == 'test'
+    main()
+
+    results = demisto.results.call_args[0]
+    assert len(results) == 1
+    assert results[0]['Type'] == entryTypes['note']
+    assert results[0]['FileMetadata']['info'] == "multipart/mixed"
+    assert "Rondo ONZ 1, 00-124 Warsaw, Poland <o:p></o:p>" in results[0]['EntryContext']['Email']['HTML']
+
+
 def test_eml_base64_header_comment_although_string(mocker):
     def executeCommand(name, args=None):
         if name == 'getFilePath':
