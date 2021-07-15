@@ -10,9 +10,9 @@ Calculate and assign the incident severity based on the highest returned severit
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
-* Calculate Severity By Email Authenticity
 * Calculate Severity - Critical Assets v2
 * Calculate Severity By Highest DBotScore
+* Calculate Severity By Email Authenticity
 
 ### Integrations
 This playbook does not use any integrations.
@@ -36,7 +36,7 @@ This playbook does not use any integrations.
 | Account | User accounts to check against the critical lists. | Account.None | Optional |
 | Endpoint | Endpoints to check against the CriticalEndpoints list. | Endpoint.None | Optional |
 | EmailAuthenticityCheck | Indicates the email authenticity resulting from the EmailAuthenticityCheck script. Possible values are: Pass, Fail, Suspicious, and Undetermined. | Email.AuthenticityCheck | Optional |
-| MicrosoftHeadersSeverityCheck | This value is being set by the "Process Microsoft's Anti-Spam Headers" Playbook. It will be "Medium" when BCL or PCL score is equal or higher than 4. |  | Optional |
+| MicrosoftHeadersSeverityCheck | This value is being set by the "Process Microsoft's Anti-Spam Headers" Playbook. It will represent the calculated severity after processing PCL, BCL and PCL values inside Microsoft's headers. |  | Optional |
 
 ## Playbook Outputs
 ---
