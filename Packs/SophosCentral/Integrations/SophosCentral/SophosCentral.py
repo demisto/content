@@ -15,12 +15,13 @@ class Client(BaseClient):
     Client class, communicates with Sophos Central
     """
 
-    def __init__(self, client_id, client_secret, verify, proxy, bearer_token):
+    def __init__(self, client_id, client_secret, verify, proxy, bearer_token, integration_context):
         headers, base_url = self.get_client_data(bearer_token)
         super().__init__(base_url=base_url, verify=verify, proxy=proxy, headers=headers)
         self.headers = headers
         self.client_id = client_id
         self.client_secret = client_secret
+        self.integration_context = integration_context
 
     @staticmethod
     def get_client_data(bearer_token: str):
@@ -75,6 +76,29 @@ class Client(BaseClient):
         if not response.ok:
             raise DemistoException(response.text)
         return response.json()
+
+    def convert_id_to_name(self, object_name: str, object_id: str, url_suffix: str) -> str:
+        try:
+            object_mapping = self.integration_context.setdefault(object_name, {})
+            if object_mapping.get(object_id):
+                return object_mapping.get(object_id)
+
+            demisto.debug(f'did not find object id in {object_name} cache, retreiving from API')
+            response = self._http_request(
+                method='GET', url_suffix=url_suffix,
+                headers=self.headers,
+            )
+            object_mapping[object_id] = response.get('name', '')
+            return object_mapping[object_id]
+        except Exception as exc:
+            demisto.debug(f'failed to convert the {object_name} id, Error: {exc}\nTrace{traceback.format_exc()}')
+            return ''
+
+    def get_person_name(self, person_id: str) -> str:
+        return self.convert_id_to_name('managed_agent_mapping', person_id, f'api/users/{person_id}')
+
+    def get_managed_agent_name(self, managed_agent_id: str) -> str:
+        return self.convert_id_to_name('managed_agent_mapping', managed_agent_id, f'api/managedagents/{managed_agent_id}')
 
     def list_alert(self, limit: Optional[int]) -> Dict:
         """
@@ -625,7 +649,25 @@ class Client(BaseClient):
         return response
 
 
-def create_alert_output(item: Dict, table_headers: List[str]) -> Dict[str, Optional[Any]]:
+def flip_chars(id_to_flip: str) -> str:
+    """
+    Reverse every couple of adjacent digits in the ID.
+    can be used to construct Sophos URLs.
+    For example:
+        badc-fehgji-xwzy -> abcd-efghij-wxyz
+
+    Args:
+        id_to_flip (str): A UID
+
+    Returns:
+        id (str): A UID with the every two digits flipped.
+    """
+    return '-'.join(''.join(pair[::-1]
+                            for pair in re.split(r'(.{2})', uid_part))
+                    for uid_part in id_to_flip.split('-'))
+
+
+def create_alert_output(client: Client, item: Dict, table_headers: List[str]) -> Dict[str, Optional[Any]]:
     """
     Create the complete output dictionary for an alert.
 
@@ -637,17 +679,27 @@ def create_alert_output(item: Dict, table_headers: List[str]) -> Dict[str, Optio
         object_data (dict(str)): The output dictionary.
     """
     alert_data = {field: item.get(field) for field in table_headers + ['groupKey', 'product']}
+
     managed_agent = item.get('managedAgent')
     if managed_agent:
+        managed_agent_morphed_id = flip_chars(managed_agent.get('id', ''))
         alert_data['managedAgentId'] = managed_agent.get('id')
+        alert_data['managedAgentIdMorphed'] = managed_agent_morphed_id
+        alert_data['managedAgent'] = client.get_managed_agent_name(managed_agent_morphed_id)
         alert_data['managedAgentType'] = managed_agent.get('type')
+
     tenant = item.get('tenant')
     if tenant:
         alert_data['tenantId'] = tenant.get('id')
+        alert_data['tenantIdMorphed'] = flip_chars(tenant.get('id', ''))
         alert_data['tenantName'] = tenant.get('name')
+
     person = item.get('person')
     if person:
+        person_morphed_id = flip_chars(person.get('id', ''))
         alert_data['person'] = person.get('id')
+        alert_data['personIdMorphed'] = person_morphed_id
+        alert_data['personName'] = client.get_person_name(person_morphed_id)
 
     return alert_data
 
@@ -670,7 +722,7 @@ def sophos_central_alert_list_command(client: Client, args: Dict[str, str]) -> C
     outputs = []
     if items:
         for item in items:
-            outputs.append(create_alert_output(item, table_headers))
+            outputs.append(create_alert_output(client, item, table_headers))
 
     readable_output = tableToMarkdown(name=f'Listed {len(outputs)} Alerts:', t=outputs,
                                       headers=table_headers, removeNull=True)
@@ -694,7 +746,7 @@ def sophos_central_alert_get_command(client: Client, args: dict) -> CommandResul
         result = client.get_alert(alert_id)
         table_headers = ['id', 'description', 'severity', 'raisedAt', 'allowedActions',
                          'managedAgentId', 'category', 'type']
-        object_data = create_alert_output(result, table_headers)
+        object_data = create_alert_output(client, result, table_headers)
         readable_output = tableToMarkdown(name='Found Alert:', t=object_data, headers=table_headers,
                                           removeNull=True)
         return CommandResults(outputs_key_field='id', outputs_prefix='SophosCentral.Alert',
@@ -767,7 +819,7 @@ def sophos_central_alert_search_command(client: Client, args: dict) -> CommandRe
     outputs = []
     if items:
         for item in items:
-            outputs.append(create_alert_output(item, table_headers))
+            outputs.append(create_alert_output(client, item, table_headers))
 
     readable_output = tableToMarkdown(name=f'Found {len(outputs)} Alerts:', t=outputs,
                                       headers=table_headers, removeNull=True)
@@ -1610,7 +1662,7 @@ def fetch_incidents(client: Client, last_run: Dict[str, int],
     data_fields = ['id', 'description', 'severity', 'raisedAt', 'allowedActions', 'managedAgentId',
                    'category', 'type']
     for alert in alerts.get('items', []):
-        alert = create_alert_output(alert, data_fields)
+        alert = create_alert_output(client, alert, data_fields)
         alert_created_time = alert.get('raisedAt')
         alert_id = alert.get('id')
         incident = {
@@ -1664,11 +1716,14 @@ def retrieve_jwt_token(client_id: str, client_secret: str, integration_context: 
     if bearer_token and valid_until:
         if time_now < int(valid_until):
             return bearer_token
+
     bearer_token_dict = Client.get_jwt_token_from_api(client_id, client_secret)
     if bearer_token_dict:
         bearer_token = str(bearer_token_dict.get('access_token', ''))
-    integration_context = {'bearer_token': bearer_token, 'valid_until': time_now + 600}
-    demisto.setIntegrationContext(integration_context)
+
+    integration_context.update({'bearer_token': bearer_token, 'valid_until': time_now + 600})
+    set_integration_context(integration_context)
+
     return bearer_token
 
 
@@ -1686,20 +1741,25 @@ def main():
     verify_certificate = not params.get('insecure', False)
     first_fetch_time = params.get('first_fetch', '3 days').strip()
     proxy = params.get('proxy', False)
-    demisto.info(f'Command being called is {demisto.command()}')
+
+    command = demisto.command()
+    demisto.info(f'Command being called is {command}')
+    client: Client
     try:
-        bearer_token = retrieve_jwt_token(sophos_id, sophos_secret, demisto.getIntegrationContext())
+        bearer_token = retrieve_jwt_token(sophos_id, sophos_secret, get_integration_context())
         client = Client(
             bearer_token=bearer_token,
             verify=verify_certificate,
             client_id=sophos_id,
             client_secret=sophos_secret,
-            proxy=proxy)
-        if demisto.command() == 'test-module':
+            proxy=proxy,
+            integration_context=get_integration_context(),
+        )
+        if command == 'test-module':
             result = test_module(client)
             return_results(result)
 
-        elif demisto.command() == 'fetch-incidents':
+        elif command == 'fetch-incidents':
             next_run, incidents = fetch_incidents(
                 client=client,
                 last_run=demisto.getLastRun(),
@@ -1710,91 +1770,91 @@ def main():
             demisto.setLastRun(next_run)
             demisto.incidents(incidents)
 
-        elif demisto.command() == 'sophos-central-alert-list':
+        elif command == 'sophos-central-alert-list':
             return_results(sophos_central_alert_list_command(client, demisto.args()))
 
-        elif demisto.command() == 'sophos-central-alert-get':
+        elif command == 'sophos-central-alert-get':
             return_results(sophos_central_alert_get_command(client, demisto.args()))
 
-        elif demisto.command() == 'sophos-central-alert-action':
+        elif command == 'sophos-central-alert-action':
             return_results(sophos_central_alert_action_command(client, demisto.args()))
 
-        elif demisto.command() == 'sophos-central-alert-search':
+        elif command == 'sophos-central-alert-search':
             return_results(sophos_central_alert_search_command(client, demisto.args()))
 
-        elif demisto.command() == 'sophos-central-endpoint-list':
+        elif command == 'sophos-central-endpoint-list':
             return_results(sophos_central_endpoint_list_command(client, demisto.args()))
 
-        elif demisto.command() == 'sophos-central-endpoint-scan':
+        elif command == 'sophos-central-endpoint-scan':
             return_results(sophos_central_endpoint_scan_command(client, demisto.args()))
 
-        elif demisto.command() == 'sophos-central-endpoint-tamper-get':
+        elif command == 'sophos-central-endpoint-tamper-get':
             return_results(sophos_central_endpoint_tamper_get_command(client, demisto.args()))
 
-        elif demisto.command() == 'sophos-central-endpoint-tamper-update':
+        elif command == 'sophos-central-endpoint-tamper-update':
             return_results(sophos_central_endpoint_tamper_update_command(client, demisto.args()))
 
-        elif demisto.command() == 'sophos-central-allowed-item-list':
+        elif command == 'sophos-central-allowed-item-list':
             return_results(sophos_central_allowed_item_list_command(client, demisto.args()))
 
-        elif demisto.command() == 'sophos-central-allowed-item-get':
+        elif command == 'sophos-central-allowed-item-get':
             return_results(sophos_central_allowed_item_get_command(client, demisto.args()))
 
-        elif demisto.command() == 'sophos-central-allowed-item-add':
+        elif command == 'sophos-central-allowed-item-add':
             return_results(sophos_central_allowed_item_add_command(client, demisto.args()))
 
-        elif demisto.command() == 'sophos-central-allowed-item-update':
+        elif command == 'sophos-central-allowed-item-update':
             return_results(sophos_central_allowed_item_update_command(client, demisto.args()))
 
-        elif demisto.command() == 'sophos-central-allowed-item-delete':
+        elif command == 'sophos-central-allowed-item-delete':
             return_results(sophos_central_allowed_item_delete_command(client, demisto.args()))
 
-        elif demisto.command() == 'sophos-central-blocked-item-list':
+        elif command == 'sophos-central-blocked-item-list':
             return_results(sophos_central_blocked_item_list_command(client, demisto.args()))
 
-        elif demisto.command() == 'sophos-central-blocked-item-get':
+        elif command == 'sophos-central-blocked-item-get':
             return_results(sophos_central_blocked_item_get_command(client, demisto.args()))
 
-        elif demisto.command() == 'sophos-central-blocked-item-add':
+        elif command == 'sophos-central-blocked-item-add':
             return_results(sophos_central_blocked_item_add_command(client, demisto.args()))
 
-        elif demisto.command() == 'sophos-central-blocked-item-delete':
+        elif command == 'sophos-central-blocked-item-delete':
             return_results(sophos_central_blocked_item_delete_command(client, demisto.args()))
 
-        elif demisto.command() == 'sophos-central-scan-exclusion-list':
+        elif command == 'sophos-central-scan-exclusion-list':
             return_results(sophos_central_scan_exclusion_list_command(client, demisto.args()))
 
-        elif demisto.command() == 'sophos-central-scan-exclusion-get':
+        elif command == 'sophos-central-scan-exclusion-get':
             return_results(sophos_central_scan_exclusion_get_command(client, demisto.args()))
 
-        elif demisto.command() == 'sophos-central-scan-exclusion-add':
+        elif command == 'sophos-central-scan-exclusion-add':
             return_results(sophos_central_scan_exclusion_add_command(client, demisto.args()))
 
-        elif demisto.command() == 'sophos-central-scan-exclusion-update':
+        elif command == 'sophos-central-scan-exclusion-update':
             return_results(sophos_central_scan_exclusion_update_command(client, demisto.args()))
 
-        elif demisto.command() == 'sophos-central-scan-exclusion-delete':
+        elif command == 'sophos-central-scan-exclusion-delete':
             return_results(sophos_central_scan_exclusion_delete_command(client, demisto.args()))
 
-        elif demisto.command() == 'sophos-central-exploit-mitigation-list':
+        elif command == 'sophos-central-exploit-mitigation-list':
             return_results(sophos_central_exploit_mitigation_list_command(client, demisto.args()))
 
-        elif demisto.command() == 'sophos-central-exploit-mitigation-get':
+        elif command == 'sophos-central-exploit-mitigation-get':
             return_results(sophos_central_exploit_mitigation_get_command(client, demisto.args()))
 
-        elif demisto.command() == 'sophos-central-exploit-mitigation-add':
+        elif command == 'sophos-central-exploit-mitigation-add':
             return_results(sophos_central_exploit_mitigation_add_command(client, demisto.args()))
 
-        elif demisto.command() == 'sophos-central-exploit-mitigation-update':
+        elif command == 'sophos-central-exploit-mitigation-update':
             return_results(sophos_central_exploit_mitigation_update_command(client, demisto.args()))
 
-        elif demisto.command() == 'sophos-central-exploit-mitigation-delete':
+        elif command == 'sophos-central-exploit-mitigation-delete':
             return_results(sophos_central_exploit_mitigation_delete_command(client, demisto.args()))
 
-        elif demisto.command() == 'sophos-central-detected-exploit-list':
+        elif command == 'sophos-central-detected-exploit-list':
             return_results(sophos_central_detected_exploit_list_command(client, demisto.args()))
 
-        elif demisto.command() == 'sophos-central-detected-exploit-get':
+        elif command == 'sophos-central-detected-exploit-get':
             return_results(sophos_central_detected_exploit_get_command(client, demisto.args()))
 
     except Exception as e:
@@ -1804,7 +1864,10 @@ def main():
             error_string = 'Wrong credentials (ID and / or secret) given.'
         else:
             error_string = str(e)
-        return_error(f'Failed to execute {demisto.command()} command. Error: {error_string}')
+        return_error(f'Failed to execute {command} command. Error: {error_string}')
+    finally:
+        if client:
+            set_integration_context(client.integration_context)
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):

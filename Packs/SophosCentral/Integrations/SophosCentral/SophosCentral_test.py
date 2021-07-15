@@ -1,6 +1,6 @@
 import json
 from datetime import datetime
-from pytest import raises
+import pytest
 from CommonServerPython import DemistoException
 
 BASE_URL = 'https://api-eu02.central.sophos.com'
@@ -986,5 +986,20 @@ def test_validate_item_fields() -> None:
     args = {'item_type': 'certificateSigner', 'certificate_signer': 'xxx'}
     validate_item_fields(args)
     args = {'item_type': 'certificateSigner', 'path': 'xxx'}
-    with raises(DemistoException):
+    with pytest.raises(DemistoException):
         validate_item_fields(args)
+
+
+@pytest.mark.parametrize(
+    'input_id, expected',
+    [
+        ('', ''),
+        ('ba', 'ab'),
+        ('aabb', 'aabb'),
+        ('badcxwzy', 'abcdwxyz'),
+        ('badc-fehgji-xwzy', 'abcd-efghij-wxyz'),
+    ]
+)
+def test_flip_chars(input_id, expected) -> None:
+    from SophosCentral import flip_chars
+    assert flip_chars(input_id) == expected
