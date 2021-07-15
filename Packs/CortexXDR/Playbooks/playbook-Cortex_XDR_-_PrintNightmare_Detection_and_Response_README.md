@@ -5,7 +5,7 @@ The playbook targets specific PrintNightmare rules written by Cortex XDR for bot
 This playbook includes the following tasks:
 - Containment of Files, endpoints, users and IP Addresses
 - Enrichment of indicators
-- Data Acquisition using Cortex XDR
+- Data acquisition of system info and files using Cortex XDR
 - Hunting and Remediation using "CVE-2021-34527 | CVE-2021-1675 - PrintNightmare" playbook
 - Eradicating compromised user credentials
 
@@ -52,4 +52,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![Cortex XDR - PrintNightmare Detection and Response](Insert the link to your image here)
+![Cortex XDR - PrintNightmare Detection and Response](https://raw.githubusercontent.com/demisto/content/9ca37e51dee71f369c3177a9a19ce59c0cdeeccd/Packs/CortexXDR/doc_files/Cortex_XDR_-_PrintNightmare_Detection_and_Response.png)

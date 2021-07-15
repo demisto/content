@@ -9,7 +9,7 @@ description: |-
   This playbook includes the following tasks:
   - Containment of Files, endpoints, users and IP Addresses
   - Enrichment of indicators
-  - Data Acquisition using Cortex XDR
+  - Data acquisition of system info and files using Cortex XDR
   - Hunting and Remediation using "CVE-2021-34527 | CVE-2021-1675 - PrintNightmare" playbook
   - Eradicating compromised user credentials
 
