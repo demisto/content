@@ -91,6 +91,7 @@ class Client(BaseClient):
                 "location",
                 "relatedEntities",
                 "riskyCIDRIPs",
+                "links",
             ],
             "domain": [
                 "entity",
@@ -100,6 +101,7 @@ class Client(BaseClient):
                 "intelCard",
                 "metrics",
                 "relatedEntities",
+                "links",
             ],
             "hash": [
                 "entity",
@@ -110,6 +112,7 @@ class Client(BaseClient):
                 "metrics",
                 "hashAlgorithm",
                 "relatedEntities",
+                "links",
             ],
             "vulnerability": [
                 "entity",
@@ -122,7 +125,8 @@ class Client(BaseClient):
                 "nvdDescription",
                 "relatedEntities",
                 "cpe",
-                "relatedLinks"
+                "relatedLinks",
+                "links",
             ],
             "url": [
                 "entity",
@@ -130,6 +134,7 @@ class Client(BaseClient):
                 "timestamps",
                 "metrics",
                 "relatedEntities",
+                "links",
             ],
         }
         if entity_type == "url":
@@ -425,7 +430,7 @@ class Actions():
     ) -> List[CommandResults]:
         """Entity lookup command."""
         entity_data = self.client.entity_lookup(entities, entity_type)
-        command_results = self.__build_rep_markdown(entity_data, entity_type)
+        command_results = self.__build_rep_context(entity_data, entity_type)
         return command_results
 
 
@@ -549,7 +554,7 @@ class Actions():
                     outputs_prefix=get_output_prefix(entity_type),
                     outputs=context,
                     raw_response=entity_data,
-                    readable_output=self.build_rep_markdown(ent, entity_type),
+                    readable_output=self.__build_rep_markdown(ent, entity_type),
                     outputs_key_field='name',
                     indicator=indicator
                 ))
@@ -689,14 +694,17 @@ class Actions():
 
 
     def enrich_command(
-        self, entity: str, entity_type: str, related: bool, risky: bool, profile: str = 'All'
+        self, entity: str, entity_type: str, related: bool, risky: bool, profile: str = "All"
     ) -> List[CommandResults]:
         """Enrich command."""
         try:
             entity_data = self.client.entity_enrich(entity, entity_type, related, risky, profile)
-            if entity_data.get('data', {}).get('relatedEntities'):
-                    entity_data['data']['relatedEntities'] = self.__handle_related_entities(
-                        entity_data['data'].pop('relatedEntities')
+            formated_links = self.__format_links(entity_data.get("data", {}).pop("links"))
+            scored_links = self.__soar_links(formated_links)
+            entity_data["data"]["links"] = scored_links
+            if entity_data.get("data", {}).get("relatedEntities"):
+                    entity_data["data"]["relatedEntities"] = self.__handle_related_entities(
+                        entity_data["data"].pop("relatedEntities")
                     )
             markdown = self.__build_intel_markdown(entity_data, entity_type)
             return self.__build_intel_context(entity, entity_data, entity_type, markdown)
@@ -712,10 +720,66 @@ class Actions():
             else:
                 raise err
 
+    def __format_links(self, links_data: Dict[str, Any]):
+        links = []
+        LINK_CATEGORIES = {
+            "InternetDomainName": "Domain",
+            "Hash": "Hash",
+            "IpAddress": "IP address",
+            "MalwareSignature": "Malware Signature",
+            "MitreAttackIdentifier": "MITRE ATT&CK Identifier",
+            "CyberVulnerability": "Vulnerability",
+            "Organization": "Organization",
+            "AttackVector": "Attack Vector",
+            "Threat Actor": "Threat Actor",
+            "Technology": "Technology",
+            "Malware": "Malware"
+        }
+        for hit in links_data.get("hits", []):
+            for section in hit["sections"]:
+                lists = []
+                for sec_list in section["lists"]:
+                    entities = []
+                    for entity in sec_list["entities"]:
+                        link = {
+                            "name": entity["name"],
+                            "type": entity["type"]
+                        }
+                        entities.append(link)
+                    lists.append({
+                        "entities": entities,
+                        "entity_type":  LINK_CATEGORIES.get(sec_list["type"]["name"], "Undefined")
+                    })
+                links.append({
+                    "category": section["section_id"]["name"],
+                    "lists": lists
+                })
+        return links
 
-    def build_intel_markdown(
-        self, entity_data: Dict[str, Any], entity_type: str
-    ) -> str:
+    def __soar_links(self, links_data: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+        scored_links = links_data
+        SOAR_TRANS = {
+            "Hash": "hash",
+            "Domain": "domain",
+            "IP address": "ip",
+            "Vulnerability": "vulnerability",
+        }
+        entity_score_map = {}
+        for category in scored_links:
+            for category_list in category["lists"]:
+                if category_list["entity_type"] in SOAR_TRANS:
+                    entities = [entity["name"] for entity in category_list["entities"]]
+                    enriched_links = self.client.entity_lookup(entities, SOAR_TRANS[category_list["entity_type"]])
+                    entity_score_map.update({
+                        entity["entity"]["name"]: int(entity["risk"]["score"])
+                        for entity in enriched_links["data"]["results"]
+                    })
+                for entity in category_list["entities"]:
+                    entity["score"] = entity_score_map.get(entity["name"])
+        return scored_links
+
+
+    def __build_intel_markdown(self, entity_data: Dict[str, Any], entity_type: str) -> str:
         """Build Intelligence markdown."""
         if entity_data and ("error" not in entity_data):
             if entity_type == "hash":
@@ -869,6 +933,28 @@ class Actions():
                     removeNull=True,
                 )
             )
+
+            if data.get("links"):
+                markdown.append('### Insikt Group Research Links')
+                for category in data['links']:
+                    markdown.append(f'#### Category {category["category"]}\n--------')
+                    for category_list in category['lists']:
+                        names = []
+                        for entity in category_list['entities']:
+                            score = f'**risk score: {entity["score"]}**' if entity["score"] else ''
+                            link = {category_list['entity_type']: f'{entity["name"]}  {score}'}
+                            names.append(link)
+                        markdown.append(
+                            tableToMarkdown(
+                                '',
+                                names,
+                                category_list['entity_type'],
+                                removeNull=True,
+                            )
+                        )
+            else:
+                markdown.append('### Insikt Group Research Links \n**No entries**.')
+
             threatlist_table = [
                 {"Threat List Name": tl["name"], "Description": tl["description"]}
                 for tl in data.get("threatLists", [])
@@ -914,10 +1000,6 @@ class Actions():
                 evidence_details = data['evidenceDetails']
                 rules = ','.join([e['rule'] for e in evidence_details])
                 data['concatRules'] = rules
-                if data.get('relatedEntities'):
-                    data['relatedEntities'] = handle_related_entities(
-                        data.pop('relatedEntities')
-                    )
 
             command_results.append(
                 CommandResults(
