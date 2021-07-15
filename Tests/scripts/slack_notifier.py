@@ -371,7 +371,6 @@ def get_fields():
 
 def slack_notifier(build_url, slack_token, test_type, env_results_file_name=None, packs_results_file=None,
                    job_name="", slack_channel=CONTENT_CHANNEL, gitlab_server=None):
-    slack_channel = 'tom-test'
     branches = run_command("git branch")
     branch_name_reg = re.search(r'\* (.*)', branches)
     branch_name = branch_name_reg.group(1)
