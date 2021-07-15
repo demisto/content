@@ -47,4 +47,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![Cortex XDR - PrintNightmare Detection and Response](Insert the link to your image here)
+![Cortex XDR - PrintNightmare Detection and Response](https://raw.githubusercontent.com/demisto/content/5e978763512b656661dc04ad65ce4f388dace3ac/Packs/CortexXDR/doc_files/Cortex_XDR_-_PrintNightmare_Detection_and_Response.png)
