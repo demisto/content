@@ -1202,7 +1202,7 @@ def get_project_details(project, header):
     json_column = resp_column.json()
     columns_data = {}
     all_project_issues = []
-          
+
     for column in json_column:
         cards = get_cards(url=column["cards_url"], header=header)
         columns_data[column["name"]] = {'Name': column["name"],
