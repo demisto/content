@@ -63,7 +63,7 @@ def main():
     response_type = demisto.get(demisto.args(), 'responseType')
     lifetime = demisto.get(demisto.args(), 'lifetime')
     slack_instance = demisto.get(demisto.args(), 'slackInstance')
-    slack_version = demisto.get(demisto.args(), 'slackVersion', default='SlackV3')
+    slack_version = demisto.args().get('slackVersion', 'SlackV3')
     try:
         expiry = datetime.strftime(dateparser.parse('in ' + lifetime, settings={'TIMEZONE': 'UTC'}),
                                    DATE_FORMAT)
