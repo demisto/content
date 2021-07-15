@@ -1187,9 +1187,9 @@ def get_cards(url, header, page=1):
     column_issues = []
     for card in cards:
         if "content_url" in card:
-            column_issues.append({"card_id" :card["id"] ,"content_number": int(card["content_url"].rsplit('/', 1)[1])})
+            column_issues.append({"CardID":card["id"],"ContentNumber": int(card["content_url"].rsplit('/', 1)[1])})
     if len(cards) == MAX_FETCH_PAGE_RESULTS:
-        return column_issues + get_cards(url=url, header=header, page=page + 1)
+        return column_issues + get_cards(url=url, header=header, page=page+1)
     else:
         return column_issues
 
@@ -1198,15 +1198,19 @@ def get_project_details(project, header):
     resp_column = requests.get(url=project["columns_url"],
                                headers=header,
                                verify=USE_SSL)
+
     json_column = resp_column.json()
     columns_data = {}
     all_project_issues = []
+                                     
     for column in json_column:
         cards = get_cards(url=column["cards_url"], header=header)
         columns_data[column["name"]] = {'Name': column["name"],
                                         'ColumnID': column["id"],
                                         'Cards': cards}
-        all_project_issues += cards
+        for card in cards:
+            all_project_issues.append(card["ContentNumber"])
+
     return {'Name': project["name"],
             'ID': project["id"],
             'Number': project["number"],
@@ -1220,7 +1224,7 @@ def list_all_projects_command():
     project_f = demisto.args().get('project_filter', [])
     limit = demisto.args().get('limit', MAX_FETCH_PAGE_RESULTS)
 
-    if int(limit) > MAX_FETCH_PAGE_RESULTS:
+    if int(limit) > MAX_FETCH_PAGE_RESULTS or project_f:
         limit = MAX_FETCH_PAGE_RESULTS
 
     if project_f:
@@ -1235,27 +1239,26 @@ def list_all_projects_command():
                                  params=params
                                  )
     projects = resp_projects.json()
-    projects_obj = {}
+    projects_obj = []
     for proj in projects:
         if project_f:
             if str(proj["number"]) in project_f:
-                projects_obj[proj["name"]] = get_project_details(project=proj, header=header)
+                projects_obj.append(get_project_details(project=proj, header=header))
         else:
-            projects_obj[proj["name"]] = get_project_details(project=proj, header=header)
+            projects_obj.append(get_project_details(project=proj, header=header))
 
-    human_readable_projects = [{'Name': projects_obj[proj]['Name'], 'ID': projects_obj[proj]['ID'],
-                                'Number': projects_obj[proj]['Number'], 'Columns':
-                                    [str(column) for column in projects_obj[proj]['Columns']]} for proj in projects_obj]
+    human_readable_projects = [{'Name': proj['Name'], 'ID': proj['ID'], 'Number': proj['Number'], 'Columns':
+        [column for column in proj['Columns']]} for proj in projects_obj]
 
-    if human_readable_projects:
-        human_readable = tableToMarkdown('Projects:', t=human_readable_projects, headers=PROJECT_HEADERS, removeNull=True)
-                                     
+    if projects_obj:
+        human_readable = tableToMarkdown('Projects:', t=human_readable_projects, headers=PROJECT_HEADERS,
+                                         removeNull=True)
     else:
-        human_readable = f'Not found projects with number - {"".join(project_f)}.'
+        human_readable = f'Not found projects with number - {",".join(project_f)}.'
 
     command_results = CommandResults(
-        outputs_prefix='GitHub.Projects',
-        outputs_key_field='name',
+        outputs_prefix='GitHub.Project',
+        outputs_key_field='Name',
         outputs=projects_obj,
         readable_output=human_readable
     )
@@ -1283,7 +1286,12 @@ def add_issue_to_project_board_command():
                              verify=USE_SSL,
                              data=json.dumps(post_data)
                              )
-    return_results("Post result %s, %s" % (response, response.text))
+
+    if response.status_code >= 400:
+        return_error(f"Post result {response}\nMessage: "
+                     f"{response.json().get('message', f'Failed to add the issue with ID {content_id} to column with ID {column_id}')}")
+
+    return_results(f"The issue was successfully added to column ID {column_id}.")
 
 
 def list_all_command():
