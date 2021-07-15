@@ -13,6 +13,19 @@ from CommonServerPython import *
 logging.getLogger("pymisp").setLevel(logging.CRITICAL)
 
 
+def handle_connection_errors(error):
+    if "SSLError" in error:
+        return_error('Unable to connect to MISP because of a SSLCertVerificationError, '
+                     'Please try to use the Trust any certificate option.')
+    if "NewConnectionError" in error:
+        return_error('Unable to connect to MISP because of a NewConnectionError, '
+                     'Please make sure your MISP server url is correct.')
+    if "Please make sure the API key and the URL are correct" in error:
+        return_error('Unable to connect to MISP, '
+                     'Please make sure the API key is correct.')
+    return_error(error)
+
+
 def warn(*args):
     """
     Do nothing with warnings
@@ -31,7 +44,10 @@ verify = not demisto.params().get('insecure')
 proxies = handle_proxy()  # type: ignore
 misp_api_key = demisto.params().get('api_key')
 misp_url = demisto.params().get('url')
-PYMISP = ExpandedPyMISP(url=misp_url, key=misp_api_key, ssl=verify, proxies=proxies)
+try:
+    PYMISP = ExpandedPyMISP(url=misp_url, key=misp_api_key, ssl=verify, proxies=proxies)
+except PyMISPError as e:
+    handle_connection_errors(e.message)
 
 INTEGRATION_NAME = "MISP V3"
 
