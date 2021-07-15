@@ -171,3 +171,13 @@ class PackStatus(enum.Enum):
     FAILED_SEARCHING_PACK_IN_INDEX = "Failed in searching pack folder in index"
     FAILED_DECRYPT_PACK = "Failed to decrypt pack: a premium pack," \
                           " which should be encrypted, seems not to be encrypted."
+
+
+class Changelog(object):
+    """
+    A class that represents all the keys that are present in a Changelog entry.
+    """
+
+    RELEASE_NOTES = 'releaseNotes'
+    DISPLAY_NAME = 'displayName'
+    RELEASED = 'released'
