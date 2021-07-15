@@ -1315,7 +1315,6 @@ script:
       required: true
       description: Name
     - name: roles
-      required: true
       description: 'Roles (CSV: can be read, write, admin)'
       defaultValue: read
     - name: password

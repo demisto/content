@@ -75,8 +75,8 @@ class Client(BaseClient):
             case = res.json()
             return case
 
-    def remove_case(self, case_id: str = None, permanent: bool = False):
-        url = f'case/{case_id}/force' if permanent else f'case/{case_id}'
+    def remove_case(self, case_id: str = None, permanent: str = ''):
+        url = f'case/{case_id}/force' if permanent == 'true' else f'case/{case_id}'
         res = self._http_request('DELETE', url, ok_codes=[200, 201, 204, 404], resp_type='response', timeout=360)
         if res.status_code not in [200, 201, 204]:
             return (res.status_code, res.text)
@@ -398,7 +398,7 @@ def output_results(title: str, outputs: Any, headers: list, outputs_prefix: str,
 
 
 def list_cases_command(client: Client, args: dict):
-    limit = int(args.get('limit', None)) if args.get('limit', None) else None
+    limit: int = args.get('limit', None)
     res = client.get_cases(limit=limit)
     res = sorted(res, key=lambda x: x['caseId'])
     output_results(
@@ -411,7 +411,7 @@ def list_cases_command(client: Client, args: dict):
 
 
 def get_case_command(client: Client, args: dict):
-    case_id = str(args.get('id', ''))
+    case_id: str = args.get('id')
     case = client.get_case(case_id)
     output_results(
         title=f'TheHive Case ID {case_id}:',
@@ -443,7 +443,7 @@ def search_cases_command(client: Client, args: dict):
 
 
 def update_case_command(client: Client, args: dict):
-    case_id = str(args.get('id', ''))
+    case_id: str = args.get('id')
 
     # Get the case first
     original_case = client.get_case(case_id)
@@ -479,18 +479,17 @@ def create_case_command(client: Client, args: dict):
 
 
 def remove_case_command(client: Client, args: dict):
-    case_id = str(args.get('id', ''))
-    permanent = args.get('permanent', 'false')
-    permanent = True if permanent == 'true' else False
+    case_id = args.get('id')
+    permanent = args.get('permanent')
 
     # See if the case exists
     case = client.get_case(case_id)
     if not case:
-        return_error(f'Case ID {case_id} does not exist')
+        return_error(f'No case found with ID {case_id}')
     res = client.remove_case(case_id, permanent)
     if type(res) == tuple:
         return_error(f'Error removing case ID {case_id} ({res[0]}) - {res[1]}')
-    message = f'Case ID {case_id} permanently removed successfully' if permanent \
+    message = f'Case ID {case_id} permanently removed successfully' if permanent == 'true' \
         else f'Case ID {case_id} removed successfully'
     demisto.results(message)
 
@@ -525,7 +524,7 @@ def merge_cases_command(client: Client, args: dict):
 
 
 def get_case_tasks_command(client: Client, args: dict):
-    case_id = str(args.get('id', ''))
+    case_id: str = args.get('id')
     tasks = client.get_tasks(case_id)
     output_results(
         title=f'TheHive Tasks For Case {case_id}:',
@@ -593,7 +592,7 @@ def search_users_command(client: Client, args: dict = None):
 
 
 def get_user_command(client: Client, args: dict):
-    user_id = str(args.get('id', ''))
+    user_id: str = args.get('id')
     user = client.get_user(user_id)
     output_results(
         title=f'TheHive User ID {user_id}:',
@@ -608,8 +607,7 @@ def create_local_user_command(client: Client, args: dict):
     user_data = {
         "login": args.get('login'),
         "name": args.get('name'),
-        "roles": str(args.get('roles', '')).split(",") if "," in str(args.get('roles', '')) else str(
-            args.get('roles', '')),
+        "roles": argToList(args.get('roles', 'read')),
         "password": args.get('password')
     }
     if client.version[0] == "4":
