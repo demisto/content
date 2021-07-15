@@ -273,7 +273,7 @@ class Client(BaseClient):
             self.update_session()
 
         res = self._http_request(method, url_suffix, headers=REQUEST_HEADERS, json_data=data, params=params,
-                                 resp_type='response', ok_codes=(200, 401), timeout=15)
+                                 resp_type='response', ok_codes=(200, 401), timeout=20)
 
         if res.status_code == 401:
             self.update_session()
@@ -290,7 +290,7 @@ class Client(BaseClient):
             'Password': self.password
         }
         try:
-            res = self._http_request('POST', f'{API_ENDPOINT}/core/security/login', json_data=body, timeout=15)
+            res = self._http_request('POST', f'{API_ENDPOINT}/core/security/login', json_data=body, timeout=20)
         except DemistoException as e:
             if '<html>' in str(e):
                 raise DemistoException(f"Check the given URL, it can be a redirect issue. Failed with error: {str(e)}")
