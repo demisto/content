@@ -166,7 +166,8 @@ def get_failed_unit_tests_attachment(build_url: str, is_sdk_build: bool = False)
     """
     if artifact_data := get_artifact_data('failed_lint_report.txt'):
         artifact_data = artifact_data.split('\n')
-        unittests_fields: Optional[List[Dict]] = get_entities_fields('Failed Unittests', artifact_data)
+        unittests_fields: Optional[List[Dict]] = get_entities_fields(f'Failed Unittests - ({len(artifact_data)})',
+                                                                     artifact_data)
     else:
         unittests_fields = None
     color: str = 'good' if not unittests_fields else 'danger'
@@ -182,38 +183,68 @@ def get_failed_unit_tests_attachment(build_url: str, is_sdk_build: bool = False)
     }]
 
 
-def get_coverage_attachment(build_url: str) -> Dict:
+def get_coverage_color(coverage_percent: float) -> str:
+    """
+    Returns color to represent coverage percent.
+    Args:
+        coverage_percent (float): Coverage percent.
+
+    Returns:
+        (str): Representing the color
+    """
+    if coverage_percent <= 50.0:
+        return 'danger'
+    elif coverage_percent < 60.0:
+        return 'warning'
+    return 'good'
+
+
+def get_coverage_attachment(build_url: str) -> Optional[Dict]:
     """
     Returns content coverage report attachment.
     Args:
         build_url (str): Build URL of the nightly.
 
     Returns:
-        (Dict): Attachment of the coverage.
+        (Dict): Attachment of the coverage if coverage report exists.
     """
     xml_coverage_data: str = get_artifact_data('coverage_report/coverage.xml')
+    if not xml_coverage_data:
+        return None
     coverage_dict_data: OrderedDict = xmltodict.parse(xml_coverage_data)
-    # TODO handle case if no exists
     coverage_percent: float = float(coverage_dict_data.get('coverage', dict()).get('@line-rate')) * 100.0
     return {
         'fallback': f'Coverage Report Content: {coverage_percent:.2f}% Total Coverage',
-        'color': 'good',
+        'color': get_coverage_color(coverage_percent),
         'title': f'Coverage Report Content: {coverage_percent:.2f}% Total Coverage',
         'title_link': build_url,
         'fields': []
     }
 
 
-def get_attachments_for_unit_test(build_url: str, is_sdk_build: bool = False):
+def get_attachments_for_unit_test(build_url: str, is_sdk_build: bool = False) -> List[Dict]:
+    """
+    Creates attachment for unit tests. Including failed unit tests attachment and coverage if exists.
+    Args:
+        build_url (str): Build URL.
+        is_sdk_build (bool): Whether build is SDK build.
+
+    Returns:
+        (List[Dict]): List of attachments.
+    """
     unit_tests_attachments = get_failed_unit_tests_attachment(build_url, is_sdk_build)
     if not is_sdk_build:
-        unit_tests_attachments.append(get_coverage_attachment(build_url))
+        coverage_attachment = get_coverage_attachment(build_url)
+        if coverage_attachment:
+            unit_tests_attachments.append(coverage_attachment)
     return unit_tests_attachments
 
 
 def get_attachments_for_bucket_upload_flow(build_url, job_name, packs_results_file_path=None):
-    failed_entities = get_failed_steps_list()
-    steps_fields = get_entities_fields(f'Failed Steps - ({len(failed_entities)})', failed_entities)
+    if failed_entities := get_failed_steps_list():
+        steps_fields = get_entities_fields(f'Failed Steps - ({len(failed_entities)})', failed_entities)
+    else:
+        steps_fields = None
     color = 'good' if not steps_fields else 'danger'
     title = f'{BucketUploadFlow.BUCKET_UPLOAD_BUILD_TITLE} - Success' if not steps_fields \
         else f'{BucketUploadFlow.BUCKET_UPLOAD_BUILD_TITLE} - Failure'
@@ -265,8 +296,10 @@ def get_attachments_for_bucket_upload_flow(build_url, job_name, packs_results_fi
 
 
 def get_attachments_for_all_steps(build_url, build_title):
-    failed_entities = get_failed_steps_list()
-    steps_fields = get_entities_fields(f'Failed Steps - ({len(failed_entities)})', failed_entities)
+    if failed_entities := get_failed_steps_list():
+        steps_fields = get_entities_fields(f'Failed Steps - ({len(failed_entities)})', failed_entities)
+    else:
+        steps_fields = None
     color = 'good' if not steps_fields else 'danger'
     title = f'{build_title} - Success' if not steps_fields else f'{build_title} - Failure'
 
@@ -371,6 +404,7 @@ def get_fields():
 
 def slack_notifier(build_url, slack_token, test_type, env_results_file_name=None, packs_results_file=None,
                    job_name="", slack_channel=CONTENT_CHANNEL, gitlab_server=None):
+    slack_channel = 'tom-test'
     branches = run_command("git branch")
     branch_name_reg = re.search(r'\* (.*)', branches)
     branch_name = branch_name_reg.group(1)
