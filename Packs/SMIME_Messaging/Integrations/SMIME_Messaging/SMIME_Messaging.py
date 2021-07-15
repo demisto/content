@@ -7,7 +7,6 @@ from CommonServerUserPython import *
 from M2Crypto import BIO, SMIME, X509, m2
 from typing import Dict
 from tempfile import NamedTemporaryFile
-import chardet
 
 
 ''' HELPER FUNCTIONS '''
@@ -134,21 +133,6 @@ def verify(client: Client, args: Dict):
     return human_readable, {}
 
 
-def decode_str_using_chardet(decrypted_text):
-    chardet_detection = chardet.detect(decrypted_text)
-    encoding = chardet_detection.get('encoding', 'utf-8') or 'utf-8'
-    try:
-        # Trying to decode using the detected encoding
-        demisto.debug(f"Going to decode decrypted text using {encoding} encoding")
-        out = decrypted_text.decode(encoding)
-    except UnicodeDecodeError:
-        # In case the detected encoding fails apply the default encoding
-        demisto.info(f'Could not decode dile using detected encoding:{encoding}, retrying '
-                     f'using utf-8.\n')
-        out = decrypted_text.decode('utf-8')
-    return out
-
-
 def decrypt_email_body(client: Client, args: Dict, file_path=None):
     """ Decrypt the message
 
@@ -165,19 +149,8 @@ def decrypt_email_body(client: Client, args: Dict, file_path=None):
     client.smime.load_key(client.private_key_file, client.public_key_file)
     try:
         p7, data = SMIME.smime_load_pkcs7(encrypt_message['path'])
-        try:
-            demisto.debug(f"p7 {str(p7)}")
-        except Exception as e:
-            demisto.debug(f"p7 exception Error: {str(e)}")
 
-        demisto.debug("smime_load_pkcs7 pass successfully")
-        decrypted_text = client.smime.decrypt(p7)
-        try:
-            demisto.debug(f"decrypted_text {str(decrypted_text)}")
-        except Exception as e:
-            demisto.debug(f"decrypted_text exception Error: {str(e)}")
-
-        out = decode_str_using_chardet(decrypted_text)
+        out = client.smime.decrypt(p7).decode('utf-8')
 
     except SMIME.SMIME_Error as e:
 
@@ -186,11 +159,7 @@ def decrypt_email_body(client: Client, args: Dict, file_path=None):
                 p7data = message_file.read()
             p7bio = BIO.MemoryBuffer(p7data)
             p7 = SMIME.PKCS7(m2.pkcs7_read_bio_der(p7bio._ptr()))
-            decrypted_text = client.smime.decrypt(p7, flags=SMIME.PKCS7_NOVERIFY)
-            out = decode_str_using_chardet(decrypted_text)
-
-        else:
-            raise Exception(e)
+            out = client.smime.decrypt(p7, flags=SMIME.PKCS7_NOVERIFY).decode('utf-8')
 
     entry_context = {
         'SMIME.Decrypted': {
