@@ -787,6 +787,8 @@ script:
   subtype: python2
   type: python
 tests:
+- SplunkPySearch_Test_default_handler
+- SplunkPySearch_Test_requests_handler
 - SplunkPy-Test-V2
 - SplunkPy KV commands
 - SplunkPy parse-raw - Test

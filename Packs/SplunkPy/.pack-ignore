@@ -9,3 +9,6 @@ ignore=RM106
 
 [file:classifier-mapper-incoming-SplunkPy.json]
 ignore=BA101
+
+[file:playbook-SplunkPySearch_Test.yml]
+ignore=auto-test
