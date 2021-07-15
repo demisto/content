@@ -255,12 +255,17 @@ def test_create_score_threshold_alert(mocker):
     assert response == create_score_alert_mock
 
 
-def test_delete_alert(mocker):
-    pass
-
-
 def test_get_alerts_last_week(mocker):
-    pass
+
+    mocker.patch.object(client, "get_alerts_last_week", return_value=alerts_mock)
+
+    response = client.get_alerts_last_week(email=USERNAME)
+
+    assert response == alerts_mock
+    assert response["size"] == 9
+    assert is_domain_valid(response["entries"][0]["domain"])
+    assert isinstance(response["entries"][0]["my_scorecard"], bool)
+
 
 
 def test_get_domain_services(mocker):
