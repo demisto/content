@@ -13,6 +13,9 @@ from re import compile as _Re
 import pandas as pd
 from langdetect import detect
 
+ANY_LANGUAGE = 'Any'
+OTHER_LANGUAGE = 'Other'
+
 
 def hash_word(word, hash_seed):
     return str(hash_djb2(word, int(hash_seed)))
@@ -359,6 +362,8 @@ def remove_foreign_language(data, text_field, language):
 
 
 def is_text_in_input_language(text, input_language):
+    if input_language in [ANY_LANGUAGE, OTHER_LANGUAGE]:
+        return True, 'UNK'
     if '<html' in text:
         text = clean_html_from_text(text)
     actual_language = detect(text)
