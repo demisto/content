@@ -10,7 +10,6 @@ description: |-
   - Containment of files, endpoints, users and IP Addresses
   - Enrichment of indicators
   - Data acquisition of system info and files using Cortex XDR
-  - Hunting and Remediation using "CVE-2021-34527 | CVE-2021-1675 - PrintNightmare" playbook
   - Eradicating compromised user credentials
 
   ** Note: This is a beta playbook, which lets you implement and test pre-release software. Since the playbook is beta, it might contain bugs. Updates to the pack during the beta phase might include non-backward compatible features. We appreciate your feedback on the quality and usability of the pack to help us identify issues, fix them, and continually improve.
@@ -34,8 +33,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": -60
+          "x": 1210,
+          "y": -120
         }
       }
     note: false
@@ -77,8 +76,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -280,
-          "y": 1050
+          "x": -1370,
+          "y": 1100
         }
       }
     note: false
@@ -119,8 +118,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -280,
-          "y": 1500
+          "x": -1370,
+          "y": 1845
         }
       }
     note: false
@@ -162,8 +161,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1220,
-          "y": 1050
+          "x": 100,
+          "y": 1100
         }
       }
     note: false
@@ -190,8 +189,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 150,
-          "y": 1290
+          "x": -920,
+          "y": 1330
         }
       }
     note: false
@@ -218,8 +217,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 750,
-          "y": 1290
+          "x": -330,
+          "y": 1340
         }
       }
     note: false
@@ -243,8 +242,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 3480
+          "x": 1210,
+          "y": 3120
         }
       }
     note: false
@@ -274,8 +273,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 870
+          "x": -300,
+          "y": 930
         }
       }
     note: false
@@ -302,8 +301,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -1280,
-          "y": 1050
+          "x": -2300,
+          "y": 1100
         }
       }
     note: false
@@ -355,8 +354,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2410,
-          "y": 1500
+          "x": 960,
+          "y": 1845
         }
       }
     note: false
@@ -398,8 +397,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2290,
-          "y": 1050
+          "x": 960,
+          "y": 1100
         }
       }
     note: false
@@ -426,8 +425,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1850,
-          "y": 1290
+          "x": 530,
+          "y": 1340
         }
       }
     note: false
@@ -451,13 +450,12 @@ tasks:
       '#none#':
       - "62"
       - "41"
-      - "40"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 2040
+          "x": -330,
+          "y": 2050
         }
       }
     note: false
@@ -484,8 +482,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 3160
+          "x": -330,
+          "y": 2760
         }
       }
     note: false
@@ -512,8 +510,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 3300
+          "x": -330,
+          "y": 2900
         }
       }
     note: false
@@ -540,8 +538,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 3260,
-          "y": 860
+          "x": 2210,
+          "y": 930
         }
       }
     note: false
@@ -585,8 +583,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 3260,
-          "y": 1050
+          "x": 2210,
+          "y": 1100
         }
       }
     note: false
@@ -645,8 +643,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 3260,
-          "y": 1290
+          "x": 2210,
+          "y": 1340
         }
       }
     note: false
@@ -687,8 +685,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 4120,
-          "y": 1290
+          "x": 3070,
+          "y": 1340
         }
       }
     note: false
@@ -715,36 +713,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2830,
-          "y": 1290
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "40":
-    id: "40"
-    taskid: c51f60f4-ce92-41c1-83c3-85e0b7bf4d20
-    type: title
-    task:
-      id: c51f60f4-ce92-41c1-83c3-85e0b7bf4d20
-      version: -1
-      name: Execute PrintNightmare Playbook
-      type: title
-      iscommand: false
-      brand: ""
-      description: ''
-    nexttasks:
-      '#none#':
-      - "79"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": -240,
-          "y": 2310
+          "x": 1780,
+          "y": 1340
         }
       }
     note: false
@@ -767,12 +737,13 @@ tasks:
     nexttasks:
       '#none#':
       - "61"
+      - "81"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 1240,
-          "y": 2310
+          "x": 30,
+          "y": 2230
         }
       }
     note: false
@@ -814,8 +785,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1240,
-          "y": 2500
+          "x": -180,
+          "y": 2460
         }
       }
     note: false
@@ -838,13 +809,12 @@ tasks:
     nexttasks:
       '#none#':
       - "63"
-      - "80"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 2310
+          "x": -690,
+          "y": 2230
         }
       }
     note: false
@@ -854,112 +824,26 @@ tasks:
     quietmode: 0
   "63":
     id: "63"
-    taskid: 3e607841-3e3a-4ee1-82ae-5049caa07ed8
+    taskid: aed1591c-cd9f-42ba-84c8-51184497392e
     type: regular
     task:
-      id: 3e607841-3e3a-4ee1-82ae-5049caa07ed8
+      id: aed1591c-cd9f-42ba-84c8-51184497392e
       version: -1
-      name: Cortex XDR - collect system info
+      name: Collect system info
       description: Initiates a new endpoint script execution action using a script
         from the script library.
-      script: '|||xdr-run-script'
       type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "64"
-    scriptarguments:
-      endpoint_ids:
-        complex:
-          root: PaloAltoNetworksXDR.Incident.alerts
-          accessor: endpoint_id
-          transformers:
-          - operator: uniq
-      script_uid:
-        simple: dc5815bb786f4cc095671f3150717fc8
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 660,
-          "y": 2580
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "64":
-    id: "64"
-    taskid: 1f1b111c-36f7-40de-862b-7c1e45dd53d9
-    type: playbook
-    task:
-      id: 1f1b111c-36f7-40de-862b-7c1e45dd53d9
-      version: -1
-      name: Cortex XDR - Check Action Status
-      description: Checks the action status of an action ID. \nEnter the action ID
-        of the action whose status you want to know.
-      playbookName: Cortex XDR - Check Action Status
-      type: playbook
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
-      - "65"
-    scriptarguments:
-      action_id:
-        complex:
-          root: PaloAltoNetworksXDR.ScriptRun
-          accessor: action_id
-      timeout:
-        simple: "10"
-    separatecontext: true
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-      max: 100
-    view: |-
-      {
-        "position": {
-          "x": 660,
-          "y": 2730
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "65":
-    id: "65"
-    taskid: f9a2bf1d-87a0-4fa3-893a-703956c373a4
-    type: regular
-    task:
-      id: f9a2bf1d-87a0-4fa3-893a-703956c373a4
-      version: -1
-      name: Cortex XDR - fetch results
-      description: Retrieve the results of a script execution action.
-      script: '|||xdr-get-script-execution-results'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "28"
-    scriptarguments:
-      action_id:
-        complex:
-          root: PaloAltoNetworksXDR.ScriptRun
-          accessor: action_id
+      - "80"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 660,
-          "y": 2890
+          "x": -690,
+          "y": 2375
         }
       }
     note: false
@@ -1010,8 +894,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1220,
-          "y": 1695
+          "x": 100,
+          "y": 1845
         }
       }
     note: false
@@ -1067,8 +951,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 3690,
-          "y": 1290
+          "x": 2640,
+          "y": 1340
         }
       }
     note: false
@@ -1133,8 +1017,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1220,
-          "y": 1290
+          "x": 100,
+          "y": 1340
         }
       }
     note: false
@@ -1190,8 +1074,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1220,
-          "y": 1500
+          "x": 100,
+          "y": 1580
         }
       }
     note: false
@@ -1230,8 +1114,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -280,
-          "y": 1290
+          "x": -1370,
+          "y": 1330
         }
       }
     note: false
@@ -1280,8 +1164,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2290,
-          "y": 1290
+          "x": 960,
+          "y": 1340
         }
       }
     note: false
@@ -1316,8 +1200,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 640
+          "x": 1000,
+          "y": 650
         }
       }
     note: false
@@ -1352,8 +1236,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 270
+          "x": 1000,
+          "y": 250
         }
       }
     note: false
@@ -1405,8 +1289,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 80
+          "x": 1210,
+          "y": 50
         }
       }
     note: false
@@ -1444,50 +1328,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 460
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "79":
-    id: "79"
-    taskid: 13589cf9-e808-4e8e-8902-0794caf37775
-    type: playbook
-    task:
-      id: 13589cf9-e808-4e8e-8902-0794caf37775
-      version: -1
-      name: CVE-2021-34527 | CVE-2021-1675 - PrintNightmare
-      description: |-
-        Microsoft has released a security update in June 2021 Patch Tuesday for CVE-2021-1675, a Local Privilege Escalation vulnerability in the Print Spooler Service. Later that month, researchers found another method to exploit the Print Spooler service remotely, which raised the severity of the vulnerability due to the fact that the new method allows Remote Code Execution, a new ID was given to the critical vulnerability - CVE-2021-34527.
-
-        Microsoft patched the vulnerability in June but an exploit POC and complete technical analysis were made publicly available online.
-        This playbook includes the following tasks:
-        - Manual actions to mitigate the exploit
-        - Search Vulnerable Devices using the CVE
-        - Query SIEM, FW, XDR to detect malicious activity and compromised hosts
-
-        More details on the vulnerabilities:
-        [CVE-2021-1675 LPE](https://nvd.nist.gov/vuln/detail/CVE-2021-1675)
-        [CVE-2021-34527 RCE](https://nvd.nist.gov/vuln/detail/CVE-2021-34527)
-
-        ** Note: This is a beta playbook, which lets you implement and test pre-release software. Since the playbook is beta, it might contain bugs. Updates to the pack during the beta phase might include non-backward compatible features. We appreciate your feedback on the quality and usability of the pack to help us identify issues, fix them, and continually improve.
-      playbookName: CVE-2021-34527 | CVE-2021-1675 - PrintNightmare
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "28"
-    separatecontext: true
-    view: |-
-      {
-        "position": {
-          "x": -240,
-          "y": 2500
+          "x": 1440,
+          "y": 440
         }
       }
     note: false
@@ -1515,8 +1357,38 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 240,
-          "y": 2690
+          "x": -690,
+          "y": 2540
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "81":
+    id: "81"
+    taskid: 44dfcf25-fea0-415a-8ae7-644577eea940
+    type: regular
+    task:
+      id: 44dfcf25-fea0-415a-8ae7-644577eea940
+      version: -1
+      name: Cortex XDR XQL queries
+      description: |-
+        Run related advanced XQL queries in Cortex XDR to find any malicious related activity.
+        [Cortex XDR Hunting Blog](https://www.paloaltonetworks.com/blog/security-operations/hunting-printnightmare/)
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "28"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 250,
+          "y": 2460
         }
       }
     note: false
@@ -1527,6 +1399,7 @@ tasks:
 view: |-
   {
     "linkLabelsPosition": {
+      "19_74_yes": 0.71,
       "33_35_yes": 0.52,
       "33_37_#default#": 0.68,
       "4_9_#default#": 0.63,
@@ -1536,20 +1409,20 @@ view: |-
       "71_66_yes": 0.47,
       "73_22_#default#": 0.33,
       "73_6_yes": 0.43,
-      "74_16_yes": 0.41,
+      "74_16_yes": 0.62,
       "74_22_#default#": 0.12,
-      "77_11_#default#": 0.27,
+      "77_11_#default#": 0.1,
       "77_76_yes": 0.49,
-      "78_11_#default#": 0.14,
+      "78_11_#default#": 0.1,
       "78_75_yes": 0.52,
       "8_10_#default#": 0.63
     },
     "paper": {
       "dimensions": {
-        "height": 3605,
-        "width": 5780,
-        "x": -1280,
-        "y": -60
+        "height": 3305,
+        "width": 5750,
+        "x": -2300,
+        "y": -120
       }
     }
   }
