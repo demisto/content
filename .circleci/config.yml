@@ -530,7 +530,7 @@ references:
     run:
       name: Change File IDs to prevent conflicts in XSOAR
       command:
-        python3 ./Tests/scripts/sdk_nightly_change_file_ids.py Packs/HelloWorld/Classifiers/classifier-mapper-incoming-HelloWorldTest.json
+        python3 ./Tests/scripts/sdk_nightly_change_json_file_fields.py Packs/HelloWorld/Classifiers/classifier-mapper-incoming-HelloWorldTest.json name
 
   upload_entities_to_cortex_xsoar: &upload_entities_to_cortex_xsoar
     run:
