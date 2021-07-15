@@ -138,7 +138,8 @@ def main():
             return_error('The command is unsupported by this script. If you have SlackV3 enabled, '
                          'please use SlackAsk instead.')
         else:
-            return_error('An error has occured while executing the send-notification command',error=e)
+            return_error('An error has occurred while executing the send-notification command',
+                         error=e)
 
 
 if __name__ in ('__builtin__', 'builtins', '__main__'):
