@@ -21,10 +21,20 @@ trigger-private-build:
     - python3 Utils/get_private_build_status.py --github-token $GITHUB_TOKEN
 
 
-on-push:run-unittests-and-lint:
+run-unittests-and-lint:
   extends:
     - .run-unittests-and-lint
-    - .push-rule
+  rules:
+    - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/'
+    - if: '$NIGHTLY'
+
+
+run-validations:
+  extends:
+    - .run-validations
+  rules:
+    - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/'
+    - if: '$NIGHTLY'
 
 
 create-instances:
