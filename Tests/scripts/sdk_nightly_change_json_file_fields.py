@@ -18,3 +18,7 @@ def main():
         json.dump(file_content, f)
 
     print(f"Successfully changed the field {field} in file {file_content}")
+
+
+if __name__ == '__main__':
+    main()
