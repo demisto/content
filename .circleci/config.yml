@@ -1097,7 +1097,7 @@ jobs:
             - run:
                 name: Download packs from GCP
                 command: |
-                  if [[ $GCS_MARKET_BUCKET != "marketplace-dist" ]]; then //TODO CHANGE TO TESTING BUCKET
+                  if [[ $GCS_MARKET_BUCKET != "marketplace-dist" ]]; then
                     $PACKS_SRC="gs://$GCS_MARKET_BUCKET/upload-flow/builds/$CIRCLE_BRANCH/$CI_PIPELINE_ID/content/packs"
                   else
                     $PACKS_SRC="gs://$GCS_MARKET_BUCKET/$STORAGE_BASE_PATH"
@@ -1105,11 +1105,13 @@ jobs:
 
                   $PACKS_SRC="gs://marketplace-dist-dev/upload-flow/builds/$CIRCLE_BRANCH/$CI_PIPELINE_ID/content/packs"
                   ZIP_FOLDER=$(mktemp -d)
+                  echo "export ZIP_FOLDER=$ZIP_FOLDER" >> $BASH_ENV
                   gsutil -m cp -r $PACKS_SRC $ZIP_FOLDER
                 when: always
             - run:
                 name: Zip Content Packs From GCS
                 command: |
+                  ZIP_FOLDER=$(source $BASH_ENV)
                   python3 ./Tests/Marketplace/zip_packs.py -z $ZIP_FOLDER -a $CIRCLE_ARTIFACTS -s $GCS_MARKET_KEY
                 when: always
             - run:

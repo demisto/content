@@ -189,7 +189,6 @@ def main():
     option = option_handler()
     zip_path = option.zip_path
     artifacts_path = option.artifacts_path
-
     private_build = option.private
 
     if private_build:
