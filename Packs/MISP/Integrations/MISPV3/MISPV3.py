@@ -384,6 +384,10 @@ def parse_response_reputation_command(response, malicious_tag_ids, suspicious_ta
             if event.get('Event'):
                 event['Event'] = related_events[event.get('event_id')].get('Event', {})
                 event['Tag'] = related_events[event.get('event_id')].get('Tag', [])
+    else:
+        # sometimes the first attribute has no RelatedAttribute list (seems to be a bug in MISP response),
+        # so we would like to override the empty list with the related events we found
+        first_attribute['RelatedAttribute'] = [value for k, value in related_events.items()]
     first_attribute['Event']['Tag'], first_attribute_event_tags = limit_tag_output(first_attribute.get('Event'), True)
     event_tag_ids.update(first_attribute_event_tags)
 
@@ -418,7 +422,6 @@ def get_full_related_event_objects(attributes_list):
                 event['Tag'], current_event_tags = limit_tag_output(event, True)
                 event_tag_set_ids.update(current_event_tags)
             related_events[event.get('id')] = {"Event": event, "Tag": attribute_tags}
-
     return related_events, attributes_tag_set_ids, event_tag_set_ids
 
 
@@ -662,11 +665,19 @@ def get_event_to_tag(data_dict, found_tag, event_name):
     related_events = []
     for tag in data_dict.get('Tag', []):
         if tag.get('ID') == found_tag:
-            event_id = data_dict.get('EventID') if data_dict.get('EventID') else data_dict.get('ID')
+            event_id = get_event_id(data_dict)
             tag_name = tag.get('Name')
             related_events.append({'Event_ID': event_id, 'Event_Name': event_name,
                                    'Tag_Name': tag_name, 'Tag_ID': tag.get('ID')})
     return related_events
+
+
+def get_event_id(data_dict):
+    if data_dict.get('EventID'):
+        return data_dict.get('EventID')
+    elif data_dict.get('ID'):
+        return data_dict.get('ID')
+    return data_dict.get('Event', {}).get('ID')
 
 
 def get_dbot_indicator(dbot_type, dbot_score, value):
