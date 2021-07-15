@@ -42,6 +42,7 @@ This script uses the following commands and scripts.
 | lifetime | Time until the question expires. For example - 1 day. When it expires, a default response is sent. |
 | defaultResponse | Default response in case the question expires. |
 | slackInstance | The instance of SlackV3 this script should use. |
+| slackVersion | The version of Slack to use. SlackV3 is configured by default. |
 
 ## Outputs
 ---

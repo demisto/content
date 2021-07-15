@@ -121,7 +121,8 @@ def test_slack_ask_user_additional(mocker):
     mocker.patch.object(demisto, 'args', return_value={
         'user': 'alexios', 'message': 'wat up', 'option1': 'yes#red', 'option2': 'no#red',
         'additionalOptions': 'maybe', 'reply': 'Thank you brother.', 'lifetime': '24 hours',
-        'defaultResponse': 'NoResponse', 'using-brand': 'SlackV3', 'slackInstance': 'TestingInstance1'
+        'defaultResponse': 'NoResponse', 'slackInstance': 'TestingInstance1',
+        'slackVersion': 'SlackV3'
     })
     mocker.patch.object(demisto, 'results')
     mocker.patch.object(dateparser, 'parse', return_value=datetime.datetime(2019, 9, 26, 18, 38, 25))

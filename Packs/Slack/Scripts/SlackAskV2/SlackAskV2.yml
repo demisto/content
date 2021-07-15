@@ -109,6 +109,13 @@ args:
   name: slackInstance
   required: false
   secret: false
+- default: true
+  defaultValue: SlackV3
+  description: The version of Slack to use. SlackV3 is configured by default.
+  isArray: false
+  name: slackVersion
+  required: false
+  secret: false
 comment: Sends a message (question) to either user (in a direct message) or to a channel.
   The message includes predefined reply options. The response can also close a task
   (might be conditional) in a playbook.
@@ -124,7 +131,7 @@ tags:
 - slack
 timeout: '0'
 type: python
-dockerimage: demisto/python3:3.9.5.21272
+dockerimage: demisto/python3:3.9.5.22665
 runonce: false
 tests:
 - no test - Untestable
