@@ -46,7 +46,7 @@ TEST_METADATA = {
 AGGREGATED_CHANGELOG = {
     "1.0.1": {
         "releaseNotes": "dummy release notes",
-        "displayName": "1.0.0",
+        "displayName": "1.0.0 - 264879",
         "released": "2020-05-05T13:39:33Z"
     },
     "1.0.3": {
@@ -709,7 +709,7 @@ class TestChangelogCreation:
         """
 
         release_notes_dir = 'Irrelevant/Test/Path'
-        changelog_latest_rn_version = LooseVersion('1.0.3')
+        changelog_latest_rn_versions = ['1.0.3']
         modified_rn_files = ['1_0_2.md']
         modified_rn_lines = 'dummy release notes\nmodified dummy release notes'
         modified_rn_file = 'modified dummy release notes'
@@ -721,8 +721,23 @@ class TestChangelogCreation:
         mocker.patch("Tests.Marketplace.marketplace_services.aggregate_release_notes_for_marketplace",
                      return_value=modified_rn_lines)
         modified_versions_dict = dummy_pack.get_modified_release_notes_lines(
-            release_notes_dir, changelog_latest_rn_version, AGGREGATED_CHANGELOG, modified_rn_files)
+            release_notes_dir, changelog_latest_rn_versions, AGGREGATED_CHANGELOG, modified_rn_files)
         assert modified_versions_dict == {'1.0.3': modified_rn_lines}
+
+    def test_update_changelog_entry(self, dummy_pack):
+        """
+           Given:
+               - Changelog from production bucket, a version that is a key of an entry in the changelog and rn lines
+                to update the entry with.
+           When:
+               - Modifying an exiting rn.
+           Then:
+               - The entry will keep all the other data other than the modified part.
+        """
+        entry = dummy_pack._get_updated_changelog_entry(AGGREGATED_CHANGELOG, '1.0.1', 'updated_rn')
+        assert entry['releaseNotes'] == 'updated_rn'
+        assert entry['displayName'] == AGGREGATED_CHANGELOG['1.0.1']['displayName']
+        assert entry['released'] == AGGREGATED_CHANGELOG['1.0.1']['released']
 
     def test_assert_production_bucket_version_matches_release_notes_version_positive(self, dummy_pack):
         """
@@ -1627,9 +1642,11 @@ class TestReleaseNotes:
         open_mocker['rn_dir_fake_path/1_1_0.md'].read_data = rn_one
         open_mocker['rn_dir_fake_path/2_0_0.md'].read_data = rn_two
         mocker.patch('builtins.open', open_mocker)
-        rn_lines, latest_rn = dummy_pack.get_release_notes_lines('rn_dir_fake_path', LooseVersion('1.0.0'), '')
+        rn_lines, latest_rn, new_versions =\
+            dummy_pack.get_release_notes_lines('rn_dir_fake_path', LooseVersion('1.0.0'), '')
         assert latest_rn == '2.0.0'
         assert rn_lines == aggregated_rn
+        assert new_versions == ['1.1.0', '2.0.0']
 
     def test_get_release_notes_lines_updated_rn(self, mocker, dummy_pack):
         """
@@ -1647,9 +1664,11 @@ class TestReleaseNotes:
         '''
         mocker.patch('builtins.open', mock_open(read_data=rn))
         mocker.patch('os.listdir', return_value=['1_0_0.md', '1_0_1.md'])
-        rn_lines, latest_rn = dummy_pack.get_release_notes_lines('rn_dir_fake_path', LooseVersion('1.0.1'), rn)
+        rn_lines, latest_rn, new_versions =\
+            dummy_pack.get_release_notes_lines('rn_dir_fake_path', LooseVersion('1.0.1'), rn)
         assert latest_rn == '1.0.1'
         assert rn_lines == rn
+        assert new_versions == []
 
     def test_get_release_notes_lines_no_rn(self, mocker, dummy_pack):
         """
@@ -1668,9 +1687,11 @@ class TestReleaseNotes:
         '''
 
         mocker.patch('os.listdir', return_value=['1_0_0.md', '1_0_1.md'])
-        rn_lines, latest_rn = dummy_pack.get_release_notes_lines('wow', LooseVersion('1.0.1'), changelog_latest_rn)
+        rn_lines, latest_rn, new_versions =\
+            dummy_pack.get_release_notes_lines('wow', LooseVersion('1.0.1'), changelog_latest_rn)
         assert latest_rn == '1.0.1'
         assert rn_lines == changelog_latest_rn
+        assert new_versions == []
 
     FAILED_PACKS_DICT = {
         'TestPack': {'status': 'wow1'},
