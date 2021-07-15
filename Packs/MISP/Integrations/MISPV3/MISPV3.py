@@ -1048,7 +1048,10 @@ def add_tag(demisto_args: dict, is_attribute=False):
     """
     uuid = demisto_args.get('uuid')
     tag = demisto_args.get('tag')
-    PYMISP.tag(uuid, tag)  # add the tag
+    try:
+        PYMISP.tag(uuid, tag)  # add the tag
+    except PyMISPError:
+        raise DemistoException("Adding the required tag was failed. Please make sure the UUID exists.")
     if is_attribute:
         response = PYMISP.search(uuid=uuid, controller='attributes')
         human_readable = f'Tag {tag} has been successfully added to attribute {uuid}'
@@ -1080,7 +1083,11 @@ def remove_tag(demisto_args: dict, is_attribute=False):
     uuid = demisto_args.get('uuid')
     tag = demisto_args.get('tag')
 
-    PYMISP.untag(uuid, tag)
+    try:
+        PYMISP.untag(uuid, tag)
+    except PyMISPError:
+        raise DemistoException("Removing the required tag was failed. Please make sure the UUID and tag exist.")
+
     if is_attribute:
         response = PYMISP.search(uuid=uuid, controller='attributes')
         human_readable = f'Tag {tag} has been successfully removed from the attribute {uuid}'
