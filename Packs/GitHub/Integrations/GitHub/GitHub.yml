@@ -9,6 +9,7 @@ configuration:
   type: 8
 - defaultvalue: Issue
   display: Select an Issue or Pull requests to Fetch
+  hidden: false
   name: fetch_object
   options:
   - Issue
@@ -63,18 +64,33 @@ name: GitHub
 script:
   commands:
   - arguments:
-    - description: The title of the issue.
+    - default: false
+      description: The title of the issue.
+      isArray: false
       name: title
       required: true
-    - description: The contents of the issue.
+      secret: false
+    - default: false
+      description: The contents of the issue.
+      isArray: false
       name: body
-    - description: Labels to associate with this issue.
+      required: false
+      secret: false
+    - default: false
+      description: Labels to associate with this issue.
       isArray: true
       name: labels
-    - description: Logins for Users to assign to this issue.
+      required: false
+      secret: false
+    - default: false
+      description: Logins for Users to assign to this issue.
       isArray: true
       name: assignees
+      required: false
+      secret: false
+    deprecated: false
     description: Creates an issue in GitHub.
+    execution: false
     name: GitHub-create-issue
     outputs:
     - contextPath: GitHub.Issue.ID
@@ -114,10 +130,15 @@ script:
       description: The repository organization.
       type: String
   - arguments:
-    - description: The number of the issue to close.
+    - default: false
+      description: The number of the issue to close.
+      isArray: false
       name: ID
       required: true
+      secret: false
+    deprecated: false
     description: Closes an existing issue.
+    execution: false
     name: GitHub-close-issue
     outputs:
     - contextPath: GitHub.Issue.ID
@@ -157,26 +178,49 @@ script:
       description: The repository organization.
       type: String
   - arguments:
-    - description: The number of the issue to update.
+    - default: false
+      description: The number of the issue to update.
+      isArray: false
       name: ID
       required: true
-    - description: The title of the issue.
+      secret: false
+    - default: false
+      description: The title of the issue.
+      isArray: false
       name: title
-    - description: The contents of the issue.
+      required: false
+      secret: false
+    - default: false
+      description: The contents of the issue.
+      isArray: false
       name: body
-    - description: State of the issue. Either open or closed.
+      required: false
+      secret: false
+    - default: false
+      description: State of the issue. Either open or closed.
+      isArray: false
       name: state
-    - description: 'Labels to apply to this issue. Pass one or more Labels to replace
+      required: false
+      secret: false
+    - default: false
+      description: 'Labels to apply to this issue. Pass one or more Labels to replace
         the set of Labels on this Issue. Send an empty array ([]) to clear all Labels
         from the Issue. '
       isArray: true
       name: labels
-    - description: Logins for Users to assign to this issue. Pass one or more user
+      required: false
+      secret: false
+    - default: false
+      description: Logins for Users to assign to this issue. Pass one or more user
         logins to replace the set of assignees on this Issue. Send an empty array
         ([]) to clear all assignees from the Issue.
       isArray: true
       name: assignees
+      required: false
+      secret: false
+    deprecated: false
     description: Updates the parameters of a specified issue.
+    execution: false
     name: GitHub-update-issue
     outputs:
     - contextPath: GitHub.Issue.ID
@@ -217,19 +261,28 @@ script:
       type: String
   - arguments:
     - auto: PREDEFINED
+      default: false
       defaultValue: open
       description: The state of the issues to return. Can be 'open', 'closed' or 'all'.
         Default is 'open'
+      isArray: false
       name: state
       predefined:
       - open
       - closed
       - all
       required: true
-    - defaultValue: '50'
+      secret: false
+    - default: false
+      defaultValue: '50'
       description: The number of issues to return. Default is 50. Maximum is 100.
+      isArray: false
       name: limit
+      required: false
+      secret: false
+    deprecated: false
     description: Lists all issues that the user has access to view.
+    execution: false
     name: GitHub-list-all-issues
     outputs:
     - contextPath: GitHub.Issue.ID
@@ -269,17 +322,34 @@ script:
       description: The repository organization.
       type: String
   - arguments:
-    - description: The query line for the search. For more information see the GitHub
+    - default: false
+      description: The query line for the search. For more information see the GitHub
         documentation at https://docs.github.com/en/github/searching-for-information-on-github/searching-code
+      isArray: false
       name: query
       required: true
-    - description: The page number.
+      secret: false
+    - default: false
+      description: The page number.
+      isArray: false
       name: page_number
-    - description: The size of the requested page. Maximum is 100.
+      required: false
+      secret: false
+    - default: false
+      description: The size of the requested page. Maximum is 100.
+      isArray: false
       name: page_size
-    - description: The number of results to return. Default is 50.
+      required: false
+      secret: false
+    - default: false
+      description: The number of results to return. Default is 50.
+      isArray: false
       name: limit
+      required: false
+      secret: false
+    deprecated: false
     description: Searches for code in repositories that match a given query.
+    execution: false
     name: GitHub-search-code
     outputs:
     - contextPath: GitHub.CodeSearchResults.name
@@ -316,14 +386,23 @@ script:
       description: The url to the commits of the repository.
       type: String
   - arguments:
-    - description: The query line for the search. For more information see the GitHub
+    - default: false
+      description: The query line for the search. For more information see the GitHub
         documentation at https://help.github.com/en/articles/searching-issues-and-pull-requests.
+      isArray: false
       name: query
       required: true
-    - defaultValue: '50'
+      secret: false
+    - default: false
+      defaultValue: '50'
       description: The number of issues to return. Default is 50. Maximum is 100.
+      isArray: false
       name: limit
+      required: false
+      secret: false
+    deprecated: false
     description: Searches for and returns issues that match a given query.
+    execution: false
     name: GitHub-search-issues
     outputs:
     - contextPath: GitHub.Issue.ID
@@ -362,9 +441,10 @@ script:
     - contextPath: GitHub.Issue.Organization
       description: The repository organization.
       type: String
-  - arguments: []
+  - deprecated: false
     description: Returns the total number of downloads for all releases for the specified
       repository.
+    execution: false
     name: GitHub-get-download-count
     outputs:
     - contextPath: GitHub.Release.ID
@@ -389,11 +469,19 @@ script:
     - default: true
       defaultValue: 3 days
       description: Time of inactivity after which a PR is considered stale
+      isArray: false
       name: stale_time
       required: true
-    - description: The label used to identify PRs of interest
+      secret: false
+    - default: false
+      description: The label used to identify PRs of interest
+      isArray: false
       name: label
+      required: false
+      secret: false
+    deprecated: false
     description: Get inactive pull requests
+    execution: false
     name: GitHub-get-stale-prs
     outputs:
     - contextPath: GitHub.PR.URL
@@ -406,10 +494,15 @@ script:
       description: A list of the PR's requested reviewers
       type: Unknown
   - arguments:
-    - description: The name of the branch to retrieve
+    - default: false
+      description: The name of the branch to retrieve
+      isArray: false
       name: branch_name
       required: true
+      secret: false
+    deprecated: false
     description: Get a branch
+    execution: false
     name: GitHub-get-branch
     outputs:
     - contextPath: GitHub.Branch.Name
@@ -434,24 +527,40 @@ script:
       description: Whether the branch is a protected one or not
       type: Boolean
   - arguments:
-    - description: The name for the new branch
+    - default: false
+      description: The name for the new branch
+      isArray: false
       name: branch_name
       required: true
-    - description: The SHA hash of the commit to reference. Try executing the 'GitHub-get-branch'
+      secret: false
+    - default: false
+      description: The SHA hash of the commit to reference. Try executing the 'GitHub-get-branch'
         command to find a commit SHA hash to reference.
+      isArray: false
       name: commit_sha
       required: true
+      secret: false
+    deprecated: false
     description: Create a new branch
+    execution: false
     name: GitHub-create-branch
   - arguments:
-    - description: The ID number by which the team is identified. Try executing the
+    - default: false
+      description: The ID number by which the team is identified. Try executing the
         'GitHub-list-teams' command to find team IDs to reference.
+      isArray: false
       name: team_id
       required: true
-    - description: The login of the user whose membership you wish to check
+      secret: false
+    - default: false
+      description: The login of the user whose membership you wish to check
+      isArray: false
       name: user_name
       required: true
+      secret: false
+    deprecated: false
     description: Retrieve a user's membership status with a team
+    execution: false
     name: GitHub-get-team-membership
     outputs:
     - contextPath: GitHub.Team.Member.Role
@@ -467,14 +576,21 @@ script:
       description: The login of the team member
       type: String
   - arguments:
-    - description: The number of the Pull Request for which you wish to request review
+    - default: false
+      description: The number of the Pull Request for which you wish to request review
+      isArray: false
       name: pull_number
       required: true
-    - description: A CSV list of GitHub users to request review from for a Pull Request
+      secret: false
+    - default: false
+      description: A CSV list of GitHub users to request review from for a Pull Request
       isArray: true
       name: reviewers
       required: true
+      secret: false
+    deprecated: false
     description: Request reviews from GitHub users for a given Pull Request
+    execution: false
     name: GitHub-request-review
     outputs:
     - contextPath: GitHub.PR.Number
@@ -496,13 +612,21 @@ script:
       description: Whether the user requested for review is a site admin or not
       type: Boolean
   - arguments:
-    - description: The number of the issue to comment on
+    - default: false
+      description: The number of the issue to comment on
+      isArray: false
       name: issue_number
       required: true
-    - description: The contents of the comment
+      secret: false
+    - default: false
+      description: The contents of the comment
+      isArray: false
       name: body
       required: true
+      secret: false
+    deprecated: false
     description: Create a comment for a given issue
+    execution: false
     name: GitHub-create-comment
     outputs:
     - contextPath: GitHub.Comment.IssueNumber
@@ -533,10 +657,15 @@ script:
       description: Whether the user who commented is a site admin or not
       type: Boolean
   - arguments:
-    - description: The number of the issue to list comments for
+    - default: false
+      description: The number of the issue to list comments for
+      isArray: false
       name: issue_number
       required: true
+      secret: false
+    deprecated: false
     description: List comments on an issue
+    execution: false
     name: GitHub-list-issue-comments
     outputs:
     - contextPath: GitHub.Comment.IssueNumber
@@ -567,14 +696,27 @@ script:
       description: Whether the user who commented is a site admin or not
       type: Boolean
   - arguments:
-    - description: The number of the pull request.
+    - default: false
+      description: The number of the pull request.
+      isArray: false
       name: pull_number
       required: true
-    - description: The name of the organization.
+      secret: false
+    - default: false
+      description: The name of the organization.
+      isArray: false
       name: organization
-    - description: The repository of the pull request.
+      required: false
+      secret: false
+    - default: false
+      description: The repository of the pull request.
+      isArray: false
       name: repository
+      required: false
+      secret: false
+    deprecated: false
     description: Lists the pull request files.
+    execution: false
     name: GitHub-list-pr-files
     outputs:
     - contextPath: GitHub.PR.Number
@@ -599,10 +741,15 @@ script:
       description: The number of changes made in the file.
       type: Number
   - arguments:
-    - description: The number of the pull request
+    - default: false
+      description: The number of the pull request
+      isArray: false
       name: pull_number
       required: true
+      secret: false
+    deprecated: false
     description: List reviews on a pull request
+    execution: false
     name: GitHub-list-pr-reviews
     outputs:
     - contextPath: GitHub.PR.Number
@@ -639,11 +786,16 @@ script:
       description: Whether the reviewer is a site admin or not
       type: Boolean
   - arguments:
-    - description: The SHA hash of the commit. Try executing the 'GitHub-get-branch'
+    - default: false
+      description: The SHA hash of the commit. Try executing the 'GitHub-get-branch'
         command to find a commit SHA hash to reference.
+      isArray: false
       name: commit_sha
       required: true
+      secret: false
+    deprecated: false
     description: Get a commit
+    execution: false
     name: GitHub-get-commit
     outputs:
     - contextPath: GitHub.Commit.SHA
@@ -689,24 +841,44 @@ script:
       description: The commit verification payload
       type: Unknown
   - arguments:
-    - description: The number of the issue to add labels to
+    - default: false
+      description: The number of the issue to add labels to
+      isArray: false
       name: issue_number
       required: true
-    - description: A CSV list of labels to add to an issue
+      secret: false
+    - default: false
+      description: A CSV list of labels to add to an issue
       isArray: true
       name: labels
       required: true
+      secret: false
+    deprecated: false
     description: Add labels to an issue
+    execution: false
     name: GitHub-add-label
   - arguments:
-    - description: The number of the pull request to retrieve
+    - default: false
+      description: The number of the pull request to retrieve
+      isArray: false
       name: pull_number
       required: true
-    - description: The name of the organization.
+      secret: false
+    - default: false
+      description: The name of the organization.
+      isArray: false
       name: organization
-    - description: The repository of the pull request.
+      required: false
+      secret: false
+    - default: false
+      description: The repository of the pull request.
+      isArray: false
       name: repository
+      required: false
+      secret: false
+    deprecated: false
     description: Get a pull request
+    execution: false
     name: GitHub-get-pull-request
     outputs:
     - contextPath: GitHub.PR.ID
@@ -1249,11 +1421,16 @@ script:
       description: The number of changed files in the pull request
       type: Number
   - arguments:
-    - description: The name of the organization
+    - default: false
+      description: The name of the organization
+      isArray: false
       name: organization
       required: true
+      secret: false
+    deprecated: false
     description: List the teams for an organization. Note that this API call is only
       available to authenticated members of the organization.
+    execution: false
     name: GitHub-list-teams
     outputs:
     - contextPath: GitHub.Team.ID
@@ -1281,16 +1458,26 @@ script:
       description: The parent of the team
       type: Unknown
   - arguments:
-    - description: The name of the branch to delete
+    - default: false
+      description: The name of the branch to delete
+      isArray: false
       name: branch_name
       required: true
+      secret: false
+    deprecated: false
     description: Delete a branch
+    execution: false
     name: GitHub-delete-branch
   - arguments:
-    - description: The issue number of the pull request.
+    - default: false
+      description: The issue number of the pull request.
+      isArray: false
       name: pull_number
       required: true
+      secret: false
+    deprecated: false
     description: Lists all the review comments for a pull request.
+    execution: false
     name: GitHub-list-pr-review-comments
     outputs:
     - contextPath: GitHub.PR.Number
@@ -1357,30 +1544,55 @@ script:
       description: The association of the user who created the review comment.
       type: String
   - arguments:
-    - description: The new title of the pull request.
+    - default: false
+      description: The new title of the pull request.
+      isArray: false
       name: title
-    - description: The new body content of the pull request.
+      required: false
+      secret: false
+    - default: false
+      description: The new body content of the pull request.
+      isArray: false
       name: body
+      required: false
+      secret: false
     - auto: PREDEFINED
+      default: false
       description: The new state of the pull request. Can be "open", or "closed".
+      isArray: false
       name: state
       predefined:
       - open
       - closed
-    - description: The name of the branch that you want your changes pulled, which
+      required: false
+      secret: false
+    - default: false
+      description: The name of the branch that you want your changes pulled, which
         must be an existing branch in the current repository. You cannot update the
         base branch in a pull request to point to another repository.
+      isArray: false
       name: base
+      required: false
+      secret: false
     - auto: PREDEFINED
+      default: false
       description: Indicates whether maintainers can modify the pull request.
+      isArray: false
       name: maintainer_can_modify
       predefined:
       - 'true'
       - 'false'
-    - description: The issue number of the pull request for which to modify.
+      required: false
+      secret: false
+    - default: false
+      description: The issue number of the pull request for which to modify.
+      isArray: false
       name: pull_number
       required: true
+      secret: false
+    deprecated: false
     description: Updates a pull request in a repository.
+    execution: false
     name: GitHub-update-pull-request
     outputs:
     - contextPath: GitHub.PR.ID
@@ -1902,40 +2114,68 @@ script:
       description: The number of changed files in the pull request.
       type: Number
   - arguments:
-    - description: The issue number of the pull request to check.
+    - default: false
+      description: The issue number of the pull request to check.
+      isArray: false
       name: pull_number
       required: true
-    description: "Returns a merged pull request. If the pull request has been merged,\
-      \ the API returns 'Status: 204 No Content'. If the pull request has not been\
-      \ merged the API returns 'Status: 404 Not Found'"
+      secret: false
+    deprecated: false
+    description: 'Returns a merged pull request. If the pull request has been merged,
+      the API returns ''Status: 204 No Content''. If the pull request has not been
+      merged the API returns ''Status: 404 Not Found'''
+    execution: false
     name: GitHub-is-pr-merged
   - arguments:
-    - description: The title of the pull request.
+    - default: false
+      description: The title of the pull request.
+      isArray: false
       name: title
       required: true
-    - description: The name of the branch where the changes are made.
+      secret: false
+    - default: false
+      description: The name of the branch where the changes are made.
+      isArray: false
       name: head
       required: true
-    - description: The name of the branch you want the changes pulled into, which
+      secret: false
+    - default: false
+      description: The name of the branch you want the changes pulled into, which
         must be an existing branch on the current repository.
+      isArray: false
       name: base
       required: true
-    - description: The contents of the pull request.
+      secret: false
+    - default: false
+      description: The contents of the pull request.
+      isArray: false
       name: body
+      required: false
+      secret: false
     - auto: PREDEFINED
+      default: false
       description: Indicates whether maintainers can modify the pull request.
+      isArray: false
       name: maintainer_can_modify
       predefined:
       - 'true'
       - 'false'
+      required: false
+      secret: false
     - auto: PREDEFINED
+      default: false
       description: Indicates whether the pull request is a draft. For more information,
         see https://help.github.com/en/articles/about-pull-requests#draft-pull-requests.
+      isArray: false
       name: draft
       predefined:
       - 'true'
       - 'false'
+      required: false
+      secret: false
+    deprecated: false
     description: Creates a new pull request.
+    execution: false
     name: GitHub-create-pull-request
     outputs:
     - contextPath: GitHub.PR.ID
@@ -2461,11 +2701,16 @@ script:
       description: The number of changed files in the pull request.
       type: Number
   - arguments:
-    - description: The repository owner.
+    - default: false
+      description: The repository owner.
+      isArray: false
       name: owner
       required: true
+      secret: false
+    deprecated: false
     description: Gets the usage details of GitHub action workflows of private repositories,
       by repository owner.
+    execution: false
     name: Github-get-github-actions-usage
     outputs:
     - contextPath: GitHub.ActionsUsage.RepositoryName
@@ -2481,17 +2726,33 @@ script:
       description: GitHub action worflow usage on different OS.
       type: Unknown
   - arguments:
-    - description: Organization or Owner
+    - default: false
+      description: Organization or Owner
+      isArray: false
       name: owner
       required: true
-    - description: Git Repository Name
+      secret: false
+    - default: false
+      description: Git Repository Name
+      isArray: false
       name: repository
       required: true
-    - description: Check Run ID
+      secret: false
+    - default: false
+      description: Check Run ID
+      isArray: false
       name: run_id
-    - description: Head Commit ID
+      required: false
+      secret: false
+    - default: false
+      description: Head Commit ID
+      isArray: false
       name: commit_id
+      required: false
+      secret: false
+    deprecated: false
     description: Get a check run details
+    execution: false
     name: Github-get-check-run
     outputs:
     - contextPath: GitHub.CheckRuns.CheckRunConclusion
@@ -2515,27 +2776,41 @@ script:
   - arguments:
     - default: true
       description: The path of the file.
+      isArray: false
       name: file_path
       required: true
-    - description: The branch name from which to get the file.
+      secret: false
+    - default: false
+      description: The branch name from which to get the file.
+      isArray: false
       name: branch_name
-    - auto: PREDEFINED
+      required: false
+      secret: false
+    - default: false
       defaultValue: raw
       description: 'The media type in which the file contents will be fetched. Possible
         values are: "raw" and "html". Default value is "raw".'
+      isArray: false
       name: media_type
       predefined:
       - raw
       - html
-    - auto: PREDEFINED
+      required: false
+      secret: false
+    - default: false
       defaultValue: 'false'
       description: 'Whether to create a file entry in the War Room with the file contents.
         Possible values are: "true" and "false". Default value is "false".'
+      isArray: false
       name: create_file_from_content
       predefined:
       - 'true'
       - 'false'
+      required: false
+      secret: false
+    deprecated: false
     description: Gets the content of a file from GitHub.
+    execution: false
     name: GitHub-get-file-content
     outputs:
     - contextPath: GitHub.FileContent.Path
@@ -2551,15 +2826,33 @@ script:
       description: The branch from which the file was fetched.
       type: Unknown
   - arguments:
-    - description: The path in the branch to get the files from.
+    - default: false
+      description: The path in the branch to get the files from.
+      isArray: false
       name: path
-    - description: The name of the organization.
+      required: false
+      secret: false
+    - default: false
+      description: The name of the organization.
+      isArray: false
       name: organization
-    - description: The name of the repository.
+      required: false
+      secret: false
+    - default: false
+      description: The name of the repository.
+      isArray: false
       name: repository
-    - description: The branch name from which to get the files.
+      required: false
+      secret: false
+    - default: false
+      description: The branch name from which to get the files.
+      isArray: false
       name: branch
+      required: false
+      secret: false
+    deprecated: false
     description: Get list of files from the given path in the repository.
+    execution: false
     name: Github-list-files
     outputs:
     - contextPath: GitHub.File.Name
@@ -2581,16 +2874,28 @@ script:
       description: The SHA of the file.
       type: String
   - arguments:
-    - description: The name of the organization.
+    - default: false
+      isArray: false
       name: organization
+      description: The name of the organization.
       required: true
-    - description: Team name.
+      secret: false
+    - default: false
+      isArray: false
       name: team_slug
+      description: Team name.
       required: true
-    - defaultValue: '30'
-      description: Miximum number of users to return.
+      secret: false
+    - default: false
+      defaultValue: '30'
+      isArray: false
       name: maximum_users
+      description: Miximum number of users to return.
+      required: false
+      secret: false
+    deprecated: false
     description: List team members
+    execution: false
     name: GitHub-list-team-members
     outputs:
     - contextPath: GitHub.TeamMember.ID
@@ -2603,44 +2908,81 @@ script:
       description: The user's team.
       type: String
   - arguments:
-    - description: Commit message.
+    - default: false
+      description: Commit message.
+      isArray: false
       name: commit_message
       required: true
-    - description: Path to the file in the Github repo (including file name and file
+      secret: false
+    - default: false
+      description: Path to the file in the Github repo (including file name and file
         ending).
+      isArray: false
       name: path_to_file
       required: true
-    - description: Entry ID for the file to commit. Either "entry_id" or "file_text"
-        must be provided.
+      secret: false
+    - default: false
+      description: Entry ID for the file to commit. Either "entry_id" or "file_text" must be provided.
+      isArray: false
       name: entry_id
-    - description: Plain text for the file to commit. Either "entry_id" or "file_text"
-        must be provided.
+      required: false
+      secret: false
+    - default: false
+      description: Plain text for the file to commit. Either "entry_id" or "file_text" must be provided.
+      isArray: false
       name: file_text
-    - description: The branch name.
+      required: false
+      secret: false
+    - default: false
+      description: The branch name.
+      isArray: false
       name: branch_name
       required: true
-    - description: The blob SHA of the file being replaced. Use the Github-list-files
-        command to get the SHA value of the file.  Required if you are updating a
-        file.
+      secret: false
+    - default: false
+      description: The blob SHA of the file being replaced. Use the Github-list-files command
+        to get the SHA value of the file.  Required if you are updating a file. 
+      isArray: false
       name: file_sha
+      required: false
+      secret: false
+    deprecated: false
     description: Commits a given file.
+    execution: false
     name: Github-commit-file
   - arguments:
-    - description: The name of the release.
+    - default: false
+      description: The name of the release.
+      isArray: false
       name: name
-    - description: The name of the release tag.
+      required: false
+      secret: false
+    - default: false
+      description: The name of the release tag.
+      isArray: false
       name: tag_name
       required: true
-    - description: Text describing the contents of the tag.
+      secret: false
+    - default: false
+      description: Text describing the contents of the tag.
+      isArray: false
       name: body
-    - auto: PREDEFINED
-      defaultValue: 'True'
+      required: false
+      secret: false
+    - default: false
       description: Whether to create a draft (unpublished) release.
+      isArray: false
       name: draft
+      required: false
+      secret: false
+      auto: PREDEFINED
       predefined:
       - 'True'
       - 'False'
+      defaultValue: 'True'
+    deprecated: false
     description: Create a release.
+    execution: false
     name: GitHub-create-release
     outputs:
     - contextPath: GitHub.Release.draft
@@ -2656,15 +2998,28 @@ script:
       description: Github API URL link to the release.
       type: String
   - arguments:
-    - description: The branch name from which to retrieve pull requests.
+    - default: false
+      description: The branch name from which to retrieve pull requests.
+      isArray: false
       name: branch_name
       required: true
-    - description: The name of the organization.
+      secret: false
+    - default: false
+      description: The name of the organization.
+      isArray: false
       name: organization
-    - description: The repository for the pull request. Defaults to the repository
-        parameter if not provided.
+      required: false
+      secret: false
+    - default: false
+      description: The repository for the pull request. Defaults to the repository parameter
+        if not provided.
+      isArray: false
       name: repository
+      required: false
+      secret: false
+    deprecated: false
     description: Get pull requests corresponding to the given branch name.
+    execution: false
     name: GitHub-list-branch-pull-requests
     outputs:
     - contextPath: GitHub.PR.ID
@@ -3204,10 +3559,15 @@ script:
       description: The number of changed files in the pull request
       type: Number
   - arguments:
-    - description: The issue number for which to retrieve events.
+    - default: false
+      description: The issue number for which to retrieve events.
+      isArray: false
       name: issue_number
       required: true
+      secret: false
+    deprecated: false
     description: Returns events corresponding to the given issue.
+    execution: false
     name: Github-list-issue-events
     outputs:
     - contextPath: GitHub.IssueEvent.id
