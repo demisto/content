@@ -1307,7 +1307,9 @@ def is_tag_list_valid(tag_ids):
     """checks if all the tag ids are valid"""
     for tag in tag_ids:
         try:
-            int(tag)
+            tag = int(tag)
+            if tag <= 0:
+                raise DemistoException(f"Tag id has to be an integer, please change the given: '{tag}' id.")
         except ValueError:
             raise DemistoException(f"Tag id has to be an integer, please change the given: '{tag}' id.")
 

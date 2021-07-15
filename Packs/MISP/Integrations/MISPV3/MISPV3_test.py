@@ -263,7 +263,7 @@ def test_is_tag_list_invalid(mocker):
     mock_misp(mocker)
     from MISPV3 import is_tag_list_valid
     with pytest.raises(DemistoException) as e:
-        is_tag_list_valid(["abc", 100, "200"])
+        is_tag_list_valid(["abc", 100, "200", -1, '0'])
         if not e:
             assert False
 
