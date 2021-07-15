@@ -19,7 +19,7 @@ class TestHelperFunctions:
         with open('ExportIndicators_test/TestHelperFunctions/iocs_cache_values_text.json', 'r') as iocs_text_values_f:
             iocs_text_dict = json.loads(iocs_text_values_f.read())
             mocker.patch.object(demisto, 'getIntegrationContext', return_value={"last_output": iocs_text_dict})
-            request_args = RequestArguments(query='', out_format='text', limit=50, offset=0)
+            request_args = RequestArguments(query='', out_format='text', param_limit=10000, limit=50, offset=0)
             ioc_list = get_outbound_ioc_values(
                 on_demand=True,
                 request_args=request_args
@@ -38,7 +38,7 @@ class TestHelperFunctions:
             mocker.patch.object(demisto, 'getIntegrationContext', return_value={"last_output": iocs_text_dict})
             mocker.patch.object(ei, 'refresh_outbound_context', return_value=iocs_text_dict)
             mocker.patch.object(demisto, 'getLastRun', return_value={'last_run': 1578383898000})
-            request_args = ei.RequestArguments(query='', out_format='text', limit=50, offset=0)
+            request_args = ei.RequestArguments(query='', out_format='text', param_limit=10000, limit=50, offset=0)
             ioc_list = ei.get_outbound_ioc_values(
                 on_demand=False,
                 request_args=request_args,
@@ -58,7 +58,7 @@ class TestHelperFunctions:
             mocker.patch.object(demisto, 'getIntegrationContext', return_value={"last_output": iocs_text_dict})
             mocker.patch.object(ei, 'refresh_outbound_context', return_value=iocs_text_dict)
             mocker.patch.object(demisto, 'getLastRun', return_value={'last_run': 1578383898000})
-            request_args = ei.RequestArguments(query='', out_format='text', limit=50, offset=0)
+            request_args = ei.RequestArguments(query='', out_format='text', param_limit=10000, limit=50, offset=0)
             ioc_list = ei.get_outbound_ioc_values(
                 on_demand=False,
                 request_args=request_args,
@@ -81,7 +81,8 @@ class TestHelperFunctions:
                                                                                 "last_format": "text"})
             mocker.patch.object(ei, 'refresh_outbound_context', return_value=iocs_text_dict)
             mocker.patch.object(demisto, 'getLastRun', return_value={'last_run': 1578383898000})
-            request_args = ei.RequestArguments(query='type:ip', out_format='text', limit=50, offset=0)
+            request_args = ei.RequestArguments(query='type:ip', out_format='text', param_limit=10000, limit=50,
+                                               offset=0)
             ioc_list = ei.get_outbound_ioc_values(
                 on_demand=False,
                 request_args=request_args,
@@ -104,7 +105,8 @@ class TestHelperFunctions:
                                                                                 "last_format": "text"})
             mocker.patch.object(ei, 'refresh_outbound_context', return_value=iocs_text_dict)
             mocker.patch.object(demisto, 'getLastRun', return_value={'last_run': 1578383898000})
-            request_args = ei.RequestArguments(query='type:ip', out_format='text', limit=50, offset=0)
+            request_args = ei.RequestArguments(query='type:ip', out_format='text', param_limit=10000, limit=50,
+                                               offset=0)
             ioc_list = ei.get_outbound_ioc_values(
                 on_demand=False,
                 request_args=request_args,
@@ -127,7 +129,8 @@ class TestHelperFunctions:
                                                                                 "last_format": "text"})
             mocker.patch.object(ei, 'refresh_outbound_context', return_value=iocs_text_dict)
             mocker.patch.object(demisto, 'getLastRun', return_value={'last_run': 1578383898000})
-            request_args = ei.RequestArguments(query='type:ip', out_format='text', limit=50, offset=0)
+            request_args = ei.RequestArguments(query='type:ip', out_format='text', param_limit=10000, limit=50,
+                                               offset=0)
             ioc_list = ei.get_outbound_ioc_values(
                 on_demand=False,
                 request_args=request_args,
@@ -196,7 +199,7 @@ class TestHelperFunctions:
         with open('ExportIndicators_test/TestHelperFunctions/demisto_iocs.json', 'r') as iocs_json_f:
             iocs_json = json.loads(iocs_json_f.read())
             mocker.patch.object(ei, 'find_indicators_with_limit', return_value=iocs_json)
-            request_args = ei.RequestArguments(query='', out_format='text', limit=38)
+            request_args = ei.RequestArguments(query='', out_format='text', param_limit=10000, limit=38)
             ei_vals = ei.refresh_outbound_context(request_args)
             for ioc in iocs_json:
                 ip = ioc.get('value')
@@ -210,7 +213,7 @@ class TestHelperFunctions:
         with open('ExportIndicators_test/TestHelperFunctions/demisto_iocs.json', 'r') as iocs_json_f:
             iocs_json = json.loads(iocs_json_f.read())
             mocker.patch.object(ei, 'find_indicators_with_limit', return_value=iocs_json)
-            request_args = ei.RequestArguments(query='', out_format='XSOAR json', limit=38)
+            request_args = ei.RequestArguments(query='', out_format='XSOAR json', param_limit=10000, limit=38)
             ei_vals = ei.refresh_outbound_context(request_args)
             assert isinstance(ei_vals, str)
             ei_vals = json.loads(ei_vals)
@@ -223,7 +226,7 @@ class TestHelperFunctions:
         with open('ExportIndicators_test/TestHelperFunctions/demisto_iocs.json', 'r') as iocs_json_f:
             iocs_json = json.loads(iocs_json_f.read())
             mocker.patch.object(ei, 'find_indicators_with_limit', return_value=iocs_json)
-            request_args = ei.RequestArguments(query='', out_format='XSOAR csv', limit=38)
+            request_args = ei.RequestArguments(query='', out_format='XSOAR csv', param_limit=10000, limit=38)
             ei_vals = ei.refresh_outbound_context(request_args)
             with open('ExportIndicators_test/TestHelperFunctions/iocs_out_csv.txt', 'r') as iocs_out_f:
                 iocs_out = iocs_out_f.read()
@@ -237,7 +240,7 @@ class TestHelperFunctions:
         with open('ExportIndicators_test/TestHelperFunctions/demisto_iocs.json', 'r') as iocs_json_f:
             iocs_json = json.loads(iocs_json_f.read())
             mocker.patch.object(ei, 'find_indicators_with_limit', return_value=iocs_json)
-            request_args = ei.RequestArguments(query='', out_format='XSOAR json-seq', limit=38)
+            request_args = ei.RequestArguments(query='', out_format='XSOAR json-seq', param_limit=10000, limit=38)
             ei_vals = ei.refresh_outbound_context(request_args)
             with open('ExportIndicators_test/TestHelperFunctions/iocs_out_json_seq.txt', 'r') as iocs_out_f:
                 iocs_out = iocs_out_f.read()
@@ -250,7 +253,7 @@ class TestHelperFunctions:
         with open('ExportIndicators_test/TestHelperFunctions/demisto_url_iocs.json', 'r') as iocs_json_f:
             iocs_json = json.loads(iocs_json_f.read())
             mocker.patch.object(ei, 'find_indicators_with_limit', return_value=iocs_json)
-            request_args = ei.RequestArguments(query='', out_format='json', limit=2)
+            request_args = ei.RequestArguments(query='', out_format='json', param_limit=10000, limit=2)
             ei_vals = ei.refresh_outbound_context(request_args)
             ei_vals = json.loads(ei_vals)
             with open('ExportIndicators_test/TestHelperFunctions/iocs_out_json.json', 'r') as iocs_json_out_f:
@@ -264,7 +267,7 @@ class TestHelperFunctions:
         with open('ExportIndicators_test/TestHelperFunctions/demisto_iocs.json', 'r') as iocs_json_f:
             iocs_json = json.loads(iocs_json_f.read())
             mocker.patch.object(ei, 'find_indicators_with_limit', return_value=iocs_json)
-            request_args = ei.RequestArguments(query='', out_format='json-seq', limit=38)
+            request_args = ei.RequestArguments(query='', out_format='json-seq', param_limit=10000, limit=1)
             ei_vals = ei.refresh_outbound_context(request_args)
             with open('ExportIndicators_test/TestHelperFunctions/iocs_out_json_seq_old.txt', 'r') as iocs_out_f:
                 iocs_out = iocs_out_f.read()
@@ -278,7 +281,7 @@ class TestHelperFunctions:
         with open('ExportIndicators_test/TestHelperFunctions/demisto_iocs.json', 'r') as iocs_json_f:
             iocs_json = json.loads(iocs_json_f.read())
             mocker.patch.object(ei, 'find_indicators_with_limit', return_value=iocs_json)
-            request_args = ei.RequestArguments(query='', out_format='csv', limit=38)
+            request_args = ei.RequestArguments(query='', out_format='csv', param_limit=10000, limit=38)
             ei_vals = ei.refresh_outbound_context(request_args)
             with open('ExportIndicators_test/TestHelperFunctions/iocs_out_csv_old.txt', 'r') as iocs_out_f:
                 iocs_out = iocs_out_f.read()
@@ -340,7 +343,7 @@ class TestHelperFunctions:
         from ExportIndicators import create_values_for_returned_dict, FORMAT_XSOAR_CSV, RequestArguments, CTX_VALUES_KEY
         with open('ExportIndicators_test/TestHelperFunctions/demisto_iocs.json', 'r') as iocs_json_f:
             iocs_json = json.loads(iocs_json_f.read())
-            request_args = RequestArguments(query='', out_format=FORMAT_XSOAR_CSV)
+            request_args = RequestArguments(query='', out_format=FORMAT_XSOAR_CSV, param_limit=10000, limit=10)
             returned_dict, _ = create_values_for_returned_dict(iocs_json, request_args)
             csv_out = returned_dict.get(CTX_VALUES_KEY)
             # assert len(csv_out) == IOC_RES_LEN + 1
@@ -355,7 +358,7 @@ class TestHelperFunctions:
         from ExportIndicators import create_values_for_returned_dict, FORMAT_XSOAR_JSON, CTX_VALUES_KEY, RequestArguments
         with open('ExportIndicators_test/TestHelperFunctions/demisto_iocs.json', 'r') as iocs_json_f:
             iocs_json = json.load(iocs_json_f)
-            request_args = RequestArguments(query='', out_format=FORMAT_XSOAR_JSON)
+            request_args = RequestArguments(query='', out_format=FORMAT_XSOAR_JSON, param_limit=10000, limit=10)
             returned_dict, _ = create_values_for_returned_dict(iocs_json, request_args)
             json_out = json.loads(returned_dict.get(CTX_VALUES_KEY))
             assert json_out == iocs_json
@@ -366,7 +369,7 @@ class TestHelperFunctions:
         from ExportIndicators import create_values_for_returned_dict, FORMAT_XSOAR_JSON_SEQ, CTX_VALUES_KEY, RequestArguments
         with open('ExportIndicators_test/TestHelperFunctions/demisto_iocs.json', 'r') as iocs_json_f:
             iocs_json = json.loads(iocs_json_f.read())
-            request_args = RequestArguments(query='', out_format=FORMAT_XSOAR_JSON_SEQ)
+            request_args = RequestArguments(query='', out_format=FORMAT_XSOAR_JSON_SEQ, param_limit=10000, limit=10)
             returned_dict, _ = create_values_for_returned_dict(iocs_json, request_args)
             json_seq_out = returned_dict.get(CTX_VALUES_KEY)
             for seq_line in json_seq_out.split('\n'):
@@ -378,7 +381,7 @@ class TestHelperFunctions:
         from ExportIndicators import create_values_for_returned_dict, FORMAT_TEXT, CTX_VALUES_KEY, RequestArguments
         with open('ExportIndicators_test/TestHelperFunctions/demisto_iocs.json', 'r') as iocs_json_f:
             iocs_json = json.loads(iocs_json_f.read())
-            request_args = RequestArguments(query='', out_format=FORMAT_TEXT)
+            request_args = RequestArguments(query='', out_format=FORMAT_TEXT, param_limit=10000, limit=10)
             returned_dict, _ = create_values_for_returned_dict(iocs_json, request_args)
             text_out = returned_dict.get(CTX_VALUES_KEY)
             with open('ExportIndicators_test/TestHelperFunctions/iocs_cache_values_text.json', 'r') as iocs_txt_f:
@@ -392,7 +395,7 @@ class TestHelperFunctions:
         from ExportIndicators import create_values_for_returned_dict, FORMAT_JSON, CTX_VALUES_KEY, RequestArguments
         with open('ExportIndicators_test/TestHelperFunctions/demisto_url_iocs.json', 'r') as iocs_json_f:
             iocs_json = json.loads(iocs_json_f.read())
-            request_args = RequestArguments(query='', out_format=FORMAT_JSON)
+            request_args = RequestArguments(query='', out_format=FORMAT_JSON, param_limit=10000, limit=10)
             returned_dict, _ = create_values_for_returned_dict(iocs_json, request_args)
             json_out = json.loads(returned_dict.get(CTX_VALUES_KEY))
             with open('ExportIndicators_test/TestHelperFunctions/iocs_out_json.json', 'r') as iocs_json_out_f:
@@ -405,7 +408,7 @@ class TestHelperFunctions:
         from ExportIndicators import create_values_for_returned_dict, FORMAT_JSON_SEQ, CTX_VALUES_KEY, RequestArguments
         with open('ExportIndicators_test/TestHelperFunctions/demisto_url_iocs.json', 'r') as iocs_json_f:
             iocs_json = json.loads(iocs_json_f.read())
-            request_args = RequestArguments(query='', out_format=FORMAT_JSON_SEQ)
+            request_args = RequestArguments(query='', out_format=FORMAT_JSON_SEQ, param_limit=10000, limit=10)
             returned_dict, _ = create_values_for_returned_dict(iocs_json, request_args)
             json_seq_out = returned_dict.get(CTX_VALUES_KEY)
             with open('ExportIndicators_test/TestHelperFunctions/iocs_out_json.json', 'r') as iocs_json_out_f:
@@ -419,7 +422,7 @@ class TestHelperFunctions:
         from ExportIndicators import create_values_for_returned_dict, FORMAT_CSV, RequestArguments, CTX_VALUES_KEY
         with open('ExportIndicators_test/TestHelperFunctions/demisto_iocs.json', 'r') as iocs_json_f:
             iocs_json = json.loads(iocs_json_f.read())
-            request_args = RequestArguments(query='', out_format=FORMAT_CSV)
+            request_args = RequestArguments(query='', out_format=FORMAT_CSV, param_limit=10000, limit=10)
             returned_dict, _ = create_values_for_returned_dict(iocs_json, request_args)
             csv_out = returned_dict.get(CTX_VALUES_KEY)
             # assert len(csv_out) == IOC_RES_LEN + 1
@@ -594,7 +597,7 @@ class TestHelperFunctions:
             iocs_json = json.loads(iocs_json_f.read())
             mocker.patch.object(ei, 'find_indicators_with_limit', return_value=iocs_json)
             request_args = RequestArguments(query='', out_format='text', sort_field=sort_field, sort_order=sort_order,
-                                            limit=10)
+                                            param_limit=10000, limit=10)
             ei_vals = refresh_outbound_context(request_args)
 
             assert ei_vals.split('\n', 1)[0] == expected_first_result
@@ -606,7 +609,8 @@ class TestHelperFunctions:
         with open('ExportIndicators_test/TestHelperFunctions/demisto_iocs.json', 'r') as iocs_json_f:
             iocs_json = json.loads(iocs_json_f.read())
             mocker.patch.object(ei, 'find_indicators_with_limit', return_value=iocs_json)
-            request_args = RequestArguments(query='', out_format='text', sort_field='lastSeen', sort_order='invalid_sort_order')
+            request_args = RequestArguments(query='', out_format='text', sort_field='lastSeen',
+                                            sort_order='invalid_sort_order', param_limit=10000, limit=10)
             ei_vals = refresh_outbound_context(request_args)
 
             assert ei_vals.split('\n', 1)[0] == '213.182.138.224'
@@ -618,7 +622,8 @@ class TestHelperFunctions:
         with open('ExportIndicators_test/TestHelperFunctions/demisto_iocs.json', 'r') as iocs_json_f:
             iocs_json = json.loads(iocs_json_f.read())
             mocker.patch.object(ei, 'find_indicators_with_limit', return_value=iocs_json)
-            request_args = RequestArguments(query='', out_format='text', sort_field='invalid_field_name', sort_order='asc')
+            request_args = RequestArguments(query='', out_format='text', sort_field='invalid_field_name',
+                                            sort_order='asc', param_limit=10000, limit=10)
             mocker.patch.object(demisto, 'debug')
             refresh_outbound_context(request_args)
 

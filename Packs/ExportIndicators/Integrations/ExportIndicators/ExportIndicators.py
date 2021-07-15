@@ -189,8 +189,7 @@ def refresh_outbound_context(request_args: RequestArguments, on_demand: bool = F
     # changes will apply not only on the limited pulled indicators, but the integration parameter limit
     iocs = find_indicators_with_limit(request_args.query, request_args.param_limit, request_args.offset)
     iocs = sort_iocs(request_args, iocs)
-    # trimming the sorted indicators to the limit, if applicable.
-    iocs = iocs[:request_args.limit-1]
+
     out_dict, actual_indicator_amount = create_values_for_returned_dict(iocs, request_args)
 
     # if in CSV format - the "indicator" header
@@ -255,6 +254,7 @@ def refresh_outbound_context(request_args: RequestArguments, on_demand: bool = F
             'sort_field': request_args.sort_field,
             'sort_order': request_args.sort_order,
         })
+
     return out_dict[CTX_VALUES_KEY]
 
 
