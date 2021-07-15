@@ -2,8 +2,8 @@
 
 echo "start slack notifier"
 
-[ -n "${NIGHTLY}" ] && IS_NIGHTLY=true || IS_NIGHTLY=false
-[ -n "${BUCKET_UPLOAD}" ] && IS_BUCKET_UPLOAD=true || IS_BUCKET_UPLOAD=false
+#[ -n "${NIGHTLY}" ] && IS_NIGHTLY=true || IS_NIGHTLY=false
+#[ -n "${BUCKET_UPLOAD}" ] && IS_BUCKET_UPLOAD=true || IS_BUCKET_UPLOAD=false
 
 # $1 = test_type - unittests | test_playbooks | sdk_unittests | sdk_failed_steps | bucket_upload |
 # $2 = env_results_file_name
