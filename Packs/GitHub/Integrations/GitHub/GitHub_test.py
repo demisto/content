@@ -60,7 +60,7 @@ def mock_http_request(method, url_suffix, params=None, data=None, headers=None, 
 
 SEARCH_CASES = [
     (200, 100),
-    (40, 40)
+    (40, 100)
 ]
 
 LIST_TEAM_MEMBERS_CASES = [
