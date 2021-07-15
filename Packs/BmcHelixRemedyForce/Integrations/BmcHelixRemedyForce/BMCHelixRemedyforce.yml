@@ -7,6 +7,11 @@ configuration:
   name: url
   required: true
   type: 0
+- display: Login Endpoint
+  name: auth_url
+  required: true
+  type: 0
+  defaultvalue: https://login.salesforce.com
 - display: Username
   hidden: false
   name: username
