@@ -1,5 +1,6 @@
 import json
 import io
+import demistomock as demisto
 
 
 def util_load_json(path):
@@ -43,3 +44,13 @@ def test_to_context_verbose_true():
     response = to_context(mock_response, True)
     expected = util_load_json('test_data/verbose_true_expected.json')
     assert expected == response
+
+
+def test_handle_stix_types(mocker):
+    from SearchIndicatorRelationships import handle_stix_types
+
+    mocker.patch.object(demisto, 'demistoVersion', return_value={'version': '6.1.0'})
+
+    entity_types = 'STIX Malware,STIX Attack Pattern,STIX Threat Actor,STIX Tool'
+    entity_types = handle_stix_types(entity_types)
+    assert entity_types == 'STIX Malware,STIX Attack Pattern,STIX Threat Actor,STIX Tool'

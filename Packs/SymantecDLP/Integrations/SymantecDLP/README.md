@@ -205,12 +205,6 @@ secondary summary selected are chosen.</li>
 <p>
 <h3>Additional Information</h3>
 <p></p>
-
-<!-- remove the following comments to manually add an image: -->
-<!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- -->
 </p>
 
 <h3>2. symantec-dlp-get-incident-details</h3>
@@ -512,14 +506,6 @@ The value "none" is default.</td>
     </tr>
   </tbody>
 </table>
-<p>
-
-<!-- remove the following comments to manually add an image: -->
-<!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- -->
-</p>
 
 <h3>3. symantec-dlp-update-incident</h3>
 <hr>
@@ -637,14 +623,6 @@ There are no context output for this command.
     </tr>
   </tbody>
 </table>
-<p>
-
-<!-- remove the following comments to manually add an image: -->
-<!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- -->
-</p>
 
 <h3>4. symantec-dlp-incident-binaries</h3>
 <hr>
@@ -793,14 +771,6 @@ incident, might include binary files.</p>
     </tr>
   </tbody>
 </table>
-<p>
-
-<!-- remove the following comments to manually add an image: -->
-<!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- -->
-</p>
 
 <h3>5. symantec-dlp-list-custom-attributes</h3>
 <hr>
@@ -840,14 +810,6 @@ There are no context output for this command.
     </tr>
   </tbody>
 </table>
-<p>
-
-<!-- remove the following comments to manually add an image: -->
-<!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- -->
-</p>
 
 <h3>6. symantec-dlp-list-incident-status</h3>
 <hr>
@@ -887,14 +849,6 @@ There are no context output for this command.
     </tr>
   </tbody>
 </table>
-<p>
-
-<!-- remove the following comments to manually add an image: -->
-<!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- -->
-</p>
 
 <h3>7. symantec-dlp-incident-violations</h3>
 <hr>
@@ -1076,14 +1030,6 @@ There are no context output for this command.
     </tr>
   </tbody>
 </table>
-<p>
-
-<!-- remove the following comments to manually add an image: -->
-<!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- -->
-</p>
 <hr>
 <h2>Troubleshooting</h2>
 <p>If you are encountering issues authenticating the configured API user, you can perform a test that the user you've configured has the proper role by running the following curl command:</p>

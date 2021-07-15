@@ -29,7 +29,3 @@ This playbook does not use any integrations.
 ## Playbook Outputs
 ---
 There are no outputs for this playbook.
-
-## Playbook Image
----
-![ExtraHop - Ticket Tracking](Insert the link to your image here)

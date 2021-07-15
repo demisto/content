@@ -22,7 +22,7 @@ from zipfile import ZipFile, ZIP_DEFLATED
 from typing import Tuple, Any, Union
 
 from Tests.Marketplace.marketplace_constants import PackFolders, Metadata, GCPConfig, BucketUploadFlow, PACKS_FOLDER, \
-    PackTags, PackIgnored
+    PackTags, PackIgnored, Changelog
 import Tests.Marketplace.marketplace_statistics as mp_statistics
 
 from Utils.release_notes_generator import aggregate_release_notes_for_marketplace
@@ -100,6 +100,8 @@ class Pack(object):
         self._keywords = None  # initialized in enhance_pack_attributes function
         self._dependencies = None  # initialized in enhance_pack_attributes function
         self._pack_statistics_handler = None  # initialized in enhance_pack_attributes function
+        self._contains_transformer = False  # initialized in collect_content_items function
+        self._contains_filter = False  # initialized in collect_content_items function
 
     @property
     def name(self):
@@ -445,7 +447,7 @@ class Pack(object):
         for dependency_id, dependency_data in dependencies_data.items():
             parsed_result[dependency_id] = {
                 "mandatory": first_level_dependencies.get(dependency_id, {}).get('mandatory', True),
-                "minVersion": dependency_data.get('currentVersion', Pack.PACK_INITIAL_VERSION),
+                "minVersion": dependency_data.get(Metadata.CURRENT_VERSION, Pack.PACK_INITIAL_VERSION),
                 "author": dependency_data.get('author', ''),
                 "name": dependency_data.get('name') if dependency_data.get('name') else dependency_id,
                 "certification": dependency_data.get('certification', 'certified')
@@ -568,8 +570,8 @@ class Pack(object):
             'authorImage': self._author_image,
             'certification': self._certification,
             'price': self._price,
-            'serverMinVersion': user_metadata.get('serverMinVersion') or self.server_min_version,
-            'currentVersion': user_metadata.get('currentVersion', ''),
+            Metadata.SERVER_MIN_VERSION: user_metadata.get(Metadata.SERVER_MIN_VERSION) or self.server_min_version,
+            Metadata.CURRENT_VERSION: user_metadata.get(Metadata.CURRENT_VERSION, ''),
             'versionInfo': build_number,
             'commit': commit_hash,
             'downloads': self._downloads_count,
@@ -627,6 +629,34 @@ class Pack(object):
 
         return dependencies_data_result
 
+    def _get_updated_changelog_entry(self, changelog: dict, version: str, release_notes: str = None,
+                                     version_display_name: str = None, build_number_with_prefix: str = None,
+                                     released_time: str = None):
+        """
+
+        Args:
+            changelog (dict): The changelog from the production bucket.
+            version (str): The version that is the key in the changelog of the entry wished to be updated.
+            release_notes (str): The release notes lines to update the entry with.
+            version_display_name (str): The version display name to update the entry with.
+            build_number_with_prefix(srt): the build number to modify the entry to, including the prefix R (if present).
+            released_time: The released time to update the entry with.
+
+        """
+        changelog_entry = changelog.get(version)
+        if not changelog_entry:
+            raise Exception('The given version is not a key in the changelog')
+        version_display_name = \
+            version_display_name if version_display_name else changelog_entry[Changelog.DISPLAY_NAME].split('-')[0]
+        build_number_with_prefix = \
+            build_number_with_prefix if build_number_with_prefix else changelog_entry[Changelog.DISPLAY_NAME].split('-')[1]
+
+        changelog_entry[Changelog.RELEASE_NOTES] = release_notes if release_notes else changelog_entry[Changelog.RELEASE_NOTES]
+        changelog_entry[Changelog.DISPLAY_NAME] = f'{version_display_name} - {build_number_with_prefix}'
+        changelog_entry[Changelog.RELEASED] = released_time if released_time else changelog_entry[Changelog.RELEASED]
+
+        return changelog_entry
+
     def _create_changelog_entry(self, release_notes, version_display_name, build_number, pack_was_modified=False,
                                 new_version=True, initial_release=False):
         """ Creates dictionary entry for changelog.
@@ -638,25 +668,24 @@ class Pack(object):
             pack_was_modified (bool): whether the pack was modified.
             new_version (bool): whether the entry is new or not. If not new, R letter will be appended to build number.
             initial_release (bool): whether the entry is an initial release or not.
-
         Returns:
             dict: release notes entry of changelog
 
         """
         if new_version:
-            return {'releaseNotes': release_notes,
-                    'displayName': f'{version_display_name} - {build_number}',
-                    'released': datetime.utcnow().strftime(Metadata.DATE_FORMAT)}
+            return {Changelog.RELEASE_NOTES: release_notes,
+                    Changelog.DISPLAY_NAME: f'{version_display_name} - {build_number}',
+                    Changelog.RELEASED: datetime.utcnow().strftime(Metadata.DATE_FORMAT)}
 
         elif initial_release:
-            return {'releaseNotes': release_notes,
-                    'displayName': f'{version_display_name} - {build_number}',
-                    'released': self._create_date}
+            return {Changelog.RELEASE_NOTES: release_notes,
+                    Changelog.DISPLAY_NAME: f'{version_display_name} - {build_number}',
+                    Changelog.RELEASED: self._create_date}
 
         elif pack_was_modified:
-            return {'releaseNotes': release_notes,
-                    'displayName': f'{version_display_name} - R{build_number}',
-                    'released': datetime.utcnow().strftime(Metadata.DATE_FORMAT)}
+            return {Changelog.RELEASE_NOTES: release_notes,
+                    Changelog.DISPLAY_NAME: f'{version_display_name} - R{build_number}',
+                    Changelog.RELEASED: datetime.utcnow().strftime(Metadata.DATE_FORMAT)}
 
         return {}
 
@@ -898,6 +927,9 @@ class Pack(object):
                         else:
                             logging.debug(f'{modified_file.a_path} is an ignored file')
             task_status = True
+            if pack_was_modified:
+                # Make sure the modification is not only of release notes files, if so count that as not modified
+                pack_was_modified = not all(self.RELEASE_NOTES in path for path in modified_files_paths)
             return
         except Exception:
             logging.exception(f"Failed in detecting modified files of {self._pack_name} pack")
@@ -1066,7 +1098,7 @@ class Pack(object):
 
         return changelog, changelog_latest_rn_version, changelog_latest_rn
 
-    def get_modified_release_notes_lines(self, release_notes_dir: str, changelog_latest_rn_version: LooseVersion,
+    def get_modified_release_notes_lines(self, release_notes_dir: str, new_release_notes_versions: list,
                                          changelog: dict, modified_rn_files: list):
         """
         In the case where an rn file was changed, this function returns the new content
@@ -1079,7 +1111,8 @@ class Pack(object):
 
         Args:
             release_notes_dir (str): the path to the release notes dir
-            changelog_latest_rn_version (LooseVersion): the last version of release notes in the changelog.json file
+            new_release_notes_versions (list): a list of the new versions of release notes in the pack since the
+             last upload. This means they were already handled on this upload run (and aggregated if needed).
             changelog (dict): the changelog from the production bucket.
             modified_rn_files (list): a list of the rn files that were modified according to the last commit in
              'filename.md' format.
@@ -1096,7 +1129,7 @@ class Pack(object):
         for rn_filename in modified_rn_files:
             version = release_notes_file_to_version(rn_filename)
             # Should only apply on modified files that are not the last rn file
-            if LooseVersion(version) >= changelog_latest_rn_version:
+            if version in new_release_notes_versions:
                 continue
             # The case where the version is a key in the changelog file,
             # and the value is not an aggregated release note
@@ -1149,7 +1182,7 @@ class Pack(object):
         return same_block_versions_dict, higher_nearest_version.vstring
 
     def get_release_notes_lines(self, release_notes_dir: str, changelog_latest_rn_version: LooseVersion,
-                                changelog_latest_rn: str) -> Tuple[str, str]:
+                                changelog_latest_rn: str) -> Tuple[str, str, list]:
         """
         Prepares the release notes contents for the new release notes entry
         Args:
@@ -1157,7 +1190,8 @@ class Pack(object):
             changelog_latest_rn_version (LooseVersion): the last version of release notes in the changelog.json file
             changelog_latest_rn (str): the last release notes in the changelog.json file
 
-        Returns: The release notes contents and the latest release notes version (in the release notes directory)
+        Returns: The release notes contents, the latest release notes version (in the release notes directory),
+        and a list of the new rn versions that this is the first time they have been uploaded.
 
         """
         found_versions: list = list()
@@ -1195,8 +1229,9 @@ class Pack(object):
             # We should take the release notes from the index as it has might been aggregated
             logging.info(f'No new RN file was detected for pack {self._pack_name}, taking latest RN from the index')
             release_notes_lines = changelog_latest_rn
+        new_release_notes_versions = list(pack_versions_dict.keys())
 
-        return release_notes_lines, latest_release_notes_version_str
+        return release_notes_lines, latest_release_notes_version_str, new_release_notes_versions
 
     def assert_upload_bucket_version_matches_release_notes_version(self,
                                                                    changelog: dict,
@@ -1268,14 +1303,15 @@ class Pack(object):
 
                 if os.path.exists(release_notes_dir):
                     # Handling latest release notes files
-                    release_notes_lines, latest_release_notes = self.get_release_notes_lines(
-                        release_notes_dir, changelog_latest_rn_version, changelog_latest_rn)
+                    release_notes_lines, latest_release_notes, new_release_notes_versions = \
+                        self.get_release_notes_lines(
+                            release_notes_dir, changelog_latest_rn_version, changelog_latest_rn)
                     self.assert_upload_bucket_version_matches_release_notes_version(changelog, latest_release_notes)
 
                     # Handling modified old release notes files, if there are any
                     rn_files_names = self.get_rn_files_names(modified_files_paths)
                     modified_release_notes_lines_dict = self.get_modified_release_notes_lines(
-                        release_notes_dir, changelog_latest_rn_version, changelog, rn_files_names)
+                        release_notes_dir, new_release_notes_versions, changelog, rn_files_names)
 
                     if self._current_version != latest_release_notes:
                         # TODO Need to implement support for pre-release versions
@@ -1303,15 +1339,11 @@ class Pack(object):
                             changelog[latest_release_notes] = version_changelog
 
                         if modified_release_notes_lines_dict:
-                            logging.info("Creating changelog entries for modified rn")
+                            logging.info("updating changelog entries for modified rn")
                             for version, modified_release_notes_lines in modified_release_notes_lines_dict.items():
-                                changelog_entry = self._create_changelog_entry(
-                                    release_notes=modified_release_notes_lines,
-                                    version_display_name=version,
-                                    build_number=build_number,
-                                    pack_was_modified=True,
-                                    new_version=False)
-                                changelog[version] = changelog_entry
+                                updated_entry = self._get_updated_changelog_entry(
+                                    changelog, version, release_notes=modified_release_notes_lines)
+                                changelog[version] = updated_entry
 
                 else:  # will enter only on initial version and release notes folder still was not created
                     if len(changelog.keys()) > 1 or Pack.PACK_INITIAL_VERSION not in changelog:
@@ -1466,12 +1498,21 @@ class Pack(object):
                     self._server_min_version = get_updated_server_version(self._server_min_version, content_item,
                                                                           self._pack_name)
 
+                    content_item_tags = content_item.get('tags', [])
+
                     if current_directory == PackFolders.SCRIPTS.value:
                         folder_collected_items.append({
                             'name': content_item.get('name', ""),
                             'description': content_item.get('comment', ""),
-                            'tags': content_item.get('tags', [])
+                            'tags': content_item_tags
                         })
+
+                        if not self._contains_transformer and 'transformer' in content_item_tags:
+                            self._contains_transformer = True
+
+                        if not self._contains_filter and 'filter' in content_item_tags:
+                            self._contains_filter = True
+
                     elif current_directory == PackFolders.PLAYBOOKS.value:
                         self.is_feed_pack(content_item, 'Playbook')
                         folder_collected_items.append({
@@ -1579,8 +1620,8 @@ class Pack(object):
                 user_metadata = {} if isinstance(user_metadata, list) else user_metadata
             # store important user metadata fields
             self.support_type = user_metadata.get('support', Metadata.XSOAR_SUPPORT)
-            self.current_version = user_metadata.get('currentVersion', '')
-            self.hidden = user_metadata.get('hidden', False)
+            self.current_version = user_metadata.get(Metadata.CURRENT_VERSION, '')
+            self.hidden = user_metadata.get(Metadata.HIDDEN, False)
             self.description = user_metadata.get('description', False)
             self.display_name = user_metadata.get('name', '')
 
@@ -1596,6 +1637,8 @@ class Pack(object):
         tags |= self._get_tags_from_landing_page(landing_page_sections)
         tags |= {PackTags.TIM} if self._is_feed else set()
         tags |= {PackTags.USE_CASE} if self._use_cases else set()
+        tags |= {PackTags.TRANSFORMER} if self._contains_transformer else set()
+        tags |= {PackTags.FILTER} if self._contains_filter else set()
 
         if self._create_date:
             days_since_creation = (datetime.utcnow() - datetime.strptime(self._create_date, Metadata.DATE_FORMAT)).days

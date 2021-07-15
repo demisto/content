@@ -1,5 +1,4 @@
 import shutil
-from typing import Dict
 
 from CommonServerPython import *
 
@@ -7,10 +6,12 @@ from CommonServerPython import *
 requests.packages.urllib3.disable_warnings()
 
 ''' GLOBALS/PARAMS '''
-URL = demisto.getParam('server')
-TOKEN = demisto.getParam('token')
-USE_SSL = not demisto.params().get('insecure', False)
-FILE_TYPE_SUPPRESS_ERROR = demisto.getParam('suppress_file_type_error')
+PARAMS = demisto.params()
+URL = PARAMS.get('server')
+TOKEN = PARAMS.get('token')
+USE_SSL = not PARAMS.get('insecure', False)
+FILE_TYPE_SUPPRESS_ERROR = PARAMS.get('suppress_file_type_error')
+RELIABILITY = PARAMS.get('integrationReliability', DBotScoreReliability.B) or DBotScoreReliability.B
 DEFAULT_HEADERS = {'Content-Type': 'application/x-www-form-urlencoded'}
 MULTIPART_HEADERS = {'Content-Type': "multipart/form-data; boundary=upload_boundry"}
 
@@ -182,12 +183,14 @@ def create_dbot_score_from_verdict(pretty_verdict):
         {'Indicator': pretty_verdict["SHA256"] if 'SHA256' in pretty_verdict else pretty_verdict["MD5"],
          'Type': 'hash',
          'Vendor': 'WildFire',
-         'Score': VERDICTS_TO_DBOTSCORE[pretty_verdict["Verdict"]]
+         'Score': VERDICTS_TO_DBOTSCORE[pretty_verdict["Verdict"]],
+         'Reliability': RELIABILITY
          },
         {'Indicator': pretty_verdict["SHA256"] if 'SHA256' in pretty_verdict else pretty_verdict["MD5"],
          'Type': 'file',
          'Vendor': 'WildFire',
-         'Score': VERDICTS_TO_DBOTSCORE[pretty_verdict["Verdict"]]
+         'Score': VERDICTS_TO_DBOTSCORE[pretty_verdict["Verdict"]],
+         'Reliability': RELIABILITY
          }
     ]
     return dbot_score
@@ -226,13 +229,15 @@ def create_dbot_score_from_verdicts(pretty_verdicts):
             'Indicator': pretty_verdict["SHA256"] if "SHA256" in pretty_verdict else pretty_verdict["MD5"],
             'Type': 'hash',
             'Vendor': 'WildFire',
-            'Score': VERDICTS_TO_DBOTSCORE[pretty_verdict["Verdict"]]
+            'Score': VERDICTS_TO_DBOTSCORE[pretty_verdict["Verdict"]],
+            'Reliability': RELIABILITY
         }
         dbot_score_type_file = {
             'Indicator': pretty_verdict["SHA256"] if "SHA256" in pretty_verdict else pretty_verdict["MD5"],
             'Type': 'file',
             'Vendor': 'WildFire',
-            'Score': VERDICTS_TO_DBOTSCORE[pretty_verdict["Verdict"]]
+            'Score': VERDICTS_TO_DBOTSCORE[pretty_verdict["Verdict"]],
+            'Reliability': RELIABILITY
         }
         dbot_score_arr.append(dbot_score_type_hash)
         dbot_score_arr.append(dbot_score_type_file)
@@ -664,8 +669,10 @@ def create_file_report(file_hash: str, reports, file_info, format_: str = 'xml',
             }
         else:
             dbot_score_file = 1
-    dbot = [{'Indicator': file_hash, 'Type': 'hash', 'Vendor': 'WildFire', 'Score': dbot_score_file},
-            {'Indicator': file_hash, 'Type': 'file', 'Vendor': 'WildFire', 'Score': dbot_score_file}]
+    dbot = [{'Indicator': file_hash, 'Type': 'hash', 'Vendor': 'WildFire', 'Score': dbot_score_file,
+             'Reliability': RELIABILITY},
+            {'Indicator': file_hash, 'Type': 'file', 'Vendor': 'WildFire', 'Score': dbot_score_file,
+             'Reliability': RELIABILITY}]
     entry_context["DBotScore"] = dbot
 
     if format_ == 'pdf':

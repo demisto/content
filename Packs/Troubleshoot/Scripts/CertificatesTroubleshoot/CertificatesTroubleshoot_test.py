@@ -1,13 +1,19 @@
+import json
+
 from pytest_mock import MockerFixture
 from CertificatesTroubleshoot import parse_all_certificates, main
 from pathlib import Path
-from json import load
 import demistomock as demisto
+
+
+def load_json_file(path):
+    with open(path, 'r') as json_file:
+        return json.load(json_file)
 
 
 def test_parse_all_certificates(datadir):
     certificate = Path(datadir['CA.pem']).read_text()
-    assert parse_all_certificates(certificate) == load(Path(datadir['output.json']).open())
+    assert parse_all_certificates(certificate) == load_json_file(datadir['output.json'])
 
 
 def test_openssl(mocker: MockerFixture, datadir):
