@@ -176,7 +176,6 @@
       else
         demisto-sdk lint -p 8 -g -v --test-xml ./unit-tests --log-path $ARTIFACTS_FOLDER --failure-report $ARTIFACTS_FOLDER --coverage-report $ARTIFACTS_FOLDER/coverage_report
       fi
-      # fi
     - section_end "Run Unit Testing and Lint"
 
 .run-validations:
