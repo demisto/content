@@ -5171,3 +5171,4 @@ class TestDBotScoreType:
         dbot = DBotScoreType()
         dbot.add_custom_type('custom_name')
         assert dbot.is_valid_type('custom_name') is True
+    # TODO: add docstring
