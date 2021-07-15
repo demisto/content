@@ -137,3 +137,13 @@ def test_get_file_reputation(mocker, file_hash, expected_result_file_path, raw_r
     context = demisto.results.call_args_list[0][0][0].get('EntryContext')
 
     assert context == expected_result
+
+
+"""
+    Hppy path:
+        1. thresholds for each IOC from command and param
+        2. inactive flag from command and param
+    Edge cases:
+        1. no confidence in the response - consider 0
+        2. 
+"""

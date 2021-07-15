@@ -59,18 +59,12 @@ script:
       name: ip
       required: true
       secret: false
-    - auto: PREDEFINED
-      default: false
-      description: If severity is greater than or equal to the threshold, then the
-        IP address will be considered malicious. This argument will override the default
-        threshold defined as a parameter. Can be "low", "medium", "high", or "very-high".
+    - default: false
+      description: If confidence is greater than the threshold, then the
+        IP address will be considered malicious otherwise it will considered good. This argument will override the default
+        IP threshold defined as a parameter.
       isArray: false
       name: threshold
-      predefined:
-      - low
-      - medium
-      - high
-      - very-high
       required: false
       secret: false
     - auto: PREDEFINED
@@ -161,18 +155,12 @@ script:
       name: domain
       required: true
       secret: false
-    - auto: PREDEFINED
-      default: false
-      description: If the severity is greater than or equal to the threshold, the
-        IP address is considered as malicious. This argument will override the default
-        threshold defined as a parameter. Can be "low", "medium", "high", or "very-high".
+    - default: false
+      description: If confidence is greater than the threshold, then the
+        Domain will be considered malicious otherwise it will considered good. This argument will override the default
+        Domain threshold defined as a parameter.
       isArray: false
       name: threshold
-      predefined:
-      - low
-      - medium
-      - high
-      - very-high
       required: false
       secret: false
     - auto: PREDEFINED
@@ -278,18 +266,12 @@ script:
       name: file
       required: true
       secret: false
-    - auto: PREDEFINED
-      default: false
-      description: If the severity is greater than or equal to the threshold, the
-        hash of file is considered as malicious. This argument will override the default
-        threshold defined as a parameter. Can be "low", "medium", "high", or "very-high".
+    - default: false
+      description: If the confidence is greater than the threshold, then the
+        hash of file will be considered malicious otherwise it will considered as good. This argument will override the default
+        File threshold defined as a parameter.
       isArray: false
       name: threshold
-      predefined:
-      - low
-      - medium
-      - high
-      - very-high
       required: false
       secret: false
     - auto: PREDEFINED
@@ -379,18 +361,12 @@ script:
       name: email
       required: true
       secret: false
-    - auto: PREDEFINED
-      default: false
-      description: If the severity is greater or equal than the threshold, the IP
-        address is considered as malicious. This argument will override the default
-        threshold defined as a parameter. Can be "low", "medium", "high", "very-high".
+    - default: false
+      description: If the confidence is greater than the threshold, then the
+        Email address will be considered malicious otherwise it will considered as good. This argument will override the default
+        Email threshold defined as a parameter.
       isArray: false
       name: threshold
-      predefined:
-      - low
-      - medium
-      - high
-      - very-high
       required: false
       secret: false
     - auto: PREDEFINED
@@ -1555,16 +1531,11 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: If the severity is greater than or equal to the threshold, the
-        URL is considered as malicious. This argument will override the default threshold
-        defined as a parameter. Can be "low", "medium", "high", or "very-high".
+      description: If confidence is greater than the threshold, then the
+        URL will be considered malicious otherwise it will considered good. This argument will override the default
+        URL threshold defined as a parameter.
       isArray: false
       name: threshold
-      predefined:
-      - low
-      - medium
-      - high
-      - very-high
       required: false
       secret: false
     - auto: PREDEFINED
