@@ -169,7 +169,7 @@ def get_failed_unit_tests_attachment(build_url: str, is_sdk_build: bool = False)
         unittests_fields: Optional[List[Dict]] = get_entities_fields(f'Failed Unittests - ({len(artifact_data)})',
                                                                      artifact_data)
     else:
-        unittests_fields = None
+        unittests_fields = []
     color: str = 'good' if not unittests_fields else 'danger'
     build_type: str = 'SDK' if is_sdk_build else 'Content'
     status = 'Success' if not unittests_fields else 'Failure'
@@ -244,7 +244,7 @@ def get_attachments_for_bucket_upload_flow(build_url, job_name, packs_results_fi
     if failed_entities := get_failed_steps_list():
         steps_fields = get_entities_fields(f'Failed Steps - ({len(failed_entities)})', failed_entities)
     else:
-        steps_fields = None
+        steps_fields = []
     color = 'good' if not steps_fields else 'danger'
     title = f'{BucketUploadFlow.BUCKET_UPLOAD_BUILD_TITLE} - Success' if not steps_fields \
         else f'{BucketUploadFlow.BUCKET_UPLOAD_BUILD_TITLE} - Failure'
@@ -299,7 +299,7 @@ def get_attachments_for_all_steps(build_url, build_title):
     if failed_entities := get_failed_steps_list():
         steps_fields = get_entities_fields(f'Failed Steps - ({len(failed_entities)})', failed_entities)
     else:
-        steps_fields = None
+        steps_fields = []
     color = 'good' if not steps_fields else 'danger'
     title = f'{build_title} - Success' if not steps_fields else f'{build_title} - Failure'
 
