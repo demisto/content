@@ -172,7 +172,7 @@ references:
         echo 'source /home/circleci/project/.circleci/content_release_vars.sh' >> $BASH_ENV
         chmod +x .circleci/gitlab-ci-env-variables.sh
         ./.circleci/gitlab-ci-env-variables.sh
-        if [ -n "${NIGHTLY_PARAMETER}" ] || [ -n "{LEGACY_NIGHTLY_PARAMETER}" ];
+        if [ -n "${NIGHTLY_PARAMETER}" ] || [ -n "${LEGACY_NIGHTLY_PARAMETER}" ];
         then
             echo 'export NIGHTLY=true' >> $BASH_ENV
         fi
