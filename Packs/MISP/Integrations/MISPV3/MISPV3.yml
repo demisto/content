@@ -20,14 +20,14 @@ configuration:
   name: insecure
   required: false
   type: 8
-- additionalinfo: Comma seperated list of malicious tag ids
-  display: Malicious tag ids
+- additionalinfo: Comma seperated list of event's or attribute's malicious tag IDs. Malicious tags are stronger than suspicios tags.
+  display: Malicious tag IDs
   hidden: false
   name: malicious_tag_ids
   required: false
   type: 12
-- additionalinfo: Comma seperated list of suspicios tag ids
-  display: Suspicious tag ids
+- additionalinfo: Comma seperated list of event's or attribute's suspicios tag IDs. Malicious tags are stronger than suspicios tags.
+  display: Suspicious tag IDs
   hidden: false
   name: suspicious_tag_ids
   required: false
