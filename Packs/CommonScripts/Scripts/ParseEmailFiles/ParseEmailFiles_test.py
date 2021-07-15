@@ -697,7 +697,7 @@ def test_eml_format_multipart_mix(mocker):
     results = demisto.results.call_args[0]
     assert len(results) == 1
     assert results[0]['Type'] == entryTypes['note']
-    assert "Rondo ONZ 1, 00-124 Warsaw, Poland <o:p></o:p>" in results[0]['EntryContext']['Email']['HTML']
+    assert "Warsaw, Poland <o:p></o:p>" in results[0]['EntryContext']['Email']['HTML']
 
 
 def test_eml_base64_header_comment_although_string(mocker):
