@@ -5,7 +5,6 @@ import logging
 
 import dateparser
 import pytest
-import datetime
 from exchangelib import Message
 from EWSv2 import fetch_last_emails
 
