@@ -1,16 +1,15 @@
-import demistomock as demisto
-from CommonServerPython import *
-from CommonServerUserPython import *
 import hashlib
 import secrets
 import string
 import tempfile
 from datetime import timezone
-from typing import Dict, Optional, List, Tuple, Union
+from math import ceil
+from typing import Any, Dict, List, Optional, Tuple, Union
+
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 from dateutil.parser import parse
 from urllib3 import disable_warnings
-from math import ceil
-
 
 disable_warnings()
 DEMISTO_TIME_FORMAT: str = '%Y-%m-%dT%H:%M:%SZ'
@@ -33,13 +32,14 @@ demisto_score_to_xdr: Dict[int, str] = {
 
 class Client:
     severity: str = ''
+    severity_map: Optional[Union[List[Dict[str, Dict[str, Any]]], Dict[str, Dict[str, Any]]]] = None
     query: str = 'reputation:Bad and (type:File or type:Domain or type:IP)'
     tag = 'Cortex XDR'
     tlp_color = None
     error_codes: Dict[int, str] = {
         500: 'XDR internal server error.',
-        401: 'Unauthorized access. An issue occurred during authentication. This can indicate an ' +    # noqa: W504
-             'incorrect key, id, or other invalid authentication parameters.',
+        401: 'Unauthorized access. An issue occurred during authentication. This can indicate an '    # noqa: W504
+             + 'incorrect key, id, or other invalid authentication parameters.',
         402: 'Unauthorized access. User does not have the required license type to run this API.',
         403: 'Unauthorized access. The provided API key does not have the required RBAC permissions to run this API.'
     }
@@ -188,7 +188,7 @@ def demisto_ioc_to_xdr(ioc: Dict) -> Dict:
     try:
         xdr_ioc: Dict = {
             'indicator': ioc['value'],
-            'severity': Client.severity,
+            'severity': demisto_ioc_to_xdr_severity(ioc, Client.severity_map),
             'type': demisto_types_to_xdr(str(ioc['indicator_type'])),
             'reputation': demisto_score_to_xdr.get(ioc.get('score', 0), 'UNKNOWN'),
             'expiration_date': demisto_expiration_to_xdr(ioc.get('expiration'))
@@ -211,6 +211,40 @@ def demisto_ioc_to_xdr(ioc: Dict) -> Dict:
     except KeyError as error:
         demisto.debug(f'unexpected IOC format in key: {str(error)}, {str(ioc)}')
         return {}
+
+
+def demisto_ioc_to_xdr_severity(ioc: Dict,
+                                severity_map: Optional[
+                                    Union[List[Dict[str, Dict[str, Any]]], Dict[str, Dict[str, Any]]]
+                                ]) -> str:
+    if not severity_map:
+        return Client.severity
+
+    severity_map_list: List[Dict[str, Dict[str, Any]]]
+    if not isinstance(severity_map, list):
+        severity_map_list = [severity_map]
+    else:
+        severity_map_list = severity_map
+
+    for severity_map in severity_map_list:
+        for k, mapping in severity_map.items():
+            demisto_severities = demisto.get(ioc, k)
+            if demisto_severities is not None:
+                if not isinstance(demisto_severities, list):
+                    demisto_severities = [demisto_severities]
+                demisto_severities.append('')  # default key
+
+                for demisto_severity in demisto_severities:
+                    xdr_severity = mapping.get(str(demisto_severity))
+                    if xdr_severity is not None:
+                        if isinstance(xdr_severity, (list, dict)):
+                            return demisto_ioc_to_xdr_severity(ioc, xdr_severity)
+                        elif isinstance(xdr_severity, str):
+                            return xdr_severity.upper()
+                        else:
+                            demisto.debug('XDR severity in the mapping must be str. The default severity will be applied.')
+                            return Client.severity
+    return Client.severity
 
 
 def get_temp_file() -> str:
@@ -429,6 +463,7 @@ def main():
     # """
     params = demisto.params()
     Client.severity = params.get('severity', '').upper()
+    Client.severity_map = json.loads(params.get('severityMap') or '{}')
     Client.query = params.get('query', Client.query)
     Client.tag = params.get('feedTags', params.get('tag', Client.tag))
     Client.tlp_color = params.get('tlp_color')

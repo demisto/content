@@ -22,6 +22,7 @@ An API key of type **Advanced** with an **Administrator** role.
 | apikey | API Key | True |  
 | feed | Fetch indicators | False |  
 | severity | the severity in Cortex XDR | True |  
+| severityMap | Map the severity from Cortex XSOAR to Cortex XDR | False |  
 | query | Sync Query | True |  
 | insecure | Trust any certificate \(not secure\) | False |  
 | proxy | Use system proxy settings | False |  
@@ -34,6 +35,40 @@ An API key of type **Advanced** with an **Administrator** role.
 | feedBypassExclusionList | Bypass exclusion list | False |  
   
 4. Click **Test** to validate the URLs, token, and connection.  
+
+
+### severityMap
+You can set the mapping of severity from Cortex XSOAR to Cortex XDR in `severityMap` in JSON.
+A simple mapping based on `score` (Displayed as verdict in Threat Intel) in indicators is like this:
+
+    {
+      "score": {
+        "0": "UNKNOWN",
+        "1": "INFORMATIONAL",
+        "2": "MEDIUM",
+        "3": "HIGH"
+      }
+    }
+
+
+If you need more complex conditions, you can create nested mappings like this:
+The empty string key ("") means default key which is used when isn't matched any keys.
+
+    {
+      "score": {
+        "0": "UNKNOWN",
+        "1": "INFORMATIONAL",
+        "2": {
+          "CustomFields.tags": {
+            "unit42": "MEDIUM",
+            "": "LOW"
+          }
+        },
+        "3": "HIGH"
+      }
+    }
+
+
 ## Commands  
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.  
 After you successfully execute a command, a DBot message appears in the War Room with the command details.  

@@ -18,3 +18,7 @@ The query to find indicators.
 
 ### Important
 Do not use more then one instance. Instances will override each other.
+
+
+---
+[View Integration Documentation](https://xsoar.pan.dev/docs/reference/integrations/cortex-xdr---ioc)
