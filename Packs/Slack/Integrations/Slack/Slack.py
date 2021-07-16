@@ -2103,6 +2103,7 @@ def filter_channels_command():
     is_archived = demisto.args().get('is_archived')
     is_general = demisto.args().get('is_general')
     is_private = demisto.args().get('is_private')
+    limit = int(demisto.args().get('limit', '10'))
 
     is_archived = bool(strtobool(is_archived)) if is_archived else None
     is_general = bool(strtobool(is_general)) if is_general else None
@@ -2116,8 +2117,8 @@ def filter_channels_command():
         is_general=is_general,
         is_private=is_private
     )
-    demisto.debug(f'found {len(filtered_conversations)} filtered conversations')
-    for conversation in filtered_conversations:
+    demisto.debug(f'found {len(filtered_conversations)} filtered conversations; limiting results to {limit}')
+    for conversation in filtered_conversations[:limit]:
         result_conversation = {
             'ID': conversation.get('id'),
             'Name': conversation.get('name'),

@@ -577,6 +577,12 @@ script:
       - 'false'
       required: false
       secret: false
+    - default: '10'
+      description: The maximum number of channels to return
+      isArray: false
+      name: limit
+      required: false
+      secret: false
     deprecated: false
     description: Returns a list of channels matching criteria
     execution: false

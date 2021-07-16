@@ -779,6 +779,11 @@ Channel renamed successfully.
       <td>True or False</td>
       <td>Optional</td>
     </tr>
+    <tr>
+      <td>limit</td>
+      <td>The maximum number of channels to return. Default is "10"</td>
+      <td>Optional</td>
+    </tr>
   </tbody>
 </table>
 
