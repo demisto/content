@@ -1,6 +1,6 @@
 {
-    "name": "Skybox Change Manager",
-    "description": "Skybox\u00ae Change Manager workflows for firewall rule creation, recertification and deprovisioning help maintain continuous compliance, close security gaps and limit vulnerability exposures.",
+    "name": "Skybox Security",
+    "description": "Skybox provides complete visibility, analytics and automation to quickly map, prioritize and remediate vulnerabilities across the organization.",
     "support": "community",
     "currentVersion": "1.0.0",
     "author": "Maciej Drobniuch",
