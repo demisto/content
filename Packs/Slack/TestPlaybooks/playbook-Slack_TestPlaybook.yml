@@ -648,7 +648,7 @@ tasks:
     ignoreworker: false
     nexttasks:
       '#none#':
-      - "14"
+      - "22"
     note: false
     quietmode: 0
     scriptarguments:
@@ -749,6 +749,45 @@ tasks:
         "position": {
           "x": 50,
           "y": 895
+        }
+      }
+  "22":
+    id: "22"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "14"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      creator: {}
+      is_archived: {}
+      is_general: {}
+      is_private: {}
+      name:
+        complex:
+          root: ${TimeNowUnix}
+          transformers:
+          - operator: Stringify
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: SlackV2
+      description: Returns a list of channels matching criteria
+      id: e684c934-23b8-48ba-87d7-fa7ddb5a2321
+      iscommand: true
+      name: slack-filter-channels
+      script: SlackV2|||slack-filter-channels
+      type: regular
+      version: -1
+    taskid: e684c934-23b8-48ba-87d7-fa7ddb5a2321
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2645
         }
       }
 version: -1
