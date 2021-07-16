@@ -2129,10 +2129,14 @@ def filter_channels_command():
         }
         command_results_list.append(result_conversation)
 
+    context = {
+        'Channel': command_results_list
+    }
+
     return_results(CommandResults(
-        outputs_prefix='Slack.Channel',
+        outputs_prefix='Slack',
         outputs_key_field='ID',
-        outputs=command_results_list
+        outputs=context
     ))
 
 
