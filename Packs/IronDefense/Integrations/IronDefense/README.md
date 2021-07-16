@@ -70,10 +70,7 @@
 <p> </p>
 <h5>Context Output</h5>
 <p>There are no context output for this command.</p>
-<p> <!-- remove the following comments to manually add an image: --> <!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- --></p>
+<p> </p>
 <h3 id="irondefense-comment-alert">2. Add a comment to an alert</h3>
 <hr>
 <p>Adds a comment to an IronDefense alert.</p>
@@ -110,10 +107,6 @@
 <h5>Context Output</h5>
 <p>There are no context output for this command.</p>
 <p> </p>
-<p><!-- remove the following comments to manually add an image: --> <!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- --></p>
 <h3 id="irondefense-set-alert-status">3. Set the status of an alert</h3>
 <hr>
 <p>Sets the status of an IronDefense alert.</p>
@@ -154,10 +147,7 @@
 <p> </p>
 <h5>Context Output</h5>
 <p>There are no context output for this command.</p>
-<p> <!-- remove the following comments to manually add an image: --> <!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- --></p>
+<p> </p>
 <h3 id="irondefense-report-observed-bad-activity">4. Submit an observed bad endpoint to create Threat Intelligence Rules (TIR)</h3>
 <hr>
 <p>Submits an observed bad endpoint to IronDefense to create Threat Intelligence Rules (TIR).</p>

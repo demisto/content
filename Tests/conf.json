@@ -99,8 +99,8 @@
             "integrations": "SecurityAndCompliance",
             "playbookID": "O365-SecurityAndCompliance-Test",
             "fromversion": "5.5.0",
-            "memory_threshold": 250,
-            "timeout": 700
+            "memory_threshold": 300,
+            "timeout": 1000
         },
         {
             "integrations": "SecurityAndCompliance",
@@ -417,7 +417,8 @@
         {
             "integrations": "Azure Compute v2",
             "playbookID": "Azure Compute - Test",
-            "instance_names": "ms_azure_compute_prod"
+            "instance_names": "ms_azure_compute_prod",
+            "is_mockable": false
         },
         {
             "integrations": "Symantec Data Loss Prevention",
@@ -431,7 +432,8 @@
         {
             "integrations": "Azure Security Center v2",
             "playbookID": "Azure SecurityCenter - Test",
-            "instance_names": "ms_azure_sc_prod"
+            "instance_names": "ms_azure_sc_prod",
+            "is_mockable": false
         },
         {
             "integrations": "Azure Security Center v2",
@@ -468,7 +470,8 @@
         {
             "integrations": "MicrosoftGraphMail",
             "playbookID": "MicrosoftGraphMail-Test_prod",
-            "instance_names": "ms_graph_mail_prod"
+            "instance_names": "ms_graph_mail_prod",
+            "is_mockable": false
         },
         {
             "integrations": "CloudShark",
@@ -571,6 +574,13 @@
             "timeout": 400,
             "pid_threshold": 5,
             "fromversion": "5.0.0"
+        },
+        {
+            "integrations": "SlackV3",
+            "playbookID": "SlackV3 TestPB",
+            "timeout": 400,
+            "pid_threshold": 8,
+            "fromversion": "5.5.0"
         },
         {
             "integrations": "Cortex XDR - IR",
@@ -1753,7 +1763,8 @@
         {
             "integrations": "Microsoft Defender Advanced Threat Protection",
             "playbookID": "Microsoft Defender Advanced Threat Protection - Test prod",
-            "instance_names": "microsoft_defender_atp_prod"
+            "instance_names": "microsoft_defender_atp_prod",
+            "is_mockable": false
         },
         {
             "integrations": "Microsoft Defender Advanced Threat Protection",
@@ -1791,7 +1802,8 @@
         {
             "integrations": "Microsoft Graph",
             "playbookID": "Microsoft Graph Security Test prod",
-            "instance_names": "ms_graph_security_prod"
+            "instance_names": "ms_graph_security_prod",
+            "is_mockable": false
         },
         {
             "integrations": "Microsoft Graph User",
@@ -1801,7 +1813,8 @@
         {
             "integrations": "Microsoft Graph User",
             "playbookID": "Microsoft Graph User - Test",
-            "instance_names": "ms_graph_user_prod"
+            "instance_names": "ms_graph_user_prod",
+            "is_mockable": false
         },
         {
             "integrations": "Microsoft Graph Groups",
@@ -1811,7 +1824,8 @@
         {
             "integrations": "Microsoft Graph Groups",
             "playbookID": "Microsoft Graph Groups - Test prod",
-            "instance_names": "ms_graph_groups_prod"
+            "instance_names": "ms_graph_groups_prod",
+            "is_mockable": false
         },
         {
             "integrations": "Microsoft_Graph_Files",
@@ -1823,7 +1837,8 @@
             "integrations": "Microsoft_Graph_Files",
             "playbookID": "test_MsGraphFiles prod",
             "instance_names": "ms_graph_files_prod",
-            "fromversion": "5.0.0"
+            "fromversion": "5.0.0",
+            "is_mockable": false
         },
         {
             "integrations": "Microsoft Graph Calendar",
@@ -1833,7 +1848,8 @@
         {
             "integrations": "Microsoft Graph Calendar",
             "playbookID": "Microsoft Graph Calendar - Test prod",
-            "instance_names": "ms_graph_calendar_prod"
+            "instance_names": "ms_graph_calendar_prod",
+            "is_mockable": false
         },
         {
             "integrations": "Microsoft Graph Device Management",
@@ -1845,7 +1861,8 @@
             "integrations": "Microsoft Graph Device Management",
             "playbookID": "MSGraph_DeviceManagement_Test_prod",
             "instance_names": "ms_graph_device_management_oproxy_prod",
-            "fromversion": "5.0.0"
+            "fromversion": "5.0.0",
+            "is_mockable": false
         },
         {
             "integrations": "Microsoft Graph Device Management",
@@ -2011,10 +2028,6 @@
             "integrations": "Jask",
             "playbookID": "Jask_Test",
             "fromversion": "4.1.0"
-        },
-        {
-            "integrations": "Qualys",
-            "playbookID": "Qualys-Test"
         },
         {
             "integrations": "Whois",
@@ -2244,6 +2257,7 @@
             "integrations": "GooglePubSub",
             "playbookID": "GooglePubSub_Test",
             "nightly": true,
+            "timeout": 500,
             "fromversion": "5.0.0"
         },
         {
@@ -3366,6 +3380,10 @@
             "nightly": true
         },
         {
+	        "integrations": "Trend Micro Deep Security",
+	        "playbookID": "Trend Micro Deep Security - Test"
+	      },
+        {
             "integrations": "Carbon Black Endpoint Standard",
             "playbookID": "carbonBlackEndpointStandardTestPlaybook",
             "fromversion": "5.5.0",
@@ -3471,7 +3489,6 @@
         "Test Playbook McAfee ATD": "Issue 33409",
         "Detonate Remote File From URL -McAfee-ATD - Test": "Issue 33407",
         "Test Playbook McAfee ATD Upload File": "Issue 33408",
-        "Extract Indicators From File - Generic v2 - Test": "Issue 30071",
         "Kenna Test": "Missing data",
         "Trend Micro Apex - Test": "Issue 27280",
         "palo_alto_panorama_test_pb": "Issue 34371",
@@ -3479,12 +3496,10 @@
         "Test-BPA": "Issue 28406",
         "Test-BPA_Integration": "Issue 28236",
         "TestTOPdeskPlaybook": "Issue 35412",
-        "PAN OS EDL Management - Test": "Issue 35652",
         "PAN-OS EDL Setup v3 Test": "Issue 35386",
         "Google-Vault-Generic-Test": "Issue 24347",
         "GmailTest": "Issue 27057",
         "Gmail Single User - Test": "Issue 27361",
-        "AWS - EC2 Test Playbook": "Issue 36486",
         "get_file_sample_by_hash_-_cylance_protect_-_test": "Issue 28823",
         "Carbon Black Enterprise EDR Test": "Issue 29775",
         "VirusTotal (API v3) Detonate Test": "Issue 36004",
@@ -3496,14 +3511,15 @@
         "Centreon-Test-Playbook": "Issue 37022",
         "PAN-OS - Block URL - Custom URL Category Test": "Issue 37024",
         "Service Desk Plus - Generic Polling Test": "Issue 30798",
-        "TestEmailRepIOPlaybook": "Issue 33219",
         "get_original_email_-_ews-_test": "Issue 27571",
         "PANW Threat Vault - Signature Search - Test": "Issue 30930",
         "TAXII_Feed_Test": "Issue 37588",
-        "FireEyeNX-Test": "Issue 33216",
+        "Trend Micro Deep Security - Test": "outsourced",
         "Microsoft Teams - Test": "Issue 38263",
         "QualysVulnerabilityManagement-Test": "Issue 38640",
-        "test playbook - QRadarCorrelations": "Issue 38639"
+        "test playbook - QRadarCorrelations": "Issue 38639",
+        "EWS Extension: Powershell Online V2 Test": "Issue 39008",
+        "O365 - EWS - Extension - Test": "Issue 39008"
     },
     "skipped_integrations": {
 
@@ -3645,6 +3661,7 @@
         "SplunkPy": "we have multiple instances with same test playbook, mock recording are per playbook so it keeps failing the playback step",
         "mysql": "Does not use http",
         "SlackV2": "Integration requires SSL",
+        "SlackV3": "Integration requires SSL",
         "Whois": "Mocks does not support sockets",
         "Panorama": "Exception: Proxy process took to long to go up. https://circleci.com/gh/demisto/content/24826",
         "Image OCR": "Does not perform network traffic",
@@ -3709,6 +3726,7 @@
         "MISP V2": "Cleanup process isn't performed as expected.",
         "Azure Network Security Groups": "Has a command that sends parameters in the path",
         "GitHub": "Cannot use proxy",
+        "LogRhythm": "Cannot use proxy",
         "Create-Mock-Feed-Relationships": "recording is redundant for this integration"
     },
     "parallel_integrations": [
@@ -3805,7 +3823,7 @@
                 "memory_threshold": 140
             },
             "demisto/powershell-ubuntu": {
-                "pid_threshold": 40,
+                "pid_threshold": 45,
                 "memory_threshold": 200
             },
             "demisto/boto3": {
