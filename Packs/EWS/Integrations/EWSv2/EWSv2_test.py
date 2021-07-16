@@ -5,6 +5,7 @@ import logging
 
 import dateparser
 import pytest
+import datetime
 from exchangelib import Message
 from EWSv2 import fetch_last_emails
 
@@ -190,3 +191,11 @@ def test_fetch_last_emails_limit(mocker, limit, expected_result):
 
     x = fetch_last_emails(client, since_datetime='since_datetime')
     assert len(x) == expected_result
+
+
+def test_dateparser():
+    """Test that dateparser works fine. See: https://github.com/demisto/etc/issues/39240 """
+    now = datetime.datetime.now()
+    res = dateparser.parse(EWSv2.FETCH_TIME)
+    assert res is not None
+    assert res < now
