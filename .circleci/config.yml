@@ -332,6 +332,10 @@ references:
     restore_cache:
       key: virtualenv-venv-{{ checksum "dev-requirements-py2.txt" }}-{{ checksum "dev-requirements-py3.txt" }}-{{ checksum ".circleci/build-requirements.txt" }}-{{ checksum "package-lock.json" }}
 
+  remote_docker: &remote_docker
+    setup_remote_docker:
+      version: 20.10.6
+
   destroy_instances: &destroy_instances
     run:
       name: Destroy Instances
@@ -691,7 +695,7 @@ jobs:
     <<: *environment
     steps:
       - *attach_workspace
-      - setup_remote_docker
+      - *remote_docker
       - *restore_cache
       - *add_ssh_keys
       - *prepare_environment
@@ -1163,7 +1167,7 @@ jobs:
     <<: *environment
     steps:
       - checkout
-      - setup_remote_docker
+      - *remote_docker
       - *restore_cache
       - *prepare_environment
       - *secrets
@@ -1192,7 +1196,7 @@ jobs:
     <<: *environment
     steps:
       - checkout
-      - setup_remote_docker
+      - *remote_docker
       - *restore_cache
       - *prepare_environment
       - *download_configuration
