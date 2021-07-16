@@ -1,0 +1,1889 @@
+category: Ticketing
+commonfields:
+  id: SkyboxTicketsService
+  version: -1
+configuration:
+- defaultvalue: https://skybox.drobniuch.pl
+  display: Server URL
+  name: url
+  required: true
+  type: 0
+- display: Username
+  name: credentials
+  required: false
+  type: 9
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ""
+    itemVersion: ""
+    packID: 1c6fd8b8-71b1-4040-8ebf-43d23f7bd4f9
+    propagationLabels:
+    - all
+    toServerVersion: ""
+description: Skybox® Change Manager workflows for firewall rule creation, recertification
+  and deprovisioning help maintain continuous compliance, close security gaps and
+  limit vulnerability exposures.
+display: Skybox Change Manager
+name: SkyboxTicketsService
+script:
+  commands:
+  - arguments:
+    - description: The ticket ID
+      name: ticketId
+      required: true
+    description: |-
+      Retrieves the list of ticket workflows in Skybox,
+      including an ID and a name for each ticket.
+    name: skybox-getTicketWorkflow
+    outputs:
+    - contextPath: Skybox.getTicketWorkflow.getTicketWorkflow
+      type: String
+  - arguments:
+    - description: The ID of the ticket
+      name: ticketId
+      required: true
+    - description: The ID of the original change request
+      name: changeRequestId
+      required: true
+    description: |-
+      Retrieves the route information from an original
+      change request.
+    name: skybox-getOriginalChangeRequestRouteInfoV1
+    outputs:
+    - contextPath: Skybox.getOriginalChangeRequestRouteInfoV1.getOriginalChangeRequestRouteInfoV1
+      type: String
+  - arguments:
+    - auto: PREDEFINED
+      description: The Ticket Type
+      name: ticketType
+      predefined:
+      - VulnerabilityTicket
+      - ApplicationTicket
+      - VulnerabilityDefinitionTicket
+      - AccessChangeTicket
+      - PolicyViolationTicket
+    description: |-
+      Retrieves the list of phases for the specified ticket
+      type.
+    name: skybox-getTicketTypePhasesByTicketType
+    outputs:
+    - contextPath: Skybox.getTicketTypePhasesByTicketType
+      type: String
+  - arguments:
+    - description: The ID of the ticket
+      name: ticketId
+      required: true
+    description: |-
+      Retrieves the (original) change requests in the
+      specified ticket.
+    name: skybox-getOriginalChangeRequestV7
+    outputs:
+    - contextPath: Skybox.getOriginalChangeRequestV7.getOriginalChangeRequestV7
+      type: String
+  - arguments:
+    - description: The ID of the ticket
+      name: ticketId
+    - auto: PREDEFINED
+      description: |-
+        Specifies whether the ticket ID is the Skybox ticket ID or the ID from the
+        external ticketing system
+        Possible values:
+        l SBV
+        l EXTERNAL
+      name: ticketIdType
+      predefined:
+      - SBV
+      - EXTERNAL
+      required: true
+    - description: The Code type of the field
+      name: ticketFields_typeCode
+    - description: The field value
+      name: ticketFields_value
+    description: |-
+      Sets ticket data in Skybox.
+      You can use this method with all ticket types.
+    name: skybox-setTicketFields
+    outputs:
+    - contextPath: Skybox.setTicketFields.setTicketFields
+      type: String
+  - arguments:
+    - defaultValue: The access Chagne Ticket ID
+      description: The change ticket ID
+      name: accessChangeTicket_id
+    - defaultValue: The access Change Ticket comment
+      description: The Change ticket comment
+      name: accessChangeTicket_comment
+    - defaultValue: The access Change Ticket description
+      description: The Change ticket description
+      name: accessChangeTicket_description
+    - defaultValue: The access Change Ticket creator
+      description: The Change ticket author
+      name: accessChangeTicket_createdBy
+    - defaultValue: The access Change Ticket creation time
+      description: The creation time
+      name: accessChangeTicket_creationTime
+    - defaultValue: The access Change Ticket last modification author
+      description: The last modification author
+      name: accessChangeTicket_lastModifiedBy
+    - defaultValue: The change ticket last modification time
+      description: The time of the last modification
+      name: accessChangeTicket_lastModificationTime
+    - defaultValue: The acess Change Ticket external ticket ID
+      description: The external ticket ID
+      name: accessChangeTicket_externalTicketId
+    - description: |-
+        Possible values:
+        l Pending
+        l Open
+        l Closed
+        l Error
+        l Rejected
+      name: accessChangeTicket_externalTicketStatus
+    - description: |-
+        Possible values:
+        l New
+        l InProgress
+        l Resolved
+        l Closed
+        l Rejected
+        l Ignored
+        l Verified
+        l Reopened
+        l Demoted
+      name: accessChangeTicket_status
+    - description: The Change ticket title
+      name: accessChangeTicket_title
+    - description: The change ticket details
+      name: accessChangeTicket_changeDetails
+    - description: |-
+        The Priority
+        Possible values:
+        l P1
+        l P2
+        l P3
+        l P4
+        l P5
+      name: accessChangeTicket_priority
+    - description: The Change ticket owner
+      name: accessChangeTicket_owner
+    - description: The Change ticket due date
+      name: accessChangeTicket_dueDate
+    - description: The change ticket done date
+      name: accessChangeTicket_doneDate
+    - description: |-
+        The likelihood
+        Possible values:
+        l Unknown
+        l Low
+        l Medium
+        l High
+        l Priority
+        l Critica
+      name: accessChangeTicket_likelihood
+    - description: The CC list email address.
+      name: accessChangeTicket_ccList_email
+    - description: The CC list username
+      name: accessChangeTicket_ccList_userName
+    - description: The custom field comment
+      name: accessChangeTicket_customFields_comment
+    - description: The custom field author
+      name: accessChangeTicket_customFields_createdBy
+    - description: The custom field creation time
+      name: accessChangeTicket_customFields_creationTime
+    - description: The custom field description
+      name: accessChangeTicket_customFields_description
+    - description: The custom field id
+      name: accessChangeTicket_customFields_id
+    - description: The custom field last modification time
+      name: accessChangeTicket_customFields_lastModificationTime
+    - description: The custom field last modification author
+      name: accessChangeTicket_customFields_lastModifiedBy
+    - description: The custom field name
+      name: accessChangeTicket_customFields_name
+    - description: The custom field type code
+      name: accessChangeTicket_customFields_typeCode
+    - description: The custom field value
+      name: accessChangeTicket_customFields_value
+    - description: The access Change Ticket current phase name
+      name: accessChangeTicket_currentPhaseName
+    - description: Phase comment
+      name: phases_comment
+    - description: Phase author
+      name: phases_createdBy
+    - description: Phase creation time
+      name: phases_creationTime
+    - description: Current phase
+      name: phases_current
+    - description: Phase demotions count
+      name: phases_demotionsCount
+    - description: Phase description
+      name: phases_description
+    - description: Phase due date
+      name: phases_dueDate
+    - description: Phase end date
+      name: phases_endDate
+    - description: The Phase ID
+      name: phases_id
+    - description: The Phase last modification time
+      name: phases_lastModificationTime
+    - description: The phase last modification author
+      name: phases_lastModifiedBy
+    - description: The phase owner
+      name: phases_owner
+    - description: The phase revised due date
+      name: phases_revisedDueDate
+    - description: The phase start date
+      name: phases_startDate
+    - description: The phase ticket type default owner
+      name: phases_ticketTypePhase_defaultOwner
+    - description: The phase ticket type ID
+      name: phases_ticketTypePhase_id
+    - description: The phase ticket type name
+      name: phases_ticketTypePhase_name
+    - description: The phase ticket type order
+      name: phases_ticketTypePhase_order
+    - description: The phase ticket type
+      name: phases_ticketTypePhase_ticketType
+    - description: The phase closure waiting status
+      name: phases_ticketTypePhase_waitingForClosure
+    description: |-
+      Creates an Access Change ticket with a workflow
+      and phases.
+    name: skybox-createAccessChangeTicket
+    outputs:
+    - contextPath: Skybox.createAccessChangeTicket.createAccessChangeTicket
+      type: String
+  - arguments:
+    - name: attachmentId
+      required: true
+    - defaultValue: output.file
+      description: The filename to save the attachment as
+      name: output_filename
+      required: true
+    description: Retrieves the specified attachment from Skybox.
+    name: skybox-getAttachmentFile
+    outputs:
+    - contextPath: Skybox.getAttachmentFile.getAttachmentFile
+      type: String
+  - arguments:
+    - description: The access Change Ticket ID
+      name: accessChangeTicket_id
+    - description: The access Change Ticket comment
+      name: accessChangeTicket_comment
+    - description: The access Change Ticket description
+      name: accessChangeTicket_description
+    - description: The access Change ticket creator
+      name: accessChangeTicket_createdBy
+    - description: The access Change Ticket creation Time
+      name: accessChangeTicket_creationTime
+    - description: The access Change Ticket last modification author
+      name: accessChangeTicket_lastModifiedBy
+    - description: The access Change Ticket last modification time
+      name: accessChangeTicket_lastModificationTime
+    - description: The access Change Ticket external ticket ID
+      name: accessChangeTicket_externalTicketId
+    - description: The access Change Ticket external Ticket Status
+      name: accessChangeTicket_externalTicketStatus
+    - description: The access Change Ticket status
+      name: accessChangeTicket_status
+    - description: The access Change Ticket title
+      name: accessChangeTicket_title
+    - description: The access change ticket details
+      name: accessChangeTicket_changeDetails
+    - description: |-
+        The access Change Ticket priority
+        Possible values:
+        l P1
+        l P2
+        l P3
+        l P4
+        l P5
+      name: accessChangeTicket_priority
+    - description: The access Change Ticket owner
+      name: accessChangeTicket_owner
+    - description: The access Change Ticket due Date
+      name: accessChangeTicket_dueDate
+    - description: The access Change Ticket done date
+      name: accessChangeTicket_doneDate
+    - description: |-
+        The access Change Ticket likelihood
+        Possible values:
+        l Unknown
+        l Low
+        l Medium
+        l High
+        l Priority
+        l Critical
+      name: accessChangeTicket_likelihood
+    - description: The access Change Ticket CC email
+      name: accessChangeTicket_ccList_email
+    - description: The access Change Ticket CC username
+      name: accessChangeTicket_ccList_userName
+    - description: The custom field comment
+      name: accessChangeTicket_customFields_comment
+    - description: The custom field crated by
+      name: accessChangeTicket_customFields_createdBy
+    - description: The custom field creation time
+      name: accessChangeTicket_customFields_creationTime
+    - description: The custom field description
+      name: accessChangeTicket_customFields_description
+    - description: The custom field ID
+      name: accessChangeTicket_customFields_id
+    - description: The custom field last modification time
+      name: accessChangeTicket_customFields_lastModificationTime
+    - description: The custom field last modification author
+      name: accessChangeTicket_customFields_lastModifiedBy
+    - description: The custom fields ame
+      name: accessChangeTicket_customFields_name
+    - description: The cusotm fields type code
+      name: accessChangeTicket_customFields_typeCode
+    - description: The custom field value
+      name: accessChangeTicket_customFields_value
+    - description: The current phase name
+      name: accessChangeTicket_currentPhaseName
+    - description: The access rule action
+      name: accessRuleElements_action
+    - description: The access rule comment
+      name: accessRuleElements_comment
+    - description: The access rule description
+      name: accessRuleElements_description
+    - description: The access rule destination address
+      name: accessRuleElements_destinationAddresses
+    - description: The access rule direction
+      name: accessRuleElements_direction
+    - description: The access rule enablement status
+      name: accessRuleElements_disabled
+    - description: The firewall ID
+      name: accessRuleElements_firewall_id
+    - description: The firewall name
+      name: accessRuleElements_firewall_name
+    - description: The firewall path
+      name: accessRuleElements_firewall_path
+    - description: The access rule global unique ID
+      name: accessRuleElements_globalUniqueId
+    - description: The access rule ID
+      name: accessRuleElements_id
+    - description: The access rule implied
+      name: accessRuleElements_implied
+    - description: The access rule authentication status
+      name: accessRuleElements_isAuthenticated
+    - description: The access rule network interfaces
+      name: accessRuleElements_netInterfaces
+    - description: The original text in the destination field
+      name: accessRuleElements_orgDestinationText
+      required: true
+    - description: The original text in the services field.
+      name: accessRuleElements_orgPortsText
+    - name: accessRuleElements_orgRuleNumber
+    - description: The original rule ID as taken from device.
+      name: accessRuleElements_orgRuleText
+    - description: |-
+        The text (definition) of the access rule as taken from
+        the device.
+      name: accessRuleElements_orgSourceText
+    - description: |-
+        Services resolved to object names, in the form of
+        80/TCP or 80-80/TCP.
+      name: accessRuleElements_ports
+    - description: The name of the rule chain.
+      name: accessRuleElements_ruleChain
+    - description: The order of the rule in its chain
+      name: accessRuleElements_sbOrder
+    - description: The services (ports) used by the rule
+      name: accessRuleElements_services
+    - description: Addresses are resolved to ranges.
+      name: accessRuleElements_sourceAddresses
+    - description: The source network interfaces
+      name: accessRuleElements_sourceNetInterfaces
+    - name: workflowId
+      required: true
+    description: |-
+      Creates tickets for certification of a firewall’s
+      access rules.
+    name: skybox-createRecertifyTicketV2
+    outputs:
+    - contextPath: Skybox.createRecertifyTicketV2.createRecertifyTicketV2
+      type: String
+  - arguments:
+    - description: The ticket ID
+      name: ticketId
+      required: true
+    description: Retrieves an Access Change ticket from Skybox.
+    name: skybox-getAccessChangeTicket
+    outputs:
+    - contextPath: Skybox.getAccessChangeTicket.getAccessChangeTicket
+      type: String
+  - arguments:
+    - description: The access request IDs
+      name: accessRequestIds
+    description: |-
+      Retrieves change requests according to their ID
+      numbers.
+    name: skybox-getAccessRequests
+    outputs:
+    - contextPath: Skybox.getAccessRequests.getAccessRequests
+      type: String
+  - arguments:
+    - description: The ticket ID
+      name: ticketId
+      required: true
+    - description: The change request ID
+      name: changeRequestId
+    description: |-
+      Retrieves the list of Vulnerability Definitions that, if
+      the requested change is made, are directly
+      exposed to assets.
+    name: skybox-getPotentialVulnerabilitiesV2
+    outputs:
+    - contextPath: Skybox.getPotentialVulnerabilitiesV2.getPotentialVulnerabilitiesV2
+      type: String
+  - arguments:
+    - description: The ticket ID
+      name: ticketId
+      required: true
+    - description: The change request IDs
+      name: changeRequestIds
+    description: Deletes change requests from a ticket
+    name: skybox-deleteChangeRequests
+    outputs:
+    - contextPath: Skybox.deleteChangeRequests.deleteChangeRequests
+      type: String
+  - arguments:
+    - description: The ticket ID
+      name: ticketId
+      required: true
+    description: |-
+      Deletes the specified Access Change ticket in
+      Skybox.
+    name: skybox-deleteAccessChangeTicket
+    outputs:
+    - contextPath: Skybox.deleteAccessChangeTicket.deleteAccessChangeTicket
+      type: String
+  - arguments: []
+    description: |-
+      Retrieves the list of unimplemented change
+      requests in Skybox Change Manager according
+      to the permissions of the user sending the
+      request. The information retrieved includes the
+      reasons that the changes were not implemented.
+    name: skybox-getNotImplementedChangeRequestsV2
+    outputs:
+    - contextPath: Skybox.getNotImplementedChangeRequestsV2.getNotImplementedChangeRequestsV2
+      type: String
+  - arguments:
+    - description: The ticket ID
+      name: ticketId
+      required: true
+    description: Retrieves the history of a ticket.
+    name: skybox-getTicketEvents
+    outputs:
+    - contextPath: Skybox.getTicketEvents.getTicketEvents
+      type: String
+  - arguments:
+    - description: The ticket ID
+      name: ticketId
+      required: true
+    - description: The change request IDs
+      name: changeRequestId
+      required: true
+    description: Retriev the Change Request Reviewers
+    name: skybox-getChangeRequestReviewers
+    outputs:
+    - contextPath: Skybox.getChangeRequestReviewers.getChangeRequestReviewers
+      type: String
+  - arguments:
+    - description: The ticket ID
+      name: ticketId
+      required: true
+    - description: The change request ID
+      name: changeRequestId
+      required: true
+    description: |-
+      Retrieves the rule attributes for the access rule in
+      a change request.
+    name: skybox-getChangeRequestRuleAttributes
+    outputs:
+    - contextPath: Skybox.getChangeRequestRuleAttributes.getChangeRequestRuleAttributes
+      type: String
+  - arguments:
+    - description: The ticket ID
+      name: ticketId
+      required: true
+    - description: The change request ID
+      name: changeRequestId
+      required: true
+    description: |-
+      Retrieves the generated command output for the
+      given change request. For Cisco firewalls, the
+      command is in Cisco format. For other firewalls,
+      the command is in a generic format.
+    name: skybox-getGeneratedCommands
+    outputs:
+    - contextPath: Skybox.getGeneratedCommands.getGeneratedCommands
+      type: String
+  - arguments: []
+    description: |-
+      Retrieves the list of implemented change requests
+      in Skybox Change Manager according to the
+      permissions of the user sending the request.
+    name: skybox-getImplementedChangeRequests
+    outputs:
+    - contextPath: Skybox.getImplementedChangeRequests.getImplementedChangeRequests
+      type: String
+  - arguments:
+    - description: The ticket ID
+      name: ticketId
+      required: true
+    - description: The change request comment
+      name: changeRequests_comment
+    - description: The change request compliance status
+      name: changeRequests_complianceStatus
+    - description: The change request author
+      name: changeRequests_createdBy
+    - description: The change request creation time
+      name: changeRequests_creationTime
+    - description: The change request description
+      name: changeRequests_description
+    - description: The change request ID
+      name: changeRequests_id
+    - description: The change request required status
+      name: changeRequests_isRequiredStatus
+    - description: The change request last modification time
+      name: changeRequests_lastModificationTime
+    - description: The change request last modification author
+      name: changeRequests_lastModifiedBy
+    - description: |-
+        The ID number of the original change
+        request, when relevant.
+      name: changeRequests_originalChangeRequestId
+    - description: |-
+        Possible values:
+        l Verified
+        l Not Verified
+        l Error
+        l Computing
+        l Unknown
+      name: changeRequests_verificationStatus
+    description: |-
+      Adds original change requests to a ticket and then
+      calculates the derived change requests, checks
+      whether a change is required, and checks for
+      policy compliance violations and potential
+      vulnerabilities.
+    name: skybox-addOriginalChangeRequests
+    outputs:
+    - contextPath: Skybox.addOriginalChangeRequests.addOriginalChangeRequests
+      type: String
+  - arguments:
+    - description: The ticket ID
+      name: ticketId
+      required: true
+    - description: The phase ID
+      name: phaseOperation_phaseId
+    - description: The phase owner
+      name: phaseOperation_phaseOwner
+    - description: The phase operation reject
+      name: phaseOperation_reject
+    - description: |-
+        Possible values:
+        l ACCEPT
+        l CHANGE_PHASE
+        l CLOSE
+        l DEMOTE
+        l IGNORED
+        l PROMOTE
+        l REASSIGN
+        l REOPEN
+        l REQUEST_TO_CLOSE
+      name: phaseOperation_type
+      required: true
+    description: |-
+      Enables you to change the phase of a Vulnerability
+      Definition ticket without sending the full ticket
+      data.
+    name: skybox-operateOnVulnerabilityDefinitionTicket
+    outputs:
+    - contextPath: Skybox.operateOnVulnerabilityDefinitionTicket.operateOnVulnerabilityDefinitionTicket
+      type: String
+  - arguments:
+    - description: The change ticket ID
+      name: accessChangeTicket_id
+    - defaultValue: The change ticket comment
+      description: The change ticket comment
+      name: accessChangeTicket_comment
+    - description: The change ticket description
+      name: accessChangeTicket_description
+    - description: The change ticket author
+      name: accessChangeTicket_createdBy
+    - description: The change ticket creation time
+      name: accessChangeTicket_creationTime
+    - description: The change ticket modification author
+      name: accessChangeTicket_lastModifiedBy
+    - description: The change ticket last modification time
+      name: accessChangeTicket_lastModificationTime
+    - description: The external ticket ID
+      name: accessChangeTicket_externalTicketId
+    - description: |-
+        Possible values:
+        l Pending
+        l Open
+        l Closed
+        l Error
+        l Rejected
+      name: accessChangeTicket_externalTicketStatus
+    - description: |-
+        Possible values:
+        l New
+        l InProgress
+        l Resolved
+        l Closed
+        l Rejected
+        l Ignored
+        l Verified
+        l Reopened
+        l Demoted
+      name: accessChangeTicket_status
+    - description: The change ticket title
+      name: accessChangeTicket_title
+    - description: The change ticket details
+      name: accessChangeTicket_changeDetails
+    - description: |-
+        The change ticket priority.
+        Possible values:
+        l P1
+        l P2
+        l P3
+        l P4
+        l P5
+      name: accessChangeTicket_priority
+    - description: The change ticket owner
+      name: accessChangeTicket_owner
+    - description: The change ticket due date
+      name: accessChangeTicket_dueDate
+    - description: The change ticket done date
+      name: accessChangeTicket_doneDate
+    - description: |-
+        Possible values:
+        l Unknown
+        l Low
+        l Medium
+        l High
+        l Priority
+        l Critica
+      name: accessChangeTicket_likelihood
+    - description: The CC list email address
+      name: accessChangeTicket_ccList_email
+    - description: The CC List user name
+      name: accessChangeTicket_ccList_userName
+    - description: The custom field comment
+      name: accessChangeTicket_customFields_comment
+    - description: The custom field creation author
+      name: accessChangeTicket_customFields_createdBy
+    - description: The custom field creation time
+      name: accessChangeTicket_customFields_creationTime
+    - description: The custom field description
+      name: accessChangeTicket_customFields_description
+    - description: The custom field ID
+      name: accessChangeTicket_customFields_id
+    - description: The custom field last modification time
+      name: accessChangeTicket_customFields_lastModificationTime
+    - description: The custom field last modification author
+      name: accessChangeTicket_customFields_lastModifiedBy
+    - description: The custom field name
+      name: accessChangeTicket_customFields_name
+    - description: The custom field type code
+      name: accessChangeTicket_customFields_typeCode
+    - description: The custom field value
+      name: accessChangeTicket_customFields_value
+    - description: The current phase name
+      name: accessChangeTicket_currentPhaseName
+    - description: The phase comment
+      name: phases_comment
+    - description: The phase author
+      name: phases_createdBy
+    - description: The phase creation time
+      name: phases_creationTime
+    - description: The current phase
+      name: phases_current
+    - description: The phase demotions count
+      name: phases_demotionsCount
+    - description: The phase description
+      name: phases_description
+    - description: The phase due date
+      name: phases_dueDate
+    - description: The phase end date
+      name: phases_endDate
+    - description: The phase ID
+      name: phases_id
+    - description: The phase last modification time
+      name: phases_lastModificationTime
+    - description: The phase last modification author
+      name: phases_lastModifiedBy
+    - description: The phase owner
+      name: phases_owner
+    - description: The phase revised due date
+      name: phases_revisedDueDate
+    - description: The phase start date
+      name: phases_startDate
+    - description: The ticket type phase default owner
+      name: phases_ticketTypePhase_defaultOwner
+    - description: The ticket type phase ID
+      name: phases_ticketTypePhase_id
+    - description: The ticket type phase name
+      name: phases_ticketTypePhase_name
+    - description: The ticket type phase order
+      name: phases_ticketTypePhase_order
+    - description: The ticket type
+      name: phases_ticketTypePhase_ticketType
+    - description: The ticket type phase waiting for closure status
+      name: phases_ticketTypePhase_waitingForClosure
+    - description: The workflow ID
+      name: workflowId
+    description: |-
+      Creates an Access Change ticket with a workflow
+      and phases.
+    name: skybox-createChangeManagerTicket
+    outputs:
+    - contextPath: Skybox.createChangeManagerTicket.createChangeManagerTicket
+      type: String
+  - arguments:
+    - description: The ticket ID
+      name: ticketIds
+      required: true
+    description: |-
+      Retrieves the list of unimplemented change
+      requests in the specified tickets according to the
+      permissions of the user sending the request. The
+      information retrieved includes the reasons that the
+      changes were not implemented.
+    name: skybox-getTicketsNotImplementedChangeRequestsV2
+    outputs:
+    - contextPath: Skybox.getTicketsNotImplementedChangeRequestsV2.getTicketsNotImplementedChangeRequestsV2
+      type: String
+  - arguments:
+    - description: The host ID
+      name: hostId
+      required: true
+    - description: The date range end date
+      name: dateRange_endDate
+    - description: The date range start date
+      name: dateRange_startDate
+    description: |-
+      Retrieves all change requests for the specified
+      firewall created during the specified time frame.
+    name: skybox-findAccessRequests
+    outputs:
+    - contextPath: Skybox.findAccessRequests.findAccessRequests
+      type: String
+  - arguments:
+    - description: The ticket ID
+      name: ticketId
+      required: true
+    - description: |-
+        A list of change request IDs. If the list is empty, all change requests
+        are expanded
+      name: accessRequestIds
+    - description: Specifies whether to expand the selected change requests.
+      name: recalculate
+      required: true
+    description: |-
+      Finds the firewalls for the change requests (sets of
+      source, destination, and port) in a ticket and
+      expands the list of change requests in the ticket so
+      that each change request includes the firewall,
+      source, destination, and port.
+    name: skybox-expandFirewallsForAccessChangeTicket
+    outputs:
+    - contextPath: Skybox.expandFirewallsForAccessChangeTicket.expandFirewallsForAccessChangeTicket
+      type: String
+  - arguments:
+    - description: Unknown
+      name: arg0
+    - description: The attachment description
+      name: attachmentDesc
+    - description: The original file name
+      name: sourceFileName
+    - description: javax.activation.DataHandler
+      name: attachmentData
+    - description: The ticket ID
+      name: ticketId
+      required: true
+    - description: The phase for which to add the attachment
+      name: phaseName
+    description: Creates an attachment to a ticket in Skybox.
+    name: skybox-addAttachmentFile
+    outputs:
+    - contextPath: Skybox.addAttachmentFile.addAttachmentFile
+      type: String
+  - arguments:
+    - description: The filter author user name
+      name: filter_createdBy
+    - description: |-
+        Free text search in the following ticket fields:
+        l Title
+        l Comment
+        l Owner
+        l ID
+        l Status
+        l Priority
+        l Vendor reference
+        l Solutions
+        l CVE catalog ID
+        l Custom fields of type String
+      name: filter_freeTextFilter
+    - description: The filter modification author
+      name: filter_modifiedBy
+    - description: Unknown
+      name: filter_myGroups
+    - description: Search tickets by owner
+      name: filter_owner
+    - description: Search tickets by current phase
+      name: filter_phaseName
+    - description: |-
+        Search tickets by status.
+        Possible values:
+        l New
+        l InProgress
+        l Resolved
+        l Closed
+        l Rejected
+        l Ignored
+        l Verified
+        l Reopened
+        l Demoted
+      name: filter_statusFilter
+    - description: Search tickets by IDs
+      name: filter_ticketIdsFilter
+    description: |-
+      Counts tickets by owner, phase, status, ID, or free
+      text. This method is used for page calculations.
+    name: skybox-countAccessChangeTickets
+    outputs:
+    - contextPath: Skybox.countAccessChangeTickets.countAccessChangeTickets
+      type: String
+  - arguments:
+    - description: The ID of the ticket
+      name: ticketId
+      required: true
+    - description: The ID of the original change request
+      name: changeRequestId
+      required: true
+    description: |-
+      Retrieves the list of derived change requests for
+      an original change request.
+    name: skybox-getDerivedChangeRequestsV7
+    outputs:
+    - contextPath: Skybox.getDerivedChangeRequestsV7.getDerivedChangeRequestsV7
+      type: String
+  - arguments:
+    - description: The ID of the ticket
+      name: ticketId
+      required: true
+    - description: |-
+        An array of address elements to use as the destination of
+        the query.
+      name: accessRequests_accessQuery_destinationAddresses
+    - description: |-
+        Mandatory for network-context analysis; null for firewallcontext analysis.
+        Each network entity consists of a network IP address and
+        a network ID in the model that you can find using
+        findNetworks
+      name: accessRequests_accessQuery_destinationElements
+    - description: |-
+        Mandatory for firewall-context analysis; null for networkcontext analysis.
+        Use findFirewalls to get this entity.
+      name: accessRequests_accessQuery_firewall
+    - description: |-
+        Specifies whether the answer is to include accessible or
+        inaccessible paths.
+        l 0: Accessible
+        l 1: Inaccessible
+        l 2: Both
+      name: accessRequests_accessQuery_mode
+    - description: |-
+        A list of ports (also referred to as services) to use in the
+        query.
+      name: accessRequests_accessQuery_ports
+    - description: |-
+        An array of address elements to use as the source of the
+        query
+      name: accessRequests_accessQuery_sourceAddresses
+    - description: |-
+        Mandatory for network-context analysis; null for firewallcontext analysis.
+        Each network entity consists of a network IP address and
+        a network ID in the model that you can find using
+        findNetworks.
+      name: accessRequests_accessQuery_sourceElements
+    - description: |-
+        Possible values:
+        l FirewallMode
+        l NetworkMode
+      name: accessRequests_accessQueryMode
+    - description: |-
+        Possible values:
+        l UNCOMPUTED
+        l ACCESSIBLE
+        l UNACCESSIBLE
+        l ERROR
+      name: accessRequests_accessStatus
+    - description: The access type
+      name: accessRequests_accessType
+    - description: The access request comment
+      name: accessRequests_comment
+    - description: |-
+        Possible values:
+        l UNCOMPUTED
+        l YES
+        l NO
+        l ERROR
+      name: accessRequests_complianceStatus
+    - description: The name of the Access Check in Skybox
+      name: accessRequests_complianceViolations_aprName
+    - description: The path of the Access Check in Skybox
+      name: accessRequests_complianceViolations_aprPath
+    - description: |-
+        Possible values:
+        l 0=Very Low
+        l 1=Low
+        l 2=Medium
+        l 3=High
+        l 4=Critica
+      name: accessRequests_complianceViolations_importance
+    - description: List of String
+      name: accessRequests_complianceViolations_portsViolating
+    - description: Acess request author user name
+      name: accessRequests_createdBy
+    - description: Access request creation time
+      name: accessRequests_creationTime
+    - description: Access request description
+      name: accessRequests_description
+    - description: List of zone names
+      name: accessRequests_destinationZones
+    - description: Access request status
+      name: accessRequests_disabled
+    - description: The access request ID
+      name: accessRequests_id
+    - description: The access request last modification time
+      name: accessRequests_lastModificationTime
+    - description: The access request last modification author
+      name: accessRequests_lastModifiedBy
+    - description: The catalog ID
+      name: accessRequests_potentialVulnerabilities_catalogId
+    - description: The CVE ID
+      name: accessRequests_potentialVulnerabilities_cveId
+    - description: The host IP
+      name: accessRequests_potentialVulnerabilities_hostIp
+    - description: The hostname
+      name: accessRequests_potentialVulnerabilities_hostName
+    - description: The vulnerability ID
+      name: accessRequests_potentialVulnerabilities_id
+    - description: The vulnerability severity
+      name: accessRequests_potentialVulnerabilities_severity
+    - description: The vulnerability title
+      name: accessRequests_potentialVulnerabilities_title
+    - description: List of zone names
+      name: accessRequests_sourceZones
+    description: |-
+      Sets the list of change requests to the specified
+      ticket
+    name: skybox-setTicketAccessRequests
+    outputs:
+    - contextPath: Skybox.setTicketAccessRequests.setTicketAccessRequests
+      type: String
+  - arguments:
+    - description: The access change ticket ID
+      name: accessChangeTicket_id
+    - description: The access chagne ticket comment
+      name: accessChangeTicket_comment
+    - description: The access change ticket description
+      name: accessChangeTicket_description
+    - description: The access change ticket author
+      name: accessChangeTicket_createdBy
+    - description: The access change ticket creation time
+      name: accessChangeTicket_creationTime
+    - description: The access change ticket last modification author
+      name: accessChangeTicket_lastModifiedBy
+    - description: The access change ticket last modification time
+      name: accessChangeTicket_lastModificationTime
+    - description: The access chagne ticket external ticket ID
+      name: accessChangeTicket_externalTicketId
+    - description: |-
+        Possible values:
+        l Pending
+        l Open
+        l Closed
+        l Error
+        l Rejected
+      name: accessChangeTicket_externalTicketStatus
+    - description: |-
+        Possible values:
+        l New
+        l InProgress
+        l Resolved
+        l Closed
+        l Rejected
+        l Ignored
+        l Verified
+        l Reopened
+        l Demoted
+      name: accessChangeTicket_status
+    - description: The access chagne ticket title
+      name: accessChangeTicket_title
+    - description: The access change ticket details
+      name: accessChangeTicket_changeDetails
+    - defaultValue: P5
+      description: |-
+        Possible values:
+        l P1
+        l P2
+        l P3
+        l P4
+        l P5
+      name: accessChangeTicket_priority
+    - description: The access change ticket owner
+      name: accessChangeTicket_owner
+    - description: The access change ticket due date
+      name: accessChangeTicket_dueDate
+    - description: The access change ticket done date
+      name: accessChangeTicket_doneDate
+    - description: |-
+        Possible values:
+        l Unknown
+        l Low
+        l Medium
+        l High
+        l Priority
+        l Critical
+      name: accessChangeTicket_likelihood
+    - description: The CC list email
+      name: accessChangeTicket_ccList_email
+    - description: The CC list user name
+      name: accessChangeTicket_ccList_userName
+    - description: The custom field comment
+      name: accessChangeTicket_customFields_comment
+    - description: The custom field author
+      name: accessChangeTicket_customFields_createdBy
+    - description: The cusotm field creation time
+      name: accessChangeTicket_customFields_creationTime
+    - description: The cusotm field description
+      name: accessChangeTicket_customFields_description
+    - description: The custom field ID
+      name: accessChangeTicket_customFields_id
+    - description: The custom field last modification time
+      name: accessChangeTicket_customFields_lastModificationTime
+    - description: The custom field last modification author
+      name: accessChangeTicket_customFields_lastModifiedBy
+    - description: The custom field name
+      name: accessChangeTicket_customFields_name
+    - description: The custom field type code
+      name: accessChangeTicket_customFields_typeCode
+    - description: The custom field value
+      name: accessChangeTicket_customFields_value
+    - description: The custom field phase name
+      name: accessChangeTicket_currentPhaseName
+    description: Enables you to modify an Access Change ticket.
+    name: skybox-updateAccessChangeTicket
+    outputs:
+    - contextPath: Skybox.updateAccessChangeTicket.updateAccessChangeTicket
+      type: String
+  - arguments:
+    - description: The ID of the ticket
+      name: ticketId
+      required: true
+    - description: The ID of the original change request
+      name: changeRequestId
+      required: true
+    - name: firewalls_accessRules
+    - description: The ID of the asset
+      name: firewalls_id
+      required: true
+    - description: The firewall interfaces
+      name: firewalls_interfaces
+    - description: The asset name
+      name: firewalls_name
+    - description: The net interface description
+      name: firewalls_netInterface_description
+    - description: The net interface ID
+      name: firewalls_netInterface_id
+    - description: The interface IP Address
+      name: firewalls_netInterface_ipAddress
+    - description: The interface name
+      name: firewalls_netInterface_name
+    - description: |-
+        Possible values:
+        l NAT
+        l ETHERNET
+        l WLAN
+        l TOKEN_RING
+        l PPP
+        l SLIP
+        l VIRTUAL
+        l OTHER
+        l UNKNOWN
+        l LOOPBACK
+        l SERIAL
+        l LOAD_BALANCER
+        l TUNNEL
+        l VPN
+        l CONNECTING_CLOUD_
+        INTERFACE
+      name: firewalls_netInterface_type
+    - description: The interface zone name
+      name: firewalls_netInterface_zoneName
+    - description: The interface zone type
+      name: firewalls_netInterface_zoneType
+    - description: The asset operating system
+      name: firewalls_os
+    - description: The asset operating system vendor
+      name: firewalls_osVendor
+    - description: The version of the asset operating system
+      name: firewalls_osVersion
+    - description: The primary IP address of the asset
+      name: firewalls_primaryIp
+    - description: The number of routing rules in this asset
+      name: firewalls_routingRules
+    - description: The number of services in this asset
+      name: firewalls_services
+    - description: |-
+        The status of the asset:
+        l Up
+        l Down
+        l Not Found
+        l Unknown
+      name: firewalls_status
+    - description: |-
+        Possible values:
+        l Firewall
+        l Router
+        l LoadBalancer
+        l Proxy
+        l NetworkDevice
+        l WirelessDevice
+        l IPS
+        l Switch
+      name: firewalls_type
+    - description: The number of vulnerability occurrences on the asset
+      name: firewalls_vulnerabilities
+    description: |-
+      Adds a derived change request to a ticket if the
+      original change request is of type Access Update
+    name: skybox-addDerivedChangeRequests
+    outputs:
+    - contextPath: Skybox.addDerivedChangeRequests.addDerivedChangeRequests
+      type: String
+  - arguments:
+    - description: The ID of the ticket
+      name: ticketId
+      required: true
+    - description: |-
+        The ID of the change request for which you want to see policy
+        violations
+      name: changeRequestId
+      required: true
+    description: |-
+      Retrieves the list of Access Policy violations
+      associated with a change request.
+    name: skybox-getPolicyViolations
+    outputs:
+    - contextPath: Skybox.getPolicyViolations.getPolicyViolations
+      type: String
+  - arguments:
+    - description: |-
+        The ID of the attachment.
+        Find the ID using getAttachmentList.
+      name: attachmentId
+      required: true
+    description: Deletes an attachment from a ticket in Skybox.
+    name: skybox-removeAttachmentFile
+    outputs:
+    - contextPath: Skybox.removeAttachmentFile.removeAttachmentFile
+      type: String
+  - arguments: []
+    description: |-
+      Retrieves the list of ticket workflows in Skybox,
+      including an ID and a name for each ticket.
+    name: skybox-getTicketWorkflows
+    outputs:
+    - contextPath: Skybox.getTicketWorkflows.getTicketWorkflows
+      type: String
+  - arguments:
+    - description: The ID of the ticket
+      name: ticketId
+      required: true
+    description: |-
+      Recalculates the change requests of the specified
+      ticket.
+    name: skybox-recalculateTicketChangeRequests
+    outputs:
+    - contextPath: Skybox.recalculateTicketChangeRequests.recalculateTicketChangeRequests
+      type: String
+  - arguments:
+    - description: Array of Integer (ancestor IDs)
+      name: filter_ancestorOf
+    - description: Array of Integeger (children IDs)
+      name: filter_childrenOf
+    - description: The configuration item types (Array of String)
+      name: filter_configurationItemTypes
+    - description: The free text filter
+      name: filter_freeTextFilter
+    - description: The fitler IDs (Array of Integer)
+      name: filter_ids
+    - description: Should the filter ignore empty groups? (boolean)
+      name: filter_ignoreEmptyGroups
+    - description: The filter status (boolean)
+      name: filter_isEnabled
+    - description: The filter name
+      name: filter_nameFilter
+    - description: The size of the sub range
+      name: subRange_size
+    - description: The sub range start
+      name: subRange_start
+    description: |-
+      Retrieves the configuration items that are defined
+      in the system.
+    name: skybox-findConfigurationItems
+    outputs:
+    - contextPath: Skybox.findConfigurationItems.findConfigurationItems
+      type: String
+  - arguments:
+    - description: The ticket ID
+      name: ticketId
+      required: true
+    description: |-
+      Retrieves the sponsoring application of the
+      specified ticket. Sponsoring applications
+      determine the phase owners for the ticket.
+    name: skybox-getSponsoringApplication
+    outputs:
+    - contextPath: Skybox.getSponsoringApplication.getSponsoringApplication
+      type: String
+  - arguments:
+    - description: The ID of the ticke
+      name: ticketId
+      required: true
+    - description: The change request comment
+      name: changeRequests_comment
+    - description: |-
+        Possible values:
+        l UNCOMPUTED
+        l YES
+        l NO
+        l ERROR
+      name: changeRequests_complianceStatus
+    - description: The change request author
+      name: changeRequests_createdBy
+    - description: The change request creation time
+      name: changeRequests_creationTime
+    - description: The change request description
+      name: changeRequests_description
+    - description: The change request ID
+      name: changeRequests_id
+    - description: |-
+        Possible values:
+        l UNCOMPUTED
+        l YES (change required)
+        l NO (already permitted)
+        l Computing
+        l ERROR
+      name: changeRequests_isRequiredStatus
+    - description: The change request last modification time
+      name: changeRequests_lastModificationTime
+    - description: The change request last modification author
+      name: changeRequests_lastModifiedBy
+    - description: The messages arguments
+      name: changeRequests_messages_args
+    - description: |-
+        Messages for the user about the change
+        request that was calculated by the Skybox
+        Server.
+        For example, the change request cannot be
+        calculated because the source and
+        destination are behind the same interface;
+        there is no firewall matching the request; or
+        the request is a duplicate of another request
+        in the ticket.
+      name: changeRequests_messages_formatedMessage
+    - description: The messages key
+      name: changeRequests_messages_key
+    - description: |-
+        Possible values:
+        l INFO
+        l WARN
+        l ERROR
+      name: changeRequests_messages_level
+    - description: |-
+        The ID number of the original change
+        request, when relevant.
+      name: changeRequests_originalChangeRequestId
+    - description: |-
+        Possible values:
+        l Verified
+        l Not Verified
+        l Error
+        l Computing
+        l Unknown
+      name: changeRequests_verificationStatus
+    description: |-
+      Adds original change requests to a ticket and then
+      calculates the derived change requests, checks
+      whether a change is required, and checks for
+      policy compliance violations and potential
+      vulnerabilities.
+    name: skybox-addOriginalChangeRequestsV7
+    outputs:
+    - contextPath: Skybox.addOriginalChangeRequestsV7.addOriginalChangeRequestsV7
+      type: String
+  - arguments:
+    - description: |-
+        The ID of the ticket to which the change requests are
+        attached
+      name: ticketId
+      required: true
+    - description: ' The ID of the device to change.'
+      name: hostId
+      required: true
+    - description: |-
+        The name of the object to change. The object can be an
+        IP address object or Service object.
+      name: objectName
+    - description: |-
+        The type of the change:
+        l 0: Add to the object
+      name: changeType
+      required: true
+    - description: |-
+        The IP address to add to or delete from the object.
+        Relevant only if the object is an IP address object.
+      name: addressChange
+    - description: |-
+        The service to add to or deleted from the object. Relevant
+        only if the object is a Service object.
+      name: portChange
+    - description: Limits the number of change requests that are created.
+      name: maxAccessRequestsToCreate
+      required: true
+    - description: |-
+        Limits the rule chains searched for affected access rules.
+        Possible values:
+        l 0: Search all chains
+        l 1: Search only primary chain
+        l 2: Search by chain name
+      name: chainFilterMode
+      required: true
+    - description: |-
+        A list of chain names in which to search for the object.
+        Relevant only if chainFilterMode=2.
+      name: chainNames
+    description: |-
+      Adds change requests to a ticket. The method
+      finds the access rules in which the specified
+      object occurs and creates a change request for
+      each access rule.
+    name: skybox-createTicketAccessRequestsForObjectChange
+    outputs:
+    - contextPath: Skybox.createTicketAccessRequestsForObjectChange.createTicketAccessRequestsForObjectChange
+      type: String
+  - arguments:
+    - description: The ID of the ticket
+      name: ticketId
+      required: true
+    - description: The ID of the original change reques
+      name: changeRequestId
+      required: true
+    description: |-
+      Retrieves the route information from a derived
+      change request.
+    name: skybox-getDerivedChangeRequestRouteInfoV1
+    outputs:
+    - contextPath: Skybox.getDerivedChangeRequestRouteInfoV1.getDerivedChangeRequestRouteInfoV1
+      type: String
+  - arguments:
+    - description: The ID of the change request
+      name: changeRequests_id
+    - description: The ID of the change request ticket
+      name: changeRequests_ticketId
+    - description: The due date of the change request
+      name: changeRequests_dueDate
+    - defaultValue: P5
+      description: |-
+        Possible values:
+        l P1
+        l P2
+        l P3
+        l P4
+        l P5
+      name: changeRequests_ticketPriority
+    - description: The type of the change request
+      name: changeRequests_changeType
+    - description: |-
+        The name of the firewall on which to make the
+        change
+      name: changeRequests_firewallName
+    - description: |-
+        The name of the firewall management on which
+        to make the change
+      name: changeRequests_firewallManagementName
+    - description: The ID of the object to change
+      name: changeRequests_objectId
+    - description: The GUID of the entity to change
+      name: changeRequests_globalUniqueId
+    - description: The change details
+      name: changeRequests_changeDetails
+    - description: The change request additional details
+      name: changeRequests_additionalDetails
+    - description: |-
+        Possible values:
+        l UNCOMPUTED
+        l YES (change required)
+        l NO (already permitted)
+        l Computing
+        l ERROR
+      name: changeRequests_isRequiredStatus
+    - description: The owner of the change request
+      name: changeRequests_owner
+    - description: The complete status
+      name: changeRequests_completeStatus
+    - description: The date of completion
+      name: changeRequests_completeDate
+    - description: The workflow name
+      name: changeRequests_workflowName
+    - description: The comment
+      name: changeRequests_comment
+    - description: The last modification time
+      name: changeRequests_lastModificationTime
+    - description: The implementation status
+      name: changeRequests_implementationStatus
+    - description: |-
+        The formula for the comment to add to rules
+        when the rules are implemented. For example,
+        <DATE> - Created by <USERNAME>
+        for ticket <TICKET_ID>.
+        The comment must include at least 1 of the
+        parameters (date, user name, or ticket ID).
+      name: comment
+    description: Implements the specified change requests.
+    name: skybox-implementChangeRequests
+    outputs:
+    - contextPath: Skybox.implementChangeRequests.implementChangeRequests
+      type: String
+  - arguments:
+    - description: |-
+        Legal values:
+        l Network Assurance Tickets
+        Public
+        l Network Assurance Tickets
+        Private
+      name: type
+    description: |-
+      Returns a list of analyses; each analysis includes
+      its ID, path, name, and type.
+    name: skybox-getAnalysisTree
+    outputs:
+    - contextPath: Skybox.getAnalysisTree.getAnalysisTree
+      type: String
+  - arguments:
+    - description: The ticket ID
+      name: ticketId
+      required: true
+    - description: Optional, depending on phase type
+      name: phaseOperation_phaseId
+    - description: Optional, depending on phase type
+      name: phaseOperation_phaseOwner
+    - description: Optional, depending on phase type
+      name: phaseOperation_reject
+    - description: |-
+        Possible values:
+        l ACCEPT
+        l CHANGE_PHASE
+        l CLOSE
+        l DEMOTE
+        l IGNORED
+        l PROMOTE
+        l REASSIGN
+        l REOPEN
+        l REQUEST_TO_CLOSE
+      name: phaseOperation_type
+      required: true
+    description: |-
+      Enables you to change the phase of a ticket
+      without sending the full ticket data.
+      The following changes can be made using this method:
+      l Accept a ticket
+      l Change a ticket’s phase
+      l Close a ticket
+      l Demote a ticket
+      l Change the status of the ticket to Ignored
+      l Promote a ticket
+      l Reassign a ticket
+      l Reopen a ticket
+      l Request to close a ticket
+    name: skybox-operateOnAccessChangeTicket
+    outputs:
+    - contextPath: Skybox.operateOnAccessChangeTicket.operateOnAccessChangeTicket
+      type: String
+  - arguments:
+    - description: The ID of the ticket to analyze
+      name: ticketId
+      required: true
+    - description: |-
+        A list of change request IDs in the ticket to analyze. An empty list means
+        that all change requests are analyzed.
+      name: accessRequests
+    - description: |-
+        The type of analysis:
+        l 0: Access analysis only
+        l 1: Access Policy compliance analysis only
+        l 2: Both
+      name: mode
+      required: true
+    description: |-
+      Analyzes policy compliance and access for
+      change requests of the specified ticket.
+    name: skybox-analyzeAccessChangeTicket
+    outputs:
+    - contextPath: Skybox.analyzeAccessChangeTicket.analyzeAccessChangeTicket
+      type: String
+  - arguments:
+    - description: The ID of the ticket.
+      name: ticketId
+      required: true
+    - description: |-
+        The ID of the (derived) change request for which you want to see the
+        firewall objects that are changed.
+      name: changeRequestId
+      required: true
+    description: |-
+      Retrieves the verification details (that is, the
+      matching FirewallChange objects) for Add Rule or
+      Modify Rule change requests that are already
+      verified. If the change request is not verified, the
+      method returns null.
+    name: skybox-getVerificationDetails
+    outputs:
+    - contextPath: Skybox.getVerificationDetails.getVerificationDetails
+      type: String
+  - arguments:
+    - description: The ID of the ticket
+      name: ticketId
+      required: true
+    description: |-
+      Retrieves from Skybox the list of ticket phases for
+      a ticket type.
+    name: skybox-getTicketPhases
+    outputs:
+    - contextPath: Skybox.getTicketPhases.getTicketPhases
+      type: String
+  - arguments:
+    - description: The analysis ID
+      name: analysis_id
+    - description: The analysis from which to retrieve the tickets
+      name: analysis_name
+    - description: The analysis path
+      name: analysis_path
+    - description: The analysis type
+      name: analysis_type
+    - description: The sub-range size
+      name: subRange_size
+    - description: The sub-range start
+      name: subRange_start
+    description: |-
+      Retrieves the Access Change tickets in the
+      specified analysis.
+    name: skybox-findTickets
+    outputs:
+    - contextPath: Skybox.findTickets.findTickets
+      type: String
+  - arguments:
+    - description: The ID of the ticket
+      name: ticketId
+      required: true
+    - description: |-
+        The IDs of the change requests for which to update the rule
+        attributes
+      name: changeRequestId
+      required: true
+    - description: The rule attribute business function
+      name: ruleAttributes_businessFunction
+    - description: The rule attribute comment
+      name: ruleAttributes_comment
+    - description: The custom field data type
+      name: ruleAttributes_customFields_dataType
+    - description: The custom field def ID
+      name: ruleAttributes_customFields_defId
+    - description: The custom field entity type
+      name: ruleAttributes_customFields_entityType
+    - description: The cusotm field ID
+      name: ruleAttributes_customFields_id
+    - description: The custom field name
+      name: ruleAttributes_customFields_name
+    - description: The custom field value
+      name: ruleAttributes_customFields_value
+    - description: The rule attribute email
+      name: ruleAttributes_email
+    - description: The rule attribute next review date
+      name: ruleAttributes_nextReviewDate
+    - description: The rule attribute owner
+      name: ruleAttributes_owner
+    - description: |-
+        The recertification status of the rule. Possible values:
+        l NONE
+        l IN_PROGRESS
+        l REJECTED
+        l CERTIFIED
+      name: ruleAttributes_status
+    - description: The rule attribute ticket ID
+      name: ruleAttributes_ticketId
+    description: |-
+      Sets the rule attributes for the rules in the
+      specified change requests.
+    name: skybox-setChangeRequestRuleAttributes
+    outputs:
+    - contextPath: Skybox.setChangeRequestRuleAttributes.setChangeRequestRuleAttributes
+      type: String
+  - arguments:
+    - description: The ID of the ticket
+      name: ticketId
+      required: true
+    description: |-
+      Retrieves the list of attachments to a ticket in
+      Skybox.
+    name: skybox-getAttachmentList
+    outputs:
+    - contextPath: Skybox.getAttachmentList.getAttachmentList
+      type: String
+  - arguments:
+    - description: The ID of the ticket
+      name: ticketId
+      required: true
+    - description: The ID of the change request in which to make the changes
+      name: changeRequestId
+      required: true
+    - description: Each element of the array is a key (name of field) + value set
+      name: fields_entry_key
+    - description: Each element of the array is a key (name of field) + value set
+      name: fields_entry_value
+    description: |-
+      Makes changes to specified fields of a change
+      request.
+    name: skybox-setAddRuleChangeRequestFields
+    outputs:
+    - contextPath: Skybox.setAddRuleChangeRequestFields.setAddRuleChangeRequestFields
+      type: String
+  - arguments:
+    - description: The ID of the ticket
+      name: ticketId
+      required: true
+    - description: The phase comment
+      name: phases_comment
+    - description: The phase author
+      name: phases_createdBy
+    - description: The phase creation time
+      name: phases_creationTime
+    - description: The phase current status
+      name: phases_current
+    - description: The phase demotions count
+      name: phases_demotionsCount
+    - description: The phase description
+      name: phases_description
+    - description: The phase due date
+      name: phases_dueDate
+    - description: The phase end date
+      name: phases_endDate
+    - description: The phase id
+      name: phases_id
+    - description: The phase last modification time
+      name: phases_lastModificationTime
+    - description: The phase last modification author
+      name: phases_lastModifiedBy
+    - description: The phase owner
+      name: phases_owner
+    - description: The phase revised due date
+      name: phases_revisedDueDate
+    - description: The phase start date
+      name: phases_startDate
+    - description: The ticket type phase default owner
+      name: phases_ticketTypePhase_defaultOwner
+    - description: The ticket type phase ID
+      name: phases_ticketTypePhase_id
+    - description: The ticket type phase name
+      name: phases_ticketTypePhase_name
+    - description: The ticket type phase order
+      name: phases_ticketTypePhase_order
+    - description: |2-
+         Possible values:
+        l VulnerabilityTicket
+        l ApplicationTicket
+        l VulnerabilityDefinitionTicket
+        l AccessChangeTicket
+        l PolicyViolationTicket
+        l EOLTicket
+      name: phases_ticketTypePhase_ticketType
+    - description: The tciket type phase waiting for closure status
+      name: phases_ticketTypePhase_waitingForClosure
+    - description: The phase ID
+      name: phaseOperation_phaseId
+    - description: The Phase Owner
+      name: phaseOperation_phaseOwner
+    - description: The phase operation reject
+      name: phaseOperation_reject
+    - description: |-
+        Possible values:
+        l ACCEPT
+        l CHANGE_PHASE
+        l CLOSE
+        l DEMOTE
+        l IGNORED
+        l PROMOTE
+        l REASSIGN
+        l REOPEN
+        l REQUEST_TO_CLOSE
+      name: phaseOperation_type
+      required: true
+    description: |-
+      Sets the list of ticket phases for a ticket type in
+      Skybox.
+    name: skybox-setTicketPhases
+    outputs:
+    - contextPath: Skybox.setTicketPhases.setTicketPhases
+      type: String
+  - arguments:
+    - description: The ID of the ticket
+      name: ticketId
+      required: true
+    description: |-
+      Retrieves from Skybox the list of change requests
+      for the specified ticket.
+    name: skybox-getTicketAccessRequests
+    outputs:
+    - contextPath: Skybox.getTicketAccessRequests.getTicketAccessRequests
+      type: String
+  - arguments:
+    - description: A number that will be returned back from the api endpoint
+      name: anyValue
+      required: true
+    description: Tests communication with the service
+    name: skybox-testService
+    outputs:
+    - contextPath: Skybox.testService.testService
+      type: String
+  - arguments:
+    - name: ticketId
+      required: true
+    - name: changeRequestIds
+    - name: ruleAttributes_businessFunction
+    - name: ruleAttributes_comment
+    - name: ruleAttributes_customFields_dataType
+    - name: ruleAttributes_customFields_defId
+    - name: ruleAttributes_customFields_entityType
+    - name: ruleAttributes_customFields_id
+    - name: ruleAttributes_customFields_name
+    - name: ruleAttributes_customFields_value
+    - name: ruleAttributes_email
+    - name: ruleAttributes_nextReviewDate
+    - name: ruleAttributes_owner
+    - name: ruleAttributes_status
+    - name: ruleAttributes_ticketId
+    description: |-
+      Sets the recertification status for the specified
+      change requests in the ticket and can be used to
+      change any other rule attributes for the rules in the
+      specified change requests.
+    name: skybox-setRecertificationStatus
+    outputs:
+    - contextPath: Skybox.setRecertificationStatus.setRecertificationStatus
+      type: String
+  - arguments:
+    - name: ticketId
+      required: true
+    - name: deferChangeRequestsCalculation
+      required: true
+    description: |-
+      Enables you to defer the automatic calculation of a
+      ticket until all change requests are created.
+    name: skybox-setTicketDeferChangeRequestsCalculationStatus
+    outputs:
+    - contextPath: Skybox.setTicketDeferChangeRequestsCalculationStatus.setTicketDeferChangeRequestsCalculationStatus
+      type: String
+  - arguments:
+    - name: ticketId
+      required: true
+    - name: sponsoringApplicationId
+      required: true
+    description: Sets the sponsoring application for a ticket.
+    name: skybox-setSponsoringApplication
+    outputs:
+    - contextPath: Skybox.setSponsoringApplication.setSponsoringApplication
+      type: String
+  - arguments:
+    - name: filter_createdBy
+    - name: filter_freeTextFilter
+    - name: filter_modifiedBy
+    - name: filter_myGroups
+    - name: filter_owner
+    - name: filter_phaseName
+    - name: filter_statusFilter
+    - name: filter_ticketIdsFilter
+    - name: subRange_size
+    - name: subRange_start
+    description: |-
+      Retrieves all Access Change tickets that match
+      the search criteria.
+    name: skybox-findAccessChangeTickets
+    outputs:
+    - contextPath: Skybox.findAccessChangeTickets.findAccessChangeTickets
+      type: String
+  - arguments:
+    - name: ticketId
+    - name: ticketIdType
+      required: true
+    description: |-
+      Retrieves ticket data from Skybox.
+      You can use this method with all ticket types.
+    name: skybox-getTicketFields
+    outputs:
+    - contextPath: Skybox.getTicketFields.getTicketFields
+      type: String
+  - arguments:
+    - name: ticketIds
+      required: true
+    description: |-
+      Retrieves the list of implemented change requests
+      in the specified tickets according to the
+      permissions of the user sending the request.
+    name: skybox-getTicketsImplementedChangeRequests
+    outputs:
+    - contextPath: Skybox.getTicketsImplementedChangeRequests.getTicketsImplementedChangeRequests
+      type: String
+  - arguments:
+    - name: ticketId
+      required: true
+    description: |-
+      Returns the calculation status of the specified
+      ticket (whether calculation of the change requests
+      is deferred).
+    name: skybox-getTicketDeferChangeRequestsCalculationStatus
+    outputs:
+    - contextPath: Skybox.getTicketDeferChangeRequestsCalculationStatus.getTicketDeferChangeRequestsCalculationStatus
+      type: String
+  - arguments:
+    - name: ticketId
+      required: true
+    - name: changeRequestId
+      required: true
+    description: |-
+      Retrieves the list of Vulnerability Definitions that, if
+      the requested change is made, are directly
+      exposed to assets.
+    name: skybox-getPotentialVulnerabilities
+    outputs:
+    - contextPath: Skybox.getPotentialVulnerabilities.getPotentialVulnerabilities
+      type: String
+  dockerimage: demisto/zeep:1.0.0.19873
+  runonce: false
+  script: ''
+  subtype: python3
+  type: python

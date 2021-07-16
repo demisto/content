@@ -1,0 +1,17 @@
+{
+    "name": "Skybox Change Manager",
+    "description": "Skybox\u00ae Change Manager workflows for firewall rule creation, recertification and deprovisioning help maintain continuous compliance, close security gaps and limit vulnerability exposures.",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "Maciej Drobniuch",
+    "url": "",
+    "email": "",
+    "created": "2021-07-16T10:38:08Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "githubUser": [
+        "mdrobniu"
+    ]
+}
