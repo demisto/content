@@ -25,7 +25,6 @@ run-unittests-and-lint:
   extends:
     - .run-unittests-and-lint
   rules:
-    - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/'
     - if: '$NIGHTLY'
 
 
@@ -33,7 +32,6 @@ run-validations:
   extends:
     - .run-validations
   rules:
-    - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/'
     - if: '$NIGHTLY'
 
 
