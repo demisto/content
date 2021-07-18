@@ -81,15 +81,15 @@ script:
         ensure that the email is delivered to every single recipient.
       name: BypassListManagement
       predefined:
-      - "True"
-      - "False"
+      - 'True'
+      - 'False'
     - auto: PREDEFINED
       description: Sandbox Mode allows you to send a test email to ensure that your
         request body is valid and formatted correctly.
       name: SandboxMode
       predefined:
-      - "True"
-      - "False"
+      - 'True'
+      - 'False'
     - description: 'The default footer that you would like included on every email.
         For ex: {"enable": "True","html": "<p>Thanks</br>The SendGrid Team</p>","text":
         "Thanks,/n The SendGrid Team"}'

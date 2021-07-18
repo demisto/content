@@ -1,0 +1,14 @@
+!cbd-lr-file-put device_id=1234567 destination_path="C:\\test\\test_file.txt" file_id=142@5
+!cbd-lr-file-get device_id=1234567 source_path="C:\\test\\test_file.txt" delay=2 timeout=30
+!cbd-lr-file-delete device_id=1234567 source_path="C:\\test\\test_file.txt"
+!cbd-lr-reg-key-create device_id=1234567 reg_path=HKEY_LOCAL_MACHINE\\SOFTWARE\\TEST
+!cbd-lr-reg-value-set device_id=1234567 reg_path=HKEY_LOCAL_MACHINE\\SOFTWARE\\TEST\\TEST_VAL value_data=[\"val_1\",\"val_2\"] value_type=REG_MULTI_SZ
+!cbd-lr-reg-sub-keys device_id=1234567 reg_path=HKEY_LOCAL_MACHINE\\SOFTWARE\\TEST
+!cbd-lr-reg-get-values device_id=1234567 reg_path=HKEY_LOCAL_MACHINE\\SOFTWARE\\TEST
+!cbd-lr-reg-value-delete device_id=1234567 reg_path=HKEY_LOCAL_MACHINE\\SOFTWARE\\TEST\\TEST_VAL
+!cbd-lr-reg-key-delete reg_path=HKEY_LOCAL_MACHINE\\SOFTWARE\\TEST device_id=1234567
+!cbd-lr-directory-listing device_id=1234567 directory_path="C:\\test\\"
+!cbd-lr-ps device_id=1234567
+!cbd-lr-execute device_id=1234567 command_string="c:\\Windows\\system32\\cmd.exe"
+!cbd-lr-kill pid=4424 device_id=1234567
+!cbd-lr-memdump device_id=1234567 target_path=C:\\test\\test_dumped_file

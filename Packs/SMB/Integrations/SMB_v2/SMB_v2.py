@@ -1,5 +1,5 @@
 import uuid
-
+import traceback
 from CommonServerPython import *
 import demistomock as demisto
 
@@ -12,8 +12,46 @@ from smbclient import (
     scandir,
     remove,
     mkdir,
-    rmdir
+    rmdir,
 )
+
+from smbprotocol.structure import DateTimeField
+from datetime import (
+    datetime,
+    timedelta,
+)
+import types
+import struct
+
+
+# A monkeypatch to issue: https://github.com/jborean93/smbprotocol/issues/114
+def _parse_value(self, value):
+    if value is None:
+        datetime_value = datetime.today()
+    elif isinstance(value, types.LambdaType):
+        datetime_value = value  # type: ignore[assignment]
+    elif isinstance(value, bytes):
+        format = self._get_struct_format(8)
+        struct_string = "%s%s"\
+                        % ("<" if self.little_endian else ">", format)
+        int_value = struct.unpack(struct_string, value)[0]
+        return self._parse_value(int_value)  # just parse the value again
+    elif isinstance(value, int):
+        time_microseconds = (value - self.EPOCH_FILETIME) // 10
+        try:
+            datetime_value = datetime(1970, 1, 1) + \
+                timedelta(microseconds=time_microseconds)
+        except OverflowError:
+            datetime_value = datetime.today()
+    elif isinstance(value, datetime):
+        datetime_value = value
+    else:
+        raise TypeError("Cannot parse value for field %s of type %s to a "
+                        "datetime" % (self.name, type(value).__name__))
+    return datetime_value
+
+
+DateTimeField._parse_value = _parse_value
 
 
 def get_file_name(path):
@@ -47,7 +85,9 @@ class SMBClient:
             username=user or self._user,
             password=password or self._password,
             port=port or self._port,
-            encrypt=encrypt or self._encrypt)
+            encrypt=encrypt or self._encrypt,
+            auth_protocol='ntlm',
+        )
 
 
 def test_module(client: SMBClient):
@@ -182,15 +222,19 @@ def main():
     dc = params.get('dc', None)
     verify = params.get('require_secure_negotiate', True)
     client_guid = params.get('client_guid', None)
+
+    # Temporary workaround to an issue in the smbprotocol package.
+    # Git issue: https://github.com/jborean93/smbprotocol/issues/109
+    config = smbclient.ClientConfig(username=user, password=password, require_secure_negotiate=verify)
+    config.domain_controller = dc
+
     if client_guid:
         try:
             client_guid = uuid.UUID(client_guid)
+            config.client_guid = client_guid
         except ValueError:
-            demisto.info(f'Failed to convert {client_guid} to a valid UUID string. Using a random generated UUID instead')
-            client_guid = None
-
-    smbclient.ClientConfig(username=user, password=password, require_secure_negotiate=verify, domain_controller=dc,
-                           client_guid=client_guid)
+            demisto.info(
+                f'Failed to convert {client_guid} to a valid UUID string. Using a random generated UUID instead')
 
     client = SMBClient(hostname=hostname,
                        user=user,
@@ -216,6 +260,7 @@ def main():
         elif demisto.command() == 'smb-directory-remove':
             return_results(smb_rmdir(client, demisto.args()))
     except Exception as e:
+        demisto.error(traceback.format_exc())
         return_error(f'Failed to execute {demisto.command()} command. Error: {str(e)}')
     finally:
         smbclient.reset_connection_cache()

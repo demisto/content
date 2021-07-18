@@ -1,5 +1,12 @@
+import json
+
 import pytest
 import demistomock as demisto
+
+
+def load_json_file(path):
+    with open(path, 'r') as _json_file:
+        return json.load(_json_file)
 
 
 @pytest.mark.parametrize(argnames="threatconnect_score, dbot_score",
@@ -17,17 +24,15 @@ def test_calculate_dbot_score(threatconnect_score, dbot_score):
 
 def test_parse_indicator(datadir):
     from FeedThreatConnect import parse_indicator
-    from json import load
 
-    assert load(datadir['parsed_indicator.json'].open()) == parse_indicator(load(datadir['indicators.json'].open()))
+    assert load_json_file(datadir['parsed_indicator.json']) == parse_indicator(load_json_file(datadir['indicators.json']))
 
 
 def test_parse_indicator_with_tlp(mocker, datadir):
     from FeedThreatConnect import parse_indicator
-    from json import load
 
-    expected_result = load(datadir['parsed_indicator.json'].open())
+    expected_result = load_json_file(datadir['parsed_indicator.json'])
     expected_result['fields']['trafficlightprotocol'] = 'AMBER'
 
     mocker.patch.object(demisto, 'params', return_value={'tlp_color': 'AMBER'})
-    assert expected_result == parse_indicator(load(datadir['indicators.json'].open()))
+    assert expected_result == parse_indicator(load_json_file(datadir['indicators.json']))

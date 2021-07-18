@@ -1,8 +1,10 @@
-from GitHub import main, BASE_URL, list_branch_pull_requests
-import demistomock as demisto
 import json
+
 import pytest
 
+import demistomock as demisto
+from CommonServerPython import CommandResults
+from GitHub import main, BASE_URL, list_branch_pull_requests
 
 MOCK_PARAMS = {
     'user': 'test',
@@ -115,3 +117,24 @@ def test_list_team_members_command(mocker, maximum_users, expected_result1):
 
     url_suffix = '/orgs/demisto/teams/content/members'
     mock_list_members.call_args_list[0]('GET', url_suffix, expected_result1)
+
+
+def test_get_issue_events_command(mocker):
+    """
+    Given:
+        'issue_number': Issue number in GitHub.
+    When:
+        Wanting to retrieve events for given issue number.
+    Then:
+        Assert expected CommandResults object is returned.
+    """
+    import GitHub
+    GitHub.ISSUE_SUFFIX = ''
+    mock_response = load_test_data('test_data/search_issue_events_response.json')
+    mocker.patch('GitHub.http_request', return_value=mock_response)
+    mocker_output = mocker.patch('GitHub.return_results')
+    GitHub.get_issue_events_command()
+    result: CommandResults = mocker_output.call_args[0][0]
+    assert result.outputs == mock_response
+    assert result.outputs_key_field == 'id'
+    assert result.outputs_prefix == 'GitHub.IssueEvent'

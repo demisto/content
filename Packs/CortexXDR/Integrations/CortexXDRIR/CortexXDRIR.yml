@@ -183,7 +183,8 @@ script:
       secret: false
     - default: false
       description: 'Filters only incidents in the specified status. The options are:
-     new, under_investigation, resolved_threat_handled, resolved_known_issue, resolved_false_positive, resolved_other, resolved_auto'
+        new, under_investigation, resolved_threat_handled, resolved_known_issue, resolved_false_positive,
+        resolved_other, resolved_auto'
       isArray: false
       name: status
       required: false
@@ -354,6 +355,12 @@ script:
     - contextPath: PaloAltoNetworksXDR.Incident.starred
       description: Incident starred.
       type: Boolean
+    - contextPath: PaloAltoNetworksXDR.Incident.wildfire_hits.mitre_techniques_ids_and_names
+      description: Incident Mitre techniques ids and names.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Incident.wildfire_hits.mitre_tactics_ids_and_names
+      description: Incident Mitre tactics ids and names.
+      type: String
     - contextPath: PaloAltoNetworksXDR.Incident.alerts.alert_id
       description: Unique ID for each alert.
       type: String
@@ -728,9 +735,10 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
+      defaultValue: Medium
       description: |-
         String value of alert severity. Valid values are:
-        Informational, Low, Medium, High, or Unknown
+        Informational, Low, Medium or High
       isArray: false
       name: severity
       predefined:
@@ -738,7 +746,6 @@ script:
       - Low
       - Medium
       - High
-      - Unknown
       required: false
       secret: false
     - default: false
@@ -1051,7 +1058,7 @@ script:
       description: The endpoint's MAC address.
       type: String
     - contextPath: Endpoint.Vendor
-      description: The integration name of the endpoint vendor. 
+      description: The integration name of the endpoint vendor.
       type: String
   - deprecated: false
     description: Gets a list of all the agent versions to use for creating a distribution
@@ -1750,17 +1757,19 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'false'
-      description: Whether to scan all of the endpoints or not. Default is false. Do note that scanning all the endpoints may cause performance issues and latency.
+      description: Whether to scan all of the endpoints or not. Default is false.
+        Scanning all of the endpoints may cause performance issues and latency.
       isArray: false
       name: all
       predefined:
-        - 'true'
-        - 'false'
+      - 'true'
+      - 'false'
       required: false
       secret: false
     deprecated: false
     description: Runs a scan on a selected endpoint. To scan all endpoints, run this
-      command with argument all=true. Do note that scanning all the endpoints may cause performance issues and latency.
+      command with argument all=true. Do note that scanning all the endpoints may
+      cause performance issues and latency.
     execution: true
     name: xdr-endpoint-scan
     outputs:
@@ -1867,9 +1876,9 @@ script:
       secret: false
     deprecated: false
     description: Cancel the scan of selected endpoints. A scan can only be aborted
-      if the selected endpoints are Pending or In Progress. To scan all
-      endpoints, run the command with the argument all=true. Note that scanning all
-      of the endpoints may cause performance issues and latency.
+      if the selected endpoints are Pending or In Progress. To scan all endpoints,
+      run the command with the argument all=true. Note that scanning all of the endpoints
+      may cause performance issues and latency.
     execution: true
     name: xdr-endpoint-scan-abort
     outputs:
@@ -2474,7 +2483,7 @@ script:
       type: Number
   - arguments:
     - default: false
-      description: Action ID retrieved from the xdr-run-script command.
+      description: Action IDs retrieved from the xdr-run-script command.
       isArray: true
       name: action_id
       required: true
@@ -2524,7 +2533,7 @@ script:
       type: Number
   - arguments:
     - default: false
-      description: Action ID retrieved from the xdr-run-script command.
+      description: Action IDs retrieved from the xdr-run-script command.
       isArray: true
       name: action_id
       required: true
@@ -2660,13 +2669,15 @@ script:
     - default: false
       description: Comma-separated list of endpoint IDs. Can be retrieved by running
         the xdr-get-endpoints command.
-      isArray: false
+      isArray: true
       name: endpoint_ids
       required: true
       secret: false
     - default: false
-      description: Path of the file to delete.
-      isArray: false
+      description: Paths of the files to delete, in a comma-separated list. Paths
+        of the files to check for existence. All of the given file paths will run
+        on all of the endpoints.
+      isArray: true
       name: file_path
       required: true
       secret: false
@@ -2693,13 +2704,14 @@ script:
     - default: false
       description: Comma-separated list of endpoint IDs. Can be retrieved by running
         the xdr-get-endpoints command.
-      isArray: false
+      isArray: true
       name: endpoint_ids
       required: true
       secret: false
     - default: false
-      description: Path of the file to check for existence.
-      isArray: false
+      description: Paths of the files to check for existence, in a comma-separated
+        list. All of the given file paths will run on all of the endpoints.
+      isArray: true
       name: file_path
       required: true
       secret: false
@@ -2725,13 +2737,14 @@ script:
     - default: false
       description: Comma-separated list of endpoint IDs. Can be retrieved by running
         the xdr-get-endpoints command.
-      isArray: false
+      isArray: true
       name: endpoint_ids
       required: true
       secret: false
     - default: false
-      description: Name of process to kill.
-      isArray: false
+      description: Names of processes to kill. Will kill all of the given processes
+        on all of the endpoints.
+      isArray: true
       name: process_name
       required: true
       secret: false
@@ -2801,7 +2814,7 @@ script:
     - contextPath: Endpoint.Vendor
       description: The integration name of the endpoint vendor.
       type: String
-  dockerimage: demisto/python3:3.9.4.18682
+  dockerimage: demisto/python3:3.9.5.21272
   feed: false
   isfetch: true
   longRunning: false

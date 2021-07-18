@@ -527,6 +527,65 @@
                 }
             }
         },
+        "GIB Data Breach": {
+            "dontMapEventToLabels": true,
+            "internalMapping": {
+                "GIB Email": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "email",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "GIB ID": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "id",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "GIB Leak Name": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "leakName",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "GIB Password": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "password",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "GIB Severity": {
+                    "complex": {
+                        "accessor": "severity",
+                        "filters": [],
+                        "root": "evaluation",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "severity": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "systemSeverity",
+                        "transformers": []
+                    },
+                    "simple": ""
+                }
+            }
+        },
         "GIB OSI Git Leak": {
             "dontMapEventToLabels": true,
             "internalMapping": {

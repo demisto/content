@@ -60,7 +60,7 @@ Get a list of endpoints. An endpoint device is an Internet-capable hardware devi
                 "attributes": {
                     "A": "B",
                     "C": "D",
-                    "demisto_test": "b",
+                    "test": "b",
                     "test": "bad"
                 },
                 "description": "test",
@@ -70,7 +70,7 @@ Get a list of endpoints. An endpoint device is an Internet-capable hardware devi
             },
             {
                 "attributes": {
-                    "demisto_test": "aaaaa"
+                    "test": "aaaaa"
                 },
                 "description": "aaaa",
                 "id": 3002,
@@ -87,8 +87,8 @@ Get a list of endpoints. An endpoint device is an Internet-capable hardware devi
 >### HPE Aruba ClearPass endpoints
 >|attributes|description|id|mac_address|status|
 >|---|---|---|---|---|
->| A: B<br/>C: D<br/>test: bad<br/>demisto_test: b | test | 3001 | 005056894ae2 | Known |
->| demisto_test: aaaaa | aaaa | 3002 | 001b44113ab7 | Known |
+>| A: B<br/>C: D<br/>test: bad<br/>test: b | test | 3001 | 005056894ae2 | Known |
+>| test: aaaaa | aaaa | 3002 | 001b44113ab7 | Known |
 
 
 ### aruba-clearpass-endpoint-update
@@ -108,7 +108,7 @@ Updates some fields of an endpoint.
 | status | Status of the endpoint to be set. Can be Known/Unknown/Disabled. Possible values: Known, Unknown, Disabled. | Optional | 
 | description | Description of the endpoint to be set. | Optional | 
 | device_insight_tags | A comma-separated list of Device Insight Tags. | Optional | 
-| attributes | Additional attributes (key/value pairs) that may be stored with the endpoint. For example: [{"demisto_test": "aaaaa"},{"test":"good"}]. | Optional | 
+| attributes | Additional attributes (key/value pairs) that may be stored with the endpoint. For example: [{"test1": "aaaaa"},{"test2":"good"}]. | Optional | 
 
 
 #### Context Output
@@ -134,8 +134,8 @@ Updates some fields of an endpoint.
             "attributes": {
                 "A": "B",
                 "C": "D",
-                "demisto_test": "b",
-                "test": "bad"
+                "test1": "b",
+                "test2": "bad"
             },
             "description": "test",
             "id": 3001,
@@ -151,7 +151,7 @@ Updates some fields of an endpoint.
 >### HPE Aruba ClearPass endpoints
 >|attributes|description|id|mac_address|status|
 >|---|---|---|---|---|
->| A: B<br/>C: D<br/>test: bad<br/>demisto_test: b | test | 3001 | 005056894ae2 | Known |
+>| A: B<br/>C: D<br/>test1: bad<br/>test2: b | test | 3001 | 005056894ae2 | Known |
 
 
 ### aruba-clearpass-attributes-list

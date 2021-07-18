@@ -1,0 +1,426 @@
+{
+    "alert": [
+        {
+            "ack": "no",
+            "action": "notified",
+            "alertUrl": "https://FireEyeCM/event_stream/events_for_bot?ev_id=35267",
+            "applianceId": "app",
+            "attackTime": "2021-05-18 00:47:44 +0000",
+            "dst": {
+                "ip": "1.1.1.1",
+                "mac": "00:00:00:00:00:00",
+                "port": 443
+            },
+            "explanation": {
+                "malwareDetected": {
+                    "malware": [
+                        {
+                            "name": "Trojan.Malicious.SSL.Certificate.Dridex"
+                        }
+                    ]
+                },
+                "osChanges": []
+            },
+            "id": 35267,
+            "malicious": "yes",
+            "name": "MALWARE_CALLBACK",
+            "occurred": "2021-05-18 00:47:44 +0000",
+            "product": "WEB_MPS",
+            "rootInfection": 34416,
+            "scVersion": "1153.102",
+            "sensor": "fireeye-941918",
+            "sensorIp": "1.1.1.1",
+            "severity": "CRIT",
+            "src": {
+                "ip": "2.2.2.2",
+                "port": 48706
+            },
+            "uuid": "uuid",
+            "vlan": 0
+        },
+        {
+            "ack": "no",
+            "action": "notified",
+            "alertUrl": "https://FireEyeCM/event_stream/events_for_bot?ev_id=35268",
+            "applianceId": "app",
+            "attackTime": "2021-05-18 01:50:45 +0000",
+            "dst": {
+                "ip": "1.1.1.1",
+                "mac": "00:00:00:00:00:00",
+                "port": 443
+            },
+            "explanation": {
+                "malwareDetected": {
+                    "malware": [
+                        {
+                            "name": "Trojan.Malicious.SSL.Certificate.Dridex"
+                        }
+                    ]
+                },
+                "osChanges": []
+            },
+            "id": 35268,
+            "malicious": "yes",
+            "name": "MALWARE_CALLBACK",
+            "occurred": "2021-05-18 01:50:45 +0000",
+            "product": "WEB_MPS",
+            "rootInfection": 34417,
+            "scVersion": "1153.104",
+            "sensor": "fireeye-941918",
+            "sensorIp": "1.1.1.1",
+            "severity": "CRIT",
+            "src": {
+                "ip": "2.2.2.2",
+                "port": 48862
+            },
+            "uuid": "uuid",
+            "vlan": 0
+        },
+        {
+            "ack": "no",
+            "action": "notified",
+            "alertUrl": "https://FireEyeCM/event_stream/events_for_bot?ev_id=35269",
+            "applianceId": "app",
+            "attackTime": "2021-05-18 02:53:54 +0000",
+            "dst": {
+                "ip": "1.1.1.1",
+                "mac": "00:00:00:00:00:00",
+                "port": 443
+            },
+            "explanation": {
+                "malwareDetected": {
+                    "malware": [
+                        {
+                            "name": "Trojan.Malicious.SSL.Certificate.Dridex"
+                        }
+                    ]
+                },
+                "osChanges": []
+            },
+            "id": 35269,
+            "malicious": "yes",
+            "name": "MALWARE_CALLBACK",
+            "occurred": "2021-05-18 02:53:54 +0000",
+            "product": "WEB_MPS",
+            "rootInfection": 34418,
+            "scVersion": "1153.106",
+            "sensor": "fireeye-941918",
+            "sensorIp": "1.1.1.1",
+            "severity": "CRIT",
+            "src": {
+                "ip": "2.2.2.2",
+                "port": 8081
+            },
+            "uuid": "uuid",
+            "vlan": 0
+        },
+        {
+            "ack": "no",
+            "action": "notified",
+            "alertUrl": "https://FireEyeCM/event_stream/events_for_bot?ev_id=35272",
+            "applianceId": "app",
+            "attackTime": "2021-05-18 03:57:14 +0000",
+            "dst": {
+                "ip": "1.1.1.1",
+                "mac": "00:00:00:00:00:00",
+                "port": 443
+            },
+            "explanation": {
+                "malwareDetected": {
+                    "malware": [
+                        {
+                            "name": "Trojan.Malicious.SSL.Certificate.Dridex"
+                        }
+                    ]
+                },
+                "osChanges": []
+            },
+            "id": 35272,
+            "malicious": "yes",
+            "name": "MALWARE_CALLBACK",
+            "occurred": "2021-05-18 03:57:14 +0000",
+            "product": "WEB_MPS",
+            "rootInfection": 34421,
+            "scVersion": "1153.108",
+            "sensor": "fireeye-941918",
+            "sensorIp": "1.1.1.1",
+            "severity": "CRIT",
+            "src": {
+                "ip": "2.2.2.2",
+                "port": 58906
+            },
+            "uuid": "uuid",
+            "vlan": 0
+        },
+        {
+            "ack": "no",
+            "action": "notified",
+            "alertUrl": "https://FireEyeCM/event_stream/events_for_bot?ev_id=35273",
+            "applianceId": "app",
+            "attackTime": "2021-05-18 05:04:36 +0000",
+            "dst": {
+                "ip": "1.1.1.1",
+                "mac": "00:00:00:00:00:00",
+                "port": 443
+            },
+            "explanation": {
+                "malwareDetected": {
+                    "malware": [
+                        {
+                            "name": "Trojan.Malicious.SSL.Certificate.Dridex"
+                        }
+                    ]
+                },
+                "osChanges": []
+            },
+            "id": 35273,
+            "malicious": "yes",
+            "name": "MALWARE_CALLBACK",
+            "occurred": "2021-05-18 05:04:36 +0000",
+            "product": "WEB_MPS",
+            "rootInfection": 34422,
+            "scVersion": "1153.110",
+            "sensor": "fireeye-941918",
+            "sensorIp": "1.1.1.1",
+            "severity": "CRIT",
+            "src": {
+                "ip": "2.2.2.2",
+                "port": 43716
+            },
+            "uuid": "uuid",
+            "vlan": 0
+        },
+        {
+            "ack": "no",
+            "action": "notified",
+            "alertUrl": "https://FireEyeCM/event_stream/events_for_bot?ev_id=35274",
+            "applianceId": "app",
+            "attackTime": "2021-05-18 06:11:42 +0000",
+            "dst": {
+                "ip": "1.1.1.1",
+                "mac": "00:00:00:00:00:00",
+                "port": 443
+            },
+            "explanation": {
+                "malwareDetected": {
+                    "malware": [
+                        {
+                            "name": "Trojan.Malicious.SSL.Certificate.Dridex"
+                        }
+                    ]
+                },
+                "osChanges": []
+            },
+            "id": 35274,
+            "malicious": "yes",
+            "name": "MALWARE_CALLBACK",
+            "occurred": "2021-05-18 06:11:42 +0000",
+            "product": "WEB_MPS",
+            "rootInfection": 34423,
+            "scVersion": "1153.112",
+            "sensor": "fireeye-941918",
+            "sensorIp": "1.1.1.1",
+            "severity": "CRIT",
+            "src": {
+                "ip": "2.2.2.2",
+                "port": 49980
+            },
+            "uuid": "uuid",
+            "vlan": 0
+        },
+        {
+            "ack": "no",
+            "action": "notified",
+            "alertUrl": "https://FireEyeCM/event_stream/events_for_bot?ev_id=35275",
+            "applianceId": "app",
+            "attackTime": "2021-05-18 07:23:49 +0000",
+            "dst": {
+                "ip": "1.1.1.1",
+                "mac": "00:00:00:00:00:00",
+                "port": 443
+            },
+            "explanation": {
+                "malwareDetected": {
+                    "malware": [
+                        {
+                            "name": "Trojan.Malicious.SSL.Certificate.Dridex"
+                        }
+                    ]
+                },
+                "osChanges": []
+            },
+            "id": 35275,
+            "malicious": "yes",
+            "name": "MALWARE_CALLBACK",
+            "occurred": "2021-05-18 07:23:49 +0000",
+            "product": "WEB_MPS",
+            "rootInfection": 34424,
+            "scVersion": "1153.114",
+            "sensor": "fireeye-941918",
+            "sensorIp": "1.1.1.1",
+            "severity": "CRIT",
+            "src": {
+                "ip": "2.2.2.2",
+                "port": 50164
+            },
+            "uuid": "uuid",
+            "vlan": 0
+        },
+        {
+            "ack": "no",
+            "action": "notified",
+            "alertUrl": "https://FireEyeCM/event_stream/events_for_bot?ev_id=35276",
+            "applianceId": "app",
+            "attackTime": "2021-05-18 08:35:44 +0000",
+            "dst": {
+                "ip": "1.1.1.1",
+                "mac": "00:00:00:00:00:00",
+                "port": 443
+            },
+            "explanation": {
+                "malwareDetected": {
+                    "malware": [
+                        {
+                            "name": "Trojan.Malicious.SSL.Certificate.Dridex"
+                        }
+                    ]
+                },
+                "osChanges": []
+            },
+            "id": 35276,
+            "malicious": "yes",
+            "name": "MALWARE_CALLBACK",
+            "occurred": "2021-05-18 08:35:44 +0000",
+            "product": "WEB_MPS",
+            "rootInfection": 34425,
+            "scVersion": "1153.116",
+            "sensor": "fireeye-941918",
+            "sensorIp": "1.1.1.1",
+            "severity": "CRIT",
+            "src": {
+                "ip": "2.2.2.2",
+                "port": 50334
+            },
+            "uuid": "uuid",
+            "vlan": 0
+        },
+        {
+            "ack": "no",
+            "action": "notified",
+            "alertUrl": "https://FireEyeCM/event_stream/events_for_bot?ev_id=35277",
+            "applianceId": "app",
+            "attackTime": "2021-05-18 09:39:22 +0000",
+            "dst": {
+                "ip": "1.1.1.1",
+                "mac": "00:00:00:00:00:00",
+                "port": 443
+            },
+            "explanation": {
+                "malwareDetected": {
+                    "malware": [
+                        {
+                            "name": "Trojan.Malicious.SSL.Certificate.Dridex"
+                        }
+                    ]
+                },
+                "osChanges": []
+            },
+            "id": 35277,
+            "malicious": "yes",
+            "name": "MALWARE_CALLBACK",
+            "occurred": "2021-05-18 09:39:22 +0000",
+            "product": "WEB_MPS",
+            "rootInfection": 34426,
+            "scVersion": "1153.118",
+            "sensor": "fireeye-941918",
+            "sensorIp": "1.1.1.1",
+            "severity": "CRIT",
+            "src": {
+                "ip": "2.2.2.2",
+                "port": 51668
+            },
+            "uuid": "uuid",
+            "vlan": 0
+        },
+        {
+            "ack": "no",
+            "action": "notified",
+            "alertUrl": "https://FireEyeCM/event_stream/events_for_bot?ev_id=35278",
+            "applianceId": "app",
+            "attackTime": "2021-05-18 10:46:28 +0000",
+            "dst": {
+                "ip": "1.1.1.1",
+                "mac": "00:00:00:00:00:00",
+                "port": 443
+            },
+            "explanation": {
+                "malwareDetected": {
+                    "malware": [
+                        {
+                            "name": "Trojan.Malicious.SSL.Certificate.Dridex"
+                        }
+                    ]
+                },
+                "osChanges": []
+            },
+            "id": 35278,
+            "malicious": "yes",
+            "name": "MALWARE_CALLBACK",
+            "occurred": "2021-05-18 10:46:28 +0000",
+            "product": "WEB_MPS",
+            "rootInfection": 34427,
+            "scVersion": "1153.122",
+            "sensor": "fireeye-941918",
+            "sensorIp": "1.1.1.1",
+            "severity": "CRIT",
+            "src": {
+                "ip": "2.2.2.2",
+                "port": 50656
+            },
+            "uuid": "uuid",
+            "vlan": 0
+        },
+        {
+            "ack": "no",
+            "action": "notified",
+            "alertUrl": "https://FireEyeCM/event_stream/events_for_bot?ev_id=35279",
+            "applianceId": "app",
+            "attackTime": "2021-05-18 12:02:54 +0000",
+            "dst": {
+                "ip": "1.1.1.1",
+                "mac": "00:00:00:00:00:00",
+                "port": 443
+            },
+            "explanation": {
+                "malwareDetected": {
+                    "malware": [
+                        {
+                            "name": "Trojan.Malicious.SSL.Certificate.Dridex"
+                        }
+                    ]
+                },
+                "osChanges": []
+            },
+            "id": 35279,
+            "malicious": "yes",
+            "name": "MALWARE_CALLBACK",
+            "occurred": "2021-05-18 12:02:54 +0000",
+            "product": "WEB_MPS",
+            "rootInfection": 34428,
+            "scVersion": "1153.124",
+            "sensor": "fireeye-941918",
+            "sensorIp": "1.1.1.1",
+            "severity": "CRIT",
+            "src": {
+                "ip": "1.1.1.1",
+                "port": 8080
+            },
+            "uuid": "uuid",
+            "vlan": 0
+        }
+    ],
+    "alertsCount": 11,
+    "appliance": "CMS",
+    "msg": "concise",
+    "version": "CMS (CMS) 9.0.2.929543"
+}

@@ -1,0 +1,24 @@
+{
+    "description": "Classifies Cyberpion alerts.",
+    "feed": false,
+    "id": "Cyberpion-Classifier",
+    "keyTypeMap": {
+        "cyberpion_action_item": "Cyberpion Security Alert"
+    },
+    "name": "Cyberpion-Classifier",
+    "propagationLabels": [
+        "all"
+    ],
+    "transformer": {
+        "complex": {
+            "accessor": "",
+            "filters": [],
+            "root": "alert_type",
+            "transformers": []
+        },
+        "simple": ""
+    },
+    "type": "classification",
+    "version": -1,
+    "fromVersion": "6.0.0"
+}

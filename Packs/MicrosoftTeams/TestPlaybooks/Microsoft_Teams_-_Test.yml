@@ -1,0 +1,107 @@
+id: Microsoft Teams - Test
+version: -1
+name: Microsoft Teams - Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: cd7763d0-f959-46ae-886e-669d43a0c10b
+    type: start
+    task:
+      id: cd7763d0-f959-46ae-886e-669d43a0c10b
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: 89ee8703-a437-45b1-81cd-3e26c0ca3971
+    type: regular
+    task:
+      id: 89ee8703-a437-45b1-81cd-3e26c0ca3971
+      version: -1
+      name: Mirror Investigation
+      description: Mirrors the Demisto investigation to the specified Microsoft Teams
+        channel.
+      script: '|||mirror-investigation'
+      type: regular
+      iscommand: true
+      brand: ""
+    scriptarguments:
+      channel_name:
+        simple: ${GeneratedUUID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: 277c96c6-5d92-4975-80dd-1e330d54cb1e
+    type: regular
+    task:
+      id: 277c96c6-5d92-4975-80dd-1e330d54cb1e
+      version: -1
+      name: Generate channel name
+      description: Generates a random UUID (UUID 4).
+      scriptName: GenerateRandomUUID
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 415,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.0.0
+description: ''

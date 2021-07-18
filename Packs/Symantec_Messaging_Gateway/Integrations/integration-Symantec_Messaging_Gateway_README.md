@@ -82,7 +82,7 @@
 </table>
 <p> </p>
 <h5>Raw Output</h5>
-<pre>Email address admin@company.com was blocked successfully.</pre>
+<pre>Email address admin@example.com was blocked successfully.</pre>
 <p> </p>
 <h3 id="h_59612418551530522681308">2. Block a domain</h3>
 <hr>
@@ -214,7 +214,7 @@
 </table>
 <p> </p>
 <h5>Raw Output</h5>
-<pre>Email address admin@company.com was unblocked successfully.</pre>
+<pre>Email address admin@example.com was unblocked successfully.</pre>
 <p> </p>
 <h3 id="h_2689340341961530522712183">5. Unblock a domain</h3>
 <hr>

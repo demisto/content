@@ -17,130 +17,171 @@
                 "Gra Case Id": {
                     "complex": {
                         "accessor": "",
-                        "filters": [
-
-                        ],
+                        "filters": [],
                         "root": "caseId",
-                        "transformers": [
-
-                        ]
+                        "transformers": []
                     },
                     "simple": ""
                 },
                 "Gra Entity": {
                     "complex": {
                         "accessor": "",
-                        "filters": [
-
-                        ],
+                        "filters": [],
                         "root": "entity",
-                        "transformers": [
-
-                        ]
+                        "transformers": []
                     },
                     "simple": ""
                 },
                 "Gra Entity Id": {
                     "complex": {
                         "accessor": "",
-                        "filters": [
-
-                        ],
+                        "filters": [],
                         "root": "entityId",
-                        "transformers": [
-
-                        ]
+                        "transformers": []
                     },
                     "simple": ""
                 },
                 "Gra Entity Type Id": {
                     "complex": {
                         "accessor": "",
-                        "filters": [
-
-                        ],
+                        "filters": [],
                         "root": "entityTypeId",
-                        "transformers": [
-
-                        ]
+                        "transformers": []
                     },
                     "simple": ""
                 },
                 "Gra Open Date": {
                     "complex": {
                         "accessor": "",
-                        "filters": [
-
-                        ],
+                        "filters": [],
                         "root": "openDate",
-                        "transformers": [
-
-                        ]
+                        "transformers": []
                     },
                     "simple": ""
                 },
                 "Gra Owner Id": {
                     "complex": {
                         "accessor": "",
-                        "filters": [
-
-                        ],
+                        "filters": [],
                         "root": "ownerId",
-                        "transformers": [
-
-                        ]
+                        "transformers": []
                     },
                     "simple": ""
                 },
                 "Gra Owner Name": {
                     "complex": {
                         "accessor": "",
-                        "filters": [
-
-                        ],
+                        "filters": [],
                         "root": "ownerName",
-                        "transformers": [
-
-                        ]
+                        "transformers": []
                     },
                     "simple": ""
                 },
                 "Gra Owner Type": {
                     "complex": {
                         "accessor": "",
-                        "filters": [
-
-                        ],
+                        "filters": [],
                         "root": "ownerType",
-                        "transformers": [
-
-                        ]
+                        "transformers": []
                     },
                     "simple": ""
                 },
                 "Gra Risk Date": {
                     "complex": {
                         "accessor": "",
-                        "filters": [
-
-                        ],
+                        "filters": [],
                         "root": "riskDate",
-                        "transformers": [
-
-                        ]
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "Gra Anomaly Name": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "anomalyName",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "Gra Case Status": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "status",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "Gra Anomaly Resource Name": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "anomalyResourceName",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "Gra Assignee": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "assignee",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "Gra Assignee Type": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "assigneeType",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "Gra Risk Accepted Date": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "riskAcceptedDate",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "Gra Anomaly Risk Score": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "anomalyRiskScore",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "Gra Anomaly Status": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "anomalyStatus",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "Gra Anomalies": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "anomalies",
+                        "transformers": []
                     },
                     "simple": ""
                 },
                 "name": {
                     "complex": {
                         "accessor": "",
-                        "filters": [
-
-                        ],
+                        "filters": [],
                         "root": "entity",
-                        "transformers": [
-
-                        ]
+                        "transformers": []
                     },
                     "simple": ""
                 }
@@ -150,13 +191,9 @@
     "transformer": {
         "complex": {
             "accessor": "",
-            "filters": [
-
-            ],
+            "filters": [],
             "root": "incidentType",
-            "transformers": [
-
-            ]
+            "transformers": []
         },
         "simple": ""
     },

@@ -1,0 +1,30 @@
+{
+    "id": "incident_f5silverlinestagedsignatureids",
+    "version": -1,
+    "modified": "2021-05-13T15:18:32.386606593Z",
+    "name": "F5 Silverline Staged Signature IDs",
+    "ownerOnly": false,
+    "cliName": "f5silverlinestagedsignatureids",
+    "type": "shortText",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "associatedTypes": [
+        "F5 Silverline WAF Events"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": false,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.0.0"
+}

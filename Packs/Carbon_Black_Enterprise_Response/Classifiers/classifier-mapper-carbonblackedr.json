@@ -1,0 +1,92 @@
+{
+    "description": "Maps Carbon Black EDR's alert fields",
+    "feed": false,
+    "id": "Carbon Black EDR Mapper",
+    "mapping": {
+        "Carbon Black EDR": {
+            "dontMapEventToLabels": true,
+            "internalMapping": {
+                "Carbon Black EDR Segment ID": {
+                    "complex": null,
+                    "simple": "segment_id"
+                },
+                "Device External IP": {
+                    "complex": null,
+                    "simple": "interface_ip"
+                },
+                "Device Id": {
+                    "complex": null,
+                    "simple": "sensor_id"
+                },
+                "Device Name": {
+                    "complex": null,
+                    "simple": "hostname"
+                },
+                "Event Descriptions": {
+                    "complex": null,
+                    "simple": "description"
+                },
+                "Event Type": {
+                    "complex": null,
+                    "simple": "alert_type"
+                },
+                "Carbon Black EDR IOC Value": {
+                    "complex": null,
+                    "simple": "ioc_value"
+                },
+                "Incident Link": {
+                    "complex": null,
+                    "simple": "link"
+                },
+                "Log Source": {
+                    "complex": null,
+                    "simple": "feed_name"
+                },
+                "MD5": {
+                    "complex": null,
+                    "simple": "md5"
+                },
+                "OS": {
+                    "complex": null,
+                    "simple": "os_type"
+                },
+                "PID": {
+                    "complex": null,
+                    "simple": "process_id"
+                },
+                "Process Name": {
+                    "complex": null,
+                    "simple": "process_name"
+                },
+                "Process Path": {
+                    "complex": null,
+                    "simple": "process_path"
+                },
+                "Resource Type": {
+                    "complex": null,
+                    "simple": "ioc_type"
+                },
+                "Username": {
+                    "complex": null,
+                    "simple": "username"
+                },
+                "Carbon Black EDR Watchlist Id": {
+                    "complex": null,
+                    "simple": "watchlist_id"
+                },
+                "Carbon Black EDR Watchlist Name": {
+                    "complex": null,
+                    "simple": "watchlist_name"
+                },
+                "severity": {
+                    "complex": null,
+                    "simple": "alert_severity"
+                }
+            }
+        }
+    },
+    "name": "Carbon Black EDR Mapper",
+    "type": "mapping-incoming",
+    "version": -1,
+    "fromVersion": "6.0.0"
+}

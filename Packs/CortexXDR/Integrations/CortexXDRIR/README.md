@@ -318,6 +318,8 @@ Returns additional data for the specified incident, for example, related alerts,
 | PaloAltoNetworksXDR.Incident.manual_description | String | Incident description provided by the user. | 
 | PaloAltoNetworksXDR.Incident.xdr_url | String | A link to the incident view on XDR. | 
 | PaloAltoNetworksXDR.Incident.starred | Boolean | Incident starred | 
+| PaloAltoNetworksXDR.Incident.wildfire_hits.mitre_techniques_ids_and_names | String | Incident Mitre techniques ids and names. | 
+| PaloAltoNetworksXDR.Incident.wildfire_hits.mitre_tactics_ids_and_names | String | Incident Mitre tactics ids and names. | 
 | PaloAltoNetworksXDR.Incident.alerts.alert_id | String | Unique ID for each alert. | 
 | PaloAltoNetworksXDR.Incident.alerts.detection_timestamp | Date | Date and time that the alert occurred. | 
 | PaloAltoNetworksXDR.Incident.alerts.source | String | Source of the alert. The product/vendor this alert came from. | 
@@ -753,7 +755,7 @@ maximum of 60 alerts.
 | remote_ip | String value of the destination IP<br/>address. | Required | 
 | remote_port | Integer value for the destination<br/>port. | Required | 
 | event_timestamp | Integer value representing the epoch of the time the alert occurred in milliseconds or String value of date format 2019-10-23T10:00:00. If not set then the event time will be defined as now. | Optional | 
-| severity | String value of alert severity:<br/>Informational, Low, Medium, High, or Unknown | Optional | 
+| severity | String value of alert severity:<br/>Informational, Low, Medium or High | Optional | 
 | alert_name | String defining the alert name | Required | 
 | alert_description | String defining the alert description | Optional | 
 
@@ -2157,7 +2159,7 @@ Retrieves the status of a script execution action.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| action_id | Action ID retrieved from the [xdr-run-script](#xdr-run-script) command. | Required | 
+| action_id | Action IDs retrieved from the [xdr-run-script](#xdr-run-script) command. | Required | 
 
 
 #### Context Output
@@ -2221,7 +2223,7 @@ Retrieves the results of a script execution action.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| action_id | Action ID retrieved from the [xdr-run-script](#xdr-run-script) command. | Required | 
+| action_id | Action IDs retrieved from the [xdr-run-script](#xdr-run-script) command. | Required | 
 
 
 #### Context Output
@@ -2383,7 +2385,7 @@ Initiates a new endpoint script execution to delete the specified file.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | endpoint_ids | Comma-separated list of endpoint IDs. Can be retrieved by running the [xdr-get-endpoints](#8-xdr-get-endpoints) command. | Required |
-| file_path | Path of the file to delete. | Required |
+| file_path |  Paths of the files to delete, in a comma-separated list. Paths of the files to check for existence. All of the given file paths will run on all of the endpoints. | Required |
 | timeout | The timeout in seconds for this execution. Default is 600. | Optional |
 
 
@@ -2434,7 +2436,7 @@ Initiates a new endpoint script execution to check if the file exists.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | endpoint_ids | Comma-separated list of endpoint IDs. Can be retrieved by running the [xdr-get-endpoints](#8-xdr-get-endpoints) command. | Required |
-| file_path | Path of the file to check for existence. | Required |
+| file_path | Paths of the files to check for existence, in a comma-separated list. All of the given file paths will run on all of the endpoints. | Required |
 | timeout | The timeout in seconds for this execution. Default is 600. | Optional |
 
 
@@ -2485,7 +2487,7 @@ Initiates a new endpoint script execution kill process.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | endpoint_ids | Comma-separated list of endpoint IDs. Can be retrieved by running the [xdr-get-endpoints](#8-xdr-get-endpoints) command. | Required |
-| process_name | Name of the process to kill. | Required |
+| process_name | Names of processes to kill. Will run all processes on all endpoints. | Required |
 | timeout | The timeout in seconds for this execution. Default is 600. | Optional |
 
 

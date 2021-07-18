@@ -1,7 +1,7 @@
 {
     "associatedToAll": false,
     "associatedTypes": [
-        "Expanse Issue"
+        "Expanse Issue", "Expanse Issue - Generic"
     ],
     "caseInsensitive": true,
     "cliName": "expansetags",

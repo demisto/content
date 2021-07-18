@@ -1,0 +1,303 @@
+id: F5Silverline_TestPlaybook
+version: -1
+name: F5Silverline_TestPlaybook
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: d197a9cf-c585-47e8-8966-6c00683d2461
+    type: start
+    task:
+      id: d197a9cf-c585-47e8-8966-6c00683d2461
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: d9346eaf-8773-4931-8fd6-645e221480f8
+    type: regular
+    task:
+      id: d9346eaf-8773-4931-8fd6-645e221480f8
+      version: -1
+      name: Delete Context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: d6547c1d-3b7c-448f-84e5-6d6e59298023
+    type: regular
+    task:
+      id: d6547c1d-3b7c-448f-84e5-6d6e59298023
+      version: -1
+      name: Add IP to denylist
+      description: Add IP address in a particular list.
+      script: '|||f5-silverline-ip-object-add'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      cidr_range:
+        simple: 1.2.3.4/32
+      list_target:
+        simple: proxy
+      list_type:
+        simple: denylist
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 6ffe21a4-0cf6-4f71-8af7-5d8a77b629b9
+    type: regular
+    task:
+      id: 6ffe21a4-0cf6-4f71-8af7-5d8a77b629b9
+      version: -1
+      name: Get denylist
+      description: Get a particular ip objects list by the list type (allowlist/denylist/bad_actor).
+        For denylist only the proxy list_target can be returned.
+      script: '|||f5-silverline-ip-objects-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      list_type:
+        simple: denylist
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: b0494cf1-6094-4df0-8ca0-23997e255143
+    type: condition
+    task:
+      id: b0494cf1-6094-4df0-8ca0-23997e255143
+      version: -1
+      name: Verify IP added to denylist
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "5"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: in
+          left:
+            value:
+              simple: 1.2.3.4
+          right:
+            value:
+              simple: F5Silverline.IPObjectList.attributes.ip
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 54ac005a-2b14-460c-8c3b-fb03850ed8db
+    type: regular
+    task:
+      id: 54ac005a-2b14-460c-8c3b-fb03850ed8db
+      version: -1
+      name: Delete IP from denylist
+      description: Deleted a particular ip objects list by the list type (allowlist/denylist/bad_actor)
+        and by the object_id.
+      script: '|||f5-silverline-ip-object-delete'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      list_type:
+        simple: denylist
+      object_id:
+        complex:
+          root: ${F5Silverline.IPObjectList
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: ${F5Silverline.IPObjectList.attributes.ip}
+                iscontext: true
+              right:
+                value:
+                  simple: 1.2.3.4
+          accessor: id}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 3e692685-c757-4451-81b9-356c57c993e9
+    type: title
+    task:
+      id: 3e692685-c757-4451-81b9-356c57c993e9
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: 278ef600-6878-4bcc-8881-0ba373ab6aa0
+    type: regular
+    task:
+      id: 278ef600-6878-4bcc-8881-0ba373ab6aa0
+      version: -1
+      name: Wait until IP appears in the IPs list
+      description: Sleep for X seconds
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      seconds:
+        simple: "10"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1260,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 6.0.0

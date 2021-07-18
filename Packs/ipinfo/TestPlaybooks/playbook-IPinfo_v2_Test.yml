@@ -83,7 +83,7 @@ tasks:
       - "5"
     scriptarguments:
       ip:
-        simple: 1.1.1.1
+        simple: 8.8.8.8
       using-brand:
         simple: ipinfo_v2
     separatecontext: false

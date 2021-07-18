@@ -22,7 +22,7 @@
 <p class="wysiwyg-indent8"><strong>Cortex XSOAR engine:</strong> If relevant, select the engine that acts as a proxy to the server.  </p>
 <p class="wysiwyg-indent8">Engines are used when you need to access a remote network segments and there are network devices such as proxies, firewalls, etc. that prevent the Cortex XSOAR server from accessing the remote networks.<br><br>For more information on Cortex XSOAR engines see:<br><a href="https://support.demisto.com/hc/en-us/articles/226274727-Settings-Integrations-Engines">https://demisto.zendesk.com/hc/en-us/articles/226274727-Settings-Integrations-Engines</a></p>
 <ol start="4">
-<li>Press the ‘Test’ button to validate connection.<br>If you are experiencing issues with the service configuration, please contact Cortex XSOAR support at support@demisto.com</li>
+<li>Press the ‘Test’ button to validate connection.</li>
 <li>After completing the test successfully, press the ‘Done’ button.</li>
 </ol>
 <h3>Commands:</h3>
