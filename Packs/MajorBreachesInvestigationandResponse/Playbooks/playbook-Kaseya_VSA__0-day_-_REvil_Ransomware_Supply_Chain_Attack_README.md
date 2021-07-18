@@ -6,9 +6,11 @@ This playbook should be trigger manually and includes the following tasks:
 * Collect related known indicators from several sources.
 * Indicators, PS commands, Registry changes and known HTTP requests hunting using PAN-OS, Cortex XDR and SIEM products.
     * Splunk advanced queries can be modified through the playbook inputs.
+    * QRadar query is done using Reference Set and "QRadar Indicator Hunting V2" playbook
 * Search for internet facing Kaseya VSA servers using Xpanse.
 * Block indicators automatically or manually.
 * Provide advanced hunting and detection capabilities.
+* Mitigation using Kaseya On-Premises and SaaS patch.
 
 More information:
 [Kaseya Incident Overview & Technical Details](https://helpdesk.kaseya.com/hc/en-gb/articles/4403584098961)
@@ -19,12 +21,13 @@ Note: This is a beta playbook, which lets you implement and test pre-release sof
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
-* Palo Alto Networks - Hunting And Threat Detection
-* Search Endpoints By Hash - Generic V2
 * Panorama Query Logs
-* Post Intrusion Ransomware Investigation
-* Splunk Indicator Hunting
 * QRadar Indicator Hunting V2
+* QRadarFullSearch
+* Splunk Indicator Hunting
+* Search Endpoints By Hash - Generic V2
+* Post Intrusion Ransomware Investigation
+* Palo Alto Networks - Hunting And Threat Detection
 * Block Indicators - Generic v2
 * PAN-OS - Block Domain - External Dynamic List
 
@@ -32,17 +35,22 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 * SplunkPy
 
 ### Scripts
-* http
-* ParseHTMLIndicators
 * SearchIncidentsV2
+* ParseHTMLIndicators
+* http
+* isError
 
 ### Commands
-* linkIncidents
-* extractIndicators
 * expanse-get-issues
-* setIndicators
+* qradar-create-reference-set
+* extractIndicators
+* linkIncidents
 * closeInvestigation
+* qradar-create-reference-set-value
+* qradar-delete-reference-set
+* setIndicators
 * splunk-search
+* qradar-get-reference-by-name
 
 ## Playbook Inputs
 ---
@@ -59,6 +67,8 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 | SplunkAdvancedSearch4PSCMD | Search Splunk for related REvil - Kaseya breach Powershell behaviours. | index=* "*C:\\Windows\\cert.exe &amp; echo %RANDOM%*" OR "*C:\\Windows\\cert.exe -decode c:\\kworking\\agent.crt*" OR "*del /q /f c:\\kworking\\agent.crt*" | Optional |
 | SplunkAdvancedSearch4WebLog | Search Splunk for related REvil - Kaseya breach web access logs activity. | index=* ("POST" AND "/dl.asp") OR ("GET" AND "/done.asp") OR ("POST" AND "/cgi-bin/KUpload.dll") OR ("POST" AND "/userFilterTableRpt.asp")  | Optional |
 | EDLDomainBlocklist | The name of the EDL Domain Blocklist. | Demisto Remediation - Domain EDL | Optional |
+| QRadarDomainFieldName | The QRadar domain field name to check against the Reference Set of Kaseya domains. | domain | Optional |
+| ReferenceListName | The reference list name to create in QRadar for the Domain Indicators Hunting. | KaseyaDomainIndicators | Optional |
 
 ## Playbook Outputs
 ---
@@ -66,4 +76,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![Kaseya VSA  0-day - REvil Ransomware Supply Chain Attack](https://raw.githubusercontent.com/demisto/content/49919f59cddb6151a840a479a0820784ca931b59/Packs/MajorBreachesInvestigationandResponse/doc_files/Kaseya_VSA__0-day_-_REvil_Ransomware_Supply_Chain_Attack.png)
+![Kaseya VSA  0-day - REvil Ransomware Supply Chain Attack](Insert the link to your image here)

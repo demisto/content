@@ -10,10 +10,11 @@ description: "On July 2nd, Kaseya company has experienced an attack against the 
   \ the following tasks: \n\n* Collect related known indicators from several sources.\n\
   * Indicators, PS commands, Registry changes and known HTTP requests hunting using\
   \ PAN-OS, Cortex XDR and SIEM products.\n    * Splunk advanced queries can be modified\
-  \ through the playbook inputs.\n* Search for internet facing Kaseya VSA servers\
-  \ using Xpanse.\n* Block indicators automatically or manually.\n* Provide advanced\
-  \ hunting and detection capabilities.\n\nMore information:\n[Kaseya Incident Overview\
-  \ & Technical Details](https://helpdesk.kaseya.com/hc/en-gb/articles/4403584098961)\n\
+  \ through the playbook inputs.\n    * QRadar query is done using Reference Set and\
+  \ \"QRadar Indicator Hunting V2\" playbook\n* Search for internet facing Kaseya\
+  \ VSA servers using Xpanse.\n* Block indicators automatically or manually.\n* Provide\
+  \ advanced hunting and detection capabilities.\n* Mitigation using Kaseya On-Premises\
+  \ and SaaS patch.\n\nMore information:\n[Kaseya Incident Overview & Technical Details](https://helpdesk.kaseya.com/hc/en-gb/articles/4403584098961)\n\
   \nNote: This is a beta playbook, which lets you implement and test pre-release software.\
   \ Since the playbook is beta, it might contain bugs. Updates to the pack during\
   \ the beta phase might include non-backward compatible features. We appreciate your\
@@ -40,7 +41,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": -170
+          "y": -510
         }
       }
     note: false
@@ -73,7 +74,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": -10
+          "y": -350
         }
       }
     note: false
@@ -111,7 +112,7 @@ tasks:
       {
         "position": {
           "x": 220,
-          "y": 150
+          "y": -190
         }
       }
     note: false
@@ -149,7 +150,7 @@ tasks:
       {
         "position": {
           "x": 680,
-          "y": 150
+          "y": -190
         }
       }
     note: false
@@ -177,7 +178,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 350
+          "y": 10
         }
       }
     note: false
@@ -210,7 +211,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 510
+          "y": 170
         }
       }
     note: false
@@ -249,7 +250,7 @@ tasks:
       {
         "position": {
           "x": -230,
-          "y": 150
+          "y": -190
         }
       }
     note: false
@@ -281,7 +282,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 1200
+          "y": 860
         }
       }
     note: false
@@ -304,13 +305,13 @@ tasks:
     nexttasks:
       '#none#':
       - "13"
-      - "24"
+      - "85"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": -580,
-          "y": 1500
+          "x": -1820,
+          "y": 1160
         }
       }
     note: false
@@ -339,7 +340,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 1500
+          "y": 1160
         }
       }
     note: false
@@ -349,10 +350,10 @@ tasks:
     quietmode: 0
   "12":
     id: "12"
-    taskid: 89eaa9f9-f8d0-44c1-8690-8a9e413f6089
+    taskid: c88e00ee-31b0-4cff-83a0-690daa2dcaf3
     type: playbook
     task:
-      id: 89eaa9f9-f8d0-44c1-8690-8a9e413f6089
+      id: c88e00ee-31b0-4cff-83a0-690daa2dcaf3
       version: -1
       name: Palo Alto Networks - Hunting And Threat Detection
       description: "This is a multipurpose playbook used for hunting and threat detection.\
@@ -422,12 +423,6 @@ tasks:
           root: ExtractedIndicators
           accessor: Domain
           transformers:
-          - operator: append
-            args:
-              item:
-                value:
-                  simple: ExtractedIndicators.URL
-                iscontext: true
           - operator: uniq
     separatecontext: true
     loop:
@@ -452,7 +447,7 @@ tasks:
       {
         "position": {
           "x": 680,
-          "y": 1680
+          "y": 1340
         }
       }
     note: false
@@ -582,8 +577,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -330,
-          "y": 1680
+          "x": -1480,
+          "y": 1360
         }
       }
     note: false
@@ -593,10 +588,10 @@ tasks:
     quietmode: 0
   "24":
     id: "24"
-    taskid: 76a9af3d-2bc8-438f-8481-22e7a977f77a
+    taskid: fb8a996e-fe66-4dbd-81af-d30eb823c13c
     type: playbook
     task:
-      id: 76a9af3d-2bc8-438f-8481-22e7a977f77a
+      id: fb8a996e-fe66-4dbd-81af-d30eb823c13c
       version: -1
       name: QRadar Indicator Hunting V2
       description: 'The Playbook queries QRadar SIEM for indicators such as file hashes,
@@ -669,18 +664,6 @@ tasks:
       TimeFrame:
         complex:
           root: inputs.QRadarSearchTimeRange
-      URLDomain:
-        complex:
-          root: ExtractedIndicators
-          accessor: Domain
-          transformers:
-          - operator: append
-            args:
-              item:
-                value:
-                  simple: ExtractedIndicators.URL
-                iscontext: true
-          - operator: uniq
     separatecontext: true
     loop:
       iscommand: false
@@ -690,8 +673,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -800,
-          "y": 1680
+          "x": -1940,
+          "y": 1755
         }
       }
     note: false
@@ -787,7 +770,7 @@ tasks:
       {
         "position": {
           "x": 1240,
-          "y": 1680
+          "y": 1340
         }
       }
     note: false
@@ -816,7 +799,7 @@ tasks:
       {
         "position": {
           "x": 1450,
-          "y": 1500
+          "y": 1160
         }
       }
     note: false
@@ -840,7 +823,7 @@ tasks:
     nexttasks:
       '#none#':
       - "34"
-      - "70"
+      - "86"
     scriptarguments:
       extend-context:
         simple: REvilXDRincidents=
@@ -911,7 +894,7 @@ tasks:
       {
         "position": {
           "x": 1660,
-          "y": 1680
+          "y": 1340
         }
       }
     note: false
@@ -921,10 +904,10 @@ tasks:
     quietmode: 0
   "32":
     id: "32"
-    taskid: 3722321a-b4c7-4592-8183-dc500289e5f1
+    taskid: d181aa5d-1a23-4161-8201-85963b94379e
     type: playbook
     task:
-      id: 3722321a-b4c7-4592-8183-dc500289e5f1
+      id: d181aa5d-1a23-4161-8201-85963b94379e
       version: -1
       name: Panorama Query Logs
       description: 'Query Panorama Logs of types: traffic, threat, url, data-filtering
@@ -952,14 +935,14 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 240,
-          "y": 1680
+          "x": 220,
+          "y": 1340
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
+    skipunavailable: true
     quietmode: 0
   "33":
     id: "33"
@@ -1010,7 +993,7 @@ tasks:
       {
         "position": {
           "x": 1770,
-          "y": 3340
+          "y": 3610
         }
       }
     note: false
@@ -1038,7 +1021,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 2230
+          "y": 2650
         }
       }
     note: false
@@ -1067,7 +1050,7 @@ tasks:
       {
         "position": {
           "x": -290,
-          "y": 3170
+          "y": 3440
         }
       }
     note: false
@@ -1096,7 +1079,7 @@ tasks:
       {
         "position": {
           "x": -710,
-          "y": 3170
+          "y": 3440
         }
       }
     note: false
@@ -1135,7 +1118,7 @@ tasks:
       {
         "position": {
           "x": -690,
-          "y": 150
+          "y": -190
         }
       }
     note: false
@@ -1165,7 +1148,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 2890
+          "y": 3160
         }
       }
     note: false
@@ -1321,7 +1304,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 2640
+          "y": 2980
         }
       }
     note: false
@@ -1366,7 +1349,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 2410
+          "y": 2770
         }
       }
     note: false
@@ -1394,7 +1377,7 @@ tasks:
       {
         "position": {
           "x": 900,
-          "y": 2640
+          "y": 2980
         }
       }
     note: false
@@ -1433,8 +1416,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -1240,
-          "y": 1890
+          "x": 150,
+          "y": 1810
         }
       }
     note: false
@@ -1461,8 +1444,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -1600,
-          "y": 1500
+          "x": -330,
+          "y": 1160
         }
       }
     note: false
@@ -1501,8 +1484,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -1840,
-          "y": 2015
+          "x": -330,
+          "y": 1810
         }
       }
     note: false
@@ -1533,7 +1516,7 @@ tasks:
       {
         "position": {
           "x": 1430,
-          "y": 3170
+          "y": 3440
         }
       }
     note: false
@@ -1607,8 +1590,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -1840,
-          "y": 1680
+          "x": -330,
+          "y": 1340
         }
       }
     note: false
@@ -1633,13 +1616,13 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "57"
+      - "81"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 220,
-          "y": 3180
+          "x": 160,
+          "y": 3590
         }
       }
     note: false
@@ -1670,7 +1653,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 720
+          "y": 380
         }
       }
     note: false
@@ -1712,7 +1695,7 @@ tasks:
       {
         "position": {
           "x": 1150,
-          "y": 960
+          "y": 620
         }
       }
     note: false
@@ -1754,7 +1737,7 @@ tasks:
       {
         "position": {
           "x": 690,
-          "y": 960
+          "y": 620
         }
       }
     note: false
@@ -1796,7 +1779,7 @@ tasks:
       {
         "position": {
           "x": 200,
-          "y": 960
+          "y": 620
         }
       }
     note: false
@@ -1838,7 +1821,7 @@ tasks:
       {
         "position": {
           "x": -250,
-          "y": 960
+          "y": 620
         }
       }
     note: false
@@ -1866,7 +1849,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 3520
+          "y": 3990
         }
       }
     note: false
@@ -1896,7 +1879,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 3660
+          "y": 4130
         }
       }
     note: false
@@ -1937,7 +1920,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 4120
+          "y": 4590
         }
       }
     note: false
@@ -1973,7 +1956,7 @@ tasks:
       {
         "position": {
           "x": 1130,
-          "y": 150
+          "y": -190
         }
       }
     note: false
@@ -2001,7 +1984,7 @@ tasks:
       {
         "position": {
           "x": 0,
-          "y": 3910
+          "y": 4380
         }
       }
     note: false
@@ -2047,7 +2030,7 @@ tasks:
       {
         "position": {
           "x": 0,
-          "y": 2640
+          "y": 2980
         }
       }
     note: false
@@ -2079,7 +2062,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 3910
+          "y": 4380
         }
       }
     note: false
@@ -2112,7 +2095,7 @@ tasks:
       {
         "position": {
           "x": 1580,
-          "y": 150
+          "y": -190
         }
       }
     note: false
@@ -2151,8 +2134,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -2360,
-          "y": 1890
+          "x": -810,
+          "y": 1810
         }
       }
     note: false
@@ -2179,8 +2162,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2550,
-          "y": 1500
+          "x": 2710,
+          "y": 1160
         }
       }
     note: false
@@ -2211,8 +2194,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2910,
-          "y": 1890
+          "x": 3020,
+          "y": 1870
         }
       }
     note: false
@@ -2265,8 +2248,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2550,
-          "y": 1680
+          "x": 2710,
+          "y": 1340
         }
       }
     note: false
@@ -2289,7 +2272,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "70"
+      - "86"
     scriptarguments:
       query:
         simple: type:"Expanse Issue" and name:Kaseya VSA
@@ -2297,7 +2280,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2280,
+          "x": 2250,
           "y": 1870
         }
       }
@@ -2331,8 +2314,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2040,
-          "y": 2040
+          "x": 2020,
+          "y": 2385
         }
       }
     note: false
@@ -2354,15 +2337,15 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "51"
       - "74"
       - "75"
+      - "51"
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 450,
-          "y": 3030
+          "y": 3300
         }
       }
     note: false
@@ -2391,7 +2374,7 @@ tasks:
       {
         "position": {
           "x": -490,
-          "y": 3030
+          "y": 3300
         }
       }
     note: false
@@ -2419,7 +2402,7 @@ tasks:
       {
         "position": {
           "x": 1430,
-          "y": 3030
+          "y": 3300
         }
       }
     note: false
@@ -2444,13 +2427,13 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "57"
+      - "81"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 680,
-          "y": 3180
+          "x": 740,
+          "y": 3580
         }
       }
     note: false
@@ -2475,13 +2458,373 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
+      - "81"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 3450
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "81":
+    id: "81"
+    taskid: efded7c4-24e0-4d07-8312-3fd524085523
+    type: regular
+    task:
+      id: efded7c4-24e0-4d07-8312-3fd524085523
+      version: -1
+      name: Install Kaseya Patch for VSA Servers
+      description: |
+        The VSA 9.5.7a (9.5.7.2994) release includes enhancements and fixes described in the topics below:
+
+        [9.5.7a (9.5.7.2994) Feature Release – 11 July 2021
+        ](https://helpdesk.kaseya.com/hc/en-gb/articles/4403785889041)
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
       - "57"
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 450,
-          "y": 3340
+          "y": 3780
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "82":
+    id: "82"
+    taskid: a6b2a04e-45c0-413a-8d4a-00370f2a2ad7
+    type: regular
+    task:
+      id: a6b2a04e-45c0-413a-8d4a-00370f2a2ad7
+      version: -1
+      name: Create Reference List of Domain Indicators
+      description: Creates a new reference set. If the provided name is already in
+        use, this command will fail.
+      script: '|||qradar-create-reference-set'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "83"
+    scriptarguments:
+      element_type:
+        simple: ALNIC
+      ref_name:
+        complex:
+          root: inputs.ReferenceListName
+      retry-count:
+        simple: "3"
+      retry-interval:
+        simple: "2"
+      time_to_live:
+        simple: 2 minutes
+      timeout_type:
+        simple: FIRST_SEEN
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -2340,
+          "y": 2135
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "83":
+    id: "83"
+    taskid: c8607345-0274-4836-8650-84acff91d15f
+    type: regular
+    task:
+      id: c8607345-0274-4836-8650-84acff91d15f
+      version: -1
+      name: Add Domain Indicators to the Reference List
+      description: Add or update a value in a reference set.
+      script: '|||qradar-create-reference-set-value'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "84"
+    scriptarguments:
+      ref_name:
+        complex:
+          root: inputs.ReferenceListName
+      value:
+        complex:
+          root: ExtractedIndicators
+          accessor: Domain
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -2130,
+          "y": 2310
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "84":
+    id: "84"
+    taskid: b4c43bd8-500a-4764-8900-ce1483a4ab34
+    type: playbook
+    task:
+      id: b4c43bd8-500a-4764-8900-ce1483a4ab34
+      version: -1
+      name: QRadarFullSearch
+      description: This playbook runs a QRadar query and return its results to the
+        context.
+      playbookName: QRadarFullSearch
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "34"
+    scriptarguments:
+      interval:
+        simple: "1"
+      query_expression:
+        simple: SELECT * FROM events where REFERENCESETCONTAINS ('${inputs.ReferenceListName}',
+          ${inputs.QRadarDomainFieldName}) LAST 14 DAYS
+      timeout:
+        simple: "600"
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": -1940,
+          "y": 2480
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "85":
+    id: "85"
+    taskid: 55c78162-2e7c-4fd5-8848-e29728e1f315
+    type: condition
+    task:
+      id: 55c78162-2e7c-4fd5-8848-e29728e1f315
+      version: -1
+      name: Is QRadar Enabled?
+      description: Check if Splunk instance is enabled.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "34"
+      "Yes":
+      - "24"
+      - "87"
+    separatecontext: false
+    conditions:
+    - label: "Yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: QRadar_v2
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": -2140,
+          "y": 1360
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "86":
+    id: "86"
+    taskid: 410988d4-c9a1-4766-883d-5d9c9f6bb27e
+    type: condition
+    task:
+      id: 410988d4-c9a1-4766-883d-5d9c9f6bb27e
+      version: -1
+      name: Found Related Incidents?
+      description: Check if Xpanse or XDR incidents were found
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "34"
+      "yes":
+      - "70"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: foundIncidents
+                accessor: id
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 2020,
+          "y": 2050
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "87":
+    id: "87"
+    taskid: 57aee824-a7c6-4a5b-8584-571372235430
+    type: regular
+    task:
+      id: 57aee824-a7c6-4a5b-8584-571372235430
+      version: -1
+      name: Check if DomainIndicators Reference List Exists
+      description: Information about the reference set that had data added or updated.
+        This returns the information set, but not the contained data. This feature
+        is supported from version 8.1 and upward.
+      script: '|||qradar-get-reference-by-name'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "88"
+    scriptarguments:
+      ref_name:
+        complex:
+          root: inputs.ReferenceListName
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -2340,
+          "y": 1580
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "88":
+    id: "88"
+    taskid: a0b1d530-5625-4f69-8bb8-55cd28bcaa12
+    type: condition
+    task:
+      id: a0b1d530-5625-4f69-8bb8-55cd28bcaa12
+      version: -1
+      name: Is KaseyaDomainIndicators Reference list exists?
+      description: Check whether given entry/entries returned an error. Use ${lastCompletedTaskEntries}
+        to check the previous task entries. If array is provided, will return yes
+        if one of the entries returned an error.
+      scriptName: isError
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "89"
+      "yes":
+      - "82"
+    scriptarguments:
+      entryId:
+        complex:
+          root: QRadar
+          accessor: Reference
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -2340,
+          "y": 1755
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "89":
+    id: "89"
+    taskid: 05c67d3d-1246-434f-843b-d018f6b2c2de
+    type: regular
+    task:
+      id: 05c67d3d-1246-434f-843b-d018f6b2c2de
+      version: -1
+      name: Delete DomainIndicators Reference List
+      description: Deletes a reference set corresponding to the name provided.
+      script: '|||qradar-delete-reference-set'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "82"
+    scriptarguments:
+      ref_name:
+        complex:
+          root: inputs.ReferenceListName
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -2130,
+          "y": 1965
         }
       }
     note: false
@@ -2493,19 +2836,24 @@ view: |-
   {
     "linkLabelsPosition": {
       "31_27_yes": 0.47,
-      "31_34_#default#": 0.26,
+      "31_34_#default#": 0.17,
       "47_33_Yes": 0.57,
-      "49_34_#default#": 0.15,
+      "47_57_No": 0.12,
+      "49_34_#default#": 0.2,
       "58_63_No": 0.71,
-      "68_34_#default#": 0.14,
-      "68_67_yes": 0.55
+      "68_34_#default#": 0.49,
+      "68_67_yes": 0.55,
+      "68_69_yes": 0.47,
+      "85_34_#default#": 0.19,
+      "86_34_#default#": 0.21,
+      "86_70_yes": 0.5
     },
     "paper": {
       "dimensions": {
-        "height": 4355,
-        "width": 5650,
-        "x": -2360,
-        "y": -170
+        "height": 5165,
+        "width": 5740,
+        "x": -2340,
+        "y": -510
       }
     }
   }
@@ -2573,6 +2921,20 @@ inputs:
     simple: Demisto Remediation - Domain EDL
   required: false
   description: The name of the EDL Domain Blocklist.
+  playbookInputQuery:
+- key: QRadarDomainFieldName
+  value:
+    simple: domain
+  required: false
+  description: The QRadar domain field name to check against the Reference Set of
+    Kaseya domains.
+  playbookInputQuery:
+- key: ReferenceListName
+  value:
+    simple: KaseyaDomainIndicators
+  required: false
+  description: The reference list name to create in QRadar for the Domain Indicators
+    Hunting.
   playbookInputQuery:
 outputs: []
 tests:
