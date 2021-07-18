@@ -65,6 +65,9 @@ def main():
             )
         )
 
+        if installation_status != 'Success':
+            return_error(f'{SCRIPT_NAME} - Installation had failed for custom pack "{pack_id}".')
+
     except Exception as e:
         return_error(f'{SCRIPT_NAME} - Error occurred while installing custom pack "{pack_id}".\n{e}')
 
