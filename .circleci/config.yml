@@ -105,7 +105,9 @@ parameters:
   sdk_ref:
     type: string
     default: "master"
-
+  test_uploadflow:
+    type: string
+    default: ""
 references:
   environment: &environment
     environment:
