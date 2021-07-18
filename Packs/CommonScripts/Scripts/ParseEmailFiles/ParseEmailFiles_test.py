@@ -700,22 +700,6 @@ def test_eml_format_multipart_mix(mocker):
     assert "Warsaw, Poland <o:p></o:p>" in results[0]['EntryContext']['Email']['HTML']
 
 
-def test_convert_to_unicode_timeout(mocker):
-    mocker.patch.object(demisto, 'args', return_value={'entryid': 'test'})
-    mocker.patch.object(demisto, 'executeCommand',
-                        side_effect=exec_command_for_file('convert_to_unicode_with_long_body.eml',
-                                                          info="multipart/alternative;, "
-                                                               "ISO-8859 text, with CRLF line terminators"))
-    mocker.patch.object(demisto, 'results')
-
-    # validate our mocks are good
-    assert demisto.args()['entryid'] == 'test'
-    main()
-    results = demisto.results.call_args[0]
-    assert len(results) == 1
-    assert results[0]['EntryContext']['Email'][0]['Subject'] == 'Test long Email'
-
-
 def test_eml_base64_header_comment_although_string(mocker):
     def executeCommand(name, args=None):
         if name == 'getFilePath':
