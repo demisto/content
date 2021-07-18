@@ -1,4 +1,22 @@
-args: []
+args:
+- default: false
+  description: The packs to install data.
+  isArray: true
+  name: packs_data
+  required: true
+  secret: false
+- default: false
+  description: The key in which the pack ID is stored.
+  isArray: false
+  name: pack_id_key
+  required: true
+  secret: false
+- default: false
+  description: The key in which the pack version is stored. Enter "latest" to update all packs to latest version.
+  isArray: false
+  name: pack_version_key
+  required: true
+  secret: false
 commonfields:
   id: MarketplacePackInstaller
   version: -1

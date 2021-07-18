@@ -365,6 +365,13 @@ tasks:
     nexttasks:
       '#none#':
       - "6"
+    scriptarguments:
+      pack_id_key:
+        simple: packid
+      pack_version_key:
+        simple: packversion
+      packs_data:
+        simple: ${ConfigurationSetup.MarketplacePacks}
     separatecontext: false
     view: |-
       {

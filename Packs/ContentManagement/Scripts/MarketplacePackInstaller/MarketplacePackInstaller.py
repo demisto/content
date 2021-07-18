@@ -237,22 +237,29 @@ class ContentPackInstaller:
         self.install_packs([pack_data])
 
 
-def get_packs_data_from_context() -> List[Dict[str, str]]:
-    """Fetched packs' data from context and formats it to an installable object.
+def format_packs_data_for_installation(args) -> List[Dict[str, str]]:
+    """Creates the body of the installation request from the raw data.
 
     Returns:
         List[Dict[str, str]]: Installable objects list.
     """
-    instance_context = demisto.context()
-    context_packs_data = instance_context.get('ConfigurationSetup', {}).get('MarketplacePacks')
+    packs_data = args.get('packs_data', [])
 
-    return [
-        {
-            'id': pack['packid'],
-            'version': pack['packversion'],
-        }
-        for pack in context_packs_data
-    ]
+    id_key = args.get('pack_id_key')
+    version_key = args.get('pack_version_key')
+
+    try:
+        return [
+            {
+                'id': pack[id_key],
+                'version': pack[version_key],
+            }
+            for pack in packs_data  # type: ignore
+        ]
+    except KeyError as e:
+        raise DemistoException(f'The following key was does not exist in the packs data: {e}.') from e
+    except Exception as e:
+        raise DemistoException(f'Unknown error occurred while processing the packs data.\n{e}') from e
 
 
 def create_context(packs_to_install: List[Dict[str, str]], content_packs_installer: ContentPackInstaller) \
@@ -295,7 +302,8 @@ def main():
     try:
         installer = ContentPackInstaller()
 
-        packs_to_install = get_packs_data_from_context()
+        args = demisto.args()
+        packs_to_install = format_packs_data_for_installation(args)
 
         for pack in packs_to_install:
             installer.install_pack_and_its_dependencies_recursively(pack)
