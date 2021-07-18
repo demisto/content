@@ -3434,6 +3434,13 @@
             "fromversion": "6.0.0",
             "is_mockable": false,
             "timeout": 2400
+        },
+        {
+            "integrations": ["OpenCTI Feed 4.X", "Demisto REST API"],
+            "playbookID": "Fetch Test",
+            "fromversion": "6.0.0",
+            "is_mockable": false,
+            "timeout": 1200
         }
     ],
     "skipped_tests": {
