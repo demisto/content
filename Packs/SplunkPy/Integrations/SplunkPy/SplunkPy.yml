@@ -24,9 +24,10 @@ configuration:
   name: fetchQuery
   required: false
   type: 0
-  additionalinfo: The Splunk search query by which to fetch events. The default query fetches ES notable events.
-   You can edit this query to fetch other types of events.
-    Note, that to fetch ES noatable events, make sure to include the \`notable\` macro in your query.
+  additionalinfo: The Splunk search query by which to fetch events. The default query
+    fetches ES notable events. You can edit this query to fetch other types of events.
+    Note, that to fetch ES noatable events, make sure to include the \`notable\` macro
+    in your query.
 - defaultvalue: '50'
   display: Fetch Limit (Max.- 200, Recommended less than 50)
   name: fetch_limit
@@ -774,7 +775,7 @@ script:
   - name: splunk-reset-enriching-fetch-mechanism
     arguments: []
     description: Resets the enrichment mechanism of fetched notables.
-  dockerimage: demisto/splunksdk:1.0.0.21241
+  dockerimage: demisto/splunksdk:1.0.0.23135
   feed: false
   isfetch: true
   longRunning: false
