@@ -1,14 +1,14 @@
-﻿To: test@test.com
-From: "test@test.com" <test@test.com>
-Subject: Test long Email
-Message-ID: <5b4831d0-5322-ea23-6312-864ff419a1f1@test.com>
-Date: Wed, 23 Jan 2019 18:55:56 +0100
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
- Thunderbird/60.4.0
+Date: Thu, 17 Jun 2021 04:18:18 -0700
+From: Test <adam@test.com>
+To: test <arxm@test.com>
+Message-ID: <124072@test.xx>
+
+Content-Type: multipart/alternative; boundary="B_3708548112_1381356721"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
-Content-Language: en-US
+
+--B_3708548112_1381356721
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
 This is a test long body
 
@@ -255,3 +255,13 @@ very long long long long long long long long long long long long long long long 
 
 Done body
 
+
+--B_3708548112_1381356721
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: Quoted-printable
+
+<html>
+</html>
+
+
+--B_3708548112_1381356721--
