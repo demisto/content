@@ -186,11 +186,19 @@ class AzureADClient:
 
     def azure_ad_identity_protection_risky_users_confirm_compromised(self, user_ids: Union[str, List[str]]):
         self.http_request(method='POST',
-                          resp_type='text',
+                          resp_type='text',  # default json causes error, as the response is empty bytecode.
                           url_suffix='riskyUsers/confirmCompromised',
                           json_data={'userIds': argToList(user_ids)},
                           ok_codes=(204,))
-        return '✅ Success'  # raises exception if not successful
+        return '✅ Confirmed successfully.'  # raises exception if not successful
+
+    def azure_ad_identity_protection_risky_users_dismiss(self, user_ids: Union[str, List[str]]):
+        self.http_request(method='POST',
+                          resp_type='text',  # default json causes error, as the response is empty bytecode.
+                          url_suffix='riskyUsers/dismiss',
+                          json_data={'userIds': argToList(user_ids)},
+                          ok_codes=(204,))
+        return '✅ Dismissed successfully.'  # raises exception if not successful
 
 
 def azure_ad_identity_protection_risk_detection_list_command(client: AzureADClient, **kwargs):
@@ -207,6 +215,10 @@ def azure_ad_identity_protection_risky_users_history_list_command(client: AzureA
 
 def azure_ad_identity_protection_risky_users_confirm_compromised_command(client: AzureADClient, **kwargs):
     return client.azure_ad_identity_protection_risky_users_confirm_compromised(**kwargs)
+
+
+def azure_ad_identity_protection_risky_users_dismiss_command(client: AzureADClient, **kwargs):
+    return client.azure_ad_identity_protection_risky_users_dismiss(**kwargs)
 
 
 def start_auth(client: AzureADClient) -> CommandResults:
@@ -268,11 +280,7 @@ def main() -> None:
         elif command == 'azure-ad-identity-protection-risky-user-confirm-compromised':
             return_results(azure_ad_identity_protection_risky_users_confirm_compromised_command(client, **args))
         elif command == 'azure-ad-identity-protection-risky-user-dismiss':
-            pass  # todo
-
-        # debug commands - todo delete
-        elif command == 'get_integration_context':
-            return_results(get_integration_context())
+            return_results(azure_ad_identity_protection_risky_users_dismiss_command(client, **args))
 
         else:
             raise NotImplementedError(f'Command "{command}" is not implemented.')

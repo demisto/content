@@ -216,6 +216,7 @@ script:
       - default: true
         isArray: true
         name: user_ids
+        description: One or more user IDs, comma-separated.
         required: true
         secret: false
     deprecated: false
@@ -223,8 +224,9 @@ script:
     name: azure-ad-identity-protection-risky-user-confirm-compromised
   - arguments:
       - default: true
-        isArray: false
-        name: risky_user_id
+        isArray: true
+        name: user_ids
+        description: One or more user IDs, comma-separated.
         required: true
         secret: false
     deprecated: false
