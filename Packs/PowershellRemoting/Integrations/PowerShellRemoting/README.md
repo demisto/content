@@ -51,10 +51,25 @@ Executes remote PowerShell commands on a single host.
 
 
 #### Command Example
-``` ```
+```!ps-remote-command host=XSOAR-XSOAR command=whoami```
 
+#### Context Example
+```json
+{
+    "PsRemote": {
+        "UTCTime": "2021-07-18T15:46:07.2006094+00:00", 
+        "FQDN": "XSOAR-XSOAR.winrm.local", 
+        "Host": "XSOAR-XSOAR", 
+        "CommandName": "whoami", 
+        "CommandResult": [
+            "winrm\\administrator\n"
+        ]
+    }
+}
+```
 #### Human Readable Output
-
+> Result for PowerShell Remote Command: whoami
+> winrm\administrator
 
 
 ### ps-remote-download-file
@@ -102,10 +117,7 @@ Downloads a file from the remote endpoint.
 
 
 #### Command Example
-``` ```
-
-#### Human Readable Output
-
+```!ps-remote-download-file host="XSOAR-XSOAR" path="c:\\XSOAR-XSOAR.etl" zip_file="true" check_hash="true" host_prefix="true"```
 
 
 ### ps-remote-upload-file
@@ -143,11 +155,11 @@ Uploads a file to the remote endpoint.
 
 
 #### Command Example
-``` ```
+```!ps-remote-upload-file entry_id=105@1d0796aa-dde9-4f18-8f04-bbe92434ba81 host="XSOAR-XSOAR" path="c:\\tmpetl.etl"```
+
 
 #### Human Readable Output
-
-
+> File 1d0796aa-dde9-4f18-8f04-bbe92434ba81_105@1d0796aa-dde9-4f18-8f04-bbe92434ba81 was uploaded successfully as: c:\tmpetl.etl
 
 ### ps-remote-etl-create-start
 ***
@@ -181,11 +193,34 @@ This command starts the recording of an ETL file on a Windows endpoint. An ETL f
 
 
 #### Command Example
-``` ```
+```!ps-remote-etl-create-stop host="XSOAR-XSOAR"```
 
 #### Human Readable Output
+> Trace configuration: ------------------------------------------------------------------- Status:             Running Trace File:         C:\XSOAR-XSOAR__a.etl Append:             Off Circular:           On Max Size:           10 MB Report:             Off
 
-
+#### Context Example
+```python
+{
+    "PsRemote": {
+        "CommandResult": [
+            "Trace configuration:\n", 
+            "-------------------------------------------------------------------\n", 
+            "Status:             Running\n", 
+            "Trace File:         C:\\XSOAR-XSOAR__a.etl\n", 
+            "Append:             Off\n", 
+            "Circular:           On\n", 
+            "Max Size:           10 MB\n", 
+            "Report:             Off\n"
+        ], 
+        "FQDN": "XSOAR-XSOAR.winrm.local", 
+        "EtlFilePath": "c:\\XSOAR-XSOAR__a.etl", 
+        "UTCTime": "2021-07-18T15:58:08.2528721+00:00", 
+        "Host": "XSOAR-XSOAR", 
+        "CommandName": "netsh trace start capture=yes traceFile=c:\\XSOAR-XSOAR__a.etl maxsize=10 overwrite=no ", 
+        "EtlFileName": "XSOAR-XSOAR__a.etl"
+    }
+}
+```
 
 ### ps-remote-etl-create-stop
 ***
@@ -215,11 +250,24 @@ Ends the recording of an ETL file on a Windows endpoint.
 
 
 #### Command Example
-``` ```
+```!ps-remote-etl-create-stop host="XSOAR-XSOAR"```
 
 #### Human Readable Output
+> Correlating traces … done Merging traces … done Generating data collection … done The trace file and additional troubleshooting information have been compiled as "c:\XSOAR-XSOAR__a.cab". File location = c:\XSOAR-XSOAR__a.etl Tracing session was successfully stopped.
 
-
+#### Context Example
+```python
+{
+    "PsRemote": {
+        "CommandResult": "Correlating traces ... done Merging traces ... done Generating data collection ... done The trace file and additional troubleshooting information have been compiled as \"c:\\XSOAR-XSOAR__a.cab\". File location = c:\\XSOAR-XSOAR__a.etl Tracing session was successfully stopped. ", 
+        "FQDN": "XSOAR-XSOAR.winrm.local", 
+        "EtlFilePath": "c:\\XSOAR-XSOAR__a.etl", 
+        "Host": "XSOAR-XSOAR", 
+        "CommandName": "netsh trace stop", 
+        "EtlFileName": "XSOAR-XSOAR__a.etl"
+    }
+}
+```
 
 ### ps-remote-export-registry
 ***
@@ -252,11 +300,25 @@ Exports the specified registry of hive to a file.
 
 
 #### Command Example
-``` ```
+```!ps-remote-export-registry host="XSOAR-XSOAR" file_path="c:\\XSOAR-XSOAR__a.reg"```
 
 #### Human Readable Output
+>Ran Export Registry.
+>Registry file expected path: c:\XSOAR-XSOAR__a.reg
 
-
+#### Context Example
+```python
+{
+    "PsRemote": {
+        "RegistryFileName": "XSOAR-XSOAR__a.reg", 
+        "RegistryFilePath": "c:\\XSOAR-XSOAR__a.reg", 
+        "FQDN": "XSOAR-XSOAR.winrm.local", 
+        "CommandName": "regedit /e c:\\XSOAR-XSOAR__a.reg", 
+        "Host": "XSOAR-XSOAR", 
+        "CommandResult": null
+    }
+}
+```
 
 ### ps-remote-export-mft
 ***
@@ -285,8 +347,31 @@ Extracts the master file table from the volume.
 
 
 #### Command Example
-``` ```
+```!ps-remote-export-mft host="XSOAR-XSOAR" volume=C```
 
 #### Human Readable Output
+>### MFT Export results:
+>| ComputerName | MFT File | MFT Size | MFT Volume | NetworkPath | PSComputerName | PSShowComputerName | RunspaceId
+>| --- | --- | --- | --- | --- | --- | --- | ---
+>| XSOAR\-XSOAR | C:\\Users\\ADMINI~1\\AppData\\Local\\Temp\\zzthh5sh.hl2 | 222 MB | C | \\\\XSOAR\-XSOAR\\C$\\Users\\ADMINI~1\\AppData\\Local\\Temp\\zzthh5sh.hl2 | XSOAR\-XSOAR.winrm.local | true | \{"value":"58aa1f39\-f86d\-4f18\-978a\-c9257295df49","Guid":"58aa1f39\-f86d\-4f18\-978a\-c9257295df49"\}
 
 
+#### Context Example
+```python
+{
+    "PsRemote": {
+        "ExportMFT": {
+            "ComputerName": "XSOAR-XSOAR", 
+            "MFT File": "C:\\Users\\ADMINI~1\\AppData\\Local\\Temp\\zzthh5sh.hl2", 
+            "MFT Size": "222 MB", 
+            "PSComputerName": "XSOAR-XSOAR.winrm.local", 
+            "NetworkPath": "\\\\XSOAR-XSOAR\\C$\\Users\\ADMINI~1\\AppData\\Local\\Temp\\zzthh5sh.hl2", 
+            "MFT Volume": "C", 
+            "RunspaceId": "58aa1f39-f86d-4f18-978a-c9257295df49", 
+            "PSShowComputerName": true
+        }, 
+        "Host": "XSOAR-XSOAR", 
+        "FQDN": "XSOAR-XSOAR.winrm.local"
+    }
+}
+```
