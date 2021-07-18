@@ -318,7 +318,7 @@ tasks:
         simple: id
       identifier_value:
         complex:
-          root: JAMF.MobileDevices
+          root: JAMF.MobileDevice
           accessor: id
           transformers:
           - operator: atIndex
@@ -512,7 +512,7 @@ tasks:
         simple: name
       identifier_value:
         complex:
-          root: JAMF.MobileDevices
+          root: JAMF.MobileDevice
           accessor: name
           transformers:
           - operator: atIndex
