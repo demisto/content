@@ -191,7 +191,7 @@ def test_list_all_projects_command(mocker, requests_mock):
 
     GitHub.list_all_projects_command()
     result: CommandResults = mocker_output.call_args[0][0]
-    
+
     assert len(result.outputs) == 2
     assert result.outputs[0]['Number'] == 22
     assert result.outputs[1]['Number'] == 24
