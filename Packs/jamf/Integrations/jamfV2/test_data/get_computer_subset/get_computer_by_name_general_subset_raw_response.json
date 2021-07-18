@@ -4,13 +4,13 @@
       "id": 1,
       "name": "Computer 95",
       "network_adapter_type": "",
-      "mac_address": "68:5B:35:CA:12:56",
+      "mac_address": "12:5B:35:CA:12:56",
       "alt_network_adapter_type": "",
-      "alt_mac_address": "B0:34:95:EC:97:C4",
+      "alt_mac_address": "A1:34:95:EC:97:C4",
       "ip_address": "123.243.192.12",
       "last_reported_ip": "192.168.1.15",
-      "serial_number": "CA40F81C60A3",
-      "udid": "CA40F812-60A3-11E4-90B8-12DF261F2C7E",
+      "serial_number": "AB40F81C60A3",
+      "udid": "AB40F812-60A3-11E4-90B8-12DF261F2C7E",
       "jamf_version": "9.6.29507.c",
       "platform": "Mac",
       "barcode_1": "",
@@ -19,7 +19,7 @@
       "remote_management": {
         "managed": false,
         "management_username": "",
-        "management_password_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        "management_password_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b123"
       },
       "supervised": false,
       "mdm_capable": false,
