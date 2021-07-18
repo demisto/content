@@ -4685,9 +4685,7 @@ script:
       description: Installation status.
       type: string
     description: Installs specific content update file.
-  - name: panorama-reset-last-run
-    description: Resets the fetch incidents last run value, which resets the fetch to its initial fetch state.
-  dockerimage: demisto/python3:3.9.5.21272
+  dockerimage: demisto/python3:3.9.5.22665
   feed: false
   isfetch: false
   isremotesyncin: true
