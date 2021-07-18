@@ -14,24 +14,22 @@ configuration:
   type: 8
 description: Use the IOCParser integration to extract IOCs and intelligence from different
   data sources.
-detaileddescription: |-
-
 display: IOC Parser
 name: IOCParser
 script:
   commands:
   - arguments:
     - default: false
-      description: IOC Types to return
-      isArray: false
-      name: keys
-      required: false
-      secret: false
-    - default: false
       description: The URL from which the IOCs will be extracted
       isArray: false
       name: url
       required: true
+      secret: false
+    - default: false
+      description: IOC Types to return
+      isArray: false
+      name: keys
+      required: false
       secret: false
     deprecated: false
     description: Parses and extracts IOCs from a given URL.
@@ -60,16 +58,16 @@ script:
     name: ioc-parser-parse-text
   - arguments:
     - default: false
-      description: IOC Types to return
-      isArray: false
-      name: keys
-      required: false
-      secret: false
-    - default: false
       description: The text from which the IOCs will be extracted
       isArray: false
       name: data
       required: true
+      secret: false
+    - default: false
+      description: IOC Types to return
+      isArray: false
+      name: keys
+      required: false
       secret: false
     deprecated: false
     description: Parses and extracts IOCs from a given text.
@@ -77,16 +75,16 @@ script:
     name: ioc-parser-parse-raw-text
   - arguments:
     - default: false
-      description: IOC Types to return
-      isArray: false
-      name: keys
-      required: false
-      secret: false
-    - default: false
       description: The twitter account (user name) from which the IOCs will be extracted
       isArray: false
       name: data
       required: true
+      secret: false
+    - default: false
+      description: IOC Types to return
+      isArray: false
+      name: keys
+      required: false
       secret: false
     deprecated: false
     description: Parses and extracts IOCs from a given twitter account.
