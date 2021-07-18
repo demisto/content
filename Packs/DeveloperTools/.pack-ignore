@@ -6,9 +6,3 @@ ignore=BA101
 
 [file:CreateMockFeed.yml]
 ignore=DO102,DO107
-
-[file:VerifyIntegrationHealth.yml]
-ignore=CJ105
-
-[file:VerifyContextFieldsList.yml]
-ignore=CJ105
