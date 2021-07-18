@@ -77,5 +77,5 @@ def test_campaign_without_duration(mock_return_error, mocker):
                                 'context': {"EmailCampaign": {}}}}])
 
     # run
-    get_duration_html()
-    mock_return_error.assert_called_once_with("Can't find firstIncidentDate in context, please run FindEmailCampaign")
+    res = get_duration_html()
+    assert res == '<div style="text-align: center;">Duration is not available.</div>'
