@@ -3432,6 +3432,7 @@
             "integrations": ["OpenCTI Feed 4.X", "Demisto REST API"],
             "playbookID": "Fetch Test",
             "fromversion": "6.0.0",
+            "is_mockable": false,
             "timeout": 1200
         }
     ],
@@ -3733,8 +3734,7 @@
         "Azure Network Security Groups": "Has a command that sends parameters in the path",
         "GitHub": "Cannot use proxy",
         "LogRhythm": "Cannot use proxy",
-        "Create-Mock-Feed-Relationships": "recording is redundant for this integration",
-        "OpenCTI Feed 4.X": "testing"
+        "Create-Mock-Feed-Relationships": "recording is redundant for this integration"
     },
     "parallel_integrations": [
         "AWS - EC2",
