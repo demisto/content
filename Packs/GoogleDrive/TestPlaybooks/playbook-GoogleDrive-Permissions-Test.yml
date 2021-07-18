@@ -1,7 +1,7 @@
 id: 898afe05-61af-4726-818b-897d9dead036
 version: 34
 vcShouldKeepItemLegacyProdMachine: false
-name: test_playbook
+name: test_playbook_permissions
 starttaskid: "0"
 tasks:
   "0":
@@ -438,7 +438,7 @@ tasks:
       key:
         simple: testData.emailAddress
       value:
-        simple: tkatzir@paloaltonetworks.com
+        simple: test@demistodev.com
     separatecontext: false
     view: |-
       {
