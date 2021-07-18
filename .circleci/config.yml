@@ -227,10 +227,10 @@ references:
         if [ -n "${DEMISTO_SDK_NIGHTLY}" ]; then
           pip3 install git+https://github.com/demisto/demisto-sdk.git@"$SDK_REF"
         fi
-        echo "Hello!"
-        pip3 install git+https://github.com/demisto/demisto-sdk@test_uploadflow
-        demisto-sdk --version
-        echo "Hello!!"
+        if [ -n "${SDK_REF}" ] ;then
+          echo "${SDK_REF}"
+          pipenv install git+https://github.com/demisto/demisto-sdk.git@"$SDK_REF"
+        fi
         echo "========== Build Parameters =========="
         set | grep -E "^NIGHTLY=|^INSTANCE_TESTS=|^NON_AMI_RUN=|^SERVER_BRANCH_NAME=|^ARTIFACT_BUILD_NUM=|^DEMISTO_SDK_NIGHTLY=|^TIME_TO_LIVE=|^CONTRIB_BRANCH=|^FORCE_PACK_UPLOAD=|^PACKS_TO_UPLOAD=|^BUCKET_UPLOAD=|^GCS_MARKET_BUCKET=|^SLACK_CHANNEL=|^SDK_REF"
         python --version
