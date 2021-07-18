@@ -7,6 +7,8 @@ from test_data.mitre_test_data import ATTACK_PATTERN, COURSE_OF_ACTION, INTRUSIO
 
 ENTERPRISE_COLLECTION_ID = '95ecc380-afe9-11e4-9b6c-751b66dd541e'
 NON_ENTERPRISE_COLLECTION_ID = '101010101010101010101010101010101'
+
+
 class MockCollection:
     def __init__(self, id_, title):
         self.id = id_
