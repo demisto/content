@@ -827,27 +827,22 @@ def test_edit_notable_event__failed_to_update(mocker, requests_mock):
     Then
     - ensure the error message parsed correctly and returned to the user
     """
-    test_base_url = 'test.url.com'
+    test_base_url = 'https://test.url.com:8089/'
     test_token = 'token12345'
-    mocker.patch.object(demisto, 'params', return_value={
-        'timezone': '0',
-        'host': test_base_url,
-        'port': '8089'
-    })
-    mocker.patch.object(demisto, 'args', return_value={
+    test_args = {
         'eventIDs': 'ID100',
         'owner': 'dbot'
-    })
+    }
     mocker.patch.object(demisto, 'results')
 
-    requests_mock.post('https://test.url.com:8089/services/notable_update',
-                       json='ValueError: Invalid owner value.')
+    requests_mock.post('{}services/notable_update'.format(test_base_url), json='ValueError: Invalid owner value.')
 
-    class Service:
-        def __init__(self):
-            self.token = test_token
-
-    splunk.splunk_edit_notable_event_command(service=Service(), auth_token=None)
+    splunk.splunk_edit_notable_event_command(
+        base_url=test_base_url,
+        token=test_token,
+        auth_token=None,
+        args=test_args
+    )
 
     assert demisto.results.call_count == 1
     error_message = demisto.results.call_args[0][0]['Contents']
