@@ -689,5 +689,5 @@ def test_unicode_to_str_recur(mocker):
         'is-mssp-optional': 'false'
     })
     from IntSight import unicode_to_str_recur
-    non_ascii_str = '\u05d5\u05d5\u05d0\u05d5'
-    assert unicode_to_str_recur(non_ascii_str) == b'\xd7\x95\xd7\x95\xd7\x90\xd7\x95'
+    non_ascii_str = u'\u05d5\u05d5\u05d0\u05d5'
+    assert unicode_to_str_recur(non_ascii_str) == '\xd7\x95\xd7\x95\xd7\x90\xd7\x95'
