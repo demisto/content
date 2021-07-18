@@ -1323,7 +1323,7 @@ def prepare_file_single_output(file_single: Dict[str, Any]) -> Dict[str, Any]:
     :return: Context output.
     """
 
-    if not 'drive#file' == file_single.get('kind', ''):
+    if file_single.get('kind', '') != 'drive#file':
         return {}
 
     ret_value = {}
