@@ -823,12 +823,9 @@ def securityscorecard_alert_grade_change_create_command(client: Client, args: Di
         'hacker_chatter',
         'leaked_information',
         'social_engineering'. For multiple factors, ['leaked_information', 'social_engineering'], type ``array``
-        ``args['target']``: What do you want to monitor with this alert.
-        It could be one of the following:
-        'my_scorecard',
-        'any_followed_company' or an array of portfolio IDs,
-        e.g. ['60c78cc2d63162001a68c2b8', '60c8c5f9139e40001908c6a4'] or
-        ['60c78cc2d63162001a68c2b8', 'my_portfolio'], type ``array``
+        `args['target']``: What do you want to monitor with this alert.
+        It could be one of the following 'my_scorecard', 'any_followed_company', or an array of portfolio IDs,
+        e.g. xxxxxxxxxxxxxxxxxxxxxx,yyyyyyyyyyyyyyyyyyyyy, type ``array``
 
     :return:
         A ``CommandResults`` object that is passed to ``return_results``
@@ -891,7 +888,7 @@ def securityscorecard_alert_score_threshold_create_command(client: Client, args:
         ``args['target']``: What do you want to monitor with this alert.
         It could be one of the following 'my_scorecard', 'any_followed_company', type ``str``
         ``args['portfolios']``: A comma-separated list of Portfolios
-        (i.e. 60c78cc2d63162001a68c2b8,60c8c5f9139e40001908c6a4) to monitor with the alert.
+        (i.e. xxxxxxxxxxxxxxxxxxxxxxxxx,yyyyyyyyyyyyyyyyyyyyy) to monitor with the alert.
         The alert will be triggered once any one of the companies within the specified Portfolio
         meets the set threshold This argument is require if the `target` argument is not specified.
 

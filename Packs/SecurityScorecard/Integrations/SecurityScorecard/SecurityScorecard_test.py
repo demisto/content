@@ -293,12 +293,3 @@ def test_fetch_alerts(mocker):
     assert response["size"] == 9
     assert is_domain_valid(response["entries"][0]["domain"])
     assert isinstance(response["entries"][0]["my_scorecard"], bool)
-
-
-# def test_test_module(mocker):
-
-#     mocker.patch.object(client, "fetch_alerts", return_value=alerts_mock)
-
-#     response = test_module(client)
-
-#     assert response == "ok"
