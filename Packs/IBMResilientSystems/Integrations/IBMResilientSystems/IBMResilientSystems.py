@@ -479,12 +479,11 @@ def update_incident_command(args):
     if args.get('other-fields'):
         for field_name, field_value in json.loads(args['other-fields']).items():
             changes.append(
-                # {
-                #     'field': {'name': field_name},
-                #     'old_value': {'object': {None: None}},
-                #     'new_value': {'object': field_value}
-                # }
-                {"field": {"name": field_name}, "old_value": {}, "new_value": field_value}
+                {
+                    'field': {'name': field_name},
+                    'old_value': {list(field_value.keys())[0]: {'format': 'html', 'content': 'newww_description'}},
+                    'new_value': field_value
+                }
             )
     data = {
         'changes': changes
