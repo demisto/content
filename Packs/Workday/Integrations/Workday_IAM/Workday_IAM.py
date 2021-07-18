@@ -595,8 +595,7 @@ def main():
     workday_password = params.get('credentials', {}).get('password')
     workday_date_format = params.get('workday_date_format', DATE_FORMAT)
     deactivation_date_field = params.get('deactivation_date_field').lower().replace('_', '')
-    source_priority = params.get('source_priority')
-    source_priority = int(source_priority) if source_priority else 1
+    source_priority = int(params.get('source_priority', '1'))
 
     days_before_hire_to_sync = params.get('days_before_hire_to_sync')
     if days_before_hire_to_sync:
