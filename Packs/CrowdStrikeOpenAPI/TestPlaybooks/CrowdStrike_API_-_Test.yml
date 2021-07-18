@@ -1,14 +1,14 @@
-id: CrowdStrike API - Test
+id: CrowdStrike OpenAPI - Test
 version: -1
-name: CrowdStrike API - Test
+name: CrowdStrike OpenAPI - Test
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: efec919b-07de-465d-828b-eaa84e89808e
+    taskid: a6f1fbf6-683a-48f9-8312-42f3660332bf
     type: start
     task:
-      id: efec919b-07de-465d-828b-eaa84e89808e
+      id: a6f1fbf6-683a-48f9-8312-42f3660332bf
       version: -1
       name: ""
       iscommand: false
@@ -32,14 +32,15 @@ tasks:
     quietmode: 0
   "1":
     id: "1"
-    taskid: 6b49466d-c01f-4352-81b5-237a9feb477d
+    taskid: 294f3cd3-2bc7-490f-8e54-624c86027fa5
     type: regular
     task:
-      id: 6b49466d-c01f-4352-81b5-237a9feb477d
+      id: 294f3cd3-2bc7-490f-8e54-624c86027fa5
       version: -1
       name: Query behaviors
-      description: Run a CrowdStrike API query.
-      script: '|||cs-api-request'
+      description: Search for behaviors by providing an FQL filter, sorting, and paging
+        details
+      script: '|||cs-query-behaviors'
       type: regular
       iscommand: true
       brand: ""
@@ -47,10 +48,8 @@ tasks:
       '#none#':
       - "2"
     scriptarguments:
-      endpoint:
-        simple: /incidents/queries/behaviors/v1
-      query_parameters:
-        simple: '{"limit":1}'
+      limit:
+        simple: "1"
     separatecontext: false
     view: |-
       {
@@ -66,10 +65,10 @@ tasks:
     quietmode: 0
   "2":
     id: "2"
-    taskid: 848851a7-06f2-401a-8bf3-373ef409cb88
+    taskid: 5ca50c44-298a-4ec4-8eea-130f2e878860
     type: condition
     task:
-      id: 848851a7-06f2-401a-8bf3-373ef409cb88
+      id: 5ca50c44-298a-4ec4-8eea-130f2e878860
       version: -1
       name: Verify Outputs
       type: condition
@@ -85,7 +84,7 @@ tasks:
       - - operator: hasLength
           left:
             value:
-              simple: CrowdStrike./incidents/queries/behaviors/v1
+              simple: CrowdStrike.msaQueryResponse.resources
             iscontext: true
           right:
             value:
@@ -104,10 +103,10 @@ tasks:
     quietmode: 0
   "3":
     id: "3"
-    taskid: 9771813b-9f7f-43b2-8937-58096d3e81f9
+    taskid: f961f41d-81ac-419c-8c18-1ab48c36ff65
     type: title
     task:
-      id: 9771813b-9f7f-43b2-8937-58096d3e81f9
+      id: f961f41d-81ac-419c-8c18-1ab48c36ff65
       version: -1
       name: Success
       type: title
@@ -129,10 +128,10 @@ tasks:
     quietmode: 0
   "4":
     id: "4"
-    taskid: cc833971-43f4-4075-89cd-63675640988b
+    taskid: 501a53cd-52ff-4bfc-8332-e66cc49a349b
     type: regular
     task:
-      id: cc833971-43f4-4075-89cd-63675640988b
+      id: 501a53cd-52ff-4bfc-8332-e66cc49a349b
       version: -1
       name: Delete Context
       description: Delete field from context
@@ -173,5 +172,5 @@ view: |-
   }
 inputs: []
 outputs: []
-fromversion: 5.5.0
+fromversion: 6.0.0
 description: ''

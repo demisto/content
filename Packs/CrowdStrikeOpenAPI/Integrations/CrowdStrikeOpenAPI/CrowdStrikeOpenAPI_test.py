@@ -3,7 +3,7 @@ import json
 
 import pytest
 
-from CrowdStrikeAPI import Client, api_request
+from CrowdStrikeOpenAPI import Client, query_behaviors_command
 
 
 @pytest.fixture()
@@ -22,25 +22,22 @@ def util_load_json(path):
         return json.loads(f.read())
 
 
-def test_api_request(client, requests_mock):
+def test_query_behaviors(client, requests_mock):
     """
     Given:
-        - Query behaviors endpoint
+        - Limit arg set to 1
     When:
-        - Running api request command
+        - Running query behaviors command
     Then:
         - Verify request sent as expected
         - Verify command outputs are as expected
     """
-    endpoint = '/incidents/queries/behaviors/v1'
-    query_parameters = '{"limit":1}'
     args = {
-        'endpoint': endpoint,
-        'query_parameters': query_parameters,
+        'limit': '1'
     }
     api_response = util_load_json('./test_data/query_behaviors_response.json')
-    requests_mock.get('https://api.crowdstrike.com' + endpoint + '?limit=1', json=api_response)
+    requests_mock.get('https://api.crowdstrike.com/incidents/queries/behaviors/v1?limit=1', json=api_response)
 
-    result = api_request(client=client, args=args)
+    result = query_behaviors_command(client=client, args=args)
 
-    assert result.outputs == api_response['resources']
+    assert result.outputs == api_response
