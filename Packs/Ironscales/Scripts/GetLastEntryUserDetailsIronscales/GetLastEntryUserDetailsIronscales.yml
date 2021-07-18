@@ -1,0 +1,26 @@
+args:
+- description: user email
+  name: email
+comment: Get the username of the last entry ID
+commonfields:
+  id: GetLastEntryUserDetails-Ironscales
+  version: -1
+dependson:
+  must: []
+dockerimage: demisto/python3:3.9.5.21272
+enabled: true
+name: GetLastEntryUserDetails-Ironscales
+outputs:
+- contextPath: entryid.email
+  description: Details of the entry ID
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags:
+- field-display
+type: python
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)
