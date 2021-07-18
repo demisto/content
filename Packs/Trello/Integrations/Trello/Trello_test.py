@@ -38,6 +38,11 @@ mock_client = Client(
 )
 
 
+def load_json_file(path):
+    with open(path) as f:
+        return json.load(f)
+
+
 @pytest.fixture
 def testclient():
     """
@@ -81,19 +86,19 @@ def test_integration_tests(mocker, testclient):
     if os.getenv("GEN_TEST_DATA"):
         # If set, test JSON added to test_data
         for k, v in test_data.items():
-            fh = open(f"test_data/{k}.json", "w")
-            json.dump(v, fh, indent=4, sort_keys=True)
+            with open(f"test_data/{k}.json", "w") as fh:
+                json.dump(v, fh, indent=4, sort_keys=True)
 
 
 def test_select_outputs():
-    result = json.load(open("./test_data/list_lists_unit.json"))
+    result = load_json_file("./test_data/list_lists_unit.json")
     outputs = select_outputs(result, ["id", "name", "idBoard"])
     assert len(outputs) == 2
     assert "Id" in outputs[0]
 
 
 def test_select_outputs_camelize():
-    result = json.load(open("./test_data/list_actions_unit.json"))
+    result = load_json_file("./test_data/list_actions_unit.json")
     outputs = select_outputs_camelize(result, ["id", "list_id"])
     assert len(outputs) > 0
     assert "ListId" in outputs[0]
@@ -107,10 +112,10 @@ def test_fetch(mocker):
         "last_fetch": None
     }
     from Trello import fetch_incidents
-    lists = json.load(open("./test_data/list_lists_unit.json"))
-    mocker.patch.object(Client, "list_actions", return_value=json.load(open("./test_data/list_actions_unit.json")))
+    lists = load_json_file("./test_data/list_lists_unit.json")
+    mocker.patch.object(Client, "list_actions", return_value=load_json_file("./test_data/list_actions_unit.json"))
     mocker.patch.object(Client, "list_lists", return_value=lists)
-    mocker.patch.object(Client, "list_cards", return_value=json.load(open("./test_data/list_cards_unit.json")))
+    mocker.patch.object(Client, "list_cards", return_value=load_json_file("./test_data/list_cards_unit.json"))
 
     last_run, incidents = fetch_incidents(mock_client, last_run, "blah", "1111")
     # Should not fetch any incidents, as we've passed it a last_id filter which will not match
@@ -127,7 +132,7 @@ def test_fetch(mocker):
 
 def test_flatten_actions():
     from Trello import flatten_action_data
-    test_actions = json.load(open("./test_data/list_actions_unit.json"))
+    test_actions = load_json_file("./test_data/list_actions_unit.json")
     r = flatten_action_data(test_actions)
     assert (r[0].get("board_id"))
     assert (r[0].get("card_id"))

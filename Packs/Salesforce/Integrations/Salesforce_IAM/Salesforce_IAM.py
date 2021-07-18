@@ -191,7 +191,7 @@ def get_user_command(client, args, mapper_in):
         return iam_user_profile
 
 
-def create_user_command(client, args, mapper_out, is_create_enabled, is_update_enabled):
+def create_user_command(client, args, mapper_out, is_create_enabled, is_update_enabled, is_enable_enabled):
     try:
         user_profile = args.get("user-profile")
         iam_user_profile = IAMUserProfile(user_profile=user_profile)
@@ -207,11 +207,12 @@ def create_user_command(client, args, mapper_out, is_create_enabled, is_update_e
 
             if user_id:
                 create_if_not_exists = False
-                iam_user_profile = update_user_command(client, args, mapper_out, is_update_enabled,
+                iam_user_profile = update_user_command(client, args, mapper_out, is_update_enabled, is_enable_enabled,
                                                        is_create_enabled, create_if_not_exists)
 
             else:
-                salesforce_user = iam_user_profile.map_object(mapper_name=mapper_out)
+                salesforce_user = iam_user_profile.map_object(mapper_name=mapper_out,
+                                                              incident_type=IAMUserProfile.CREATE_INCIDENT_TYPE)
                 # Removing empty elements from salesforce_user
                 salesforce_user = {key: value for key, value in salesforce_user.items() if value is not None}
                 salesforce_user = check_and_set_manndatory_fields(salesforce_user, client.demisto_params)
@@ -236,7 +237,8 @@ def create_user_command(client, args, mapper_out, is_create_enabled, is_update_e
         return iam_user_profile
 
 
-def update_user_command(client, args, mapper_out, is_command_enabled, is_create_user_enabled, create_if_not_exists):
+def update_user_command(client, args, mapper_out, is_command_enabled, is_enable_enabled,
+                        is_create_user_enabled, create_if_not_exists):
     try:
         iam_user_profile = IAMUserProfile(user_profile=args.get('user-profile'))
         allow_enable = args.get('allow-enable') == 'true'
@@ -252,7 +254,8 @@ def update_user_command(client, args, mapper_out, is_command_enabled, is_create_
             if not user_id:
                 # user doesn't exists
                 if create_if_not_exists:
-                    iam_user_profile = create_user_command(client, args, mapper_out, is_create_user_enabled, False)
+                    iam_user_profile = create_user_command(client, args, mapper_out, is_create_user_enabled,
+                                                           False, False)
                 else:
                     error_code, error_message = IAMErrors.USER_DOES_NOT_EXIST
                     iam_user_profile.set_result(action=IAMActions.UPDATE_USER,
@@ -260,9 +263,10 @@ def update_user_command(client, args, mapper_out, is_command_enabled, is_create_
                                                 skip=True,
                                                 skip_reason=error_message)
             else:
-                salesforce_user = iam_user_profile.map_object(mapper_name=mapper_out)
+                salesforce_user = iam_user_profile.map_object(mapper_name=mapper_out,
+                                                              incident_type=IAMUserProfile.UPDATE_INCIDENT_TYPE)
                 salesforce_user = {key: value for key, value in salesforce_user.items() if value is not None}
-                if allow_enable:
+                if allow_enable and is_enable_enabled:
                     salesforce_user['IsActive'] = True
 
                 res = client.update_user(user_term=user_id, data=salesforce_user)
@@ -307,7 +311,8 @@ def disable_user_command(client, args, mapper_out, is_command_enabled):
                                             skip=True,
                                             skip_reason=error_message)
             else:
-                salesforce_user = iam_user_profile.map_object(mapper_name=mapper_out)
+                salesforce_user = iam_user_profile.map_object(mapper_name=mapper_out,
+                                                              incident_type=IAMUserProfile.UPDATE_INCIDENT_TYPE)
                 salesforce_user['IsActive'] = False
                 salesforce_user = {key: value for key, value in salesforce_user.items() if value is not None}
                 res = client.update_user_profile(user_term=user_id, data=salesforce_user)
@@ -362,7 +367,7 @@ def get_all_user_attributes(client):
 
 def get_mapping_fields_command(client):
     scheme = get_all_user_attributes(client)
-    incident_type_scheme = SchemeTypeMapping(type_name=IAMUserProfile.INDICATOR_TYPE)
+    incident_type_scheme = SchemeTypeMapping(type_name=IAMUserProfile.DEFAULT_INCIDENT_TYPE)
 
     for field in scheme:
         incident_type_scheme.add_field(field, "Field")
@@ -396,6 +401,7 @@ def main():
     is_create_enabled = params.get("create_user_enabled")
     is_update_enabled = demisto.params().get("update_user_enabled")
     is_disable_enabled = demisto.params().get("disable_user_enabled")
+    is_enable_enabled = demisto.params().get("enable_user_enabled")
     create_if_not_exists = demisto.params().get("create_if_not_exists")
 
     LOG(f'Command being called is {command}')
@@ -421,11 +427,12 @@ def main():
             return_results(user_profile)
 
         elif command == 'iam-create-user':
-            user_profile = create_user_command(client, args, mapper_out, is_create_enabled, is_update_enabled)
+            user_profile = create_user_command(client, args, mapper_out, is_create_enabled, is_update_enabled,
+                                               is_enable_enabled)
             return_results(user_profile)
 
         elif command == 'iam-update-user':
-            user_profile = update_user_command(client, args, mapper_out, is_update_enabled,
+            user_profile = update_user_command(client, args, mapper_out, is_update_enabled, is_enable_enabled,
                                                is_create_enabled, create_if_not_exists)
             return_results(user_profile)
 

@@ -30,3 +30,21 @@ def test_upload_sample_command(mocker):
         main()
 
     assert mocker_output.call_args.args[0] == expected_output
+
+
+def test_encoding_file_name(mocker):
+    """
+    Given:
+        A string representing a file name with backslashes
+    When:
+        encode_file_name is running
+    Then:
+        Verify the output of encode_file_name is the same as the input string (in bytes) without it's backslashes
+    """
+    mocker.patch.object(demisto, 'params', return_value={"api_key": "123456", "server": "https://cloud.vmray.com/",
+                                                         'shareable': False, 'reanalyze': False})
+    file_name = '\\test\\encode\\file\\name'
+    expected_output = 'testencodefilename'
+    from VMRay import encode_file_name
+
+    assert encode_file_name(file_name) == expected_output

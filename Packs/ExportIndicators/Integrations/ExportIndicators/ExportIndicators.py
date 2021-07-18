@@ -440,17 +440,18 @@ def create_proxysg_out_format(iocs: list, category_attribute: list, category_def
 
     for indicator in iocs:
         if indicator.get('indicator_type') in ['URL', 'Domain', 'DomainGlob'] and indicator.get('value'):
+            stripped_indicator = _PROTOCOL_REMOVAL.sub('', indicator.get('value'))
             indicator_proxysg_category = indicator.get('proxysgcategory')
             # if a ProxySG Category is set and it is in the category_attribute list or that the attribute list is empty
             # than list add the indicator to it's category list
             if indicator_proxysg_category is not None and \
                     (indicator_proxysg_category in category_attribute or len(category_attribute) == 0):
-                category_dict = add_indicator_to_category(indicator.get('value'), indicator_proxysg_category,
+                category_dict = add_indicator_to_category(stripped_indicator, indicator_proxysg_category,
                                                           category_dict)
 
             else:
                 # if ProxySG Category is not set or does not exist in the category_attribute list
-                category_dict = add_indicator_to_category(indicator.get('value'), category_default, category_dict)
+                category_dict = add_indicator_to_category(stripped_indicator, category_default, category_dict)
 
     for category, indicator_list in category_dict.items():
         sub_output_string = f"define category {category}\n"
