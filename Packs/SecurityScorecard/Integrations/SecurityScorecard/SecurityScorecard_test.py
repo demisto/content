@@ -1,16 +1,11 @@
 from SecurityScorecard import \
     Client, \
     DATE_FORMAT, \
-    is_domain_valid, \
-    is_email_valid, \
-    is_date_valid, \
     incidents_to_import
 
 import json
 import io
 import datetime
-import pytest  # type: ignore
-import re
 
 """ Helper Functions Test Data"""
 
@@ -36,24 +31,6 @@ create_score_alert_mock = load_json("./test_data/alerts/create_score_alert.json"
 services_mock = load_json("./test_data/companies/services.json")
 
 """ Helper Functions Unit Tests"""
-
-
-@pytest.mark.parametrize("domain,result", domain_test_data)
-def test_is_domain_valid(domain, result):
-    for domain, result in domain_test_data:
-        assert is_domain_valid(domain) == result
-
-
-@pytest.mark.parametrize("date,result", date_test_data)
-def test_is_date_valid(date, result):
-    for date, result in date_test_data:
-        assert is_date_valid(date) == result
-
-
-@pytest.mark.parametrize("email,result", email_test_data)
-def test_is_email_valid(email, result):
-    for email, result in email_test_data:
-        assert is_email_valid(email) == result
 
 
 def test_incidents_to_import(mocker):
@@ -174,7 +151,6 @@ def test_get_company_score(mocker):
     assert response_score["domain"] == DOMAIN
     assert isinstance(response_score["score"], int)
     assert isinstance(response_score["last30day_score_change"], int)
-    assert re.match("[A-F]", response_score["grade"])
 
 
 def test_get_company_factor_score(mocker):
@@ -190,7 +166,6 @@ def test_get_company_factor_score(mocker):
     sample_factor = response_factor_score["entries"][0]
 
     assert isinstance(sample_factor["score"], int)
-    assert re.match("[A-F]", sample_factor["grade"])
 
 
 def test_get_company_historical_scores(mocker):
@@ -207,7 +182,6 @@ def test_get_company_historical_scores(mocker):
     assert response_historical_score == historical_score_mock
     assert len(response_historical_score["entries"]) == 8
     assert isinstance(response_historical_score["entries"][0]["score"], int)
-    assert is_domain_valid(response_historical_score["entries"][0]["domain"])
 
 
 def test_get_company_historical_factor_scores(mocker):
@@ -264,7 +238,6 @@ def test_get_alerts_last_week(mocker):
 
     assert response == alerts_mock
     assert response["size"] == 9
-    assert is_domain_valid(response["entries"][0]["domain"])
     assert isinstance(response["entries"][0]["my_scorecard"], bool)
 
 
@@ -276,9 +249,6 @@ def test_get_domain_services(mocker):
 
     assert response == services_mock
     assert response["total"] == len(response["entries"])
-    for entry in response["entries"]:
-        assert is_domain_valid(entry["vendor_domain"])
-        assert is_domain_valid(entry["client_domain"])
 
 
 def test_fetch_alerts(mocker):
@@ -291,5 +261,4 @@ def test_fetch_alerts(mocker):
 
     assert response == alerts_mock
     assert response["size"] == 9
-    assert is_domain_valid(response["entries"][0]["domain"])
     assert isinstance(response["entries"][0]["my_scorecard"], bool)

@@ -239,35 +239,6 @@ Please run !securityscorecard-portfolios-list to see available Portfolios and tr
 """ HELPER FUNCTIONS """
 
 
-def is_domain_valid(domain: str):
-
-    regex = "^((?!-)[A-Za-z0-9-]" + \
-            "{1,63}(?<!-)\\.)" + \
-            "+[A-Za-z]{2,6}"
-
-    p = re.compile(regex)
-
-    if domain is None:
-        return False
-
-    if re.search(p, domain):
-        return True
-    else:
-        return False
-
-
-def is_email_valid(email: str):
-
-    if email is None:
-        return False
-
-    if(re.match(emailRegex, email)):
-        return True
-
-    else:
-        return False
-
-
 def incidents_to_import(alerts: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
 
     """
@@ -362,28 +333,6 @@ def incidents_to_import(alerts: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
     return incidents_to_import
 
 
-def is_date_valid(date):
-    """
-    The method checks whether the date supplied is valid.
-    The SecurityScorecard API requires the date to be in YYYY-MM-DD format.
-    """
-    regex = r'[1-3]\d{3}-(0[1-9]|1[0-2])-(0[1-9]|1[0-9]|2[0-9]|3[0-1])'
-
-    demisto.debug("is_date_valid(date={0})".format(date))
-    # Since the date is optional, an empty date is considered valid
-    if date is None:
-        demisto.debug("date is None, returning True")
-        return True
-
-    elif(re.match(regex, date)):
-        demisto.debug("date matches regex, returning True")
-        return True
-
-    else:
-        demisto.debug("date doesn't match regex, returning False")
-        return False
-
-
 """ COMMAND FUNCTIONS """
 
 
@@ -404,19 +353,16 @@ def test_module(client: Client) -> str:
     username_input = demisto.params().get('username').get("identifier")
 
     message: str = ''
-    if not is_email_valid(username_input):
-        message = "Username/Email address '{}' is invalid".format(username_input)
-    else:
-        try:
-            client.fetch_alerts(
-                username=username_input,
-                page_size=1)
-            message = 'ok'
-        except DemistoException as e:
-            if 'Unauthorized' in str(e):
-                message = 'Authorization Error: make sure API Key is correctly set'
-            else:
-                raise e
+    try:
+        client.fetch_alerts(
+            username=username_input,
+            page_size=1)
+        message = 'ok'
+    except DemistoException as e:
+        if 'Unauthorized' in str(e):
+            message = 'Authorization Error: make sure API Key is correctly set'
+        else:
+            raise e
     return message
 
 # region Methods
@@ -566,30 +512,25 @@ def securityscorecard_company_score_get_command(client: Client, args: Dict[str, 
     # str cast for mypy compatibility
     domain = str(args.get('domain'))
 
-    if is_domain_valid(domain):
+    score = client.get_company_score(domain=domain)
+    score["domain"] = "[{0}](https://{0})".format(domain)
 
-        score = client.get_company_score(domain=domain)
-        score["domain"] = "[{0}](https://{0})".format(domain)
+    industry = str(score.get("industry")).title().replace("_", " ")
+    score["industry"] = industry
 
-        industry = str(score.get("industry")).title().replace("_", " ")
-        score["industry"] = industry
+    markdown = tableToMarkdown(
+        "Domain {0} Scorecard".format(domain),
+        score,
+        headers=['name', 'domain', 'grade', 'score', 'industry', 'last30day_score_change', 'size']
+    )
 
-        markdown = tableToMarkdown(
-            "Domain {0} Scorecard".format(domain),
-            score,
-            headers=['name', 'domain', 'grade', 'score', 'industry', 'last30day_score_change', 'size']
-        )
+    results = CommandResults(
+        readable_output=markdown,
+        outputs_prefix="SecurityScorecard.Company.Score",
+        outputs=score
+    )
 
-        results = CommandResults(
-            readable_output=markdown,
-            outputs_prefix="SecurityScorecard.Company.Score",
-            outputs=score
-        )
-
-        return results
-
-    else:
-        raise DemistoException("The domain '{0}' is invalid. Please try a different domain, e.g. google.com".format(domain))
+    return results
 
 
 def securityscorecard_company_factor_score_get_command(client: Client, args: Dict[str, Any]) -> CommandResults:
@@ -611,40 +552,36 @@ def securityscorecard_company_factor_score_get_command(client: Client, args: Dic
 
     domain = str(args.get('domain'))
 
-    if is_domain_valid(domain):
+    severity_in = args.get('severity_in')
 
-        severity_in = args.get('severity_in')
+    response = client.get_company_factor_score(domain, severity_in)
 
-        response = client.get_company_factor_score(domain, severity_in)
+    demisto.debug("factor score response: {0}".format(response))
+    entries = response['entries']
 
-        demisto.debug("factor score response: {0}".format(response))
-        entries = response['entries']
+    factor_scores = []
+    for entry in entries:
+        score = {}
+        score["Name"] = entry.get("name").title().replace("_", " ")
+        score["Grade"] = entry.get("grade")
+        score["Score"] = entry.get("score")
+        score["Issues"] = len(entry.get("issue_summary"))
+        score["Issue Details"] = entry.get("issue_summary")
+        factor_scores.append(score)
 
-        factor_scores = []
-        for entry in entries:
-            score = {}
-            score["Name"] = entry.get("name").title().replace("_", " ")
-            score["Grade"] = entry.get("grade")
-            score["Score"] = entry.get("score")
-            score["Issues"] = len(entry.get("issue_summary"))
-            score["Issue Details"] = entry.get("issue_summary")
-            factor_scores.append(score)
+    markdown = tableToMarkdown(
+        "Domain [{0}](https://{0}) Scorecard".format(domain),
+        factor_scores,
+        headers=['Name', 'Grade', 'Score', 'Issues']
+    )
 
-        markdown = tableToMarkdown(
-            "Domain [{0}](https://{0}) Scorecard".format(domain),
-            factor_scores,
-            headers=['Name', 'Grade', 'Score', 'Issues']
-        )
+    results = CommandResults(
+        readable_output=markdown,
+        outputs_prefix="SecurityScorecard.Company.Factor",
+        outputs=factor_scores
+    )
 
-        results = CommandResults(
-            readable_output=markdown,
-            outputs_prefix="SecurityScorecard.Company.Factor",
-            outputs=factor_scores
-        )
-
-        return results
-    else:
-        raise DemistoException("The domain '{0}' is invalid. Please try a different domain, e.g. google.com".format(domain))
+    return results
 
 
 def securityscorecard_company_history_score_get_command(client: Client, args: Dict[str, Any]) -> CommandResults:
@@ -668,47 +605,30 @@ def securityscorecard_company_history_score_get_command(client: Client, args: Di
 
     domain = str(args.get('domain'))
 
-    if is_domain_valid(domain):
+    _from = args.get('from')
+    to = args.get('to')
+    timing = str(args.get('timing'))
 
-        _from = args.get('from')
-        to = args.get('to')
+    demisto.debug("Arguments: {0}".format(args))
+    response = client.get_company_historical_scores(domain=domain, _from=_from, to=to, timing=timing)  # type: ignore
 
-        if not is_date_valid(_from):
-            raise DemistoException("""Date format for 'from' argument '{0}' is not valid.
-            The valid form is YYYY-MM-DD, e.g. 2021-01-01, 2021-12-31""".format(_from))
+    demisto.debug("API response: {0}".format(response))
 
-        if not is_date_valid(to):
-            raise DemistoException("""Date format for 'to' argument '{0}' is not valid.
-            The valid form is YYYY-MM-DD, e.g. 2021-01-01, 2021-12-31""".format(to))
+    entries = response.get('entries')
 
-        if _from is not None and to is not None and _from > to:
-            raise DemistoException("Invalid time range. The 'from' date '{0}' is after the 'to' date '{1}'".format(_from, to))
+    markdown = tableToMarkdown(
+        "Historical Scores for Domain [`{0}`](https://{0})".format(domain),
+        entries,
+        headers=['date', 'score']
+    )
 
-        timing = str(args.get('timing'))
+    results = CommandResults(
+        readable_output=markdown,
+        outputs_prefix="SecurityScorecard.Company.History",
+        outputs=entries
+    )
 
-        demisto.debug("Arguments: {0}".format(args))
-        response = client.get_company_historical_scores(domain=domain, _from=_from, to=to, timing=timing)  # type: ignore
-
-        demisto.debug("API response: {0}".format(response))
-
-        entries = response.get('entries')
-
-        markdown = tableToMarkdown(
-            "Historical Scores for Domain [`{0}`](https://{0})".format(domain),
-            entries,
-            headers=['date', 'score']
-        )
-
-        results = CommandResults(
-            readable_output=markdown,
-            outputs_prefix="SecurityScorecard.Company.History",
-            outputs=entries
-        )
-
-        return results
-
-    else:
-        raise DemistoException("The domain '{0}' is invalid. Please try a different domain, e.g. google.com".format(domain))
+    return results
 
 
 def securityscorecard_company_history_factor_score_get_command(client: Client, args: Dict[str, Any]) -> CommandResults:
@@ -732,72 +652,45 @@ def securityscorecard_company_history_factor_score_get_command(client: Client, a
     """
 
     domain = str(args.get('domain'))
+    _from = args.get('from')
+    to = args.get('to')
+    timing = str(args.get('timing'))
 
-    if is_domain_valid(domain):
+    demisto.debug("Arguments: {0}".format(args))
+    response = client.get_company_historical_factor_scores(domain=domain, _from=_from, to=to, timing=timing)  # type: ignore
 
-        _from = args.get('from')
-        to = args.get('to')
+    demisto.debug("API response: {0}".format(response))
 
-        if not is_date_valid(_from):
-            raise DemistoException(
-                """
-                Date format for 'from' argument '{0}' is not valid.
-                The valid form is YYYY-MM-DD,
-                e.g. 2021-01-01, 2021-12-31
-                """.format(_from)
-            )
+    entries = response['entries']
 
-        if not is_date_valid(to):
-            raise DemistoException(
-                """
-                Date format for 'to' argument '{0}' is not valid.
-                The valid form is YYYY-MM-DD,
-                e.g. 2021-01-01, 2021-12-31
-                """.format(to)
-            )
+    factor_scores = []
 
-        if _from is not None and to is not None and _from > to:
-            raise DemistoException("Invalid time range. The 'from' date '{0}' is after the 'to' date '{1}'".format(_from, to))
+    for entry in entries:
+        f = {}
+        f["Date"] = entry.get("date").split("T")[0]
 
-        timing = str(args.get('timing'))
+        factors = entry.get("factors")
+        factor_row = ''
+        for factor in factors:
+            factor_name = factor.get("name").title().replace("_", " ")
+            factor_score = factor.get("score")
 
-        demisto.debug("Arguments: {0}".format(args))
-        response = client.get_company_historical_factor_scores(domain=domain, _from=_from, to=to, timing=timing)  # type: ignore
+            factor_row = factor_row + "{0}: {1}\n".format(factor_name, factor_score)
 
-        demisto.debug("API response: {0}".format(response))
+        f["Factors"] = factor_row
+        factor_scores.append(f)
 
-        entries = response['entries']
+    demisto.debug("factor_scores: {0}".format(factor_scores))
 
-        factor_scores = []
+    markdown = tableToMarkdown("Historical Factor Scores for Domain [`{0}`](https://{0})".format(domain), factor_scores)
 
-        for entry in entries:
-            f = {}
-            f["Date"] = entry.get("date").split("T")[0]
+    results = CommandResults(
+        readable_output=markdown,
+        outputs_prefix="SecurityScorecard.Company.FactorHistory",
+        outputs=entries
+    )
 
-            factors = entry.get("factors")
-            factor_row = ''
-            for factor in factors:
-                factor_name = factor.get("name").title().replace("_", " ")
-                factor_score = factor.get("score")
-
-                factor_row = factor_row + "{0}: {1}\n".format(factor_name, factor_score)
-
-            f["Factors"] = factor_row
-            factor_scores.append(f)
-
-        demisto.debug("factor_scores: {0}".format(factor_scores))
-
-        markdown = tableToMarkdown("Historical Factor Scores for Domain [`{0}`](https://{0})".format(domain), factor_scores)
-
-        results = CommandResults(
-            readable_output=markdown,
-            outputs_prefix="SecurityScorecard.Company.FactorHistory",
-            outputs=entries
-        )
-
-        return results
-    else:
-        raise DemistoException("The domain '{0}' is invalid. Please try a different domain, e.g. google.com".format(domain))
+    return results
 
 
 def securityscorecard_alert_grade_change_create_command(client: Client, args: Dict[str, Any]) -> CommandResults:
@@ -833,34 +726,29 @@ def securityscorecard_alert_grade_change_create_command(client: Client, args: Di
     """
 
     email = demisto.params().get('username').get("identifier")
+    change_direction = str(args.get('change_direction'))
+    score_types = argToList(args.get('score_types'))
+    target = argToList(args.get('target'))
 
-    if is_email_valid(email=email):
-        change_direction = str(args.get('change_direction'))
-        score_types = argToList(args.get('score_types'))
-        target = argToList(args.get('target'))
+    demisto.debug("Attempting to create alert with body {0}".format(args))
+    response = client.create_grade_change_alert(
+        email=email,
+        change_direction=change_direction,
+        score_types=score_types,
+        target=target
+    )
+    demisto.debug("Response received: {0}".format(response))
+    alert_id = response.get("id")
 
-        demisto.debug("Attempting to create alert with body {0}".format(args))
-        response = client.create_grade_change_alert(
-            email=email,
-            change_direction=change_direction,
-            score_types=score_types,
-            target=target
-        )
-        demisto.debug("Response received: {0}".format(response))
-        alert_id = response.get("id")
+    markdown = "Alert **{0}** created".format(alert_id)
 
-        markdown = "Alert **{0}** created".format(alert_id)
+    results = CommandResults(
+        readable_output=markdown,
+        outputs_prefix="SecurityScorecard.GradeChangeAlert.id",
+        outputs=alert_id
+    )
 
-        results = CommandResults(
-            readable_output=markdown,
-            outputs_prefix="SecurityScorecard.GradeChangeAlert.id",
-            outputs=alert_id
-        )
-
-        return results
-
-    else:
-        raise DemistoException("Email address '{0}' is invalid. Please try a different email address.".format(email))
+    return results
 
 
 def securityscorecard_alert_score_threshold_create_command(client: Client, args: Dict[str, Any]) -> CommandResults:
@@ -898,49 +786,45 @@ def securityscorecard_alert_score_threshold_create_command(client: Client, args:
     """
 
     email = demisto.params().get('username').get("identifier")
-    if is_email_valid(email=email):
+    change_direction = str(args.get('change_direction'))
+    threshold = arg_to_number(args.get('threshold'))  # type: ignore
+    score_types = argToList(args.get('score_types'))
+    target_arg = argToList(args.get('target'))
+    portfolios = argToList(args.get('portfolios'))
 
-        change_direction = str(args.get('change_direction'))
-        threshold = arg_to_number(args.get('threshold'))  # type: ignore
-        score_types = argToList(args.get('score_types'))
-        target_arg = argToList(args.get('target'))
-        portfolios = argToList(args.get('portfolios'))
-
-        # Only one argument between portfolios and target should be defined
-        # Return error if neither of them is defined or if both are defined
-        # Else choose the one that is defined and use it as the target
-        if portfolios and target_arg:
-            raise DemistoException("""Both 'portfolio' and 'target' argument have been set.
-            Please remove one of them and try again.""")
-        elif target_arg and not portfolios:
-            target = target_arg
-        elif portfolios and not target_arg:
-            target = portfolios
-        else:
-            raise DemistoException("Either 'portfolio' or 'target' argument has to be speficied")
-
-        demisto.debug("Attempting to create alert with body {0}".format(args))
-        response = client.create_score_threshold_alert(
-            email=email,
-            change_direction=change_direction,
-            threshold=threshold,  # type: ignore
-            score_types=score_types,
-            target=target
-        )
-        demisto.debug("Response received: {0}".format(response))
-        alert_id = response.get("id")
-
-        markdown = "Alert **{0}** created".format(alert_id)
-
-        results = CommandResults(
-            readable_output=markdown,
-            outputs_prefix="SecurityScorecard.ScoreThresholdAlert.id",
-            outputs=alert_id
-        )
-
-        return results
+    # Only one argument between portfolios and target should be defined
+    # Return error if neither of them is defined or if both are defined
+    # Else choose the one that is defined and use it as the target
+    if portfolios and target_arg:
+        raise DemistoException("""Both 'portfolio' and 'target' argument have been set.
+        Please remove one of them and try again.""")
+    elif target_arg and not portfolios:
+        target = target_arg
+    elif portfolios and not target_arg:
+        target = portfolios
     else:
-        raise DemistoException("Email address '{0}' is invalid. Please try a different email address.".format(email))
+        raise DemistoException("Either 'portfolio' or 'target' argument has to be speficied")
+
+    demisto.debug("Attempting to create alert with body {0}".format(args))
+    response = client.create_score_threshold_alert(
+        email=email,
+        change_direction=change_direction,
+        threshold=threshold,  # type: ignore
+        score_types=score_types,
+        target=target
+    )
+    demisto.debug("Response received: {0}".format(response))
+    alert_id = response.get("id")
+
+    markdown = "Alert **{0}** created".format(alert_id)
+
+    results = CommandResults(
+        readable_output=markdown,
+        outputs_prefix="SecurityScorecard.ScoreThresholdAlert.id",
+        outputs=alert_id
+    )
+
+    return results
 
 
 def securityscorecard_alert_delete_command(client: Client, args: Dict[str, Any]) -> CommandResults:
@@ -960,19 +844,15 @@ def securityscorecard_alert_delete_command(client: Client, args: Dict[str, Any])
     """
 
     email = demisto.params().get('username').get("identifier")
-    if is_email_valid(email):
+    alert_id = str(args.get("alert_id"))
+    alert_type = str(args.get("alert_type"))
+    client.delete_alert(email=email, alert_id=alert_id, alert_type=alert_type)
 
-        alert_id = str(args.get("alert_id"))
-        alert_type = str(args.get("alert_type"))
-        client.delete_alert(email=email, alert_id=alert_id, alert_type=alert_type)
+    markdown = "{0} alert **{1}** deleted".format(str.capitalize(alert_type), alert_id)
 
-        markdown = "{0} alert **{1}** deleted".format(str.capitalize(alert_type), alert_id)
+    results = CommandResults(readable_output=markdown)
 
-        results = CommandResults(readable_output=markdown)
-
-        return results
-    else:
-        raise DemistoException("Email address '{0}' is invalid. Please try a different email address.".format(email))
+    return results
 
 
 def securityscorecard_alerts_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
@@ -992,48 +872,44 @@ def securityscorecard_alerts_list_command(client: Client, args: Dict[str, Any]) 
 
     email = demisto.params().get('username').get("identifier")
     demisto.debug("email: {0}".format(email))
-    if is_email_valid(email):
+    portfolio_id = args.get('portfolio_id')
 
-        portfolio_id = args.get('portfolio_id')
+    demisto.debug("Sending request to retrieve alerts with arguments {0}".format(args))
 
-        demisto.debug("Sending request to retrieve alerts with arguments {0}".format(args))
+    response = client.get_alerts_last_week(email=email, portfolio_id=portfolio_id)
 
-        response = client.get_alerts_last_week(email=email, portfolio_id=portfolio_id)
+    entries = response["entries"]
 
-        entries = response["entries"]
+    # Retrieve the alert metadata (direction, score, factor, grade_letter, score_impact)
+    alerts = []
 
-        # Retrieve the alert metadata (direction, score, factor, grade_letter, score_impact)
-        alerts = []
+    for entry in entries:
+        # change_data is a list that includes all alert metadata that triggered the event
+        changes = entry.get("change_data")
+        for change in changes:
+            alert = {}
+            alert["id"] = entry.get("id")
+            alert["change_type"] = entry.get("change_type")
+            alert["domain"] = entry.get("domain")
+            alert["company"] = entry.get("company_name")
+            alert["created"] = entry.get("created_at")
+            alert["direction"] = change.get("direction")
+            alert["score"] = change.get("score")
+            alert["factor"] = change.get("factor")
+            alert["grade_letter"] = change.get("grade_letter")
+            alert["score_impact"] = change.get("score_impact")
+            alerts.append(alert)
 
-        for entry in entries:
-            # change_data is a list that includes all alert metadata that triggered the event
-            changes = entry.get("change_data")
-            for change in changes:
-                alert = {}
-                alert["id"] = entry.get("id")
-                alert["change_type"] = entry.get("change_type")
-                alert["domain"] = entry.get("domain")
-                alert["company"] = entry.get("company_name")
-                alert["created"] = entry.get("created_at")
-                alert["direction"] = change.get("direction")
-                alert["score"] = change.get("score")
-                alert["factor"] = change.get("factor")
-                alert["grade_letter"] = change.get("grade_letter")
-                alert["score_impact"] = change.get("score_impact")
-                alerts.append(alert)
+    markdown = tableToMarkdown("Latest Alerts for user {0}".format(email), alerts)
 
-        markdown = tableToMarkdown("Latest Alerts for user {0}".format(email), alerts)
+    results = CommandResults(
+        outputs_prefix="SecurityScorecard.Alert",
+        outputs_key_field="id",
+        readable_output=markdown,
+        outputs=alerts
+    )
 
-        results = CommandResults(
-            outputs_prefix="SecurityScorecard.Alert",
-            outputs_key_field="id",
-            readable_output=markdown,
-            outputs=alerts
-        )
-
-        return results
-    else:
-        raise DemistoException("Email address '{0}' is invalid. Please try a different email address.".format(email))
+    return results
 
 
 def securityscorecard_company_services_get_command(client: Client, args: Dict[str, Any]) -> CommandResults:
@@ -1052,35 +928,29 @@ def securityscorecard_company_services_get_command(client: Client, args: Dict[st
     """
 
     domain = str(args.get("domain"))
+    response = client.get_domain_services(domain=domain)
 
-    if is_domain_valid(domain):
+    entries = response["entries"]
 
-        response = client.get_domain_services(domain=domain)
+    services = []
 
-        entries = response["entries"]
+    for entry in entries:
+        categories = entry.get("categories")
+        for category in categories:
+            service = {}
+            service["vendor_domain"] = entry.get("vendor_domain")
+            service["category"] = category
+            services.append(service)
 
-        services = []
+    markdown = tableToMarkdown("Services for domain [{0}](https://{0})".format(domain), services)
 
-        for entry in entries:
-            categories = entry.get("categories")
-            for category in categories:
-                service = {}
-                service["vendor_domain"] = entry.get("vendor_domain")
-                service["category"] = category
-                services.append(service)
+    results = CommandResults(
+        outputs_prefix="SecurityScorecard.Company.Service",
+        outputs=entries,
+        readable_output=markdown
+    )
 
-        markdown = tableToMarkdown("Services for domain [{0}](https://{0})".format(domain), services)
-
-        results = CommandResults(
-            outputs_prefix="SecurityScorecard.Company.Service",
-            outputs=entries,
-            readable_output=markdown
-        )
-
-        return results
-
-    else:
-        raise DemistoException("The domain '{0}' is invalid. Please try a different domain, e.g. google.com".format(domain))
+    return results
 
 
 def fetch_alerts(client: Client, params: Dict):
