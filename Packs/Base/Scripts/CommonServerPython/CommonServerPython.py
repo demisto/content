@@ -3891,7 +3891,7 @@ class Common(object):
         :return: None
         :rtype: ``None``
         """
-        CONTEXT_PATH = 'AttackPattern(val.value && val.Address == obj.value)'
+        CONTEXT_PATH = 'AttackPattern(val.value && val.value == obj.value)'
 
         def __init__(self, stix_id, kill_chain_phases, first_seen_by_source, description,
                      operating_system_refs, publications, mitre_id, tags, dbot_score):
