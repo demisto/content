@@ -3433,6 +3433,18 @@
             "playbookID": "Fetch Test",
             "fromversion": "6.0.0",
             "timeout": 1200
+        },
+        {
+            "integrations": ["AutoFocus Daily Feed", "Demisto REST API"],
+            "playbookID": "Fetch Test",
+            "fromversion": "6.0.0",
+            "timeout": 2400
+        },
+        {
+            "integrations": ["Majestic Million", "Demisto REST API"],
+            "playbookID": "Fetch Test",
+            "fromversion": "6.0.0",
+            "timeout": 1200
         }
     ],
     "skipped_tests": {
@@ -3733,7 +3745,8 @@
         "Azure Network Security Groups": "Has a command that sends parameters in the path",
         "GitHub": "Cannot use proxy",
         "LogRhythm": "Cannot use proxy",
-        "Create-Mock-Feed-Relationships": "recording is redundant for this integration"
+        "Create-Mock-Feed-Relationships": "recording is redundant for this integration",
+        "OpenCTI Feed 4.X": "testing"
     },
     "parallel_integrations": [
         "AWS - EC2",
