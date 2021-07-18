@@ -1109,7 +1109,6 @@ jobs:
             - run:
                 name: Zip Content Packs From GCS
                 command: |
-                  ZIP_FOLDER=$(source $BASH_ENV)
                   python3 ./Tests/Marketplace/zip_packs.py -z $ZIP_FOLDER -a $CIRCLE_ARTIFACTS -s $GCS_MARKET_KEY
                 when: always
             - run:
