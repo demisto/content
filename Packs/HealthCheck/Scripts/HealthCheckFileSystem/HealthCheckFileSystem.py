@@ -14,7 +14,7 @@ UNITS = {'B': 1, 'K': 10**3, 'M': 10**6, 'G': 10**9, 'T': 10**12}
 def count_partitions(filesystem):
     if filesystem:
         for path in filesystem:
-            if '/lib/demisto/data/partitionsData' in path:
+            if '/data/partitionsData' in path:
                 return len(filesystem[path]) - 2
 
 
@@ -108,10 +108,9 @@ def main(args):
                     'description': f"You have {number_of_partitions} months data, consider to archive old data",
                     'resolution': RESOLUTION[0]
                     })
-
-    res = demisto.executeCommand('setIncident', {"healthchecklargefiles": large_files_table})
-    if is_error(res):
-        return_results(res)
+    resCommand = demisto.executeCommand('setIncident', {"healthchecklargefiles": large_files_table})
+    if is_error(resCommand):
+        return_results(resCommand)
         return_error('Failed to execute setIncident. See additional error details in the above entries.')
 
     results = CommandResults(
