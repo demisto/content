@@ -4,12 +4,10 @@ import urllib3
 
 LIMIT_DEFAULT = 50
 
-OUTPUTS_PREFIX = "AZURE_AD_IP"
-
 urllib3.disable_warnings()
 
+OUTPUTS_PREFIX = "AZURE_AD_IP"
 BASE_URL = 'https://graph.microsoft.com/beta'
-
 NEXT_LINK_DESCRIPTION = 'next_link value for listing commands'
 RISKS_HEADERS = ['activity', 'activityDateTime', 'additionalInfo', 'correlationId', 'detectedDateTime',
                  'detectionTimingType', 'id', 'ipAddress', 'lastUpdatedDateTime', 'location', 'requestId',
@@ -31,10 +29,15 @@ class AzureADClient:
             auth_id=app_id,
             grant_type=DEVICE_CODE,
             base_url=BASE_URL,
+            token_retrieval_url='https://login.microsoftonline.com/organizations/oauth2/v2.0/token',
             verify=verify,
             proxy=proxy,
             resource=f'{BASE_URL}/{resource_group_name}',
-            scope='offline_access IdentityRiskEvent.Read.All IdentityRiskyUser.Read.All',
+            scope=' '.join(('offline_access',
+                            'IdentityRiskEvent.Read.All',
+                            'IdentityRiskyUser.ReadWrite.All'
+                            )
+                           ),
             azure_ad_endpoint=azure_ad_endpoint
         )
         self.subscription_id = subscription_id
@@ -181,6 +184,14 @@ class AzureADClient:
                                url_suffix=f'RiskyUsers/{risky_user_id}/history',
                                filter_arguments=filter_arguments)
 
+    def azure_ad_identity_protection_risky_users_confirm_compromised(self, user_ids: Union[str, List[str]]):
+        self.http_request(method='POST',
+                          resp_type='text',
+                          url_suffix='riskyUsers/confirmCompromised',
+                          json_data={'userIds': argToList(user_ids)},
+                          ok_codes=(204,))
+        return '✅ Success'  # raises exception if not successful
+
 
 def azure_ad_identity_protection_risk_detection_list_command(client: AzureADClient, **kwargs):
     return client.azure_ad_identity_protection_risk_detection_list(**kwargs)
@@ -192,6 +203,10 @@ def azure_ad_identity_protection_risky_users_list_command(client: AzureADClient,
 
 def azure_ad_identity_protection_risky_users_history_list_command(client: AzureADClient, **kwargs):
     return client.azure_ad_identity_protection_risky_users_history_list(**kwargs)
+
+
+def azure_ad_identity_protection_risky_users_confirm_compromised_command(client: AzureADClient, **kwargs):
+    return client.azure_ad_identity_protection_risky_users_confirm_compromised(**kwargs)
 
 
 def start_auth(client: AzureADClient) -> CommandResults:
@@ -251,7 +266,7 @@ def main() -> None:
         elif command == 'azure-ad-identity-protection-risky-user-history-list':
             return_results(azure_ad_identity_protection_risky_users_history_list_command(client, **args))
         elif command == 'azure-ad-identity-protection-risky-user-confirm-compromised':
-            pass  # todo
+            return_results(azure_ad_identity_protection_risky_users_confirm_compromised_command(client, **args))
         elif command == 'azure-ad-identity-protection-risky-user-dismiss':
             pass  # todo
 
