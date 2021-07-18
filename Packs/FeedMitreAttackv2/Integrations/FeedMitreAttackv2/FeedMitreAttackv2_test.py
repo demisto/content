@@ -5,7 +5,8 @@ from test_data.mitre_test_data import ATTACK_PATTERN, COURSE_OF_ACTION, INTRUSIO
     RELATION, STIX_TOOL, STIX_MALWARE, STIX_ATTACK_PATTERN, MALWARE_LIST_WITHOUT_PREFIX, MALWARE_LIST_WITH_PREFIX, \
     INDICATORS_LIST, NEW_INDICATORS_LIST, MITRE_ID_TO_MITRE_NAME, OLD_ID_TO_NAME, NEW_ID_TO_NAME
 
-
+ENTERPRISE_COLLECTION_ID = '95ecc380-afe9-11e4-9b6c-751b66dd541e'
+NON_ENTERPRISE_COLLECTION_ID = '101010101010101010101010101010101'
 class MockCollection:
     def __init__(self, id_, title):
         self.id = id_
@@ -40,7 +41,8 @@ def test_fetch_indicators(mocker, indicator, expected_result):
     import FeedMitreAttackv2 as fm
     from FeedMitreAttackv2 import Client, create_relationship
     client = Client(url="https://test.org", proxies=False, verify=False, tags=[], tlp_color=None)
-    default_id = '95ecc380-afe9-11e4-9b6c-751b66dd541e'
+
+    default_id = ENTERPRISE_COLLECTION_ID
     nondefault_id = 2
     client.collections = [MockCollection(default_id, 'default'), MockCollection(nondefault_id, 'not_default')]
     mocker.patch.object(client, 'initialise')
@@ -52,6 +54,19 @@ def test_fetch_indicators(mocker, indicator, expected_result):
 
     indicators = client.build_iterator(create_relationships=True, limit=6)
     assert indicators == expected_result
+
+    default_id = NON_ENTERPRISE_COLLECTION_ID
+    nondefault_id = 2
+    client.collections = [MockCollection(default_id, 'default'), MockCollection(nondefault_id, 'not_default')]
+    mocker.patch.object(client, 'initialise')
+
+    mocker.patch.object(TAXIICollectionSource, "__init__", return_value=None)
+    mocker.patch.object(TAXIICollectionSource, 'query', return_value=indicator)
+    mocker.patch.object(json, 'loads', return_value=indicator[0])
+    mocker.patch.object(fm, 'create_relationship', wraps=mock_create_relations(create_relationship))
+
+    indicators = client.build_iterator(create_relationships=True, limit=6)
+    assert indicators == ([], [], {}, {})
 
 
 @pytest.mark.parametrize('field_name, field_value, expected_result', [

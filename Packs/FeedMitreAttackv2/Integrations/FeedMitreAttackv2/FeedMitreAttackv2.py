@@ -57,6 +57,7 @@ FILTER_OBJS = {
 }
 
 RELATIONSHIP_TYPES = EntityRelationship.Relationships.RELATIONSHIPS_NAMES.keys()
+ENTERPRISE_COLLECTION_ID = '95ecc380-afe9-11e4-9b6c-751b66dd541e'
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -124,7 +125,7 @@ class Client:
         for collection in self.collections:
 
             # fetch only enterprise objects
-            if collection.id != '95ecc380-afe9-11e4-9b6c-751b66dd541e':
+            if collection.id != ENTERPRISE_COLLECTION_ID:
                 continue
 
             # Stop when we have reached the limit defined
@@ -189,13 +190,19 @@ def add_technique_prefix_to_sub_technique(indicators, id_to_name, mitre_id_to_mi
                 len(indicator['fields']['mitreid']) > 5:  # Txxxx.xxx is sub technique
             parent_mitre_id = indicator['fields']['mitreid'][:5]
             value = indicator['value']
-            technique = mitre_id_to_mitre_name.get(parent_mitre_id)  # TODO in case that technique doesnt exist
-            new_value = f'{technique}: {value}'
-            indicator['value'] = new_value
-            id_to_name[indicator['fields']['stixid']] = new_value
+            technique = mitre_id_to_mitre_name.get(parent_mitre_id)
+            if technique:
+                new_value = f'{technique}: {value}'
+                indicator['value'] = new_value
+                id_to_name[indicator['fields']['stixid']] = new_value
+            else:
+                demisto.debug(f'MITRE Attack Feed v2, There is no such Technique - {parent_mitre_id}')
 
 
 def add_malware_prefix_to_dup_with_intrusion_set(indicators):
+    """
+    Some Malware have names like their Intrusion Set, in which case we add (Malware) as a suffix.
+    """
     intrusion_sets = []
     for ind in indicators:
         if ind['type'] in ['STIX Intrusion Set', 'Intrusion Set']:
