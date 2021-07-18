@@ -1,0 +1,17 @@
+{
+    "name": "LineNotification",
+    "description": "Send notification to LINE group via LINE\nRelated information could be found from: https://bustlec.github.io/note/2018/07/10/line-notify-using-python/",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "Nicholas Hsiao",
+    "url": "",
+    "email": "",
+    "created": "2021-07-18T18:44:47Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "githubUser": [
+        "nicholashsiao"
+    ]
+}

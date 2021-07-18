@@ -1,0 +1,28 @@
+args:
+- name: token
+  required: true
+- name: msg
+  required: true
+commonfields:
+  id: 87619cc4-659e-4485-8293-81810f98b6f4
+  version: -1
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ""
+    itemVersion: ""
+    packID: b252331d-f0cd-47b8-81b3-ab8b7fb3d6e3
+    propagationLabels:
+    - all
+    toServerVersion: ""
+dockerimage: demisto/python3:3.9.6.22912
+enabled: true
+engineinfo: {}
+name: LineNotification
+pswd: ""
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags: []
+type: python
