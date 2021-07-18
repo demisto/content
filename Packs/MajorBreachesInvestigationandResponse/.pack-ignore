@@ -9,3 +9,6 @@ ignore=BA110
 
 [file:playbook-Kaseya_VSA__0-day_-_REvil_Ransomware_Supply_Chain_Attack_README.md]
 ignore=RM106
+
+[file:playbook-CVE-2021-1675_-_PrintNightmare.yml]
+ignore=BA101
