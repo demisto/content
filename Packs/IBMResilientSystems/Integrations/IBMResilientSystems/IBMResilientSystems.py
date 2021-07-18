@@ -481,7 +481,7 @@ def update_incident_command(args):
             changes.append(
                 {
                     'field': {'name': field_name},
-                    'old_value': {list(field_value.keys())[0]: {'format': 'html', 'content': 'newww_description'}},
+                    'old_value': {list(field_value.keys())[0]: {'format': 'html', 'content': incident['description']['content']}},
                     'new_value': field_value
                 }
             )
@@ -539,7 +539,7 @@ def get_incident_command(incident_id):
 
 
 def get_incident(incident_id):
-    response = client.get('/incidents/' + incident_id)
+    response = client.get('/incidents/' + incident_id + '?text_content_output_format=objects_no_convert')
     return response
 
 
