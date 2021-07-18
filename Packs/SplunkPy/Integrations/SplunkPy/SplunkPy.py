@@ -1879,14 +1879,13 @@ def splunk_edit_notable_event_command(service, auth_token):
                                         urgency=demisto.get(demisto.args(), 'urgency'),
                                         owner=demisto.get(demisto.args(), 'owner'), eventIDs=eventIDs,
                                         auth_token=auth_token, sessionKey=session_key)
-    demisto.debug('####')
-    demisto.debug(response_info)
+
     if 'success' not in response_info or not response_info['success']:
         demisto.results({'ContentsFormat': formats['text'], 'Type': entryTypes['error'],
                          'Contents': "Could not update notable "
                                      "events: " + demisto.args()['eventIDs'] + ' : ' + str(response_info)})
-
-    demisto.results('Splunk ES Notable events: ' + response_info.get('message'))
+    else:
+        demisto.results('Splunk ES Notable events: ' + response_info.get('message'))
 
 
 def splunk_job_status(service):
