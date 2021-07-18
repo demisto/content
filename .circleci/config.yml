@@ -188,6 +188,8 @@ references:
         fi
         if [ -n "${TEST_UPLOADFLOW_PARAMETER}" ];
         then
+            echo "Hello! this is "
+            echo "${TEST_UPLOADFLOW_PARAMETER}"
             echo 'export TEST_UPLOADFLOW=true' >> $BASH_ENV
         fi
         if [ -n "${TIME_TO_LIVE_PARAMETER}" ];
