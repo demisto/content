@@ -1018,7 +1018,6 @@ def file_get_command(client: GSuiteClient, args: Dict[str, str]) -> CommandResul
     http_request_params = prepare_file_read_request_res['http_request_params']
     # Make sure we have the fields "kind" and "id".
     http_request_params['fields'] = 'kind, id, ' + args.get('fields', 'kind, id')
-    # TODO Remove empty?
     url_suffix = URL_SUFFIX['DRIVE_FILES_ID'].format(args.get('file_id'))
     response = client.http_request(url_suffix=url_suffix, method='GET', params=http_request_params)
     return handle_response_single_file(response, args)
@@ -1151,7 +1150,6 @@ def prepare_file_command_request(client: GSuiteClient, args: Dict[str, str], sco
     client.set_authorized_http(scopes=scopes, subject=user_id)
 
     return {
-        # 'client': client,
         'http_request_params': http_request_params,
         'user_id': user_id,
     }
@@ -1168,7 +1166,6 @@ def file_upload_command(client: GSuiteClient, args: Dict[str, str]) -> CommandRe
     :return: Command Result.
     """
 
-    demisto.info('google-drive-file-upload')
     prepare_file_command_res = prepare_file_command_request(client, args, scopes=COMMAND_SCOPES['FILES'])
     http_request_params = prepare_file_command_res['http_request_params']
     http_request_params['uploadType'] = 'multipart'
@@ -1198,10 +1195,7 @@ def file_download_command(client: GSuiteClient, args: Dict[str, str]) -> Command
     :return: Command Result.
     """
 
-    demisto.info('google-drive-file-download')
-    # prepare_file_command_res = prepare_file_command_request(client, args, scopes=COMMAND_SCOPES['FILES'])
     prepare_file_command_request(client, args, scopes=COMMAND_SCOPES['FILES'])
-    # http_request_params = prepare_file_command_res['http_request_params']
 
     version = 'v3'
     service_name = 'drive'
@@ -1212,7 +1206,6 @@ def file_download_command(client: GSuiteClient, args: Dict[str, str]) -> Command
     done = False
     while done is False:
         status, done = downloader.next_chunk()
-        # demisto.debug('Downloaded ' + str(int(status.progress() * 100)) + '%')
     return fileResult(args.get('file_name'), fh.getvalue())
 
 
@@ -1228,7 +1221,6 @@ def file_replace_existing_command(client: GSuiteClient, args: Dict[str, str]) ->
     :return: Command Result.
     """
 
-    demisto.info('google-drive-file-replace-existing')
     prepare_file_command_res = prepare_file_command_request(client, args, scopes=COMMAND_SCOPES['FILES'])
     http_request_params = prepare_file_command_res['http_request_params']
     http_request_params['uploadType'] = 'multipart'
@@ -1259,15 +1251,11 @@ def file_delete_command(client: GSuiteClient, args: Dict[str, str]) -> CommandRe
     :return: Command Result.
     """
 
-    demisto.info('google-drive-file-delete')
     prepare_file_command_res = prepare_file_command_request(client, args, scopes=COMMAND_SCOPES['FILE_DELETE'])
     http_request_params = prepare_file_command_res['http_request_params']
 
-    # client.set_authorized_http(scopes=COMMAND_SCOPES['FILE_DELETE'], subject=prepare_file_command_res['user_id'])
-
     url_suffix = URL_SUFFIX['DRIVE_FILES_ID'].format(args.get('file_id'))
     client.http_request(url_suffix=url_suffix, method='DELETE', params=http_request_params)
-    # TODO Check the response?
     outputs_context = {
         'fileId': args.get('file_id'),
     }
@@ -1436,7 +1424,6 @@ def file_permission_create_command(client: GSuiteClient, args: Dict[str, str]) -
     prepare_file_permission_request_res = prepare_file_permission_request(
         client, args, scopes=COMMAND_SCOPES['FILE_PERMISSIONS_CRUD'])
     http_request_params = prepare_file_permission_request_res['http_request_params']
-    # client.set_authorized_http(scopes=COMMAND_SCOPES['FILE_PERMISSIONS_CRUD'], subject=user_id)
 
     copy_dict_value(source_dict=args, dest_dict=http_request_params,
                     source_dict_key='send_notification_email', dest_dict_key='sendNotificationEmail')
@@ -1467,7 +1454,6 @@ def file_permission_update_command(client: GSuiteClient, args: Dict[str, str]) -
     prepare_file_permission_request_res = prepare_file_permission_request(
         client, args, scopes=COMMAND_SCOPES['FILE_PERMISSIONS_CRUD'])
     http_request_params = prepare_file_permission_request_res['http_request_params']
-    # client.set_authorized_http(scopes=COMMAND_SCOPES['FILE_PERMISSIONS_CRUD'], subject=user_id)
 
     body = {
         'role': args.get('role'),
@@ -1493,10 +1479,8 @@ def file_permission_delete_command(client: GSuiteClient, args: Dict[str, str]) -
     prepare_file_permission_request_res = prepare_file_permission_request(
         client, args, scopes=COMMAND_SCOPES['FILE_PERMISSIONS_CRUD'])
     http_request_params = prepare_file_permission_request_res['http_request_params']
-    # client.set_authorized_http(scopes=COMMAND_SCOPES['FILE_PERMISSIONS_CRUD'], subject=user_id)
 
     url_suffix = URL_SUFFIX['FILE_PERMISSION_DELETE'].format(args.get('file_id'), args.get('permission_id'))
-    # response = client.http_request(url_suffix=url_suffix, method='DELETE', params=http_request_params)
     client.http_request(url_suffix=url_suffix, method='DELETE', params=http_request_params)
     outputs = {'fileId': args.get('file_id'), 'permissionId': args.get('permission_id')}
     table_hr_md = tableToMarkdown(HR_MESSAGES['LIST_COMMAND_SUCCESS'].format('Permission(s)', 1),
@@ -1506,9 +1490,7 @@ def file_permission_delete_command(client: GSuiteClient, args: Dict[str, str]) -
                                   removeNull=False)
 
     return CommandResults(
-        # outputs={'deleted': True},
         readable_output=table_hr_md,
-        # raw_response={'deleted': True}
     )
 
 
@@ -1612,7 +1594,6 @@ def prepare_permission_output(permission: Dict[str, Any]) -> Dict[str, Any]:
     return GSuiteClient.remove_empty_entities(ret_value)
 
 
-# def prepare_permission_human_readable(outputs_context: List[Dict[str, Any]], args: Dict[str, str]) -> str:
 def prepare_permission_human_readable(outputs_context: Dict[str, Any], args: Dict[str, str]) -> str:
     """
     Prepares human readable for google-drive-file-permissions commands.
@@ -1768,7 +1749,6 @@ def main() -> None:
         'google-drive-file-permission-delete': file_permission_delete_command,
     }
     command = demisto.command()
-    demisto.info(f'Command being called is {command}')
 
     try:
         params = demisto.params()
