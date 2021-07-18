@@ -173,13 +173,22 @@ else:
             for line in reversed(data_line):
                 if (context_log_until is None) and (log_until is None):
                     log_until = re.findall('(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2})', line)
+                    if not log_until:
+                        log_until = None
+                        continue
                     newestDate = log_until[0]
                     break
                 elif (context_since is not None) and (log_until is None):
                     log_until = re.findall('(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2})', line)
+                    if not log_until:
+                        continue
                     newestDate = log_until[0]
                     newestDate = findNewestDate(log_until[0], context_log_until)
-                    continue
+                    break
+                else:
+                    oldestDate = context_since
+                    newestDate = context_log_until
+                    break
 
         demisto.setContext("LogServer.since", str(oldestDate))
         demisto.setContext("LogServer.logUntil", str(newestDate))
