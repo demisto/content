@@ -3010,7 +3010,7 @@ script:
       name: id
       required: false
       secret: false
-    - default: false
+    - default: true
       description: The endpoint IP address.
       isArray: true
       name: ip
