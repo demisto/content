@@ -122,6 +122,8 @@ references:
       GCS_MARKET_BUCKET: << pipeline.parameters.gcs_market_bucket >>
       SLACK_CHANNEL: << pipeline.parameters.slack_channel >>
       SDK_REF: << pipeline.parameters.sdk_ref >>
+      TEST_UPLOADFLOW: << pipeline.parameters.test_uploadflow >>
+
       # Giving different names to the following pipeline parameters to avoid collision, handling such collision case
       # is done in 'Setup Environment' step.
       TIME_TO_LIVE_PARAMETER: << pipeline.parameters.time_to_live >>
@@ -133,7 +135,6 @@ references:
       FORCE_PACK_UPLOAD_PARAMETER: << pipeline.parameters.force_pack_upload >>
       PACKS_TO_UPLOAD_PARAMETER: << pipeline.parameters.packs_to_upload >>
       BUCKET_UPLOAD_PARAMETER: << pipeline.parameters.bucket_upload >>
-      TEST_UPLOADFLOW_PARAMETER: << pipeline.parameters.test_uploadflow >>
   container_config: &container_config
     docker:
       - image: devdemisto/content-build:3.0.0.12681  # disable-secrets-detection
@@ -186,12 +187,6 @@ references:
         then
             echo 'export DEMISTO_SDK_NIGHTLY=true' >> $BASH_ENV
         fi
-        if [ -n "${TEST_UPLOADFLOW_PARAMETER}" ];
-        then
-            echo "Hello! this is "
-            echo "${TEST_UPLOADFLOW_PARAMETER}"
-            echo 'export TEST_UPLOADFLOW=true' >> $BASH_ENV
-        fi
         if [ -n "${TIME_TO_LIVE_PARAMETER}" ];
         then
             echo "export TIME_TO_LIVE=$TIME_TO_LIVE_PARAMETER" >> $BASH_ENV
@@ -237,7 +232,7 @@ references:
         fi
 
         echo "========== Build Parameters =========="
-        set | grep -E "^NIGHTLY=|^INSTANCE_TESTS=|^NON_AMI_RUN=|^SERVER_BRANCH_NAME=|^ARTIFACT_BUILD_NUM=|^DEMISTO_SDK_NIGHTLY=|^TIME_TO_LIVE=|^CONTRIB_BRANCH=|^FORCE_PACK_UPLOAD=|^PACKS_TO_UPLOAD=|^BUCKET_UPLOAD=|^GCS_MARKET_BUCKET=|^SLACK_CHANNEL=|^SDK_REF=|^TEST_UPLOADFLOW"
+        set | grep -E "^NIGHTLY=|^INSTANCE_TESTS=|^NON_AMI_RUN=|^SERVER_BRANCH_NAME=|^ARTIFACT_BUILD_NUM=|^DEMISTO_SDK_NIGHTLY=|^TIME_TO_LIVE=|^CONTRIB_BRANCH=|^FORCE_PACK_UPLOAD=|^PACKS_TO_UPLOAD=|^BUCKET_UPLOAD=|^GCS_MARKET_BUCKET=|^SLACK_CHANNEL=|^SDK_REF=|^TEST_UPLOADFLOW="
         python --version
         python3 --version
         node --version
