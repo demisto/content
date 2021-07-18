@@ -22,7 +22,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1555,
+          "x": 910,
           "y": 50
         }
       }
@@ -55,7 +55,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1555,
+          "x": 910,
           "y": 195
         }
       }
@@ -92,7 +92,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2200,
+          "x": 910,
           "y": 865
         }
       }
@@ -183,7 +183,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2200,
+          "x": 910,
           "y": 1040
         }
       }
@@ -217,7 +217,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 3140
+          "y": 4335
         }
       }
     note: false
@@ -281,7 +281,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 3315
+          "y": 4510
         }
       }
     note: false
@@ -314,7 +314,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 3140
+          "y": 4335
         }
       }
     note: false
@@ -378,7 +378,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 3315
+          "y": 4510
         }
       }
     note: false
@@ -411,7 +411,7 @@ tasks:
       {
         "position": {
           "x": 910,
-          "y": 3140
+          "y": 4335
         }
       }
     note: false
@@ -475,7 +475,7 @@ tasks:
       {
         "position": {
           "x": 910,
-          "y": 3315
+          "y": 4510
         }
       }
     note: false
@@ -508,7 +508,7 @@ tasks:
       {
         "position": {
           "x": 1340,
-          "y": 3140
+          "y": 4335
         }
       }
     note: false
@@ -572,7 +572,7 @@ tasks:
       {
         "position": {
           "x": 1340,
-          "y": 3315
+          "y": 4510
         }
       }
     note: false
@@ -605,7 +605,7 @@ tasks:
       {
         "position": {
           "x": 1770,
-          "y": 3140
+          "y": 4335
         }
       }
     note: false
@@ -669,7 +669,7 @@ tasks:
       {
         "position": {
           "x": 1770,
-          "y": 3315
+          "y": 4510
         }
       }
     note: false
@@ -693,7 +693,6 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "49"
       - "50"
     scriptarguments:
       info:
@@ -706,7 +705,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1555,
+          "x": 910,
           "y": 370
         }
       }
@@ -853,7 +852,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2200,
+          "x": 910,
           "y": 690
         }
       }
@@ -890,7 +889,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2200,
+          "x": 910,
           "y": 1215
         }
       }
@@ -1023,7 +1022,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2200,
+          "x": 910,
           "y": 1390
         }
       }
@@ -1058,8 +1057,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1125,
-          "y": 4160
+          "x": 910,
+          "y": 5355
         }
       }
     note: false
@@ -1123,8 +1122,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1125,
-          "y": 4335
+          "x": 910,
+          "y": 5530
         }
       }
     note: false
@@ -1158,7 +1157,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2200,
+          "x": 910,
           "y": 1565
         }
       }
@@ -1216,7 +1215,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2200,
+          "x": 910,
           "y": 1915
         }
       }
@@ -1251,7 +1250,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2200,
+          "x": 910,
           "y": 1740
         }
       }
@@ -1276,7 +1275,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "51"
+      - "62"
     scriptarguments:
       feed:
         simple: Botvrij.eu
@@ -1286,7 +1285,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2200,
+          "x": 910,
           "y": 3315
         }
       }
@@ -1321,8 +1320,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1125,
-          "y": 6260
+          "x": 910,
+          "y": 7455
         }
       }
     note: false
@@ -1360,8 +1359,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1125,
-          "y": 5735
+          "x": 910,
+          "y": 6930
         }
       }
     note: false
@@ -1444,8 +1443,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1125,
-          "y": 5910
+          "x": 910,
+          "y": 7105
         }
       }
     note: false
@@ -1481,8 +1480,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1125,
-          "y": 5385
+          "x": 910,
+          "y": 6580
         }
       }
     note: false
@@ -1519,8 +1518,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1125,
-          "y": 5035
+          "x": 910,
+          "y": 6230
         }
       }
     note: false
@@ -1554,8 +1553,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1125,
-          "y": 4685
+          "x": 910,
+          "y": 5880
         }
       }
     note: false
@@ -1591,7 +1590,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2200,
+          "x": 910,
           "y": 2440
         }
       }
@@ -1631,7 +1630,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2200,
+          "x": 910,
           "y": 2615
         }
       }
@@ -1657,8 +1656,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1125,
-          "y": 6785
+          "x": 910,
+          "y": 7980
         }
       }
     note: false
@@ -1700,7 +1699,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2200,
+          "x": 910,
           "y": 2965
         }
       }
@@ -1713,10 +1712,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "40":
     id: "40"
-    taskid: 6089c67c-46ab-4092-8eec-3e2c454cb4d6
+    taskid: bc6101dd-123e-45ae-8e8e-67f8b4c2e51c
     type: condition
     task:
-      id: 6089c67c-46ab-4092-8eec-3e2c454cb4d6
+      id: bc6101dd-123e-45ae-8e8e-67f8b4c2e51c
       version: -1
       name: Verify Search Attribute Outputs
       type: condition
@@ -1802,14 +1801,6 @@ tasks:
       - - operator: isEqualString
           left:
             value:
-              simple: MISP.Attribute.Tag.Name
-            iscontext: true
-          right:
-            value:
-              simple: TestPlaybook
-      - - operator: isEqualString
-          left:
-            value:
               simple: MISP.Attribute.Sighting.Type
             iscontext: true
           right:
@@ -1818,7 +1809,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2200,
+          "x": 910,
           "y": 3140
         }
       }
@@ -1851,7 +1842,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2200,
+          "x": 910,
           "y": 2265
         }
       }
@@ -1884,7 +1875,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2200,
+          "x": 910,
           "y": 2790
         }
       }
@@ -1920,7 +1911,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2965
+          "y": 4160
         }
       }
     note: false
@@ -1955,7 +1946,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 2965
+          "y": 4160
         }
       }
     note: false
@@ -1990,7 +1981,7 @@ tasks:
       {
         "position": {
           "x": 910,
-          "y": 2965
+          "y": 4160
         }
       }
     note: false
@@ -2025,7 +2016,7 @@ tasks:
       {
         "position": {
           "x": 1770,
-          "y": 2965
+          "y": 4160
         }
       }
     note: false
@@ -2060,7 +2051,7 @@ tasks:
       {
         "position": {
           "x": 1340,
-          "y": 2965
+          "y": 4160
         }
       }
     note: false
@@ -2153,8 +2144,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1125,
-          "y": 5560
+          "x": 910,
+          "y": 6755
         }
       }
     note: false
@@ -2187,7 +2178,7 @@ tasks:
       {
         "position": {
           "x": 910,
-          "y": 2805
+          "y": 4015
         }
       }
     note: false
@@ -2215,7 +2206,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2200,
+          "x": 910,
           "y": 545
         }
       }
@@ -2249,8 +2240,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1125,
-          "y": 3490
+          "x": 910,
+          "y": 4685
         }
       }
     note: false
@@ -2278,8 +2269,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1125,
-          "y": 3665
+          "x": 910,
+          "y": 4860
         }
       }
     note: false
@@ -2311,8 +2302,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1125,
-          "y": 3810
+          "x": 910,
+          "y": 5005
         }
       }
     note: false
@@ -2345,8 +2336,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1125,
-          "y": 6610
+          "x": 910,
+          "y": 7805
         }
       }
     note: false
@@ -2382,8 +2373,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1125,
-          "y": 3985
+          "x": 910,
+          "y": 5180
         }
       }
     note: false
@@ -2460,8 +2451,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1125,
-          "y": 4860
+          "x": 910,
+          "y": 6055
         }
       }
     note: false
@@ -2554,8 +2545,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1125,
-          "y": 5210
+          "x": 910,
+          "y": 6405
         }
       }
     note: false
@@ -2592,8 +2583,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1125,
-          "y": 6085
+          "x": 910,
+          "y": 7280
         }
       }
     note: false
@@ -2652,8 +2643,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1125,
-          "y": 6435
+          "x": 910,
+          "y": 7630
         }
       }
     note: false
@@ -2688,8 +2679,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1125,
-          "y": 4510
+          "x": 910,
+          "y": 5705
         }
       }
     note: false
@@ -2724,8 +2715,112 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2200,
+          "x": 910,
           "y": 2090
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "62":
+    id: "62"
+    taskid: a45a5694-9fa2-44b4-87bb-64de2dce7212
+    type: regular
+    task:
+      id: a45a5694-9fa2-44b4-87bb-64de2dce7212
+      version: -1
+      name: Delete Event
+      description: Deletes an event according to the given event ID.
+      script: '|||misp-delete-event'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "64"
+    scriptarguments:
+      event_id:
+        simple: ${MISP.Event.ID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 3490
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "63":
+    id: "63"
+    taskid: b2203ae2-3c33-46c9-801b-8677d2af2781
+    type: regular
+    task:
+      id: b2203ae2-3c33-46c9-801b-8677d2af2781
+      version: -1
+      name: misp-create-event
+      script: '|||misp-create-event'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "49"
+    scriptarguments:
+      info:
+        simple: TPB-New-Event
+      threat_level_id:
+        simple: low
+      value:
+        simple: 1.1.1.1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 3840
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "64":
+    id: "64"
+    taskid: dd321c77-a2d4-4b9f-8e9c-379e49a46327
+    type: regular
+    task:
+      id: dd321c77-a2d4-4b9f-8e9c-379e49a46327
+      version: -1
+      name: DeleteContext
+      script: DeleteContext
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "63"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 3665
         }
       }
     note: false
@@ -2740,8 +2835,8 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 6800,
-        "width": 2530,
+        "height": 7995,
+        "width": 2100,
         "x": 50,
         "y": 50
       }
