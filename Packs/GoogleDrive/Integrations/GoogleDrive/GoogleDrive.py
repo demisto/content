@@ -794,7 +794,7 @@ def drive_changes_list_command(client: GSuiteClient, args: Dict[str, Any]) -> Co
     return CommandResults(
         outputs=outputs,
         readable_output=readable_hr,
-        raw_response=response
+        raw_response=response,
     )
 
 
@@ -916,7 +916,7 @@ def handle_response_single_drive(response: Dict[str, Any], args: Dict[str, str])
     return CommandResults(
         outputs=outputs,
         readable_output=readable_hr,
-        raw_response=response
+        raw_response=response,
     )
 
 
@@ -1047,7 +1047,7 @@ def handle_response_files_list(response: Dict[str, Any]) -> CommandResults:
     return CommandResults(
         outputs=outputs,
         readable_output=readable_hr,
-        raw_response=response
+        raw_response=response,
     )
 
 
@@ -1069,7 +1069,7 @@ def handle_response_single_file(response: Dict[str, Any], args: Dict[str, str]):
     return CommandResults(
         outputs=outputs,
         readable_output=readable_hr,
-        raw_response=response
+        raw_response=response,
     )
 
 
@@ -1310,7 +1310,7 @@ def handle_response_file_single(response: Dict[str, Any], args: Dict[str, str]) 
     return CommandResults(
         outputs=outputs,
         readable_output=readable_hr,
-        raw_response=response
+        raw_response=response,
     )
 
 
@@ -1521,7 +1521,7 @@ def handle_response_permissions_list(response: Dict[str, Any], args: Dict[str, s
     return CommandResults(
         outputs=outputs,
         readable_output=readable_hr,
-        raw_response=response
+        raw_response=response,
     )
 
 
@@ -1570,7 +1570,7 @@ def handle_response_permission_single(response: Dict[str, Any], args: Dict[str, 
     return CommandResults(
         outputs=outputs,
         readable_output=readable_hr,
-        raw_response=response
+        raw_response=response,
     )
 
 
@@ -1651,7 +1651,7 @@ def drive_activity_list_command(client: GSuiteClient, args: Dict[str, str]) -> C
     return CommandResults(
         outputs=outputs,
         readable_output=readable_hr,
-        raw_response=response
+        raw_response=response,
     )
 
 
