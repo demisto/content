@@ -396,6 +396,7 @@ script:
       predefined:
       - person
       - computer
+      - group
       description: 'The type of members to search. Can be: "Person", or "computer". Default is person.'
       defaultValue: person
     - name: attributes
@@ -419,6 +420,10 @@ script:
         - 'true'
       required: false
       secret: false
+    - name: sAMAccountName
+      description: Queries results by the samAccountName attribute.
+      required: false
+      defaultValue: '*'
     outputs:
     - contextPath: 'ActiveDirectory.Groups.dn'
       description: The DN of the group.
