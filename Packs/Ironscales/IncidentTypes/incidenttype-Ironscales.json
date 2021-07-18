@@ -11,7 +11,7 @@
     "layout": "Ironscales Incident Layout",
     "locked": false,
     "name": "Ironscales",
-    "playbookId": "Ironscales-Classify-Incident-Playbook",
+    "playbookId": "Ironscales-Classify-Incident",
     "readonly": false,
     "reputationCalc": 0,
     "system": false,

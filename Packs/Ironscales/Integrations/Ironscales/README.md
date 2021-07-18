@@ -1,5 +1,6 @@
 IRONSCLAES, a self-learning email security platform integration
-This integration was integrated and tested with version xx of Ironscales
+
+
 ## Configure Ironscales on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.

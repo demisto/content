@@ -1,8 +1,6 @@
-import json
-import traceback
-from typing import Any, Dict, List, Optional, Tuple, Union, cast
 
-import dateparser
+from typing import Dict
+
 import demistomock as demisto  # noqa: F401
 import urllib3
 from CommonServerPython import *  # noqa: F401
@@ -12,8 +10,9 @@ urllib3.disable_warnings()
 
 
 class Client(BaseClient):
-    def __init__(self, company_id: str, base_url: str, verify_certificate: bool, proxy: bool):
+    def __init__(self, company_id: str, base_url: str, verify_certificate: bool, proxy: bool, headers: dict = None):
         self.company_id = company_id
+        self.headers = headers
         super().__init__(base_url, verify_certificate, proxy)
 
     def get_jwt_token(self, api_key: str, scopes: list) -> Dict[str, Any]:
@@ -29,6 +28,7 @@ class Client(BaseClient):
 
         :type incident_id: ``str``
         :param incident_id: id of the incident to return
+        :param company_id: company ID
 
         :return: dict containing the incident as returned from the API
         :rtype: ``Dict[str, Any]``
@@ -130,18 +130,19 @@ def classify_incident_command(client: Client, args: Dict[str, Any]) -> str:
         return "Classification Failed!"
 
 
-def get_open_incidents_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def get_open_incidents_command(client: Client, args: Dict[str, Any]) -> Union[CommandResults, str]:
     company_id = args.get("company_id", None)
 
     open_incidents = client.get_open_incidents(company_id)
     if open_incidents:
-        readable_output = tableToMarkdown(f"Open Incidents:", open_incidents)
+        readable_output = tableToMarkdown("Open Incidents:", open_incidents)
         return CommandResults(
             readable_output=readable_output,
             outputs_prefix="Ironscales.OpenIncidents",
             outputs_key_field="incident_ids",
             outputs=open_incidents,
         )
+    return "No open incidents were found"
 
 
 def test_module(client: Client, api_key, scopes) -> str:

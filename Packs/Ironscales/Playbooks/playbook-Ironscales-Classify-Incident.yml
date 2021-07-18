@@ -1,10 +1,6 @@
-contentitemexportablefields:
-  contentitemfields:
-    propagationLabels:
-    - all
-id: Ironscales-Classify-Incident-Playbook
+id: Ironscales-Classify-Incident
 inputs: []
-name: Ironscales-Classify-Incident-Playbook
+name: Ironscales-Classify-Incident
 description: "Classify an Ironscales incident"
 outputs: []
 starttaskid: "0"
@@ -61,7 +57,7 @@ tasks:
       id: 7003cfbc-90c9-41c1-8541-475de9df77d1
       iscommand: true
       name: ironscales-classify-incident
-      script: Ironscales|||ironscales-classify-incident
+      script: '|||ironscales-classify-incident'
       type: regular
       version: -1
     taskid: 7003cfbc-90c9-41c1-8541-475de9df77d1
@@ -98,7 +94,7 @@ tasks:
       id: 81ab81d6-400c-4ac8-8e56-e32c1c8fb612
       iscommand: true
       name: ironscales-get-incident
-      script: Ironscales|||ironscales-get-incident
+      script: '|||ironscales-get-incident'
       type: regular
       version: -1
     taskid: 81ab81d6-400c-4ac8-8e56-e32c1c8fb612
@@ -123,6 +119,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
+      description: ""
       id: 73cfac8a-92d8-46bf-8a5d-c37612040628
       iscommand: false
       name: classify incident

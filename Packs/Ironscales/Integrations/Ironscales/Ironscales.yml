@@ -20,6 +20,14 @@ configuration:
   name: scopes
   required: true
   type: 0
+- defaultvalue: '50'
+  name: max_fetch
+  required: false
+  type: 0
+- display: First fetch
+  name: first_fetch
+  required: false
+  type: 0
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
@@ -94,11 +102,13 @@ script:
       description: Sender email.
       type: string
     - contextPath: Ironscales.Incident.sender_is_internal
+      description: True is the email sender is internal, False otherwise.
       type: boolean
     - contextPath: Ironscales.Incident.sender_reputation
       description: Sender reputation.
       type: string
     - contextPath: Ironscales.Incident.spf_result
+      description: spf results.
       type: unknown
     - contextPath: Ironscales.Incident.themis_proba
       description: Themis proba.
@@ -142,7 +152,7 @@ script:
     outputs:
     - contextPath: Ironscales.OpenIncidents.incident_ids
       description: List of open incidents IDs.
-  dockerimage: demisto/python3:3.9.5.21272
+  dockerimage: demisto/python3:3.9.6.22912
   isFetchSamples: true
   isfetch: true
   runonce: false
