@@ -707,7 +707,7 @@ def panorama_push_status_command(job_id: str):
 
     # WARNINGS - Job warnings
     status_warnings = []  # type: ignore
-    status_errors = []   # type: ignore
+    status_errors = []  # type: ignore
     devices = safeget(result, ["response", "result", "job", "devices", "entry"])
     if devices:
         for device in devices:
@@ -736,23 +736,22 @@ def prettify_addresses_arr(addresses_arr: list) -> List:
     if not isinstance(addresses_arr, list):
         return prettify_address(addresses_arr)
     pretty_addresses_arr = []
+
     for address in addresses_arr:
         pretty_address = {'Name': address['@name']}
         if DEVICE_GROUP:
             pretty_address['DeviceGroup'] = DEVICE_GROUP
         if 'description' in address:
             pretty_address['Description'] = address['description']
-
         if 'ip-netmask' in address:
             pretty_address['IP_Netmask'] = address['ip-netmask']
-
         if 'ip-range' in address:
             pretty_address['IP_Range'] = address['ip-range']
-
         if 'fqdn' in address:
             pretty_address['FQDN'] = address['fqdn']
-
-        if 'tag' in address and 'member' in address['tag']:
+        if 'tag' in address and address['tag'] is not None and 'member' in address['tag']:
+            # handling edge cases in which the Tag value is None, e.g:
+            # {'@name': 'test', 'ip-netmask': '1.1.1.1', 'tag': None}
             pretty_address['Tags'] = address['tag']['member']
 
         pretty_addresses_arr.append(pretty_address)
@@ -817,7 +816,9 @@ def prettify_address(address: Dict) -> Dict:
     if 'fqdn' in address:
         pretty_address['FQDN'] = address['fqdn']
 
-    if 'tag' in address and 'member' in address['tag']:
+    if 'tag' in address and address['tag'] is not None and 'member' in address['tag']:
+        # handling edge cases in which the Tag value is None, e.g:
+        # {'@name': 'test', 'ip-netmask': '1.1.1.1', 'tag': None}
         pretty_address['Tags'] = address['tag']['member']
 
     return pretty_address
@@ -986,7 +987,9 @@ def prettify_address_groups_arr(address_groups_arr: list) -> List:
             pretty_address_group['DeviceGroup'] = DEVICE_GROUP
         if 'description' in address_group:
             pretty_address_group['Description'] = address_group['description']
-        if 'tag' in address_group and 'member' in address_group['tag']:
+        if 'tag' in address_group and address_group['tag'] is not None and 'member' in address_group['tag']:
+            # handling edge cases in which the Tag value is None, e.g:
+            # {'@name': 'test', 'static': {'member': 'test_address'}, 'tag': None}
             pretty_address_group['Tags'] = address_group['tag']['member']
 
         if pretty_address_group['Type'] == 'static':
@@ -1050,10 +1053,11 @@ def prettify_address_group(address_group: Dict) -> Dict:
     }
     if DEVICE_GROUP:
         pretty_address_group['DeviceGroup'] = DEVICE_GROUP
-
     if 'description' in address_group:
         pretty_address_group['Description'] = address_group['description']
-    if 'tag' in address_group and 'member' in address_group['tag']:
+    if 'tag' in address_group and address_group['tag'] is not None and 'member' in address_group['tag']:
+        # handling edge cases in which the Tag value is None, e.g:
+        # {'@name': 'test', 'static': {'member': 'test_address'}, 'tag': None}
         pretty_address_group['Tags'] = address_group['tag']['member']
 
     if pretty_address_group['Type'] == 'static':
@@ -1357,7 +1361,7 @@ def prettify_services_arr(services_arr: Union[dict, list]):
             pretty_service['DeviceGroup'] = DEVICE_GROUP
         if 'description' in service:
             pretty_service['Description'] = service['description']
-        if 'tag' in service and 'member' in service['tag']:
+        if 'tag' in service and service['tag'] is not None and 'member' in service['tag']:
             pretty_service['Tags'] = service['tag']['member']
 
         protocol = ''
@@ -1430,7 +1434,7 @@ def prettify_service(service: Dict):
         pretty_service['DeviceGroup'] = DEVICE_GROUP
     if 'description' in service:
         pretty_service['Description'] = service['description']
-    if 'tag' in service and 'member' in service['tag']:
+    if 'tag' in service and service['tag'] is not None and 'member' in service['tag']:
         pretty_service['Tags'] = service['tag']['member']
 
     protocol = ''
@@ -1609,7 +1613,9 @@ def prettify_service_groups_arr(service_groups_arr: list):
         }
         if DEVICE_GROUP:
             pretty_service_group['DeviceGroup'] = DEVICE_GROUP
-        if 'tag' in service_group and 'member' in service_group['tag']:
+        if 'tag' in service_group and service_group['tag'] is not None and 'member' in service_group['tag']:
+            # handling edge cases in which the Tag value is None, e.g:
+            # {'@name': 'sg_group', 'members': {'member': 'test_sg'}, 'tag': None}
             pretty_service_group['Tags'] = service_group['tag']['member']
 
         pretty_service_groups_arr.append(pretty_service_group)
@@ -1665,7 +1671,9 @@ def prettify_service_group(service_group: dict):
     }
     if DEVICE_GROUP:
         pretty_service_group['DeviceGroup'] = DEVICE_GROUP
-    if 'tag' in service_group and 'member' in service_group['tag']:
+    if 'tag' in service_group and service_group['tag'] is not None and 'member' in service_group['tag']:
+        # handling edge cases in which the Tag value is None, e.g:
+        # {'@name': 'sg_group', 'members': {'member': 'test_sg'}, 'tag': None}
         pretty_service_group['Tags'] = service_group['tag']['member']
 
     return pretty_service_group
