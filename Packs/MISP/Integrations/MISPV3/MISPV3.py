@@ -1122,9 +1122,13 @@ def add_sighting(demisto_args: dict):
     }
     sigh_obj = MISPSighting()
     sigh_obj.from_dict(**sighting_args)
-    PYMISP.add_sighting(sigh_obj, att_id)
-    human_readable = f'Sighting \'{sighting_type}\' has been successfully added to attribute {att_id}'
-    return CommandResults(readable_output=human_readable)
+    response = PYMISP.add_sighting(sigh_obj, att_id)
+    if response.get('message'):
+        return_error(f"An error was occurred: {response.get('message')}")
+    elif response.get('Sighting'):
+        human_readable = f'Sighting \'{sighting_type}\' has been successfully added to attribute {att_id}'
+        return CommandResults(readable_output=human_readable)
+    return_error(f"An error was occurred: {json.dumps(response)}")
 
 
 def test(malicious_tag_ids, suspicious_tag_ids):

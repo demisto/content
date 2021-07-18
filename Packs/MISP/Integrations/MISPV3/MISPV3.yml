@@ -2223,7 +2223,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: Domain.
+      description: Domain name.
       isArray: false
       name: domain
       required: false
@@ -2259,7 +2259,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: Description of the object.
+      description: Description of the object to be set as a text attribute.
       isArray: false
       name: comment
       required: false
