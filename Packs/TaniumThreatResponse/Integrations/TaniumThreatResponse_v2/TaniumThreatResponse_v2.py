@@ -14,7 +14,6 @@ from typing import Any
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 ''' GLOBALS/PARAMS '''
-FETCH_TIME = demisto.params().get('fetch_time')
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%S.%fZ'
 
 PROCESS_TEXT = 'Process information for process with PTID'
@@ -49,16 +48,20 @@ class Client(BaseClient):
         self.session = ''
         super(Client, self).__init__(base_url, **kwargs)
 
-    def do_request(self, method, url_suffix, data=None, params=None, resp_type='json'):
+    def do_request(self, method: str, url_suffix: str, data: dict = None, params: dict = None, resp_type: str = 'json',
+                   headers: dict = None, body: dict = None) -> Union[dict, list]:
+        if headers is None:
+            headers = {}
         if not self.session:
             self.update_session()
-        res = self._http_request(method, url_suffix, headers={'session': self.session}, json_data=data,
+        headers['session'] = self.session
+        res = self._http_request(method, url_suffix, headers=headers, json_data=data, data=body,
                                  params=params, resp_type='response', ok_codes=(200, 201, 202, 204, 400, 403, 404))
 
         # if session expired
         if res.status_code == 403:
             self.update_session()
-            res = self._http_request(method, url_suffix, headers={'session': self.session}, json_data=data,
+            res = self._http_request(method, url_suffix, headers=headers, json_data=data, data=body,
                                      params=params, ok_codes=(200, 400, 404))
             return res
 
@@ -111,7 +114,7 @@ def convert_to_int(int_to_parse: Any) -> Optional[int]:
 
     """
     try:
-        res = int(int_to_parse)
+        res: Optional[int] = int(int_to_parse)
     except (TypeError, ValueError):
         res = None
     return res
@@ -141,6 +144,15 @@ def filter_to_tanium_api_syntax(filter_str):
         return filter_dict
     except IndexError:
         raise ValueError('Invalid filter argument.')
+
+
+def get_file_name_and_content(entry_id: str):
+    file = demisto.getFilePath(entry_id)
+    file_path = file['path']
+    file_name = file['name']
+    with open(file_path, 'r') as f:
+        file_content = f.read()
+    return file_name, file_content
 
 
 def init_commands_dict():
@@ -288,13 +300,14 @@ def evidence_type_number_to_name(num: int) -> str:
 
 
 def get_evidence_item(raw_item):
+    evidence_type = convert_to_int(raw_item.get('type'))
     evidence_item = {
         'ID': raw_item.get('id'),
         'CreatedAt': raw_item.get('created'),
         'UpdatedAt': raw_item.get('lastModified'),
         'User': raw_item.get('user'),
         'ConnectionName': raw_item.get('host'),
-        'Type': evidence_type_number_to_name(convert_to_int(raw_item.get('type'))),
+        'Type': evidence_type_number_to_name(evidence_type) if evidence_type is not None else '',
         'ProcessTableId': raw_item.get('sId'),
         'Timestamp': raw_item.get('sTimestamp'),
         'Summary': raw_item.get('summary'),
@@ -550,6 +563,7 @@ def get_intel_doc_item(intel_doc):
     return {
         'ID': intel_doc.get('id'),
         'Name': intel_doc.get('name'),
+        'Type': intel_doc.get('type'),
         'Description': intel_doc.get('description'),
         'AlertCount': intel_doc.get('alertCount'),
         'UnresolvedAlertCount': intel_doc.get('unresolvedAlertCount'),
@@ -653,10 +667,11 @@ def fetch_incidents(client, alerts_states_to_retrieve):
     last_run = demisto.getLastRun()
     # Get the last fetch time and data if it exists
     last_fetch = last_run.get('time')
+    fetch_time = demisto.params().get('fetch_time')
 
     # Handle first time fetch, fetch incidents retroactively
     if not last_fetch:
-        last_fetch, _ = parse_date_range(FETCH_TIME, date_format=DATE_FORMAT)
+        last_fetch, _ = parse_date_range(fetch_time, date_format=DATE_FORMAT)
 
     last_fetch = parse(last_fetch)
     current_fetch = last_fetch
@@ -707,8 +722,7 @@ def get_intel_docs(client, data_args):
                            type=data_args.get('type'), limit=convert_to_int(data_args.get('limit')),
                            offset=convert_to_int(data_args.get('offset')), labelId=data_args.get('label_id'),
                            mitreTechniqueId=data_args.get('mitre_technique_id'))
-    raw_response = client.do_request('GET',
-                                     f'/plugin/products/detect3/api/v1/intels/', params=params)
+    raw_response = client.do_request('GET', '/plugin/products/detect3/api/v1/intels/', params=params)
 
     intel_docs = []
     # append raw response to a list in case raw_response is a dictionary
@@ -762,7 +776,9 @@ def add_intel_docs_label(client, data_args):
         intel_docs_labels.append(intel_doc_label)
 
     context = createContext(intel_docs_labels, removeNull=True)
-    outputs = {f'Tanium.IntelDocLabels(val.ID && val.ID === obj.ID).{intel_doc_id}': context} # TODO should I add it to docs context as well?
+    outputs = {
+        f'Tanium.IntelDocLabels(val.ID && val.ID === obj.ID).{intel_doc_id}': context}
+    # TODO should I add it to docs context as well?
 
     human_readable = tableToMarkdown(
         f'Successfully created a new label association for the identified intel document ({intel_doc_id}).',
@@ -778,19 +794,48 @@ def remove_intel_docs_label(client, data_args):
 
     human_readable = ""
     if raw_response:
-        human_readable = f'Successfully removed the label ({label_id_to_delete}) association for the identified intel document ({intel_doc_id}).'
+        human_readable = f'Successfully removed the label ({label_id_to_delete})' \
+                         f' association for the identified intel document ({intel_doc_id}).'
     return human_readable, {}, raw_response
 
 
 def create_intel_doc(client, data_args):
-    # intel_doc = data_args.get('intel-doc')
-    # raw_response = client.do_request('POST',
-    #                                  f'/plugin/products/detect3/api/v1/intels')
-    pass
+    entry_id = data_args.get('entry-id')
+    file_extension = data_args.get('file-extension')
+    file_name, file_content = get_file_name_and_content(entry_id)
+    raw_response = client.do_request('POST', '/plugin/products/detect3/api/v1/intels',
+                                     headers={"Content-Disposition": f'filename=file.{file_extension}',
+                                              'Content-Type': 'application/xml'}, body=file_content)
+    intel_doc = get_intel_doc_item(raw_response)
+    context = createContext(intel_doc, removeNull=True)
+    outputs = {'Tanium.IntelDoc(val.ID && val.ID === obj.ID)': context}
+
+    intel_doc['LabelIds'] = str(intel_doc['LabelIds']).strip('[]')
+    headers = ['ID', 'Name', 'Description', 'Type', 'AlertCount', 'UnresolvedAlertCount', 'CreatedAt', 'UpdatedAt',
+               'LabelIds']
+    human_readable = tableToMarkdown('Intel Doc information', intel_doc, headers=headers,
+                                     headerTransform=pascalToSpace, removeNull=True)
+    return human_readable, outputs, raw_response
 
 
 def update_intel_doc(client, data_args):
-    pass
+    id_ = data_args.get('intel-doc-id')
+    entry_id = data_args.get('entry-id')
+    file_extension = data_args.get('file-extension')
+    file_name, file_content = get_file_name_and_content(entry_id)
+    raw_response = client.do_request('PUT', f'/plugin/products/detect3/api/v1/intels/{id_}',
+                                     headers={"Content-Disposition": f'filename=file.{file_extension}',
+                                              'Content-Type': 'application/xml'}, body=file_content)
+    intel_doc = get_intel_doc_item(raw_response)
+    context = createContext(intel_doc, removeNull=True)
+    outputs = {'Tanium.IntelDoc(val.ID && val.ID === obj.ID)': context}
+
+    intel_doc['LabelIds'] = str(intel_doc['LabelIds']).strip('[]')
+    headers = ['ID', 'Name', 'Description', 'Type', 'AlertCount', 'UnresolvedAlertCount', 'CreatedAt', 'UpdatedAt',
+               'LabelIds']
+    human_readable = tableToMarkdown('Intel Doc information', intel_doc, headers=headers,
+                                     headerTransform=pascalToSpace, removeNull=True)
+    return human_readable, outputs, raw_response
 
 
 def deploy_intel(client, data_args):

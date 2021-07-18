@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="us-ascii"?>
+<ioc xmlns:xsi="http://www.test1.org/2001/" xmlns:xsd="http://www.test1.org" id="ea3cab0c-72ad-40cc-abbf-90846fa4afec" last-modified="2011-11-04T19:35:05" xmlns="http://test1.com/2010/ioc">
+  <short_description>STUXNET VIRUS TEST</short_description>
+  <description>Generic indicator for the stuxnet virus.  When loaded, stuxnet spawns lsass.exe in a suspended state. The malware then maps in its own executable section and fixes up the CONTEXT to point to the newly mapped in section. This is a common task performed by malware and allows the malware to execute under the pretense of a known and trusted process.</description>
+  <keywords>methodology</keywords>
+  <authored_by>Mandiant</authored_by>
+  <authored_date>0001-01-01T00:00:00</authored_date>
+  <links />
+  <definition>
+    <Indicator operator="OR" id="73bc8d65-826b-48d2-b4a8-48918e29e323">
+      <IndicatorItem id="b9ef2559-cc59-4463-81d9-52800545e16e" condition="contains">
+        <Context document="FileItem" search="FileItem/PEInfo/Sections/Section/Name" type="mir" />
+        <Content type="string">.stub</Content>
+      </IndicatorItem>
+      <IndicatorItem id="156bc4b6-a2a1-4735-bfe8-6c8d1f7eae38" condition="contains">
+        <Context document="FileItem" search="FileItem/FileName" type="mir" />
+        <Content type="string">mdmcpq3.PNF</Content>
+      </IndicatorItem>
+      <IndicatorItem id="e57d9a5b-5e6a-41ec-87c8-ee67f3ed2e20" condition="contains">
+        <Context document="FileItem" search="FileItem/FileName" type="mir" />
+        <Content type="string">mdmeric3.PNF</Content>
+      </IndicatorItem>
+      <IndicatorItem id="63d7bee6-b575-4d56-8d43-1c5eac57658f" condition="contains">
+        <Context document="FileItem" search="FileItem/FileName" type="mir" />
+        <Content type="string">oem6C.PNF</Content>
+      </IndicatorItem>
+      <IndicatorItem id="e6bff12a-e23d-45ea-94bd-8289f806bea7" condition="contains">
+        <Context document="FileItem" search="FileItem/FileName" type="mir" />
+        <Content type="string">oem7A.PNF</Content>
+      </IndicatorItem>
+      <Indicator operator="AND" id="422ae9bf-a1ae-41f2-8e54-5b4c6f3e1598">
+        <IndicatorItem id="e93f1610-daaf-4311-bcf3-3aecef8271c0" condition="contains">
+          <Context document="DriverItem" search="DriverItem/DeviceItem/AttachedToDriverName" type="mir" />
+          <Content type="string">fs_rec.sys</Content>
+        </IndicatorItem>
+        <IndicatorItem id="72476f35-8dea-4bae-8239-7c22d05d664f" condition="contains">
+          <Context document="DriverItem" search="DriverItem/DeviceItem/AttachedToDriverName" type="mir" />
+          <Content type="string">mrxsmb.sys</Content>
+        </IndicatorItem>
+        <IndicatorItem id="f98ea5aa-9e23-4f18-b871-b3cf5ba153fe" condition="contains">
+          <Context document="DriverItem" search="DriverItem/DeviceItem/AttachedToDriverName" type="mir" />
+          <Content type="string">sr.sys</Content>
+        </IndicatorItem>
+        <IndicatorItem id="32f61140-0f58-43bc-8cdd-a25db75ca6c4" condition="contains">
+          <Context document="DriverItem" search="DriverItem/DeviceItem/AttachedToDriverName" type="mir" />
+          <Content type="string">fastfat.sys</Content>
+        </IndicatorItem>
+      </Indicator>
+      <Indicator operator="AND" id="eb585bf5-18d8-4837-baf0-80ac74104ca3">
+        <IndicatorItem id="8d85b559-4d18-4e15-b0c9-da5a9b32f53c" condition="contains">
+          <Context document="FileItem" search="FileItem/FileName" type="mir" />
+          <Content type="string">mrxcls.sys</Content>
+        </IndicatorItem>
+        <IndicatorItem id="8a3e425d-fa87-4a31-b20d-8f8630d77933" condition="contains">
+          <Context document="FileItem" search="FileItem/PEInfo/DigitalSignature/CertificateSubject" type="mir" />
+          <Content type="string">Realtek Semiconductor Corp</Content>
+        </IndicatorItem>
+      </Indicator>
+      <Indicator operator="AND" id="bc8d06dd-f879-4609-bb1c-eccded0222ce">
+        <IndicatorItem id="89f194d3-3ee6-4218-93f8-055ea92a9f00" condition="contains">
+          <Context document="FileItem" search="FileItem/FileName" type="mir" />
+          <Content type="string">mrxnet.sys</Content>
+        </IndicatorItem>
+        <IndicatorItem id="c2dae8bf-81b1-49fb-8654-396830d75ade" condition="contains">
+          <Context document="FileItem" search="CertificateSubject" type="mir" />
+          <Content type="string">Realtek Semiconductor Corp</Content>
+        </IndicatorItem>
+      </Indicator>
+      <Indicator operator="AND" id="00538c36-88fe-42ea-a70f-136a2fb53834">
+        <IndicatorItem id="a779b811-345f-4164-897e-0752837d0c1e" condition="contains">
+          <Context document="RegistryItem" search="RegistryItem/Path" type="mir" />
+          <Content type="string">\ImagePath</Content>
+        </IndicatorItem>
+        <IndicatorItem id="ee981f06-b713-40aa-ac98-c6f4fd82b78d" condition="contains">
+          <Context document="RegistryItem" search="RegistryItem/Text" type="mir" />
+          <Content type="string">mrxcls.sys</Content>
+        </IndicatorItem>
+      </Indicator>
+      <Indicator operator="AND" id="d8d9b32c-f648-4552-9805-93c05ed48219">
+        <IndicatorItem id="c08044e7-e88c-433c-b463-763bdddeff82" condition="contains">
+          <Context document="RegistryItem" search="RegistryItem/Path" type="mir" />
+          <Content type="string">\ImagePath</Content>
+        </IndicatorItem>
+        <IndicatorItem id="38dfb382-ebbe-4685-bbb7-60675b91bd15" condition="contains">
+          <Context document="RegistryItem" search="RegistryItem/Text" type="mir" />
+          <Content type="string">mrxnet.sys</Content>
+        </IndicatorItem>
+      </Indicator>
+    </Indicator>
+  </definition>
+</ioc>

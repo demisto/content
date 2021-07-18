@@ -1845,9 +1845,20 @@ script:
     name: tanium-tr-intel-docs-remove-label
   - arguments:
     - default: false
-      description: The text of the intel document.
+      description: The file entry ID.
       isArray: false
-      name: intel-doc-text
+      name: entry-id
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: The suffix at the end of a filename.
+      isArray: false
+      name: file-extension
+      predefined:
+      - ioc
+      - yara
+      - stix
       required: true
       secret: false
     deprecated: false
@@ -1891,10 +1902,21 @@ script:
       required: true
       secret: false
     - default: false
-      description: The updated text of the intel document.
+      description: The file entry ID.
       isArray: false
-      name: intel-doc-text
+      name: entry-id
       required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: The suffix at the end of a filename.
+      isArray: false
+      name: file-extension
+      predefined:
+      - ioc
+      - yara
+      - stix
+      required: false
       secret: false
     deprecated: false
     description: Update the contents of an existing intel document by providing the

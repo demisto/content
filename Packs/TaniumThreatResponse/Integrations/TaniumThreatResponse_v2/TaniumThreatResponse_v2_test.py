@@ -175,18 +175,14 @@ MOCK_CLIENT = mock_client()
 
 
 def test_get_process_tree_item():
-    from TaniumThreatResponse import get_process_tree_item
-
-    tree, readable_output = get_process_tree_item(PROCESS_TREE_RAW[0], 0)
+    tree, readable_output = TaniumThreatResponse_v2.get_process_tree_item(PROCESS_TREE_RAW[0], 0)
 
     assert tree == PROCESS_TREE_ITEM_RES
     assert readable_output == PROCESS_TREE_READABLE_RES
 
 
 def test_get_process_tree_item_two_generations():
-    from TaniumThreatResponse import get_process_tree_item
-
-    tree, readable_output = get_process_tree_item(PROCESS_TREE_TWO_GENERATIONS_RAW[0], 0)
+    tree, readable_output = TaniumThreatResponse_v2.get_process_tree_item(PROCESS_TREE_TWO_GENERATIONS_RAW[0], 0)
 
     assert tree == PROCESS_TREE_ITEM_TWO_GENERATIONS_RES
     assert readable_output == PROCESS_TREE_TWO_GENERATIONS_READABLE_RES
@@ -296,7 +292,7 @@ def test_deploy_intel(requests_mock):
         }
     }
     requests_mock.get(BASE_URL + '/api/v2/session/login', json={'data': {'session': 'session-id'}})
-    requests_mock.post(BASE_URL + f"/plugin/products/threat-response/api/v1/intel/deploy",
+    requests_mock.post(BASE_URL + '/plugin/products/threat-response/api/v1/intel/deploy',
                        json=api_raw_response)
 
     human_readable, outputs, raw_response = TaniumThreatResponse_v2.deploy_intel(MOCK_CLIENT, {})
@@ -316,8 +312,8 @@ def test_get_deploy_status(requests_mock):
         }
     }
     requests_mock.get(BASE_URL + '/api/v2/session/login', json={'data': {'session': 'session-id'}})
-    requests_mock.get(BASE_URL + f"/plugin/products/threat-response/api/v1/intel/status",
-                       json=api_raw_response)
+    requests_mock.get(BASE_URL + '/plugin/products/threat-response/api/v1/intel/status',
+                      json=api_raw_response)
 
     human_readable, outputs, raw_response = TaniumThreatResponse_v2.get_deploy_status(MOCK_CLIENT, {})
     assert 'Intel deploy status' in human_readable
