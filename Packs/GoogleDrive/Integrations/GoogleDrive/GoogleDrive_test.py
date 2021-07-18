@@ -308,7 +308,7 @@ def test_drive_activity_list_command_no_records(mocker_http_request, gsuite_clie
     args = {}
     result = drive_activity_list_command(gsuite_client, args)
 
-    assert result.readable_output == "No drive activity found."
+    assert result.readable_output == "No Drive Activity found."
 
 
 def test_validate_params_for_fetch_incidents_error():
@@ -709,7 +709,6 @@ def test_files_list_command_failure(mocker_http_request, gsuite_client):
         files_list_command(gsuite_client, args)
 
 
-
 @patch(MOCKER_HTTP_METHOD)
 def test_file_get_command_success(mocker_http_request, gsuite_client):
     """
@@ -743,7 +742,6 @@ def test_file_get_command_success(mocker_http_request, gsuite_client):
     # assert result.readable_output.startswith("### Next Page Token: myNextPageToken")
     assert HR_MESSAGES['LIST_COMMAND_SUCCESS'].format('File(s)', 1) in result.readable_output
     assert '17' in result.readable_output
-
 
 
 @patch(MOCKER_HTTP_METHOD)
@@ -832,7 +830,6 @@ def test_file_permission_list_command_failure(mocker_http_request, gsuite_client
         file_permission_list_command(gsuite_client, args)
 
 
-
 @patch(MOCKER_HTTP_METHOD)
 def test_file_permission_create_command_success(mocker_http_request, gsuite_client):
     """
@@ -865,7 +862,6 @@ def test_file_permission_create_command_success(mocker_http_request, gsuite_clie
 
     assert HR_MESSAGES['LIST_COMMAND_SUCCESS'].format('Permission(s)', 1) in result.readable_output
     assert '17' in result.readable_output
-
 
 
 @patch(MOCKER_HTTP_METHOD)
@@ -926,7 +922,6 @@ def test_file_permission_update_command_success(mocker_http_request, gsuite_clie
 
     assert HR_MESSAGES['LIST_COMMAND_SUCCESS'].format('Permission(s)', 1) in result.readable_output
     assert '17' in result.readable_output
-
 
 
 @patch(MOCKER_HTTP_METHOD)
