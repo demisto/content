@@ -20,9 +20,9 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: Enterprise Mobility Management (EMM) for Apple devices (Mac, iPhone, Apple TV, iPad). Can be used to control
-  various configurations via different policies, install and uninstall applications, lock
-  devices, smart groups searches, and more.
+description: Enterprise Mobility Management (EMM) for Apple devices (Mac, iPhone,
+  Apple TV, iPad). Can be used to control various configurations via different policies,
+  install and uninstall applications, lock devices, smart groups searches, and more.
 display: JAMF v2
 name: jamf v2
 script:
@@ -30,8 +30,8 @@ script:
   - arguments:
     - default: false
       defaultValue: '50'
-      description: The maximum number of results to be returned on each page. 
-        The maximum size is 200.
+      description: The maximum number of results to be returned on each page. The
+        maximum size is 200.
       isArray: false
       name: limit
       required: false
@@ -44,8 +44,8 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Returns a list of all computers with their associated
-      IDs. By default, returns the first 50 computers to the context (ID + name).
+    description: Returns a list of all computers with their associated IDs. By default,
+      returns the first 50 computers to the context (ID + name).
     execution: false
     name: jamf-get-computers
     outputs:
@@ -67,7 +67,8 @@ script:
   - arguments:
     - default: false
       defaultValue: '50'
-      description: The maximum number of results to be returned on each page. The maximum size is 200.
+      description: The maximum number of results to be returned on each page. The
+        maximum size is 200.
       isArray: false
       name: limit
       required: false
@@ -80,9 +81,9 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: 'Returns the “basic” subset for all of the computers.
-      The “basic” subset includes: MAC address, model,
-      UDID, name, department, building, serial number, username, ID.'
+    description: 'Returns the “basic” subset for all of the computers. The “basic”
+      subset includes: MAC address, model, UDID, name, department, building, serial
+      number, username, ID.'
     execution: false
     name: jamf-get-computers-basic-subset
     outputs:
@@ -132,8 +133,8 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: 'Returns the "general" subset of a specific computer,
-      e.g.: name, MAC address, IP, serial number, UDID, etc.'
+    description: 'Returns the "general" subset of a specific computer, e.g.: name,
+      MAC address, IP, serial number, UDID, etc.'
     execution: false
     name: jamf-get-computer-by-id
     outputs:
@@ -263,8 +264,8 @@ script:
   - arguments:
     - default: false
       defaultValue: '50'
-      description: The maximum number of results to be returned on each page.
-        The maximum size is 200.
+      description: The maximum number of results to be returned on each page. The
+        maximum size is 200.
       isArray: false
       name: limit
       required: false
@@ -278,15 +279,15 @@ script:
       secret: false
     - default: false
       description: 'Match computers by specific characteristics (supports wildcards)
-        such as: name, UDID, serial_number, mac_address, username, realname, email. e.g.:
-        “match=john*”, “match=C52F72FACB9T”.'
+        such as: name, UDID, serial_number, mac_address, username, realname, email.
+        e.g.: “match=john*”, “match=C52F72FACB9T”.'
       isArray: false
       name: match
       required: true
       secret: false
     deprecated: false
-    description: Matches computers by specific characteristics and
-      returns general data on each of the computers.
+    description: Matches computers by specific characteristics and returns general
+      data on each of the computers.
     execution: false
     name: jamf-get-computer-by-match
     outputs:
@@ -359,7 +360,7 @@ script:
   - arguments:
     - auto: PREDEFINED
       default: false
-      description: 'The identifier used to determine which computer is requested. 
+      description: 'The identifier used to determine which computer is requested.
         Possible values: "id", "name", "udid", "serialnumber", and "macaddress".'
       isArray: false
       name: identifier
@@ -373,8 +374,8 @@ script:
       secret: false
     - default: false
       description: The value of the "identifier". For example, if you choose the "id"
-        identifier, a computer ID should be passed. If you choose "macaddress"
-        as the identifier, a computer’s MAC address should be passed, etc.
+        identifier, a computer ID should be passed. If you choose "macaddress" as
+        the identifier, a computer’s MAC address should be passed, etc.
       isArray: false
       name: identifier_value
       required: true
@@ -520,7 +521,7 @@ script:
   - arguments:
     - auto: PREDEFINED
       default: false
-      description: 'The identifier used to determine which computer is requested. 
+      description: 'The identifier used to determine which computer is requested.
         Possible values: "id", "name", "udid", "serialnumber", and "macaddress".'
       isArray: false
       name: identifier
@@ -534,8 +535,8 @@ script:
       secret: false
     - default: false
       description: The value of the "identifier". For example, if you choose the "id"
-        identifier, a computer ID should be passed. If you choose "macaddress"
-        as the identifier, a computer’s MAC address should be passed, etc.
+        identifier, a computer ID should be passed. If you choose "macaddress" as
+        the identifier, a computer’s MAC address should be passed, etc.
       isArray: false
       name: identifier_value
       required: true
@@ -582,7 +583,7 @@ script:
   - arguments:
     - auto: PREDEFINED
       default: false
-      description: 'The identifier used to determine which computer is requested. 
+      description: 'The identifier used to determine which computer is requested.
         Possible values: "id", "name", "udid", "serialnumber", and "macaddress".'
       isArray: false
       name: identifier
@@ -596,8 +597,8 @@ script:
       secret: false
     - default: false
       description: The value of the "identifier". For example, if you choose the "id"
-        identifier, a computer ID should be passed. If you choose "macaddress"
-        as the identifier, a computer’s MAC address should be passed, etc.
+        identifier, a computer ID should be passed. If you choose "macaddress" as
+        the identifier, a computer’s MAC address should be passed, etc.
       isArray: false
       name: identifier_value
       required: true
@@ -674,7 +675,7 @@ script:
   - arguments:
     - auto: PREDEFINED
       default: false
-      description: 'The identifier used to determine which computer is requested. 
+      description: 'The identifier used to determine which computer is requested.
         Possible values: "id", "name", "udid", "serialnumber", and "macaddress".'
       isArray: false
       name: identifier
@@ -688,8 +689,8 @@ script:
       secret: false
     - default: false
       description: The value of the "identifier". For example, if you choose the "id"
-        identifier, a computer ID should be passed. If you choose "macaddress"
-        as the identifier, a computer’s MAC address should be passed, etc.
+        identifier, a computer ID should be passed. If you choose "macaddress" as
+        the identifier, a computer’s MAC address should be passed, etc.
       isArray: false
       name: identifier_value
       required: true
@@ -709,7 +710,7 @@ script:
   - arguments:
     - auto: PREDEFINED
       default: false
-      description: 'The identifier used to determine which computer is requested. 
+      description: 'The identifier used to determine which computer is requested.
         Possible values: "id", "name", "udid", "serialnumber", and "macaddress".'
       isArray: false
       name: identifier
@@ -723,8 +724,8 @@ script:
       secret: false
     - default: false
       description: The value of the "identifier". For example, if you choose the "id"
-        identifier, a computer ID should be passed. If you choose "macaddress"
-        as the identifier, a computer’s MAC address should be passed, etc.
+        identifier, a computer ID should be passed. If you choose "macaddress" as
+        the identifier, a computer’s MAC address should be passed, etc.
       isArray: false
       name: identifier_value
       required: true
@@ -892,7 +893,8 @@ script:
       description: The computer storage partition second filevault percent.
       type: Number
     - contextPath: JAMF.ComputerSubset.hardware.storage.partitions.boot_drive_available_mb
-      description: The available space on the computer storage partition boot drive in MB.
+      description: The available space on the computer storage partition boot drive
+        in MB.
       type: Number
     - contextPath: JAMF.ComputerSubset.hardware.storage.partitions.lvgUUID
       description: The computer storage partition logical volume group (lvg) UUID.
@@ -909,7 +911,7 @@ script:
   - arguments:
     - auto: PREDEFINED
       default: false
-      description: 'The identifier used to determine which computer is requested. 
+      description: 'The identifier used to determine which computer is requested.
         Possible values: "id", "name", "udid", "serialnumber", and "macaddress".'
       isArray: false
       name: identifier
@@ -923,8 +925,8 @@ script:
       secret: false
     - default: false
       description: The value of the "identifier". For example, if you choose the "id"
-        identifier, a computer ID should be passed. If you choose "macaddress"
-        as the identifier, a computer’s MAC address should be passed, etc.
+        identifier, a computer ID should be passed. If you choose "macaddress" as
+        the identifier, a computer’s MAC address should be passed, etc.
       isArray: false
       name: identifier_value
       required: true
@@ -956,7 +958,7 @@ script:
   - arguments:
     - auto: PREDEFINED
       default: false
-      description: 'The identifier used to determine which computer is requested. 
+      description: 'The identifier used to determine which computer is requested.
         Possible values: "id", "name", "udid", "serialnumber", and "macaddress".'
       isArray: false
       name: identifier
@@ -970,8 +972,8 @@ script:
       secret: false
     - default: false
       description: The value of the "identifier". For example, if you choose the "id"
-        identifier, a computer ID should be passed. If you choose "macaddress"
-        as the identifier, a computer’s MAC address should be passed, etc.
+        identifier, a computer ID should be passed. If you choose "macaddress" as
+        the identifier, a computer’s MAC address should be passed, etc.
       isArray: false
       name: identifier_value
       required: true
@@ -997,7 +999,7 @@ script:
   - arguments:
     - auto: PREDEFINED
       default: false
-      description: 'The identifier used to determine which computer is requested. 
+      description: 'The identifier used to determine which computer is requested.
         Possible values: "id", "name", "udid", "serialnumber", and "macaddress".'
       isArray: false
       name: identifier
@@ -1011,8 +1013,8 @@ script:
       secret: false
     - default: false
       description: The value of the "identifier". For example, if you choose the "id"
-        identifier, a computer ID should be passed. If you choose "macaddress"
-        as the identifier, a computer’s MAC address should be passed, etc.
+        identifier, a computer ID should be passed. If you choose "macaddress" as
+        the identifier, a computer’s MAC address should be passed, etc.
       isArray: false
       name: identifier_value
       required: true
@@ -1033,8 +1035,8 @@ script:
       description: The computer software that was installed by Jamf PRO.
       type: String
     - contextPath: JAMF.ComputerSubset.software.installed_by_installer_swu.package
-      description: The computer software that was installed either by an installer, an app
-        or a software update.
+      description: The computer software that was installed either by an installer,
+        an app or a software update.
       type: String
     - contextPath: JAMF.ComputerSubset.software.cached_by_casper.package
       description: The computer software that was cached by Jamf PRO.
@@ -1090,7 +1092,7 @@ script:
   - arguments:
     - auto: PREDEFINED
       default: false
-      description: 'The identifier used to determine which computer is requested. 
+      description: 'The identifier used to determine which computer is requested.
         Possible values: "id", "name", "udid", "serialnumber", and "macaddress".'
       isArray: false
       name: identifier
@@ -1104,8 +1106,8 @@ script:
       secret: false
     - default: false
       description: The value of the "identifier". For example, if you choose the "id"
-        identifier, a computer ID should be passed. If you choose "macaddress"
-        as the identifier, a computer’s MAC address should be passed, etc.
+        identifier, a computer ID should be passed. If you choose "macaddress" as
+        the identifier, a computer’s MAC address should be passed, etc.
       isArray: false
       name: identifier_value
       required: true
@@ -1137,7 +1139,7 @@ script:
   - arguments:
     - auto: PREDEFINED
       default: false
-      description: 'The identifier used to determine which computer is requested. 
+      description: 'The identifier used to determine which computer is requested.
         Possible values: "id", "name", "udid", "serialnumber", and "macaddress".'
       isArray: false
       name: identifier
@@ -1151,8 +1153,8 @@ script:
       secret: false
     - default: false
       description: The value of the "identifier". For example, if you choose the "id"
-        identifier, a computer ID should be passed. If you choose "macaddress"
-        as the identifier, a computer’s MAC address should be passed, etc.
+        identifier, a computer ID should be passed. If you choose "macaddress" as
+        the identifier, a computer’s MAC address should be passed, etc.
       isArray: false
       name: identifier_value
       required: true
@@ -1217,7 +1219,7 @@ script:
   - arguments:
     - auto: PREDEFINED
       default: false
-      description: 'The identifier used to determine which computer is requested. 
+      description: 'The identifier used to determine which computer is requested.
         Possible values: "id", "name", "udid", "serialnumber", and "macaddress".'
       isArray: false
       name: identifier
@@ -1231,8 +1233,8 @@ script:
       secret: false
     - default: false
       description: The value of the "identifier". For example, if you choose the "id"
-        identifier, a computer ID should be passed. If you choose "macaddress"
-        as the identifier, a computer’s MAC address should be passed, etc.
+        identifier, a computer ID should be passed. If you choose "macaddress" as
+        the identifier, a computer’s MAC address should be passed, etc.
       isArray: false
       name: identifier_value
       required: true
@@ -1252,7 +1254,7 @@ script:
   - arguments:
     - auto: PREDEFINED
       default: false
-      description: 'The identifier used to determine which computer is requested. 
+      description: 'The identifier used to determine which computer is requested.
         Possible values: "id", "name", "udid", "serialnumber", and "macaddress".'
       isArray: false
       name: identifier
@@ -1266,8 +1268,8 @@ script:
       secret: false
     - default: false
       description: The value of the "identifier". For example, if you choose the "id"
-        identifier, a computer ID should be passed. If you choose "macaddress"
-        as the identifier, a computer’s MAC address should be passed, etc.
+        identifier, a computer ID should be passed. If you choose "macaddress" as
+        the identifier, a computer’s MAC address should be passed, etc.
       isArray: false
       name: identifier_value
       required: true
@@ -1295,8 +1297,8 @@ script:
       type: Number
   - arguments:
     - default: false
-      description: A 6-digit passcode to be used
-        to unlock the computer after it was locked.
+      description: A 6-digit passcode to be used to unlock the computer after it was
+        locked.
       isArray: false
       name: passcode
       required: true
@@ -1331,8 +1333,7 @@ script:
       type: String
   - arguments:
     - default: false
-      description: A 6-digit passcode that locks the
-        computer after being erased.
+      description: A 6-digit passcode that locks the computer after being erased.
       isArray: false
       name: passcode
       required: true
@@ -1375,7 +1376,8 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Returns a list of users with their IDs and names. By default, returns the first 50 users to the context (ID + name).
+    description: Returns a list of users with their IDs and names. By default, returns
+      the first 50 users to the context (ID + name).
     execution: false
     name: jamf-get-users
     outputs:
@@ -1730,9 +1732,8 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Returns a list of devices with  basic data on
-      each. By default, returns the first 50 devices to the context
-      (ID + name).
+    description: Returns a list of devices with  basic data on each. By default, returns
+      the first 50 devices to the context (ID + name).
     execution: false
     name: jamf-get-mobile-devices
     outputs:
@@ -1797,8 +1798,8 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: 'Returns the "general" subset of a specific mobile
-      device, e.g.: name, MAC address, IP, serial number, UDID. etc.'
+    description: 'Returns the "general" subset of a specific mobile device, e.g.:
+      name, MAC address, IP, serial number, UDID. etc.'
     execution: false
     name: jamf-get-mobile-device-by-id
     outputs:
@@ -1972,8 +1973,8 @@ script:
       type: String
   - arguments:
     - default: false
-      description: 'The specific characteristics by which to match devices 
-        such as: name, udid, serial_number, mac_address, username, email. e.g: “match=john*”,
+      description: 'The specific characteristics by which to match devices such as:
+        name, udid, serial_number, mac_address, username, email. e.g: “match=john*”,
         “match=C52F72FACB9T”. (Supports wildcards)'
       isArray: false
       name: match
@@ -1996,8 +1997,8 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Matches mobile devices by specific characteristics
-      and returns general data on each one of the mobile devices.
+    description: Matches mobile devices by specific characteristics and returns general
+      data on each one of the mobile devices.
     execution: false
     name: jamf-get-mobile-device-by-match
     outputs:
@@ -2061,7 +2062,7 @@ script:
   - arguments:
     - auto: PREDEFINED
       default: false
-      description: 'The identifier used to determine which computer is requested. 
+      description: 'The identifier used to determine which computer is requested.
         Possible values: "id", "name", "udid", "serialnumber", and "macaddress".'
       isArray: false
       name: identifier
@@ -2075,8 +2076,8 @@ script:
       secret: false
     - default: false
       description: The value of the "identifier". For example, if you choose the "id"
-        identifier, a computer ID should be passed. If you choose "macaddress"
-        as the identifier, a computer’s MAC address should be passed, etc.
+        identifier, a computer ID should be passed. If you choose "macaddress" as
+        the identifier, a computer’s MAC address should be passed, etc.
       isArray: false
       name: identifier_value
       required: true
@@ -2261,7 +2262,7 @@ script:
   - arguments:
     - auto: PREDEFINED
       default: false
-      description: 'The identifier used to determine which computer is requested. 
+      description: 'The identifier used to determine which computer is requested.
         Possible values: "id", "name", "udid", "serialnumber", and "macaddress".'
       isArray: false
       name: identifier
@@ -2275,8 +2276,8 @@ script:
       secret: false
     - default: false
       description: The value of the "identifier". For example, if you choose the "id"
-        identifier, a computer ID should be passed. If you choose "macaddress"
-        as the identifier, a computer’s MAC address should be passed, etc.
+        identifier, a computer ID should be passed. If you choose "macaddress" as
+        the identifier, a computer’s MAC address should be passed, etc.
       isArray: false
       name: identifier_value
       required: true
@@ -2323,7 +2324,7 @@ script:
   - arguments:
     - auto: PREDEFINED
       default: false
-      description: 'The identifier used to determine which computer is requested. 
+      description: 'The identifier used to determine which computer is requested.
         Possible values: "id", "name", "udid", "serialnumber", and "macaddress".'
       isArray: false
       name: identifier
@@ -2337,8 +2338,8 @@ script:
       secret: false
     - default: false
       description: The value of the "identifier". For example, if you choose the "id"
-        identifier, a computer ID should be passed. If you choose "macaddress"
-        as the identifier, a computer’s MAC address should be passed, etc.
+        identifier, a computer ID should be passed. If you choose "macaddress" as
+        the identifier, a computer’s MAC address should be passed, etc.
       isArray: false
       name: identifier_value
       required: true
@@ -2409,7 +2410,7 @@ script:
   - arguments:
     - auto: PREDEFINED
       default: false
-      description: 'The identifier used to determine which computer is requested. 
+      description: 'The identifier used to determine which computer is requested.
         Possible values: "id", "name", "udid", "serialnumber", and "macaddress".'
       isArray: false
       name: identifier
@@ -2423,8 +2424,8 @@ script:
       secret: false
     - default: false
       description: The value of the "identifier". For example, if you choose the "id"
-        identifier, a computer ID should be passed. If you choose "macaddress"
-        as the identifier, a computer’s MAC address should be passed, etc.
+        identifier, a computer ID should be passed. If you choose "macaddress" as
+        the identifier, a computer’s MAC address should be passed, etc.
       isArray: false
       name: identifier_value
       required: true
@@ -2453,7 +2454,7 @@ script:
   - arguments:
     - auto: PREDEFINED
       default: false
-      description: 'The identifier used to determine which computer is requested. 
+      description: 'The identifier used to determine which computer is requested.
         Possible values: "id", "name", "udid", "serialnumber", and "macaddress".'
       isArray: false
       name: identifier
@@ -2467,8 +2468,8 @@ script:
       secret: false
     - default: false
       description: The value of the "identifier". For example, if you choose the "id"
-        identifier, a computer ID should be passed. If you choose "macaddress"
-        as the identifier, a computer’s MAC address should be passed, etc.
+        identifier, a computer ID should be passed. If you choose "macaddress" as
+        the identifier, a computer’s MAC address should be passed, etc.
       isArray: false
       name: identifier_value
       required: true
@@ -2563,7 +2564,7 @@ script:
   - arguments:
     - auto: PREDEFINED
       default: false
-      description: 'The identifier used to determine which computer is requested. 
+      description: 'The identifier used to determine which computer is requested.
         Possible values: "id", "name", "udid", "serialnumber", and "macaddress".'
       isArray: false
       name: identifier
@@ -2577,8 +2578,8 @@ script:
       secret: false
     - default: false
       description: The value of the "identifier". For example, if you choose the "id"
-        identifier, a computer ID should be passed. If you choose "macaddress"
-        as the identifier, a computer’s MAC address should be passed, etc.
+        identifier, a computer ID should be passed. If you choose "macaddress" as
+        the identifier, a computer’s MAC address should be passed, etc.
       isArray: false
       name: identifier_value
       required: true
@@ -2640,7 +2641,7 @@ script:
   - arguments:
     - auto: PREDEFINED
       default: false
-      description: 'The identifier used to determine which computer is requested. 
+      description: 'The identifier used to determine which computer is requested.
         Possible values: "id", "name", "udid", "serialnumber", and "macaddress".'
       isArray: false
       name: identifier
@@ -2654,8 +2655,8 @@ script:
       secret: false
     - default: false
       description: The value of the "identifier". For example, if you choose the "id"
-        identifier, a computer ID should be passed. If you choose "macaddress"
-        as the identifier, a computer’s MAC address should be passed, etc.
+        identifier, a computer ID should be passed. If you choose "macaddress" as
+        the identifier, a computer’s MAC address should be passed, etc.
       isArray: false
       name: identifier_value
       required: true
@@ -2681,7 +2682,7 @@ script:
   - arguments:
     - auto: PREDEFINED
       default: false
-      description: 'The identifier used to determine which computer is requested. 
+      description: 'The identifier used to determine which computer is requested.
         Possible values: "id", "name", "udid", "serialnumber", and "macaddress".'
       isArray: false
       name: identifier
@@ -2695,8 +2696,8 @@ script:
       secret: false
     - default: false
       description: The value of the "identifier". For example, if you choose the "id"
-        identifier, a computer ID should be passed. If you choose "macaddress"
-        as the identifier, a computer’s MAC address should be passed, etc.
+        identifier, a computer ID should be passed. If you choose "macaddress" as
+        the identifier, a computer’s MAC address should be passed, etc.
       isArray: false
       name: identifier_value
       required: true
@@ -2720,10 +2721,12 @@ script:
       description: The mobile device provisioning profiles expiration date.
       type: String
     - contextPath: JAMF.MobileDeviceSubset.provisioning_profiles.mobile_device_provisioning_profile.expiration_date_epoch
-      description: The mobile device provisioning profiles expiration date in epoch format.
+      description: The mobile device provisioning profiles expiration date in epoch
+        format.
       type: Number
     - contextPath: JAMF.MobileDeviceSubset.provisioning_profiles.mobile_device_provisioning_profile.expiration_date_utc
-      description: The mobile device provisioning profiles expiration date in UTC format.
+      description: The mobile device provisioning profiles expiration date in UTC
+        format.
       type: String
     - contextPath: JAMF.MobileDeviceSubset.provisioning_profiles.mobile_device_provisioning_profile.uuid
       description: The mobile device provisioning profiles UUID.
@@ -2731,7 +2734,7 @@ script:
   - arguments:
     - auto: PREDEFINED
       default: false
-      description: 'The identifier used to determine which computer is requested. 
+      description: 'The identifier used to determine which computer is requested.
         Possible values: "id", "name", "udid", "serialnumber", and "macaddress".'
       isArray: false
       name: identifier
@@ -2745,8 +2748,8 @@ script:
       secret: false
     - default: false
       description: The value of the "identifier". For example, if you choose the "id"
-        identifier, a computer ID should be passed. If you choose "macaddress"
-        as the identifier, a computer’s MAC address should be passed, etc.
+        identifier, a computer ID should be passed. If you choose "macaddress" as
+        the identifier, a computer’s MAC address should be passed, etc.
       isArray: false
       name: identifier_value
       required: true
@@ -2778,7 +2781,7 @@ script:
   - arguments:
     - auto: PREDEFINED
       default: false
-      description: 'The identifier used to determine which computer is requested. 
+      description: 'The identifier used to determine which computer is requested.
         Possible values: "id", "name", "udid", "serialnumber", and "macaddress".'
       isArray: false
       name: identifier
@@ -2792,8 +2795,8 @@ script:
       secret: false
     - default: false
       description: The value of the "identifier". For example, if you choose the "id"
-        identifier, a computer ID should be passed. If you choose "macaddress"
-        as the identifier, a computer’s MAC address should be passed, etc.
+        identifier, a computer ID should be passed. If you choose "macaddress" as
+        the identifier, a computer’s MAC address should be passed, etc.
       isArray: false
       name: identifier_value
       required: true
@@ -2816,7 +2819,7 @@ script:
   - arguments:
     - auto: PREDEFINED
       default: false
-      description: 'The identifier used to determine which computer is requested. 
+      description: 'The identifier used to determine which computer is requested.
         Possible values: "id", "name", "udid", "serialnumber", and "macaddress".'
       isArray: false
       name: identifier
@@ -2830,8 +2833,8 @@ script:
       secret: false
     - default: false
       description: The value of the "identifier". For example, if you choose the "id"
-        identifier, a computer ID should be passed. If you choose "macaddress"
-        as the identifier, a computer’s MAC address should be passed, etc.
+        identifier, a computer ID should be passed. If you choose "macaddress" as
+        the identifier, a computer’s MAC address should be passed, etc.
       isArray: false
       name: identifier_value
       required: true
@@ -2934,11 +2937,9 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Enables “lost mode” on a specific device. Lost Mode is a feature
-      that allows you to lock a mobile device and track the device's location. The
-      device reports the GPS coordinates of the point where the device received
-      the command. This feature adds additional protection to mobile devices and their
-      data in the event that a device is lost or stolen.
+    description: |-
+      This is a beta command - couldn't be tested due to technical limitations.
+      Enables “lost mode” on a specific device. Lost Mode is a feature that allows you to lock a mobile device and track the device's location. The device reports the GPS coordinates of the point where the device received the command. This feature adds additional protection to mobile devices and their data in the event that a device is lost or stolen.
     execution: false
     name: jamf-mobile-device-lost-mode
     outputs:
@@ -2984,7 +2985,9 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Permanently erases all data on the device and deactivates the device.
+    description: |-
+      This is a beta command - couldn't be tested due to technical limitations.
+      Permanently erases all data on the device and deactivates the device.
     execution: false
     name: jamf-mobile-device-erase
     outputs:

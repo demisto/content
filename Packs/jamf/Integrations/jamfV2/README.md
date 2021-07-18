@@ -2370,7 +2370,7 @@ Jamf Pro Server Settings → Apple Education Support → Read (in order to view 
             "id": 97,
             "ldap_server": {
                 "id": 2,
-                "name": "AD Demisto Ninja"
+                "name": "AD XSOAR Ninja"
             },
             "links": {
                 "computers": [
@@ -4044,7 +4044,8 @@ Jamf Pro Server Objects → Advanced Computer Searches → Read
 
 ### jamf-mobile-device-lost-mode
 ***
-Enables “lost mode” on a specific device. Lost Mode is a feature that allows you to lock a mobile device and track the device's location. The device reports the GPS coordinates of the point where the device received the command. This feature adds additional protection to mobile devices and their data in the event that a device is lost or stolen.
+#### This is a beta command
+This is a beta command - couldn't be tested due to technical limitations. Enables “lost mode” on a specific device. Lost Mode is a feature that allows you to lock a mobile device and track the device's location. The device reports the GPS coordinates of the point where the device received the command. This feature adds additional protection to mobile devices and their data in the event that a device is lost or stolen.
 
 
 #### Base Command
@@ -4083,7 +4084,8 @@ Jamf Pro Server Objects → Mobile Devices → Create
 
 ### jamf-mobile-device-erase
 ***
-Permanently erases all data on the device and deactivates the device.
+#### This is a beta command
+This is a beta command - couldn't be tested due to technical limitations. Permanently erases all data on the device and deactivates the device.
 
 
 #### Base Command
