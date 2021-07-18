@@ -1,11 +1,7 @@
 contentitemexportablefields:
   contentitemfields:
-    fromServerVersion: ""
-    itemVersion: ""
-    packID: Ironscales
     propagationLabels:
     - all
-    toServerVersion: ""
 id: Ironscales-Classify-Incident-Playbook
 inputs: []
 name: Ironscales-Classify-Incident-Playbook
@@ -29,6 +25,7 @@ tasks:
       iscommand: false
       name: ""
       version: -1
+      description: ''
     taskid: dfc568c0-54ac-4c3a-8fdc-f63f98867fc8
     timertriggers: []
     type: start
@@ -156,4 +153,4 @@ view: |-
   }
 fromversion: 6.0.0
 tests:
-- No tests 
+- No tests

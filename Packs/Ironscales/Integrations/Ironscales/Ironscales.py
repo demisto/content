@@ -12,7 +12,7 @@ urllib3.disable_warnings()
 
 
 class Client(BaseClient):
-    def __init__(self, company_id: str, base_url: str, verify_certificate: str, proxy: str):
+    def __init__(self, company_id: str, base_url: str, verify_certificate: bool, proxy: bool):
         self.company_id = company_id
         super().__init__(base_url, verify_certificate, proxy)
 
@@ -47,12 +47,12 @@ class Client(BaseClient):
         )
 
     def classify_incident(
-        self,
-        incident_id: str,
-        classification: str,
-        prev_classification: str,
-        classifying_user_email: str,
-        company_id=None,
+            self,
+            incident_id: str,
+            classification: str,
+            prev_classification: str,
+            classifying_user_email: str,
+            company_id=None,
     ) -> str:
 
         if not company_id:
@@ -71,8 +71,8 @@ class Client(BaseClient):
         )
 
     def get_open_incidents(
-        self,
-        company_id=None,
+            self,
+            company_id=None,
     ) -> Dict[str, Any]:
 
         if not company_id:
@@ -86,7 +86,6 @@ class Client(BaseClient):
 
 
 def get_incident_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-
     incident_id = args.get("incident_id", None)
     company_id = args.get("company_id", None)
 
@@ -126,7 +125,7 @@ def classify_incident_command(client: Client, args: Dict[str, Any]) -> str:
     )
 
     if classify:
-       return "Classification Succeeded!"
+        return "Classification Succeeded!"
     else:
         return "Classification Failed!"
 
@@ -172,7 +171,7 @@ def test_module(client: Client, api_key, scopes) -> str:
     return "ok"
 
 
-def fetch_incidents(client: Client, last_run: Dict[str, Any]) -> List:
+def fetch_incidents(client: Client, last_run: Dict[str, Any]):
     last_run = last_run.get("data", None)
     if last_run is None:
         last_run = set()
@@ -184,17 +183,15 @@ def fetch_incidents(client: Client, last_run: Dict[str, Any]) -> List:
     if not new_incidents:
         new_incidents = set()
 
-    incidents = []
     incidents = set(new_incidents) - last_run
 
     for incident in incidents:
         data = client.get_incident(incident)
-        json_data = json.dumps(data)
-        incident_name = "Ironscales incident : IS-%s" % incident
+        incident_name = f"Ironscales incident: IS-{incident}"
         incident = {
             "name": incident_name,
-            "occurred": json_data.get("first_reported_date"),
-            "rawJSON": json.dumps(json_data),
+            "occurred": data.get("first_reported_date"),
+            "rawJSON": json.dumps(data),
         }
 
         incidents_to_create.append(incident)
@@ -213,13 +210,9 @@ def main():
     base_url = urljoin(demisto.params()["url"], "/appapi")
 
     verify_certificate = not demisto.params().get("insecure", False)
-
-    # How many time before the first fetch to retrieve incidents
-
     proxy = demisto.params().get("proxy", False)
 
     demisto.debug(f"Command being called is {demisto.command()}")
-
 
     try:
         client = Client(

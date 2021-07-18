@@ -9,7 +9,6 @@ This integration was integrated and tested with version xx of Ironscales
     | **Parameter** | **Required** |
     | --- | --- |
     | Server URL (e.g. https://appapi.ironscales.com) | True |
-    | Maximum number of incidents per fetch | False |
     | API Key | True |
     | Company Id | True |
     | Scopes (e.g. "company.all") | True |
@@ -34,8 +33,8 @@ Get incident data by ID.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| incident_id | Incident ID. Possible values are: , . | Required | 
-| company_id | Company id - Optional. | Optional | 
+| incident_id | Incident ID. | Required | 
+| company_id | Company ID. | Optional | 
 
 
 #### Context Output
@@ -63,13 +62,6 @@ Get incident data by ID.
 | Ironscales.Incident.themis_verdict | string | Themis verdict. | 
 
 
-#### Command Example
-``` ```
-
-#### Human Readable Output
-
-
-
 ### ironscales-classify-incident
 ***
 Classify incident by ID.
@@ -95,13 +87,6 @@ Classify incident by ID.
 | Ironscales.classifyincidnet | boolean | Classification succeeded | 
 
 
-#### Command Example
-``` ```
-
-#### Human Readable Output
-
-
-
 ### ironscales-get-open-incidents
 ***
 Get open incident ids.
@@ -121,11 +106,4 @@ Get open incident ids.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | Ironscales.OpenIncidents.incident_ids | unknown | List of open incidents IDs. | 
-
-
-#### Command Example
-``` ```
-
-#### Human Readable Output
-
 
