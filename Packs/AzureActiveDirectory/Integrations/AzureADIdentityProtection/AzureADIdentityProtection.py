@@ -8,6 +8,8 @@ OUTPUTS_PREFIX = "AZURE_AD_IP"
 
 urllib3.disable_warnings()
 
+BASE_URL = 'https://graph.microsoft.com/beta'
+
 NEXT_LINK_DESCRIPTION = 'next_link value for listing commands'
 RISKS_HEADERS = ['activity', 'activityDateTime', 'additionalInfo', 'correlationId', 'detectedDateTime',
                  'detectionTimingType', 'id', 'ipAddress', 'lastUpdatedDateTime', 'location', 'requestId',
@@ -27,13 +29,12 @@ class AzureADClient:
         self.ms_client = MicrosoftClient(
             self_deployed=True,
             auth_id=app_id,
-            token_retrieval_url='https://login.microsoftonline.com/organizations/oauth2/v2.0/token',
             grant_type=DEVICE_CODE,
-            base_url='https://graph.microsoft.com/beta',
+            base_url=BASE_URL,
             verify=verify,
             proxy=proxy,
-            resource=f'https://graph.microsoft.com/beta/{resource_group_name}',
-            scope='https://graph.microsoft.com/.default',
+            resource=f'{BASE_URL}/{resource_group_name}',
+            scope='offline_access IdentityRiskEvent.Read.All IdentityRiskyUser.Read.All',
             azure_ad_endpoint=azure_ad_endpoint
         )
         self.subscription_id = subscription_id
