@@ -140,17 +140,20 @@ class AzureADClient:
                                                       risk_detail: Optional[str] = None,
                                                       user_principal_name: Optional[str] = None) -> CommandResults:
 
-        headers = ['id', 'requestId', 'correlationId', 'riskEventType', 'riskState', 'riskLevel', 'riskDetail',
-                   'source', 'detectionTimingType', 'activity', 'tokenIssuerType', 'ipAddress', 'location',
-                   'activityDateTime', 'detectedDateTime', 'lastUpdatedDateTime', 'userId', 'userDisplayName',
-                   'userPrincipalName', 'additionalInfo']
+        headers = [
+            'id', 'requestId', 'correlationId', 'riskEventType', 'riskState', 'riskLevel', 'riskDetail',
+            'source', 'detectionTimingType', 'activity', 'tokenIssuerType', 'ipAddress', 'location',
+            'activityDateTime', 'detectedDateTime', 'lastUpdatedDateTime', 'userId', 'userDisplayName',
+            'userPrincipalName', 'additionalInfo'
+        ]
 
-        filter_arguments = {'riskLastUpdatedDateTime': updated_time,
-                            'riskLevel': risk_level,
-                            'riskState': risk_state,
-                            'riskDetail': risk_detail,
-                            'userPrincipalName': user_principal_name
-                            }
+        filter_arguments = {
+            'riskLastUpdatedDateTime': updated_time,
+            'riskLevel': risk_level,
+            'riskState': risk_state,
+            'riskDetail': risk_detail,
+            'userPrincipalName': user_principal_name
+        }
         return self.query_list(headers=headers,
                                limit=limit,
                                filter_expression=filter_expression,
@@ -223,11 +226,11 @@ def main() -> None:
         elif command == 'azure-ad-identity-protection-risky-user-list':
             return_results(azure_ad_identity_protection_risky_users_list_command(client, **args))
         elif command == 'azure-ad-identity-protection-risky-user-history-list':
-            pass
+            pass  # todo
         elif command == 'azure-ad-identity-protection-risky-user-confirm-compromised':
-            pass
+            pass  # todo
         elif command == 'azure-ad-identity-protection-risky-user-dismiss':
-            pass
+            pass  # todo
 
         # debug commands - todo delete
         elif command == 'get_integration_context':
