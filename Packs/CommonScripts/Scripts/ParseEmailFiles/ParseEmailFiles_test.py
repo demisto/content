@@ -1,6 +1,6 @@
 # coding=utf-8
 from __future__ import print_function
-from ParseEmailFiles import MsOxMessage, main, convert_to_unicode, unfold, handle_msg, get_msg_mail_format, \
+from ParseEmailFiles import MsOxMessage, main, unfold, handle_msg, get_msg_mail_format, \
     data_to_md, create_headers_map, DataModel
 from CommonServerPython import entryTypes
 import demistomock as demisto
@@ -66,7 +66,7 @@ def test_msg_html_with_attachments():
     attach = attachments_list[0]
     assert attach.AttachFilename == 'dummy-attachment.txt'
     assert attach.AttachMimeTag == 'text/plain'
-    assert attach.data == 'This is a text attachment'
+    assert attach.data == b'This is a text attachment'
 
 
 def test_msg_utf_encoded_subject():
@@ -306,6 +306,7 @@ def test_eml_utf_text(mocker):
     assert len(results) == 1
     assert results[0]['Type'] == entryTypes['note']
     assert results[0]['EntryContext']['Email']['Subject'] == 'Test UTF Email'
+    assert 'עברית' in results[0]['EntryContext']['Email']['Text']
 
 
 def test_eml_utf_text_with_bom(mocker):
@@ -398,22 +399,6 @@ def test_email_with_special_character(mocker):
     assert results[0]['EntryContext']['Email']['Subject'] == 'Hello dear friend'
 
 
-@pytest.mark.parametrize('encoded_subject, decoded_subject', [
-    (
-        '[TESTING] =?utf-8?q?=F0=9F=94=92_=E2=9C=94_Votre_colis_est_disponible_chez_votre_co?= =?utf-8?q?mmer=C3=A7ant_Pickup_!?=',  # noqa E501
-        '[TESTING]\xf0\x9f\x94\x92 \xe2\x9c\x94 Votre colis est disponible chez votre commer\xc3\xa7ant Pickup !'
-    ),
-    (
-        'This =?UTF-8?B?VGVzdMKu?= passes',
-        'This Test® passes'
-    ),
-])
-def test_utf_subject_convert(encoded_subject, decoded_subject):
-    decoded = convert_to_unicode(encoded_subject)
-    assert decoded == decoded_subject
-    assert 'utf-8' not in decoded
-
-
 def test_unfold():
     assert unfold('test\n\tthis') == 'test this'
     assert unfold('test\r\n\tthis') == 'test this'
@@ -481,9 +466,7 @@ def test_email_raw_headers_from_is_cyrillic_characters(mocker):
 
 
 def test_eml_contains_eml_with_status(mocker):
-    subject = '=?iso-8859-7?B?Rlc6IEZPT0RMSU5LINDLx9HZzMc=?='  # disable-secrets-detection
-    decoded = convert_to_unicode(subject)
-    subject_attach = decoded.decode('utf-8')
+    subject_attach = '=?iso-8859-7?B?Rlc6IEZPT0RMSU5LINDLx9HZzMc=?='  # disable-secrets-detection
     mocker.patch.object(demisto, 'args', return_value={'entryid': 'test'})
     mocker.patch.object(demisto, 'executeCommand', side_effect=exec_command_for_file('ParseEmailFiles-test-emls.eml'))
     mocker.patch.object(demisto, 'results')
@@ -571,6 +554,23 @@ def test_smime_msg(mocker):
     assert results[0]['EntryContext']['Email']['Subject'] == 'test'
 
 
+def test_rtf_msg(mocker):
+    info = 'CDFV2 Microsoft Outlook Message'
+    mocker.patch.object(demisto, 'args', return_value={'entryid': 'test'})
+    mocker.patch.object(demisto, 'executeCommand', side_effect=exec_command_for_file('msg_with_rtf_compressed.msg', info=info))
+    mocker.patch.object(demisto, 'results')
+    # validate our mocks are good
+    assert demisto.args()['entryid'] == 'test'
+    main()
+    # assert demisto.results.call_count == 1
+    # call_args is tuple (args list, kwargs). we only need the first one
+    results = demisto.results.call_args[0]
+    assert len(results) == 1
+    assert results[0]['Type'] == entryTypes['note']
+    assert '<html xmlns:v="urn:schemas-microsoft-com:vml"' in results[0]['EntryContext']['Email']['HTML']
+    assert 'src="data:image/png;base64, '
+
+
 def test_msg_headers_map():
     email_data, ignore = handle_msg('test_data/utf_subject.msg', 'utf_subject.msg')
     assert '?utf-8' not in email_data['Subject']
@@ -580,17 +580,17 @@ def test_msg_headers_map():
     assert 47 == len(email_data['HeadersMap'])
     assert isinstance(email_data['HeadersMap']['Received'], list)
     assert 8 == len(email_data['HeadersMap']['Received'])
-    assert '1; DM6PR11MB2810; 31:tCNnPn/K8BROQtLwu3Qs1Fz2TjDW+b7RiyfdRvmvCG+dGRQ08+3CN4i8QpLn2o4' \
+    assert '1;DM6PR11MB2810;31:tCNnPn/K8BROQtLwu3Qs1Fz2TjDW+b7RiyfdRvmvCG+dGRQ08+3CN4i8QpLn2o4' \
            in email_data['HeadersMap']['X-Microsoft-Exchange-Diagnostics'][2]
-    assert '2eWTrUmQCI=; 20:7yMOvCHfrNUNaJIus4SbwkpcSids8EscckQZzX/oGEwux6FJcH42uCQd9tNH8gmDkvPw' \
+    assert '2eWTrUmQCI=;20:7yMOvCHfrNUNaJIus4SbwkpcSids8EscckQZzX/oGEwux6FJcH42uCQd9tNH8gmDkvPw' \
            in email_data['HeadersMap']['X-Microsoft-Exchange-Diagnostics'][2]
     assert 'text/plain' in email_data['Format']
 
 
 def test_parse_body_with_russian_language():
     email_data, ignore = handle_msg('test_data/Phishing_TEST.msg', 'Phishing_TEST.msg')
-    assert str(email_data['Text']).startswith('\xd0\xa3')
-    assert str(email_data['HTML']).startswith('\xd0\xa3')
+    assert str(email_data['Text']).startswith('Уважаемые коллеги')
+    assert "<span style='mso-fareast-language:RU'>Уважаемые" in str(email_data['HTML'])
 
 
 def test_unknown_file_type(mocker):
@@ -900,12 +900,15 @@ def test_double_dots_removed(mocker):
     Then:
         replace the two dots with one and test that `part.get_payload()` decodes it correctly.
     """
-    import ParseEmailFiles as pef
     mocker.patch.object(demisto, 'args', return_value={'entryid': 'test'})
     mocker.patch.object(demisto, 'executeCommand', side_effect=exec_command_for_file('multiple_to_cc.eml'))
-    mocker.patch.object(pef, 'get_utf_string')
+    mocker.patch.object(demisto, 'results')
     main()
-    assert 'http://schemas.microsoft.com/office/2004/12/omml' in pef.get_utf_string.mock_calls[0][1][0]
+
+    results = demisto.results.call_args[0]
+    assert len(results) == 1
+    assert 'http://schemas.microsoft.com/office/2004/12/omml' in results[0]['EntryContext']['Email']['HTML']
+    # assert 'http://schemas.microsoft.com/office/2004/12/omml' in pef.get_utf_string.mock_calls[0][1][0]
 
 
 def test_only_parts_of_object_email_saved(mocker):
@@ -957,10 +960,10 @@ def test_pkcs7_mime(mocker):
 
 
 def test_PtypString():
-    data_value = DataModel.PtypString('IPM.Note')
+    data_value = DataModel.PtypString(b'IPM.Note')
     assert data_value == u'IPM.Note'
 
-    data_value = DataModel.PtypString('I\x00P\x00M\x00.\x00N\x00o\x00t\x00e\x00')
+    data_value = DataModel.PtypString(b'I\x00P\x00M\x00.\x00N\x00o\x00t\x00e\x00')
     assert data_value == u'IPM.Note'
 
     data_value = DataModel.PtypString(b'e\x9c\xe6\xb9pe')
