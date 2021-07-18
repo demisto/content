@@ -1,7 +1,6 @@
 PowerShell Remoting is a comprehensive built-in remoting subsystem that is a part of Microsoft's native Windows management framework (WMF) and Windows remote management (WinRM).
 This feature allows you to handle most remoting tasks in any configuration you might encounter by creating a remote PowerShell session to Windows hosts and executing commands in the created session.
 The integration includes out-of-the-box commands which supports agentless forensics for remote hosts.
-This integration was integrated and tested with version xx of PowerShell Remoting
 
 ## Configure PowerShell Remoting on Cortex XSOAR
 
