@@ -441,7 +441,17 @@ def main():
         if demisto.command() == 'fetch-indicators':
             indicators_batch = fetch_indicators_command(client, client.indicator_type)
             for indicators in indicators_batch:
-                demisto.createIndicators(indicators)
+                non_duplicates_dict: Dict[str, Dict] = {}
+                for indicator in indicators:
+                    # remove duplicates due to performance issue -
+                    # https://github.com/demisto/etc/issues/25033
+                    indicator_value = indicator.get("value")
+                    if indicator_value:
+                        # each value is added to the dict only ones
+                        if not non_duplicates_dict.get(str(indicator_value).lower()):
+                            non_duplicates_dict[str(indicator_value.lower())] = indicator
+                unique_indicators_list = list(non_duplicates_dict.values())
+                demisto.createIndicators(unique_indicators_list)
         else:
             readable_output, outputs, raw_response = commands[command](client, demisto.args())  # type:ignore
             return_outputs(readable_output, outputs, raw_response)
