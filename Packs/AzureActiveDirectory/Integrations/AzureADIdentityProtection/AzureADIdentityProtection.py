@@ -218,7 +218,7 @@ def main() -> None:
             return_results(reset_auth())
 
         # actual commands
-        elif command == 'azure-ad-identity-protection-list-risks':
+        elif command == 'azure-ad-identity-protection-risks-list':
             return_results(azure_ad_identity_protection_risk_detection_list_command(client, **args))
         elif command == 'azure-ad-identity-protection-risky-user-list':
             return_results(azure_ad_identity_protection_risky_users_list_command(client, **args))

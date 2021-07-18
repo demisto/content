@@ -111,7 +111,7 @@ script:
     deprecated: false
     description: Retrieve the properties of a collection of riskDetection objects.
     execution: false
-    name: azure-ad-identity-protection-list-risks
+    name: azure-ad-identity-protection-risks-list
   - arguments:
     - default: false
       description: The date and time that the risky user was last updated
