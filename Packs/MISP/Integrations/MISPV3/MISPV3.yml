@@ -190,9 +190,6 @@ script:
     - contextPath: MISP.Event.OwnerOrganisation.local
       description: Is the owner organization local.
       type: boolean
-    - contextPath: MISP.Event.RelatedEvent.ID
-      description: Event IDs of related events (can be a list).
-      type: string
     - contextPath: MISP.Event.ProposalEmailLock
       description: If email lock proposed.
       type: boolean
@@ -1115,9 +1112,6 @@ script:
     - contextPath: MISP.Event.OwnerOrganisation.local
       description: Is the owner organization local.
       type: boolean
-    - contextPath: MISP.Event.RelatedEvent.ID
-      description: Event IDs of related events (can be a list).
-      type: string
     - contextPath: MISP.Event.ProposalEmailLock
       description: If email lock proposed.
       type: boolean
@@ -1376,9 +1370,6 @@ script:
     - contextPath: MISP.Event.OwnerOrganisation.local
       description: Is the owner organization local.
       type: boolean
-    - contextPath: MISP.Event.RelatedEvent.ID
-      description: Event IDs of related events (can be a list).
-      type: string
     - contextPath: MISP.Event.ProposalEmailLock
       description: If email lock proposed.
       type: boolean
@@ -1499,9 +1490,6 @@ script:
     - contextPath: MISP.Event.OwnerOrganisation.local
       description: Is the owner organization local.
       type: boolean
-    - contextPath: MISP.Event.RelatedEvent.ID
-      description: Event IDs of related events (can be a list).
-      type: string
     - contextPath: MISP.Event.ProposalEmailLock
       description: If email lock proposed.
       type: boolean

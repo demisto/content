@@ -937,13 +937,9 @@ def build_events_search_response(response_object: Union[dict, requests.Response]
         events[i] = {key: events[i].get(key) for key in EVENT_FIELDS if key in events[i]}
         # Remove 'Event' keyword from 'RelatedEvent'
         if events[i].get('RelatedEvent'):
-            events[i]['RelatedEvent'] = [r_event.get('Event') for r_event in events[i].get('RelatedEvent')]
-            # Get only IDs from related event
-            events[i]['RelatedEvent'] = [
-                {
-                    'id': r_event.get('id')
-                } for r_event in events[i].get('RelatedEvent')
-            ]
+            # there is no need in returning related event when searching for an event
+            events[i]['RelatedEvent'] = []
+
         # Build Galaxy
         if events[i].get('Galaxy'):
             events[i]['Galaxy'] = [
