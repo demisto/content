@@ -3,6 +3,13 @@
     "testInterval": 20,
     "tests": [
         {
+            "playbookID": "Base64Decode - Test"
+        },
+        {
+            "playbookID": "SupportMultithreading - Test",
+            "is_mockable": false
+        },
+        {
             "fromversion": "5.0.0",
             "integrations": [
                 "WildFire-v2"
@@ -54,6 +61,12 @@
             "fromversion": "5.0.0"
         },
         {
+            "integrations": "FireEye Central Management",
+            "playbookID": "FireEye Central Management - Test",
+            "fromversion": "5.5.0",
+            "timeout": 500
+        },
+        {
             "integrations": "FireEyeNX",
             "playbookID": "FireEyeNX-Test"
         },
@@ -86,12 +99,14 @@
             "integrations": "SecurityAndCompliance",
             "playbookID": "O365-SecurityAndCompliance-Test",
             "fromversion": "5.5.0",
-            "timeout": 700
+            "memory_threshold": 300,
+            "timeout": 1000
         },
         {
             "integrations": "SecurityAndCompliance",
             "playbookID": "O365-SecurityAndCompliance-ContextResults-Test",
             "fromversion": "5.5.0",
+            "memory_threshold": 250,
             "timeout": 1000
         },
         {
@@ -402,7 +417,8 @@
         {
             "integrations": "Azure Compute v2",
             "playbookID": "Azure Compute - Test",
-            "instance_names": "ms_azure_compute_prod"
+            "instance_names": "ms_azure_compute_prod",
+            "is_mockable": false
         },
         {
             "integrations": "Symantec Data Loss Prevention",
@@ -416,7 +432,8 @@
         {
             "integrations": "Azure Security Center v2",
             "playbookID": "Azure SecurityCenter - Test",
-            "instance_names": "ms_azure_sc_prod"
+            "instance_names": "ms_azure_sc_prod",
+            "is_mockable": false
         },
         {
             "integrations": "Azure Security Center v2",
@@ -453,7 +470,8 @@
         {
             "integrations": "MicrosoftGraphMail",
             "playbookID": "MicrosoftGraphMail-Test_prod",
-            "instance_names": "ms_graph_mail_prod"
+            "instance_names": "ms_graph_mail_prod",
+            "is_mockable": false
         },
         {
             "integrations": "CloudShark",
@@ -558,10 +576,17 @@
             "fromversion": "5.0.0"
         },
         {
+            "integrations": "SlackV3",
+            "playbookID": "SlackV3 TestPB",
+            "timeout": 400,
+            "pid_threshold": 8,
+            "fromversion": "5.5.0"
+        },
+        {
             "integrations": "Cortex XDR - IR",
             "playbookID": "Test XDR Playbook",
             "fromversion": "4.1.0",
-            "timeout": 800
+            "timeout": 1500
         },
         {
             "integrations": "Cortex XDR - IOC",
@@ -822,14 +847,6 @@
             "timeout": 2400
         },
         {
-            "integrations": "QRadar",
-            "playbookID": "test playbook - QRadarCorrelations",
-            "timeout": 2000,
-            "fromversion": "5.0.0",
-            "toversion": "5.9.9",
-            "is_mockable": false
-        },
-        {
             "integrations": "QRadar_v2",
             "playbookID": "test playbook - QRadarCorrelations For V2",
             "timeout": 2600,
@@ -1018,6 +1035,7 @@
         {
             "playbookID": "Test_EDL",
             "integrations": "EDL",
+            "instance_names": "edl_update",
             "fromversion": "5.5.0",
             "pid_threshold": 8
         },
@@ -1492,6 +1510,11 @@
             "fromversion": "5.5.0"
         },
         {
+            "integrations": "GoogleMaps",
+            "playbookID": "GoogleMapsTest",
+            "fromversion": "6.0.0"
+        },
+        {
             "playbookID": "VerifyHumanReadableFormat"
         },
         {
@@ -1740,7 +1763,8 @@
         {
             "integrations": "Microsoft Defender Advanced Threat Protection",
             "playbookID": "Microsoft Defender Advanced Threat Protection - Test prod",
-            "instance_names": "microsoft_defender_atp_prod"
+            "instance_names": "microsoft_defender_atp_prod",
+            "is_mockable": false
         },
         {
             "integrations": "Microsoft Defender Advanced Threat Protection",
@@ -1778,7 +1802,8 @@
         {
             "integrations": "Microsoft Graph",
             "playbookID": "Microsoft Graph Security Test prod",
-            "instance_names": "ms_graph_security_prod"
+            "instance_names": "ms_graph_security_prod",
+            "is_mockable": false
         },
         {
             "integrations": "Microsoft Graph User",
@@ -1788,7 +1813,8 @@
         {
             "integrations": "Microsoft Graph User",
             "playbookID": "Microsoft Graph User - Test",
-            "instance_names": "ms_graph_user_prod"
+            "instance_names": "ms_graph_user_prod",
+            "is_mockable": false
         },
         {
             "integrations": "Microsoft Graph Groups",
@@ -1798,7 +1824,8 @@
         {
             "integrations": "Microsoft Graph Groups",
             "playbookID": "Microsoft Graph Groups - Test prod",
-            "instance_names": "ms_graph_groups_prod"
+            "instance_names": "ms_graph_groups_prod",
+            "is_mockable": false
         },
         {
             "integrations": "Microsoft_Graph_Files",
@@ -1810,7 +1837,8 @@
             "integrations": "Microsoft_Graph_Files",
             "playbookID": "test_MsGraphFiles prod",
             "instance_names": "ms_graph_files_prod",
-            "fromversion": "5.0.0"
+            "fromversion": "5.0.0",
+            "is_mockable": false
         },
         {
             "integrations": "Microsoft Graph Calendar",
@@ -1820,7 +1848,8 @@
         {
             "integrations": "Microsoft Graph Calendar",
             "playbookID": "Microsoft Graph Calendar - Test prod",
-            "instance_names": "ms_graph_calendar_prod"
+            "instance_names": "ms_graph_calendar_prod",
+            "is_mockable": false
         },
         {
             "integrations": "Microsoft Graph Device Management",
@@ -1832,7 +1861,8 @@
             "integrations": "Microsoft Graph Device Management",
             "playbookID": "MSGraph_DeviceManagement_Test_prod",
             "instance_names": "ms_graph_device_management_oproxy_prod",
-            "fromversion": "5.0.0"
+            "fromversion": "5.0.0",
+            "is_mockable": false
         },
         {
             "integrations": "Microsoft Graph Device Management",
@@ -1861,12 +1891,6 @@
             "is_mockable": false
         },
         {
-            "integrations": "QRadar",
-            "playbookID": "test_Qradar",
-            "fromversion": "5.5.0",
-            "is_mockable": false
-        },
-        {
             "integrations": "QRadar_v2",
             "playbookID": "test_Qradar_v2",
             "fromversion": "6.0.0",
@@ -1884,6 +1908,11 @@
             "integrations": "carbonblack-v2",
             "playbookID": "Carbon Black Response Test",
             "fromversion": "5.0.0"
+        },
+        {
+            "integrations": "VMware Carbon Black EDR v2",
+            "playbookID": "Carbon Black Edr - Test",
+            "is_mockable": false
         },
         {
             "integrations": "Cisco Umbrella Investigate",
@@ -1904,7 +1933,7 @@
         },
         {
             "integrations": "AWS - IAM",
-            "playbookID": "d5cb69b1-c81c-4f27-8a40-3106c0cb2620"
+            "playbookID": "AWS - IAM Test Playbook"
         },
         {
             "integrations": "McAfee Active Response",
@@ -1999,10 +2028,6 @@
             "integrations": "Jask",
             "playbookID": "Jask_Test",
             "fromversion": "4.1.0"
-        },
-        {
-            "integrations": "Qualys",
-            "playbookID": "Qualys-Test"
         },
         {
             "integrations": "Whois",
@@ -2232,6 +2257,7 @@
             "integrations": "GooglePubSub",
             "playbookID": "GooglePubSub_Test",
             "nightly": true,
+            "timeout": 500,
             "fromversion": "5.0.0"
         },
         {
@@ -2876,6 +2902,11 @@
             "memory_threshold": 190
         },
         {
+            "integrations": "F5Silverline",
+            "playbookID": "F5Silverline_TestPlaybook",
+            "fromversion": "6.0.0"
+        },
+        {
             "integrations": "Carbon Black Enterprise EDR",
             "playbookID": "Carbon Black Enterprise EDR Test",
             "fromversion": "5.0.0"
@@ -3312,7 +3343,7 @@
             "timeout": 1000
         },
         {
-           "integrations": "HPEArubaClearPass",
+            "integrations": "HPEArubaClearPass",
             "playbookID": "HPEArubaClearPass_TestPlaybook"
         },
         {
@@ -3349,6 +3380,10 @@
             "nightly": true
         },
         {
+	        "integrations": "Trend Micro Deep Security",
+	        "playbookID": "Trend Micro Deep Security - Test"
+	      },
+        {
             "integrations": "Carbon Black Endpoint Standard",
             "playbookID": "carbonBlackEndpointStandardTestPlaybook",
             "fromversion": "5.5.0",
@@ -3357,6 +3392,12 @@
         {
             "integrations": "Proofpoint TAP v2",
             "playbookID": "ProofpointTAP-Test"
+        },
+        {
+            "integrations": "QualysV2",
+            "playbookID": "QualysVulnerabilityManagement-Test",
+            "fromversion": "5.5.0",
+            "timeout": 3000
         },
         {
             "integrations": "ThreatExchange v2",
@@ -3369,9 +3410,23 @@
             "fromversion": "5.5.0"
         },
         {
-            "integrations": "jamf v2",
-            "playbookID": "Jamf_v2_test",
-            "fromversion": "5.5.0"
+            "integrations": "CarbonBlackLiveResponseCloud",
+            "playbookID": "CarbonBlackLiveResponseCloud-Test",
+            "fromversion": "5.5.0",
+            "is_mockable": false
+        },
+        {
+            "playbookID": "EDL Performance Test",
+            "instance_names": "edl_auto",
+            "integrations": [
+                "EDL",
+                "Create-Mock-Feed-Relationships"
+            ],
+            "fromversion": "6.0.0",
+            "timeout": 3500,
+            "memory_threshold": 900,
+            "pid_threshold": 12,
+            "context_print_dt": "EDLHey"
         }
     ],
     "skipped_tests": {
@@ -3382,7 +3437,6 @@
         "Tidy - Test": "Will run it manually.",
         "Protectwise-Test": "Issue 28168",
         "Phishing Classifier V2 ML Test": "Issue 26066",
-        "RedLockTest": "Issue 24600",
         "TestDedupIncidentsPlaybook": "Issue 24344",
         "CreateIndicatorFromSTIXTest": "Issue 24345",
         "Endpoint data collection test": "Uses a deprecated playbook called Endpoint data collection",
@@ -3427,7 +3481,6 @@
         "Carbon Black Enterprise Protection V2 Test": "Issue 32322",
         "Google_Vault-Search_And_Display_Results_test": "Issue 24348",
         "FeedThreatConnect-Test": "Issue 32317",
-        "HelloWorldPremium_Scan-Test": "Issue 32512",
         "Palo_Alto_Networks_Enterprise_DLP - Test": "Issue 32568",
         "JoeSecurityTestDetonation": "Issue 25650",
         "JoeSecurityTestPlaybook": "Issue 25649",
@@ -3436,25 +3489,17 @@
         "Test Playbook McAfee ATD": "Issue 33409",
         "Detonate Remote File From URL -McAfee-ATD - Test": "Issue 33407",
         "Test Playbook McAfee ATD Upload File": "Issue 33408",
-        "Extract Indicators From File - Generic v2 - Test": "Issue 30071",
         "Kenna Test": "Missing data",
         "Trend Micro Apex - Test": "Issue 27280",
-        "Create ServiceNow Ticket and Mirror Test": "Issue 30587",
         "palo_alto_panorama_test_pb": "Issue 34371",
         "Microsoft Defender - ATP - Indicators Test": "Issue 29279",
-        "Active Directory - Get User Manager Details - Test": "Issue 25604",
-        "GSuiteAdmin-Test": "Issue 34784",
         "Test-BPA": "Issue 28406",
         "Test-BPA_Integration": "Issue 28236",
-        "EWS search-mailbox test": "Issue 27943",
         "TestTOPdeskPlaybook": "Issue 35412",
-        "PAN OS EDL Management - Test": "Issue 35652",
         "PAN-OS EDL Setup v3 Test": "Issue 35386",
         "Google-Vault-Generic-Test": "Issue 24347",
-        "FireEyeNX-Test": "Issue 33216",
         "GmailTest": "Issue 27057",
         "Gmail Single User - Test": "Issue 27361",
-        "AWS - EC2 Test Playbook": "Issue 36486",
         "get_file_sample_by_hash_-_cylance_protect_-_test": "Issue 28823",
         "Carbon Black Enterprise EDR Test": "Issue 29775",
         "VirusTotal (API v3) Detonate Test": "Issue 36004",
@@ -3466,11 +3511,15 @@
         "Centreon-Test-Playbook": "Issue 37022",
         "PAN-OS - Block URL - Custom URL Category Test": "Issue 37024",
         "Service Desk Plus - Generic Polling Test": "Issue 30798",
-        "TestEmailRepIOPlaybook": "Issue 33219",
         "get_original_email_-_ews-_test": "Issue 27571",
         "PANW Threat Vault - Signature Search - Test": "Issue 30930",
         "TAXII_Feed_Test": "Issue 37588",
-        "Git_Integration-Test": "Issue 37800"
+        "Trend Micro Deep Security - Test": "outsourced",
+        "Microsoft Teams - Test": "Issue 38263",
+        "QualysVulnerabilityManagement-Test": "Issue 38640",
+        "test playbook - QRadarCorrelations": "Issue 38639",
+        "EWS Extension: Powershell Online V2 Test": "Issue 39008",
+        "O365 - EWS - Extension - Test": "Issue 39008"
     },
     "skipped_integrations": {
 
@@ -3500,7 +3549,6 @@
         "Nessus": "No instance",
         "Cisco CloudLock": "No instance",
         "Vectra v2": "No instance",
-        "AWS - IAM": "Issue 21401",
         "GoogleCloudSCC": "No instance, outsourced",
         "FortiGate": "License expired, and not going to get one (issue 14723)",
         "Attivo Botsink": "no instance, not going to get it",
@@ -3560,11 +3608,9 @@
         "Infoblox": "Unstable instance, issue 25651",
 
         "_comment3": "~~~ QUOTA ISSUES ~~~",
-        "XFE_v2": "Required proper instance, otherwise we get quota errors",
         "Lastline": "issue 20323",
         "Google Resource Manager": "Cannot create projects because have reached allowed quota.",
         "Looker": "Warehouse 'DEMO_WH' cannot be resumed because resource monitor 'LIMITER' has exceeded its quota.",
-        "Ipstack": "Issue 26266",
 
         "_comment4": "~~~ OTHER ~~~",
         "Pentera": "authentication method will not work with testing",
@@ -3615,6 +3661,7 @@
         "SplunkPy": "we have multiple instances with same test playbook, mock recording are per playbook so it keeps failing the playback step",
         "mysql": "Does not use http",
         "SlackV2": "Integration requires SSL",
+        "SlackV3": "Integration requires SSL",
         "Whois": "Mocks does not support sockets",
         "Panorama": "Exception: Proxy process took to long to go up. https://circleci.com/gh/demisto/content/24826",
         "Image OCR": "Does not perform network traffic",
@@ -3678,12 +3725,15 @@
         "EWSO365": "oproxy dependent",
         "MISP V2": "Cleanup process isn't performed as expected.",
         "Azure Network Security Groups": "Has a command that sends parameters in the path",
-        "GitHub": "Cannot use proxy"
+        "GitHub": "Cannot use proxy",
+        "LogRhythm": "Cannot use proxy",
+        "Create-Mock-Feed-Relationships": "recording is redundant for this integration"
     },
     "parallel_integrations": [
         "AWS - EC2",
         "Amazon DynamoDB",
         "AWS - ACM",
+        "AWS - Security Hub",
         "Cryptocurrency",
         "SNDBOX",
         "Whois",
@@ -3728,7 +3778,12 @@
         "McAfee DXL",
         "GCP Whitelist Feed",
         "Cortex Data Lake",
-        "Mail Listener v2"
+        "Mail Listener v2",
+        "EDL",
+        "Create-Mock-Feed-Relationships"
+    ],
+    "private_tests": [
+        "HelloWorldPremium_Scan-Test"
     ],
     "docker_thresholds": {
 
@@ -3768,11 +3823,14 @@
                 "memory_threshold": 140
             },
             "demisto/powershell-ubuntu": {
-                "pid_threshold": 40,
+                "pid_threshold": 45,
                 "memory_threshold": 200
             },
             "demisto/boto3": {
                 "memory_threshold": 90
+            },
+            "demisto/flask-nginx": {
+                "pid_threshold": 11
             }
         }
     }
