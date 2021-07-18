@@ -162,6 +162,25 @@ class AzureADClient:
                                url_suffix='RiskyUsers',
                                filter_arguments=filter_arguments)
 
+    def azure_ad_identity_protection_risky_users_history_list(self,
+                                                              limit: int = LIMIT_DEFAULT,
+                                                              risky_user_id: Optional[str] = None,
+                                                              filter_expression: Optional[str] = None,
+                                                              next_link: Optional[str] = None) -> CommandResults:
+
+        headers = [
+            'id', 'idDeleted', 'isGuest', 'isProcessing',
+            'riskLevel', 'riskState', 'riskDetail', 'riskLastUpdatedDateTime',
+            'userDisplayName', 'userPrincipalName', 'userId',
+            'initiatedBy', 'activity'
+        ]
+
+        filter_arguments = {}
+        return self.query_list(headers=headers, limit=limit, filter_expression=filter_expression,
+                               next_link=next_link, human_readable_header=f'Risky user history for {risky_user_id}',
+                               url_suffix=f'RiskyUsers/{risky_user_id}/history',
+                               filter_arguments=filter_arguments)
+
 
 def azure_ad_identity_protection_risk_detection_list_command(client: AzureADClient, **kwargs):
     return client.azure_ad_identity_protection_risk_detection_list(**kwargs)
@@ -169,6 +188,10 @@ def azure_ad_identity_protection_risk_detection_list_command(client: AzureADClie
 
 def azure_ad_identity_protection_risky_users_list_command(client: AzureADClient, **kwargs):
     return client.azure_ad_identity_protection_risky_users_list(**kwargs)
+
+
+def azure_ad_identity_protection_risky_users_history_list_command(client: AzureADClient, **kwargs):
+    return client.azure_ad_identity_protection_risky_users_history_list(**kwargs)
 
 
 def start_auth(client: AzureADClient) -> CommandResults:
@@ -226,7 +249,7 @@ def main() -> None:
         elif command == 'azure-ad-identity-protection-risky-user-list':
             return_results(azure_ad_identity_protection_risky_users_list_command(client, **args))
         elif command == 'azure-ad-identity-protection-risky-user-history-list':
-            pass  # todo
+            return_results(azure_ad_identity_protection_risky_users_history_list_command(client, **args))
         elif command == 'azure-ad-identity-protection-risky-user-confirm-compromised':
             pass  # todo
         elif command == 'azure-ad-identity-protection-risky-user-dismiss':
