@@ -183,9 +183,9 @@ def is_termination_event(workday_user, demisto_user, deactivation_date_field, fi
 
 def is_display_name_already_taken(demisto_user, workday_user, display_name_to_user_profile):
     user_display_name = workday_user.get(DISPLAY_NAME_FIELD)
-    demisto_user_by_display_name = display_name_to_user_profile.get(user_display_name)
+    demisto_users_by_display_name = display_name_to_user_profile.get(user_display_name)
 
-    if demisto_user_by_display_name is None:
+    if demisto_users_by_display_name is None:
         return False
 
     if demisto_user is None:
@@ -194,13 +194,23 @@ def is_display_name_already_taken(demisto_user, workday_user, display_name_to_us
                       f'Please review the incident.')
         return True
 
-    if demisto_user_by_display_name.get(EMPLOYEE_ID_FIELD) != demisto_user.get(EMPLOYEE_ID_FIELD) \
-            and demisto_user_by_display_name.get(AD_ACCOUNT_STATUS_FIELD).lower() != 'terminated':
+    display_name_is_taken_by_another_user = False
+    is_display_name_change = True
+
+    for user in demisto_users_by_display_name:
+        if user.get(EMPLOYEE_ID_FIELD) == demisto_user.get(EMPLOYEE_ID_FIELD):
+            # user already exists with this display name in XSOAR
+            is_display_name_change = False
+
+        if user.get(EMPLOYEE_ID_FIELD) != demisto_user.get(EMPLOYEE_ID_FIELD) \
+                and user.get(AD_ACCOUNT_STATUS_FIELD).lower() != 'terminated':
+            display_name_is_taken_by_another_user = True
+
+    if display_name_is_taken_by_another_user and is_display_name_change:
         demisto.debug(f'Detected an event for user with email address '
                       f'{workday_user.get(EMAIL_ADDRESS_FIELD)}, but its display name is already taken. '
                       f'Please review the incident.')
         return True
-
     return False
 
 
@@ -281,7 +291,7 @@ def get_all_user_profiles():
             display_name = user_profile.get(DISPLAY_NAME_FIELD)
             employee_id = user_profile.get(EMPLOYEE_ID_FIELD)
             email = user_profile.get(EMAIL_ADDRESS_FIELD)
-            display_name_to_user_profile[display_name] = user_profile
+            display_name_to_user_profile.setdefault(display_name, []).append(user_profile)
             employee_id_to_user_profile[employee_id] = user_profile
             email_to_user_profile[email] = user_profile
 
@@ -422,7 +432,7 @@ def get_event_details(entry, workday_user, demisto_user, days_before_hire_to_syn
         return None
 
     if is_display_name_already_taken(demisto_user, workday_user, display_name_to_user_profile) \
-            and event_type != TERMINATE_USER_EVENT_TYPE:
+            and event_type in [NEW_HIRE_EVENT_TYPE, REHIRE_USER_EVENT_TYPE, UPDATE_USER_EVENT_TYPE]:
         event_details = f'Detected an "{event_type}" event, but display name already exists. Please review.\n' \
                         f'{changed_fields}'
         event_type = DEFAULT_INCIDENT_TYPE
