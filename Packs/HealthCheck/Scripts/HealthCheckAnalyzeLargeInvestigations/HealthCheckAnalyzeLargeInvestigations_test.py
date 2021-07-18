@@ -1,3 +1,5 @@
+import pytest
+
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
@@ -16,17 +18,22 @@ LARGEST_INCIDENTS = [
         'Size(MB)': 1,
         'AmountOfEntries': 1000,
     },
+    {
+        'Size(MB)': 5,
+        'AmountOfEntries': 10,
+    },
+]
+EXPECTED_FORMATTED_INCIDENTS = [
+    {'size': '50 MB', 'amountofentries': 100},
+    {'size': '500 MB', 'amountofentries': 100},
+    {'size': '1 MB', 'amountofentries': 1000},
+    {'size': '5 MB', 'amountofentries': 10},
 ]
 
 
-def test_format_dict_keys():
-    given = LARGEST_INCIDENTS
-    expected = [
-        {'size': '50 MB', 'amountofentries': 100},
-        {'size': '500 MB', 'amountofentries': 100},
-        {'size': '1 MB', 'amountofentries': 1000},
-    ]
-    output = HealthCheckAnalyzeLargeInvestigations.format_dict_keys(given)
+@pytest.mark.parametrize("incident,expected", zip(LARGEST_INCIDENTS, EXPECTED_FORMATTED_INCIDENTS))
+def test_format_dict_keys(incident, expected):
+    output = HealthCheckAnalyzeLargeInvestigations.format_dict_keys(incident)
 
     assert output == expected
 
@@ -40,7 +47,6 @@ def test_main(mocker):
             'total': len(LARGEST_INCIDENTS),
         }
     }])
-    # mocker.patch.object(demisto, 'executeCommand', return_value=LARGEST_INCIDENTS)
     args = {'Thresholds': {
         'numberofincidentswithmorethan500entries': 0,
         'numberofincidentsbiggerthan10mb': 0,
@@ -53,6 +59,6 @@ def test_main(mocker):
 
     # Assert
     assert len(result.outputs) == 3
-    assert set_incident_fields['healthchecknumberofinvestigationsbiggerthan1mb'] == 3
+    assert set_incident_fields['healthchecknumberofinvestigationsbiggerthan1mb'] == 2
     assert set_incident_fields['healthchecknumberofinvestigationsbiggerthan10mb'] == 2
     assert set_incident_fields['healthchecknumberofinvestigationswithmorethan500entries'] == 1
