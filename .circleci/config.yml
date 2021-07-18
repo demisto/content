@@ -229,7 +229,6 @@ references:
         fi
         echo "Hello!"
         pip3 install git+https://github.com/demisto/demisto-sdk@test_uploadflow
-        workon demisto-sdk-dev
         demisto-sdk --version
         echo "Hello!!"
         echo "========== Build Parameters =========="
