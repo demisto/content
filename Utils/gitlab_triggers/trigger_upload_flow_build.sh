@@ -14,7 +14,7 @@ if [ "$#" -lt "1" ]; then
   exit 1
 fi
 
-branch="$(git branch  --show-current)"
+_branch="$(git branch  --show-current)"
 _bucket="marketplace-dist-dev"
 _bucket_upload="true"
 _slack_channel="dmst-bucket-upload"
@@ -78,7 +78,7 @@ fi
 
 source Utils/gitlab_triggers/trigger_build_url.sh
 
-curl --request POST \
+curl -k -v --request POST \
   --form token="${_ci_token}" \
   --form ref="${_branch}" \
   --form "${_variables}" \
