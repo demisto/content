@@ -1,7 +1,7 @@
-id: 898afe05-61af-4726-818b-897d9dead036
-version: 34
+id: Google Drive Permissions Test
+version: -1
 vcShouldKeepItemLegacyProdMachine: false
-name: test_playbook_permissions
+name: Google Drive Permissions Test
 starttaskid: "0"
 tasks:
   "0":
