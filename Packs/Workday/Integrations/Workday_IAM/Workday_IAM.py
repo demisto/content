@@ -281,9 +281,9 @@ def get_old_user_data_if_email_changed(workday_user, email_to_user_profile, empl
 
 def get_all_user_profiles():
     query = f'type:\"{USER_PROFILE_INDICATOR}\"'
-    display_name_to_user_profile = {}
-    employee_id_to_user_profile = {}
-    email_to_user_profile = {}
+    display_name_to_user_profile: Dict[str, List[Dict]] = {}
+    employee_id_to_user_profile: Dict[str, Dict] = {}
+    email_to_user_profile: Dict[str, Dict] = {}
 
     def handle_batch(user_profiles):
         for user_profile in user_profiles:
