@@ -1864,7 +1864,7 @@ def splunk_submit_event_hec_command():
 def splunk_edit_notable_event_command(service, auth_token):
     params = demisto.params()
     base_url = 'https://' + params['host'] + ':' + params['port'] + '/'
-    sessionKey = service.token if not auth_token else None
+    session_key = service.token if not auth_token else None
 
     eventIDs = None
     if demisto.get(demisto.args(), 'eventIDs'):
@@ -1878,7 +1878,9 @@ def splunk_edit_notable_event_command(service, auth_token):
                                         comment=demisto.get(demisto.args(), 'comment'), status=status,
                                         urgency=demisto.get(demisto.args(), 'urgency'),
                                         owner=demisto.get(demisto.args(), 'owner'), eventIDs=eventIDs,
-                                        auth_token=auth_token, sessionKey=sessionKey)
+                                        auth_token=auth_token, sessionKey=session_key)
+    demisto.debug('####')
+    demisto.debug(response_info)
     if 'success' not in response_info or not response_info['success']:
         demisto.results({'ContentsFormat': formats['text'], 'Type': entryTypes['error'],
                          'Contents': "Could not update notable "
