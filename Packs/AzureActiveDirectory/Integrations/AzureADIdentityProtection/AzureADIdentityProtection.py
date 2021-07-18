@@ -9,10 +9,6 @@ urllib3.disable_warnings()
 OUTPUTS_PREFIX = "AZURE_AD_IP"
 BASE_URL = 'https://graph.microsoft.com/beta'
 NEXT_LINK_DESCRIPTION = 'next_link value for listing commands'
-RISKS_HEADERS = ['activity', 'activityDateTime', 'additionalInfo', 'correlationId', 'detectedDateTime',
-                 'detectionTimingType', 'id', 'ipAddress', 'lastUpdatedDateTime', 'location', 'requestId',
-                 'riskDetail', 'riskEventType', 'riskLevel', 'riskState', 'riskType', 'source', 'tokenIssuerType',
-                 'userDisplayName', 'userId', 'userPrincipalName']
 
 
 class AzureADClient:
@@ -45,50 +41,6 @@ class AzureADClient:
 
     def http_request(self, **kwargs):
         return self.ms_client.http_request(**kwargs)
-
-    def azure_ad_identity_protection_risk_detection_list(self,
-                                                         limit: int = LIMIT_DEFAULT,
-                                                         filter_expression: Optional[str] = None,
-                                                         next_link: Optional[str] = None,
-                                                         user_id: Optional[str] = None,
-                                                         user_principal_name: Optional[str] = None,
-                                                         country: Optional[str] = None) -> CommandResults:
-        if next_link:
-            next_link = next_link.replace('%20', ' ')  # OData syntax can't handle '%' character
-            raw_response = self.http_request(method='GET', full_url=next_link)
-
-        else:
-            params: Dict[str, Any] = {'$top': limit}
-
-            if filter_expression is None:
-                filter_expression = ' and '.join([f'{key} eq \'{value}\'' for key, value in {
-                    'userId': user_id,
-                    'userPrincipalName': user_principal_name,
-                    'location/countryOrRegion': country
-                }.items() if value is not None])
-
-            params['$filter'] = filter_expression
-            remove_nulls_from_dictionary(params)
-            raw_response = self.http_request(method='GET', url_suffix='riskDetections', params=params)
-
-        risks = raw_response.get('value', [])
-        readable_output = tableToMarkdown(f'Risk List ({len(risks)} results)',
-                                          risks,
-                                          headers=RISKS_HEADERS,
-                                          headerTransform=pascalToSpace)
-        outputs = {'risks': risks}
-
-        # removing whitespaces so they aren't mistakenly considered as argument separators in CLI
-        next_link = raw_response.get('nextLink', '').replace(' ', '%20')
-        if next_link:
-            next_link_key = f'{OUTPUTS_PREFIX}.NextLink(val.Description == "{NEXT_LINK_DESCRIPTION}")'
-            next_link_value = {'Description': NEXT_LINK_DESCRIPTION, 'URL': next_link}
-            outputs[next_link_key] = next_link_value  # type: ignore
-
-        return CommandResults(outputs_prefix=OUTPUTS_PREFIX,
-                              outputs=outputs,
-                              readable_output=readable_output,
-                              raw_response=raw_response)
 
     def query_list(self,
                    url_suffix: str,
@@ -133,6 +85,32 @@ class AzureADClient:
                               readable_output=readable_output,
                               raw_response=raw_response)
 
+    def azure_ad_identity_protection_risk_detection_list(self,
+                                                         limit: int = LIMIT_DEFAULT,
+                                                         filter_expression: Optional[str] = None,
+                                                         next_link: Optional[str] = None,
+                                                         user_id: Optional[str] = None,
+                                                         user_principal_name: Optional[str] = None,
+                                                         country: Optional[str] = None) -> CommandResults:
+        return self.query_list(
+            url_suffix='riskDetections',
+            limit=limit,
+            filter_expression=filter_expression,
+            next_link=next_link,
+            filter_arguments={
+                'userId': user_id,
+                'userPrincipalName': user_principal_name,
+                'location/countryOrRegion': country
+            },
+            headers=[
+                'activity', 'activityDateTime', 'additionalInfo', 'correlationId', 'detectedDateTime',
+                'detectionTimingType', 'id', 'ipAddress', 'lastUpdatedDateTime', 'location', 'requestId',
+                'riskDetail', 'riskEventType', 'riskLevel', 'riskState', 'riskType', 'source', 'tokenIssuerType',
+                'userDisplayName', 'userId', 'userPrincipalName'
+            ],
+            human_readable_header="Risks"
+        )
+
     def azure_ad_identity_protection_risky_users_list(self,
                                                       limit: int = LIMIT_DEFAULT,
                                                       filter_expression: Optional[str] = None,
@@ -167,7 +145,7 @@ class AzureADClient:
 
     def azure_ad_identity_protection_risky_users_history_list(self,
                                                               limit: int = LIMIT_DEFAULT,
-                                                              risky_user_id: Optional[str] = None,
+                                                              user_id: Optional[str] = None,
                                                               filter_expression: Optional[str] = None,
                                                               next_link: Optional[str] = None) -> CommandResults:
 
@@ -180,8 +158,8 @@ class AzureADClient:
 
         filter_arguments = {}
         return self.query_list(headers=headers, limit=limit, filter_expression=filter_expression,
-                               next_link=next_link, human_readable_header=f'Risky user history for {risky_user_id}',
-                               url_suffix=f'RiskyUsers/{risky_user_id}/history',
+                               next_link=next_link, human_readable_header=f'Risky user history for {user_id}',
+                               url_suffix=f'RiskyUsers/{user_id}/history',
                                filter_arguments=filter_arguments)
 
     def azure_ad_identity_protection_risky_users_confirm_compromised(self, user_ids: Union[str, List[str]]):

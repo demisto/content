@@ -199,15 +199,13 @@ script:
     description: Retrieve the properties of a collection of riskDetection objects.
     execution: false
     name: azure-ad-identity-protection-risky-user-list
-  - deprecated: false
-    execution: false
-    name: get_integration_context
   - arguments:
       - default: true
         isArray: false
-        name: risky_user_id
+        name: user_id
         required: true
         secret: false
+        description: Unique ID of the user.
     deprecated: false
     description: Get the risk history of a riskyUser resource.
     execution: false
@@ -221,6 +219,7 @@ script:
         secret: false
     deprecated: false
     execution: false
+    description: Confirm one or more riskyUser objects as compromised. This action sets the targeted user's risk level to high.
     name: azure-ad-identity-protection-risky-user-confirm-compromised
   - arguments:
       - default: true
@@ -231,6 +230,7 @@ script:
         secret: false
     deprecated: false
     execution: false
+    description: Dismiss the risk of one or more riskyUser objects. This action sets the targeted user's risk level to none.
     name: azure-ad-identity-protection-risky-user-dismiss
   dockerimage: demisto/crypto:1.0.0.14297
   feed: false
