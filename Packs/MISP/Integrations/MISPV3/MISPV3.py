@@ -1080,7 +1080,9 @@ def remove_tag(demisto_args: dict, is_attribute=False):
     uuid = demisto_args.get('uuid')
     tag = demisto_args.get('tag')
     try:
-        PYMISP.untag(uuid, tag)
+        response = PYMISP.untag(uuid, tag)
+        if response and response.get('errors'):
+            return_error(f'Error in `{demisto.command()}` command: {response}')
     except PyMISPError:
         raise DemistoException("Removing the required tag was failed. Please make sure the UUID and tag exist.")
 
