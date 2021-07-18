@@ -17,31 +17,7 @@
             "script": "",
             "selectValues": null,
             "type": "shortText",
-            "width": 150
-        },
-        {
-            "displayName": "Input or Output",
-            "fieldCalcScript": "",
-            "isDefault": true,
-            "isReadOnly": false,
-            "key": "inputoroutput",
-            "required": false,
-            "script": "",
-            "selectValues": null,
-            "type": "shortText",
-            "width": 150
-        },
-        {
-            "displayName": "Task ID",
-            "fieldCalcScript": "",
-            "isDefault": true,
-            "isReadOnly": false,
-            "key": "taskid",
-            "required": false,
-            "script": "",
-            "selectValues": null,
-            "type": "shortText",
-            "width": 150
+            "width": 120
         },
         {
             "displayName": "Size",
@@ -53,13 +29,34 @@
             "script": "",
             "selectValues": null,
             "type": "shortText",
-            "width": 150
+            "width": 120
+        },
+        {
+            "displayName": "Details",
+            "fieldCalcScript": "",
+            "isDefault": true,
+            "isReadOnly": false,
+            "key": "details",
+            "required": false,
+            "script": "",
+            "selectValues": null,
+            "type": "longText",
+            "width": 120
+        },
+        {
+            "displayName": "Input or Output",
+            "fieldCalcScript": "",
+            "isDefault": true,
+            "isReadOnly": false,
+            "key": "inputoroutput",
+            "required": false,
+            "script": "",
+            "selectValues": null,
+            "type": "shortText",
+            "width": 120
         }
     ],
     "content": true,
-    "defaultRows": [
-        {}
-    ],
     "editForm": true,
     "group": 0,
     "hidden": false,
