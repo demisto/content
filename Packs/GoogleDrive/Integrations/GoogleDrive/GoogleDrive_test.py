@@ -516,7 +516,6 @@ def test_copy_dict_value():
         'key3': 'val3',
     }
 
-    # copy_dict_value(source_dict: dict_1, dest_dict: dict_2, source_dict_key: str, dest_dict_key: str = None):
     assert 'key1' not in dict_2
     copy_dict_value(source_dict=dict_1, dest_dict=dict_2, source_dict_key='key1')
     assert dict_2['key1'] == 'val1'
@@ -617,7 +616,6 @@ def test_drive_get_command_success(mocker_http_request, gsuite_client):
 
     assert result.raw_response == mock_response
 
-    # assert result.readable_output.startswith("### Next Page Token: myNextPageToken")
     assert HR_MESSAGES['LIST_COMMAND_SUCCESS'].format('Drive(s)', 1) in result.readable_output
     assert '17' in result.readable_output
 
@@ -739,7 +737,6 @@ def test_file_get_command_success(mocker_http_request, gsuite_client):
 
     assert result.raw_response == mock_response
 
-    # assert result.readable_output.startswith("### Next Page Token: myNextPageToken")
     assert HR_MESSAGES['LIST_COMMAND_SUCCESS'].format('File(s)', 1) in result.readable_output
     assert '17' in result.readable_output
 
