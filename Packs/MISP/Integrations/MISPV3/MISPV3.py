@@ -62,14 +62,14 @@ PREDEFINED_FEEDS = {
                    'input': 'network'}
 }
 
-THREAT_LEVELS_NUMBERS = {
+THREAT_LEVELS_TO_ID = {
     'high': 1,
     'medium': 2,
     'low': 3,
     'undefined': 4
 }
 
-ENTITIESDICT = {
+MISP_ENTITIES_TO_CONTEXT_DATA = {
     'deleted': 'Deleted',
     'category': 'Category',
     'comment': 'Comment',
@@ -117,13 +117,13 @@ ENTITIESDICT = {
     'last_seen': 'last_seen'
 }
 
-ANALYSIS_NUMBERS = {
+MISP_ANALYSIS_TO_IDS = {
     'initial': 0,
     'ongoing': 1,
     'completed': 2
 }
 
-DISTRIBUTION_NUMBERS = {
+MISP_DISTRIBUTION_TO_IDS = {
     'Your_organisation_only': 0,
     'This_community_only': 1,
     'Connected_communities': 2,
@@ -131,19 +131,19 @@ DISTRIBUTION_NUMBERS = {
     'Inherit_event': 5
 }
 
-SIGHTING_TO_TYPE_MAP = {
+SIGHTING_TO_TYPE_ID = {
     'sighting': 0,
     'false_positive': 1,
     'expiration': 2
 }
 
-SIGHTING_FROM_TYPE_MAP = {
+SIGHTING_TYPE_TO_NAME = {
     '0': 'sighting',
     '1': 'false_positive',
     '2': 'expiration'
 }
 
-DBOT_SCORE_TYPE_MAP = {
+INDICATOR_TYPE_TO_DBOT_SCORE = {
     'FILE': DBotScoreType.FILE,
     'URL': DBotScoreType.URL,
     'DOMAIN': DBotScoreType.DOMAIN,
@@ -331,7 +331,7 @@ def replace_keys(obj_to_build: Union[dict, list, str]) -> Union[dict, list, str]
         return [replace_keys(item) for item in obj_to_build]
     if isinstance(obj_to_build, dict):
         return {
-            (ENTITIESDICT[key] if key in ENTITIESDICT else key): replace_keys(value)
+            (MISP_ENTITIES_TO_CONTEXT_DATA[key] if key in MISP_ENTITIES_TO_CONTEXT_DATA else key): replace_keys(value)
             for key, value in obj_to_build.items()
         }
     return obj_to_build
@@ -485,12 +485,12 @@ def get_new_event(args):
     Create a new MISP event object and set the event's details.
     """
     event = MISPEvent()
-    event.distribution = DISTRIBUTION_NUMBERS[args.get('distribution')]
+    event.distribution = MISP_DISTRIBUTION_TO_IDS[args.get('distribution')]
     threat_level_id_arg = args.get('threat_level_id')
-    event.threat_level_id = THREAT_LEVELS_NUMBERS[
-        threat_level_id_arg] if threat_level_id_arg in THREAT_LEVELS_NUMBERS else threat_level_id_arg
+    event.threat_level_id = THREAT_LEVELS_TO_ID[
+        threat_level_id_arg] if threat_level_id_arg in THREAT_LEVELS_TO_ID else threat_level_id_arg
     analysis_arg = args.get('analysis')
-    event.analysis = ANALYSIS_NUMBERS.get(analysis_arg) if analysis_arg in ANALYSIS_NUMBERS else analysis_arg
+    event.analysis = MISP_ANALYSIS_TO_IDS.get(analysis_arg) if analysis_arg in MISP_ANALYSIS_TO_IDS else analysis_arg
     event.info = args.get('info') if args.get('info') else 'Event from XSOAR'
     event.date = get_time_now()
     event.published = argToBoolean(args.get('published', 'False'))
@@ -532,11 +532,12 @@ def get_valid_distribution(distribution: int):
     if not isinstance(distribution, int):
         if isinstance(distribution, str) and distribution.isdigit():  # type: ignore
             return int(distribution)
-        elif isinstance(distribution, str) and distribution in DISTRIBUTION_NUMBERS:
-            return DISTRIBUTION_NUMBERS[distribution]
+        elif isinstance(distribution, str) and distribution in MISP_DISTRIBUTION_TO_IDS:
+            return MISP_DISTRIBUTION_TO_IDS[distribution]
         else:
             return_error(
-                f"Invalid Distribution. Can be one of the following: {[key for key in DISTRIBUTION_NUMBERS.keys()]}")
+                f"Invalid Distribution. Can be one of the following: "
+                f"{[key for key in MISP_DISTRIBUTION_TO_IDS.keys()]}")
     return distribution
 
 
@@ -625,7 +626,7 @@ def find_reputation_indicator(value, dbot_type, malicious_tag_ids, suspicious_ta
     misp_response = PYMISP.search(value=value, controller='attributes', include_context=True,
                                   include_correlations=True, include_event_tags=True, enforce_warninglist=True,
                                   include_decay_score=True, includeSightings=True)
-    indicator_type = DBOT_SCORE_TYPE_MAP[dbot_type]
+    indicator_type = INDICATOR_TYPE_TO_DBOT_SCORE[dbot_type]
     is_indicator_found = misp_response and misp_response.get('Attribute')
     if is_indicator_found:
         outputs, score, found_tag = parse_response_reputation_command(copy.deepcopy(misp_response), malicious_tag_ids,
@@ -862,7 +863,7 @@ def attribute_response_to_markdown_table(response: dict):
         event = attribute.get('Event', {})
         attribute_tags = [tag.get('Name') for tag in attribute.get('Tag')] if attribute.get(
             'Tag') else None
-        attribute_sightings = [SIGHTING_FROM_TYPE_MAP[sighting.get('Type')] for sighting in
+        attribute_sightings = [SIGHTING_TYPE_TO_NAME[sighting.get('Type')] for sighting in
                                attribute.get('Sighting')] if attribute.get('Sighting') else None
         attribute_highlights.append({
             'Attribute ID': attribute.get('ID'),
@@ -1078,7 +1079,6 @@ def remove_tag(demisto_args: dict, is_attribute=False):
     """
     uuid = demisto_args.get('uuid')
     tag = demisto_args.get('tag')
-
     try:
         PYMISP.untag(uuid, tag)
     except PyMISPError:
@@ -1094,7 +1094,6 @@ def remove_tag(demisto_args: dict, is_attribute=False):
             outputs=build_attributes_search_response(response),
             raw_response=response
         )
-
     # event's uuid
     response = PYMISP.search(uuid=uuid)
     human_readable = f'Tag {tag} has been successfully removed from the event {uuid}'
@@ -1119,12 +1118,11 @@ def add_sighting(demisto_args: dict):
     sighting_args = {
         'id': attribute_id,
         'uuid': attribute_uuid,
-        'type': SIGHTING_TO_TYPE_MAP[sighting_type]
+        'type': SIGHTING_TO_TYPE_ID[sighting_type]
     }
     sigh_obj = MISPSighting()
     sigh_obj.from_dict(**sighting_args)
     PYMISP.add_sighting(sigh_obj, att_id)
-
     human_readable = f'Sighting \'{sighting_type}\' has been successfully added to attribute {att_id}'
     return CommandResults(readable_output=human_readable)
 
@@ -1154,7 +1152,6 @@ def add_events_from_feed(demisto_args: dict, use_ssl: bool, proxies: dict):
         url = PREDEFINED_FEEDS[url].get('url')  # type: ignore
     limit = demisto_args.get('limit')  # type: str
     limit_int = int(limit) if limit.isdigit() else 0
-
     osint_url = f'{url}/manifest.json'
     not_added_counter = 0
     try:
@@ -1178,7 +1175,6 @@ def add_events_from_feed(demisto_args: dict, use_ssl: bool, proxies: dict):
         if not_added_counter:
             human_readable = f'{human_readable}\n' \
                              f'{not_added_counter} events were not added. Might already been added earlier.'
-
         return CommandResults(
             readable_output=human_readable,
             outputs_prefix='MISP.Event',

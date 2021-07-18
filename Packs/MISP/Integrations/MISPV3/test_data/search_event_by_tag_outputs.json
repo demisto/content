@@ -29,11 +29,7 @@
       "UUID": "56c42374-fdb8-4544-a218-41ffc0a8ab16",
       "local": false
     },
-    "RelatedEvent": [
-      {
-        "ID": "148"
-      }
-    ],
+    "RelatedEvent": [],
     "Galaxy": [
       {
         "Name": "Banker",

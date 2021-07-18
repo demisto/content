@@ -605,12 +605,12 @@ def test_build_events_search_response(mocker):
     - Ensure that the output to context data is valid and was parsed correctly.
     """
     mock_misp(mocker)
-    from MISPV3 import build_events_search_response, ENTITIESDICT
+    from MISPV3 import build_events_search_response, EVENT_FIELDS
     search_response = util_load_json("test_data/search_event_by_tag.json")
     search_expected_output = util_load_json("test_data/search_event_by_tag_outputs.json")
     search_outputs = build_events_search_response(search_response)
     for actual_event, expected_event in zip(search_outputs, search_expected_output):
-        for key, event_field in ENTITIESDICT.items():
+        for event_field in EVENT_FIELDS:
             if actual_event.get(event_field):
                 assert actual_event.get(event_field) == expected_event.get(event_field)
 
@@ -628,11 +628,11 @@ def test_build_attributes_search_response(mocker):
     - Ensure that the output to context data is valid and was parsed correctly.
     """
     mock_misp(mocker)
-    from MISPV3 import build_attributes_search_response, ENTITIESDICT
+    from MISPV3 import build_attributes_search_response, ATTRIBUTE_FIELDS
     search_response = util_load_json("test_data/search_attribute_by_type.json")
     search_expected_output = util_load_json("test_data/search_attribute_by_type_outputs.json")
     search_outputs = build_attributes_search_response(search_response)
     for actual_attribute, expected_attribute in zip(search_outputs, search_expected_output):
-        for key, event_field in ENTITIESDICT.items():
+        for event_field in ATTRIBUTE_FIELDS:
             if actual_attribute.get(event_field):
                 assert actual_attribute.get(event_field) == expected_attribute.get(event_field)
