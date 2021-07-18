@@ -495,7 +495,7 @@ def test_flatten_comment_mentioned_user_keys_for_fetch_incident():
 
 def test_copy_dict_value():
     """
-    Scenario: Copy a value from one Dict toi another.
+    Scenario: Copy a value from one Dict to another.
 
     Given:
     - 2 Dicts and 2 keys.
