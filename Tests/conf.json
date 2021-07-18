@@ -1569,7 +1569,8 @@
             "integrations": "SplunkPy",
             "playbookID": "SplunkPy_KV_commands_default_handler",
             "memory_threshold": 200,
-            "instance_names": "use_default_handler"
+            "instance_names": "use_default_handler",
+            "is_mockable": false
         },
         {
             "integrations": "SplunkPy",
@@ -1581,13 +1582,15 @@
             "integrations": "SplunkPy",
             "playbookID": "Splunk-Test_requests_handler",
             "memory_threshold": 500,
-            "instance_names": "use_python_requests_handler"
+            "instance_names": "use_python_requests_handler",
+            "is_mockable": false
         },
         {
             "integrations": "SplunkPy",
             "playbookID": "SplunkPySearch_Test_requests_handler",
             "memory_threshold": 200,
-            "instance_names": "use_python_requests_handler"
+            "instance_names": "use_python_requests_handler",
+            "is_mockable": false
         },
         {
             "integrations": "SplunkPy",
