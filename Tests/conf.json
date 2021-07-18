@@ -576,6 +576,13 @@
             "fromversion": "5.0.0"
         },
         {
+            "integrations": "SlackV3",
+            "playbookID": "SlackV3 TestPB",
+            "timeout": 400,
+            "pid_threshold": 8,
+            "fromversion": "5.5.0"
+        },
+        {
             "integrations": "Cortex XDR - IR",
             "playbookID": "Test XDR Playbook",
             "fromversion": "4.1.0",
@@ -2023,10 +2030,6 @@
             "fromversion": "4.1.0"
         },
         {
-            "integrations": "Qualys",
-            "playbookID": "Qualys-Test"
-        },
-        {
             "integrations": "Whois",
             "playbookID": "whois_test",
             "fromversion": "4.1.0"
@@ -2254,6 +2257,7 @@
             "integrations": "GooglePubSub",
             "playbookID": "GooglePubSub_Test",
             "nightly": true,
+            "timeout": 500,
             "fromversion": "5.0.0"
         },
         {
@@ -3496,7 +3500,6 @@
         "Google-Vault-Generic-Test": "Issue 24347",
         "GmailTest": "Issue 27057",
         "Gmail Single User - Test": "Issue 27361",
-        "AWS - EC2 Test Playbook": "Issue 36486",
         "get_file_sample_by_hash_-_cylance_protect_-_test": "Issue 28823",
         "Carbon Black Enterprise EDR Test": "Issue 29775",
         "VirusTotal (API v3) Detonate Test": "Issue 36004",
@@ -3508,11 +3511,9 @@
         "Centreon-Test-Playbook": "Issue 37022",
         "PAN-OS - Block URL - Custom URL Category Test": "Issue 37024",
         "Service Desk Plus - Generic Polling Test": "Issue 30798",
-        "TestEmailRepIOPlaybook": "Issue 33219",
         "get_original_email_-_ews-_test": "Issue 27571",
         "PANW Threat Vault - Signature Search - Test": "Issue 30930",
         "TAXII_Feed_Test": "Issue 37588",
-        "FireEyeNX-Test": "Issue 33216",
         "Trend Micro Deep Security - Test": "outsourced",
         "Microsoft Teams - Test": "Issue 38263",
         "QualysVulnerabilityManagement-Test": "Issue 38640",
@@ -3660,6 +3661,7 @@
         "SplunkPy": "we have multiple instances with same test playbook, mock recording are per playbook so it keeps failing the playback step",
         "mysql": "Does not use http",
         "SlackV2": "Integration requires SSL",
+        "SlackV3": "Integration requires SSL",
         "Whois": "Mocks does not support sockets",
         "Panorama": "Exception: Proxy process took to long to go up. https://circleci.com/gh/demisto/content/24826",
         "Image OCR": "Does not perform network traffic",

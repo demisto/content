@@ -33,6 +33,7 @@ def test_bad_host_no_ssl(mocker):
     assert 'Failed to access' in err_msg
 
 
+@pytest.mark.filterwarnings("ignore::ResourceWarning")
 def test_bad_ssl(mocker):
     params = BASE_TEST_PARAMS.copy()
     params['server_ip'] = '185.199.108.153'  # disable-secrets-detection
@@ -86,6 +87,7 @@ def ssl_bad_socket_server(port):
         raise
 
 
+@pytest.mark.filterwarnings("ignore::ResourceWarning")
 def test_faulty_server(mocker):
     port = 9638
     t = Thread(target=ssl_bad_socket_server, args=(port,))
