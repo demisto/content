@@ -330,16 +330,6 @@ def set_true_for_empty_dict(d):
                                                                        for key, value in d.items())}
 
 
-# def remove_false_values(dict: Dict[str, Any]) -> List[str]:
-#     ret_value = []
-#
-#     for current_item in dict.keys():
-#         if dict[current_item]:
-#             ret_value.append(current_item)
-#
-#     return ret_value
-
-
 def copy_dict_value(source_dict: Dict[str, Any], dest_dict: Dict[str, Any], source_dict_key: str, dest_dict_key: str = None):
     if not source_dict_key:
         return None
