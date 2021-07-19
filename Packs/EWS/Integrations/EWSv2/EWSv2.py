@@ -1239,7 +1239,7 @@ def parse_incident_from_item(item, is_fetch):
 
 def fetch_emails_as_incidents(account_email, folder_name):
     last_run = get_last_run()
-    excluded_ids = set(last_run.get(LAST_RUN_IDS))
+    excluded_ids = set(last_run.get(LAST_RUN_IDS, []))
 
     try:
         account = get_account(account_email)
