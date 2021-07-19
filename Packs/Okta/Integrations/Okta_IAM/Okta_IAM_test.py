@@ -148,7 +148,7 @@ def test_create_user_command__success(mocker):
     mocker.patch.object(client, 'activate_user', return_value=None)
 
     user_profile = create_user_command(client, args, 'mapper_out',
-                                       is_command_enabled=True, is_update_user_enabled=True)
+                                       is_command_enabled=True, is_update_user_enabled=True, is_enable_enabled=True)
     outputs = get_outputs_from_user_profile(user_profile)
 
     assert outputs.get('action') == IAMActions.CREATE_USER
@@ -180,7 +180,7 @@ def test_update_user_command__allow_enable(mocker):
     mocker.patch.object(IAMUserProfile, 'map_object', return_value={})
     mocker.patch.object(client, 'activate_user', return_value=None)
 
-    user_profile = update_user_command(client, args, 'mapper_out', is_command_enabled=True,
+    user_profile = update_user_command(client, args, 'mapper_out', is_command_enabled=True, is_enable_enabled=True,
                                        is_create_user_enabled=False, create_if_not_exists=False)
     outputs = get_outputs_from_user_profile(user_profile)
 
@@ -215,7 +215,7 @@ def test_update_user_command__non_existing_user(mocker):
     mocker.patch.object(client, 'create_user', return_value=OKTA_USER_OUTPUT)
     mocker.patch.object(client, 'activate_user', return_value=None)
 
-    user_profile = update_user_command(client, args, 'mapper_out', is_command_enabled=True,
+    user_profile = update_user_command(client, args, 'mapper_out', is_command_enabled=True, is_enable_enabled=True,
                                        is_create_user_enabled=True, create_if_not_exists=True)
     outputs = get_outputs_from_user_profile(user_profile)
 
@@ -246,7 +246,7 @@ def test_update_user_command__command_is_disabled(mocker):
     mocker.patch.object(IAMUserProfile, 'map_object', return_value={})
     mocker.patch.object(client, 'update_user', return_value=OKTA_USER_OUTPUT)
 
-    user_profile = update_user_command(client, args, 'mapper_out', is_command_enabled=False,
+    user_profile = update_user_command(client, args, 'mapper_out', is_command_enabled=False, is_enable_enabled=True,
                                        is_create_user_enabled=False, create_if_not_exists=False)
     outputs = get_outputs_from_user_profile(user_profile)
 
@@ -280,7 +280,7 @@ def test_update_user_command__rate_limit_error(mocker):
     mocker.patch.object(demisto, 'error')
     mocker.patch.object(Session, 'request', return_value=bad_response)
 
-    user_profile = update_user_command(client, args, 'mapper_out', is_command_enabled=True,
+    user_profile = update_user_command(client, args, 'mapper_out', is_command_enabled=True, is_enable_enabled=True,
                                        is_create_user_enabled=False, create_if_not_exists=False)
 
     entry_context = user_profile.to_entry()
@@ -344,8 +344,8 @@ def test_get_mapping_fields_command(mocker):
     mapping_response = get_mapping_fields_command(client)
     mapping = mapping_response.extract_mapping()
 
-    assert mapping.get(IAMUserProfile.INDICATOR_TYPE, {}).get('field1') == 'description1'
-    assert mapping.get(IAMUserProfile.INDICATOR_TYPE, {}).get('field2') == 'description2'
+    assert mapping.get(IAMUserProfile.DEFAULT_INCIDENT_TYPE, {}).get('field1') == 'description1'
+    assert mapping.get(IAMUserProfile.DEFAULT_INCIDENT_TYPE, {}).get('field2') == 'description2'
 
 
 def test_get_app_user_assignment_command(mocker):
