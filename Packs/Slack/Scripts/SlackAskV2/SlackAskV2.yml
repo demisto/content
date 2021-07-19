@@ -103,14 +103,27 @@ args:
   name: defaultResponse
   required: false
   secret: false
+- default: false
+  description: The instance of SlackV3 this script should use.
+  isArray: false
+  name: slackInstance
+  required: false
+  secret: false
+- default: true
+  defaultValue: SlackV3
+  description: The version of Slack to use. SlackV3 is configured by default.
+  isArray: false
+  name: slackVersion
+  required: false
+  secret: false
 comment: Sends a message (question) to either user (in a direct message) or to a channel.
   The message includes predefined reply options. The response can also close a task
   (might be conditional) in a playbook.
 commonfields:
-  id: SlackAsk
+  id: SlackAskV2
   version: -1
 enabled: true
-name: SlackAsk
+name: SlackAskV2
 script: '-'
 subtype: python3
 system: false
@@ -124,5 +137,5 @@ tests:
 - no test - Untestable
 dependson:
   must:
-  - SlackV2|||send-notification
-fromversion: 5.0.0
+  - SlackV3|||send-notification
+fromversion: 5.5.0
