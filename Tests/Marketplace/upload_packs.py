@@ -1085,7 +1085,6 @@ def main():
 
     # Going over all packs that were marked as missing dependencies,
     # updating them with the new data for the new packs that were added to the index.zip
-    statistics_handler = StatisticsHandler(service_account, index_folder_path)
     for pack in packs_missing_dependencies:
         task_status, _ = pack.format_metadata(index_folder_path, packs_dependencies_mapping,
                                               build_number, current_commit_hash, False, statistics_handler,
