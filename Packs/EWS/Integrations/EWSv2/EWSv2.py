@@ -929,7 +929,7 @@ def fetch_last_emails(account, folder_name='Inbox', since_datetime=None, exclude
             future_utils.raise_from(ValueError(
                 'Got an error when pulling incidents. You might be using the wrong exchange version.'
             ), exc)
-    demisto.debug(f'EWS V2 - Got total of {counter} from ews query. {len(result)} results not excluded. ')
+    demisto.debug('EWS V2 - Got total of {} from ews query. {} results not excluded. '.,fomat(counter, len(result)))
     return result
 
 def keys_to_camel_case(value):
