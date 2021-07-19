@@ -928,7 +928,7 @@ def fetch_last_emails(account, folder_name='Inbox', since_datetime=None, exclude
             future_utils.raise_from(ValueError(
                 'Got an error when pulling incidents. You might be using the wrong exchange version.'
             ), exc)
-    demisto.debug('EWS V2 - Got total of {} from ews query. {} results not excluded. '.fomat(len(qs), len(result)))
+    demisto.debug('EWS V2 - Got total of {} from ews query. {} results not excluded. '.format(len(qs), len(result)))
     return result
 
 
