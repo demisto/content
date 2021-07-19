@@ -411,11 +411,8 @@ class Pack(object):
                 if dep_int_img not in pack_integration_images:  # avoid duplicates in list
                     if dep_pack_name in dependencies_integration_images_dict:
                         dependencies_integration_images_dict[dep_pack_name].append(dep_int_img)
-                        logging.info('=1=')
                     else:
                         dependencies_integration_images_dict[dep_pack_name] = [dep_int_img]
-                        logging.info('=2=')
-
 
         return Pack.organize_integration_images(
             pack_integration_images, dependencies_integration_images_dict, pack_dependencies_by_download_count
