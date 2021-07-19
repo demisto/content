@@ -23,7 +23,9 @@ PRE_POST = ''
 
 XPATH_SECURITY_RULES = ''
 DEVICE_GROUP = ''
+
 XPATH_OBJECTS = ''
+
 XPATH_RULEBASE = ''
 
 # Security rule arguments for output handling
