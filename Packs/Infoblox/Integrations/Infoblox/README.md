@@ -370,6 +370,11 @@ This integration was integrated and tested with version V2 of Infoblox
       <td>The next page ID that was returned when last running this command.</td>
       <td>Optional</td>
     </tr>
+    <tr>
+      <td>view</td>
+      <td>The DNS view in which the records are located. By default, the 'default' DNS view is searched.</td>
+      <td>Optional</td>
+    </tr>
   </tbody>
 </table>
 
@@ -1121,6 +1126,11 @@ This integration was integrated and tested with version V2 of Infoblox
     <tr>
       <td>substitute_name</td>
       <td>The substitute name to assign (substitute domain only).</td>
+      <td>Optional</td>
+    </tr>
+    <tr>
+      <td>view</td>
+      <td>The DNS view in which the records are located. By default, the 'default' DNS view is searched.</td>
       <td>Optional</td>
     </tr>
   </tbody>
