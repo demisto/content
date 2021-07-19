@@ -1213,7 +1213,7 @@ def file_download_command(client: GSuiteClient, args: Dict[str, str]) -> Command
 def file_replace_existing_command(client: GSuiteClient, args: Dict[str, str]) -> CommandResults:
     """
     Replace an existing file in Google Drive
-        google-drive-file-delete
+        google-drive-file-replace-existing
 
     :param client: Client object.
     :param args: Command arguments.

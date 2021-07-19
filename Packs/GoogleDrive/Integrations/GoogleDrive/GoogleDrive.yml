@@ -5,9 +5,7 @@ configuration:
 - name: isFetch
   display: Fetch incidents
   required: false
-  defaultvalue: "true"
   type: 8
-  additionalinfo:
 - name: user_service_account_json
   display: User's Service Account JSON
   required: true
@@ -65,44 +63,22 @@ configuration:
   type: 0
   additionalinfo: The time range to consider for the initial data fetch in the format
     <number> <unit> e.g., 1 hour, 2 hours, 6 hours, 12 hours, 24 hours, 48 hours).
-- name: incidentType
-  display: Incident type
-  required: false
-  defaultvalue:
-  type: 13
-  additionalinfo:
 - name: insecure
   display: Trust any certificate (not secure)
   required: false
-  defaultvalue: "true"
+  defaultvalue: ""
   type: 8
   additionalinfo:
 - name: proxy
   display: Use system proxy settings
   required: false
-  defaultvalue: "true"
-  type: 8
-  additionalinfo:
-- name: incidentType
-  display: Incident type
-  required: false
-  defaultvalue:
-  type: 13
-  additionalinfo:
-- name: isFetch
-  display: Fetch incidents
-  required: false
-  defaultvalue: "true"
+  defaultvalue: ""
   type: 8
   additionalinfo:
 - display: Incident type
   name: incidentType
   required: false
   type: 13
-- display: Fetch incidents
-  name: isFetch
-  required: false
-  type: 8
 description: Google Drive allows users to store files on their servers, synchronize
   files across devices, and share files. This integration helps you to create a new
   drive, query past activity, and view change logs performed by the users.
@@ -3398,14 +3374,7 @@ script:
       defaultValue: ""
       predefined:
       - ""
-    outputs:
-    - contextPath: kind
-      description: description
-      type: String
-    - contextPath: nextPageToken
-      description: description
-      type: Unknown
-  dockerimage: demisto/googleapi-python3:1.0.0.13812
+  dockerimage: demisto/googleapi-python3:1.0.0.23060
   feed: false
   isfetch: true
   longRunning: false
