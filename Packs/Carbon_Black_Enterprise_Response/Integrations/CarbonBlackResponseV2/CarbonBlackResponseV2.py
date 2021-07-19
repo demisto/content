@@ -660,6 +660,7 @@ def endpoint_command(client: Client, id: str = None, ip: str = None, hostname: s
         raise Exception(f'{INTEGRATION_NAME} - In order to run this command, please provide valid id, ip or hostname')
 
     try:
+        ip = argToList(ip)
         res = client.get_sensors(id=id, ipaddr=ip, hostname=hostname)[1]
         endpoints = []
         command_results = []
@@ -712,7 +713,7 @@ def fetch_incidents(client: Client, max_results: int, last_run: dict, first_fetc
 
     incidents: List[Dict[str, Any]] = []
 
-    # multiple statuses are not supported by api. If status provided, gets the incidents for each status.
+    # multiple statuses are not supported by api. If multiple statuses provided, gets the incidents for each status.
     # Otherwise will run without status.
     alerts = []
     if status:

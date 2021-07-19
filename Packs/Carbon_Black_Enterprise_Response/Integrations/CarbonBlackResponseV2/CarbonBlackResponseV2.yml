@@ -1998,7 +1998,7 @@ script:
       secret: false
     - default: true
       description: Query sensors with specified IP address
-      isArray: false
+      isArray: true
       name: ip
       required: false
       secret: false
