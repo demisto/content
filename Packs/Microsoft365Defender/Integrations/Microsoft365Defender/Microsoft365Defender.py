@@ -22,28 +22,28 @@ BASE_URL = "https://api.security.microsoft.com"
 class Client:
     @logger
     def __init__(self, app_id: str, verify: bool, proxy: bool, base_url: str = BASE_URL, tenant_id: str = None,
-                 enc_key: str = None, self_deployed: bool = False):
+                 enc_key: str = None, client_credentials: bool = False):
         if '@' in app_id:
             app_id, refresh_token = app_id.split('@')
             integration_context = get_integration_context()
             integration_context.update(current_refresh_token=refresh_token)
             set_integration_context(integration_context)
 
-        self.self_deployed = self_deployed
+        self.client_credentials = client_credentials
         client_args = assign_params(
             self_deployed=True,  # We always set the self_deployed key as True because when not using a self
             # deployed machine, the DEVICE_CODE flow should behave somewhat like a self deployed
             # flow and most of the same arguments should be set, as we're !not! using OProxy.
             tenant_id=tenant_id,
             auth_id=app_id,
-            token_retrieval_url='https://login.windows.net/organizations/oauth2/v2.0/token' if not self_deployed else None,
-            grant_type=CLIENT_CREDENTIALS if self_deployed else DEVICE_CODE,
+            token_retrieval_url='https://login.windows.net/organizations/oauth2/v2.0/token' if not client_credentials else None,
+            grant_type=CLIENT_CREDENTIALS if client_credentials else DEVICE_CODE,
             base_url=base_url,
             verify=verify,
             proxy=proxy,
             scope='offline_access https://security.microsoft.com/mtp/.default',
             ok_codes=(200, 201, 202, 204),
-            resource='https://api.security.microsoft.com' if not self_deployed else None,
+            resource='https://api.security.microsoft.com' if not client_credentials else None,
             enc_key=enc_key,
         )
         self.ms_client = MicrosoftClient(**client_args)  # type: ignore
@@ -181,7 +181,7 @@ def test_context_for_token(client: Client) -> None:
     Returns:
 
     """
-    if client.self_deployed:
+    if client.client_credentials:
         return
     if not (get_integration_context().get('access_token') or get_integration_context().get('current_refresh_token')):
         raise DemistoException(
@@ -204,7 +204,7 @@ def test_module(client: Client) -> str:
     """
     # This  should validate all the inputs given in the integration configuration panel,
     # either manually or by using an API that uses them.
-    if client.self_deployed:
+    if client.client_credentials:
         raise DemistoException("When using a self-deployed configuration, run the !microsoft-365-defender-auth-test"
                                "command in order to test the connection")
 
@@ -529,7 +529,7 @@ def main() -> None:
     base_url = params.get('base_url')
 
     tenant_id = params.get('tenant_id')
-    self_deployed = params.get('self_deployed', False)
+    client_credentials = params.get('client_credentials', False)
     enc_key = params.get('enc_key')
 
     first_fetch_time = params.get('first_fetch', '3 days').strip()
@@ -548,7 +548,7 @@ def main() -> None:
             proxy=proxy,
             tenant_id=tenant_id,
             enc_key=enc_key,
-            self_deployed=self_deployed,
+            client_credentials=client_credentials,
         )
         if demisto.command() == 'test-module':
             # This is the call made when pressing the integration Test button.

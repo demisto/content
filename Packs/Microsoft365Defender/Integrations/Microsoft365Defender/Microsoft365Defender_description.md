@@ -1,6 +1,8 @@
-## Device Code Flow
+There are two ways to authenticate to the Microsoft 365 Defender:
+1. *Device Code Flow*.
+2. *Client Credentials Flow*.
 
-### Microsoft 365 Defender
+## Device Code Flow
 
 Use the [device code flow](https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#device-code-flow)
 to link Microsoft 365 Defender with Cortex XSOAR.
@@ -46,7 +48,7 @@ To use a self-configured Azure application, you need to add a new Azure App Regi
 Follow these steps for a self-deployed configuration.
 
 1. To use a self-configured Azure application, you need to add a new Azure App Registration in the Azure Portal. To add the registration, refer to the following [Microsoft article](https://docs.microsoft.com/en-us/microsoft-365/security/defender/api-create-app-web?view=o365-worldwide#create-an-app) steps 1-8.
-2. Select the ***self-deployed*** button.
+2. In the instance configuration, select the ***client-credentials*** button.
 2. Enter your Client/Application ID in the ***Application ID*** parameter. 
 3. Enter your Client Secret in the ***Client Secret*** parameter.
 4. Enter your Tenant ID in the ***Tenant ID/Token*** parameter.

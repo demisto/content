@@ -19,8 +19,10 @@ configuration:
   name: base_url
   required: true
   type: 0
-- display: Use a self-deployed Azure application
-  name: self_deployed
+- additionalinfo: |-
+  Use a self-deployed Azure application and authenticate using the Client Credentials flow.
+  display: client-credentials
+  name: client_credentials
   required: false
   type: 8
 - display: Tenant ID (for self-deployed mode)
