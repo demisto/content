@@ -1,4 +1,6 @@
 import pytest
+from freezegun import freeze_time
+
 import demistomock as demisto
 from CommonServerPython import DemistoException
 
@@ -7,6 +9,10 @@ integration_params = {
     'vsys': 'vsys1',
     'server': 'https://1.1.1.1',
     'key': 'thisisabogusAPIKEY!',
+    'isFetch': True,
+    'log_type': 'threat',
+    'first_fetch': '7 days',
+    'max_fetch': '50'
 }
 
 mock_demisto_args = {
@@ -352,3 +358,79 @@ def test_prettify_configured_user_id_agents__single_result():
                 'CollectorName': 'demisto', 'Secret': 'secret', 'EnableHipCollection': 'no', 'SerialNumber': None,
                 'IpUserMapping': 'yes', 'Disabled': 'no'}
     assert response == expected
+
+
+@freeze_time("2021-07-10T13:34:14.758295Z")
+def test_fetch_incidents_first_time_fetch(mocker):
+    """Unit test
+    Given
+    - fetch incidents command
+    - command args
+    When
+    - mock the integration parameters
+    - mock the panorama_query_logs response
+    Then
+    - Validate that the fetch_status is pending
+    - Validate that the job_id is as pending
+    - Validate that the last_time is as the frozen time
+    """
+    from Panorama import fetch_incidents
+    submitted_job = {'response': {
+        '@status': 'success', '@code': '19',
+        'result': {'msg': {'line': 'query job enqueued with jobid 9440'}, 'job': '9440'}}
+    }
+    mocker.patch('Panorama.panorama_query_logs', return_value=submitted_job)
+    _, next_run = fetch_incidents(params=demisto.params(), last_run={})
+    # {'fetch_status': 'pending', 'job_id': '9440', 'last_time': '2021/07/19 16:29:16'}
+    assert next_run.get('fetch_status') == 'pending'
+    assert next_run.get('job_id') == '9440'
+    assert next_run.get('last_time') == '2021/07/10 16:34:14'
+
+
+def test_fetch_incidents_second_time_fetch_no_logs(mocker):
+    """Unit test
+    Given
+    - fetch incidents command
+    - command args
+    When
+    - mock the integration parameters
+    - mock the panorama_get_logs response, that no logs matched the query
+    Then
+    - Validate that when there are no logs, an appropriate message
+    - Validate that the fetch_status is new
+    - Validate that the job_id is -1
+    - Validate that the last_time is as the last_run(not changed)
+    """
+    from Panorama import fetch_incidents
+    result = {
+        "response": {
+            "@status": "success",
+            "result": {
+                "job": {
+                    "cached-logs": "0",
+                    "id": "9441",
+                    "status": "FIN",
+                    "tdeq": "06:38:31",
+                    "tenq": "06:38:31",
+                    "tlast": "16:00:00"
+                },
+                "log": {
+                    "logs": {
+                        "@count": "0",
+                        "@progress": "0"
+                    }
+                }
+            }
+        }
+    }
+    mocker.patch('Panorama.panorama_get_logs', return_value=result)
+    incidents, next_run = fetch_incidents(params=demisto.params(),
+                                          last_run={
+                                              'fetch_status': 'pending',
+                                              'job_id': '9440',
+                                              'last_time': '2021/07/19 16:29:16'}
+                                          )
+    assert not len(incidents)
+    assert next_run.get('fetch_status') == 'new'
+    assert next_run.get('job_id') == '-1'
+    assert next_run.get('last_time') == '2021/07/19 16:29:16'
