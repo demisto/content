@@ -212,7 +212,15 @@ def get_coverage_attachment(build_url: str) -> Optional[Dict]:
     if not xml_coverage_data:
         return None
     coverage_dict_data: OrderedDict = xmltodict.parse(xml_coverage_data)
-    coverage_percent: float = float(coverage_dict_data.get('coverage', dict()).get('@line-rate')) * 100.0
+    if not (coverage_percent_str := coverage_dict_data.get('coverage', {}).get('@line-rate')):
+        logging.error('Line coverage rate was missing from coverage data.')
+        return None
+    try:
+        coverage_percent: float = float(coverage_percent_str) * 100.0
+    except ValueError:
+        logging.error(
+            f'Unexpected value for line coverage rage: {coverage_percent_str}. Expected float from line coverage rate.')
+        return None
     return {
         'fallback': f'Coverage Report Content: {coverage_percent:.2f}% Total Coverage',
         'color': get_coverage_color(coverage_percent),
