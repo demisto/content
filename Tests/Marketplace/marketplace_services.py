@@ -379,14 +379,14 @@ class Pack(object):
                 for dep_int_img in dep_int_imgs:
                     if dep_int_img not in all_dep_int_imgs:  # avoid duplicates
                         all_dep_int_imgs.append(dep_int_img)
-
-        for dep_pack_name in pack_dependencies_integration_images_dict.keys():
-            if dep_pack_name not in pack_dependencies_by_download_count:
-                logging.info(f'Adding {dep_pack_name} to deps int imgs')
-                dep_int_imgs = sorted(pack_dependencies_integration_images_dict[dep_pack_name], key=sort_by_name)
-                for dep_int_img in dep_int_imgs:
-                    if dep_int_img not in all_dep_int_imgs:  # avoid duplicates
-                        all_dep_int_imgs.append(dep_int_img)
+        #
+        # for dep_pack_name in pack_dependencies_integration_images_dict.keys():
+        #     if dep_pack_name not in pack_dependencies_by_download_count:
+        #         logging.info(f'Adding {dep_pack_name} to deps int imgs')
+        #         dep_int_imgs = sorted(pack_dependencies_integration_images_dict[dep_pack_name], key=sort_by_name)
+        #         for dep_int_img in dep_int_imgs:
+        #             if dep_int_img not in all_dep_int_imgs:  # avoid duplicates
+        #                 all_dep_int_imgs.append(dep_int_img)
 
         logging.info(f'all_dep_int_imgs:{all_dep_int_imgs}==')
         return all_dep_int_imgs
@@ -1755,6 +1755,7 @@ class Pack(object):
             self._downloads_count = self._pack_statistics_handler.download_count
             trending_packs = statistics_handler.trending_packs
             pack_dependencies_by_download_count = self._pack_statistics_handler.displayed_dependencies_sorted
+
 
         self._tags = self._collect_pack_tags(user_metadata, landing_page_sections, trending_packs)
         self._search_rank = mp_statistics.PackStatisticsHandler.calculate_search_rank(
