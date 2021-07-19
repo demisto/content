@@ -88,8 +88,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: A custom query by the the OData syntax. Using this overrides all arguments,
-      except for next_link. For more details, see https://docs.microsoft.com/en-us/graph/query-parameters.
+      description: A custom query by the the OData syntax. Using this overrides all arguments, except for next_link. For more details, see https://docs.microsoft.com/en-us/graph/query-parameters.
       isArray: false
       name: filter_expression
       required: false
@@ -169,8 +168,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: A custom query by the the OData syntax. Using this overrides all arguments,
-      except for next_link. For more details, see https://docs.microsoft.com/en-us/graph/query-parameters.
+      description: A custom query by the the OData syntax. Using this overrides all arguments, except for next_link. For more details, see https://docs.microsoft.com/en-us/graph/query-parameters.
       isArray: false
       name: filter_expression
       required: false
