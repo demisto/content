@@ -52,7 +52,7 @@ def unit_tests_results():
     failing_unit_tests = get_artifact_data('failed_lint_report.txt')
     slack_results = []
     if failing_unit_tests:
-        failing_unit_tests.split('\n')
+        failing_unit_tests = failing_unit_tests.split('\n')
         slack_results.append({
             "title": f'{"Failed Unit Tests"} - ({len(failing_unit_tests)})',
             "value": '\n'.join(failing_unit_tests),

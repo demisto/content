@@ -114,26 +114,26 @@ def options_handler():
     return options
 
 
-def get_artifact_data(artifact_suffix: str) -> Optional[str]:
+def get_artifact_data(artifact_relative_path: str) -> Optional[str]:
     """
-    Retrieves artifact data according to the artifact suffix given.
+    Retrieves artifact data according to the artifact relative path from 'ARTIFACTS_FOLDER' given.
     Args:
-        artifact_suffix (str): Artifact suffix.
+        artifact_relative_path (str): Artifact suffix.
 
     Returns:
         (Optional[str]): data of the artifact as str if exists, None otherwise.
     """
     artifact_data = None
     try:
-        file_name = os.path.join(ARTIFACTS_FOLDER, artifact_suffix)
+        file_name = os.path.join(ARTIFACTS_FOLDER, artifact_relative_path)
         if os.path.isfile(file_name):
-            logging.info(f'Extracting {artifact_suffix}')
+            logging.info(f'Extracting {artifact_relative_path}')
             with open(file_name, 'r') as file_data:
                 artifact_data = file_data.read()
         else:
-            logging.info(f'Did not find {artifact_suffix} file')
+            logging.info(f'Did not find {artifact_relative_path} file')
     except Exception:
-        logging.exception(f'Error getting {artifact_suffix} file')
+        logging.exception(f'Error getting {artifact_relative_path} file')
     return artifact_data
 
 
