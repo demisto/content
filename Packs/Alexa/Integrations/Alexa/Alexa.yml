@@ -3,7 +3,7 @@ commonfields:
   id: Alexa Rank Indicator
   version: -1
 configuration:
-- additionalinfo: Reliability of the source providing the intelligence data.
+- additionalInfo: Reliability of the source providing the intelligence data.
   defaultvalue: A - Completely reliable
   display: Source Reliability
   name: integrationReliability
@@ -18,16 +18,17 @@ configuration:
   required: true
   type: 15
 - defaultvalue: '2000000'
-  display: Sensitivity threshold for configuring which domains are suspicious versus trusted.
+  display: Sensitivity threshold for configuring which domains are suspicious versus
+    trusted.
   name: threshold
   required: true
   type: 0
-- display: Alexa rank - top domains to be considered trusted.
+- additionalInfo: These domains will be given a DbotScore of good.
+  defaultvalue: '0'
+  display: Alexa rank - top domains to be considered trusted.
   name: benign
-  defaultvalue: "0"
-  type: 0
   required: true
-  additionalinfo: These domains will be given a DbotScore of good.
+  type: 0
 - display: Use system proxy settings
   name: proxy
   required: false
@@ -36,7 +37,8 @@ configuration:
   name: insecure
   required: false
   type: 8
-description: Alexa provides website ranking information that can be useful in determining if the domain in question has a strong web presence.
+description: Alexa provides website ranking information that can be useful in determining
+  if the domain in question has a strong web presence.
 display: Alexa Rank Indicator
 name: Alexa Rank Indicator
 script:
@@ -44,7 +46,7 @@ script:
   - arguments:
     - default: true
       description: Domain to search.
-      isArray: false
+      isArray: true
       name: domain
       required: true
       secret: false
@@ -80,12 +82,15 @@ script:
     - contextPath: Alexa.Domain.Rank
       description: Alexa rank as determined by Amazon
       type: string
-  isfetch: false
-  runonce: false
-  script: ''
-  type: python
-  subtype: python2
   dockerimage: demisto/python:2.7.18.20958
+  feed: false
+  isfetch: false
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  subtype: python2
+  type: python
 tests:
 - Alexa Test Playbook
 fromversion: 5.0.0
