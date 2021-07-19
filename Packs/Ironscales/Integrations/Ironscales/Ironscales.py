@@ -41,7 +41,7 @@ class Client(BaseClient):
             url_suffix=f"/incident/{company_id}/details/{incident_id}",
             headers=self.headers,
             json_data={
-                "company_id": self.company_id,
+                "company_id": company_id,
                 "incident_id": incident_id,
             },
         )
