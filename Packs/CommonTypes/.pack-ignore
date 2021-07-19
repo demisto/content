@@ -272,3 +272,6 @@ ignore=IF100
 
 [file:incidentfield-Alert_URL.json]
 ignore=IF100
+
+[file:incidentfield-Alert_Type_ID.json]
+ignore=IF100

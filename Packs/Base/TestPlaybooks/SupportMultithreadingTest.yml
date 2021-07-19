@@ -20,7 +20,7 @@ script: |
 
 
   with Pool(pool_size) as pool:
-      pool.map(worker, [1, 2, 3])
+      pool.map(worker, range(10))
 
 
   print('done')

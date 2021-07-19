@@ -2066,9 +2066,18 @@ def parse_incident_from_item(item):
                     attached_email_bytes = attached_email.as_bytes()
                     chardet_detection = chardet.detect(attached_email_bytes)
                     encoding = chardet_detection.get('encoding', 'utf-8') or 'utf-8'
+                    try:
+                        # Trying to decode using the detected encoding
+                        data = attached_email_bytes.decode(encoding)
+                    except UnicodeDecodeError:
+                        # In case the detected encoding fails apply the default encoding
+                        demisto.info(f'Could not decode attached email using detected encoding:{encoding}, retrying '
+                                     f'using utf-8.\nAttached email:\n{attached_email}')
+                        data = attached_email_bytes.decode('utf-8')
+
                     file_result = fileResult(
                         get_attachment_name(attachment.name) + ".eml",
-                        attached_email_bytes.decode(encoding),
+                        data,
                     )
 
                 if file_result:
@@ -2198,9 +2207,9 @@ def fetch_last_emails(
     if since_datetime:
         qs = qs.filter(datetime_received__gte=since_datetime)
     else:
-        tz = EWSTimeZone.timezone('UTC')
+        tz = EWSTimeZone('UTC')
         first_fetch_datetime = dateparser.parse(FETCH_TIME)
-        first_fetch_ews_datetime = EWSDateTime.from_datetime(tz.localize(first_fetch_datetime))
+        first_fetch_ews_datetime = EWSDateTime.from_datetime(first_fetch_datetime.replace(tzinfo=tz))
         qs = qs.filter(last_modified_time__gte=first_fetch_ews_datetime)
     qs = qs.filter().only(*[x.name for x in Message.FIELDS])
     qs = qs.filter().order_by("datetime_received")

@@ -72,4 +72,3 @@ If any alerts are missing in Cortex XSOAR, check the status of the integration.
 
 ![image](https://user-images.githubusercontent.com/49071222/72086124-18b0fe00-330f-11ea-894b-6b2f9f0528fd.png)
 
-If you have any questions, contact [Demisto support](mailto:support@demisto.com) and attach the server logs.

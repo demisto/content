@@ -50,14 +50,16 @@ def main():
         if time_to_live:
             logging.info(f'Skipping - Time to live was set to {time_to_live} minutes')
             continue
-        if os.path.isfile("./Tests/is_build_passed_{}.txt".format(env["Role"].replace(' ', ''))):
+        if os.path.isfile("./Tests/is_build_passed_{}.txt".format(env["Role"].replace(' ', ''))) and \
+                os.path.isfile("./Tests/is_post_update_passed_{}.txt".format(env["Role"].replace(' ', ''))):
             logging.info(f'Destroying instance with role - {env.get("Role", "Unknown role")} and IP - '
                          f'{env["InstanceDNS"]}')
             rminstance = aws_functions.destroy_instance(env["Region"], env["InstanceID"])
             if aws_functions.isError(rminstance):
                 logging.error(rminstance['Message'])
         else:
-            logging.warning(f'Tests failed on {env.get("Role", "Unknown role")}, keeping instance alive')
+            logging.warning(f'Tests for some integration failed on {env.get("Role", "Unknown role")}'
+                            f', keeping instance alive')
 
 
 if __name__ == "__main__":
