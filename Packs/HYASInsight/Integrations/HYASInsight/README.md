@@ -221,8 +221,8 @@ Returns DynamicDNS records for the provided indicator value.
                 "created": "2020-05-09T03:39:28Z",
                 "created_ip": "",
                 "domain": "tempoary.duckdns.org",
-                "domain_creator_ip": "42.3.24.36",
-                "email": "benson877204@gmail.com"
+                "domain_creator_ip": "",
+                "email": ""
             },
             {
                 "a_record": "4.4.4.4",
@@ -231,7 +231,7 @@ Returns DynamicDNS records for the provided indicator value.
                 "created_ip": "",
                 "domain": "bensonwonghk.duckdns.org",
                 "domain_creator_ip": "",
-                "email": "benson877204@gmail.com"
+                "email": ""
             }
         ]
     }
@@ -244,8 +244,8 @@ Returns DynamicDNS records for the provided indicator value.
 >|A Record|Account|Created Date|Account Holder IP Address|Domain|Domain Creator IP Address|Email Address|
 >|---|---|---|---|---|---|---|
 >| 4.4.4.4 | free | 2019-03-30T14:39:49Z |  | seyir.duckdns.org |  |  |
->| 4.4.4.4 | free | 2020-05-09T03:39:28Z |  | tempoary.duckdns.org | 42.3.24.36 | benson877204@gmail.com |
->| 4.4.4.4 | free | 2020-05-09T03:39:24Z |  | bensonwonghk.duckdns.org | | benson877204@gmail.com |
+>| 4.4.4.4 | free | 2020-05-09T03:39:28Z |  | tempoary.duckdns.org |  |  |
+>| 4.4.4.4 | free | 2020-05-09T03:39:24Z |  | bensonwonghk.duckdns.org | |  |
 
 
 ### hyas-get-whois-records-by-indicator
@@ -342,7 +342,7 @@ Returns WHOIS records for the provided indicator value.
                 "domain_expires_datetime": "2020-10-29T09:48:04Z",
                 "domain_updated_datetime": "2019-10-31T01:09:53.933724Z",
                 "email": [
-                    "viendongonline@gmail.com",
+                    "",
                     "abuse-contact@publicdomainregistry.com"
                 ],
                 "idn_name": "None",
@@ -382,7 +382,7 @@ Returns WHOIS records for the provided indicator value.
                 "domain_expires_datetime": "2020-10-29T09:48:04Z",
                 "domain_updated_datetime": "None",
                 "email": [
-                    "viendongonline@gmail.com",
+                    "",
                     "dns@cloudflare.com"
                 ],
                 "idn_name": "None",
@@ -411,8 +411,8 @@ Returns WHOIS records for the provided indicator value.
 >|Address|City|Country|Domain|Domain_2tld|Domain Created Time|Domain Expires Time|Domain Updated Time|Email Address|IDN Name|Nameserver|Phone Info|Privacy_punch|Registrar|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >|  | ha noi |  | dulieuonline.net | None | 2015-05-22T00:00:00Z | 2016-05-22T00:00:00Z | 2017-06-14T19:06:36.577650Z | ngoc.mycomputer@gmail.com | None | ns2.inet.vn,<br/>ns1.inet.vn | {'phone': '+84986386242', 'phone_info': {'carrier': 'Viettel', 'country': 'Vietnam', 'geo': 'Vietnam'}} | false | onlinenic, inc. |
->|  | hcm | VN | dulieuonline.net | None | 2019-10-29T09:48:04Z | 2020-10-29T09:48:04Z | 2019-10-31T01:09:53.933724Z | viendongonline@gmail.com,<br/>abuse-contact@publicdomainregistry.com | None | viendong.mars.orderbox-dns.com,<br/>viendong.venus.orderbox-dns.com,<br/>viendong.earth.orderbox-dns.com,<br/>viendong.mercury.orderbox-dns.com | {'phone': '+84909095309', 'phone_info': {'carrier': 'MobiFone', 'country': 'Vietnam', 'geo': 'Vietnam'}} | false | pdr ltd. d/b/a publicdomainregistry.comvien dong co., ltd. |
->| 32 duong 885 kp 5 tt ba tri,<br/>vn | hcm | VN | dulieuonline.net | dulieuonline.net | 2019-10-29T09:48:04Z | 2020-10-29T09:48:04Z | None | viendongonline@gmail.com,<br/>dns@cloudflare.com | None |  | {'phone': '+84909095309', 'phone_info': {'carrier': 'MobiFone', 'country': 'Vietnam', 'geo': 'Vietnam'}} | true | pdr ltd. d/b/a publicdomainregistry.com |
+>|  | hcm | VN | dulieuonline.net | None | 2019-10-29T09:48:04Z | 2020-10-29T09:48:04Z | 2019-10-31T01:09:53.933724Z | "",<br/>abuse-contact@publicdomainregistry.com | None | viendong.mars.orderbox-dns.com,<br/>viendong.venus.orderbox-dns.com,<br/>viendong.earth.orderbox-dns.com,<br/>viendong.mercury.orderbox-dns.com | {'phone': '+84909095309', 'phone_info': {'carrier': 'MobiFone', 'country': 'Vietnam', 'geo': 'Vietnam'}} | false | pdr ltd. d/b/a publicdomainregistry.comvien dong co., ltd. |
+>| 32 duong 885 kp 5 tt ba tri,<br/>vn | hcm | VN | dulieuonline.net | dulieuonline.net | 2019-10-29T09:48:04Z | 2020-10-29T09:48:04Z | None | "",<br/>dns@cloudflare.com | None |  | {'phone': '+84909095309', 'phone_info': {'carrier': 'MobiFone', 'country': 'Vietnam', 'geo': 'Vietnam'}} | true | pdr ltd. d/b/a publicdomainregistry.com |
 
 
 ### hyas-get-whois-current-records-by-domain
@@ -461,7 +461,7 @@ Returns WHOIS Current records for the provided indicator value.
     "HYAS": {
         "WHOISCurrent": {
             "abuse_emails": [
-                "abuse@godaddy.com"
+                ""
             ],
             "address": [],
             "city": [],
@@ -497,7 +497,7 @@ Returns WHOIS Current records for the provided indicator value.
 >### HYAS WHOISCurrent records for domain : www.hyas.com
 >|Abuse Emails|Address|City|Country|Domain|Domain_2tld|Domain Created Time|Domain Expires Time|Domain Updated Time|Email Address|IDN Name|Nameserver|Organization|Phone Info|Registrar|State|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
->| abuse@godaddy.com |  |  | Canada | hyas.com | hyas.com | 2001-05-01T23:42:14 | 2026-05-01T23:42:14 | 2020-06-30T15:43:39 |  | None | ns09.domaincontrol.com,<br/>ns10.domaincontrol.com | HYAS Infosec Inc. |  | GoDaddy.com, LLC | British Columbia |
+>|  |  |  | Canada | hyas.com | hyas.com | 2001-05-01T23:42:14 | 2026-05-01T23:42:14 | 2020-06-30T15:43:39 |  | None | ns09.domaincontrol.com,<br/>ns10.domaincontrol.com | HYAS Infosec Inc. |  | GoDaddy.com, LLC | British Columbia |
 
 
 ### hyas-get-malware-samples-records-by-indicator
@@ -541,7 +541,7 @@ Returns Malware Sample records for the provided indicator value.
             {
                 "datetime": "2021-06-03",
                 "domain": "butterfly.bigmoney.biz",
-                "ipv4": "106.187.43.98",
+                "ipv4": "",
                 "ipv6": null,
                 "md5": "f8e537c178999f4ab1609576c6f5751e",
                 "sha1": null,
@@ -550,7 +550,7 @@ Returns Malware Sample records for the provided indicator value.
             {
                 "datetime": "2021-05-18",
                 "domain": "butterfly.bigmoney.biz",
-                "ipv4": "106.187.43.98",
+                "ipv4": "",
                 "ipv6": null,
                 "md5": "5fb3ee62c7bd0d801d76e272f51fe137",
                 "sha1": null,
@@ -559,7 +559,7 @@ Returns Malware Sample records for the provided indicator value.
             {
                 "datetime": "2021-05-18",
                 "domain": "butterfly.bigmoney.biz",
-                "ipv4": "106.187.43.98",
+                "ipv4": "",
                 "ipv6": null,
                 "md5": "a20473e3a24c52ac3d89d7489b500189",
                 "sha1": null,
@@ -575,9 +575,9 @@ Returns Malware Sample records for the provided indicator value.
 >### HYAS MalwareSamples records for domain : butterfly.bigmoney.biz
 >|Datetime|Domain|IPV4 Address|IPV6 Address|MD5 Value|SHA1 Value|SHA256 Value|
 >|---|---|---|---|---|---|---|
->| 2021-06-03 | butterfly.bigmoney.biz | 106.187.43.98 | None | f8e537c178999f4ab1609576c6f5751e | None | None |
->| 2021-05-18 | butterfly.bigmoney.biz | 106.187.43.98 | None | 5fb3ee62c7bd0d801d76e272f51fe137 | None | None |
->| 2021-05-18 | butterfly.bigmoney.biz | 106.187.43.98 | None | a20473e3a24c52ac3d89d7489b500189 | None | None |
+>| 2021-06-03 | butterfly.bigmoney.biz |  | None | f8e537c178999f4ab1609576c6f5751e | None | None |
+>| 2021-05-18 | butterfly.bigmoney.biz |  | None | 5fb3ee62c7bd0d801d76e272f51fe137 | None | None |
+>| 2021-05-18 | butterfly.bigmoney.biz |  | None | a20473e3a24c52ac3d89d7489b500189 | None | None |
 
 
 ### hyas-get-associated-ips-by-hash
@@ -612,7 +612,7 @@ Returns associated IP's for the provided hash value.
     "HYAS": {
         "HASH-IP": {
             "ips": [
-                "106.187.43.98"
+                "1.1.1.1"
             ],
             "md5": "1d0a97c41afe5540edd0a8c1fb9a0f1c"
         }
@@ -625,7 +625,7 @@ Returns associated IP's for the provided hash value.
 >### HYAS HASH-IP records for md5 : 1d0a97c41afe5540edd0a8c1fb9a0f1c
 >|Associated IPs|
 >|---|
->| 106.187.43.98 |
+>| 1.1.1.1 |
 
 
 ### hyas-get-associated-domains-by-hash
